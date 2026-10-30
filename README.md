@@ -4,12 +4,11 @@ Hệ thống Design System dùng chung cho toàn bộ dự án web thuộc hệ 
 Xây dựng cho **Next.js 16 + React 19 + Tailwind CSS 4**.
 
 Repository này đóng gói **2 sản phẩm trong cùng 1 tag phiên bản (semver)**:
-1. **Plugin cho AI Agent (`semi-design`):** chứa bộ quy tắc (`rules/AGENTS.md`), hook tự chạy lint khi sửa file (`hooks.json`), và 4 skills:
-   - `semi-ui` — tự động kích hoạt khi agent viết hoặc sửa giao diện.
-   - `/semi-init` — tự động khởi tạo dự án mới hoặc phân tích + refactor dự án có sẵn sang Semi Design System (user không cần gõ tay `npm install`).
-   - `/semi-audit` — quét dự án có sẵn, liệt kê màu/component trùng lặp, đặt câu hỏi trắc nghiệm cho user và lập kế hoạch refactor 4 giai đoạn.
-   - `/semi-update` — nâng cấp `@semi/ui` lên tag mới nhất, kiểm tra `CHANGELOG.md` và chạy `semi-lint` + `tsc`.
-2. **NPM Package (`@semi/ui`):** chứa Design Tokens (`tokens.css`, `base.css`), style constants (`@semi/ui/styles`), 17 React components (`@semi/ui`), và công cụ kiểm tra `semi-lint`.
+1. **Plugin cho AI Agent (`semi-design`):** chứa bộ quy tắc luôn bật (`rules/AGENTS.md` — tự động hướng dẫn agent mỗi khi viết hoặc sửa giao diện), hook tự chạy lint khi sửa file (`hooks.json`), và **3 slash commands không chồng chéo**:
+   - `/semi-init` — **Cài đặt lần đầu** cho một dự án (tự động khởi tạo dự án mới Next.js + Tailwind + `@semi/ui` HOẶC quét, hỏi trắc nghiệm và refactor 4 giai đoạn cho dự án có sẵn / monorepo).
+   - `/semi-update` — **Nâng cấp phiên bản** cho dự án đã dùng `@semi/ui` (nâng lên tag mới nhất, đối chiếu `CHANGELOG.md` + kiểm tra cấu trúc và refactor các điểm lệch mới).
+   - `/semi-audit` — **Kiểm tra sức khỏe (Read-only)** (chỉ quét và in báo cáo độ đồng nhất token + cấu trúc layout, không cài đặt hay sửa bất kỳ file nào).
+2. **NPM Package (`@semi/ui`):** chứa Design Tokens (`tokens.css`, `base.css`), style constants (`@semi/ui/styles`), 23 React components bao gồm cả khung bố cục trang (`AppShell`, `MobileTabBar`, `PageTitle`, `PageTabsTitle`, `SubpageToolbar`, `KpiCard`, `Modal`, …), và công cụ kiểm tra `semi-lint`.
 
 ---
 
@@ -70,8 +69,9 @@ Agent sẽ tự động:
 ## 3. Cấu trúc xuất (Exports) của `@semi/ui`
 
 ```tsx
-// 1. Components
+// 1. Components (Layout + Controls)
 import {
+  AppShell, MobileTabBar, PageTitle, PageTabsTitle, SubpageToolbar, KpiCard, Modal,
   Icon, IconTile,
   AppHeader, PageActions, SidePanel, RefreshButton,
   Chip, Pills,
@@ -83,8 +83,10 @@ import {
 
 // 2. Style constants (surfaces, buttons, app chrome)
 import {
+  SHELL_OUTER, SHELL_SIDEBAR, SHELL_MAIN, SHELL_CONTENT,
   CARD, CARD_HOVER, CARD_ACTIVE, HERO, TILE,
   SECTION_HEAD, SECTION_TITLE, COUNT_PILL, EMPTY,
+  FIELD_LABEL, FIELD_INPUT, FIELD_TEXTAREA,
   ICON_BTN, ICON_BTN_DANGER, STATUS_PILL, STATUS_DOT, STICKY_TOOLBAR,
   MODAL_BACKDROP, MODAL_PANEL, MODAL_HEAD, MODAL_TITLE, MODAL_FOOT, MODAL_CLOSE,
   BTN_PRIMARY, BTN_SECONDARY, BTN_DANGER, BTN_ICON,

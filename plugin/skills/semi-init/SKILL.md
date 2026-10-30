@@ -1,41 +1,51 @@
 ---
 name: semi-init
-description: Initialize or adopt the Semi Design System (@semi/ui) in a web project with zero manual terminal steps for the user. Automatically detects whether the workspace is a brand-new project (scaffolds Next.js + Tailwind 4 + @semi/ui + starter layout) or an existing codebase (runs /semi-audit, asks user decision questions, gets approval, then installs and refactors in phases). Triggered by /semi-init.
+description: Set up or adopt the Semi Design System (@semi/ui) in a web project with zero manual terminal commands. Automatically detects whether the workspace is a brand-new project (scaffolds Next.js + Tailwind 4 + @semi/ui + AppShell starter) or an existing codebase (audits, asks targeted multiple-choice questions, gets approval, and executes the 4-phase refactor). Triggered by /semi-init.
 ---
 
-# Initialize Semi Design System (`/semi-init`)
+# Initialize or Adopt Semi Design System (`/semi-init`)
 
-Use this skill when the user invokes `/semi-init` or asks to set up the Semi Design System in a project.
-The user should **never** have to run manual `npm install` or config commands — you run the scripts and only ask the user when refactoring decisions are needed.
+Use this skill when the user invokes `/semi-init` to set up the Semi Design System in a brand-new directory OR to migrate an existing web project to `@semi/ui`.
+The user should **never** have to run manual `npm install` or config commands — you run the scripts and only ask the user when decisions are needed.
 
 ## Workflow
 
-### Step 1: Detect project mode (New vs Existing) & Ask Version Preference
-Check whether the target directory (or `./web`) already has a `package.json`:
+### Step 1: Detect project mode (New vs Existing)
+Run `audit.mjs` to check whether the workspace already contains one or more frontend apps (`package.json`):
+```bash
+node "<path-to-plugin>/skills/semi-audit/scripts/audit.mjs" --cwd "<target-dir>"
+```
 
-- **Case A — Brand-new / empty directory:**
-  1. Ask the user (via `ask_question`) for:
-     - **Next.js & Tailwind CSS version:**
-       - `(Recommended) Latest (next@latest + tailwindcss@latest)` (default)
-       - Or a specific version string chosen by the user.
-     - **App title & export mode:** (e.g. standard Next.js server vs static export `output: "export"`).
-  2. Run `init.mjs`:
+---
+
+### Case A — Brand-new / Empty Directory (`No package.json found`)
+1. Ask the user (via `ask_question`) for:
+   - **Next.js & Tailwind CSS version:**
+     - `(Recommended) Latest (next@latest + tailwindcss@latest)` (default)
+     - Or a specific version string chosen by the user.
+   - **App title & export mode:** (standard Next.js server vs static export `output: "export"`).
+2. Run `init.mjs`:
+   ```bash
+   node "<path-to-this-skill>/scripts/init.mjs" --cwd "<target-dir>" --app-name "<App Title>" --next-version "<latest|ver>" --tailwind-version "<latest|ver>" [--static-export]
+   ```
+   (Defaults for `--next-version` and `--tailwind-version` are `latest`.)
+3. `init.mjs` automatically scaffolds Next.js + Tailwind, installs `@semi/ui` from the latest tag of `github:hoanghuynh296/semi-nextjs-codebase`, configures `transpilePackages: ["@semi/ui"]`, wires `@semi/ui/tokens.css` + `@semi/ui/base.css` + `@source` into `app/globals.css`, sets up Geist + Montserrat Alternates fonts and `<ConfirmHost />` in `app/layout.tsx`, creates a starter page using `AppShell`, `PageTitle`, `SubpageToolbar`, `KpiCard`, `CARD`, `Pills`, `Chip`, `CustomSelect`, writes `semi-lint.json` and `AGENTS.md`, and verifies `semi-lint` + `tsc` + `npm run build`.
+
+---
+
+### Case B — Existing Codebase (One or More Frontend Apps Found)
+1. **Present the audit summary** and ask the user the multiple-choice questions listed in **Questions Requiring User Decision** (using `ask_question`):
+   - **Target frontend app(s) (if monorepo):** Refactor all discovered frontend apps or a specific one?
+   - **Next.js & Tailwind CSS version (always asked):** Default `(Recommended) Latest versions (next@latest + tailwindcss@latest)`, keep current, or custom version.
+   - **Layout Shell (`AppShell`):** Replace legacy `<aside>` + mobile hamburger drawer with `@semi/ui`'s floating Bento `AppShell` + collapsible `w-52`/`w-14` sidebar + `MobileTabBar`?
+   - **Page Headers, Toolbars & `ui.tsx` Wrappers:** Remove local `ui.tsx` wrappers and standardize every page on `PageTitle`/`PageTabsTitle` + `SubpageToolbar` (icon-only `+` CTA, `SearchInput`, `RefreshButton`) + `Modal` (`MODAL_FOOT`) + `FIELD_INPUT`?
+   - **List Views (`<table>` vs Bento `CARD`s):** Convert entity overview grids to Bento `CARD`s (with `IconTile` / `STATUS_DOT`) and add `<Pagination>` to dense transactional tables?
+2. **Propose the 4-Phase Refactor Plan and wait for user approval:**
+   - **Phase 1 — Install `@semi/ui` & Upgrade Next.js/Tailwind:**
      ```bash
-     node "<path-to-this-skill>/scripts/init.mjs" --cwd "<target-dir>" --app-name "<App Title>" --next-version "<latest|ver>" --tailwind-version "<latest|ver>" [--static-export]
+     node "<path-to-this-skill>/scripts/init.mjs" --cwd "<app-dir>" --apply --write-baseline --next-version "<latest|keep|ver>" --tailwind-version "<latest|keep|ver>"
      ```
-     (Defaults for `--next-version` and `--tailwind-version` are `latest`. Supports `SEMI_UI_SOURCE=file:/path/to/semi-nextjs-codebase` when testing against a local checkout before pushing tags.)
-  3. The script scaffolds Next.js + Tailwind (`create-next-app@<next-version>`), ensures `next` and `tailwindcss` match the requested versions (default `latest`), installs `@semi/ui`, configures `transpilePackages`, wires `@semi/ui/tokens.css` + `@semi/ui/base.css` + `@source` into `app/globals.css`, sets up Geist + Montserrat Alternates fonts and `<ConfirmHost />` in `app/layout.tsx`, creates a starter page using `AppHeader`, `CARD`, `BTN_PRIMARY`, `Pills`, `Chip`, `IconTile`, creates `semi-lint.json` and `AGENTS.md`, and verifies `semi-lint` + `tsc` + `npm run build`.
-
-- **Case B — Existing codebase (`package.json` exists):**
-  1. Run `init.mjs --cwd "<target-dir>"` (without `--apply`), or directly run `semi-audit/scripts/audit.mjs --cwd "<target-dir>"`.
-  2. Present the audit report summary and ask the user the multiple-choice questions listed in **Questions Requiring User Decision** (use `ask_question` tool). This always includes asking which version of Next.js and Tailwind CSS to install (defaulting to `(Recommended) Latest (next@latest + tailwindcss@latest)`).
-  3. Present the 4-phase refactor plan (see `semi-audit` skill) and wait for user approval.
-  4. Once approved, execute **Phase 1** by running:
-     ```bash
-     node "<path-to-this-skill>/scripts/init.mjs" --cwd "<target-dir>" --apply --write-baseline --next-version "<latest|keep|ver>" --tailwind-version "<latest|keep|ver>"
-     ```
-  5. Then execute **Phases 2–4** according to the user's selected scope, keeping `npx semi-lint`, `npx tsc --noEmit`, and `npm run build` green at the end of every phase.
-
-### Private Repository Authentication
-`@semi/ui` is hosted in the private repository `https://github.com/hoanghuynh296/semi-nextjs-codebase`.
-If `init.mjs` exits with code `2` (git access denied), tell the user the single command to authenticate (`gh auth login && gh auth setup-git` or adding an SSH key) and stop until they confirm.
+   - **Phase 2 — Bento `AppShell` & `MobileTabBar`:** Refactor the main layout (`layout.tsx`) to use `AppShell` (floating `rounded-2xl` panels on `bg-canvas`, collapsible `w-52`/`w-14` sidebar with grouped `sections`, and `MobileTabBar` on phones).
+   - **Phase 3 — Remove `ui.tsx` Wrappers & Standardize `PageTitle` + `SubpageToolbar` + `KpiCard` + `Modal` + `FIELD_INPUT`:** Replace local wrapper components (`PageHeader`, `Select`, `Input`, `Modal`, `Button`, `EmptyState`, custom `KPICard`) with direct imports from `@semi/ui` and `@semi/ui/styles`.
+   - **Phase 4 — Bento Cards, `Pagination` & Zero `semi-lint` Violations:** Upgrade list views (Bento `CARD`s / `IconTile` / `<Pagination>`), replace `font-mono` on numbers/codes with `tabular-nums`, update `semi-lint-baseline.json`, and verify `npx semi-lint` + `npx tsc --noEmit` + `npm run build` are all green.
+3. Execute Phases 1–4 after the user approves.
