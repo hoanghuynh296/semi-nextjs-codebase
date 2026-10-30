@@ -291,12 +291,12 @@ export function AppShell({
                     <div
                       className={`${
                         collapsed ? "hidden" : "hidden lg:flex"
-                      } items-center gap-1.5 px-2.5 pt-1.5 pb-0.5 text-[11px] font-medium text-gray-400 select-none truncate`}
+                      } shrink-0 items-center gap-1.5 px-2.5 pt-2 pb-1 text-[11px] font-medium text-gray-400 select-none`}
                     >
                       {section.icon && (
-                        <Icon name={section.icon} className="w-3 h-3 text-gray-500 shrink-0" />
+                        <Icon name={section.icon} className="w-3.5 h-3.5 text-gray-500 shrink-0" />
                       )}
-                      <span className="truncate">{section.label}</span>
+                      <span className="truncate leading-normal">{section.label}</span>
                     </div>
                   )}
                   <nav aria-label={section.label ?? `Menu ${idx + 1}`} className="flex flex-col gap-0.5">
