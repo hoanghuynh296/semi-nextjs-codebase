@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { auditProject } from "../../semi-audit/scripts/audit.mjs";
+import { auditProject, discoverFrontendApps } from "../../semi-audit/scripts/audit.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PLUGIN_ROOT = resolve(__dirname, "../../..");
@@ -225,25 +225,34 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 import React, { useState } from "react";
 import {
-  AppHeader,
+  AppShell,
   Chip,
   CustomSelect,
-  Icon,
   IconTile,
+  KpiCard,
+  PageTitle,
   Pills,
-  SearchInput,
+  SubpageToolbar,
   confirmDialog,
+  type ShellNavSection,
 } from "@semi/ui";
-import {
-  BTN_ICON,
-  BTN_PRIMARY,
-  BTN_SECONDARY,
-  CARD,
-  HERO,
-  STATUS_DOT,
-  STATUS_PILL,
-  STICKY_TOOLBAR,
-} from "@semi/ui/styles";
+import { CARD, STATUS_DOT } from "@semi/ui/styles";
+
+const SECTIONS: ShellNavSection[] = [
+  {
+    label: "Quản lý",
+    items: [
+      { id: "dashboard", label: "Tổng quan", shortLabel: "Trang chủ", icon: "grid" },
+      { id: "devices", label: "Thiết bị", icon: "printer" },
+      { id: "inventory", label: "Kho vật tư", icon: "spool" },
+      { id: "automation", label: "Tự động hoá", icon: "zap" },
+    ],
+  },
+  {
+    label: "Hệ thống",
+    items: [{ id: "settings", label: "Cài đặt", icon: "settings" }],
+  },
+];
 
 const TABS = [
   { key: "all", label: "Tất cả" },
@@ -252,102 +261,84 @@ const TABS = [
 ] as const;
 
 export default function HomePage() {
+  const [activeNav, setActiveNav] = useState("dashboard");
   const [tab, setTab] = useState<string>("all");
   const [query, setQuery] = useState("");
   const [region, setRegion] = useState("vn");
   const [pinnedOnly, setPinnedOnly] = useState(false);
 
   return (
-    <div className="min-h-screen bg-app text-gray-200 flex flex-col">
-      <AppHeader
-        title={${JSON.stringify(appName)}}
-        logo={<IconTile name="layers" tone="green" size="sm" />}
-      >
-        <button
-          type="button"
-          className={BTN_PRIMARY}
-          onClick={() =>
-            confirmDialog({
-              title: "Tạo mục mới",
-              message: "Bạn có muốn khởi tạo bản ghi mới trong hệ thống Semi không?",
-              confirmLabel: "Tạo mới",
-            })
-          }
-        >
-          <Icon name="plus" className="w-4 h-4" />
-          <span>Tạo mới</span>
-        </button>
-      </AppHeader>
+    <AppShell
+      productName={${JSON.stringify(appName)}}
+      logoIcon="layers"
+      sections={SECTIONS}
+      activeId={activeNav}
+      onSelect={setActiveNav}
+    >
+      <PageTitle title={${JSON.stringify(appName)}} />
 
-      <main className="flex-1 p-4 sm:p-6 space-y-4">
-        <section className={HERO}>
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-3 min-w-0">
-              <IconTile name="sparkles" tone="green" size="md" />
-              <div className="min-w-0">
-                <h1 className="font-display text-[22px] sm:text-[26px] font-semibold tracking-tight text-white truncate">
-                  {${JSON.stringify(appName)}}
-                </h1>
-              </div>
-            </div>
-            <span className={\`\${STATUS_PILL} bg-emerald-500/15 text-emerald-300\`}>
-              <span className={\`w-2 h-2 rounded-full \${STATUS_DOT.online}\`} />
-              <span>Hệ thống sẵn sàng</span>
-            </span>
-          </div>
-        </section>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+        <KpiCard icon="printer" iconTone="green" label="Thiết bị trực tuyến" value="12 / 14" sub="Hoạt động ổn định" />
+        <KpiCard icon="zap" iconTone="sky" label="Tác vụ hôm nay" value="148" sub="Tỷ lệ thành công 99.2%" />
+        <KpiCard icon="spool" iconTone="violet" label="Tồn kho khả dụng" value="86" sub="4 mục sắp hết" />
+        <KpiCard icon="coin" iconTone="amber" label="Hiệu suất trung bình" value="42 ms" sub="Trong 24 giờ qua" />
+      </div>
 
-        <div className={STICKY_TOOLBAR}>
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-2 flex-wrap">
-              <Pills options={[...TABS]} value={tab} onChange={setTab} />
-              <Chip active={pinnedOnly} onClick={() => setPinnedOnly((v) => !v)}>
-                <span>Đã ghim</span>
-              </Chip>
-            </div>
-            <div className="flex items-center gap-2">
-              <SearchInput value={query} onChange={setQuery} placeholder="Tìm kiếm…" className="w-48 sm:w-60" />
-              <CustomSelect
-                value={region}
-                onChange={setRegion}
-                options={[
-                  { value: "vn", label: "Khu vực VN" },
-                  { value: "sg", label: "Khu vực SG" },
-                ]}
-              />
-              <button type="button" className={\`\${BTN_SECONDARY} \${BTN_ICON}\`} title="Làm mới" aria-label="Làm mới">
-                <Icon name="refresh" className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        </div>
+      <SubpageToolbar
+        left={
+          <>
+            <Pills options={[...TABS]} value={tab} onChange={setTab} />
+            <Chip active={pinnedOnly} onClick={() => setPinnedOnly((v) => !v)}>
+              <span>Đã ghim</span>
+            </Chip>
+            <CustomSelect
+              value={region}
+              onChange={setRegion}
+              options={[
+                { value: "vn", label: "Khu vực VN" },
+                { value: "sg", label: "Khu vực SG" },
+              ]}
+            />
+          </>
+        }
+        onPrimaryAction={() =>
+          confirmDialog({
+            title: "Tạo mục mới",
+            message: "Bạn có muốn khởi tạo bản ghi mới trong hệ thống Semi không?",
+            confirmLabel: "Tạo mới",
+          })
+        }
+        primaryActionLabel="Tạo mới"
+        searchValue={query}
+        onSearchChange={setQuery}
+        onRefresh={async () => {}}
+      />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {[
-            { id: "01", name: "Thiết bị điều khiển trung tâm", status: "online" as const, metric: "99.8%" },
-            { id: "02", name: "Trạm xử lý dữ liệu thời gian thực", status: "printing" as const, metric: "42 ms" },
-            { id: "03", name: "Bộ lưu trữ nhật ký vận hành", status: "online" as const, metric: "1.2 TB" },
-          ].map((item) => (
-            <div key={item.id} className={\`\${CARD} p-4 space-y-3\`}>
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <IconTile name="printer" tone="sky" size="md" />
-                  <div className="min-w-0">
-                    <div className="text-[13px] font-semibold text-white truncate">{item.name}</div>
-                    <div className="text-[11px] text-gray-500 tabular-nums">Mã #{item.id}</div>
-                  </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {[
+          { id: "01", name: "Thiết bị điều khiển trung tâm", status: "online" as const, metric: "99.8%" },
+          { id: "02", name: "Trạm xử lý dữ liệu thời gian thực", status: "printing" as const, metric: "42 ms" },
+          { id: "03", name: "Bộ lưu trữ nhật ký vận hành", status: "online" as const, metric: "1.2 TB" },
+        ].map((item) => (
+          <div key={item.id} className={\`\${CARD} p-4 space-y-3\`}>
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <IconTile name="printer" tone="sky" size="md" />
+                <div className="min-w-0">
+                  <div className="text-[13px] font-semibold text-white truncate">{item.name}</div>
+                  <div className="text-[11px] text-gray-500 tabular-nums">Mã #{item.id}</div>
                 </div>
-                <span className={\`w-2 h-2 rounded-full shrink-0 \${STATUS_DOT[item.status]}\`} />
               </div>
-              <div className="flex items-center justify-between pt-2 border-t border-divider text-[12px]">
-                <span className="text-gray-400">Hiệu suất</span>
-                <span className="text-white font-medium tabular-nums">{item.metric}</span>
-              </div>
+              <span className={\`w-2 h-2 rounded-full shrink-0 \${STATUS_DOT[item.status]}\`} />
             </div>
-          ))}
-        </div>
-      </main>
-    </div>
+            <div className="flex items-center justify-between pt-2 border-t border-divider text-[12px]">
+              <span className="text-gray-400">Hiệu suất</span>
+              <span className="text-white font-medium tabular-nums">{item.metric}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </AppShell>
   );
 }
 `,
@@ -357,11 +348,9 @@ export default function HomePage() {
 const opts = parseArgs(process.argv.slice(2));
 mkdirSync(opts.cwd, { recursive: true });
 
-let webDir = opts.cwd;
-if (!existsSync(join(webDir, "package.json")) && existsSync(join(webDir, "web", "package.json"))) {
-  webDir = join(webDir, "web");
-}
-const isExisting = existsSync(join(webDir, "package.json"));
+const discovered = discoverFrontendApps(opts.cwd);
+let webDir = discovered[0] || opts.cwd;
+const isExisting = discovered.length > 0;
 
 if (isExisting && !opts.apply) {
   console.log("Existing project detected. Running /semi-audit first (pass --apply after user approves refactor plan)...\n");

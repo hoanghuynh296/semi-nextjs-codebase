@@ -3,6 +3,7 @@
   "baseline": "semi-lint-baseline.json",
   "skip": {
     "inline-svg-path": ["src/Icon.tsx"],
-    "app-chrome-copy": ["styles/appChrome.ts"]
+    "app-chrome-copy": ["styles/appChrome.ts"],
+    "legacy-ui-wrapper": ["src/Modal.tsx"]
   }
 }

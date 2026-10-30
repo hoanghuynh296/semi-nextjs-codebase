@@ -72,3 +72,24 @@ export const MODAL_TITLE = "text-[15px] font-semibold text-white tracking-tight 
 /** Modal footer: buttons right-aligned; stretched on a phone with safe-area bottom padding. */
 export const MODAL_FOOT =
   "px-5 py-3 max-sm:pb-[max(1rem,env(safe-area-inset-bottom))] border-t border-divider flex items-center justify-end gap-2 shrink-0 max-sm:*:flex-1";
+
+/** Form field label above an input/select/textarea. */
+export const FIELD_LABEL = "block text-[12px] font-medium text-gray-400 mb-1";
+
+/** Form text input: 5% white tonal fill so it contrasts on both bg-panel cards and bg-field modals. */
+export const FIELD_INPUT =
+  "w-full h-9 bg-white/[0.05] border border-line hover:border-line-hover rounded-lg px-3 text-[13px] text-white placeholder:text-gray-500 focus:outline-none focus:border-primary-500/50 focus:bg-white/[0.08] transition-colors disabled:opacity-40";
+
+/** Form textarea: matches FIELD_INPUT contrast and focus border. */
+export const FIELD_TEXTAREA =
+  "w-full bg-white/[0.05] border border-line hover:border-line-hover rounded-lg px-3 py-2 text-[13px] text-white placeholder:text-gray-500 focus:outline-none focus:border-primary-500/50 focus:bg-white/[0.08] transition-colors disabled:opacity-40";
+
+/** 2-panel floating Bento shell classes (used by AppShell). */
+export const SHELL_OUTER =
+  "h-dvh overflow-hidden flex flex-col md:flex-row md:p-2 md:gap-2 bg-app md:bg-canvas text-gray-200";
+export const SHELL_ASIDE =
+  "max-md:hidden shrink-0 rounded-2xl bg-panel border border-white/[0.05] flex flex-col overflow-hidden select-none transition-[width] duration-200";
+export const SHELL_MAIN =
+  "flex-1 min-w-0 min-h-0 md:rounded-2xl bg-app md:border md:border-white/[0.05] overflow-y-auto overflow-x-hidden overscroll-contain flex flex-col";
+export const SHELL_CONTAINER =
+  "flex-1 min-w-0 w-full max-w-[1440px] mx-auto px-4 sm:px-6 pt-[max(1rem,env(safe-area-inset-top))] sm:pt-8 pb-8 sm:pb-10 flex flex-col";

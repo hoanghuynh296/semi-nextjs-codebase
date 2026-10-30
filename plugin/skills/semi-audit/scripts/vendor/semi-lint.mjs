@@ -28,8 +28,27 @@ export const HARD = [
   ["uppercase-label", /uppercase tracking-(wide|wider|widest)|tracking-(wide|wider|widest) uppercase/, "labels are sentence case"],
   ["native-select", /<select\b/, "use CustomSelect from @semi/ui"],
   ["rounded-md", /\brounded-md\b/, "radius scale: rounded (tiny marks) / lg / xl / 2xl / full"],
-  ["tw-text-size", /\btext-(xs|sm|base|lg|xl)\b/, "use px sizes text-[11px]…[15px]"],
+  [
+    "tw-text-size",
+    /\btext-(xs|sm|base|lg|xl)\b/,
+    "use explicit px sizes: body/UI text-[11px]…[15px], KPI figures KpiCard (text-[18px] sm:text-[22px]), titles PageTitle (text-[22px] sm:text-[26px])",
+  ],
   ["grey-surface", /bg-gray-(800|900)|border-gray-700/, "use the surface tokens (bg-panel, border-line…)"],
+  [
+    "legacy-shell-aside",
+    /\bw-(56|60|64)\b[^"'\n]*\bborder-r\b|\b-translate-x-full\b/,
+    "use AppShell from @semi/ui (floating rounded-2xl bento sidebar + MobileTabBar), not a fixed border-r or hamburger drawer <aside>",
+  ],
+  [
+    "legacy-ui-wrapper",
+    /export\s+function\s+(PageHeader|Select|Modal|Input|Textarea|Button|EmptyState)\b/,
+    "do not keep a local ui.tsx wrapper; use PageTitle, SubpageToolbar, CustomSelect, Modal, FIELD_INPUT, BTN_*, EMPTY from @semi/ui",
+  ],
+  [
+    "input-bg-field",
+    /\bh-(8|9|10)\b[^"'\n]*\bbg-field\b|\bbg-field\b[^"'\n]*\bplaceholder:/,
+    "inputs/textareas use FIELD_INPUT / FIELD_TEXTAREA (bg-white/[0.05]), never bg-field (invisible inside bg-field modals)",
+  ],
   ["gradient", /bg-gradient-|linear-gradient|radial-gradient|from-primary-\d+ to-/, "flat UI: no gradients"],
   [
     "glow",
