@@ -1,0 +1,16 @@
+# Semi Design System — Decision Log
+
+Newest first. Each entry is a user decision already reflected in `DESIGN_SYSTEM.md`, `QUICK_REF.md` and `lint/semi-lint.mjs`.
+
+- **2026-10-30 (v0.1.0):** Extracted the Semi Design System (`@semi/ui` + `semi-design` plugin) from 3D Noobs Studio as the shared foundation for all Semi web products (Next.js 16 + React 19 + Tailwind 4). Single source of truth lives in `hoanghuynh296/semi-nextjs-codebase`; app-specific rules stay in each app's extension doc.
+- **2026-10-29:** Stand-alone tool / 3D apps share one chrome (`AppHeader`, `appChrome.ts`, `SidePanel`, floating canvas controls); module headers show only the module name without the parent brand prefix; rare inputs sit under "Tuỳ chọn khác".
+- **2026-10-29:** A filter sidebar beside long results scrolls independently (`overflow-y-auto overscroll-contain` columns, no sticky + JS height). Long result lists auto-load near the end with "Xem thêm" as fallback. Removable chips show active filters when filters sit in a sheet.
+- **2026-10-29:** Card grids beside a sidebar size columns by `@container` (the content column), never by viewport breakpoints.
+- **2026-10-28:** Links to other sites always use `ExternalLink` (new tab on desktop, external browser hook when wrapped in a mobile WebView).
+- **2026-10-28:** Async select/model fields that fetch options automatically may show a small `role="status"` line with a spinner under the field while loading (§13b exception to the no-loading-text rule).
+- **2026-10-27:** One source of truth for UI rules. Flat everywhere: no glow on status dots, power buttons or active cards. Native `<select>` and unicode glyph icons banned. Stand-alone app headers: logo + title returns home, no Home button.
+- **2026-10-26:** Sticky sub-page toolbars; "Thêm" and "Làm mới" toolbar buttons are icon-only (`BTN_ICON`).
+- **2026-10-25:** No subtitles under page titles.
+- **2026-10-22:** Geist + Montserrat Alternates (`font-display`) replace Inter; neutral selected chips (`bg-white/[0.10]`); full-width content panel; modals full screen on phones, centred from `sm`.
+- **2026-10-21:** Every modal shares one shell (`MODAL_BACKDROP`, `MODAL_PANEL`, `MODAL_HEAD`, `MODAL_TITLE`, `MODAL_FOOT`, `MODAL_CLOSE`).
+- **2026-10-20:** Dark restrained look, minimal text, no gradients, no glow. Radius scale 8/12/16/full. Left menu grey 16px icons, no per-tab colours, no count badges. One chip background, colour only on a dot/icon. Primary actions top-right. Scrollbars hidden. Shimmer skeletons instead of loading text. Numbers in `tabular-nums`, not mono.

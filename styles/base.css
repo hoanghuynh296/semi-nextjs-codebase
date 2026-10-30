@@ -1,0 +1,73 @@
+/* @semi/ui base layer: generic rules every Semi app shares (docs/DESIGN_SYSTEM.md).
+   Import after tailwindcss and tokens.css:
+     @import "tailwindcss";
+     @import "@semi/ui/tokens.css";
+     @import "@semi/ui/base.css";
+   Nothing app- or page-specific belongs here; apps keep those in their own globals.css. */
+
+/* `dark:` variant follows a `.dark` class (Semi is dark-first; the class lets apps opt into light sections later). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Tailwind v3 preflight compatibility (copied class strings render as designed). */
+@layer base {
+  *, ::after, ::before, ::backdrop, ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+  button:not(:disabled), [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  input::placeholder, textarea::placeholder {
+    color: var(--color-gray-400);
+  }
+  dialog {
+    margin: auto;
+  }
+}
+
+@layer base {
+  html, body {
+    background-color: var(--color-app);
+    /* No sideways page pan or rubber-band on phones / iPad. `clip`, unlike `hidden`, creates no scroll container,
+       so position: sticky keeps working. Horizontal lists (tab bar, chips) still scroll. */
+    overflow-x: clip;
+    overscroll-behavior-x: none;
+  }
+  * {
+    overscroll-behavior-x: none;
+  }
+  body {
+    font-family: var(--font-sans);
+    font-feature-settings: "ss02" on;
+  }
+  .font-display {
+    font-family: var(--font-display) !important;
+    font-weight: 700;
+  }
+}
+
+@layer components {
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}
+
+/* No visible scrollbars anywhere (every page, every screen size); content still scrolls by wheel, touch and keys.
+   `custom-scrollbar` is a no-op kept for older markup. */
+*, *::before, *::after { scrollbar-width: none; -ms-overflow-style: none; }
+::-webkit-scrollbar { display: none; width: 0; height: 0; }
+
+/* Loading skeleton: a tonal block with a light band sweeping across (Skeleton.tsx). The only gradient Semi allows. */
+@keyframes shimmer-sweep { 100% { transform: translateX(100%); } }
+.shimmer { position: relative; overflow: hidden; background-color: rgba(255, 255, 255, 0.06); }
+.shimmer::after {
+  content: ""; position: absolute; inset: 0; transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.07) 50%, transparent);
+  animation: shimmer-sweep 1.4s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) { .shimmer::after { animation: none; } }
+
+/* Side panel slide (generic right-edge panels: AI chats, inspectors). */
+@keyframes slide-panel-in { from { transform: translateX(100%); opacity: 0; } }
+@keyframes slide-panel-out { to { transform: translateX(100%); opacity: 0; } }
+.slide-panel-in { animation: slide-panel-in 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.slide-panel-out { animation: slide-panel-out 0.25s cubic-bezier(0.4, 0, 1, 1) both; }
+@media (prefers-reduced-motion: reduce) { .slide-panel-in, .slide-panel-out { animation-duration: 1ms; } }
