@@ -24,6 +24,8 @@ export interface ShellNavItem {
 
 export interface ShellNavSection {
   label?: string;
+  hideLabel?: boolean;
+  icon?: IconName;
   items: ShellNavItem[];
   loading?: boolean;
   loadingCount?: number;
@@ -278,32 +280,49 @@ export function AppShell({
               ))}
 
             {/* Navigation sections */}
-            {sections.map((section, idx) => (
-              <React.Fragment key={section.label ?? idx}>
-                {idx > 0 && <div className="my-0.5 mx-1.5 border-t border-divider" />}
-                <nav aria-label={section.label ?? `Menu ${idx + 1}`} className="flex flex-col gap-0.5">
-                  {section.loading ? (
-                    Array.from({ length: section.loadingCount ?? 5 }, (_, i) => (
-                      <div
-                        key={i}
-                        className={`w-full h-8 flex items-center rounded-lg ${
-                          collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2.5 lg:px-2.5"
-                        }`}
-                        aria-hidden
-                      >
-                        <div className="w-4 h-4 rounded shimmer shrink-0" />
-                        <div
-                          className={`${collapsed ? "hidden" : "hidden lg:block"} h-3 rounded shimmer`}
-                          style={{ width: `${55 + ((i * 19) % 35)}%` }}
-                        />
-                      </div>
-                    ))
-                  ) : (
-                    section.items.map(renderNavEntry)
+            {sections.map((section, idx) => {
+              if (!section.loading && (!section.items || section.items.length === 0)) {
+                return null;
+              }
+              return (
+                <React.Fragment key={section.label ?? idx}>
+                  {idx > 0 && <div className="my-1 mx-1.5 border-t border-divider" />}
+                  {section.label && !section.hideLabel && (
+                    <div
+                      className={`${
+                        collapsed ? "hidden" : "hidden lg:flex"
+                      } items-center gap-1.5 px-2.5 pt-1.5 pb-0.5 text-[11px] font-medium text-gray-400 select-none truncate`}
+                    >
+                      {section.icon && (
+                        <Icon name={section.icon} className="w-3 h-3 text-gray-500 shrink-0" />
+                      )}
+                      <span className="truncate">{section.label}</span>
+                    </div>
                   )}
-                </nav>
-              </React.Fragment>
-            ))}
+                  <nav aria-label={section.label ?? `Menu ${idx + 1}`} className="flex flex-col gap-0.5">
+                    {section.loading ? (
+                      Array.from({ length: section.loadingCount ?? 5 }, (_, i) => (
+                        <div
+                          key={i}
+                          className={`w-full h-8 flex items-center rounded-lg ${
+                            collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2.5 lg:px-2.5"
+                          }`}
+                          aria-hidden
+                        >
+                          <div className="w-4 h-4 rounded shimmer shrink-0" />
+                          <div
+                            className={`${collapsed ? "hidden" : "hidden lg:block"} h-3 rounded shimmer`}
+                            style={{ width: `${55 + ((i * 19) % 35)}%` }}
+                          />
+                        </div>
+                      ))
+                    ) : (
+                      section.items.map(renderNavEntry)
+                    )}
+                  </nav>
+                </React.Fragment>
+              );
+            })}
           </div>
 
           {/* Sidebar footer */}
