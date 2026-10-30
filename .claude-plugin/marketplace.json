@@ -8,7 +8,7 @@
       "name": "semi-design",
       "source": "./plugin",
       "description": "Semi Design System plugin: UI rules, lint hook, and /semi-init, /semi-audit, /semi-update skills for Next.js + Tailwind 4 apps.",
-      "version": "0.2.0"
+      "version": "0.2.5"
     }
   ]
 }

@@ -36,6 +36,10 @@ Khi cần hiển thị biểu tượng cho một hành động hoặc trạng th
 | **Khôi phục mặc định ban đầu** | `reset` | `<Icon name="reset" />` | Dùng trong form cấu hình / filter reset |
 | **Ghim mục lên đầu danh sách** | `pin` | `<Icon name="pin" />` | Dùng cho ghim tab/dự án/mục ưu tiên |
 | **Gửi lệnh / Gửi tin nhắn** | `send` | `<Icon name="send" />` | Dùng cho chat AI / G-code terminal |
+| **Bắt đầu / Khởi chạy tác vụ** | `play` | `<Icon name="play" />` | Nút Bắt đầu in / Chạy script / Video stream |
+| **Tạm dừng in / Tác vụ** | `pause` | `<Icon name="pause" />` | Không dùng cho nút dừng hẳn (dùng `stop`) |
+| **Dừng hẳn / Huỷ in khẩn cấp** | `stop` | `<Icon name="stop" />` | Nút Huỷ lệnh in khẩn cấp (kết hợp BTN_DANGER) |
+| **Xoá lùi từng ký tự** | `backspace` | `<Icon name="backspace" />` | Bàn phím ảo NumPadPopup (không dùng thay `trash`) |
 
 ---
 
@@ -43,6 +47,8 @@ Khi cần hiển thị biểu tượng cho một hành động hoặc trạng th
 
 | Ý định / Hành động | Icon chuẩn (`IconName`) | Code mẫu | Không được dùng / Lưu ý |
 |---|---|---|---|
+| **Trang chủ / Dashboard chính** | `home` | `<Icon name="home" />` | Breadcrumb hoặc link về root (AppHeader không đặt nút Home) |
+| **Mũi tên chéo góc / Shortcut** | `arrow` | `<Icon name="arrow" />` | Chỉ hướng nhanh (không dùng cho liên kết ngoài) |
 | **Đóng modal / sidepanel / toast** | `close` | `<Icon name="close" />` | **CẤM** dùng `trash` để đóng cửa sổ |
 | **Quay lại trang trước (Back)** | `back` | `<Icon name="back" />` | Nút back góc trái SubpageToolbar |
 | **Tiếp tục / Bước tiếp theo** | `arrowRight` | `<Icon name="arrowRight" />` | Nút wizard / chuyển bước |
@@ -71,22 +77,72 @@ Khi cần hiển thị biểu tượng cho một hành động hoặc trạng th
 
 ---
 
-### 2.4. Người dùng, Thương mại & Thực thể (Users, Commerce & Entities)
+### 2.4. Người dùng & Tài khoản (Users & Account)
 
 | Thực thể / Chức năng | Icon chuẩn (`IconName`) | Code mẫu | Không được dùng / Lưu ý |
 |---|---|---|---|
 | **Hồ sơ cá nhân / Khách hàng** | `user` | `<Icon name="user" />` | Không dùng cho nhóm nhiều người |
 | **Đội ngũ / Nhóm / Danh sách khách** | `users` | `<Icon name="users" />` | Quản lý team / quyền nhóm |
 | **Chuông thông báo hệ thống** | `bell` | `<Icon name="bell" />` | Chuông trên header / tin tức |
-| **Thẻ phân loại / Nhãn / Danh mục** | `tag` | `<Icon name="tag" />` | Phân loại sản phẩm / thẻ nhựa |
-| **Giỏ hàng / Mua sắm** | `cart` | `<Icon name="cart" />` | Không dùng cho kho lưu trữ nhựa |
-| **Giá tiền / Chi phí / Doanh thu** | `coin` | `<Icon name="coin" />` | Chi phí VND, chi phí in ấn |
-| **Kho hàng / Kiện hàng / Mô hình** | `box` | `<Icon name="box" />` | Inventory, kiện hàng vận chuyển |
 | **Đăng xuất tài khoản** | `logout` | `<Icon name="logout" />` | Menu tài khoản (không dùng cho tắt máy) |
 
 ---
 
-### 2.5. Thiết bị, Phần cứng & IoT (Devices & Hardware)
+### 2.5. Thương mại điện tử, Đơn hàng & Thanh toán (E-Commerce & Retail)
+
+| Thực thể / Thao tác | Icon chuẩn (`IconName`) | Lucide Alias | Code mẫu | Hướng dẫn sử dụng |
+|---|---|---|---|---|
+| **Túi mua hàng / Checkout** | `bag` | `shopping-bag` | `<Icon name="bag" />` | Giỏ checkout đơn hàng, mua sắm sản phẩm |
+| **Giỏ hàng / Store cart** | `cart` | `shopping-cart` | `<Icon name="cart" />` | Giỏ hàng trong shop / store |
+| **Thẻ ngân hàng / Cổng thanh toán**| `creditCard` | `credit-card` | `<Icon name="creditCard" />` | Phương thức thanh toán thẻ (Stripe, VNPay, Visa) |
+| **Hoá đơn / Biên lai thanh toán** | `receipt` | `receipt` | `<Icon name="receipt" />` | Hoá đơn mua hàng, biên lai VAT |
+| **Vận chuyển / Giao hàng** | `truck` | `truck` | `<Icon name="truck" />` | Trạng thái shipping, đơn vị giao vận logistics |
+| **Giao hàng thành công / Nhập kho** | `packageCheck` | `package-check` | `<Icon name="packageCheck" />` | Trạng thái Delivered hoặc đã nhập kho |
+| **Khuyến mãi / Giảm giá / Voucher**| `percent` | `percent` | `<Icon name="percent" />` | Mã giảm giá, coupon, chiết khấu % |
+| **Cửa hàng / Gian hàng đại lý** | `store` | `store` | `<Icon name="store" />` | Trang đối tác, gian hàng, marketplace |
+| **Ví tiền / Số dư tài khoản** | `wallet` | `wallet` | `<Icon name="wallet" />` | Số dư tài khoản ví, nạp/rút tiền |
+| **Giá tiền / Chi phí / Doanh thu** | `coin` | `coins` | `<Icon name="coin" />` | Chi phí VND, chi phí in ấn |
+| **Thẻ phân loại / Nhãn sản phẩm** | `tag` | `tag` | `<Icon name="tag" />` | Phân loại sản phẩm / thẻ nhựa |
+| **Kho hàng / Kiện hàng / Mô hình** | `box` | `box` | `<Icon name="box" />` | Inventory kho, kiện hàng vận chuyển |
+
+---
+
+### 2.6. Lập trình, Dữ liệu & DevOps (Developer & DevOps)
+
+| Công cụ / Đối tượng | Icon chuẩn (`IconName`) | Lucide Alias | Code mẫu | Hướng dẫn sử dụng |
+|---|---|---|---|---|
+| **Cơ sở dữ liệu / SQL Storage** | `database` | `database` | `<Icon name="database" />` | Quản lý CSDL SQLite/PostgreSQL, bảng dữ liệu backend |
+| **Máy chủ / Host / Node điều khiển**| `server` | `server` | `<Icon name="server" />` | Trạng thái máy chủ, backend OctoPrint/Klipper |
+| **Vi xử lý / Chip MCU / Bo mạch** | `cpu` | `cpu` | `<Icon name="cpu" />` | Mainboard máy in, chip STM32/ESP32, tải CPU |
+| **Báo lỗi code / Debug sự cố** | `bug` | `bug` | `<Icon name="bug" />` | Báo cáo lỗi phần mềm, chế độ gỡ lỗi (debug) |
+| **Lưu commit / Phiên bản code** | `gitCommit` | `git-commit-horizontal` | `<Icon name="gitCommit" />` | Lịch sử commit Git, phiên bản firmware |
+| **Yêu cầu hợp nhất / Đóng góp** | `gitPullRequest` | `git-pull-request` | `<Icon name="gitPullRequest" />` | Đóng góp preset in, review chia sẻ profile |
+| **Bảo mật / Chứng chỉ SSL / An toàn**| `shield` | `shield` | `<Icon name="shield" />` | Tường lửa, kết nối an toàn SSL, chứng thực |
+| **API Key / Token / Mật mã bí mật**| `key` | `key-round` | `<Icon name="key" />` | Trường nhập API Key, MQTT Token, Access Code |
+| **Tích hợp Webhook / Bot trigger** | `webhook` | `webhook` | `<Icon name="webhook" />` | Tích hợp bot thông báo Telegram/Discord/Slack |
+| **Mã lập trình / G-code script** | `code` | `code` | `<Icon name="code" />` | Khối code G-code, script tự động hoá |
+| **Cửa sổ lệnh console / Terminal** | `terminal` | `terminal` | `<Icon name="terminal" />` | Log thời gian thực, CLI, terminal |
+| **Nhánh phiên bản / Rẽ nhánh luồng**| `branch` | `git-branch` | `<Icon name="branch" />` | Điều kiện if/else automation, git branch |
+
+---
+
+### 2.7. Báo cáo, Chỉ số & Đo lường (Analytics & Metrics)
+
+| Chỉ số / Đo lường | Icon chuẩn (`IconName`) | Lucide Alias | Code mẫu | Hướng dẫn sử dụng |
+|---|---|---|---|---|
+| **Nhịp tim thiết bị / Telemetry live**| `activity` | `activity` | `<Icon name="activity" />` | Heartbeat máy in online, truyền nhận telemetry MQTT |
+| **Xu hướng tăng / Tăng trưởng** | `trendingUp` | `trending-up` | `<Icon name="trendingUp" />` | Chỉ số tăng trưởng dương (+%) trên KpiCard |
+| **Xu hướng giảm / Sụt giảm chi phí** | `trendingDown` | `trending-down` | `<Icon name="trendingDown" />` | Chỉ số giảm (-%) trên KpiCard, giảm sự cố |
+| **Biểu đồ tròn / Cơ cấu tỉ lệ %** | `pieChart` | `chart-pie` | `<Icon name="pieChart" />` | Cơ cấu tiêu thụ nhựa (PLA/PETG), phân bổ đơn hàng |
+| **Đồng hồ đo tốc độ / Áp suất / Tải**| `gauge` | `gauge` | `<Icon name="gauge" />` | Tốc độ in thực tế (mm/s), gia tốc, công suất |
+| **Biểu đồ thống kê số liệu** | `chart` | `bar-chart` | `<Icon name="chart" />` | Biểu đồ sản lượng, giờ in theo tuần/tháng |
+| **Lịch ngày tháng / Hẹn giờ** | `calendar` | `calendar` | `<DatePicker />` | Lên lịch hẹn giờ in ấn tự động |
+| **Đồng hồ / Thời gian còn lại** | `clock` | `clock` | `<Icon name="clock" />` | Đếm ngược thời gian in (Remaining time) |
+| **Lưới toạ độ bàn in (Grid)** | `grid` | `grid` | `<Icon name="grid" />` | Bật/tắt lưới bàn in 3D viewport |
+
+---
+
+### 2.8. Thiết bị, Phần cứng & IoT (Devices & Hardware)
 
 | Thiết bị / Chức năng | Icon chuẩn (`IconName`) | Code mẫu | Ghi chú |
 |---|---|---|---|
@@ -106,7 +162,7 @@ Khi cần hiển thị biểu tượng cho một hành động hoặc trạng th
 
 ---
 
-### 2.6. Slicing 3D & Sáng tạo (3D Slicing & Creative)
+### 2.9. Slicing 3D & Sáng tạo (3D Slicing & Creative)
 
 | Công cụ | Icon chuẩn (`IconName`) | Code mẫu | Ghi chú |
 |---|---|---|---|
@@ -118,23 +174,17 @@ Khi cần hiển thị biểu tượng cho một hành động hoặc trạng th
 | **Lớp in / Đĩa in (Layers / Plates)**| `layers` | `<Icon name="layers" />` | Xem lát cắt layer G-code |
 | **Hợp nhất chi tiết (Merge)** | `merge` | `<Icon name="merge" />` | Gộp mesh trong 3D |
 | **Gán màu ngẫu nhiên (Shuffle)** | `shuffle` | `<Icon name="shuffle" />` | Xáo trộn màu ngẫu nhiên |
+| **Co giãn / Đổi kích thước (Scale)** | `resize` | `<Icon name="resize" />` | Thay đổi tỉ lệ mô hình 3D (không dùng cho fullscreen) |
 
 ---
 
-### 2.7. Tệp tin, Mã nguồn & Hệ thống (Files, Code & System)
+### 2.10. Tệp tin, Tài liệu & Đa phương tiện (Files & Media)
 
 | Đối tượng | Icon chuẩn (`IconName`) | Code mẫu | Ghi chú |
 |---|---|---|---|
-| **Tệp tin đơn lẻ** | `file` | `<Icon name="file" />` | File G-code, 3MF, STL |
-| **Thư mục chứa file** | `folder` | `<Icon name="folder" />` | Nhóm preset, thư mục |
-| **Mã lập trình / G-code script** | `code` | `<Icon name="code" />` | Khối code G-code |
-| **Bảng điều khiển lệnh (Console/CLI)**| `terminal`| `<Icon name="terminal" />` | Log máy in, terminal |
-| **Nhánh phiên bản / Rẽ nhánh** | `branch` | `<Icon name="branch" />` | Nhánh rẽ if/else trong automation |
-| **Biểu đồ thống kê số liệu** | `chart` | `<Icon name="chart" />` | Giờ in, báo cáo |
-| **Lịch ngày tháng** | `calendar` | `<DatePicker />` | Lên lịch hẹn giờ in |
-| **Đồng hồ / Thời gian còn lại** | `clock` | `<Icon name="clock" />` | Đếm ngược thời gian in |
-| **Lưới toạ độ bàn in (Grid)** | `grid` | `<Icon name="grid" />` | Lưới 3D viewport |
-| **Hình ảnh xem trước (Thumbnail)** | `image` | `<Icon name="image" />` | Ảnh chụp mô hình |
+| **Tệp tin đơn lẻ** | `file` | `<Icon name="file" />` | File G-code, 3MF, STL, cấu hình |
+| **Thư mục chứa file** | `folder` | `<Icon name="folder" />` | Nhóm preset, cây thư mục lưu trữ |
+| **Hình ảnh xem trước (Thumbnail)** | `image` | `<Icon name="image" />` | Ảnh chụp mô hình, render 3D |
 | **Dấu trừ / Giảm số lượng** | `minus` | `<Icon name="minus" />` | Nút trừ trong NumberInput |
 
 ---
@@ -165,6 +215,13 @@ Khi lập trình, nếu viết các từ khoá sau thì `semi-lint` hoặc `tsc`
 | `minimize`, `exit_fullscreen` | `shrink` | Thu nhỏ dùng `shrink` |
 | `ai`, `magic`, `smart` | `sparkles` | Tính năng AI dùng `sparkles` |
 | `tooltip`, `help` | `info` | Giải thích dùng `info` |
+| `confirm`, `accept`, `ok` | `check` | Xác nhận hoàn tất dùng `check` |
+| `mail`, `email`, `message` | `send` | Gửi tin nhắn / thư từ dùng `send` |
+| `link`, `open_link` | `external` | Liên kết ngoài dùng `external` |
+| `shutdown`, `turn_off`, `power_off` | `power` | Nguồn thiết bị dùng `power` |
+| `scale` | `resize` | Thu phóng mô hình dùng `resize` |
+| `decrease` | `minus` | Nút trừ / giảm dùng `minus` |
+| `increase` | `plus` | Nút cộng / tăng dùng `plus` |
 
 ---
 

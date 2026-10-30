@@ -1,12 +1,23 @@
 // Icon catalog with semantic metadata, usage guidelines, and search keywords (docs/ICONS.md).
 import { ICONS, type IconName } from "./Icon";
 
+export type IconDomain =
+  | "core"
+  | "ecommerce"
+  | "developer"
+  | "analytics"
+  | "hardware_3d"
+  | "media";
+
 export interface IconMeta {
   readonly name: IconName;
+  readonly domain?: IconDomain;
   readonly category: "action" | "navigation" | "status" | "device" | "app" | "content" | "commerce";
   readonly purpose: string;
   readonly do: string;
   readonly dont: string;
+  readonly intents?: readonly string[];
+  readonly lucideEquivalent?: string;
   readonly keywords: readonly string[];
 }
 
@@ -680,6 +691,254 @@ export const ICON_CATALOG: Record<IconName, IconMeta> = {
     dont: "Không dùng cho nút xoá đối tượng.",
     keywords: ["giảm", "trừ", "decrease", "subtract"],
   },
+  // E-commerce & Retail
+  bag: {
+    name: "bag",
+    domain: "ecommerce",
+    category: "commerce",
+    purpose: "Túi hàng, mua sắm hoặc checkout đơn hàng",
+    do: "Dùng cho giỏ hàng checkout, túi sản phẩm trong cửa hàng thương mại.",
+    dont: "Không dùng cho kho lưu trữ cuộn nhựa (dùng spool).",
+    intents: ["checkout", "mua hàng", "thanh toán đơn", "túi hàng", "shopping bag"],
+    lucideEquivalent: "shopping-bag",
+    keywords: ["túi hàng", "mua sắm", "shopping bag", "bag", "checkout", "purchase"],
+  },
+  creditCard: {
+    name: "creditCard",
+    domain: "ecommerce",
+    category: "commerce",
+    purpose: "Thẻ ngân hàng, thẻ tín dụng hoặc cổng thanh toán trực tuyến",
+    do: "Dùng cho phương thức thanh toán thẻ (VNPay, Stripe, Visa, Master).",
+    dont: "Không dùng cho giá tiền / chi phí in (dùng coin).",
+    intents: ["thanh toán", "cổng thanh toán", "thẻ tín dụng", "credit card", "payment method"],
+    lucideEquivalent: "credit-card",
+    keywords: ["thẻ", "thẻ tín dụng", "thanh toán", "credit card", "payment", "card", "visa"],
+  },
+  receipt: {
+    name: "receipt",
+    domain: "ecommerce",
+    category: "commerce",
+    purpose: "Hoá đơn bán hàng, biên lai thanh toán hoặc VAT",
+    do: "Dùng cho hoá đơn thanh toán đơn hàng, xuất biên lai VAT.",
+    dont: "Không dùng cho tệp mô hình 3D (dùng file).",
+    intents: ["hoá đơn", "biên lai", "xuất hoá đơn", "invoice", "receipt", "bill"],
+    lucideEquivalent: "receipt",
+    keywords: ["hoá đơn", "biên lai", "receipt", "invoice", "bill", "chứng từ"],
+  },
+  truck: {
+    name: "truck",
+    domain: "ecommerce",
+    category: "commerce",
+    purpose: "Vận chuyển, giao hàng hoặc đơn vị logistics",
+    do: "Dùng hiển thị trạng thái đang giao hàng (shipping / in transit) hoặc chọn bên vận chuyển.",
+    dont: "Không dùng cho việc xuất file dữ liệu.",
+    intents: ["vận chuyển", "giao hàng", "shipping", "delivery", "logistics"],
+    lucideEquivalent: "truck",
+    keywords: ["vận chuyển", "giao hàng", "shipping", "delivery", "truck", "xe tải"],
+  },
+  packageCheck: {
+    name: "packageCheck",
+    domain: "ecommerce",
+    category: "commerce",
+    purpose: "Kiện hàng đã giao thành công hoặc nhập kho hoàn tất",
+    do: "Dùng cho trạng thái đơn hàng đã giao (Delivered) hoặc hàng đã vào kho.",
+    dont: "Không dùng cho kiện hàng đang vận chuyển (dùng truck).",
+    intents: ["đã nhận hàng", "giao thành công", "nhập kho hoàn tất", "package check", "delivered"],
+    lucideEquivalent: "package-check",
+    keywords: ["giao thành công", "đã nhận", "nhập kho", "delivered", "package check", "received"],
+  },
+  percent: {
+    name: "percent",
+    domain: "ecommerce",
+    category: "commerce",
+    purpose: "Khuyến mãi, mã giảm giá, voucher hoặc tỉ lệ phần trăm",
+    do: "Dùng cho ô nhập voucher giảm giá, tag khuyến mãi hoặc phần trăm chiết khấu.",
+    dont: "Không dùng cho độ ẩm (dùng drop).",
+    intents: ["khuyến mãi", "giảm giá", "voucher", "discount", "coupon", "percent"],
+    lucideEquivalent: "percent",
+    keywords: ["phần trăm", "giảm giá", "khuyến mãi", "discount", "voucher", "coupon", "sale"],
+  },
+  store: {
+    name: "store",
+    domain: "ecommerce",
+    category: "commerce",
+    purpose: "Cửa hàng, gian hàng đối tác hoặc chi nhánh phân phối",
+    do: "Dùng cho danh mục cửa hàng, trang bán phụ kiện hoặc nhà bán lẻ.",
+    dont: "Không dùng cho giỏ hàng cá nhân (dùng cart hoặc bag).",
+    intents: ["cửa hàng", "gian hàng", "shop", "store", "marketplace", "chi nhánh"],
+    lucideEquivalent: "store",
+    keywords: ["cửa hàng", "gian hàng", "store", "shop", "marketplace", "chi nhánh"],
+  },
+  wallet: {
+    name: "wallet",
+    domain: "ecommerce",
+    category: "commerce",
+    purpose: "Ví tiền điện tử, số dư tài khoản hoặc nạp/rút tiền",
+    do: "Dùng cho hiển thị số dư ví, tài khoản thanh toán trả trước.",
+    dont: "Không dùng cho thẻ tín dụng (dùng creditCard).",
+    intents: ["ví tiền", "số dư", "nạp tiền", "rút tiền", "wallet", "balance"],
+    lucideEquivalent: "wallet",
+    keywords: ["ví tiền", "số dư", "wallet", "balance", "tài khoản ví"],
+  },
+
+  // Developer & DevOps
+  database: {
+    name: "database",
+    domain: "developer",
+    category: "content",
+    purpose: "Cơ sở dữ liệu, SQL, bộ nhớ lưu trữ hoặc máy chủ CSDL",
+    do: "Dùng cho quản lý cơ sở dữ liệu SQLite/PostgreSQL, bảng dữ liệu backend.",
+    dont: "Không dùng cho tệp tin đơn lẻ (dùng file).",
+    intents: ["cơ sở dữ liệu", "database", "sql", "bảng dữ liệu", "sqlite", "postgres"],
+    lucideEquivalent: "database",
+    keywords: ["cơ sở dữ liệu", "database", "sql", "db", "storage", "postgres", "sqlite"],
+  },
+  server: {
+    name: "server",
+    domain: "developer",
+    category: "device",
+    purpose: "Máy chủ backend, host OctoPrint/Klipper hoặc server điều khiển",
+    do: "Dùng cho trạng thái máy chủ mạng, node điều khiển hoặc kết nối server.",
+    dont: "Không dùng cho máy in 3D (dùng printer).",
+    intents: ["máy chủ", "server", "host", "backend", "octoprint", "klipper"],
+    lucideEquivalent: "server",
+    keywords: ["máy chủ", "server", "host", "backend", "node"],
+  },
+  cpu: {
+    name: "cpu",
+    domain: "developer",
+    category: "device",
+    purpose: "Vi xử lý, chip vi điều khiển (MCU) hoặc tải xử lý CPU",
+    do: "Dùng hiển thị bo mạch chính (Mainboard), thông số MCU (STM32/ESP32) hoặc mức tải CPU.",
+    dont: "Không dùng cho cảm biến nhiệt độ (dùng sensor).",
+    intents: ["vi xử lý", "chip", "mcu", "cpu load", "mainboard", "processor"],
+    lucideEquivalent: "cpu",
+    keywords: ["vi xử lý", "chip", "cpu", "processor", "mcu", "mainboard"],
+  },
+  bug: {
+    name: "bug",
+    domain: "developer",
+    category: "action",
+    purpose: "Lỗi phần mềm, báo cáo sự cố lập trình hoặc chế độ gỡ lỗi (Debug)",
+    do: "Dùng cho tính năng báo lỗi code, bug report hoặc tab gỡ lỗi hệ thống.",
+    dont: "Không dùng cho cảnh báo lỗi vận hành máy in nguy hiểm (dùng alert).",
+    intents: ["báo lỗi", "bug report", "debug", "sự cố phần mềm", "issue"],
+    lucideEquivalent: "bug",
+    keywords: ["lỗi code", "bug", "debug", "báo lỗi", "issue", "gỡ lỗi"],
+  },
+  gitCommit: {
+    name: "gitCommit",
+    domain: "developer",
+    category: "content",
+    purpose: "Điểm lưu phiên bản mã nguồn (Git Commit) hoặc lịch sử thay đổi",
+    do: "Dùng cho lịch sử phiên bản firmware, commit hash, changelog.",
+    dont: "Không dùng cho nhánh rẽ (dùng branch).",
+    intents: ["commit", "phiên bản", "lịch sử commit", "git commit", "hash"],
+    lucideEquivalent: "git-commit-horizontal",
+    keywords: ["commit", "git commit", "phiên bản code", "hash", "snapshot"],
+  },
+  gitPullRequest: {
+    name: "gitPullRequest",
+    domain: "developer",
+    category: "action",
+    purpose: "Yêu cầu hợp nhất (Pull Request / Merge Request) hoặc đóng góp cộng đồng",
+    do: "Dùng cho đóng góp preset in, tính năng chia sẻ profile hoặc duyệt yêu cầu.",
+    dont: "Không dùng cho nút merge mesh 3D (dùng merge).",
+    intents: ["pull request", "merge request", "đóng góp", "pr", "review code"],
+    lucideEquivalent: "git-pull-request",
+    keywords: ["pull request", "merge request", "pr", "đóng góp code", "git pr"],
+  },
+  shield: {
+    name: "shield",
+    domain: "developer",
+    category: "status",
+    purpose: "Bảo mật hệ thống, chứng chỉ SSL, tường lửa hoặc trạng thái an toàn",
+    do: "Dùng cho trạng thái bảo mật kết nối LAN/Cloud, chứng thực thiết bị an toàn.",
+    dont: "Không dùng cho mật khẩu (dùng lock).",
+    intents: ["bảo mật", "an toàn", "chứng thực", "shield", "security", "ssl", "firewall"],
+    lucideEquivalent: "shield",
+    keywords: ["bảo mật", "an toàn", "shield", "security", "bảo vệ", "ssl"],
+  },
+  key: {
+    name: "key",
+    domain: "developer",
+    category: "status",
+    purpose: "Khoá bí mật, API Key, Token xác thực hoặc Access Token",
+    do: "Dùng cho trường nhập API Key, MQTT Token hoặc Access Code của máy in.",
+    dont: "Không dùng cho thao tác khoá trục động cơ (dùng lock).",
+    intents: ["api key", "token", "khoá bí mật", "access key", "secret"],
+    lucideEquivalent: "key-round",
+    keywords: ["chìa khoá", "api key", "token", "key", "secret", "access code"],
+  },
+  webhook: {
+    name: "webhook",
+    domain: "developer",
+    category: "action",
+    purpose: "Tích hợp Webhook, API trigger hoặc kết nối dịch vụ ngoài",
+    do: "Dùng cho cấu hình gửi thông báo in xong qua Webhook Telegram/Discord/Slack.",
+    dont: "Không dùng cho đường dẫn liên kết web thông thường (dùng external).",
+    intents: ["webhook", "tích hợp api", "trigger ngoài", "bot notification"],
+    lucideEquivalent: "webhook",
+    keywords: ["webhook", "tích hợp", "api trigger", "webhook url", "callback"],
+  },
+
+  // Analytics & Metrics
+  activity: {
+    name: "activity",
+    domain: "analytics",
+    category: "status",
+    purpose: "Tín hiệu nhịp tim thiết bị (Heartbeat), đo lường telemetry hoặc hoạt động",
+    do: "Dùng hiển thị trạng thái máy in đang online/alive, nhịp truyền nhận dữ liệu MQTT.",
+    dont: "Không dùng cho biểu đồ tổng thể (dùng chart).",
+    intents: ["nhịp tim", "telemetry", "heartbeat", "pulse", "hoạt động real-time"],
+    lucideEquivalent: "activity",
+    keywords: ["nhịp tim", "hoạt động", "pulse", "activity", "heartbeat", "telemetry"],
+  },
+  trendingUp: {
+    name: "trendingUp",
+    domain: "analytics",
+    category: "status",
+    purpose: "Xu hướng tăng, tăng trưởng sản lượng hoặc hiệu suất cải thiện",
+    do: "Dùng trong KpiCard báo hiệu chỉ số tăng trưởng dương (+%).",
+    dont: "Không dùng cho mũi tên chuyển bước (dùng arrowRight).",
+    intents: ["tăng trưởng", "xu hướng tăng", "tăng sản lượng", "trending up", "growth"],
+    lucideEquivalent: "trending-up",
+    keywords: ["tăng trưởng", "tăng", "trending up", "growth", "uptrend"],
+  },
+  trendingDown: {
+    name: "trendingDown",
+    domain: "analytics",
+    category: "status",
+    purpose: "Xu hướng giảm, sụt giảm chi phí hoặc giảm sự cố",
+    do: "Dùng trong KpiCard báo hiệu chỉ số giảm (-%).",
+    dont: "Không dùng cho nút giảm số lượng (dùng minus).",
+    intents: ["sụt giảm", "xu hướng giảm", "giảm chi phí", "trending down"],
+    lucideEquivalent: "trending-down",
+    keywords: ["giảm", "sụt giảm", "trending down", "downtrend", "decline"],
+  },
+  pieChart: {
+    name: "pieChart",
+    domain: "analytics",
+    category: "content",
+    purpose: "Biểu đồ tròn, cơ cấu tỉ lệ phần trăm hoặc phân bổ tài nguyên",
+    do: "Dùng hiển thị cơ cấu các loại nhựa tiêu thụ (PLA vs PETG vs ABS) hoặc tỉ lệ đơn hàng.",
+    dont: "Không dùng cho biểu đồ cột theo thời gian (dùng chart).",
+    intents: ["biểu đồ tròn", "cơ cấu", "phân bổ", "pie chart", "tỉ lệ phần trăm"],
+    lucideEquivalent: "chart-pie",
+    keywords: ["biểu đồ tròn", "pie chart", "cơ cấu", "phân bổ", "tỉ lệ"],
+  },
+  gauge: {
+    name: "gauge",
+    domain: "analytics",
+    category: "device",
+    purpose: "Đồng hồ đo tốc độ, áp suất hoặc tải vận hành",
+    do: "Dùng cho tốc độ in thực tế (mm/s), gia tốc đầu in hoặc đồng hồ đo công suất.",
+    dont: "Không dùng cho đồng hồ thời gian (dùng clock).",
+    intents: ["tốc độ", "đồng hồ đo", "áp suất", "gauge", "speedometer", "meter"],
+    lucideEquivalent: "gauge",
+    keywords: ["đồng hồ đo", "tốc độ in", "gauge", "speed", "meter", "áp suất"],
+  },
+
 } as const;
 
 /** Canonical icon aliases for semantic lookups and linter suggestions. */
@@ -730,7 +989,7 @@ export const ICON_ALIASES: Record<string, IconName> = {
   label: "tag",
   badge: "tag",
   cart_item: "cart",
-  shop: "cart",
+  shop: "store",
   shopping: "cart",
   price: "coin",
   money: "coin",
@@ -752,6 +1011,86 @@ export const ICON_ALIASES: Record<string, IconName> = {
   magic: "sparkles",
   help: "info",
   tooltip: "info",
+  confirm: "check",
+  accept: "check",
+  ok: "check",
+  mail: "send",
+  email: "send",
+  message: "send",
+  link: "external",
+  open_link: "external",
+  shutdown: "power",
+  turn_off: "power",
+  turn_on: "power",
+  power_off: "power",
+  scale: "resize",
+  decrease: "minus",
+  increase: "plus",
+  // E-commerce aliases
+  shopping_bag: "bag",
+  "shopping-bag": "bag",
+  shop_bag: "bag",
+  credit_card: "creditCard",
+  "credit-card": "creditCard",
+  payment: "creditCard",
+  card: "creditCard",
+  invoice: "receipt",
+  bill: "receipt",
+  shipping: "truck",
+  delivery: "truck",
+  delivered: "packageCheck",
+  package_check: "packageCheck",
+  "package-check": "packageCheck",
+  discount: "percent",
+  voucher: "percent",
+  coupon: "percent",
+  percentage: "percent",
+  storefront: "store",
+  marketplace: "store",
+  balance: "wallet",
+  // Developer aliases
+  db: "database",
+  sql: "database",
+  storage: "database",
+  host: "server",
+  backend: "server",
+  mcu: "cpu",
+  processor: "cpu",
+  chip: "cpu",
+  mainboard: "cpu",
+  debug: "bug",
+  issue: "bug",
+  commit: "gitCommit",
+  git_commit: "gitCommit",
+  "git-commit": "gitCommit",
+  pr: "gitPullRequest",
+  pull_request: "gitPullRequest",
+  "pull-request": "gitPullRequest",
+  security: "shield",
+  protect: "shield",
+  ssl: "shield",
+  firewall: "shield",
+  token: "key",
+  api_key: "key",
+  secret: "key",
+  access_code: "key",
+  // Analytics aliases
+  pulse: "activity",
+  heartbeat: "activity",
+  telemetry: "activity",
+  growth: "trendingUp",
+  uptrend: "trendingUp",
+  trending_up: "trendingUp",
+  "trending-up": "trendingUp",
+  downtrend: "trendingDown",
+  trending_down: "trendingDown",
+  "trending-down": "trendingDown",
+  pie: "pieChart",
+  pie_chart: "pieChart",
+  "pie-chart": "pieChart",
+  chart_pie: "pieChart",
+  speed: "gauge",
+  speedometer: "gauge",
 };
 
 /** Get metadata of an icon or undefined if not found. */
@@ -762,14 +1101,72 @@ export function getIconMeta(name: string): IconMeta | undefined {
   return undefined;
 }
 
-/** Suggest canonical IconName from any keyword, synonym, or alias. */
+/** Suggest canonical IconName from any keyword, synonym, intent, or alias. */
 export function suggestIcon(query: string): IconName | undefined {
-  const q = query.trim().toLowerCase();
-  if (q in ICON_CATALOG) return q as IconName;
-  if (q in ICON_ALIASES) return ICON_ALIASES[q];
+  const raw = query.trim().toLowerCase();
+  if (!raw) return undefined;
+  const q = raw.replace(/[-_]/g, " ");
+  const qClean = raw.replace(/[-_]/g, "");
 
+  // 1. Direct match with canonical IconName (exact, case-insensitive, or hyphen/camel normalization)
+  for (const name of Object.keys(ICON_CATALOG)) {
+    if (name.toLowerCase() === raw || name.toLowerCase() === qClean) {
+      return name as IconName;
+    }
+  }
+
+  // 2. Direct match with registered alias
+  if (raw in ICON_ALIASES) return ICON_ALIASES[raw];
+  if (q in ICON_ALIASES) return ICON_ALIASES[q];
+  if (qClean in ICON_ALIASES) return ICON_ALIASES[qClean];
+
+  // 3. Exact Lucide equivalent match
   for (const [name, meta] of Object.entries(ICON_CATALOG)) {
-    if (meta.keywords.some((k) => k.toLowerCase().includes(q) || q.includes(k.toLowerCase()))) {
+    if (meta.lucideEquivalent) {
+      const lucide = meta.lucideEquivalent.toLowerCase();
+      if (lucide === raw || lucide.replace(/[-_]/g, "") === qClean) {
+        return name as IconName;
+      }
+    }
+  }
+
+  // 4. Exact keyword or intent match
+  for (const [name, meta] of Object.entries(ICON_CATALOG)) {
+    if (
+      meta.keywords.some((k) => k.toLowerCase() === raw || k.toLowerCase() === q) ||
+      meta.intents?.some((i) => i.toLowerCase() === raw || i.toLowerCase() === q)
+    ) {
+      return name as IconName;
+    }
+  }
+
+  // 5. Query is a prefix or substring of keyword or intent
+  for (const [name, meta] of Object.entries(ICON_CATALOG)) {
+    if (
+      meta.keywords.some((k) => k.toLowerCase().includes(raw) || k.toLowerCase().includes(q)) ||
+      meta.intents?.some((i) => i.toLowerCase().includes(raw) || i.toLowerCase().includes(q))
+    ) {
+      return name as IconName;
+    }
+  }
+
+  // 6. Query contains a keyword or intent as a distinct token / word
+  const words = raw.split(/[\s,./\-_+:]+/).filter(Boolean);
+  for (const [name, meta] of Object.entries(ICON_CATALOG)) {
+    if (
+      meta.keywords.some((k) => {
+        const lowerK = k.toLowerCase();
+        if (words.includes(lowerK)) return true;
+        if (lowerK.length >= 3 && (raw.includes(lowerK) || q.includes(lowerK))) return true;
+        return false;
+      }) ||
+      meta.intents?.some((i) => {
+        const lowerI = i.toLowerCase();
+        if (words.includes(lowerI)) return true;
+        if (lowerI.length >= 3 && (raw.includes(lowerI) || q.includes(lowerI))) return true;
+        return false;
+      })
+    ) {
       return name as IconName;
     }
   }

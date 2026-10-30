@@ -143,7 +143,7 @@ export function AppShell({
           rel={item.external ? "noopener noreferrer" : undefined}
           aria-current={active ? "page" : undefined}
           title={item.label}
-          className={`${navItemClass} ${stateClass} group`}
+          className={`${navItemClass} ${stateClass} group ${item.right && !collapsed ? "lg:!pr-1.5" : ""}`}
         >
           {inner}
           {item.right && !collapsed && (
@@ -153,26 +153,24 @@ export function AppShell({
       );
     }
 
-    if (item.right) {
+    if (item.right && !collapsed) {
       return (
         <div
           key={item.id}
-          className={`${navItemClass} ${stateClass} group relative !pr-1.5`}
+          className={`${navItemClass} ${stateClass} group relative lg:!pr-1.5`}
           title={item.label}
         >
           <button
             type="button"
             onClick={() => onSelect?.(item.id)}
             aria-current={active ? "page" : undefined}
-            className="flex-1 min-w-0 h-full flex items-center gap-2.5 text-left cursor-pointer overflow-hidden focus:outline-none"
+            className="flex-1 min-w-0 h-full flex items-center justify-center lg:justify-start lg:gap-2.5 text-left cursor-pointer overflow-hidden focus:outline-none"
           >
             {inner}
           </button>
-          {!collapsed && (
-            <div className="hidden lg:flex items-center shrink-0 ml-auto z-10">
-              {item.right}
-            </div>
-          )}
+          <div className="hidden lg:flex items-center shrink-0 ml-auto z-10">
+            {item.right}
+          </div>
         </div>
       );
     }
