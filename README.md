@@ -1,5 +1,8 @@
 # Semi Design System (`@semi/ui` + `semi-design` plugin)
 
+> 🌟 **Live Storybook & Icon Catalogue:** [https://hoanghuynh296.github.io/semi-nextjs-codebase/](https://hoanghuynh296.github.io/semi-nextjs-codebase/)
+> Xem trực tiếp trên web toàn bộ **104 icons** (search real-time, click copy JSX), Design Tokens và Showcase các components chuẩn Bento AppShell.
+
 Hệ thống Design System dùng chung cho toàn bộ dự án web thuộc hệ sinh thái **Semi** (bao gồm **3D Noobs Studio**, `iot`, `bmcu` và các ứng dụng web mới).
 Xây dựng cho **Next.js 16 + React 19 + Tailwind CSS 4**.
 

@@ -281,7 +281,7 @@ export function AppShell({
           </div>
 
           {/* Scrollable navigation sections */}
-          <div className="flex-1 min-h-0 flex flex-col overflow-y-auto overflow-x-hidden p-2 pt-2.5 gap-2.5">
+          <div className="flex-1 min-h-0 flex flex-col overflow-y-auto overflow-x-hidden p-2 pt-1.5 gap-1">
             {sections.map((section, idx) => {
               if (!section.loading && (!section.items || section.items.length === 0)) {
                 return null;
@@ -293,7 +293,7 @@ export function AppShell({
                     <div
                       className={`${
                         collapsed ? "hidden" : "hidden lg:flex"
-                      } group shrink-0 items-center justify-between gap-1.5 px-2.5 pt-2 pb-1 text-[11px] font-medium text-gray-400 select-none`}
+                      } group shrink-0 items-center justify-between gap-1.5 px-2.5 py-0.5 text-[11px] font-medium text-gray-500 select-none`}
                     >
                       <div className="flex items-center gap-1.5 min-w-0 truncate">
                         {section.icon && (
