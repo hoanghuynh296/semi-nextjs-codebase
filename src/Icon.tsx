@@ -81,6 +81,11 @@ export const ICONS = {
   sparkles: "M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3zm7 12l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15z",
   send: "M5 12h13M12 5l7 7-7 7",
   resize: "M20 9v11H9",
+  terminal: "M4 17l6-6-6-6m8 14h8",
+  folder: "M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z",
+  file: "M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6",
+  smartphone: "M7 2h10a2 2 0 012 2v16a2 2 0 01-2 2H7a2 2 0 01-2-2V4a2 2 0 012-2zm5 16h.01",
+  branch: "M6 3v12m12-9a3 3 0 10-6 0 3 3 0 006 0zm-12 12a3 3 0 10-6 0 3 3 0 006 0zm12-12a9 9 0 01-9 9",
 } as const;
 
 export type IconName = keyof typeof ICONS;
