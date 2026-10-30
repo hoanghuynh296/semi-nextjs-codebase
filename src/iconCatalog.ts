@@ -624,6 +624,14 @@ export const ICON_CATALOG: Record<IconName, IconMeta> = {
     dont: "Không dùng cho liên kết ngoài.",
     keywords: ["nhánh", "phân nhánh", "fork", "git branch", "condition"],
   },
+  pin: {
+    name: "pin",
+    category: "action",
+    purpose: "Ghim / cố định mục quan trọng lên đầu danh sách hoặc tab",
+    do: "Dùng cho chức năng ghim dự án, thẻ hoặc mục ưu tiên lên đầu danh sách.",
+    dont: "Không dùng thay cho lưu trữ file hoặc bookmark.",
+    keywords: ["ghim", "pin", "cố định", "ưu tiên", "thumbtack", "pushpin"],
+  },
   chart: {
     name: "chart",
     category: "content",

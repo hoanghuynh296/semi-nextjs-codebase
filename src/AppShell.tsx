@@ -19,6 +19,7 @@ export interface ShellNavItem {
   icon: IconName;
   href?: string;
   external?: boolean;
+  right?: React.ReactNode;
 }
 
 export interface ShellNavSection {
@@ -139,10 +140,37 @@ export function AppShell({
           rel={item.external ? "noopener noreferrer" : undefined}
           aria-current={active ? "page" : undefined}
           title={item.label}
-          className={`${navItemClass} ${stateClass}`}
+          className={`${navItemClass} ${stateClass} group`}
         >
           {inner}
+          {item.right && !collapsed && (
+            <span className="hidden lg:flex items-center shrink-0 ml-auto">{item.right}</span>
+          )}
         </Link>
+      );
+    }
+
+    if (item.right) {
+      return (
+        <div
+          key={item.id}
+          className={`${navItemClass} ${stateClass} group relative !pr-1.5`}
+          title={item.label}
+        >
+          <button
+            type="button"
+            onClick={() => onSelect?.(item.id)}
+            aria-current={active ? "page" : undefined}
+            className="flex-1 min-w-0 h-full flex items-center gap-2.5 text-left cursor-pointer overflow-hidden focus:outline-none"
+          >
+            {inner}
+          </button>
+          {!collapsed && (
+            <div className="hidden lg:flex items-center shrink-0 ml-auto z-10">
+              {item.right}
+            </div>
+          )}
+        </div>
       );
     }
 

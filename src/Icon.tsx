@@ -91,6 +91,7 @@ export const ICONS = {
   file: "M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6",
   smartphone: "M7 2h10a2 2 0 012 2v16a2 2 0 01-2 2H7a2 2 0 01-2-2V4a2 2 0 012-2zm5 16h.01",
   branch: "M6 3v12m12-9a3 3 0 10-6 0 3 3 0 006 0zm-12 12a3 3 0 10-6 0 3 3 0 006 0zm12-12a9 9 0 01-9 9",
+  pin: "M12 17v5M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z",
 } as const;
 
 export type IconName = keyof typeof ICONS;
