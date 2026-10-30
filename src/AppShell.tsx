@@ -24,6 +24,8 @@ export interface ShellNavItem {
 export interface ShellNavSection {
   label?: string;
   items: ShellNavItem[];
+  loading?: boolean;
+  loadingCount?: number;
 }
 
 export function AppShell({
@@ -252,7 +254,25 @@ export function AppShell({
               <React.Fragment key={section.label ?? idx}>
                 {idx > 0 && <div className="my-0.5 mx-1.5 border-t border-divider" />}
                 <nav aria-label={section.label ?? `Menu ${idx + 1}`} className="flex flex-col gap-0.5">
-                  {section.items.map(renderNavEntry)}
+                  {section.loading ? (
+                    Array.from({ length: section.loadingCount ?? 5 }, (_, i) => (
+                      <div
+                        key={i}
+                        className={`w-full h-8 flex items-center rounded-lg ${
+                          collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2.5 lg:px-2.5"
+                        }`}
+                        aria-hidden
+                      >
+                        <div className="w-4 h-4 rounded shimmer shrink-0" />
+                        <div
+                          className={`${collapsed ? "hidden" : "hidden lg:block"} h-3 rounded shimmer`}
+                          style={{ width: `${55 + ((i * 19) % 35)}%` }}
+                        />
+                      </div>
+                    ))
+                  ) : (
+                    section.items.map(renderNavEntry)
+                  )}
                 </nav>
               </React.Fragment>
             ))}
