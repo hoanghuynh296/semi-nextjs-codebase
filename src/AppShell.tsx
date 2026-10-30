@@ -26,6 +26,7 @@ export interface ShellNavSection {
   label?: string;
   hideLabel?: boolean;
   icon?: IconName;
+  right?: React.ReactNode;
   items: ShellNavItem[];
   loading?: boolean;
   loadingCount?: number;
@@ -291,12 +292,19 @@ export function AppShell({
                     <div
                       className={`${
                         collapsed ? "hidden" : "hidden lg:flex"
-                      } shrink-0 items-center gap-1.5 px-2.5 pt-2 pb-1 text-[11px] font-medium text-gray-400 select-none`}
+                      } group shrink-0 items-center justify-between gap-1.5 px-2.5 pt-2 pb-1 text-[11px] font-medium text-gray-400 select-none`}
                     >
-                      {section.icon && (
-                        <Icon name={section.icon} className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+                      <div className="flex items-center gap-1.5 min-w-0 truncate">
+                        {section.icon && (
+                          <Icon name={section.icon} className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+                        )}
+                        <span className="truncate leading-normal">{section.label}</span>
+                      </div>
+                      {section.right && (
+                        <div className="flex items-center shrink-0 ml-auto">
+                          {section.right}
+                        </div>
                       )}
-                      <span className="truncate leading-normal">{section.label}</span>
                     </div>
                   )}
                   <nav aria-label={section.label ?? `Menu ${idx + 1}`} className="flex flex-col gap-0.5">
