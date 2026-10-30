@@ -209,10 +209,11 @@ export function AppShell({
       <div className={SHELL_OUTER}>
         {/* Left floating Bento sidebar (md+; phones use MobileTabBar at bottom) */}
         <aside className={`${SHELL_ASIDE} ${collapsed ? "w-14" : "w-14 lg:w-52"}`}>
-          <div className="flex-1 min-h-0 flex flex-col overflow-y-auto overflow-x-hidden p-2 gap-2.5">
+          {/* Sticky top header: Brand + optional primary CTA */}
+          <div className="shrink-0 p-2 pb-0 flex flex-col gap-2.5">
             {/* Brand + collapse toggle */}
             <div
-              className={`h-8 flex items-center gap-2 ${
+              className={`h-8 flex items-center gap-2 shrink-0 ${
                 collapsed ? "justify-center" : "justify-center lg:justify-between lg:pl-1.5"
               }`}
             >
@@ -247,7 +248,7 @@ export function AppShell({
               </button>
             </div>
 
-            {/* Optional primary CTA (e.g. Slicer) */}
+            {/* Optional primary CTA (e.g. Slicer / Trợ lý AI) */}
             {primaryCta &&
               (primaryCta.href ? (
                 <Link
@@ -255,7 +256,7 @@ export function AppShell({
                   target={primaryCta.external ? "_blank" : undefined}
                   rel={primaryCta.external ? "noopener noreferrer" : undefined}
                   title={primaryCta.label}
-                  className={`w-full h-9 rounded-lg bg-primary-500/15 hover:bg-primary-500/25 border border-primary-500/30 hover:border-primary-500/50 text-white flex items-center text-[12px] font-semibold transition active:scale-[0.99] ${
+                  className={`shrink-0 w-full h-9 rounded-lg bg-primary-500/15 hover:bg-primary-500/25 border border-primary-500/30 hover:border-primary-500/50 text-white flex items-center text-[12px] font-semibold transition active:scale-[0.99] ${
                     collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2 lg:px-2.5"
                   }`}
                 >
@@ -269,7 +270,7 @@ export function AppShell({
                   type="button"
                   onClick={primaryCta.onClick}
                   title={primaryCta.label}
-                  className={`w-full h-9 rounded-lg bg-primary-500/15 hover:bg-primary-500/25 border border-primary-500/30 hover:border-primary-500/50 text-white flex items-center text-[12px] font-semibold transition active:scale-[0.99] cursor-pointer ${
+                  className={`shrink-0 w-full h-9 rounded-lg bg-primary-500/15 hover:bg-primary-500/25 border border-primary-500/30 hover:border-primary-500/50 text-white flex items-center text-[12px] font-semibold transition active:scale-[0.99] cursor-pointer ${
                     collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2 lg:px-2.5"
                   }`}
                 >
@@ -279,8 +280,10 @@ export function AppShell({
                   <span className={navLabelClass}>{primaryCta.label}</span>
                 </button>
               ))}
+          </div>
 
-            {/* Navigation sections */}
+          {/* Scrollable navigation sections */}
+          <div className="flex-1 min-h-0 flex flex-col overflow-y-auto overflow-x-hidden p-2 pt-2.5 gap-2.5">
             {sections.map((section, idx) => {
               if (!section.loading && (!section.items || section.items.length === 0)) {
                 return null;
