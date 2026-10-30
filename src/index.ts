@@ -1,5 +1,6 @@
 // @semi/ui — Semi Design System components. Rules: docs/DESIGN_SYSTEM.md (cheatsheet docs/QUICK_REF.md).
 export * from "./Icon";
+export * from "./iconCatalog";
 export * from "./Chip";
 export * from "./Pills";
 export * from "./CustomSelect";

@@ -58,6 +58,11 @@ export const HARD = [
   ["native-dialog", /window\.(confirm|alert|prompt)\(/, "use confirmDialog() from @semi/ui / a toast"],
   ["native-input", /type="(date|number)"/, "use DatePicker / NumberInput from @semi/ui"],
   ["glyph-icon", /[✓✔✕✖✗✘⚠☑☒]/, 'use <Icon name="close|check|alert" />, not unicode glyphs'],
+  [
+    "icon-alias",
+    /<(?:Icon|IconTile)\b[^>]*\bname=["'](delete|remove|bin|cancel|x|cross|reload|sync|pencil|warning|gear|cog|funnel|profile|account|notification|notifications|category|label)["']/,
+    "use canonical IconName (trash for delete, close for cancel/x, refresh for reload, settings for gear, filter for funnel, user for profile, bell for notifications, tag for category/label). See docs/ICONS.md",
+  ],
   ["home-button", /name="home"/, "app headers have no Home button: logo + title go home (AppHeader)"],
   ["external-link", /window\.open\(|href=\{?["'`]https?:\/\//, "links to other sites use ExternalLink from @semi/ui"],
   [

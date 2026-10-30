@@ -256,10 +256,13 @@ WebView pass an `onClick` that opens the URL outside. Never a bare `<a target="_
 links), never raw. An app's AI chat is built from one set of shared parts (list, composer, suggestion rows) kept in
 that app; a new AI feature reuses them, never its own composer or row classes.
 
-## 15. Icons
+## 15. Icons & Semantic Registry
 
-`<Icon name="…" />` from `Icon.tsx` (new Lucide-style 24×24 paths go into `ICONS` in the semi repo). Stroke 1.75,
-round caps and joins, no fills (play / stop too). Sizes: `w-4 h-4` default, `w-3.5 h-3.5` in chips and captions,
+`<Icon name="…" />` from `Icon.tsx` (new Lucide-style 24×24 paths go into `ICONS` in the semi repo). Follow the
+**Semantic Icon Guide** in `docs/ICONS.md`: every icon has an explicit purpose, do's & don'ts, and canonical action mapping
+(e.g. `trash` for delete, `close` for dialog dismiss, `refresh` for sync, `sliders` for process parameters, `user` for profile, `filter` for search filters).
+
+Stroke 1.75, round caps and joins, no fills (play / stop too). Sizes: `w-4 h-4` default, `w-3.5 h-3.5` in chips and captions,
 `w-5 h-5` in `md` tiles, `w-6 h-6` in empty states and `lg` tiles. No emoji or unicode pictograms (✕ ✓ ✗ ⚠) in UI
 text, toasts or buttons: use `<Icon name="close" />`, `check`, etc. An app-only icon (a product logo) lives in the app
 and is listed in `semi-lint.json` → `skip.inline-svg-path`.
