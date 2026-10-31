@@ -223,7 +223,29 @@ Khi cần hiển thị biểu tượng cho một hành động hoặc trạng th
 | Đối tượng | Icon chuẩn (`IconName`) | Code mẫu | Ghi chú |
 |---|---|---|---|
 | **Tệp tin đơn lẻ** | `file` | `<Icon name="file" />` | File G-code, 3MF, STL, cấu hình |
+| **Tài liệu văn bản / PDF** | `fileText` | `<Icon name="fileText" />` | Tài liệu hướng dẫn in, README, PDF |
+| **Tệp mã nguồn / G-code** | `fileCode` | `<Icon name="fileCode" />` | File G-code in 3D, script lập trình, macro |
+| **Tệp nén lưu trữ / ZIP** | `fileArchive` | `<Icon name="fileArchive" />` | Tệp nén ZIP, TAR, 7Z, gói backup model |
+| **Tệp đã kiểm tra / Checksum**| `fileCheck` | `<Icon name="fileCheck" />` | File đã xác thực tính toàn vẹn, G-code hợp lệ |
+| **Tạo tệp mới** | `filePlus` | `<Icon name="filePlus" />` | Tạo file rỗng, thêm tài liệu mới |
+| **Bảng tính Excel / CSV** | `fileSpreadsheet`| `<Icon name="fileSpreadsheet" />`| Báo cáo số liệu in, bảng kiểm kê vật tư |
 | **Thư mục chứa file** | `folder` | `<Icon name="folder" />` | Nhóm preset, cây thư mục lưu trữ |
+| **Tạo thư mục mới** | `folderPlus` | `<Icon name="folderPlus" />` | Tạo folder mới, nhóm dự án mới |
+| **Mở thư mục duyệt file** | `folderOpen` | `<Icon name="folderOpen" />` | Thư mục đang kích hoạt, duyệt folder |
+| **Đính kèm tệp / File kẹp** | `paperclip` | `<Icon name="paperclip" />` | Đính kèm file vào yêu cầu, báo lỗi |
+| **Âm lượng loa / Buzzer** | `volume2` | `<Icon name="volume2" />` | Còi báo bíp hoàn thành in, âm thanh |
+| **Tắt tiếng / Im lặng (Mute)**| `volumeX` | `<Icon name="volumeX" />` | Tắt chuông báo, tắt tiếng bíp máy in |
+| **Tai nghe (Headphones)** | `headphones` | `<Icon name="headphones" />` | Nghe âm thanh tai nghe, audio output |
+| **Micro / Thu âm giọng nói** | `mic` | `<Icon name="mic" />` | Ra lệnh giọng nói AI, thu âm ghi chú |
+| **Video trực tiếp / Webcam** | `video` | `<Icon name="video" />` | Luồng camera buồng in RTSP, video timelapse |
+| **Tắt camera / Riêng tư** | `videoOff` | `<Icon name="videoOff" />` | Tắt truyền hình ảnh buồng in bảo mật |
+| **Thước phim / Timelapse Reel**| `film` | `<Icon name="film" />` | Bộ sưu tập video timelapse in hoàn tất |
+| **Lùi khung hình / Lớp trước**| `skipBack` | `<Icon name="skipBack" />` | Lùi lát cắt (Previous layer), lùi video |
+| **Tới khung hình / Lớp sau** | `skipForward` | `<Icon name="skipForward" />` | Tiến lát cắt kế tiếp (Next layer), tới video |
+| **Lặp lại (Repeat / Loop)** | `repeat` | `<Icon name="repeat" />` | Lặp video timelapse, in lặp lại chu kỳ |
+| **Tua nhanh tốc độ (2x/4x)** | `fastForward` | `<Icon name="fastForward" />` | Tua nhanh mô phỏng đường in G-code |
+| **Tua lùi mô phỏng (Rewind)**| `rewind` | `<Icon name="rewind" />` | Tua ngược thanh thời gian mô phỏng |
+| **Cắt cúp ảnh (Crop)** | `crop` | `<Icon name="crop" />` | Xén ảnh chụp webcam, căn khung thumbnail |
 | **Hình ảnh xem trước (Thumbnail)** | `image` | `<Icon name="image" />` | Ảnh chụp mô hình, render 3D |
 | **Dấu trừ / Giảm số lượng** | `minus` | `<Icon name="minus" />` | Nút trừ trong NumberInput |
 
@@ -301,6 +323,27 @@ Khi lập trình, nếu viết các từ khoá sau thì `semi-lint` hoặc `tsc`
 | `power_backup` | `battery` | Pin lưu điện UPS dùng `battery` |
 | `lidar`, `lidar_scan` | `scanLine` | Cảm biến Micro Lidar dùng `scanLine` |
 | `safety_alert`, `door_open` | `shieldAlert` | Cảnh báo an toàn / quá nhiệt dùng `shieldAlert` |
+| `document`, `doc`, `pdf`, `txt` | `fileText` | Tài liệu văn bản / PDF dùng `fileText` |
+| `gcode`, `gcode_file`, `source_code` | `fileCode` | Tệp mã G-code dùng `fileCode` |
+| `zip`, `archive`, `tar` | `fileArchive` | Tệp nén / gói lưu trữ dùng `fileArchive` |
+| `verified_file` | `fileCheck` | Tệp đã kiểm tra / checksum OK dùng `fileCheck` |
+| `new_file`, `add_file` | `filePlus` | Tạo tệp mới dùng `filePlus` |
+| `excel`, `csv`, `spreadsheet` | `fileSpreadsheet`| Bảng tính Excel / CSV dùng `fileSpreadsheet` |
+| `new_folder`, `add_folder` | `folderPlus` | Tạo thư mục mới dùng `folderPlus` |
+| `open_folder` | `folderOpen` | Mở / duyệt thư mục dùng `folderOpen` |
+| `attach`, `attachment`, `clip` | `paperclip` | Đính kèm tệp tin dùng `paperclip` |
+| `sound`, `speaker`, `volume` | `volume2` | Âm lượng / còi bíp loa dùng `volume2` |
+| `mute`, `silent` | `volumeX` | Tắt tiếng / im lặng dùng `volumeX` |
+| `headset`, `earphones` | `headphones` | Tai nghe dùng `headphones` |
+| `microphone`, `voice` | `mic` | Micro / lệnh giọng nói dùng `mic` |
+| `cam`, `webcam`, `timelapse`, `stream` | `video` | Video trực tiếp / timelapse dùng `video` |
+| `cam_off`, `webcam_off` | `videoOff` | Tắt video camera dùng `videoOff` |
+| `movie`, `reel` | `film` | Thước phim hoạt cảnh dùng `film` |
+| `prev_track`, `prev_layer` | `skipBack` | Về khung hình / lớp trước dùng `skipBack` |
+| `next_track`, `next_layer` | `skipForward` | Tới khung hình / lớp sau dùng `skipForward` |
+| `loop` | `repeat` | Lặp lại phát video dùng `repeat` |
+| `fast_forward`, `speed_up` | `fastForward` | Tua nhanh tốc độ dùng `fastForward` |
+| `crop_image` | `crop` | Cắt cúp ảnh thumbnail dùng `crop` |
 
 ---
 

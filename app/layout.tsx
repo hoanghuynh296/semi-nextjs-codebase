@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Semi Design System — Catalogue & Storybook",
-  description: "Foundations, Design Tokens, 144 Semantic Icons & Components for the Semi ecosystem.",
+  description: "Foundations, Design Tokens, 166 Semantic Icons & Components for the Semi ecosystem.",
 };
 
 export default function RootLayout({

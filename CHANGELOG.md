@@ -2,6 +2,17 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
+## [0.2.8] - 2026-10-31
+
+### Added
+- **Media, Documents & Playback Comprehensive Expansion (`@semi/ui`):** Added 22 new Lucide-standard 24×24 stroke icons expanding the system to 166 icons total (Media & Files now contains 31 icons):
+  - **Documents & File Management:** `fileText` (documents / README / PDF), `fileCode` (source code / G-code / macro script), `fileArchive` (ZIP / TAR / 7Z archive / project package), `fileCheck` (validated file / integrity checksum pass), `filePlus` (create file / new preset), `fileSpreadsheet` (Excel / CSV export / inventory sheet), `folderPlus` (new directory / project folder), `folderOpen` (open folder / active directory), `paperclip` (file attachments / inquiry attachment).
+  - **Audio & Sound:** `volume2` (speaker audio / buzzer level), `volumeX` (mute / silent mode / buzzer off), `headphones` (headphones / audio output), `mic` (microphone / voice control / audio notes).
+  - **Video & Timelapse:** `video` (live webcam stream RTSP / timelapse video), `videoOff` (disable camera / privacy mode), `film` (timelapse reel / animation series).
+  - **Playback & Editing:** `skipBack` (previous frame / previous layer), `skipForward` (next frame / next layer), `repeat` (loop video / repeat print cycle), `fastForward` (speed up simulation 2x/4x), `rewind` (rewind simulation timeline), `crop` (crop thumbnail / photo frame).
+- **Aliases & AI Retrieval:** Added 50+ canonical aliases to `ICON_ALIASES` and `semi-lint` HARD rules (`document`, `doc`, `pdf`, `gcode`, `zip`, `archive`, `excel`, `csv`, `attach`, `sound`, `speaker`, `volume`, `mute`, `silent`, `webcam`, `timelapse`, `movie`, `loop`, `crop_image`, etc.).
+- **Storybook Shell:** Updated to `166 Icons` dynamic count across Foundations & Component showcases.
+
 ## [0.2.7] - 2026-10-31
 
 ### Added
