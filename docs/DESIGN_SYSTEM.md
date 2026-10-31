@@ -179,6 +179,40 @@ Instead, follow the canonical Semi patterns:
    ```
    *Why alpha transparency works:* 10% opacity blends gracefully onto `#18191c` (`bg-panel`) in dark mode and onto `#ffffff` in light mode, maintaining ideal contrast and eliminating the need for complex mode-specific overrides.
 
+## 3c. Theme-Matching Tonal Components (Chips, Badges, Tags)
+
+When migrating existing applications, components often carry identifying chromatic colors (such as a **purple** chip for "Pro" plan, an **amber** badge for "Pending", or an **emerald** tag for "Completed").
+
+**Semi does not strip these colors down to monotonous gray.** Instead, the design system **adapts** chromatic colors to **Theme-Matching Tonal Standards**:
+- **Background:** `bg-<color>-500/10` (soft 10% tint on light backgrounds, deep rich tint on dark panels).
+- **Border:** `border-<color>-500/20` (subtle 20% alpha border).
+- **Text:** `text-<color>-700 dark:text-<color>-300` (deep high-contrast tone on light, luminous 300 tone on dark).
+
+### Example: Adapting a Purple Chip
+```tsx
+// Before (Legacy Light Mode only):
+<span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200">
+  Pro Plan
+</span>
+
+// After (Adapted with Theme-Matching Tonal Standards):
+<span className="px-2.5 py-0.5 rounded-full text-[12px] font-semibold bg-purple-500/10 border border-purple-500/20 text-purple-700 dark:text-purple-300">
+  Pro Plan
+</span>
+
+// Or using standard @semi/ui component:
+<Badge tone="purple">Pro Plan</Badge>
+```
+
+### Standard Palette Tones (`SemanticTone`)
+Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@semi/ui/styles` via `TONAL_SURFACE`:
+- `purple`, `violet`, `indigo`
+- `blue`, `sky`, `cyan`, `teal`
+- `emerald`, `green`
+- `amber`, `yellow`, `orange`
+- `rose`, `red`, `pink`
+- `gray` (neutral fallback)
+
 ## 4. Layout
 
 - **Radius scale:** controls, inputs, buttons and inner tiles `rounded-lg` (8px) · cards `rounded-xl` (12px) · panels,

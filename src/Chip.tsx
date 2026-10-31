@@ -5,6 +5,7 @@
 // a leading dot (TONE_DOT) or icon (chipIconClass) in the tone of what it filters (a material, a device category).
 import React from "react";
 import { TONE_TEXT, type TileTone } from "./Icon";
+import { type SemanticTone, TONAL_SURFACE } from "../styles/surfaces";
 
 export const CHIP_BASE =
   "shrink-0 inline-flex items-center gap-1.5 px-3.5 h-[34px] rounded-full text-[12px] font-medium whitespace-nowrap border transition cursor-pointer";
@@ -37,14 +38,27 @@ export function Chip({
   onClick,
   children,
   title,
+  tone,
+  className = "",
 }: {
   active: boolean;
   onClick: () => void;
   children: React.ReactNode;
   title?: string;
+  /** Optional theme-matching chromatic tone when active. Defaults to neutral raised surface. */
+  tone?: SemanticTone;
+  className?: string;
 }) {
+  const activeStyle = tone && TONAL_SURFACE[tone] ? TONAL_SURFACE[tone] : CHIP_ON;
+  const chipStyle = active ? activeStyle : CHIP_OFF;
   return (
-    <button type="button" onClick={onClick} title={title} aria-pressed={active} className={`${CHIP_BASE} ${chipClass(active)}`}>
+    <button
+      type="button"
+      onClick={onClick}
+      title={title}
+      aria-pressed={active}
+      className={`${CHIP_BASE} ${chipStyle} ${className}`}
+    >
       {children}
     </button>
   );

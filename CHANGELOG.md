@@ -2,6 +2,23 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
+## [0.3.5] - 2026-10-31
+
+### Added
+- **Theme-Matching Tonal Architecture (`@semi/ui`, `@semi/ui/styles`):**
+  - Added `SemanticTone` type and `TONAL_SURFACE` constants across 16 chromatic hues (`purple`, `violet`, `indigo`, `blue`, `sky`, `cyan`, `teal`, `emerald`, `green`, `amber`, `yellow`, `orange`, `rose`, `red`, `pink`, `gray`).
+  - Added first-class `<Badge tone="..." icon="..." dot>` component in `@semi/ui` for category tags, status pills, and plan labels.
+  - Enhanced `<Chip tone="...">` to support theme-matching active chromatic tones.
+- **Chromatic Tonal Component Analysis in `/semi-audit` (`audit.mjs`):**
+  - Automatically scans and reports chromatic tonal classes (e.g. `bg-purple-50 text-purple-700`, `bg-sky-100 text-sky-800`), grouping by color family with recommended Dual-Theme tone adaptations.
+  - Added interactive multiple-choice question for automated tonal adaptation.
+- **Theme-Matching Tonal Codemod in `/semi-init` (`init.mjs`):**
+  - Automatically adapts legacy solid pastel classes to Semi Dual-Theme matching tones:
+    - `bg-<color>-50/100` $\rightarrow$ `bg-<color>-500/10`
+    - `border-<color>-100/200/300` $\rightarrow$ `border-<color>-500/20`
+    - `text-<color>-600/700/800/900` $\rightarrow$ `text-<color>-700 dark:text-<color>-300`
+  - Preserves chromatic color identity (purple stays purple, amber stays amber) while eliminating dark-mode glare and ensuring optimal contrast in both themes.
+
 ## [0.3.4] - 2026-10-31
 
 ### Added

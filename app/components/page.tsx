@@ -10,6 +10,7 @@ import { CustomCombobox } from "../../src/CustomCombobox";
 import { NumberInput } from "../../src/NumberInput";
 import { DatePicker } from "../../src/DatePicker";
 import { Chip, TONE_DOT } from "../../src/Chip";
+import { Badge } from "../../src/Badge";
 import { Pills } from "../../src/Pills";
 import { KpiCard } from "../../src/KpiCard";
 import { Pagination } from "../../src/Pagination";
@@ -317,28 +318,39 @@ export default function ComponentsShowcasePage() {
           <span className="text-[11px] text-muted">Semi Tonal Coding</span>
         </div>
 
-        <div className="p-4 rounded-xl bg-panel border border-line space-y-3">
-          <div className="flex flex-wrap items-center gap-2">
-            <Chip active={activeChip === "pla"} onClick={() => setActiveChip("pla")}>
-              <span className={`w-1.5 h-1.5 rounded-full ${TONE_DOT.green}`} />
-              <span>Bambu Lab PLA</span>
-            </Chip>
-            <Chip active={activeChip === "petg"} onClick={() => setActiveChip("petg")}>
-              <span className={`w-1.5 h-1.5 rounded-full ${TONE_DOT.pink}`} />
-              <span>PETG Translucent</span>
-            </Chip>
-            <Chip active={activeChip === "cam"} onClick={() => setActiveChip("cam")}>
-              <span className={`w-1.5 h-1.5 rounded-full ${TONE_DOT.sky}`} />
-              <span>Camera Online</span>
-            </Chip>
-            <Chip active={activeChip === "led"} onClick={() => setActiveChip("led")}>
-              <span className={`w-1.5 h-1.5 rounded-full ${TONE_DOT.amber}`} />
-              <span>Đèn LED 100%</span>
-            </Chip>
-            <Chip active={activeChip === "auto"} onClick={() => setActiveChip("auto")}>
-              <span className={`w-1.5 h-1.5 rounded-full ${TONE_DOT.violet}`} />
-              <span>Auto Flow Rate</span>
-            </Chip>
+        <div className="p-4 rounded-xl bg-panel border border-line space-y-4">
+          <div>
+            <div className="text-[12px] font-medium text-muted mb-2">Dual-Theme Tonal Badges (&lt;Badge tone="..."&gt;):</div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge tone="purple" icon="sparkles">Pro Plan</Badge>
+              <Badge tone="blue" icon="shield">Enterprise</Badge>
+              <Badge tone="emerald" dot>Hoàn thành</Badge>
+              <Badge tone="amber" dot>Đang xử lý</Badge>
+              <Badge tone="rose" dot>Thất bại</Badge>
+              <Badge tone="sky" icon="server">Sync Cloud</Badge>
+              <Badge tone="gray">Nháp</Badge>
+            </div>
+          </div>
+
+          <div>
+            <div className="text-[12px] font-medium text-muted mb-2">Toggle Filter Chips (&lt;Chip tone="..."&gt;):</div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Chip tone="purple" active={activeChip === "pla"} onClick={() => setActiveChip("pla")}>
+                <span>Bambu Lab PLA (Tím)</span>
+              </Chip>
+              <Chip tone="pink" active={activeChip === "petg"} onClick={() => setActiveChip("petg")}>
+                <span>PETG Translucent</span>
+              </Chip>
+              <Chip tone="sky" active={activeChip === "cam"} onClick={() => setActiveChip("cam")}>
+                <span>Camera Online</span>
+              </Chip>
+              <Chip tone="amber" active={activeChip === "led"} onClick={() => setActiveChip("led")}>
+                <span>Đèn LED 100%</span>
+              </Chip>
+              <Chip tone="emerald" active={activeChip === "auto"} onClick={() => setActiveChip("auto")}>
+                <span>Auto Flow Rate</span>
+              </Chip>
+            </div>
           </div>
         </div>
       </section>

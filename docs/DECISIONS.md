@@ -2,6 +2,9 @@
 
 Newest first. Each entry is a user decision already reflected in `DESIGN_SYSTEM.md`, `QUICK_REF.md` and `lint/semi-lint.mjs`.
 
+- **2026-10-31 (v0.3.5 / Theme-Matching Tonal Components):**
+  - *Context:* Existing projects often feature colored chips/badges (e.g. purple for Pro, amber for Pending). Flat UI migration should not strip these to monotonous gray, but solid pastels (`bg-purple-50`) fail completely in Dark Mode.
+  - *Decision:* Standardized Two-Tier Theme-Matching Tonal architecture (`bg-<color>-500/10 border-<color>-500/20 text-<color>-700 dark:text-<color>-300`) across 16 hues. Created `<Badge>` component, enhanced `<Chip tone="...">`, upgraded `/semi-audit` to detect chromatic tonal clusters, and added automated tonal codemod to `/semi-init`.
 - **2026-10-31 (v0.3.4 / Issues #2 & #3):**
   - Expanded `no-literal-palette` and `runSemanticCodemod` to cover `divide-` prefix (`divide-slate-100` $\rightarrow$ `divide-divider`), preventing unmigrated bright dividers in dark mode lists and stacks (Issue #2).
   - Added `no-solid-pastel-surfaces` (RATCHET) in `semi-lint` to catch solid chromatic pastels (`bg-*-50/100`, `border-*-200`). Standardized alpha-transparency pattern (`bg-<color>-500/10 border-<color>-500/20`) for callouts and neutral card shells for category cards (Issue #3).

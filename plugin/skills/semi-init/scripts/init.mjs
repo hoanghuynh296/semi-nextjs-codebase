@@ -238,6 +238,11 @@ function runSemanticCodemod(webDir) {
     [/(?<=\s|^)shadow(?=\s|$)/g, ""],
   ];
 
+  const CHROMATIC_TONES = "amber|yellow|orange|red|rose|pink|fuchsia|purple|violet|indigo|blue|sky|cyan|teal|emerald|green";
+  const bgTonalRe = new RegExp(`\\b(?<!dark:)bg-(${CHROMATIC_TONES})-(?:50|100)\\b`, "g");
+  const borderTonalRe = new RegExp(`\\b(?<!dark:)border-(${CHROMATIC_TONES})-(?:100|200|300)\\b`, "g");
+  const textTonalRe = new RegExp(`\\b(?<!dark:)text-(${CHROMATIC_TONES})-(?:600|700|800|900)\\b`, "g");
+
   for (const file of files) {
     let content = readFileSync(file, "utf8");
     let changed = false;
@@ -250,6 +255,36 @@ function runSemanticCodemod(webDir) {
         fileReplacements += match.length;
         changed = true;
       }
+    }
+
+    // Adapt Chromatic Tonal Components (chips, badges, alerts) to dual-theme matching tones
+    const bgTonalMatches = content.match(bgTonalRe);
+    if (bgTonalMatches) {
+      content = content.replace(bgTonalRe, "bg-$1-500/10");
+      fileReplacements += bgTonalMatches.length;
+      changed = true;
+    }
+
+    const borderTonalMatches = content.match(borderTonalRe);
+    if (borderTonalMatches) {
+      content = content.replace(borderTonalRe, "border-$1-500/20");
+      fileReplacements += borderTonalMatches.length;
+      changed = true;
+    }
+
+    const textTonalMatches = content.match(textTonalRe);
+    if (textTonalMatches) {
+      content = content.replace(textTonalRe, (match, color, offset, fullStr) => {
+        const windowStart = Math.max(0, offset - 75);
+        const windowEnd = Math.min(fullStr.length, offset + 100);
+        const slice = fullStr.slice(windowStart, windowEnd);
+        if (new RegExp(`dark:text-${color}-\\d+`).test(slice)) {
+          return match;
+        }
+        return `text-${color}-700 dark:text-${color}-300`;
+      });
+      fileReplacements += textTonalMatches.length;
+      changed = true;
     }
 
     if (changed) {

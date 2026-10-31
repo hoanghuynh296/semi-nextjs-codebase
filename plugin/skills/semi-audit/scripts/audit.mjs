@@ -172,6 +172,11 @@ export function auditSingleApp(cwd) {
   const PHYSICAL_RX = /\b(bg|text|border)-(?:white|black|(?:slate|gray|zinc|neutral|stone)-\d{2,3})\b/g;
   const SEMANTIC_RX = /\b(bg-(?:canvas|app|panel|field|raised)|text-(?:contrast|body|muted)|border-(?:line|divider|line-hover))\b/g;
 
+  const CHROMATIC_TONAL_RX = /\b(?:bg|border|text)-(amber|yellow|orange|red|rose|pink|fuchsia|purple|violet|indigo|blue|sky|cyan|teal|emerald|green)-(?:50|100|200|700|800|900)\b/g;
+  const tonalCounts = new Map();
+  let totalTonal = 0;
+  const tonalFilesByColor = new Map();
+
   let vnStringHits = 0;
   let enStringHits = 0;
   const importUsage = new Map();
@@ -203,6 +208,14 @@ export function auditSingleApp(cwd) {
     for (const s of semMatches) {
       semanticCounts.set(s, (semanticCounts.get(s) || 0) + 1);
       totalSemantic++;
+    }
+    const tonalMatches = text.match(CHROMATIC_TONAL_RX) || [];
+    for (const t of tonalMatches) {
+      tonalCounts.set(t, (tonalCounts.get(t) || 0) + 1);
+      totalTonal++;
+      const color = t.split("-")[1];
+      if (!tonalFilesByColor.has(color)) tonalFilesByColor.set(color, new Set());
+      tonalFilesByColor.get(color).add(rel);
     }
     if (/[àáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵđ]/i.test(text)) {
       vnStringHits++;
@@ -363,6 +376,18 @@ export function auditSingleApp(cwd) {
     });
   }
 
+  if (totalTonal > 0) {
+    questions.push({
+      id: "tonal-matching-codemod",
+      question: `Found ${totalTonal} chromatic tonal class usages (chips, badges, alerts) across ${tonalFilesByColor.size} color families. How should they be adapted?`,
+      options: [
+        "(Recommended) Automatically adapt to Semi Dual-Theme Tone Matching (bg-<color>-500/10 border-<color>-500/20 text-<color>-700 dark:text-<color>-300)",
+        "Convert to neutral gray surfaces (bg-field border-line text-muted)",
+        "Keep existing classes as-is",
+      ],
+    });
+  }
+
   return {
     exists: true,
     cwd,
@@ -400,6 +425,24 @@ export function auditSingleApp(cwd) {
         total: totalSemantic,
         topClasses: topSemanticTokens.slice(0, 10),
       },
+      totalTonal,
+      tonalColors: [...tonalFilesByColor.entries()]
+        .map(([color, filesSet]) => {
+          const sampleClasses = [...tonalCounts.entries()]
+            .filter(([cls]) => cls.includes(`-${color}-`))
+            .map(([cls, cnt]) => `${cls} (${cnt}x)`)
+            .slice(0, 4);
+          const count = [...tonalCounts.entries()]
+            .filter(([cls]) => cls.includes(`-${color}-`))
+            .reduce((sum, [, cnt]) => sum + cnt, 0);
+          return {
+            color,
+            count,
+            files: [...filesSet].slice(0, 5),
+            sampleClasses,
+          };
+        })
+        .sort((a, b) => b.count - a.count),
       semanticAdoptionRate,
     },
     duplicateComponents,
@@ -470,6 +513,19 @@ function formatSingleAppMarkdown(r) {
           `> Run \`/semi-init --apply\` to automatically run the codemod and migrate literal classes to Semantic Tokens.`,
         ]
       : [`- **Literal / Physical Classes:** ✅ None (100% Dual-theme ready)`]),
+    ...(r.colours.tonalColors && r.colours.tonalColors.length > 0
+      ? [
+          ``,
+          `#### 🎨 Chromatic Tonal Components (Chips, Badges, Tags)`,
+          `Detected **${r.colours.totalTonal} chromatic tonal class usages** across ${r.colours.tonalColors.length} color families:`,
+          ...r.colours.tonalColors.map(
+            (t) =>
+              `- **${t.color.charAt(0).toUpperCase() + t.color.slice(1)} (${t.count}x):** ${t.sampleClasses.join(", ")} in ${t.files.map((f) => `\`${f}\``).join(", ")}\n` +
+              `  → *Semi Dual-Theme Adapt:* \`bg-${t.color}-500/10 border-${t.color}-500/20 text-${t.color}-700 dark:text-${t.color}-300\` (or \`<Badge tone="${t.color}">\`)`
+          ),
+          `> \`/semi-init\` will automatically adapt these components to theme-matching dual-theme tones, preserving their original color identity without dark-mode glare.`,
+        ]
+      : []),
     ``,
     `#### Hard-coded Hex Colours → Nearest Semi Token`,
   ];
