@@ -450,8 +450,33 @@ from `md` (iPad). Confirmations go through `confirmDialog()` (mount `<ConfirmHos
 WebView pass an `onClick` that opens the URL outside. Never a bare `<a target="_blank">` to another site.
 
 **AI text** is rendered with `Markdown` (light markdown: paragraphs, headings as bold lines, lists, bold, code,
-links), never raw. An app's AI chat is built from one set of shared parts (list, composer, suggestion rows) kept in
-that app; a new AI feature reuses them, never its own composer or row classes.
+links), never raw. AI conversations use the chat parts below (§14b), never an app's own composer or bubbles.
+
+## 14b. AI chat
+
+Every AI conversation (assistant panel, error diagnosis, "explain this setting") is built from `Chat.tsx`. It is
+**UI only**: the app keeps the messages, streams the answer and talks to the model (provider, model picker, settings
+are the app's); the parts draw it and report `onSend` / `onStop` / `onRetry` / `onNewChat`.
+
+- **Ready-made:** `<AIChat messages busy onSend onStop onRetry onNewChat empty toolbar … />` with `ChatItem`
+  (`role`, `content` = Markdown for answers, `pending`, `error`, `failed`). Custom bubbles via `renderUser` /
+  `renderAnswer`; content under the last message via `listEnd`; model / attachment controls via `toolbar`.
+- **Panel:** `ChatPanel`, a right side panel. `placement="workspace"` sits in the nearest positioned parent beside the
+  content (`z-drawer`, `z-sticky` from `sm`); `"screen"` covers the page as a dialog (`z-dialog`, focus trap), also over
+  an open `Modal`, and Escape closes only the chat. Full screen on phones, lifted above the iOS keyboard; resizable from
+  `sm` by dragging or ←/→ on the edge (320–900px, double click = 380px, remembered per `widthKey`). Header = `IconTile`
+  + title + "new chat" (only once there is a message) + close. Keep it mounted with `shown={false}` while it slides out.
+- **Inside:** `ChatView` (skeleton while settings load, `setup` in place of the chat, e.g. an `EmptyState` "AI is not
+  set up" + settings button) > `ChatList` + `ChatComposer`. Messages: `UserMessage` (right, accent tint; `failed`
+  dimmed), `AssistantMessage` (left behind `ChatAvatar`, actions such as `ChatCopyButton` once done), `ChatThinking`
+  (label + three dots, before the first token), `ChatError` (status tint, optional retry). Empty conversation:
+  `ChatIntro` + `ChatSuggestions` of `ChatSuggestion` rows (`href` = external link). `CHAT_ROW` / `CHAT_CHIP` for
+  custom rows and chips.
+- **Behaviour built in, do not re-implement:** Enter sends, Shift+Enter breaks the line, Enter while an input method
+  composes (Telex / VNI) does not send; the field grows to 45% of the screen; focus returns to it after a typed
+  question is answered; the list follows new text only while the reader is at the bottom (else a "jump to latest"
+  button); streamed tokens are not read out one by one, the finished answer is announced once (`role="log"` + a polite
+  status).
 
 ## 15. Icons & Semantic Registry
 
@@ -478,6 +503,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `confirmDialog.tsx` | `confirmDialog()`, `ConfirmHost`, `ConfirmOptions` (§14) |
 | `ThemeProvider.tsx` | `ThemeProvider`, `useTheme`, `ThemeToggle` (§2) |
 | `Markdown.tsx` | `Markdown` (AI answers) |
+| `Chat.tsx` | `AIChat`, `ChatPanel`, `ChatView`, `ChatList`, `ChatComposer`, `UserMessage`, `AssistantMessage`, `ChatAnswer`, `ChatError`, `ChatThinking`, `ChatIntro`, `ChatSuggestion(s)`, `ChatAvatar`, `ChatCopyButton`, `CHAT_ROW`, `CHAT_CHIP`, `ChatItem` (§14b) |
 | `ExternalLink.tsx` | `ExternalLink` |
 | `Pills.tsx`, `Chip.tsx` | single choice / on-off chips (`Chip`, `CHIP_BASE`, `chipClass`, `chipIconClass`, `TAG`, `TONE_DOT`) |
 | `SearchInput`, `CustomSelect`, `CustomCombobox`, `DatePicker`, `Pagination` | toolbar and form inputs |
@@ -520,7 +546,7 @@ options; more → `CustomSelect`).
 | Persistent message in a page | `Alert` (tone, title, action, `onDismiss`) |
 | Secondary task beside the page | `Drawer` (right / left / bottom sheet) |
 | Sections of one record | `Tabs` (underline; `segmented` inside a toolbar); 2–4 sibling pages → `PageTabsTitle` |
-| Compared rows | `Table` + `THead` / `TBody` / `TR` / `TH` / `TD numeric`; entity overviews stay Bento `Card`s |
+| Compared rows | `Table` + `THead` / `TBody` / `TR` / `TH` / `TD numeric`; cells stay on one line and the table scrolls sideways on phones (`TD wrap` for a long-text column); entity overviews stay Bento `Card`s |
 | Progress / quota | `Progress` (determinate or indeterminate) |
 | People | `Avatar` (photo or initials on a stable tone) |
 | Nothing to show yet | `EmptyState` (icon, one line, action) |

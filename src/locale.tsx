@@ -44,6 +44,17 @@ export const vi = {
   actions: "Thao tác",
   breadcrumb: "Đường dẫn",
   home: "Về trang chủ",
+  chatPlaceholder: "Hỏi bất cứ điều gì…",
+  chatSend: "Gửi",
+  chatStop: "Dừng",
+  chatNewChat: "Cuộc trò chuyện mới",
+  chatThinking: "Đang suy nghĩ",
+  chatRetry: "Thử lại",
+  chatResize: "Kéo để đổi độ rộng (nhấp đúp để đặt lại)",
+  chatAnswerDone: "Đã trả lời xong",
+  chatJumpToLatest: "Xuống tin nhắn mới nhất",
+  copy: "Sao chép",
+  copied: "Đã sao chép",
 };
 
 export type SemiStrings = typeof vi;
@@ -88,6 +99,17 @@ export const en: SemiStrings = {
   actions: "Actions",
   breadcrumb: "Breadcrumb",
   home: "Go to home",
+  chatPlaceholder: "Ask anything…",
+  chatSend: "Send",
+  chatStop: "Stop",
+  chatNewChat: "New chat",
+  chatThinking: "Thinking",
+  chatRetry: "Retry",
+  chatResize: "Drag to resize (double-click to reset)",
+  chatAnswerDone: "Answer complete",
+  chatJumpToLatest: "Jump to latest message",
+  copy: "Copy",
+  copied: "Copied",
 };
 
 const LocaleContext = createContext<SemiStrings>(vi);

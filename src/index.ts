@@ -37,6 +37,7 @@ export * from "./Toast";
 export * from "./Feedback";
 export * from "./Table";
 export * from "./Drawer";
+export * from "./Chat";
 export * from "./locale";
 export { useDialog, useFocusTrap, useScrollLock } from "./a11y";
 export { useAnchoredPosition } from "./floating";

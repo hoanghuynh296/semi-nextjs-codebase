@@ -14,7 +14,7 @@ export function StorybookShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   // Normalize active route
-  const activeId = ["components", "primitives", "patterns"].find((p) => pathname.includes(`/${p}`)) ?? "foundations";
+  const activeId = ["components", "primitives", "patterns", "chat"].find((p) => pathname.includes(`/${p}`)) ?? "foundations";
 
   const sections: ShellNavSection[] = [
     {
@@ -23,30 +23,37 @@ export function StorybookShell({ children }: { children: React.ReactNode }) {
         {
           id: "foundations",
           label: "Foundations & Icons",
-          shortLabel: "Foundations",
+          shortLabel: "Tokens",
           icon: "palette",
           href: "./foundations",
         },
         {
           id: "components",
           label: "Components Showcase",
-          shortLabel: "Components",
+          shortLabel: "UI",
           icon: "sliders",
           href: "./components",
         },
         {
           id: "primitives",
           label: "Primitives & Forms",
-          shortLabel: "Primitives",
+          shortLabel: "Forms",
           icon: "zap",
           href: "./primitives",
         },
         {
           id: "patterns",
           label: "Layout Patterns",
-          shortLabel: "Patterns",
+          shortLabel: "Layout",
           icon: "grid",
           href: "./patterns",
+        },
+        {
+          id: "chat",
+          label: "AI Chat",
+          shortLabel: "Chat",
+          icon: "sparkles",
+          href: "./chat",
         },
       ],
     },
@@ -104,7 +111,8 @@ export function StorybookShell({ children }: { children: React.ReactNode }) {
         )
       }
     >
-      <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto space-y-8">
+      {/* w-full: an auto-margin flex item would size to its widest demo and push the page past a phone screen */}
+      <div className="w-full min-w-0 space-y-8">
         {children}
       </div>
     </AppShell>

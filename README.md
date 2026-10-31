@@ -108,6 +108,7 @@ import {
   Skeleton, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton,
   confirmDialog, ConfirmHost,
   ExternalLink, Markdown,
+  AIChat, ChatPanel, ChatView, ChatComposer, ChatIntro, ChatSuggestion, // AI chat (§14b)
 } from "@semi/ui";
 
 // 2. Style constants (surfaces, buttons, app chrome)

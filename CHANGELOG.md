@@ -2,6 +2,17 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
+## [0.6.0] - 2026-10-31
+
+### Added
+- **AI chat (`Chat.tsx`, extracted from 3D Noobs Studio and rebuilt on tokens):** `AIChat` (ready-made), `ChatPanel` (side panel, `workspace` / `screen` placement, resizable, iOS keyboard inset), `ChatView`, `ChatList` (stick-to-bottom while at the bottom, "jump to latest", one announcement per finished answer), `ChatComposer` (auto-grow, Enter / Shift+Enter, IME-safe, stop, `toolbar` slot), `UserMessage`, `AssistantMessage`, `ChatAnswer`, `ChatError` (retry), `ChatThinking`, `ChatIntro`, `ChatSuggestion(s)`, `ChatAvatar`, `ChatCopyButton`, `CHAT_ROW`, `CHAT_CHIP`, `ChatItem`. Locale strings `chat*`, `copy`, `copied`.
+- **Storybook:** "AI Chat" page (live demo with fake streaming, panel over a Modal, every part). Playwright: contrast + axe in both themes, IME Enter, scroll position while streaming, dialog over modal, phone layout.
+
+### Changed
+- **DESIGN_SYSTEM §14b:** AI conversations use the shared chat parts (replaces "chat parts kept in each app").
+- **Phones:** `Badge` / `STATUS_PILL` never wrap; table cells stay on one line so a `Table` scrolls sideways on a phone instead of squeezing columns (`TD wrap` for a long-text column); an empty chat starts at the top so the intro shows first.
+- **Storybook on phones:** the page column no longer grows to its widest demo (an auto-margin flex item sized to content), section headers stack under 640px, shorter tab-bar labels. Playwright checks that every page fits a 375px screen.
+
 ## [0.5.0] - 2026-10-31
 
 ### Added

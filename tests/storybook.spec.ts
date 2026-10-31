@@ -3,7 +3,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
-const PAGES = ["/foundations.html", "/components.html", "/primitives.html", "/patterns.html"];
+const PAGES = ["/foundations.html", "/components.html", "/primitives.html", "/patterns.html", "/chat.html"];
 const THEMES = ["dark", "light"] as const;
 
 async function open(page: Page, path: string, theme: "dark" | "light" | "system") {
@@ -90,6 +90,36 @@ for (const path of PAGES) {
       expect(serious.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).slice(0, 3).join(" | ")}`)).toEqual([]);
     });
   }
+
+  test(`fits a phone screen · ${path}`, async ({ browser }) => {
+    const page = await browser.newPage({ viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true });
+    await open(page, path, "light");
+    // Everything stays inside the page column (16px gutters) unless it sits in its own horizontal scroller
+    const overflow = await page.evaluate(() => {
+      const col = document.querySelector("main > div")!;
+      const cs = getComputedStyle(col);
+      const cb = col.getBoundingClientRect();
+      const left = cb.left + parseFloat(cs.paddingLeft) - 1;
+      const right = cb.right - parseFloat(cs.paddingRight) + 1;
+      const out: string[] = [];
+      if (Math.round(cb.width) !== document.documentElement.clientWidth) out.push(`column ${Math.round(cb.width)}px`);
+      for (const el of col.querySelectorAll<HTMLElement>("*")) {
+        if (getComputedStyle(el).position === "fixed") continue;
+        const b = el.getBoundingClientRect();
+        if (!b.width) continue;
+        let s = el.parentElement;
+        let clipped = false;
+        while (s && s !== col) {
+          if (getComputedStyle(s).overflowX !== "visible") clipped = true;
+          s = s.parentElement;
+        }
+        if (!clipped && (b.right > right || b.left < left)) out.push(`${el.tagName.toLowerCase()} "${(el.textContent || "").trim().slice(0, 30)}"`);
+      }
+      return out.slice(0, 5);
+    });
+    expect(overflow).toEqual([]);
+    await page.close();
+  });
 
   test(`page never scrolls outside the shell · ${path}`, async ({ page }) => {
     await open(page, path, "dark");
@@ -200,3 +230,106 @@ for (const theme of THEMES) {
     expect(await page.getByRole("switch", { name: "Thông báo khi in xong" }).evaluate((el) => getComputedStyle(el).backgroundColor)).toBe(accent);
   });
 }
+
+// ─── AI chat ─────────────────────────────────────────────────────────────────────────────────────────────────────
+
+const chatPanel = (page: Page) => page.getByTestId("chat-workspace").getByRole("complementary", { name: "Trợ lý AI" });
+
+for (const theme of THEMES) {
+  test(`AI chat: send, stream, stop / retry and contrast · ${theme}`, async ({ page }) => {
+    await open(page, "/chat.html", theme);
+    const panel = chatPanel(page);
+    const field = panel.getByRole("textbox", { name: "Hỏi về cài đặt in…" });
+    await field.fill("PETG bị kéo sợi");
+    await field.press("Enter");
+    await expect(panel.getByRole("button", { name: "Dừng" })).toBeVisible();
+    await expect(field).toHaveValue("");
+    await expect(panel.getByRole("button", { name: "Sao chép" })).toBeVisible({ timeout: 10_000 });
+    await expect(panel.getByRole("button", { name: "Gửi" })).toBeVisible();
+    await expect(field).toBeFocused(); // back to the field after a typed question
+    await expect(panel.getByRole("status").filter({ hasText: "PETG" })).toHaveCount(1); // the finished answer is announced once
+    // second question fails in the demo: error with retry
+    await field.fill("Câu thứ hai");
+    await field.press("Enter");
+    await expect(panel.getByRole("alert")).toContainText("Không kết nối được");
+    await expect(panel.getByRole("button", { name: "Thử lại" })).toBeVisible();
+    expect(await lowContrast(page)).toEqual([]);
+    const { violations } = await new AxeBuilder({ page }).include('[data-testid="chat-workspace"]').withTags(["wcag2a", "wcag2aa"]).analyze();
+    expect(violations.filter((v) => v.impact === "serious" || v.impact === "critical").map((v) => v.id)).toEqual([]);
+  });
+}
+
+test("AI chat: Enter while an input method composes does not send; Shift+Enter breaks the line", async ({ page }) => {
+  await open(page, "/chat.html", "dark");
+  const panel = chatPanel(page);
+  const field = panel.getByRole("textbox", { name: "Hỏi về cài đặt in…" });
+  await field.fill("Tiếng Việt");
+  await field.dispatchEvent("keydown", { key: "Enter", isComposing: true, bubbles: true });
+  await field.press("Shift+Enter");
+  await expect(panel.getByRole("button", { name: "Dừng" })).toHaveCount(0);
+  await expect(field).toHaveValue("Tiếng Việt\n");
+  expect(await panel.getByRole("log").evaluate((el) => el.textContent?.includes("Tiếng Việt"))).toBe(false);
+});
+
+test("AI chat: scrolled up while streaming, the list stays put", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await open(page, "/chat.html", "dark");
+  const panel = chatPanel(page);
+  const field = panel.getByRole("textbox", { name: "Hỏi về cài đặt in…" });
+  const log = panel.getByRole("log");
+  const ask = async (q: string) => {
+    await field.fill(q);
+    await field.press("Enter");
+    await expect(panel.getByRole("button", { name: "Gửi" })).toBeVisible({ timeout: 10_000 });
+  };
+  for (const q of ["Một", "Hai", "Ba", "Bốn"]) await ask(q); // the second one fails in the demo
+  expect(await log.evaluate((el) => el.scrollHeight > el.clientHeight + 200)).toBe(true);
+  await field.fill("Năm");
+  await field.press("Enter");
+  await expect(panel.getByRole("button", { name: "Dừng" })).toBeVisible();
+  await log.evaluate((el) => el.scrollTo({ top: 0 }));
+  await log.dispatchEvent("scroll");
+  await expect(panel.getByRole("button", { name: "Xuống tin nhắn mới nhất" })).toBeVisible();
+  await expect(panel.getByRole("button", { name: "Gửi" })).toBeVisible({ timeout: 10_000 });
+  expect(await log.evaluate((el) => el.scrollTop)).toBe(0);
+  await panel.getByRole("button", { name: "Xuống tin nhắn mới nhất" }).click();
+  await expect.poll(() => log.evaluate((el) => el.scrollHeight - el.scrollTop - el.clientHeight)).toBeLessThan(32);
+});
+
+test("AI chat over a Modal: focus goes to the field, Escape closes only the chat", async ({ page }) => {
+  await open(page, "/chat.html", "light");
+  await page.getByRole("button", { name: "Mở trên Modal" }).click();
+  const opener = page.getByRole("button", { name: "Hỏi AI về lỗi này" });
+  await opener.click();
+  const chat = page.getByRole("dialog", { name: "Trợ lý AI" });
+  await expect(chat).toBeVisible();
+  await expect(chat.getByRole("textbox")).toBeFocused();
+  for (let i = 0; i < 8; i++) {
+    await page.keyboard.press("Tab");
+    expect(await chat.evaluate((d) => d.contains(document.activeElement))).toBe(true);
+  }
+  await page.keyboard.press("Escape");
+  await expect(chat).toBeHidden();
+  await expect(page.getByRole("dialog", { name: /HMS 0300-0100/ })).toBeVisible();
+  await expect(opener).toBeFocused();
+});
+
+test("AI chat fills the screen on phones", async ({ browser }) => {
+  const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
+  await open(page, "/chat.html", "dark");
+  const panel = chatPanel(page);
+  const box = await panel.boundingBox();
+  const host = await page.getByTestId("chat-workspace").boundingBox();
+  expect(Math.round(box!.width)).toBe(Math.round(host!.width) - 2); // inside the 1px borders
+  await expect(panel.getByRole("separator")).toBeHidden();
+  await page.close();
+});
+
+test("AI chat: an empty conversation starts at the top (intro first)", async ({ browser }) => {
+  const page = await browser.newPage({ viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true });
+  await open(page, "/chat.html", "dark");
+  const log = chatPanel(page).getByRole("log");
+  await expect(log.getByText("Hỏi gì về bản in?")).toBeVisible();
+  expect(await log.evaluate((el) => el.scrollTop)).toBe(0);
+  await page.close();
+});

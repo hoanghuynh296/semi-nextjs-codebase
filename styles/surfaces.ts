@@ -57,7 +57,7 @@ export const MODAL_CLOSE =
   "w-9 h-9 sm:w-8 sm:h-8 rounded-full bg-field hover:bg-raised text-muted hover:text-contrast flex items-center justify-center transition outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 border border-line active:scale-95 shrink-0";
 
 /** Status pill (device state, job result): coloured 15% fill + 300 text. */
-export const STATUS_PILL = "inline-flex items-center gap-1.5 h-6 px-2 rounded-full text-caption font-medium";
+export const STATUS_PILL = "inline-flex items-center gap-1.5 h-6 px-2 rounded-full text-caption font-medium whitespace-nowrap";
 
 /** Standard chromatic tones across the Semi ecosystem. */
 export type SemanticTone =
@@ -99,7 +99,7 @@ export const TONAL_SURFACE: Record<SemanticTone, string> = {
 };
 
 /** Tonal badge base class (11px or 12px pill). */
-export const BADGE_BASE = "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-caption font-medium border";
+export const BADGE_BASE = "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-caption font-medium border whitespace-nowrap";
 
 /** Dual-theme tonal container (cards, callouts, alert banners): 10% alpha fill + 20% alpha border + dual-theme text. */
 export const TONAL_CONTAINER = TONAL_SURFACE;

@@ -123,12 +123,12 @@ export default function ComponentsShowcasePage() {
 
       {/* Pattern 0: Theme */}
       <section className="space-y-3">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
           <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="sun" className="w-4 h-4 text-warning-fg" />
             <span>0. Theme (Sáng · Tối · Hệ thống)</span>
           </h2>
-          <span className="text-caption text-muted">ThemeScript · ThemeProvider</span>
+          <span className="text-caption text-muted pl-6 sm:pl-0 sm:text-right">ThemeScript · ThemeProvider</span>
         </div>
 
         <div className="p-4 rounded-xl bg-panel border border-line space-y-4">
@@ -151,12 +151,12 @@ export default function ComponentsShowcasePage() {
 
       {/* Pattern 1: SubpageToolbar */}
       <section className="space-y-3">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
           <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="sliders" className="w-4 h-4 text-accent-fg" />
             <span>1. SubpageToolbar (Thanh công cụ trang chuẩn)</span>
           </h2>
-          <span className="text-caption text-muted">STICKY_TOOLBAR Pattern</span>
+          <span className="text-caption text-muted pl-6 sm:pl-0 sm:text-right">STICKY_TOOLBAR Pattern</span>
         </div>
 
         <div className="p-4 rounded-xl bg-panel border border-line space-y-3">
@@ -204,7 +204,7 @@ export default function ComponentsShowcasePage() {
 
       {/* Pattern 2: Action Buttons */}
       <section className="space-y-3">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
           <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="zap" className="w-4 h-4 text-warning-fg" />
             <span>2. Button System (Các biến thể nút bấm)</span>
@@ -246,12 +246,12 @@ export default function ComponentsShowcasePage() {
 
       {/* Pattern 3: Form Controls */}
       <section className="space-y-3">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
           <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="edit" className="w-4 h-4 text-tone-sky" />
             <span>3. Form Controls & Custom Inputs (Không dùng control native)</span>
           </h2>
-          <span className="text-caption text-muted">Dark-first Form Components</span>
+          <span className="text-caption text-muted pl-6 sm:pl-0 sm:text-right">Dark-first Form Components</span>
         </div>
 
         <div className="p-4 rounded-xl bg-panel border border-line">
@@ -313,12 +313,12 @@ export default function ComponentsShowcasePage() {
 
       {/* Pattern 4: KPI Cards & Data */}
       <section className="space-y-3">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
           <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="chart" className="w-4 h-4 text-success-fg" />
             <span>4. KPI Cards & Metrics</span>
           </h2>
-          <span className="text-caption text-muted">18px–22px Tabular Numbers</span>
+          <span className="text-caption text-muted pl-6 sm:pl-0 sm:text-right">18px–22px Tabular Numbers</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -357,7 +357,7 @@ export default function ComponentsShowcasePage() {
         </div>
 
         {/* Pagination demo */}
-        <div className="p-3 rounded-xl bg-panel border border-line flex items-center justify-between">
+        <div className="p-3 rounded-xl bg-panel border border-line flex flex-wrap items-center justify-between gap-2">
           <span className="text-label text-muted">Component Pagination (Phân trang):</span>
           <Pagination
             page={currentPage}
@@ -369,12 +369,12 @@ export default function ComponentsShowcasePage() {
 
       {/* Pattern 5: Chips, Pills & Tones */}
       <section className="space-y-3">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
           <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="tag" className="w-4 h-4 text-tone-violet" />
             <span>5. Chips & Status Indicators</span>
           </h2>
-          <span className="text-caption text-muted">Semi Tonal Coding</span>
+          <span className="text-caption text-muted pl-6 sm:pl-0 sm:text-right">Semi Tonal Coding</span>
         </div>
 
         <div className="p-4 rounded-xl bg-panel border border-line space-y-4">
@@ -416,12 +416,12 @@ export default function ComponentsShowcasePage() {
 
       {/* Pattern 6: Modals & Confirmation */}
       <section className="space-y-3">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
           <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="alert" className="w-4 h-4 text-danger-fg" />
             <span>6. Modals & Dialogs (Không dùng alert/confirm native)</span>
           </h2>
-          <span className="text-caption text-muted">Modal Portal & ConfirmHost</span>
+          <span className="text-caption text-muted pl-6 sm:pl-0 sm:text-right">Modal Portal & ConfirmHost</span>
         </div>
 
         <div className="p-4 rounded-xl bg-panel border border-line space-y-3">
@@ -496,12 +496,12 @@ export default function ComponentsShowcasePage() {
 
       {/* Pattern 7: Shimmer Skeletons */}
       <section className="space-y-3">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
           <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="clock" className="w-4 h-4 text-tone-sky" />
             <span>7. Skeletons (Dùng Shimmer thay vì thông báo tải)</span>
           </h2>
-          <span className="text-caption text-muted">Shimmer Placeholder</span>
+          <span className="text-caption text-muted pl-6 sm:pl-0 sm:text-right">Shimmer Placeholder</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
