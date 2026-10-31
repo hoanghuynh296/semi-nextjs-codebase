@@ -18,8 +18,9 @@
 //     "baseline": "semi-lint-baseline.json",
 //     "skip": { "inline-svg-path": ["components/brand/Logo.tsx"] },   // rule id → path prefixes it ignores
 //     "only": { "viewport-grid-cols": ["components/catalog/"] },      // rule id → only these path prefixes
-//     "disable": ["loading-text"]                   // rule ids turned off (record why in your app's doc)
-//   }
+//     "disable": ["loading-text"],                  // rule ids turned off (record why in your app's doc)
+//     "keep": { "tables": "reports need dense tables" }  // /semi-audit structural checks the team chose to keep
+//   }                                                     // (reason string = whole app, array = path prefixes)
 // A rule that the Semi docs add and that can be grepped belongs here too (change it in the semi repo, not per app).
 import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { join, relative, resolve, sep } from "node:path";
@@ -153,8 +154,10 @@ export function scan(paths, cfg, cwd) {
   const hard = [];
   const counts = Object.fromEntries(RATCHET.map(([id]) => [id, {}]));
   const lines = Object.fromEntries(RATCHET.map(([id]) => [id, {}])); // rule → file → first hit lines (for messages)
+  const hits = []; // every ratchet hit { file, line, rule, token? } (the audit lists them all)
   const skipped = (id, name) => disabled.has(id) || (skip[id] || []).some((s) => name.startsWith(s));
-  const add = (id, name, line) => {
+  const add = (id, name, line, token) => {
+    hits.push({ file: name, line, rule: id, ...(token ? { token } : {}) });
     counts[id][name] = (counts[id][name] || 0) + 1;
     (lines[id][name] ||= []).length < 5 && lines[id][name].push(line);
   };
@@ -162,7 +165,7 @@ export function scan(paths, cfg, cwd) {
     const name = toPosix(relative(cwd, p));
     const src = readFileSync(p, "utf8");
     const css = p.endsWith(".css");
-    for (const f of analyse(src, { css })) if (!skipped(f.rule, name)) add(f.rule, name, f.line);
+    for (const f of analyse(src, { css })) if (!skipped(f.rule, name)) add(f.rule, name, f.line, f.token);
     if (css) continue;
     src.split(/\r?\n/).forEach((raw, i) => {
       if (!raw.trim() || isComment(raw)) return;
@@ -180,7 +183,7 @@ export function scan(paths, cfg, cwd) {
       }
     });
   }
-  return { hard, counts, lines };
+  return { hard, counts, lines, hits };
 }
 
 function sortedCounts(counts) {

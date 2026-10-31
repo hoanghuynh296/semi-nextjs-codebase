@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-// /semi-update helper: upgrades @semi/ui to the latest tag across single-app or monorepo projects, prints CHANGELOG + structural audit, and runs semi-lint + tsc.
+// /semi-update helper: upgrades @semi/ui to the latest tag across single-app or monorepo projects, prints CHANGELOG, runs tsc, then audits (semi-audit.md) so /semi-fix can fix what the new release flags.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
-import { auditSingleApp, discoverFrontendApps } from "../../semi-audit/scripts/audit.mjs";
+import { auditProject, discoverFrontendApps, formatSummary, writeAuditFile } from "../../semi-audit/scripts/audit.mjs";
 
 const REPO_URL = "https://github.com/hoanghuynh296/semi-nextjs-codebase.git";
 const GITHUB_SPEC_BASE = "github:hoanghuynh296/semi-nextjs-codebase";
@@ -115,18 +115,13 @@ for (const appDir of targetApps) {
     }
   }
 
-  const audit = auditSingleApp(appDir);
-  console.log("--- Structural Alignment Check ---");
-  console.log(`- AppShell + MobileTabBar: ${audit.structure.usesAppShell ? "OK" : `MISSING (${audit.structure.legacySidebarFile || "layout.tsx"})`}`);
-  console.log(`- SubpageToolbar (STICKY_TOOLBAR): ${audit.structure.toolbarPagesCount}/${audit.structure.pageFileCount} pages`);
-  console.log(`- KpiCard (18px-22px): ${audit.structure.usesKpiCard ? "OK" : audit.structure.customKpiCardFile ? `Custom KPICard in ${audit.structure.customKpiCardFile}` : "—"}`);
-  console.log(`- Legacy UI wrapper files: ${audit.structure.wrapperFiles.length ? audit.structure.wrapperFiles.join(", ") : "None"}`);
-
-  const lintRes = spawnSync("npx", ["semi-lint"], { cwd: appDir, stdio: "inherit" });
+  // tsc catches breaking API changes; new lint rules are reported by the audit below and fixed with /semi-fix.
   const tscRes = spawnSync("npx", ["tsc", "--noEmit"], { cwd: appDir, stdio: "inherit" });
-  if (lintRes.status !== 0 || tscRes.status !== 0) {
-    exitCode = lintRes.status || tscRes.status || 1;
-  }
+  if (tscRes.status !== 0) exitCode = tscRes.status || 1;
 }
+
+const report = auditProject(cwd);
+const written = writeAuditFile(report, resolve(cwd));
+console.log("\n" + formatSummary(report, written || "semi-audit.md"));
 
 process.exit(exitCode);

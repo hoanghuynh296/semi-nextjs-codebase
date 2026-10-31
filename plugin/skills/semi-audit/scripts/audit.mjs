@@ -1,10 +1,16 @@
 #!/usr/bin/env node
 // /semi-audit static & structural analyzer for existing web projects (including multi-app monorepos). Zero external deps.
-import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
+// It changes no source file: it prints a short summary and writes every issue to semi-audit.md, which /semi-fix works
+// from (deleted again once an audit finds nothing).
+import { createHash } from "node:crypto";
+import { existsSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { basename, dirname, extname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
-import { HARD, RATCHET, scan as runSemiLintScan } from "./vendor/semi-lint.mjs";
+import { HARD, RATCHET, loadConfig, scan as runSemiLintScan } from "./vendor/semi-lint.mjs";
 import { analyse } from "./vendor/classes.mjs";
+import { detectMode, migrateSource } from "./vendor/codemod.mjs";
+
+export const REPORT_FILE = "semi-audit.md";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_TOKENS_PATH = resolve(__dirname, "../../../../tokens/tokens.json");
@@ -144,6 +150,28 @@ export function discoverFrontendApps(rawCwd = process.cwd()) {
   return found;
 }
 
+/** The dirs and files the audit reads in one app (semi-lint.json "scan" when present). */
+export function scanTargets(cwd) {
+  const cfg = loadConfig(cwd);
+  const dirs = cfg._found
+    ? cfg.scan.filter((d) => existsSync(join(cwd, d)))
+    : ["src/app", "src/components", "src/pages", "src/modules", "app", "components", "pages", "modules"].filter(
+        (d, idx, arr) => existsSync(join(cwd, d)) && !arr.slice(0, idx).some((prev) => d.startsWith(prev + "/")),
+      );
+  const files = [...new Set((dirs.length ? dirs.map((d) => join(cwd, d)) : [cwd]).flatMap((d) => walkCode(d, [])))].sort();
+  return { cfg, scanDirs: dirs, files };
+}
+
+/** Hash of everything the audit reads, so /semi-fix can tell whether semi-audit.md is still current. */
+export function fingerprint(cwd) {
+  const h = createHash("sha1");
+  for (const f of ["package.json", "semi-lint.json", ...scanTargets(cwd).files.map((p) => relative(cwd, p))]) {
+    const p = join(cwd, f);
+    if (existsSync(p)) h.update(f).update("\0").update(readFileSync(p)).update("\0");
+  }
+  return h.digest("hex").slice(0, 16);
+}
+
 export function auditSingleApp(cwd) {
   const pkgPath = join(cwd, "package.json");
   const pkg = JSON.parse(readFileSync(pkgPath, "utf8"));
@@ -159,9 +187,7 @@ export function auditSingleApp(cwd) {
     detectedLibs.push({ pkg: "components.json", label: "shadcn/ui", version: "local" });
   }
 
-  const scanDirs = ["src/app", "src/components", "src/pages", "src/modules", "app", "components", "pages", "modules"]
-    .filter((d, idx, arr) => existsSync(join(cwd, d)) && !arr.slice(0, idx).some((prev) => d.startsWith(prev + "/")));
-  const allFiles = (scanDirs.length ? scanDirs.map((d) => join(cwd, d)) : [cwd]).flatMap((d) => walkCode(d, []));
+  const { cfg: lintCfg, scanDirs, files: allFiles } = scanTargets(cwd);
   const tsFiles = allFiles.filter((f) => /\.(tsx?|jsx?|mjs)$/.test(f));
   const pageFiles = tsFiles.filter((f) => /(?:^|\/)page\.tsx$/.test(f.split(sep).join("/")));
 
@@ -192,10 +218,13 @@ export function auditSingleApp(cwd) {
   let customKpiCardFile = null;
   const wrapperFiles = [];
   const tablePages = [];
+  const pagesWithoutToolbar = [];
+  const sources = [];
 
   for (const file of allFiles) {
     const text = readFileSync(file, "utf8");
     const rel = relative(cwd, file).split(sep).join("/");
+    sources.push({ rel, src: text, css: file.endsWith(".css") });
     const hexMatches = text.match(/#[0-9a-fA-F]{6}\b/g) || [];
     for (const h of hexMatches) {
       const upper = h.toUpperCase();
@@ -239,6 +268,7 @@ export function auditSingleApp(cwd) {
     if (/\bAppShell\b/.test(text)) usesAppShell = true;
     if (/<aside[^>]*\b(border-r|-translate-x-full)\b/.test(text)) legacySidebarFile = rel;
     if (/\b(SubpageToolbar|STICKY_TOOLBAR)\b/.test(text)) toolbarPagesCount++;
+    else if (/(?:^|\/)page\.tsx$/.test(rel)) pagesWithoutToolbar.push(rel);
     if (/\bPagination\b/.test(text)) paginationPagesCount++;
     if (/\bKpiCard\b/.test(text)) usesKpiCard = true;
     if (/function\s+KPICard\b/.test(text)) customKpiCardFile = rel;
@@ -286,7 +316,7 @@ export function auditSingleApp(cwd) {
   }
   duplicateComponents.sort((a, b) => b.importsCount - a.importsCount);
 
-  const { hard, counts } = runSemiLintScan(tsFiles, { scan: scanDirs, skip: {}, only: {}, disable: [] }, cwd);
+  const { hard, counts, hits } = runSemiLintScan(tsFiles, { ...lintCfg, scan: scanDirs }, cwd);
   const hardByRule = {};
   const hardByDir = {};
   for (const h of hard) {
@@ -418,9 +448,51 @@ export function auditSingleApp(cwd) {
     files: inventoryFiles.filter((f) => f.total).sort((a, b) => b.total - a.total),
   };
 
+  // Every issue, one entry each, for semi-audit.md and /semi-fix. kind: "decision" (structure: fix or keep, the team
+  // decides), "manual" (a rule hit no codemod can fix safely), "auto" (the token codemod rewrites it).
+  const keep = lintCfg.keep || {};
+  const kept = [];
+  const issues = [];
+  const decide = (check, file, what, fix) => {
+    const k = keep[check];
+    if (k && (!Array.isArray(k) || k.some((prefix) => (file || "").startsWith(prefix)))) return kept.push({ check, file, reason: Array.isArray(k) ? "" : String(k) });
+    issues.push({ kind: "decision", check, file, what, fix });
+  };
+  if (!hasSemiUi) decide("semi-ui", "package.json", "@semi/ui chưa được cài", "chạy /semi-init (lần đầu áp dụng Semi)");
+  if (twVersion && !isTailwindV4) decide("tailwind-v4", "package.json", `Tailwind ${twVersion}, Semi cần v4`, "nâng tailwindcss lên v4 (@tailwindcss/postcss)");
+  if (!usesAppShell || legacySidebarFile)
+    decide("app-shell", legacySidebarFile || "layout.tsx", legacySidebarFile ? "sidebar cũ (aside border-r / drawer)" : "chưa dùng AppShell", "AppShell + MobileTabBar");
+  for (const f of wrapperFiles) decide("ui-wrappers", f, "file wrapper UI riêng che @semi/ui", "import thẳng từ @semi/ui, xoá wrapper");
+  if (customKpiCardFile) decide("kpi-card", customKpiCardFile, "KPICard tự viết", "KpiCard");
+  for (const f of pagesWithoutToolbar) decide("subpage-toolbar", f, "trang không có SubpageToolbar", "PageTitle + SubpageToolbar (nếu là trang danh sách)");
+  for (const f of tablePages) decide("tables", f, "bảng `<table>` HTML", "Table của @semi/ui, hoặc lưới Card cho danh sách thực thể");
+  for (const d of duplicateComponents) if (!wrapperFiles.includes(d.file)) decide("duplicates", d.file, `component riêng ${d.name} (${d.importsCount} chỗ import)`, d.semiEquivalent);
+  for (const l of detectedLibs) decide("third-party-ui", "package.json", `thư viện UI ${l.label}`, "thay bằng @semi/ui rồi gỡ thư viện");
+
+  for (const h of hard) issues.push({ kind: "manual", rule: h.rule, file: h.file, line: h.line, text: h.text });
+  // Class-token findings: what the codemod rewrites is "auto", what it cannot map is "manual".
+  const mode = detectMode(sources);
+  const autoAt = new Set();
+  for (const { rel, src, css } of sources) {
+    for (const c of migrateSource(src, { css, mode }).changes) {
+      issues.push({ kind: "auto", file: rel, line: c.line, from: c.from, to: c.to });
+      autoAt.add(`${rel}:${c.line}:${c.from}`);
+    }
+  }
+  for (const h of hits) if (!h.token || !autoAt.has(`${h.file}:${h.line}:${h.token}`)) issues.push({ kind: "manual", rule: h.rule, file: h.file, line: h.line, token: h.token });
+  // CSS files are not linted by semi-lint; their @apply findings still count.
+  for (const { rel, src, css } of sources) {
+    if (!css) continue;
+    for (const f of analyse(src, { css: true })) if (!autoAt.has(`${rel}:${f.line}:${f.token}`)) issues.push({ kind: "manual", rule: f.rule, file: rel, line: f.line, token: f.token });
+  }
+  const order = { decision: 0, manual: 1, auto: 2 };
+  issues.sort((a, b) => order[a.kind] - order[b.kind] || (a.file || "").localeCompare(b.file || "") || (a.line || 0) - (b.line || 0));
+
   return {
     exists: true,
     cwd,
+    issues,
+    kept,
     inventory,
     stack: {
       nextVersion,
@@ -428,6 +500,13 @@ export function auditSingleApp(cwd) {
       tailwindVersion: twVersion,
       isTailwindV4,
       hasSemiUi,
+      semiUiVersion: (() => {
+        try {
+          return JSON.parse(readFileSync(join(cwd, "node_modules/@semi/ui/package.json"), "utf8")).version;
+        } catch {
+          return null;
+        }
+      })(),
       detectedLibs,
       uiLanguage: vnStringHits >= enStringHits ? "Vietnamese" : "Mixed / English",
       tsFileCount: tsFiles.length,
@@ -495,7 +574,7 @@ export function auditProject(rawCwd = process.cwd()) {
   }
   const reports = apps.map((dir) => auditSingleApp(dir));
   if (reports.length === 1) {
-    return { ...reports[0], apps: reports };
+    return { ...reports[0], root: resolve(rawCwd), apps: reports };
   }
   const multiAppQuestion = {
     id: "monorepo-target-apps",
@@ -509,128 +588,183 @@ export function auditProject(rawCwd = process.cwd()) {
     exists: true,
     isMonorepo: true,
     cwd: resolve(rawCwd),
+    root: resolve(rawCwd),
     apps: reports,
     questions: [multiAppQuestion, ...reports.flatMap((r) => r.questions)],
   };
 }
 
-function formatSingleAppMarkdown(r) {
-  const lines = [
-    `## App: \`${r.cwd}\``,
-    ``,
-    `- **Next.js:** \`${r.stack.nextVersion || "none"}\` · **React:** \`${r.stack.reactVersion || "none"}\` · **Tailwind:** \`${r.stack.tailwindVersion || "none"}\` (${r.stack.isTailwindV4 ? "v4 ready" : "needs v4 upgrade"})`,
-    `- **@semi/ui installed:** ${r.stack.hasSemiUi ? "Yes" : "No"}`,
-    `- **Files scanned:** ${r.stack.tsFileCount} TS/TSX files (${r.stack.pageFileCount} pages) in \`${r.stack.scanDirs.join(", ")}\``,
-    `- **UI language detected:** ${r.stack.uiLanguage}`,
-    `- **Other UI libraries:** ${r.stack.detectedLibs.length ? r.stack.detectedLibs.map((d) => `${d.label} (${d.version})`).join(", ") : "None"}`,
-    ``,
-    `### 1. Structural Alignment with 3D Noobs Studio (Semi v0.2.0)`,
-    `- **Floating Bento \`AppShell\` + \`MobileTabBar\`:** ${r.structure.usesAppShell ? "✅ Used" : `❌ Missing (legacy sidebar in \`${r.structure.legacySidebarFile || "layout.tsx"}\`)`}`,
-    `- **\`SubpageToolbar\` (\`STICKY_TOOLBAR\` + icon-only CTA + \`RefreshButton\`):** ${r.structure.toolbarPagesCount}/${r.structure.pageFileCount} pages`,
-    `- **\`KpiCard\` (\`18px–22px\` metrics):** ${r.structure.usesKpiCard ? "✅ Used" : r.structure.customKpiCardFile ? `❌ Custom KPICard in \`${r.structure.customKpiCardFile}\`` : "—"}`,
-    `- **\`Pagination\` component:** used in ${r.structure.paginationPagesCount} file(s)`,
-    `- **Legacy UI wrapper files (\`ui.tsx\`):** ${r.structure.wrapperFiles.length ? `❌ ${r.structure.wrapperFiles.map((f) => `\`${f}\``).join(", ")}` : "✅ None"}`,
-    `- **Pages with raw HTML \`<table>\`:** ${r.structure.tablePages.length ? `${r.structure.tablePages.length} (${r.structure.tablePages.map((f) => `\`${f}\``).join(", ")})` : "None"}`,
-    ``,
-    `### 2. Palette & Dual-Theme Health`,
-    `- **Semantic Tokens Adoption Rate:** ${r.colours.semanticAdoptionRate}% (${r.colours.semanticTokens.total} semantic vs ${r.colours.physicalColours.total} literal classes)`,
-    ...(r.colours.physicalColours.total > 0
-      ? [
-          `- **Literal / Physical Classes Remaining (${r.colours.physicalColours.total}):** ` +
-            r.colours.physicalColours.topClasses
-              .slice(0, 8)
-              .map((c) => `\`${c.cls}\` (${c.count}x)`)
-              .join(", "),
-          `> Run \`/semi-init --apply\` to automatically run the codemod and migrate literal classes to Semantic Tokens.`,
-        ]
-      : [`- **Literal / Physical Classes:** ✅ None (100% Dual-theme ready)`]),
-    ...(r.colours.tonalColors && r.colours.tonalColors.length > 0
-      ? [
-          ``,
-          `#### 🎨 Chromatic Tonal Components (Cards, Banners, Callouts, Table Rows, Buttons, Badges, Chips)`,
-          `Detected **${r.colours.totalTonal} chromatic tonal class usages** across ${r.colours.tonalColors.length} color families:`,
-          ...r.colours.tonalColors.map(
-            (t) =>
-              `- **${t.color.charAt(0).toUpperCase() + t.color.slice(1)} (${t.count}x):** ${t.sampleClasses.join(", ")} in ${t.files.map((f) => `\`${f}\``).join(", ")}\n` +
-              `  → *Semi Dual-Theme Adapt:* \`bg-${t.color}-500/10 border-${t.color}-500/20 text-tone-${{ green: "emerald", yellow: "amber", red: "rose" }[t.color] ?? t.color}\` | *Hover:* \`hover:bg-${t.color}-500/15 hover:border-${t.color}-500/30\` (or \`<Badge tone="${t.color}">\`, \`TONAL_CONTAINER\`, \`TONAL_HOVER\`)`
-          ),
-          `> \`/semi-init\` will automatically adapt any tonal components (cards, callouts, alert banners, rows, buttons, badges, chips) to theme-matching dual-theme tones, preserving their original color identity without dark-mode glare.`,
-        ]
-      : []),
-    ``,
-    `#### Hard-coded Hex Colours → Nearest Semi Token`,
-  ];
-  if (!r.colours.topHexColours.length) {
-    lines.push(`No raw \`#hex\` literals found.`);
-  } else {
-    lines.push(`| Hex | Count | Nearest Semi Token | Token Hex | Δ RGB |`, `|---|---:|---|---|---:|`);
-    for (const c of r.colours.topHexColours) {
-      lines.push(
-        `| \`${c.hex}\` | ${c.count} | \`--color-${c.nearest?.token || "?"}\` | \`${c.nearest?.tokenHex || "?"}\` | ${c.nearest?.distance ?? "?"} |`,
-      );
-    }
-  }
-  lines.push(``, `### 3. Local Components Overlapping with \`@semi/ui\` (${r.duplicateComponents.length})`);
-  if (!r.duplicateComponents.length) {
-    lines.push(`None detected.`);
-  } else {
-    lines.push(`| Local File | Lines | Imports | \`@semi/ui\` Equivalent |`, `|---|---:|---:|---|`);
-    for (const d of r.duplicateComponents.slice(0, 25)) {
-      lines.push(`| \`${d.file}\` | ${d.lines} | ${d.importsCount} | ${d.semiEquivalent} |`);
-    }
-  }
-  lines.push(
-    ``,
-    `### 4. \`semi-lint\` Violations`,
-    `- **Hard violations:** ${r.lint.hardTotal}`,
-    ...Object.entries(r.lint.hardByRule).map(([k, v]) => `  - \`${k}\`: ${v}`),
-    `- **By directory:** ${Object.entries(r.lint.hardByDir).map(([k, v]) => `\`${k}\` (${v})`).join(", ") || "clean"}`,
-    `- **Ratchet hits:** ${r.lint.ratchetTotal}`,
-    ...Object.entries(r.lint.ratchetByRule).map(([k, v]) => `  - \`${k}\`: ${v}`),
-    ``,
-    `### 5. Migration Inventory (one module per refactor PR)`,
-    `- **Token coverage:** ${r.inventory.coverage.percent}% (${r.inventory.coverage.semanticTokens} semantic tokens vs ${r.inventory.coverage.findings} colour / size findings)`,
-    ...Object.entries(r.inventory.modules)
-      .filter(([, m]) => m.findings)
-      .map(([mod, m]) => `- \`${mod}\`: ${m.findings} findings in ${m.debtFiles}/${m.files} files`),
-    `- Export the full per-file list with \`--inventory semi-migration.json\`.`,
-    ``,
-    `### 6. Questions Requiring User Decision (${r.questions.length})`,
-  );
-  r.questions.forEach((q, idx) => {
-    lines.push(`${idx + 1}. **${q.question}**`);
-    for (const opt of q.options) lines.push(`   - ${opt}`);
-  });
-  return lines.join("\n");
+const RULE_HINTS = Object.fromEntries([...HARD, ...RATCHET].map(([id, , msg]) => [id, msg]));
+const CHECK_NAMES = {
+  "semi-ui": "chưa cài @semi/ui",
+  "tailwind-v4": "Tailwind v3",
+  "app-shell": "khung AppShell",
+  "ui-wrappers": "wrapper UI riêng",
+  "kpi-card": "KPICard riêng",
+  "subpage-toolbar": "trang thiếu SubpageToolbar",
+  tables: "bảng HTML",
+  duplicates: "component trùng @semi/ui",
+  "third-party-ui": "thư viện UI khác",
+};
+const appsOf = (r) => (r.apps?.length ? r.apps : r.exists ? [r] : []);
+const rootOf = (r) => r.root || r.cwd;
+const nameOf = (r, a) => relative(rootOf(r), a.cwd) || basename(a.cwd);
+const countBy = (list, key) => {
+  const m = new Map();
+  for (const x of list) m.set(x[key], (m.get(x[key]) || 0) + 1);
+  return [...m.entries()].sort((a, b) => b[1] - a[1]);
+};
+export function totals(r) {
+  const all = appsOf(r).flatMap((a) => a.issues);
+  const n = (k) => all.filter((i) => i.kind === k).length;
+  return { total: all.length, decision: n("decision"), manual: n("manual"), auto: n("auto") };
 }
 
-function formatMarkdown(r) {
-  if (!r.exists) return `# Semi Audit\n\n${r.message}\n`;
-  const header = [`# Semi Design System — Audit Report`, ``];
-  if (r.isMonorepo) {
-    header.push(`Detected **${r.apps.length} frontend applications** under \`${r.cwd}\`.`, ``);
-    return [...header, ...r.apps.map(formatSingleAppMarkdown)].join("\n\n") + "\n";
+/** Short Vietnamese summary for the chat: one table, the next command, then the issues grouped in a few lines. */
+export function formatSummary(r, reportPath = REPORT_FILE) {
+  if (!r.exists) return `# Semi audit\n\nKhông thấy app Next.js / React nào: đây là dự án mới, chạy **/semi-init**.\n`;
+  const apps = appsOf(r);
+  const t = totals(r);
+  const needsInit = apps.filter((a) => !a.stack.hasSemiUi);
+  const lines = [
+    `# Semi audit`,
+    ``,
+    `| App | @semi/ui | Next · Tailwind | Token | Vấn đề |`,
+    `|---|---|---|---:|---:|`,
+    ...apps.map(
+      (a) =>
+        `| \`${nameOf(r, a)}\` | ${a.stack.semiUiVersion || (a.stack.hasSemiUi ? "có" : "chưa cài")} | ${a.stack.nextVersion || "—"} · ${a.stack.tailwindVersion || "—"} | ${a.inventory.coverage.percent}% | ${a.issues.length || "✅ 0"} |`,
+    ),
+    ``,
+  ];
+  if (!t.total) lines.push(`✅ Không có vấn đề.`);
+  else {
+    lines.push(
+      `**${t.total} vấn đề:** ${t.decision} cần quyết định · ${t.manual} sửa tay · ${t.auto} tự sửa (codemod). Chi tiết: \`${reportPath}\`.`,
+      ``,
+      needsInit.length
+        ? `**Tiếp theo:** chạy **/semi-init** cho ${needsInit.map((a) => `\`${nameOf(r, a)}\``).join(", ")} (chưa cài @semi/ui), sau đó **/semi-fix**.`
+        : `**Tiếp theo:** chạy **/semi-fix**.`,
+      ``,
+      `## Vấn đề`,
+    );
+    for (const a of apps) {
+      if (!a.issues.length) continue;
+      const of = (k) => a.issues.filter((i) => i.kind === k);
+      const parts = [];
+      const d = of("decision");
+      if (d.length) parts.push(`cần quyết định: ${countBy(d, "check").map(([c, n]) => `${CHECK_NAMES[c] || c}${n > 1 ? ` ×${n}` : ""}`).join(", ")}`);
+      const m = of("manual");
+      if (m.length) parts.push(`sửa tay: ${countBy(m, "rule").slice(0, 5).map(([c, n]) => `\`${c}\` ×${n}`).join(", ")}${countBy(m, "rule").length > 5 ? ", …" : ""}`);
+      const au = of("auto");
+      if (au.length) parts.push(`tự sửa: ${au.length} class màu trong ${new Set(au.map((i) => i.file)).size} file`);
+      lines.push(`- **\`${nameOf(r, a)}\`**`, ...parts.map((p) => `  - ${p}`));
+    }
   }
-  return [...header, formatSingleAppMarkdown(r)].join("\n") + "\n";
+  const kept = apps.flatMap((a) => a.kept);
+  if (kept.length) lines.push(``, `Giữ nguyên theo \`keep\` trong semi-lint.json: ${countBy(kept, "check").map(([c, n]) => `${CHECK_NAMES[c] || c} ×${n}`).join(", ")}.`);
+  return lines.join("\n") + "\n";
+}
+
+/** semi-audit.md: every issue with file:line, what to do, and a meta line /semi-fix uses to detect a stale file. */
+export function formatDetails(r) {
+  const apps = appsOf(r);
+  const t = totals(r);
+  const meta = { generatedAt: new Date().toISOString(), apps: apps.map((a) => ({ cwd: relative(rootOf(r), a.cwd) || ".", fingerprint: fingerprint(a.cwd) })) };
+  const at = (i) => `\`${i.file}${i.line ? `:${i.line}` : ""}\``;
+  const lines = [
+    `<!-- semi-audit ${JSON.stringify(meta)} -->`,
+    `# Semi audit: chi tiết`,
+    ``,
+    `Sinh bởi /semi-audit để /semi-fix làm theo. Đừng sửa tay: chạy lại /semi-audit sau khi đổi code. File được xoá khi audit không còn vấn đề.`,
+    ``,
+    `**${t.total} vấn đề:** ${t.decision} cần quyết định · ${t.manual} sửa tay · ${t.auto} tự sửa (codemod)`,
+  ];
+  const usedRules = new Set();
+  for (const a of apps) {
+    if (!a.issues.length) continue;
+    lines.push(``, `## App \`${nameOf(r, a)}\``);
+    const of = (k) => a.issues.filter((i) => i.kind === k);
+    const d = of("decision");
+    if (d.length) {
+      lines.push(``, `### Cần quyết định (${d.length})`, ``, `Sửa theo đề xuất, hoặc giữ nguyên: thêm \`"keep": { "<check>": "lý do" }\` (hoặc mảng đường dẫn) vào \`semi-lint.json\`.`, ``);
+      d.forEach((i, n) => lines.push(`- [ ] D${n + 1} \`${i.check}\` ${at(i)}: ${i.what} → ${i.fix}`));
+    }
+    const m = of("manual");
+    if (m.length) {
+      lines.push(``, `### Sửa tay (${m.length})`);
+      let file = null;
+      for (const i of m) {
+        usedRules.add(i.rule);
+        if (i.file !== file) lines.push(``, `#### \`${(file = i.file)}\``);
+        lines.push(`- [ ] L${i.line} \`${i.rule}\`${i.token ? ` \`${i.token}\`` : ""}${i.text ? `: \`${i.text.replace(/`/g, "'")}\`` : ""}`);
+      }
+    }
+    const au = of("auto");
+    if (au.length) {
+      lines.push(``, `### Tự sửa bằng codemod (${au.length})`, ``, `\`node <semi-fix>/scripts/fix.mjs --codemod\` đổi hết các dòng này; xem lại diff.`);
+      let file = null;
+      for (const i of au) {
+        if (i.file !== file) lines.push(``, `#### \`${(file = i.file)}\``);
+        lines.push(`- [ ] L${i.line} \`${i.from}\` → ${i.to ? `\`${i.to}\`` : "bỏ (token gốc đã đổi theo theme)"}`);
+      }
+    }
+  }
+  if (usedRules.size) {
+    lines.push(``, `## Luật`, ``);
+    for (const id of [...usedRules].sort()) lines.push(`- \`${id}\`: ${RULE_HINTS[id] || ""}`);
+  }
+  return lines.join("\n") + "\n";
+}
+
+/** Write semi-audit.md under root, or delete it when the audit found nothing. Returns the path, or null when clean. */
+export function writeAuditFile(r, root = rootOf(r)) {
+  const path = join(root, REPORT_FILE);
+  if (!r.exists || !totals(r).total) {
+    rmSync(path, { force: true });
+    return null;
+  }
+  writeFileSync(path, formatDetails(r));
+  return path;
+}
+
+/** Meta line of an existing semi-audit.md (null when missing), and whether every app still has the same sources. */
+export function auditFileState(root) {
+  const path = join(root, REPORT_FILE);
+  if (!existsSync(path)) return { path, exists: false, fresh: false };
+  const m = readFileSync(path, "utf8").match(/^<!-- semi-audit (.*) -->/);
+  let meta = null;
+  try {
+    meta = m ? JSON.parse(m[1]) : null;
+  } catch {
+    meta = null;
+  }
+  const fresh = Boolean(meta?.apps?.length) && meta.apps.every((a) => existsSync(join(root, a.cwd)) && fingerprint(join(root, a.cwd)) === a.fingerprint);
+  return { path, exists: true, fresh, meta };
 }
 
 const isMain = process.argv[1] && resolve(process.argv[1]).endsWith("audit.mjs");
 if (isMain) {
   let cwd = process.cwd();
   let asJson = false;
+  let write = true;
   let inventoryPath = null;
   const argv = process.argv.slice(2);
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === "--cwd" && argv[i + 1]) cwd = argv[++i];
     else if (argv[i] === "--json") asJson = true;
+    else if (argv[i] === "--no-write") write = false;
     else if (argv[i] === "--inventory" && argv[i + 1]) inventoryPath = argv[++i];
   }
   const report = auditProject(cwd);
   if (inventoryPath) {
-    // Opt-in export for /semi-init planning; the plain audit stays read-only.
     const apps = report.apps?.length ? report.apps : [report];
     writeFileSync(inventoryPath, JSON.stringify({ apps: apps.map((a) => ({ cwd: a.cwd, ...a.inventory })) }, null, 2) + "\n");
   }
+  const written = write ? writeAuditFile(report, resolve(cwd)) : null;
   if (asJson) console.log(JSON.stringify(report, null, 2));
-  else process.stdout.write(formatMarkdown(report));
+  else {
+    const rel = written ? relative(process.cwd(), written) : REPORT_FILE;
+    process.stdout.write(formatSummary(report, rel && !rel.startsWith("..") ? rel : written));
+  }
 }

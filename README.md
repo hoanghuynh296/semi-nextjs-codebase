@@ -7,10 +7,11 @@ Hệ thống Design System dùng chung cho toàn bộ dự án web thuộc hệ 
 Xây dựng cho **Next.js 16 + React 19 + Tailwind CSS 4**, hỗ trợ chuyển đổi giao diện Dark/Light mượt mà không cần `dark:bg-...` thủ công nhờ kiến trúc Semantic Tokens.
 
 Repository này đóng gói **2 sản phẩm trong cùng 1 tag phiên bản (semver)**:
-1. **Plugin cho AI Agent (`semi-design`):** chứa bộ quy tắc luôn bật (`rules/AGENTS.md` — tự động hướng dẫn agent mỗi khi viết hoặc sửa giao diện), hook tự chạy lint khi sửa file (`hooks.json`), và **5 slash commands chuyên biệt**:
+1. **Plugin cho AI Agent (`semi-design`):** chứa bộ quy tắc luôn bật (`rules/AGENTS.md` — tự động hướng dẫn agent mỗi khi viết hoặc sửa giao diện), hook tự chạy lint khi sửa file (`hooks.json`), và **6 slash commands**. Thứ tự dùng: `/semi-init` một lần → `/semi-audit` để kiểm tra định kỳ → `/semi-fix` khi audit ra vấn đề → `/semi-update` khi muốn lên bản mới:
    - `/semi-init` — **Cài đặt lần đầu** cho một dự án (tự động khởi tạo dự án mới Next.js + Tailwind + `@semi/ui` HOẶC quét, hỏi trắc nghiệm và refactor 4 giai đoạn cho dự án có sẵn / monorepo).
-   - `/semi-update` — **Nâng cấp phiên bản** cho dự án đã dùng `@semi/ui` (nâng lên tag mới nhất, đối chiếu `CHANGELOG.md` + kiểm tra cấu trúc và refactor các điểm lệch mới).
-   - `/semi-audit` — **Kiểm tra sức khỏe (Read-only)** (chỉ quét và in báo cáo độ đồng nhất token + cấu trúc layout, không cài đặt hay sửa bất kỳ file nào).
+   - `/semi-audit` — **Kiểm tra** (không sửa code): in tóm tắt ngắn và ghi mọi vấn đề kèm `file:dòng` vào `semi-audit.md`.
+   - `/semi-fix` — **Sửa vấn đề audit tìm ra**, dựa trên `semi-audit.md`: hỏi các quyết định cấu trúc, chạy codemod token, sửa tay phần còn lại, kiểm tra lại tới khi sạch rồi xoá file.
+   - `/semi-update` — **Nâng cấp phiên bản** `@semi/ui` lên tag mới nhất (CHANGELOG, `tsc`, rồi audit; nếu bản mới báo vấn đề thì chạy `/semi-fix`).
    - `/semi-propose` — **Đề xuất tính năng từ dự án con** (quét nhu cầu chưa được `@semi/ui` đáp ứng tại dự án thực tế, cấu trúc issue chuẩn và tạo issue trực tiếp trên GitHub repo lõi).
    - `/semi-triage` — **Đánh giá & Tổng quát hóa Issue (Dành cho Core)** (đọc issue trên GitHub, phân tích tính đúng đắn, đối chiếu rulebook, và thiết kế giải pháp tổng quát cho toàn hệ sinh thái mà không break rule).
 2. **NPM Package (`@semi/ui`):** chứa Design Tokens (`tokens.css`, `base.css`), style constants (`@semi/ui/styles`), ~45 React components (danh sách đầy đủ + props: `components.json`) bao gồm cả khung bố cục trang (`AppShell`, `MobileTabBar`, `PageTitle`, `PageTabsTitle`, `SubpageToolbar`, `KpiCard`, `Modal`, …), và công cụ kiểm tra `semi-lint`.
@@ -64,10 +65,19 @@ Agent sẽ tự động:
 3. Lập **kế hoạch refactor 4 giai đoạn** (Phase 1: Cài `@semi/ui` + tokens không đổi giao diện → Phase 2: Thay màu/typography/radius bằng token → Phase 3: Thay từng nhóm component → Phase 4: Khóa `semi-lint` + baseline).
 4. Sau khi bạn bấm duyệt, agent thực thi từng giai đoạn và đảm bảo `semi-lint` + `tsc` + `build` xanh ở mỗi bước.
 
+### Kiểm tra định kỳ và sửa
+```text
+/semi-audit
+/semi-fix
+```
+`/semi-audit` ghi chi tiết vào `semi-audit.md`; `/semi-fix` sửa theo file đó và xoá nó khi audit không còn vấn đề.
+Cái nào nhóm chọn giữ nguyên (ví dụ bảng HTML ở trang báo cáo) ghi vào `semi-lint.json`: `"keep": { "tables": "lý do" }`.
+
 ### Nâng cấp phiên bản mới
 ```text
 /semi-update
 ```
+Chỉ để lên bản mới. Nếu bản mới báo vấn đề, chạy tiếp `/semi-fix`.
 
 ### Đề xuất tính năng mới từ dự án con (Khi gặp thiếu sót hoặc nhu cầu chưa đáp ứng)
 ```text

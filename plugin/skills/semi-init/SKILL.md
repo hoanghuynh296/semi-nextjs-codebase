@@ -35,42 +35,29 @@ node "<path-to-plugin>/skills/semi-audit/scripts/audit.mjs" --cwd "<target-dir>"
 
 ### Case B — Existing Codebase (One or More Frontend Apps Found)
 
-The goal is a migration that misses nothing: every file is inventoried, every change is reviewable, and "done" is measured
-(zero findings), never assumed. A ratchet baseline is only a temporary safety net between PRs.
+`/semi-init` installs Semi and lays the foundation once; the module-by-module clean-up is `/semi-fix`, working from the
+audit file. Done is measured (zero issues), never assumed.
 
-1. **Inventory (read-only).**
+1. **Preview (read-only for source files).**
    ```bash
-   node "<path-to-plugin>/skills/semi-audit/scripts/audit.mjs" --cwd "<app-dir>" --inventory "<app-dir>/semi-migration.json"
-   node "<path-to-this-skill>/scripts/init.mjs" --cwd "<app-dir>" --dry-run   # writes semi-codemod-report.md, changes nothing
+   node "<path-to-plugin>/skills/semi-audit/scripts/audit.mjs" --cwd "<app-dir>"   # summary + semi-audit.md
+   node "<path-to-this-skill>/scripts/init.mjs" --cwd "<app-dir>" --dry-run        # semi-codemod-report.md, changes nothing
    ```
-   `semi-migration.json` lists every file with colour / size debt per rule, grouped by module, plus the token coverage %.
-   `semi-codemod-report.md` shows each automatic replacement (`bg-white` → `bg-panel`, `bg-white dark:bg-slate-900` →
-   `bg-panel`) and every token that has **no safe mapping** (needs a human decision).
-2. **Present the audit summary + codemod preview** and ask the multiple-choice questions in **Questions Requiring User
-   Decision** (`ask_question`): target app(s) in a monorepo, Next.js / Tailwind versions, brand colour (`primary-*`
-   override), what to do with each duplicate local component, and which **Pattern** items to adopt (below).
-3. **Propose the plan as two tracks, one PR per module** (modules = the `modules` keys of `semi-migration.json`, biggest
-   first), and wait for approval:
-   - **Track A — Foundation (mandatory for every Semi app):**
-     - **A1 Install:** `init.mjs --apply` installs `@semi/ui`, wires `tokens.css` / `base.css` / `@source` and
-       `transpilePackages`, writes `semi-lint.json`, runs the codemod (same as the dry-run report) and records a
-       baseline. Then edit the root layout yourself: `<html suppressHydrationWarning>`, `<ThemeScript />` in `<head>`,
-       body wrapped in `<ThemeProvider>` with `<ConfirmHost />` and `<ToastHost />` (see README §3).
-       ```bash
-       node "<path-to-this-skill>/scripts/init.mjs" --cwd "<app-dir>" --apply --next-version "<latest|keep|ver>" --tailwind-version "<latest|keep|ver>"
-       ```
-     - **A2 Per module:** resolve every unresolved token from the report by hand (pick a token, never re-add a
-       physical colour), replace native controls / local wrappers with `@semi/ui` (`Button`, `Field` + `Input`,
-       `CustomSelect`, `DatePicker`, `NumberInput`, `Checkbox`, `Switch`, `Modal`, `Drawer`, `Tabs`, `Menu`, `toast`,
-       `Alert`, `Table`, `EmptyState`), and type sizes to the scale (`text-caption` … `text-display`).
-   - **Track B — Patterns (opt-in, per user answers):** `AppShell` + `MobileTabBar`, `PageTitle` / `PageTabsTitle` +
-     `SubpageToolbar`, Bento `Card` grids instead of entity tables, `KpiCard`, `Pagination`.
-4. **Definition of Done for every module PR** (check all before moving on):
-   - `npx semi-lint` reports **0 findings for the module's files** — re-run `npx semi-lint --update-baseline` so the
-     baseline shrinks; never raise it and never add a `skip` for a whole folder.
-   - `npx tsc --noEmit` and the production build pass.
-   - Screens of the module checked in **both themes** (`data-theme="light"` and `"dark"`): no white boxes in dark, no
-     unreadable text in light, focus ring visible when tabbing.
-   - Inventory re-run: the module's `findings` is 0 and the coverage % went up.
-5. **Finish:** final `audit.mjs --inventory` shows **0 findings in every module** and `semi-lint-baseline.json` has no
-   colour / size entries left. Report coverage before → after to the user. Only then is the migration complete.
+2. **Ask the decisions** (`ask_question`, see **Questions Requiring User Decision** in the audit's `--json` output):
+   target app(s) in a monorepo, Next.js / Tailwind versions, brand colour (`primary-*` override), and which
+   structural items to adopt (`AppShell` + `MobileTabBar`, `PageTitle` + `SubpageToolbar`, Bento `Card` grids,
+   `KpiCard`, `Pagination`, what to do with each duplicate local component). Record every "keep" answer in
+   `semi-lint.json` as `"keep": { "<check>": "<reason>" }` so later audits do not ask again.
+3. **Install (after approval):**
+   ```bash
+   node "<path-to-this-skill>/scripts/init.mjs" --cwd "<app-dir>" --apply --next-version "<latest|keep|ver>" --tailwind-version "<latest|keep|ver>"
+   ```
+   It installs `@semi/ui`, wires `tokens.css` / `base.css` / `@source` and `transpilePackages`, writes `semi-lint.json`
+   and `AGENTS.md`, runs the token codemod and records a ratchet baseline. Then edit the root layout yourself:
+   `<html suppressHydrationWarning>`, `<ThemeScript />` in `<head>`, body wrapped in `<ThemeProvider>` with
+   `<ConfirmHost />` and `<ToastHost />` (README §3).
+4. **Hand over to `/semi-fix`:** run `/semi-audit` again (it rewrites `semi-audit.md` with what is left after the
+   install), then follow the `/semi-fix` workflow until the audit is clean: decisions, codemod, hand fixes per module,
+   verify, shrink the baseline, both themes checked.
+5. **Finish:** report token coverage before → after. The adoption is complete when the audit finds nothing and
+   `semi-audit.md` is gone.

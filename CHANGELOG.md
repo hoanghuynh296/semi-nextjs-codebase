@@ -7,6 +7,12 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 ### Added
 - **Docs ↔ code checks (`check:manifest`):** fails when a usage snippet in `app/usage.ts` imports a name `@semi/ui` does not export, when a Storybook section and its usage entry do not match, or when a component / hook is not named in `docs/DESIGN_SYSTEM.md`.
 - **Maintainer guide:** "Change checklist" in `AGENTS.md` (what to update with each kind of change); `CLAUDE.md` loads it for Claude Code.
+- **`/semi-fix`:** fixes what `/semi-audit` found, working from `semi-audit.md`: asks the structural decisions (fix, or keep in `semi-lint.json` `"keep"`), runs the token codemod (`fix.mjs --codemod`), fixes the remaining hits by hand, and verifies (`fix.mjs --verify`: re-audit, `semi-lint`, `tsc`) until clean.
+
+### Changed
+- **`/semi-audit`:** prints a short Vietnamese summary (one table, the next command, issues grouped at the bottom) and writes every issue with `file:line` to `semi-audit.md` (decisions, hand fixes, codemod fixes, rule texts). It changes no source file; the file is deleted when an audit finds nothing, so it never lists fixed problems. It now reads the app's `semi-lint.json` (`scan`, `skip`, `disable`, new `keep`).
+- **`/semi-update`:** only upgrades (install, rules block, CHANGELOG, `tsc`), then audits; refactoring moved to `/semi-fix`. `/semi-init` hands the module-by-module clean-up to `/semi-fix` after the install.
+- **`semi-lint` `scan()`** also returns every ratchet hit (`hits`), so the audit lists each line.
 
 ### Fixed
 - `DESIGN_SYSTEM.md` now describes `Spinner`, `useField`, `useDialog` / `useFocusTrap` / `useScrollLock` and `useAnchoredPosition`.

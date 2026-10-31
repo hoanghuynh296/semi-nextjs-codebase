@@ -1,35 +1,41 @@
 ---
 name: semi-audit
-description: Read-only UI and structural health check against the Semi Design System (@semi/ui). Scans one or more frontend apps in a workspace, reports visual token gaps, structural alignment with 3D Noobs Studio (AppShell, SubpageToolbar, KpiCard, ui.tsx wrappers, tables), and semi-lint violations without modifying any files. Triggered by /semi-audit.
+description: Health check of a project against the Semi Design System (@semi/ui), for periodic checks. Scans every frontend app in the workspace (lint rules, colour / size tokens, structure such as AppShell, SubpageToolbar, local wrappers, tables), prints a short summary, and writes every issue with file:line to semi-audit.md for /semi-fix. Changes no source file. Triggered by /semi-audit.
 ---
 
-# Semi Design System Health Check (`/semi-audit` — Read-Only)
+# Semi Design System Health Check (`/semi-audit`)
 
-Use this skill when the user invokes `/semi-audit` to inspect how closely a project follows the Semi Design System (3D Noobs Studio reference) **without changing any code or installing packages**.
+The Semi flow: `/semi-init` once → `/semi-audit` to check (any time, e.g. before a release) → `/semi-fix` when it finds
+issues → `/semi-update` only to move to a newer `@semi/ui` release.
 
-> **Important:** `/semi-audit` is strictly **read-only**. Do not install dependencies or edit files during `/semi-audit`. At the end of the report, tell the user whether they should run `/semi-init` (for first-time adoption / full structural refactor) or `/semi-update` (to upgrade an existing `@semi/ui` installation and adopt newer components).
+`/semi-audit` changes **no source file** and installs nothing. Its only output file is `semi-audit.md` at the folder it
+audits: every issue with `file:line` and what to do. `/semi-fix` works from it. When the audit finds nothing it deletes
+an old `semi-audit.md`, so the file never describes problems that are already gone.
 
 ## Workflow
 
-1. **Run the static & structural audit script** on the workspace root (automatically discovers all Next.js/React frontend packages in monorepos such as `frontend/dashboard`, `frontend/store`, `web/`, `apps/*`):
+1. Run the audit on the workspace root (it finds every Next.js / React app, also in monorepos):
    ```bash
    node "<path-to-this-skill>/scripts/audit.mjs" --cwd "<workspace-or-app-dir>"
    ```
-   (`--inventory <file>` additionally exports the per-file list as JSON; only do this when the user asked for a plan,
-   since `/semi-audit` itself writes nothing.)
-2. **Present a clear, concise Vietnamese report** covering for each discovered frontend app:
-   - **Stack & `@semi/ui` status:** Next.js version, Tailwind CSS version (v3 vs v4), `@semi/ui` installed or not, third-party UI libraries.
-   - **Structural alignment with 3D Noobs Studio:**
-     - `AppShell` + collapsible `w-52`/`w-14` Bento sidebar + `MobileTabBar` (vs legacy `border-r` / hamburger drawer `<aside>`).
-     - `PageTitle` / `PageTabsTitle` + `SubpageToolbar` (`STICKY_TOOLBAR` with filters left, icon-only `+` CTA + `SearchInput` + `RefreshButton` right).
-     - `KpiCard` (`18px–22px` `tabular-nums`) vs custom small KPI cards.
-     - Local `ui.tsx` wrapper barrels shadowing `@semi/ui` or using `bg-field` on `<input>`/`<textarea>`.
-     - Raw multi-column HTML `<table>` views vs Bento `CARD` grids and `<Pagination>`.
-   - **`semi-lint` violations:** Hard violations (must be 0) and Ratchet debt counts by rule and directory.
-   - **Migration inventory:** token coverage % and colour / size findings per module (one module = one refactor PR).
-     The colour rules read every class token of every string literal (className, `cn()`, constants, templates,
-     `@apply`), including variants (`dark:`, `hover:`, `group-hover:`) and every colour prefix (`bg`, `text`, `border-*`,
-     `divide`, `ring`, `outline`, `fill`, `stroke`, `from/via/to`, `shadow`, `placeholder`, …), so nothing is missed.
-   - **Recommended next command:**
-     - Suggest `/semi-init` if `@semi/ui` is not installed yet or the app needs full 4-phase structural adoption.
-     - Suggest `/semi-update` if `@semi/ui` is already installed and needs to be upgraded to the latest release tag + structural rules.
+2. Show the summary it prints, as is (Vietnamese, short): a table per app, the issue count, the next command, then the
+   issues grouped in a few lines at the bottom. Do not add sections, tables of hex colours or long lists: the details
+   are in `semi-audit.md`. Link that file.
+3. Next command, exactly as the summary says:
+   - issues found → **`/semi-fix`**
+   - an app without `@semi/ui` (or no app at all) → **`/semi-init`**
+   - nothing found → say so; no next command.
+
+## Issue kinds (in semi-audit.md)
+
+| Kind | Meaning | /semi-fix does |
+|---|---|---|
+| Cần quyết định (`D…`) | Structure: AppShell, local wrappers, tables, duplicate components, other UI libraries, Tailwind v3 | asks the user: fix, or keep (recorded in `semi-lint.json` `keep`) |
+| Sửa tay (`L…`) | A lint rule hit no codemod can fix safely | edits by hand, file by file |
+| Tự sửa | Colour / size classes the token codemod maps safely | runs the codemod |
+
+Checks the team chose to keep are listed in `semi-lint.json` (`"keep": { "tables": "reason" }`, or an array of path
+prefixes) and only appear as one "Giữ nguyên" line.
+
+Options: `--no-write` (summary only), `--json` (full machine-readable report), `--inventory <file>` (per-module
+coverage, used by `/semi-init` planning).
