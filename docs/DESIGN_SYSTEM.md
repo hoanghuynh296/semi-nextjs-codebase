@@ -179,33 +179,82 @@ Instead, follow the canonical Semi patterns:
    ```
    *Why alpha transparency works:* 10% opacity blends gracefully onto `#18191c` (`bg-panel`) in dark mode and onto `#ffffff` in light mode, maintaining ideal contrast and eliminating the need for complex mode-specific overrides.
 
-## 3c. Theme-Matching Tonal Components (Chips, Badges, Tags)
+## 3c. Universal Theme-Matching Tonal Architecture (All Components)
 
-When migrating existing applications, components often carry identifying chromatic colors (such as a **purple** chip for "Pro" plan, an **amber** badge for "Pending", or an **emerald** tag for "Completed").
+When migrating existing applications, UI elements across the interface often carry identifying chromatic colors:
+- **Tonal Bento Cards & Stat Widgets** (e.g., purple analytics card, blue billing summary)
+- **Alert Banners & Callouts** (e.g., amber warning banner, emerald success alert)
+- **Table Rows & List Items** (e.g., highlighted pending order row)
+- **Interactive Buttons & Pills** (e.g., soft green action button, violet pill)
+- **Badges, Chips & Status Tags** (e.g., `<Badge tone="purple">`, `<Chip tone="emerald">`)
 
-**Semi does not strip these colors down to monotonous gray.** Instead, the design system **adapts** chromatic colors to **Theme-Matching Tonal Standards**:
-- **Background:** `bg-<color>-500/10` (soft 10% tint on light backgrounds, deep rich tint on dark panels).
-- **Border:** `border-<color>-500/20` (subtle 20% alpha border).
-- **Text:** `text-<color>-700 dark:text-<color>-300` (deep high-contrast tone on light, luminous 300 tone on dark).
+**Semi does not strip these colors down to monotonous gray.** Nor does it leave light-mode pastels (`bg-*-50`, `border-*-200`) that turn into glaring white/light boxes in Dark Mode.
 
-### Example: Adapting a Purple Chip
+Instead, the Semi Design System **adapts all chromatic components** to **Two-Tier Dual-Theme Matching Tones** using alpha transparency:
+
+| Component State | Dual-Theme Token Formula | Visual Behavior (Light & Dark) |
+|---|---|---|
+| **Static Surface** | `bg-<color>-500/10` | 10% soft tint on light; deep rich glow on `#18191c` dark panel |
+| **Static Border** | `border-<color>-500/20` | 20% subtle alpha outline harmonizing with border-line |
+| **Interactive Hover Surface** | `hover:bg-<color>-500/15` | 15% reactive tint on hover |
+| **Interactive Hover Border** | `hover:border-<color>-500/30` | 30% crisp boundary on hover |
+| **Interactive Active Fill** | `active:bg-<color>-500/20` | 20% feedback on pressed state |
+| **Dividers & Rings** | `divide-<color>-500/20 ring-<color>-500/20` | 20% alpha separator / focus accent |
+| **Dual-Theme Text** | `text-<color>-700 dark:text-<color>-300` | Deep contrast (700) on light; radiant legible tone (300) on dark |
+
+### Examples Across Component Types
+
+#### 1. Tonal Bento Card / Stat Widget
 ```tsx
 // Before (Legacy Light Mode only):
-<span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200">
-  Pro Plan
+<div className="rounded-xl border border-purple-200 bg-purple-50 p-4 text-purple-900 hover:bg-purple-100 hover:border-purple-300">
+  <p className="text-sm font-semibold">Pro Subscription</p>
+</div>
+
+// After (Universal Theme-Matching):
+<div className="rounded-xl border border-purple-500/20 bg-purple-500/10 p-4 text-purple-700 dark:text-purple-300 hover:bg-purple-500/15 hover:border-purple-500/30">
+  <p className="text-[14px] font-semibold">Pro Subscription</p>
+</div>
+// Or using @semi/ui/styles:
+<div className={cn("rounded-xl p-4", TONAL_CONTAINER.purple, TONAL_HOVER.purple)}>...</div>
+```
+
+#### 2. Alert Banner / Callout
+```tsx
+// Before:
+<div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-amber-800">
+  <span>Your license expires soon.</span>
+</div>
+
+// After:
+<div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-3 text-amber-700 dark:text-amber-300">
+  <span className="text-[13px] font-medium">Your license expires soon.</span>
+</div>
+```
+
+#### 3. Interactive Table Row / List Item
+```tsx
+// Before:
+<tr className="hover:bg-blue-50 border-b border-blue-100 text-blue-700">...</tr>
+
+// After:
+<tr className="hover:bg-blue-500/15 border-b border-blue-500/20 text-blue-700 dark:text-blue-300">...</tr>
+```
+
+#### 4. Badges & Chips
+```tsx
+// Standalone Tailwind:
+<span className="px-2 py-0.5 rounded-full text-[11px] font-medium bg-rose-500/10 border border-rose-500/20 text-rose-700 dark:text-rose-300">
+  Urgent
 </span>
 
-// After (Adapted with Theme-Matching Tonal Standards):
-<span className="px-2.5 py-0.5 rounded-full text-[12px] font-semibold bg-purple-500/10 border border-purple-500/20 text-purple-700 dark:text-purple-300">
-  Pro Plan
-</span>
-
-// Or using standard @semi/ui component:
-<Badge tone="purple">Pro Plan</Badge>
+// Standard @semi/ui:
+<Badge tone="rose">Urgent</Badge>
+<Chip tone="emerald" selected>Active</Chip>
 ```
 
 ### Standard Palette Tones (`SemanticTone`)
-Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@semi/ui/styles` via `TONAL_SURFACE`:
+Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@semi/ui/styles` via `TONAL_CONTAINER`, `TONAL_HOVER`, `TONAL_SURFACE`:
 - `purple`, `violet`, `indigo`
 - `blue`, `sky`, `cyan`, `teal`
 - `emerald`, `green`

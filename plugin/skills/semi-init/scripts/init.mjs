@@ -239,9 +239,18 @@ function runSemanticCodemod(webDir) {
   ];
 
   const CHROMATIC_TONES = "amber|yellow|orange|red|rose|pink|fuchsia|purple|violet|indigo|blue|sky|cyan|teal|emerald|green";
-  const bgTonalRe = new RegExp(`\\b(?<!dark:)bg-(${CHROMATIC_TONES})-(?:50|100)\\b`, "g");
-  const borderTonalRe = new RegExp(`\\b(?<!dark:)border-(${CHROMATIC_TONES})-(?:100|200|300)\\b`, "g");
-  const textTonalRe = new RegExp(`\\b(?<!dark:)text-(${CHROMATIC_TONES})-(?:600|700|800|900)\\b`, "g");
+
+  // Multi-state Tonal Adaptations across all component types (cards, banners, callouts, rows, buttons, badges, chips)
+  const bgHoverTonalRe = new RegExp(`\\bhover:bg-(${CHROMATIC_TONES})-(?:50|100|200)\\b`, "g");
+  const bgActiveTonalRe = new RegExp(`\\bactive:bg-(${CHROMATIC_TONES})-(?:100|200|300)\\b`, "g");
+  const bgStaticTonalRe = new RegExp(`(?<!dark:|hover:|active:|focus:)\\bbg-(${CHROMATIC_TONES})-(?:50|100)\\b`, "g");
+
+  const borderHoverTonalRe = new RegExp(`\\bhover:border-(${CHROMATIC_TONES})-(?:100|200|300)\\b`, "g");
+  const borderStaticTonalRe = new RegExp(`(?<!dark:|hover:|active:|focus:)\\bborder-(${CHROMATIC_TONES})-(?:100|200|300)\\b`, "g");
+
+  const divideTonalRe = new RegExp(`\\bdivide-(${CHROMATIC_TONES})-(?:50|100|200)\\b`, "g");
+  const ringTonalRe = new RegExp(`\\bring-(${CHROMATIC_TONES})-(?:100|200|300)\\b`, "g");
+  const textTonalRe = new RegExp(`(?<!dark:|hover:|active:|focus:)\\btext-(${CHROMATIC_TONES})-(?:600|700|800|900)\\b`, "g");
 
   for (const file of files) {
     let content = readFileSync(file, "utf8");
@@ -257,21 +266,60 @@ function runSemanticCodemod(webDir) {
       }
     }
 
-    // Adapt Chromatic Tonal Components (chips, badges, alerts) to dual-theme matching tones
-    const bgTonalMatches = content.match(bgTonalRe);
-    if (bgTonalMatches) {
-      content = content.replace(bgTonalRe, "bg-$1-500/10");
-      fileReplacements += bgTonalMatches.length;
+    // Adapt Chromatic Tonal Components across all types (cards, banners, callouts, rows, buttons, chips, badges)
+    // 1. Interactive hover / active states
+    const bgHoverMatches = content.match(bgHoverTonalRe);
+    if (bgHoverMatches) {
+      content = content.replace(bgHoverTonalRe, "hover:bg-$1-500/15");
+      fileReplacements += bgHoverMatches.length;
       changed = true;
     }
 
-    const borderTonalMatches = content.match(borderTonalRe);
-    if (borderTonalMatches) {
-      content = content.replace(borderTonalRe, "border-$1-500/20");
-      fileReplacements += borderTonalMatches.length;
+    const bgActiveMatches = content.match(bgActiveTonalRe);
+    if (bgActiveMatches) {
+      content = content.replace(bgActiveTonalRe, "active:bg-$1-500/20");
+      fileReplacements += bgActiveMatches.length;
       changed = true;
     }
 
+    // 2. Static surfaces
+    const bgStaticMatches = content.match(bgStaticTonalRe);
+    if (bgStaticMatches) {
+      content = content.replace(bgStaticTonalRe, "bg-$1-500/10");
+      fileReplacements += bgStaticMatches.length;
+      changed = true;
+    }
+
+    // 3. Borders (hover and static), Dividers, Rings
+    const borderHoverMatches = content.match(borderHoverTonalRe);
+    if (borderHoverMatches) {
+      content = content.replace(borderHoverTonalRe, "hover:border-$1-500/30");
+      fileReplacements += borderHoverMatches.length;
+      changed = true;
+    }
+
+    const borderStaticMatches = content.match(borderStaticTonalRe);
+    if (borderStaticMatches) {
+      content = content.replace(borderStaticTonalRe, "border-$1-500/20");
+      fileReplacements += borderStaticMatches.length;
+      changed = true;
+    }
+
+    const divideMatches = content.match(divideTonalRe);
+    if (divideMatches) {
+      content = content.replace(divideTonalRe, "divide-$1-500/20");
+      fileReplacements += divideMatches.length;
+      changed = true;
+    }
+
+    const ringMatches = content.match(ringTonalRe);
+    if (ringMatches) {
+      content = content.replace(ringTonalRe, "ring-$1-500/20");
+      fileReplacements += ringMatches.length;
+      changed = true;
+    }
+
+    // 4. Dual-theme text contrast
     const textTonalMatches = content.match(textTonalRe);
     if (textTonalMatches) {
       content = content.replace(textTonalRe, (match, color, offset, fullStr) => {

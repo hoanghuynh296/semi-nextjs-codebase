@@ -2,6 +2,13 @@
 
 Newest first. Each entry is a user decision already reflected in `DESIGN_SYSTEM.md`, `QUICK_REF.md` and `lint/semi-lint.mjs`.
 
+- **2026-10-31 (v0.3.6 / Universal Tonal Theme-Matching Across All Component Types):**
+  - *Context:* Tonal colors are not limited to chips or badges. Real-world consumer applications have tonal accents across many component types: Bento Cards, stat widgets, alert banners, callouts, table rows, action buttons, dividers, and rings. Solid pastels (`bg-*-50`, `border-*-200`) glaringly fail in Dark Mode across all these components.
+  - *Decision:* Generalized the Theme-Matching Tonal Architecture to apply universally across all component types and interactive states:
+    - Added `TONAL_CONTAINER` and `TONAL_HOVER` to `@semi/ui/styles`.
+    - Enhanced `/semi-audit` to inspect and report chromatic tonal usage across cards, callouts, banners, rows, buttons, badges, chips, rings, and dividers across 16 chromatic hues.
+    - Enhanced `/semi-init` codemod (`runSemanticCodemod`) to automatically adapt all component states: static background (`bg-*-500/10`), hover background (`hover:bg-*-500/15`), active background (`active:bg-*-500/20`), static border (`border-*-500/20`), hover border (`hover:border-*-500/30`), dividers (`divide-*-500/20`), rings (`ring-*-500/20`), and dual-theme high-contrast text (`text-*-700 dark:text-*-300`).
+    - Tightened `no-solid-pastel-surfaces` in `semi-lint` to detect hover, active, border, divide, ring, and all 16 Tailwind chromatic hues.
 - **2026-10-31 (v0.3.5 / Theme-Matching Tonal Components):**
   - *Context:* Existing projects often feature colored chips/badges (e.g. purple for Pro, amber for Pending). Flat UI migration should not strip these to monotonous gray, but solid pastels (`bg-purple-50`) fail completely in Dark Mode.
   - *Decision:* Standardized Two-Tier Theme-Matching Tonal architecture (`bg-<color>-500/10 border-<color>-500/20 text-<color>-700 dark:text-<color>-300`) across 16 hues. Created `<Badge>` component, enhanced `<Chip tone="...">`, upgraded `/semi-audit` to detect chromatic tonal clusters, and added automated tonal codemod to `/semi-init`.

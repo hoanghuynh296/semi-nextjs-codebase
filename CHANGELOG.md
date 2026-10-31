@@ -2,6 +2,24 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
+## [0.3.6] - 2026-10-31
+
+### Added
+- **Universal Tonal Architecture Across All Components (`@semi/ui`, `@semi/ui/styles`):**
+  - Added `TONAL_CONTAINER` and `TONAL_HOVER` to `@semi/ui/styles` (`surfaces.ts`) for consistent styling of chromatic cards, alert banners, callouts, stat widgets, table rows, and interactive buttons.
+  - Multi-state theme-matching tokens:
+    - Static container: `bg-<color>-500/10 border-<color>-500/20 text-<color>-700 dark:text-<color>-300`
+    - Hover state: `hover:bg-<color>-500/15 hover:border-<color>-500/30`
+    - Active state: `active:bg-<color>-500/20`
+    - Dividers & rings: `divide-<color>-500/20 ring-<color>-500/20`
+- **Universal Component Tonal Analysis in `/semi-audit` (`audit.mjs`):**
+  - Scans across all component types (cards, banners, callouts, table rows, buttons, badges, chips) and all prefixes (`hover:`, `active:`, `border-`, `divide-`, `ring-`, `text-`).
+  - Reports cluster breakdown with both container and hover dual-theme adaptations.
+- **Universal Multi-State Tonal Codemod in `/semi-init` (`init.mjs`):**
+  - Full automated migration for any component type across static background, hover background, active background, static border, hover border, dividers, rings, and dual-theme high-contrast text.
+- **Air-Tight Pastel Surfaces Lint Rule (`semi-lint`):**
+  - Expanded `no-solid-pastel-surfaces` in `lint/semi-lint.mjs` to detect all 16 Tailwind chromatic hues across `bg`, `hover:bg`, `active:bg`, `border`, `hover:border`, `divide`, and `ring`.
+
 ## [0.3.5] - 2026-10-31
 
 ### Added

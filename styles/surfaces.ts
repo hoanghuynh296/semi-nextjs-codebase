@@ -97,6 +97,29 @@ export const TONAL_SURFACE: Record<SemanticTone, string> = {
 /** Tonal badge base class (11px or 12px pill). */
 export const BADGE_BASE = "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium border";
 
+/** Dual-theme tonal container (cards, callouts, alert banners): 10% alpha fill + 20% alpha border + dual-theme text. */
+export const TONAL_CONTAINER = TONAL_SURFACE;
+
+/** Dual-theme tonal interactive hover (clickable cards, list rows, buttons): 15% hover fill + 30% hover border. */
+export const TONAL_HOVER: Record<SemanticTone, string> = {
+  purple: "hover:bg-purple-500/15 hover:border-purple-500/30",
+  violet: "hover:bg-violet-500/15 hover:border-violet-500/30",
+  indigo: "hover:bg-indigo-500/15 hover:border-indigo-500/30",
+  blue: "hover:bg-blue-500/15 hover:border-blue-500/30",
+  sky: "hover:bg-sky-500/15 hover:border-sky-500/30",
+  cyan: "hover:bg-cyan-500/15 hover:border-cyan-500/30",
+  teal: "hover:bg-teal-500/15 hover:border-teal-500/30",
+  emerald: "hover:bg-emerald-500/15 hover:border-emerald-500/30",
+  green: "hover:bg-emerald-500/15 hover:border-emerald-500/30",
+  amber: "hover:bg-amber-500/15 hover:border-amber-500/30",
+  yellow: "hover:bg-amber-500/15 hover:border-amber-500/30",
+  orange: "hover:bg-orange-500/15 hover:border-orange-500/30",
+  rose: "hover:bg-rose-500/15 hover:border-rose-500/30",
+  red: "hover:bg-rose-500/15 hover:border-rose-500/30",
+  pink: "hover:bg-pink-500/15 hover:border-pink-500/30",
+  gray: "hover:bg-raised hover:border-line-hover",
+};
+
 /**
  * Modal shell: backdrop + panel.
  * Phones (< sm): full screen (edge-to-edge, h-dvh, rounded-none, border-0).

@@ -87,7 +87,7 @@ export const RATCHET = [
   ],
   [
     "no-solid-pastel-surfaces",
-    /\b(?:bg|border)-(?:amber|red|green|emerald|blue|sky|indigo|purple|violet|pink|rose|orange)-(?:50|100|200)\b(?!\/)/g,
+    /\b(?:(?:hover:|active:)?(?:bg|border)|divide|ring)-(?:amber|yellow|orange|red|rose|pink|fuchsia|purple|violet|indigo|blue|sky|cyan|teal|emerald|green)-(?:50|100|200)\b(?!\/)/g,
     "Tuyệt đối không dùng bề mặt pastel nguyên khối (bg-*-50, border-*-200) vì gây chói lóa trong Dark Mode. Hãy dùng độ mờ alpha (e.g. bg-amber-500/10 border-amber-500/20) hoặc bề mặt chuẩn bg-panel.",
   ],
   ["all-caps-label", /\>\s*[A-ZĐẮẰẲẴẶÂẤẦẨẪẬÊẾỀỂỄỆÔỐỒỔỖỘƠỚỜỞỠỢƯỨỪỬỮỰ]{4,}(?:[ .·…]+[A-ZĐ0-9…]+)*\s*</g, "button / label text is sentence case"],
