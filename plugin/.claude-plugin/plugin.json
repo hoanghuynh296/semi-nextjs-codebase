@@ -1,6 +1,6 @@
 {
   "name": "semi-design",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Semi Design System rules, lint hook, and /semi-init, /semi-audit, /semi-update skills for Next.js 16 + React 19 + Tailwind 4 web projects.",
   "repository": "https://github.com/hoanghuynh296/semi-nextjs-codebase"
 }

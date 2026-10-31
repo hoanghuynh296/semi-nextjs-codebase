@@ -101,9 +101,28 @@ Khi cần hiển thị biểu tượng cho một hành động hoặc trạng th
 | **Khuyến mãi / Giảm giá / Voucher**| `percent` | `percent` | `<Icon name="percent" />` | Mã giảm giá, coupon, chiết khấu % |
 | **Cửa hàng / Gian hàng đại lý** | `store` | `store` | `<Icon name="store" />` | Trang đối tác, gian hàng, marketplace |
 | **Ví tiền / Số dư tài khoản** | `wallet` | `wallet` | `<Icon name="wallet" />` | Số dư tài khoản ví, nạp/rút tiền |
+| **Xác minh chính hãng / Shop Mall**| `badgeCheck` | `badge-check` | `<Icon name="badgeCheck" />` | Shop Mall chính hãng, đối tác đã xác minh |
+| **Quà tặng kèm / Tri ân** | `gift` | `gift` | `<Icon name="gift" />` | Quà khuyến mãi, gói quà, phần thưởng tri ân |
+| **Yêu thích / Wishlist** | `heart` | `heart` | `<Icon name="heart" />` | Nút tim yêu thích, lưu vào danh sách wishlist |
+| **Đánh giá sao / Xếp hạng** | `star` | `star` | `<Icon name="star" />` | Đánh giá sản phẩm (Rating/Review 1-5 sao) |
+| **Mã vạch sản phẩm / SKU** | `barcode` | `barcode` | `<Icon name="barcode" />` | Tem mã vạch SKU, máy quét mã vạch kho |
+| **Mã QR thanh toán / Chuyển khoản**| `qrCode` | `qr-code` | `<Icon name="qrCode" />` | Quét mã VietQR, thanh toán MoMo/ngân hàng |
+| **Tiền mặt / Thanh toán COD** | `banknote` | `banknote` | `<Icon name="banknote" />` | Phương thức giao hàng thu tiền mặt (COD) |
+| **Ngân hàng / Chuyển khoản trực tiếp**| `landmark` | `landmark` | `<Icon name="landmark" />` | Tài khoản ngân hàng, chuyển khoản ủy nhiệm |
+| **Kiện hàng / Bưu kiện / Đơn hàng** | `package` | `package` | `<Icon name="package" />` | Đơn hàng chờ giao, gói bưu kiện vật lý |
+| **Mở kiện hàng / Unboxing** | `packageOpen` | `package-open` | `<Icon name="packageOpen" />` | Đóng gói hàng, khui hàng kiểm tra, đổi trả |
+| **Huỷ đơn / Giao thất bại** | `packageX` | `package-x` | `<Icon name="packageX" />` | Đơn hàng bị huỷ, từ chối nhận (bom hàng) |
+| **Tạo đơn mới / Thêm hàng kho** | `packagePlus` | `package-plus` | `<Icon name="packagePlus" />` | Tạo đơn thủ công, bổ sung hàng vào kho |
+| **Danh sách đơn / Bảng kê hàng** | `clipboardList` | `clipboard-list` | `<Icon name="clipboardList" />` | Sổ quản lý đơn hàng, danh mục phiếu xuất |
+| **Địa chỉ nhận / Vị trí giao hàng**| `mapPin` | `map-pin` | `<Icon name="mapPin" />` | Địa chỉ ship hàng, toạ độ bưu cục |
+| **Deal hot / Giảm giá sốc** | `badgePercent` | `badge-percent` | `<Icon name="badgePercent" />` | Nhãn Flash Sale, siêu ưu đãi chớp nhoáng |
+| **Sản phẩm bán chạy / Hot trend** | `flame` | `flame` | `<Icon name="flame" />` | Best seller, sản phẩm đang thịnh hành |
+| **Chiến dịch Marketing / Quảng bá**| `megaphone` | `megaphone` | `<Icon name="megaphone" />` | Chiến dịch marketing, thông báo khuyến mãi |
+| **Khách hàng thân thiết / Loyalty** | `award` | `award` | `<Icon name="award" />` | Hạng thành viên (Vàng/VIP), huy hiệu vinh danh |
+| **Tính tiền tự động / Ước tính giá**| `calculator` | `calculator` | `<Icon name="calculator" />` | Công cụ tính giá in theo gram, tính phí ship |
 | **Giá tiền / Chi phí / Doanh thu** | `coin` | `coins` | `<Icon name="coin" />` | Chi phí VND, chi phí in ấn |
 | **Thẻ phân loại / Nhãn sản phẩm** | `tag` | `tag` | `<Icon name="tag" />` | Phân loại sản phẩm / thẻ nhựa |
-| **Kho hàng / Kiện hàng / Mô hình** | `box` | `box` | `<Icon name="box" />` | Inventory kho, kiện hàng vận chuyển |
+| **Kho hàng / Kiện hàng / Mô hình** | `box` | `box` | `<Icon name="box" />` | Inventory kho, bounding box 3D |
 
 ---
 
@@ -222,6 +241,25 @@ Khi lập trình, nếu viết các từ khoá sau thì `semi-lint` hoặc `tsc`
 | `scale` | `resize` | Thu phóng mô hình dùng `resize` |
 | `decrease` | `minus` | Nút trừ / giảm dùng `minus` |
 | `increase` | `plus` | Nút cộng / tăng dùng `plus` |
+| `wishlist`, `like`, `favorite` | `heart` | Thích / lưu sản phẩm dùng `heart` |
+| `rating`, `review`, `rate` | `star` | Đánh giá xếp hạng sao dùng `star` |
+| `present`, `bonus`, `reward` | `gift` | Quà tặng / phần thưởng dùng `gift` |
+| `sku`, `scan` | `barcode` | Mã vạch kho SKU dùng `barcode` |
+| `qr`, `qr_code`, `vietqr` | `qrCode` | Quét mã QR thanh toán dùng `qrCode` |
+| `cash`, `cod`, `money_bill` | `banknote` | Tiền mặt COD dùng `banknote` |
+| `bank`, `bank_transfer` | `landmark` | Ngân hàng / chuyển khoản dùng `landmark` |
+| `parcel` | `package` | Bưu kiện / kiện hàng dùng `package` |
+| `unboxing` | `packageOpen` | Khui hộp / mở kiện hàng dùng `packageOpen` |
+| `cancel_order` | `packageX` | Huỷ đơn hàng dùng `packageX` |
+| `add_stock`, `new_order` | `packagePlus` | Nhập kho / tạo đơn mới dùng `packagePlus` |
+| `order_list`, `orders` | `clipboardList` | Danh sách đơn hàng / bảng kê dùng `clipboardList` |
+| `address`, `location` | `mapPin` | Địa chỉ nhận hàng / vị trí dùng `mapPin` |
+| `deal`, `flash_sale` | `badgePercent` | Deal hot / siêu giảm giá dùng `badgePercent` |
+| `hot`, `trending`, `best_seller`| `flame` | Hàng bán chạy / xu hướng dùng `flame` |
+| `marketing`, `promotion` | `megaphone` | Chiến dịch marketing / thông báo dùng `megaphone` |
+| `loyalty`, `vip` | `award` | Thành viên thân thiết / huy hiệu dùng `award` |
+| `calc`, `calculate`, `estimate` | `calculator` | Tính toán chi phí / giá in dùng `calculator` |
+| `verified`, `official`, `mall` | `badgeCheck` | Shop chính hãng / xác minh dùng `badgeCheck` |
 
 ---
 

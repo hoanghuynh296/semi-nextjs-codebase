@@ -78,10 +78,10 @@ export function StorybookShell({ children }: { children: React.ReactNode }) {
       footer={
         <div className="p-2 border-t border-line/60">
           <div className="flex items-center justify-between text-[11px] text-gray-400 px-1 py-1">
-            <span>Semi UI v0.2.5</span>
+            <span>Semi UI v0.2.6</span>
             <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 font-medium">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              104 Icons
+              123 Icons
             </span>
           </div>
         </div>

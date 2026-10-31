@@ -2,6 +2,17 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
+## [0.2.6] - 2026-10-31
+
+### Added
+- **E-Commerce Comprehensive Icon Expansion (`@semi/ui`):** Added 19 new Lucide-standard 24×24 stroke icons expanding the E-Commerce domain to 31 icons and total system icons to 123:
+  - **Orders & Logistics:** `package` (order parcel / package), `packageOpen` (unboxing / packing / returns), `packageX` (cancelled order / failed delivery), `packagePlus` (new order / restock), `clipboardList` (order list / manifest / inventory), `mapPin` (shipping address / pickup location).
+  - **Payments & Trust:** `banknote` (cash on delivery / COD / paper money), `landmark` (bank transfer / bank account), `qrCode` (VietQR / QR payment), `barcode` (SKU barcode / barcode scanner), `badgeCheck` (verified mall / official shop / trust badge).
+  - **Marketing, Engagement & Loyalty:** `gift` (gift / present / bonus reward), `heart` (wishlist / favorite / like), `star` (ratings / reviews / stars), `badgePercent` (flash sale / deep discount / hot deal), `flame` (best seller / hot trending), `megaphone` (marketing campaigns / promotional broadcasts), `award` (loyalty program / membership tier / VIP), `calculator` (cost calculator / filament print pricing).
+- **Interactive Storybook App (`app/`):**
+  - Updated icon counts dynamically across Foundations & Icon Catalogue (`123 Icons chuẩn hóa`).
+  - Added new e-commerce aliases to `ICON_ALIASES` and `semi-lint` HARD rules (`wishlist`, `like`, `rating`, `review`, `qr`, `vietqr`, `cod`, `cash`, `bank`, `unboxing`, `cancel_order`, `deal`, `hot`, `loyalty`, `calc`, etc.).
+
 ## [0.2.5] - 2026-10-30
 
 ### Added

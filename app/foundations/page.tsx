@@ -72,6 +72,7 @@ export default function FoundationsPage() {
   };
 
   const selectedMeta = selectedIconName ? ICON_CATALOG[selectedIconName] : null;
+  const totalCount = Object.keys(ICON_CATALOG).length;
 
   return (
     <StorybookShell>
@@ -80,12 +81,12 @@ export default function FoundationsPage() {
         <PageTitle title="Foundations & Icon Catalogue" />
         <p className="text-[13px] text-gray-400 max-w-3xl leading-relaxed">
           Tài liệu tổng quan hệ thống Design Tokens (màu sắc tối, typography, bán kính viền) và công cụ tra cứu{" "}
-          <strong className="text-gray-200">104 icons chuẩn hóa</strong> của hệ sinh thái Semi. Không inline SVG, không dùng glyph unicode.
+          <strong className="text-gray-200">{totalCount} icons chuẩn hóa</strong> của hệ sinh thái Semi. Không inline SVG, không dùng glyph unicode.
         </p>
         <div className="flex flex-wrap items-center gap-2 pt-1">
           <span className={TAG}>
             <span className={`w-1.5 h-1.5 rounded-full ${TONE_DOT.green}`} />
-            <span>104 Icons chuẩn</span>
+            <span>{totalCount} Icons chuẩn</span>
           </span>
           <span className={TAG}>
             <span className={`w-1.5 h-1.5 rounded-full ${TONE_DOT.sky}`} />
@@ -199,7 +200,7 @@ export default function FoundationsPage() {
               <Icon name="sparkles" className="w-4 h-4 text-primary-400" />
               <span>Interactive Icon Explorer</span>
               <span className="text-[12px] font-normal px-2 py-0.5 rounded-full bg-white/[0.08] text-gray-300">
-                {filteredIcons.length} / 104 icons
+                {filteredIcons.length} / {totalCount} icons
               </span>
             </h2>
             <p className="text-[12px] text-gray-400 pt-0.5">
@@ -283,7 +284,7 @@ export default function FoundationsPage() {
           </div>
         </div>
 
-        {/* Layout: Grid 104 Icons + Detail Inspector */}
+        {/* Layout: Grid Icons + Detail Inspector */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-start">
           {/* Main Grid */}
           <div className="lg:col-span-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-2.5">
