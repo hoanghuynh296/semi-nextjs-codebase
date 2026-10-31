@@ -233,6 +233,12 @@ function runSemanticCodemod(webDir) {
     [/\bdivide-(?:slate|gray|zinc|neutral|stone)-(?:50|100)\b/g, "divide-divider"],
     [/\bdivide-(?:slate|gray|zinc|neutral|stone)-(?:200|300)\b/g, "divide-line"],
 
+    // Gradient Stops (Transitional masks / fades mapped to semantic surfaces)
+    [/\b(from|to|via)-white\b/g, "$1-panel"],
+    [/\b(from|to|via)-(?:slate|gray|zinc|neutral|stone)-50\b/g, "$1-field"],
+    [/\b(from|to|via)-(?:slate|gray|zinc|neutral|stone)-100\b/g, "$1-field"],
+    [/\b(from|to|via)-(?:slate|gray|zinc|neutral|stone)-900\b/g, "$1-canvas"],
+
     // Shadows (Flat UI uses border-line / surfaces instead)
     [/\bshadow-(?:sm|md|lg|xl|2xl)\b/g, ""],
     [/(?<=\s|^)shadow(?=\s|$)/g, ""],

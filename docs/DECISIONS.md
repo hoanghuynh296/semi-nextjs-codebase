@@ -2,6 +2,10 @@
 
 Newest first. Each entry is a user decision already reflected in `DESIGN_SYSTEM.md`, `QUICK_REF.md` and `lint/semi-lint.mjs`.
 
+- **2026-10-31 (v0.3.7 / Issue #4):**
+  - Expanded `no-literal-palette` in `lint/semi-lint.mjs` to check gradient stop utilities (`from-`, `via-`, `to-`), closing Issue #4. Previously, transitional horizontal fade masks (e.g. `from-white to-transparent`) slipped through undetected and caused blinding white blurs on dark mode tabs/carousels.
+  - Added mappings for `(from|via|to)-white` $\rightarrow$ `$1-panel` and `(from|via|to)-slate-50` $\rightarrow$ `$1-field` in `/semi-init` codemod (`runSemanticCodemod`).
+  - Synchronized `PHYSICAL_RX` and `SEMANTIC_RX` in `/semi-audit` (`audit.mjs`).
 - **2026-10-31 (v0.3.6 / Universal Tonal Theme-Matching Across All Component Types):**
   - *Context:* Tonal colors are not limited to chips or badges. Real-world consumer applications have tonal accents across many component types: Bento Cards, stat widgets, alert banners, callouts, table rows, action buttons, dividers, and rings. Solid pastels (`bg-*-50`, `border-*-200`) glaringly fail in Dark Mode across all these components.
   - *Decision:* Generalized the Theme-Matching Tonal Architecture to apply universally across all component types and interactive states:

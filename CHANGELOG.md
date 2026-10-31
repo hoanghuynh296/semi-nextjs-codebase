@@ -2,6 +2,17 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
+## [0.3.7] - 2026-10-31
+
+### Fixed
+- **Gradient Stop Palette Guard Rails (`semi-lint`, Issue #4):**
+  - Expanded `no-literal-palette` in `lint/semi-lint.mjs` to detect gradient stop utilities (`from-`, `via-`, `to-`) using physical color literals (`from-white`, `to-slate-900`, etc.).
+  - Added warning that Semi Design System enforces Flat UI (no gradients), but if transitional fade masks are kept during migration, stops must use semantic tokens (`from-panel`, `to-transparent`).
+- **Semantic Codemod for Fade Overlays (`semi-init`, `init.mjs`):**
+  - Added mappings in `runSemanticCodemod` to adapt `(from|via|to)-white` $\rightarrow$ `(from|via|to)-panel`, `(from|via|to)-slate-50` $\rightarrow$ `(from|via|to)-field`, and `(from|via|to)-slate-900` $\rightarrow$ `(from|via|to)-canvas`.
+- **Synchronized Palette Audit (`semi-audit`, `audit.mjs`):**
+  - Updated `PHYSICAL_RX` and `SEMANTIC_RX` to cover `from-`, `via-`, and `to-` prefixes.
+
 ## [0.3.6] - 2026-10-31
 
 ### Added

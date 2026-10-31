@@ -169,8 +169,8 @@ export function auditSingleApp(cwd) {
   let totalPhysical = 0;
   const semanticCounts = new Map();
   let totalSemantic = 0;
-  const PHYSICAL_RX = /\b(bg|text|border)-(?:white|black|(?:slate|gray|zinc|neutral|stone)-\d{2,3})\b/g;
-  const SEMANTIC_RX = /\b(bg-(?:canvas|app|panel|field|raised)|text-(?:contrast|body|muted)|border-(?:line|divider|line-hover))\b/g;
+  const PHYSICAL_RX = /\b(bg|text|border|divide|from|via|to)-(?:white|black|(?:slate|gray|zinc|neutral|stone)-\d{2,3})\b/g;
+  const SEMANTIC_RX = /\b((?:bg|from|via|to)-(?:canvas|app|panel|field|raised)|text-(?:contrast|body|muted)|(?:border|divide)-(?:line|divider|line-hover))\b/g;
 
   const CHROMATIC_TONAL_RX = /\b(?:(?:hover:|active:)?(?:bg|border)|divide|ring|text)-(amber|yellow|orange|red|rose|pink|fuchsia|purple|violet|indigo|blue|sky|cyan|teal|emerald|green)-(?:50|100|200|300|600|700|800|900)\b/g;
   const tonalCounts = new Map();

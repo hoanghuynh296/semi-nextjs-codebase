@@ -82,8 +82,8 @@ const OPT_IN = new Set(["viewport-grid-cols"]);
 export const RATCHET = [
   [
     "no-literal-palette",
-    /\b(bg|text|border|divide)-(?:white(?!\/)|black(?!\/)|(?:slate|gray|zinc|neutral|stone)-\d{2,3})\b/g,
-    "Tuyệt đối không dùng class màu vật lý trực tiếp (bg-white, text-slate-900, border-slate-200, divide-slate-100). Hãy dùng Semantic Tokens (bg-panel, bg-field, text-contrast, text-body, text-muted, border-line, divide-divider) để tự động tương thích cả Dark Mode lẫn Light Mode.",
+    /\b(bg|text|border|divide|from|via|to)-(?:white(?!\/)|black(?!\/)|(?:slate|gray|zinc|neutral|stone)-\d{2,3})\b/g,
+    "Tuyệt đối không dùng class màu vật lý trực tiếp (bg-white, text-slate-900, border-slate-200, divide-slate-100, from-white). Hãy dùng Semantic Tokens (bg-panel, bg-field, text-contrast, text-body, text-muted, border-line, divide-divider, from-panel) để tự động tương thích cả Dark Mode lẫn Light Mode. Chú ý: Semi tuân thủ Flat UI (không dùng gradient); nếu là lớp phủ chuyển tiếp tạm thời, phải dùng stop ngữ nghĩa.",
   ],
   [
     "no-solid-pastel-surfaces",
