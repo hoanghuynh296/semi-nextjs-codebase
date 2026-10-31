@@ -2,6 +2,7 @@
 // /semi-update helper: upgrades @semi/ui to the latest tag across single-app or monorepo projects, prints CHANGELOG + structural audit, and runs semi-lint + tsc.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import { auditSingleApp, discoverFrontendApps } from "../../semi-audit/scripts/audit.mjs";
 
@@ -86,18 +87,24 @@ for (const appDir of targetApps) {
     ? JSON.parse(readFileSync(installedPkgPath, "utf8")).version
     : version;
 
-  const rulesTemplatePath = join(appDir, "node_modules", "@semi", "ui", "docs", "..", "plugin", "rules", "AGENTS.md");
-  for (const candidate of [join(appDir, "AGENTS.md"), join(cwd, "AGENTS.md")]) {
-    if (existsSync(candidate)) {
-      const content = readFileSync(candidate, "utf8");
-      const updated = content.replace(
-        /Semi Design System \(`@semi\/ui`[^)]*\)/g,
-        `Semi Design System (\`@semi/ui\` v${installedVersion}, repo \`https://github.com/hoanghuynh296/semi-nextjs-codebase\`)`,
-      );
-      if (updated !== content) writeFileSync(candidate, updated);
+  // Refresh the managed rules block from this plugin's template (the npm package does not ship plugin/).
+  const rulesTemplatePath = fileURLToPath(new URL("../../../rules/AGENTS.md", import.meta.url));
+  const stamp = (s) =>
+    s.replace(
+      /Semi Design System \(`@semi\/ui`[^)]*\)/g,
+      `Semi Design System (\`@semi/ui\` v${installedVersion}, repo \`https://github.com/hoanghuynh296/semi-nextjs-codebase\`)`,
+    );
+  const freshBlock = existsSync(rulesTemplatePath) ? stamp(readFileSync(rulesTemplatePath, "utf8")).trim() : null;
+  const BLOCK_RE = /<!-- semi-design-system:start -->[\s\S]*?<!-- semi-design-system:end -->/;
+  for (const candidate of new Set([join(appDir, "AGENTS.md"), join(cwd, "AGENTS.md")])) {
+    if (!existsSync(candidate)) continue;
+    const content = readFileSync(candidate, "utf8");
+    const updated = freshBlock && BLOCK_RE.test(content) ? content.replace(BLOCK_RE, () => freshBlock) : stamp(content);
+    if (updated !== content) {
+      writeFileSync(candidate, updated);
+      console.log(`Refreshed Semi rules block in ${candidate}`);
     }
   }
-  void rulesTemplatePath;
 
   if (!printedChangelog) {
     const changelogPath = join(appDir, "node_modules", "@semi", "ui", "CHANGELOG.md");

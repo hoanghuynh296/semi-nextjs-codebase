@@ -1,99 +1,101 @@
 ---
 name: semi-propose
-description: Propose an enhancement, new component, token, or report an unmet requirement from a consumer project directly to the Semi Design System repository (hoanghuynh296/semi-nextjs-codebase). Analyzes gaps in the current project, structures a compliant feature request or issue, and publishes it via GitHub API or prefilled issue URL. Triggered by /semi-propose.
+description: Propose an enhancement, new component, token, icon or lint fix from a consumer project to the Semi Design System repository (hoanghuynh296/semi-nextjs-codebase). Verifies the gap is real (not already shipped, not app-specific, not a duplicate), drafts a rule-compliant proposal, gets user approval, then files a GitHub issue. Use when @semi/ui cannot express a UI need instead of inventing local primitives. Triggered by /semi-propose.
 ---
 
 # Semi Design System Gap Proposal (`/semi-propose`)
 
-Use this skill when an AI Agent working on any consumer project (such as Auton Platform, 3D Noobs Studio, IoT, BMCU, or a new project) finds that **`@semi/ui` or the `semi-design` plugin does not yet meet a specific UI requirement**, lacks a needed component, token, or icon, or encounters a blocker during implementation.
+Use in a **consumer project** (Auton Platform, 3D Noobs Studio, IoT, BMCU, …) when `@semi/ui` cannot express a UI need:
+missing component/prop, missing semantic token, missing icon, or a `semi-lint` false positive.
+Goal: get the gap fixed **once in the design system** instead of forking a local primitive.
 
-This skill bridges the consumer project and the core design system repository (`hoanghuynh296/semi-nextjs-codebase`), creating high-quality, standardized GitHub issues so the maintainers can generalize and incorporate the capability into the system.
+`SCRIPT="<this-skill-dir>/scripts/propose.mjs"`
 
----
+## Step 1 — Verify the gap is real (do NOT skip)
 
-## Workflow for the Proposing Agent
-
-### 1. Scan the Consumer Project Context
-Run the project scanner to collect stack versions and custom components built locally in the consumer app:
 ```bash
-node "<path-to-plugin>/skills/semi-propose/scripts/propose.mjs" --scan --cwd "<project-dir>"
+node "$SCRIPT" --scan --cwd "<app-dir>"
 ```
-Identify:
-- Installed `@semi/ui` version.
-- Any custom components in `src/components/`, `components/`, or `app/components/` that had to be hand-crafted because `@semi/ui` lacked them (e.g. `TabsBadge`, `DateRangePicker`, `Stepper`, `MultiSelect`, `AudioWaveform`, `ContextMenu`).
-- Workarounds currently used (e.g. inline SVGs, raw physical color classes, custom CSS).
+Output: declared/installed/latest `@semi/ui`, stack versions, local primitive files (`components/**/Tabs.tsx`, …), and workarounds (inline `<svg><path>`, native `<select>`, `type="date|number"`).
 
-### 2. Formulate the Structured Proposal
-Structure the proposal following this standardized template:
+Stop and do not file an issue if any of these hold:
+| Finding | Instead |
+|---|---|
+| `semiUi.outdated: true` and the latest `CHANGELOG.md` already covers it | Recommend `/semi-update` |
+| It exists already: check `node_modules/@semi/ui/docs/QUICK_REF.md`, `DESIGN_SYSTEM.md`, `ICONS.md` (aliases, too) and `src/index.ts` exports | Use the existing API |
+| It is business logic (data fetching, domain state machines, app-specific workflows) | Build it locally on `@semi/ui/styles` and record it in the app's `docs/UI_EXTENSIONS.md` |
+| The need only exists because the desired look breaks a Semi rule (gradients, shadows, white cards, `rounded-md`) | Explain the rule to the user and use the compliant pattern |
+
+## Step 2 — Check for duplicates
+
+```bash
+node "$SCRIPT" --search "<2-4 keywords, e.g. date range picker>"
+```
+If an open issue matches, add a comment with your project's context (via the GitHub link) rather than filing a new issue.
+
+## Step 3 — Draft the proposal
+
+Write the draft to a temp file (e.g. `/tmp/semi-proposal.md`, never into the consumer repo) using **exactly these headings** (the triage audit parses them):
 
 ```markdown
 ### 1. Consumer Project Context
-- **Project:** [Project Name, e.g. Auton Platform / Storefront / IoT Dashboard]
-- **Current `@semi/ui` Version:** [e.g. v0.3.0]
-- **Stack:** [e.g. Next.js 16 + React 19 + Tailwind CSS 4]
+- Project / screen(s):
+- `@semi/ui` version (installed → latest):
+- Stack:
 
-### 2. Unmet Requirement & Real-World Problem
-[Describe what the screen or workflow requires and exactly what is missing in @semi/ui.
-Be specific: is it a missing component, an extra prop on an existing component, a semantic token, an icon, or a linter false positive?]
+### 2. Unmet Requirement
+What the screen needs and what exactly is missing (component / prop / token / icon / lint rule).
 
 ### 3. Current Workaround
-[Include a brief code snippet of how the project is currently handling this requirement,
-e.g. hand-written component, local helper, or temporary baseline skip.]
-```tsx
-// Current local workaround
-```
+Short snippet of the local code in use today (it may break rules; that is expected here).
 
 ### 4. Proposed Solution & API Design
-[Propose a clean, idiomatic API conforming to Semi Design System principles:
-- Component name, props interface, and default values
-- Semantic Tokens to use (bg-panel, bg-field, text-contrast, text-body, border-line)
-- Dual-theme behavior (how it looks in dark vs light mode)
-- Standard radii (rounded-lg for controls, rounded-xl for cards)
-- Icon semantics from docs/ICONS.md]
-
-```tsx
-// Proposed component signature
-export interface ProposedComponentProps {
-  // ...
-}
-```
+Component/prop signature, defaults, which semantic tokens it uses, dark + light behaviour,
+radius, icon names from ICONS.md. This section MUST itself be rule-compliant.
 
 ### 5. Ecosystem Generalization Rationale
-[Explain why this capability is not just a one-off business requirement for this app,
-but a general primitive that benefits other apps across the Semi ecosystem (SaaS, E-Commerce, 3D/CAD, IoT, Admin dashboards).]
+Why at least one other kind of Semi app (SaaS, e-commerce, IoT, 3D, admin) needs the same primitive.
 
-### 6. Semi UI Rules Compliance Checklist
-- [x] Flat surfaces only (no gradients, no glow, no drop shadows `shadow-sm/md/lg`)
-- [x] Semantic Tokens only (`bg-panel`, `bg-field`, `text-contrast`, `text-body`, `border-line` — no physical `bg-white` or `text-slate-900`)
-- [x] Dual-theme compliant (renders correctly in both `[data-theme="dark"]` and `[data-theme="light"]`)
-- [x] Typography: medium/semibold, explicit px sizes, `tabular-nums` for numbers
-- [x] Radii: `rounded-lg` (controls), `rounded-xl` (cards), `rounded-2xl` (panels/modals), `rounded-full` (chips)
-- [x] Icons: Uses standard `<Icon name="..." />` (stroke 1.75), no emojis or raw SVGs
+### 6. Semi Rules Checklist
+- [ ] Semantic tokens only (no `bg-white`, `text-slate-*`, hex classes)
+- [ ] Renders correctly in `data-theme="dark"` and `data-theme="light"`
+- [ ] Flat: no gradients, glow or `shadow-sm/md/lg`
+- [ ] `font-medium`/`font-semibold`, px sizes ≥ 11px, `tabular-nums` for numbers, sentence case
+- [ ] Radii: `rounded-lg` / `rounded-xl` / `rounded-2xl` / `rounded-full`
+- [ ] `<Icon name>`, `CustomSelect`, `DatePicker`, `NumberInput`, `confirmDialog` (no native controls)
 ```
 
-### 3. Choose Issue Title and Category Label
-Classify the issue using a clear prefix:
-- `[Component Request]` (label: `component,ecosystem-proposal`)
-- `[Token Request]` (label: `tokens,ecosystem-proposal`)
-- `[Icon Request]` (label: `icons,ecosystem-proposal`)
-- `[Lint Improvement]` (label: `lint,ecosystem-proposal`)
-- `[Bug Report]` (label: `bug,ecosystem-proposal`)
-- `[Enhancement]` (label: `enhancement,ecosystem-proposal`)
-
-### 4. Publish the Issue to GitHub
-Save the markdown proposal to a temporary file (e.g. `/tmp/semi-proposal.md`) and run:
+Self-check the draft with the same audit the maintainers use (path is the sibling skill):
 ```bash
-node "<path-to-plugin>/skills/semi-propose/scripts/propose.mjs" --create \
-  --title "[Category] Brief summary of proposal" \
-  --file "/tmp/semi-proposal.md" \
-  --labels "ecosystem-proposal,component"
+node "<plugin-dir>/skills/semi-triage/scripts/triage.mjs" --audit-file /tmp/semi-proposal.md
 ```
+Fix every `violation` before continuing.
 
-**Outcomes:**
-- If GitHub credentials (`GITHUB_TOKEN`, `GH_TOKEN`, or git credential helper) are active:
-  The script automatically creates the issue and prints the Issue #Number and live GitHub URL.
-- If unauthenticated / offline:
-  The script automatically writes `SEMI_PROPOSAL.md` in the project root and outputs a clickable prefilled GitHub URL (`https://github.com/hoanghuynh296/semi-nextjs-codebase/issues/new?...`) for one-click submission.
+Title prefix + labels:
+| Prefix | `--labels` |
+|---|---|
+| `[Component Request]` | `ecosystem-proposal,component` |
+| `[Token Request]` | `ecosystem-proposal,tokens` |
+| `[Icon Request]` | `ecosystem-proposal,icons` |
+| `[Lint Improvement]` | `ecosystem-proposal,lint` |
+| `[Bug Report]` | `ecosystem-proposal,bug` |
+| `[Enhancement]` | `ecosystem-proposal,enhancement` |
 
-### 5. Report Back to the User
-Summarize the proposal created, link to the issue or `SEMI_PROPOSAL.md`, and inform the user that the Semi core team can now triage it using `/semi-triage`.
+## Step 4 — Get user approval, then publish
+
+Filing an issue is an outward action on a shared repo: **show the user the title and draft and wait for explicit approval.**
+Never include secrets, internal URLs, customer data or proprietary business logic in the body.
+
+```bash
+node "$SCRIPT" --create --title "[Component Request] DateRangePicker" --file /tmp/semi-proposal.md --labels "ecosystem-proposal,component"
+```
+- Authenticated: prints `issueNumber` + `url` (labels are dropped automatically if you lack permission to set them).
+- `NO_TOKEN` / `NO_ACCESS` (repo is private): prints `savedTo` (temp file) and a prefilled `webUrl`. Give both to the user, plus the fix:
+  `gh auth login && gh auth setup-git` (or export `GITHUB_TOKEN`). Do not try other ways around auth.
+
+## Step 5 — Keep working and report
+
+- While the issue is open, keep the local workaround minimal, compliant where possible, and mark it
+  `// TODO(semi#<issue>): replace with @semi/ui <Name>` so `/semi-update` can find it later.
+- If the workaround needs a lint exception, record it in `semi-lint-baseline.json` (`--update-baseline`), never a broad `skip`.
+- Tell the user the issue link and that maintainers will review it with `/semi-triage`.

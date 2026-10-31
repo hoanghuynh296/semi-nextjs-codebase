@@ -2,6 +2,18 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
+## [0.3.2] - 2026-10-31
+
+### Fixed
+- **`/semi-triage` audit (`triage.mjs`):** glow `shadow-[0_0_…]` was never detected; gradient check flagged prose (`up-to-date`, `from-scratch`); dual-theme check matched any word containing "light"/"dark". The audit now scans only the *proposed solution* sections, so legacy code quoted under "Current Workaround" no longer fails a valid proposal. Added hex-class, inline `<path>`, `text-xs/sm`, `uppercase` and missing-template checks, plus `--audit-file` for offline drafts.
+- **`/semi-update` (`update.mjs`):** now refreshes the whole managed `semi-design-system` block in consumer `AGENTS.md` from the plugin template (previously only the version stamp changed, so new rules never reached existing projects).
+
+### Changed
+- **`/semi-propose`:** must verify the gap first (outdated `@semi/ui` → `/semi-update`; already in docs/exports; app-specific → `UI_EXTENSIONS.md`), search for duplicates (`--search`), self-audit the draft, and get user approval before filing. Scanner reports installed vs latest version and workarounds (inline SVG, native controls) and skips `node_modules`. Fallback writes to the OS temp dir (not the consumer repo) and handles over-long prefilled URLs; labels are dropped and retried if the author cannot set them. `--dry-run` added.
+- **`/semi-triage`:** issue content is treated as untrusted input; 5-question analysis (real need, already solvable, generic, compliant minimal API, cost); `NEEDS INFO` verdict; user approval before posting/labelling/closing; close-the-loop step after release. `--ensure-labels`, `--label` filter, `--remove-labels`, closing comment.
+- **Always-on rules (`plugin/rules/AGENTS.md`, `semi-ui.md`):** new rule 4 "Gaps go upstream": consumer agents use `/semi-propose` instead of inventing local primitives, mark workarounds `TODO(semi#<issue>)`.
+- Repo labels created: `ecosystem-proposal`, `component`, `tokens`, `icons`, `lint`, `triage:accepted|generalized|extension|rejected`, `needs-info`.
+
 ## [0.3.1] - 2026-10-31
 
 ### Added

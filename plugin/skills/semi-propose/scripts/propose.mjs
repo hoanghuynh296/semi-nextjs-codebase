@@ -1,244 +1,204 @@
 #!/usr/bin/env node
 /**
- * propose.mjs
- * 
- * Helper script for /semi-propose skill.
- * - Scans consumer project codebase for unmet UI needs and custom components.
- * - Formats standardized, high-quality GitHub issues for hoanghuynh296/semi-nextjs-codebase.
- * - Publishes the issue directly via GitHub REST API (using git credentials or GITHUB_TOKEN),
- *   or generates a pre-filled issue URL and local SEMI_PROPOSAL.md fallback.
+ * propose.mjs — helper for the /semi-propose skill.
+ *
+ *   --scan      Collect consumer-project context (installed vs latest @semi/ui, local primitives, workarounds).
+ *   --search    Look for existing issues on the core repo before filing a duplicate.
+ *   --create    Publish a proposal (body from --file) via the GitHub REST API.
+ *               Falls back to a temp file + prefilled issue URL when unauthenticated.
+ *   --dry-run   With --create: print what would be sent without calling the API.
+ *
+ * Auth: GITHUB_TOKEN / GH_TOKEN, else the user's configured git credential helper for github.com.
  */
 
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { execSync } from "node:child_process";
 
 const REPO_OWNER = "hoanghuynh296";
 const REPO_NAME = "semi-nextjs-codebase";
+const REPO_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}`;
 const GITHUB_API = "https://api.github.com";
+const MAX_PREFILL_URL = 7000; // browsers/GitHub truncate longer prefilled URLs
 
-// --- Parse CLI arguments ---
 const args = process.argv.slice(2);
-function getArg(flag, defaultValue = null) {
-  const idx = args.indexOf(flag);
-  if (idx !== -1 && idx + 1 < args.length) return args[idx + 1];
-  return defaultValue;
-}
+const getArg = (flag, def = null) => {
+  const i = args.indexOf(flag);
+  return i !== -1 && i + 1 < args.length ? args[i + 1] : def;
+};
 const hasFlag = (flag) => args.includes(flag);
+const out = (obj) => console.log(JSON.stringify(obj, null, 2));
 
 const cwd = path.resolve(getArg("--cwd", process.cwd()));
-const isScan = hasFlag("--scan");
-const isCreate = hasFlag("--create");
-const issueTitle = getArg("--title");
-const issueBody = getArg("--body");
-const issueBodyFile = getArg("--file");
-const issueLabels = getArg("--labels", "ecosystem-proposal");
-const proposalType = getArg("--type", "feature");
 
-// --- Token helper ---
 function getGitHubToken() {
   if (process.env.GITHUB_TOKEN) return process.env.GITHUB_TOKEN.trim();
   if (process.env.GH_TOKEN) return process.env.GH_TOKEN.trim();
   try {
-    const out = execSync("printf \"protocol=https\\nhost=github.com\\n\" | git credential fill 2>/dev/null", { encoding: "utf8" });
-    const m = out.match(/^password=(.+)$/m);
-    if (m && m[1]) return m[1].trim();
+    const res = execSync('printf "protocol=https\\nhost=github.com\\n" | git credential fill 2>/dev/null', {
+      encoding: "utf8",
+      env: { ...process.env, GIT_TERMINAL_PROMPT: "0" },
+    });
+    const m = res.match(/^password=(.+)$/m);
+    if (m) return m[1].trim();
   } catch {}
   return null;
 }
 
-// --- Project Scanner ---
-function scanProject(projectDir) {
-  const result = {
-    projectDir,
-    name: path.basename(projectDir),
-    semiUiVersion: null,
-    nextVersion: null,
-    tailwindVersion: null,
-    customComponents: [],
-    suspectedWrappers: [],
-    unmetHints: []
-  };
-
-  const pkgPath = path.join(projectDir, "package.json");
-  if (fs.existsSync(pkgPath)) {
-    try {
-      const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
-      result.name = pkg.name || result.name;
-      const deps = { ...(pkg.dependencies || {}), ...(pkg.devDependencies || {}) };
-      result.semiUiVersion = deps["@semi/ui"] || null;
-      result.nextVersion = deps["next"] || null;
-      result.tailwindVersion = deps["tailwindcss"] || null;
-    } catch {}
-  }
-
-  // Scan for custom components
-  const searchDirs = ["src/components", "components", "app/components", "src/app/components", "ui", "src/ui"];
-  for (const relDir of searchDirs) {
-    const fullDir = path.join(projectDir, relDir);
-    if (fs.existsSync(fullDir)) {
-      try {
-        const files = fs.readdirSync(fullDir, { recursive: true });
-        for (const file of files) {
-          const ext = path.extname(file);
-          if ([".tsx", ".jsx", ".ts", ".js"].includes(ext) && !file.endsWith(".d.ts")) {
-            const baseName = path.basename(file, ext);
-            result.customComponents.push({
-              name: baseName,
-              relPath: path.join(relDir, file)
-            });
-
-            // Check if name matches common design system primitives
-            const knownPrimitives = [
-              "Button", "Modal", "Dialog", "Select", "Combobox", "Dropdown",
-              "Tabs", "Table", "Pagination", "Card", "Badge", "Chip", "Pill",
-              "Tooltip", "Popover", "Drawer", "SidePanel", "Accordion", "Slider",
-              "DateRange", "Calendar", "Upload", "Toast", "Stepper", "AudioPlayer"
-            ];
-            if (knownPrimitives.some(p => baseName.toLowerCase().includes(p.toLowerCase()))) {
-              result.suspectedWrappers.push(baseName);
-            }
-          }
-        }
-      } catch {}
-    }
-  }
-
-  return result;
-}
-
-// --- Create Issue via GitHub REST API ---
-async function createGitHubIssue({ title, body, labels }) {
+async function gh(endpoint, options = {}) {
   const token = getGitHubToken();
-  const labelList = labels ? labels.split(",").map(s => s.trim()).filter(Boolean) : [];
+  return fetch(`${GITHUB_API}${endpoint}`, {
+    ...options,
+    headers: {
+      Accept: "application/vnd.github+json",
+      "User-Agent": "semi-propose-agent",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(options.body ? { "Content-Type": "application/json" } : {}),
+      ...(options.headers || {}),
+    },
+  });
+}
 
-  if (!token) {
-    return {
-      success: false,
-      reason: "NO_TOKEN",
-      message: "No GitHub token found in GITHUB_TOKEN, GH_TOKEN, or git credential helper."
-    };
+// ---------- scan ----------
+const PRIMITIVES = [
+  "Button", "Modal", "Dialog", "Select", "Combobox", "Dropdown", "Menu", "Tabs", "Table", "DataGrid",
+  "Pagination", "Card", "Badge", "Chip", "Pill", "Tooltip", "Popover", "Drawer", "Sheet", "Accordion",
+  "Slider", "Switch", "Toggle", "Checkbox", "Radio", "DateRange", "Calendar", "TimePicker", "Upload",
+  "Dropzone", "Toast", "Stepper", "Progress", "Avatar", "Breadcrumb", "Tree", "Timeline", "Empty",
+];
+const SKIP_DIRS = new Set(["node_modules", ".next", "dist", "build", ".git", "out", "coverage"]);
+
+function walk(dir, files = []) {
+  let entries = [];
+  try { entries = fs.readdirSync(dir, { withFileTypes: true }); } catch { return files; }
+  for (const e of entries) {
+    if (SKIP_DIRS.has(e.name)) continue;
+    const full = path.join(dir, e.name);
+    if (e.isDirectory()) walk(full, files);
+    else if (/\.(tsx|jsx)$/.test(e.name)) files.push(full);
   }
+  return files;
+}
 
+function latestTag() {
   try {
-    const res = await fetch(`${GITHUB_API}/repos/${REPO_OWNER}/${REPO_NAME}/issues`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/vnd.github+json",
-        "Content-Type": "application/json",
-        "User-Agent": "semi-design-agent"
-      },
-      body: JSON.stringify({
-        title,
-        body,
-        labels: labelList
-      })
+    const res = execSync(`git ls-remote --tags --refs ${REPO_URL}.git`, {
+      encoding: "utf8", timeout: 15000, env: { ...process.env, GIT_TERMINAL_PROMPT: "0" },
     });
+    const tags = [...res.matchAll(/refs\/tags\/v(\d+)\.(\d+)\.(\d+)$/gm)].map((m) => m.slice(1).map(Number));
+    tags.sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2]);
+    const t = tags.at(-1);
+    return t ? t.join(".") : null;
+  } catch { return null; }
+}
 
-    const data = await res.json();
-    if (res.status === 201) {
-      return {
-        success: true,
-        issueNumber: data.number,
-        htmlUrl: data.html_url,
-        title: data.title
-      };
-    } else {
-      return {
-        success: false,
-        reason: "API_ERROR",
-        status: res.status,
-        message: data.message || JSON.stringify(data)
-      };
+function scanProject(dir) {
+  const r = {
+    projectDir: dir, name: path.basename(dir),
+    semiUi: { declared: null, installed: null, latest: null, outdated: null },
+    stack: { next: null, react: null, tailwind: null },
+    localPrimitives: [], workarounds: { inlineSvgPath: [], nativeSelect: [], nativeDateOrNumber: [] },
+    filesScanned: 0,
+  };
+  try {
+    const pkg = JSON.parse(fs.readFileSync(path.join(dir, "package.json"), "utf8"));
+    r.name = pkg.name || r.name;
+    const deps = { ...pkg.dependencies, ...pkg.devDependencies };
+    r.semiUi.declared = deps["@semi/ui"] || null;
+    r.stack = { next: deps.next || null, react: deps.react || null, tailwind: deps.tailwindcss || null };
+  } catch {}
+  try {
+    r.semiUi.installed = JSON.parse(fs.readFileSync(path.join(dir, "node_modules/@semi/ui/package.json"), "utf8")).version;
+  } catch {}
+  r.semiUi.latest = latestTag();
+  if (r.semiUi.installed && r.semiUi.latest) r.semiUi.outdated = r.semiUi.installed !== r.semiUi.latest;
+
+  const files = walk(dir).filter((f) => !f.includes(`${path.sep}node_modules${path.sep}`));
+  r.filesScanned = files.length;
+  for (const f of files) {
+    const rel = path.relative(dir, f);
+    const base = path.basename(f).replace(/\.(tsx|jsx)$/, "");
+    if (/(^|\/)(components|ui)\//.test(rel.split(path.sep).join("/")) && PRIMITIVES.some((p) => base.toLowerCase().includes(p.toLowerCase()))) {
+      r.localPrimitives.push(rel);
     }
-  } catch (err) {
-    return {
-      success: false,
-      reason: "NETWORK_ERROR",
-      message: err.message
-    };
+    let src = "";
+    try { src = fs.readFileSync(f, "utf8"); } catch { continue; }
+    if (/<svg[\s\S]{0,400}?<path\b/.test(src)) r.workarounds.inlineSvgPath.push(rel);
+    if (/<select\b/.test(src)) r.workarounds.nativeSelect.push(rel);
+    if (/type=["'](date|number)["']/.test(src)) r.workarounds.nativeDateOrNumber.push(rel);
   }
+  return r;
 }
 
-// --- Generate Fallback / Web URL ---
-function generateWebIssueUrl({ title, body, labels }) {
-  const base = `https://github.com/${REPO_OWNER}/${REPO_NAME}/issues/new`;
-  const params = new URLSearchParams();
-  if (title) params.set("title", title);
-  if (body) params.set("body", body);
-  if (labels) params.set("labels", labels);
-  return `${base}?${params.toString()}`;
+// ---------- search duplicates ----------
+async function searchIssues(query) {
+  const q = encodeURIComponent(`repo:${REPO_OWNER}/${REPO_NAME} is:issue ${query}`);
+  const res = await gh(`/search/issues?q=${q}&per_page=10`);
+  if (!res.ok) return { ok: false, status: res.status, hint: res.status === 404 || res.status === 401 ? "Private repo: GitHub auth required (gh auth login && gh auth setup-git, or GITHUB_TOKEN)." : undefined };
+  const data = await res.json();
+  return {
+    ok: true,
+    total: data.total_count,
+    items: data.items.map((i) => ({ number: i.number, title: i.title, state: i.state, labels: i.labels.map((l) => l.name), url: i.html_url })),
+  };
 }
 
-// --- Execution ---
+// ---------- create ----------
+async function createIssue({ title, body, labels }) {
+  if (!getGitHubToken()) return { success: false, reason: "NO_TOKEN" };
+  const post = (payload) => gh(`/repos/${REPO_OWNER}/${REPO_NAME}/issues`, { method: "POST", body: JSON.stringify(payload) });
+  let res = await post({ title, body, labels });
+  let labelsDropped = false;
+  if (res.status === 422 && labels.length) { // label missing/forbidden → retry without labels
+    res = await post({ title, body });
+    labelsDropped = true;
+  }
+  const data = await res.json().catch(() => ({}));
+  if (res.status === 201) return { success: true, number: data.number, url: data.html_url, labelsDropped };
+  return { success: false, reason: res.status === 404 ? "NO_ACCESS" : "API_ERROR", status: res.status, message: data.message };
+}
+
+function fallback({ title, body, labels }) {
+  const safe = title.replace(/[^\w-]+/g, "-").slice(0, 60);
+  const file = path.join(os.tmpdir(), `semi-proposal-${safe}.md`);
+  fs.writeFileSync(file, `# ${title}\n\n${body}\n`, "utf8");
+  const p = new URLSearchParams({ title, body, labels: labels.join(",") });
+  let url = `${REPO_URL}/issues/new?${p}`;
+  let urlNote;
+  if (url.length > MAX_PREFILL_URL) {
+    url = `${REPO_URL}/issues/new?${new URLSearchParams({ title, labels: labels.join(",") })}`;
+    urlNote = `Body too long for a prefilled URL; open the link and paste the body from ${file}.`;
+  }
+  return { savedTo: file, webUrl: url, urlNote };
+}
+
 async function main() {
-  if (isScan) {
-    const scan = scanProject(cwd);
-    console.log(JSON.stringify(scan, null, 2));
-    return;
+  if (hasFlag("--scan")) return out(scanProject(cwd));
+
+  if (hasFlag("--search")) {
+    const q = getArg("--search");
+    if (!q) { out({ error: "Usage: --search \"<keywords>\"" }); process.exit(1); }
+    return out(await searchIssues(q));
   }
 
-  if (isCreate) {
-    let body = issueBody;
-    if (!body && issueBodyFile) {
-      const filePath = path.resolve(cwd, issueBodyFile);
-      if (fs.existsSync(filePath)) {
-        body = fs.readFileSync(filePath, "utf8");
-      }
-    }
+  if (hasFlag("--create")) {
+    const title = getArg("--title");
+    const file = getArg("--file");
+    const body = getArg("--body") ?? (file && fs.existsSync(path.resolve(cwd, file)) ? fs.readFileSync(path.resolve(cwd, file), "utf8") : null);
+    const labels = getArg("--labels", "ecosystem-proposal").split(",").map((s) => s.trim()).filter(Boolean);
+    if (!title || !body) { out({ success: false, error: "Missing --title or --file/--body" }); process.exit(1); }
+    if (hasFlag("--dry-run")) return out({ dryRun: true, repo: `${REPO_OWNER}/${REPO_NAME}`, title, labels, bodyChars: body.length });
 
-    if (!issueTitle || !body) {
-      console.error(JSON.stringify({
-        success: false,
-        error: "Missing required --title or --body (or --file)"
-      }));
-      process.exit(1);
-    }
-
-    const result = await createGitHubIssue({
-      title: issueTitle,
-      body,
-      labels: issueLabels
-    });
-
-    if (result.success) {
-      console.log(JSON.stringify({
-        success: true,
-        issueNumber: result.issueNumber,
-        url: result.htmlUrl,
-        title: result.title,
-        message: `Issue #${result.issueNumber} created successfully on ${REPO_OWNER}/${REPO_NAME}!`
-      }, null, 2));
-    } else {
-      // Fallback: save to file and generate URL
-      const fallbackFile = path.join(cwd, "SEMI_PROPOSAL.md");
-      const content = `# ${issueTitle}\n\n${body}`;
-      fs.writeFileSync(fallbackFile, content, "utf8");
-      const webUrl = generateWebIssueUrl({ title: issueTitle, body, labels: issueLabels });
-
-      console.log(JSON.stringify({
-        success: false,
-        reason: result.reason,
-        errorMessage: result.message,
-        savedTo: fallbackFile,
-        webUrl,
-        message: `Could not publish directly via GitHub API (${result.reason}). Proposal saved to ${fallbackFile}. Open the webUrl to publish.`
-      }, null, 2));
-    }
-    return;
+    const r = await createIssue({ title, body, labels });
+    if (r.success) return out({ success: true, issueNumber: r.number, url: r.url, labelsDropped: r.labelsDropped });
+    return out({ success: false, reason: r.reason, status: r.status, message: r.message, ...fallback({ title, body, labels }) });
   }
 
-  // Default: Help output
   console.log(`Semi Propose CLI
-Usage:
-  node propose.mjs --scan [--cwd <path>]
-  node propose.mjs --create --title "<title>" --body "<body>" [--labels "l1,l2"]
-  node propose.mjs --create --title "<title>" --file "<path-to-body-file>"
-`);
+  node propose.mjs --scan [--cwd <dir>]
+  node propose.mjs --search "<keywords>"
+  node propose.mjs --create --title "<title>" --file <body.md> [--labels "ecosystem-proposal,component"] [--dry-run]`);
 }
 
-main().catch(err => {
-  console.error(err);
-  process.exit(1);
-});
+main().catch((e) => { out({ error: e.message }); process.exit(1); });
