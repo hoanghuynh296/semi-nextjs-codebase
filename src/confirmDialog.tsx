@@ -2,7 +2,9 @@
 
 // App-styled replacement for window.confirm() (docs/DESIGN_SYSTEM.md §14). Mount <ConfirmHost /> once in the root
 // layout, then `if (await confirmDialog({ title: "Xoá?", tone: "danger" })) …` anywhere. No state library needed.
-import React, { useEffect, useSyncExternalStore } from "react";
+import React, { useRef, useSyncExternalStore } from "react";
+import { useDialog } from "./a11y";
+import { useSemiLocale } from "./locale";
 import type { ReactNode } from "react";
 import { MODAL_BTN_DANGER, MODAL_BTN_PRIMARY, MODAL_BTN_SECONDARY } from "../styles/buttons";
 
@@ -54,54 +56,46 @@ function subscribe(l: () => void) {
 /** Mounted once in the root layout; renders the dialog opened by `confirmDialog()`. */
 export function ConfirmHost() {
   const c = useSyncExternalStore(subscribe, () => current, () => null);
-
-  useEffect(() => {
-    if (!c) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.stopPropagation();
-        resolveConfirm(false);
-      }
-    };
-    window.addEventListener("keydown", onKey, true);
-    return () => window.removeEventListener("keydown", onKey, true);
-  }, [c]);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const t = useSemiLocale();
+  const { titleId } = useDialog(panelRef, !!c, () => resolveConfirm(false));
 
   if (!c) return null;
   const danger = c.tone === "danger";
 
   return (
     <div
-      className="fixed inset-0 z-[9000] flex items-center justify-center p-4 bg-black/70 backdrop-blur-lg"
+      className="fixed inset-0 z-dialog flex items-center justify-center p-4 bg-overlay backdrop-blur-lg"
       onClick={() => resolveConfirm(false)}
     >
       <div
+        ref={panelRef}
         role="alertdialog"
         aria-modal="true"
-        aria-labelledby="semi-confirm-title"
-        className="bg-panel border border-line rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden"
+        aria-labelledby={titleId}
+        className="bg-panel border border-line rounded-2xl w-full max-w-sm shadow-overlay overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <div className={`px-5 pt-5 pb-4 space-y-2 ${c.icon ? "text-center" : ""}`}>
           {c.icon && <div className="flex justify-center pb-1">{c.icon}</div>}
-          <h3 id="semi-confirm-title" className="text-[15px] font-semibold text-contrast">
+          <h3 id={titleId} className="text-title font-semibold text-contrast">
             {c.title}
           </h3>
-          {c.message && <p className="text-[13px] text-muted leading-relaxed whitespace-pre-line">{c.message}</p>}
+          {c.message && <p className="text-ui text-muted leading-relaxed whitespace-pre-line">{c.message}</p>}
         </div>
         <div
           className={`px-5 pb-5 max-sm:pb-[max(1rem,env(safe-area-inset-bottom))] flex items-center gap-2 ${c.icon ? "*:flex-1" : "justify-end max-sm:*:flex-1"}`}
         >
           <button type="button" onClick={() => resolveConfirm(false)} className={MODAL_BTN_SECONDARY}>
-            {c.cancelLabel || "Huỷ"}
+            {c.cancelLabel || t.cancel}
           </button>
           <button
             type="button"
-            autoFocus
+            data-autofocus
             onClick={() => resolveConfirm(true)}
             className={danger ? MODAL_BTN_DANGER : MODAL_BTN_PRIMARY}
           >
-            {c.confirmLabel || "Đồng ý"}
+            {c.confirmLabel || t.ok}
           </button>
         </div>
       </div>

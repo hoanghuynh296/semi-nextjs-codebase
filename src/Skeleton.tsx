@@ -1,5 +1,8 @@
+"use client";
+
 // Shimmer placeholders shown while a page or a list loads (docs/DESIGN_SYSTEM.md §13b). The `.shimmer` class lives in base.css.
 import React from "react";
+import { useSemiLocale } from "./locale";
 import { CARD } from "../styles/surfaces";
 
 /** One shimmering block; size and radius come from className (default rounded-lg). */
@@ -8,7 +11,9 @@ export function Skeleton({ className = "", style }: { className?: string; style?
 }
 
 /** Wrapper that tells assistive tech the region is loading. `relative` keeps the absolute sr-only label inside scroll containers. */
-export function Loading({ children, className = "", label = "Đang tải" }: { children: React.ReactNode; className?: string; label?: string }) {
+export function Loading({ children, className = "", label: labelProp }: { children: React.ReactNode; className?: string; label?: string }) {
+  const t = useSemiLocale();
+  const label = labelProp ?? t.loading;
   return (
     <div role="status" aria-busy="true" aria-live="polite" className={`relative ${className}`}>
       <span className="sr-only">{label}</span>

@@ -3,6 +3,7 @@
 // Page title and underline display-tab heading of the Semi Design System (docs/DESIGN_SYSTEM.md §1, §4a).
 // Titles are text-only (no subtitles, no text action buttons on the title row — actions belong in SubpageToolbar).
 import React from "react";
+import { useSemiLocale } from "./locale";
 
 export function PageTitle({
   title,
@@ -13,7 +14,7 @@ export function PageTitle({
 }) {
   return (
     <div className={`mb-6 sm:mb-7 min-w-0 ${className}`}>
-      <h1 className="pb-2 font-display text-[22px] sm:text-[26px] leading-[1.15] font-semibold text-contrast tracking-tight truncate">
+      <h1 className="pb-2 font-display text-heading sm:text-display leading-[1.15] font-semibold text-contrast tracking-tight truncate">
         {title}
       </h1>
     </div>
@@ -33,7 +34,7 @@ export function PageTabsTitle<T extends string = string>({
   tabs,
   value,
   onChange,
-  ariaLabel = "Chế độ xem",
+  ariaLabel: ariaLabelProp,
   className = "",
 }: {
   tabs: PageTabOption<T>[];
@@ -42,6 +43,8 @@ export function PageTabsTitle<T extends string = string>({
   ariaLabel?: string;
   className?: string;
 }) {
+  const t = useSemiLocale();
+  const ariaLabel = ariaLabelProp ?? t.views;
   return (
     <div className={`mb-6 sm:mb-7 min-w-0 ${className}`}>
       <div
@@ -58,7 +61,7 @@ export function PageTabsTitle<T extends string = string>({
               role="tab"
               aria-selected={isOn}
               onClick={() => onChange(tab.key)}
-              className={`relative pb-2 font-display text-[22px] sm:text-[26px] leading-[1.15] font-semibold tracking-tight whitespace-nowrap transition cursor-pointer shrink-0 ${
+              className={`relative pb-2 font-display text-heading sm:text-display leading-[1.15] font-semibold tracking-tight whitespace-nowrap transition cursor-pointer shrink-0 ${
                 isOn ? "text-contrast" : "text-muted hover:text-contrast"
               }`}
             >

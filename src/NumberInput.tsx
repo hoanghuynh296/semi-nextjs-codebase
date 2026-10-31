@@ -6,6 +6,8 @@
 // DOM value (uncontrolled, defaultValue) and onBlur work unchanged.
 import React, { useRef, useState } from "react";
 import { NumPadPopup, useCoarsePointer } from "./NumPadPopup";
+import { useField } from "./Field";
+import { useSemiLocale } from "./locale";
 
 type Props = Omit<React.InputHTMLAttributes<HTMLInputElement>, "inputMode"> & {
   ref?: React.Ref<HTMLInputElement>;
@@ -25,6 +27,8 @@ const setNativeValue = (el: HTMLInputElement, v: string) => {
 
 export function NumberInput({ ref, numpadLabel, unit, integer, onClick, readOnly, disabled, type = "number", ...rest }: Props) {
   const coarse = useCoarsePointer();
+  const t = useSemiLocale();
+  const field = useField();
   const own = useRef<HTMLInputElement | null>(null);
   const [pad, setPad] = useState<string | null>(null);
   const usePad = coarse && !readOnly && !disabled;
@@ -38,6 +42,10 @@ export function NumberInput({ ref, numpadLabel, unit, integer, onClick, readOnly
   return (
     <>
       <input
+        id={field?.id}
+        aria-describedby={field?.describedBy}
+        aria-invalid={field?.invalid || undefined}
+        required={field?.required}
         {...rest}
         ref={setRefs}
         type={usePad ? "text" : type}
@@ -51,7 +59,7 @@ export function NumberInput({ ref, numpadLabel, unit, integer, onClick, readOnly
       />
       {pad !== null && (
         <NumPadPopup
-          label={numpadLabel || rest["aria-label"] || rest.placeholder || "Nhập số"}
+          label={numpadLabel || rest["aria-label"] || rest.placeholder || t.enterNumber}
           unit={unit}
           initial={pad}
           integer={integer}

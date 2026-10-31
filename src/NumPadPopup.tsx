@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { useDialog } from "./a11y";
+import { useSemiLocale } from "./locale";
 import { createPortal } from "react-dom";
 import { Icon } from "./Icon";
 
@@ -99,11 +101,9 @@ export function NumPadPopup({ label, unit, initial, integer, allowPercent, onCom
   const [fresh, setFresh] = useState(true); // next digit replaces the initial value
   const [error, setError] = useState(false);
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const strings = useSemiLocale();
+  const { titleId } = useDialog(panelRef, true, onClose);
 
   const press = (k: string) => {
     setError(false);
@@ -168,7 +168,7 @@ export function NumPadPopup({ label, unit, initial, integer, allowPercent, onCom
   };
 
   const keyCls =
-    "h-12 sm:h-14 rounded-lg bg-raised text-body text-[18px] font-medium active:bg-line transition-colors select-none touch-manipulation cursor-pointer flex items-center justify-center";
+    "h-12 sm:h-14 rounded-lg bg-raised text-body text-kpi font-medium active:bg-line transition-colors select-none touch-manipulation cursor-pointer flex items-center justify-center";
   const mute = "text-muted";
 
   const renderKey = (k: string, cls = "", children?: React.ReactNode) => (
@@ -179,21 +179,25 @@ export function NumPadPopup({ label, unit, initial, integer, allowPercent, onCom
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[10000] bg-black/70 backdrop-blur-lg flex items-end sm:items-center justify-center p-3"
+      className="fixed inset-0 z-keypad bg-overlay backdrop-blur-lg flex items-end sm:items-center justify-center p-3"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-sm bg-panel border border-line rounded-xl p-3 shadow-2xl text-body"
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        className="w-full max-w-sm bg-panel border border-line rounded-xl p-3 shadow-overlay text-body"
         style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-1 pb-2">
-          <span className="text-[13px] font-medium text-muted truncate">{label}</span>
+          <span id={titleId} className="text-ui font-medium text-muted truncate">{label}</span>
           <button
             type="button"
             onClick={onClose}
             className="w-8 h-8 rounded-lg text-muted hover:text-contrast flex items-center justify-center cursor-pointer"
-            aria-label="Đóng"
+            aria-label={strings.close}
           >
             <Icon name="close" className="w-4 h-4" />
           </button>
@@ -205,13 +209,13 @@ export function NumPadPopup({ label, unit, initial, integer, allowPercent, onCom
           }`}
         >
           <span
-            className={`text-[20px] tabular-nums truncate flex-1 text-right text-contrast ${
+            className={`text-heading-sm tabular-nums truncate flex-1 text-right text-contrast ${
               fresh && text ? "bg-primary-500/25 rounded px-1" : ""
             }`}
           >
             {text || <span className="text-muted">0</span>}
           </span>
-          {unit && <span className="text-[13px] text-muted tabular-nums flex-shrink-0">{unit}</span>}
+          {unit && <span className="text-ui text-muted tabular-nums flex-shrink-0">{unit}</span>}
         </div>
 
         <div className="grid grid-cols-4 gap-2 mb-2">
@@ -246,7 +250,7 @@ export function NumPadPopup({ label, unit, initial, integer, allowPercent, onCom
           type="button"
           onClick={confirm}
           className="mt-2 w-full h-12 rounded-lg bg-accent hover:bg-accent-hover text-on-accent flex items-center justify-center cursor-pointer touch-manipulation"
-          aria-label="Xác nhận"
+          aria-label={strings.confirm}
         >
           <Icon name="check" className="w-6 h-6" />
         </button>

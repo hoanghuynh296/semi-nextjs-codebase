@@ -21,8 +21,9 @@ export function Pills<T extends string>({
           key={o.key}
           type="button"
           title={o.title}
+          aria-pressed={value === o.key}
           onClick={() => onChange(o.key)}
-          className={`px-2.5 h-full rounded-lg text-[12px] font-medium whitespace-nowrap transition cursor-pointer ${
+          className={`px-2.5 h-full rounded-lg text-label font-medium whitespace-nowrap transition cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 ${
             value === o.key ? "bg-raised text-contrast" : "text-muted hover:text-contrast"
           }`}
         >

@@ -4,6 +4,7 @@
 // - Left slot: filter pills / chips / CustomSelect dropdowns
 // - Right slot: icon-only primary CTA (BTN_PRIMARY BTN_ICON) + SearchInput + RefreshButton (+ optional extra controls)
 import React from "react";
+import { useSemiLocale } from "./locale";
 import { Icon, type IconName } from "./Icon";
 import { SearchInput } from "./SearchInput";
 import { RefreshButton } from "./RefreshButton";
@@ -14,11 +15,11 @@ export function SubpageToolbar({
   left,
   right,
   onPrimaryAction,
-  primaryActionLabel = "Thêm mới",
+  primaryActionLabel: primaryActionLabelProp,
   primaryActionIcon = "plus",
   searchValue,
   onSearchChange,
-  searchPlaceholder = "Tìm kiếm…",
+  searchPlaceholder: searchPlaceholderProp,
   onRefresh,
   className = "",
 }: {
@@ -42,6 +43,9 @@ export function SubpageToolbar({
   onRefresh?: () => Promise<unknown> | unknown;
   className?: string;
 }) {
+  const t = useSemiLocale();
+  const primaryActionLabel = primaryActionLabelProp ?? t.add;
+  const searchPlaceholder = searchPlaceholderProp ?? t.search;
   return (
     <div className={`${STICKY_TOOLBAR} flex flex-wrap items-center justify-between gap-2.5 min-w-0 mb-5 ${className}`}>
       <div className="flex items-center gap-2 flex-wrap min-w-0">{left}</div>

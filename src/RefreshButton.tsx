@@ -3,10 +3,13 @@
 // Icon-only "Làm mới" page action: reloads the page's
 // data; the icon spins while the reload runs (a button running its own action may show a spinner, §13b).
 import React, { useState } from "react";
+import { useSemiLocale } from "./locale";
 import { Icon } from "./Icon";
 import { BTN_ICON, BTN_SECONDARY } from "../styles/buttons";
 
-export function RefreshButton({ onRefresh, className = "", label = "Làm mới" }: { onRefresh: () => unknown; className?: string; label?: string }) {
+export function RefreshButton({ onRefresh, className = "", label: labelProp }: { onRefresh: () => unknown; className?: string; label?: string }) {
+  const t = useSemiLocale();
+  const label = labelProp ?? t.refresh;
   const [busy, setBusy] = useState(false);
   return (
     <button

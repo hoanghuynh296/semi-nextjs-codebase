@@ -3,6 +3,7 @@
 // Date field with an app-styled calendar popover (the browser's own date popup is white and ignores the theme).
 // Values are local days "YYYY-MM-DD"; display is dd/mm/yyyy; weeks start on Monday.
 import React, { useEffect, useRef, useState } from "react";
+import { useSemiLocale } from "./locale";
 import { Icon } from "./Icon";
 
 const WEEKDAYS = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
@@ -30,6 +31,7 @@ export function DatePicker({
   ariaLabel?: string;
   className?: string;
 }) {
+  const t = useSemiLocale();
   const [open, setOpen] = useState(false);
   const selected = parse(value);
   const [view, setView] = useState(() => {
@@ -67,7 +69,7 @@ export function DatePicker({
   const start = new Date(view.y, view.m, 1 - ((first.getDay() + 6) % 7));
   const days = Array.from({ length: 42 }, (_, i) => new Date(start.getFullYear(), start.getMonth(), start.getDate() + i));
   const today = iso(new Date());
-  const label = selected ? `${pad(selected.getDate())}/${pad(selected.getMonth() + 1)}/${selected.getFullYear()}` : "Chọn ngày";
+  const label = selected ? `${pad(selected.getDate())}/${pad(selected.getMonth() + 1)}/${selected.getFullYear()}` : t.selectDate;
 
   return (
     <div ref={ref} className={`relative inline-block ${className}`}>
@@ -77,7 +79,7 @@ export function DatePicker({
         aria-haspopup="dialog"
         aria-expanded={open}
         onClick={toggle}
-        className="flex items-center gap-2 bg-panel border border-line rounded-lg text-contrast text-[12px] font-medium tabular-nums px-2.5 h-[34px] hover:border-line-hover focus:outline-none focus:border-line-hover transition"
+        className="flex items-center gap-2 bg-panel border border-line rounded-lg text-contrast text-label font-medium tabular-nums px-2.5 h-[34px] hover:border-line-hover focus:outline-none focus:border-line-hover transition"
       >
         <span>{label}</span>
         <Icon name="calendar" className="w-4 h-4 text-muted" />
@@ -87,20 +89,20 @@ export function DatePicker({
         <div
           role="dialog"
           aria-label={ariaLabel}
-          className="absolute right-0 mt-1.5 w-[264px] bg-panel/95 backdrop-blur-xl border border-line rounded-xl shadow-2xl z-50 p-3 flex flex-col gap-2"
+          className="absolute right-0 mt-1.5 w-[264px] bg-panel/95 backdrop-blur-xl border border-line rounded-xl shadow-overlay z-popover p-3 flex flex-col gap-2"
         >
           <div className="flex items-center justify-between">
-            <button type="button" aria-label="Tháng trước" onClick={() => shift(-1)} className="w-8 h-8 rounded-lg flex items-center justify-center text-muted hover:text-contrast hover:bg-raised transition">
+            <button type="button" aria-label={t.prevMonth} onClick={() => shift(-1)} className="w-8 h-8 rounded-lg flex items-center justify-center text-muted hover:text-contrast hover:bg-raised transition">
               <Icon name="back" className="w-4 h-4" />
             </button>
-            <span className="text-[13px] font-medium text-contrast tabular-nums">
+            <span className="text-ui font-medium text-contrast tabular-nums">
               Tháng {view.m + 1}, {view.y}
             </span>
-            <button type="button" aria-label="Tháng sau" onClick={() => shift(1)} className="w-8 h-8 rounded-lg flex items-center justify-center text-muted hover:text-contrast hover:bg-raised transition">
+            <button type="button" aria-label={t.nextMonth} onClick={() => shift(1)} className="w-8 h-8 rounded-lg flex items-center justify-center text-muted hover:text-contrast hover:bg-raised transition">
               <Icon name="chevron" className="w-4 h-4" />
             </button>
           </div>
-          <div className="grid grid-cols-7 text-center text-[11px] text-muted">
+          <div className="grid grid-cols-7 text-center text-caption text-muted">
             {WEEKDAYS.map((w) => (
               <span key={w} className="h-7 flex items-center justify-center">
                 {w}
@@ -122,7 +124,7 @@ export function DatePicker({
                     onChange(key);
                     setOpen(false);
                   }}
-                  className={`h-8 rounded-lg text-[12px] tabular-nums flex items-center justify-center transition disabled:opacity-30 disabled:pointer-events-none ${
+                  className={`h-8 rounded-lg text-label tabular-nums flex items-center justify-center transition disabled:opacity-30 disabled:pointer-events-none ${
                     isSel
                       ? "bg-primary-500/20 text-accent-fg font-medium"
                       : key === today
@@ -145,7 +147,7 @@ export function DatePicker({
                 onChange(today);
                 setOpen(false);
               }}
-              className="text-[12px] font-medium text-accent-fg hover:text-contrast disabled:opacity-30 disabled:pointer-events-none transition"
+              className="text-label font-medium text-accent-fg hover:text-contrast disabled:opacity-30 disabled:pointer-events-none transition"
             >
               Hôm nay
             </button>

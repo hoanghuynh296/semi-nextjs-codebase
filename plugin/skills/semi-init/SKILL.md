@@ -34,18 +34,43 @@ node "<path-to-plugin>/skills/semi-audit/scripts/audit.mjs" --cwd "<target-dir>"
 ---
 
 ### Case B — Existing Codebase (One or More Frontend Apps Found)
-1. **Present the audit summary** and ask the user the multiple-choice questions listed in **Questions Requiring User Decision** (using `ask_question`):
-   - **Target frontend app(s) (if monorepo):** Refactor all discovered frontend apps or a specific one?
-   - **Next.js & Tailwind CSS version (always asked):** Default `(Recommended) Latest versions (next@latest + tailwindcss@latest)`, keep current, or custom version.
-   - **Layout Shell (`AppShell`):** Replace legacy `<aside>` + mobile hamburger drawer with `@semi/ui`'s floating Bento `AppShell` + collapsible `w-52`/`w-14` sidebar + `MobileTabBar`?
-   - **Page Headers, Toolbars & `ui.tsx` Wrappers:** Remove local `ui.tsx` wrappers and standardize every page on `PageTitle`/`PageTabsTitle` + `SubpageToolbar` (icon-only `+` CTA, `SearchInput`, `RefreshButton`) + `Modal` (`MODAL_FOOT`) + `FIELD_INPUT`?
-   - **List Views (`<table>` vs Bento `CARD`s):** Convert entity overview grids to Bento `CARD`s (with `IconTile` / `STATUS_DOT`) and add `<Pagination>` to dense transactional tables?
-2. **Propose the 4-Phase Refactor Plan and wait for user approval:**
-   - **Phase 1 — Install `@semi/ui` & Upgrade Next.js/Tailwind:**
-     ```bash
-     node "<path-to-this-skill>/scripts/init.mjs" --cwd "<app-dir>" --apply --write-baseline --next-version "<latest|keep|ver>" --tailwind-version "<latest|keep|ver>"
-     ```
-   - **Phase 2 — Bento `AppShell` & `MobileTabBar`:** Refactor the main layout (`layout.tsx`) to use `AppShell` (floating `rounded-2xl` panels on `bg-canvas`, collapsible `w-52`/`w-14` sidebar with grouped `sections`, and `MobileTabBar` on phones).
-   - **Phase 3 — Remove `ui.tsx` Wrappers & Standardize `PageTitle` + `SubpageToolbar` + `KpiCard` + `Modal` + `FIELD_INPUT`:** Replace local wrapper components (`PageHeader`, `Select`, `Input`, `Modal`, `Button`, `EmptyState`, custom `KPICard`) with direct imports from `@semi/ui` and `@semi/ui/styles`.
-   - **Phase 4 — Bento Cards, `Pagination` & Zero `semi-lint` Violations:** Upgrade list views (Bento `CARD`s / `IconTile` / `<Pagination>`), replace `font-mono` on numbers/codes with `tabular-nums`, update `semi-lint-baseline.json`, and verify `npx semi-lint` + `npx tsc --noEmit` + `npm run build` are all green.
-3. Execute Phases 1–4 after the user approves.
+
+The goal is a migration that misses nothing: every file is inventoried, every change is reviewable, and "done" is measured
+(zero findings), never assumed. A ratchet baseline is only a temporary safety net between PRs.
+
+1. **Inventory (read-only).**
+   ```bash
+   node "<path-to-plugin>/skills/semi-audit/scripts/audit.mjs" --cwd "<app-dir>" --inventory "<app-dir>/semi-migration.json"
+   node "<path-to-this-skill>/scripts/init.mjs" --cwd "<app-dir>" --dry-run   # writes semi-codemod-report.md, changes nothing
+   ```
+   `semi-migration.json` lists every file with colour / size debt per rule, grouped by module, plus the token coverage %.
+   `semi-codemod-report.md` shows each automatic replacement (`bg-white` → `bg-panel`, `bg-white dark:bg-slate-900` →
+   `bg-panel`) and every token that has **no safe mapping** (needs a human decision).
+2. **Present the audit summary + codemod preview** and ask the multiple-choice questions in **Questions Requiring User
+   Decision** (`ask_question`): target app(s) in a monorepo, Next.js / Tailwind versions, brand colour (`primary-*`
+   override), what to do with each duplicate local component, and which **Pattern** items to adopt (below).
+3. **Propose the plan as two tracks, one PR per module** (modules = the `modules` keys of `semi-migration.json`, biggest
+   first), and wait for approval:
+   - **Track A — Foundation (mandatory for every Semi app):**
+     - **A1 Install:** `init.mjs --apply` installs `@semi/ui`, wires `tokens.css` / `base.css` / `@source` and
+       `transpilePackages`, writes `semi-lint.json`, runs the codemod (same as the dry-run report) and records a
+       baseline. Then edit the root layout yourself: `<html suppressHydrationWarning>`, `<ThemeScript />` in `<head>`,
+       body wrapped in `<ThemeProvider>` with `<ConfirmHost />` and `<ToastHost />` (see README §3).
+       ```bash
+       node "<path-to-this-skill>/scripts/init.mjs" --cwd "<app-dir>" --apply --next-version "<latest|keep|ver>" --tailwind-version "<latest|keep|ver>"
+       ```
+     - **A2 Per module:** resolve every unresolved token from the report by hand (pick a token, never re-add a
+       physical colour), replace native controls / local wrappers with `@semi/ui` (`Button`, `Field` + `Input`,
+       `CustomSelect`, `DatePicker`, `NumberInput`, `Checkbox`, `Switch`, `Modal`, `Drawer`, `Tabs`, `Menu`, `toast`,
+       `Alert`, `Table`, `EmptyState`), and type sizes to the scale (`text-caption` … `text-display`).
+   - **Track B — Patterns (opt-in, per user answers):** `AppShell` + `MobileTabBar`, `PageTitle` / `PageTabsTitle` +
+     `SubpageToolbar`, Bento `Card` grids instead of entity tables, `KpiCard`, `Pagination`.
+4. **Definition of Done for every module PR** (check all before moving on):
+   - `npx semi-lint` reports **0 findings for the module's files** — re-run `npx semi-lint --update-baseline` so the
+     baseline shrinks; never raise it and never add a `skip` for a whole folder.
+   - `npx tsc --noEmit` and the production build pass.
+   - Screens of the module checked in **both themes** (`data-theme="light"` and `"dark"`): no white boxes in dark, no
+     unreadable text in light, focus ring visible when tabbing.
+   - Inventory re-run: the module's `findings` is 0 and the coverage % went up.
+5. **Finish:** final `audit.mjs --inventory` shows **0 findings in every module** and `semi-lint-baseline.json` has no
+   colour / size entries left. Report coverage before → after to the user. Only then is the migration complete.

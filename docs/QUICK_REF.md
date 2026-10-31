@@ -36,12 +36,20 @@ Chips (`Chip`, `chipClass(active)`): `rounded-full h-[34px] px-3.5`, ghost when 
 leading dot or icon (`TONE_DOT`, `chipIconClass(tone)`). Card tiles keep their area tint. Flat: no gradients, no glow
 blobs, no `shadow-[0_0_…]` (status dots and power buttons too). Active card = `CARD_ACTIVE` (primary border).
 
-**Type:** page title (`PageTitle` / `PageTabsTitle`) `font-display text-[22px] sm:text-[26px] font-semibold tracking-tight text-contrast` ·
-KPI figure (`KpiCard`) `text-[18px] sm:text-[22px] font-semibold tabular-nums text-contrast` · section `text-[13px]–[15px]
-font-semibold text-contrast` · UI `text-[12px] font-medium text-body` · label `text-[12px] font-medium text-muted` ·
-caption `text-[11px]–[12px] text-muted` · numbers `tabular-nums` (Geist; `font-mono` only for code) · Geist +
-Montserrat Alternates (`font-display`) · weights medium/semibold · px sizes only (no `text-xs/sm`) · min `text-[11px]` ·
+**Type:** page title (`PageTitle` / `PageTabsTitle`) `font-display text-heading sm:text-display font-semibold tracking-tight text-contrast` ·
+KPI figure (`KpiCard`) `text-kpi sm:text-heading font-semibold tabular-nums text-contrast` · section `text-ui`–`text-title`
+font-semibold text-contrast` · UI `text-label font-medium text-body` · label `text-label font-medium text-muted` ·
+caption `text-caption`–`text-label` text-muted` · numbers `tabular-nums` (Geist; `font-mono` only for code) · Geist +
+Montserrat Alternates (`font-display`) · weights medium/semibold · type scale only: `text-caption` 11 · `label` 12 · `ui` 13 · `ui-lg` 14 · `title` 15 · `title-lg` 16 · `kpi` 18 · `heading-sm` 20 · `heading` 22 · `heading-lg` 24 · `display` 26 (no `text-xs/sm`, no `text-[13px]`) ·
 sentence case, no ALL CAPS.
+
+**Status, layers, elevation:** callouts / badges `bg-{danger,success,warning,info}-bg border-*-border text-*-fg` (`Alert`) ·
+dots / bars `bg-*-solid` · backdrop `bg-overlay` · floating layers `shadow-overlay` (canvas controls `shadow-float`) ·
+layers `z-sticky` < `z-drawer` < `z-modal` < `z-dialog` < `z-keypad` < `z-popover` < `z-toast` < `z-tooltip` (no `z-[9999]`).
+
+**A11y & strings:** icon-only controls need `aria-label` · forms use `Field` (label / hint / error wired) · dialogs are
+`Modal` / `Drawer` / `confirmDialog` (focus trap, Escape, focus return) · keep `FOCUS_RING` on custom controls · UI text
+in shared components comes from `useSemiLocale()` (`<SemiLocaleProvider locale={en}>`).
 
 **Shape:** controls/tiles `rounded-lg` · cards `rounded-xl` · panels/hero/modal `rounded-2xl` · chips/pills/badges
 `rounded-full` · tiny swatches `rounded`. No `rounded-md`.
@@ -67,11 +75,60 @@ sentence case, no ALL CAPS.
 
 ## Anti-patterns & Token Rules (enforced by `npx semi-lint`)
 - **No literal palette colors (`no-literal-palette`):** Never use direct physical classes like `bg-white`, `text-slate-900`, `border-slate-200`, `divide-slate-100`, `bg-slate-50`, `bg-gray-800/900`. Always use Semantic Tokens (`bg-panel`, `bg-field`, `text-contrast`, `text-body`, `text-muted`, `border-line`, `divide-divider`).
+- **No fixed chromatic text (`no-fixed-tone-text`):** `text-emerald-400`, `text-rose-700 dark:text-rose-300`, `fill-sky-500` → `text-accent-fg`, `text-*-fg`, `text-tone-<hue>`.
+- **No arbitrary colours / sizes:** `bg-[#…]`, `text-[rgb(…)]` (`hex-colour-class`), `"#fff"` in style props or configs (`literal-colour-value`), `text-[13px]` (`arbitrary-text-size`).
 - **No solid pastel surfaces (`no-solid-pastel-surfaces`):** Never use solid pastels (`bg-*-50`, `border-*-200`) for cards, rows, or containers; in dark mode they turn into glaring light rectangles. Use alpha transparency (`bg-amber-500/10 border-amber-500/20`) or standard `bg-panel`.
-- **Universal Tonal Theme-Matching:** Chromatic accents across ANY component (cards, alert banners, callouts, table rows, buttons, badges, chips) adapt seamlessly to both dark & light themes using alpha transparency: static fill `bg-<color>-500/10`, hover fill `hover:bg-<color>-500/15`, active fill `active:bg-<color>-500/20`, border `border-<color>-500/20`, hover border `hover:border-<color>-500/30`, and text `text-<color>-700 dark:text-<color>-300` (or `TONAL_CONTAINER` / `TONAL_HOVER` / `<Badge tone="...">`).
+- **Universal Tonal Theme-Matching:** Chromatic accents across ANY component (cards, alert banners, callouts, table rows, buttons, badges, chips) adapt seamlessly to both dark & light themes using alpha transparency: static fill `bg-<color>-500/10`, hover fill `hover:bg-<color>-500/15`, active fill `active:bg-<color>-500/20`, border `border-<color>-500/20`, hover border `hover:border-<color>-500/30`, and text `text-tone-<color>` (or `TONAL_CONTAINER` / `TONAL_HOVER` / `<Badge tone="...">`).
 - **No Card class override (`card-class-override`):** `<Card>` (`interactive`, `active`) owns its surface: no `bg-*` / `shadow-*` in its className.
 - **Surfaces & Shadows:** Gradients, glow, `shadow-[0_0_…]`, `shadow-sm/md/lg` are banned. Dark/Flat Bento UI relies on borders (`border-line`) rather than drop shadows.
 - **Typography:** `font-bold`, `text-[9|10px]`, `text-xs/sm`, uppercase labels, ALL CAPS buttons.
 - **Radii:** `rounded-md`.
-- **Navigation & Layout:** fixed `border-r` sidebars or `-translate-x-full` hamburger drawers (use `AppShell` + `MobileTabBar`) · local `ui.tsx` wrapper barrels (`PageHeader`, `Select`, `Input`, `Button`, `Modal`).
+- **Navigation & Layout:** fixed `border-r` sidebars or `-translate-x-full` hamburger drawers (use `AppShell` + `MobileTabBar`) · local `ui.tsx` wrapper barrels (`PageHeader`, `Select`, `Input`, `Button`, `Modal`): use `Button`, `Field` + `Input`, `CustomSelect`, `Modal`, `EmptyState` from `@semi/ui`.
 - **Icons & Controls:** emoji / ✕ ✓ glyphs, stroke 2+, inline `<path>` · native `<select>` / date / number inputs, `window.confirm` · "Đang tải…" text · Home button in app headers, page subtitles, text buttons on the page title row.
+
+## Component inventory
+
+<!-- generated:components:start (scripts/build-manifest.mjs) -->
+**Components (64)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+
+- `AppHeader`: `AppHeader`
+- `AppShell`: `AppShell`
+- `Badge`: `Badge`
+- `Button`: `Spinner`, `Button`
+- `Card`: `Card`
+- `Chip`: `Chip`
+- `Choice`: `Checkbox`, `Switch`, `RadioGroup`
+- `CustomCombobox`: `CustomCombobox`
+- `CustomSelect`: `CustomSelect`
+- `DatePicker`: `DatePicker`
+- `Drawer`: `Drawer`
+- `ExternalLink`: `ExternalLink`
+- `Feedback`: `Alert`, `Progress`, `Avatar`, `EmptyState`
+- `Field`: `Field`, `Input`, `Textarea`
+- `Icon`: `Icon`, `IconTile`
+- `KpiCard`: `KpiCard`
+- `Markdown`: `Markdown`
+- `MobileTabBar`: `MobileTabBar`
+- `Modal`: `Modal`
+- `NumPadPopup`: `NumPadPopup`
+- `NumberInput`: `NumberInput`
+- `Overlay`: `Tooltip`, `Menu`
+- `PageActions`: `PageActionsProvider`, `PageActionsSlot`, `PageActions`
+- `PageTitle`: `PageTitle`, `PageTabsTitle`
+- `Pagination`: `Pagination`
+- `Pills`: `Pills`
+- `RefreshButton`: `RefreshButton`
+- `SearchInput`: `SearchInput`
+- `SidePanel`: `SidePanelToggle`, `SidePanel`
+- `Skeleton`: `Skeleton`, `Loading`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton`
+- `SubpageToolbar`: `SubpageToolbar`
+- `Table`: `Table`, `THead`, `TBody`, `TR`, `TH`, `TD`
+- `Tabs`: `Tabs`
+- `ThemeProvider`: `ThemeProvider`, `ThemeToggle`, `ThemeSwitcher`
+- `ThemeScript`: `ThemeScript`
+- `Toast`: `ToastHost`
+- `confirmDialog`: `ConfirmHost`
+- `locale`: `SemiLocaleProvider`
+
+**Hooks:** `useField`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useSemiLocale` · **Functions:** `chipClass`, `chipIconClass`, `pageWindow`, `themeScript`, `toast`, `dismissToast`, `confirmDialog`, `cn`
+<!-- generated:components:end -->

@@ -14,7 +14,7 @@ export function StorybookShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   // Normalize active route
-  const activeId = pathname.includes("/components") ? "components" : "foundations";
+  const activeId = ["components", "primitives", "patterns"].find((p) => pathname.includes(`/${p}`)) ?? "foundations";
 
   const sections: ShellNavSection[] = [
     {
@@ -33,6 +33,20 @@ export function StorybookShell({ children }: { children: React.ReactNode }) {
           shortLabel: "Components",
           icon: "sliders",
           href: "./components",
+        },
+        {
+          id: "primitives",
+          label: "Primitives & Forms",
+          shortLabel: "Primitives",
+          icon: "zap",
+          href: "./primitives",
+        },
+        {
+          id: "patterns",
+          label: "Layout Patterns",
+          shortLabel: "Patterns",
+          icon: "grid",
+          href: "./patterns",
         },
       ],
     },
@@ -79,7 +93,7 @@ export function StorybookShell({ children }: { children: React.ReactNode }) {
         ) : (
           <div className="flex flex-col gap-2">
             <ThemeSwitcher fullWidth />
-            <div className="flex items-center justify-between text-[11px] text-muted px-1">
+            <div className="flex items-center justify-between text-caption text-muted px-1">
               <span className="tabular-nums">@semi/ui v{pkg.version}</span>
               <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 text-success-fg font-medium tabular-nums">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />

@@ -15,6 +15,8 @@ Use this skill when the user invokes `/semi-audit` to inspect how closely a proj
    ```bash
    node "<path-to-this-skill>/scripts/audit.mjs" --cwd "<workspace-or-app-dir>"
    ```
+   (`--inventory <file>` additionally exports the per-file list as JSON; only do this when the user asked for a plan,
+   since `/semi-audit` itself writes nothing.)
 2. **Present a clear, concise Vietnamese report** covering for each discovered frontend app:
    - **Stack & `@semi/ui` status:** Next.js version, Tailwind CSS version (v3 vs v4), `@semi/ui` installed or not, third-party UI libraries.
    - **Structural alignment with 3D Noobs Studio:**
@@ -24,6 +26,10 @@ Use this skill when the user invokes `/semi-audit` to inspect how closely a proj
      - Local `ui.tsx` wrapper barrels shadowing `@semi/ui` or using `bg-field` on `<input>`/`<textarea>`.
      - Raw multi-column HTML `<table>` views vs Bento `CARD` grids and `<Pagination>`.
    - **`semi-lint` violations:** Hard violations (must be 0) and Ratchet debt counts by rule and directory.
+   - **Migration inventory:** token coverage % and colour / size findings per module (one module = one refactor PR).
+     The colour rules read every class token of every string literal (className, `cn()`, constants, templates,
+     `@apply`), including variants (`dark:`, `hover:`, `group-hover:`) and every colour prefix (`bg`, `text`, `border-*`,
+     `divide`, `ring`, `outline`, `fill`, `stroke`, `from/via/to`, `shadow`, `placeholder`, …), so nothing is missed.
    - **Recommended next command:**
      - Suggest `/semi-init` if `@semi/ui` is not installed yet or the app needs full 4-phase structural adoption.
      - Suggest `/semi-update` if `@semi/ui` is already installed and needs to be upgraded to the latest release tag + structural rules.

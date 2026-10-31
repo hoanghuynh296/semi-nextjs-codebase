@@ -707,6 +707,15 @@ export const ICON_CATALOG: Record<IconName, IconMeta> = {
     dont: "Không dùng cho camera trực tiếp (dùng camera).",
     keywords: ["hình ảnh", "ảnh chụp", "thumbnail", "picture", "photo"],
   },
+  more: {
+    name: "more",
+    category: "action",
+    purpose: "Mở menu thao tác phụ (ba chấm) của một hàng, thẻ hoặc thanh công cụ",
+    do: "Dùng làm nút icon-only mở <Menu> chứa các thao tác ít dùng (Sửa tên, Nhân bản, Xoá).",
+    dont: "Không dùng cho \"Xem thêm\" nội dung (dùng chevronDown) hay điều hướng (dùng chevron).",
+    lucideEquivalent: "ellipsis",
+    keywords: ["thêm", "menu", "ba chấm", "more", "ellipsis", "actions", "overflow"],
+  },
   minus: {
     name: "minus",
     category: "action",

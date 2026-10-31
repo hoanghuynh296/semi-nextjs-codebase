@@ -1,7 +1,7 @@
 # Semi Design System (`@semi/ui` + `semi-design` plugin)
 
 > 🌟 **Live Storybook & Icon Catalogue:** [https://hoanghuynh296.github.io/semi-nextjs-codebase/](https://hoanghuynh296.github.io/semi-nextjs-codebase/)
-> Xem trực tiếp trên web toàn bộ **169 icons** (search real-time, click copy JSX), Two-Tier Semantic Tokens, Dual-Theme (Dark + Light mode) và Showcase các components chuẩn Bento AppShell.
+> Xem trực tiếp trên web toàn bộ **170 icons** (search real-time, click copy JSX), Two-Tier Semantic Tokens, Dual-Theme (Dark + Light mode) và Showcase các components chuẩn Bento AppShell.
 
 Hệ thống Design System dùng chung cho toàn bộ dự án web thuộc hệ sinh thái **Semi** (bao gồm **3D Noobs Studio**, `iot`, `bmcu` và các ứng dụng web mới).
 Xây dựng cho **Next.js 16 + React 19 + Tailwind CSS 4**, hỗ trợ chuyển đổi giao diện Dark/Light mượt mà không cần `dark:bg-...` thủ công nhờ kiến trúc Semantic Tokens.
@@ -13,7 +13,7 @@ Repository này đóng gói **2 sản phẩm trong cùng 1 tag phiên bản (sem
    - `/semi-audit` — **Kiểm tra sức khỏe (Read-only)** (chỉ quét và in báo cáo độ đồng nhất token + cấu trúc layout, không cài đặt hay sửa bất kỳ file nào).
    - `/semi-propose` — **Đề xuất tính năng từ dự án con** (quét nhu cầu chưa được `@semi/ui` đáp ứng tại dự án thực tế, cấu trúc issue chuẩn và tạo issue trực tiếp trên GitHub repo lõi).
    - `/semi-triage` — **Đánh giá & Tổng quát hóa Issue (Dành cho Core)** (đọc issue trên GitHub, phân tích tính đúng đắn, đối chiếu rulebook, và thiết kế giải pháp tổng quát cho toàn hệ sinh thái mà không break rule).
-2. **NPM Package (`@semi/ui`):** chứa Design Tokens (`tokens.css`, `base.css`), style constants (`@semi/ui/styles`), 25 React components bao gồm cả khung bố cục trang (`AppShell`, `MobileTabBar`, `PageTitle`, `PageTabsTitle`, `SubpageToolbar`, `KpiCard`, `Modal`, …), và công cụ kiểm tra `semi-lint`.
+2. **NPM Package (`@semi/ui`):** chứa Design Tokens (`tokens.css`, `base.css`), style constants (`@semi/ui/styles`), ~45 React components (danh sách đầy đủ + props: `components.json`) bao gồm cả khung bố cục trang (`AppShell`, `MobileTabBar`, `PageTitle`, `PageTabsTitle`, `SubpageToolbar`, `KpiCard`, `Modal`, …), và công cụ kiểm tra `semi-lint`.
 
 ---
 
@@ -95,6 +95,10 @@ Agent tại repo lõi sẽ:
 ```tsx
 // 1. Components (Layout + Controls + Theming)
 import {
+  // Primitives
+  Button, Spinner, Field, Input, Textarea, Checkbox, Switch, RadioGroup, Tabs, Tooltip, Menu,
+  toast, ToastHost, Alert, Progress, Avatar, EmptyState, Table, THead, TBody, TR, TH, TD, Drawer,
+  SemiLocaleProvider, useSemiLocale, en, vi,
   ThemeProvider, ThemeScript, useTheme, ThemeToggle, ThemeSwitcher,
   Card, AppShell, MobileTabBar, PageTitle, PageTabsTitle, SubpageToolbar, KpiCard, Modal,
   Icon, IconTile,
@@ -137,14 +141,14 @@ Nếu một thương hiệu con cần đổi màu nhấn chính (`primary-*`), k
 
 Trong `app/layout.tsx` (chống nháy sai theme khi tải trang):
 ```tsx
-import { ConfirmHost, ThemeProvider, ThemeScript } from "@semi/ui";
+import { ConfirmHost, ThemeProvider, ThemeScript, ToastHost } from "@semi/ui";
 
 <html lang="vi" data-theme="dark" className="dark" suppressHydrationWarning>
   <head>
     <ThemeScript defaultTheme="dark" />
   </head>
   <body>
-    <ThemeProvider defaultTheme="dark">{children}<ConfirmHost /></ThemeProvider>
+    <ThemeProvider defaultTheme="dark">{children}<ConfirmHost /><ToastHost /></ThemeProvider>
   </body>
 </html>
 ```
@@ -158,6 +162,11 @@ import { ConfirmHost, ThemeProvider, ThemeScript } from "@semi/ui";
 3. Chạy kiểm tra:
    ```bash
    npm run check
+   ```
+   (`check:tokens` + `check:vendor` + `check:version` + `check:manifest` + `typecheck` + `semi-lint` + `npm test`). Nếu đổi component / style:
+   `npm run build:manifest`. Kiểm tra trên trình duyệt (contrast AA cả 2 theme, axe, theme, bàn phím):
+   ```bash
+   npm run build:storybook && npm run test:ui
    ```
 4. Nếu sửa `lint/semi-lint.mjs` hoặc `tokens/tokens.json`: chạy `npm run sync:vendor` để cập nhật bản copy trong plugin (`check` sẽ fail nếu quên).
 5. Cập nhật `CHANGELOG.md`, chạy `npm run bump -- X.Y.Z` (cập nhật cả 5 manifest + `tokens.css`; minor cho thay đổi token/quy tắc, major khi đổi tên/xoá component), commit và gắn tag `vX.Y.Z`.

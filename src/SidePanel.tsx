@@ -4,6 +4,7 @@
 // with the same sidebar toggle as the home menu. While the width animates the content keeps its full width (clipped)
 // so it does not re-wrap every frame.
 import React from "react";
+import { useSemiLocale } from "./locale";
 import { Icon } from "./Icon";
 
 export const SIDE_PANEL_WIDTH = 320;
@@ -11,12 +12,13 @@ export const SIDE_PANEL_COLLAPSED = 48;
 
 /** The collapse toggle placed at the top of the panel content (next to the first label). */
 export function SidePanelToggle({ onClick }: { onClick: () => void }) {
+  const t = useSemiLocale();
   return (
     <button
       type="button"
       onClick={onClick}
-      aria-label="Thu gọn bảng cài đặt"
-      title="Thu gọn bảng cài đặt"
+      aria-label={t.collapsePanel}
+      title={t.collapsePanel}
       className="w-7 h-7 -my-1 rounded-lg flex items-center justify-center text-muted hover:text-contrast hover:bg-raised transition shrink-0"
     >
       <Icon name="sidebar" className="w-3.5 h-3.5" />
@@ -37,6 +39,7 @@ export function SidePanel({
   width?: number;
   children: React.ReactNode;
 }) {
+  const t = useSemiLocale();
   const [prevCollapsed, setPrevCollapsed] = React.useState(collapsed);
   const [settling, setSettling] = React.useState(false);
   if (prevCollapsed !== collapsed) {
@@ -63,8 +66,8 @@ export function SidePanel({
         <button
           type="button"
           onClick={onToggleCollapse}
-          aria-label="Mở rộng bảng cài đặt"
-          title="Mở rộng bảng cài đặt"
+          aria-label={t.expandPanel}
+          title={t.expandPanel}
           className="w-7 h-7 rounded-lg flex items-center justify-center text-muted hover:text-contrast hover:bg-raised transition"
         >
           <Icon name="sidebar" className="w-3.5 h-3.5" />

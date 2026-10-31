@@ -2,6 +2,26 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
+## [0.5.0] - 2026-10-31
+
+### Added
+- **Tokens:** type scale `text-caption` 11 · `text-label` 12 · `text-ui` 13 · `text-ui-lg` 14 · `text-title` 15 · `text-title-lg` 16 · `text-kpi` 18 · `text-heading-sm` 20 · `text-heading` 22 · `text-heading-lg` 24 · `text-display` 26; layers `z-sticky` 30 · `z-drawer` 40 · `z-modal` 50 · `z-dialog` 60 · `z-keypad` 70 · `z-popover` 80 · `z-toast` 90 · `z-tooltip` 95; `bg-overlay`; `shadow-overlay`, `shadow-float`; status `bg/border-{danger,success,warning,info}-{bg,border}`, `bg-*-solid`, `text-on-solid`; `ease-out-soft` / `ease-in-soft`; pinned `radius-lg/xl/2xl`.
+- **Components:** `Button` + `Spinner`, `Field` + `Input` + `Textarea` (+ `useField`), `Checkbox`, `Switch`, `RadioGroup`, `Tabs`, `Tooltip`, `Menu`, `toast()` / `dismissToast()` + `ToastHost`, `Alert`, `Progress`, `Avatar`, `EmptyState`, `Table` (`THead`, `TBody`, `TR`, `TH`, `TD`), `Drawer`, `SemiLocaleProvider` / `useSemiLocale` (`vi`, `en`), `useDialog` / `useFocusTrap` / `useScrollLock`, `useAnchoredPosition`.
+- **Styles:** `BTN_GHOST`, `BTN_SM`, `EMPTY_STATIC`, `cn()`, `FOCUS_RING`, `OVERLAY`. Icon `more`.
+- **Tooling:** `lint/classes.mjs` (class-token analysis) and `lint/codemod.mjs` (token codemod) with `node --test` fixtures (`npm test`); `/semi-init --dry-run` writes `semi-codemod-report.md`; `/semi-audit --inventory` writes `semi-migration.json` (per-module debt + coverage %); `components.json` manifest + generated component inventory in `QUICK_REF.md` (`npm run build:manifest`, checked by `npm run check`); Playwright browser checks (`npm run test:ui`) in CI.
+- **Storybook:** "Primitives & Forms" and "Layout Patterns" pages; every exported component is shown.
+
+### Changed
+- **Library uses the new tokens everywhere:** px text sizes → type scale, `z-[9000]/[10000]/[10001]` → `z-dialog/keypad/popover`, `bg-black/70` → `bg-overlay`, `shadow-2xl` → `shadow-overlay`, status dots and danger buttons → status tokens.
+- **Accessibility:** `Modal`, `confirmDialog`, `NumPadPopup` trap focus, lock page scroll and return focus; `Modal` gets `aria-labelledby`, optional `description`, `closeOnBackdrop`; `CustomCombobox` is a WAI-ARIA combobox (↑/↓/Enter/Escape, `aria-activedescendant`); `Pills` sets `aria-pressed`; all shared control classes (`BTN_*`, `ICON_BTN*`, `MODAL_CLOSE`, `CHIP_BASE`, header / viewport controls) show a `focus-visible` ring.
+- **UI strings** of every component come from the locale (props still override).
+- **`semi-lint`:** colour rules read class tokens from every string literal (and `@apply` in CSS) instead of regex over lines; scans `.js/.jsx/.mjs/.css` too; reports hit lines. New ratchet rules `no-fixed-tone-text`, `literal-colour-value`, `arbitrary-text-size`; `hex-colour-class` covers every colour prefix and `rgb()/hsl()/oklch()`; `legacy-ui-wrapper` points to the new components.
+- **`/semi-init` codemod:** token-level, string literals only; collapses light/dark pairs; dark-first mapping; type scale; reports unresolved tokens instead of guessing. Starter layout includes `ToastHost`.
+- **`/semi-init`, `/semi-audit`, `/semi-update` skills:** inventory → plan (Foundation / Patterns, one module per PR) → Definition of Done (0 findings per module, both themes checked) → final zero scan.
+
+### Migration
+- Existing apps: run `/semi-update`. The new ratchet rules start at 0 for every file; preview fixes with `init.mjs --dry-run`, apply, resolve the reported tokens, then shrink the baseline. Add `<ToastHost />` next to `<ConfirmHost />` if you use `toast()`.
+
 ## [0.4.0] - 2026-10-31
 
 ### Changed (visible)

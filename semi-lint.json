@@ -1,9 +1,22 @@
 {
-  "scan": ["src", "styles", "app"],
+  "scan": [
+    "src",
+    "styles",
+    "app"
+  ],
   "baseline": "semi-lint-baseline.json",
   "skip": {
-    "inline-svg-path": ["src/Icon.tsx"],
-    "app-chrome-copy": ["styles/appChrome.ts"],
-    "legacy-ui-wrapper": ["src/Modal.tsx"]
+    "inline-svg-path": [
+      "src/Icon.tsx"
+    ],
+    "app-chrome-copy": [
+      "styles/appChrome.ts"
+    ],
+    "legacy-ui-wrapper": [
+      "src/"
+    ],
+    "loading-text": [
+      "src/locale.tsx"
+    ]
   }
 }

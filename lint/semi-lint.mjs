@@ -6,6 +6,9 @@
 //   npx semi-lint --update-baseline   # after fixing ratchet hits (or when adopting Semi): rewrite the baseline
 //   npx semi-lint --json              # machine-readable result (used by the semi-audit skill)
 //
+// Scans .ts/.tsx/.js/.jsx/.mjs (and @apply in .css). Colour and size rules read class tokens out of every string
+// literal (lint/classes.mjs), so className strings, cn() args, constants and template parts are all covered.
+//
 // HARD rules fail on any hit. RATCHET rules are old debt: each file may not get more hits than recorded in the
 // baseline (new files start at 0), so the debt only shrinks.
 //
@@ -20,18 +23,19 @@
 // A rule that the Semi docs add and that can be grepped belongs here too (change it in the semi repo, not per app).
 import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { join, relative, resolve, sep } from "node:path";
+import { analyse } from "./classes.mjs";
 
 /** [id, regex, message] */
 export const HARD = [
   ["font-weight", /font-(bold|extrabold|black)\b/, "weights are font-medium / font-semibold only"],
-  ["tiny-text", /text-\[(8|9|10)px\]/, "minimum text size is text-[11px]"],
+  ["tiny-text", /text-\[(8|9|10)px\]/, "minimum text size is text-caption (11px)"],
   ["uppercase-label", /uppercase tracking-(wide|wider|widest)|tracking-(wide|wider|widest) uppercase/, "labels are sentence case"],
   ["native-select", /<select\b/, "use CustomSelect from @semi/ui"],
   ["rounded-md", /\brounded-md\b/, "radius scale: rounded (tiny marks) / lg / xl / 2xl / full"],
   [
     "tw-text-size",
     /\btext-(xs|sm|base|lg|xl)\b/,
-    "use explicit px sizes: body/UI text-[11px]…[15px], KPI figures KpiCard (text-[18px] sm:text-[22px]), titles PageTitle (text-[22px] sm:text-[26px])",
+    "use the type scale: text-caption 11 · text-label 12 · text-ui 13 · text-ui-lg 14 · text-title 15 · text-title-lg 16, KPI figures text-kpi sm:text-heading (KpiCard), titles text-heading sm:text-display (PageTitle)",
   ],
   ["grey-surface", /bg-gray-(800|900)|border-gray-700/, "use the surface tokens (bg-panel, border-line…)"],
   [
@@ -42,7 +46,7 @@ export const HARD = [
   [
     "legacy-ui-wrapper",
     /export\s+function\s+(PageHeader|Select|Modal|Input|Textarea|Button|EmptyState)\b/,
-    "do not keep a local ui.tsx wrapper; use PageTitle, SubpageToolbar, CustomSelect, Modal, FIELD_INPUT, BTN_*, EMPTY from @semi/ui",
+    "do not keep a local ui.tsx wrapper: use Button, Input, Textarea, Field, CustomSelect, Modal, EmptyState, PageTitle, SubpageToolbar from @semi/ui",
   ],
   ["gradient", /bg-gradient-|linear-gradient|radial-gradient|from-primary-\d+ to-/, "flat UI: no gradients"],
   [
@@ -62,7 +66,7 @@ export const HARD = [
   ["external-link", /window\.open\(|href=\{?["'`]https?:\/\//, "links to other sites use ExternalLink from @semi/ui"],
   [
     "app-chrome-copy",
-    /h-\[34px\] px-4 rounded-lg text-\[12px\] font-semibold|p-1 sm:p-1\.5 rounded-2xl z-20|rounded-2xl p-1 gap-1 select-none shadow-xl/,
+    /h-\[34px\] px-4 rounded-lg text-(?:\[12px\]|label) font-semibold|p-1 sm:p-1\.5 rounded-2xl z-20|rounded-2xl p-1 gap-1 select-none shadow-(?:xl|float)/,
     "tool-app headers / canvas controls use @semi/ui/styles (headerPrimary, VIEWPORT_TOOLBAR, VIEWPORT_PILL…), not copies",
   ],
   [
@@ -79,22 +83,30 @@ export const HARD = [
 /** Rules that are opt-in: they only run on the path prefixes listed in config "only". */
 const OPT_IN = new Set(["viewport-grid-cols"]);
 
+/** [id, regex | null, message]. null = class-token analysis (lint/classes.mjs), counted per hit. */
 export const RATCHET = [
   [
     "no-literal-palette",
-    /\b(bg|text|border|divide|from|via|to)-(?:white(?!\/)|black(?!\/)|(?:slate|gray|zinc|neutral|stone)-\d{2,3})\b/g,
-    "Tuyệt đối không dùng class màu vật lý trực tiếp (bg-white, text-slate-900, border-slate-200, divide-slate-100, from-white). Hãy dùng Semantic Tokens (bg-panel, bg-field, text-contrast, text-body, text-muted, border-line, divide-divider, from-panel) để tự động tương thích cả Dark Mode lẫn Light Mode. Chú ý: Semi tuân thủ Flat UI (không dùng gradient); nếu là lớp phủ chuyển tiếp tạm thời, phải dùng stop ngữ nghĩa.",
+    null,
+    "No physical neutral / white / black colour classes (bg-white, text-slate-900, border-gray-200, divide-zinc-100, from-white, ring-slate-300, dark:bg-slate-800 …). Use semantic tokens: bg-canvas/app/panel/field/raised, text-contrast/body/muted, border-line/line-hover/divider. white/black with an alpha (bg-white/10) stays allowed.",
   ],
   [
     "no-solid-pastel-surfaces",
-    /\b(?:(?:hover:|active:)?(?:bg|border)|divide|ring)-(?:amber|yellow|orange|red|rose|pink|fuchsia|purple|violet|indigo|blue|sky|cyan|teal|emerald|green)-(?:50|100|200)\b(?!\/)/g,
-    "Tuyệt đối không dùng bề mặt pastel nguyên khối (bg-*-50, border-*-200) vì gây chói lóa trong Dark Mode. Hãy dùng độ mờ alpha (e.g. bg-amber-500/10 border-amber-500/20) hoặc bề mặt chuẩn bg-panel.",
+    null,
+    "No solid pastel surfaces (bg-*-50…200, border-*-200, ring-*-100, divide-*-100): they glare in dark mode. Use bg-<hue>-500/10 border-<hue>-500/20 (TONAL_CONTAINER, <Badge tone>) or bg-danger-bg / bg-success-bg …",
   ],
+  [
+    "no-fixed-tone-text",
+    null,
+    "No fixed chromatic text shades (text-emerald-400, text-rose-700, dark:text-sky-300, fill-amber-500 …): one shade cannot pass contrast in both themes. Use text-accent-fg, text-danger-fg / success-fg / warning-fg / info-fg or text-tone-<hue>.",
+  ],
+  ["hex-colour-class", null, "No arbitrary colour values (bg-[#fff], text-[rgb(…)], border-[hsl(…)]): use colour tokens."],
+  ["literal-colour-value", null, "No literal CSS colours in code (\"#fff\", \"rgb(…)\" in style props or configs): use var(--color-…) tokens."],
+  ["arbitrary-text-size", null, "Use the type scale instead of text-[Npx]: text-caption 11 · label 12 · ui 13 · ui-lg 14 · title 15 · title-lg 16 · kpi 18 · heading-sm 20 · heading 22 · heading-lg 24 · display 26."],
   ["all-caps-label", /\>\s*[A-ZĐẮẰẲẴẶÂẤẦẨẪẬÊẾỀỂỄỆÔỐỒỔỖỘƠỚỜỞỠỢƯỨỪỬỮỰ]{4,}(?:[ .·…]+[A-ZĐ0-9…]+)*\s*</g, "button / label text is sentence case"],
   ["inline-svg-path", /<path\b/g, "add the icon to ICONS in @semi/ui (Icon.tsx) instead of inline <path>"],
   ["thick-stroke", /strokeWidth[=:]\s*\{?"?(2|2\.\d+|3)\b/g, "icon stroke is 1.75"],
   ["font-mono", /\bfont-mono\b/g, "numbers use tabular-nums; mono only for code"],
-  ["hex-colour-class", /(bg|text|border)-\[#/g, "use colour tokens"],
   ["narrow-container", /max-w-(4xl|5xl|6xl)\b/g, "content uses the full width"],
   ["loading-text", /^(?!.*(label|role="status")).*(Đang tải|Loading\.\.\.)/g, "show a skeleton or a progress bar, not loading text (§13b)"],
 ];
@@ -108,6 +120,7 @@ export function loadConfig(cwd = process.cwd()) {
 }
 
 const toPosix = (p) => p.split(sep).join("/");
+const SOURCE_RX = /\.(?:tsx?|jsx?|mjs|css)$/;
 
 function walk(dir, out) {
   if (!existsSync(dir)) return out;
@@ -116,7 +129,7 @@ function walk(dir, out) {
     const p = join(dir, name);
     const st = statSync(p);
     if (st.isDirectory()) walk(p, out);
-    else if (/\.tsx?$/.test(name) && !name.endsWith(".d.ts")) out.push(p);
+    else if (SOURCE_RX.test(name) && !name.endsWith(".d.ts")) out.push(p);
   }
   return out;
 }
@@ -126,7 +139,7 @@ export function filesToScan(cfg, cwd, only) {
   if (only) {
     return only
       .map((f) => resolve(cwd, f))
-      .filter((p) => /\.tsx?$/.test(p) && existsSync(p) && roots.some((r) => p === r || p.startsWith(r + sep)));
+      .filter((p) => SOURCE_RX.test(p) && !p.endsWith(".d.ts") && existsSync(p) && roots.some((r) => p === r || p.startsWith(r + sep)));
   }
   return roots.flatMap((r) => walk(r, [])).sort();
 }
@@ -139,28 +152,35 @@ export function scan(paths, cfg, cwd) {
   const onlyMap = cfg.only || {};
   const hard = [];
   const counts = Object.fromEntries(RATCHET.map(([id]) => [id, {}]));
+  const lines = Object.fromEntries(RATCHET.map(([id]) => [id, {}])); // rule → file → first hit lines (for messages)
+  const skipped = (id, name) => disabled.has(id) || (skip[id] || []).some((s) => name.startsWith(s));
+  const add = (id, name, line) => {
+    counts[id][name] = (counts[id][name] || 0) + 1;
+    (lines[id][name] ||= []).length < 5 && lines[id][name].push(line);
+  };
   for (const p of paths) {
     const name = toPosix(relative(cwd, p));
-    const lines = readFileSync(p, "utf8").split(/\r?\n/);
-    lines.forEach((raw, i) => {
+    const src = readFileSync(p, "utf8");
+    const css = p.endsWith(".css");
+    for (const f of analyse(src, { css })) if (!skipped(f.rule, name)) add(f.rule, name, f.line);
+    if (css) continue;
+    src.split(/\r?\n/).forEach((raw, i) => {
       if (!raw.trim() || isComment(raw)) return;
       for (const [id, rx, msg] of HARD) {
-        if (disabled.has(id)) continue;
-        if ((skip[id] || []).some((s) => name.startsWith(s))) continue;
+        if (skipped(id, name)) continue;
         if (OPT_IN.has(id) && !(onlyMap[id] || []).some((s) => name.startsWith(s))) continue;
         if (!OPT_IN.has(id) && onlyMap[id] && !onlyMap[id].some((s) => name.startsWith(s))) continue;
         if (rx.test(raw)) hard.push({ file: name, line: i + 1, rule: id, message: msg, text: raw.trim().slice(0, 140) });
       }
       for (const [id, rx] of RATCHET) {
-        if (disabled.has(id)) continue;
-        if ((skip[id] || []).some((s) => name.startsWith(s))) continue;
+        if (!rx || skipped(id, name)) continue;
         rx.lastIndex = 0;
         const c = (raw.match(rx) || []).length;
-        if (c) counts[id][name] = (counts[id][name] || 0) + c;
+        for (let k = 0; k < c; k++) add(id, name, i + 1);
       }
     });
   }
-  return { hard, counts };
+  return { hard, counts, lines };
 }
 
 function sortedCounts(counts) {
@@ -192,7 +212,7 @@ function main(argv) {
   const cwd = process.cwd();
   const cfg = loadConfig(cwd);
   const paths = filesToScan(cfg, cwd, args.files);
-  const { hard, counts } = scan(paths, cfg, cwd);
+  const { hard, counts, lines } = scan(paths, cfg, cwd);
   const baselinePath = resolve(cwd, cfg.baseline);
 
   if (args.update) {
@@ -211,7 +231,7 @@ function main(argv) {
   for (const [id, perFile] of Object.entries(counts)) {
     for (const [file, c] of Object.entries(perFile).sort()) {
       const allowed = base[id]?.[file] ?? 0;
-      if (c > allowed) grown.push({ file, rule: id, hits: c, baseline: allowed, message: msgs[id] });
+      if (c > allowed) grown.push({ file, rule: id, hits: c, baseline: allowed, lines: lines[id][file], message: msgs[id] });
     }
   }
   const total = Object.values(counts).reduce((s, v) => s + Object.values(v).reduce((a, b) => a + b, 0), 0);
@@ -222,7 +242,7 @@ function main(argv) {
     return hard.length || grown.length ? 1 : 0;
   }
   for (const h of hard) console.log(`${h.file}:${h.line}: [${h.rule}] ${h.message}\n    ${h.text}`);
-  for (const g of grown) console.log(`${g.file}: [${g.rule}] ${g.hits} hits, baseline ${g.baseline}: ${g.message}`);
+  for (const g of grown) console.log(`${g.file}: [${g.rule}] ${g.hits} hits (lines ${g.lines.join(", ")}${g.hits > g.lines.length ? ", …" : ""}), baseline ${g.baseline}: ${g.message}`);
   if (hard.length || grown.length) {
     console.log(
       `\nsemi-lint: ${hard.length} hard violation(s), ${grown.length} file(s) over the ratchet baseline ` +

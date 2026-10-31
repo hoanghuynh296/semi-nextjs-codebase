@@ -4,6 +4,7 @@
 // top there). Stand-alone apps: logo + app title on the left, the app's actions on the right. There is no Home button:
 // clicking the logo + title returns to `homeHref` (pass `onHome` when leaving needs a confirmation first).
 import React from "react";
+import { useSemiLocale } from "./locale";
 import Link from "next/link";
 import { Icon, type IconName } from "./Icon";
 
@@ -17,7 +18,7 @@ export function AppHeader({
   logo,
   logoIcon = "sparkles",
   homeHref = "/",
-  homeLabel = "Về trang chủ",
+  homeLabel: homeLabelProp,
 }: {
   /** Stand-alone app title; without it the bar is the home page's logo bar. */
   title?: string;
@@ -39,6 +40,8 @@ export function AppHeader({
   /** Tooltip / aria text of the logo link. */
   homeLabel?: string;
 }) {
+  const t = useSemiLocale();
+  const homeLabel = homeLabelProp ?? t.home;
   const app = title != null;
   const brand = (
     <>
@@ -48,7 +51,7 @@ export function AppHeader({
         </span>
       )}
       <span
-        className={`min-w-0 truncate text-[13px] font-semibold text-contrast tracking-tight ${hideTitleOnPhone ? "max-sm:hidden" : ""}`}
+        className={`min-w-0 truncate text-ui font-semibold text-contrast tracking-tight ${hideTitleOnPhone ? "max-sm:hidden" : ""}`}
       >
         {app ? title : productName}
       </span>
@@ -58,7 +61,7 @@ export function AppHeader({
     "min-w-0 shrink flex items-center gap-2 rounded-lg -mx-1.5 px-1.5 py-1 hover:bg-raised active:scale-95 transition";
   return (
     <header
-      className={`${app ? "block" : "hidden md:block"} sticky top-0 bg-app/95 backdrop-blur-xl border-b border-divider z-30 shrink-0 select-none ${className}`}
+      className={`${app ? "block" : "hidden md:block"} sticky top-0 bg-app/95 backdrop-blur-xl border-b border-divider z-sticky shrink-0 select-none ${className}`}
     >
       <div className="w-full px-3 sm:px-5 h-13 flex items-center gap-2.5 min-w-0">
         {onHome ? (

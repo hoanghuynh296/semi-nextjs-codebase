@@ -8,7 +8,7 @@ import { TONE_TEXT, type TileTone } from "./Icon";
 import { type SemanticTone, TONAL_SURFACE } from "../styles/surfaces";
 
 export const CHIP_BASE =
-  "shrink-0 inline-flex items-center gap-1.5 px-3.5 h-[34px] rounded-full text-[12px] font-medium whitespace-nowrap border transition cursor-pointer";
+  "shrink-0 inline-flex items-center gap-1.5 px-3.5 h-[34px] rounded-full text-label font-medium whitespace-nowrap border transition outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 cursor-pointer";
 
 const CHIP_ON = "bg-raised border-line text-contrast";
 
@@ -21,7 +21,7 @@ export const chipClass = (active: boolean) => (active ? CHIP_ON : CHIP_OFF);
 export const chipIconClass = (tone: TileTone = "green") => TONE_TEXT[tone];
 
 /** Static tag (a filament's brand / type on a card): same neutral background for every tag. */
-export const TAG = "inline-flex items-center gap-1.5 h-6 px-2 rounded-full bg-field border border-line text-[11px] font-medium text-muted";
+export const TAG = "inline-flex items-center gap-1.5 h-6 px-2 rounded-full bg-field border border-line text-caption font-medium text-muted";
 
 /** Solid dot in a tone (material / category chips and tags). */
 export const TONE_DOT: Record<TileTone, string> = {

@@ -2,6 +2,7 @@
 
 // Page-number pager: ‹ 1 … 4 [5] 6 … 12 ›. Current page = primary tint, others neutral (Dashboard style).
 import React from "react";
+import { useSemiLocale } from "./locale";
 import { Icon } from "./Icon";
 
 /** Page numbers to show around `page` (1-based); `null` = an ellipsis. */
@@ -17,7 +18,7 @@ export function pageWindow(page: number, pages: number): (number | null)[] {
   return out;
 }
 
-const BTN = "min-w-[32px] h-8 px-2 rounded-lg text-[12px] font-medium tabular-nums inline-flex items-center justify-center transition";
+const BTN = "min-w-[32px] h-8 px-2 rounded-lg text-label font-medium tabular-nums inline-flex items-center justify-center transition";
 
 export function Pagination({
   page,
@@ -31,13 +32,14 @@ export function Pagination({
   onChange: (page: number) => void;
   className?: string;
 }) {
+  const t = useSemiLocale();
   if (pages <= 1) return null;
   const go = (p: number) => p >= 1 && p <= pages && p !== page && onChange(p);
   return (
-    <nav aria-label="Phân trang" className={`flex items-center justify-center gap-1 flex-wrap ${className}`}>
+    <nav aria-label={t.pagination} className={`flex items-center justify-center gap-1 flex-wrap ${className}`}>
       <button
         type="button"
-        aria-label="Trang trước"
+        aria-label={t.prevPage}
         disabled={page <= 1}
         onClick={() => go(page - 1)}
         className={`${BTN} text-muted hover:text-contrast hover:bg-raised disabled:opacity-40 disabled:pointer-events-none`}
@@ -46,7 +48,7 @@ export function Pagination({
       </button>
       {pageWindow(page, pages).map((p, i) =>
         p === null ? (
-          <span key={`gap-${i}`} className="min-w-[24px] text-center text-[12px] text-muted" aria-hidden>
+          <span key={`gap-${i}`} className="min-w-[24px] text-center text-label text-muted" aria-hidden>
             …
           </span>
         ) : (
@@ -64,7 +66,7 @@ export function Pagination({
       )}
       <button
         type="button"
-        aria-label="Trang sau"
+        aria-label={t.nextPage}
         disabled={page >= pages}
         onClick={() => go(page + 1)}
         className={`${BTN} text-muted hover:text-contrast hover:bg-raised disabled:opacity-40 disabled:pointer-events-none`}

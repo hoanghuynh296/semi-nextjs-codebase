@@ -3,6 +3,8 @@
 // App-styled dropdown (docs/DESIGN_SYSTEM.md: never a native <select>, its OS popup ignores the theme).
 // The list opens in a fixed-position layer under (or above) the button, so it is never clipped by a scrolling panel or a modal.
 import React, { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { useSemiLocale } from "./locale";
+import { useField } from "./Field";
 import { createPortal } from "react-dom";
 import { Icon } from "./Icon";
 
@@ -43,10 +45,10 @@ interface CustomSelectProps {
 
 const TRIGGER: Record<NonNullable<CustomSelectProps["variant"]>, string> = {
   toolbar:
-    "h-[34px] px-3 bg-panel border border-line rounded-lg text-[12px] font-medium text-body hover:border-line-hover",
+    "h-[34px] px-3 bg-panel border border-line rounded-lg text-label font-medium text-body hover:border-line-hover",
   field:
-    "w-full h-9 px-3 bg-field border border-line rounded-lg text-[13px] text-contrast hover:border-line-hover focus-visible:border-primary-500/50",
-  inline: "w-full h-7 px-0 bg-transparent text-[12px] font-medium text-body hover:text-contrast",
+    "w-full h-9 px-3 bg-field border border-line rounded-lg text-ui text-contrast hover:border-line-hover focus-visible:border-primary-500/50",
+  inline: "w-full h-7 px-0 bg-transparent text-label font-medium text-body hover:text-contrast",
   bare: "",
 };
 
@@ -54,7 +56,7 @@ export function CustomSelect({
   value,
   onChange,
   options,
-  placeholder = "Chọn...",
+  placeholder: placeholderProp,
   className = "",
   align = "left",
   iconsInList = false,
@@ -66,6 +68,9 @@ export function CustomSelect({
   title,
   "aria-label": ariaLabel,
 }: CustomSelectProps) {
+  const t = useSemiLocale();
+  const placeholder = placeholderProp ?? t.select;
+  const field = useField();
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
   const [pos, setPos] = useState<{ left: number; top?: number; bottom?: number; minWidth: number; maxHeight: number } | null>(null);
@@ -146,8 +151,10 @@ export function CustomSelect({
     <div className={`relative ${block ? "block w-full min-w-0" : "inline-block"} ${className}`}>
       <button
         ref={btnRef}
-        id={id}
+        id={id ?? field?.id}
         type="button"
+        aria-describedby={field?.describedBy}
+        aria-invalid={field?.invalid || undefined}
         disabled={disabled}
         title={iconOnly && selected ? selected.label : title ?? selected?.title}
         aria-label={ariaLabel}
@@ -178,15 +185,15 @@ export function CustomSelect({
             id={listId}
             role="listbox"
             style={{ left: pos.left, top: pos.top, bottom: pos.bottom, minWidth: pos.minWidth, maxHeight: pos.maxHeight }}
-            className="fixed z-[10001] max-w-[calc(100vw-16px)] overflow-y-auto overscroll-contain bg-panel border border-line rounded-xl shadow-2xl p-1 flex flex-col gap-0.5"
+            className="fixed z-popover max-w-[calc(100vw-16px)] overflow-y-auto overscroll-contain bg-panel border border-line rounded-xl shadow-overlay p-1 flex flex-col gap-0.5"
           >
-            {options.length === 0 && <div className="px-3 py-2 text-[12px] text-muted">{placeholder}</div>}
+            {options.length === 0 && <div className="px-3 py-2 text-label text-muted">{placeholder}</div>}
             {options.map((opt, i) => {
               const isSelected = opt.value === value;
               const head = opt.group && opt.group !== options[i - 1]?.group;
               return (
                 <React.Fragment key={`${opt.group ?? ""}\u0000${opt.value}`}>
-                  {head && <div className="px-3 pt-2 pb-1 text-[11px] font-medium text-muted truncate">{opt.group}</div>}
+                  {head && <div className="px-3 pt-2 pb-1 text-caption font-medium text-muted truncate">{opt.group}</div>}
                   <button
                     type="button"
                     role="option"
@@ -196,7 +203,7 @@ export function CustomSelect({
                     title={opt.title}
                     onClick={() => pick(opt)}
                     onPointerEnter={() => setActive(i)}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-[12px] transition cursor-pointer flex items-center justify-between gap-3 disabled:opacity-40 disabled:cursor-not-allowed ${
+                    className={`w-full text-left px-3 py-2 rounded-lg text-label transition cursor-pointer flex items-center justify-between gap-3 disabled:opacity-40 disabled:cursor-not-allowed ${
                       isSelected
                         ? "bg-raised text-contrast font-medium"
                         : i === active

@@ -2,6 +2,7 @@
 
 // Phones (< md): native-style bottom tab bar with up to 6 primary navigation items.
 import React from "react";
+import { useSemiLocale } from "./locale";
 import Link from "next/link";
 import { Icon, type IconName } from "./Icon";
 
@@ -32,6 +33,7 @@ export function MobileTabBar({
   onToggleMore?: () => void;
   moreLabel?: string;
 }) {
+  const t = useSemiLocale();
   const itemClass = (on: boolean) =>
     `flex-1 min-w-0 h-16 flex flex-col items-center justify-center gap-1 transition active:scale-95 cursor-pointer ${
       on ? "text-accent-fg" : "text-muted"
@@ -42,7 +44,7 @@ export function MobileTabBar({
       <span className={`w-12 h-7 rounded-full flex items-center justify-center transition ${on ? "bg-primary-500/15" : ""}`}>
         <Icon name={icon} className="w-5 h-5" />
       </span>
-      <span className={`text-[11px] font-medium truncate max-w-full px-1 ${on ? "text-accent-fg" : "text-muted"}`}>
+      <span className={`text-caption font-medium truncate max-w-full px-1 ${on ? "text-accent-fg" : "text-muted"}`}>
         {label}
       </span>
     </>
@@ -50,8 +52,8 @@ export function MobileTabBar({
 
   return (
     <nav
-      aria-label="Điều hướng"
-      className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-app/95 backdrop-blur-xl border-t border-divider pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] select-none"
+      aria-label={t.navigation}
+      className="md:hidden fixed bottom-0 inset-x-0 z-drawer bg-app/95 backdrop-blur-xl border-t border-divider pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] select-none"
     >
       <div className="flex items-stretch">
         {tabs.map((t) => {

@@ -10,7 +10,7 @@ function inline(text: string): React.ReactNode[] {
   return text.split(/(\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\(https?:\/\/[^)\s]+\)|https?:\/\/[^\s)<>]+[^\s)<>.,;:!?])/g).map((part, i) => {
     if (part.startsWith("**") && part.endsWith("**") && part.length > 4) return <strong key={i} className="font-semibold text-contrast">{part.slice(2, -2)}</strong>;
     if (part.startsWith("`") && part.endsWith("`") && part.length > 2)
-      return <code key={i} className="px-1 rounded bg-field border border-line text-[12px]">{part.slice(1, -1)}</code>;
+      return <code key={i} className="px-1 rounded bg-field border border-line text-label">{part.slice(1, -1)}</code>;
     // Links go to other sites: a new tab, or the phone's browser inside the app
     const md = part.match(/^\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)$/);
     if (md) return <ExternalLink key={i} href={md[2]} className={LINK}>{md[1]}</ExternalLink>;

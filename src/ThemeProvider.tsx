@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useSemiLocale } from "./locale";
 import { Icon } from "./Icon";
 import type { Theme, ThemeOptions } from "./ThemeScript";
 
@@ -117,6 +118,7 @@ export interface ThemeToggleProps {
 
 /** Theme toggle button: seamlessly switches between Dark and Light mode. */
 export function ThemeToggle({ className = "", size = "md" }: ThemeToggleProps) {
+  const t = useSemiLocale();
   const { resolvedTheme, mounted, toggleTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
   const sizeClasses = size === "sm" ? "w-7 h-7" : "w-[34px] h-[34px]";
@@ -125,8 +127,8 @@ export function ThemeToggle({ className = "", size = "md" }: ThemeToggleProps) {
     <button
       type="button"
       onClick={toggleTheme}
-      title={isDark ? "Chuyển sang giao diện sáng (Light Mode)" : "Chuyển sang giao diện tối (Dark Mode)"}
-      aria-label={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+      title={isDark ? t.toLight : t.toDark}
+      aria-label={isDark ? t.toLight : t.toDark}
       className={`${sizeClasses} rounded-lg bg-field hover:bg-raised border border-line text-muted hover:text-contrast flex items-center justify-center transition active:scale-95 cursor-pointer shrink-0 ${className}`}
     >
       <Icon name={isDark ? "sun" : "moon"} className={`${size === "sm" ? "w-3.5 h-3.5" : "w-4 h-4"} transition-opacity ${mounted ? "" : "opacity-0"}`} />
@@ -145,7 +147,7 @@ export interface ThemeSwitcherProps {
   showLabels?: boolean;
   /** Stretch to the container width (sidebar footers, settings rows). */
   fullWidth?: boolean;
-  /** Override the labels (i18n). */
+  /** Override the labels (default: the SemiLocaleProvider strings). */
   labels?: Record<Theme, string>;
   className?: string;
 }
@@ -154,14 +156,16 @@ export interface ThemeSwitcherProps {
 export function ThemeSwitcher({
   showLabels = false,
   fullWidth = false,
-  labels = { light: "Sáng", dark: "Tối", system: "Hệ thống" },
+  labels: labelsProp,
   className = "",
 }: ThemeSwitcherProps) {
+  const t = useSemiLocale();
+  const labels = labelsProp ?? { light: t.themeLight, dark: t.themeDark, system: t.themeSystem };
   const { theme, mounted, setTheme } = useTheme();
   return (
     <div
       role="radiogroup"
-      aria-label="Giao diện"
+      aria-label={t.theme}
       className={`${fullWidth ? "flex w-full" : "inline-flex"} items-center gap-0.5 bg-field p-0.5 h-[34px] rounded-lg border border-line shrink-0 ${className}`}
     >
       {THEME_OPTIONS.map(({ key, icon }) => {
@@ -176,7 +180,7 @@ export function ThemeSwitcher({
             aria-label={labels[key]}
             title={labels[key]}
             onClick={() => setTheme(key)}
-            className={`${fullWidth ? "flex-1" : ""} ${showLabels ? "px-2.5" : "w-8"} h-full rounded-lg inline-flex items-center justify-center gap-1.5 text-[12px] font-medium whitespace-nowrap transition cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 ${
+            className={`${fullWidth ? "flex-1" : ""} ${showLabels ? "px-2.5" : "w-8"} h-full rounded-lg inline-flex items-center justify-center gap-1.5 text-label font-medium whitespace-nowrap transition cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 ${
               on ? "bg-raised text-contrast" : "text-muted hover:text-contrast"
             }`}
           >

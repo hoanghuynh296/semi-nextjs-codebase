@@ -5,6 +5,7 @@ import { dirname, join, relative, resolve, sep } from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { auditProject, discoverFrontendApps } from "../../semi-audit/scripts/audit.mjs";
+import { detectMode, migrateSource } from "../../semi-audit/scripts/vendor/codemod.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PLUGIN_ROOT = resolve(__dirname, "../../..");
@@ -15,6 +16,7 @@ function parseArgs(argv) {
   const opts = {
     cwd: process.cwd(),
     apply: false,
+    dryRun: false,
     writeBaseline: false,
     staticExport: false,
     starter: false,
@@ -26,6 +28,7 @@ function parseArgs(argv) {
     const a = argv[i];
     if (a === "--cwd" && argv[i + 1]) opts.cwd = resolve(argv[++i]);
     else if (a === "--apply") opts.apply = true;
+    else if (a === "--dry-run") opts.dryRun = true;
     else if (a === "--write-baseline") opts.writeBaseline = true;
     else if (a === "--static-export") opts.staticExport = true;
     else if (a === "--starter") opts.starter = true;
@@ -176,7 +179,7 @@ function wireSemiLintConfig(webDir) {
   return cfgPath;
 }
 
-function runSemanticCodemod(webDir) {
+function runSemanticCodemod(webDir, { dryRun = false } = {}) {
   const cfgPath = join(webDir, "semi-lint.json");
   let scanDirs = ["src/app", "src/components", "src/modules", "app", "components", "modules"];
   if (existsSync(cfgPath)) {
@@ -195,170 +198,48 @@ function runSemanticCodemod(webDir) {
       const p = join(dir, name);
       const st = statSync(p);
       if (st.isDirectory()) walk(p, out);
-      else if (/\.(tsx?|jsx?|css)$/.test(name) && !name.endsWith(".d.ts")) out.push(p);
+      else if (/\.(tsx?|jsx?|mjs|css)$/.test(name) && !name.endsWith(".d.ts")) out.push(p);
     }
     return out;
   }
 
-  const files = roots.flatMap((r) => walk(r, []));
+  // Token-level rewrite inside string literals only (lint/codemod.mjs); unsafe cases are reported, not guessed.
+  const files = [...new Set(roots.flatMap((r) => walk(r, [])))].map((p) => ({ p, src: readFileSync(p, "utf8"), css: p.endsWith(".css") }));
+  const mode = detectMode(files);
   let modifiedFiles = 0;
   let totalReplacements = 0;
-
-  const MAPPINGS = [
-    // Backgrounds
-    [/\bbg-white\b/g, "bg-panel"],
-    [/\bbg-(?:slate|gray|zinc|neutral|stone)-50\b/g, "bg-field"],
-    [/\bbg-(?:slate|gray|zinc|neutral|stone)-100\b/g, "bg-field"],
-    [/\bbg-(?:slate|gray|zinc|neutral|stone)-200\b/g, "bg-raised"],
-
-    // Headings & High Contrast Text
-    [/\btext-(?:slate|gray|zinc|neutral|stone)-900\b/g, "text-contrast"],
-    [/\btext-(?:slate|gray|zinc|neutral|stone)-800\b/g, "text-contrast"],
-
-    // Muted & Secondary Text
-    [/\btext-(?:slate|gray|zinc|neutral|stone)-500\b/g, "text-muted"],
-    [/\btext-(?:slate|gray|zinc|neutral|stone)-400\b/g, "text-muted"],
-
-    // Body Text
-    [/\btext-(?:slate|gray|zinc|neutral|stone)-700\b/g, "text-body"],
-    [/\btext-(?:slate|gray|zinc|neutral|stone)-600\b/g, "text-body"],
-
-    // Borders
-    [/\bborder-(?:slate|gray|zinc|neutral|stone)-50\b/g, "border-divider"],
-    [/\bborder-(?:slate|gray|zinc|neutral|stone)-100\b/g, "border-divider"],
-    [/\bborder-(?:slate|gray|zinc|neutral|stone)-200\b/g, "border-line"],
-    [/\bborder-(?:slate|gray|zinc|neutral|stone)-300\b/g, "border-line"],
-
-    // Dividers
-    [/\bdivide-(?:slate|gray|zinc|neutral|stone)-(?:50|100)\b/g, "divide-divider"],
-    [/\bdivide-(?:slate|gray|zinc|neutral|stone)-(?:200|300)\b/g, "divide-line"],
-
-    // Gradient Stops (Transitional masks / fades mapped to semantic surfaces)
-    [/\b(from|to|via)-white\b/g, "$1-panel"],
-    [/\b(from|to|via)-(?:slate|gray|zinc|neutral|stone)-50\b/g, "$1-field"],
-    [/\b(from|to|via)-(?:slate|gray|zinc|neutral|stone)-100\b/g, "$1-field"],
-    [/\b(from|to|via)-(?:slate|gray|zinc|neutral|stone)-900\b/g, "$1-canvas"],
-
-    // Shadows (Flat UI uses border-line / surfaces instead)
-    [/\bshadow-(?:sm|md|lg|xl|2xl)\b/g, ""],
-    [/(?<=\s|^)shadow(?=\s|$)/g, ""],
-  ];
-
-  const CHROMATIC_TONES = "amber|yellow|orange|red|rose|pink|fuchsia|purple|violet|indigo|blue|sky|cyan|teal|emerald|green";
-  // Hues with a themed text token (tokens.json → text-tone-*); the rest keep a 700 / dark:300 pair.
-  const TONE_TOKEN = {
-    purple: "purple", violet: "violet", indigo: "indigo", blue: "blue", sky: "sky", cyan: "cyan", teal: "teal",
-    emerald: "emerald", green: "emerald", amber: "amber", yellow: "amber", orange: "orange", rose: "rose", red: "rose", pink: "pink",
-  };
-
-  // Multi-state Tonal Adaptations across all component types (cards, banners, callouts, rows, buttons, badges, chips)
-  const bgHoverTonalRe = new RegExp(`\\bhover:bg-(${CHROMATIC_TONES})-(?:50|100|200)\\b`, "g");
-  const bgActiveTonalRe = new RegExp(`\\bactive:bg-(${CHROMATIC_TONES})-(?:100|200|300)\\b`, "g");
-  const bgStaticTonalRe = new RegExp(`(?<!dark:|hover:|active:|focus:)\\bbg-(${CHROMATIC_TONES})-(?:50|100)\\b`, "g");
-
-  const borderHoverTonalRe = new RegExp(`\\bhover:border-(${CHROMATIC_TONES})-(?:100|200|300)\\b`, "g");
-  const borderStaticTonalRe = new RegExp(`(?<!dark:|hover:|active:|focus:)\\bborder-(${CHROMATIC_TONES})-(?:100|200|300)\\b`, "g");
-
-  const divideTonalRe = new RegExp(`\\bdivide-(${CHROMATIC_TONES})-(?:50|100|200)\\b`, "g");
-  const ringTonalRe = new RegExp(`\\bring-(${CHROMATIC_TONES})-(?:100|200|300)\\b`, "g");
-  const textTonalRe = new RegExp(`(?<!dark:|hover:|active:|focus:)\\btext-(${CHROMATIC_TONES})-(?:600|700|800|900)\\b`, "g");
-
-  for (const file of files) {
-    let content = readFileSync(file, "utf8");
-    let changed = false;
-    let fileReplacements = 0;
-
-    for (const [rx, repl] of MAPPINGS) {
-      const match = content.match(rx);
-      if (match) {
-        content = content.replace(rx, repl);
-        fileReplacements += match.length;
-        changed = true;
-      }
-    }
-
-    // Adapt Chromatic Tonal Components across all types (cards, banners, callouts, rows, buttons, chips, badges)
-    // 1. Interactive hover / active states
-    const bgHoverMatches = content.match(bgHoverTonalRe);
-    if (bgHoverMatches) {
-      content = content.replace(bgHoverTonalRe, "hover:bg-$1-500/15");
-      fileReplacements += bgHoverMatches.length;
-      changed = true;
-    }
-
-    const bgActiveMatches = content.match(bgActiveTonalRe);
-    if (bgActiveMatches) {
-      content = content.replace(bgActiveTonalRe, "active:bg-$1-500/20");
-      fileReplacements += bgActiveMatches.length;
-      changed = true;
-    }
-
-    // 2. Static surfaces
-    const bgStaticMatches = content.match(bgStaticTonalRe);
-    if (bgStaticMatches) {
-      content = content.replace(bgStaticTonalRe, "bg-$1-500/10");
-      fileReplacements += bgStaticMatches.length;
-      changed = true;
-    }
-
-    // 3. Borders (hover and static), Dividers, Rings
-    const borderHoverMatches = content.match(borderHoverTonalRe);
-    if (borderHoverMatches) {
-      content = content.replace(borderHoverTonalRe, "hover:border-$1-500/30");
-      fileReplacements += borderHoverMatches.length;
-      changed = true;
-    }
-
-    const borderStaticMatches = content.match(borderStaticTonalRe);
-    if (borderStaticMatches) {
-      content = content.replace(borderStaticTonalRe, "border-$1-500/20");
-      fileReplacements += borderStaticMatches.length;
-      changed = true;
-    }
-
-    const divideMatches = content.match(divideTonalRe);
-    if (divideMatches) {
-      content = content.replace(divideTonalRe, "divide-$1-500/20");
-      fileReplacements += divideMatches.length;
-      changed = true;
-    }
-
-    const ringMatches = content.match(ringTonalRe);
-    if (ringMatches) {
-      content = content.replace(ringTonalRe, "ring-$1-500/20");
-      fileReplacements += ringMatches.length;
-      changed = true;
-    }
-
-    // 4. Dual-theme text contrast
-    const textTonalMatches = content.match(textTonalRe);
-    if (textTonalMatches) {
-      content = content.replace(textTonalRe, (match, color, offset, fullStr) => {
-        const windowStart = Math.max(0, offset - 75);
-        const windowEnd = Math.min(fullStr.length, offset + 100);
-        const slice = fullStr.slice(windowStart, windowEnd);
-        if (new RegExp(`dark:text-${color}-\\d+`).test(slice)) {
-          return match;
-        }
-        const tone = TONE_TOKEN[color];
-        return tone ? `text-tone-${tone}` : `text-${color}-700 dark:text-${color}-300`;
-      });
-      fileReplacements += textTonalMatches.length;
-      changed = true;
-    }
-
-    if (changed) {
-      content = content.replace(/className=(["'])(.*?)\1/g, (m, q, classes) => {
-        const cleaned = classes.replace(/\s{2,}/g, " ").trim();
-        return `className=${q}${cleaned}${q}`;
-      });
-      writeFileSync(file, content);
+  const report = [];
+  for (const { p, src, css } of files) {
+    const { code, changes, unresolved } = migrateSource(src, { css, mode });
+    if (!changes.length && !unresolved.length) continue;
+    const rel = relative(webDir, p).split(sep).join("/");
+    report.push({ file: rel, changes, unresolved });
+    if (code !== src) {
+      if (!dryRun) writeFileSync(p, code);
       modifiedFiles++;
-      totalReplacements += fileReplacements;
+      totalReplacements += changes.length;
     }
   }
 
-  console.log(`\nSemantic Codemod applied: updated ${modifiedFiles} files (${totalReplacements} class replacements).`);
+  const unresolvedCount = report.reduce((n, r) => n + r.unresolved.length, 0);
+  const lines = [
+    `# Semi codemod report${dryRun ? " (dry run: no file changed)" : ""}`,
+    "",
+    `Legacy styling detected: **${mode}-first**. ${totalReplacements} class replacements in ${modifiedFiles} files; ${unresolvedCount} tokens need a decision.`,
+    "",
+    ...report.flatMap((r) => [
+      `## ${r.file}`,
+      ...r.changes.map((c) => `- L${c.line}: \`${c.from}\` → ${c.to ? `\`${c.to}\`` : "_removed_"}`),
+      ...r.unresolved.map((u) => `- L${u.line}: ⚠️ \`${u.token}\` (no safe mapping: choose a token by hand)`),
+      "",
+    ]),
+  ];
+  const reportPath = join(webDir, "semi-codemod-report.md");
+  writeFileSync(reportPath, lines.join("\n"));
+  console.log(
+    `\nSemantic codemod${dryRun ? " (dry run)" : ""}: ${mode}-first app, ${totalReplacements} replacements in ${modifiedFiles} files, ` +
+      `${unresolvedCount} unresolved tokens. Report: ${relative(process.cwd(), reportPath) || reportPath}`,
+  );
 }
 
 function wireAgentsMd(rootDir, version) {
@@ -392,7 +273,7 @@ function writeNewProjectStarter(webDir, appName) {
     layoutPath,
     `import type { Metadata } from "next";
 import { Geist, Montserrat_Alternates } from "next/font/google";
-import { ConfirmHost, ThemeProvider, ThemeScript } from "@semi/ui";
+import { ConfirmHost, ThemeProvider, ThemeScript, ToastHost } from "@semi/ui";
 import "./globals.css";
 
 const geist = Geist({ subsets: ["latin", "vietnamese"], variable: "--font-geist" });
@@ -417,6 +298,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider defaultTheme="dark">
           {children}
           <ConfirmHost />
+          <ToastHost />
         </ThemeProvider>
       </body>
     </html>
@@ -536,13 +418,13 @@ export default function HomePage() {
               <div className="flex items-center gap-2.5 min-w-0">
                 <IconTile name="printer" tone="sky" size="md" />
                 <div className="min-w-0">
-                  <div className="text-[13px] font-semibold text-contrast truncate">{item.name}</div>
-                  <div className="text-[11px] text-muted tabular-nums">Mã #{item.id}</div>
+                  <div className="text-ui font-semibold text-contrast truncate">{item.name}</div>
+                  <div className="text-caption text-muted tabular-nums">Mã #{item.id}</div>
                 </div>
               </div>
               <span className={\`w-2 h-2 rounded-full shrink-0 \${STATUS_DOT[item.status]}\`} />
             </div>
-            <div className="flex items-center justify-between pt-2 border-t border-divider text-[12px]">
+            <div className="flex items-center justify-between pt-2 border-t border-divider text-label">
               <span className="text-muted">Hiệu suất</span>
               <span className="text-contrast font-medium tabular-nums">{item.metric}</span>
             </div>
@@ -562,6 +444,12 @@ mkdirSync(opts.cwd, { recursive: true });
 const discovered = discoverFrontendApps(opts.cwd);
 let webDir = discovered[0] || opts.cwd;
 const isExisting = discovered.length > 0;
+
+if (isExisting && opts.dryRun) {
+  // Preview the colour / size codemod: writes semi-codemod-report.md, changes no source file.
+  runSemanticCodemod(webDir, { dryRun: true });
+  process.exit(0);
+}
 
 if (isExisting && !opts.apply) {
   console.log("Existing project detected. Running /semi-audit first (pass --apply after user approves refactor plan)...\n");

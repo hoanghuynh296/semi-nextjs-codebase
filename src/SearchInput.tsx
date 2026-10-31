@@ -3,6 +3,7 @@
 // Collapsible search box: shows a search icon button by default;
 // expands into the text field on click or when active (value is not empty).
 import React, { useEffect, useRef, useState } from "react";
+import { useSemiLocale } from "./locale";
 import { Icon } from "./Icon";
 
 export function SearchInput({
@@ -18,6 +19,7 @@ export function SearchInput({
   className?: string;
   label?: string;
 }) {
+  const t = useSemiLocale();
   const [isOpen, setIsOpen] = useState(() => Boolean(value));
   const containerRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -89,13 +91,13 @@ export function SearchInput({
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         aria-label={label || placeholder}
-        className="w-full bg-panel border border-line hover:border-line-hover rounded-lg pl-8 pr-7 h-[34px] text-[12px] text-contrast placeholder:text-muted outline-none focus:border-line-hover transition"
+        className="w-full bg-panel border border-line hover:border-line-hover rounded-lg pl-8 pr-7 h-[34px] text-label text-contrast placeholder:text-muted outline-none focus:border-line-hover transition"
       />
       <button
         type="button"
         onClick={handleClearOrClose}
-        aria-label={value ? "Xoá tìm kiếm" : "Đóng tìm kiếm"}
-        title={value ? "Xoá tìm kiếm" : "Đóng tìm kiếm"}
+        aria-label={value ? t.clearSearch : t.closeSearch}
+        title={value ? t.clearSearch : t.closeSearch}
         className="w-5 h-5 rounded flex items-center justify-center text-muted hover:text-contrast absolute right-1.5 top-1/2 -translate-y-1/2 transition"
       >
         <Icon name="close" className="w-3 h-3" />

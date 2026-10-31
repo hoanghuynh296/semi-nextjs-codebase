@@ -79,7 +79,7 @@ export default function FoundationsPage() {
       {/* Page Header */}
       <div className="space-y-3 pb-2 border-b border-line/60">
         <PageTitle title="Foundations & Icon Catalogue" />
-        <p className="text-[13px] text-muted max-w-3xl leading-relaxed">
+        <p className="text-ui text-muted max-w-3xl leading-relaxed">
           Tài liệu tổng quan hệ thống Design Tokens (màu sắc tối, typography, bán kính viền) và công cụ tra cứu{" "}
           <strong className="text-body">{totalCount} icons chuẩn hóa</strong> của hệ sinh thái Semi. Không inline SVG, không dùng glyph unicode.
         </p>
@@ -106,50 +106,50 @@ export default function FoundationsPage() {
       {/* SECTION 1: Surfaces & Radius Tokens */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-[15px] font-semibold text-body flex items-center gap-2">
+          <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="layers" className="w-4 h-4 text-accent-fg" />
             <span>Dark Surfaces & Tokens Scale</span>
           </h2>
-          <span className="text-[11px] text-muted font-medium">Bento 5-Surface Architecture</span>
+          <span className="text-caption text-muted font-medium">Bento 5-Surface Architecture</span>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           <div className="p-3.5 rounded-xl bg-canvas border border-line space-y-2">
-            <span className="text-[11px] font-medium text-muted block">bg-canvas</span>
-            <div className="text-[13px] font-semibold text-body">#111111</div>
-            <p className="text-[11px] text-muted leading-normal">Khung ngoài cùng AppShell, lớp bọc toàn trang</p>
+            <span className="text-caption font-medium text-muted block">bg-canvas</span>
+            <div className="text-ui font-semibold text-body">#111111</div>
+            <p className="text-caption text-muted leading-normal">Khung ngoài cùng AppShell, lớp bọc toàn trang</p>
           </div>
           <div className="p-3.5 rounded-xl bg-app border border-line space-y-2">
-            <span className="text-[11px] font-medium text-muted block">bg-app</span>
-            <div className="text-[13px] font-semibold text-body">#181818</div>
-            <p className="text-[11px] text-muted leading-normal">Nền chính của content panel, trang nội dung</p>
+            <span className="text-caption font-medium text-muted block">bg-app</span>
+            <div className="text-ui font-semibold text-body">#181818</div>
+            <p className="text-caption text-muted leading-normal">Nền chính của content panel, trang nội dung</p>
           </div>
           <div className="p-3.5 rounded-xl bg-panel border border-line space-y-2">
-            <span className="text-[11px] font-medium text-muted block">bg-panel</span>
-            <div className="text-[13px] font-semibold text-body">#262626</div>
-            <p className="text-[11px] text-muted leading-normal">Thẻ Card, Sidebar Bento, Header thanh công cụ</p>
+            <span className="text-caption font-medium text-muted block">bg-panel</span>
+            <div className="text-ui font-semibold text-body">#262626</div>
+            <p className="text-caption text-muted leading-normal">Thẻ Card, Sidebar Bento, Header thanh công cụ</p>
           </div>
           <div className="p-3.5 rounded-xl bg-field border border-line space-y-2">
-            <span className="text-[11px] font-medium text-muted block">bg-field</span>
-            <div className="text-[13px] font-semibold text-body">#2E2E2E</div>
-            <p className="text-[11px] text-muted leading-normal">Thân Modal, popup menu, dropdown panel</p>
+            <span className="text-caption font-medium text-muted block">bg-field</span>
+            <div className="text-ui font-semibold text-body">#2E2E2E</div>
+            <p className="text-caption text-muted leading-normal">Thân Modal, popup menu, dropdown panel</p>
           </div>
           <div className="p-3.5 rounded-xl bg-raised border border-line space-y-2">
-            <span className="text-[11px] font-medium text-muted block">bg-raised</span>
-            <div className="text-[13px] font-semibold text-body">#383838</div>
-            <p className="text-[11px] text-muted leading-normal">Trạng thái Hover trên bảng dữ liệu, track fills</p>
+            <span className="text-caption font-medium text-muted block">bg-raised</span>
+            <div className="text-ui font-semibold text-body">#383838</div>
+            <p className="text-caption text-muted leading-normal">Trạng thái Hover trên bảng dữ liệu, track fills</p>
           </div>
         </div>
 
         {/* Radius rule banner */}
-        <div className="p-3.5 rounded-xl bg-panel border border-line flex flex-wrap items-center justify-between gap-4 text-[12px]">
+        <div className="p-3.5 rounded-xl bg-panel border border-line flex flex-wrap items-center justify-between gap-4 text-label">
           <div className="flex items-center gap-2 text-body">
             <Icon name="info" className="w-4 h-4 text-tone-sky shrink-0" />
             <span>
               <strong>Bán kính viền (Radii):</strong> <code className="text-accent-fg">rounded-lg</code> (Controls 8px) · <code className="text-accent-fg">rounded-xl</code> (Cards 12px) · <code className="text-accent-fg">rounded-2xl</code> (Panels/Modal 16px) · <code className="text-accent-fg">rounded-full</code> (Chips/Pills)
             </span>
           </div>
-          <span className="text-[11px] px-2.5 py-1 rounded bg-red-500/10 text-danger-fg font-medium">
+          <span className="text-caption px-2.5 py-1 rounded bg-red-500/10 text-danger-fg font-medium">
             Không dùng bán kính trung bình (bị chặn bởi linter)
           </span>
         </div>
@@ -158,35 +158,35 @@ export default function FoundationsPage() {
       {/* SECTION 2: Typography Scale */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-[15px] font-semibold text-body flex items-center gap-2">
+          <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="code" className="w-4 h-4 text-accent-fg" />
             <span>Typography Scale & Constraints</span>
           </h2>
-          <span className="text-[11px] text-muted">font-medium / font-semibold only</span>
+          <span className="text-caption text-muted">font-medium / font-semibold only</span>
         </div>
 
         <div className="p-4 rounded-xl bg-panel border border-line space-y-3">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-1.5 p-3 rounded-lg bg-panel/[0.03]">
-              <span className="text-[11px] text-muted block font-medium">Page Title (22px - 26px)</span>
-              <div className="font-display text-[22px] sm:text-[24px] text-contrast">
+              <span className="text-caption text-muted block font-medium">Page Title (22px - 26px)</span>
+              <div className="font-display text-heading sm:text-heading-lg text-contrast">
                 Montserrat Alternates
               </div>
-              <p className="text-[11px] text-muted">Dùng cho tiêu đề trang chính thông qua component PageTitle</p>
+              <p className="text-caption text-muted">Dùng cho tiêu đề trang chính thông qua component PageTitle</p>
             </div>
             <div className="space-y-1.5 p-3 rounded-lg bg-panel/[0.03]">
-              <span className="text-[11px] text-muted block font-medium">KPI & Figures (18px - 22px)</span>
-              <div className="text-[20px] font-semibold text-contrast tabular-nums">
-                12.450.000 ₫ <span className="text-success-fg text-[13px] font-medium">+15.8%</span>
+              <span className="text-caption text-muted block font-medium">KPI & Figures (18px - 22px)</span>
+              <div className="text-heading-sm font-semibold text-contrast tabular-nums">
+                12.450.000 ₫ <span className="text-success-fg text-ui font-medium">+15.8%</span>
               </div>
-              <p className="text-[11px] text-muted">Luôn dùng tabular-nums cho số đo, số tiền, giờ in</p>
+              <p className="text-caption text-muted">Luôn dùng tabular-nums cho số đo, số tiền, giờ in</p>
             </div>
             <div className="space-y-1.5 p-3 rounded-lg bg-panel/[0.03]">
-              <span className="text-[11px] text-muted block font-medium">Body / UI (11px - 15px)</span>
-              <div className="text-[13px] text-body font-medium leading-relaxed">
+              <span className="text-caption text-muted block font-medium">Body / UI (11px - 15px)</span>
+              <div className="text-ui text-body font-medium leading-relaxed">
                 Geist Sans với font-feature-settings &quot;ss02&quot;
               </div>
-              <p className="text-[11px] text-muted">Không dùng các lớp cỡ chữ cũ; tối thiểu là text-[11px]</p>
+              <p className="text-caption text-muted">Không dùng các lớp cỡ chữ cũ; tối thiểu là text-caption</p>
             </div>
           </div>
         </div>
@@ -196,21 +196,21 @@ export default function FoundationsPage() {
       <section className="space-y-4 pt-2">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h2 className="text-[16px] font-semibold text-contrast flex items-center gap-2">
+            <h2 className="text-title-lg font-semibold text-contrast flex items-center gap-2">
               <Icon name="sparkles" className="w-4 h-4 text-accent-fg" />
               <span>Interactive Icon Explorer</span>
-              <span className="text-[12px] font-normal px-2 py-0.5 rounded-full bg-panel/[0.08] text-body">
+              <span className="text-label font-normal px-2 py-0.5 rounded-full bg-panel/[0.08] text-body">
                 {filteredIcons.length} / {totalCount} icons
               </span>
             </h2>
-            <p className="text-[12px] text-muted pt-0.5">
+            <p className="text-label text-muted pt-0.5">
               Click bất kỳ icon nào để copy nhanh mã JSX <code className="text-accent-fg">&lt;Icon name=&quot;...&quot; /&gt;</code>
             </p>
           </div>
 
           {/* Tone Selector */}
           <div className="flex items-center gap-1.5 p-1 rounded-lg bg-panel border border-line shrink-0">
-            <span className="text-[11px] text-muted px-2 font-medium">Tone Tile:</span>
+            <span className="text-caption text-muted px-2 font-medium">Tone Tile:</span>
             {TONES.map((t) => (
               <button
                 key={t.id}
@@ -235,7 +235,7 @@ export default function FoundationsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Tìm kiếm icon (tên, alias, intent: 'checkout', 'database', 'xoá', 'giao hàng')..."
-                className="w-full h-10 pl-10 pr-4 rounded-lg bg-panel/[0.05] border border-line focus:border-primary-400 focus:outline-none text-[13px] text-contrast placeholder:text-muted font-medium"
+                className="w-full h-10 pl-10 pr-4 rounded-lg bg-panel/[0.05] border border-line focus:border-primary-400 focus:outline-none text-ui text-contrast placeholder:text-muted font-medium"
               />
               <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted pointer-events-none">
                 <Icon name="search" className="w-4 h-4" />
@@ -254,7 +254,7 @@ export default function FoundationsPage() {
             {/* Quick stats pill */}
             <div className="flex items-center gap-2 shrink-0">
               {copiedIcon && (
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-success-fg text-[12px] font-semibold animate-pulse">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-success-fg text-label font-semibold animate-pulse">
                   <Icon name="check" className="w-3.5 h-3.5" />
                   <span>Đã copy &lt;Icon name=&quot;{copiedIcon}&quot; /&gt;</span>
                 </div>
@@ -271,7 +271,7 @@ export default function FoundationsPage() {
                   key={dom.id}
                   type="button"
                   onClick={() => setSelectedDomain(dom.id)}
-                  className={`px-3 py-1 rounded-full text-[12px] font-medium transition-colors ${
+                  className={`px-3 py-1 rounded-full text-label font-medium transition-colors ${
                     active
                       ? "bg-raised text-contrast border border-line"
                       : "text-muted hover:text-contrast hover:bg-field border border-transparent"
@@ -318,17 +318,17 @@ export default function FoundationsPage() {
 
                   {/* Icon Name */}
                   <div className="w-full">
-                    <span className="text-[12px] font-medium text-body group-hover:text-primary-300 transition-colors block truncate">
+                    <span className="text-label font-medium text-body group-hover:text-accent-fg transition-colors block truncate">
                       {name}
                     </span>
-                    <span className="text-[11px] text-muted block truncate">
+                    <span className="text-caption text-muted block truncate">
                       {meta.lucideEquivalent || meta.category}
                     </span>
                   </div>
 
                   {/* Domain Tag */}
                   {meta.domain && (
-                    <span className="text-[11px] px-1.5 py-0.5 rounded bg-panel/[0.05] text-muted">
+                    <span className="text-caption px-1.5 py-0.5 rounded bg-panel/[0.05] text-muted">
                       {meta.domain}
                     </span>
                   )}
@@ -339,8 +339,8 @@ export default function FoundationsPage() {
             {filteredIcons.length === 0 && (
               <div className="col-span-full py-12 text-center text-muted space-y-2 bg-panel rounded-xl border border-line">
                 <Icon name="search" className="w-6 h-6 mx-auto text-muted" />
-                <p className="text-[13px] font-medium">Không tìm thấy icon nào với từ khoá &quot;{search}&quot;</p>
-                <p className="text-[11px] text-muted">Hãy thử gõ từ khoá tiếng Việt như &quot;xoá&quot;, &quot;thanh toán&quot;, &quot;giao hàng&quot;, &quot;máy chủ&quot;...</p>
+                <p className="text-ui font-medium">Không tìm thấy icon nào với từ khoá &quot;{search}&quot;</p>
+                <p className="text-caption text-muted">Hãy thử gõ từ khoá tiếng Việt như &quot;xoá&quot;, &quot;thanh toán&quot;, &quot;giao hàng&quot;, &quot;máy chủ&quot;...</p>
               </div>
             )}
           </div>
@@ -348,11 +348,11 @@ export default function FoundationsPage() {
           {/* Inspector Panel */}
           <div className="lg:col-span-1 sticky top-4 p-4 rounded-xl bg-panel border border-line space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-line">
-              <span className="text-[11px] text-muted font-semibold">
+              <span className="text-caption text-muted font-semibold">
                 Icon Semantic Inspector
               </span>
               {selectedMeta?.domain && (
-                <span className="px-2 py-0.5 rounded-full text-[11px] font-medium bg-primary-500/15 text-accent-fg">
+                <span className="px-2 py-0.5 rounded-full text-caption font-medium bg-primary-500/15 text-accent-fg">
                   {selectedMeta.domain}
                 </span>
               )}
@@ -364,10 +364,10 @@ export default function FoundationsPage() {
                 <div className="flex items-center gap-3 p-3 rounded-lg bg-panel/[0.03] border border-line/60">
                   <IconTile name={selectedMeta.name} tone={activeTone} size="lg" />
                   <div className="min-w-0 flex-1">
-                    <div className="text-[14px] font-semibold text-contrast truncate">
+                    <div className="text-ui-lg font-semibold text-contrast truncate">
                       {selectedMeta.name}
                     </div>
-                    <div className="text-[11px] text-muted truncate">
+                    <div className="text-caption text-muted truncate">
                       Category: {selectedMeta.category}
                     </div>
                   </div>
@@ -375,35 +375,35 @@ export default function FoundationsPage() {
 
                 {/* Purpose */}
                 <div className="space-y-1">
-                  <span className="text-[11px] font-semibold text-body block">Ý định sử dụng (Purpose):</span>
-                  <p className="text-[12px] text-body leading-relaxed bg-panel/[0.02] p-2.5 rounded-lg border border-line/50">
+                  <span className="text-caption font-semibold text-body block">Ý định sử dụng (Purpose):</span>
+                  <p className="text-label text-body leading-relaxed bg-panel/[0.02] p-2.5 rounded-lg border border-line/50">
                     {selectedMeta.purpose}
                   </p>
                 </div>
 
                 {/* Do & Don't */}
-                <div className="space-y-2 text-[12px]">
+                <div className="space-y-2 text-label">
                   <div className="p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-success-fg space-y-1">
-                    <span className="font-semibold flex items-center gap-1.5 text-[11px]">
+                    <span className="font-semibold flex items-center gap-1.5 text-caption">
                       <Icon name="check" className="w-3.5 h-3.5" />
                       NÊN DÙNG (DO):
                     </span>
-                    <p className="text-[11px] text-success-fg leading-normal">{selectedMeta.do}</p>
+                    <p className="text-caption text-success-fg leading-normal">{selectedMeta.do}</p>
                   </div>
                   <div className="p-2.5 rounded-lg bg-red-500/10 border border-red-500/20 text-danger-fg space-y-1">
-                    <span className="font-semibold flex items-center gap-1.5 text-[11px]">
+                    <span className="font-semibold flex items-center gap-1.5 text-caption">
                       <Icon name="close" className="w-3.5 h-3.5" />
                       CẤM DÙNG (DON&apos;T):
                     </span>
-                    <p className="text-[11px] text-danger-fg leading-normal">{selectedMeta.dont}</p>
+                    <p className="text-caption text-danger-fg leading-normal">{selectedMeta.dont}</p>
                   </div>
                 </div>
 
                 {/* Lucide Equivalent */}
                 {selectedMeta.lucideEquivalent && (
-                  <div className="space-y-1 text-[11px]">
+                  <div className="space-y-1 text-caption">
                     <span className="font-medium text-muted block">Tên chuẩn Lucide:</span>
-                    <code className="px-2 py-1 rounded bg-panel/[0.06] text-tone-sky block text-[11px]">
+                    <code className="px-2 py-1 rounded bg-panel/[0.06] text-tone-sky block text-caption">
                       {selectedMeta.lucideEquivalent}
                     </code>
                   </div>
@@ -411,22 +411,22 @@ export default function FoundationsPage() {
 
                 {/* Code snippets */}
                 <div className="space-y-1 pt-1">
-                  <span className="text-[11px] font-semibold text-muted block">Mã nguồn JSX:</span>
+                  <span className="text-caption font-semibold text-muted block">Mã nguồn JSX:</span>
                   <div
                     onClick={() => handleCopy(selectedMeta.name)}
-                    className="p-2.5 rounded-lg bg-canvas border border-line text-[11px] text-accent-fg hover:border-primary-400 transition-colors cursor-pointer group flex items-center justify-between"
+                    className="p-2.5 rounded-lg bg-canvas border border-line text-caption text-accent-fg hover:border-primary-400 transition-colors cursor-pointer group flex items-center justify-between"
                   >
                     <span>&lt;Icon name=&quot;{selectedMeta.name}&quot; /&gt;</span>
-                    <Icon name="copy" className="w-3.5 h-3.5 text-muted group-hover:text-primary-300" />
+                    <Icon name="copy" className="w-3.5 h-3.5 text-muted group-hover:text-accent-fg" />
                   </div>
                 </div>
 
                 {/* Keywords list */}
                 <div className="space-y-1">
-                  <span className="text-[11px] font-medium text-muted block">Từ khoá tìm kiếm:</span>
+                  <span className="text-caption font-medium text-muted block">Từ khoá tìm kiếm:</span>
                   <div className="flex flex-wrap gap-1">
                     {selectedMeta.keywords.map((kw) => (
-                      <span key={kw} className="text-[11px] px-1.5 py-0.5 rounded bg-panel/[0.05] text-muted">
+                      <span key={kw} className="text-caption px-1.5 py-0.5 rounded bg-panel/[0.05] text-muted">
                         {kw}
                       </span>
                     ))}
@@ -434,7 +434,7 @@ export default function FoundationsPage() {
                 </div>
               </div>
             ) : (
-              <p className="text-[12px] text-muted py-6 text-center">Chọn một icon để xem chi tiết</p>
+              <p className="text-label text-muted py-6 text-center">Chọn một icon để xem chi tiết</p>
             )}
           </div>
         </div>

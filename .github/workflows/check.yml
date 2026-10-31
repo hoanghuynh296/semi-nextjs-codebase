@@ -30,3 +30,6 @@ jobs:
 
       - name: Build Next.js Static Storybook
         run: npx next build
+
+      - name: Browser checks (contrast AA both themes, axe, theme, keyboard)
+        run: npm run test:ui

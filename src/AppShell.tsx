@@ -6,6 +6,7 @@
 // - Rounded-2xl bg-app right content panel with max-w-[1440px] container
 // - Mobile (< md): hides the top logo header and renders MobileTabBar at the bottom (plus a bottom sheet if >5 routes)
 import React, { useEffect, useState } from "react";
+import { useSemiLocale } from "./locale";
 import Link from "next/link";
 import { Icon, type IconName } from "./Icon";
 import { MobileTabBar, TAB_BAR_PAD, type MobileTabItem } from "./MobileTabBar";
@@ -75,6 +76,7 @@ export function AppShell({
   children: React.ReactNode;
   containerClassName?: string;
 }) {
+  const t = useSemiLocale();
   const [collapsed, setCollapsed] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
 
@@ -103,7 +105,7 @@ export function AppShell({
   const allItems = sections.flatMap((s) => s.items);
   const firstItem = allItems[0];
 
-  const navItemClass = `w-full h-8 flex items-center rounded-lg text-[12px] font-medium transition whitespace-nowrap cursor-pointer ${
+  const navItemClass = `w-full h-8 flex items-center rounded-lg text-label font-medium transition whitespace-nowrap cursor-pointer ${
     collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2.5 lg:px-2.5"
   }`;
   const navLabelClass = `${collapsed ? "hidden" : "hidden lg:block"} flex-1 min-w-0 truncate text-left`;
@@ -196,7 +198,7 @@ export function AppShell({
           <Icon name={logoIcon} className="w-3.5 h-3.5 text-accent-fg" />
         </span>
       )}
-      <span className="hidden lg:block truncate text-[13px] font-semibold text-contrast tracking-tight">
+      <span className="hidden lg:block truncate text-ui font-semibold text-contrast tracking-tight">
         {productName}
       </span>
     </>
@@ -254,7 +256,7 @@ export function AppShell({
                   target={primaryCta.external ? "_blank" : undefined}
                   rel={primaryCta.external ? "noopener noreferrer" : undefined}
                   title={primaryCta.label}
-                  className={`shrink-0 w-full h-9 rounded-lg bg-primary-500/15 hover:bg-primary-500/25 border border-primary-500/30 hover:border-primary-500/50 text-contrast flex items-center text-[12px] font-semibold transition active:scale-[0.99] ${
+                  className={`shrink-0 w-full h-9 rounded-lg bg-primary-500/15 hover:bg-primary-500/25 border border-primary-500/30 hover:border-primary-500/50 text-contrast flex items-center text-label font-semibold transition active:scale-[0.99] ${
                     collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2 lg:px-2.5"
                   }`}
                 >
@@ -268,7 +270,7 @@ export function AppShell({
                   type="button"
                   onClick={primaryCta.onClick}
                   title={primaryCta.label}
-                  className={`shrink-0 w-full h-9 rounded-lg bg-primary-500/15 hover:bg-primary-500/25 border border-primary-500/30 hover:border-primary-500/50 text-contrast flex items-center text-[12px] font-semibold transition active:scale-[0.99] cursor-pointer ${
+                  className={`shrink-0 w-full h-9 rounded-lg bg-primary-500/15 hover:bg-primary-500/25 border border-primary-500/30 hover:border-primary-500/50 text-contrast flex items-center text-label font-semibold transition active:scale-[0.99] cursor-pointer ${
                     collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2 lg:px-2.5"
                   }`}
                 >
@@ -293,7 +295,7 @@ export function AppShell({
                     <div
                       className={`${
                         collapsed ? "hidden" : "hidden lg:flex"
-                      } group shrink-0 items-center justify-between gap-1.5 px-2.5 py-0.5 text-[11px] font-medium text-muted select-none`}
+                      } group shrink-0 items-center justify-between gap-1.5 px-2.5 py-0.5 text-caption font-medium text-muted select-none`}
                     >
                       <div className="flex items-center gap-1.5 min-w-0 truncate">
                         {section.icon && (
@@ -345,7 +347,7 @@ export function AppShell({
         {/* Right floating Bento content panel */}
         <main className={`${SHELL_MAIN} ${TAB_BAR_PAD}`}>
           <div className={`${SHELL_CONTAINER} ${containerClassName}`}>
-            <PageActionsSlot className="empty:hidden ml-auto mb-2 sticky top-0 max-md:top-[env(safe-area-inset-top)] z-30" />
+            <PageActionsSlot className="empty:hidden ml-auto mb-2 sticky top-0 max-md:top-[env(safe-area-inset-top)] z-sticky" />
             {children}
           </div>
         </main>
@@ -353,7 +355,7 @@ export function AppShell({
         {/* Mobile bottom sheet when the app has more routes than fit on MobileTabBar */}
         {hasMoreSheet && moreOpen && (
           <div
-            className="md:hidden fixed inset-0 z-30 bg-black/70 backdrop-blur-sm flex flex-col justify-end pb-16"
+            className="md:hidden fixed inset-0 z-sticky bg-overlay backdrop-blur-sm flex flex-col justify-end pb-16"
             onClick={() => setMoreOpen(false)}
           >
             <div
@@ -361,11 +363,11 @@ export function AppShell({
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between px-1">
-                <span className="font-display text-[15px] font-semibold text-contrast">{productName}</span>
+                <span className="font-display text-title font-semibold text-contrast">{productName}</span>
                 <button
                   type="button"
                   onClick={() => setMoreOpen(false)}
-                  aria-label="Đóng"
+                  aria-label={t.close}
                   className="w-8 h-8 rounded-full bg-field hover:bg-raised flex items-center justify-center text-muted hover:text-contrast transition border border-line"
                 >
                   <Icon name="close" className="w-4 h-4" />
@@ -374,7 +376,7 @@ export function AppShell({
               <div className="grid grid-cols-2 gap-1.5">
                 {allItems.map((item) => {
                   const active = activeId === item.id;
-                  const cls = `flex items-center gap-2.5 h-10 px-3 rounded-xl text-[12px] font-medium transition ${
+                  const cls = `flex items-center gap-2.5 h-10 px-3 rounded-xl text-label font-medium transition ${
                     active ? "bg-raised text-contrast" : "bg-field text-body hover:bg-raised hover:text-contrast"
                   }`;
                   if (item.href && !onSelect) {

@@ -23,7 +23,8 @@ import { Icon } from "../../src/Icon";
 import { ThemeSwitcher, ThemeToggle, useTheme } from "../../src/ThemeProvider";
 import { Card } from "../../src/Card";
 import { BTN_PRIMARY, BTN_SECONDARY, BTN_DANGER, BTN_ICON } from "../../styles/buttons";
-import { FIELD_LABEL, FIELD_INPUT, FIELD_TEXTAREA } from "../../styles/surfaces";
+import { FIELD_LABEL, FIELD_INPUT } from "../../styles/surfaces";
+import { Field, Input, Textarea } from "../../src/Field";
 
 const GITHUB_URL = "https" + "://github.com/hoanghuynh296/semi-nextjs-codebase";
 
@@ -31,16 +32,16 @@ const GITHUB_URL = "https" + "://github.com/hoanghuynh296/semi-nextjs-codebase";
 function ThemeScopePreview({ theme }: { theme: "dark" | "light" }) {
   return (
     <div data-theme={theme} className={`${theme} p-3 rounded-xl bg-canvas border border-line space-y-2`}>
-      <span className="text-[11px] font-medium text-muted block">data-theme=&quot;{theme}&quot;</span>
+      <span className="text-caption font-medium text-muted block">data-theme=&quot;{theme}&quot;</span>
       <Card className="p-3 space-y-2">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-[13px] font-semibold text-contrast">Bento card</span>
+          <span className="text-ui font-semibold text-contrast">Bento card</span>
           <Badge tone="emerald" dot>
             Online
           </Badge>
         </div>
-        <p className="text-[12px] text-body">Body text trên bg-panel.</p>
-        <p className="text-[11px] text-muted">Muted caption · <span className="text-accent-fg">accent link</span></p>
+        <p className="text-label text-body">Body text trên bg-panel.</p>
+        <p className="text-caption text-muted">Muted caption · <span className="text-accent-fg">accent link</span></p>
         <div className="flex gap-2">
           <button type="button" className={BTN_PRIMARY}>
             <Icon name="check" />
@@ -59,7 +60,7 @@ function ThemeScopePreview({ theme }: { theme: "dark" | "light" }) {
 function ThemeState() {
   const { theme, resolvedTheme } = useTheme();
   return (
-    <span className="text-[12px] text-muted tabular-nums">
+    <span className="text-label text-muted tabular-nums">
       theme = <span className="text-contrast font-medium">{theme}</span> · resolvedTheme ={" "}
       <span className="text-contrast font-medium">{resolvedTheme}</span>
     </span>
@@ -114,7 +115,7 @@ export default function ComponentsShowcasePage() {
       {/* Title */}
       <div className="space-y-3 pb-2 border-b border-line/60">
         <PageTitle title="Components & Patterns Showcase" />
-        <p className="text-[13px] text-muted max-w-3xl leading-relaxed">
+        <p className="text-ui text-muted max-w-3xl leading-relaxed">
           Tập hợp đầy đủ các component chuẩn của hệ sinh thái Semi UI (<code className="text-accent-fg">@semi/ui</code>).
           Tuân thủ nguyên tắc Bento layout, dark-first flat surfaces, sentence case labels, và 100% không dùng control native hay glow blob.
         </p>
@@ -123,11 +124,11 @@ export default function ComponentsShowcasePage() {
       {/* Pattern 0: Theme */}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-[15px] font-semibold text-body flex items-center gap-2">
+          <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="sun" className="w-4 h-4 text-warning-fg" />
             <span>0. Theme (Sáng · Tối · Hệ thống)</span>
           </h2>
-          <span className="text-[11px] text-muted">ThemeScript · ThemeProvider</span>
+          <span className="text-caption text-muted">ThemeScript · ThemeProvider</span>
         </div>
 
         <div className="p-4 rounded-xl bg-panel border border-line space-y-4">
@@ -137,7 +138,7 @@ export default function ComponentsShowcasePage() {
             <ThemeToggle />
             <ThemeState />
           </div>
-          <p className="text-[12px] text-muted">
+          <p className="text-label text-muted">
             Đổi theme ở đây hoặc ở chân sidebar; lựa chọn được lưu (localStorage &quot;semi-theme&quot;) và áp trước khi trang hiển thị nhờ ThemeScript.
             Hai khung dưới cố định theme bằng data-theme để so sánh cùng lúc.
           </p>
@@ -151,15 +152,15 @@ export default function ComponentsShowcasePage() {
       {/* Pattern 1: SubpageToolbar */}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-[15px] font-semibold text-body flex items-center gap-2">
+          <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="sliders" className="w-4 h-4 text-accent-fg" />
             <span>1. SubpageToolbar (Thanh công cụ trang chuẩn)</span>
           </h2>
-          <span className="text-[11px] text-muted">STICKY_TOOLBAR Pattern</span>
+          <span className="text-caption text-muted">STICKY_TOOLBAR Pattern</span>
         </div>
 
         <div className="p-4 rounded-xl bg-panel border border-line space-y-3">
-          <p className="text-[12px] text-muted">
+          <p className="text-label text-muted">
             Toolbar chuẩn luôn có bộ lọc bên trái và nhóm nút thao tác (Search, Refresh, Nút thêm mới dạng icon-only BTN_ICON) ở bên phải:
           </p>
           <div className="p-2 rounded-xl bg-canvas border border-line">
@@ -204,11 +205,11 @@ export default function ComponentsShowcasePage() {
       {/* Pattern 2: Action Buttons */}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-[15px] font-semibold text-body flex items-center gap-2">
+          <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="zap" className="w-4 h-4 text-warning-fg" />
             <span>2. Button System (Các biến thể nút bấm)</span>
           </h2>
-          <span className="text-[11px] text-muted font-medium">@semi/ui/styles</span>
+          <span className="text-caption text-muted font-medium">@semi/ui/styles</span>
         </div>
 
         <div className="p-4 rounded-xl bg-panel border border-line space-y-4">
@@ -246,77 +247,66 @@ export default function ComponentsShowcasePage() {
       {/* Pattern 3: Form Controls */}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-[15px] font-semibold text-body flex items-center gap-2">
+          <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="edit" className="w-4 h-4 text-tone-sky" />
             <span>3. Form Controls & Custom Inputs (Không dùng control native)</span>
           </h2>
-          <span className="text-[11px] text-muted">Dark-first Form Components</span>
+          <span className="text-caption text-muted">Dark-first Form Components</span>
         </div>
 
         <div className="p-4 rounded-xl bg-panel border border-line">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* CustomSelect */}
-            <div className="space-y-1.5">
-              <label className={FIELD_LABEL}>Chọn máy in đích (CustomSelect)</label>
+            <Field label="Chọn máy in đích (CustomSelect)">
               <CustomSelect
+                variant="field"
                 options={printerOptions}
                 value={selectValue}
                 onChange={setSelectValue}
               />
-            </div>
+            </Field>
 
             {/* CustomCombobox */}
-            <div className="space-y-1.5">
-              <label className={FIELD_LABEL}>Cuộn nhựa / Vật liệu (Combobox)</label>
+            <Field label="Cuộn nhựa / Vật liệu (Combobox)">
               <CustomCombobox
                 options={filamentOptions}
                 value={comboboxValue}
                 onChange={setComboboxValue}
                 placeholder="Tìm loại nhựa..."
               />
-            </div>
+            </Field>
 
             {/* NumberInput */}
-            <div className="space-y-1.5">
-              <label className={FIELD_LABEL}>Nhiệt độ đầu phun (NumberInput °C)</label>
+            <Field label="Nhiệt độ đầu phun (NumberInput °C)">
               <NumberInput
+                className={FIELD_INPUT}
                 value={numberVal}
                 onChange={(e) => setNumberVal(Number(e.target.value) || 0)}
                 min={180}
                 max={300}
                 step={5}
               />
-            </div>
+            </Field>
 
             {/* DatePicker */}
             <div className="space-y-1.5">
-              <label className={FIELD_LABEL}>Hẹn giờ ngày in (DatePicker)</label>
+              <span className={FIELD_LABEL}>Hẹn giờ ngày in (DatePicker)</span>
               <DatePicker
                 value={selectedDate}
                 onChange={setSelectedDate}
+                ariaLabel="Hẹn giờ ngày in"
               />
             </div>
           </div>
 
           {/* Standard Input & Textarea */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 mt-4 border-t border-line/60">
-            <div className="space-y-1.5">
-              <label className={FIELD_LABEL}>Tên bản in 3D (FIELD_INPUT)</label>
-              <input
-                type="text"
-                defaultValue="Voron_Stealthburner_Main_Body_v2.gcode"
-                className={FIELD_INPUT}
-              />
-              <span className="text-[11px] text-muted">Inputs luôn dùng FIELD_INPUT (bg-panel/[0.05]), không dùng bg-field</span>
-            </div>
-            <div className="space-y-1.5">
-              <label className={FIELD_LABEL}>Ghi chú quy trình in (FIELD_TEXTAREA)</label>
-              <textarea
-                rows={2}
-                defaultValue="In 4 vách ngoài (wall loops), 25% gyroid infill, quạt 60%."
-                className={FIELD_TEXTAREA}
-              />
-            </div>
+            <Field label="Tên bản in 3D (Input / FIELD_INPUT)" hint="Input dùng bề mặt bg-field với viền border-line.">
+              <Input defaultValue="Voron_Stealthburner_Main_Body_v2.gcode" />
+            </Field>
+            <Field label="Ghi chú quy trình in (Textarea / FIELD_TEXTAREA)">
+              <Textarea rows={2} defaultValue="In 4 vách ngoài (wall loops), 25% gyroid infill, quạt 60%." />
+            </Field>
           </div>
         </div>
       </section>
@@ -324,11 +314,11 @@ export default function ComponentsShowcasePage() {
       {/* Pattern 4: KPI Cards & Data */}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-[15px] font-semibold text-body flex items-center gap-2">
+          <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="chart" className="w-4 h-4 text-success-fg" />
             <span>4. KPI Cards & Metrics</span>
           </h2>
-          <span className="text-[11px] text-muted">18px–22px Tabular Numbers</span>
+          <span className="text-caption text-muted">18px–22px Tabular Numbers</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -368,7 +358,7 @@ export default function ComponentsShowcasePage() {
 
         {/* Pagination demo */}
         <div className="p-3 rounded-xl bg-panel border border-line flex items-center justify-between">
-          <span className="text-[12px] text-muted">Component Pagination (Phân trang):</span>
+          <span className="text-label text-muted">Component Pagination (Phân trang):</span>
           <Pagination
             page={currentPage}
             pages={8}
@@ -380,16 +370,16 @@ export default function ComponentsShowcasePage() {
       {/* Pattern 5: Chips, Pills & Tones */}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-[15px] font-semibold text-body flex items-center gap-2">
+          <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="tag" className="w-4 h-4 text-tone-violet" />
             <span>5. Chips & Status Indicators</span>
           </h2>
-          <span className="text-[11px] text-muted">Semi Tonal Coding</span>
+          <span className="text-caption text-muted">Semi Tonal Coding</span>
         </div>
 
         <div className="p-4 rounded-xl bg-panel border border-line space-y-4">
           <div>
-            <div className="text-[12px] font-medium text-muted mb-2">Dual-Theme Tonal Badges (&lt;Badge tone="..."&gt;):</div>
+            <div className="text-label font-medium text-muted mb-2">Dual-Theme Tonal Badges (&lt;Badge tone="..."&gt;):</div>
             <div className="flex flex-wrap items-center gap-2">
               <Badge tone="purple" icon="sparkles">Pro Plan</Badge>
               <Badge tone="blue" icon="shield">Enterprise</Badge>
@@ -402,7 +392,7 @@ export default function ComponentsShowcasePage() {
           </div>
 
           <div>
-            <div className="text-[12px] font-medium text-muted mb-2">Toggle Filter Chips (&lt;Chip tone="..."&gt;):</div>
+            <div className="text-label font-medium text-muted mb-2">Toggle Filter Chips (&lt;Chip tone="..."&gt;):</div>
             <div className="flex flex-wrap items-center gap-2">
               <Chip tone="purple" active={activeChip === "pla"} onClick={() => setActiveChip("pla")}>
                 <span>Bambu Lab PLA (Tím)</span>
@@ -427,11 +417,11 @@ export default function ComponentsShowcasePage() {
       {/* Pattern 6: Modals & Confirmation */}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-[15px] font-semibold text-body flex items-center gap-2">
+          <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="alert" className="w-4 h-4 text-danger-fg" />
             <span>6. Modals & Dialogs (Không dùng alert/confirm native)</span>
           </h2>
-          <span className="text-[11px] text-muted">Modal Portal & ConfirmHost</span>
+          <span className="text-caption text-muted">Modal Portal & ConfirmHost</span>
         </div>
 
         <div className="p-4 rounded-xl bg-panel border border-line space-y-3">
@@ -455,7 +445,7 @@ export default function ComponentsShowcasePage() {
             </button>
 
             {confirmResult && (
-              <span className="text-[12px] font-medium text-accent-fg px-3 py-1.5 rounded-lg bg-panel/[0.05] border border-line">
+              <span className="text-label font-medium text-accent-fg px-3 py-1.5 rounded-lg bg-panel/[0.05] border border-line">
                 {confirmResult}
               </span>
             )}
@@ -469,19 +459,17 @@ export default function ComponentsShowcasePage() {
           title="Cấu hình thông số in nâng cao"
         >
           <div className="space-y-4">
-            <p className="text-[13px] text-body leading-relaxed">
+            <p className="text-ui text-body leading-relaxed">
               Modal của Semi sử dụng lớp nền <code className="text-accent-fg">bg-field</code> với bán kính <code className="text-accent-fg">rounded-2xl</code>, có header và nút đóng chuẩn Semantic Icon.
             </p>
 
-            <div className="space-y-1.5">
-              <label className={FIELD_LABEL}>Tốc độ in lớp đầu tiên (First Layer Speed)</label>
-              <input type="text" defaultValue="50 mm/s" className={FIELD_INPUT} />
-            </div>
+            <Field label="Tốc độ in lớp đầu tiên (First Layer Speed)">
+              <Input defaultValue="50 mm/s" />
+            </Field>
 
-            <div className="space-y-1.5">
-              <label className={FIELD_LABEL}>Độ dày lát cắt (Layer Height)</label>
-              <input type="text" defaultValue="0.20 mm Standard" className={FIELD_INPUT} />
-            </div>
+            <Field label="Độ dày lát cắt (Layer Height)">
+              <Input defaultValue="0.20 mm Standard" />
+            </Field>
 
             <div className="flex items-center justify-end gap-2 pt-2 border-t border-line/60">
               <button
@@ -509,20 +497,20 @@ export default function ComponentsShowcasePage() {
       {/* Pattern 7: Shimmer Skeletons */}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-[15px] font-semibold text-body flex items-center gap-2">
+          <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="clock" className="w-4 h-4 text-tone-sky" />
             <span>7. Skeletons (Dùng Shimmer thay vì thông báo tải)</span>
           </h2>
-          <span className="text-[11px] text-muted">Shimmer Placeholder</span>
+          <span className="text-caption text-muted">Shimmer Placeholder</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="p-4 rounded-xl bg-panel border border-line space-y-2">
-            <span className="text-[11px] text-muted font-medium block">SkeletonCard (Khung card đang nạp dữ liệu):</span>
+            <span className="text-caption text-muted font-medium block">SkeletonCard (Khung card đang nạp dữ liệu):</span>
             <SkeletonCard />
           </div>
           <div className="p-4 rounded-xl bg-panel border border-line space-y-2">
-            <span className="text-[11px] text-muted font-medium block">SkeletonRows (Hàng bảng dữ liệu):</span>
+            <span className="text-caption text-muted font-medium block">SkeletonRows (Hàng bảng dữ liệu):</span>
             <SkeletonRows count={3} />
           </div>
         </div>

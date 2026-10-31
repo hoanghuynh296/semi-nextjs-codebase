@@ -18,4 +18,8 @@ Use this skill when a project **already uses `@semi/ui`** (or has partially adop
    - Summarize what changed in the new `@semi/ui` version (`CHANGELOG.md`) and list the newly flagged structural gaps.
    - Ask the user (via `ask_question` if there are choices, or a brief confirmation) if they want to refactor the flagged files now (`AppShell`, removing `ui.tsx` wrappers, adding `SubpageToolbar` / `KpiCard` / `Modal` / `FIELD_INPUT`).
    - Refactor the files so `npx semi-lint`, `npx tsc --noEmit`, and `npm run build` pass with **0 hard violations**.
-3. **Report to the user:** State `old version → new version`, summarize the updated components/files, and confirm `semi-lint`, `tsc`, and `build` are green.
+3. **New lint rules after an upgrade** (e.g. v0.5.0 adds `no-fixed-tone-text`, `arbitrary-text-size`, `literal-colour-value`,
+   `hex-colour-class` on every colour prefix): preview fixes with `init.mjs --cwd <app> --dry-run`, apply the safe ones,
+   resolve the reported tokens by hand, then shrink the baseline. Treat the result as a migration with the same
+   Definition of Done as `/semi-init` Case B (0 findings per touched module, both themes checked).
+4. **Report to the user:** State `old version → new version`, summarize the updated components/files, and confirm `semi-lint`, `tsc`, and `build` are green.

@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 // /semi-audit static & structural analyzer for existing web projects (including multi-app monorepos). Zero external deps.
-import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { basename, dirname, extname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { HARD, RATCHET, scan as runSemiLintScan } from "./vendor/semi-lint.mjs";
+import { analyse } from "./vendor/classes.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_TOKENS_PATH = resolve(__dirname, "../../../../tokens/tokens.json");
@@ -101,7 +102,7 @@ function walkCode(dir, out = []) {
     const p = join(dir, name);
     const st = statSync(p);
     if (st.isDirectory()) walkCode(p, out);
-    else if (/\.(tsx?|css)$/.test(name) && !name.endsWith(".d.ts")) out.push(p);
+    else if (/\.(tsx?|jsx?|mjs|css)$/.test(name) && !name.endsWith(".d.ts")) out.push(p);
   }
   return out;
 }
@@ -161,7 +162,7 @@ export function auditSingleApp(cwd) {
   const scanDirs = ["src/app", "src/components", "src/pages", "src/modules", "app", "components", "pages", "modules"]
     .filter((d, idx, arr) => existsSync(join(cwd, d)) && !arr.slice(0, idx).some((prev) => d.startsWith(prev + "/")));
   const allFiles = (scanDirs.length ? scanDirs.map((d) => join(cwd, d)) : [cwd]).flatMap((d) => walkCode(d, []));
-  const tsFiles = allFiles.filter((f) => /\.tsx?$/.test(f));
+  const tsFiles = allFiles.filter((f) => /\.(tsx?|jsx?|mjs)$/.test(f));
   const pageFiles = tsFiles.filter((f) => /(?:^|\/)page\.tsx$/.test(f.split(sep).join("/")));
 
   const hexCounts = new Map();
@@ -169,9 +170,9 @@ export function auditSingleApp(cwd) {
   let totalPhysical = 0;
   const semanticCounts = new Map();
   let totalSemantic = 0;
-  // Same pattern semi-lint enforces (no-literal-palette), so the report and the lint never disagree.
-  const PHYSICAL_RX = new RegExp(RATCHET.find(([id]) => id === "no-literal-palette")[1].source, "g");
-  const SEMANTIC_RX = /\b((?:bg|from|via|to)-(?:canvas|app|panel|field|raised|accent|accent-hover)|text-(?:contrast|body|muted|on-accent|accent-fg|danger-fg|success-fg|warning-fg|info-fg|tone-[a-z]+)|(?:border|divide)-(?:line|divider|line-hover))\b/g;
+  // Literal colours come from the same class-token analysis semi-lint runs (vendor/classes.mjs), so they never disagree.
+  const inventoryFiles = [];
+  const SEMANTIC_RX = /\b((?:bg|from|via|to)-(?:canvas|app|panel|field|raised|accent|accent-hover|overlay|(?:danger|success|warning|info)-(?:bg|border|solid))|text-(?:contrast|body|muted|on-accent|accent-fg|danger-fg|success-fg|warning-fg|info-fg|tone-[a-z]+)|(?:border|divide)-(?:line|divider|line-hover))\b/g;
 
   const CHROMATIC_TONAL_RX = /\b(?:(?:hover:|active:)?(?:bg|border)|divide|ring|text)-(amber|yellow|orange|red|rose|pink|fuchsia|purple|violet|indigo|blue|sky|cyan|teal|emerald|green)-(?:50|100|200|300|600|700|800|900)\b/g;
   const tonalCounts = new Map();
@@ -200,11 +201,16 @@ export function auditSingleApp(cwd) {
       const upper = h.toUpperCase();
       hexCounts.set(upper, (hexCounts.get(upper) || 0) + 1);
     }
-    const physMatches = text.match(PHYSICAL_RX) || [];
-    for (const p of physMatches) {
-      physicalCounts.set(p, (physicalCounts.get(p) || 0) + 1);
+    const findings = analyse(text, { css: file.endsWith(".css") });
+    for (const f of findings) {
+      if (f.rule !== "no-literal-palette") continue;
+      physicalCounts.set(f.token, (physicalCounts.get(f.token) || 0) + 1);
       totalPhysical++;
     }
+    const byRule = {};
+    for (const f of findings) byRule[f.rule] = (byRule[f.rule] || 0) + 1;
+    const semanticHere = (text.match(SEMANTIC_RX) || []).length;
+    if (findings.length || semanticHere) inventoryFiles.push({ file: rel, findings: byRule, total: findings.length, semantic: semanticHere });
     const semMatches = text.match(SEMANTIC_RX) || [];
     for (const s of semMatches) {
       semanticCounts.set(s, (semanticCounts.get(s) || 0) + 1);
@@ -389,9 +395,33 @@ export function auditSingleApp(cwd) {
     });
   }
 
+  // Migration inventory: every file with colour / size debt, grouped by module, plus a coverage figure. The refactor
+  // plan is built from this (one module per PR) and "done" means zero findings, not a frozen baseline.
+  const modules = {};
+  for (const f of inventoryFiles) {
+    const mod = f.file.split("/").slice(0, f.file.split("/").length > 2 ? 2 : 1).join("/");
+    const m = (modules[mod] ||= { files: 0, debtFiles: 0, findings: 0, semantic: 0 });
+    m.files++;
+    if (f.total) m.debtFiles++;
+    m.findings += f.total;
+    m.semantic += f.semantic;
+  }
+  const debtTotal = inventoryFiles.reduce((n, f) => n + f.total, 0);
+  const inventory = {
+    generatedBy: "semi-audit",
+    coverage: {
+      semanticTokens: totalSemantic,
+      findings: debtTotal,
+      percent: totalSemantic + debtTotal ? Math.round((totalSemantic / (totalSemantic + debtTotal)) * 1000) / 10 : 100,
+    },
+    modules: Object.fromEntries(Object.entries(modules).sort((a, b) => b[1].findings - a[1].findings)),
+    files: inventoryFiles.filter((f) => f.total).sort((a, b) => b.total - a.total),
+  };
+
   return {
     exists: true,
     cwd,
+    inventory,
     stack: {
       nextVersion,
       reactVersion,
@@ -558,7 +588,14 @@ function formatSingleAppMarkdown(r) {
     `- **Ratchet hits:** ${r.lint.ratchetTotal}`,
     ...Object.entries(r.lint.ratchetByRule).map(([k, v]) => `  - \`${k}\`: ${v}`),
     ``,
-    `### 5. Questions Requiring User Decision (${r.questions.length})`,
+    `### 5. Migration Inventory (one module per refactor PR)`,
+    `- **Token coverage:** ${r.inventory.coverage.percent}% (${r.inventory.coverage.semanticTokens} semantic tokens vs ${r.inventory.coverage.findings} colour / size findings)`,
+    ...Object.entries(r.inventory.modules)
+      .filter(([, m]) => m.findings)
+      .map(([mod, m]) => `- \`${mod}\`: ${m.findings} findings in ${m.debtFiles}/${m.files} files`),
+    `- Export the full per-file list with \`--inventory semi-migration.json\`.`,
+    ``,
+    `### 6. Questions Requiring User Decision (${r.questions.length})`,
   );
   r.questions.forEach((q, idx) => {
     lines.push(`${idx + 1}. **${q.question}**`);
@@ -581,12 +618,19 @@ const isMain = process.argv[1] && resolve(process.argv[1]).endsWith("audit.mjs")
 if (isMain) {
   let cwd = process.cwd();
   let asJson = false;
+  let inventoryPath = null;
   const argv = process.argv.slice(2);
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === "--cwd" && argv[i + 1]) cwd = argv[++i];
     else if (argv[i] === "--json") asJson = true;
+    else if (argv[i] === "--inventory" && argv[i + 1]) inventoryPath = argv[++i];
   }
   const report = auditProject(cwd);
+  if (inventoryPath) {
+    // Opt-in export for /semi-init planning; the plain audit stays read-only.
+    const apps = report.apps?.length ? report.apps : [report];
+    writeFileSync(inventoryPath, JSON.stringify({ apps: apps.map((a) => ({ cwd: a.cwd, ...a.inventory })) }, null, 2) + "\n");
+  }
   if (asJson) console.log(JSON.stringify(report, null, 2));
   else process.stdout.write(formatMarkdown(report));
 }

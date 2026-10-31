@@ -67,9 +67,14 @@
 }
 @media (prefers-reduced-motion: reduce) { .shimmer::after { animation: none; } }
 
+/* Indeterminate Progress bar: a third-width fill sliding across the track. */
+@keyframes progress-slide { from { left: -33%; } to { left: 100%; } }
+.progress-indeterminate { animation: progress-slide 1.2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .progress-indeterminate { animation-duration: 3s; } }
+
 /* Side panel slide (generic right-edge panels: AI chats, inspectors). */
 @keyframes slide-panel-in { from { transform: translateX(100%); opacity: 0; } }
 @keyframes slide-panel-out { to { transform: translateX(100%); opacity: 0; } }
-.slide-panel-in { animation: slide-panel-in 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
-.slide-panel-out { animation: slide-panel-out 0.25s cubic-bezier(0.4, 0, 1, 1) both; }
+.slide-panel-in { animation: slide-panel-in 0.3s var(--ease-out-soft, cubic-bezier(0.2, 0.8, 0.2, 1)) both; }
+.slide-panel-out { animation: slide-panel-out 0.25s var(--ease-in-soft, cubic-bezier(0.4, 0, 1, 1)) both; }
 @media (prefers-reduced-motion: reduce) { .slide-panel-in, .slide-panel-out { animation-duration: 1ms; } }
