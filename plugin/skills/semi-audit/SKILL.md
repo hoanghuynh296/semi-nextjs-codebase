@@ -1,13 +1,12 @@
 ---
 name: semi-audit
-description: Health check of a project against the Semi Design System (@semi/ui), for periodic checks. Scans every frontend app in the workspace (lint rules, colour / size tokens, structure such as AppShell, SubpageToolbar, local wrappers, tables), prints a short summary, and writes every issue with file:line to semi-audit.md for /semi-fix. Changes no source file. Triggered by /semi-audit.
+description: Check a project against the Semi Design System (@semi/ui) - the first step for an existing app (with or without @semi/ui) and the periodic check after. Scans every frontend app (foundation setup, lint rules, colour / size tokens, structure such as AppShell, local wrappers, tables), prints a short summary, and writes every issue with file:line, by phase, to semi-audit.md for /semi-fix. Changes no source file. Triggered by /semi-audit.
 ---
 
 # Semi Design System Health Check (`/semi-audit`)
 
-The Semi flow: `/semi-init` installs Semi in an app that does not have it → for an existing app, `/semi-audit` then
-`/semi-fix` refactor it (a new app starts clean) → `/semi-audit` any time after to check, `/semi-fix` when it finds
-issues. `/semi-update` only moves to a newer `@semi/ui` release.
+The Semi commands: new app → `/semi-init`. Existing app (first adoption or periodic check) → `/semi-audit`, then
+`/semi-fix` when it finds issues. Newer `@semi/ui` → `/semi-update`.
 
 `/semi-audit` changes **no source file** and installs nothing. Its only output file is `semi-audit.md` at the folder it
 audits: every issue with `file:line` and what to do. `/semi-fix` works from it. When the audit finds nothing it deletes
@@ -19,24 +18,23 @@ an old `semi-audit.md`, so the file never describes problems that are already go
    ```bash
    node "<path-to-this-skill>/scripts/audit.mjs" --cwd "<workspace-or-app-dir>"
    ```
-2. Show the summary it prints, as is (Vietnamese, short): a table per app, the issue count, the next command, then the
-   issues grouped in a few lines at the bottom. Do not add sections, tables of hex colours or long lists: the details
-   are in `semi-audit.md`. Link that file.
-3. Next command, exactly as the summary says:
-   - issues found → **`/semi-fix`**
-   - an app without `@semi/ui` (or no app at all) → **`/semi-init`**
-   - nothing found → say so; no next command.
+2. Show the summary it prints, as is (Vietnamese, short): a table per app with its phase, the issue count, the next
+   command, then the issues grouped in a few lines at the bottom. Do not add sections or long lists: the details are in
+   `semi-audit.md`. Link that file.
+3. Next command, exactly as the summary says: issues found → **`/semi-fix`**; no app at all → **`/semi-init`**;
+   nothing found → say so, no next command.
 
-## Issue kinds (in semi-audit.md)
+## Phases (in semi-audit.md, the order /semi-fix works in)
 
-| Kind | Meaning | /semi-fix does |
+| Phase | Issues | /semi-fix does |
 |---|---|---|
-| Cần quyết định (`D…`) | Structure: AppShell, local wrappers, tables, duplicate components, other UI libraries, Tailwind v3 | asks the user: fix, or keep (recorded in `semi-lint.json` `keep`) |
-| Sửa tay (`L…`) | A lint rule hit no codemod can fix safely | edits by hand, file by file |
-| Tự sửa | Colour / size classes the token codemod maps safely | runs the codemod |
+| 1. Nền móng (`F…`) | `@semi/ui` not installed, `transpilePackages`, Semi CSS, `semi-lint.json`, layout providers, Tailwind v3 | `fix.mjs foundation` (installs, keeps Next / Tailwind) + the layout by hand, screenshots before / after |
+| 2. Token | colour / size classes the codemod maps safely | `fix.mjs tokens [--only dir]` |
+| 3. Sửa tay (`L…`) | lint hits no codemod can fix safely | edits by hand |
+| 4. Cấu trúc (`D…`) | AppShell / AppHeader frame, local wrappers, list pages without `SubpageToolbar`, tables, components that duplicate `@semi/ui`, other UI libraries | asks: fix, or keep (`semi-lint.json` `keep`) |
 
 Checks the team chose to keep are listed in `semi-lint.json` (`"keep": { "tables": "reason" }`, or an array of path
 prefixes) and only appear as one "Giữ nguyên" line.
 
-Options: `--no-write` (summary only), `--json` (full machine-readable report), `--inventory <file>` (per-module
-coverage, used by `/semi-init` planning).
+Options: `--no-write` (summary only), `--ci` (summary only, exit 1 while issues are left: a periodic check in the
+app's CI), `--json` (full machine-readable report), `--inventory <file>` (per-module token coverage).

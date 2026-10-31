@@ -9,10 +9,10 @@
     "url": "https://github.com/hoanghuynh296/semi-nextjs-codebase"
   },
   "suggestedPrompts": [
-    "Run /semi-init to set up the Semi Design System in this project",
-    "Run /semi-audit to check this codebase against the Semi Design System",
+    "Run /semi-init to create a new app on the Semi Design System",
+    "Run /semi-audit to check this app against the Semi Design System (first step for an existing app)",
     "Run /semi-fix to fix the issues the last /semi-audit found",
-    "Run /semi-update to upgrade @semi/ui to the latest release",
+    "Run /semi-update to upgrade @semi/ui and apply its release migrations",
     "Run /semi-propose to analyze project gaps and submit a feature request to Semi Design System",
     "Run /semi-triage to evaluate and generalize incoming ecosystem issues"
   ]

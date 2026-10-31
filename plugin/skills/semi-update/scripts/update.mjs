@@ -1,123 +1,74 @@
 #!/usr/bin/env node
-// /semi-update helper: upgrades @semi/ui to the latest tag across single-app or monorepo projects, refreshes the Semi rules block, prints CHANGELOG and runs tsc. Nothing else.
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { join, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
-import { spawnSync } from "node:child_process";
+// /semi-update helper: moves every app that uses @semi/ui to the latest release tag, refreshes the Semi rules block,
+// prints the CHANGELOG of the skipped releases, runs their release migrations (node_modules/@semi/ui/migrations),
+// then tsc. No audit, no refactor (that is /semi-audit + /semi-fix).
+import { existsSync, readFileSync } from "node:fs";
+import { join, relative, resolve } from "node:path";
 import { discoverFrontendApps } from "../../semi-audit/scripts/audit.mjs";
+import { installSemiUi, installedSemiVersion, resolveTargetSpec, runLocal, wireAgentsMd } from "../../semi-init/scripts/setup.mjs";
+import { cmpVersion, runMigrations } from "./migrate.mjs";
 
-const REPO_URL = "https://github.com/hoanghuynh296/semi-nextjs-codebase.git";
-const GITHUB_SPEC_BASE = "github:hoanghuynh296/semi-nextjs-codebase";
+let cwd = process.cwd();
+const argv = process.argv.slice(2);
+for (let i = 0; i < argv.length; i++) if (argv[i] === "--cwd" && argv[i + 1]) cwd = resolve(argv[++i]);
 
-function parseArgs(argv) {
-  let cwd = process.cwd();
-  for (let i = 0; i < argv.length; i++) {
-    if (argv[i] === "--cwd" && argv[i + 1]) cwd = resolve(argv[++i]);
-  }
-  return { cwd };
-}
-
-function detectPkgManager(cwd) {
-  if (existsSync(join(cwd, "pnpm-lock.yaml"))) return "pnpm";
-  if (existsSync(join(cwd, "yarn.lock"))) return "yarn";
-  return "npm";
-}
-
-function resolveTargetSpec() {
-  if (process.env.SEMI_UI_SOURCE) {
-    return { spec: process.env.SEMI_UI_SOURCE, version: "local" };
-  }
-  const ls = spawnSync("git", ["ls-remote", "--tags", "--refs", REPO_URL], { encoding: "utf8", timeout: 15000 });
-  if (ls.status !== 0) {
-    console.error(
-      "ERROR: Cannot access private repository https://github.com/hoanghuynh296/semi-nextjs-codebase.\n" +
-        "Action required: Run `gh auth login && gh auth setup-git` (or add your SSH key to GitHub), then re-run `/semi-update`.",
-    );
-    process.exit(2);
-  }
-  const tags = (ls.stdout || "")
-    .split(/\r?\n/)
-    .map((l) => l.split("refs/tags/")[1])
-    .filter(Boolean)
-    .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-  const latest = tags[tags.length - 1] || "main";
-  return { spec: `${GITHUB_SPEC_BASE}#${latest}`, version: latest.replace(/^v/, "") };
-}
-
-const { cwd } = parseArgs(process.argv.slice(2));
-const allApps = discoverFrontendApps(cwd);
-if (allApps.length === 0) {
-  console.error(`No frontend package.json found under ${cwd}. Run /semi-init first.`);
-  process.exit(1);
-}
-
-// Prefer apps that already have @semi/ui installed; if none do, update all discovered frontend apps
-const semiApps = allApps.filter((dir) => {
+const apps = discoverFrontendApps(cwd).filter((dir) => {
   const pkg = JSON.parse(readFileSync(join(dir, "package.json"), "utf8"));
   return Boolean(pkg.dependencies?.["@semi/ui"] || pkg.devDependencies?.["@semi/ui"]);
 });
-const targetApps = semiApps.length > 0 ? semiApps : allApps;
+if (!apps.length) {
+  console.error(`Không có app nào dùng @semi/ui dưới ${cwd}. App có sẵn: /semi-audit rồi /semi-fix. App mới: /semi-init.`);
+  process.exit(1);
+}
 
-const { spec, version } = resolveTargetSpec();
+/** CHANGELOG sections of the releases after `from` up to `to`. */
+function changelogBetween(text, from, to) {
+  const parts = text.split(/^(?=## \[)/m);
+  return parts
+    .filter((p) => {
+      const v = p.match(/^## \[(\d+\.\d+\.\d+)\]/)?.[1];
+      return v && (!from || cmpVersion(v, from) > 0) && cmpVersion(v, to) <= 0;
+    })
+    .join("")
+    .trim();
+}
+
+const { spec } = resolveTargetSpec();
 let exitCode = 0;
 let printedChangelog = false;
 
-for (const appDir of targetApps) {
-  const pkgPath = join(appDir, "package.json");
-  const pkg = JSON.parse(readFileSync(pkgPath, "utf8"));
-  const oldSpec = pkg.dependencies?.["@semi/ui"] || pkg.devDependencies?.["@semi/ui"] || "none";
-
-  console.log(`\n=== Updating @semi/ui in ${appDir}: ${oldSpec} -> ${spec} ===`);
-  pkg.dependencies = pkg.dependencies || {};
-  pkg.dependencies["@semi/ui"] = spec;
-  pkg.scripts = pkg.scripts || {};
-  pkg.scripts["semi:lint"] = "semi-lint";
-  writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
-
-  const pm = detectPkgManager(appDir);
-  const installArgs = pm === "npm" ? ["install", "--install-links"] : ["add", `@semi/ui@${spec}`];
-  const inst = spawnSync(pm, installArgs, { cwd: appDir, stdio: "inherit" });
-  if (inst.status !== 0) {
-    exitCode = inst.status || 1;
+for (const appDir of apps) {
+  const name = relative(cwd, appDir) || ".";
+  const from = installedSemiVersion(appDir);
+  console.log(`\n=== ${name}: @semi/ui ${from || "?"} → ${spec} ===`);
+  if (!installSemiUi(appDir, spec)) {
+    exitCode = 1;
     continue;
   }
+  const to = installedSemiVersion(appDir);
 
-  const installedPkgPath = join(appDir, "node_modules", "@semi", "ui", "package.json");
-  const installedVersion = existsSync(installedPkgPath)
-    ? JSON.parse(readFileSync(installedPkgPath, "utf8")).version
-    : version;
+  // Rules block in the app's AGENTS.md (and the workspace's, when the block lives there).
+  const targets = [appDir, cwd].filter((d, i, a) => a.indexOf(d) === i && existsSync(join(d, "AGENTS.md")));
+  for (const d of targets.length ? targets : [cwd]) wireAgentsMd(d, to);
 
-  // Refresh the managed rules block from this plugin's template (the npm package does not ship plugin/).
-  const rulesTemplatePath = fileURLToPath(new URL("../../../rules/AGENTS.md", import.meta.url));
-  const stamp = (s) =>
-    s.replace(
-      /Semi Design System \(`@semi\/ui`[^)]*\)/g,
-      `Semi Design System (\`@semi/ui\` v${installedVersion}, repo \`https://github.com/hoanghuynh296/semi-nextjs-codebase\`)`,
-    );
-  const freshBlock = existsSync(rulesTemplatePath) ? stamp(readFileSync(rulesTemplatePath, "utf8")).trim() : null;
-  const BLOCK_RE = /<!-- semi-design-system:start -->[\s\S]*?<!-- semi-design-system:end -->/;
-  for (const candidate of new Set([join(appDir, "AGENTS.md"), join(cwd, "AGENTS.md")])) {
-    if (!existsSync(candidate)) continue;
-    const content = readFileSync(candidate, "utf8");
-    const updated = freshBlock && BLOCK_RE.test(content) ? content.replace(BLOCK_RE, () => freshBlock) : stamp(content);
-    if (updated !== content) {
-      writeFileSync(candidate, updated);
-      console.log(`Refreshed Semi rules block in ${candidate}`);
-    }
+  const changelogPath = join(appDir, "node_modules", "@semi", "ui", "CHANGELOG.md");
+  if (!printedChangelog && existsSync(changelogPath)) {
+    const notes = changelogBetween(readFileSync(changelogPath, "utf8"), from, to);
+    if (notes) console.log(`\n--- CHANGELOG ${from || "?"} → ${to} ---\n${notes}\n`);
+    printedChangelog = true;
   }
 
-  if (!printedChangelog) {
-    const changelogPath = join(appDir, "node_modules", "@semi", "ui", "CHANGELOG.md");
-    if (existsSync(changelogPath)) {
-      console.log("\n--- CHANGELOG.md ---");
-      console.log(readFileSync(changelogPath, "utf8").slice(0, 2500));
-      printedChangelog = true;
-    }
+  if (!from) console.log(`${name}: không biết phiên bản cũ, bỏ qua migration (xem CHANGELOG).`);
+  else if (cmpVersion(to, from) <= 0) console.log(`${name}: đã ở bản mới nhất (${to}).`);
+  else {
+    const done = await runMigrations({ appDir, dir: join(appDir, "node_modules", "@semi", "ui", "migrations"), from, to });
+    if (!done.length) console.log(`${name}: các bản ${from} → ${to} không có migration.`);
+    for (const m of done)
+      console.log(`${name}: migration ${m.version} ${m.id} (${m.description}): ${m.changed.length ? m.changed.join(", ") : "không có gì để đổi"}`);
   }
 
-  // tsc only checks the upgrade itself (an API the app uses changed); rule checks belong to /semi-audit.
-  const tscRes = spawnSync("npx", ["tsc", "--noEmit"], { cwd: appDir, stdio: "inherit" });
-  if (tscRes.status !== 0) exitCode = tscRes.status || 1;
+  // Only checks the upgrade itself (an API the app uses changed and no migration covers it).
+  if (runLocal(appDir, "tsc", ["--noEmit"]).status !== 0) exitCode = 1;
 }
 
 process.exit(exitCode);

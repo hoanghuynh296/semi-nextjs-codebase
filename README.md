@@ -7,11 +7,11 @@ Hệ thống Design System dùng chung cho toàn bộ dự án web thuộc hệ 
 Xây dựng cho **Next.js 16 + React 19 + Tailwind CSS 4**, hỗ trợ chuyển đổi giao diện Dark/Light mượt mà không cần `dark:bg-...` thủ công nhờ kiến trúc Semantic Tokens.
 
 Repository này đóng gói **2 sản phẩm trong cùng 1 tag phiên bản (semver)**:
-1. **Plugin cho AI Agent (`semi-design`):** chứa bộ quy tắc luôn bật (`rules/AGENTS.md` — tự động hướng dẫn agent mỗi khi viết hoặc sửa giao diện), hook tự chạy lint khi sửa file (`hooks.json`), và **6 slash commands**. Thứ tự dùng: `/semi-init` cài Semi cho app chưa có → app cũ thì `/semi-audit` rồi `/semi-fix` để refactor (app mới không cần) → sau đó `/semi-audit` kiểm tra định kỳ, `/semi-fix` khi có vấn đề → `/semi-update` chỉ để lên bản mới:
-   - `/semi-init` — **Cài đặt lần đầu** cho một dự án (tự động khởi tạo dự án mới Next.js + Tailwind + `@semi/ui` HOẶC quét, hỏi trắc nghiệm và refactor 4 giai đoạn cho dự án có sẵn / monorepo).
+1. **Plugin cho AI Agent (`semi-design`):** chứa bộ quy tắc luôn bật (`rules/AGENTS.md` — tự động hướng dẫn agent mỗi khi viết hoặc sửa giao diện), hook tự chạy lint khi sửa file (`hooks.json`), và **6 slash commands**. App mới: `/semi-init`. App có sẵn (đã hay chưa có Semi): `/semi-audit` rồi `/semi-fix`, và cũng là cách kiểm tra định kỳ. Lên bản mới: `/semi-update`:
+   - `/semi-init` — **Tạo app mới** (thư mục trống): Next.js + Tailwind 4 + `@semi/ui` + trang mẫu, sạch ngay, không cần audit hay fix.
    - `/semi-audit` — **Kiểm tra** (không sửa code): in tóm tắt ngắn và ghi mọi vấn đề kèm `file:dòng` vào `semi-audit.md`.
-   - `/semi-fix` — **Sửa vấn đề audit tìm ra**, dựa trên `semi-audit.md`: hỏi các quyết định cấu trúc, chạy codemod token, sửa tay phần còn lại, kiểm tra lại tới khi sạch rồi xoá file.
-   - `/semi-update` — **Nâng cấp phiên bản** `@semi/ui` lên tag mới nhất, chỉ vậy thôi (CHANGELOG + `tsc` để chắc bản mới vẫn build; không audit, không refactor).
+   - `/semi-fix` — **Sửa theo `semi-audit.md`, từng giai đoạn:** nền móng (cài `@semi/ui`, CSS, provider; giữ nguyên Next / Tailwind; so ảnh trước / sau) → codemod token → sửa tay → cấu trúc theo quyết định. Kiểm tra lại tới khi sạch rồi xoá file.
+   - `/semi-update` — **Nâng cấp phiên bản** `@semi/ui` lên tag mới nhất và chạy migration của các bản mới (sửa code theo thay đổi lớn của chính bản đó), rồi `tsc`. Không audit, không refactor.
    - `/semi-propose` — **Đề xuất tính năng từ dự án con** (quét nhu cầu chưa được `@semi/ui` đáp ứng tại dự án thực tế, cấu trúc issue chuẩn và tạo issue trực tiếp trên GitHub repo lõi).
    - `/semi-triage` — **Đánh giá & Tổng quát hóa Issue (Dành cho Core)** (đọc issue trên GitHub, phân tích tính đúng đắn, đối chiếu rulebook, và thiết kế giải pháp tổng quát cho toàn hệ sinh thái mà không break rule).
 2. **NPM Package (`@semi/ui`):** chứa Design Tokens (`tokens.css`, `base.css`), style constants (`@semi/ui/styles`), ~45 React components (danh sách đầy đủ + props: `components.json`) bao gồm cả khung bố cục trang (`AppShell`, `MobileTabBar`, `PageTitle`, `PageTabsTitle`, `SubpageToolbar`, `KpiCard`, `Modal`, …), và công cụ kiểm tra `semi-lint`.
@@ -53,34 +53,28 @@ Agent sẽ tự động:
 4. Dựng sẵn `layout.tsx` (font Geist + Montserrat Alternates, `<ConfirmHost />`) và trang mẫu chuẩn Semi (`AppHeader`, `HERO`, `STICKY_TOOLBAR`, `CARD`, `Pills`, `Chip`, `CustomSelect`, `SearchInput`).
 5. Tạo `semi-lint.json`, `AGENTS.md` và kiểm tra `semi-lint` + `tsc` + `npm run build`.
 
-### Trường hợp 2: Dự án có sẵn
-```text
-/semi-init
-```
-Agent hỏi app nào (nếu là monorepo), phiên bản Next.js / Tailwind, màu thương hiệu, rồi **chỉ cài đặt**: `@semi/ui`,
-tokens + `base.css` + `@source`, `transpilePackages`, `semi-lint.json`, `AGENTS.md`, các provider trong layout, và
-baseline của `semi-lint` (lỗi cũ không chặn khi sửa file, chỉ chặn lỗi mới). Code của app chưa bị đổi.
-
-Sau đó refactor app sang Semi:
+### Trường hợp 2: Dự án có sẵn (đã hay chưa có `@semi/ui`), và kiểm tra định kỳ
 ```text
 /semi-audit
 /semi-fix
 ```
-App mới (trường hợp 1) dựng từ trang mẫu Semi nên không cần bước này.
+`/semi-audit` không sửa code: in tóm tắt ngắn và ghi mọi vấn đề kèm `file:dòng` vào `semi-audit.md`, chia 4 giai đoạn.
+`/semi-fix` làm theo thứ tự đó, mỗi giai đoạn xong app vẫn build được:
+1. **Nền móng:** cài `@semi/ui` (giữ nguyên phiên bản Next.js / Tailwind), `transpilePackages`, CSS của Semi, provider
+   trong layout (theme mặc định giữ đúng sáng / tối như app đang có), `semi-lint.json` + baseline. Chụp vài trang trước
+   và sau để so.
+2. **Token:** codemod đổi class màu / cỡ chữ sang token, có thể làm từng module (`--only`).
+3. **Sửa tay:** lỗi lint còn lại.
+4. **Cấu trúc:** AppShell / AppHeader, bảng, component trùng… theo quyết định của nhóm. Cái nào giữ nguyên thì ghi
+   vào `semi-lint.json`: `"keep": { "tables": "lý do" }`, audit sẽ không hỏi lại.
 
-### Kiểm tra định kỳ và sửa
-```text
-/semi-audit
-/semi-fix
-```
-`/semi-audit` ghi chi tiết vào `semi-audit.md`; `/semi-fix` sửa theo file đó và xoá nó khi audit không còn vấn đề.
-Cái nào nhóm chọn giữ nguyên (ví dụ bảng HTML ở trang báo cáo) ghi vào `semi-lint.json`: `"keep": { "tables": "lý do" }`.
+Khi sạch, `semi-audit.md` được xoá. Muốn audit tự chạy trong CI của app: `node <plugin>/skills/semi-audit/scripts/audit.mjs --ci`.
 
 ### Nâng cấp phiên bản mới
 ```text
 /semi-update
 ```
-Chỉ để lên bản mới. Luật mới (nếu có) sẽ hiện ở lần `/semi-audit` kế tiếp.
+Chỉ để lên bản mới: cài tag mới, in CHANGELOG các bản đã bỏ qua, chạy migration của các bản đó, rồi `tsc`. Luật mới (nếu có) sẽ hiện ở lần `/semi-audit` kế tiếp.
 
 ### Đề xuất tính năng mới từ dự án con (Khi gặp thiếu sót hoặc nhu cầu chưa đáp ứng)
 ```text

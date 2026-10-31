@@ -23,6 +23,7 @@ This repository (`hoanghuynh296/semi-nextjs-codebase`) is the **single source of
 | Added / removed / renamed an export | The above, plus the `src/index.ts` export and the §16 / §17 tables of `DESIGN_SYSTEM.md` |
 | A UI rule | `docs/DESIGN_SYSTEM.md`, `docs/QUICK_REF.md`, `docs/DECISIONS.md` (why), `plugin/rules/AGENTS.md` when consumer agents must follow it, `lint/semi-lint.mjs` when a regex can check it |
 | A Storybook section | Its `app/usage.ts` entry (same id, `title`, `when`, `code`), and `<StoryUsage id>` / `ShowcaseSection id` on the page |
+| A breaking change (renamed / removed component, prop, constant, token) | A release migration `migrations/<version>-<id>.mjs` (`migrations/README.md`) + its test in `lint/test/migrations.test.mjs`, and a CHANGELOG "Migration" note for what it cannot do |
 | Tokens or lint | `npm run build:tokens` / `npm run sync:vendor` |
 
 Then run `npm run build:manifest` (regenerates the agent files) and `npm run check`. `check:manifest` fails when:

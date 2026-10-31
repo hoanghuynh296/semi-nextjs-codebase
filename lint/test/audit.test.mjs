@@ -14,12 +14,39 @@ function app() {
   const web = join(root, "web");
   mkdirSync(join(web, "app"), { recursive: true });
   writeFileSync(join(web, "package.json"), JSON.stringify({ dependencies: { next: "16.0.0", react: "19.0.0", "@semi/ui": "x" }, devDependencies: { tailwindcss: "^4.1.0" } }));
+  writeFileSync(join(web, "next.config.mjs"), `const nextConfig = { transpilePackages: ["@semi/ui"] };\nexport default nextConfig;\n`);
+  writeFileSync(join(web, "app/globals.css"), `@import "tailwindcss";\n@import "@semi/ui/tokens.css";\n`);
   writeFileSync(
     join(web, "app/page.tsx"),
-    `export default function Page() {\n  return <main className="bg-white text-slate-900"><h1 className="font-bold">T</h1><table /></main>;\n}\n`,
+    `export default function Page() {\n  return <main className="bg-white text-slate-900"><h1 className="font-bold">T</h1><table />{[1].map((i) => i)}</main>;\n}\n`,
   );
   return { root, web };
 }
+
+test("an app without Semi starts at the foundation phase", () => {
+  const root = mkdtempSync(join(tmpdir(), "semi-audit-"));
+  mkdirSync(join(root, "app"));
+  writeFileSync(join(root, "package.json"), JSON.stringify({ dependencies: { next: "16.0.0", react: "19.0.0" }, devDependencies: { tailwindcss: "^4.1.0" } }));
+  writeFileSync(join(root, "app/layout.tsx"), `export default function L({ children }) { return <html><body>{children}</body></html>; }\n`);
+  const issues = auditProject(root).apps[0].issues;
+  assert.deepEqual(
+    issues.filter((i) => i.phase === "foundation").map((i) => i.check),
+    ["semi-ui", "transpile", "semi-css", "semi-lint-config", "providers"],
+  );
+  assert.equal(issues[0].phase, "foundation");
+  rmSync(root, { recursive: true });
+});
+
+test("detail and list pages: only list pages need a SubpageToolbar; AppHeader counts as a Semi frame", () => {
+  const { root, web } = app();
+  mkdirSync(join(web, "app/about"));
+  writeFileSync(join(web, "app/about/page.tsx"), `export default function A() { return <p>x</p>; }\n`);
+  writeFileSync(join(web, "app/list.tsx"), `import { AppHeader } from "@semi/ui";\nexport const H = () => <AppHeader title="x" />;\n`);
+  const checks = auditProject(root).apps[0].issues.map((i) => `${i.check}:${i.file}`);
+  assert.ok(!checks.includes("subpage-toolbar:app/about/page.tsx"));
+  assert.ok(!checks.some((c) => c.startsWith("app-shell:")));
+  rmSync(root, { recursive: true });
+});
 
 test("issues are sorted into decisions, hand fixes and codemod fixes with file:line", () => {
   const { root } = app();

@@ -27,6 +27,7 @@
     "tokens",
     "lint",
     "docs",
+    "migrations",
     "CHANGELOG.md",
     "components.json"
   ],

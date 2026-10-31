@@ -9,8 +9,11 @@ import { fileURLToPath } from "node:url";
 import { HARD, RATCHET, loadConfig, scan as runSemiLintScan } from "./vendor/semi-lint.mjs";
 import { analyse } from "./vendor/classes.mjs";
 import { detectMode, migrateSource } from "./vendor/codemod.mjs";
+import { findGlobalsCss } from "../../semi-init/scripts/setup.mjs";
 
 export const REPORT_FILE = "semi-audit.md";
+/** The order /semi-fix works in; each phase leaves the app building. */
+export const PHASES = ["foundation", "tokens", "lint", "structure"];
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_TOKENS_PATH = resolve(__dirname, "../../../../tokens/tokens.json");
@@ -265,10 +268,10 @@ export function auditSingleApp(cwd) {
       importUsage.set(base, (importUsage.get(base) || 0) + 1);
     }
 
-    if (/\bAppShell\b/.test(text)) usesAppShell = true;
+    if (/\b(AppShell|AppHeader)\b/.test(text)) usesAppShell = true; // AppHeader: the Semi frame of tool apps
     if (/<aside[^>]*\b(border-r|-translate-x-full)\b/.test(text)) legacySidebarFile = rel;
     if (/\b(SubpageToolbar|STICKY_TOOLBAR)\b/.test(text)) toolbarPagesCount++;
-    else if (/(?:^|\/)page\.tsx$/.test(rel)) pagesWithoutToolbar.push(rel);
+    else if (/(?:^|\/)page\.tsx$/.test(rel) && /\.map\(/.test(text)) pagesWithoutToolbar.push(rel); // list pages only
     if (/\bPagination\b/.test(text)) paginationPagesCount++;
     if (/\bKpiCard\b/.test(text)) usesKpiCard = true;
     if (/function\s+KPICard\b/.test(text)) customKpiCardFile = rel;
@@ -300,9 +303,12 @@ export function auditSingleApp(cwd) {
   for (const file of tsFiles) {
     const rel = relative(cwd, file).split(sep).join("/");
     const stem = basename(file, extname(file));
+    const src = readFileSync(file, "utf8");
+    // A duplicate defines its own component and does not build on @semi/ui (a thin Semi-based wrapper is fine).
+    if (!/export\s+(?:default\s+)?(?:function|const)\s+[A-Z]/.test(src) || !/<[A-Za-z]/.test(src) || /from\s+["']@semi\/ui(?:\/styles)?["']/.test(src)) continue;
     for (const item of SEMI_COMPONENT_MAP) {
       if (item.pattern.test(stem)) {
-        const lines = readFileSync(file, "utf8").split(/\r?\n/).length;
+        const lines = src.split(/\r?\n/).length;
         duplicateComponents.push({
           file: rel,
           name: stem,
@@ -448,51 +454,75 @@ export function auditSingleApp(cwd) {
     files: inventoryFiles.filter((f) => f.total).sort((a, b) => b.total - a.total),
   };
 
-  // Every issue, one entry each, for semi-audit.md and /semi-fix. kind: "decision" (structure: fix or keep, the team
-  // decides), "manual" (a rule hit no codemod can fix safely), "auto" (the token codemod rewrites it).
+  // Every issue, one entry each, for semi-audit.md and /semi-fix, in the order /semi-fix works:
+  //   phase "foundation": install and wire Semi (kind "setup": fix.mjs foundation does it; "manual": by hand)
+  //   phase "tokens":     kind "auto", the token codemod rewrites it
+  //   phase "lint":       kind "manual", a rule hit no codemod can fix safely
+  //   phase "structure":  kind "decision", fix or keep (semi-lint.json "keep"), the team decides
+  const mode = detectMode(sources);
   const keep = lintCfg.keep || {};
   const kept = [];
   const issues = [];
   const decide = (check, file, what, fix) => {
     const k = keep[check];
     if (k && (!Array.isArray(k) || k.some((prefix) => (file || "").startsWith(prefix)))) return kept.push({ check, file, reason: Array.isArray(k) ? "" : String(k) });
-    issues.push({ kind: "decision", check, file, what, fix });
+    issues.push({ phase: "structure", kind: "decision", check, file, what, fix });
   };
-  if (!hasSemiUi) decide("semi-ui", "package.json", "@semi/ui chưa được cài", "chạy /semi-init (lần đầu áp dụng Semi)");
-  if (twVersion && !isTailwindV4) decide("tailwind-v4", "package.json", `Tailwind ${twVersion}, Semi cần v4`, "nâng tailwindcss lên v4 (@tailwindcss/postcss)");
+  const setup = (check, file, what, fix, kind = "setup") => issues.push({ phase: "foundation", kind, check, file, what, fix });
+
+  if (!hasSemiUi) setup("semi-ui", "package.json", "@semi/ui chưa được cài", "cài @semi/ui (giữ nguyên Next / Tailwind)");
+  if (twVersion && !isTailwindV4) setup("tailwind-v4", "package.json", `Tailwind ${twVersion}, Semi cần v4`, "npx @tailwindcss/upgrade (công cụ chính thức), rồi kiểm tra giao diện", "manual");
+  const nextConfig = ["next.config.ts", "next.config.mjs", "next.config.js"].find((f) => existsSync(join(cwd, f)));
+  if (nextVersion && (!nextConfig || !readFileSync(join(cwd, nextConfig), "utf8").includes("@semi/ui")))
+    setup("transpile", nextConfig || "next.config.ts", "chưa có @semi/ui trong transpilePackages", 'transpilePackages: ["@semi/ui"]');
+  const cssPath = findGlobalsCss(cwd);
+  const cssRel = relative(cwd, cssPath).split(sep).join("/");
+  if (!existsSync(cssPath) || !readFileSync(cssPath, "utf8").includes("@semi/ui/tokens.css"))
+    setup("semi-css", cssRel, "chưa import tokens.css + base.css của Semi", "khối semi-design-system trong globals.css (đổi giao diện: so ảnh trước / sau)");
+  if (!lintCfg._found) setup("semi-lint-config", "semi-lint.json", "chưa có semi-lint.json", "semi-lint.json + baseline lint");
+  const layout = ["app/layout.tsx", "src/app/layout.tsx", "app/layout.jsx", "src/app/layout.jsx"].find((f) => existsSync(join(cwd, f)));
+  if (layout && !/\bThemeProvider\b/.test(readFileSync(join(cwd, layout), "utf8")))
+    setup("providers", layout, "layout chưa có ThemeScript / ThemeProvider / ToastHost / ConfirmHost", `bọc layout, defaultTheme="${mode === "dark" ? "dark" : "light"}" theo giao diện hiện tại`, "manual");
+
   if (!usesAppShell || legacySidebarFile)
-    decide("app-shell", legacySidebarFile || "layout.tsx", legacySidebarFile ? "sidebar cũ (aside border-r / drawer)" : "chưa dùng AppShell", "AppShell + MobileTabBar");
+    decide("app-shell", legacySidebarFile || layout || "layout.tsx", legacySidebarFile ? "sidebar cũ (aside border-r / drawer)" : "chưa có khung AppShell / AppHeader", "AppShell + MobileTabBar (app nhiều trang) hoặc AppHeader (app công cụ)");
   for (const f of wrapperFiles) decide("ui-wrappers", f, "file wrapper UI riêng che @semi/ui", "import thẳng từ @semi/ui, xoá wrapper");
   if (customKpiCardFile) decide("kpi-card", customKpiCardFile, "KPICard tự viết", "KpiCard");
-  for (const f of pagesWithoutToolbar) decide("subpage-toolbar", f, "trang không có SubpageToolbar", "PageTitle + SubpageToolbar (nếu là trang danh sách)");
+  for (const f of pagesWithoutToolbar) decide("subpage-toolbar", f, "trang danh sách không có SubpageToolbar", "PageTitle + SubpageToolbar");
   for (const f of tablePages) decide("tables", f, "bảng `<table>` HTML", "Table của @semi/ui, hoặc lưới Card cho danh sách thực thể");
   for (const d of duplicateComponents) if (!wrapperFiles.includes(d.file)) decide("duplicates", d.file, `component riêng ${d.name} (${d.importsCount} chỗ import)`, d.semiEquivalent);
   for (const l of detectedLibs) decide("third-party-ui", "package.json", `thư viện UI ${l.label}`, "thay bằng @semi/ui rồi gỡ thư viện");
 
-  for (const h of hard) issues.push({ kind: "manual", rule: h.rule, file: h.file, line: h.line, text: h.text });
+  for (const h of hard) issues.push({ phase: "lint", kind: "manual", rule: h.rule, file: h.file, line: h.line, text: h.text });
   // Class-token findings: what the codemod rewrites is "auto", what it cannot map is "manual".
-  const mode = detectMode(sources);
   const autoAt = new Set();
   for (const { rel, src, css } of sources) {
     for (const c of migrateSource(src, { css, mode }).changes) {
-      issues.push({ kind: "auto", file: rel, line: c.line, from: c.from, to: c.to });
+      issues.push({ phase: "tokens", kind: "auto", file: rel, line: c.line, from: c.from, to: c.to });
       autoAt.add(`${rel}:${c.line}:${c.from}`);
     }
   }
-  for (const h of hits) if (!h.token || !autoAt.has(`${h.file}:${h.line}:${h.token}`)) issues.push({ kind: "manual", rule: h.rule, file: h.file, line: h.line, token: h.token });
+  for (const h of hits) if (!h.token || !autoAt.has(`${h.file}:${h.line}:${h.token}`)) issues.push({ phase: "lint", kind: "manual", rule: h.rule, file: h.file, line: h.line, token: h.token });
   // CSS files are not linted by semi-lint; their @apply findings still count.
   for (const { rel, src, css } of sources) {
     if (!css) continue;
-    for (const f of analyse(src, { css: true })) if (!autoAt.has(`${rel}:${f.line}:${f.token}`)) issues.push({ kind: "manual", rule: f.rule, file: rel, line: f.line, token: f.token });
+    for (const f of analyse(src, { css: true })) if (!autoAt.has(`${rel}:${f.line}:${f.token}`)) issues.push({ phase: "lint", kind: "manual", rule: f.rule, file: rel, line: f.line, token: f.token });
   }
-  const order = { decision: 0, manual: 1, auto: 2 };
-  issues.sort((a, b) => order[a.kind] - order[b.kind] || (a.file || "").localeCompare(b.file || "") || (a.line || 0) - (b.line || 0));
+  const STEP = ["semi-ui", "tailwind-v4", "transpile", "semi-css", "semi-lint-config", "providers"];
+  issues.sort(
+    (a, b) =>
+      PHASES.indexOf(a.phase) - PHASES.indexOf(b.phase) ||
+      (a.phase === "foundation" ? STEP.indexOf(a.check) - STEP.indexOf(b.check) : 0) ||
+      (a.file || "").localeCompare(b.file || "") ||
+      (a.line || 0) - (b.line || 0),
+  );
 
   return {
     exists: true,
     cwd,
     issues,
     kept,
+    legacyMode: mode,
     inventory,
     stack: {
       nextVersion,
@@ -596,8 +626,6 @@ export function auditProject(rawCwd = process.cwd()) {
 
 const RULE_HINTS = Object.fromEntries([...HARD, ...RATCHET].map(([id, , msg]) => [id, msg]));
 const CHECK_NAMES = {
-  "semi-ui": "chưa cài @semi/ui",
-  "tailwind-v4": "Tailwind v3",
   "app-shell": "khung AppShell",
   "ui-wrappers": "wrapper UI riêng",
   "kpi-card": "KPICard riêng",
@@ -605,6 +633,15 @@ const CHECK_NAMES = {
   tables: "bảng HTML",
   duplicates: "component trùng @semi/ui",
   "third-party-ui": "thư viện UI khác",
+};
+const PHASE_NAMES = { foundation: "Nền móng", tokens: "Token (codemod)", lint: "Sửa tay", structure: "Cấu trúc (cần quyết định)" };
+const SETUP_NAMES = {
+  "semi-ui": "cài @semi/ui",
+  "tailwind-v4": "Tailwind v4",
+  transpile: "transpilePackages",
+  "semi-css": "CSS của Semi",
+  "semi-lint-config": "semi-lint.json",
+  providers: "provider trong layout",
 };
 const appsOf = (r) => (r.apps?.length ? r.apps : r.exists ? [r] : []);
 const rootOf = (r) => r.root || r.cwd;
@@ -614,59 +651,67 @@ const countBy = (list, key) => {
   for (const x of list) m.set(x[key], (m.get(x[key]) || 0) + 1);
   return [...m.entries()].sort((a, b) => b[1] - a[1]);
 };
+const phaseOf = (a) => PHASES.find((ph) => a.issues.some((i) => i.phase === ph)) || null;
 export function totals(r) {
   const all = appsOf(r).flatMap((a) => a.issues);
-  const n = (k) => all.filter((i) => i.kind === k).length;
-  return { total: all.length, decision: n("decision"), manual: n("manual"), auto: n("auto") };
+  return { total: all.length, ...Object.fromEntries(PHASES.map((ph) => [ph, all.filter((i) => i.phase === ph).length])) };
+}
+
+/** One line per phase that has issues, for the summary. */
+function phaseLines(a) {
+  const of = (ph) => a.issues.filter((i) => i.phase === ph);
+  const out = [];
+  const f = of("foundation");
+  if (f.length) out.push(`nền móng: ${f.map((i) => SETUP_NAMES[i.check] || i.check).join(", ")}`);
+  const t = of("tokens");
+  if (t.length) out.push(`token: ${t.length} class trong ${new Set(t.map((i) => i.file)).size} file (codemod)`);
+  const l = of("lint");
+  if (l.length) {
+    const by = countBy(l, "rule");
+    out.push(`sửa tay: ${by.slice(0, 5).map(([c, n]) => `\`${c}\` ×${n}`).join(", ")}${by.length > 5 ? ", …" : ""}`);
+  }
+  const d = of("structure");
+  if (d.length) out.push(`cần quyết định: ${countBy(d, "check").map(([c, n]) => `${CHECK_NAMES[c] || c}${n > 1 ? ` ×${n}` : ""}`).join(", ")}`);
+  return out;
 }
 
 /** Short Vietnamese summary for the chat: one table, the next command, then the issues grouped in a few lines. */
 export function formatSummary(r, reportPath = REPORT_FILE) {
-  if (!r.exists) return `# Semi audit\n\nKhông thấy app Next.js / React nào: đây là dự án mới, chạy **/semi-init**.\n`;
+  if (!r.exists) return `# Semi audit\n\nKhông thấy app Next.js / React nào. App mới: chạy **/semi-init**.\n`;
   const apps = appsOf(r);
   const t = totals(r);
-  const needsInit = apps.filter((a) => !a.stack.hasSemiUi);
+  const stage = (a) => {
+    const ph = phaseOf(a);
+    return ph ? `${PHASES.indexOf(ph) + 1}/4 ${PHASE_NAMES[ph]}` : "✅ xong";
+  };
   const lines = [
     `# Semi audit`,
     ``,
-    `| App | @semi/ui | Next · Tailwind | Token | Vấn đề |`,
-    `|---|---|---|---:|---:|`,
+    `| App | @semi/ui | Next · Tailwind | Token | Giai đoạn | Vấn đề |`,
+    `|---|---|---|---:|---|---:|`,
     ...apps.map(
       (a) =>
-        `| \`${nameOf(r, a)}\` | ${a.stack.semiUiVersion || (a.stack.hasSemiUi ? "có" : "chưa cài")} | ${a.stack.nextVersion || "—"} · ${a.stack.tailwindVersion || "—"} | ${a.inventory.coverage.percent}% | ${a.issues.length || "✅ 0"} |`,
+        `| \`${nameOf(r, a)}\` | ${a.stack.semiUiVersion || (a.stack.hasSemiUi ? "có" : "chưa cài")} | ${a.stack.nextVersion || "—"} · ${a.stack.tailwindVersion || "—"} | ${a.inventory.coverage.percent}% | ${stage(a)} | ${a.issues.length} |`,
     ),
     ``,
   ];
   if (!t.total) lines.push(`✅ Không có vấn đề.`);
   else {
     lines.push(
-      `**${t.total} vấn đề:** ${t.decision} cần quyết định · ${t.manual} sửa tay · ${t.auto} tự sửa (codemod). Chi tiết: \`${reportPath}\`.`,
+      `**${t.total} vấn đề:** ${PHASES.filter((ph) => t[ph]).map((ph) => `${t[ph]} ${PHASE_NAMES[ph].toLowerCase()}`).join(" · ")}. Chi tiết: \`${reportPath}\`.`,
       ``,
-      needsInit.length
-        ? `**Tiếp theo:** chạy **/semi-init** cho ${needsInit.map((a) => `\`${nameOf(r, a)}\``).join(", ")} (chưa cài @semi/ui), sau đó **/semi-fix**.`
-        : `**Tiếp theo:** chạy **/semi-fix**.`,
+      `**Tiếp theo:** chạy **/semi-fix**.`,
       ``,
       `## Vấn đề`,
     );
-    for (const a of apps) {
-      if (!a.issues.length) continue;
-      const of = (k) => a.issues.filter((i) => i.kind === k);
-      const parts = [];
-      const d = of("decision");
-      if (d.length) parts.push(`cần quyết định: ${countBy(d, "check").map(([c, n]) => `${CHECK_NAMES[c] || c}${n > 1 ? ` ×${n}` : ""}`).join(", ")}`);
-      const m = of("manual");
-      if (m.length) parts.push(`sửa tay: ${countBy(m, "rule").slice(0, 5).map(([c, n]) => `\`${c}\` ×${n}`).join(", ")}${countBy(m, "rule").length > 5 ? ", …" : ""}`);
-      const au = of("auto");
-      if (au.length) parts.push(`tự sửa: ${au.length} class màu trong ${new Set(au.map((i) => i.file)).size} file`);
-      lines.push(`- **\`${nameOf(r, a)}\`**`, ...parts.map((p) => `  - ${p}`));
-    }
+    for (const a of apps) if (a.issues.length) lines.push(`- **\`${nameOf(r, a)}\`**`, ...phaseLines(a).map((p) => `  - ${p}`));
   }
   const kept = apps.flatMap((a) => a.kept);
   if (kept.length) lines.push(``, `Giữ nguyên theo \`keep\` trong semi-lint.json: ${countBy(kept, "check").map(([c, n]) => `${CHECK_NAMES[c] || c} ×${n}`).join(", ")}.`);
   return lines.join("\n") + "\n";
 }
 
-/** semi-audit.md: every issue with file:line, what to do, and a meta line /semi-fix uses to detect a stale file. */
+/** semi-audit.md: every issue by phase with file:line and what to do, plus a meta line /semi-fix uses to detect a stale file. */
 export function formatDetails(r) {
   const apps = appsOf(r);
   const t = totals(r);
@@ -676,39 +721,41 @@ export function formatDetails(r) {
     `<!-- semi-audit ${JSON.stringify(meta)} -->`,
     `# Semi audit: chi tiết`,
     ``,
-    `Sinh bởi /semi-audit để /semi-fix làm theo. Đừng sửa tay: chạy lại /semi-audit sau khi đổi code. File được xoá khi audit không còn vấn đề.`,
+    `Sinh bởi /semi-audit để /semi-fix làm theo, từng giai đoạn một (mỗi giai đoạn xong app vẫn build được). Đừng sửa tay: chạy lại /semi-audit sau khi đổi code. File được xoá khi audit không còn vấn đề.`,
     ``,
-    `**${t.total} vấn đề:** ${t.decision} cần quyết định · ${t.manual} sửa tay · ${t.auto} tự sửa (codemod)`,
+    `**${t.total} vấn đề:** ${PHASES.filter((ph) => t[ph]).map((ph) => `${t[ph]} ${PHASE_NAMES[ph].toLowerCase()}`).join(" · ")}`,
   ];
   const usedRules = new Set();
+  const HOW = {
+    foundation: "`fix.mjs foundation` làm các mục *tự động*; mục *tay* làm theo đề xuất. Giai đoạn này đổi giao diện: chụp vài trang trước và sau.",
+    tokens: "`fix.mjs tokens` (thêm `--only <thư mục>` để làm từng module) đổi hết các dòng này; xem lại diff.",
+    lint: "Sửa theo luật ở cuối file; không thêm `skip`, không nâng baseline.",
+    structure: 'Sửa theo đề xuất, hoặc giữ nguyên: thêm `"keep": { "<check>": "lý do" }` (hoặc mảng đường dẫn) vào `semi-lint.json`.',
+  };
   for (const a of apps) {
     if (!a.issues.length) continue;
     lines.push(``, `## App \`${nameOf(r, a)}\``);
-    const of = (k) => a.issues.filter((i) => i.kind === k);
-    const d = of("decision");
-    if (d.length) {
-      lines.push(``, `### Cần quyết định (${d.length})`, ``, `Sửa theo đề xuất, hoặc giữ nguyên: thêm \`"keep": { "<check>": "lý do" }\` (hoặc mảng đường dẫn) vào \`semi-lint.json\`.`, ``);
-      d.forEach((i, n) => lines.push(`- [ ] D${n + 1} \`${i.check}\` ${at(i)}: ${i.what} → ${i.fix}`));
-    }
-    const m = of("manual");
-    if (m.length) {
-      lines.push(``, `### Sửa tay (${m.length})`);
-      let file = null;
-      for (const i of m) {
-        usedRules.add(i.rule);
-        if (i.file !== file) lines.push(``, `#### \`${(file = i.file)}\``);
-        lines.push(`- [ ] L${i.line} \`${i.rule}\`${i.token ? ` \`${i.token}\`` : ""}${i.text ? `: \`${i.text.replace(/`/g, "'")}\`` : ""}`);
+    PHASES.forEach((ph, n) => {
+      const list = a.issues.filter((i) => i.phase === ph);
+      if (!list.length) return;
+      lines.push(``, `### ${n + 1}. ${PHASE_NAMES[ph]} (${list.length})`, ``, HOW[ph]);
+      if (ph === "foundation" || ph === "structure") {
+        lines.push(``);
+        list.forEach((i, k) =>
+          lines.push(`- [ ] ${ph === "structure" ? `D${k + 1}` : `F${k + 1}`} \`${i.check}\` ${at(i)}${ph === "foundation" ? ` (${i.kind === "setup" ? "tự động" : "tay"})` : ""}: ${i.what} → ${i.fix}`),
+        );
+        return;
       }
-    }
-    const au = of("auto");
-    if (au.length) {
-      lines.push(``, `### Tự sửa bằng codemod (${au.length})`, ``, `\`node <semi-fix>/scripts/fix.mjs --codemod\` đổi hết các dòng này; xem lại diff.`);
       let file = null;
-      for (const i of au) {
+      for (const i of list) {
         if (i.file !== file) lines.push(``, `#### \`${(file = i.file)}\``);
-        lines.push(`- [ ] L${i.line} \`${i.from}\` → ${i.to ? `\`${i.to}\`` : "bỏ (token gốc đã đổi theo theme)"}`);
+        if (ph === "tokens") lines.push(`- [ ] L${i.line} \`${i.from}\` → ${i.to ? `\`${i.to}\`` : "bỏ (token gốc đã đổi theo theme)"}`);
+        else {
+          usedRules.add(i.rule);
+          lines.push(`- [ ] L${i.line} \`${i.rule}\`${i.token ? ` \`${i.token}\`` : ""}${i.text ? `: \`${i.text.replace(/`/g, "'")}\`` : ""}`);
+        }
       }
-    }
+    });
   }
   if (usedRules.size) {
     lines.push(``, `## Luật`, ``);
@@ -748,12 +795,17 @@ if (isMain) {
   let cwd = process.cwd();
   let asJson = false;
   let write = true;
+  let ci = false;
   let inventoryPath = null;
   const argv = process.argv.slice(2);
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === "--cwd" && argv[i + 1]) cwd = argv[++i];
     else if (argv[i] === "--json") asJson = true;
     else if (argv[i] === "--no-write") write = false;
+    else if (argv[i] === "--ci") {
+      ci = true;
+      write = false;
+    }
     else if (argv[i] === "--inventory" && argv[i + 1]) inventoryPath = argv[++i];
   }
   const report = auditProject(cwd);
@@ -767,4 +819,6 @@ if (isMain) {
     const rel = written ? relative(process.cwd(), written) : REPORT_FILE;
     process.stdout.write(formatSummary(report, rel && !rel.startsWith("..") ? rel : written));
   }
+  // --ci: summary only, exit 1 while anything is left (a periodic check in the app's CI).
+  if (ci && totals(report).total) process.exit(1);
 }
