@@ -10,6 +10,7 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Icon, IconTile, type IconName } from "./Icon";
 import { Button } from "./Button";
+import { CustomSelect, type CustomSelectOption } from "./CustomSelect";
 import { ExternalLink } from "./ExternalLink";
 import { Markdown } from "./Markdown";
 import { Skeleton } from "./Skeleton";
@@ -434,6 +435,90 @@ export function ChatComposer({
         {toolbar && <div className="pl-1 pb-0.5 flex items-center gap-1.5 min-w-0 text-caption text-muted">{toolbar}</div>}
       </div>
     </form>
+  );
+}
+
+// ─── Model picker ────────────────────────────────────────────────────────────────────────────────────────────────
+
+/** A compact chip select under the composer field (provider, model, thinking effort). */
+export const CHAT_PICK_CHIP = cn(
+  "inline-flex items-center gap-1 h-6 px-2 rounded-full bg-field hover:bg-raised border border-line text-caption font-medium text-body hover:text-contrast transition min-w-0 max-w-[150px] truncate",
+  FOCUS_RING,
+);
+
+/**
+ * Provider, model and thinking-effort chips, like the model picker of the Claude / Gemini apps; pass it as the
+ * composer `toolbar`. UI only: the app lists what is ready and remembers the pick. The provider chip shows only when
+ * more than one provider is offered, as its logo (`icon`; the name is the tooltip and the label in the list); the
+ * effort chip only when the model takes one. The chips stay usable while an answer streams (the pick applies to the
+ * next question).
+ */
+export function ChatModelPicker({
+  providers = [],
+  provider,
+  onProviderChange,
+  models,
+  model,
+  onModelChange,
+  efforts = [],
+  effort,
+  onEffortChange,
+  disabled = false,
+}: {
+  /** Ready providers / profiles (Claude, OpenAI, a local server…): `icon` = its logo in the text colour. */
+  providers?: CustomSelectOption[];
+  provider?: string;
+  onProviderChange?: (value: string) => void;
+  /** The current provider's models (`title` e.g. "default of this provider"). */
+  models: CustomSelectOption[];
+  model: string;
+  onModelChange: (value: string) => void;
+  /** Thinking levels the current model takes (empty = no effort chip). */
+  efforts?: CustomSelectOption[];
+  effort?: string;
+  onEffortChange?: (value: string) => void;
+  disabled?: boolean;
+}) {
+  const t = useSemiLocale();
+  return (
+    <span className="inline-flex items-center gap-1 min-w-0 flex-wrap">
+      {providers.length > 1 && provider !== undefined && onProviderChange && (
+        <CustomSelect
+          variant="bare"
+          buttonClassName={CHAT_PICK_CHIP}
+          value={provider}
+          onChange={onProviderChange}
+          options={providers}
+          disabled={disabled}
+          aria-label={t.chatProvider}
+          title={t.chatProvider}
+          iconsInList
+          iconOnly
+        />
+      )}
+      <CustomSelect
+        variant="bare"
+        buttonClassName={CHAT_PICK_CHIP}
+        value={model}
+        onChange={onModelChange}
+        options={models}
+        disabled={disabled}
+        aria-label={t.chatModel}
+        title={t.chatModel}
+      />
+      {efforts.length > 0 && effort !== undefined && onEffortChange && (
+        <CustomSelect
+          variant="bare"
+          buttonClassName={CHAT_PICK_CHIP}
+          value={effort}
+          onChange={onEffortChange}
+          options={efforts}
+          disabled={disabled}
+          aria-label={t.chatEffort}
+          title={t.chatEffort}
+        />
+      )}
+    </span>
   );
 }
 

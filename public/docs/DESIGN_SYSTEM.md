@@ -1,0 +1,605 @@
+# Semi Design System
+
+**This file is the single source of truth for every UI rule of every Semi app** (3D Noobs Studio and the other Semi
+products). Rules change **only in the semi repo** (`hoanghuynh296/semi-nextjs-codebase`): update this file,
+`QUICK_REF.md` and `DECISIONS.md` in the same commit as the code, extend `lint/semi-lint.mjs` when the rule can be
+grepped, then release a new version (see the repo README). Apps never keep their own copy of a rule; agent memory,
+skills, AGENTS.md and plan docs only point here. A rule that lives in two places drifts.
+
+Apps read this file from `node_modules/@semi/ui/docs/DESIGN_SYSTEM.md` (the version they installed).
+
+The UI is a **restrained dark product theme** with a **bento card layout**: dark page, rounded cards with thin borders,
+a neutral icon menu, uniform chips and tags with coloured dots, one green accent for actions, few words.
+
+Quick cheatsheet: `QUICK_REF.md`. Tokens: `@semi/ui/tokens.css` (generated from `tokens/tokens.json`). Base layer:
+`@semi/ui/base.css`. Shared building blocks: `@semi/ui` (components) and `@semi/ui/styles` (class constants), see §16;
+use them instead of re-typing class strings. Lint: `npx semi-lint` (config `semi-lint.json`, also run by the agent edit
+hook of the `semi-design` plugin).
+
+## Core principles
+
+- **Icons over words.** Every nav item, card, section, empty state and dialog leads with an icon (tile or inline).
+  Minimal text: no subtitle or caption under page titles, no captions that repeat what an icon already says.
+- **Flat, no glow, no gradients.** No gradient fills, no blurred colour blobs, no coloured `shadow-[0_0_…]` glows
+  (buttons, cards, status dots, power buttons). Depth comes from the surface tokens and translucent white overlays;
+  emphasis ("on", active, running) comes from a flat primary fill or a `border-primary-500/30` border.
+  The only gradient is the skeleton shimmer sweep in `base.css`.
+- **Colour on content, not on chrome.** The nav menu is neutral (grey icons, no count badges; active item =
+  `bg-white/[0.10] text-white`). Colour goes where it helps reading the content: a coloured dot or icon on filter chips
+  and tags, card icon tiles use their area's soft tint, primary marks the main action and "on". Status colours (§3)
+  appear only where they carry a state.
+- **Unified sub-page toolbar.** Sub-pages open with a large `font-display` title (text only), followed by a single
+  sticky toolbar row: pill filter tabs on the left, the icon-only primary CTA (`BTN_PRIMARY` + `BTN_ICON`) + secondary
+  filter/search/refresh controls on the right (§4). All toolbar controls share `h-[34px]` and `text-label font-medium`.
+- **Cards, not lines.** Group content in rounded cards (`rounded-xl`, 12px) on the dark page; nested facts sit in tonal tiles.
+- **One accent.** `primary-*` (Semi default green `#00AE42`; a product may override it, see §2b) for actions,
+  selection and focus. Status colours carry meaning only (§3).
+- **Phone first.** Used from iPhone and iPad: no horizontal page scroll at 375px, touch targets ≥ 36px (44px for nav),
+  the home logo header is hidden under 768px (`md`).
+- **No scrollbars.** Scrollbars are hidden on every page and screen size (`base.css`); areas still scroll. Don't add
+  scrollbar styling back (`custom-scrollbar` is a no-op kept on old elements).
+- **App-styled controls only.** No native `<select>`, `<input type="date">` or `type="number"`: their OS popups ignore
+  the theme (iPad shows a white iOS wheel). Use `CustomSelect`, `DatePicker`, `NumberInput`.
+
+## 1. Typography
+
+| Role | Classes |
+|---|---|
+| Page title (sub-page) | `font-display text-heading sm:text-display leading-[1.15] font-semibold text-contrast tracking-tight`, text only, no subtitle |
+| Section / card title | `text-ui–text-title font-semibold text-contrast tracking-tight` |
+| UI / nav text | `text-label font-medium text-body` |
+| Label | `text-label font-medium text-muted` (sentence case, never uppercase) |
+| Caption | `text-caption–text-label text-muted` |
+| Big number (KPI) | `text-heading leading-tight font-semibold tracking-tight tabular-nums text-contrast` |
+| Numbers (temperatures, %, times, money, counts) | add `tabular-nums` (Geist, digits line up) |
+| Code (code editors, parameter keys, error codes) | `font-mono`, only there |
+
+Geist (`--font-sans` with `font-feature-settings: "ss02" on`) for UI and body text, and Montserrat Alternates
+(`--font-display`, class `font-display`) for large page titles, both loaded with `next/font/google` (Latin + Vietnamese
+subsets) in `app/layout.tsx` as the CSS variables `--font-geist` / `--font-montserrat-alternates` (or set
+`--font-sans-family` / `--font-display-family`). ui-monospace only for code. Numbers stay in Geist with `tabular-nums`:
+a monospace font for prices and readings looks like a terminal, not a product. Weights: only `font-medium` and
+`font-semibold`. Sizes come from the **type scale** tokens (`--text-*` in `tokens.json`), never `text-[13px]` and never
+Tailwind's `text-xs` / `text-sm` / `text-base`:
+
+| Token | px | Use |
+|---|---:|---|
+| `text-caption` | 11 | captions, counts, badges (minimum size) |
+| `text-label` | 12 | labels, UI text, buttons, table cells |
+| `text-ui` | 13 | body text, inputs, card titles |
+| `text-ui-lg` | 14 | phone dialog buttons |
+| `text-title` | 15 | section / modal titles |
+| `text-title-lg` | 16 | large section titles |
+| `text-kpi` | 18 | KPI figures on phones (`text-kpi sm:text-heading`) |
+| `text-heading-sm` | 20 | sub-headings |
+| `text-heading` | 22 | page titles on phones, KPI figures from sm |
+| `text-heading-lg` | 24 | display numbers |
+| `text-display` | 26 | page titles from sm (`text-heading sm:text-display`) |
+
+Minimum `text-caption`. Button and label text is sentence case ("Lưu", "Xem lại"), never ALL CAPS.
+
+## 2. Dual-Theme & Semantic Tokenization (Two-Tier Tokens)
+
+Semi architecture separates tokens into two tiers:
+- **Tier 1 (Primitives & Brand):** Fixed raw hex palettes (`primary-*`, `emerald-*`, `gray-*`, `rose-*`, `amber-*`, `sky-*`) defined in `tokens/tokens.json`.
+- **Tier 2 (Semantic Tokens):** Dynamic CSS variables that automatically adapt according to the active theme (`data-theme="dark"` or `data-theme="light"`). Developers build UI exclusively with Semantic Tokens (`bg-panel`, `bg-field`, `text-contrast`, `text-body`, `text-muted`, `border-line`), eliminating hard-coded physical colors and manual `dark:bg-...` / `light:bg-...` conditional classes.
+
+### Semantic Tokens Mapping Table
+
+| Semantic Token | Tailwind Utility | Purpose | Dark Mode (`[data-theme="dark"]`) | Light Mode (`[data-theme="light"]`) |
+|---|---|---|---|---|
+| `--color-canvas` | `bg-canvas` | Nền ứng dụng ngoài cùng (outer bento shell) | `#0c0d0e` | `#f1f5f9` (Slate-100) |
+| `--color-app` | `bg-app` | Khung bề mặt màn hình chính (content panel) | `#121316` | `#ffffff` |
+| `--color-panel` | `bg-panel` | Thẻ Bento Card, Sidebar, Modal shell | `#18191c` | `#ffffff` |
+| `--color-field` | `bg-field` | Nền ô nhập liệu, header bảng | `#1e1f23` | `#f1f5f9` (Slate-100) |
+| `--color-raised` | `bg-raised` | Hover / track fills trên nền field hoặc panel | `#282a2f` | `#e2e8f0` (Slate-200) |
+| `--color-text-contrast` | `text-contrast` | Tiêu đề, chữ độ tương phản cao | `#ffffff` | `#0f172a` (Slate-900) |
+| `--color-text-body` | `text-body` | Nội dung văn bản chính | `#d1d5db` (Gray-300) | `#334155` (Slate-700) |
+| `--color-text-muted` | `text-muted` | Nhãn phụ, placeholder, gợi ý | `#8b919a` | `#5b6779` |
+| `--color-line` | `border-line` | Đường viền card, bảng, khung | `rgba(255, 255, 255, 0.08)` | `rgba(0, 0, 0, 0.08)` (Slate-200) |
+| `--color-line-hover` | `border-line-hover` | Đường viền khi hover | `rgba(255, 255, 255, 0.16)` | `rgba(0, 0, 0, 0.16)` |
+| `--color-divider` | `border-divider` | Đường phân cách nhẹ giữa các hàng | `rgba(255, 255, 255, 0.05)` | `rgba(0, 0, 0, 0.05)` (Slate-100) |
+| `--color-accent` | `bg-accent` | Nền nút chính / mark "on" (BTN_PRIMARY, headerPrimary) | `primary-500` | `primary-700` |
+| `--color-accent-hover` | `hover:bg-accent-hover` | Hover của nền accent | `primary-400` | `primary-800` |
+| `--color-on-accent` | `text-on-accent` | Chữ / icon trên `bg-accent` (≥ 4.5:1) | `#0c0d0e` | `#ffffff` |
+| `--color-accent-fg` | `text-accent-fg` | Chữ / icon màu primary trên surface (link, check, tab active) | `primary-400` | `primary-700` |
+| `--color-danger-fg` · `success-fg` · `warning-fg` · `info-fg` | `text-danger-fg` … | Chữ trạng thái trên surface | `rose/emerald/amber/sky-400` | `-700` |
+| `--color-tone-<hue>` | `text-tone-<hue>` | Chữ tonal 12 hue (purple, violet, indigo, blue, sky, cyan, teal, emerald, amber, orange, rose, pink) | `<hue>-300` | `<hue>-700` |
+
+Mọi cặp chữ / nền ở trên đạt WCAG AA (≥ 4.5:1) ở cả hai theme. Không viết `text-*-400` hay `text-*-700 dark:text-*-300` trong component: dùng `text-accent-fg`, `text-*-fg` hoặc `text-tone-*`.
+Brand override: đổi `primary-*` trong `@theme` là đủ (accent đọc từ `primary-*`); nếu brand mới tối, đặt lại `--semi-on-accent` cho dark.
+
+**Cách sinh CSS:** giá trị theo theme nằm ở biến nguồn `--semi-*` (đặt trong `:root/[data-theme=dark]` và `[data-theme=light]`); utility đọc qua `@theme inline` (`bg-panel` → `var(--semi-panel)`), còn `--color-*` được khai báo lại ở mỗi theme scope cho CSS của app (`var(--color-panel)`).
+
+### Status, overlay, elevation and layers
+
+| Need | Tokens |
+|---|---|
+| Status callout / badge / danger button | `bg-{danger,success,warning,info}-bg` + `border-*-border` + `text-*-fg` (`Alert`, `BTN_DANGER`) |
+| Status dot, progress fill, destructive solid | `bg-*-solid` (+ `text-on-solid`) |
+| Backdrop of modal / drawer / dialog | `bg-overlay` (themed scrim) — or `OVERLAY` |
+| Floating layer (modal, popover, menu, toast, tooltip) | `shadow-overlay` |
+| Controls floating over a canvas | `shadow-float` |
+| Global stacking | `z-sticky` 30 < `z-drawer` 40 < `z-modal` 50 < `z-dialog` 60 < `z-keypad` 70 < `z-popover` 80 < `z-toast` 90 < `z-tooltip` 95 |
+
+Surfaces stay flat: no `shadow-sm/md` on cards. Local stacking inside one component keeps `z-10` / `z-20`; anything
+that covers the page uses a layer token, never `z-[9999]`. Easing: `ease-out-soft` (entering), `ease-in-soft` (leaving).
+
+### Theme Switching Mechanism
+
+Themes are toggled via the `data-theme` attribute on `<html>` (with fallback `.dark` / `.light` classes):
+```html
+<html lang="vi" data-theme="dark" class="dark">
+```
+`data-theme="system"` follows the OS in pure CSS (no JS). Users pick a theme with `<ThemeSwitcher />` (Sáng · Tối · Hệ thống: settings pages, sidebar footer; `fullWidth` in a sidebar) or flip it with `<ThemeToggle />` (collapsed sidebar, header). Any element can pin a theme for its subtree with `data-theme="light|dark"` (plus the matching class): all semantic tokens re-resolve inside it. Apps render `<ThemeScript />` in `<head>` (sets the stored theme
+before the first paint, so there is no flash of the wrong theme) and wrap the body in `<ThemeProvider>` with the **same options**:
+```tsx
+import { ThemeProvider, ThemeScript, ThemeToggle } from "@semi/ui";
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="vi" data-theme="dark" className="dark" suppressHydrationWarning>
+      <head>
+        <ThemeScript defaultTheme="dark" />
+      </head>
+      <body className="bg-app text-body">
+        <ThemeProvider defaultTheme="dark">
+          {children}
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+### Why Physical Colors Are Prohibited
+Hardcoding physical palette classes such as `bg-white`, `text-slate-900`, `border-slate-200`, or `bg-slate-50` creates the "Dark Shell, Light Core" conflict:
+- In Dark Mode, a card with `bg-white` creates a blinding white rectangle inside a dark Bento frame.
+- In Light Mode, text with `text-white` disappears completely on the white page background.
+By using `bg-panel` and `text-contrast`, your UI seamlessly flips from dark obsidian to crisp slate without writing a single media query.
+
+## 2b. Brand colour per product
+
+`primary-*` is the only token a product may change. Override it in the app's own CSS **after** the Semi import, with
+the full 50–900 scale (keep 500 = main, 400 = hover):
+
+```css
+@import "tailwindcss";
+@import "@semi/ui/tokens.css";
+@import "@semi/ui/base.css";
+@theme {
+  --color-primary: #3B82F6;
+  --color-primary-50: #EFF6FF; /* … 100–800 … */
+  --color-primary-500: #3B82F6;
+  --color-primary-900: #1E3A8A;
+}
+```
+
+Surfaces, greys, status colours, radius and type stay Semi's. Record the product's brand hex in its own AGENTS.md.
+
+## 3. Colour meaning
+
+- **Primary** `primary-*` (Semi default `#00AE42`, hover 400 `#1FBC5C`): buttons, focus ring, power-on.
+- **Status green** `emerald-*`: online, ready, on, success. Never as an accent.
+- **Amber**: busy, paused, warning, connecting. **Rose**: error, danger, destructive. **Sky**: info, cost.
+- **Tile tones** (`TILE_TONES` in `Icon.tsx`, soft 15% tint + light icon; `TONE_TEXT` for a bare icon): green ·
+  pink · sky · amber · violet (indigo) · gray (advanced / unknown). Each app maps its areas to tones once (in its own
+  extension doc) and keeps the mapping everywhere. The nav menu uses neutral grey `w-4 h-4` (16px) icons
+  (`text-gray-400`, active `bg-white/[0.10] text-white`).
+- **Chips and tags** (`Chip.tsx`) all share one pill-tab style (`rounded-full h-[34px] px-3.5 text-label font-medium`):
+  borderless ghost pills when off (`bg-transparent border-transparent text-gray-400 hover:text-gray-200 hover:bg-white/[0.04]`)
+  and subtle filled pills when selected (`bg-white/[0.10] border-white/[0.08] text-white`, `chipClass(active)`); static
+  tags use `TAG` (neutral). Per-item colour appears only on a leading dot (`TONE_DOT`) or icon (`chipIconClass(tone)`).
+  `Pills` selected = `bg-white/[0.10] text-white`.
+- Data series in charts may use several hues; that is the one place extra colours belong. Syntax colours in code
+  views are the other exception.
+
+## 3b. Tinted cards, callouts & alert banners (Alpha-transparency over solid pastels)
+
+**Never use solid pastel surface classes** (such as `bg-purple-50`, `bg-sky-50`, `bg-amber-50`, `border-amber-200`, `border-purple-200`) on cards or containers.
+In `data-theme="dark"`, solid pastels have luminance > 95% and turn into glaring white/neon rectangular slabs that ruin the dark interface.
+
+Instead, follow the canonical Semi patterns:
+1. **Categorized / Feature Cards:**
+   Keep the card shell neutral using standard `CARD` / `bg-panel border-line`, and express category color on the icon tile:
+   ```tsx
+   <div className="bg-panel rounded-xl border border-line p-4">
+     <div className="flex items-center gap-2">
+       <span className="p-1.5 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+         <Icon name="plug" className="w-4 h-4" />
+       </span>
+       <span className="text-ui font-semibold text-contrast">{title}</span>
+     </div>
+     <p className="text-label text-muted mt-1">{description}</p>
+   </div>
+   ```
+2. **Callout / Alert Banners:**
+   When an inline banner or callout needs a chromatic tint (info, warning, success), use 10% alpha container fill with 20% alpha border:
+   ```tsx
+   {/* Amber warning callout */}
+   <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-label">
+     <Icon name="alertTriangle" className="w-4 h-4 shrink-0" />
+     <span>{warningMessage}</span>
+   </div>
+   ```
+   *Why alpha transparency works:* 10% opacity blends gracefully onto `#18191c` (`bg-panel`) in dark mode and onto `#ffffff` in light mode, maintaining ideal contrast and eliminating the need for complex mode-specific overrides.
+
+## 3c. Universal Theme-Matching Tonal Architecture (All Components)
+
+When migrating existing applications, UI elements across the interface often carry identifying chromatic colors:
+- **Tonal Bento Cards & Stat Widgets** (e.g., purple analytics card, blue billing summary)
+- **Alert Banners & Callouts** (e.g., amber warning banner, emerald success alert)
+- **Table Rows & List Items** (e.g., highlighted pending order row)
+- **Interactive Buttons & Pills** (e.g., soft green action button, violet pill)
+- **Badges, Chips & Status Tags** (e.g., `<Badge tone="purple">`, `<Chip tone="emerald">`)
+
+**Semi does not strip these colors down to monotonous gray.** Nor does it leave light-mode pastels (`bg-*-50`, `border-*-200`) that turn into glaring white/light boxes in Dark Mode.
+
+Instead, the Semi Design System **adapts all chromatic components** to **Two-Tier Dual-Theme Matching Tones** using alpha transparency:
+
+| Component State | Dual-Theme Token Formula | Visual Behavior (Light & Dark) |
+|---|---|---|
+| **Static Surface** | `bg-<color>-500/10` | 10% soft tint on light; deep rich glow on `#18191c` dark panel |
+| **Static Border** | `border-<color>-500/20` | 20% subtle alpha outline harmonizing with border-line |
+| **Interactive Hover Surface** | `hover:bg-<color>-500/15` | 15% reactive tint on hover |
+| **Interactive Hover Border** | `hover:border-<color>-500/30` | 30% crisp boundary on hover |
+| **Interactive Active Fill** | `active:bg-<color>-500/20` | 20% feedback on pressed state |
+| **Dividers & Rings** | `divide-<color>-500/20 ring-<color>-500/20` | 20% alpha separator / focus accent |
+| **Dual-Theme Text** | `text-<color>-700 dark:text-<color>-300` | Deep contrast (700) on light; radiant legible tone (300) on dark |
+
+### Examples Across Component Types
+
+#### 1. Tonal Bento Card / Stat Widget
+```tsx
+// Before (Legacy Light Mode only):
+<div className="rounded-xl border border-purple-200 bg-purple-50 p-4 text-purple-900 hover:bg-purple-100 hover:border-purple-300">
+  <p className="text-sm font-semibold">Pro Subscription</p>
+</div>
+
+// After (Universal Theme-Matching):
+<div className="rounded-xl border border-purple-500/20 bg-purple-500/10 p-4 text-purple-700 dark:text-purple-300 hover:bg-purple-500/15 hover:border-purple-500/30">
+  <p className="text-ui-lg font-semibold">Pro Subscription</p>
+</div>
+// Or using @semi/ui/styles:
+<div className={cn("rounded-xl p-4", TONAL_CONTAINER.purple, TONAL_HOVER.purple)}>...</div>
+```
+
+#### 2. Alert Banner / Callout
+```tsx
+// Before:
+<div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-amber-800">
+  <span>Your license expires soon.</span>
+</div>
+
+// After:
+<div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-3 text-amber-700 dark:text-amber-300">
+  <span className="text-ui font-medium">Your license expires soon.</span>
+</div>
+```
+
+#### 3. Interactive Table Row / List Item
+```tsx
+// Before:
+<tr className="hover:bg-blue-50 border-b border-blue-100 text-blue-700">...</tr>
+
+// After:
+<tr className="hover:bg-blue-500/15 border-b border-blue-500/20 text-blue-700 dark:text-blue-300">...</tr>
+```
+
+#### 4. Badges & Chips
+```tsx
+// Standalone Tailwind:
+<span className="px-2 py-0.5 rounded-full text-caption font-medium bg-rose-500/10 border border-rose-500/20 text-rose-700 dark:text-rose-300">
+  Urgent
+</span>
+
+// Standard @semi/ui:
+<Badge tone="rose">Urgent</Badge>
+<Chip tone="emerald" selected>Active</Chip>
+```
+
+### Standard Palette Tones (`SemanticTone`)
+Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@semi/ui/styles` via `TONAL_CONTAINER`, `TONAL_HOVER`, `TONAL_SURFACE`:
+- `purple`, `violet`, `indigo`
+- `blue`, `sky`, `cyan`, `teal`
+- `emerald`, `green`
+- `amber`, `yellow`, `orange`
+- `rose`, `red`, `pink`
+- `gray` (neutral fallback)
+
+## 4. Layout
+
+- **Radius scale:** controls, inputs, buttons and inner tiles `rounded-lg` (8px) · cards `rounded-xl` (12px) · panels,
+  hero and modals `rounded-2xl` (16px) · filter chips, pills, avatars, badges `rounded-full`. Tiny inline marks
+  (a colour swatch, a key cap) may use `rounded` (4px). No `rounded-md`.
+- **Control height:** all toolbar buttons, filter chips, pills, search inputs, custom selects and date pickers use
+  `h-[34px]` and `text-label font-medium` so toolbar rows align evenly.
+- **Spacing scale:** 4 / 8 / 12 / 16 / 20 / 24 px. Card padding `p-4`, gaps inside a card `gap-3`, between cards
+  `gap-3.5`–`gap-4`, between sections `gap-5`.
+- **Home shell (`md+`):** two inset `rounded-2xl` panels inside a `bg-canvas` frame (`md:p-2 md:gap-2`): a collapsible
+  left **Panel Menu** (`w-52`, or `w-14` collapsed, toggled via the `sidebar` icon button) and a right **Panel
+  Content** (`bg-app`) holding a full-width content container (`max-w-[1440px] px-4 sm:px-6`). Phones (`< md`) use a
+  bottom tab bar with the same tabs (icons `w-5 h-5`).
+- Each sub-page opens with a large display title (text only), followed by the toolbar row: pill filter tabs
+  (`CHIP_BASE` + `chipClass(active)`) on the left, icon-only primary CTA + secondary controls on the right. The row
+  carries `STICKY_TOOLBAR` so the filters stay on top of the scrolling content (below the safe area on phones).
+  "Thêm …" and "Làm mới" buttons are icon-only (`BTN_PRIMARY`/`BTN_SECONDARY` + `BTN_ICON`, `RefreshButton`) with
+  `title` + `aria-label` carrying the label.
+- Grids expand across wide screens (e.g. `sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4`); touch screens
+  (iPad) stop at 4 columns (`not-any-pointer-coarse:` for 5+). Card grids **beside a sidebar** size columns by
+  `@container` (`@xl:grid-cols-…`), never by viewport breakpoints (lint rule `viewport-grid-cols`, enabled per path via
+  `"only"` in `semi-lint.json`).
+- A filter sidebar beside long results scrolls on its own: on desktop the row fills the screen and sidebar and results
+  are two `overflow-y-auto overscroll-contain` columns (no sticky + JS height). Long lists load the next page near the
+  end ("Xem thêm" stays as fallback). Where filters sit in a sheet, the active ones show as removable chips.
+- Every flex/grid child that holds text gets `min-w-0` + `truncate` so long names never push the page wider.
+- No narrow `max-w-4xl/5xl/6xl` page containers: content uses the full width (cap `max-w-[1440px]`).
+
+## 4b. Stand-alone app header
+
+Every stand-alone app page uses the same top bar, `<AppHeader>`: logo + app title on the left, the app's actions on
+the right. Props: `title`, `productName` (home bar), `logo` / `logoIcon`, `homeHref`, `onHome`, `hideTitleOnPhone`.
+
+- Title = the app's name only (the product's name is never put in front of a module's name).
+- On the right: icon buttons (`HEADER_ICON_BTN` + `HEADER_ICON_OFF|ON`), "Huỷ" when opened from another app, and ONE
+  green main action (`headerPrimary(enabled)`), disabled until it can run; never a second green button elsewhere on the
+  screen (a panel's own action is `BTN_SECONDARY`).
+- **There is no Home button.** Clicking the logo + title returns home in the same tab; pass `onHome` when leaving needs
+  a confirmation. The bar is full width, `h-13`, `bg-app/95 backdrop-blur-xl border-b border-divider`, sticky.
+- Tool apps (an editor around a canvas / 3D view): left `SidePanel` (320 px, collapses to a rail with the sidebar
+  icon), sections `p-3 sm:p-3.5 border-b border-divider`, labels `text-label font-medium text-gray-400`, rarely used
+  options under a collapsed "Tuỳ chọn khác". Floating canvas controls come from `@semi/ui/styles` (`VIEWPORT_TOOLBAR`
+  top centre, `VIEWPORT_PILL` undo/redo bottom centre, `VIEWPORT_ROUND_BTN` bottom left, `VIEWPORT_BADGE` bottom
+  right). Phones: canvas on top, settings in a bottom sheet titled with the app name. No file open: a start screen
+  whose heading is the app's name and whose big tile is the app's icon in its tone.
+
+## 5. Card
+
+`<Card>` (`@semi/ui`) wraps the same classes: `<Card className="p-4">`, `<Card interactive>` (CARD_HOVER), `<Card active>`
+(CARD_ACTIVE). It owns its surface: pass padding / layout only, never `bg-*` or `shadow-*`.
+
+```tsx
+import { CARD, CARD_HOVER, CARD_ACTIVE } from "@semi/ui/styles";
+
+<div className={`${CARD} p-4 flex flex-col gap-3`}>…</div>          // static
+<button className={`${CARD_HOVER} p-4 text-left`}>…</button>         // opens something
+<div className={`${CARD} ${CARD_ACTIVE} p-4`}>…</div>                // active / "on" / running: primary border, no glow
+```
+
+Card header row: `IconTile` (or the item's image) · name (`text-ui-lg font-semibold`) + caption · icon actions
+(`ICON_BTN`, `ICON_BTN_DANGER`) on the right.
+
+## 6. Hero card
+
+`HERO` (`rounded-2xl p-4 sm:p-6`): a plain panel for the top block of a page. No glow blob.
+
+## 7. Icon tile
+
+`<IconTile name="box" tone="green" size="sm|md|lg" />`: rounded square with a soft tint of the area's tone.
+`sm` 28px (list rows) · `md` 36px (card headers) · `lg` 44px (dialogs, empty states). Nav items use a grey `w-4 h-4`
+icon in a `h-8` row; the active item uses a neutral tonal fill (`bg-white/[0.10] text-white`). Dashboard quick feature
+tiles use `w-11 h-11 rounded-xl` with their area's `TILE_TONES`.
+
+## 8. Section heading
+
+```tsx
+<div className={SECTION_HEAD}>
+  <h2 className={SECTION_TITLE}>Thiết bị</h2>
+  <span className={COUNT_PILL}>3</span>
+  <button className={SECTION_LINK}>Quản lý <Icon name="chevron" className="w-3.5 h-3.5" /></button>
+</div>
+```
+
+## 9. Buttons
+
+`BTN_PRIMARY` / `BTN_SECONDARY` / `BTN_DANGER` from `@semi/ui/styles` (`rounded-lg`, `h-[34px]`,
+`text-label font-medium`, flat). Icon-only: add `BTN_ICON`, or `ICON_BTN` (`w-7 h-7 rounded-lg`) inside cards. Big
+state toggles (power) are round: `w-20 h-20 sm:w-24 sm:h-24 rounded-full`, flat `bg-primary-500 text-white` when on,
+`bg-white/[0.05]` when off. A running action shows a spinner inside its own button only.
+
+## 10. Pills, chips, badges
+
+- Single choice: `Pills` (`h-[34px] rounded-lg` track, active = `bg-white/[0.10] text-white`).
+- Sub-page filter tabs / chips: `Chip` (see §3 Chips). Static labels: `TAG`.
+- Filter chips may carry an icon and a count: icon `w-3.5 h-3.5` + label + `COUNT_PILL`.
+- Status pill: `STATUS_PILL` + `bg-<tone>-500/15 text-<tone>-300` with a status dot (§11).
+- Tag / meta chip: `inline-flex items-center gap-1 h-6 px-2 rounded-full bg-white/[0.05] text-caption text-gray-400` with an icon.
+
+## 11. Status dot
+
+Flat dot next to state text, no glow: online `bg-emerald-400`, running `bg-primary-400 animate-pulse`,
+busy/paused/connecting `bg-amber-400`, error `bg-rose-500`, offline `bg-gray-500`. Use `STATUS_DOT`.
+Size `w-2 h-2` (`w-1.5 h-1.5` inline in a caption).
+
+## 12. Tiles & readings
+
+Nested facts (readings, KPIs, sensor values) sit in `TILE` (`rounded-lg bg-white/[0.04] border border-white/[0.06]`)
+with an icon above or before a `tabular-nums` value. Progress is a ring or a `h-1.5 rounded-full` bar in
+`primary-500` on `bg-white/[0.08]`.
+
+## 13. Empty state
+
+`EMPTY`: dashed `rounded-xl` card with an icon in a `w-12 h-12 rounded-xl bg-white/[0.05]` square above one short
+line. Make it the button that adds the first item when there is one.
+
+## 13b. Loading (shimmer skeleton)
+
+While a page, tab, list or number loads, show its shape with shimmering placeholders, never a "Đang tải…" line or a
+centred spinner. `Skeleton.tsx`: `Skeleton` (one block, size via className), `SkeletonCard`, `SkeletonGrid` (use the
+real grid's classes), `SkeletonRows` (lists, dialogs, tables), `PageSkeleton` (Suspense fallbacks), `Loading` (adds
+`role="status"` / `aria-busy`; its `label` is for screen readers only). The sweep is the `.shimmer` class in
+`base.css` (stops under `prefers-reduced-motion`). Keep "not loaded yet" apart from "empty" (e.g. `undefined` =
+loading, `null` = failed, or a `loaded` flag) so an empty state never flashes before data. Long operations the user
+started (upload, export) show a progress bar with a short label and percentage.
+One exception: a list a form field fetches by itself in the background shows one small `role="status"` line under that
+field while it loads: a `w-3 h-3` spinner + "Đang tải …" in `text-label text-gray-500` (the text sits in the
+`role="status"` element, which the lint allows), gone when done; a failed fetch stays silent.
+
+## 14. Modal & dialog
+
+`MODAL_BACKDROP` (`bg-black/70 backdrop-blur-lg`) + `MODAL_PANEL` (`bg-field border-line`): full screen on phones
+(`max-sm:h-dvh max-sm:rounded-none max-sm:border-0`, edge-to-edge), a centred `rounded-2xl` dialog from `sm` up.
+The panel caps itself at `92dvh` and scrolls; pass only a width (`max-w-md`…) and, for a fixed header / footer,
+`flex flex-col` with a `flex-1 overflow-y-auto` body. `MODAL_HEAD` / `MODAL_TITLE` / `MODAL_FOOT`: header = `IconTile`
++ title + close `MODAL_CLOSE`; footer buttons right-aligned, stretched on a phone. Buttons are `MODAL_BTN_*`.
+Every overlay (modals, full-screen viewers, popups, numpad) uses this backdrop. Big detail views split into two columns
+from `md` (iPad). Confirmations go through `confirmDialog()` (mount `<ConfirmHost />` once in the root layout), never
+`window.confirm`. Phones can use a bottom sheet for pickers and filter panels.
+
+**Links to other sites** always use `ExternalLink` (new tab, `rel="noopener noreferrer"`). Apps inside a native
+WebView pass an `onClick` that opens the URL outside. Never a bare `<a target="_blank">` to another site.
+
+**AI text** is rendered with `Markdown` (light markdown: paragraphs, headings as bold lines, lists, bold, code,
+links), never raw. AI conversations use the chat parts below (§14b), never an app's own composer or bubbles.
+
+## 14b. AI chat
+
+Every AI conversation (assistant panel, error diagnosis, "explain this setting") is built from `Chat.tsx`. It is
+**UI only**: the app keeps the messages, streams the answer and talks to the model (provider, model picker, settings
+are the app's); the parts draw it and report `onSend` / `onStop` / `onRetry` / `onNewChat`.
+
+- **Ready-made:** `<AIChat messages busy onSend onStop onRetry onNewChat empty toolbar … />` with `ChatItem`
+  (`role`, `content` = Markdown for answers, `pending`, `error`, `failed`). Custom bubbles via `renderUser` /
+  `renderAnswer`; content under the last message via `listEnd`; model / attachment controls via `toolbar`.
+- **Model picker:** `toolbar={<ChatModelPicker … />}`: chips under the field, left to right = provider (its logo,
+  name as tooltip; shown only when more than one is ready) → model → thinking effort (only when the model takes one).
+  The app supplies the ready providers, their models and logos and remembers the pick; switching provider resets the
+  model to that provider's default. The chips stay usable while an answer streams (the pick applies to the next
+  question). `CHAT_PICK_CHIP` for any other chip there (attachments).
+- **Panel:** `ChatPanel`, a right side panel. `placement="workspace"` sits in the nearest positioned parent beside the
+  content (`z-drawer`, `z-sticky` from `sm`); `"screen"` covers the page as a dialog (`z-dialog`, focus trap), also over
+  an open `Modal`, and Escape closes only the chat. Full screen on phones, lifted above the iOS keyboard; resizable from
+  `sm` by dragging or ←/→ on the edge (320–900px, double click = 380px, remembered per `widthKey`). Header = `IconTile`
+  + title + "new chat" (only once there is a message) + close. Keep it mounted with `shown={false}` while it slides out.
+- **Inside:** `ChatView` (skeleton while settings load, `setup` in place of the chat, e.g. an `EmptyState` "AI is not
+  set up" + settings button) > `ChatList` + `ChatComposer`. Messages: `UserMessage` (right, accent tint; `failed`
+  dimmed), `AssistantMessage` (left behind `ChatAvatar`, actions such as `ChatCopyButton` once done), `ChatThinking`
+  (label + three dots, before the first token), `ChatError` (status tint, optional retry). Empty conversation:
+  `ChatIntro` + `ChatSuggestions` of `ChatSuggestion` rows (`href` = external link). `CHAT_ROW` / `CHAT_CHIP` for
+  custom rows and chips.
+- **Behaviour built in, do not re-implement:** Enter sends, Shift+Enter breaks the line, Enter while an input method
+  composes (Telex / VNI) does not send; the field grows to 45% of the screen; focus returns to it after a typed
+  question is answered; the list follows new text only while the reader is at the bottom (else a "jump to latest"
+  button); streamed tokens are not read out one by one, the finished answer is announced once (`role="log"` + a polite
+  status).
+
+## 15. Icons & Semantic Registry
+
+`<Icon name="…" />` from `Icon.tsx` (new Lucide-style 24×24 paths go into `ICONS` in the semi repo). Follow the
+**Semantic Icon Guide** in `docs/ICONS.md`: every icon has an explicit purpose, do's & don'ts, and canonical action mapping
+(e.g. `trash` for delete, `close` for dialog dismiss, `refresh` for sync, `sliders` for process parameters, `user` for profile, `filter` for search filters).
+
+Stroke 1.75, round caps and joins, no fills (play / stop too). Sizes: `w-4 h-4` default, `w-3.5 h-3.5` in chips and captions,
+`w-5 h-5` in `md` tiles, `w-6 h-6` in empty states and `lg` tiles. No emoji or unicode pictograms (✕ ✓ ✗ ⚠) in UI
+text, toasts or buttons: use `<Icon name="close" />`, `check`, etc. An app-only icon (a product logo) lives in the app
+and is listed in `semi-lint.json` → `skip.inline-svg-path`.
+
+## 16. Shared building blocks (`@semi/ui`)
+
+| Import | Exports |
+|---|---|
+| `@semi/ui` → `AppShell.tsx`, `MobileTabBar.tsx` | `AppShell` (floating Bento 2-panel frame, collapsible `w-52`/`w-14` menu), `MobileTabBar`, `TAB_BAR_PAD` (§4) |
+| `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle`, `PageTabsTitle` (underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh) (§4a) |
+| `KpiCard.tsx`, `Modal.tsx` | `KpiCard` (`18px–22px` metric card with shimmer), `Modal` (shared portal dialog with `MODAL_HEAD` + `MODAL_FOOT`) (§13, §14) |
+| `Icon.tsx` | `Icon`, `ICONS`, `IconName`, `IconTile`, `TILE_TONES`, `TONE_TEXT`, `TileTone` |
+| `AppHeader.tsx` | `AppHeader` (stand-alone app top bar, §4b) |
+| `PageActions.tsx` | `PageActions` (a tab's header buttons), `PageActionsSlot` + `PageActionsProvider` |
+| `Skeleton.tsx` | `Skeleton`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton`, `Loading` (§13b) |
+| `confirmDialog.tsx` | `confirmDialog()`, `ConfirmHost`, `ConfirmOptions` (§14) |
+| `ThemeProvider.tsx` | `ThemeProvider`, `useTheme`, `ThemeToggle` (§2) |
+| `Markdown.tsx` | `Markdown` (AI answers) |
+| `Chat.tsx` | `AIChat`, `ChatPanel`, `ChatView`, `ChatList`, `ChatComposer`, `UserMessage`, `AssistantMessage`, `ChatAnswer`, `ChatError`, `ChatThinking`, `ChatIntro`, `ChatSuggestion(s)`, `ChatAvatar`, `ChatCopyButton`, `ChatModelPicker`, `CHAT_ROW`, `CHAT_CHIP`, `CHAT_PICK_CHIP`, `ChatItem` (§14b) |
+| `ExternalLink.tsx` | `ExternalLink` |
+| `Pills.tsx`, `Chip.tsx` | single choice / on-off chips (`Chip`, `CHIP_BASE`, `chipClass`, `chipIconClass`, `TAG`, `TONE_DOT`) |
+| `SearchInput`, `CustomSelect`, `CustomCombobox`, `DatePicker`, `Pagination` | toolbar and form inputs |
+| `NumberInput` (+ `NumPadPopup`, `useCoarsePointer`) | every number field (app numpad on touch screens) |
+| `SidePanel`, `SidePanelToggle`, `RefreshButton` | tool-app left panel, icon-only reload action |
+| `@semi/ui/styles` → `surfaces.ts` | `SHELL_*`, `CARD`, `CARD_HOVER`, `CARD_ACTIVE`, `HERO`, `TILE`, `SECTION_*`, `COUNT_PILL`, `EMPTY`, `ICON_BTN` / `ICON_BTN_DANGER`, `STATUS_PILL`, `STATUS_DOT`, `STICKY_TOOLBAR`, `MODAL_*`, `FIELD_LABEL`, `FIELD_INPUT`, `FIELD_TEXTAREA` |
+| `buttons.ts` | `BTN_PRIMARY`, `BTN_SECONDARY`, `BTN_DANGER`, `BTN_ICON`, `MODAL_BTN_*` |
+| `appChrome.ts` | `HEADER_ICON_*`, `headerPrimary`, `HEADER_PILL`, `VIEWPORT_*` |
+
+Components are client components (`"use client"`), shipped as TypeScript source: the app adds
+`transpilePackages: ["@semi/ui"]` to `next.config.*` and `@source` lines for `src` and `styles` to its CSS (README).
+
+A component used by **two or more Semi apps** belongs here; open a change in the semi repo instead of copying it.
+
+## Form fields
+
+Wrap every control in `<Field label hint error required>`: it renders the label (`FIELD_LABEL`), links the hint / error
+with `aria-describedby`, sets `aria-invalid` and announces the error (`role="alert"`). `Input`, `Textarea`,
+`NumberInput`, `CustomSelect` (`variant="field"`) and `CustomCombobox` read the Field automatically:
+
+```tsx
+<Field label="Tên máy in" hint="Hiện trên thẻ." error={errors.name} required>
+  <Input value={name} onChange={(e) => setName(e.target.value)} icon="printer" />
+</Field>
+```
+
+Input surface: `FIELD_INPUT` (`bg-field border border-line hover:border-line-hover rounded-lg px-3 h-9 text-ui …
+focus:border-primary-500/50`); invalid adds `border-danger-border`. Never `focus:outline-none` without a visible focus
+border. Choices: `Checkbox` (with `indeterminate`), `Switch` (settings that apply at once), `RadioGroup` (2–5 exclusive
+options; more → `CustomSelect`).
+
+## 17. Primitives (`@semi/ui`)
+
+| Need | Use |
+|---|---|
+| Any action | `Button` (`variant` primary / secondary / danger / ghost, `size` md / sm / modal, `icon`, `iconOnly` + `aria-label`, `loading`) |
+| Overflow actions of a row / card | `Menu` (icon-only "more" trigger; `danger` item last) |
+| Hint for an icon-only control | `Tooltip` (never essential text: touch screens do not show it) |
+| Feedback after an action | `toast({ title, tone, action })` + `<ToastHost />` in the layout |
+| Persistent message in a page | `Alert` (tone, title, action, `onDismiss`) |
+| Secondary task beside the page | `Drawer` (right / left / bottom sheet) |
+| Sections of one record | `Tabs` (underline; `segmented` inside a toolbar); 2–4 sibling pages → `PageTabsTitle` |
+| Compared rows | `Table` + `THead` / `TBody` / `TR` / `TH` / `TD numeric`; cells stay on one line and the table scrolls sideways on phones (`TD wrap` for a long-text column); entity overviews stay Bento `Card`s |
+| Progress / quota | `Progress` (determinate or indeterminate) |
+| People | `Avatar` (photo or initials on a stable tone) |
+| Nothing to show yet | `EmptyState` (icon, one line, action) |
+
+The full inventory with props is generated into `components.json` (`npm run build:manifest`).
+
+## 18. Accessibility & UI strings
+
+- Contrast: every text / background pair ≥ 4.5:1 (3:1 for ≥ 24px) in **both** themes; `npm run test:ui` checks every
+  Storybook page in light and dark, plus axe (WCAG 2.1 AA).
+- Keyboard: every control is reachable and shows `FOCUS_RING` (`focus-visible` only); dialogs (`Modal`, `Drawer`,
+  `confirmDialog`, `NumPadPopup`) trap focus, close on Escape and return focus to the opener (`useDialog`); menus,
+  tabs and comboboxes follow the WAI-ARIA keyboard patterns.
+- Names: icon-only controls carry `aria-label` (Button's type requires it); form controls get their label from `Field`.
+- Motion: animations respect `prefers-reduced-motion`.
+- Strings: shared components never hard-code UI text; they read `useSemiLocale()` (Vietnamese default). Apps switch
+  language with `<SemiLocaleProvider locale={en}>` or override single strings (`locale={{ close: "Thoát" }}`).
+
+## Anti-patterns (enforced by `semi-lint`)
+
+- **Physical / literal colors (`no-literal-palette`):** Never use neutral / white / black colour classes on any prefix or variant (`bg-white`, `text-slate-900`, `border-b-gray-200`, `divide-zinc-100`, `ring-slate-300`, `from-white`, `dark:bg-slate-800`). Always use Semantic Tokens (`bg-panel`, `bg-field`, `text-contrast`, `text-body`, `text-muted`, `border-line`, `divide-divider`).
+- **Fixed chromatic text (`no-fixed-tone-text`):** `text-emerald-400`, `text-rose-700 dark:text-rose-300`, `fill-amber-500` cannot pass contrast in both themes: use `text-accent-fg`, `text-*-fg` or `text-tone-<hue>`.
+- **Solid pastel surfaces (`no-solid-pastel-surfaces`), arbitrary colours (`hex-colour-class`), literal colours in code (`literal-colour-value`), off-scale sizes (`arbitrary-text-size`).**
+- The colour / size rules read class tokens from every string literal (className, `cn()`, constants, template parts, `@apply`), not lines, so any spelling of a colour is caught.
+- **Overriding Card component (`card-class-override`):** Never pass any `bg-*` or `shadow-*` (with or without a variant such as `hover:`) to `<Card />`; use `TONAL_CONTAINER` on a plain element for a tinted card.
+- Gradients, glow blobs, coloured glow shadows (`shadow-[0_0_…]`), "glassmorphism" panels.
+- Solid greys for surfaces (`bg-gray-800/900`), `border-gray-700`, hard-coded hex colour classes (`bg-[#...]`, `text-[#...]`).
+- `font-bold` / `extrabold` / `black`; `text-[9px]` / `text-[10px]`; `text-xs` / `text-sm`; `uppercase` labels; ALL-CAPS button text.
+- Off-scale radii (`rounded-md`); `font-mono` for numbers; coloured icon tiles in front of every card title.
+- Emoji or unicode pictograms as icons; filled glyphs mixed with stroke icons; stroke 2+; new inline `<svg>` paths.
+- Native `<select>`, `type="date"`, `type="number"`, `window.confirm` / `alert`.
+- "Đang tải…" text or a page spinner instead of a skeleton.
+- A Home button in an app header; subtitles under page titles.
+- Coloured nav icons or count badges in the menu; chips or tags with different background colours.
+- Narrow `max-w-5xl` page containers that waste horizontal space.
+- Copies of `@semi/ui/styles` class strings (app chrome) instead of the constants; `window.open` / bare external links.
+
+## App extensions
+
+An app may have screens Semi does not cover (a 3D viewport, a printer dashboard, a code editor). It documents them in
+its **own** extension doc (e.g. `docs/UI_EXTENSIONS.md`) that builds on these rules and never contradicts them. When a
+pattern there is needed by a second app, move it into Semi.
+
+## Implementation notes
+
+1. Tokens: edit `tokens/tokens.json` in the semi repo, run `node scripts/build-tokens.mjs`; never edit `tokens.css`.
+2. Pages are client components where they use Semi components (`"use client"`); Semi works with static export.
+3. Persisted UI prefs use `localStorage` wrapped in try/catch, keys prefixed per app.
+4. After UI edits: `npm run semi:lint` + `tsc --noEmit` + build, then look at 375px, iPad and 1440px.
+
+The history of decisions is in `DECISIONS.md`.

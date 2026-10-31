@@ -17,6 +17,9 @@ export default function RootLayout({
     <html lang="vi" data-theme="dark" className="dark" suppressHydrationWarning>
       <head>
         <ThemeScript defaultTheme="dark" />
+        {/* Text form of this Storybook for agents (relative: works under the GitHub Pages base path) */}
+        <link rel="alternate" type="text/plain" href="llms.txt" title="llms.txt — Semi Design System for agents" />
+        <link rel="alternate" type="application/json" href="components.json" title="components.json — component manifest" />
       </head>
       <body className="min-h-screen bg-canvas text-body antialiased selection:bg-primary-500/20 selection:text-accent-fg">
         <ThemeProvider defaultTheme="dark">

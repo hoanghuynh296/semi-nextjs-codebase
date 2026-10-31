@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 // Machine-readable inventory of @semi/ui for agents and docs, generated from the source so it cannot drift.
-//   node scripts/build-manifest.mjs          write components.json + the generated list in docs/QUICK_REF.md
-//   node scripts/build-manifest.mjs --check  exit 1 when either is stale (npm run check)
+//   node scripts/build-manifest.mjs          write components.json, the generated list in docs/QUICK_REF.md and the
+//                                            agent files of the Storybook (public/llms.txt, llms-full.txt, docs/…)
+//   node scripts/build-manifest.mjs --check  exit 1 when any of them is stale (npm run check)
 // Each entry: name, kind (component | hook | function | constant | type-scale), module, client, summary (JSDoc or
 // the file's header comment), props (names of the destructured parameters, for components).
-import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -129,11 +130,57 @@ const quickRef = readFileSync(quickRefPath, "utf8");
 const markerRx = /<!-- generated:components:start[\s\S]*?<!-- generated:components:end -->/;
 const nextQuickRef = markerRx.test(quickRef) ? quickRef.replace(markerRx, generated) : `${quickRef.trimEnd()}\n\n## Component inventory\n\n${generated}\n`;
 
+// Agent files served by the Storybook export (public/ is copied as is): llms.txt = index + every section's usage code
+// (app/usage.ts, the data the pages render), llms-full.txt = that + the docs, plus raw copies of the docs and manifest.
+const { STORY_PAGES, STORY_SECTIONS } = await import("../app/usage.ts");
+const read = (rel) => readFileSync(join(root, rel), "utf8");
+const DOCS = [
+  ["docs/QUICK_REF.md", "QUICK_REF.md", "Quick reference: the rules and imports to read before any UI change"],
+  ["docs/DESIGN_SYSTEM.md", "DESIGN_SYSTEM.md", "Full design system rules (layout, colour, components, accessibility, anti-patterns)"],
+  ["docs/ICONS.md", "ICONS.md", "Semantic icon guide: which icon means what"],
+  ["plugin/rules/AGENTS.md", "agent-rules.md", "Rules block for a consumer app's AGENTS.md / CLAUDE.md"],
+  ["tokens/tokens.css", "tokens.css", "Generated design tokens (CSS variables for both themes)"],
+];
+const llms = [
+  `# Semi Design System (${pkg.name} v${pkg.version})`,
+  "",
+  "> The shared UI of every Semi app: semantic tokens that work in light and dark mode, React components (Next.js, Tailwind CSS 4) and the rules agents follow. This Storybook shows each component live; this file is its text form.",
+  "",
+  `Install \`${pkg.name}\`, import components from \`${manifest.import.components}\`, class constants from \`${manifest.import.styles}\`, CSS ${manifest.import.css.map((c) => `\`${c}\``).join(" + ")}. Before writing UI read QUICK_REF.md; pick components from components.json; never invent local colours, sizes or wrapper components; check with \`npx semi-lint\`.`,
+  "",
+  "## Machine-readable",
+  "",
+  `- [components.json](./components.json): all ${manifest.components.length} components, hooks and constants with props and one-line summaries`,
+  ...DOCS.map(([, out, what]) => `- [${out}](./docs/${out}): ${what}`),
+  "- [llms-full.txt](./llms-full.txt): this file followed by all the docs above",
+  "",
+  "## Pages",
+  "",
+  ...STORY_PAGES.map((p) => `- [${p.title}](./${p.path}.html): ${p.summary}`),
+  "",
+  ...STORY_PAGES.flatMap((p) => [
+    `## ${p.title} (./${p.path}.html)`,
+    "",
+    ...Object.entries(STORY_SECTIONS)
+      .filter(([, sec]) => sec.page === p.path)
+      .flatMap(([id, sec]) => [`### ${sec.title} (./${p.path}.html#${id})`, "", sec.when, "", "```tsx", sec.code, "```", ""]),
+  ]),
+].join("\n");
+const llmsFull = [llms, ...DOCS.filter(([src]) => src.endsWith(".md")).map(([src]) => `\n\n---\n\n<!-- ${src} -->\n\n${read(src)}`)].join("");
+const publicFiles = {
+  "public/llms.txt": llms,
+  "public/llms-full.txt": llmsFull,
+  "public/components.json": json,
+  ...Object.fromEntries(DOCS.map(([src, out]) => [`public/docs/${out}`, src === "docs/QUICK_REF.md" ? nextQuickRef : read(src)])),
+};
+for (const id of Object.keys(STORY_SECTIONS)) if (!STORY_PAGES.some((p) => p.path === STORY_SECTIONS[id].page)) throw new Error(`usage ${id}: unknown page`);
+
 const manifestPath = join(root, "components.json");
 if (process.argv.includes("--check")) {
   const stale = [];
   if (!existsSync(manifestPath) || readFileSync(manifestPath, "utf8") !== json) stale.push("components.json");
   if (quickRef !== nextQuickRef) stale.push("docs/QUICK_REF.md (component inventory)");
+  for (const [rel, text] of Object.entries(publicFiles)) if (!existsSync(join(root, rel)) || read(rel) !== text) stale.push(rel);
   if (stale.length) {
     console.error(`stale generated docs (run node scripts/build-manifest.mjs): ${stale.join(", ")}`);
     process.exit(1);
@@ -142,5 +189,7 @@ if (process.argv.includes("--check")) {
 } else {
   writeFileSync(manifestPath, json);
   writeFileSync(quickRefPath, nextQuickRef);
+  mkdirSync(join(root, "public/docs"), { recursive: true });
+  for (const [rel, text] of Object.entries(publicFiles)) writeFileSync(join(root, rel), text);
   console.log(`wrote components.json (${manifest.components.length} components, ${manifest.hooks.length} hooks, ${manifest.constants.length} constants, ${iconNames.length} icons)`);
 }

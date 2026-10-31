@@ -68,7 +68,7 @@ in shared components comes from `useSemiLocale()` (`<SemiLocaleProvider locale={
   - `AppHeader` (stand-alone tool/3D app top bar), `PageActions`, `SidePanel`, `RefreshButton`, `ExternalLink`, `Markdown`.
   - Loading: `Skeleton` / `SkeletonCard` / `SkeletonGrid` / `SkeletonRows` / `PageSkeleton`; no "Đang tải…" text or page spinners.
   - Confirmations: `confirmDialog({ title, message, confirmLabel, tone, icon })` + `<ConfirmHost />`, never `window.confirm`.
-  - AI chat (§14b): `<AIChat messages busy onSend onStop onRetry onNewChat empty toolbar />` (or `ChatPanel` > `ChatView` > `ChatList` + `ChatComposer` with `UserMessage` / `AssistantMessage` / `ChatError` / `ChatThinking` / `ChatIntro` / `ChatSuggestion`). UI only: the app keeps messages, streaming and the model picker (`toolbar`). Never a local composer or bubbles.
+  - AI chat (§14b): `<AIChat messages busy onSend onStop onRetry onNewChat empty toolbar />` (or `ChatPanel` > `ChatView` > `ChatList` + `ChatComposer` with `UserMessage` / `AssistantMessage` / `ChatError` / `ChatThinking` / `ChatIntro` / `ChatSuggestion`). UI only: the app keeps messages and streaming; the provider → model → effort chips are `toolbar={<ChatModelPicker providers models efforts … />}`. Never a local composer or bubbles.
 - **Style Constants (`@semi/ui/styles`):**
   - `surfaces.ts`: `SHELL_OUTER`, `SHELL_ASIDE`, `SHELL_MAIN`, `SHELL_CONTAINER`, `CARD`, `CARD_HOVER`, `CARD_ACTIVE`, `HERO`, `TILE`, `SECTION_*`, `COUNT_PILL`, `EMPTY`, `ICON_BTN*`, `STATUS_PILL`, `STATUS_DOT`, `TONAL_SURFACE`, `TONAL_CONTAINER`, `TONAL_HOVER`, `BADGE_BASE`, `STICKY_TOOLBAR`, `MODAL_*`, `FIELD_LABEL`, `FIELD_INPUT`, `FIELD_TEXTAREA`.
   - `buttons.ts`: `BTN_PRIMARY`, `BTN_SECONDARY`, `BTN_DANGER`, `BTN_ICON`, `MODAL_BTN_*`.
@@ -90,14 +90,14 @@ in shared components comes from `useSemiLocale()` (`<SemiLocaleProvider locale={
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (79)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (80)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `AppHeader`: `AppHeader`
 - `AppShell`: `AppShell`
 - `Badge`: `Badge`
 - `Button`: `Spinner`, `Button`
 - `Card`: `Card`
-- `Chat`: `ChatAvatar`, `ChatThinking`, `UserMessage`, `AssistantMessage`, `ChatError`, `ChatCopyButton`, `ChatIntro`, `ChatSuggestion`, `ChatSuggestions`, `ChatList`, `ChatComposer`, `ChatView`, `ChatPanel`, `ChatAnswer`, `AIChat`
+- `Chat`: `ChatAvatar`, `ChatThinking`, `UserMessage`, `AssistantMessage`, `ChatError`, `ChatCopyButton`, `ChatIntro`, `ChatSuggestion`, `ChatSuggestions`, `ChatList`, `ChatComposer`, `ChatModelPicker`, `ChatView`, `ChatPanel`, `ChatAnswer`, `AIChat`
 - `Chip`: `Chip`
 - `Choice`: `Checkbox`, `Switch`, `RadioGroup`
 - `CustomCombobox`: `CustomCombobox`

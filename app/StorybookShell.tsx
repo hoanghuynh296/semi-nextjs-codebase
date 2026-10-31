@@ -69,6 +69,14 @@ export function StorybookShell({ children }: { children: React.ReactNode }) {
           external: true,
         },
         {
+          id: "llms",
+          label: "llms.txt (cho agent)",
+          shortLabel: "llms.txt",
+          icon: "fileText",
+          href: "./llms.txt",
+          external: true,
+        },
+        {
           id: "design-doc",
           label: "Design System Rules",
           shortLabel: "DESIGN.md",

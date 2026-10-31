@@ -17,6 +17,9 @@
     ],
     "loading-text": [
       "src/locale.tsx"
+    ],
+    "font-mono": [
+      "app/Showcase.tsx"
     ]
   }
 }

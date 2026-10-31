@@ -53,6 +53,9 @@ export const vi = {
   chatResize: "Kéo để đổi độ rộng (nhấp đúp để đặt lại)",
   chatAnswerDone: "Đã trả lời xong",
   chatJumpToLatest: "Xuống tin nhắn mới nhất",
+  chatProvider: "Nhà cung cấp AI",
+  chatModel: "Model AI",
+  chatEffort: "Mức suy nghĩ",
   copy: "Sao chép",
   copied: "Đã sao chép",
 };
@@ -108,6 +111,9 @@ export const en: SemiStrings = {
   chatResize: "Drag to resize (double-click to reset)",
   chatAnswerDone: "Answer complete",
   chatJumpToLatest: "Jump to latest message",
+  chatProvider: "AI provider",
+  chatModel: "AI model",
+  chatEffort: "Thinking effort",
   copy: "Copy",
   copied: "Copied",
 };

@@ -461,6 +461,11 @@ are the app's); the parts draw it and report `onSend` / `onStop` / `onRetry` / `
 - **Ready-made:** `<AIChat messages busy onSend onStop onRetry onNewChat empty toolbar … />` with `ChatItem`
   (`role`, `content` = Markdown for answers, `pending`, `error`, `failed`). Custom bubbles via `renderUser` /
   `renderAnswer`; content under the last message via `listEnd`; model / attachment controls via `toolbar`.
+- **Model picker:** `toolbar={<ChatModelPicker … />}`: chips under the field, left to right = provider (its logo,
+  name as tooltip; shown only when more than one is ready) → model → thinking effort (only when the model takes one).
+  The app supplies the ready providers, their models and logos and remembers the pick; switching provider resets the
+  model to that provider's default. The chips stay usable while an answer streams (the pick applies to the next
+  question). `CHAT_PICK_CHIP` for any other chip there (attachments).
 - **Panel:** `ChatPanel`, a right side panel. `placement="workspace"` sits in the nearest positioned parent beside the
   content (`z-drawer`, `z-sticky` from `sm`); `"screen"` covers the page as a dialog (`z-dialog`, focus trap), also over
   an open `Modal`, and Escape closes only the chat. Full screen on phones, lifted above the iOS keyboard; resizable from
@@ -503,7 +508,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `confirmDialog.tsx` | `confirmDialog()`, `ConfirmHost`, `ConfirmOptions` (§14) |
 | `ThemeProvider.tsx` | `ThemeProvider`, `useTheme`, `ThemeToggle` (§2) |
 | `Markdown.tsx` | `Markdown` (AI answers) |
-| `Chat.tsx` | `AIChat`, `ChatPanel`, `ChatView`, `ChatList`, `ChatComposer`, `UserMessage`, `AssistantMessage`, `ChatAnswer`, `ChatError`, `ChatThinking`, `ChatIntro`, `ChatSuggestion(s)`, `ChatAvatar`, `ChatCopyButton`, `CHAT_ROW`, `CHAT_CHIP`, `ChatItem` (§14b) |
+| `Chat.tsx` | `AIChat`, `ChatPanel`, `ChatView`, `ChatList`, `ChatComposer`, `UserMessage`, `AssistantMessage`, `ChatAnswer`, `ChatError`, `ChatThinking`, `ChatIntro`, `ChatSuggestion(s)`, `ChatAvatar`, `ChatCopyButton`, `ChatModelPicker`, `CHAT_ROW`, `CHAT_CHIP`, `CHAT_PICK_CHIP`, `ChatItem` (§14b) |
 | `ExternalLink.tsx` | `ExternalLink` |
 | `Pills.tsx`, `Chip.tsx` | single choice / on-off chips (`Chip`, `CHIP_BASE`, `chipClass`, `chipIconClass`, `TAG`, `TONE_DOT`) |
 | `SearchInput`, `CustomSelect`, `CustomCombobox`, `DatePicker`, `Pagination` | toolbar and form inputs |

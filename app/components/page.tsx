@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { StorybookShell } from "../StorybookShell";
+import { StoryUsage } from "../Showcase";
 import { PageTitle } from "../../src/PageTitle";
 import { SubpageToolbar } from "../../src/SubpageToolbar";
 import { SearchInput } from "../../src/SearchInput";
@@ -122,7 +123,7 @@ export default function ComponentsShowcasePage() {
       </div>
 
       {/* Pattern 0: Theme */}
-      <section className="space-y-3">
+      <section id="theme" className="space-y-3">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
           <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="sun" className="w-4 h-4 text-warning-fg" />
@@ -147,10 +148,11 @@ export default function ComponentsShowcasePage() {
             <ThemeScopePreview theme="dark" />
           </div>
         </div>
+        <StoryUsage id="theme" />
       </section>
 
       {/* Pattern 1: SubpageToolbar */}
-      <section className="space-y-3">
+      <section id="subpage-toolbar" className="space-y-3">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
           <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="sliders" className="w-4 h-4 text-accent-fg" />
@@ -200,10 +202,11 @@ export default function ComponentsShowcasePage() {
             />
           </div>
         </div>
+        <StoryUsage id="subpage-toolbar" />
       </section>
 
       {/* Pattern 2: Action Buttons */}
-      <section className="space-y-3">
+      <section id="buttons" className="space-y-3">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
           <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="zap" className="w-4 h-4 text-warning-fg" />
@@ -242,10 +245,11 @@ export default function ComponentsShowcasePage() {
             </ExternalLink>
           </div>
         </div>
+        <StoryUsage id="buttons" />
       </section>
 
       {/* Pattern 3: Form Controls */}
-      <section className="space-y-3">
+      <section id="form-controls" className="space-y-3">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
           <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="edit" className="w-4 h-4 text-tone-sky" />
@@ -309,10 +313,11 @@ export default function ComponentsShowcasePage() {
             </Field>
           </div>
         </div>
+        <StoryUsage id="form-controls" />
       </section>
 
       {/* Pattern 4: KPI Cards & Data */}
-      <section className="space-y-3">
+      <section id="kpi" className="space-y-3">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
           <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="chart" className="w-4 h-4 text-success-fg" />
@@ -365,10 +370,11 @@ export default function ComponentsShowcasePage() {
             onChange={setCurrentPage}
           />
         </div>
+        <StoryUsage id="kpi" />
       </section>
 
       {/* Pattern 5: Chips, Pills & Tones */}
-      <section className="space-y-3">
+      <section id="chips" className="space-y-3">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
           <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="tag" className="w-4 h-4 text-tone-violet" />
@@ -412,10 +418,11 @@ export default function ComponentsShowcasePage() {
             </div>
           </div>
         </div>
+        <StoryUsage id="chips" />
       </section>
 
       {/* Pattern 6: Modals & Confirmation */}
-      <section className="space-y-3">
+      <section id="dialogs" className="space-y-3">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
           <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="alert" className="w-4 h-4 text-danger-fg" />
@@ -492,10 +499,11 @@ export default function ComponentsShowcasePage() {
             </div>
           </div>
         </Modal>
+        <StoryUsage id="dialogs" />
       </section>
 
       {/* Pattern 7: Shimmer Skeletons */}
-      <section className="space-y-3">
+      <section id="skeletons" className="space-y-3">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
           <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="clock" className="w-4 h-4 text-tone-sky" />
@@ -514,6 +522,7 @@ export default function ComponentsShowcasePage() {
             <SkeletonRows count={3} />
           </div>
         </div>
+        <StoryUsage id="skeletons" />
       </section>
     </StorybookShell>
   );

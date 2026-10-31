@@ -2,6 +2,7 @@
 
 import React, { useMemo, useState } from "react";
 import { StorybookShell } from "../StorybookShell";
+import { StoryUsage } from "../Showcase";
 import { Icon, IconTile, type IconName, type TileTone, TILE_TONES } from "../../src/Icon";
 import { ICON_CATALOG, type IconDomain, suggestIcon } from "../../src/iconCatalog";
 import { PageTitle } from "../../src/PageTitle";
@@ -104,7 +105,7 @@ export default function FoundationsPage() {
       </div>
 
       {/* SECTION 1: Surfaces & Radius Tokens */}
-      <section className="space-y-4">
+      <section id="surfaces" className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="layers" className="w-4 h-4 text-accent-fg" />
@@ -153,10 +154,11 @@ export default function FoundationsPage() {
             Không dùng bán kính trung bình (bị chặn bởi linter)
           </span>
         </div>
+        <StoryUsage id="surfaces" />
       </section>
 
       {/* SECTION 2: Typography Scale */}
-      <section className="space-y-4">
+      <section id="typography" className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="code" className="w-4 h-4 text-accent-fg" />
@@ -190,10 +192,11 @@ export default function FoundationsPage() {
             </div>
           </div>
         </div>
+        <StoryUsage id="typography" />
       </section>
 
       {/* SECTION 3: Interactive Icon Catalogue (Core Feature) */}
-      <section className="space-y-4 pt-2">
+      <section id="icons" className="space-y-4 pt-2">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h2 className="text-title-lg font-semibold text-contrast flex items-center gap-2">
@@ -438,6 +441,7 @@ export default function FoundationsPage() {
             )}
           </div>
         </div>
+        <StoryUsage id="icons" />
       </section>
     </StorybookShell>
   );

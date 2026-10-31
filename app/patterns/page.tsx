@@ -86,7 +86,7 @@ export default function PatternsPage() {
         <Markdown text={AI_TEXT} />
       </ShowcaseSection>
 
-      <ShowcaseSection id="skeletons" title="Skeletons" icon="clock" meta="Loading wrapper announces the region (role=status)">
+      <ShowcaseSection id="layout-skeletons" title="Skeletons" icon="clock" meta="Loading wrapper announces the region (role=status)">
         <div className="flex gap-2">
           <Button size="sm" variant={skeleton === "grid" ? "primary" : "secondary"} onClick={() => setSkeleton("grid")}>
             SkeletonGrid

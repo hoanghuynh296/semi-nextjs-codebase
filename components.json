@@ -494,6 +494,25 @@
       ]
     },
     {
+      "name": "ChatModelPicker",
+      "kind": "component",
+      "module": "src/Chat.tsx",
+      "client": true,
+      "summary": "Provider, model and thinking-effort chips, like the model picker of the Claude / Gemini apps; pass it as the composer `toolbar`. UI only: the app lists what is ready and remembers the pick. The provider chip shows only when more than one provider is offered, as its logo (`icon`; the name is the tooltip and the label in the list); the effort chip only when the model takes one. The chips stay usable while an answer streams (the pick applies to the next question). /",
+      "props": [
+        "providers",
+        "provider",
+        "onProviderChange",
+        "models",
+        "model",
+        "onModelChange",
+        "efforts",
+        "effort",
+        "onEffortChange",
+        "disabled"
+      ]
+    },
+    {
       "name": "ChatView",
       "kind": "component",
       "module": "src/Chat.tsx",
@@ -1475,6 +1494,13 @@
       "module": "src/Chat.tsx",
       "client": true,
       "summary": "A small label chip in a chat (events, tags the AI understands). */"
+    },
+    {
+      "name": "CHAT_PICK_CHIP",
+      "kind": "constant",
+      "module": "src/Chat.tsx",
+      "client": true,
+      "summary": "A compact chip select under the composer field (provider, model, thinking effort). */"
     },
     {
       "name": "CHAT_PANEL_WIDTH",

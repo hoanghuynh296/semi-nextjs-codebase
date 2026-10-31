@@ -333,3 +333,52 @@ test("AI chat: an empty conversation starts at the top (intro first)", async ({ 
   expect(await log.evaluate((el) => el.scrollTop)).toBe(0);
   await page.close();
 });
+
+test("AI chat: provider picker sits left of the model and switches its models", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 1000 });
+  await open(page, "/chat.html", "dark");
+  const panel = chatPanel(page);
+  const provider = panel.getByRole("button", { name: "Nhà cung cấp AI" });
+  const model = panel.getByRole("button", { name: "Model AI" });
+  const effort = panel.getByRole("button", { name: "Mức suy nghĩ" });
+  expect((await provider.boundingBox())!.x).toBeLessThan((await model.boundingBox())!.x);
+  await expect(model).toHaveText("Sonnet 5.5");
+  await expect(effort).toBeVisible();
+  await chatPanel(page).scrollIntoViewIfNeeded(); // a page scroll closes an open list
+  await provider.click();
+  await page.getByRole("option", { name: /Ollama/ }).click();
+  await expect(provider).toHaveAttribute("title", "Ollama (máy này)");
+  await expect(model).toHaveText("llama-local");
+  await expect(effort).toHaveCount(0); // that model takes no thinking effort
+});
+
+// ─── Agent-readable ──────────────────────────────────────────────────────────────────────────────────────────────
+
+test("agents: llms.txt lists every page and section with usage code, and the docs it links are served", async ({ page, request }) => {
+  const llms = await (await request.get("/llms.txt")).text();
+  for (const p of ["foundations", "components", "primitives", "patterns", "chat"]) expect(llms).toContain(`(./${p}.html)`);
+  expect(llms).toContain("### AIChat (workspace panel) (./chat.html#ai-chat)");
+  expect(llms).toContain("ChatModelPicker");
+  for (const link of [...llms.matchAll(/\]\(\.\/([^)#]+)\)/g)].map((m) => m[1])) {
+    expect((await request.get(`/${link}`)).status(), link).toBe(200);
+  }
+  const manifest = await (await request.get("/components.json")).json();
+  expect(manifest.components.some((c: { name: string }) => c.name === "AIChat")).toBe(true);
+  await page.goto("/primitives.html");
+  await expect(page.locator('link[rel="alternate"][href="llms.txt"]')).toHaveCount(1);
+});
+
+for (const path of PAGES) {
+  test(`agents: ${path} has its own title and usage code under every section`, async ({ page }) => {
+    await open(page, path, "dark");
+    await expect(page).toHaveTitle(/ — Semi Design System$/);
+    const sections = page.locator("main section[id]");
+    const n = await sections.count();
+    expect(n).toBeGreaterThan(1);
+    for (let i = 0; i < n; i++) {
+      const s = sections.nth(i);
+      const id = await s.getAttribute("id");
+      await expect(s.locator(`[data-story-usage="${id}"] pre code`), `section #${id}`).toHaveText(/\S/);
+    }
+  });
+}

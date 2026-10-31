@@ -6,7 +6,7 @@ import { ShowcaseSection, DemoLabel } from "../Showcase";
 import { PageTitle } from "../../src/PageTitle";
 import { Button } from "../../src/Button";
 import { Modal } from "../../src/Modal";
-import { CustomSelect } from "../../src/CustomSelect";
+import { Icon, type IconName } from "../../src/Icon";
 import { EmptyState } from "../../src/Feedback";
 import { Markdown } from "../../src/Markdown";
 import {
@@ -16,6 +16,7 @@ import {
   ChatCopyButton,
   ChatError,
   ChatIntro,
+  ChatModelPicker,
   ChatSuggestion,
   ChatSuggestions,
   ChatThinking,
@@ -30,6 +31,27 @@ const ANSWER = `Với **PETG**, thử các bước sau:
 3. Bật \`Z-hop\` 0.4 mm để giảm kéo sợi
 
 Nếu vẫn kéo sợi, tăng retraction thêm 0.5 mm mỗi lần.`;
+
+/** Demo providers (an app lists its ready profiles; real apps pass the provider's logo as `icon`). */
+const PROVIDERS: { id: string; name: string; icon: IconName; models: { id: string; label: string; efforts?: boolean }[] }[] = [
+  {
+    id: "claude",
+    name: "Claude",
+    icon: "sparkles",
+    models: [
+      { id: "claude-sonnet-5-5", label: "Sonnet 5.5", efforts: true },
+      { id: "claude-opus-5-5", label: "Opus 5.5", efforts: true },
+      { id: "claude-haiku-5-5", label: "Haiku 5.5" },
+    ],
+  },
+  { id: "compat", name: "OpenAI-compatible (api.example.com)", icon: "code", models: [{ id: "gpt-x", label: "gpt-x" }, { id: "gpt-x-mini", label: "gpt-x-mini" }] },
+  { id: "local", name: "Ollama (máy này)", icon: "server", models: [{ id: "llama", label: "llama-local" }] },
+];
+const EFFORTS = [
+  { value: "low", label: "Nghĩ ít" },
+  { value: "medium", label: "Nghĩ vừa" },
+  { value: "high", label: "Nghĩ kỹ" },
+];
 
 /** ChatSuggestion with href renders ExternalLink. */
 const GUIDE_URL = "https://example.com/guide";
@@ -89,7 +111,11 @@ function useFakeAssistant() {
 
 function DemoChat({ placement, shown, onClose }: { placement: "workspace" | "screen"; shown: boolean; onClose: () => void }) {
   const chat = useFakeAssistant();
-  const [model, setModel] = useState("sonnet");
+  const [provider, setProvider] = useState(PROVIDERS[0].id);
+  const [model, setModel] = useState(PROVIDERS[0].models[0].id);
+  const [effort, setEffort] = useState("");
+  const current = PROVIDERS.find((p) => p.id === provider)!;
+  const currentModel = current.models.find((m) => m.id === model);
   const [draft, setDraft] = useState("");
   return (
     <AIChat
@@ -108,15 +134,23 @@ function DemoChat({ placement, shown, onClose }: { placement: "workspace" | "scr
       placeholder="Hỏi về cài đặt in…"
       widthKey={null}
       toolbar={
-        <CustomSelect
-          value={model}
-          onChange={setModel}
-          aria-label="Model AI"
-          options={[
-            { value: "sonnet", label: "Claude Sonnet 5.5" },
-            { value: "opus", label: "Claude Opus 5.5" },
-            { value: "haiku", label: "Claude Haiku 5.5" },
-          ]}
+        <ChatModelPicker
+          providers={PROVIDERS.map((p) => ({ value: p.id, label: p.name, icon: <Icon name={p.icon} className="w-3.5 h-3.5" /> }))}
+          provider={provider}
+          onProviderChange={(v) => {
+            setProvider(v);
+            setModel(PROVIDERS.find((p) => p.id === v)!.models[0].id);
+            setEffort("");
+          }}
+          models={current.models.map((m, i) => ({ value: m.id, label: m.label, title: i === 0 ? "Mặc định của nhà cung cấp" : undefined }))}
+          model={model}
+          onModelChange={(v) => {
+            setModel(v);
+            setEffort("");
+          }}
+          efforts={currentModel?.efforts ? [{ value: "", label: "Tự động" }, ...EFFORTS] : []}
+          effort={effort}
+          onEffortChange={setEffort}
         />
       }
       empty={
