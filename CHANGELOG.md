@@ -2,6 +2,15 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
+## [0.2.7] - 2026-10-31
+
+### Added
+- **3D Slicing, CAD & Hardware Comprehensive Expansion (`@semi/ui`):** Added 21 new Lucide-standard 24×24 stroke icons expanding the system to 144 icons total:
+  - **3D Slicing & CAD Tools:** `move` (XYZ coordinates / model translation / jog motor), `rotateCw` (90° clockwise rotation / plate rotate), `rotateCcw` (counter-clockwise rotation), `crosshair` (homing G28 / probe point / auto bed leveling), `ruler` (measurement / dimension / distance tool), `magnet` (lay on face / snap to bed / magnetic PEI plate), `pipette` (filament color picker / AMS slot color), `shapes` (primitive shapes / modifiers / negative volume / support blocker), `focus` (center on object / zoom to fit / camera focus), `orbit` (3D camera orbit / viewport free rotation).
+  - **Hardware, Devices & Maintenance:** `thermometer` (nozzle / bed / chamber temp °C), `wrench` (mechanical maintenance / nozzle change / belt tensioning), `hammer` (hardware workshop / fabrication / DIY tools), `circuitBoard` (mainboard / MCU / toolhead CAN bus PCB), `usb` (USB drive / serial UART printing), `bluetooth` (Bluetooth BLE printer pairing / sensors), `hardDrive` (SD / MicroSD / eMMC storage for G-codes), `cable` (stepper motor wires / FPC cable / CAN bus harness), `battery` (UPS power backup / portable device battery), `scanLine` (Micro Lidar scan / first layer inspection / 3D scan), `shieldAlert` (safety enclosure door sensor / thermal runaway protection).
+- **Aliases & AI Retrieval:** Added 40+ canonical aliases to `ICON_ALIASES` and `semi-lint` HARD rules (`temp`, `temperature`, `spanner`, `maintenance`, `jog`, `rotate`, `homing`, `origin`, `abl`, `measure`, `snap`, `lay_on_face`, `eyedropper`, `color_picker`, `primitives`, `zoom_to_fit`, `orbit_camera`, `sd_card`, `motherboard`, `pcb`, `wire`, `lidar`, `safety_alert`, etc.).
+- **Storybook Shell:** Updated to `144 Icons` dynamic count across Foundations & Component showcases.
+
 ## [0.2.6] - 2026-10-31
 
 ### Added

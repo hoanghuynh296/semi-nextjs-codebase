@@ -166,6 +166,17 @@ Khi cần hiển thị biểu tượng cho một hành động hoặc trạng th
 | Thiết bị / Chức năng | Icon chuẩn (`IconName`) | Code mẫu | Ghi chú |
 |---|---|---|---|
 | **Bật / Tắt nguồn thiết bị** | `power` | `<Icon name="power" />` | Công tắc nguồn máy in / ổ cắm |
+| **Nhiệt độ (°C) / Cặp nhiệt điện** | `thermometer` | `<Icon name="thermometer" />` | Nhiệt độ đầu in, bàn nhiệt, buồng sấy |
+| **Bảo trì cơ khí / Cờ lê siết ốc**| `wrench` | `<Icon name="wrench" />` | Bảo dưỡng máy in, thay nozzle, siết đai |
+| **Công cụ cơ khí / Xưởng DIY** | `hammer` | `<Icon name="hammer" />` | Chế tác phần cứng, gia công, lắp ráp |
+| **Bo mạch chủ / Mạch Toolhead** | `circuitBoard` | `<Icon name="circuitBoard" />` | Mainboard MCU, mạch đầu in CAN bus |
+| **Cổng USB / Ổ flash cắm ngoài**| `usb` | `<Icon name="usb" />` | In từ USB, nạp firmware Serial UART |
+| **Kết nối Bluetooth BLE** | `bluetooth` | `<Icon name="bluetooth" />` | Ghép đôi máy in không dây, cảm biến BLE |
+| **Thẻ nhớ SD / Bộ nhớ trong** | `hardDrive` | `<Icon name="hardDrive" />` | Thẻ MicroSD, eMMC lưu trữ file G-code |
+| **Cáp tín hiệu / Dây động cơ** | `cable` | `<Icon name="cable" />` | Dây nối động cơ bước, cáp bẹ FPC |
+| **Pin dự phòng / Bộ lưu điện UPS**| `battery` | `<Icon name="battery" />` | Mức pin UPS chống mất điện khi in |
+| **Quét Micro Lidar / Quét 3D** | `scanLine` | `<Icon name="scanLine" />` | Quét kiểm tra lớp in đầu (First layer), Lidar |
+| **Cảnh báo an toàn / Quá nhiệt** | `shieldAlert` | `<Icon name="shieldAlert" />` | Cửa buồng in mở, bảo vệ quá nhiệt (Thermal Runaway) |
 | **Đèn chiếu sáng buồng in / bàn** | `light` | `<Icon name="light" />` | Công tắc đèn chiếu |
 | **Cảm biến nhiệt độ & độ ẩm** | `sensor` | `<Icon name="sensor" />` | Chỉ số môi trường |
 | **Độ ẩm (Humidity)** | `drop` | `<Icon name="drop" />` | Phần trăm độ ẩm hộp sấy nhựa |
@@ -186,6 +197,16 @@ Khi cần hiển thị biểu tượng cho một hành động hoặc trạng th
 | Công cụ | Icon chuẩn (`IconName`) | Code mẫu | Ghi chú |
 |---|---|---|---|
 | **Cắt lớp mô hình (Slicer)** | `slicer` | `<Icon name="slicer" />` | Tab Slicer chính |
+| **Điều hướng toạ độ XYZ (Move)** | `move` | `<Icon name="move" />` | Di chuyển mô hình trên đĩa in, phím jog motor |
+| **Xoay thuận chiều kim đồng hồ** | `rotateCw` | `<Icon name="rotateCw" />` | Xoay mô hình 90° CW, xoay đĩa in |
+| **Xoay ngược chiều kim đồng hồ** | `rotateCcw` | `<Icon name="rotateCcw" />` | Xoay mô hình ngược chiều CCW |
+| **Gốc toạ độ Home / Cân bàn ABL**| `crosshair` | `<Icon name="crosshair" />` | Lệnh G28 về gốc, điểm probe cân bàn tự động |
+| **Thước đo khoảng cách (Measure)**| `ruler` | `<Icon name="ruler" />` | Đo kích thước mô hình 3D, độ dày thành |
+| **Áp mặt phẳng (Lay on face)** | `magnet` | `<Icon name="magnet" />` | Hít mặt đáy áp sát bàn in, bàn từ tính PEI |
+| **Ống hút màu filament (Picker)** | `pipette` | `<Icon name="pipette" />` | Hút màu mô hình gán vào cuộn nhựa AMS |
+| **Khối hình học cơ bản (Shapes)** | `shapes` | `<Icon name="shapes" />` | Khối lập phương/hình cầu Modifier, Negative Volume |
+| **Căn giữa khung nhìn (Focus)** | `focus` | `<Icon name="focus" />` | Zoom to fit, căn giữa camera vào chi tiết |
+| **Xoay camera tự do (3D Orbit)** | `orbit` | `<Icon name="orbit" />` | Xoay góc nhìn 3D quanh đĩa in |
 | **Bảng màu / Color Studio** | `palette` | `<Icon name="palette" />` | Công cụ phối màu đa sắc |
 | **Cọ quét màu (Paint Brush)** | `brush` | `<Icon name="brush" />` | Tô màu mesh thủ công |
 | **Cắt phân chia part (Part Split)** | `scissors` | `<Icon name="scissors" />` | Cắt rời mô hình 3D |
@@ -260,6 +281,26 @@ Khi lập trình, nếu viết các từ khoá sau thì `semi-lint` hoặc `tsc`
 | `loyalty`, `vip` | `award` | Thành viên thân thiết / huy hiệu dùng `award` |
 | `calc`, `calculate`, `estimate` | `calculator` | Tính toán chi phí / giá in dùng `calculator` |
 | `verified`, `official`, `mall` | `badgeCheck` | Shop chính hãng / xác minh dùng `badgeCheck` |
+| `temp`, `temperature`, `heat` | `thermometer` | Nhiệt độ đầu phun/bàn in dùng `thermometer` |
+| `spanner`, `maintenance`, `tools`| `wrench` | Bảo trì cơ khí dùng `wrench` |
+| `jog`, `jogging`, `translate` | `move` | Di chuyển toạ độ XYZ dùng `move` |
+| `rotate`, `rotate_cw`, `rotate_right`| `rotateCw` | Xoay thuận chiều kim đồng hồ dùng `rotateCw` |
+| `rotate_ccw`, `rotate_left` | `rotateCcw` | Xoay ngược chiều kim đồng hồ dùng `rotateCcw` |
+| `homing`, `origin`, `abl` | `crosshair` | Về gốc G28 / cân bàn ABL dùng `crosshair` |
+| `measure`, `measurement`, `dimension`| `ruler` | Thước đo khoảng cách dùng `ruler` |
+| `snap`, `lay_on_face` | `magnet` | Áp mặt đáy vào đĩa in dùng `magnet` |
+| `eyedropper`, `color_picker` | `pipette` | Hút màu chọn nhựa AMS dùng `pipette` |
+| `primitives`, `modifier`, `geometry`| `shapes` | Khối cơ bản Modifier dùng `shapes` |
+| `zoom_to_fit`, `center_view` | `focus` | Căn giữa khung nhìn dùng `focus` |
+| `view_orbit`, `orbit_camera` | `orbit` | Xoay camera 3D viewport dùng `orbit` |
+| `usb_drive`, `flash_drive` | `usb` | Ổ cắm USB flash dùng `usb` |
+| `ble` | `bluetooth` | Kết nối Bluetooth không dây dùng `bluetooth` |
+| `sd_card`, `microsd`, `emmc` | `hardDrive` | Thẻ nhớ máy in dùng `hardDrive` |
+| `mainboard`, `motherboard`, `pcb`| `circuitBoard` | Bo mạch chủ MCU dùng `circuitBoard` |
+| `wire`, `wiring` | `cable` | Dây nối động cơ / cáp dùng `cable` |
+| `power_backup` | `battery` | Pin lưu điện UPS dùng `battery` |
+| `lidar`, `lidar_scan` | `scanLine` | Cảm biến Micro Lidar dùng `scanLine` |
+| `safety_alert`, `door_open` | `shieldAlert` | Cảnh báo an toàn / quá nhiệt dùng `shieldAlert` |
 
 ---
 
