@@ -64,7 +64,8 @@ sentence case, no ALL CAPS.
   - `appChrome.ts`: `HEADER_ICON_*`, `headerPrimary`, `HEADER_PILL`, `VIEWPORT_*`.
 
 ## Anti-patterns (enforced by `npx semi-lint`)
-- **No literal palette colors (`no-literal-palette`):** Never use direct physical classes like `bg-white`, `text-slate-900`, `border-slate-200`, `bg-slate-50`, `bg-gray-800/900`. Always use Semantic Tokens (`bg-panel`, `bg-field`, `text-contrast`, `text-body`, `text-muted`, `border-line`).
+- **No literal palette colors (`no-literal-palette`):** Never use direct physical classes like `bg-white`, `text-slate-900`, `border-slate-200`, `divide-slate-100`, `bg-slate-50`, `bg-gray-800/900`. Always use Semantic Tokens (`bg-panel`, `bg-field`, `text-contrast`, `text-body`, `text-muted`, `border-line`, `divide-divider`).
+- **No solid pastel surfaces (`no-solid-pastel-surfaces`):** Never use solid pastels (`bg-*-50`, `border-*-200`) for cards or containers; in dark mode they turn into glaring light rectangles. Use alpha transparency (`bg-amber-500/10 border-amber-500/20`) or standard `bg-panel`.
 - **No Card class override (`card-class-override`):** Do not pass background or shadow classes into `<Card>` (e.g. `<Card className="bg-white shadow-sm">`).
 - **Surfaces & Shadows:** Gradients, glow, `shadow-[0_0_…]`, `shadow-sm/md/lg` are banned. Dark/Flat Bento UI relies on borders (`border-line`) rather than drop shadows.
 - **Typography:** `font-bold`, `text-[9|10px]`, `text-xs/sm`, uppercase labels, ALL CAPS buttons.

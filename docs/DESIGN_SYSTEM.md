@@ -149,6 +149,36 @@ Surfaces, greys, status colours, radius and type stay Semi's. Record the product
 - Data series in charts may use several hues; that is the one place extra colours belong. Syntax colours in code
   views are the other exception.
 
+## 3b. Tinted cards, callouts & alert banners (Alpha-transparency over solid pastels)
+
+**Never use solid pastel surface classes** (such as `bg-purple-50`, `bg-sky-50`, `bg-amber-50`, `border-amber-200`, `border-purple-200`) on cards or containers.
+In `data-theme="dark"`, solid pastels have luminance > 95% and turn into glaring white/neon rectangular slabs that ruin the dark interface.
+
+Instead, follow the canonical Semi patterns:
+1. **Categorized / Feature Cards:**
+   Keep the card shell neutral using standard `CARD` / `bg-panel border-line`, and express category color on the icon tile:
+   ```tsx
+   <div className="bg-panel rounded-xl border border-line p-4">
+     <div className="flex items-center gap-2">
+       <span className="p-1.5 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+         <Icon name="plug" className="w-4 h-4" />
+       </span>
+       <span className="text-[13px] font-semibold text-contrast">{title}</span>
+     </div>
+     <p className="text-[12px] text-muted mt-1">{description}</p>
+   </div>
+   ```
+2. **Callout / Alert Banners:**
+   When an inline banner or callout needs a chromatic tint (info, warning, success), use 10% alpha container fill with 20% alpha border:
+   ```tsx
+   {/* Amber warning callout */}
+   <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-[12px]">
+     <Icon name="alertTriangle" className="w-4 h-4 shrink-0" />
+     <span>{warningMessage}</span>
+   </div>
+   ```
+   *Why alpha transparency works:* 10% opacity blends gracefully onto `#18191c` (`bg-panel`) in dark mode and onto `#ffffff` in light mode, maintaining ideal contrast and eliminating the need for complex mode-specific overrides.
+
 ## 4. Layout
 
 - **Radius scale:** controls, inputs, buttons and inner tiles `rounded-lg` (8px) · cards `rounded-xl` (12px) · panels,

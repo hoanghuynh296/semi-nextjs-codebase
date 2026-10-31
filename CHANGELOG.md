@@ -2,6 +2,15 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
+## [0.3.4] - 2026-10-31
+
+### Added
+- **Solid Pastel Surfaces Lint Rule (`semi-lint`):** Added rule `no-solid-pastel-surfaces` (RATCHET) in `lint/semi-lint.mjs` to flag solid chromatic pastel backgrounds and borders (`bg-*-50/100`, `border-*-200`), resolving Issue #3. In Dark Mode (`data-theme="dark"`), solid pastels turn into glaring white/neon rectangular slabs.
+- **Tinted Cards & Callouts Guidelines (`docs/DESIGN_SYSTEM.md`, `docs/QUICK_REF.md`):** Documented canonical Semi Bento pattern for tinted cards (neutral `bg-panel border-line` with `<IconTile tone="...">`) and callouts using alpha transparency (`bg-<color>-500/10 border-<color>-500/20`), which automatically blend seamlessly in both dark and light modes.
+
+### Fixed
+- **Divider Palette Checks & Codemod (`semi-lint`, `semi-init`):** Expanded `no-literal-palette` to include `divide-` prefix (`divide-slate-100`, `divide-gray-100`, etc.), and added `divide-*` mappings to `runSemanticCodemod` (`divide-divider` and `divide-line`), resolving Issue #2.
+
 ## [0.3.3] - 2026-10-31
 
 ### Fixed

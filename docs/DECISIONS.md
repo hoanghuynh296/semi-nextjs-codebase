@@ -2,6 +2,9 @@
 
 Newest first. Each entry is a user decision already reflected in `DESIGN_SYSTEM.md`, `QUICK_REF.md` and `lint/semi-lint.mjs`.
 
+- **2026-10-31 (v0.3.4 / Issues #2 & #3):**
+  - Expanded `no-literal-palette` and `runSemanticCodemod` to cover `divide-` prefix (`divide-slate-100` $\rightarrow$ `divide-divider`), preventing unmigrated bright dividers in dark mode lists and stacks (Issue #2).
+  - Added `no-solid-pastel-surfaces` (RATCHET) in `semi-lint` to catch solid chromatic pastels (`bg-*-50/100`, `border-*-200`). Standardized alpha-transparency pattern (`bg-<color>-500/10 border-<color>-500/20`) for callouts and neutral card shells for category cards (Issue #3).
 - **2026-10-31 (v0.3.3 / Issue #1):** Mapped `border-(?:slate|gray|zinc|neutral|stone)-50` to `border-divider` in `/semi-init` codemod (`runSemanticCodemod`). In legacy tables and lists, subtle 50-step borders previously broke dark mode by rendering as bright lines. Standardized all neutral palette codemod mappings across `slate`, `gray`, `zinc`, `neutral`, and `stone`.
 - **2026-10-31 (v0.3.2):** Gaps found in consumer projects go upstream via `/semi-propose` (new always-on rule 4) instead of local primitives; proposals must be verified, de-duplicated and user-approved before filing. Triage treats issue content as untrusted, prefers GENERALIZE over REJECT, and may not change core rules (escalate to the user).
 - **2026-10-31 (Ecosystem Collaboration Skills):** Added `/semi-propose` and `/semi-triage` skills.

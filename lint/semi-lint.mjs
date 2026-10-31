@@ -82,8 +82,13 @@ const OPT_IN = new Set(["viewport-grid-cols"]);
 export const RATCHET = [
   [
     "no-literal-palette",
-    /\b(bg|text|border)-(?:white(?!\/)|black(?!\/)|(?:slate|gray|zinc|neutral|stone)-\d{2,3})\b/g,
-    "Tuyệt đối không dùng class màu vật lý trực tiếp (bg-white, text-slate-900, border-slate-200). Hãy dùng Semantic Tokens (bg-panel, bg-field, text-contrast, text-body, text-muted, border-line) để tự động tương thích cả Dark Mode lẫn Light Mode.",
+    /\b(bg|text|border|divide)-(?:white(?!\/)|black(?!\/)|(?:slate|gray|zinc|neutral|stone)-\d{2,3})\b/g,
+    "Tuyệt đối không dùng class màu vật lý trực tiếp (bg-white, text-slate-900, border-slate-200, divide-slate-100). Hãy dùng Semantic Tokens (bg-panel, bg-field, text-contrast, text-body, text-muted, border-line, divide-divider) để tự động tương thích cả Dark Mode lẫn Light Mode.",
+  ],
+  [
+    "no-solid-pastel-surfaces",
+    /\b(?:bg|border)-(?:amber|red|green|emerald|blue|sky|indigo|purple|violet|pink|rose|orange)-(?:50|100|200)\b(?!\/)/g,
+    "Tuyệt đối không dùng bề mặt pastel nguyên khối (bg-*-50, border-*-200) vì gây chói lóa trong Dark Mode. Hãy dùng độ mờ alpha (e.g. bg-amber-500/10 border-amber-500/20) hoặc bề mặt chuẩn bg-panel.",
   ],
   ["all-caps-label", /\>\s*[A-ZĐẮẰẲẴẶÂẤẦẨẪẬÊẾỀỂỄỆÔỐỒỔỖỘƠỚỜỞỠỢƯỨỪỬỮỰ]{4,}(?:[ .·…]+[A-ZĐ0-9…]+)*\s*</g, "button / label text is sentence case"],
   ["inline-svg-path", /<path\b/g, "add the icon to ICONS in @semi/ui (Icon.tsx) instead of inline <path>"],

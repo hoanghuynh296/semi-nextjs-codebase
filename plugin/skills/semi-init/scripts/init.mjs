@@ -229,6 +229,10 @@ function runSemanticCodemod(webDir) {
     [/\bborder-(?:slate|gray|zinc|neutral|stone)-200\b/g, "border-line"],
     [/\bborder-(?:slate|gray|zinc|neutral|stone)-300\b/g, "border-line"],
 
+    // Dividers
+    [/\bdivide-(?:slate|gray|zinc|neutral|stone)-(?:50|100)\b/g, "divide-divider"],
+    [/\bdivide-(?:slate|gray|zinc|neutral|stone)-(?:200|300)\b/g, "divide-line"],
+
     // Shadows (Flat UI uses border-line / surfaces instead)
     [/\bshadow-(?:sm|md|lg|xl|2xl)\b/g, ""],
     [/(?<=\s|^)shadow(?=\s|$)/g, ""],
