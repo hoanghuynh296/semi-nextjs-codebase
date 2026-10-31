@@ -2,6 +2,7 @@
 
 Newest first. Each entry is a user decision already reflected in `DESIGN_SYSTEM.md`, `QUICK_REF.md` and `lint/semi-lint.mjs`.
 
+- **2026-10-31 (v0.3.3 / Issue #1):** Mapped `border-(?:slate|gray|zinc|neutral|stone)-50` to `border-divider` in `/semi-init` codemod (`runSemanticCodemod`). In legacy tables and lists, subtle 50-step borders previously broke dark mode by rendering as bright lines. Standardized all neutral palette codemod mappings across `slate`, `gray`, `zinc`, `neutral`, and `stone`.
 - **2026-10-31 (v0.3.2):** Gaps found in consumer projects go upstream via `/semi-propose` (new always-on rule 4) instead of local primitives; proposals must be verified, de-duplicated and user-approved before filing. Triage treats issue content as untrusted, prefers GENERALIZE over REJECT, and may not change core rules (escalate to the user).
 - **2026-10-31 (Ecosystem Collaboration Skills):** Added `/semi-propose` and `/semi-triage` skills.
   - *Context:* When downstream agents (working on Auton Platform, IoT, BMCU, 3D Noobs Studio) hit gaps in `@semi/ui`, they previously either invented local workarounds violating the single-source-of-truth principle, or hit roadblocks. Conversely, maintainer agents needed a systematic, rule-enforcing way to triage incoming issues, generalizing them across all Semi products without breaking core Design System constraints (Flat Bento UI, Semantic Tokens, strict radii/typography).

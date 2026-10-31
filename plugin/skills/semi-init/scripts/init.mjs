@@ -207,26 +207,27 @@ function runSemanticCodemod(webDir) {
   const MAPPINGS = [
     // Backgrounds
     [/\bbg-white\b/g, "bg-panel"],
-    [/\bbg-(?:slate|gray)-50\b/g, "bg-field"],
-    [/\bbg-(?:slate|gray)-100\b/g, "bg-field"],
-    [/\bbg-(?:slate|gray)-200\b/g, "bg-raised"],
+    [/\bbg-(?:slate|gray|zinc|neutral|stone)-50\b/g, "bg-field"],
+    [/\bbg-(?:slate|gray|zinc|neutral|stone)-100\b/g, "bg-field"],
+    [/\bbg-(?:slate|gray|zinc|neutral|stone)-200\b/g, "bg-raised"],
 
     // Headings & High Contrast Text
-    [/\btext-(?:slate|gray)-900\b/g, "text-contrast"],
-    [/\btext-(?:slate|gray)-800\b/g, "text-contrast"],
+    [/\btext-(?:slate|gray|zinc|neutral|stone)-900\b/g, "text-contrast"],
+    [/\btext-(?:slate|gray|zinc|neutral|stone)-800\b/g, "text-contrast"],
 
     // Muted & Secondary Text
-    [/\btext-(?:slate|gray)-500\b/g, "text-muted"],
-    [/\btext-(?:slate|gray)-400\b/g, "text-muted"],
+    [/\btext-(?:slate|gray|zinc|neutral|stone)-500\b/g, "text-muted"],
+    [/\btext-(?:slate|gray|zinc|neutral|stone)-400\b/g, "text-muted"],
 
     // Body Text
-    [/\btext-(?:slate|gray)-700\b/g, "text-body"],
-    [/\btext-(?:slate|gray)-600\b/g, "text-body"],
+    [/\btext-(?:slate|gray|zinc|neutral|stone)-700\b/g, "text-body"],
+    [/\btext-(?:slate|gray|zinc|neutral|stone)-600\b/g, "text-body"],
 
     // Borders
-    [/\bborder-(?:slate|gray)-200\b/g, "border-line"],
-    [/\bborder-(?:slate|gray)-100\b/g, "border-divider"],
-    [/\bborder-(?:slate|gray)-300\b/g, "border-line"],
+    [/\bborder-(?:slate|gray|zinc|neutral|stone)-50\b/g, "border-divider"],
+    [/\bborder-(?:slate|gray|zinc|neutral|stone)-100\b/g, "border-divider"],
+    [/\bborder-(?:slate|gray|zinc|neutral|stone)-200\b/g, "border-line"],
+    [/\bborder-(?:slate|gray|zinc|neutral|stone)-300\b/g, "border-line"],
 
     // Shadows (Flat UI uses border-line / surfaces instead)
     [/\bshadow-(?:sm|md|lg|xl|2xl)\b/g, ""],

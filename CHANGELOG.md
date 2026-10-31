@@ -2,6 +2,11 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
+## [0.3.3] - 2026-10-31
+
+### Fixed
+- **Semantic Codemod in `/semi-init` (`init.mjs`):** Expanded `runSemanticCodemod` to map `border-(?:slate|gray|zinc|neutral|stone)-50` to `border-divider`, resolving Issue #1. In legacy tables and list views, step-50 borders previously went unmigrated and appeared as stark white lines in dark mode. Also generalized all background, text, and border mapping regexes across `slate`, `gray`, `zinc`, `neutral`, and `stone`.
+
 ## [0.3.2] - 2026-10-31
 
 ### Fixed
