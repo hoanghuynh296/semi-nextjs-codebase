@@ -56,7 +56,7 @@ Khi cần hiển thị biểu tượng cho một hành động hoặc trạng th
 | **Xem chi tiết hàng (danh sách)** | `chevron` | `<Icon name="chevron" />` | Mũi tên trỏ sang phải ở cuối row |
 | **Mở sang tab mới / web ngoài** | `external` | `<ExternalLink href="..." />` | Không dùng cho link nội bộ app |
 | **Thu gọn / Mở rộng sidebar** | `sidebar` | `<Icon name="sidebar" />` | Chân sidebar AppShell (w-52 / w-14) |
-| **Toàn màn hình / Thu nhỏ** | `expand` / `shrink` | `<Icon name="expand" />` | Xem camera / 3D viewport |
+| **Toàn màn hình / Thu nhỏ** | `expand` / `shrink` | `<Icon name="expand" />` | Phóng to toàn màn hình, mở rộng / thu nhỏ khung nhìn |
 | **Menu di động phụ** | `menu` | `<Icon name="menu" />` | Dùng khi không có MobileTabBar |
 
 ---
@@ -69,11 +69,11 @@ Khi cần hiển thị biểu tượng cho một hành động hoặc trạng th
 | **Lỗi / Cảnh báo / Sự cố nguy hiểm** | `alert` | `<Icon name="alert" />` | **CẤM** dùng ký tự `⚠` |
 | **Thông tin giải thích / Tooltip** | `info` | `<Icon name="info" />` | Đặt cạnh nhãn FIELD_LABEL |
 | **Khoá / Bảo mật / Mật khẩu** | `lock` | `<Icon name="lock" />` | Kết nối mã hoá, Access code |
-| **Mở khoá** | `unlock` | `<Icon name="unlock" />` | Mở khoá trục máy / tính năng |
+| **Mở khoá** | `unlock` | `<Icon name="unlock" />` | Mở quyền truy cập / mở khoá chức năng |
 | **Bị cấm / Chặn thao tác** | `block` | `<Icon name="block" />` | Tính năng bị vô hiệu hoá |
-| **Hiện mật khẩu / Xem layer** | `eye` | `<Icon name="eye" />` | Không dùng cho camera |
-| **Ẩn mật khẩu / Ẩn layer** | `eyeOff` | `<Icon name="eyeOff" />` | |
-| **Tính năng AI / Tự động thông minh** | `sparkles` | `<Icon name="sparkles" />` | AI Chat, Auto Palette |
+| **Hiện nội dung / mật khẩu** | `eye` | `<Icon name="eye" />` | Hiển thị mật khẩu, bật hiển thị layer hoặc thông tin ẩn |
+| **Ẩn nội dung / mật khẩu** | `eyeOff` | `<Icon name="eyeOff" />` | Che giấu mật khẩu, ẩn layer hoặc tắt hiển thị |
+| **Tính năng AI / Tự động thông minh** | `sparkles` | `<Icon name="sparkles" />` | AI Chat, trợ lý thông minh, gợi ý tự động |
 
 ---
 
@@ -119,10 +119,10 @@ Khi cần hiển thị biểu tượng cho một hành động hoặc trạng th
 | **Sản phẩm bán chạy / Hot trend** | `flame` | `flame` | `<Icon name="flame" />` | Best seller, sản phẩm đang thịnh hành |
 | **Chiến dịch Marketing / Quảng bá**| `megaphone` | `megaphone` | `<Icon name="megaphone" />` | Chiến dịch marketing, thông báo khuyến mãi |
 | **Khách hàng thân thiết / Loyalty** | `award` | `award` | `<Icon name="award" />` | Hạng thành viên (Vàng/VIP), huy hiệu vinh danh |
-| **Tính tiền tự động / Ước tính giá**| `calculator` | `calculator` | `<Icon name="calculator" />` | Công cụ tính giá in theo gram, tính phí ship |
-| **Giá tiền / Chi phí / Doanh thu** | `coin` | `coins` | `<Icon name="coin" />` | Chi phí VND, chi phí in ấn |
-| **Thẻ phân loại / Nhãn sản phẩm** | `tag` | `tag` | `<Icon name="tag" />` | Phân loại sản phẩm / thẻ nhựa |
-| **Kho hàng / Kiện hàng / Mô hình** | `box` | `box` | `<Icon name="box" />` | Inventory kho, bounding box 3D |
+| **Tính tiền tự động / Ước tính giá**| `calculator` | `calculator` | `<Icon name="calculator" />` | Công cụ tính toán chi phí, tính tiền, báo giá hoặc phí ship |
+| **Giá tiền / Chi phí / Doanh thu** | `coin` | `coins` | `<Icon name="coin" />` | Đơn vị tiền tệ, giá cả, chi phí, xu thưởng hoặc doanh thu |
+| **Thẻ phân loại / Nhãn sản phẩm** | `tag` | `tag` | `<Icon name="tag" />` | Phân loại danh mục, thẻ sản phẩm, nhãn dán |
+| **Kho hàng / Kiện hàng / Thùng chứa**| `box` | `box` | `<Icon name="box" />` | Quản lý kho, thùng hàng, đóng gói hoặc bounding box |
 
 ---
 
@@ -130,18 +130,18 @@ Khi cần hiển thị biểu tượng cho một hành động hoặc trạng th
 
 | Công cụ / Đối tượng | Icon chuẩn (`IconName`) | Lucide Alias | Code mẫu | Hướng dẫn sử dụng |
 |---|---|---|---|---|
-| **Cơ sở dữ liệu / SQL Storage** | `database` | `database` | `<Icon name="database" />` | Quản lý CSDL SQLite/PostgreSQL, bảng dữ liệu backend |
-| **Máy chủ / Host / Node điều khiển**| `server` | `server` | `<Icon name="server" />` | Trạng thái máy chủ, backend OctoPrint/Klipper |
-| **Vi xử lý / Chip MCU / Bo mạch** | `cpu` | `cpu` | `<Icon name="cpu" />` | Mainboard máy in, chip STM32/ESP32, tải CPU |
-| **Báo lỗi code / Debug sự cố** | `bug` | `bug` | `<Icon name="bug" />` | Báo cáo lỗi phần mềm, chế độ gỡ lỗi (debug) |
-| **Lưu commit / Phiên bản code** | `gitCommit` | `git-commit-horizontal` | `<Icon name="gitCommit" />` | Lịch sử commit Git, phiên bản firmware |
-| **Yêu cầu hợp nhất / Đóng góp** | `gitPullRequest` | `git-pull-request` | `<Icon name="gitPullRequest" />` | Đóng góp preset in, review chia sẻ profile |
-| **Bảo mật / Chứng chỉ SSL / An toàn**| `shield` | `shield` | `<Icon name="shield" />` | Tường lửa, kết nối an toàn SSL, chứng thực |
-| **API Key / Token / Mật mã bí mật**| `key` | `key-round` | `<Icon name="key" />` | Trường nhập API Key, MQTT Token, Access Code |
-| **Tích hợp Webhook / Bot trigger** | `webhook` | `webhook` | `<Icon name="webhook" />` | Tích hợp bot thông báo Telegram/Discord/Slack |
-| **Mã lập trình / G-code script** | `code` | `code` | `<Icon name="code" />` | Khối code G-code, script tự động hoá |
-| **Cửa sổ lệnh console / Terminal** | `terminal` | `terminal` | `<Icon name="terminal" />` | Log thời gian thực, CLI, terminal |
-| **Nhánh phiên bản / Rẽ nhánh luồng**| `branch` | `git-branch` | `<Icon name="branch" />` | Điều kiện if/else automation, git branch |
+| **Cơ sở dữ liệu / SQL Storage** | `database` | `database` | `<Icon name="database" />` | Quản lý CSDL (PostgreSQL, SQLite, Redis), bảng dữ liệu |
+| **Máy chủ / Host / Hạ tầng mạng** | `server` | `server` | `<Icon name="server" />` | Trạng thái máy chủ, dịch vụ backend, node hạ tầng |
+| **Vi xử lý / Chip bán dẫn / Tải CPU**| `cpu` | `cpu` | `<Icon name="cpu" />` | Bo mạch vi xử lý, mức tải CPU, năng lực tính toán |
+| **Báo lỗi code / Debug sự cố** | `bug` | `bug` | `<Icon name="bug" />` | Báo cáo lỗi phần mềm, chế độ gỡ lỗi (debug), issue tracker |
+| **Lưu commit / Phiên bản code** | `gitCommit` | `git-commit-horizontal` | `<Icon name="gitCommit" />` | Lịch sử commit Git, mốc phiên bản mã nguồn |
+| **Yêu cầu hợp nhất / Đóng góp** | `gitPullRequest` | `git-pull-request` | `<Icon name="gitPullRequest" />` | Pull request, merge request, xem xét và đóng góp thay đổi |
+| **Bảo mật / Chứng chỉ SSL / An toàn**| `shield` | `shield` | `<Icon name="shield" />` | Tường lửa, kết nối an toàn SSL, chứng thực bảo mật |
+| **API Key / Token / Mật mã bí mật**| `key` | `key-round` | `<Icon name="key" />` | Trường nhập API Key, Access Token, mật mã xác thực |
+| **Tích hợp Webhook / Bot trigger** | `webhook` | `webhook` | `<Icon name="webhook" />` | Tích hợp webhook, bot thông báo (Slack/Discord/Telegram) |
+| **Mã lập trình / Script tự động** | `code` | `code` | `<Icon name="code" />` | Khối mã lập trình, script tự động hoá, macro |
+| **Cửa sổ lệnh console / Terminal** | `terminal` | `terminal` | `<Icon name="terminal" />` | Log thời gian thực, CLI, terminal thao tác lệnh |
+| **Nhánh phiên bản / Rẽ nhánh luồng**| `branch` | `git-branch` | `<Icon name="branch" />` | Nhánh Git (branch), rẽ nhánh điều kiện logic |
 
 ---
 
@@ -149,15 +149,15 @@ Khi cần hiển thị biểu tượng cho một hành động hoặc trạng th
 
 | Chỉ số / Đo lường | Icon chuẩn (`IconName`) | Lucide Alias | Code mẫu | Hướng dẫn sử dụng |
 |---|---|---|---|---|
-| **Nhịp tim thiết bị / Telemetry live**| `activity` | `activity` | `<Icon name="activity" />` | Heartbeat máy in online, truyền nhận telemetry MQTT |
+| **Hoạt động / Telemetry / Nhịp tim**| `activity` | `activity` | `<Icon name="activity" />` | Trạng thái hoạt động live, heartbeat kết nối, nhịp độ hệ thống |
 | **Xu hướng tăng / Tăng trưởng** | `trendingUp` | `trending-up` | `<Icon name="trendingUp" />` | Chỉ số tăng trưởng dương (+%) trên KpiCard |
-| **Xu hướng giảm / Sụt giảm chi phí** | `trendingDown` | `trending-down` | `<Icon name="trendingDown" />` | Chỉ số giảm (-%) trên KpiCard, giảm sự cố |
-| **Biểu đồ tròn / Cơ cấu tỉ lệ %** | `pieChart` | `chart-pie` | `<Icon name="pieChart" />` | Cơ cấu tiêu thụ nhựa (PLA/PETG), phân bổ đơn hàng |
-| **Đồng hồ đo tốc độ / Áp suất / Tải**| `gauge` | `gauge` | `<Icon name="gauge" />` | Tốc độ in thực tế (mm/s), gia tốc, công suất |
-| **Biểu đồ thống kê số liệu** | `chart` | `bar-chart` | `<Icon name="chart" />` | Biểu đồ sản lượng, giờ in theo tuần/tháng |
-| **Lịch ngày tháng / Hẹn giờ** | `calendar` | `calendar` | `<DatePicker />` | Lên lịch hẹn giờ in ấn tự động |
-| **Đồng hồ / Thời gian còn lại** | `clock` | `clock` | `<Icon name="clock" />` | Đếm ngược thời gian in (Remaining time) |
-| **Lưới toạ độ bàn in (Grid)** | `grid` | `grid` | `<Icon name="grid" />` | Bật/tắt lưới bàn in 3D viewport |
+| **Xu hướng giảm / Sụt giảm chi phí** | `trendingDown` | `trending-down` | `<Icon name="trendingDown" />` | Chỉ số giảm (-%) trên KpiCard, giảm chi phí/sự cố |
+| **Biểu đồ tròn / Cơ cấu tỉ lệ %** | `pieChart` | `chart-pie` | `<Icon name="pieChart" />` | Cơ cấu tỉ lệ %, phân bổ danh mục hoặc thị phần |
+| **Đồng hồ đo tốc độ / Áp suất / Tải**| `gauge` | `gauge` | `<Icon name="gauge" />` | Tốc độ xử lý, hiệu năng, áp suất hoặc mức tải hệ thống |
+| **Biểu đồ thống kê số liệu** | `chart` | `bar-chart` | `<Icon name="chart" />` | Biểu đồ cột sản lượng, doanh thu, phân tích chu kỳ |
+| **Lịch ngày tháng / Hẹn giờ** | `calendar` | `calendar` | `<DatePicker />` | Lên lịch hẹn, ngày giao dịch, chọn mốc thời gian |
+| **Đồng hồ / Thời gian thực hiện** | `clock` | `clock` | `<Icon name="clock" />` | Đếm ngược thời gian, thời lượng xử lý, lịch sử giờ |
+| **Bố cục dạng lưới / Toạ độ (Grid)**| `grid` | `grid` | `<Icon name="grid" />` | Bố cục hiển thị dạng lưới (grid view), lưới toạ độ không gian |
 
 ---
 
@@ -165,56 +165,56 @@ Khi cần hiển thị biểu tượng cho một hành động hoặc trạng th
 
 | Thiết bị / Chức năng | Icon chuẩn (`IconName`) | Code mẫu | Ghi chú |
 |---|---|---|---|
-| **Bật / Tắt nguồn thiết bị** | `power` | `<Icon name="power" />` | Công tắc nguồn máy in / ổ cắm |
-| **Nhiệt độ (°C) / Cặp nhiệt điện** | `thermometer` | `<Icon name="thermometer" />` | Nhiệt độ đầu in, bàn nhiệt, buồng sấy |
-| **Bảo trì cơ khí / Cờ lê siết ốc**| `wrench` | `<Icon name="wrench" />` | Bảo dưỡng máy in, thay nozzle, siết đai |
-| **Công cụ cơ khí / Xưởng DIY** | `hammer` | `<Icon name="hammer" />` | Chế tác phần cứng, gia công, lắp ráp |
-| **Bo mạch chủ / Mạch Toolhead** | `circuitBoard` | `<Icon name="circuitBoard" />` | Mainboard MCU, mạch đầu in CAN bus |
-| **Cổng USB / Ổ flash cắm ngoài**| `usb` | `<Icon name="usb" />` | In từ USB, nạp firmware Serial UART |
-| **Kết nối Bluetooth BLE** | `bluetooth` | `<Icon name="bluetooth" />` | Ghép đôi máy in không dây, cảm biến BLE |
-| **Thẻ nhớ SD / Bộ nhớ trong** | `hardDrive` | `<Icon name="hardDrive" />` | Thẻ MicroSD, eMMC lưu trữ file G-code |
-| **Cáp tín hiệu / Dây động cơ** | `cable` | `<Icon name="cable" />` | Dây nối động cơ bước, cáp bẹ FPC |
-| **Pin dự phòng / Bộ lưu điện UPS**| `battery` | `<Icon name="battery" />` | Mức pin UPS chống mất điện khi in |
-| **Quét Micro Lidar / Quét 3D** | `scanLine` | `<Icon name="scanLine" />` | Quét kiểm tra lớp in đầu (First layer), Lidar |
-| **Cảnh báo an toàn / Quá nhiệt** | `shieldAlert` | `<Icon name="shieldAlert" />` | Cửa buồng in mở, bảo vệ quá nhiệt (Thermal Runaway) |
-| **Đèn chiếu sáng buồng in / bàn** | `light` | `<Icon name="light" />` | Công tắc đèn chiếu |
-| **Cảm biến nhiệt độ & độ ẩm** | `sensor` | `<Icon name="sensor" />` | Chỉ số môi trường |
-| **Độ ẩm (Humidity)** | `drop` | `<Icon name="drop" />` | Phần trăm độ ẩm hộp sấy nhựa |
-| **Đầu phun nhựa (Hotend / Nozzle)**| `nozzle` | `<Icon name="nozzle" />` | Nhiệt độ đầu phun, cỡ lỗ phun |
-| **Bàn nhiệt (Heatbed / Plate)** | `bed` | `<Icon name="bed" />` | Nhiệt độ bàn in, trạng thái bàn |
-| **Quạt làm mát (Fan)** | `fan` | `<Icon name="fan" />` | Tốc độ quạt Part/Aux fan |
-| **Tín hiệu Wi-Fi / Mạng không dây**| `wifi` | `<Icon name="wifi" />` | Cường độ sóng Wi-Fi |
-| **Thiết bị ngoại vi (Peripherals)** | `plug` | `<Icon name="plug" />` | Ổ cắm phụ trợ Tuya/Sonoff |
-| **Kích hoạt tự động / Điện năng** | `zap` | `<Icon name="zap" />` | Tab Tự động hoá (Automation) |
-| **Camera buồng in / RTSP** | `camera` | `<Icon name="camera" />` | Video luồng trực tiếp |
-| **Máy in 3D (3D Printer)** | `printer` | `<Icon name="printer" />` | Thiết bị máy in chính |
-| **Ứng dụng di động (Mobile App)** | `smartphone` | `<Icon name="smartphone" />` | Tải app điện thoại |
+| **Bật / Tắt nguồn thiết bị** | `power` | `<Icon name="power" />` | Công tắc nguồn thiết bị, bật/tắt nguồn điện |
+| **Nhiệt độ (°C / °F)** | `thermometer` | `<Icon name="thermometer" />` | Nhiệt độ môi trường, bộ gia nhiệt hoặc linh kiện |
+| **Bảo trì kỹ thuật / Cờ lê siết ốc**| `wrench` | `<Icon name="wrench" />` | Bảo dưỡng kỹ thuật, cấu hình tham số, sửa chữa |
+| **Công cụ cơ khí / Xưởng DIY** | `hammer` | `<Icon name="hammer" />` | Chế tác phần cứng, gia công, thi công, lắp ráp |
+| **Bo mạch điện tử / Mạch điều khiển**| `circuitBoard`| `<Icon name="circuitBoard" />` | Mạch vi điều khiển, PCB, phần cứng nhúng |
+| **Cổng USB / Thiết bị flash cắm ngoài**| `usb` | `<Icon name="usb" />` | Kết nối cổng USB, nạp firmware, thiết bị lưu trữ USB |
+| **Kết nối Bluetooth không dây** | `bluetooth` | `<Icon name="bluetooth" />` | Ghép đôi thiết bị không dây Bluetooth / BLE |
+| **Ổ cứng / Bộ nhớ trong / Thẻ nhớ**| `hardDrive` | `<Icon name="hardDrive" />` | Bộ nhớ lưu trữ, thẻ nhớ SD, phân vùng ổ đĩa |
+| **Cáp kết nối / Dây truyền tín hiệu**| `cable` | `<Icon name="cable" />` | Cáp mạng, dây dẫn tín hiệu, kết nối vật lý |
+| **Pin / Nguồn lưu điện (UPS)** | `battery` | `<Icon name="battery" />` | Mức dung lượng pin, sạc dự phòng, nguồn điện phụ |
+| **Quét mã / Quét laser / Scan** | `scanLine` | `<Icon name="scanLine" />` | Quét mã vạch/QR, quét tài liệu, cảm biến quét LiDAR |
+| **Cảnh báo an toàn / Nguy hiểm** | `shieldAlert` | `<Icon name="shieldAlert" />` | Cảnh báo vi phạm bảo mật, quá nhiệt, sự cố thiết bị |
+| **Đèn chiếu sáng / Đèn hiển thị**| `light` | `<Icon name="light" />` | Bật/tắt đèn chiếu sáng, trạng thái đèn tín hiệu |
+| **Cảm biến môi trường / Sensor**| `sensor` | `<Icon name="sensor" />` | Cảm biến chuyển động, đo đạc môi trường IoT |
+| **Chất lỏng / Độ ẩm (Humidity)** | `drop` | `<Icon name="drop" />` | Mức chất lỏng, độ ẩm không khí hoặc dung dịch |
+| **Đầu phun / Vòi xịt (Nozzle)** | `nozzle` | `<Icon name="nozzle" />` | Đầu phun in 3D, vòi phun chất lỏng, điều tiết dòng chảy |
+| **Bàn nhiệt / Mặt phẳng làm việc**| `bed` | `<Icon name="bed" />` | Bàn in nhiệt 3D, mặt phẳng gia công vật liệu |
+| **Quạt gió / Tản nhiệt làm mát**| `fan` | `<Icon name="fan" />` | Quạt gió tản nhiệt, hệ thống làm mát, thông gió |
+| **Tín hiệu Wi-Fi / Mạng không dây**| `wifi` | `<Icon name="wifi" />` | Cường độ sóng Wi-Fi, kết nối mạng không dây |
+| **Phích cắm / Thiết bị ngoại vi** | `plug` | `<Icon name="plug" />` | Ổ cắm điện, kết nối cắm phụ trợ hoặc plugin |
+| **Năng lượng điện / Kích hoạt nhanh**| `zap` | `<Icon name="zap" />` | Kích hoạt tức thì, điện năng, tác vụ tự động hoá |
+| **Máy ảnh / Camera giám sát** | `camera` | `<Icon name="camera" />` | Camera ghi hình, webcam giám sát hoặc chụp ảnh |
+| **Máy in / Lệnh xuất in** | `printer` | `<Icon name="printer" />` | Máy in 3D, máy in văn phòng, thao tác xuất in |
+| **Thiết bị di động (Mobile App)**| `smartphone` | `<Icon name="smartphone" />` | Ứng dụng điện thoại di động, thiết bị smartphone |
 
 ---
 
-### 2.9. Slicing 3D & Sáng tạo (3D Slicing & Creative)
+### 2.9. Công cụ Sáng tạo & Biên tập (Creative & Editing Tools)
 
 | Công cụ | Icon chuẩn (`IconName`) | Code mẫu | Ghi chú |
 |---|---|---|---|
-| **Cắt lớp mô hình (Slicer)** | `slicer` | `<Icon name="slicer" />` | Tab Slicer chính |
-| **Điều hướng toạ độ XYZ (Move)** | `move` | `<Icon name="move" />` | Di chuyển mô hình trên đĩa in, phím jog motor |
-| **Xoay thuận chiều kim đồng hồ** | `rotateCw` | `<Icon name="rotateCw" />` | Xoay mô hình 90° CW, xoay đĩa in |
-| **Xoay ngược chiều kim đồng hồ** | `rotateCcw` | `<Icon name="rotateCcw" />` | Xoay mô hình ngược chiều CCW |
-| **Gốc toạ độ Home / Cân bàn ABL**| `crosshair` | `<Icon name="crosshair" />` | Lệnh G28 về gốc, điểm probe cân bàn tự động |
-| **Thước đo khoảng cách (Measure)**| `ruler` | `<Icon name="ruler" />` | Đo kích thước mô hình 3D, độ dày thành |
-| **Áp mặt phẳng (Lay on face)** | `magnet` | `<Icon name="magnet" />` | Hít mặt đáy áp sát bàn in, bàn từ tính PEI |
-| **Ống hút màu filament (Picker)** | `pipette` | `<Icon name="pipette" />` | Hút màu mô hình gán vào cuộn nhựa AMS |
-| **Khối hình học cơ bản (Shapes)** | `shapes` | `<Icon name="shapes" />` | Khối lập phương/hình cầu Modifier, Negative Volume |
-| **Căn giữa khung nhìn (Focus)** | `focus` | `<Icon name="focus" />` | Zoom to fit, căn giữa camera vào chi tiết |
-| **Xoay camera tự do (3D Orbit)** | `orbit` | `<Icon name="orbit" />` | Xoay góc nhìn 3D quanh đĩa in |
-| **Bảng màu / Color Studio** | `palette` | `<Icon name="palette" />` | Công cụ phối màu đa sắc |
-| **Cọ quét màu (Paint Brush)** | `brush` | `<Icon name="brush" />` | Tô màu mesh thủ công |
-| **Cắt phân chia part (Part Split)** | `scissors` | `<Icon name="scissors" />` | Cắt rời mô hình 3D |
-| **Cuộn nhựa (Filament Spool)** | `spool` | `<Icon name="spool" />` | Kho nhựa, cuộn AMS |
-| **Lớp in / Đĩa in (Layers / Plates)**| `layers` | `<Icon name="layers" />` | Xem lát cắt layer G-code |
-| **Hợp nhất chi tiết (Merge)** | `merge` | `<Icon name="merge" />` | Gộp mesh trong 3D |
-| **Gán màu ngẫu nhiên (Shuffle)** | `shuffle` | `<Icon name="shuffle" />` | Xáo trộn màu ngẫu nhiên |
-| **Co giãn / Đổi kích thước (Scale)** | `resize` | `<Icon name="resize" />` | Thay đổi tỉ lệ mô hình 3D (không dùng cho fullscreen) |
+| **Cắt lớp mô hình 3D (Slicer)** | `slicer` | `<Icon name="slicer" />` | Công cụ cắt lớp mô hình 3D (Slicer), xem phân lớp |
+| **Điều hướng toạ độ / Di chuyển**| `move` | `<Icon name="move" />` | Di chuyển vị trí đối tượng, tịnh tiến toạ độ (Translate) |
+| **Xoay theo chiều kim đồng hồ** | `rotateCw` | `<Icon name="rotateCw" />` | Xoay 90° CW, xoay đối tượng hoặc hình ảnh thuận chiều |
+| **Xoay ngược chiều kim đồng hồ** | `rotateCcw` | `<Icon name="rotateCcw" />` | Xoay 90° CCW, xoay đối tượng ngược chiều kim đồng hồ |
+| **Tâm ngắm / Toạ độ gốc (Origin)**| `crosshair` | `<Icon name="crosshair" />` | Định vị tâm, hiệu chuẩn gốc toạ độ, điểm ngắm |
+| **Thước đo khoảng cách (Measure)**| `ruler` | `<Icon name="ruler" />` | Đo đạc khoảng cách, kích thước vật thể hoặc căn lề |
+| **Hít dính / Snap mặt phẳng** | `magnet` | `<Icon name="magnet" />` | Snap hút vào lưới toạ độ, áp sát bề mặt làm việc |
+| **Hút màu (Color Picker)** | `pipette` | `<Icon name="pipette" />` | Lấy mẫu màu sắc từ hình ảnh hoặc đối tượng giao diện |
+| **Hình khối cơ bản (Shapes)** | `shapes` | `<Icon name="shapes" />` | Khối hình học đồ hoạ (vuông, tròn, khối 3D modifier) |
+| **Căn giữa tiêu điểm (Focus)** | `focus` | `<Icon name="focus" />` | Căn giữa vùng nhìn, zoom vừa khung hình (Zoom to fit) |
+| **Xoay quỹ đạo góc nhìn (Orbit)** | `orbit` | `<Icon name="orbit" />` | Xoay camera không gian 3D, quan sát đa chiều |
+| **Bảng màu / Phối màu (Palette)** | `palette` | `<Icon name="palette" />` | Bảng màu thiết kế, công cụ phối màu đa sắc |
+| **Cọ quét màu / Nét vẽ (Brush)** | `brush` | `<Icon name="brush" />` | Cọ vẽ tự do, tô màu bề mặt, chỉnh sửa đồ hoạ |
+| **Cắt rời / Chia tách (Scissors)** | `scissors` | `<Icon name="scissors" />` | Thao tác cắt rời, phân chia khối, kéo cắt tài liệu |
+| **Cuộn vật liệu / Ống dây (Spool)**| `spool` | `<Icon name="spool" />` | Cuộn dây cáp, cuộn sợi vật liệu in ấn filament |
+| **Lớp hiển thị / Xếp lớp (Layers)**| `layers` | `<Icon name="layers" />` | Quản lý các lớp đồ hoạ (layers), lát cắt chiều sâu |
+| **Hợp nhất đối tượng (Merge)** | `merge` | `<Icon name="merge" />` | Hợp nhất các khối, gộp nhánh code hoặc liên kết dữ liệu |
+| **Xáo trộn ngẫu nhiên (Shuffle)** | `shuffle` | `<Icon name="shuffle" />` | Đổi thứ tự ngẫu nhiên, xáo trộn danh sách |
+| **Co giãn / Đổi kích thước (Scale)**| `resize` | `<Icon name="resize" />` | Co giãn kích thước đối tượng, điều chỉnh tỉ lệ khung |
 
 ---
 
@@ -222,32 +222,32 @@ Khi cần hiển thị biểu tượng cho một hành động hoặc trạng th
 
 | Đối tượng | Icon chuẩn (`IconName`) | Code mẫu | Ghi chú |
 |---|---|---|---|
-| **Tệp tin đơn lẻ** | `file` | `<Icon name="file" />` | File G-code, 3MF, STL, cấu hình |
-| **Tài liệu văn bản / PDF** | `fileText` | `<Icon name="fileText" />` | Tài liệu hướng dẫn in, README, PDF |
-| **Tệp mã nguồn / G-code** | `fileCode` | `<Icon name="fileCode" />` | File G-code in 3D, script lập trình, macro |
-| **Tệp nén lưu trữ / ZIP** | `fileArchive` | `<Icon name="fileArchive" />` | Tệp nén ZIP, TAR, 7Z, gói backup model |
-| **Tệp đã kiểm tra / Checksum**| `fileCheck` | `<Icon name="fileCheck" />` | File đã xác thực tính toàn vẹn, G-code hợp lệ |
-| **Tạo tệp mới** | `filePlus` | `<Icon name="filePlus" />` | Tạo file rỗng, thêm tài liệu mới |
-| **Bảng tính Excel / CSV** | `fileSpreadsheet`| `<Icon name="fileSpreadsheet" />`| Báo cáo số liệu in, bảng kiểm kê vật tư |
-| **Thư mục chứa file** | `folder` | `<Icon name="folder" />` | Nhóm preset, cây thư mục lưu trữ |
-| **Tạo thư mục mới** | `folderPlus` | `<Icon name="folderPlus" />` | Tạo folder mới, nhóm dự án mới |
-| **Mở thư mục duyệt file** | `folderOpen` | `<Icon name="folderOpen" />` | Thư mục đang kích hoạt, duyệt folder |
-| **Đính kèm tệp / File kẹp** | `paperclip` | `<Icon name="paperclip" />` | Đính kèm file vào yêu cầu, báo lỗi |
-| **Âm lượng loa / Buzzer** | `volume2` | `<Icon name="volume2" />` | Còi báo bíp hoàn thành in, âm thanh |
-| **Tắt tiếng / Im lặng (Mute)**| `volumeX` | `<Icon name="volumeX" />` | Tắt chuông báo, tắt tiếng bíp máy in |
-| **Tai nghe (Headphones)** | `headphones` | `<Icon name="headphones" />` | Nghe âm thanh tai nghe, audio output |
-| **Micro / Thu âm giọng nói** | `mic` | `<Icon name="mic" />` | Ra lệnh giọng nói AI, thu âm ghi chú |
-| **Video trực tiếp / Webcam** | `video` | `<Icon name="video" />` | Luồng camera buồng in RTSP, video timelapse |
-| **Tắt camera / Riêng tư** | `videoOff` | `<Icon name="videoOff" />` | Tắt truyền hình ảnh buồng in bảo mật |
-| **Thước phim / Timelapse Reel**| `film` | `<Icon name="film" />` | Bộ sưu tập video timelapse in hoàn tất |
-| **Lùi khung hình / Lớp trước**| `skipBack` | `<Icon name="skipBack" />` | Lùi lát cắt (Previous layer), lùi video |
-| **Tới khung hình / Lớp sau** | `skipForward` | `<Icon name="skipForward" />` | Tiến lát cắt kế tiếp (Next layer), tới video |
-| **Lặp lại (Repeat / Loop)** | `repeat` | `<Icon name="repeat" />` | Lặp video timelapse, in lặp lại chu kỳ |
-| **Tua nhanh tốc độ (2x/4x)** | `fastForward` | `<Icon name="fastForward" />` | Tua nhanh mô phỏng đường in G-code |
-| **Tua lùi mô phỏng (Rewind)**| `rewind` | `<Icon name="rewind" />` | Tua ngược thanh thời gian mô phỏng |
-| **Cắt cúp ảnh (Crop)** | `crop` | `<Icon name="crop" />` | Xén ảnh chụp webcam, căn khung thumbnail |
-| **Hình ảnh xem trước (Thumbnail)** | `image` | `<Icon name="image" />` | Ảnh chụp mô hình, render 3D |
-| **Dấu trừ / Giảm số lượng** | `minus` | `<Icon name="minus" />` | Nút trừ trong NumberInput |
+| **Tệp tin dữ liệu** | `file` | `<Icon name="file" />` | Tệp tin chung trong hệ thống, dữ liệu đính kèm |
+| **Tài liệu văn bản / PDF** | `fileText` | `<Icon name="fileText" />` | Văn bản ghi chú, tài liệu hướng dẫn, file TXT/PDF |
+| **Tệp mã nguồn / Script** | `fileCode` | `<Icon name="fileCode" />` | File mã nguồn lập trình, kịch bản lệnh, macro, G-code |
+| **Tệp nén lưu trữ / ZIP** | `fileArchive` | `<Icon name="fileArchive" />` | Tệp nén ZIP, TAR, 7Z, gói backup dữ liệu |
+| **Tệp đã kiểm tra / Xác thực**| `fileCheck` | `<Icon name="fileCheck" />` | Tệp đã kiểm tra tính toàn vẹn (checksum), file hợp lệ |
+| **Tạo tệp mới** | `filePlus` | `<Icon name="filePlus" />` | Thêm tài liệu mới, tạo tệp tin rỗng |
+| **Bảng tính Excel / CSV** | `fileSpreadsheet`| `<Icon name="fileSpreadsheet" />`| Bảng tính biểu mẫu, dữ liệu CSV/Excel, sổ thu chi |
+| **Thư mục lưu trữ** | `folder` | `<Icon name="folder" />` | Thư mục phân loại, cây thư mục tệp tin |
+| **Tạo thư mục mới** | `folderPlus` | `<Icon name="folderPlus" />` | Tạo thư mục mới, tạo nhóm dự án |
+| **Mở thư mục duyệt file** | `folderOpen` | `<Icon name="folderOpen" />` | Mở thư mục đang làm việc, duyệt tệp tin |
+| **Đính kèm tệp / File kẹp** | `paperclip` | `<Icon name="paperclip" />` | Đính kèm tệp tin vào bình luận, yêu cầu, phiếu việc |
+| **Âm lượng loa / Phát âm thanh** | `volume2` | `<Icon name="volume2" />` | Âm lượng hệ thống, còi thông báo, phát âm thanh |
+| **Tắt tiếng / Im lặng (Mute)**| `volumeX` | `<Icon name="volumeX" />` | Tắt âm thanh, chế độ im lặng, ngắt tiếng |
+| **Tai nghe (Headphones)** | `headphones` | `<Icon name="headphones" />` | Thiết bị tai nghe, đầu ra âm thanh cá nhân |
+| **Micro / Thu âm giọng nói** | `mic` | `<Icon name="mic" />` | Thu âm giọng nói, nhập lệnh thoại AI, micro hội thoại |
+| **Video trực tiếp / Xem camera** | `video` | `<Icon name="video" />` | Phát video clip, luồng camera giám sát, video call |
+| **Tắt video / Riêng tư** | `videoOff` | `<Icon name="videoOff" />` | Ngắt luồng video, bảo mật camera, tắt hình ảnh |
+| **Thước phim / Video clip** | `film` | `<Icon name="film" />` | Bộ sưu tập video, phim hoạt cảnh, timelapse |
+| **Lùi bài / Khung hình trước** | `skipBack` | `<Icon name="skipBack" />` | Chuyển về bài trước, lùi khung hình video hoặc lớp cắt |
+| **Tới bài / Khung hình tiếp** | `skipForward` | `<Icon name="skipForward" />` | Chuyển bài kế tiếp, tiến khung hình video hoặc lớp sau |
+| **Lặp lại (Repeat / Loop)** | `repeat` | `<Icon name="repeat" />` | Phát lặp lại danh sách, vòng lặp tác vụ tự động |
+| **Tua nhanh tốc độ (2x/4x)** | `fastForward` | `<Icon name="fastForward" />` | Tua nhanh phát video/audio, tăng tốc mô phỏng |
+| **Tua lùi (Rewind)** | `rewind` | `<Icon name="rewind" />` | Tua lùi phát media, quay lại đoạn trước |
+| **Cắt cúp ảnh (Crop)** | `crop` | `<Icon name="crop" />` | Cắt xén hình ảnh, căn chỉnh khung hình thumbnail |
+| **Hình ảnh xem trước (Thumbnail)** | `image` | `<Icon name="image" />` | Ảnh chụp minh hoạ, thumbnail sản phẩm, hình render |
+| **Dấu trừ / Giảm số lượng** | `minus` | `<Icon name="minus" />` | Nút trừ giá trị, thu gọn hoặc giảm số lượng |
 
 ---
 
@@ -281,7 +281,7 @@ Khi lập trình, nếu viết các từ khoá sau thì `semi-lint` hoặc `tsc`
 | `mail`, `email`, `message` | `send` | Gửi tin nhắn / thư từ dùng `send` |
 | `link`, `open_link` | `external` | Liên kết ngoài dùng `external` |
 | `shutdown`, `turn_off`, `power_off` | `power` | Nguồn thiết bị dùng `power` |
-| `scale` | `resize` | Thu phóng mô hình dùng `resize` |
+| `scale` | `resize` | Thu phóng, đổi kích thước đối tượng dùng `resize` |
 | `decrease` | `minus` | Nút trừ / giảm dùng `minus` |
 | `increase` | `plus` | Nút cộng / tăng dùng `plus` |
 | `wishlist`, `like`, `favorite` | `heart` | Thích / lưu sản phẩm dùng `heart` |
@@ -301,30 +301,30 @@ Khi lập trình, nếu viết các từ khoá sau thì `semi-lint` hoặc `tsc`
 | `hot`, `trending`, `best_seller`| `flame` | Hàng bán chạy / xu hướng dùng `flame` |
 | `marketing`, `promotion` | `megaphone` | Chiến dịch marketing / thông báo dùng `megaphone` |
 | `loyalty`, `vip` | `award` | Thành viên thân thiết / huy hiệu dùng `award` |
-| `calc`, `calculate`, `estimate` | `calculator` | Tính toán chi phí / giá in dùng `calculator` |
+| `calc`, `calculate`, `estimate` | `calculator` | Tính toán chi phí / giá trị dùng `calculator` |
 | `verified`, `official`, `mall` | `badgeCheck` | Shop chính hãng / xác minh dùng `badgeCheck` |
-| `temp`, `temperature`, `heat` | `thermometer` | Nhiệt độ đầu phun/bàn in dùng `thermometer` |
-| `spanner`, `maintenance`, `tools`| `wrench` | Bảo trì cơ khí dùng `wrench` |
-| `jog`, `jogging`, `translate` | `move` | Di chuyển toạ độ XYZ dùng `move` |
+| `temp`, `temperature`, `heat` | `thermometer` | Nhiệt độ môi trường / thiết bị dùng `thermometer` |
+| `spanner`, `maintenance`, `tools`| `wrench` | Bảo trì kỹ thuật / công cụ dùng `wrench` |
+| `jog`, `jogging`, `translate` | `move` | Di chuyển vị trí / toạ độ dùng `move` |
 | `rotate`, `rotate_cw`, `rotate_right`| `rotateCw` | Xoay thuận chiều kim đồng hồ dùng `rotateCw` |
 | `rotate_ccw`, `rotate_left` | `rotateCcw` | Xoay ngược chiều kim đồng hồ dùng `rotateCcw` |
-| `homing`, `origin`, `abl` | `crosshair` | Về gốc G28 / cân bàn ABL dùng `crosshair` |
-| `measure`, `measurement`, `dimension`| `ruler` | Thước đo khoảng cách dùng `ruler` |
-| `snap`, `lay_on_face` | `magnet` | Áp mặt đáy vào đĩa in dùng `magnet` |
-| `eyedropper`, `color_picker` | `pipette` | Hút màu chọn nhựa AMS dùng `pipette` |
-| `primitives`, `modifier`, `geometry`| `shapes` | Khối cơ bản Modifier dùng `shapes` |
-| `zoom_to_fit`, `center_view` | `focus` | Căn giữa khung nhìn dùng `focus` |
-| `view_orbit`, `orbit_camera` | `orbit` | Xoay camera 3D viewport dùng `orbit` |
+| `homing`, `origin`, `abl` | `crosshair` | Gốc toạ độ / tâm ngắm / chuẩn vị dùng `crosshair` |
+| `measure`, `measurement`, `dimension`| `ruler` | Thước đo khoảng cách / kích thước dùng `ruler` |
+| `snap`, `lay_on_face` | `magnet` | Hút dính / snap bề mặt dùng `magnet` |
+| `eyedropper`, `color_picker` | `pipette` | Hút mẫu màu (picker) dùng `pipette` |
+| `primitives`, `modifier`, `geometry`| `shapes` | Hình khối cơ bản đồ hoạ dùng `shapes` |
+| `zoom_to_fit`, `center_view` | `focus` | Căn giữa tiêu điểm / khung nhìn dùng `focus` |
+| `view_orbit`, `orbit_camera` | `orbit` | Xoay camera 3D / quỹ đạo dùng `orbit` |
 | `usb_drive`, `flash_drive` | `usb` | Ổ cắm USB flash dùng `usb` |
 | `ble` | `bluetooth` | Kết nối Bluetooth không dây dùng `bluetooth` |
-| `sd_card`, `microsd`, `emmc` | `hardDrive` | Thẻ nhớ máy in dùng `hardDrive` |
-| `mainboard`, `motherboard`, `pcb`| `circuitBoard` | Bo mạch chủ MCU dùng `circuitBoard` |
-| `wire`, `wiring` | `cable` | Dây nối động cơ / cáp dùng `cable` |
-| `power_backup` | `battery` | Pin lưu điện UPS dùng `battery` |
-| `lidar`, `lidar_scan` | `scanLine` | Cảm biến Micro Lidar dùng `scanLine` |
-| `safety_alert`, `door_open` | `shieldAlert` | Cảnh báo an toàn / quá nhiệt dùng `shieldAlert` |
+| `sd_card`, `microsd`, `emmc` | `hardDrive` | Thẻ nhớ / ổ đĩa lưu trữ dùng `hardDrive` |
+| `mainboard`, `motherboard`, `pcb`| `circuitBoard` | Bo mạch phần cứng / MCU dùng `circuitBoard` |
+| `wire`, `wiring` | `cable` | Dây nối tín hiệu / cáp dùng `cable` |
+| `power_backup` | `battery` | Pin / nguồn dự phòng dùng `battery` |
+| `lidar`, `lidar_scan` | `scanLine` | Quét mã / quét cảm biến dùng `scanLine` |
+| `safety_alert`, `door_open` | `shieldAlert` | Cảnh báo an toàn / sự cố dùng `shieldAlert` |
 | `document`, `doc`, `pdf`, `txt` | `fileText` | Tài liệu văn bản / PDF dùng `fileText` |
-| `gcode`, `gcode_file`, `source_code` | `fileCode` | Tệp mã G-code dùng `fileCode` |
+| `gcode`, `gcode_file`, `source_code` | `fileCode` | Tệp mã nguồn / script lập trình dùng `fileCode` |
 | `zip`, `archive`, `tar` | `fileArchive` | Tệp nén / gói lưu trữ dùng `fileArchive` |
 | `verified_file` | `fileCheck` | Tệp đã kiểm tra / checksum OK dùng `fileCheck` |
 | `new_file`, `add_file` | `filePlus` | Tạo tệp mới dùng `filePlus` |
@@ -332,18 +332,18 @@ Khi lập trình, nếu viết các từ khoá sau thì `semi-lint` hoặc `tsc`
 | `new_folder`, `add_folder` | `folderPlus` | Tạo thư mục mới dùng `folderPlus` |
 | `open_folder` | `folderOpen` | Mở / duyệt thư mục dùng `folderOpen` |
 | `attach`, `attachment`, `clip` | `paperclip` | Đính kèm tệp tin dùng `paperclip` |
-| `sound`, `speaker`, `volume` | `volume2` | Âm lượng / còi bíp loa dùng `volume2` |
+| `sound`, `speaker`, `volume` | `volume2` | Âm lượng / phát âm thanh dùng `volume2` |
 | `mute`, `silent` | `volumeX` | Tắt tiếng / im lặng dùng `volumeX` |
 | `headset`, `earphones` | `headphones` | Tai nghe dùng `headphones` |
 | `microphone`, `voice` | `mic` | Micro / lệnh giọng nói dùng `mic` |
-| `cam`, `webcam`, `timelapse`, `stream` | `video` | Video trực tiếp / timelapse dùng `video` |
+| `cam`, `webcam`, `timelapse`, `stream` | `video` | Video trực tiếp / ghi hình dùng `video` |
 | `cam_off`, `webcam_off` | `videoOff` | Tắt video camera dùng `videoOff` |
 | `movie`, `reel` | `film` | Thước phim hoạt cảnh dùng `film` |
-| `prev_track`, `prev_layer` | `skipBack` | Về khung hình / lớp trước dùng `skipBack` |
-| `next_track`, `next_layer` | `skipForward` | Tới khung hình / lớp sau dùng `skipForward` |
+| `prev_track`, `prev_layer` | `skipBack` | Về bài trước / lùi khung hình dùng `skipBack` |
+| `next_track`, `next_layer` | `skipForward` | Tới bài tiếp / tiến khung hình dùng `skipForward` |
 | `loop` | `repeat` | Lặp lại phát video dùng `repeat` |
 | `fast_forward`, `speed_up` | `fastForward` | Tua nhanh tốc độ dùng `fastForward` |
-| `crop_image` | `crop` | Cắt cúp ảnh thumbnail dùng `crop` |
+| `crop_image` | `crop` | Cắt xén hình ảnh dùng `crop` |
 
 ---
 

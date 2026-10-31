@@ -2,6 +2,23 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
+## [0.2.9] - 2026-10-31
+
+### Changed
+- **Universal Icon Metadata & Semantic Generalization (`src/iconCatalog.ts`, `docs/ICONS.md`):**
+  - Refactored metadata across 76+ icons previously described with narrow, single-domain terminology (such as 3D printing or slicer specifics) into universal, multi-domain definitions suitable for Web, SaaS, Mobile, E-commerce, Dev tools, Cloud/IoT, Media, and 3D applications.
+  - Examples:
+    - `merge`: Generalized from *"gộp các chi tiết trong viewport 3D"* to *"Hợp nhất các đối tượng, gộp nhánh mã nguồn hoặc liên kết dữ liệu (Merge)"* with multi-purpose examples (Git merge, mesh boolean union, combining datasets).
+    - `settings` / `sliders`: Clarified distinction between system configuration vs parameter tuning across web apps, SaaS settings, and IoT devices.
+    - `send`: Universalized for message submission, chat dispatch, email sending, or command triggers.
+    - `box`: Universalized for inventory boxes, postal parcels, UI bounding boxes, and 3D containers.
+    - `code`, `terminal`, `server`, `cpu`, `activity`: Expanded to cover general backend infrastructure, DevOps CI/CD, web development, and system monitoring.
+    - `scissors`, `crop`, `resize`, `move`, `rotateCw`, `rotateCcw`, `ruler`, `pipette`, `shapes`: Refactored to represent universal graphic, document, spatial, and UI manipulation tools.
+    - `file*` & `folder*` family: Generalized across office documents, spreadsheets, source files, archives, and cloud drives.
+  - Maintained 3D and hardware capabilities as valid secondary use cases without restricting primary semantics.
+  - Synchronized documentation tables in `docs/ICONS.md` (§2.2–§2.10 and §3 Aliases) with the updated agnostic taxonomy.
+- **Storybook Shell:** Updated version badge to `Semi UI v0.2.9` (166 Icons).
+
 ## [0.2.8] - 2026-10-31
 
 ### Added
