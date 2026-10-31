@@ -2,6 +2,16 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
+## [Unreleased]
+
+### Added
+- **Docs ↔ code checks (`check:manifest`):** fails when a usage snippet in `app/usage.ts` imports a name `@semi/ui` does not export, when a Storybook section and its usage entry do not match, or when a component / hook is not named in `docs/DESIGN_SYSTEM.md`.
+- **Maintainer guide:** "Change checklist" in `AGENTS.md` (what to update with each kind of change); `CLAUDE.md` loads it for Claude Code.
+
+### Fixed
+- `DESIGN_SYSTEM.md` now describes `Spinner`, `useField`, `useDialog` / `useFocusTrap` / `useScrollLock` and `useAnchoredPosition`.
+- CI runs on Node 24 (the manifest script imports `app/usage.ts` with Node's type stripping).
+
 ## [0.6.0] - 2026-10-31
 
 ### Added

@@ -173,7 +173,31 @@ const publicFiles = {
   "public/components.json": json,
   ...Object.fromEntries(DOCS.map(([src, out]) => [`public/docs/${out}`, src === "docs/QUICK_REF.md" ? nextQuickRef : read(src)])),
 };
-for (const id of Object.keys(STORY_SECTIONS)) if (!STORY_PAGES.some((p) => p.path === STORY_SECTIONS[id].page)) throw new Error(`usage ${id}: unknown page`);
+// Drift between the hand-written docs and the code (both modes fail): usage code imports only real exports, every
+// Storybook section has usage and the other way round, every component / hook is described in DESIGN_SYSTEM.md.
+const drift = [];
+const typeNames = readdirSync(join(root, "src"))
+  .filter((f) => /\.tsx?$/.test(f))
+  .flatMap((f) => [...read(`src/${f}`).matchAll(/^export (?:type|interface) (\w+)/gm)].map((x) => x[1]));
+const exported = new Set([...items.map((i) => i.name), ...typeNames]);
+for (const [id, sec] of Object.entries(STORY_SECTIONS)) {
+  if (!STORY_PAGES.some((p) => p.path === sec.page)) drift.push(`app/usage.ts ${id}: unknown page "${sec.page}"`);
+  for (const [, names] of sec.code.matchAll(/import\s*\{([^}]*)\}\s*from\s*"@semi\/ui(?:\/styles)?"/g))
+    for (const n of names.split(",").map((x) => x.trim().replace(/^type\s+/, "").split(/\s+as\s+/)[0]).filter(Boolean))
+      if (!exported.has(n)) drift.push(`app/usage.ts ${id}: imports "${n}", which @semi/ui does not export`);
+}
+for (const p of STORY_PAGES) {
+  const ids = [...read(`app/${p.path}/page.tsx`).matchAll(/<(?:ShowcaseSection|section)\b[^>]*\bid="([\w-]+)"/g)].map((x) => x[1]);
+  for (const id of ids) if (STORY_SECTIONS[id]?.page !== p.path) drift.push(`app/${p.path}/page.tsx #${id}: no usage entry in app/usage.ts`);
+  for (const [id, sec] of Object.entries(STORY_SECTIONS)) if (sec.page === p.path && !ids.includes(id)) drift.push(`app/usage.ts ${id}: no section #${id} on app/${p.path}/page.tsx`);
+}
+const designSystem = read("docs/DESIGN_SYSTEM.md");
+for (const i of [...manifest.components, ...manifest.hooks])
+  if (!new RegExp(`\\b${i.name}\\b`).test(designSystem)) drift.push(`docs/DESIGN_SYSTEM.md: ${i.kind} ${i.name} (${i.module}) is not described`);
+if (drift.length) {
+  console.error(`docs and code out of sync:\n- ${drift.join("\n- ")}`);
+  process.exit(1);
+}
 
 const manifestPath = join(root, "components.json");
 if (process.argv.includes("--check")) {
