@@ -2,6 +2,11 @@
 
 Newest first. Each entry is a user decision already reflected in `DESIGN_SYSTEM.md`, `QUICK_REF.md` and `lint/semi-lint.mjs`.
 
+- **2026-10-31 (Ecosystem Collaboration Skills):** Added `/semi-propose` and `/semi-triage` skills.
+  - *Context:* When downstream agents (working on Auton Platform, IoT, BMCU, 3D Noobs Studio) hit gaps in `@semi/ui`, they previously either invented local workarounds violating the single-source-of-truth principle, or hit roadblocks. Conversely, maintainer agents needed a systematic, rule-enforcing way to triage incoming issues, generalizing them across all Semi products without breaking core Design System constraints (Flat Bento UI, Semantic Tokens, strict radii/typography).
+  - *Decision:*
+    - Created `/semi-propose`: Allows consumer agents to scan project gaps, structure standardized feature proposals, and publish them directly to GitHub (`hoanghuynh296/semi-nextjs-codebase`).
+    - Created `/semi-triage`: Allows core maintainer agents to fetch issues, run automated rule compliance checks, determine architectural verdicts (`ACCEPT`, `GENERALIZE`, `WORKAROUND / EXTENSION`, `REJECT`), build an ecosystem-wide implementation plan, and post feedback to GitHub.
 - **2026-10-31 (v0.3.0):** Two-Tier Semantic Tokens & Native Dual-Theme Architecture (`data-theme="dark|light"`).
   - *Context & Problem:* In real-world migrations (e.g. Auton Platform with 60+ legacy screens), wrapping light screens in a dark `AppShell` resulted in a "dark shell, light core" conflict. Hardcoded physical colors (`bg-white`, `text-slate-900`, `border-slate-200`) prevent theme toggling and break design cohesion.
   - *Decision:* Replaced fixed surface color constants with CSS-variable-backed Semantic Tokens (`--color-canvas`, `--color-app`, `--color-panel`, `--color-field`, `--color-raised`, `--color-text-contrast`, `--color-text-body`, `--color-text-muted`, `--color-line`, `--color-line-hover`, `--color-divider`). Tokens switch seamlessly between Dark and Light mode via `[data-theme="dark"]` and `[data-theme="light"]` (or `.dark` / `.light` classes).

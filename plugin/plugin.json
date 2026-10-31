@@ -1,8 +1,8 @@
 {
   "name": "semi-design",
   "displayName": "Semi Design System",
-  "version": "0.3.0",
-  "description": "Semi Design System rules, lint hook, and /semi-init, /semi-audit, /semi-update skills for Next.js 16 + React 19 + Tailwind 4 web projects.",
+  "version": "0.3.1",
+  "description": "Semi Design System rules, lint hook, and /semi-init, /semi-audit, /semi-update, /semi-propose, /semi-triage skills for Next.js 16 + React 19 + Tailwind 4 web projects.",
   "logo": "assets/logo.svg",
   "repository": {
     "type": "git",
@@ -11,6 +11,8 @@
   "suggestedPrompts": [
     "Run /semi-init to set up the Semi Design System in this project",
     "Run /semi-audit to analyze this codebase and plan a Semi UI refactor",
-    "Run /semi-update to upgrade @semi/ui to the latest release"
+    "Run /semi-update to upgrade @semi/ui to the latest release",
+    "Run /semi-propose to analyze project gaps and submit a feature request to Semi Design System",
+    "Run /semi-triage to evaluate and generalize incoming ecosystem issues"
   ]
 }

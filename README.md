@@ -7,10 +7,12 @@ Hệ thống Design System dùng chung cho toàn bộ dự án web thuộc hệ 
 Xây dựng cho **Next.js 16 + React 19 + Tailwind CSS 4**, hỗ trợ chuyển đổi giao diện Dark/Light mượt mà không cần `dark:bg-...` thủ công nhờ kiến trúc Semantic Tokens.
 
 Repository này đóng gói **2 sản phẩm trong cùng 1 tag phiên bản (semver)**:
-1. **Plugin cho AI Agent (`semi-design`):** chứa bộ quy tắc luôn bật (`rules/AGENTS.md` — tự động hướng dẫn agent mỗi khi viết hoặc sửa giao diện), hook tự chạy lint khi sửa file (`hooks.json`), và **3 slash commands không chồng chéo**:
+1. **Plugin cho AI Agent (`semi-design`):** chứa bộ quy tắc luôn bật (`rules/AGENTS.md` — tự động hướng dẫn agent mỗi khi viết hoặc sửa giao diện), hook tự chạy lint khi sửa file (`hooks.json`), và **5 slash commands chuyên biệt**:
    - `/semi-init` — **Cài đặt lần đầu** cho một dự án (tự động khởi tạo dự án mới Next.js + Tailwind + `@semi/ui` HOẶC quét, hỏi trắc nghiệm và refactor 4 giai đoạn cho dự án có sẵn / monorepo).
    - `/semi-update` — **Nâng cấp phiên bản** cho dự án đã dùng `@semi/ui` (nâng lên tag mới nhất, đối chiếu `CHANGELOG.md` + kiểm tra cấu trúc và refactor các điểm lệch mới).
    - `/semi-audit` — **Kiểm tra sức khỏe (Read-only)** (chỉ quét và in báo cáo độ đồng nhất token + cấu trúc layout, không cài đặt hay sửa bất kỳ file nào).
+   - `/semi-propose` — **Đề xuất tính năng từ dự án con** (quét nhu cầu chưa được `@semi/ui` đáp ứng tại dự án thực tế, cấu trúc issue chuẩn và tạo issue trực tiếp trên GitHub repo lõi).
+   - `/semi-triage` — **Đánh giá & Tổng quát hóa Issue (Dành cho Core)** (đọc issue trên GitHub, phân tích tính đúng đắn, đối chiếu rulebook, và thiết kế giải pháp tổng quát cho toàn hệ sinh thái mà không break rule).
 2. **NPM Package (`@semi/ui`):** chứa Design Tokens (`tokens.css`, `base.css`), style constants (`@semi/ui/styles`), 23 React components bao gồm cả khung bố cục trang (`AppShell`, `MobileTabBar`, `PageTitle`, `PageTabsTitle`, `SubpageToolbar`, `KpiCard`, `Modal`, …), và công cụ kiểm tra `semi-lint`.
 
 ---
@@ -66,6 +68,25 @@ Agent sẽ tự động:
 ```text
 /semi-update
 ```
+
+### Đề xuất tính năng mới từ dự án con (Khi gặp thiếu sót hoặc nhu cầu chưa đáp ứng)
+```text
+/semi-propose
+```
+Agent sẽ tự động:
+1. Quét dự án xem `@semi/ui` đang thiếu component, token, icon nào hoặc có component tự chế nào cần chuẩn hóa.
+2. Cấu trúc một bản đề xuất chuẩn (Real-world Problem, Current Workaround, Proposed API, Generalization Potential, Rule Compliance).
+3. Đẩy issue trực tiếp lên GitHub repo `hoanghuynh296/semi-nextjs-codebase` qua GitHub API (hoặc sinh file `SEMI_PROPOSAL.md` và link issue tạo sẵn).
+
+### Đánh giá & Thiết kế giải pháp tổng quát cho Issue (Dành cho Maintainer)
+```text
+/semi-triage
+```
+Agent tại repo lõi sẽ:
+1. Đọc danh sách issue hoặc 1 issue cụ thể trên GitHub.
+2. Kiểm tra rule compliance (Flat Bento UI, Semantic Tokens, Typography, Radii, Controls).
+3. Ra phán quyết kiến trúc (`ACCEPT`, `GENERALIZE`, `WORKAROUND / EXTENSION`, `REJECT`) và lập kế hoạch triển khai tổng quát không làm phá vỡ nguyên tắc thiết kế chung.
+4. Tự động post phản hồi phân tích vào GitHub Issue.
 
 ---
 

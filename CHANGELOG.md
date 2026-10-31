@@ -2,6 +2,13 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
+## [0.3.1] - 2026-10-31
+
+### Added
+- **Ecosystem Collaboration Skills (`/semi-propose` & `/semi-triage`):**
+  - **`/semi-propose` (`plugin/skills/semi-propose/`):** Allows AI agents in consumer projects (Auton Platform, IoT, BMCU, 3D Noobs Studio, etc.) to scan project gaps, detect local wrapper components or missing primitives, format standardized feature requests, and publish issues directly to GitHub repo `hoanghuynh296/semi-nextjs-codebase` using GitHub API or prefilled issue URLs.
+  - **`/semi-triage` (`plugin/skills/semi-triage/`):** Allows core maintainer agents to list, fetch, and audit proposed issues against Semi Design System constraints (Flat surfaces, Semantic Tokens, Typography, Radii, Bento structures), formulate generalized solutions, assign verdicts (`ACCEPT`, `GENERALIZE`, `WORKAROUND / EXTENSION`, `REJECT`), and post architectural analysis back to GitHub issues.
+
 ## [0.3.0] - 2026-10-31
 
 ### Added
@@ -31,6 +38,9 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
   - `/semi-audit`: Added automated scanning for physical Tailwind color classes and calculated `semanticAdoptionRate` with dual-theme health indicators.
   - `/semi-init`: Added automated codemod (`runSemanticCodemod`) mapping legacy classes (`bg-white` -> `bg-panel`, `bg-slate-50` -> `bg-field`, `text-slate-900` -> `text-contrast`, `text-slate-500` -> `text-muted`, `border-slate-200` -> `border-line`, removing drop shadows).
   - `/semi-init`: Eliminated destructive blanket skips (`skip: { ...: ["src/app"] }`) in `semi-lint.json`, recording legacy debt via `--update-baseline` in `semi-lint-baseline.json`.
+- **Ecosystem Collaboration Skills (`/semi-propose` & `/semi-triage`):**
+  - Added `/semi-propose`: Enables agents in downstream projects to scan unmet requirements, structure standardized GitHub issues, and publish them directly to `hoanghuynh296/semi-nextjs-codebase` via GitHub API or prefilled issue URLs.
+  - Added `/semi-triage`: Enables core maintainer agents to list, view, audit rule compliance, and formulate generalized solutions for ecosystem proposals without violating Semi Design System constraints.
 - **Documentation:**
   - Added "Dual-Theme & Semantic Tokenization" section in `docs/DESIGN_SYSTEM.md`, updated `docs/QUICK_REF.md`, `docs/DECISIONS.md`, and maintainer guides.
 
