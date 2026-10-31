@@ -5,7 +5,7 @@ description: Fix the issues /semi-audit found in a project that already uses the
 
 # Fix Semi audit issues (`/semi-fix`)
 
-Run after `/semi-audit` reported issues. The source of the work is `semi-audit.md` at the audited folder: every issue
+Run after `/semi-audit` reported issues: to refactor an existing app after `/semi-init`, or after a periodic check. The source of the work is `semi-audit.md` at the audited folder: every issue
 with `file:line`. If `@semi/ui` is not installed in an app, stop and suggest `/semi-init` for it.
 
 ## Workflow

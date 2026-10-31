@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-// /semi-update helper: upgrades @semi/ui to the latest tag across single-app or monorepo projects, prints CHANGELOG, runs tsc, then audits (semi-audit.md) so /semi-fix can fix what the new release flags.
+// /semi-update helper: upgrades @semi/ui to the latest tag across single-app or monorepo projects, refreshes the Semi rules block, prints CHANGELOG and runs tsc. Nothing else.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
-import { auditProject, discoverFrontendApps, formatSummary, writeAuditFile } from "../../semi-audit/scripts/audit.mjs";
+import { discoverFrontendApps } from "../../semi-audit/scripts/audit.mjs";
 
 const REPO_URL = "https://github.com/hoanghuynh296/semi-nextjs-codebase.git";
 const GITHUB_SPEC_BASE = "github:hoanghuynh296/semi-nextjs-codebase";
@@ -115,13 +115,9 @@ for (const appDir of targetApps) {
     }
   }
 
-  // tsc catches breaking API changes; new lint rules are reported by the audit below and fixed with /semi-fix.
+  // tsc only checks the upgrade itself (an API the app uses changed); rule checks belong to /semi-audit.
   const tscRes = spawnSync("npx", ["tsc", "--noEmit"], { cwd: appDir, stdio: "inherit" });
   if (tscRes.status !== 0) exitCode = tscRes.status || 1;
 }
-
-const report = auditProject(cwd);
-const written = writeAuditFile(report, resolve(cwd));
-console.log("\n" + formatSummary(report, written || "semi-audit.md"));
 
 process.exit(exitCode);

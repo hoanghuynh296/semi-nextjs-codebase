@@ -1,12 +1,12 @@
 ---
 name: semi-update
-description: Upgrade a project's @semi/ui to the latest release tag from github:hoanghuynh296/semi-nextjs-codebase, refresh the Semi rules block in AGENTS.md, check the build still compiles, and audit what the new release flags (semi-audit.md). Only for moving to a new version; fixing issues is /semi-fix. Triggered by /semi-update.
+description: Upgrade a project's @semi/ui to the latest release tag from github:hoanghuynh296/semi-nextjs-codebase and refresh the Semi rules block in AGENTS.md. Does only the version upgrade: no audit, no refactor. Triggered by /semi-update.
 ---
 
 # Upgrade Semi Design System (`/semi-update`)
 
-Use only when the user wants a newer `@semi/ui` release. Fixing what the audit reports is `/semi-fix`, not this skill.
-For an app without `@semi/ui`, use `/semi-init`.
+One job: move an app that already has `@semi/ui` to the latest release. It does not audit or refactor (that is
+`/semi-audit` + `/semi-fix`); for an app without `@semi/ui`, use `/semi-init`.
 
 ## Workflow
 
@@ -14,9 +14,9 @@ For an app without `@semi/ui`, use `/semi-init`.
    ```bash
    node "<path-to-this-skill>/scripts/update.mjs" --cwd "<workspace-or-app-dir>"
    ```
-   It installs the latest tag, refreshes the managed Semi block in `AGENTS.md`, prints the `CHANGELOG.md`, runs `tsc`,
-   then audits and writes `semi-audit.md` (new lint rules of the release show up there).
-2. If `tsc` fails, the release changed an API the app uses: fix those call sites now, using the CHANGELOG
-   ("Changed" / "Migration" notes). That is part of the upgrade.
-3. Report in a few lines: `old version → new version`, the CHANGELOG points that matter for this app, and the audit
-   summary the script printed. If it found issues, the next command is **`/semi-fix`**.
+   It installs the latest tag, refreshes the managed Semi block in `AGENTS.md`, prints the `CHANGELOG.md` and runs
+   `tsc` to confirm the upgrade compiles.
+2. If `tsc` fails, the release changed an API the app uses: fix those call sites, using the CHANGELOG ("Changed" /
+   "Migration" notes). That is part of finishing the upgrade; nothing else is changed.
+3. Report in a few lines: `old version → new version` and the CHANGELOG points that matter for this app. A release
+   may add lint rules; they show up the next time the user runs `/semi-audit`.

@@ -11,7 +11,8 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ### Changed
 - **`/semi-audit`:** prints a short Vietnamese summary (one table, the next command, issues grouped at the bottom) and writes every issue with `file:line` to `semi-audit.md` (decisions, hand fixes, codemod fixes, rule texts). It changes no source file; the file is deleted when an audit finds nothing, so it never lists fixed problems. It now reads the app's `semi-lint.json` (`scan`, `skip`, `disable`, new `keep`).
-- **`/semi-update`:** only upgrades (install, rules block, CHANGELOG, `tsc`), then audits; refactoring moved to `/semi-fix`. `/semi-init` hands the module-by-module clean-up to `/semi-fix` after the install.
+- **`/semi-update`:** only upgrades (install, rules block, CHANGELOG, `tsc`); no audit, no refactor.
+- **`/semi-init`:** for an app without `@semi/ui`, only installs and wires it (no codemod, no app code changed) and records the lint baseline; an existing app is then refactored with `/semi-audit` + `/semi-fix`, a new app needs neither. `init.mjs --dry-run` and `semi-codemod-report.md` are gone (the codemod lives in `/semi-fix`); old lint hits no longer fail the install of an existing app.
 - **`semi-lint` `scan()`** also returns every ratchet hit (`hits`), so the audit lists each line.
 
 ### Fixed

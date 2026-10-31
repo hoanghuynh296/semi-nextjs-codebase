@@ -11,10 +11,12 @@ The user should **never** have to run manual `npm install` or config commands �
 ## Workflow
 
 ### Step 1: Detect project mode (New vs Existing)
-Run `audit.mjs` to check whether the workspace already contains one or more frontend apps (`package.json`):
 ```bash
-node "<path-to-plugin>/skills/semi-audit/scripts/audit.mjs" --cwd "<target-dir>"
+node "<path-to-this-skill>/scripts/init.mjs" --cwd "<target-dir>"
 ```
+No `package.json` → Case A. Otherwise it prints the apps it found (exit 10) and installs nothing yet → Case B. An app
+that already has `@semi/ui` needs no `/semi-init`: say so and point to `/semi-audit` (check) or `/semi-update` (new
+version).
 
 ---
 
@@ -33,31 +35,22 @@ node "<path-to-plugin>/skills/semi-audit/scripts/audit.mjs" --cwd "<target-dir>"
 
 ---
 
-### Case B — Existing Codebase (One or More Frontend Apps Found)
+### Case B — Existing app without `@semi/ui`
 
-`/semi-init` installs Semi and lays the foundation once; the module-by-module clean-up is `/semi-fix`, working from the
-audit file. Done is measured (zero issues), never assumed.
+`/semi-init` only installs and wires Semi; it does not touch the app's own code. Refactoring the app is the next step:
+`/semi-audit`, then `/semi-fix`.
 
-1. **Preview (read-only for source files).**
-   ```bash
-   node "<path-to-plugin>/skills/semi-audit/scripts/audit.mjs" --cwd "<app-dir>"   # summary + semi-audit.md
-   node "<path-to-this-skill>/scripts/init.mjs" --cwd "<app-dir>" --dry-run        # semi-codemod-report.md, changes nothing
-   ```
-2. **Ask the decisions** (`ask_question`, see **Questions Requiring User Decision** in the audit's `--json` output):
-   target app(s) in a monorepo, Next.js / Tailwind versions, brand colour (`primary-*` override), and which
-   structural items to adopt (`AppShell` + `MobileTabBar`, `PageTitle` + `SubpageToolbar`, Bento `Card` grids,
-   `KpiCard`, `Pagination`, what to do with each duplicate local component). Record every "keep" answer in
-   `semi-lint.json` as `"keep": { "<check>": "<reason>" }` so later audits do not ask again.
-3. **Install (after approval):**
+1. **Ask** (`ask_question`): which app(s) in a monorepo, Next.js / Tailwind versions (`latest`, `keep` or a version),
+   and the brand colour if the app has one (`primary-*` override in `globals.css`).
+2. **Install:**
    ```bash
    node "<path-to-this-skill>/scripts/init.mjs" --cwd "<app-dir>" --apply --next-version "<latest|keep|ver>" --tailwind-version "<latest|keep|ver>"
    ```
    It installs `@semi/ui`, wires `tokens.css` / `base.css` / `@source` and `transpilePackages`, writes `semi-lint.json`
-   and `AGENTS.md`, runs the token codemod and records a ratchet baseline. Then edit the root layout yourself:
-   `<html suppressHydrationWarning>`, `<ThemeScript />` in `<head>`, body wrapped in `<ThemeProvider>` with
-   `<ConfirmHost />` and `<ToastHost />` (README §3).
-4. **Hand over to `/semi-fix`:** run `/semi-audit` again (it rewrites `semi-audit.md` with what is left after the
-   install), then follow the `/semi-fix` workflow until the audit is clean: decisions, codemod, hand fixes per module,
-   verify, shrink the baseline, both themes checked.
-5. **Finish:** report token coverage before → after. The adoption is complete when the audit finds nothing and
-   `semi-audit.md` is gone.
+   and `AGENTS.md`, and records a `semi-lint` baseline of today's debt (so the edit hook blocks only new debt). Then
+   edit the root layout yourself: `<html suppressHydrationWarning>`, `<ThemeScript />` in `<head>`, body wrapped in
+   `<ThemeProvider>` with `<ConfirmHost />` and `<ToastHost />` (README §3). `tsc` and the build must pass; old lint
+   hits are expected at this point.
+3. **Report** in a few lines what was installed and the next commands: **`/semi-audit`**, then **`/semi-fix`**.
+
+A new app (Case A) starts clean from the Semi starter and needs no audit or fix.

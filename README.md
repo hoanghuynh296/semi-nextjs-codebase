@@ -7,11 +7,11 @@ Hệ thống Design System dùng chung cho toàn bộ dự án web thuộc hệ 
 Xây dựng cho **Next.js 16 + React 19 + Tailwind CSS 4**, hỗ trợ chuyển đổi giao diện Dark/Light mượt mà không cần `dark:bg-...` thủ công nhờ kiến trúc Semantic Tokens.
 
 Repository này đóng gói **2 sản phẩm trong cùng 1 tag phiên bản (semver)**:
-1. **Plugin cho AI Agent (`semi-design`):** chứa bộ quy tắc luôn bật (`rules/AGENTS.md` — tự động hướng dẫn agent mỗi khi viết hoặc sửa giao diện), hook tự chạy lint khi sửa file (`hooks.json`), và **6 slash commands**. Thứ tự dùng: `/semi-init` một lần → `/semi-audit` để kiểm tra định kỳ → `/semi-fix` khi audit ra vấn đề → `/semi-update` khi muốn lên bản mới:
+1. **Plugin cho AI Agent (`semi-design`):** chứa bộ quy tắc luôn bật (`rules/AGENTS.md` — tự động hướng dẫn agent mỗi khi viết hoặc sửa giao diện), hook tự chạy lint khi sửa file (`hooks.json`), và **6 slash commands**. Thứ tự dùng: `/semi-init` cài Semi cho app chưa có → app cũ thì `/semi-audit` rồi `/semi-fix` để refactor (app mới không cần) → sau đó `/semi-audit` kiểm tra định kỳ, `/semi-fix` khi có vấn đề → `/semi-update` chỉ để lên bản mới:
    - `/semi-init` — **Cài đặt lần đầu** cho một dự án (tự động khởi tạo dự án mới Next.js + Tailwind + `@semi/ui` HOẶC quét, hỏi trắc nghiệm và refactor 4 giai đoạn cho dự án có sẵn / monorepo).
    - `/semi-audit` — **Kiểm tra** (không sửa code): in tóm tắt ngắn và ghi mọi vấn đề kèm `file:dòng` vào `semi-audit.md`.
    - `/semi-fix` — **Sửa vấn đề audit tìm ra**, dựa trên `semi-audit.md`: hỏi các quyết định cấu trúc, chạy codemod token, sửa tay phần còn lại, kiểm tra lại tới khi sạch rồi xoá file.
-   - `/semi-update` — **Nâng cấp phiên bản** `@semi/ui` lên tag mới nhất (CHANGELOG, `tsc`, rồi audit; nếu bản mới báo vấn đề thì chạy `/semi-fix`).
+   - `/semi-update` — **Nâng cấp phiên bản** `@semi/ui` lên tag mới nhất, chỉ vậy thôi (CHANGELOG + `tsc` để chắc bản mới vẫn build; không audit, không refactor).
    - `/semi-propose` — **Đề xuất tính năng từ dự án con** (quét nhu cầu chưa được `@semi/ui` đáp ứng tại dự án thực tế, cấu trúc issue chuẩn và tạo issue trực tiếp trên GitHub repo lõi).
    - `/semi-triage` — **Đánh giá & Tổng quát hóa Issue (Dành cho Core)** (đọc issue trên GitHub, phân tích tính đúng đắn, đối chiếu rulebook, và thiết kế giải pháp tổng quát cho toàn hệ sinh thái mà không break rule).
 2. **NPM Package (`@semi/ui`):** chứa Design Tokens (`tokens.css`, `base.css`), style constants (`@semi/ui/styles`), ~45 React components (danh sách đầy đủ + props: `components.json`) bao gồm cả khung bố cục trang (`AppShell`, `MobileTabBar`, `PageTitle`, `PageTabsTitle`, `SubpageToolbar`, `KpiCard`, `Modal`, …), và công cụ kiểm tra `semi-lint`.
@@ -57,13 +57,16 @@ Agent sẽ tự động:
 ```text
 /semi-init
 ```
-(hoặc chạy riêng `/semi-audit` nếu chỉ muốn xem báo cáo trước)
+Agent hỏi app nào (nếu là monorepo), phiên bản Next.js / Tailwind, màu thương hiệu, rồi **chỉ cài đặt**: `@semi/ui`,
+tokens + `base.css` + `@source`, `transpilePackages`, `semi-lint.json`, `AGENTS.md`, các provider trong layout, và
+baseline của `semi-lint` (lỗi cũ không chặn khi sửa file, chỉ chặn lỗi mới). Code của app chưa bị đổi.
 
-Agent sẽ tự động:
-1. Chạy `audit.mjs` quét toàn bộ source code (framework, Tailwind v3/v4, thư viện UI đang dùng, bảng màu `#hex` so với token gần nhất, các component tự viết trùng với `@semi/ui`, số lỗi `semi-lint` theo thư mục).
-2. Đặt các **câu hỏi trắc nghiệm** cho những quyết định không thể tự suy diễn (ví dụ: xử lý component trùng lặp, màu thương hiệu riêng, lộ trình gỡ thư viện UI cũ, phạm vi refactor).
-3. Lập **kế hoạch refactor 4 giai đoạn** (Phase 1: Cài `@semi/ui` + tokens không đổi giao diện → Phase 2: Thay màu/typography/radius bằng token → Phase 3: Thay từng nhóm component → Phase 4: Khóa `semi-lint` + baseline).
-4. Sau khi bạn bấm duyệt, agent thực thi từng giai đoạn và đảm bảo `semi-lint` + `tsc` + `build` xanh ở mỗi bước.
+Sau đó refactor app sang Semi:
+```text
+/semi-audit
+/semi-fix
+```
+App mới (trường hợp 1) dựng từ trang mẫu Semi nên không cần bước này.
 
 ### Kiểm tra định kỳ và sửa
 ```text
@@ -77,7 +80,7 @@ Cái nào nhóm chọn giữ nguyên (ví dụ bảng HTML ở trang báo cáo) 
 ```text
 /semi-update
 ```
-Chỉ để lên bản mới. Nếu bản mới báo vấn đề, chạy tiếp `/semi-fix`.
+Chỉ để lên bản mới. Luật mới (nếu có) sẽ hiện ở lần `/semi-audit` kế tiếp.
 
 ### Đề xuất tính năng mới từ dự án con (Khi gặp thiếu sót hoặc nhu cầu chưa đáp ứng)
 ```text

@@ -5,8 +5,9 @@ description: Health check of a project against the Semi Design System (@semi/ui)
 
 # Semi Design System Health Check (`/semi-audit`)
 
-The Semi flow: `/semi-init` once → `/semi-audit` to check (any time, e.g. before a release) → `/semi-fix` when it finds
-issues → `/semi-update` only to move to a newer `@semi/ui` release.
+The Semi flow: `/semi-init` installs Semi in an app that does not have it → for an existing app, `/semi-audit` then
+`/semi-fix` refactor it (a new app starts clean) → `/semi-audit` any time after to check, `/semi-fix` when it finds
+issues. `/semi-update` only moves to a newer `@semi/ui` release.
 
 `/semi-audit` changes **no source file** and installs nothing. Its only output file is `semi-audit.md` at the folder it
 audits: every issue with `file:line` and what to do. `/semi-fix` works from it. When the audit finds nothing it deletes

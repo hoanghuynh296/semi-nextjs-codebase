@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-// /semi-init automation script: idempotent installer & scaffolder for new or existing Next.js projects.
-import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
+// /semi-init automation script: idempotent installer & scaffolder for new or existing Next.js projects. It installs and
+// wires @semi/ui and changes no app code: refactoring an existing app is /semi-audit + /semi-fix.
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { auditProject, discoverFrontendApps } from "../../semi-audit/scripts/audit.mjs";
-import { detectMode, migrateSource } from "../../semi-audit/scripts/vendor/codemod.mjs";
+import { discoverFrontendApps } from "../../semi-audit/scripts/audit.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PLUGIN_ROOT = resolve(__dirname, "../../..");
@@ -16,7 +16,6 @@ function parseArgs(argv) {
   const opts = {
     cwd: process.cwd(),
     apply: false,
-    dryRun: false,
     writeBaseline: false,
     staticExport: false,
     starter: false,
@@ -28,7 +27,6 @@ function parseArgs(argv) {
     const a = argv[i];
     if (a === "--cwd" && argv[i + 1]) opts.cwd = resolve(argv[++i]);
     else if (a === "--apply") opts.apply = true;
-    else if (a === "--dry-run") opts.dryRun = true;
     else if (a === "--write-baseline") opts.writeBaseline = true;
     else if (a === "--static-export") opts.staticExport = true;
     else if (a === "--starter") opts.starter = true;
@@ -177,69 +175,6 @@ function wireSemiLintConfig(webDir) {
     }
   }
   return cfgPath;
-}
-
-function runSemanticCodemod(webDir, { dryRun = false } = {}) {
-  const cfgPath = join(webDir, "semi-lint.json");
-  let scanDirs = ["src/app", "src/components", "src/modules", "app", "components", "modules"];
-  if (existsSync(cfgPath)) {
-    try {
-      const cfg = JSON.parse(readFileSync(cfgPath, "utf8"));
-      if (cfg.scan && Array.isArray(cfg.scan)) scanDirs = cfg.scan;
-    } catch {}
-  }
-  const roots = scanDirs.map((d) => resolve(webDir, d)).filter((d) => existsSync(d));
-  if (roots.length === 0) roots.push(webDir);
-
-  function walk(dir, out = []) {
-    if (!existsSync(dir)) return out;
-    for (const name of readdirSync(dir)) {
-      if (["node_modules", ".next", "out", "dist", "build", ".git"].includes(name) || name.startsWith(".")) continue;
-      const p = join(dir, name);
-      const st = statSync(p);
-      if (st.isDirectory()) walk(p, out);
-      else if (/\.(tsx?|jsx?|mjs|css)$/.test(name) && !name.endsWith(".d.ts")) out.push(p);
-    }
-    return out;
-  }
-
-  // Token-level rewrite inside string literals only (lint/codemod.mjs); unsafe cases are reported, not guessed.
-  const files = [...new Set(roots.flatMap((r) => walk(r, [])))].map((p) => ({ p, src: readFileSync(p, "utf8"), css: p.endsWith(".css") }));
-  const mode = detectMode(files);
-  let modifiedFiles = 0;
-  let totalReplacements = 0;
-  const report = [];
-  for (const { p, src, css } of files) {
-    const { code, changes, unresolved } = migrateSource(src, { css, mode });
-    if (!changes.length && !unresolved.length) continue;
-    const rel = relative(webDir, p).split(sep).join("/");
-    report.push({ file: rel, changes, unresolved });
-    if (code !== src) {
-      if (!dryRun) writeFileSync(p, code);
-      modifiedFiles++;
-      totalReplacements += changes.length;
-    }
-  }
-
-  const unresolvedCount = report.reduce((n, r) => n + r.unresolved.length, 0);
-  const lines = [
-    `# Semi codemod report${dryRun ? " (dry run: no file changed)" : ""}`,
-    "",
-    `Legacy styling detected: **${mode}-first**. ${totalReplacements} class replacements in ${modifiedFiles} files; ${unresolvedCount} tokens need a decision.`,
-    "",
-    ...report.flatMap((r) => [
-      `## ${r.file}`,
-      ...r.changes.map((c) => `- L${c.line}: \`${c.from}\` → ${c.to ? `\`${c.to}\`` : "_removed_"}`),
-      ...r.unresolved.map((u) => `- L${u.line}: ⚠️ \`${u.token}\` (no safe mapping: choose a token by hand)`),
-      "",
-    ]),
-  ];
-  const reportPath = join(webDir, "semi-codemod-report.md");
-  writeFileSync(reportPath, lines.join("\n"));
-  console.log(
-    `\nSemantic codemod${dryRun ? " (dry run)" : ""}: ${mode}-first app, ${totalReplacements} replacements in ${modifiedFiles} files, ` +
-      `${unresolvedCount} unresolved tokens. Report: ${relative(process.cwd(), reportPath) || reportPath}`,
-  );
 }
 
 function wireAgentsMd(rootDir, version) {
@@ -445,16 +380,14 @@ const discovered = discoverFrontendApps(opts.cwd);
 let webDir = discovered[0] || opts.cwd;
 const isExisting = discovered.length > 0;
 
-if (isExisting && opts.dryRun) {
-  // Preview the colour / size codemod: writes semi-codemod-report.md, changes no source file.
-  runSemanticCodemod(webDir, { dryRun: true });
-  process.exit(0);
-}
-
 if (isExisting && !opts.apply) {
-  console.log("Existing project detected. Running /semi-audit first (pass --apply after user approves refactor plan)...\n");
-  const report = auditProject(webDir);
-  console.log(JSON.stringify(report, null, 2));
+  // Detection only: which apps exist and whether they already have @semi/ui. Pass --apply to install.
+  const apps = discovered.map((dir) => {
+    const pkg = JSON.parse(readFileSync(join(dir, "package.json"), "utf8"));
+    const deps = { ...pkg.dependencies, ...pkg.devDependencies };
+    return { dir: relative(opts.cwd, dir) || ".", next: deps.next || null, tailwindcss: deps.tailwindcss || null, semiUi: deps["@semi/ui"] || null };
+  });
+  console.log(JSON.stringify({ existing: true, apps }, null, 2));
   process.exit(10);
 }
 
@@ -534,8 +467,7 @@ wireAgentsMd(opts.cwd, installedVersion);
 if (!isExisting || opts.starter) {
   writeNewProjectStarter(webDir, opts.appName);
 } else if (isExisting && opts.apply) {
-  runSemanticCodemod(webDir);
-  // Ratchet mechanism: record old debt in semi-lint-baseline.json so debt only shrinks
+  // Record today's debt so the edit hook only blocks new debt; /semi-fix pays the old debt off and shrinks it.
   spawnSync("npx", ["semi-lint", "--update-baseline"], { cwd: webDir, stdio: "inherit" });
 }
 
@@ -548,7 +480,9 @@ const lintRes = spawnSync("npx", ["semi-lint"], { cwd: webDir, stdio: "inherit" 
 const tscRes = spawnSync("npx", ["tsc", "--noEmit"], { cwd: webDir, stdio: "inherit" });
 const buildRes = spawnSync(pm, ["run", "build"], { cwd: webDir, stdio: "inherit" });
 
-if (lintRes.status !== 0 || tscRes.status !== 0 || buildRes.status !== 0) {
+// A new app must be lint-clean; an existing app keeps its old hard hits until /semi-fix (the install must still build).
+if ((!isExisting && lintRes.status !== 0) || tscRes.status !== 0 || buildRes.status !== 0) {
   process.exit(1);
 }
-console.log(`\nSemi Design System (@semi/ui v${installedVersion}) initialized and verified in ${webDir}`);
+console.log(`\nSemi Design System (@semi/ui v${installedVersion}) installed in ${webDir}`);
+if (isExisting) console.log("Existing app: run /semi-audit, then /semi-fix to refactor it to Semi.");
