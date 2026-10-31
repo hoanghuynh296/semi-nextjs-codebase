@@ -59,7 +59,7 @@ export function SkeletonRows({ count = 5, className = "flex flex-col gap-2", lab
   return (
     <Loading className={className} label={label}>
       {Array.from({ length: count }, (_, i) => (
-        <div key={i} className="flex items-center gap-3 p-2.5 rounded-lg bg-white/[0.02]">
+        <div key={i} className="flex items-center gap-3 p-2.5 rounded-lg bg-field">
           <Skeleton className="w-8 h-8 !rounded-lg shrink-0" />
           <div className="flex-1 flex flex-col gap-1.5 min-w-0">
             <Skeleton className="h-3 w-1/2" />

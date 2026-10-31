@@ -43,19 +43,19 @@ export function AppHeader({
   const brand = (
     <>
       {logo ?? (
-        <span className="w-6 h-6 rounded-lg bg-white/[0.08] text-white flex items-center justify-center shrink-0">
+        <span className="w-6 h-6 rounded-lg bg-field border border-line text-contrast flex items-center justify-center shrink-0">
           <Icon name={logoIcon} className="w-3.5 h-3.5 text-primary-400" />
         </span>
       )}
       <span
-        className={`min-w-0 truncate text-[13px] font-semibold text-white tracking-tight ${hideTitleOnPhone ? "max-sm:hidden" : ""}`}
+        className={`min-w-0 truncate text-[13px] font-semibold text-contrast tracking-tight ${hideTitleOnPhone ? "max-sm:hidden" : ""}`}
       >
         {app ? title : productName}
       </span>
     </>
   );
   const brandClass =
-    "min-w-0 shrink flex items-center gap-2 rounded-lg -mx-1.5 px-1.5 py-1 hover:bg-white/[0.05] active:scale-95 transition";
+    "min-w-0 shrink flex items-center gap-2 rounded-lg -mx-1.5 px-1.5 py-1 hover:bg-raised active:scale-95 transition";
   return (
     <header
       className={`${app ? "block" : "hidden md:block"} sticky top-0 bg-app/95 backdrop-blur-xl border-b border-divider z-30 shrink-0 select-none ${className}`}

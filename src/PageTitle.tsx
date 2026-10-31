@@ -13,7 +13,7 @@ export function PageTitle({
 }) {
   return (
     <div className={`mb-6 sm:mb-7 min-w-0 ${className}`}>
-      <h1 className="pb-2 font-display text-[22px] sm:text-[26px] leading-[1.15] font-semibold text-white tracking-tight truncate">
+      <h1 className="pb-2 font-display text-[22px] sm:text-[26px] leading-[1.15] font-semibold text-contrast tracking-tight truncate">
         {title}
       </h1>
     </div>
@@ -59,7 +59,7 @@ export function PageTabsTitle<T extends string = string>({
               aria-selected={isOn}
               onClick={() => onChange(tab.key)}
               className={`relative pb-2 font-display text-[22px] sm:text-[26px] leading-[1.15] font-semibold tracking-tight whitespace-nowrap transition cursor-pointer shrink-0 ${
-                isOn ? "text-white" : "text-white/30 hover:text-white/60"
+                isOn ? "text-contrast" : "text-muted hover:text-contrast"
               }`}
             >
               {tab.label}

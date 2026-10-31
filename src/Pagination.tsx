@@ -40,13 +40,13 @@ export function Pagination({
         aria-label="Trang trước"
         disabled={page <= 1}
         onClick={() => go(page - 1)}
-        className={`${BTN} text-gray-400 hover:text-white hover:bg-white/[0.08] disabled:opacity-40 disabled:pointer-events-none`}
+        className={`${BTN} text-muted hover:text-contrast hover:bg-raised disabled:opacity-40 disabled:pointer-events-none`}
       >
         <Icon name="back" className="w-4 h-4" />
       </button>
       {pageWindow(page, pages).map((p, i) =>
         p === null ? (
-          <span key={`gap-${i}`} className="min-w-[24px] text-center text-[12px] text-gray-600" aria-hidden>
+          <span key={`gap-${i}`} className="min-w-[24px] text-center text-[12px] text-muted" aria-hidden>
             …
           </span>
         ) : (
@@ -56,7 +56,7 @@ export function Pagination({
             aria-label={`Trang ${p}`}
             aria-current={p === page ? "page" : undefined}
             onClick={() => go(p)}
-            className={`${BTN} ${p === page ? "bg-primary-500/15 text-primary-300" : "text-gray-400 hover:text-white hover:bg-white/[0.08]"}`}
+            className={`${BTN} ${p === page ? "bg-primary-500/15 text-primary-500 font-semibold" : "text-muted hover:text-contrast hover:bg-raised"}`}
           >
             {p}
           </button>
@@ -67,7 +67,7 @@ export function Pagination({
         aria-label="Trang sau"
         disabled={page >= pages}
         onClick={() => go(page + 1)}
-        className={`${BTN} text-gray-400 hover:text-white hover:bg-white/[0.08] disabled:opacity-40 disabled:pointer-events-none`}
+        className={`${BTN} text-muted hover:text-contrast hover:bg-raised disabled:opacity-40 disabled:pointer-events-none`}
       >
         <Icon name="chevron" className="w-4 h-4" />
       </button>

@@ -48,6 +48,8 @@ export const ICONS = {
   users: "M17 21v-2a4 4 0 00-3-3.87M9 21v-2a4 4 0 014-4h2a4 4 0 014 4v2M9 11a4 4 0 100-8 4 4 0 000 8zm10-4a3 3 0 110 6",
   filter: "M22 3H2l8 9.46V19l4 2v-8.54L22 3z",
   bell: "M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0",
+  sun: "M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z",
+  moon: "M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z",
   tag: "M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82zM7 7h.01",
   menu: "M4 7h16M4 12h16M4 17h16",
   sidebar: "M4 4h16a1 1 0 011 1v14a1 1 0 01-1 1H4a1 1 0 01-1-1V5a1 1 0 011-1zm5 0v16",
@@ -222,7 +224,7 @@ export const TILE_TONES = {
   sky: "bg-sky-500/15 text-sky-300", // camera, print hours
   amber: "bg-amber-500/15 text-amber-300", // peripherals, lights
   violet: "bg-indigo-500/15 text-indigo-300", // automation
-  gray: "bg-white/[0.06] text-gray-300", // advanced / unknown
+  gray: "bg-raised text-muted", // advanced / unknown
 } as const;
 
 /** Icon colour of each tone when it stands alone (inactive nav item). */
@@ -232,7 +234,7 @@ export const TONE_TEXT = {
   sky: "text-sky-400",
   amber: "text-amber-400",
   violet: "text-indigo-400",
-  gray: "text-gray-400",
+  gray: "text-muted",
 } as const;
 
 export type TileTone = keyof typeof TILE_TONES;

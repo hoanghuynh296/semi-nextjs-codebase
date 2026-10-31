@@ -43,10 +43,10 @@ interface CustomSelectProps {
 
 const TRIGGER: Record<NonNullable<CustomSelectProps["variant"]>, string> = {
   toolbar:
-    "h-[34px] px-3 bg-panel border border-line rounded-lg text-[12px] font-medium text-gray-200 hover:border-line-hover",
+    "h-[34px] px-3 bg-panel border border-line rounded-lg text-[12px] font-medium text-body hover:border-line-hover",
   field:
-    "w-full h-9 px-3 bg-white/[0.05] border border-line rounded-lg text-[13px] text-white hover:border-line-hover focus-visible:border-primary-500/50",
-  inline: "w-full h-7 px-0 bg-transparent text-[12px] font-medium text-gray-200 hover:text-white",
+    "w-full h-9 px-3 bg-field border border-line rounded-lg text-[13px] text-contrast hover:border-line-hover focus-visible:border-primary-500/50",
+  inline: "w-full h-7 px-0 bg-transparent text-[12px] font-medium text-body hover:text-contrast",
   bare: "",
 };
 
@@ -164,10 +164,10 @@ export function CustomSelect({
         <span className={`flex items-center gap-1.5 min-w-0 ${block ? "flex-1" : variant === "bare" ? "" : "max-w-[130px] sm:max-w-[180px]"}`}>
           {selected?.icon}
           {!(iconOnly && selected?.icon) && (
-            <span className={`truncate ${selected ? "" : "text-gray-500"}`}>{selected ? selected.label : placeholder}</span>
+            <span className={`truncate ${selected ? "" : "text-muted"}`}>{selected ? selected.label : placeholder}</span>
           )}
         </span>
-        <Icon name="chevronDown" className={`${variant === "bare" ? "hidden" : ""} w-3.5 h-3.5 text-gray-400 transition-transform duration-150 shrink-0 ${open ? "rotate-180" : ""}`} />
+        <Icon name="chevronDown" className={`${variant === "bare" ? "hidden" : ""} w-3.5 h-3.5 text-muted transition-transform duration-150 shrink-0 ${open ? "rotate-180" : ""}`} />
       </button>
 
       {open &&
@@ -178,15 +178,15 @@ export function CustomSelect({
             id={listId}
             role="listbox"
             style={{ left: pos.left, top: pos.top, bottom: pos.bottom, minWidth: pos.minWidth, maxHeight: pos.maxHeight }}
-            className="fixed z-[10001] max-w-[calc(100vw-16px)] overflow-y-auto overscroll-contain bg-field border border-line rounded-xl shadow-2xl p-1 flex flex-col gap-0.5"
+            className="fixed z-[10001] max-w-[calc(100vw-16px)] overflow-y-auto overscroll-contain bg-panel border border-line rounded-xl shadow-2xl p-1 flex flex-col gap-0.5"
           >
-            {options.length === 0 && <div className="px-3 py-2 text-[12px] text-gray-500">{placeholder}</div>}
+            {options.length === 0 && <div className="px-3 py-2 text-[12px] text-muted">{placeholder}</div>}
             {options.map((opt, i) => {
               const isSelected = opt.value === value;
               const head = opt.group && opt.group !== options[i - 1]?.group;
               return (
                 <React.Fragment key={`${opt.group ?? ""}\u0000${opt.value}`}>
-                  {head && <div className="px-3 pt-2 pb-1 text-[11px] font-medium text-gray-500 truncate">{opt.group}</div>}
+                  {head && <div className="px-3 pt-2 pb-1 text-[11px] font-medium text-muted truncate">{opt.group}</div>}
                   <button
                     type="button"
                     role="option"
@@ -198,10 +198,10 @@ export function CustomSelect({
                     onPointerEnter={() => setActive(i)}
                     className={`w-full text-left px-3 py-2 rounded-lg text-[12px] transition cursor-pointer flex items-center justify-between gap-3 disabled:opacity-40 disabled:cursor-not-allowed ${
                       isSelected
-                        ? "bg-white/[0.10] text-white font-medium"
+                        ? "bg-raised text-contrast font-medium"
                         : i === active
-                        ? "bg-white/[0.06] text-white"
-                        : "text-gray-200 hover:bg-white/[0.06] hover:text-white"
+                        ? "bg-raised/70 text-contrast"
+                        : "text-body hover:bg-raised hover:text-contrast"
                     }`}
                   >
                     <span className="flex items-center gap-1.5 min-w-0">

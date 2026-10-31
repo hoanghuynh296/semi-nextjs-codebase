@@ -1,0 +1,13 @@
+{
+ "all-caps-label": {},
+ "font-mono": {},
+ "hex-colour-class": {},
+ "inline-svg-path": {},
+ "loading-text": {},
+ "narrow-container": {},
+ "no-literal-palette": {
+  "styles/appChrome.ts": 1,
+  "styles/buttons.ts": 2
+ },
+ "thick-stroke": {}
+}

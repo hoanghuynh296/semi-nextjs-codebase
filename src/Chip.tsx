@@ -9,9 +9,9 @@ import { TONE_TEXT, type TileTone } from "./Icon";
 export const CHIP_BASE =
   "shrink-0 inline-flex items-center gap-1.5 px-3.5 h-[34px] rounded-full text-[12px] font-medium whitespace-nowrap border transition cursor-pointer";
 
-const CHIP_ON = "bg-white/[0.10] border-white/[0.08] text-white";
+const CHIP_ON = "bg-raised border-line text-contrast";
 
-const CHIP_OFF = "bg-transparent border-transparent text-gray-400 hover:text-gray-200 hover:bg-white/[0.04]";
+const CHIP_OFF = "bg-transparent border-transparent text-muted hover:text-contrast hover:bg-field";
 
 /** Colour classes of a filter chip (add CHIP_BASE + your own size). Same for every chip. */
 export const chipClass = (active: boolean) => (active ? CHIP_ON : CHIP_OFF);
@@ -20,7 +20,7 @@ export const chipClass = (active: boolean) => (active ? CHIP_ON : CHIP_OFF);
 export const chipIconClass = (tone: TileTone = "green") => TONE_TEXT[tone];
 
 /** Static tag (a filament's brand / type on a card): same neutral background for every tag. */
-export const TAG = "inline-flex items-center gap-1.5 h-6 px-2 rounded-full bg-white/[0.06] text-[11px] font-medium text-gray-300";
+export const TAG = "inline-flex items-center gap-1.5 h-6 px-2 rounded-full bg-field border border-line text-[11px] font-medium text-muted";
 
 /** Solid dot in a tone (material / category chips and tags). */
 export const TONE_DOT: Record<TileTone, string> = {
@@ -29,7 +29,7 @@ export const TONE_DOT: Record<TileTone, string> = {
   sky: "bg-sky-400",
   amber: "bg-amber-400",
   violet: "bg-indigo-400",
-  gray: "bg-gray-400",
+  gray: "bg-muted",
 };
 
 export function Chip({

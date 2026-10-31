@@ -77,10 +77,10 @@ export function DatePicker({
         aria-haspopup="dialog"
         aria-expanded={open}
         onClick={toggle}
-        className="flex items-center gap-2 bg-panel border border-line rounded-lg text-white text-[12px] font-medium tabular-nums px-2.5 h-[34px] hover:border-line-hover focus:outline-none focus:border-line-hover transition"
+        className="flex items-center gap-2 bg-panel border border-line rounded-lg text-contrast text-[12px] font-medium tabular-nums px-2.5 h-[34px] hover:border-line-hover focus:outline-none focus:border-line-hover transition"
       >
         <span>{label}</span>
-        <Icon name="calendar" className="w-4 h-4 text-gray-400" />
+        <Icon name="calendar" className="w-4 h-4 text-muted" />
       </button>
 
       {open && (
@@ -90,17 +90,17 @@ export function DatePicker({
           className="absolute right-0 mt-1.5 w-[264px] bg-panel/95 backdrop-blur-xl border border-line rounded-xl shadow-2xl z-50 p-3 flex flex-col gap-2"
         >
           <div className="flex items-center justify-between">
-            <button type="button" aria-label="Tháng trước" onClick={() => shift(-1)} className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/[0.08] transition">
+            <button type="button" aria-label="Tháng trước" onClick={() => shift(-1)} className="w-8 h-8 rounded-lg flex items-center justify-center text-muted hover:text-contrast hover:bg-raised transition">
               <Icon name="back" className="w-4 h-4" />
             </button>
-            <span className="text-[13px] font-medium text-white tabular-nums">
+            <span className="text-[13px] font-medium text-contrast tabular-nums">
               Tháng {view.m + 1}, {view.y}
             </span>
-            <button type="button" aria-label="Tháng sau" onClick={() => shift(1)} className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/[0.08] transition">
+            <button type="button" aria-label="Tháng sau" onClick={() => shift(1)} className="w-8 h-8 rounded-lg flex items-center justify-center text-muted hover:text-contrast hover:bg-raised transition">
               <Icon name="chevron" className="w-4 h-4" />
             </button>
           </div>
-          <div className="grid grid-cols-7 text-center text-[11px] text-gray-500">
+          <div className="grid grid-cols-7 text-center text-[11px] text-muted">
             {WEEKDAYS.map((w) => (
               <span key={w} className="h-7 flex items-center justify-center">
                 {w}
@@ -124,12 +124,12 @@ export function DatePicker({
                   }}
                   className={`h-8 rounded-lg text-[12px] tabular-nums flex items-center justify-center transition disabled:opacity-30 disabled:pointer-events-none ${
                     isSel
-                      ? "bg-primary-500/20 text-primary-300 font-medium"
+                      ? "bg-primary-500/20 text-primary-400 font-medium"
                       : key === today
-                        ? "text-primary-300 border border-primary-500/40 hover:bg-white/[0.08]"
+                        ? "text-primary-400 border border-primary-500/40 hover:bg-raised"
                         : outside
-                          ? "text-gray-600 hover:bg-white/[0.06]"
-                          : "text-gray-200 hover:bg-white/[0.08]"
+                          ? "text-muted/60 hover:bg-raised"
+                          : "text-body hover:bg-raised"
                   }`}
                 >
                   {d.getDate()}

@@ -1,10 +1,10 @@
 # Semi Design System (`@semi/ui` + `semi-design` plugin)
 
 > 🌟 **Live Storybook & Icon Catalogue:** [https://hoanghuynh296.github.io/semi-nextjs-codebase/](https://hoanghuynh296.github.io/semi-nextjs-codebase/)
-> Xem trực tiếp trên web toàn bộ **104 icons** (search real-time, click copy JSX), Design Tokens và Showcase các components chuẩn Bento AppShell.
+> Xem trực tiếp trên web toàn bộ **168 icons** (search real-time, click copy JSX), Two-Tier Semantic Tokens, Dual-Theme (Dark + Light mode) và Showcase các components chuẩn Bento AppShell.
 
 Hệ thống Design System dùng chung cho toàn bộ dự án web thuộc hệ sinh thái **Semi** (bao gồm **3D Noobs Studio**, `iot`, `bmcu` và các ứng dụng web mới).
-Xây dựng cho **Next.js 16 + React 19 + Tailwind CSS 4**.
+Xây dựng cho **Next.js 16 + React 19 + Tailwind CSS 4**, hỗ trợ chuyển đổi giao diện Dark/Light mượt mà không cần `dark:bg-...` thủ công nhờ kiến trúc Semantic Tokens.
 
 Repository này đóng gói **2 sản phẩm trong cùng 1 tag phiên bản (semver)**:
 1. **Plugin cho AI Agent (`semi-design`):** chứa bộ quy tắc luôn bật (`rules/AGENTS.md` — tự động hướng dẫn agent mỗi khi viết hoặc sửa giao diện), hook tự chạy lint khi sửa file (`hooks.json`), và **3 slash commands không chồng chéo**:
@@ -72,8 +72,9 @@ Agent sẽ tự động:
 ## 3. Cấu trúc xuất (Exports) của `@semi/ui`
 
 ```tsx
-// 1. Components (Layout + Controls)
+// 1. Components (Layout + Controls + Theming)
 import {
+  ThemeProvider, useTheme, ThemeToggle,
   AppShell, MobileTabBar, PageTitle, PageTabsTitle, SubpageToolbar, KpiCard, Modal,
   Icon, IconTile,
   AppHeader, PageActions, SidePanel, RefreshButton,

@@ -6,7 +6,7 @@ const BASE =
 export const BTN_PRIMARY = `${BASE} px-3 bg-primary-500 hover:bg-primary-400 active:scale-[0.98] text-white`;
 
 /** Secondary action (Làm mới, Tính lại, Đóng). */
-export const BTN_SECONDARY = `${BASE} px-3 bg-white/[0.05] hover:bg-white/[0.10] border border-line text-gray-200 hover:text-white`;
+export const BTN_SECONDARY = `${BASE} px-3 bg-field hover:bg-raised border border-line text-body hover:text-contrast`;
 
 /** Icon-only toolbar button (Thêm, Làm mới): add to BTN_PRIMARY / BTN_SECONDARY; keep `title` + `aria-label`. */
 export const BTN_ICON = "w-[34px] !px-0";
@@ -22,8 +22,7 @@ const MODAL_BASE =
 export const MODAL_BTN_PRIMARY = `${MODAL_BASE} bg-primary-500 hover:bg-primary-400 text-white`;
 
 /** Secondary action in dialogs & modals (Huỷ, Đóng). */
-export const MODAL_BTN_SECONDARY = `${MODAL_BASE} bg-white/[0.05] hover:bg-white/[0.10] border border-line text-gray-200 hover:text-white`;
+export const MODAL_BTN_SECONDARY = `${MODAL_BASE} bg-field hover:bg-raised border border-line text-body hover:text-contrast`;
 
 /** Destructive action in dialogs & modals (Dừng in, Xoá). */
 export const MODAL_BTN_DANGER = `${MODAL_BASE} bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/20 text-rose-400`;
-

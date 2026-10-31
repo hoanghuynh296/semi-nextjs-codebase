@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // /semi-init automation script: idempotent installer & scaffolder for new or existing Next.js projects.
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
@@ -155,8 +155,110 @@ function wireSemiLintConfig(webDir) {
       only: {},
     };
     writeFileSync(cfgPath, JSON.stringify(cfg, null, 2) + "\n");
+  } else {
+    try {
+      const existing = JSON.parse(readFileSync(cfgPath, "utf8"));
+      if (!existing.baseline) existing.baseline = "semi-lint-baseline.json";
+      // Prevent broad skip blankets that hide real errors (e.g. skip: { ...: ["src/app"] })
+      if (existing.skip) {
+        for (const [rule, list] of Object.entries(existing.skip)) {
+          if (Array.isArray(list)) {
+            existing.skip[rule] = list.filter((p) => p !== "src/app" && p !== "app" && p !== "src");
+            if (existing.skip[rule].length === 0) delete existing.skip[rule];
+          }
+        }
+      }
+      writeFileSync(cfgPath, JSON.stringify(existing, null, 2) + "\n");
+    } catch {
+      // ignore
+    }
   }
   return cfgPath;
+}
+
+function runSemanticCodemod(webDir) {
+  const cfgPath = join(webDir, "semi-lint.json");
+  let scanDirs = ["src/app", "src/components", "src/modules", "app", "components", "modules"];
+  if (existsSync(cfgPath)) {
+    try {
+      const cfg = JSON.parse(readFileSync(cfgPath, "utf8"));
+      if (cfg.scan && Array.isArray(cfg.scan)) scanDirs = cfg.scan;
+    } catch {}
+  }
+  const roots = scanDirs.map((d) => resolve(webDir, d)).filter((d) => existsSync(d));
+  if (roots.length === 0) roots.push(webDir);
+
+  function walk(dir, out = []) {
+    if (!existsSync(dir)) return out;
+    for (const name of readdirSync(dir)) {
+      if (["node_modules", ".next", "out", "dist", "build", ".git"].includes(name) || name.startsWith(".")) continue;
+      const p = join(dir, name);
+      const st = statSync(p);
+      if (st.isDirectory()) walk(p, out);
+      else if (/\.(tsx?|jsx?|css)$/.test(name) && !name.endsWith(".d.ts")) out.push(p);
+    }
+    return out;
+  }
+
+  const files = roots.flatMap((r) => walk(r, []));
+  let modifiedFiles = 0;
+  let totalReplacements = 0;
+
+  const MAPPINGS = [
+    // Backgrounds
+    [/\bbg-white\b/g, "bg-panel"],
+    [/\bbg-(?:slate|gray)-50\b/g, "bg-field"],
+    [/\bbg-(?:slate|gray)-100\b/g, "bg-field"],
+    [/\bbg-(?:slate|gray)-200\b/g, "bg-raised"],
+
+    // Headings & High Contrast Text
+    [/\btext-(?:slate|gray)-900\b/g, "text-contrast"],
+    [/\btext-(?:slate|gray)-800\b/g, "text-contrast"],
+
+    // Muted & Secondary Text
+    [/\btext-(?:slate|gray)-500\b/g, "text-muted"],
+    [/\btext-(?:slate|gray)-400\b/g, "text-muted"],
+
+    // Body Text
+    [/\btext-(?:slate|gray)-700\b/g, "text-body"],
+    [/\btext-(?:slate|gray)-600\b/g, "text-body"],
+
+    // Borders
+    [/\bborder-(?:slate|gray)-200\b/g, "border-line"],
+    [/\bborder-(?:slate|gray)-100\b/g, "border-divider"],
+    [/\bborder-(?:slate|gray)-300\b/g, "border-line"],
+
+    // Shadows (Flat UI uses border-line / surfaces instead)
+    [/\bshadow-(?:sm|md|lg|xl|2xl)\b/g, ""],
+    [/(?<=\s|^)shadow(?=\s|$)/g, ""],
+  ];
+
+  for (const file of files) {
+    let content = readFileSync(file, "utf8");
+    let changed = false;
+    let fileReplacements = 0;
+
+    for (const [rx, repl] of MAPPINGS) {
+      const match = content.match(rx);
+      if (match) {
+        content = content.replace(rx, repl);
+        fileReplacements += match.length;
+        changed = true;
+      }
+    }
+
+    if (changed) {
+      content = content.replace(/className=(["'])(.*?)\1/g, (m, q, classes) => {
+        const cleaned = classes.replace(/\s{2,}/g, " ").trim();
+        return `className=${q}${cleaned}${q}`;
+      });
+      writeFileSync(file, content);
+      modifiedFiles++;
+      totalReplacements += fileReplacements;
+    }
+  }
+
+  console.log(`\nSemantic Codemod applied: updated ${modifiedFiles} files (${totalReplacements} class replacements).`);
 }
 
 function wireAgentsMd(rootDir, version) {
@@ -190,7 +292,7 @@ function writeNewProjectStarter(webDir, appName) {
     layoutPath,
     `import type { Metadata } from "next";
 import { Geist, Montserrat_Alternates } from "next/font/google";
-import { ConfirmHost } from "@semi/ui";
+import { ConfirmHost, ThemeProvider } from "@semi/ui";
 import "./globals.css";
 
 const geist = Geist({ subsets: ["latin", "vietnamese"], variable: "--font-geist" });
@@ -207,10 +309,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="vi" className={\`dark \${geist.variable} \${montserratAlternates.variable}\`}>
-      <body className="bg-app text-gray-200 font-sans antialiased min-h-screen">
-        {children}
-        <ConfirmHost />
+    <html lang="vi" data-theme="dark" className={\`dark \${geist.variable} \${montserratAlternates.variable}\`}>
+      <body className="bg-app text-body font-sans antialiased min-h-screen">
+        <ThemeProvider defaultTheme="dark">
+          {children}
+          <ConfirmHost />
+        </ThemeProvider>
       </body>
     </html>
   );
@@ -233,6 +337,7 @@ import {
   PageTitle,
   Pills,
   SubpageToolbar,
+  ThemeToggle,
   confirmDialog,
   type ShellNavSection,
 } from "@semi/ui";
@@ -275,7 +380,10 @@ export default function HomePage() {
       activeId={activeNav}
       onSelect={setActiveNav}
     >
-      <PageTitle title={${JSON.stringify(appName)}} />
+      <div className="flex items-center justify-between gap-4 pb-2">
+        <PageTitle title={${JSON.stringify(appName)}} />
+        <ThemeToggle />
+      </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
         <KpiCard icon="printer" iconTone="green" label="Thiết bị trực tuyến" value="12 / 14" sub="Hoạt động ổn định" />
@@ -325,15 +433,15 @@ export default function HomePage() {
               <div className="flex items-center gap-2.5 min-w-0">
                 <IconTile name="printer" tone="sky" size="md" />
                 <div className="min-w-0">
-                  <div className="text-[13px] font-semibold text-white truncate">{item.name}</div>
-                  <div className="text-[11px] text-gray-500 tabular-nums">Mã #{item.id}</div>
+                  <div className="text-[13px] font-semibold text-contrast truncate">{item.name}</div>
+                  <div className="text-[11px] text-muted tabular-nums">Mã #{item.id}</div>
                 </div>
               </div>
               <span className={\`w-2 h-2 rounded-full shrink-0 \${STATUS_DOT[item.status]}\`} />
             </div>
             <div className="flex items-center justify-between pt-2 border-t border-divider text-[12px]">
-              <span className="text-gray-400">Hiệu suất</span>
-              <span className="text-white font-medium tabular-nums">{item.metric}</span>
+              <span className="text-muted">Hiệu suất</span>
+              <span className="text-contrast font-medium tabular-nums">{item.metric}</span>
             </div>
           </div>
         ))}
@@ -434,6 +542,10 @@ wireAgentsMd(opts.cwd, installedVersion);
 
 if (!isExisting || opts.starter) {
   writeNewProjectStarter(webDir, opts.appName);
+} else if (isExisting && opts.apply) {
+  runSemanticCodemod(webDir);
+  // Ratchet mechanism: record old debt in semi-lint-baseline.json so debt only shrinks
+  spawnSync("npx", ["semi-lint", "--update-baseline"], { cwd: webDir, stdio: "inherit" });
 }
 
 if (opts.writeBaseline) {

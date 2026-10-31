@@ -17,7 +17,7 @@ export function SidePanelToggle({ onClick }: { onClick: () => void }) {
       onClick={onClick}
       aria-label="Thu gọn bảng cài đặt"
       title="Thu gọn bảng cài đặt"
-      className="w-7 h-7 -my-1 rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/[0.06] transition shrink-0"
+      className="w-7 h-7 -my-1 rounded-lg flex items-center justify-center text-muted hover:text-contrast hover:bg-raised transition shrink-0"
     >
       <Icon name="sidebar" className="w-3.5 h-3.5" />
     </button>
@@ -65,7 +65,7 @@ export function SidePanel({
           onClick={onToggleCollapse}
           aria-label="Mở rộng bảng cài đặt"
           title="Mở rộng bảng cài đặt"
-          className="w-7 h-7 rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/[0.06] transition"
+          className="w-7 h-7 rounded-lg flex items-center justify-center text-muted hover:text-contrast hover:bg-raised transition"
         >
           <Icon name="sidebar" className="w-3.5 h-3.5" />
         </button>

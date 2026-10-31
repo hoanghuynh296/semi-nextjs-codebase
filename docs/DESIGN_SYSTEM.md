@@ -45,12 +45,12 @@ hook of the `semi-design` plugin).
 
 | Role | Classes |
 |---|---|
-| Page title (sub-page) | `font-display text-[22px] sm:text-[26px] leading-[1.15] font-semibold text-white tracking-tight`, text only, no subtitle |
-| Section / card title | `text-[13px]–text-[15px] font-semibold text-white tracking-tight` |
-| UI / nav text | `text-[12px] font-medium text-gray-300` |
-| Label | `text-[12px] font-medium text-gray-400` (sentence case, never uppercase) |
-| Caption | `text-[11px]–text-[12px] text-gray-500` |
-| Big number (KPI) | `text-[22px] leading-tight font-semibold tracking-tight tabular-nums text-white` |
+| Page title (sub-page) | `font-display text-[22px] sm:text-[26px] leading-[1.15] font-semibold text-contrast tracking-tight`, text only, no subtitle |
+| Section / card title | `text-[13px]–text-[15px] font-semibold text-contrast tracking-tight` |
+| UI / nav text | `text-[12px] font-medium text-body` |
+| Label | `text-[12px] font-medium text-muted` (sentence case, never uppercase) |
+| Caption | `text-[11px]–text-[12px] text-muted` |
+| Big number (KPI) | `text-[22px] leading-tight font-semibold tracking-tight tabular-nums text-contrast` |
 | Numbers (temperatures, %, times, money, counts) | add `tabular-nums` (Geist, digits line up) |
 | Code (code editors, parameter keys, error codes) | `font-mono`, only there |
 
@@ -62,20 +62,56 @@ a monospace font for prices and readings looks like a terminal, not a product. W
 `font-semibold`. Sizes in px (`text-[11px]`…`text-[15px]`), not Tailwind's `text-xs` / `text-sm` / `text-base`.
 Minimum `text-[11px]`. Button and label text is sentence case ("Lưu", "Xem lại"), never ALL CAPS.
 
-## 2. Surfaces & colour
+## 2. Dual-Theme & Semantic Tokenization (Two-Tier Tokens)
 
-| Token | Hex | Use |
-|---|---|---|
-| `bg-canvas` | `#111111` | outer frame behind the floating menu & content panels (`md+`) |
-| `bg-app` | `#181818` | page / content panel background |
-| `bg-panel` | `#262626` | cards, sidebar panel, header |
-| `bg-field` | `#2E2E2E` | inputs, modals, popovers |
-| `bg-raised` | `#383838` | hover / track fill on top of field |
-| `border-line` / `border-line-hover` | `#333333` / `#474747` | card and input edges / hover (quiet: cards read by fill) |
-| `border-divider` | `#2E2E2E` | single-side separators inside a panel |
-| Tonal fills | `bg-white/[0.04]` tile · `[0.05]` input · `[0.08]` active · `[0.10]` selected pill | depth on top of a card |
+Semi architecture separates tokens into two tiers:
+- **Tier 1 (Primitives & Brand):** Fixed raw hex palettes (`primary-*`, `emerald-*`, `gray-*`, `rose-*`, `amber-*`, `sky-*`) defined in `tokens/tokens.json`.
+- **Tier 2 (Semantic Tokens):** Dynamic CSS variables that automatically adapt according to the active theme (`data-theme="dark"` or `data-theme="light"`). Developers build UI exclusively with Semantic Tokens (`bg-panel`, `bg-field`, `text-contrast`, `text-body`, `text-muted`, `border-line`), eliminating hard-coded physical colors and manual `dark:bg-...` / `light:bg-...` conditional classes.
 
-Text colour on the page root is a token (`text-gray-200`), never a hex class (`text-[#e5e7eb]`, `bg-[#16171b]`).
+### Semantic Tokens Mapping Table
+
+| Semantic Token | Tailwind Utility | Purpose | Dark Mode (`[data-theme="dark"]`) | Light Mode (`[data-theme="light"]`) |
+|---|---|---|---|---|
+| `--color-canvas` | `bg-canvas` | Nền ứng dụng ngoài cùng (outer bento shell) | `#0c0d0e` | `#f1f5f9` (Slate-100) |
+| `--color-app` | `bg-app` | Khung bề mặt màn hình chính (content panel) | `#121316` | `#ffffff` |
+| `--color-panel` | `bg-panel` | Thẻ Bento Card, Sidebar, Modal shell | `#18191c` | `#ffffff` |
+| `--color-field` | `bg-field` | Nền ô nhập liệu, header bảng | `#1e1f23` | `#f1f5f9` (Slate-100) |
+| `--color-raised` | `bg-raised` | Hover / track fills trên nền field hoặc panel | `#282a2f` | `#e2e8f0` (Slate-200) |
+| `--color-text-contrast` | `text-contrast` | Tiêu đề, chữ độ tương phản cao | `#ffffff` | `#0f172a` (Slate-900) |
+| `--color-text-body` | `text-body` | Nội dung văn bản chính | `#d1d5db` (Gray-300) | `#334155` (Slate-700) |
+| `--color-text-muted` | `text-muted` | Nhãn phụ, placeholder, gợi ý | `#6b7280` (Gray-500) | `#64748b` (Slate-500) |
+| `--color-line` | `border-line` | Đường viền card, bảng, khung | `rgba(255, 255, 255, 0.08)` | `rgba(0, 0, 0, 0.08)` (Slate-200) |
+| `--color-line-hover` | `border-line-hover` | Đường viền khi hover | `rgba(255, 255, 255, 0.16)` | `rgba(0, 0, 0, 0.16)` |
+| `--color-divider` | `border-divider` | Đường phân cách nhẹ giữa các hàng | `rgba(255, 255, 255, 0.05)` | `rgba(0, 0, 0, 0.05)` (Slate-100) |
+
+### Theme Switching Mechanism
+
+Themes are toggled via the `data-theme` attribute on `<html>` (with fallback `.dark` / `.light` classes):
+```html
+<html lang="vi" data-theme="dark" class="dark">
+```
+Apps use `<ThemeProvider>` and `useTheme()` from `@semi/ui`:
+```tsx
+import { ThemeProvider, ThemeToggle } from "@semi/ui";
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="vi" data-theme="dark">
+      <body className="bg-app text-body">
+        <ThemeProvider defaultTheme="dark">
+          {children}
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+### Why Physical Colors Are Prohibited
+Hardcoding physical palette classes such as `bg-white`, `text-slate-900`, `border-slate-200`, or `bg-slate-50` creates the "Dark Shell, Light Core" conflict:
+- In Dark Mode, a card with `bg-white` creates a blinding white rectangle inside a dark Bento frame.
+- In Light Mode, text with `text-white` disappears completely on the white page background.
+By using `bg-panel` and `text-contrast`, your UI seamlessly flips from dark obsidian to crisp slate without writing a single media query.
 
 ## 2b. Brand colour per product
 
@@ -279,6 +315,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `PageActions.tsx` | `PageActions` (a tab's header buttons), `PageActionsSlot` + `PageActionsProvider` |
 | `Skeleton.tsx` | `Skeleton`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton`, `Loading` (§13b) |
 | `confirmDialog.tsx` | `confirmDialog()`, `ConfirmHost`, `ConfirmOptions` (§14) |
+| `ThemeProvider.tsx` | `ThemeProvider`, `useTheme`, `ThemeToggle` (§2) |
 | `Markdown.tsx` | `Markdown` (AI answers) |
 | `ExternalLink.tsx` | `ExternalLink` |
 | `Pills.tsx`, `Chip.tsx` | single choice / on-off chips (`Chip`, `CHIP_BASE`, `chipClass`, `chipIconClass`, `TAG`, `TONE_DOT`) |
@@ -296,14 +333,15 @@ A component used by **two or more Semi apps** belongs here; open a change in the
 
 ## Form fields
 
-Input: `bg-white/[0.05] border border-line rounded-lg px-3 py-2 text-[14px] text-white placeholder-gray-500
-focus:outline-none focus:border-primary-500/50 focus:bg-white/[0.08] transition-colors`. Label above it (§1 label).
+Input: `FIELD_INPUT` (`bg-field border border-line hover:border-line-hover rounded-lg px-3 h-9 text-[13px] text-contrast placeholder:text-muted focus:outline-none focus:border-primary-500/50 focus:bg-raised transition-colors`). Label above it (`FIELD_LABEL`, `text-[12px] font-medium text-muted`).
 Never `focus:outline-none` without a visible focus border.
 
 ## Anti-patterns (enforced by `semi-lint`)
 
+- **Physical / literal colors in JSX (`no-literal-palette`):** Never use hardcoded Tailwind color classes (`bg-white`, `text-slate-900`, `border-slate-200`, `bg-slate-50`, `text-gray-500`). Always use Semantic Tokens (`bg-panel`, `bg-field`, `text-contrast`, `text-body`, `text-muted`, `border-line`).
+- **Overriding Card component (`card-class-override`):** Never pass `bg-white`, `bg-gray`, `bg-slate` or `shadow-*` to `<Card />`.
 - Gradients, glow blobs, coloured glow shadows (`shadow-[0_0_…]`), "glassmorphism" panels.
-- Solid greys for surfaces (`bg-gray-800/900`), `border-gray-700`, hard-coded hex colour classes.
+- Solid greys for surfaces (`bg-gray-800/900`), `border-gray-700`, hard-coded hex colour classes (`bg-[#...]`, `text-[#...]`).
 - `font-bold` / `extrabold` / `black`; `text-[9px]` / `text-[10px]`; `text-xs` / `text-sm`; `uppercase` labels; ALL-CAPS button text.
 - Off-scale radii (`rounded-md`); `font-mono` for numbers; coloured icon tiles in front of every card title.
 - Emoji or unicode pictograms as icons; filled glyphs mixed with stroke icons; stroke 2+; new inline `<svg>` paths.

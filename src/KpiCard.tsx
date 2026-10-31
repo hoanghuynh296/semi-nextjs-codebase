@@ -32,19 +32,19 @@ export function KpiCard({
 }) {
   return (
     <div className={`${CARD} p-3 sm:p-4 flex flex-col gap-2 ${className}`} title={hint}>
-      <div className="flex items-center gap-2 text-[12px] font-medium text-gray-400 min-w-0">
+      <div className="flex items-center gap-2 text-[12px] font-medium text-muted min-w-0">
         {icon && <Icon name={icon} className={`w-4 h-4 shrink-0 ${TONE_TEXT[iconTone]}`} />}
         <span className="truncate">{label}</span>
       </div>
       <div
         className={`text-[18px] sm:text-[22px] leading-tight font-semibold tracking-tight tabular-nums truncate ${
-          tone === "danger" ? "text-rose-300" : tone === "good" ? "text-emerald-300" : "text-white"
+          tone === "danger" ? "text-rose-400" : tone === "good" ? "text-emerald-400" : "text-contrast"
         }`}
       >
         {loading ? <Skeleton className="h-6 w-28 my-0.5" /> : value}
       </div>
       {!loading && sub !== undefined && sub !== null && (
-        <div className="text-[12px] text-gray-500 truncate -mt-1 tabular-nums">{sub}</div>
+        <div className="text-[12px] text-muted truncate -mt-1 tabular-nums">{sub}</div>
       )}
     </div>
   );

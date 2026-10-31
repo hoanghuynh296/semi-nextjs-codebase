@@ -2,6 +2,38 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
+## [0.3.0] - 2026-10-31
+
+### Added
+- **Two-Tier Semantic Tokens Architecture (`tokens/tokens.json`, `tokens/tokens.css`):**
+  - Replaced static surface color tokens with dynamic CSS-variable-backed Semantic Tokens:
+    - `--color-canvas` (`bg-canvas`): `#0c0d0e` (Dark) / `#f1f5f9` (Light)
+    - `--color-app` (`bg-app`): `#121316` (Dark) / `#ffffff` (Light)
+    - `--color-panel` (`bg-panel`): `#18191c` (Dark) / `#ffffff` (Light)
+    - `--color-field` (`bg-field`): `#1e1f23` (Dark) / `#f1f5f9` (Light)
+    - `--color-raised` (`bg-raised`): `#26282e` (Dark) / `#e2e8f0` (Light)
+    - `--color-text-contrast` (`text-contrast`): `#ffffff` (Dark) / `#0f172a` (Light)
+    - `--color-text-body` (`text-body`): `#d1d5db` (Dark) / `#334155` (Light)
+    - `--color-text-muted` (`text-muted`): `#6b7280` (Dark) / `#64748b` (Light)
+    - `--color-line` (`border-line`): `rgba(255,255,255,0.08)` (Dark) / `rgba(0,0,0,0.08)` (Light)
+    - `--color-line-hover` (`border-line-hover`): `rgba(255,255,255,0.16)` (Dark) / `rgba(0,0,0,0.16)` (Light)
+    - `--color-divider` (`border-divider`): `rgba(255,255,255,0.05)` (Dark) / `rgba(0,0,0,0.05)` (Light)
+  - Generated compiled CSS utilities and Tailwind 4 `@theme` mappings via updated `scripts/build-tokens.mjs`.
+  - Added support for theme switching via `[data-theme="dark"]`, `[data-theme="light"]`, and `.dark` / `.light` class fallbacks.
+- **Theme Provider & Switcher Components (`@semi/ui`):**
+  - Added `ThemeProvider`, `useTheme()`, and `ThemeToggle` to `@semi/ui`.
+  - Added `sun` and `moon` icons to `src/Icon.tsx` and `src/iconCatalog.ts`, bringing total standardized icons to 168.
+- **Linter Upgrades (`lint/semi-lint.mjs`):**
+  - Added `no-literal-palette` (Ratchet): Banning direct physical classes (`bg-white`, `text-slate-900`, `border-slate-200`, `bg-slate-50`, `bg-gray-800/900`, etc.) in favor of semantic tokens.
+  - Added `card-class-override` (Hard): Preventing direct background and shadow overrides on `<Card>`.
+  - Retired `input-bg-field` rule as `bg-field` is now the formal semantic token for form fields.
+- **Plugin Skill Enhancements (`semi-audit` & `semi-init`):**
+  - `/semi-audit`: Added automated scanning for physical Tailwind color classes and calculated `semanticAdoptionRate` with dual-theme health indicators.
+  - `/semi-init`: Added automated codemod (`runSemanticCodemod`) mapping legacy classes (`bg-white` -> `bg-panel`, `bg-slate-50` -> `bg-field`, `text-slate-900` -> `text-contrast`, `text-slate-500` -> `text-muted`, `border-slate-200` -> `border-line`, removing drop shadows).
+  - `/semi-init`: Eliminated destructive blanket skips (`skip: { ...: ["src/app"] }`) in `semi-lint.json`, recording legacy debt via `--update-baseline` in `semi-lint-baseline.json`.
+- **Documentation:**
+  - Added "Dual-Theme & Semantic Tokenization" section in `docs/DESIGN_SYSTEM.md`, updated `docs/QUICK_REF.md`, `docs/DECISIONS.md`, and maintainer guides.
+
 ## [0.2.9] - 2026-10-31
 
 ### Changed

@@ -24,4 +24,5 @@ export * from "./Modal";
 export * from "./Markdown";
 export * from "./ExternalLink";
 export * from "./confirmDialog";
+export * from "./ThemeProvider";
 export * from "../styles";

@@ -44,11 +44,6 @@ export const HARD = [
     /export\s+function\s+(PageHeader|Select|Modal|Input|Textarea|Button|EmptyState)\b/,
     "do not keep a local ui.tsx wrapper; use PageTitle, SubpageToolbar, CustomSelect, Modal, FIELD_INPUT, BTN_*, EMPTY from @semi/ui",
   ],
-  [
-    "input-bg-field",
-    /\bh-(8|9|10)\b[^"'\n]*\bbg-field\b|\bbg-field\b[^"'\n]*\bplaceholder:/,
-    "inputs/textareas use FIELD_INPUT / FIELD_TEXTAREA (bg-white/[0.05]), never bg-field (invisible inside bg-field modals)",
-  ],
   ["gradient", /bg-gradient-|linear-gradient|radial-gradient|from-primary-\d+ to-/, "flat UI: no gradients"],
   [
     "glow",
@@ -71,6 +66,11 @@ export const HARD = [
     "tool-app headers / canvas controls use @semi/ui/styles (headerPrimary, VIEWPORT_TOOLBAR, VIEWPORT_PILL…), not copies",
   ],
   [
+    "card-class-override",
+    /<Card\b[^>]*\b(bg-white|bg-gray|bg-slate|shadow-)\b/,
+    "Không truyền class màu nền hoặc bóng đè lên component Card của Semi.",
+  ],
+  [
     "viewport-grid-cols",
     /(?<![@\w])(sm|md|lg|xl|2xl):grid-cols-/,
     "card grids beside a sidebar size columns by @container (@xl:grid-cols-…), not viewport breakpoints",
@@ -80,6 +80,11 @@ export const HARD = [
 const OPT_IN = new Set(["viewport-grid-cols"]);
 
 export const RATCHET = [
+  [
+    "no-literal-palette",
+    /\b(bg|text|border)-(?:white(?!\/)|black(?!\/)|(?:slate|gray|zinc|neutral|stone)-\d{2,3})\b/g,
+    "Tuyệt đối không dùng class màu vật lý trực tiếp (bg-white, text-slate-900, border-slate-200). Hãy dùng Semantic Tokens (bg-panel, bg-field, text-contrast, text-body, text-muted, border-line) để tự động tương thích cả Dark Mode lẫn Light Mode.",
+  ],
   ["all-caps-label", /\>\s*[A-ZĐẮẰẲẴẶÂẤẦẨẪẬÊẾỀỂỄỆÔỐỒỔỖỘƠỚỜỞỠỢƯỨỪỬỮỰ]{4,}(?:[ .·…]+[A-ZĐ0-9…]+)*\s*</g, "button / label text is sentence case"],
   ["inline-svg-path", /<path\b/g, "add the icon to ICONS in @semi/ui (Icon.tsx) instead of inline <path>"],
   ["thick-stroke", /strokeWidth[=:]\s*\{?"?(2|2\.\d+|3)\b/g, "icon stroke is 1.75"],

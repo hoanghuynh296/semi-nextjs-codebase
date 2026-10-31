@@ -5,19 +5,20 @@
      @import "@semi/ui/base.css";
    Nothing app- or page-specific belongs here; apps keep those in their own globals.css. */
 
-/* `dark:` variant follows a `.dark` class (Semi is dark-first; the class lets apps opt into light sections later). */
-@custom-variant dark (&:where(.dark, .dark *));
+/* `dark:` and `light:` variants follow a class or data-theme attribute (Semi is dark-first by default). */
+@custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
+@custom-variant light (&:where(.light, .light *, [data-theme="light"], [data-theme="light"] *));
 
 /* Tailwind v3 preflight compatibility (copied class strings render as designed). */
 @layer base {
   *, ::after, ::before, ::backdrop, ::file-selector-button {
-    border-color: var(--color-gray-200, currentColor);
+    border-color: var(--color-line, currentColor);
   }
   button:not(:disabled), [role="button"]:not(:disabled) {
     cursor: pointer;
   }
   input::placeholder, textarea::placeholder {
-    color: var(--color-gray-400);
+    color: var(--color-text-muted);
   }
   dialog {
     margin: auto;
@@ -27,6 +28,7 @@
 @layer base {
   html, body {
     background-color: var(--color-app);
+    color: var(--color-text-body);
     /* No sideways page pan or rubber-band on phones / iPad. `clip`, unlike `hidden`, creates no scroll container,
        so position: sticky keeps working. Horizontal lists (tab bar, chips) still scroll. */
     overflow-x: clip;
@@ -57,10 +59,10 @@
 
 /* Loading skeleton: a tonal block with a light band sweeping across (Skeleton.tsx). The only gradient Semi allows. */
 @keyframes shimmer-sweep { 100% { transform: translateX(100%); } }
-.shimmer { position: relative; overflow: hidden; background-color: rgba(255, 255, 255, 0.06); }
+.shimmer { position: relative; overflow: hidden; background-color: var(--color-raised); }
 .shimmer::after {
   content: ""; position: absolute; inset: 0; transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.07) 50%, transparent);
+  background: linear-gradient(90deg, transparent, var(--color-line-hover) 50%, transparent);
   animation: shimmer-sweep 1.4s ease-in-out infinite;
 }
 @media (prefers-reduced-motion: reduce) { .shimmer::after { animation: none; } }

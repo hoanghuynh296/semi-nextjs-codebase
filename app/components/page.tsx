@@ -72,7 +72,7 @@ export default function ComponentsShowcasePage() {
       {/* Title */}
       <div className="space-y-3 pb-2 border-b border-line/60">
         <PageTitle title="Components & Patterns Showcase" />
-        <p className="text-[13px] text-gray-400 max-w-3xl leading-relaxed">
+        <p className="text-[13px] text-muted max-w-3xl leading-relaxed">
           Tập hợp đầy đủ các component chuẩn của hệ sinh thái Semi UI (<code className="text-primary-300">@semi/ui</code>).
           Tuân thủ nguyên tắc Bento layout, dark-first flat surfaces, sentence case labels, và 100% không dùng control native hay glow blob.
         </p>
@@ -81,15 +81,15 @@ export default function ComponentsShowcasePage() {
       {/* Pattern 1: SubpageToolbar */}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-[15px] font-semibold text-gray-200 flex items-center gap-2">
+          <h2 className="text-[15px] font-semibold text-body flex items-center gap-2">
             <Icon name="sliders" className="w-4 h-4 text-primary-400" />
             <span>1. SubpageToolbar (Thanh công cụ trang chuẩn)</span>
           </h2>
-          <span className="text-[11px] text-gray-500">STICKY_TOOLBAR Pattern</span>
+          <span className="text-[11px] text-muted">STICKY_TOOLBAR Pattern</span>
         </div>
 
         <div className="p-4 rounded-xl bg-panel border border-line space-y-3">
-          <p className="text-[12px] text-gray-400">
+          <p className="text-[12px] text-muted">
             Toolbar chuẩn luôn có bộ lọc bên trái và nhóm nút thao tác (Search, Refresh, Nút thêm mới dạng icon-only BTN_ICON) ở bên phải:
           </p>
           <div className="p-2 rounded-xl bg-canvas border border-line">
@@ -134,11 +134,11 @@ export default function ComponentsShowcasePage() {
       {/* Pattern 2: Action Buttons */}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-[15px] font-semibold text-gray-200 flex items-center gap-2">
+          <h2 className="text-[15px] font-semibold text-body flex items-center gap-2">
             <Icon name="zap" className="w-4 h-4 text-amber-400" />
             <span>2. Button System (Các biến thể nút bấm)</span>
           </h2>
-          <span className="text-[11px] text-gray-500 font-medium">@semi/ui/styles</span>
+          <span className="text-[11px] text-muted font-medium">@semi/ui/styles</span>
         </div>
 
         <div className="p-4 rounded-xl bg-panel border border-line space-y-4">
@@ -176,11 +176,11 @@ export default function ComponentsShowcasePage() {
       {/* Pattern 3: Form Controls */}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-[15px] font-semibold text-gray-200 flex items-center gap-2">
+          <h2 className="text-[15px] font-semibold text-body flex items-center gap-2">
             <Icon name="edit" className="w-4 h-4 text-sky-400" />
             <span>3. Form Controls & Custom Inputs (Không dùng control native)</span>
           </h2>
-          <span className="text-[11px] text-gray-500">Dark-first Form Components</span>
+          <span className="text-[11px] text-muted">Dark-first Form Components</span>
         </div>
 
         <div className="p-4 rounded-xl bg-panel border border-line">
@@ -237,7 +237,7 @@ export default function ComponentsShowcasePage() {
                 defaultValue="Voron_Stealthburner_Main_Body_v2.gcode"
                 className={FIELD_INPUT}
               />
-              <span className="text-[11px] text-gray-500">Inputs luôn dùng FIELD_INPUT (bg-white/[0.05]), không dùng bg-field</span>
+              <span className="text-[11px] text-muted">Inputs luôn dùng FIELD_INPUT (bg-panel/[0.05]), không dùng bg-field</span>
             </div>
             <div className="space-y-1.5">
               <label className={FIELD_LABEL}>Ghi chú quy trình in (FIELD_TEXTAREA)</label>
@@ -254,11 +254,11 @@ export default function ComponentsShowcasePage() {
       {/* Pattern 4: KPI Cards & Data */}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-[15px] font-semibold text-gray-200 flex items-center gap-2">
+          <h2 className="text-[15px] font-semibold text-body flex items-center gap-2">
             <Icon name="chart" className="w-4 h-4 text-emerald-400" />
             <span>4. KPI Cards & Metrics</span>
           </h2>
-          <span className="text-[11px] text-gray-500">18px–22px Tabular Numbers</span>
+          <span className="text-[11px] text-muted">18px–22px Tabular Numbers</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -298,7 +298,7 @@ export default function ComponentsShowcasePage() {
 
         {/* Pagination demo */}
         <div className="p-3 rounded-xl bg-panel border border-line flex items-center justify-between">
-          <span className="text-[12px] text-gray-400">Component Pagination (Phân trang):</span>
+          <span className="text-[12px] text-muted">Component Pagination (Phân trang):</span>
           <Pagination
             page={currentPage}
             pages={8}
@@ -310,11 +310,11 @@ export default function ComponentsShowcasePage() {
       {/* Pattern 5: Chips, Pills & Tones */}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-[15px] font-semibold text-gray-200 flex items-center gap-2">
+          <h2 className="text-[15px] font-semibold text-body flex items-center gap-2">
             <Icon name="tag" className="w-4 h-4 text-violet-400" />
             <span>5. Chips & Status Indicators</span>
           </h2>
-          <span className="text-[11px] text-gray-500">Semi Tonal Coding</span>
+          <span className="text-[11px] text-muted">Semi Tonal Coding</span>
         </div>
 
         <div className="p-4 rounded-xl bg-panel border border-line space-y-3">
@@ -346,11 +346,11 @@ export default function ComponentsShowcasePage() {
       {/* Pattern 6: Modals & Confirmation */}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-[15px] font-semibold text-gray-200 flex items-center gap-2">
+          <h2 className="text-[15px] font-semibold text-body flex items-center gap-2">
             <Icon name="alert" className="w-4 h-4 text-red-400" />
             <span>6. Modals & Dialogs (Không dùng alert/confirm native)</span>
           </h2>
-          <span className="text-[11px] text-gray-500">Modal Portal & ConfirmHost</span>
+          <span className="text-[11px] text-muted">Modal Portal & ConfirmHost</span>
         </div>
 
         <div className="p-4 rounded-xl bg-panel border border-line space-y-3">
@@ -374,7 +374,7 @@ export default function ComponentsShowcasePage() {
             </button>
 
             {confirmResult && (
-              <span className="text-[12px] font-medium text-primary-300 px-3 py-1.5 rounded-lg bg-white/[0.05] border border-line">
+              <span className="text-[12px] font-medium text-primary-300 px-3 py-1.5 rounded-lg bg-panel/[0.05] border border-line">
                 {confirmResult}
               </span>
             )}
@@ -388,7 +388,7 @@ export default function ComponentsShowcasePage() {
           title="Cấu hình thông số in nâng cao"
         >
           <div className="space-y-4">
-            <p className="text-[13px] text-gray-300 leading-relaxed">
+            <p className="text-[13px] text-body leading-relaxed">
               Modal của Semi sử dụng lớp nền <code className="text-primary-300">bg-field</code> với bán kính <code className="text-primary-300">rounded-2xl</code>, có header và nút đóng chuẩn Semantic Icon.
             </p>
 
@@ -428,20 +428,20 @@ export default function ComponentsShowcasePage() {
       {/* Pattern 7: Shimmer Skeletons */}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-[15px] font-semibold text-gray-200 flex items-center gap-2">
+          <h2 className="text-[15px] font-semibold text-body flex items-center gap-2">
             <Icon name="clock" className="w-4 h-4 text-sky-400" />
             <span>7. Skeletons (Dùng Shimmer thay vì thông báo tải)</span>
           </h2>
-          <span className="text-[11px] text-gray-500">Shimmer Placeholder</span>
+          <span className="text-[11px] text-muted">Shimmer Placeholder</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="p-4 rounded-xl bg-panel border border-line space-y-2">
-            <span className="text-[11px] text-gray-400 font-medium block">SkeletonCard (Khung card đang nạp dữ liệu):</span>
+            <span className="text-[11px] text-muted font-medium block">SkeletonCard (Khung card đang nạp dữ liệu):</span>
             <SkeletonCard />
           </div>
           <div className="p-4 rounded-xl bg-panel border border-line space-y-2">
-            <span className="text-[11px] text-gray-400 font-medium block">SkeletonRows (Hàng bảng dữ liệu):</span>
+            <span className="text-[11px] text-muted font-medium block">SkeletonRows (Hàng bảng dữ liệu):</span>
             <SkeletonRows count={3} />
           </div>
         </div>

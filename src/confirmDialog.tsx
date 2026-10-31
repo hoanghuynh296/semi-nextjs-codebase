@@ -79,15 +79,15 @@ export function ConfirmHost() {
         role="alertdialog"
         aria-modal="true"
         aria-labelledby="semi-confirm-title"
-        className="bg-field border border-line rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden"
+        className="bg-panel border border-line rounded-2xl w-full max-w-sm shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <div className={`px-5 pt-5 pb-4 space-y-2 ${c.icon ? "text-center" : ""}`}>
           {c.icon && <div className="flex justify-center pb-1">{c.icon}</div>}
-          <h3 id="semi-confirm-title" className="text-[15px] font-semibold text-white">
+          <h3 id="semi-confirm-title" className="text-[15px] font-semibold text-contrast">
             {c.title}
           </h3>
-          {c.message && <p className="text-[13px] text-gray-400 leading-relaxed whitespace-pre-line">{c.message}</p>}
+          {c.message && <p className="text-[13px] text-muted leading-relaxed whitespace-pre-line">{c.message}</p>}
         </div>
         <div
           className={`px-5 pb-5 max-sm:pb-[max(1rem,env(safe-area-inset-bottom))] flex items-center gap-2 ${c.icon ? "*:flex-1" : "justify-end max-sm:*:flex-1"}`}

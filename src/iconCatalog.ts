@@ -495,6 +495,22 @@ export const ICON_CATALOG: Record<IconName, IconMeta> = {
     dont: "Không dùng cho thông báo lỗi nghiêm trọng trên form (dùng alert).",
     keywords: ["thông báo", "chuông", "notifications", "alerts"],
   },
+  sun: {
+    name: "sun",
+    category: "status",
+    purpose: "Chế độ giao diện sáng (Light Mode) hoặc độ sáng màn hình",
+    do: "Dùng cho nút chuyển đổi giao diện sang Light Mode hoặc hiển thị biểu tượng ban ngày.",
+    dont: "Không dùng cho chế độ ban đêm (dùng moon).",
+    keywords: ["mặt trời", "sáng", "light mode", "sun", "day", "theme"],
+  },
+  moon: {
+    name: "moon",
+    category: "status",
+    purpose: "Chế độ giao diện tối (Dark Mode) hoặc ban đêm",
+    do: "Dùng cho nút chuyển đổi giao diện sang Dark Mode hoặc hiển thị biểu tượng ban đêm.",
+    dont: "Không dùng cho chế độ ban ngày (dùng sun).",
+    keywords: ["mặt trăng", "tối", "dark mode", "moon", "night", "theme"],
+  },
   tag: {
     name: "tag",
     category: "commerce",

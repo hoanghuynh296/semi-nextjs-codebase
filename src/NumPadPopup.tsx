@@ -168,8 +168,8 @@ export function NumPadPopup({ label, unit, initial, integer, allowPercent, onCom
   };
 
   const keyCls =
-    "h-12 sm:h-14 rounded-lg bg-raised text-gray-100 text-[18px] font-medium active:bg-line transition-colors select-none touch-manipulation cursor-pointer flex items-center justify-center";
-  const mute = "text-gray-300";
+    "h-12 sm:h-14 rounded-lg bg-raised text-body text-[18px] font-medium active:bg-line transition-colors select-none touch-manipulation cursor-pointer flex items-center justify-center";
+  const mute = "text-muted";
 
   const renderKey = (k: string, cls = "", children?: React.ReactNode) => (
     <button key={k} type="button" className={`${keyCls} ${cls}`} onClick={() => press(k)}>
@@ -183,16 +183,16 @@ export function NumPadPopup({ label, unit, initial, integer, allowPercent, onCom
       onClick={onClose}
     >
       <div
-        className="w-full max-w-sm bg-field border border-line rounded-xl p-3 shadow-2xl text-gray-100"
+        className="w-full max-w-sm bg-panel border border-line rounded-xl p-3 shadow-2xl text-body"
         style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-1 pb-2">
-          <span className="text-[13px] font-medium text-gray-400 truncate">{label}</span>
+          <span className="text-[13px] font-medium text-muted truncate">{label}</span>
           <button
             type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-lg text-gray-400 hover:text-white flex items-center justify-center cursor-pointer"
+            className="w-8 h-8 rounded-lg text-muted hover:text-contrast flex items-center justify-center cursor-pointer"
             aria-label="Đóng"
           >
             <Icon name="close" className="w-4 h-4" />
@@ -200,18 +200,18 @@ export function NumPadPopup({ label, unit, initial, integer, allowPercent, onCom
         </div>
 
         <div
-          className={`flex items-center justify-between gap-2 rounded-lg bg-panel border px-3 h-12 mb-2.5 ${
+          className={`flex items-center justify-between gap-2 rounded-lg bg-field border px-3 h-12 mb-2.5 ${
             error ? "border-red-500" : "border-line"
           }`}
         >
           <span
-            className={`text-[20px] tabular-nums truncate flex-1 text-right ${
+            className={`text-[20px] tabular-nums truncate flex-1 text-right text-contrast ${
               fresh && text ? "bg-primary-500/25 rounded px-1" : ""
             }`}
           >
-            {text || <span className="text-gray-600">0</span>}
+            {text || <span className="text-muted">0</span>}
           </span>
-          {unit && <span className="text-[13px] text-gray-500 tabular-nums flex-shrink-0">{unit}</span>}
+          {unit && <span className="text-[13px] text-muted tabular-nums flex-shrink-0">{unit}</span>}
         </div>
 
         <div className="grid grid-cols-4 gap-2 mb-2">
@@ -245,7 +245,7 @@ export function NumPadPopup({ label, unit, initial, integer, allowPercent, onCom
         <button
           type="button"
           onClick={confirm}
-          className="mt-2 w-full h-12 rounded-lg bg-primary-500 hover:bg-primary-400 active:bg-primary-600 text-white flex items-center justify-center cursor-pointer touch-manipulation"
+          className="mt-2 w-full h-12 rounded-lg bg-primary-500 hover:bg-primary-400 active:bg-primary-600 text-contrast flex items-center justify-center cursor-pointer touch-manipulation"
           aria-label="Xác nhận"
         >
           <Icon name="check" className="w-6 h-6" />

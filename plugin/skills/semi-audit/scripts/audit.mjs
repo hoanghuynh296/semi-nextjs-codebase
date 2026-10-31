@@ -24,7 +24,7 @@ const PALETTE = [];
 for (const [group, entries] of Object.entries(TOKENS)) {
   if (group.startsWith("$") || typeof entries !== "object" || !entries) continue;
   for (const [name, raw] of Object.entries(entries)) {
-    const hex = typeof raw === "string" ? raw : raw?.value;
+    const hex = typeof raw === "string" ? raw : (raw?.dark || raw?.value);
     if (typeof hex === "string" && hex.startsWith("#")) {
       const rgb = hexToRgb(hex);
       if (rgb) PALETTE.push({ name: name.replace(/^color-/, ""), hex, rgb });
@@ -165,6 +165,13 @@ export function auditSingleApp(cwd) {
   const pageFiles = tsFiles.filter((f) => /(?:^|\/)page\.tsx$/.test(f.split(sep).join("/")));
 
   const hexCounts = new Map();
+  const physicalCounts = new Map();
+  let totalPhysical = 0;
+  const semanticCounts = new Map();
+  let totalSemantic = 0;
+  const PHYSICAL_RX = /\b(bg|text|border)-(?:white|black|(?:slate|gray|zinc|neutral|stone)-\d{2,3})\b/g;
+  const SEMANTIC_RX = /\b(bg-(?:canvas|app|panel|field|raised)|text-(?:contrast|body|muted)|border-(?:line|divider|line-hover))\b/g;
+
   let vnStringHits = 0;
   let enStringHits = 0;
   const importUsage = new Map();
@@ -186,6 +193,16 @@ export function auditSingleApp(cwd) {
     for (const h of hexMatches) {
       const upper = h.toUpperCase();
       hexCounts.set(upper, (hexCounts.get(upper) || 0) + 1);
+    }
+    const physMatches = text.match(PHYSICAL_RX) || [];
+    for (const p of physMatches) {
+      physicalCounts.set(p, (physicalCounts.get(p) || 0) + 1);
+      totalPhysical++;
+    }
+    const semMatches = text.match(SEMANTIC_RX) || [];
+    for (const s of semMatches) {
+      semanticCounts.set(s, (semanticCounts.get(s) || 0) + 1);
+      totalSemantic++;
     }
     if (/[àáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợùúủũụưứừửữựỳýỷỹỵđ]/i.test(text)) {
       vnStringHits++;
@@ -217,6 +234,17 @@ export function auditSingleApp(cwd) {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 15)
     .map(([hex, count]) => ({ hex, count, nearest: nearestToken(hex) }));
+
+  const topPhysicalColours = [...physicalCounts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .map(([cls, count]) => ({ cls, count }));
+  const topSemanticTokens = [...semanticCounts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .map(([cls, count]) => ({ cls, count }));
+  const semanticAdoptionRate =
+    totalPhysical + totalSemantic > 0
+      ? Math.round((totalSemantic / (totalPhysical + totalSemantic)) * 1000) / 10
+      : 100;
 
   const duplicateComponents = [];
   for (const file of tsFiles) {
@@ -323,6 +351,18 @@ export function auditSingleApp(cwd) {
     });
   }
 
+  if (totalPhysical > 0) {
+    const topSample = topPhysicalColours.slice(0, 4).map((c) => `${c.cls} (${c.count}x)`).join(", ");
+    questions.push({
+      id: "semantic-tokens-codemod",
+      question: `Found ${totalPhysical} literal colour classes (${topSample}) that break Dark/Light theme switching. Run automated codemod to migrate them to Semantic Tokens?`,
+      options: [
+        "(Recommended) Automatically map to Semantic Tokens (bg-panel, bg-field, text-contrast, text-body, text-muted, border-line)",
+        "Keep literal classes and record in semi-lint-baseline.json",
+      ],
+    });
+  }
+
   return {
     exists: true,
     cwd,
@@ -349,7 +389,19 @@ export function auditSingleApp(cwd) {
       wrapperFiles,
       tablePages,
     },
-    colours: { topHexColours, offPaletteCount: customHex.length },
+    colours: {
+      topHexColours,
+      offPaletteCount: customHex.length,
+      physicalColours: {
+        total: totalPhysical,
+        topClasses: topPhysicalColours.slice(0, 10),
+      },
+      semanticTokens: {
+        total: totalSemantic,
+        topClasses: topSemanticTokens.slice(0, 10),
+      },
+      semanticAdoptionRate,
+    },
     duplicateComponents,
     lint: {
       hardTotal: hard.length,
@@ -406,7 +458,20 @@ function formatSingleAppMarkdown(r) {
     `- **Legacy UI wrapper files (\`ui.tsx\`):** ${r.structure.wrapperFiles.length ? `❌ ${r.structure.wrapperFiles.map((f) => `\`${f}\``).join(", ")}` : "✅ None"}`,
     `- **Pages with raw HTML \`<table>\`:** ${r.structure.tablePages.length ? `${r.structure.tablePages.length} (${r.structure.tablePages.map((f) => `\`${f}\``).join(", ")})` : "None"}`,
     ``,
-    `### 2. Hard-coded Hex Colours → Nearest Semi Token`,
+    `### 2. Palette & Dual-Theme Health`,
+    `- **Semantic Tokens Adoption Rate:** ${r.colours.semanticAdoptionRate}% (${r.colours.semanticTokens.total} semantic vs ${r.colours.physicalColours.total} literal classes)`,
+    ...(r.colours.physicalColours.total > 0
+      ? [
+          `- **Literal / Physical Classes Remaining (${r.colours.physicalColours.total}):** ` +
+            r.colours.physicalColours.topClasses
+              .slice(0, 8)
+              .map((c) => `\`${c.cls}\` (${c.count}x)`)
+              .join(", "),
+          `> Run \`/semi-init --apply\` to automatically run the codemod and migrate literal classes to Semantic Tokens.`,
+        ]
+      : [`- **Literal / Physical Classes:** ✅ None (100% Dual-theme ready)`]),
+    ``,
+    `#### Hard-coded Hex Colours → Nearest Semi Token`,
   ];
   if (!r.colours.topHexColours.length) {
     lines.push(`No raw \`#hex\` literals found.`);

@@ -125,8 +125,8 @@ export function AppShell({
   const renderNavEntry = (item: ShellNavItem) => {
     const active = activeId === item.id;
     const stateClass = active
-      ? "bg-white/[0.10] text-white"
-      : "text-gray-400 hover:text-gray-200 hover:bg-white/[0.04]";
+      ? "bg-raised text-contrast"
+      : "text-muted hover:text-contrast hover:bg-field";
     const inner = (
       <>
         <Icon name={item.icon} className="w-4 h-4 shrink-0" />
@@ -192,11 +192,11 @@ export function AppShell({
   const brandNode = (
     <>
       {logo ?? (
-        <span className="w-6 h-6 rounded-lg bg-white/[0.08] text-white flex items-center justify-center shrink-0">
+        <span className="w-6 h-6 rounded-lg bg-field border border-line text-contrast flex items-center justify-center shrink-0">
           <Icon name={logoIcon} className="w-3.5 h-3.5 text-primary-400" />
         </span>
       )}
-      <span className="hidden lg:block truncate text-[13px] font-semibold text-white tracking-tight">
+      <span className="hidden lg:block truncate text-[13px] font-semibold text-contrast tracking-tight">
         {productName}
       </span>
     </>
@@ -240,7 +240,7 @@ export function AppShell({
                 title={collapsed ? "Mở rộng menu" : "Thu gọn menu"}
                 className={`${
                   collapsed ? "flex" : "hidden lg:flex"
-                } w-7 h-7 rounded-lg items-center justify-center text-gray-400 hover:text-white hover:bg-white/[0.06] transition shrink-0 cursor-pointer`}
+                } w-7 h-7 rounded-lg items-center justify-center text-muted hover:text-contrast hover:bg-raised transition shrink-0 cursor-pointer`}
               >
                 <Icon name="sidebar" className="w-3.5 h-3.5" />
               </button>
@@ -254,11 +254,11 @@ export function AppShell({
                   target={primaryCta.external ? "_blank" : undefined}
                   rel={primaryCta.external ? "noopener noreferrer" : undefined}
                   title={primaryCta.label}
-                  className={`shrink-0 w-full h-9 rounded-lg bg-primary-500/15 hover:bg-primary-500/25 border border-primary-500/30 hover:border-primary-500/50 text-white flex items-center text-[12px] font-semibold transition active:scale-[0.99] ${
+                  className={`shrink-0 w-full h-9 rounded-lg bg-primary-500/15 hover:bg-primary-500/25 border border-primary-500/30 hover:border-primary-500/50 text-contrast flex items-center text-[12px] font-semibold transition active:scale-[0.99] ${
                     collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2 lg:px-2.5"
                   }`}
                 >
-                  <span className="w-5 h-5 rounded bg-primary-500 text-white flex items-center justify-center shrink-0">
+                  <span className="w-5 h-5 rounded bg-primary-500 text-contrast flex items-center justify-center shrink-0">
                     <Icon name={primaryCta.icon} className="w-3.5 h-3.5" />
                   </span>
                   <span className={navLabelClass}>{primaryCta.label}</span>
@@ -268,11 +268,11 @@ export function AppShell({
                   type="button"
                   onClick={primaryCta.onClick}
                   title={primaryCta.label}
-                  className={`shrink-0 w-full h-9 rounded-lg bg-primary-500/15 hover:bg-primary-500/25 border border-primary-500/30 hover:border-primary-500/50 text-white flex items-center text-[12px] font-semibold transition active:scale-[0.99] cursor-pointer ${
+                  className={`shrink-0 w-full h-9 rounded-lg bg-primary-500/15 hover:bg-primary-500/25 border border-primary-500/30 hover:border-primary-500/50 text-contrast flex items-center text-[12px] font-semibold transition active:scale-[0.99] cursor-pointer ${
                     collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2 lg:px-2.5"
                   }`}
                 >
-                  <span className="w-5 h-5 rounded bg-primary-500 text-white flex items-center justify-center shrink-0">
+                  <span className="w-5 h-5 rounded bg-primary-500 text-contrast flex items-center justify-center shrink-0">
                     <Icon name={primaryCta.icon} className="w-3.5 h-3.5" />
                   </span>
                   <span className={navLabelClass}>{primaryCta.label}</span>
@@ -293,11 +293,11 @@ export function AppShell({
                     <div
                       className={`${
                         collapsed ? "hidden" : "hidden lg:flex"
-                      } group shrink-0 items-center justify-between gap-1.5 px-2.5 py-0.5 text-[11px] font-medium text-gray-500 select-none`}
+                      } group shrink-0 items-center justify-between gap-1.5 px-2.5 py-0.5 text-[11px] font-medium text-muted select-none`}
                     >
                       <div className="flex items-center gap-1.5 min-w-0 truncate">
                         {section.icon && (
-                          <Icon name={section.icon} className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+                          <Icon name={section.icon} className="w-3.5 h-3.5 text-muted shrink-0" />
                         )}
                         <span className="truncate leading-normal">{section.label}</span>
                       </div>
@@ -357,16 +357,16 @@ export function AppShell({
             onClick={() => setMoreOpen(false)}
           >
             <div
-              className="bg-field border-t border-line rounded-t-2xl p-4 max-h-[75dvh] overflow-y-auto space-y-3"
+              className="bg-panel border-t border-line rounded-t-2xl p-4 max-h-[75dvh] overflow-y-auto space-y-3"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between px-1">
-                <span className="font-display text-[15px] font-semibold text-white">{productName}</span>
+                <span className="font-display text-[15px] font-semibold text-contrast">{productName}</span>
                 <button
                   type="button"
                   onClick={() => setMoreOpen(false)}
                   aria-label="Đóng"
-                  className="w-8 h-8 rounded-full bg-white/[0.08] flex items-center justify-center text-gray-300"
+                  className="w-8 h-8 rounded-full bg-field hover:bg-raised flex items-center justify-center text-muted hover:text-contrast transition border border-line"
                 >
                   <Icon name="close" className="w-4 h-4" />
                 </button>
@@ -375,7 +375,7 @@ export function AppShell({
                 {allItems.map((item) => {
                   const active = activeId === item.id;
                   const cls = `flex items-center gap-2.5 h-10 px-3 rounded-xl text-[12px] font-medium transition ${
-                    active ? "bg-white/[0.10] text-white" : "bg-white/[0.04] text-gray-300"
+                    active ? "bg-raised text-contrast" : "bg-field text-body hover:bg-raised hover:text-contrast"
                   }`;
                   if (item.href && !onSelect) {
                     return (
@@ -385,7 +385,7 @@ export function AppShell({
                         onClick={() => setMoreOpen(false)}
                         className={cls}
                       >
-                        <Icon name={item.icon} className="w-4 h-4 text-gray-400 shrink-0" />
+                        <Icon name={item.icon} className="w-4 h-4 text-muted shrink-0" />
                         <span className="truncate">{item.label}</span>
                       </Link>
                     );
@@ -400,7 +400,7 @@ export function AppShell({
                       }}
                       className={cls}
                     >
-                      <Icon name={item.icon} className="w-4 h-4 text-gray-400 shrink-0" />
+                      <Icon name={item.icon} className="w-4 h-4 text-muted shrink-0" />
                       <span className="truncate">{item.label}</span>
                     </button>
                   );

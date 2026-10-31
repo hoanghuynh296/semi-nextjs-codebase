@@ -22,8 +22,8 @@ export function Pills<T extends string>({
           type="button"
           title={o.title}
           onClick={() => onChange(o.key)}
-          className={`px-2.5 h-full rounded-lg text-[12px] font-medium whitespace-nowrap transition ${
-            value === o.key ? "bg-white/[0.10] text-white" : "text-gray-400 hover:text-gray-200"
+          className={`px-2.5 h-full rounded-lg text-[12px] font-medium whitespace-nowrap transition cursor-pointer ${
+            value === o.key ? "bg-raised text-contrast" : "text-muted hover:text-contrast"
           }`}
         >
           {o.label}

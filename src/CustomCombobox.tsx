@@ -56,13 +56,13 @@ export function CustomCombobox({
           }}
           onFocus={() => setOpen(true)}
           placeholder={placeholder}
-          className="w-full bg-field border border-line rounded-lg pl-3 pr-8 py-2 text-[13px] text-white placeholder-gray-500 focus:border-primary-500/60 transition outline-none"
+          className="w-full bg-field border border-line rounded-lg pl-3 pr-8 py-2 text-[13px] text-contrast placeholder:text-muted focus:border-primary-500/60 transition outline-none"
         />
         <button
           type="button"
           tabIndex={-1}
           onClick={() => setOpen((prev) => !prev)}
-          className="absolute right-2.5 p-1 text-gray-400 hover:text-white transition cursor-pointer"
+          className="absolute right-2.5 p-1 text-muted hover:text-contrast transition cursor-pointer"
         >
           <Icon name="chevronDown" className={`w-3.5 h-3.5 transition-transform duration-150 ${open ? "rotate-180" : ""}`} />
         </button>
@@ -71,7 +71,7 @@ export function CustomCombobox({
       {open && (
         <div className="absolute left-0 right-0 mt-1.5 max-h-56 overflow-y-auto bg-panel/95 backdrop-blur-xl border border-line rounded-lg shadow-2xl z-50 p-1 flex flex-col gap-0.5 custom-scrollbar">
           {filteredOptions.length === 0 ? (
-            <div className="px-3 py-2 text-[12px] text-gray-400 italic">
+            <div className="px-3 py-2 text-[12px] text-muted italic">
               Không có sẵn &mdash; bấm lưu để thêm &quot;{value}&quot;
             </div>
           ) : (
@@ -88,7 +88,7 @@ export function CustomCombobox({
                   className={`w-full text-left px-3 py-1.5 rounded-lg text-[12px] transition cursor-pointer flex items-center justify-between ${
                     isSelected
                       ? "bg-primary-500/15 text-primary-400 font-medium"
-                      : "text-gray-200 hover:bg-white/[0.08] hover:text-white"
+                      : "text-body hover:bg-raised hover:text-contrast"
                   }`}
                 >
                   <span className="truncate">{opt.label || opt.value}</span>
