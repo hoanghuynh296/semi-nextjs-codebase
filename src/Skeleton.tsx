@@ -7,10 +7,10 @@ export function Skeleton({ className = "", style }: { className?: string; style?
   return <div className={`shimmer rounded-lg ${className}`} style={style} aria-hidden />;
 }
 
-/** Wrapper that tells assistive tech the region is loading. */
+/** Wrapper that tells assistive tech the region is loading. `relative` keeps the absolute sr-only label inside scroll containers. */
 export function Loading({ children, className = "", label = "Đang tải" }: { children: React.ReactNode; className?: string; label?: string }) {
   return (
-    <div role="status" aria-busy="true" aria-live="polite" className={className}>
+    <div role="status" aria-busy="true" aria-live="polite" className={`relative ${className}`}>
       <span className="sr-only">{label}</span>
       {children}
     </div>

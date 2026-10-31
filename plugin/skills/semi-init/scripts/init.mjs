@@ -245,6 +245,11 @@ function runSemanticCodemod(webDir) {
   ];
 
   const CHROMATIC_TONES = "amber|yellow|orange|red|rose|pink|fuchsia|purple|violet|indigo|blue|sky|cyan|teal|emerald|green";
+  // Hues with a themed text token (tokens.json → text-tone-*); the rest keep a 700 / dark:300 pair.
+  const TONE_TOKEN = {
+    purple: "purple", violet: "violet", indigo: "indigo", blue: "blue", sky: "sky", cyan: "cyan", teal: "teal",
+    emerald: "emerald", green: "emerald", amber: "amber", yellow: "amber", orange: "orange", rose: "rose", red: "rose", pink: "pink",
+  };
 
   // Multi-state Tonal Adaptations across all component types (cards, banners, callouts, rows, buttons, badges, chips)
   const bgHoverTonalRe = new RegExp(`\\bhover:bg-(${CHROMATIC_TONES})-(?:50|100|200)\\b`, "g");
@@ -335,7 +340,8 @@ function runSemanticCodemod(webDir) {
         if (new RegExp(`dark:text-${color}-\\d+`).test(slice)) {
           return match;
         }
-        return `text-${color}-700 dark:text-${color}-300`;
+        const tone = TONE_TOKEN[color];
+        return tone ? `text-tone-${tone}` : `text-${color}-700 dark:text-${color}-300`;
       });
       fileReplacements += textTonalMatches.length;
       changed = true;
@@ -386,7 +392,7 @@ function writeNewProjectStarter(webDir, appName) {
     layoutPath,
     `import type { Metadata } from "next";
 import { Geist, Montserrat_Alternates } from "next/font/google";
-import { ConfirmHost, ThemeProvider } from "@semi/ui";
+import { ConfirmHost, ThemeProvider, ThemeScript } from "@semi/ui";
 import "./globals.css";
 
 const geist = Geist({ subsets: ["latin", "vietnamese"], variable: "--font-geist" });
@@ -403,7 +409,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="vi" data-theme="dark" className={\`dark \${geist.variable} \${montserratAlternates.variable}\`}>
+    <html lang="vi" data-theme="dark" className={\`dark \${geist.variable} \${montserratAlternates.variable}\`} suppressHydrationWarning>
+      <head>
+        <ThemeScript defaultTheme="dark" />
+      </head>
       <body className="bg-app text-body font-sans antialiased min-h-screen">
         <ThemeProvider defaultTheme="dark">
           {children}

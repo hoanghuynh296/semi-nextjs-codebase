@@ -79,10 +79,21 @@ Semi architecture separates tokens into two tiers:
 | `--color-raised` | `bg-raised` | Hover / track fills trên nền field hoặc panel | `#282a2f` | `#e2e8f0` (Slate-200) |
 | `--color-text-contrast` | `text-contrast` | Tiêu đề, chữ độ tương phản cao | `#ffffff` | `#0f172a` (Slate-900) |
 | `--color-text-body` | `text-body` | Nội dung văn bản chính | `#d1d5db` (Gray-300) | `#334155` (Slate-700) |
-| `--color-text-muted` | `text-muted` | Nhãn phụ, placeholder, gợi ý | `#6b7280` (Gray-500) | `#64748b` (Slate-500) |
+| `--color-text-muted` | `text-muted` | Nhãn phụ, placeholder, gợi ý | `#8b919a` | `#5b6779` |
 | `--color-line` | `border-line` | Đường viền card, bảng, khung | `rgba(255, 255, 255, 0.08)` | `rgba(0, 0, 0, 0.08)` (Slate-200) |
 | `--color-line-hover` | `border-line-hover` | Đường viền khi hover | `rgba(255, 255, 255, 0.16)` | `rgba(0, 0, 0, 0.16)` |
 | `--color-divider` | `border-divider` | Đường phân cách nhẹ giữa các hàng | `rgba(255, 255, 255, 0.05)` | `rgba(0, 0, 0, 0.05)` (Slate-100) |
+| `--color-accent` | `bg-accent` | Nền nút chính / mark "on" (BTN_PRIMARY, headerPrimary) | `primary-500` | `primary-700` |
+| `--color-accent-hover` | `hover:bg-accent-hover` | Hover của nền accent | `primary-400` | `primary-800` |
+| `--color-on-accent` | `text-on-accent` | Chữ / icon trên `bg-accent` (≥ 4.5:1) | `#0c0d0e` | `#ffffff` |
+| `--color-accent-fg` | `text-accent-fg` | Chữ / icon màu primary trên surface (link, check, tab active) | `primary-400` | `primary-700` |
+| `--color-danger-fg` · `success-fg` · `warning-fg` · `info-fg` | `text-danger-fg` … | Chữ trạng thái trên surface | `rose/emerald/amber/sky-400` | `-700` |
+| `--color-tone-<hue>` | `text-tone-<hue>` | Chữ tonal 12 hue (purple, violet, indigo, blue, sky, cyan, teal, emerald, amber, orange, rose, pink) | `<hue>-300` | `<hue>-700` |
+
+Mọi cặp chữ / nền ở trên đạt WCAG AA (≥ 4.5:1) ở cả hai theme. Không viết `text-*-400` hay `text-*-700 dark:text-*-300` trong component: dùng `text-accent-fg`, `text-*-fg` hoặc `text-tone-*`.
+Brand override: đổi `primary-*` trong `@theme` là đủ (accent đọc từ `primary-*`); nếu brand mới tối, đặt lại `--semi-on-accent` cho dark.
+
+**Cách sinh CSS:** giá trị theo theme nằm ở biến nguồn `--semi-*` (đặt trong `:root/[data-theme=dark]` và `[data-theme=light]`); utility đọc qua `@theme inline` (`bg-panel` → `var(--semi-panel)`), còn `--color-*` được khai báo lại ở mỗi theme scope cho CSS của app (`var(--color-panel)`).
 
 ### Theme Switching Mechanism
 
@@ -90,13 +101,17 @@ Themes are toggled via the `data-theme` attribute on `<html>` (with fallback `.d
 ```html
 <html lang="vi" data-theme="dark" class="dark">
 ```
-Apps use `<ThemeProvider>` and `useTheme()` from `@semi/ui`:
+`data-theme="system"` follows the OS in pure CSS (no JS). Users pick a theme with `<ThemeSwitcher />` (Sáng · Tối · Hệ thống: settings pages, sidebar footer; `fullWidth` in a sidebar) or flip it with `<ThemeToggle />` (collapsed sidebar, header). Any element can pin a theme for its subtree with `data-theme="light|dark"` (plus the matching class): all semantic tokens re-resolve inside it. Apps render `<ThemeScript />` in `<head>` (sets the stored theme
+before the first paint, so there is no flash of the wrong theme) and wrap the body in `<ThemeProvider>` with the **same options**:
 ```tsx
-import { ThemeProvider, ThemeToggle } from "@semi/ui";
+import { ThemeProvider, ThemeScript, ThemeToggle } from "@semi/ui";
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="vi" data-theme="dark">
+    <html lang="vi" data-theme="dark" className="dark" suppressHydrationWarning>
+      <head>
+        <ThemeScript defaultTheme="dark" />
+      </head>
       <body className="bg-app text-body">
         <ThemeProvider defaultTheme="dark">
           {children}
@@ -310,6 +325,9 @@ the right. Props: `title`, `productName` (home bar), `logo` / `logoIcon`, `homeH
 
 ## 5. Card
 
+`<Card>` (`@semi/ui`) wraps the same classes: `<Card className="p-4">`, `<Card interactive>` (CARD_HOVER), `<Card active>`
+(CARD_ACTIVE). It owns its surface: pass padding / layout only, never `bg-*` or `shadow-*`.
+
 ```tsx
 import { CARD, CARD_HOVER, CARD_ACTIVE } from "@semi/ui/styles";
 
@@ -452,7 +470,7 @@ Never `focus:outline-none` without a visible focus border.
 ## Anti-patterns (enforced by `semi-lint`)
 
 - **Physical / literal colors in JSX (`no-literal-palette`):** Never use hardcoded Tailwind color classes (`bg-white`, `text-slate-900`, `border-slate-200`, `bg-slate-50`, `text-gray-500`). Always use Semantic Tokens (`bg-panel`, `bg-field`, `text-contrast`, `text-body`, `text-muted`, `border-line`).
-- **Overriding Card component (`card-class-override`):** Never pass `bg-white`, `bg-gray`, `bg-slate` or `shadow-*` to `<Card />`.
+- **Overriding Card component (`card-class-override`):** Never pass any `bg-*` or `shadow-*` (with or without a variant such as `hover:`) to `<Card />`; use `TONAL_CONTAINER` on a plain element for a tinted card.
 - Gradients, glow blobs, coloured glow shadows (`shadow-[0_0_…]`), "glassmorphism" panels.
 - Solid greys for surfaces (`bg-gray-800/900`), `border-gray-700`, hard-coded hex colour classes (`bg-[#...]`, `text-[#...]`).
 - `font-bold` / `extrabold` / `black`; `text-[9px]` / `text-[10px]`; `text-xs` / `text-sm`; `uppercase` labels; ALL-CAPS button text.

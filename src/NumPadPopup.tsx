@@ -245,7 +245,7 @@ export function NumPadPopup({ label, unit, initial, integer, allowPercent, onCom
         <button
           type="button"
           onClick={confirm}
-          className="mt-2 w-full h-12 rounded-lg bg-primary-500 hover:bg-primary-400 active:bg-primary-600 text-contrast flex items-center justify-center cursor-pointer touch-manipulation"
+          className="mt-2 w-full h-12 rounded-lg bg-accent hover:bg-accent-hover text-on-accent flex items-center justify-center cursor-pointer touch-manipulation"
           aria-label="Xác nhận"
         >
           <Icon name="check" className="w-6 h-6" />

@@ -87,13 +87,13 @@ export function CustomCombobox({
                   }}
                   className={`w-full text-left px-3 py-1.5 rounded-lg text-[12px] transition cursor-pointer flex items-center justify-between ${
                     isSelected
-                      ? "bg-primary-500/15 text-primary-400 font-medium"
+                      ? "bg-primary-500/15 text-accent-fg font-medium"
                       : "text-body hover:bg-raised hover:text-contrast"
                   }`}
                 >
                   <span className="truncate">{opt.label || opt.value}</span>
                   {isSelected && (
-                    <Icon name="check" className="w-3.5 h-3.5 text-primary-400 shrink-0" />
+                    <Icon name="check" className="w-3.5 h-3.5 text-accent-fg shrink-0" />
                   )}
                 </button>
               );

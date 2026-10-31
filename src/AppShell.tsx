@@ -193,7 +193,7 @@ export function AppShell({
     <>
       {logo ?? (
         <span className="w-6 h-6 rounded-lg bg-field border border-line text-contrast flex items-center justify-center shrink-0">
-          <Icon name={logoIcon} className="w-3.5 h-3.5 text-primary-400" />
+          <Icon name={logoIcon} className="w-3.5 h-3.5 text-accent-fg" />
         </span>
       )}
       <span className="hidden lg:block truncate text-[13px] font-semibold text-contrast tracking-tight">
@@ -258,7 +258,7 @@ export function AppShell({
                     collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2 lg:px-2.5"
                   }`}
                 >
-                  <span className="w-5 h-5 rounded bg-primary-500 text-contrast flex items-center justify-center shrink-0">
+                  <span className="w-5 h-5 rounded bg-accent text-on-accent flex items-center justify-center shrink-0">
                     <Icon name={primaryCta.icon} className="w-3.5 h-3.5" />
                   </span>
                   <span className={navLabelClass}>{primaryCta.label}</span>
@@ -272,7 +272,7 @@ export function AppShell({
                     collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2 lg:px-2.5"
                   }`}
                 >
-                  <span className="w-5 h-5 rounded bg-primary-500 text-contrast flex items-center justify-center shrink-0">
+                  <span className="w-5 h-5 rounded bg-accent text-on-accent flex items-center justify-center shrink-0">
                     <Icon name={primaryCta.icon} className="w-3.5 h-3.5" />
                   </span>
                   <span className={navLabelClass}>{primaryCta.label}</span>

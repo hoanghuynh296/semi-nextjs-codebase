@@ -4,7 +4,7 @@
 import React from "react";
 import { ExternalLink } from "./ExternalLink";
 
-const LINK = "text-primary-300 hover:text-primary-200 underline underline-offset-2 break-all";
+const LINK = "text-accent-fg hover:text-contrast underline underline-offset-2 break-all";
 
 function inline(text: string): React.ReactNode[] {
   return text.split(/(\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\(https?:\/\/[^)\s]+\)|https?:\/\/[^\s)<>]+[^\s)<>.,;:!?])/g).map((part, i) => {

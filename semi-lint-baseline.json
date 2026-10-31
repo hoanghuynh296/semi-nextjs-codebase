@@ -5,9 +5,7 @@
  "inline-svg-path": {},
  "loading-text": {},
  "narrow-container": {},
- "no-literal-palette": {
-  "styles/appChrome.ts": 1,
-  "styles/buttons.ts": 2
- },
+ "no-literal-palette": {},
+ "no-solid-pastel-surfaces": {},
  "thick-stroke": {}
 }

@@ -1,15 +1,17 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AppShell, type ShellNavSection } from "../src/AppShell";
-import { Icon } from "../src/Icon";
-import { BTN_SECONDARY } from "../styles/buttons";
+import { ICONS } from "../src/Icon";
+import { ThemeSwitcher, ThemeToggle } from "../src/ThemeProvider";
+import pkg from "../package.json";
+
+const ICON_COUNT = Object.keys(ICONS).length;
 
 export function StorybookShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [copied, setCopied] = useState(false);
 
   // Normalize active route
   const activeId = pathname.includes("/components") ? "components" : "foundations";
@@ -57,12 +59,6 @@ export function StorybookShell({ children }: { children: React.ReactNode }) {
     },
   ];
 
-  const handleCopyInstall = () => {
-    navigator.clipboard.writeText("npx semi-lint");
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   return (
     <AppShell
       productName="Semi Design"
@@ -75,16 +71,23 @@ export function StorybookShell({ children }: { children: React.ReactNode }) {
         href: "https://github.com/hoanghuynh296/semi-nextjs-codebase",
         external: true,
       }}
-      footer={
-        <div className="p-2 border-t border-line/60">
-          <div className="flex items-center justify-between text-[11px] text-muted px-1 py-1">
-            <span>Semi UI v0.3.0</span>
-            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 font-medium">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              166 Icons
-            </span>
+      footer={({ collapsed }) =>
+        collapsed ? (
+          <div className="flex justify-center">
+            <ThemeToggle />
           </div>
-        </div>
+        ) : (
+          <div className="flex flex-col gap-2">
+            <ThemeSwitcher fullWidth />
+            <div className="flex items-center justify-between text-[11px] text-muted px-1">
+              <span className="tabular-nums">@semi/ui v{pkg.version}</span>
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 text-success-fg font-medium tabular-nums">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                {ICON_COUNT} icons
+              </span>
+            </div>
+          </div>
+        )
       }
     >
       <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto space-y-8">

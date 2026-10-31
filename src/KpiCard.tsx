@@ -38,7 +38,7 @@ export function KpiCard({
       </div>
       <div
         className={`text-[18px] sm:text-[22px] leading-tight font-semibold tracking-tight tabular-nums truncate ${
-          tone === "danger" ? "text-rose-400" : tone === "good" ? "text-emerald-400" : "text-contrast"
+          tone === "danger" ? "text-danger-fg" : tone === "good" ? "text-success-fg" : "text-contrast"
         }`}
       >
         {loading ? <Skeleton className="h-6 w-28 my-0.5" /> : value}

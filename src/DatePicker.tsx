@@ -124,9 +124,9 @@ export function DatePicker({
                   }}
                   className={`h-8 rounded-lg text-[12px] tabular-nums flex items-center justify-center transition disabled:opacity-30 disabled:pointer-events-none ${
                     isSel
-                      ? "bg-primary-500/20 text-primary-400 font-medium"
+                      ? "bg-primary-500/20 text-accent-fg font-medium"
                       : key === today
-                        ? "text-primary-400 border border-primary-500/40 hover:bg-raised"
+                        ? "text-accent-fg border border-primary-500/40 hover:bg-raised"
                         : outside
                           ? "text-muted/60 hover:bg-raised"
                           : "text-body hover:bg-raised"
@@ -145,7 +145,7 @@ export function DatePicker({
                 onChange(today);
                 setOpen(false);
               }}
-              className="text-[12px] font-medium text-primary-400 hover:text-primary-300 disabled:opacity-30 disabled:pointer-events-none transition"
+              className="text-[12px] font-medium text-accent-fg hover:text-contrast disabled:opacity-30 disabled:pointer-events-none transition"
             >
               Hôm nay
             </button>

@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "../src/ThemeProvider";
+import { ThemeScript } from "../src/ThemeScript";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Semi Design System — Catalogue & Storybook",
-  description: "Foundations, Design Tokens, 166 Semantic Icons & Components for the Semi ecosystem.",
+  description: "Foundations, design tokens, semantic icons & components for the Semi ecosystem.",
 };
 
 export default function RootLayout({
@@ -13,8 +14,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="vi" data-theme="dark" className="dark">
-      <body className="min-h-screen bg-canvas text-body antialiased selection:bg-primary-500/20 selection:text-primary-300">
+    <html lang="vi" data-theme="dark" className="dark" suppressHydrationWarning>
+      <head>
+        <ThemeScript defaultTheme="dark" />
+      </head>
+      <body className="min-h-screen bg-canvas text-body antialiased selection:bg-primary-500/20 selection:text-accent-fg">
         <ThemeProvider defaultTheme="dark">
           {children}
         </ThemeProvider>

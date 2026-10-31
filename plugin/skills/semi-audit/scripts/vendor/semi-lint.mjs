@@ -67,8 +67,8 @@ export const HARD = [
   ],
   [
     "card-class-override",
-    /<Card\b[^>]*\b(bg-white|bg-gray|bg-slate|shadow-)\b/,
-    "Không truyền class màu nền hoặc bóng đè lên component Card của Semi.",
+    /<Card\b[^>]*\bclassName=[^>]*(?<![\w-])(?:[a-z-]+:)*(?:bg|shadow)-/,
+    "<Card> (@semi/ui) owns its surface: pass padding/layout only, no bg-* or shadow-* (use TONAL_CONTAINER on a plain element for a tinted card).",
   ],
   [
     "viewport-grid-cols",
@@ -82,12 +82,12 @@ const OPT_IN = new Set(["viewport-grid-cols"]);
 export const RATCHET = [
   [
     "no-literal-palette",
-    /\b(bg|text|border|divide)-(?:white(?!\/)|black(?!\/)|(?:slate|gray|zinc|neutral|stone)-\d{2,3})\b/g,
-    "Tuyệt đối không dùng class màu vật lý trực tiếp (bg-white, text-slate-900, border-slate-200, divide-slate-100). Hãy dùng Semantic Tokens (bg-panel, bg-field, text-contrast, text-body, text-muted, border-line, divide-divider) để tự động tương thích cả Dark Mode lẫn Light Mode.",
+    /\b(bg|text|border|divide|from|via|to)-(?:white(?!\/)|black(?!\/)|(?:slate|gray|zinc|neutral|stone)-\d{2,3})\b/g,
+    "Tuyệt đối không dùng class màu vật lý trực tiếp (bg-white, text-slate-900, border-slate-200, divide-slate-100, from-white). Hãy dùng Semantic Tokens (bg-panel, bg-field, text-contrast, text-body, text-muted, border-line, divide-divider, from-panel) để tự động tương thích cả Dark Mode lẫn Light Mode. Chú ý: Semi tuân thủ Flat UI (không dùng gradient); nếu là lớp phủ chuyển tiếp tạm thời, phải dùng stop ngữ nghĩa.",
   ],
   [
     "no-solid-pastel-surfaces",
-    /\b(?:bg|border)-(?:amber|red|green|emerald|blue|sky|indigo|purple|violet|pink|rose|orange)-(?:50|100|200)\b(?!\/)/g,
+    /\b(?:(?:hover:|active:)?(?:bg|border)|divide|ring)-(?:amber|yellow|orange|red|rose|pink|fuchsia|purple|violet|indigo|blue|sky|cyan|teal|emerald|green)-(?:50|100|200)\b(?!\/)/g,
     "Tuyệt đối không dùng bề mặt pastel nguyên khối (bg-*-50, border-*-200) vì gây chói lóa trong Dark Mode. Hãy dùng độ mờ alpha (e.g. bg-amber-500/10 border-amber-500/20) hoặc bề mặt chuẩn bg-panel.",
   ],
   ["all-caps-label", /\>\s*[A-ZĐẮẰẲẴẶÂẤẦẨẪẬÊẾỀỂỄỆÔỐỒỔỖỘƠỚỜỞỠỢƯỨỪỬỮỰ]{4,}(?:[ .·…]+[A-ZĐ0-9…]+)*\s*</g, "button / label text is sentence case"],

@@ -2,6 +2,35 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
+## [0.4.0] - 2026-10-31
+
+### Changed (visible)
+- **Light/dark contrast (WCAG AA in both themes):** `BTN_PRIMARY`, `MODAL_BTN_PRIMARY`, `headerPrimary` now use `bg-accent hover:bg-accent-hover text-on-accent` — dark theme: brand green with near-black text (6.6:1, was white at 2.94:1); light theme: `primary-700` with white (6.1:1). Danger buttons, KPI deltas, selected options, active tab, pagination, links, icon tones and `TONAL_SURFACE` use the new themed text tokens instead of fixed `-300/-400` shades.
+- **`text-muted`:** `#8b919a` in dark (5.5:1 on panel, was 3.64:1), `#5b6779` in light (5.2:1 on field, was 4.34:1).
+- **Focus ring default:** `--default-ring-color` follows `primary-500` instead of Tailwind blue.
+
+### Added
+- **Themed semantic tokens:** `bg-accent`, `bg-accent-hover`, `text-on-accent`, `text-accent-fg`, `text-danger-fg`, `text-success-fg`, `text-warning-fg`, `text-info-fg`, `text-tone-<hue>` (purple, violet, indigo, blue, sky, cyan, teal, emerald, amber, orange, rose, pink).
+- **`<ThemeScript />` / `themeScript()`:** inline `<head>` script that applies the stored theme before the first paint (no flash of the dark theme for light-mode users). Use with `<html suppressHydrationWarning>` and the same options as `ThemeProvider`. `/semi-init` starter layout includes it.
+- **`data-theme="system"`:** follows `prefers-color-scheme` in pure CSS.
+- **`<ThemeSwitcher />`:** three-way Sáng · Tối · Hệ thống picker (`showLabels`, `fullWidth`, `labels` for i18n; `radiogroup` semantics). `useTheme()` now also returns `mounted`; `ThemeSwitcher` and `ThemeToggle` show no selection until it is true, so the SSR default never flashes as selected.
+- **`monitor` icon** (system theme / desktop) with catalog metadata.
+- **Storybook:** theme switcher in the sidebar footer (toggle when collapsed), a "0. Theme" showcase with fixed `data-theme="light"` / `"dark"` previews side by side, live package version and icon count.
+- **`<Card>`** (`interactive`, `active`): component form of `CARD` / `CARD_HOVER` / `CARD_ACTIVE`.
+- **Maintainer tooling:** `npm run sync:vendor` / `check:vendor` (plugin copies of `semi-lint` + tokens), `npm run bump <version>` / `check:version` (all five manifests incl. `package-lock.json`), both part of `npm run check`; `.github/workflows/check.yml` runs check + build on PRs.
+
+### Fixed
+- **ThemeProvider** no longer resets `<html>` to `defaultTheme` on mount before reading the stored theme, and follows OS changes while in `system` mode.
+- **Token CSS:** semantic tokens no longer self-reference (`--color-canvas: var(--color-canvas)`); values live in `--semi-*` and utilities read them via `@theme inline`. `--color-*` runtime variables are still defined in every theme scope; `text-text-contrast`-style duplicate utilities are gone.
+- **`/semi-audit` used a stale vendored `semi-lint`** (missing Issue #3/#4 rules); it is re-synced, guarded by `check:vendor`, and the audit's literal-palette pattern now comes from `semi-lint` itself.
+- **`card-class-override`** now targets the real `<Card>` and catches any `bg-*` / `shadow-*`, including variants (`hover:shadow-lg`).
+- **Codemod / audit tonal text:** `/semi-init` maps `text-<hue>-600…900` to `text-tone-<hue>`; `/semi-audit` suggests the same.
+- `package-lock.json` version was stuck at 0.2.5.
+- **`<Loading>` (all skeleton wrappers)** was not positioned, so its absolute `sr-only` label escaped `AppShell`'s scroll container and made the whole window scroll past the shell; it is now `relative`.
+
+### Migration
+- Apps: add `<ThemeScript />` to `<head>` and `suppressHydrationWarning` to `<html>` (see README §3). Apps that override `primary-*` with a dark brand colour should also set `--semi-on-accent: #fff` for the dark theme.
+
 ## [0.3.7] - 2026-10-31
 
 ### Fixed

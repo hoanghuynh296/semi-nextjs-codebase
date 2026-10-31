@@ -20,10 +20,51 @@ import { Modal } from "../../src/Modal";
 import { confirmDialog, ConfirmHost } from "../../src/confirmDialog";
 import { SkeletonCard, SkeletonRows } from "../../src/Skeleton";
 import { Icon } from "../../src/Icon";
+import { ThemeSwitcher, ThemeToggle, useTheme } from "../../src/ThemeProvider";
+import { Card } from "../../src/Card";
 import { BTN_PRIMARY, BTN_SECONDARY, BTN_DANGER, BTN_ICON } from "../../styles/buttons";
 import { FIELD_LABEL, FIELD_INPUT, FIELD_TEXTAREA } from "../../styles/surfaces";
 
 const GITHUB_URL = "https" + "://github.com/hoanghuynh296/semi-nextjs-codebase";
+
+/** A fixed-theme preview: data-theme on any element re-scopes every semantic token inside it. */
+function ThemeScopePreview({ theme }: { theme: "dark" | "light" }) {
+  return (
+    <div data-theme={theme} className={`${theme} p-3 rounded-xl bg-canvas border border-line space-y-2`}>
+      <span className="text-[11px] font-medium text-muted block">data-theme=&quot;{theme}&quot;</span>
+      <Card className="p-3 space-y-2">
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-[13px] font-semibold text-contrast">Bento card</span>
+          <Badge tone="emerald" dot>
+            Online
+          </Badge>
+        </div>
+        <p className="text-[12px] text-body">Body text trên bg-panel.</p>
+        <p className="text-[11px] text-muted">Muted caption · <span className="text-accent-fg">accent link</span></p>
+        <div className="flex gap-2">
+          <button type="button" className={BTN_PRIMARY}>
+            <Icon name="check" />
+            Lưu
+          </button>
+          <button type="button" className={BTN_DANGER}>
+            <Icon name="trash" />
+            Xoá
+          </button>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+function ThemeState() {
+  const { theme, resolvedTheme } = useTheme();
+  return (
+    <span className="text-[12px] text-muted tabular-nums">
+      theme = <span className="text-contrast font-medium">{theme}</span> · resolvedTheme ={" "}
+      <span className="text-contrast font-medium">{resolvedTheme}</span>
+    </span>
+  );
+}
 
 export default function ComponentsShowcasePage() {
   // State for interactive controls
@@ -74,16 +115,44 @@ export default function ComponentsShowcasePage() {
       <div className="space-y-3 pb-2 border-b border-line/60">
         <PageTitle title="Components & Patterns Showcase" />
         <p className="text-[13px] text-muted max-w-3xl leading-relaxed">
-          Tập hợp đầy đủ các component chuẩn của hệ sinh thái Semi UI (<code className="text-primary-300">@semi/ui</code>).
+          Tập hợp đầy đủ các component chuẩn của hệ sinh thái Semi UI (<code className="text-accent-fg">@semi/ui</code>).
           Tuân thủ nguyên tắc Bento layout, dark-first flat surfaces, sentence case labels, và 100% không dùng control native hay glow blob.
         </p>
       </div>
+
+      {/* Pattern 0: Theme */}
+      <section className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-[15px] font-semibold text-body flex items-center gap-2">
+            <Icon name="sun" className="w-4 h-4 text-warning-fg" />
+            <span>0. Theme (Sáng · Tối · Hệ thống)</span>
+          </h2>
+          <span className="text-[11px] text-muted">ThemeScript · ThemeProvider</span>
+        </div>
+
+        <div className="p-4 rounded-xl bg-panel border border-line space-y-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <ThemeSwitcher showLabels />
+            <ThemeSwitcher />
+            <ThemeToggle />
+            <ThemeState />
+          </div>
+          <p className="text-[12px] text-muted">
+            Đổi theme ở đây hoặc ở chân sidebar; lựa chọn được lưu (localStorage &quot;semi-theme&quot;) và áp trước khi trang hiển thị nhờ ThemeScript.
+            Hai khung dưới cố định theme bằng data-theme để so sánh cùng lúc.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <ThemeScopePreview theme="light" />
+            <ThemeScopePreview theme="dark" />
+          </div>
+        </div>
+      </section>
 
       {/* Pattern 1: SubpageToolbar */}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-[15px] font-semibold text-body flex items-center gap-2">
-            <Icon name="sliders" className="w-4 h-4 text-primary-400" />
+            <Icon name="sliders" className="w-4 h-4 text-accent-fg" />
             <span>1. SubpageToolbar (Thanh công cụ trang chuẩn)</span>
           </h2>
           <span className="text-[11px] text-muted">STICKY_TOOLBAR Pattern</span>
@@ -136,7 +205,7 @@ export default function ComponentsShowcasePage() {
       <section className="space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-[15px] font-semibold text-body flex items-center gap-2">
-            <Icon name="zap" className="w-4 h-4 text-amber-400" />
+            <Icon name="zap" className="w-4 h-4 text-warning-fg" />
             <span>2. Button System (Các biến thể nút bấm)</span>
           </h2>
           <span className="text-[11px] text-muted font-medium">@semi/ui/styles</span>
@@ -178,7 +247,7 @@ export default function ComponentsShowcasePage() {
       <section className="space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-[15px] font-semibold text-body flex items-center gap-2">
-            <Icon name="edit" className="w-4 h-4 text-sky-400" />
+            <Icon name="edit" className="w-4 h-4 text-tone-sky" />
             <span>3. Form Controls & Custom Inputs (Không dùng control native)</span>
           </h2>
           <span className="text-[11px] text-muted">Dark-first Form Components</span>
@@ -256,7 +325,7 @@ export default function ComponentsShowcasePage() {
       <section className="space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-[15px] font-semibold text-body flex items-center gap-2">
-            <Icon name="chart" className="w-4 h-4 text-emerald-400" />
+            <Icon name="chart" className="w-4 h-4 text-success-fg" />
             <span>4. KPI Cards & Metrics</span>
           </h2>
           <span className="text-[11px] text-muted">18px–22px Tabular Numbers</span>
@@ -312,7 +381,7 @@ export default function ComponentsShowcasePage() {
       <section className="space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-[15px] font-semibold text-body flex items-center gap-2">
-            <Icon name="tag" className="w-4 h-4 text-violet-400" />
+            <Icon name="tag" className="w-4 h-4 text-tone-violet" />
             <span>5. Chips & Status Indicators</span>
           </h2>
           <span className="text-[11px] text-muted">Semi Tonal Coding</span>
@@ -359,7 +428,7 @@ export default function ComponentsShowcasePage() {
       <section className="space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-[15px] font-semibold text-body flex items-center gap-2">
-            <Icon name="alert" className="w-4 h-4 text-red-400" />
+            <Icon name="alert" className="w-4 h-4 text-danger-fg" />
             <span>6. Modals & Dialogs (Không dùng alert/confirm native)</span>
           </h2>
           <span className="text-[11px] text-muted">Modal Portal & ConfirmHost</span>
@@ -386,7 +455,7 @@ export default function ComponentsShowcasePage() {
             </button>
 
             {confirmResult && (
-              <span className="text-[12px] font-medium text-primary-300 px-3 py-1.5 rounded-lg bg-panel/[0.05] border border-line">
+              <span className="text-[12px] font-medium text-accent-fg px-3 py-1.5 rounded-lg bg-panel/[0.05] border border-line">
                 {confirmResult}
               </span>
             )}
@@ -401,7 +470,7 @@ export default function ComponentsShowcasePage() {
         >
           <div className="space-y-4">
             <p className="text-[13px] text-body leading-relaxed">
-              Modal của Semi sử dụng lớp nền <code className="text-primary-300">bg-field</code> với bán kính <code className="text-primary-300">rounded-2xl</code>, có header và nút đóng chuẩn Semantic Icon.
+              Modal của Semi sử dụng lớp nền <code className="text-accent-fg">bg-field</code> với bán kính <code className="text-accent-fg">rounded-2xl</code>, có header và nút đóng chuẩn Semantic Icon.
             </p>
 
             <div className="space-y-1.5">
@@ -441,7 +510,7 @@ export default function ComponentsShowcasePage() {
       <section className="space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="text-[15px] font-semibold text-body flex items-center gap-2">
-            <Icon name="clock" className="w-4 h-4 text-sky-400" />
+            <Icon name="clock" className="w-4 h-4 text-tone-sky" />
             <span>7. Skeletons (Dùng Shimmer thay vì thông báo tải)</span>
           </h2>
           <span className="text-[11px] text-muted">Shimmer Placeholder</span>

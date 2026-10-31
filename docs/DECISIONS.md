@@ -2,6 +2,12 @@
 
 Newest first. Each entry is a user decision already reflected in `DESIGN_SYSTEM.md`, `QUICK_REF.md` and `lint/semi-lint.mjs`.
 
+- **2026-10-31 (v0.4.0 / Phase 0 hardening):**
+  - *Context:* A review found that the library itself failed light mode (`text-rose-400`, `text-primary-400`, `text-*-300` were 1.9–2.7:1 on white), `BTN_PRIMARY` was 2.94:1 in both themes (white on `primary-500`), dark `text-muted` was 3.64:1, the theme flashed dark on load for light-mode users (ThemeProvider applied the stored theme only after hydration), and `/semi-audit` ran a stale vendored copy of `semi-lint` (without the Issue #3/#4 fixes).
+  - *Decision:* Every text/background pair in shared UI must reach WCAG AA (4.5:1) in both themes, through themed tokens instead of fixed shades or `dark:` pairs: `bg-accent` / `hover:bg-accent-hover` / `text-on-accent` (dark: `primary-500` with near-black text, light: `primary-700` with white), `text-accent-fg`, `text-danger|success|warning|info-fg`, `text-tone-<hue>` for 12 hues. `text-muted` is `#8b919a` dark / `#5b6779` light. Semantic tokens are generated as `--semi-*` sources read through `@theme inline` (no self-referencing `--color-*`).
+  - *Theming:* `<ThemeScript />` in `<head>` applies the stored theme before paint; `ThemeProvider` no longer overwrites it on mount; `data-theme="system"` follows the OS in CSS; `<ThemeSwitcher />` is the standard three-way picker and theme-dependent controls stay unselected until `useTheme().mounted`.
+  - *Tooling:* `npm run check` now also fails on stale plugin vendor copies (`scripts/sync-vendor.mjs`) and on version drift across manifests (`scripts/bump-version.mjs`); `/semi-audit` takes its literal-palette pattern from `semi-lint`. Added `<Card>` so `card-class-override` targets a real component (any `bg-*` / `shadow-*`). CI runs `check` + build on every PR.
+
 - **2026-10-31 (v0.3.7 / Issue #4):**
   - Expanded `no-literal-palette` in `lint/semi-lint.mjs` to check gradient stop utilities (`from-`, `via-`, `to-`), closing Issue #4. Previously, transitional horizontal fade masks (e.g. `from-white to-transparent`) slipped through undetected and caused blinding white blurs on dark mode tabs/carousels.
   - Added mappings for `(from|via|to)-white` $\rightarrow$ `$1-panel` and `(from|via|to)-slate-50` $\rightarrow$ `$1-field` in `/semi-init` codemod (`runSemanticCodemod`).

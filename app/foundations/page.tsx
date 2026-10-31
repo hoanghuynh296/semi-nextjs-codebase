@@ -107,7 +107,7 @@ export default function FoundationsPage() {
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-[15px] font-semibold text-body flex items-center gap-2">
-            <Icon name="layers" className="w-4 h-4 text-primary-400" />
+            <Icon name="layers" className="w-4 h-4 text-accent-fg" />
             <span>Dark Surfaces & Tokens Scale</span>
           </h2>
           <span className="text-[11px] text-muted font-medium">Bento 5-Surface Architecture</span>
@@ -144,12 +144,12 @@ export default function FoundationsPage() {
         {/* Radius rule banner */}
         <div className="p-3.5 rounded-xl bg-panel border border-line flex flex-wrap items-center justify-between gap-4 text-[12px]">
           <div className="flex items-center gap-2 text-body">
-            <Icon name="info" className="w-4 h-4 text-sky-400 shrink-0" />
+            <Icon name="info" className="w-4 h-4 text-tone-sky shrink-0" />
             <span>
-              <strong>Bán kính viền (Radii):</strong> <code className="text-primary-300">rounded-lg</code> (Controls 8px) · <code className="text-primary-300">rounded-xl</code> (Cards 12px) · <code className="text-primary-300">rounded-2xl</code> (Panels/Modal 16px) · <code className="text-primary-300">rounded-full</code> (Chips/Pills)
+              <strong>Bán kính viền (Radii):</strong> <code className="text-accent-fg">rounded-lg</code> (Controls 8px) · <code className="text-accent-fg">rounded-xl</code> (Cards 12px) · <code className="text-accent-fg">rounded-2xl</code> (Panels/Modal 16px) · <code className="text-accent-fg">rounded-full</code> (Chips/Pills)
             </span>
           </div>
-          <span className="text-[11px] px-2.5 py-1 rounded bg-red-500/10 text-red-400 font-medium">
+          <span className="text-[11px] px-2.5 py-1 rounded bg-red-500/10 text-danger-fg font-medium">
             Không dùng bán kính trung bình (bị chặn bởi linter)
           </span>
         </div>
@@ -159,7 +159,7 @@ export default function FoundationsPage() {
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-[15px] font-semibold text-body flex items-center gap-2">
-            <Icon name="code" className="w-4 h-4 text-primary-400" />
+            <Icon name="code" className="w-4 h-4 text-accent-fg" />
             <span>Typography Scale & Constraints</span>
           </h2>
           <span className="text-[11px] text-muted">font-medium / font-semibold only</span>
@@ -177,7 +177,7 @@ export default function FoundationsPage() {
             <div className="space-y-1.5 p-3 rounded-lg bg-panel/[0.03]">
               <span className="text-[11px] text-muted block font-medium">KPI & Figures (18px - 22px)</span>
               <div className="text-[20px] font-semibold text-contrast tabular-nums">
-                12.450.000 ₫ <span className="text-emerald-400 text-[13px] font-medium">+15.8%</span>
+                12.450.000 ₫ <span className="text-success-fg text-[13px] font-medium">+15.8%</span>
               </div>
               <p className="text-[11px] text-muted">Luôn dùng tabular-nums cho số đo, số tiền, giờ in</p>
             </div>
@@ -197,14 +197,14 @@ export default function FoundationsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h2 className="text-[16px] font-semibold text-contrast flex items-center gap-2">
-              <Icon name="sparkles" className="w-4 h-4 text-primary-400" />
+              <Icon name="sparkles" className="w-4 h-4 text-accent-fg" />
               <span>Interactive Icon Explorer</span>
               <span className="text-[12px] font-normal px-2 py-0.5 rounded-full bg-panel/[0.08] text-body">
                 {filteredIcons.length} / {totalCount} icons
               </span>
             </h2>
             <p className="text-[12px] text-muted pt-0.5">
-              Click bất kỳ icon nào để copy nhanh mã JSX <code className="text-primary-300">&lt;Icon name=&quot;...&quot; /&gt;</code>
+              Click bất kỳ icon nào để copy nhanh mã JSX <code className="text-accent-fg">&lt;Icon name=&quot;...&quot; /&gt;</code>
             </p>
           </div>
 
@@ -254,7 +254,7 @@ export default function FoundationsPage() {
             {/* Quick stats pill */}
             <div className="flex items-center gap-2 shrink-0">
               {copiedIcon && (
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-[12px] font-semibold animate-pulse">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-success-fg text-[12px] font-semibold animate-pulse">
                   <Icon name="check" className="w-3.5 h-3.5" />
                   <span>Đã copy &lt;Icon name=&quot;{copiedIcon}&quot; /&gt;</span>
                 </div>
@@ -352,7 +352,7 @@ export default function FoundationsPage() {
                 Icon Semantic Inspector
               </span>
               {selectedMeta?.domain && (
-                <span className="px-2 py-0.5 rounded-full text-[11px] font-medium bg-primary-500/15 text-primary-300">
+                <span className="px-2 py-0.5 rounded-full text-[11px] font-medium bg-primary-500/15 text-accent-fg">
                   {selectedMeta.domain}
                 </span>
               )}
@@ -383,19 +383,19 @@ export default function FoundationsPage() {
 
                 {/* Do & Don't */}
                 <div className="space-y-2 text-[12px]">
-                  <div className="p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 space-y-1">
+                  <div className="p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-success-fg space-y-1">
                     <span className="font-semibold flex items-center gap-1.5 text-[11px]">
                       <Icon name="check" className="w-3.5 h-3.5" />
                       NÊN DÙNG (DO):
                     </span>
-                    <p className="text-[11px] text-emerald-200/90 leading-normal">{selectedMeta.do}</p>
+                    <p className="text-[11px] text-success-fg leading-normal">{selectedMeta.do}</p>
                   </div>
-                  <div className="p-2.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-300 space-y-1">
+                  <div className="p-2.5 rounded-lg bg-red-500/10 border border-red-500/20 text-danger-fg space-y-1">
                     <span className="font-semibold flex items-center gap-1.5 text-[11px]">
                       <Icon name="close" className="w-3.5 h-3.5" />
                       CẤM DÙNG (DON&apos;T):
                     </span>
-                    <p className="text-[11px] text-red-200/90 leading-normal">{selectedMeta.dont}</p>
+                    <p className="text-[11px] text-danger-fg leading-normal">{selectedMeta.dont}</p>
                   </div>
                 </div>
 
@@ -403,7 +403,7 @@ export default function FoundationsPage() {
                 {selectedMeta.lucideEquivalent && (
                   <div className="space-y-1 text-[11px]">
                     <span className="font-medium text-muted block">Tên chuẩn Lucide:</span>
-                    <code className="px-2 py-1 rounded bg-panel/[0.06] text-sky-300 block text-[11px]">
+                    <code className="px-2 py-1 rounded bg-panel/[0.06] text-tone-sky block text-[11px]">
                       {selectedMeta.lucideEquivalent}
                     </code>
                   </div>
@@ -414,7 +414,7 @@ export default function FoundationsPage() {
                   <span className="text-[11px] font-semibold text-muted block">Mã nguồn JSX:</span>
                   <div
                     onClick={() => handleCopy(selectedMeta.name)}
-                    className="p-2.5 rounded-lg bg-canvas border border-line text-[11px] text-primary-300 hover:border-primary-400 transition-colors cursor-pointer group flex items-center justify-between"
+                    className="p-2.5 rounded-lg bg-canvas border border-line text-[11px] text-accent-fg hover:border-primary-400 transition-colors cursor-pointer group flex items-center justify-between"
                   >
                     <span>&lt;Icon name=&quot;{selectedMeta.name}&quot; /&gt;</span>
                     <Icon name="copy" className="w-3.5 h-3.5 text-muted group-hover:text-primary-300" />

@@ -169,8 +169,9 @@ export function auditSingleApp(cwd) {
   let totalPhysical = 0;
   const semanticCounts = new Map();
   let totalSemantic = 0;
-  const PHYSICAL_RX = /\b(bg|text|border|divide|from|via|to)-(?:white|black|(?:slate|gray|zinc|neutral|stone)-\d{2,3})\b/g;
-  const SEMANTIC_RX = /\b((?:bg|from|via|to)-(?:canvas|app|panel|field|raised)|text-(?:contrast|body|muted)|(?:border|divide)-(?:line|divider|line-hover))\b/g;
+  // Same pattern semi-lint enforces (no-literal-palette), so the report and the lint never disagree.
+  const PHYSICAL_RX = new RegExp(RATCHET.find(([id]) => id === "no-literal-palette")[1].source, "g");
+  const SEMANTIC_RX = /\b((?:bg|from|via|to)-(?:canvas|app|panel|field|raised|accent|accent-hover)|text-(?:contrast|body|muted|on-accent|accent-fg|danger-fg|success-fg|warning-fg|info-fg|tone-[a-z]+)|(?:border|divide)-(?:line|divider|line-hover))\b/g;
 
   const CHROMATIC_TONAL_RX = /\b(?:(?:hover:|active:)?(?:bg|border)|divide|ring|text)-(amber|yellow|orange|red|rose|pink|fuchsia|purple|violet|indigo|blue|sky|cyan|teal|emerald|green)-(?:50|100|200|300|600|700|800|900)\b/g;
   const tonalCounts = new Map();
@@ -381,7 +382,7 @@ export function auditSingleApp(cwd) {
       id: "tonal-matching-codemod",
       question: `Found ${totalTonal} chromatic tonal class usages (cards, callouts, alert banners, rows, buttons, badges, chips) across ${tonalFilesByColor.size} color families. How should they be adapted?`,
       options: [
-        "(Recommended) Automatically adapt to Semi Dual-Theme Tone Matching (bg-<color>-500/10 border-<color>-500/20 text-<color>-700 dark:text-<color>-300, hover:bg-<color>-500/15)",
+        "(Recommended) Automatically adapt to Semi Dual-Theme Tone Matching (bg-<color>-500/10 border-<color>-500/20 text-tone-<color>, hover:bg-<color>-500/15)",
         "Convert to neutral gray surfaces (bg-field border-line text-muted)",
         "Keep existing classes as-is",
       ],
@@ -521,7 +522,7 @@ function formatSingleAppMarkdown(r) {
           ...r.colours.tonalColors.map(
             (t) =>
               `- **${t.color.charAt(0).toUpperCase() + t.color.slice(1)} (${t.count}x):** ${t.sampleClasses.join(", ")} in ${t.files.map((f) => `\`${f}\``).join(", ")}\n` +
-              `  → *Semi Dual-Theme Adapt:* \`bg-${t.color}-500/10 border-${t.color}-500/20 text-${t.color}-700 dark:text-${t.color}-300\` | *Hover:* \`hover:bg-${t.color}-500/15 hover:border-${t.color}-500/30\` (or \`<Badge tone="${t.color}">\`, \`TONAL_CONTAINER\`, \`TONAL_HOVER\`)`
+              `  → *Semi Dual-Theme Adapt:* \`bg-${t.color}-500/10 border-${t.color}-500/20 text-tone-${{ green: "emerald", yellow: "amber", red: "rose" }[t.color] ?? t.color}\` | *Hover:* \`hover:bg-${t.color}-500/15 hover:border-${t.color}-500/30\` (or \`<Badge tone="${t.color}">\`, \`TONAL_CONTAINER\`, \`TONAL_HOVER\`)`
           ),
           `> \`/semi-init\` will automatically adapt any tonal components (cards, callouts, alert banners, rows, buttons, badges, chips) to theme-matching dual-theme tones, preserving their original color identity without dark-mode glare.`,
         ]

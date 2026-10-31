@@ -208,7 +208,7 @@ export function CustomSelect({
                       {iconsInList && opt.icon}
                       <span className="truncate">{opt.label}</span>
                     </span>
-                    {isSelected && <Icon name="check" className="w-3.5 h-3.5 text-primary-400 shrink-0" />}
+                    {isSelected && <Icon name="check" className="w-3.5 h-3.5 text-accent-fg shrink-0" />}
                   </button>
                 </React.Fragment>
               );

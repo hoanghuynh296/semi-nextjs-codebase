@@ -67,8 +67,8 @@ export const HARD = [
   ],
   [
     "card-class-override",
-    /<Card\b[^>]*\b(bg-white|bg-gray|bg-slate|shadow-)\b/,
-    "Không truyền class màu nền hoặc bóng đè lên component Card của Semi.",
+    /<Card\b[^>]*\bclassName=[^>]*(?<![\w-])(?:[a-z-]+:)*(?:bg|shadow)-/,
+    "<Card> (@semi/ui) owns its surface: pass padding/layout only, no bg-* or shadow-* (use TONAL_CONTAINER on a plain element for a tinted card).",
   ],
   [
     "viewport-grid-cols",

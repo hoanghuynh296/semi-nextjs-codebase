@@ -44,7 +44,7 @@ export function AppHeader({
     <>
       {logo ?? (
         <span className="w-6 h-6 rounded-lg bg-field border border-line text-contrast flex items-center justify-center shrink-0">
-          <Icon name={logoIcon} className="w-3.5 h-3.5 text-primary-400" />
+          <Icon name={logoIcon} className="w-3.5 h-3.5 text-accent-fg" />
         </span>
       )}
       <span

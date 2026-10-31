@@ -511,6 +511,14 @@ export const ICON_CATALOG: Record<IconName, IconMeta> = {
     dont: "Không dùng cho chế độ ban ngày (dùng sun).",
     keywords: ["mặt trăng", "tối", "dark mode", "moon", "night", "theme"],
   },
+  monitor: {
+    name: "monitor",
+    category: "status",
+    purpose: "Theo hệ điều hành (System theme) hoặc thiết bị màn hình / desktop",
+    do: "Dùng cho lựa chọn giao diện \"Theo hệ thống\" cạnh sun / moon, hoặc biểu thị phiên bản desktop.",
+    dont: "Không dùng cho máy chủ (dùng server) hay chip xử lý (dùng cpu).",
+    keywords: ["màn hình", "hệ thống", "system theme", "monitor", "desktop", "screen", "theme"],
+  },
   tag: {
     name: "tag",
     category: "commerce",
