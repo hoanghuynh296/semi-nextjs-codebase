@@ -13,6 +13,7 @@ the docs, which ship inside `@semi/ui` and so always match the installed version
 | What props does an export take? | `semi_props { name }` | `semi props <Component>` |
 | What exists, by group? | `semi_list { group? }` | `semi list [--group AI]` |
 | A whole page? | `semi_block { id? }` | `semi blocks`, `semi add <id> [--out path] [--force]` |
+| How does this app's brand write, use colour, place its logo? | `semi_brand { topic? }` (`voice`, `color`, `logo`, `brief`, `tokens`; none = BRAND.md) | `semi brand [topic]` |
 
 **Search** takes plain words in Vietnamese or English ("bảng có sắp xếp và chọn dòng", "agent asks before sending
 email"). Vietnamese UI terms map to the English docs (bảng → table, sắp xếp → sort, biểu đồ → chart …), filler words

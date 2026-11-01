@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { renameExport, renameProp } from "../../migrations/lib.mjs";
+import { accentStateTokens, renameExport, renameProp } from "../../migrations/lib.mjs";
 import { cmpVersion, loadMigrations, pending, runMigrations } from "../../plugin/skills/semi-update/scripts/migrate.mjs";
 
 const root = new URL("../..", import.meta.url).pathname;
@@ -39,6 +39,16 @@ test("renameExport renames the import and its uses, only in files importing it f
   assert.equal(renameExport(out, "KpiCard", "MetricCard"), out, "second run changes nothing");
   const local = `import { KpiCard } from "./mine";\n<KpiCard />`;
   assert.equal(renameExport(local, "KpiCard", "MetricCard"), local);
+});
+
+test("accentStateTokens: brand-scale states become themed accent tokens, solid fills and other hues stay", () => {
+  const src = `cn("focus-visible:ring-2 focus-visible:ring-primary-500/50", "focus:border-primary-500/50 hover:border-primary-500/30", "bg-primary-500/15 hover:bg-primary-500/25 bg-primary-500 bg-rose-500/10", "md:focus-within:border-primary-400")`;
+  const out = accentStateTokens(src);
+  assert.equal(
+    out,
+    `cn("focus-visible:ring-2 focus-visible:ring-focus", "focus:border-focus hover:border-accent-line", "bg-accent-subtle hover:bg-accent-subtle-hover bg-primary-500 bg-rose-500/10", "md:focus-within:border-focus")`,
+  );
+  assert.equal(accentStateTokens(out), out, "second run changes nothing");
 });
 
 test("renameProp only touches that component's tag", () => {

@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, readFileSync, existsSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import * as core from "../../cli/core.mjs";
@@ -71,4 +71,19 @@ test("mcp: initialize, list tools and call one over stdio", () => {
   assert.ok(out[1].result.tools.some((t) => t.name === "semi_search"));
   assert.match(out[2].result.content[0].text, /^# Slider/);
   assert.equal(out[3].result.isError, true);
+});
+
+test("brand: semi brand / semi_brand answer from the app's brand kit; an app without one is told so", () => {
+  const app = mkdtempSync(join(tmpdir(), "semi-brand-app-"));
+  assert.match(cli(["brand"], { cwd: app }).stderr, /no brand kit/);
+  writeFileSync(join(app, "semi-lint.json"), JSON.stringify({ brand: "@acme/brand" }));
+  const kit = join(app, "node_modules", "@acme", "brand");
+  mkdirSync(join(kit, "dist"), { recursive: true });
+  const guide = { voice: { tone: "friendly", address: "bạn", examples: { error: "Chưa lưu được." } }, color: { accent: "restrained" }, logo: { fullDist: "dist/logo/full.svg" } };
+  writeFileSync(join(kit, "dist", "brand.json"), JSON.stringify({ name: "Acme", package: "@acme/brand", styles: { default: "flat", allowed: ["flat"] }, fonts: [{ family: "Inter" }], themes: {}, guide }));
+  writeFileSync(join(kit, "BRAND.md"), "# Acme: brand guideline\n");
+  const voice = JSON.parse(cli(["brand", "voice", "--json"], { cwd: app }).stdout);
+  assert.equal(voice.voice.examples.error, "Chưa lưu được.");
+  assert.equal(JSON.parse(cli(["brand", "logo", "--json"], { cwd: app }).stdout).logo.import.full, "@acme/brand/dist/logo/full.svg");
+  assert.match(cli(["brand"], { cwd: app }).stdout, /^# Acme: brand guideline/);
 });

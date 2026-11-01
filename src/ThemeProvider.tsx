@@ -180,7 +180,7 @@ export function ThemeSwitcher({
             aria-label={labels[key]}
             title={labels[key]}
             onClick={() => setTheme(key)}
-            className={`${fullWidth ? "flex-1" : ""} ${showLabels ? "px-2.5" : "w-8"} h-full rounded-control inline-flex items-center justify-center gap-1.5 text-label font-medium whitespace-nowrap transition cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 ${
+            className={`${fullWidth ? "flex-1" : ""} ${showLabels ? "px-2.5" : "w-8"} h-full rounded-control inline-flex items-center justify-center gap-1.5 text-label font-medium whitespace-nowrap transition cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-focus ${
               on ? "bg-raised text-contrast" : "text-muted hover:text-contrast"
             }`}
           >

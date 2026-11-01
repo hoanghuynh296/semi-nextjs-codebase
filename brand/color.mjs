@@ -85,3 +85,21 @@ export function contrast(a, b) {
 
 /** Smallest hue distance in degrees. */
 export const hueDistance = (a, b) => Math.min(Math.abs(a - b), 360 - Math.abs(a - b));
+
+/** Distance of two colours in OKLab (0 = same colour; ≈0.02 is barely visible, 0.1 clearly another shade). */
+export function deltaE(a, b) {
+  const p = hexToOklch(a);
+  const q = hexToOklch(b);
+  const ab = ({ c, h }) => [c * Math.cos((h * Math.PI) / 180), c * Math.sin((h * Math.PI) / 180)];
+  const [pa, pb] = ab(p);
+  const [qa, qb] = ab(q);
+  return Math.hypot(p.l - q.l, pa - qa, pb - qb);
+}
+
+/** `fg` at `alpha` over the opaque `bg` (sRGB, as the browser composites), as hex. */
+export function blend(fg, bg, alpha) {
+  const f = parseColor(fg);
+  const b = parseColor(bg);
+  const mix = (k) => Math.round((f[k] * alpha + b[k] * (1 - alpha)) * 255).toString(16).padStart(2, "0");
+  return `#${mix("r")}${mix("g")}${mix("b")}`;
+}

@@ -111,6 +111,11 @@ export const RATCHET = [
     null,
     "No fixed chromatic text shades (text-emerald-400, text-rose-700, dark:text-sky-300, fill-amber-500 …): one shade cannot pass contrast in both themes. Use text-accent-fg, text-danger-fg / success-fg / warning-fg / info-fg or text-tone-<hue>.",
   ],
+  [
+    "accent-state-token",
+    null,
+    "Accent states use themed tokens, not the brand scale: ring-focus (focus ring), border-focus (focused field), bg-accent-subtle / bg-accent-subtle-hover (selected or hover tint), border-accent-line (selected border), bg-accent (fill). primary-N/alpha is not checked in either theme and disappears for light brands.",
+  ],
   ["hex-colour-class", null, "No arbitrary colour values (bg-[#fff], text-[rgb(…)], border-[hsl(…)]): use colour tokens."],
   ["literal-colour-value", null, "No literal CSS colours in code (\"#fff\", \"rgb(…)\" in style props or configs): use var(--color-…) tokens."],
   ["radius-token", null, "Radii are style tokens: rounded-chip (marks, checkboxes, inline code) · rounded-control (buttons, inputs, tiles, rows) · rounded-card · rounded-panel (hero, modal, drawer, sidebar), plus rounded-full / rounded-none. Not rounded / rounded-lg / rounded-xl / rounded-[Npx]: those do not follow the app's style."],

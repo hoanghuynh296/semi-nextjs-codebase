@@ -6,6 +6,7 @@
 //   semi props Button                 props from components.json
 //   semi list [--group AI]            every doc by group
 //   semi blocks / semi add <block>    page-level blocks; add copies one into the app
+//   semi brand [voice|color|logo|brief|tokens]   this app's brand kit (voice, colour use, logo), or its BRAND.md
 //   semi mcp                          the same tools as an MCP server on stdio
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -35,11 +36,18 @@ const HELP = `semi ${core.version()} — Semi Design System docs for agents
   semi list [--group <name>]   every doc, by group
   semi blocks                  page-level blocks
   semi add <block> [--out <path>] [--force]   copy a block into this app
+  semi brand [topic]           this app's brand: voice | color | logo | brief | tokens (default: BRAND.md)
   semi mcp                     run as an MCP server (stdio)
 
 Add --json for structured output.`;
 
 switch (cmd) {
+  case "brand": {
+    const r = core.brand(rest[0] ?? "all");
+    if (r.error) fail(r.error);
+    out(r, r.markdown ?? JSON.stringify(r, null, 2));
+    break;
+  }
   case "search": {
     const q = rest.join(" ");
     if (!q) fail("semi search <need…>");

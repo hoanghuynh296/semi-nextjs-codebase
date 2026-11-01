@@ -68,9 +68,8 @@ export default function BrandPage() {
     toast({ title: `Đã copy ${what}`, tone: "success" });
   };
   const brandJson = JSON.stringify(brand, null, 2);
-  const command = `node <plugin>/skills/semi-brand/scripts/brand.mjs create --cwd . --name "${brand.name}" --package "${brand.package}" --primary "${brand.primary}"${
-    brand.secondary ? ` --secondary "${brand.secondary}"` : ""
-  } --neutral ${brand.neutral} --style ${brand.styles.default} --allow ${brand.styles.allowed.join(",")} --sans "${brand.fonts.sans}" --display "${brand.fonts.display}"`;
+  // What to paste into the agent in an empty brand repo: /semi-brand takes these choices instead of asking for them.
+  const prompt = `/semi-brand tạo brand kit từ brand.json này:\n\n\`\`\`json\n${brandJson}\n\`\`\``;
 
   return (
     <>
@@ -78,8 +77,8 @@ export default function BrandPage() {
         <PageTitle title="Brand preview" />
         <p className="text-ui text-muted max-w-3xl leading-relaxed">
           Xem một thương hiệu trên toàn bộ Semi trước khi tạo brand kit. Chỉ chọn vài thứ (màu chính, màu phụ, màu trung tính, style, font); thang màu, màu
-          nút cho nền sáng / tối và màu trung tính của từng style do Semi tự sinh và kiểm tra đọc rõ. Bật xem trước để mọi trang Storybook đổi theo. Hướng dẫn:
-          docs/BRANDS.md.
+          nút cho nền sáng / tối và màu trung tính của từng style do Semi tự sinh và kiểm tra đọc rõ. Bật xem trước để mọi trang của docs đổi theo. Ưng ý thì copy lệnh cho agent và dán vào
+          /semi-brand trong repo brand trống. Hướng dẫn: docs/BRANDS.md.
         </p>
       </div>
 
@@ -142,8 +141,8 @@ export default function BrandPage() {
           <Button variant="secondary" icon="copy" onClick={() => copy(brandJson, "brand.json")}>
             Copy brand.json
           </Button>
-          <Button variant="secondary" icon="code" onClick={() => copy(command, "lệnh tạo brand kit")}>
-            Copy lệnh tạo kit
+          <Button variant="secondary" icon="code" onClick={() => copy(prompt, "lệnh cho agent")}>
+            Copy lệnh cho agent
           </Button>
         </div>
       </ShowcaseSection>
@@ -173,23 +172,27 @@ export default function BrandPage() {
               ))}
               <div className="grid gap-3 @xl:grid-cols-3">
                 <KpiCard
-                  label="Cặp màu đạt AA"
+                  label="Cặp màu đạt"
                   value={`${result.report.filter((r) => r.ok).length}/${result.report.length}`}
                   icon="check"
                   iconTone="green"
-                  tone={result.report.every((r) => r.ok) ? "good" : "danger"}
+                  tone={result.report.every((r) => r.ok || r.soft) ? "good" : "danger"}
                 />
                 <div className={`${CARD} p-4 space-y-2 @xl:col-span-2`}>
-                  <DemoLabel>Màu nút chính</DemoLabel>
-                  <div className="flex flex-wrap gap-2 text-label">
-                    {(["dark", "light"] as const).map((t) => (
-                      <span key={t} className="inline-flex items-center gap-2">
-                        <Badge tone="gray">{t === "dark" ? "Tối" : "Sáng"}</Badge>
-                        <span className="tabular-nums text-body">
-                          {result.tokens.themes[t]["color-accent"]} / chữ {result.tokens.themes[t]["color-on-accent"]}
+                  <DemoLabel>Nút chính so với màu thương hiệu</DemoLabel>
+                  <div className="flex flex-col gap-2 text-label">
+                    {(["dark", "light"] as const).map((t) => {
+                      const f = result.tokens.fidelity[t];
+                      return (
+                        <span key={t} className="inline-flex flex-wrap items-center gap-2">
+                          <Badge tone="gray">{t === "dark" ? "Tối" : "Sáng"}</Badge>
+                          <span className="tabular-nums text-body">
+                            primary-{f.fill} {result.tokens.themes[t]["color-accent"]} · chữ {result.tokens.themes[t]["color-on-accent"]}
+                          </span>
+                          <Badge tone={f.deltaE <= 0.08 ? "green" : "amber"}>{f.deltaE === 0 ? "đúng màu thương hiệu" : `lệch ΔE ${f.deltaE.toFixed(2)}`}</Badge>
                         </span>
-                      </span>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               </div>
@@ -204,6 +207,7 @@ export default function BrandPage() {
                     <TH>Kiểm tra</TH>
                     <TH>Cặp</TH>
                     <TH align="right">Tỉ lệ</TH>
+                    <TH align="right">Cần</TH>
                     <TH>Kết quả</TH>
                   </TR>
                 </THead>
@@ -215,9 +219,12 @@ export default function BrandPage() {
                       <TD align="right" numeric>
                         {r.ratio.toFixed(2)}
                       </TD>
+                      <TD align="right" numeric>
+                        {r.min}
+                      </TD>
                       <TD>
-                        <Badge tone={r.ok ? "green" : "rose"} dot>
-                          {r.ok ? "Đạt" : "Chưa đạt"}
+                        <Badge tone={r.ok ? "green" : r.soft ? "amber" : "rose"} dot>
+                          {r.ok ? "Đạt" : r.soft ? "Lưu ý" : "Chưa đạt"}
                         </Badge>
                       </TD>
                     </TR>

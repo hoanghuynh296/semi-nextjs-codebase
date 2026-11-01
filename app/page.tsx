@@ -43,7 +43,7 @@ export default function HomePage() {
 
       <section className="grid gap-3 @3xl:grid-cols-3">
         {START.map((s) => (
-          <Link key={s.href} href={s.href} className={`${CARD_HOVER} p-4 space-y-2 outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50`}>
+          <Link key={s.href} href={s.href} className={`${CARD_HOVER} p-4 space-y-2 outline-none focus-visible:ring-2 focus-visible:ring-focus`}>
             <Icon name={s.icon} className="w-5 h-5 text-accent-fg" />
             <div className="text-title font-semibold text-contrast">{s.title}</div>
             <p className="text-label text-muted">{s.text}</p>

@@ -221,7 +221,7 @@ export function Icon({
  * to tell apart, while chips, pills and buttons stay neutral. Tints only (15% fill + light icon), no gradients.
  */
 export const TILE_TONES = {
-  green: "bg-primary-500/15 text-accent-fg", // main areas, "on" states
+  green: "bg-accent-subtle text-accent-fg", // main areas, "on" states
   pink: "bg-pink-500/15 text-tone-pink", // filament, colours, sensors
   sky: "bg-sky-500/15 text-tone-sky", // camera, print hours
   amber: "bg-amber-500/15 text-tone-amber", // peripherals, lights

@@ -266,7 +266,7 @@ export function AppShell({
                   target={primaryCta.external ? "_blank" : undefined}
                   rel={primaryCta.external ? "noopener noreferrer" : undefined}
                   title={primaryCta.label}
-                  className={`shrink-0 w-full h-9 rounded-control bg-primary-500/15 hover:bg-primary-500/25 border border-primary-500/30 hover:border-primary-500/50 text-contrast flex items-center text-label font-semibold transition active:scale-[0.99] ${
+                  className={`shrink-0 w-full h-9 rounded-control bg-accent-subtle hover:bg-accent-subtle-hover border border-accent-line hover:border-accent-line text-contrast flex items-center text-label font-semibold transition active:scale-[0.99] ${
                     collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2 lg:px-2.5"
                   }`}
                 >
@@ -280,7 +280,7 @@ export function AppShell({
                   type="button"
                   onClick={primaryCta.onClick}
                   title={primaryCta.label}
-                  className={`shrink-0 w-full h-9 rounded-control bg-primary-500/15 hover:bg-primary-500/25 border border-primary-500/30 hover:border-primary-500/50 text-contrast flex items-center text-label font-semibold transition active:scale-[0.99] cursor-pointer ${
+                  className={`shrink-0 w-full h-9 rounded-control bg-accent-subtle hover:bg-accent-subtle-hover border border-accent-line hover:border-accent-line text-contrast flex items-center text-label font-semibold transition active:scale-[0.99] cursor-pointer ${
                     collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2 lg:px-2.5"
                   }`}
                 >

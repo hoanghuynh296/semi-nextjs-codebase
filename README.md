@@ -108,7 +108,8 @@ style: `/semi-style`. Danh sách: `tokens/styles.json`, mô tả: `docs/STYLES.m
 ```
 Agent tìm đúng component hoặc block cho từng nhu cầu (gõ tiếng Việt hay tiếng Anh đều được), đọc trang docs của nó,
 bắt đầu từ ví dụ, ghép trang rồi chạy `semi-lint`. Plugin tự chạy MCP server `semi` (công cụ `semi_search`,
-`semi_docs`, `semi_example`, `semi_props`, `semi_list`, `semi_block`) đọc từ `@semi/ui` đã cài, nên luôn khớp phiên
+`semi_docs`, `semi_example`, `semi_props`, `semi_list`, `semi_block`, và `semi_brand` cho giọng văn, cách dùng màu,
+logo của brand kit) đọc từ `@semi/ui` đã cài, nên luôn khớp phiên
 bản. Từ terminal cũng dùng được:
 ```bash
 npx semi search "bảng có sắp xếp và chọn dòng"

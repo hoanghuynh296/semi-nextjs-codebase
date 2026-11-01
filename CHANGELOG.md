@@ -4,6 +4,27 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-11-01
+
+### Added
+- **Accent state tokens:** `ring-focus` / `border-focus` (focus ring, focused field), `bg-accent-subtle` / `bg-accent-subtle-hover` (selected, active), `border-accent-line` (selected border). They follow `accent-fg`, so they reach 3:1 in both themes for every brand. Every component and class constant uses them (`FOCUS_RING`, `FIELD_INPUT`, `CARD_ACTIVE`, Pagination, Combobox, Calendar, Chat, AppShell …).
+- **`accent-state-token` lint rule** (ratchet): `ring-primary-500/50`, `bg-primary-500/15`, `border-primary-500/30` and other brand-scale state colours. `/semi-fix` rewrites them.
+- **Brand kits:** `bg-secondary-solid` + `text-on-secondary` for a secondary colour; `brandStep` and `fidelity` (button shade and its ΔE from the brand colour, per theme) in `dist/brand.json`; the report checks the hover of the button and the focus ring (3:1), and lists "nút tách khỏi nền" as a soft finding.
+- **Brand guideline, not only colours:** `brand.json` takes an optional `brief` (product, audience, personality), `logo` (full / dark / mark files, clear space, min width), `voice` (tone friendly · neutral · formal, how to address the user, emoji, do / don't, example texts), `color` (how much accent, secondary colour role) and `imagery`. The build validates them, copies logos to `dist/logo/`, and writes a full `BRAND.md` (brief, logo, colour use, voice with Semi's shared microcopy rules, imagery) and an `AGENTS.brand.md` of decisions (one primary per area, accent use, secondary role, logo import, voice and example texts), not only prohibitions. Missing voice is a warning.
+- **Kit preview:** a sample product screen in light and dark side by side (texts from the voice), the logo on both backgrounds with its clear space, the voice and colour-use sections.
+- **`semi_brand` MCP tool / `semi brand [voice|color|logo|brief|tokens]`:** agents in a product ask the installed brand kit how to write, use colour and place the logo.
+- **`/semi-brand`:** starts from a brief and recommends from it; asks for the logo, voice and colour use; `brand.mjs colors <logo.svg>` lists a logo's colours; `create --from <brand.json>`; new `set` keys (`tone`, `address`, `we`, `emoji`, `accent`, `secondaryRole`, `product`, `audience`, `personality`, `logo`, `logoDark`, `mark`, `imagery`). A new logo is a major kit change, voice / colour use / brief a minor one.
+- Docs site *Brand preview*: the button's distance from the brand colour per theme, a "Cần" column and soft findings in the contrast table; "Copy lệnh cho agent" (a `/semi-brand` prompt with the brand.json) replaces the command that had a `<plugin>` placeholder.
+
+### Changed
+- **Brand scales sit on a fixed lightness ladder** (`LADDER` in `brand/generate.mjs`) with the brand colour unchanged on its nearest shade (`brandStep`), instead of `500 = the brand colour`. Very dark and very light brands no longer get identical shades or invisible hovers. `--color-primary` / `--color-secondary` are still the exact brand colours.
+- **The button keeps the brand colour where it can:** per theme, the AA shade (white or dark text) closest to the brand colour; lifted only when it would blend into the page. E.g. `#FF6B00` light theme: `#df5d00` with dark text (was `#a14100` with white); `#1E3A8A` dark theme: `#5670aa` (was `#7d93c3`). Coloured text (`accent-fg`) is the closest shade that reads on every surface and on `bg-accent-subtle`.
+- The focus ring is now solid `accent-fg` (was `primary-500` at 50%): more visible in Semi's own green too.
+
+### Migration
+- `0.15.0-accent-state-tokens` rewrites brand-scale state classes in apps (`ring-primary-500/50` → `ring-focus`, `bg-primary-500/15` → `bg-accent-subtle`, `border-primary-500/30` → `border-accent-line`, `focus:border-primary-*` → `border-focus`). Solid fills (`bg-primary-500`) are left alone: if one carries text, use `bg-accent` + `text-on-accent`.
+- Brand kits: run `/semi-brand update`. Most brands' shades and buttons change, so it reports a **major** change; products then get it through `/semi-update` (asked first).
+
 ## [0.14.0] - 2026-11-01
 
 ### Removed (breaking)

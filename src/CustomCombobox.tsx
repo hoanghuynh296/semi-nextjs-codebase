@@ -112,7 +112,7 @@ export function CustomCombobox({
           onFocus={() => setOpen(true)}
           onKeyDown={onKeyDown}
           placeholder={placeholder}
-          className="w-full h-field bg-field border border-line hover:border-line-hover rounded-control pl-3 pr-8 text-ui text-contrast placeholder:text-muted focus:border-primary-500/60 transition outline-none disabled:opacity-40 aria-invalid:border-danger-border"
+          className="w-full h-field bg-field border border-line hover:border-line-hover rounded-control pl-3 pr-8 text-ui text-contrast placeholder:text-muted focus:border-focus transition outline-none disabled:opacity-40 aria-invalid:border-danger-border"
         />
         <button
           type="button"
@@ -150,7 +150,7 @@ export function CustomCombobox({
                   onPointerEnter={() => setActive(i)}
                   className={`w-full text-left px-3 py-1.5 rounded-control text-label transition cursor-pointer flex items-center justify-between ${
                     isSelected
-                      ? "bg-primary-500/15 text-accent-fg font-medium"
+                      ? "bg-accent-subtle text-accent-fg font-medium"
                       : i === active
                         ? "bg-raised text-contrast"
                         : "text-body hover:bg-raised hover:text-contrast"

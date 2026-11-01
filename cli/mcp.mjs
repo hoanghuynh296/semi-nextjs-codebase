@@ -64,6 +64,16 @@ const TOOLS = [
       return b ? text(core.examples(b.id)[0].code) : missing(id);
     },
   },
+  {
+    name: "semi_brand",
+    description: "The brand of this app (its brand kit): topic 'voice' (tone, how to address the user, do / don't, example button / error / empty texts), 'color' (how much accent, secondary colour role, button shades per theme), 'logo' (files to import, clear space), 'brief' (audience, personality, imagery), 'tokens', or 'all' (the full BRAND.md). Call it before writing UI text, picking colours or placing the logo.",
+    inputSchema: { type: "object", properties: { topic: { type: "string", enum: ["all", "voice", "color", "logo", "brief", "tokens"] } } },
+    run: ({ topic }) => {
+      const r = core.brand(topic ?? "all");
+      if (r.error) return { ...text(r.error), isError: true };
+      return r.markdown ? text(r.markdown) : json(r);
+    },
+  },
 ];
 
 const send = (msg) => process.stdout.write(JSON.stringify(msg) + "\n");
@@ -77,7 +87,7 @@ export function handle(msg) {
       protocolVersion: params?.protocolVersion ?? "2025-06-18",
       capabilities: { tools: {} },
       serverInfo: { name: "semi", version: core.version() },
-      instructions: "Semi Design System docs for the installed @semi/ui. Before writing UI: semi_search the need, read semi_docs of the pick, start from semi_example. Never invent local primitives.",
+      instructions: "Semi Design System docs for the installed @semi/ui. Before writing UI: semi_search the need, read semi_docs of the pick, start from semi_example. Never invent local primitives. In an app with a brand kit, semi_brand gives its voice, colour use and logo.",
     });
   if (method === "ping") return reply(id, {});
   if (method === "tools/list") return reply(id, { tools: TOOLS.map(({ run, ...t }) => t) });

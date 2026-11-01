@@ -190,7 +190,7 @@ export function DataTable<T>({
                   const id = getRowId(row);
                   const isSel = selected.includes(id);
                   return (
-                    <TR key={id} onClick={onRowClick ? () => onRowClick(row) : undefined} aria-selected={selectable ? isSel : undefined} className={cn(isSel && "bg-primary-500/5")}>
+                    <TR key={id} onClick={onRowClick ? () => onRowClick(row) : undefined} aria-selected={selectable ? isSel : undefined} className={cn(isSel && "bg-accent-subtle")}>
                       {selectable && (
                         <TD onClick={(e) => e.stopPropagation()}>
                           <Checkbox checked={isSel} onChange={(on) => toggleRow(id, on)} label={<span className="sr-only">{t.selectRow}</span>} />

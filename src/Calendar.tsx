@@ -137,7 +137,7 @@ export function Calendar(props: CalendarProps) {
               const inRange = range && r?.start && rangeEnd ? key > r.start && key < rangeEnd : false;
               const isSel = isStart || isEnd;
               return (
-                <div key={key} role="gridcell" aria-selected={isSel || inRange} className={cn(inRange && "bg-primary-500/10", isStart && rangeEnd && "rounded-l-control bg-primary-500/10", isEnd && "rounded-r-control bg-primary-500/10")}>
+                <div key={key} role="gridcell" aria-selected={isSel || inRange} className={cn(inRange && "bg-accent-subtle", isStart && rangeEnd && "rounded-l-control bg-accent-subtle", isEnd && "rounded-r-control bg-accent-subtle")}>
                   <button
                     type="button"
                     tabIndex={key === focusKey ? 0 : -1}
@@ -155,7 +155,7 @@ export function Calendar(props: CalendarProps) {
                       isSel
                         ? "bg-accent text-on-accent font-medium"
                         : key === today
-                          ? "text-accent-fg border border-primary-500/40 hover:bg-raised"
+                          ? "text-accent-fg border border-accent-line hover:bg-raised"
                           : outside
                             ? "text-muted hover:bg-raised"
                             : "text-body hover:bg-raised",

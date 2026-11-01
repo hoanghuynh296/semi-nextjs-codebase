@@ -41,7 +41,7 @@ export function MobileTabBar({
 
   const renderInner = (icon: IconName, label: string, on: boolean) => (
     <>
-      <span className={`w-12 h-7 rounded-full flex items-center justify-center transition ${on ? "bg-primary-500/15" : ""}`}>
+      <span className={`w-12 h-7 rounded-full flex items-center justify-center transition ${on ? "bg-accent-subtle" : ""}`}>
         <Icon name={icon} className="w-5 h-5" />
       </span>
       <span className={`text-caption font-medium truncate max-w-full px-1 ${on ? "text-accent-fg" : "text-muted"}`}>

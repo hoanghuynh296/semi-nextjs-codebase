@@ -37,7 +37,7 @@ export function StyleSwitcher() {
             aria-checked={on}
             title={o.description}
             onClick={() => pickStyle(o.id)}
-            className={`flex-1 min-w-0 truncate h-full rounded-control text-label font-medium transition cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 ${
+            className={`flex-1 min-w-0 truncate h-full rounded-control text-label font-medium transition cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-focus ${
               on ? "bg-raised text-contrast" : "text-muted hover:text-contrast"
             }`}
           >

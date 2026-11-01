@@ -28,7 +28,7 @@ export function ComponentIndex() {
                     <div className="relative h-40 overflow-hidden border-b border-line p-4 flex items-center justify-center" inert>
                       <div className="max-w-full">{First ? <First /> : <Icon name="code" className="w-8 h-8 text-muted" />}</div>
                     </div>
-                    <Link href={`/components/${d.id}/`} className="p-4 space-y-1 outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 rounded-b-card">
+                    <Link href={`/components/${d.id}/`} className="p-4 space-y-1 outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-b-card">
                       <div className="text-title font-semibold text-contrast">{d.title}</div>
                       <p className="text-label text-muted line-clamp-2">{d.description}</p>
                     </Link>
