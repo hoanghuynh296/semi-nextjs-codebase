@@ -236,14 +236,14 @@ test("brand preview: a #brand= link recolours every page, passes contrast in bot
   await expect(page.getByText("Blue Co", { exact: true })).toBeVisible();
   for (const theme of THEMES) {
     await page.getByRole("radio", { name: theme === "dark" ? "Tối" : "Sáng" }).first().click();
-    expect(await accent()).toBe(theme === "dark" ? "#568af4" : "#2563eb");
+    await expect.poll(accent).toBe(theme === "dark" ? "#568af4" : "#2563eb");
     expect(await lowContrast(page)).toEqual([]);
   }
   await page.getByRole("radio", { name: "Tối" }).first().click();
-  await page.goto("/components/button/"); // stays on across pages
-  expect(await accent()).toBe("#568af4");
+  await page.goto("/components/button/"); // stays on across pages (applied once the page hydrates)
+  await expect.poll(accent).toBe("#568af4");
   await page.getByRole("button", { name: "Tắt xem trước brand" }).click();
-  expect(await accent()).toBe("#00ae42"); // Semi's own green again (dark theme)
+  await expect.poll(accent).toBe("#00ae42"); // Semi's own green again (dark theme)
 });
 
 test("system theme follows prefers-color-scheme", async ({ browser }) => {
