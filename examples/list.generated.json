@@ -72,6 +72,12 @@
     "description": "An input with fixed parts around it: a prefix (https://), a unit (kg, ₫), an icon or a small button (copy, show password)."
   },
   {
+    "id": "input-otp",
+    "title": "Input OTP",
+    "group": "Forms",
+    "description": "One-time code entry (OTP, PIN, 2FA): boxes on screen, one real input underneath, so paste, SMS autofill, screen readers and the number keypad work like a normal field."
+  },
+  {
     "id": "number-input",
     "title": "Number input",
     "group": "Forms",
@@ -186,6 +192,18 @@
     "description": "Where the page sits: a trail of links ending with the current page. Long trails collapse their middle into a “…” menu."
   },
   {
+    "id": "menubar",
+    "title": "Menubar",
+    "group": "Navigation & layout",
+    "description": "The menu bar of a desktop-style tool (Tệp · Sửa · Xem): menus that open from a bar and behave like Menu."
+  },
+  {
+    "id": "navigation-menu",
+    "title": "Navigation menu",
+    "group": "Navigation & layout",
+    "description": "Top navigation of a website or landing page: links, and items that open a panel of links with descriptions. Below md it becomes one menu button with a sheet."
+  },
+  {
     "id": "page-actions",
     "title": "Page actions",
     "group": "Navigation & layout",
@@ -202,6 +220,12 @@
     "title": "Pagination",
     "group": "Navigation & layout",
     "description": "Page numbers with previous / next for long tables. For card lists prefer auto-loading with “Xem thêm”."
+  },
+  {
+    "id": "resizable",
+    "title": "Resizable panels",
+    "group": "Navigation & layout",
+    "description": "Panels side by side or stacked with handles to resize them (an editor beside a preview, a list beside details). Sizes are percentages and can be remembered."
   },
   {
     "id": "scroll-area",
@@ -234,6 +258,12 @@
     "description": "A list of sections where one (or several) open at a time: FAQs, settings groups, help."
   },
   {
+    "id": "aspect-ratio",
+    "title": "Aspect ratio",
+    "group": "Data display",
+    "description": "Keeps media at a fixed ratio while its width follows the layout (images, video, maps, 3D previews)."
+  },
+  {
     "id": "avatar",
     "title": "Avatar",
     "group": "Data display",
@@ -252,6 +282,24 @@
     "description": "The bento content card: panel fill and the style's card border, radius and resting shadow. interactive adds hover / press, active marks the selected or running item."
   },
   {
+    "id": "carousel",
+    "title": "Carousel",
+    "group": "Data display",
+    "description": "Slides in a row that scroll by swipe, trackpad, arrow keys, buttons or dots (CSS scroll-snap, no library). Phones show one slide and a peek of the next."
+  },
+  {
+    "id": "chart",
+    "title": "Chart",
+    "group": "Data display",
+    "description": "Charts in SVG on Semi tokens, no library: BarChart (grouped or stacked columns), LineChart (optional area wash), DonutChart (parts of a whole) and Sparkline (a trend in a tile). Series use the fixed chart-1…8 colours (validated for colour-blind readers in both themes); every chart has a legend for 2+ series, a hover / keyboard tooltip and a table view."
+  },
+  {
+    "id": "code-block",
+    "title": "Code block",
+    "group": "Data display",
+    "description": "Code to read or copy: a mono block with a copy button and an optional title (file name); long lines scroll sideways. Plain text, no highlighting."
+  },
+  {
     "id": "collapsible",
     "title": "Collapsible",
     "group": "Data display",
@@ -268,6 +316,12 @@
     "title": "Icon",
     "group": "Data display",
     "description": "The semantic icon registry (stroke 1.75, 24px grid). IconTile is the rounded tinted square that leads cards and dialogs."
+  },
+  {
+    "id": "item",
+    "title": "Item",
+    "group": "Data display",
+    "description": "A list row — leading icon / avatar / image, title and description, meta on the right, actions — and ItemGroup, which stacks rows in a card with dividers."
   },
   {
     "id": "kbd",
@@ -298,6 +352,12 @@
     "title": "Table",
     "group": "Data display",
     "description": "A dense table for rows compared column by column. Cells stay on one line (the table scrolls sideways on phones); TD wrap for a long-text column, numeric for figures."
+  },
+  {
+    "id": "typography",
+    "title": "Typography",
+    "group": "Data display",
+    "description": "The type scale (text-caption 11 … text-display 26, font-display for titles) and Prose, which styles long-form text — headings, paragraphs, lists, links, quotes, inline code — from that scale."
   },
   {
     "id": "alert",

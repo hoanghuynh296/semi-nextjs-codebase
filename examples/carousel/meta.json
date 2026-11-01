@@ -1,0 +1,30 @@
+{
+  "title": "Carousel",
+  "group": "Data display",
+  "description": "Slides in a row that scroll by swipe, trackpad, arrow keys, buttons or dots (CSS scroll-snap, no library). Phones show one slide and a peek of the next.",
+  "components": [
+    "Carousel"
+  ],
+  "when": [
+    "Product photos, featured items, onboarding steps."
+  ],
+  "instead": [
+    {
+      "need": "Content people must not miss",
+      "use": "a grid or a list"
+    },
+    {
+      "need": "Steps of a task",
+      "use": "a form with sections"
+    }
+  ],
+  "a11y": [
+    "aria-roledescription=\"carousel\" with a label; slides are labelled groups (“2 / 5”); the track is focusable and ←/→ move; no auto-play."
+  ],
+  "examples": [
+    {
+      "file": "products",
+      "title": "Products, 3 per view"
+    }
+  ]
+}

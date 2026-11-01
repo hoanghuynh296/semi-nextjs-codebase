@@ -1,0 +1,34 @@
+{
+  "title": "Typography",
+  "group": "Data display",
+  "description": "The type scale (text-caption 11 … text-display 26, font-display for titles) and Prose, which styles long-form text — headings, paragraphs, lists, links, quotes, inline code — from that scale.",
+  "components": [
+    "Prose"
+  ],
+  "when": [
+    "Help articles, release notes, policies, long AI answers (wrap Markdown in Prose)."
+  ],
+  "instead": [
+    {
+      "need": "Page title",
+      "use": "PageTitle"
+    },
+    {
+      "need": "UI text in cards and forms",
+      "use": "the type classes directly (text-ui, text-label…)"
+    }
+  ],
+  "a11y": [
+    "Keep a real heading order (h2 → h3); Prose caps the line length (max-w-prose) for reading."
+  ],
+  "examples": [
+    {
+      "file": "scale",
+      "title": "Type scale"
+    },
+    {
+      "file": "prose",
+      "title": "Prose"
+    }
+  ]
+}

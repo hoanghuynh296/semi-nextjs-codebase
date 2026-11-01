@@ -1,0 +1,34 @@
+{
+  "title": "Resizable panels",
+  "group": "Navigation & layout",
+  "description": "Panels side by side or stacked with handles to resize them (an editor beside a preview, a list beside details). Sizes are percentages and can be remembered.",
+  "components": [
+    "ResizablePanels"
+  ],
+  "when": [
+    "Tools where people tune the space between two or three areas."
+  ],
+  "instead": [
+    {
+      "need": "A collapsible tool panel beside a canvas",
+      "use": "SidePanel"
+    },
+    {
+      "need": "A temporary detail view",
+      "use": "Drawer"
+    }
+  ],
+  "a11y": [
+    "Each handle is a focusable separator with aria-valuenow; ←/→ (↑/↓ when stacked) resize, Shift for bigger steps."
+  ],
+  "examples": [
+    {
+      "file": "editor",
+      "title": "List and details"
+    },
+    {
+      "file": "vertical",
+      "title": "Stacked, three panels"
+    }
+  ]
+}

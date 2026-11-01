@@ -1,0 +1,66 @@
+{
+  "title": "Chart",
+  "group": "Data display",
+  "description": "Charts in SVG on Semi tokens, no library: BarChart (grouped or stacked columns), LineChart (optional area wash), DonutChart (parts of a whole) and Sparkline (a trend in a tile). Series use the fixed chart-1…8 colours (validated for colour-blind readers in both themes); every chart has a legend for 2+ series, a hover / keyboard tooltip and a table view.",
+  "components": [
+    "BarChart",
+    "LineChart",
+    "DonutChart",
+    "Sparkline"
+  ],
+  "imports": [
+    "type ChartSeries",
+    "type DonutSlice"
+  ],
+  "when": [
+    "Compare categories (BarChart), show change over time (LineChart), parts of a whole with ≤ 5 parts (DonutChart), a trend next to a KPI (Sparkline)."
+  ],
+  "instead": [
+    {
+      "need": "One headline number",
+      "use": "KpiCard (optionally with a Sparkline)"
+    },
+    {
+      "need": "Exact values to compare and sort",
+      "use": "DataTable"
+    },
+    {
+      "need": "Two measures with different units",
+      "use": "two charts, never a second y axis"
+    },
+    {
+      "need": "More than 8 series",
+      "use": "fold into “Khác”, or small multiples"
+    }
+  ],
+  "a11y": [
+    "Each chart is role=\"img\" with a label; focus it and use ←/→ (Home / End) to read every index in the tooltip; “Xem bảng” switches to a table with all values.",
+    "Colour is never the only channel: legend (2+ series), tooltip labels and the table view carry identity; text stays in text tokens."
+  ],
+  "notes": [
+    "Keep a series' colour fixed per entity (color: slot) so a filter never repaints the others.",
+    "Put the visible title in the card around the chart; label is the accessible name."
+  ],
+  "examples": [
+    {
+      "file": "bar",
+      "title": "Grouped columns"
+    },
+    {
+      "file": "stacked",
+      "title": "Stacked columns"
+    },
+    {
+      "file": "line",
+      "title": "Lines with an area wash"
+    },
+    {
+      "file": "donut",
+      "title": "Donut"
+    },
+    {
+      "file": "sparkline",
+      "title": "Sparkline in a KPI row"
+    }
+  ]
+}

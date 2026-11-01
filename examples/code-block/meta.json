@@ -1,0 +1,26 @@
+{
+  "title": "Code block",
+  "group": "Data display",
+  "description": "Code to read or copy: a mono block with a copy button and an optional title (file name); long lines scroll sideways. Plain text, no highlighting.",
+  "components": [
+    "CodeBlock"
+  ],
+  "when": [
+    "API keys and commands to copy, config snippets, developer docs."
+  ],
+  "instead": [
+    {
+      "need": "A short value inline",
+      "use": "<code> in text, or Kbd for keys"
+    }
+  ],
+  "a11y": [
+    "The block is focusable so keyboard users can scroll it; the copy button is labelled and says when it copied."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "With a file name"
+    }
+  ]
+}

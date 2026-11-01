@@ -4,6 +4,17 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-11-01
+
+### Added
+- **Charts in SVG, no library:** `BarChart` (grouped or `stacked`), `LineChart` (optional `area`), `DonutChart`, `Sparkline`. Series use the new `chart-1…8` colour tokens (fixed order, colour-blind checked in light and dark); legend for 2+ series, hover and keyboard tooltip (←/→, Home, End), and a table view on every chart. Types `ChartSeries`, `DonutSlice`.
+- **More components, each with a doc page and examples:** `InputOTP` (one real input: paste and SMS autofill work), `Carousel` (scroll-snap, buttons, dots, arrow keys, no auto-play), `ResizablePanels` (keyboard handles, sizes can be remembered), `AspectRatio`, `NavigationMenu` (website header with link panels; a sheet on phones), `Menubar` (Tệp · Sửa · Xem, ARIA menubar), `CodeBlock` (copy button, file name), `Prose` (long-form text styles), `Item` + `ItemGroup` (list rows).
+- Docs pages for Chart, Input OTP, Carousel, Resizable panels, Aspect ratio, Navigation menu, Menubar, Typography, Code block and Item.
+- Locale strings `tableView`, `chartView`, `slide`, `prevSlide`, `nextSlide`, `goToSlide`, `resize`, `oneTimeCode`.
+
+### Changed
+- The docs site's `CodeBlock` (`@semi/ui/site`) is now the public `CodeBlock`.
+
 ## [0.10.0] - 2026-11-01
 
 ### Added

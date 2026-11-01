@@ -1,0 +1,20 @@
+{
+  "title": "Aspect ratio",
+  "group": "Data display",
+  "description": "Keeps media at a fixed ratio while its width follows the layout (images, video, maps, 3D previews).",
+  "components": [
+    "AspectRatio"
+  ],
+  "when": [
+    "Thumbnails and media that must not jump while loading."
+  ],
+  "a11y": [
+    "A plain wrapper; give the image its own alt text."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "16:9 and square"
+    }
+  ]
+}

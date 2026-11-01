@@ -577,6 +577,16 @@ options; more → `CustomSelect`).
 | Sort / filter / select / page rows | `DataTable` (`columns`, `search`, `selectable` + `bulkActions`, `pageSize`, `loading`) |
 | Fixed-height scrolling list | `ScrollArea` (edge lines, optional thin scrollbar, keyboard focusable) |
 | Divider / key cap | `Separator` (horizontal, vertical, with a label); `Kbd` (`keys={["⌘", "K"]}`) |
+| Charts | `BarChart` (grouped / `stacked`), `LineChart` (`area`), `DonutChart` (≤ 5 parts), `Sparkline` (trend in a KPI tile). Series colours are the fixed `chart-1…8` tokens in order, a 9th series folds into “Khác”; one y axis only; legend for 2+ series, keyboard tooltip and table view built in |
+| One-time code / PIN | `InputOTP` (one real input, paste and SMS autofill work) |
+| Slides in a row | `Carousel` (`perView`, scroll-snap, no auto-play) |
+| Areas people resize | `ResizablePanels` (`direction`, `defaultSizes`, `storageKey`) |
+| Media at a fixed ratio | `AspectRatio` (`ratio`, default 16 / 9) |
+| Website top navigation | `NavigationMenu` (links + panels of described links; a sheet below md) |
+| Commands of a desktop-style tool | `Menubar` (Tệp · Sửa · Xem; items like `Menu`) |
+| Code to read or copy | `CodeBlock` (`title`, copy button) |
+| Long-form text (articles, Markdown) | `Prose` |
+| List rows | `Item` (icon / media, title, description, meta, actions, `href`) in an `ItemGroup` |
 
 The full inventory with props is generated into `components.json` (`npm run build:manifest`).
 

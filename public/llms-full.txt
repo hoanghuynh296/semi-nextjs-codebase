@@ -1,4 +1,4 @@
-# Semi Design System (@semi/ui v0.10.0)
+# Semi Design System (@semi/ui v0.11.0)
 
 > The shared UI of every Semi app: semantic tokens that work in light and dark mode, React components (Next.js, Tailwind CSS 4) and the rules agents follow. Every component has a page with live examples and a markdown twin for agents.
 
@@ -6,7 +6,7 @@ Install `@semi/ui`, import components from `@semi/ui`, class constants from `@se
 
 ## Machine-readable
 
-- [components.json](./components.json): all 98 components, hooks and constants with props, summaries and their doc page
+- [components.json](./components.json): all 112 components, hooks and constants with props, summaries and their doc page
 - [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
@@ -44,6 +44,7 @@ Install `@semi/ui`, import components from `@semi/ui`, class constants from `@se
 - [Date picker](./components/date-picker/) ([markdown](./docs/components/date-picker.md)): A date field with a Calendar popover (YYYY-MM-DD, min / max). Never type="date". Components: DatePicker.
 - [Field, Input, Textarea](./components/field/) ([markdown](./docs/components/field.md)): Field gives any control a label, a hint and an error, wired for screen readers. Input and Textarea are the standard text controls (bg-field, h-field). Components: Field, Input, Textarea.
 - [Input group](./components/input-group/) ([markdown](./docs/components/input-group.md)): An input with fixed parts around it: a prefix (https://), a unit (kg, ₫), an icon or a small button (copy, show password). Components: InputGroup.
+- [Input OTP](./components/input-otp/) ([markdown](./docs/components/input-otp.md)): One-time code entry (OTP, PIN, 2FA): boxes on screen, one real input underneath, so paste, SMS autofill, screen readers and the number keypad work like a normal field. Components: InputOTP.
 - [Number input](./components/number-input/) ([markdown](./docs/components/number-input.md)): NumberInput: numbers with a touch keypad (NumPadPopup) on phones and tablets, plain typing elsewhere. Never type="number". Components: NumberInput, NumPadPopup.
 - [Radio group](./components/radio-group/) ([markdown](./docs/components/radio-group.md)): Exactly one option of a few, each with an optional description; vertical by default. Components: RadioGroup.
 - [Search input](./components/search-input/) ([markdown](./docs/components/search-input.md)): The toolbar search: an icon button that opens into a field (clear button, h-control); it collapses again when empty and focus leaves. SubpageToolbar includes one. Components: SearchInput.
@@ -69,9 +70,12 @@ Install `@semi/ui`, import components from `@semi/ui`, class constants from `@se
 - [App header](./components/app-header/) ([markdown](./docs/components/app-header.md)): The top bar of a stand-alone tool app: logo + title go home, the module name, and one primary action on the right. No Home button. Components: AppHeader.
 - [App shell](./components/app-shell/) ([markdown](./docs/components/app-shell.md)): The frame of a multi-page app: a floating bento sidebar (w-52, collapses to a w-14 icon rail) on bg-canvas, the content panel beside it, and MobileTabBar at the bottom on phones. This docs site is an AppShell. Components: AppShell, MobileTabBar.
 - [Breadcrumb](./components/breadcrumb/) ([markdown](./docs/components/breadcrumb.md)): Where the page sits: a trail of links ending with the current page. Long trails collapse their middle into a “…” menu. Components: Breadcrumb.
+- [Menubar](./components/menubar/) ([markdown](./docs/components/menubar.md)): The menu bar of a desktop-style tool (Tệp · Sửa · Xem): menus that open from a bar and behave like Menu. Components: Menubar.
+- [Navigation menu](./components/navigation-menu/) ([markdown](./docs/components/navigation-menu.md)): Top navigation of a website or landing page: links, and items that open a panel of links with descriptions. Below md it becomes one menu button with a sheet. Components: NavigationMenu.
 - [Page actions](./components/page-actions/) ([markdown](./docs/components/page-actions.md)): Lets a page put its actions into a slot of the shared header: PageActionsProvider wraps the layout, PageActionsSlot marks where they render, PageActions sends them from the page. Components: PageActions, PageActionsProvider, PageActionsSlot.
 - [Page title](./components/page-title/) ([markdown](./docs/components/page-title.md)): PageTitle is the large display title of a page (text only). PageTabsTitle turns it into 2–4 underline tabs for sibling pages. Components: PageTitle, PageTabsTitle.
 - [Pagination](./components/pagination/) ([markdown](./docs/components/pagination.md)): Page numbers with previous / next for long tables. For card lists prefer auto-loading with “Xem thêm”. Components: Pagination.
+- [Resizable panels](./components/resizable/) ([markdown](./docs/components/resizable.md)): Panels side by side or stacked with handles to resize them (an editor beside a preview, a list beside details). Sizes are percentages and can be remembered. Components: ResizablePanels.
 - [Scroll area](./components/scroll-area/) ([markdown](./docs/components/scroll-area.md)): A fixed-size scrolling region (a long list in a card, a log). Semi hides scrollbars, so it marks the edges that have more content, can show a thin scrollbar, and is reachable by keyboard. Components: ScrollArea.
 - [Side panel](./components/side-panel/) ([markdown](./docs/components/side-panel.md)): A 320px tool panel beside a canvas that collapses to a 48px rail; SidePanelToggle is its collapse button. Components: SidePanel, SidePanelToggle.
 - [Subpage toolbar](./components/subpage-toolbar/) ([markdown](./docs/components/subpage-toolbar.md)): The sticky row under a page title: filters on the left; search, refresh and the icon-only primary action on the right. RefreshButton spins while its promise runs. Components: SubpageToolbar, RefreshButton.
@@ -80,17 +84,23 @@ Install `@semi/ui`, import components from `@semi/ui`, class constants from `@se
 ### Data display
 
 - [Accordion](./components/accordion/) ([markdown](./docs/components/accordion.md)): A list of sections where one (or several) open at a time: FAQs, settings groups, help. Components: Accordion.
+- [Aspect ratio](./components/aspect-ratio/) ([markdown](./docs/components/aspect-ratio.md)): Keeps media at a fixed ratio while its width follows the layout (images, video, maps, 3D previews). Components: AspectRatio.
 - [Avatar](./components/avatar/) ([markdown](./docs/components/avatar.md)): A person or team: their image, or initials on a tone picked from the name. Components: Avatar.
 - [Badge](./components/badge/) ([markdown](./docs/components/badge.md)): A read-only status or tag in a tone (10% fill, 20% border, theme-safe text), with an optional dot or icon. Components: Badge.
 - [Card](./components/card/) ([markdown](./docs/components/card.md)): The bento content card: panel fill and the style's card border, radius and resting shadow. interactive adds hover / press, active marks the selected or running item. Components: Card.
+- [Carousel](./components/carousel/) ([markdown](./docs/components/carousel.md)): Slides in a row that scroll by swipe, trackpad, arrow keys, buttons or dots (CSS scroll-snap, no library). Phones show one slide and a peek of the next. Components: Carousel.
+- [Chart](./components/chart/) ([markdown](./docs/components/chart.md)): Charts in SVG on Semi tokens, no library: BarChart (grouped or stacked columns), LineChart (optional area wash), DonutChart (parts of a whole) and Sparkline (a trend in a tile). Series use the fixed chart-1…8 colours (validated for colour-blind readers in both themes); every chart has a legend for 2+ series, a hover / keyboard tooltip and a table view. Components: BarChart, LineChart, DonutChart, Sparkline.
+- [Code block](./components/code-block/) ([markdown](./docs/components/code-block.md)): Code to read or copy: a mono block with a copy button and an optional title (file name); long lines scroll sideways. Plain text, no highlighting. Components: CodeBlock.
 - [Collapsible](./components/collapsible/) ([markdown](./docs/components/collapsible.md)): One section that opens and closes under its trigger row (advanced options, details of a log line). Components: Collapsible.
 - [Data table](./components/data-table/) ([markdown](./docs/components/data-table.md)): A table that sorts, filters, selects and pages rows on the client, built on Table: give it rows and columns, it keeps the state (or you control it). Components: DataTable.
 - [Icon](./components/icon/) ([markdown](./docs/components/icon.md)): The semantic icon registry (stroke 1.75, 24px grid). IconTile is the rounded tinted square that leads cards and dialogs. Components: Icon, IconTile.
+- [Item](./components/item/) ([markdown](./docs/components/item.md)): A list row — leading icon / avatar / image, title and description, meta on the right, actions — and ItemGroup, which stacks rows in a card with dividers. Components: Item, ItemGroup.
 - [Kbd](./components/kbd/) ([markdown](./docs/components/kbd.md)): A key or a shortcut (⌘ K, Ctrl Enter) as key caps, for menus, tooltips, the command palette and help text. Components: Kbd.
 - [KPI card](./components/kpi-card/) ([markdown](./docs/components/kpi-card.md)): A metric card: label, a large tabular figure, a sub line coloured good / danger, and an icon in its tone. Components: KpiCard.
 - [Markdown](./components/markdown/) ([markdown](./docs/components/markdown.md)): Renders AI or user text safely: paragraphs, lists, bold, inline code and links (as ExternalLink). No HTML. Components: Markdown.
 - [Separator](./components/separator/) ([markdown](./docs/components/separator.md)): A thin divider between groups of content: horizontal, vertical, or with a short label in the middle (“hoặc”). Components: Separator.
 - [Table](./components/table/) ([markdown](./docs/components/table.md)): A dense table for rows compared column by column. Cells stay on one line (the table scrolls sideways on phones); TD wrap for a long-text column, numeric for figures. Components: Table, THead, TBody, TR, TH, TD.
+- [Typography](./components/typography/) ([markdown](./docs/components/typography.md)): The type scale (text-caption 11 … text-display 26, font-display for titles) and Prose, which styles long-form text — headings, paragraphs, lists, links, quotes, inline code — from that scale. Components: Prose.
 
 ### Feedback
 
@@ -214,19 +224,23 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (98)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (112)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `AppHeader`: `AppHeader`
 - `AppShell`: `AppShell`
+- `AspectRatio`: `AspectRatio`
 - `Badge`: `Badge`
 - `Breadcrumb`: `Breadcrumb`
 - `Button`: `Spinner`, `Button`
 - `ButtonGroup`: `ButtonGroup`
 - `Calendar`: `Calendar`
 - `Card`: `Card`
+- `Carousel`: `Carousel`
+- `Chart`: `BarChart`, `LineChart`, `DonutChart`, `Sparkline`
 - `Chat`: `ChatAvatar`, `ChatThinking`, `UserMessage`, `AssistantMessage`, `ChatError`, `ChatCopyButton`, `ChatIntro`, `ChatSuggestion`, `ChatSuggestions`, `ChatList`, `ChatComposer`, `ChatModelPicker`, `ChatView`, `ChatPanel`, `ChatAnswer`, `AIChat`
 - `Chip`: `Chip`
 - `Choice`: `Checkbox`, `Switch`, `RadioGroup`
+- `CodeBlock`: `CodeBlock`
 - `Command`: `Command`, `CommandDialog`
 - `CustomCombobox`: `CustomCombobox`
 - `CustomSelect`: `CustomSelect`
@@ -239,20 +253,25 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
 - `Field`: `Field`, `Input`, `Textarea`
 - `Icon`: `Icon`, `IconTile`
 - `InputGroup`: `InputGroup`
+- `InputOTP`: `InputOTP`
+- `Item`: `Item`, `ItemGroup`
 - `Kbd`: `Kbd`
 - `KpiCard`: `KpiCard`
 - `Markdown`: `Markdown`
 - `MobileTabBar`: `MobileTabBar`
 - `Modal`: `Modal`
+- `NavigationMenu`: `NavigationMenu`
 - `NumPadPopup`: `NumPadPopup`
 - `NumberInput`: `NumberInput`
-- `Overlay`: `Tooltip`, `Menu`, `ContextMenu`
+- `Overlay`: `Tooltip`, `Menu`, `ContextMenu`, `Menubar`
 - `PageActions`: `PageActionsProvider`, `PageActionsSlot`, `PageActions`
 - `PageTitle`: `PageTitle`, `PageTabsTitle`
 - `Pagination`: `Pagination`
 - `Pills`: `Pills`
 - `Popover`: `Popover`, `HoverCard`
+- `Prose`: `Prose`
 - `RefreshButton`: `RefreshButton`
+- `Resizable`: `ResizablePanels`
 - `ScrollArea`: `ScrollArea`
 - `SearchInput`: `SearchInput`
 - `Separator`: `Separator`
@@ -856,6 +875,16 @@ options; more → `CustomSelect`).
 | Sort / filter / select / page rows | `DataTable` (`columns`, `search`, `selectable` + `bulkActions`, `pageSize`, `loading`) |
 | Fixed-height scrolling list | `ScrollArea` (edge lines, optional thin scrollbar, keyboard focusable) |
 | Divider / key cap | `Separator` (horizontal, vertical, with a label); `Kbd` (`keys={["⌘", "K"]}`) |
+| Charts | `BarChart` (grouped / `stacked`), `LineChart` (`area`), `DonutChart` (≤ 5 parts), `Sparkline` (trend in a KPI tile). Series colours are the fixed `chart-1…8` tokens in order, a 9th series folds into “Khác”; one y axis only; legend for 2+ series, keyboard tooltip and table view built in |
+| One-time code / PIN | `InputOTP` (one real input, paste and SMS autofill work) |
+| Slides in a row | `Carousel` (`perView`, scroll-snap, no auto-play) |
+| Areas people resize | `ResizablePanels` (`direction`, `defaultSizes`, `storageKey`) |
+| Media at a fixed ratio | `AspectRatio` (`ratio`, default 16 / 9) |
+| Website top navigation | `NavigationMenu` (links + panels of described links; a sheet below md) |
+| Commands of a desktop-style tool | `Menubar` (Tệp · Sửa · Xem; items like `Menu`) |
+| Code to read or copy | `CodeBlock` (`title`, copy button) |
+| Long-form text (articles, Markdown) | `Prose` |
+| List rows | `Item` (icon / media, title, description, meta, actions, `href`) in an `ItemGroup` |
 
 The full inventory with props is generated into `components.json` (`npm run build:manifest`).
 
@@ -2717,6 +2746,84 @@ export default function InputGroupAddons() {
 
 ---
 
+<!-- docs/components/input-otp.md -->
+
+# Input OTP
+
+One-time code entry (OTP, PIN, 2FA): boxes on screen, one real input underneath, so paste, SMS autofill, screen readers and the number keypad work like a normal field.
+
+## When to use
+
+- Verification codes, PINs, invite codes of a fixed length.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A password | Input type="password" (+ InputGroup reveal button) |
+
+## Import
+
+```tsx
+import { InputOTP } from "@semi/ui";
+```
+
+## Examples
+
+### 6-digit code
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Field, InputOTP, toast } from "@semi/ui";
+
+export default function InputOTPBasic() {
+  const [code, setCode] = useState("");
+  const [error, setError] = useState(false);
+  return (
+    <Field label="Mã xác thực" hint="Gửi tới số điện thoại ****321" error={error ? "Mã không đúng, thử lại." : undefined}>
+      <InputOTP
+        value={code}
+        onChange={(v) => {
+          setCode(v);
+          setError(false);
+        }}
+        onComplete={(v) => (v === "123456" ? toast({ title: "Đã xác thực", tone: "success" }) : setError(true))}
+        invalid={error}
+      />
+    </Field>
+  );
+}
+```
+
+## API
+
+### InputOTP
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `value` * | `string` |  |  |
+| `onChange` * | `(value: string) => void` |  |  |
+| `onComplete` | `(value: string) => void` |  | Called once every box is filled. |
+| `length` | `number` | `6` |  |
+| `type` | `'numeric' \| 'text'` | `"numeric"` | numeric: digits and the number keypad; text: letters and digits. |
+| `label` | `string` |  | Accessible name (default “Mã xác thực”). Put a visible label in Field around it when you have one. |
+| `groupSize` | `number` | `3` | Visual gap after every N boxes (0: none). |
+| `disabled` | `boolean` | `false` |  |
+| `invalid` | `boolean` | `false` | Error look (wrong code). |
+| `autoFocus` | `boolean` | `false` |  |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- A single labelled input with autocomplete="one-time-code" and inputmode="numeric"; the boxes are decoration; invalid sets aria-invalid.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/input-otp/ and the types in src/ -->
+
+
+---
+
 <!-- docs/components/number-input.md -->
 
 # Number input
@@ -4322,6 +4429,171 @@ export default function BreadcrumbCollapsed() {
 
 ---
 
+<!-- docs/components/menubar.md -->
+
+# Menubar
+
+The menu bar of a desktop-style tool (Tệp · Sửa · Xem): menus that open from a bar and behave like Menu.
+
+## When to use
+
+- Editors and tool apps with many commands (3D, slicer, image tools), next to an AppHeader.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Page navigation | NavigationMenu or AppShell |
+| A few actions | Buttons or one Menu |
+
+## Import
+
+```tsx
+import { Menubar, type MenubarMenu } from "@semi/ui";
+```
+
+## Examples
+
+### Editor menus
+
+```tsx
+import { Menubar, toast } from "@semi/ui";
+
+const run = (title: string) => () => toast({ title });
+
+export default function MenubarEditor() {
+  return (
+    <Menubar
+      label="Lệnh của trình chỉnh sửa"
+      menus={[
+        {
+          label: "Tệp",
+          items: [
+            { label: "Mở…", icon: "folderOpen", shortcut: "⌘O", onSelect: run("Mở tệp") },
+            { label: "Lưu", icon: "check", shortcut: "⌘S", onSelect: run("Đã lưu") },
+            { label: "Xuất G-code", icon: "download", separator: true, onSelect: run("Xuất G-code") },
+          ],
+        },
+        {
+          label: "Sửa",
+          items: [
+            { label: "Hoàn tác", shortcut: "⌘Z", onSelect: run("Hoàn tác") },
+            { label: "Làm lại", shortcut: "⇧⌘Z", onSelect: run("Làm lại"), disabled: true },
+          ],
+        },
+        {
+          label: "Xem",
+          items: [
+            { label: "Vừa khung hình", icon: "focus", onSelect: run("Vừa khung hình") },
+            { label: "Hiện lưới", icon: "grid", onSelect: run("Hiện lưới") },
+          ],
+        },
+      ]}
+    />
+  );
+}
+```
+
+## API
+
+### Menubar
+
+The menu bar of a desktop-style tool (Tệp · Sửa · Xem): ←/→ move between menus (and switch the open one), ↓ / Enter
+open, the menus behave like Menu. For page navigation use NavigationMenu or AppShell instead.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `menus` * | `MenubarMenu[]` |  |  |
+| `label` * | `string` |  |  |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- role="menubar": ←/→ move between menus (and switch the open one), ↓ / Enter open, Escape closes and returns focus; one tab stop for the bar.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/menubar/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/navigation-menu.md -->
+
+# Navigation menu
+
+Top navigation of a website or landing page: links, and items that open a panel of links with descriptions. Below md it becomes one menu button with a sheet.
+
+## When to use
+
+- Marketing sites, storefronts, docs headers.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Navigation of an app with many pages | AppShell |
+| Commands of a tool (Tệp, Sửa) | Menubar |
+
+## Import
+
+```tsx
+import { NavigationMenu, type NavigationItem } from "@semi/ui";
+```
+
+## Examples
+
+### Site header
+
+```tsx
+import { NavigationMenu } from "@semi/ui";
+
+export default function NavigationMenuSite() {
+  return (
+    <div className="flex items-center justify-between rounded-card border border-line bg-panel px-3 py-2">
+      <span className="text-ui font-semibold text-contrast">3D Noobs</span>
+      <NavigationMenu
+        label="Điều hướng chính"
+        current="/pricing"
+        items={[
+          {
+            label: "Sản phẩm",
+            links: [
+              { label: "In theo yêu cầu", href: "/print", description: "Gửi file, nhận bản in trong 48 giờ", icon: "printer" },
+              { label: "Vật liệu", href: "/materials", description: "PLA, PETG, TPU và nhựa kỹ thuật", icon: "box" },
+              { label: "Studio", href: "/studio", description: "Thiết kế và lát cắt ngay trên web", icon: "sparkles" },
+            ],
+          },
+          { label: "Bảng giá", href: "/pricing" },
+          { label: "Liên hệ", href: "/contact" },
+        ]}
+      />
+    </div>
+  );
+}
+```
+
+## API
+
+### NavigationMenu
+
+Disclosure navigation (buttons with aria-expanded, not an ARIA menu): Enter / Space / ↓ open a panel, Escape closes
+it and returns focus, a click outside closes it; the current page link gets aria-current.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `items` * | `NavigationItem[]` |  |  |
+| `label` * | `string` |  | Accessible name of the nav ("Điều hướng chính"). |
+| `current` | `string` |  | href of the current page (marked with aria-current="page"). |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- A nav landmark with disclosure buttons (aria-expanded), not an ARIA menu: Tab moves through links, Escape closes a panel and returns focus; the current page link has aria-current.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/navigation-menu/ and the types in src/ -->
+
+
+---
+
 <!-- docs/components/page-actions.md -->
 
 # Page actions
@@ -4553,6 +4825,84 @@ export default function PaginationBasic() {
 - A nav landmark; the current page has aria-current="page"; arrows are labelled.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/pagination/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/resizable.md -->
+
+# Resizable panels
+
+Panels side by side or stacked with handles to resize them (an editor beside a preview, a list beside details). Sizes are percentages and can be remembered.
+
+## When to use
+
+- Tools where people tune the space between two or three areas.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A collapsible tool panel beside a canvas | SidePanel |
+| A temporary detail view | Drawer |
+
+## Import
+
+```tsx
+import { ResizablePanels } from "@semi/ui";
+```
+
+## Examples
+
+### List and details
+
+```tsx
+import { ResizablePanels } from "@semi/ui";
+
+export default function ResizableEditor() {
+  return (
+    <ResizablePanels defaultSizes={[35, 65]} className="h-64">
+      <div className="p-4 text-label text-muted">Danh sách đơn</div>
+      <div className="p-4 text-label text-muted">Chi tiết đơn đang chọn</div>
+    </ResizablePanels>
+  );
+}
+```
+
+### Stacked, three panels
+
+```tsx
+import { ResizablePanels } from "@semi/ui";
+
+export default function ResizableVertical() {
+  return (
+    <ResizablePanels direction="vertical" defaultSizes={[50, 30, 20]} className="h-80">
+      <div className="p-4 text-label text-muted">Khung xem 3D</div>
+      <div className="p-4 text-label text-muted">Lớp</div>
+      <div className="p-4 text-label text-muted">Nhật ký</div>
+    </ResizablePanels>
+  );
+}
+```
+
+## API
+
+### ResizablePanels
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `direction` | `'horizontal' \| 'vertical'` | `"horizontal"` |  |
+| `defaultSizes` | `number[]` |  | Starting sizes in %, one per panel (default: equal). |
+| `minSize` | `number` | `15` | Smallest size of a panel in %. |
+| `storageKey` | `string` |  | Remember the sizes in localStorage under this key. |
+| `className` | `string` |  | Height for direction="vertical" (e.g. "h-96"). |
+| `children` * | `React.ReactNode` |  | One child per panel (2 or more). |
+
+## Accessibility
+
+- Each handle is a focusable separator with aria-valuenow; ←/→ (↑/↓ when stacked) resize, Shift for bigger steps.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/resizable/ and the types in src/ -->
 
 
 ---
@@ -4998,6 +5348,62 @@ headers, Home / End jump; each header is a button inside a heading (level), its 
 
 ---
 
+<!-- docs/components/aspect-ratio.md -->
+
+# Aspect ratio
+
+Keeps media at a fixed ratio while its width follows the layout (images, video, maps, 3D previews).
+
+## When to use
+
+- Thumbnails and media that must not jump while loading.
+
+## Import
+
+```tsx
+import { AspectRatio } from "@semi/ui";
+```
+
+## Examples
+
+### 16:9 and square
+
+```tsx
+import { AspectRatio } from "@semi/ui";
+
+export default function AspectRatioBasic() {
+  return (
+    <div className="grid gap-3 grid-cols-2 max-w-md">
+      <AspectRatio className="rounded-card border border-line bg-field">
+        <div className="flex h-full items-center justify-center text-label text-muted">16 : 9</div>
+      </AspectRatio>
+      <AspectRatio ratio={1} className="rounded-card border border-line bg-field">
+        <div className="flex h-full items-center justify-center text-label text-muted">1 : 1</div>
+      </AspectRatio>
+    </div>
+  );
+}
+```
+
+## API
+
+### AspectRatio
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `ratio` | `number` | `16 / 9` | Width / height: 16 / 9 (default), 4 / 3, 1, 3 / 4. |
+| `className` | `string` |  | Radius / border / background of the frame. |
+| `children` * | `React.ReactNode` |  | Usually an <img> or <video> with "w-full h-full object-cover". |
+
+## Accessibility
+
+- A plain wrapper; give the image its own alt text.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/aspect-ratio/ and the types in src/ -->
+
+
+---
+
 <!-- docs/components/avatar.md -->
 
 # Avatar
@@ -5220,6 +5626,375 @@ export default function CardStates() {
 - Pass padding and layout only: no bg-* or shadow-* on <Card> (card-class-override).
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/card/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/carousel.md -->
+
+# Carousel
+
+Slides in a row that scroll by swipe, trackpad, arrow keys, buttons or dots (CSS scroll-snap, no library). Phones show one slide and a peek of the next.
+
+## When to use
+
+- Product photos, featured items, onboarding steps.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Content people must not miss | a grid or a list |
+| Steps of a task | a form with sections |
+
+## Import
+
+```tsx
+import { Carousel } from "@semi/ui";
+```
+
+## Examples
+
+### Products, 3 per view
+
+```tsx
+import { AspectRatio, Card, Carousel } from "@semi/ui";
+
+const ITEMS = ["Giá đỡ điện thoại", "Hộp đựng tai nghe", "Móc khoá logo", "Chậu cây mini", "Kệ sách nhỏ"];
+
+export default function CarouselProducts() {
+  return (
+    <Carousel label="Sản phẩm nổi bật" perView={3}>
+      {ITEMS.map((name, i) => (
+        <Card key={name} className="p-3 space-y-2">
+          <AspectRatio ratio={4 / 3} className="rounded-control bg-field">
+            <div className="flex h-full items-center justify-center text-display font-semibold text-muted">{i + 1}</div>
+          </AspectRatio>
+          <div className="text-ui font-medium text-contrast">{name}</div>
+          <div className="text-label text-muted tabular-nums">{(89 + i * 30).toLocaleString("vi-VN")}k ₫</div>
+        </Card>
+      ))}
+    </Carousel>
+  );
+}
+```
+
+## API
+
+### Carousel
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `label` * | `string` |  | Accessible name of the carousel ("Ảnh sản phẩm"). |
+| `perView` | `2 \| 3 \| 4 \| 1` | `1` | Slides visible at once from sm up (phones always show one and a peek of the next). |
+| `className` | `string` |  |  |
+| `children` * | `React.ReactNode` |  | One child per slide. |
+
+## Accessibility
+
+- aria-roledescription="carousel" with a label; slides are labelled groups (“2 / 5”); the track is focusable and ←/→ move; no auto-play.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/carousel/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/chart.md -->
+
+# Chart
+
+Charts in SVG on Semi tokens, no library: BarChart (grouped or stacked columns), LineChart (optional area wash), DonutChart (parts of a whole) and Sparkline (a trend in a tile). Series use the fixed chart-1…8 colours (validated for colour-blind readers in both themes); every chart has a legend for 2+ series, a hover / keyboard tooltip and a table view.
+
+## When to use
+
+- Compare categories (BarChart), show change over time (LineChart), parts of a whole with ≤ 5 parts (DonutChart), a trend next to a KPI (Sparkline).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| One headline number | KpiCard (optionally with a Sparkline) |
+| Exact values to compare and sort | DataTable |
+| Two measures with different units | two charts, never a second y axis |
+| More than 8 series | fold into “Khác”, or small multiples |
+
+## Import
+
+```tsx
+import { BarChart, LineChart, DonutChart, Sparkline, type ChartSeries, type DonutSlice } from "@semi/ui";
+```
+
+## Examples
+
+### Grouped columns
+
+```tsx
+import { BarChart } from "@semi/ui";
+
+const DATA = [
+  { month: "T6", pla: 120, petg: 80 },
+  { month: "T7", pla: 150, petg: 96 },
+  { month: "T8", pla: 132, petg: 118 },
+  { month: "T9", pla: 178, petg: 104 },
+  { month: "T10", pla: 196, petg: 140 },
+];
+
+export default function ChartBar() {
+  return (
+    <BarChart
+      label="Bản in theo vật liệu, 5 tháng"
+      data={DATA}
+      index="month"
+      series={[
+        { key: "pla", label: "PLA" },
+        { key: "petg", label: "PETG" },
+      ]}
+      format={(v) => `${v} bản`}
+    />
+  );
+}
+```
+
+### Stacked columns
+
+```tsx
+import { BarChart } from "@semi/ui";
+
+const DATA = [
+  { day: "T2", web: 32, shop: 18, partner: 9 },
+  { day: "T3", web: 41, shop: 22, partner: 12 },
+  { day: "T4", web: 28, shop: 25, partner: 8 },
+  { day: "T5", web: 47, shop: 19, partner: 14 },
+  { day: "T6", web: 53, shop: 31, partner: 16 },
+  { day: "T7", web: 61, shop: 44, partner: 20 },
+  { day: "CN", web: 38, shop: 40, partner: 11 },
+];
+
+export default function ChartStacked() {
+  return (
+    <BarChart
+      stacked
+      label="Đơn hàng theo kênh, 7 ngày"
+      data={DATA}
+      index="day"
+      series={[
+        { key: "web", label: "Website" },
+        { key: "shop", label: "Cửa hàng" },
+        { key: "partner", label: "Đối tác" },
+      ]}
+    />
+  );
+}
+```
+
+### Lines with an area wash
+
+```tsx
+import { LineChart } from "@semi/ui";
+
+const DATA = Array.from({ length: 12 }, (_, i) => ({
+  week: `Tuần ${i + 1}`,
+  revenue: Math.round(40 + i * 4 + 10 * Math.sin(i / 1.6)),
+  cost: Math.round(28 + i * 2 + 6 * Math.cos(i / 2)),
+}));
+
+export default function ChartLine() {
+  return (
+    <LineChart
+      area
+      label="Doanh thu và chi phí, 12 tuần (triệu ₫)"
+      data={DATA}
+      index="week"
+      formatIndex={(w) => w.replace("Tuần ", "T")}
+      series={[
+        { key: "revenue", label: "Doanh thu" },
+        { key: "cost", label: "Chi phí" },
+      ]}
+      format={(v) => `${v} tr ₫`}
+    />
+  );
+}
+```
+
+### Donut
+
+```tsx
+import { DonutChart } from "@semi/ui";
+
+export default function ChartDonut() {
+  return (
+    <DonutChart
+      label="Đơn theo trạng thái"
+      centerLabel="Tổng đơn"
+      data={[
+        { label: "Đã giao", value: 812 },
+        { label: "Đang in", value: 164 },
+        { label: "Chờ thanh toán", value: 96 },
+        { label: "Huỷ", value: 31 },
+      ]}
+    />
+  );
+}
+```
+
+### Sparkline in a KPI row
+
+```tsx
+import { KpiCard, Sparkline } from "@semi/ui";
+
+export default function ChartSparkline() {
+  return (
+    <div className="grid gap-3 @2xl:grid-cols-2">
+      <div className="relative">
+        <KpiCard label="Doanh thu tuần" value="61,8 tr ₫" sub="+12% so với tuần trước" tone="good" icon="coin" iconTone="green" />
+        <Sparkline label="Doanh thu 8 tuần" values={[42, 45, 44, 50, 48, 55, 58, 62]} className="absolute right-4 bottom-4" />
+      </div>
+      <div className="relative">
+        <KpiCard label="Tỉ lệ lỗi" value="1,8%" sub="-0,4 điểm" tone="good" icon="alert" iconTone="pink" />
+        <Sparkline label="Tỉ lệ lỗi 8 tuần" values={[3.1, 2.9, 3.4, 2.6, 2.4, 2.2, 2.0, 1.8]} className="absolute right-4 bottom-4" />
+      </div>
+    </div>
+  );
+}
+```
+
+## API
+
+### BarChart
+
+Columns per category: grouped (default) or `stacked`. ≤24px columns with 4px rounded tops, a 2px gap between stacked
+segments. Hover or ←/→ on the focused chart shows every series of a category; the table view lists all values.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `data` * | `Row[]` |  |  |
+| `index` * | `string` |  | Field holding the category / date of each row (the x axis). |
+| `series` * | `ChartSeries[]` |  |  |
+| `label` * | `string` |  | Accessible name; also the table view's caption. Put the visible title in your card heading. |
+| `height` | `number` |  | Plot height in px (default 240). |
+| `format` | `(value: number) => string` |  | How values read (tooltip, table, labels); axis ticks are compacted (1,2K). |
+| `formatIndex` | `(value: string) => string` |  | How an index value reads ("2026-10" → "T10"). |
+| `className` | `string` |  |  |
+| `stacked` | `boolean` |  |  |
+
+### LineChart
+
+Lines over an index (usually time), 2px with an end dot; `area` adds a 10% wash under each line. A crosshair snaps
+to the nearest index on hover or ←/→ and lists every series.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `data` * | `Row[]` |  |  |
+| `index` * | `string` |  | Field holding the category / date of each row (the x axis). |
+| `series` * | `ChartSeries[]` |  |  |
+| `label` * | `string` |  | Accessible name; also the table view's caption. Put the visible title in your card heading. |
+| `height` | `number` |  | Plot height in px (default 240). |
+| `format` | `(value: number) => string` |  | How values read (tooltip, table, labels); axis ticks are compacted (1,2K). |
+| `formatIndex` | `(value: string) => string` |  | How an index value reads ("2026-10" → "T10"). |
+| `className` | `string` |  |  |
+| `area` | `boolean` |  |  |
+
+### DonutChart
+
+Parts of a whole (≤ 5 slices; fold the rest into "Khác"). Slices are separated by a 2px surface gap; the centre shows
+the total (or `centerLabel`); the legend lists every slice with its value and share.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `data` * | `DonutSlice[]` |  |  |
+| `label` * | `string` |  |  |
+| `format` | `(value: number) => string` | `(v) => v.toLocaleString("vi-VN")` |  |
+| `centerLabel` | `string` |  | Text under the centre figure ("Tổng đơn"). |
+| `size` | `number` | `180` |  |
+| `className` | `string` |  |  |
+
+### Sparkline
+
+A small trend line for a KPI tile or a table cell: muted line, the last point in the accent. Decorative detail:
+the label states the trend for screen readers (first, last, min, max).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `values` * | `number[]` |  |  |
+| `label` * | `string` |  |  |
+| `width` | `number` | `96` |  |
+| `height` | `number` | `28` |  |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- Each chart is role="img" with a label; focus it and use ←/→ (Home / End) to read every index in the tooltip; “Xem bảng” switches to a table with all values.
+- Colour is never the only channel: legend (2+ series), tooltip labels and the table view carry identity; text stays in text tokens.
+
+## Notes
+
+- Keep a series' colour fixed per entity (color: slot) so a filter never repaints the others.
+- Put the visible title in the card around the chart; label is the accessible name.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/chart/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/code-block.md -->
+
+# Code block
+
+Code to read or copy: a mono block with a copy button and an optional title (file name); long lines scroll sideways. Plain text, no highlighting.
+
+## When to use
+
+- API keys and commands to copy, config snippets, developer docs.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A short value inline | <code> in text, or Kbd for keys |
+
+## Import
+
+```tsx
+import { CodeBlock } from "@semi/ui";
+```
+
+## Examples
+
+### With a file name
+
+```tsx
+import { CodeBlock } from "@semi/ui";
+
+export default function CodeBlockBasic() {
+  return (
+    <div className="space-y-3">
+      <CodeBlock code="npx semi-brand preview" />
+      <CodeBlock
+        title="app/globals.css"
+        code={`@import "tailwindcss";
+@import "@semi/ui/tokens.css";
+@import "@semi/ui/base.css";`}
+      />
+    </div>
+  );
+}
+```
+
+## API
+
+### CodeBlock
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `code` * | `string` |  |  |
+| `title` | `string` |  |  |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- The block is focusable so keyboard users can scroll it; the copy button is labelled and says when it copied.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/code-block/ and the types in src/ -->
 
 
 ---
@@ -5504,6 +6279,83 @@ Rounded square with an icon: the leading visual of cards, list rows and dialogs.
 - Decorative by default (aria-hidden); pass title when the icon alone carries meaning.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/icon/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/item.md -->
+
+# Item
+
+A list row — leading icon / avatar / image, title and description, meta on the right, actions — and ItemGroup, which stacks rows in a card with dividers.
+
+## When to use
+
+- Settings lists, files, members, notifications, linked records.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Rows compared column by column | Table or DataTable |
+| Entities with images and status in a grid | Card |
+
+## Import
+
+```tsx
+import { Item, ItemGroup } from "@semi/ui";
+```
+
+## Examples
+
+### Settings list
+
+```tsx
+import { Badge, IconTile, Item, ItemGroup, Switch } from "@semi/ui";
+
+export default function ItemSettings() {
+  return (
+    <ItemGroup label="Cài đặt máy in" showLabel className="max-w-lg">
+      <Item media={<IconTile name="printer" tone="green" size="sm" />} title="X1 Carbon 03" description="Xưởng A · Online" meta={<Badge tone="emerald" dot size="sm">Online</Badge>} href="#printer" />
+      <Item icon="bell" title="Thông báo" description="Khi in xong hoặc gặp lỗi" actions={<Switch checked onChange={() => undefined} label={<span className="sr-only">Thông báo</span>} />} />
+      <Item icon="fileText" title="Nhật ký in" description="Lưu 30 ngày" meta="2,4 GB" />
+    </ItemGroup>
+  );
+}
+```
+
+## API
+
+### Item
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `icon` | `IconName` |  | A leading icon (or pass `media` for an Avatar, IconTile or image). |
+| `media` | `React.ReactNode` |  |  |
+| `title` * | `React.ReactNode` |  |  |
+| `description` | `React.ReactNode` |  |  |
+| `meta` | `React.ReactNode` |  | Right-aligned detail: a value, a Badge, a time. |
+| `actions` | `React.ReactNode` |  | Buttons or a Menu at the end (stay clickable on a linked row). |
+| `href` | `string` |  | Make the whole row a link (next/link). |
+| `onClick` | `() => void` |  | Make the whole row a button. |
+| `className` | `string` |  |  |
+
+### ItemGroup
+
+Rows in a card with dividers; `label` names the list for screen readers (and shows above it when visible).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `label` * | `string` |  |  |
+| `showLabel` | `boolean` | `false` |  |
+| `className` | `string` |  |  |
+| `children` * | `React.ReactNode` |  |  |
+
+## Accessibility
+
+- A linked row is one link (the whole row is clickable through a stretched link); actions stay separate buttons; ItemGroup is a labelled section.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/item/ and the types in src/ -->
 
 
 ---
@@ -5855,6 +6707,93 @@ No props of its own.
 - Real <table> semantics; a clickable TR is reachable by keyboard (Enter).
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/table/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/typography.md -->
+
+# Typography
+
+The type scale (text-caption 11 … text-display 26, font-display for titles) and Prose, which styles long-form text — headings, paragraphs, lists, links, quotes, inline code — from that scale.
+
+## When to use
+
+- Help articles, release notes, policies, long AI answers (wrap Markdown in Prose).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Page title | PageTitle |
+| UI text in cards and forms | the type classes directly (text-ui, text-label…) |
+
+## Import
+
+```tsx
+import { Prose } from "@semi/ui";
+```
+
+## Examples
+
+### Type scale
+
+```tsx
+export default function TypographyScale() {
+  return (
+    <div className="space-y-1.5">
+      <div className="font-display text-display text-contrast">Hiển thị 26</div>
+      <div className="text-heading text-contrast font-semibold">Tiêu đề trang 22</div>
+      <div className="text-title-lg text-contrast font-semibold">Tiêu đề 16</div>
+      <div className="text-title text-contrast font-medium">Tiêu đề thẻ 15</div>
+      <div className="text-ui-lg text-body">Nội dung dài 14</div>
+      <div className="text-ui text-body">Giao diện 13</div>
+      <div className="text-label text-muted">Nhãn 12</div>
+      <div className="text-caption text-muted">Chú thích 11</div>
+    </div>
+  );
+}
+```
+
+### Prose
+
+```tsx
+import { Prose } from "@semi/ui";
+
+export default function TypographyProse() {
+  return (
+    <Prose>
+      <h2>Bảo quản vật liệu</h2>
+      <p>
+        Nhựa PETG và TPU <strong>hút ẩm nhanh</strong>. Giữ cuộn trong hộp kín có gói hút ẩm, hoặc sấy ở <code>65°C</code> trước khi in.
+      </p>
+      <ul>
+        <li>PLA: để nơi khô ráo, tránh nắng</li>
+        <li>PETG: sấy 4 giờ nếu mở hơn một tuần</li>
+      </ul>
+      <blockquote>Bản in bị rỗ bề mặt thường là do nhựa ẩm.</blockquote>
+      <p>
+        Xem thêm <a href="#guide">hướng dẫn sấy nhựa</a>.
+      </p>
+    </Prose>
+  );
+}
+```
+
+## API
+
+### Prose
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `className` | `string` |  |  |
+| `children` * | `React.ReactNode` |  |  |
+
+## Accessibility
+
+- Keep a real heading order (h2 → h3); Prose caps the line length (max-w-prose) for reading.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/typography/ and the types in src/ -->
 
 
 ---

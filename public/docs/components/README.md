@@ -24,6 +24,7 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Date picker](date-picker.md) | `DatePicker` | Schedule a job, filter by day, set a due date. |
 | [Field, Input, Textarea](field.md) | `Field`, `Input`, `Textarea` | Every form control: wrap it in Field instead of writing a <label>. |
 | [Input group](input-group.md) | `InputGroup` | Money and units, URLs and domains, a copy or reveal button inside the field. |
+| [Input OTP](input-otp.md) | `InputOTP` | Verification codes, PINs, invite codes of a fixed length. |
 | [Number input](number-input.md) | `NumberInput`, `NumPadPopup` | Quantities, temperatures, prices, percentages. |
 | [Radio group](radio-group.md) | `RadioGroup` | 2–5 options where the descriptions help the choice (plans, shipping). |
 | [Search input](search-input.md) | `SearchInput` | Filter the list or grid on the current page. |
@@ -53,9 +54,12 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [App header](app-header.md) | `AppHeader` | Single-screen tools: 3D editors, slicers, colour tools. |
 | [App shell](app-shell.md) | `AppShell`, `MobileTabBar` | Every app with several pages (dashboards, admin, store back office). |
 | [Breadcrumb](breadcrumb.md) | `Breadcrumb` | Detail pages deep in a hierarchy (Kho › Vật liệu › PLA đen). |
+| [Menubar](menubar.md) | `Menubar` | Editors and tool apps with many commands (3D, slicer, image tools), next to an AppHeader. |
+| [Navigation menu](navigation-menu.md) | `NavigationMenu` | Marketing sites, storefronts, docs headers. |
 | [Page actions](page-actions.md) | `PageActions`, `PageActionsProvider`, `PageActionsSlot` | A layout owns the header row but the page decides the actions (PageTabsTitle + “+”). |
 | [Page title](page-title.md) | `PageTitle`, `PageTabsTitle` | The first line of every page (PageTitle). |
 | [Pagination](pagination.md) | `Pagination` | Server-paged tables and reports. |
+| [Resizable panels](resizable.md) | `ResizablePanels` | Tools where people tune the space between two or three areas. |
 | [Scroll area](scroll-area.md) | `ScrollArea` | A list or log inside a card that must keep its height. |
 | [Side panel](side-panel.md) | `SidePanel`, `SidePanelToggle` | Settings or layers beside a 3D view, map or editor. |
 | [Subpage toolbar](subpage-toolbar.md) | `SubpageToolbar`, `RefreshButton` | Every list or grid page. |
@@ -66,17 +70,23 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | Doc | Components | When to use |
 |---|---|---|
 | [Accordion](accordion.md) | `Accordion` | FAQs and help; long settings split into groups. |
+| [Aspect ratio](aspect-ratio.md) | `AspectRatio` | Thumbnails and media that must not jump while loading. |
 | [Avatar](avatar.md) | `Avatar` | Owners, assignees, customers in rows and cards. |
 | [Badge](badge.md) | `Badge` | Status of a row or card (Đã thanh toán, Lỗi), a plan or role tag. |
 | [Card](card.md) | `Card` | Group the content of a page in cards; nested facts in TILE. |
+| [Carousel](carousel.md) | `Carousel` | Product photos, featured items, onboarding steps. |
+| [Chart](chart.md) | `BarChart`, `LineChart`, `DonutChart`, `Sparkline` | Compare categories (BarChart), show change over time (LineChart), parts of a whole with ≤ 5 parts (DonutChart), a trend next to a KPI (Sparkline). |
+| [Code block](code-block.md) | `CodeBlock` | API keys and commands to copy, config snippets, developer docs. |
 | [Collapsible](collapsible.md) | `Collapsible` | Hide rarely used options (“Tuỳ chọn khác”), long details. |
 | [Data table](data-table.md) | `DataTable` | Admin lists: orders, customers, inventory, logs — sort by a column, search, act on several rows. |
 | [Icon](icon.md) | `Icon`, `IconTile` | Every icon in the UI: pick the semantic name (trash = delete, close = dismiss, refresh = reload). See docs/ICONS.md. |
+| [Item](item.md) | `Item`, `ItemGroup` | Settings lists, files, members, notifications, linked records. |
 | [Kbd](kbd.md) | `Kbd` | Show the shortcut of an action next to it. |
 | [KPI card](kpi-card.md) | `KpiCard` | The metric row at the top of a dashboard (2–4 per row). |
 | [Markdown](markdown.md) | `Markdown` | Answers of an AI assistant, release notes, short rich text. |
 | [Separator](separator.md) | `Separator` | Split groups inside a card or menu; “hoặc” between two ways to sign in. |
 | [Table](table.md) | `Table`, `THead`, `TBody`, `TR`, `TH`, `TD` | Orders, invoices, logs: rows compared by column. |
+| [Typography](typography.md) | `Prose` | Help articles, release notes, policies, long AI answers (wrap Markdown in Prose). |
 
 ## Feedback
 

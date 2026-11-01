@@ -1,0 +1,26 @@
+{
+  "title": "Input OTP",
+  "group": "Forms",
+  "description": "One-time code entry (OTP, PIN, 2FA): boxes on screen, one real input underneath, so paste, SMS autofill, screen readers and the number keypad work like a normal field.",
+  "components": [
+    "InputOTP"
+  ],
+  "when": [
+    "Verification codes, PINs, invite codes of a fixed length."
+  ],
+  "instead": [
+    {
+      "need": "A password",
+      "use": "Input type=\"password\" (+ InputGroup reveal button)"
+    }
+  ],
+  "a11y": [
+    "A single labelled input with autocomplete=\"one-time-code\" and inputmode=\"numeric\"; the boxes are decoration; invalid sets aria-invalid."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "6-digit code"
+    }
+  ]
+}

@@ -9,6 +9,7 @@
   "baseline": "semi-lint-baseline.json",
   "skip": {
     "inline-svg-path": [
+      "src/Chart.tsx",
       "src/Icon.tsx"
     ],
     "app-chrome-copy": [
@@ -21,7 +22,11 @@
       "src/locale.tsx"
     ],
     "font-mono": [
-      "site/"
+      "site/",
+      "src/CodeBlock.tsx"
+    ],
+    "thick-stroke": [
+      "src/Chart.tsx"
     ]
   },
   "ignore": [

@@ -1,0 +1,33 @@
+{
+  "title": "Navigation menu",
+  "group": "Navigation & layout",
+  "description": "Top navigation of a website or landing page: links, and items that open a panel of links with descriptions. Below md it becomes one menu button with a sheet.",
+  "components": [
+    "NavigationMenu"
+  ],
+  "imports": [
+    "type NavigationItem"
+  ],
+  "when": [
+    "Marketing sites, storefronts, docs headers."
+  ],
+  "instead": [
+    {
+      "need": "Navigation of an app with many pages",
+      "use": "AppShell"
+    },
+    {
+      "need": "Commands of a tool (Tệp, Sửa)",
+      "use": "Menubar"
+    }
+  ],
+  "a11y": [
+    "A nav landmark with disclosure buttons (aria-expanded), not an ARIA menu: Tab moves through links, Escape closes a panel and returns focus; the current page link has aria-current."
+  ],
+  "examples": [
+    {
+      "file": "site",
+      "title": "Site header"
+    }
+  ]
+}

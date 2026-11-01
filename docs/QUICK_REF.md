@@ -97,19 +97,23 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (98)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (112)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `AppHeader`: `AppHeader`
 - `AppShell`: `AppShell`
+- `AspectRatio`: `AspectRatio`
 - `Badge`: `Badge`
 - `Breadcrumb`: `Breadcrumb`
 - `Button`: `Spinner`, `Button`
 - `ButtonGroup`: `ButtonGroup`
 - `Calendar`: `Calendar`
 - `Card`: `Card`
+- `Carousel`: `Carousel`
+- `Chart`: `BarChart`, `LineChart`, `DonutChart`, `Sparkline`
 - `Chat`: `ChatAvatar`, `ChatThinking`, `UserMessage`, `AssistantMessage`, `ChatError`, `ChatCopyButton`, `ChatIntro`, `ChatSuggestion`, `ChatSuggestions`, `ChatList`, `ChatComposer`, `ChatModelPicker`, `ChatView`, `ChatPanel`, `ChatAnswer`, `AIChat`
 - `Chip`: `Chip`
 - `Choice`: `Checkbox`, `Switch`, `RadioGroup`
+- `CodeBlock`: `CodeBlock`
 - `Command`: `Command`, `CommandDialog`
 - `CustomCombobox`: `CustomCombobox`
 - `CustomSelect`: `CustomSelect`
@@ -122,20 +126,25 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
 - `Field`: `Field`, `Input`, `Textarea`
 - `Icon`: `Icon`, `IconTile`
 - `InputGroup`: `InputGroup`
+- `InputOTP`: `InputOTP`
+- `Item`: `Item`, `ItemGroup`
 - `Kbd`: `Kbd`
 - `KpiCard`: `KpiCard`
 - `Markdown`: `Markdown`
 - `MobileTabBar`: `MobileTabBar`
 - `Modal`: `Modal`
+- `NavigationMenu`: `NavigationMenu`
 - `NumPadPopup`: `NumPadPopup`
 - `NumberInput`: `NumberInput`
-- `Overlay`: `Tooltip`, `Menu`, `ContextMenu`
+- `Overlay`: `Tooltip`, `Menu`, `ContextMenu`, `Menubar`
 - `PageActions`: `PageActionsProvider`, `PageActionsSlot`, `PageActions`
 - `PageTitle`: `PageTitle`, `PageTabsTitle`
 - `Pagination`: `Pagination`
 - `Pills`: `Pills`
 - `Popover`: `Popover`, `HoverCard`
+- `Prose`: `Prose`
 - `RefreshButton`: `RefreshButton`
+- `Resizable`: `ResizablePanels`
 - `ScrollArea`: `ScrollArea`
 - `SearchInput`: `SearchInput`
 - `Separator`: `Separator`

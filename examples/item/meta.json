@@ -1,0 +1,31 @@
+{
+  "title": "Item",
+  "group": "Data display",
+  "description": "A list row — leading icon / avatar / image, title and description, meta on the right, actions — and ItemGroup, which stacks rows in a card with dividers.",
+  "components": [
+    "Item",
+    "ItemGroup"
+  ],
+  "when": [
+    "Settings lists, files, members, notifications, linked records."
+  ],
+  "instead": [
+    {
+      "need": "Rows compared column by column",
+      "use": "Table or DataTable"
+    },
+    {
+      "need": "Entities with images and status in a grid",
+      "use": "Card"
+    }
+  ],
+  "a11y": [
+    "A linked row is one link (the whole row is clickable through a stretched link); actions stay separate buttons; ItemGroup is a labelled section."
+  ],
+  "examples": [
+    {
+      "file": "settings",
+      "title": "Settings list"
+    }
+  ]
+}

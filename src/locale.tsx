@@ -69,6 +69,14 @@ export const vi = {
   sortBy: (column: string) => `Sắp xếp theo ${column}`,
   showHidden: "Hiện các mục ẩn",
   value: "Giá trị",
+  tableView: "Xem bảng",
+  chartView: "Xem biểu đồ",
+  slide: (n: number, total: number) => `${n} / ${total}`,
+  prevSlide: "Ảnh trước",
+  nextSlide: "Ảnh sau",
+  goToSlide: (n: number) => `Đến ảnh ${n}`,
+  resize: "Kéo để đổi kích thước",
+  oneTimeCode: "Mã xác thực",
 };
 
 export type SemiStrings = typeof vi;
@@ -138,6 +146,14 @@ export const en: SemiStrings = {
   sortBy: (column) => `Sort by ${column}`,
   showHidden: "Show hidden items",
   value: "Value",
+  tableView: "Show table",
+  chartView: "Show chart",
+  slide: (n, total) => `${n} of ${total}`,
+  prevSlide: "Previous slide",
+  nextSlide: "Next slide",
+  goToSlide: (n) => `Go to slide ${n}`,
+  resize: "Drag to resize",
+  oneTimeCode: "Verification code",
 };
 
 const LocaleContext = createContext<SemiStrings>(vi);

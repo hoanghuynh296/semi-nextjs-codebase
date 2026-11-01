@@ -93,6 +93,7 @@ function MenuPanel({
   initial,
   onClose,
   panelRef,
+  onSide,
 }: {
   id: string;
   items: MenuItem[];
@@ -101,6 +102,8 @@ function MenuPanel({
   initial: number;
   onClose: (refocus: boolean) => void;
   panelRef: React.RefObject<HTMLDivElement | null>;
+  /** ←/→ inside the panel (Menubar moves to the neighbouring menu). */
+  onSide?: (dir: 1 | -1) => void;
 }) {
   const [active, setActive] = useState(initial);
   const enabled = items.map((it, i) => (it.disabled ? -1 : i)).filter((i) => i >= 0);
@@ -119,6 +122,7 @@ function MenuPanel({
       Home: () => setActive(enabled[0]),
       End: () => setActive(enabled[enabled.length - 1]),
       Escape: () => onClose(true),
+      ...(onSide ? { ArrowRight: () => onSide(1), ArrowLeft: () => onSide(-1) } : {}),
     };
     if (!actions[e.key]) return;
     e.preventDefault();
@@ -308,4 +312,106 @@ export function ContextMenu({
       {at && pos && <MenuPanel id={id} items={items} label={label} pos={pos} initial={enabled[0] ?? 0} onClose={close} panelRef={menuRef} />}
     </div>
   );
+}
+
+export interface MenubarMenu {
+  label: string;
+  items: MenuItem[];
+}
+
+/**
+ * The menu bar of a desktop-style tool (Tệp · Sửa · Xem): ←/→ move between menus (and switch the open one), ↓ / Enter
+ * open, the menus behave like Menu. For page navigation use NavigationMenu or AppShell instead.
+ */
+export function Menubar({ menus, label, className }: { menus: MenubarMenu[]; /** Accessible name of the bar. */ label: string; className?: string }) {
+  const [open, setOpen] = useState<number | null>(null);
+  const [focus, setFocus] = useState(0);
+  const btnRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const barRef = useRef<HTMLDivElement>(null);
+  const id = useId();
+  const close = useCallback((refocus = true) => {
+    setOpen((o) => {
+      if (refocus && o !== null) btnRefs.current[o]?.focus();
+      return null;
+    });
+  }, []);
+  const refs = useMemo(() => [menuRef, barRef], []);
+  useOutsideClose(open !== null, refs, () => close(false));
+  const moveTo = (i: number, openIt: boolean) => {
+    const k = (i + menus.length) % menus.length;
+    setFocus(k);
+    btnRefs.current[k]?.focus();
+    setOpen(openIt ? k : null);
+  };
+  return (
+    <div ref={barRef} role="menubar" aria-label={label} className={cn("inline-flex items-center gap-0.5 rounded-control border border-line bg-panel p-0.5", className)}>
+      {menus.map((m, i) => (
+        <button
+          key={m.label}
+          ref={(el) => {
+            btnRefs.current[i] = el;
+          }}
+          type="button"
+          role="menuitem"
+          aria-haspopup="menu"
+          aria-expanded={open === i}
+          aria-controls={open === i ? id : undefined}
+          tabIndex={i === focus ? 0 : -1}
+          onClick={() => (open === i ? close() : moveTo(i, true))}
+          onPointerEnter={() => open !== null && open !== i && moveTo(i, true)}
+          onKeyDown={(e) => {
+            const keys: Record<string, () => void> = {
+              ArrowRight: () => moveTo(i + 1, open !== null),
+              ArrowLeft: () => moveTo(i - 1, open !== null),
+              ArrowDown: () => moveTo(i, true),
+              Enter: () => moveTo(i, true),
+              " ": () => moveTo(i, true),
+              Home: () => moveTo(0, false),
+              End: () => moveTo(menus.length - 1, false),
+            };
+            if (!keys[e.key]) return;
+            e.preventDefault();
+            keys[e.key]();
+          }}
+          className={cn("h-7 px-2.5 rounded-control text-label font-medium transition outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50", open === i ? "bg-raised text-contrast" : "text-body hover:bg-field hover:text-contrast")}
+        >
+          {m.label}
+        </button>
+      ))}
+      {open !== null && (
+        <MenubarDropdown
+          key={open}
+          anchor={btnRefs.current[open]}
+          id={id}
+          menu={menus[open]}
+          onClose={close}
+          panelRef={menuRef}
+          onSide={(dir) => moveTo(open + dir, true)}
+        />
+      )}
+    </div>
+  );
+}
+
+/** One open menu of a Menubar, positioned under its own button (a new instance per menu, so it re-anchors). */
+function MenubarDropdown({
+  anchor,
+  id,
+  menu,
+  onClose,
+  panelRef,
+  onSide,
+}: {
+  anchor: HTMLElement | null;
+  id: string;
+  menu: MenubarMenu;
+  onClose: (refocus: boolean) => void;
+  panelRef: React.RefObject<HTMLDivElement | null>;
+  onSide: (dir: 1 | -1) => void;
+}) {
+  const anchorRef = useRef<HTMLElement | null>(anchor);
+  const pos = useAnchoredPosition(anchorRef, true, { minWidth: 200 });
+  if (!pos) return null;
+  return <MenuPanel id={id} items={menu.items} label={menu.label} pos={pos} initial={Math.max(0, menu.items.findIndex((it) => !it.disabled))} onClose={onClose} panelRef={panelRef} onSide={onSide} />;
 }

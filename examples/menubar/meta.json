@@ -1,0 +1,33 @@
+{
+  "title": "Menubar",
+  "group": "Navigation & layout",
+  "description": "The menu bar of a desktop-style tool (Tệp · Sửa · Xem): menus that open from a bar and behave like Menu.",
+  "components": [
+    "Menubar"
+  ],
+  "imports": [
+    "type MenubarMenu"
+  ],
+  "when": [
+    "Editors and tool apps with many commands (3D, slicer, image tools), next to an AppHeader."
+  ],
+  "instead": [
+    {
+      "need": "Page navigation",
+      "use": "NavigationMenu or AppShell"
+    },
+    {
+      "need": "A few actions",
+      "use": "Buttons or one Menu"
+    }
+  ],
+  "a11y": [
+    "role=\"menubar\": ←/→ move between menus (and switch the open one), ↓ / Enter open, Escape closes and returns focus; one tab stop for the bar."
+  ],
+  "examples": [
+    {
+      "file": "editor",
+      "title": "Editor menus"
+    }
+  ]
+}

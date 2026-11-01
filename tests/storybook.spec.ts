@@ -303,7 +303,7 @@ test("Field wires label, hint and error to the input", async ({ page }) => {
 test("phones get the bottom tab bar", async ({ browser }) => {
   const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
   await open(page, "/components/", "dark");
-  await expect(page.getByRole("navigation", { name: "Điều hướng" })).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Điều hướng", exact: true })).toBeVisible();
   await page.close();
 });
 
@@ -580,4 +580,67 @@ test("Popover moves focus in and returns it; ContextMenu opens with Shift+F10", 
   await page.keyboard.press("Escape");
   await expect(page.getByRole("menu")).toBeHidden();
   await expect(area).toBeFocused();
+});
+
+test("Charts: the keyboard reads every point, and the table view shows the values", async ({ page }) => {
+  await open(page, "/components/chart/", "dark");
+  const bar = example(page, "chart/bar");
+  const svg = bar.getByRole("img", { name: "Bản in theo vật liệu, 5 tháng" });
+  await svg.focus();
+  await expect(bar.getByRole("status")).toContainText("196 bản"); // focus starts at the latest point
+  await page.keyboard.press("Home");
+  await expect(bar.getByRole("status")).toContainText("T6");
+  await expect(bar.getByRole("status")).toContainText("120 bản");
+  await page.keyboard.press("ArrowRight");
+  await expect(bar.getByRole("status")).toContainText("150 bản");
+  await bar.getByRole("button", { name: "Xem bảng" }).click();
+  const table = bar.getByRole("table", { name: "Bản in theo vật liệu, 5 tháng" });
+  await expect(table).toContainText("178 bản");
+  await bar.getByRole("button", { name: "Xem biểu đồ" }).click();
+  await expect(svg).toBeVisible();
+});
+
+test("InputOTP takes a pasted code; Carousel, Resizable and Menubar move from the keyboard", async ({ page }) => {
+  await open(page, "/components/input-otp/", "dark");
+  await page.getByRole("textbox", { name: "Mã xác thực" }).fill("123456");
+  await expect(page.getByText("Đã xác thực")).toBeVisible();
+  await page.getByRole("textbox", { name: "Mã xác thực" }).fill("111111");
+  await expect(page.getByText("Mã không đúng, thử lại.")).toBeVisible();
+
+  await open(page, "/components/carousel/", "dark");
+  const carousel = page.getByRole("region", { name: "Sản phẩm nổi bật" });
+  await carousel.getByRole("button", { name: "Ảnh sau" }).click();
+  await expect(carousel.getByRole("button", { name: "Đến ảnh 2" })).toHaveAttribute("aria-current", "true");
+
+  await open(page, "/components/resizable/", "dark");
+  const handle = example(page, "resizable/editor").getByRole("separator");
+  await handle.focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(handle).toHaveAttribute("aria-valuenow", "37");
+  await page.keyboard.press("Shift+ArrowLeft");
+  await expect(handle).toHaveAttribute("aria-valuenow", "27");
+
+  await open(page, "/components/menubar/", "dark");
+  const bar = page.getByRole("menubar", { name: "Lệnh của trình chỉnh sửa" });
+  await bar.getByRole("menuitem", { name: "Tệp" }).focus();
+  await page.keyboard.press("ArrowDown");
+  await expect(page.getByRole("menuitem", { name: /^Mở…/ })).toBeFocused();
+  await page.keyboard.press("ArrowRight");
+  await expect(page.getByRole("menuitem", { name: /^Hoàn tác/ })).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(bar.getByRole("menuitem", { name: "Sửa" })).toBeFocused();
+});
+
+test("NavigationMenu opens a panel of links and Escape returns focus", async ({ page }) => {
+  await open(page, "/components/navigation-menu/", "dark");
+  const nav = page.getByRole("navigation", { name: "Điều hướng chính" });
+  const trigger = nav.getByRole("button", { name: "Sản phẩm" });
+  await trigger.click();
+  await expect(trigger).toHaveAttribute("aria-expanded", "true");
+  await expect(nav.getByRole("link", { name: /Vật liệu/ })).toBeVisible();
+  await expect(nav.getByRole("link", { name: "Bảng giá" })).toHaveAttribute("aria-current", "page");
+  await nav.getByRole("link", { name: /Vật liệu/ }).focus();
+  await page.keyboard.press("Escape");
+  await expect(trigger).toHaveAttribute("aria-expanded", "false");
+  await expect(trigger).toBeFocused();
 });
