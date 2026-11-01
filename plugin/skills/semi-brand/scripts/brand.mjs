@@ -124,7 +124,10 @@ function installSemi(spec) {
   (pkg.devDependencies ||= {})["@semi/ui"] = spec;
   writeJson(pkgPath, pkg);
   const pm = detectPkgManager(cwd);
-  return spawnSync(pm, pm === "npm" ? ["install", "--install-links"] : ["install"], { cwd, stdio: "inherit" }).status === 0;
+  // Name the package: a bare `npm install` keeps the commit package-lock.json already has for a git dependency, so a
+  // new tag in package.json would never be installed.
+  const args = pm === "npm" ? ["install", "--install-links", "-D", `@semi/ui@${spec}`] : ["add", "-D", `@semi/ui@${spec}`];
+  return spawnSync(pm, args, { cwd, stdio: "inherit" }).status === 0;
 }
 
 /** Brand tokens of the last build (dist/brand.json), for comparing before / after an update. */
@@ -283,6 +286,10 @@ if (cmd === "update") {
   else {
     console.log(`@semi/ui ${from || "?"} → ${target.version}`);
     if (!installSemi(target.spec)) process.exit(1);
+  }
+  if (semiVersion() !== target.version && !process.env.SEMI_UI_SOURCE) {
+    console.error(`@semi/ui: đã cài ${semiVersion()} nhưng cần ${target.version}. Xoá node_modules/@semi rồi chạy lại update.`);
+    process.exit(1);
   }
   const brand = readJson(brandPath);
   brand.semi = `^${semiVersion() || target.version}`;

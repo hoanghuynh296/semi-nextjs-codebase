@@ -416,9 +416,20 @@ export function installSemiUi(appDir, spec) {
   (pkg.scripts ||= {})["semi:lint"] = "semi-lint";
   writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
   const pm = detectPkgManager(appDir);
-  const args = pm === "npm" ? ["install", "--install-links"] : ["add", `@semi/ui@${spec}`];
+  // Name the package: a bare `npm install` keeps the commit package-lock.json already has for a git dependency, so an
+  // upgrade to a new tag would silently stay on the old one.
+  const dev = Boolean(pkg.devDependencies?.["@semi/ui"]);
+  const args = pm === "npm" ? ["install", "--install-links", ...(dev ? ["-D"] : []), `@semi/ui@${spec}`] : ["add", ...(dev ? ["-D"] : []), `@semi/ui@${spec}`];
   const res = spawnSync(pm, args, { cwd: appDir, stdio: "inherit" });
-  return res.status === 0;
+  if (res.status !== 0) return false;
+  // Say it plainly when the installed version is not the one asked for (a stale lock or cache).
+  const want = String(spec).match(/#v?(\d+\.\d+\.\d+)$/)?.[1];
+  const got = installedSemiVersion(appDir);
+  if (want && got && got !== want) {
+    console.error(`@semi/ui: đã cài ${got} nhưng cần ${want}. Xoá node_modules/@semi rồi chạy lại.`);
+    return false;
+  }
+  return true;
 }
 
 /** Run a CLI installed in the app (node_modules/.bin), never a same-named package fetched by npx. */

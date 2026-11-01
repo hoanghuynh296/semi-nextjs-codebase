@@ -4,6 +4,9 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+### Fixed
+- `/semi-brand update` and `/semi-update` install `@semi/ui` by name (`npm install @semi/ui@<tag>`): a bare `npm install` kept the commit `package-lock.json` already had for the git dependency, so a kit or app stayed on the old release while `package.json` named the new tag. Both now stop with a message when the installed version is not the one asked for.
+
 ## [0.8.0] - 2026-11-01
 
 ### Added
