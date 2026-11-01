@@ -1,7 +1,15 @@
 # Thương hiệu trên Semi (brand kit)
 
-Semi là bộ kit gốc để làm phần mềm cho nhiều thương hiệu (công ty con, khách hàng). Mỗi thương hiệu có **một brand kit
-riêng** sinh ra từ Semi; mọi sản phẩm của thương hiệu đó dùng brand kit, nên luôn cùng màu, cùng font, cùng luật.
+**Bắt đầu từ đây.** Semi là brand builder: bạn định nghĩa thương hiệu một lần, mọi sản phẩm và mọi agent làm theo.
+Mỗi thương hiệu (công ty con, khách hàng) có **một brand kit riêng** sinh ra từ Semi: logo, màu, font, giọng văn, style
+được phép, kèm một brand book để xem. Mọi sản phẩm của thương hiệu cài brand kit, nên luôn cùng nhận diện, cùng luật.
+
+| Bạn đang ở | Gõ | Để làm gì |
+|---|---|---|
+| Repo brand | `/semi-brand` | Tạo hoặc sửa thương hiệu, xem brand book, ra bản |
+| Thư mục trống | `/semi-new-app` | Tạo sản phẩm mới của thương hiệu |
+| App có sẵn | `/semi-check` | Kiểm tra app theo brand và Semi, rồi sửa khi bạn đồng ý |
+| App có sẵn | `/semi-sync` | Brand kit hoặc Semi có bản mới: kéo về |
 
 ```
 Semi core (@semi/ui)              cố định cho mọi thương hiệu
@@ -9,18 +17,19 @@ Semi core (@semi/ui)              cố định cho mọi thương hiệu
         │  /semi-brand
         ▼
 Brand kit (vd. @3dnoobs/brand)    lựa chọn của một thương hiệu, repo GitHub riêng
-  brand.json (bạn chọn) → dist/brand.css, dist/brand.json, BRAND.md, AGENTS.brand.md
+  brand.json (bạn chọn) → dist/brand.css, dist/brand.json, dist/logo/, BRAND.md, AGENTS.brand.md, brand book
         │  /semi-new-app --brand  ·  /semi-sync
         ▼
 Sản phẩm (Manager, Store, …)       chỉ dùng: không tự chọn màu / font, không ghi đè token
 ```
 
-- **Bạn chỉ quyết định vài thứ**, một lần, trong repo brand: màu chính, màu phụ (tuỳ chọn), màu trung tính, các style
-  được dùng, font. Phần còn lại (thang màu, màu cho nền tối / sáng, chữ trên nút, đảm bảo đọc rõ) do Semi tự sinh.
+- **Bạn chỉ quyết định vài thứ**, một lần, trong repo brand: brief (sản phẩm, người dùng, tính cách), logo, màu chính,
+  màu phụ (tuỳ chọn), màu trung tính, các style được dùng, font, giọng văn, mức dùng màu. Phần còn lại (thang màu, màu cho nền tối / sáng, chữ trên nút, đảm bảo đọc rõ) do Semi tự sinh.
 - **Mọi màu đều đạt chuẩn đọc rõ (WCAG AA)** ở cả theme sáng và tối: bộ sinh tự chỉnh, và báo lỗi nếu một màu không
   thể dùng được.
 - **Sản phẩm không thể đi lệch:** `semi-lint` chặn việc ghi đè màu thương hiệu trong sản phẩm (`brand-override`),
   `/semi-check` kiểm tra sản phẩm đang dùng đúng brand kit, đúng style được phép.
+- **Agent viết đúng giọng thương hiệu:** trong sản phẩm, agent hỏi `semi_brand` trước khi viết chữ, đặt màu hay logo.
 
 ---
 
@@ -176,7 +185,7 @@ Luôn đi **từ trên xuống**: Semi → brand kit → sản phẩm.
 | minor | Thêm lựa chọn (style được phép, màu phụ, token mới) | Tự cập nhật |
 | major | Màu / font thương hiệu đổi, thấy rõ | Hỏi trước (`--accept-major`) |
 
-Brand kit ghi nó chạy với `@semi/ui` nào (`"semi": "^0.6"` trong `brand.json`). Nếu Semi mới nhất nằm ngoài dải đó,
+Brand kit ghi nó chạy với `@semi/ui` nào (`"semi": "^0.16"` trong `brand.json`). Nếu Semi mới nhất nằm ngoài dải đó,
 `/semi-sync` giữ Semi ở bản tương thích mới nhất và nhắc chạy `/semi-brand update` trong repo brand.
 
 ---
@@ -201,7 +210,7 @@ Brand kit ghi nó chạy với `@semi/ui` nào (`"semi": "^0.6"` trong `brand.js
   },
   "color": { "accent": "restrained" },
   "imagery": "Ảnh bản in thật trên nền tối, chụp gần; không ảnh stock.",
-  "semi": "^0.6"
+  "semi": "^0.16"
 }
 ```
 

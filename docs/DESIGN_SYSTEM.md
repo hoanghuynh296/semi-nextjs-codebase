@@ -8,8 +8,9 @@ skills, AGENTS.md and plan docs only point here. A rule that lives in two places
 
 Apps read this file from `node_modules/@semi/ui/docs/DESIGN_SYSTEM.md` (the version they installed).
 
-The UI is a **restrained dark product theme** with a **bento card layout**: dark page, rounded cards with thin borders,
-a neutral icon menu, uniform chips and tags with coloured dots, one green accent for actions, few words.
+The UI is a **restrained product theme, dark and light,** with a **bento card layout**: neutral page, rounded cards with thin
+borders, a neutral icon menu, uniform chips and tags with coloured dots, one accent (the brand's primary colour, Semi green
+without a brand kit) for actions, few words. A brand kit (`BRANDS.md`) sets the colours, fonts, voice and allowed styles.
 
 Quick cheatsheet: `QUICK_REF.md`. Tokens: `@semi/ui/tokens.css` (generated from `tokens/tokens.json`). Base layer:
 `@semi/ui/base.css`. Shared building blocks: `@semi/ui` (components) and `@semi/ui/styles` (class constants), see §16;

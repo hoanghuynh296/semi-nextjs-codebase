@@ -66,8 +66,8 @@ Agent hỏi thương hiệu trước, rồi tự động:
 1. Khởi tạo Next.js 16 + React 19 + Tailwind 4 (`create-next-app`).
 2. Cài đặt `@semi/ui` từ tag mới nhất của `github:hoanghuynh296/semi-nextjs-codebase`.
 3. Cấu hình `transpilePackages: ["@semi/ui"]`, nối `@semi/ui/tokens.css` + `@semi/ui/base.css` + `@source` vào `app/globals.css`.
-4. Dựng sẵn `layout.tsx` (font Geist + Montserrat Alternates, `<ConfirmHost />`) và trang mẫu chuẩn Semi (`AppHeader`, `HERO`, `STICKY_TOOLBAR`, `CARD`, `Pills`, `Chip`, `CustomSelect`, `SearchInput`).
-5. Áp style đã chọn (`data-style` trên `<html>`, `"style"` trong `semi-lint.json`).
+4. Dựng sẵn `layout.tsx` (font của brand, hoặc của style khi chưa có brand; `ThemeProvider`, `ToastHost`, `ConfirmHost`) và một trang mẫu (`AppShell`, `PageTitle`, `SubpageToolbar`, `KpiCard`, `CARD`).
+5. Có brand: cài brand kit, nhập `brand.css`, ghi luật của brand vào `AGENTS.md`. Áp style đã chọn trong các style brand cho phép (`data-style` trên `<html>`, `"style"` trong `semi-lint.json`).
 6. Tạo `semi-lint.json`, `AGENTS.md` và kiểm tra `semi-lint` + `tsc` + `npm run build`.
 
 ### Trường hợp 2: Dự án có sẵn (đã hay chưa có `@semi/ui`), và kiểm tra định kỳ
@@ -90,7 +90,7 @@ Khi sạch, `semi-check.md` được xoá. Muốn audit tự chạy trong CI c�
 ```text
 /semi-sync
 ```
-Chỉ để lên bản mới: cài tag mới, in CHANGELOG các bản đã bỏ qua, chạy migration của các bản đó, rồi `tsc`. Luật mới (nếu có) sẽ hiện ở lần `/semi-check` kế tiếp.
+Chỉ để lên bản mới: cập nhật brand kit (nếu có) và `@semi/ui` lên tag mới, in CHANGELOG các bản đã bỏ qua, chạy migration của các bản đó, rồi `tsc`. Luật mới (nếu có) sẽ hiện ở lần `/semi-check` kế tiếp.
 
 ### Thương hiệu riêng (brand kit)
 ```text
@@ -100,7 +100,7 @@ Chỉ để lên bản mới: cài tag mới, in CHANGELOG các bản đã bỏ 
 Semi là bộ kit gốc cho nhiều thương hiệu: **Semi core → brand kit (một repo / thương hiệu) → sản phẩm**. Bạn chỉ quyết
 vài thứ một lần trong repo brand; sản phẩm chỉ cài kit, không tự chọn màu hay font (`brand-override` chặn).
 `/semi-sync` ở sản phẩm cập nhật cả `@semi/ui` lẫn brand kit (đổi màu thương hiệu thấy rõ thì hỏi trước). Xem thử
-thương hiệu: trang **Brand preview** của docs. **Ví dụ từng bước 3D Noobs → app Manager và bảng "lệnh nào khi
+thương hiệu trước khi tạo kit: trang **Brand preview** của docs; sau khi tạo: brand book của kit (`npm run preview` trong repo brand). **Ví dụ từng bước 3D Noobs → app Manager và bảng "lệnh nào khi
 nào": [docs/BRANDS.md](docs/BRANDS.md).**
 
 ### Style
@@ -112,7 +112,7 @@ vuông, bóng lệch cứng, cho landing page / portfolio / công cụ sáng t�
 thương hiệu chọn (`/semi-brand`) và app chọn một lần lúc `/semi-new-app`; muốn đổi sau, chỉ cần nói với agent ("đổi sang Soft"). Danh sách: `tokens/styles.json`, mô tả: `docs/STYLES.md`. Xem thử trên trang docs (nút chọn style
 ở chân sidebar).
 
-### Dựng giao diện với agent (CLI `semi`, MCP)
+### Dựng màn hình với agent (CLI `semi`, MCP)
 Không cần gõ lệnh: khi bạn nhờ agent làm giao diện trong app có Semi, skill `semi-ui` tự chạy. Agent tìm đúng component hoặc block cho từng nhu cầu (gõ tiếng Việt hay tiếng Anh đều được), đọc trang docs của nó,
 bắt đầu từ ví dụ, ghép trang rồi chạy `semi-lint`. Plugin tự chạy MCP server `semi` (công cụ `semi_search`,
 `semi_docs`, `semi_example`, `semi_props`, `semi_list`, `semi_block`, và `semi_brand` cho giọng văn, cách dùng màu,
@@ -193,7 +193,7 @@ Trong `app/globals.css`:
 /* semi-design-system:end */
 ```
 
-Nếu một thương hiệu con cần đổi màu nhấn chính (`primary-*`), khai báo `@theme` ngay dưới khối import trên trong `globals.css`.
+Không khai báo màu hay `@theme` riêng trong app (`brand-override` chặn): màu của một thương hiệu đến từ brand kit (`/semi-brand`), app chỉ nhập `brand.css` của kit ngay dưới khối trên.
 
 Trong `app/layout.tsx` (chống nháy sai theme khi tải trang):
 ```tsx
