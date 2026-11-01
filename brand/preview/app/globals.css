@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@import "@semi/ui/tokens.css";
+@import "@semi/ui/base.css";
+@import "./brand.css";
+@source "../../node_modules/@semi/ui/src";
+@source "../../node_modules/@semi/ui/styles";

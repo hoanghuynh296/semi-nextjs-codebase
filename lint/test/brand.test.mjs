@@ -8,6 +8,7 @@ import { join } from "node:path";
 import { contrast, hexToOklch } from "../../brand/color.mjs";
 import { generateBrand, scale, validateBrand } from "../../brand/generate.mjs";
 import { scan } from "../semi-lint.mjs";
+import { preparePreview } from "../../brand/cli.mjs";
 
 const read = (p) => JSON.parse(readFileSync(new URL(`../../${p}`, import.meta.url), "utf8"));
 const tokens = read("tokens/tokens.json");
@@ -86,7 +87,7 @@ test("css: primary scale in @theme, fonts through the family hooks, secondary ut
   assert.match(two, /--color-secondary-fg: var\(--semi-secondary-fg\);/);
 });
 
-test("semi-brand build writes the kit, check catches a stale file, preview encodes brand.json", () => {
+test("semi-brand build writes the kit, check catches a stale file, storybook encodes brand.json", () => {
   const dir = mkdtempSync(join(tmpdir(), "semi-brand-"));
   writeFileSync(join(dir, "brand.json"), JSON.stringify(brand({ name: "3D Noobs", package: "@3dnoobs/brand" }), null, 2));
   execFileSync("node", [CLI, "build"], { cwd: dir });
@@ -95,7 +96,7 @@ test("semi-brand build writes the kit, check catches a stale file, preview encod
   execFileSync("node", [CLI, "check"], { cwd: dir });
   writeFileSync(join(dir, "brand.json"), JSON.stringify(brand({ name: "3D Noobs", package: "@3dnoobs/brand", primary: "#2563EB" })));
   assert.throws(() => execFileSync("node", [CLI, "check"], { cwd: dir, stdio: "pipe" }));
-  const url = execFileSync("node", [CLI, "preview"], { cwd: dir, encoding: "utf8" }).trim();
+  const url = execFileSync("node", [CLI, "storybook"], { cwd: dir, encoding: "utf8" }).trim();
   assert.equal(JSON.parse(Buffer.from(url.split("#brand=")[1], "base64url").toString()).primary, "#2563EB");
   rmSync(dir, { recursive: true });
 });
@@ -108,5 +109,20 @@ test("brand-override: an app with a brand kit may not set brand colours, fonts o
   const withBrand = scan([css], { brand: "@3dnoobs/brand" }, dir).hard.filter((h) => h.rule === "brand-override");
   assert.deepEqual(withBrand.map((h) => h.line), [2, 3, 4]);
   assert.equal(scan([css], {}, dir).hard.filter((h) => h.rule === "brand-override").length, 0); // only with a brand
+  rmSync(dir, { recursive: true });
+});
+
+test("preview site: the template plus this brand's data, fonts module and CSS land in .preview/", () => {
+  const dir = mkdtempSync(join(tmpdir(), "semi-brand-preview-"));
+  writeFileSync(join(dir, "brand.json"), JSON.stringify(brand({ name: "3D Noobs", package: "@3dnoobs/brand", fonts: { sans: "Inter", display: "Montserrat Alternates" } })));
+  execFileSync("node", [CLI, "build"], { cwd: dir });
+  const out = preparePreview(dir);
+  for (const f of ["next.config.mjs", "postcss.config.mjs", "app/layout.jsx", "app/page.jsx", "app/globals.css", "app/brand.css", "app/brand.json"]) assert.ok(readFileSync(join(out, f), "utf8").length > 20, f);
+  const fonts = readFileSync(join(out, "app/fonts.js"), "utf8");
+  assert.match(fonts, /import \{ Inter, Montserrat_Alternates \} from "next\/font\/google";/);
+  assert.match(fonts, /weight: \["600","700"\]/);
+  assert.match(fonts, /export const fontVariables = \[inter\.variable, montserratAlternates\.variable\]\.join\(" "\);/);
+  assert.equal(readFileSync(join(out, "app/brand.css"), "utf8"), readFileSync(join(dir, "dist/brand.css"), "utf8"));
+  assert.match(readFileSync(join(out, "next.config.mjs"), "utf8"), /SEMI_BRAND_BASE_PATH/);
   rmSync(dir, { recursive: true });
 });

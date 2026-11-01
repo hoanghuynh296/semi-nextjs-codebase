@@ -48,15 +48,17 @@ Mở thư mục đó bằng Claude Code (hoặc agent có plugin `semi-design`).
 | Style mặc định, style được phép | Flat · Flat + Soft | Mỗi sản phẩm chọn trong danh sách này |
 | Font | Geist + Montserrat Alternates | Chọn trong danh sách, hoặc tên một Google Font |
 
-👉 *Bạn làm:* chọn. *Agent làm:* tạo repo kit (`package.json`, `brand.json`), cài `@semi/ui`, sinh `dist/`.
+👉 *Bạn làm:* chọn. *Agent làm:* tạo repo kit (`package.json`, `brand.json`, workflow GitHub Pages), cài `@semi/ui`
+và Next.js (cho trang preview), sinh `dist/`.
 
-**Bước 3. Xem trước và chỉnh**
+**Bước 3. Xem trước ngay trong repo brand và chỉnh**
 
-Agent mở trang **Brand preview** của Storybook với thương hiệu của bạn: toàn bộ component (nút, thẻ, form, bảng, modal,
-chat) trong màu 3D Noobs, chuyển được sáng / tối và giữa các style được phép, kèm bảng điểm đọc rõ.
+Agent chạy trang preview **của chính repo brand** (`npm run preview`) và gửi link local:
+**http://localhost:4600**. Trang dựng bằng `@semi/ui` thật cùng `brand.css` của kit: màu, chữ, nút & form, thẻ, bảng,
+thông báo… trong màu 3D Noobs, đổi sáng / tối ở chân menu và giữa các style được phép, kèm bảng điểm đọc rõ.
 
-👉 *Bạn làm:* nhìn và nói điều muốn đổi ("màu chính đậm hơn", "dùng màu trung tính có sẵn"). *Agent làm:* sửa
-`brand.json`, sinh lại, mở lại trang xem trước.
+👉 *Bạn làm:* mở link, nhìn và nói điều muốn đổi ("màu chính đậm hơn", "dùng màu trung tính có sẵn"). *Agent làm:* sửa
+`brand.json`, sinh lại; trang đang mở tự cập nhật.
 
 Repo kit sau bước này:
 
@@ -66,13 +68,20 @@ dist/brand.css      sinh ra: màu, font, màu trung tính cho từng style (đã
 dist/brand.json     sinh ra: toàn bộ giá trị + font để sản phẩm nạp
 BRAND.md            sinh ra: guideline thương hiệu, người đọc được
 AGENTS.brand.md     sinh ra: luật cho agent ở mọi sản phẩm của thương hiệu
-package.json        "@3dnoobs/brand", phụ thuộc "@semi/ui"
+package.json        "@3dnoobs/brand", phụ thuộc "@semi/ui" (+ Next.js cho trang preview)
+.github/workflows/brand-pages.yml   build trang preview và đăng lên GitHub Pages mỗi lần push
+.preview/           trang preview sinh ra khi chạy (không commit)
 ```
 
-**Bước 4. Chốt và phát hành**
+**Bước 4. Chốt, phát hành và xem online**
 
 👉 *Bạn làm:* nói "ok, publish" và tạo repo GitHub cho kit (vd. `3dnoobs/brand`) nếu chưa có.
-*Agent làm:* `npm run check`, commit, push, gắn tag `v1.0.0`. Từ đây 3D Noobs có bộ nhận diện riêng.
+*Agent làm:* `npm run check`, commit, push, gắn tag `v1.0.0`, bật GitHub Pages cho repo (`brand.mjs pages`, nguồn:
+GitHub Actions). Workflow `brand-pages.yml` build trang preview và đăng lên **https://&lt;owner&gt;.github.io/&lt;repo&gt;/**;
+mỗi lần push lên main nó build lại. Từ đây 3D Noobs có bộ nhận diện riêng, ai cũng xem được online.
+
+> Repo private: GitHub Pages cho repo private cần gói GitHub có hỗ trợ (Pro / Team / Enterprise). Không có thì để repo
+> brand public (nó chỉ chứa màu, font, guideline), hoặc chỉ xem local.
 
 ### Phần B — Tạo app Manager
 
