@@ -1,0 +1,12 @@
+{
+  "$note": "A Semi style: the shape tokens every component reads (rounded-chip / control / card / panel, shadow-card). Every style sets the same keys; colours, type and layout stay shared. Edit, then npm run build:tokens. docs/STYLES.md describes each style.",
+  "name": "Sharp",
+  "description": "Square corners and a hard offset shadow under cards. Bold, editorial screens: landing pages, portfolios, creative tools.",
+  "tokens": {
+    "radius-chip": { "value": "0.125rem" },
+    "radius-control": { "value": "0" },
+    "radius-card": { "value": "0" },
+    "radius-panel": { "value": "0" },
+    "shadow-card": { "value": "4px 4px 0 var(--semi-line-hover)", "note": "Hard offset shadow in the theme's strong line colour" }
+  }
+}

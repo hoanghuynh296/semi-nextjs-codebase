@@ -5,6 +5,7 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 ## [Unreleased]
 
 ### Added
+- **Sharp style:** square corners (chip 2px, everything else 0) and a hard 4px offset shadow under cards (theme's strong line colour), for bold editorial screens.
 - **Styles:** the shape of the UI is now a style an app picks once (`<html data-style>` + `"style"` in `semi-lint.json`): **Flat** (default, unchanged look) and **Soft** (radii 6 · 12 · 20 · 24px, soft resting card shadow). Style tokens `rounded-chip` · `rounded-control` · `rounded-card` · `rounded-panel` and `shadow-card` (in `CARD`, `HERO`, `SHELL_ASIDE`); sources `tokens/styles/<id>.json`, generated list `tokens/styles.json` (`@semi/ui/styles.json`, also in `components.json`), guide `docs/STYLES.md`. Storybook has a Flat / Soft switch; Playwright checks Soft before paint and its contrast in both themes.
 - **`/semi-style`:** shows or switches an app's style. `/semi-init --style`, `/semi-fix foundation --style` (asked with the other decisions); `/semi-audit` reports a missing or unapplied style in phase 1; `/semi-update` warns when the app's style left the release.
 - **`radius-token` (ratchet):** `rounded`, `rounded-sm/md/lg/xl/2xl`, `rounded-[Npx]` do not follow the style; the token codemod maps them (`lg` → `control`, `xl` → `card`, `2xl` → `panel`, `sm` / `md` / bare → `chip`) and `shadow-sm/md` → `shadow-card` (it used to drop them).

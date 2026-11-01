@@ -102,6 +102,11 @@
         "description": "Thin borders, no card shadows, medium radii. Dense, information-first screens: dashboards, tools, admin."
       },
       {
+        "id": "sharp",
+        "name": "Sharp",
+        "description": "Square corners and a hard offset shadow under cards. Bold, editorial screens: landing pages, portfolios, creative tools."
+      },
+      {
         "id": "soft",
         "name": "Soft",
         "description": "Larger radii and a soft resting shadow under cards. Calmer, friendlier screens: consumer apps, storefronts, onboarding."

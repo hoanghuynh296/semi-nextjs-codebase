@@ -484,7 +484,7 @@ in shared components comes from `useSemiLocale()` (`<SemiLocaleProvider locale={
 **Shape (style tokens, docs/STYLES.md):** marks / checkboxes / inline code `rounded-chip` · controls / tiles / rows
 `rounded-control` · cards / popovers / menus / toasts `rounded-card` · panels / hero / modal / sidebar `rounded-panel` ·
 pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `CARD`; none in Flat). The app's style
-(`<html data-style>`, Flat by default, or Soft) sets the values. Never `rounded`, `rounded-lg/xl/2xl` or `rounded-[Npx]`.
+(`<html data-style>`: Flat by default, Soft or Sharp) sets the values. Never `rounded`, `rounded-lg/xl/2xl` or `rounded-[Npx]`.
 
 **Use the shared blocks (`@semi/ui` and `@semi/ui/styles`) — never create a local `ui.tsx` wrapper barrel:**
 - **Layout & Structure (`@semi/ui`):**
@@ -513,7 +513,7 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
 - **No solid pastel surfaces (`no-solid-pastel-surfaces`):** Never use solid pastels (`bg-*-50`, `border-*-200`) for cards, rows, or containers; in dark mode they turn into glaring light rectangles. Use alpha transparency (`bg-amber-500/10 border-amber-500/20`) or standard `bg-panel`.
 - **Universal Tonal Theme-Matching:** Chromatic accents across ANY component (cards, alert banners, callouts, table rows, buttons, badges, chips) adapt seamlessly to both dark & light themes using alpha transparency: static fill `bg-<color>-500/10`, hover fill `hover:bg-<color>-500/15`, active fill `active:bg-<color>-500/20`, border `border-<color>-500/20`, hover border `hover:border-<color>-500/30`, and text `text-tone-<color>` (or `TONAL_CONTAINER` / `TONAL_HOVER` / `<Badge tone="...">`).
 - **No Card class override (`card-class-override`):** `<Card>` (`interactive`, `active`) owns its surface: no `bg-*` / `shadow-*` in its className.
-- **Surfaces & Shadows:** Gradients, glow, `shadow-[0_0_…]`, `shadow-sm/md/lg` are banned. Cards are separated by borders (`border-line`); their only resting shadow is `shadow-card`, which the style sets (none in Flat, soft in Soft).
+- **Surfaces & Shadows:** Gradients, glow, `shadow-[0_0_…]`, `shadow-sm/md/lg` are banned. Cards are separated by borders (`border-line`); their only resting shadow is `shadow-card`, which the style sets (none in Flat, soft in Soft, hard offset in Sharp).
 - **Typography:** `font-bold`, `text-[9|10px]`, `text-xs/sm`, uppercase labels, ALL CAPS buttons.
 - **Radii (`radius-token`):** `rounded`, `rounded-sm/md/lg/xl/2xl`, `rounded-[Npx]` (they ignore the app's style); per-style classes or `[data-style=…]` selectors in an app.
 - **Navigation & Layout:** fixed `border-r` sidebars or `-translate-x-full` hamburger drawers (use `AppShell` + `MobileTabBar`) · local `ui.tsx` wrapper barrels (`PageHeader`, `Select`, `Input`, `Button`, `Modal`): use `Button`, `Field` + `Input`, `CustomSelect`, `Modal`, `EmptyState` from `@semi/ui`.
@@ -596,7 +596,7 @@ hook of the `semi-design` plugin).
   Minimal text: no subtitle or caption under page titles, no captions that repeat what an icon already says.
 - **Flat, no glow, no gradients.** No gradient fills, no blurred colour blobs, no coloured `shadow-[0_0_…]` glows
   (buttons, cards, status dots, power buttons). Depth comes from the surface tokens and translucent white overlays
-  (plus the style's neutral resting card shadow `shadow-card`: none in Flat, soft in Soft);
+  (plus the style's neutral resting card shadow `shadow-card`: none in Flat, soft in Soft, a hard offset in Sharp);
   emphasis ("on", active, running) comes from a flat primary fill or a `border-primary-500/30` border.
   The only gradient is the skeleton shimmer sweep in `base.css`.
 - **Colour on content, not on chrome.** The nav menu is neutral (grey icons, no count badges; active item =
@@ -607,8 +607,8 @@ hook of the `semi-design` plugin).
   sticky toolbar row: pill filter tabs on the left, the icon-only primary CTA (`BTN_PRIMARY` + `BTN_ICON`) + secondary
   filter/search/refresh controls on the right (§4). All toolbar controls share `h-[34px]` and `text-label font-medium`.
 - **Cards, not lines.** Group content in rounded cards (`rounded-card`) on the dark page; nested facts sit in tonal tiles.
-- **One style per app.** Radii and the card shadow are style tokens (`docs/STYLES.md`): an app picks Flat (default) or
-  Soft once, with `<html data-style>`, and every component follows. Components, colours, type and layout are shared.
+- **One style per app.** Radii and the card shadow are style tokens (`docs/STYLES.md`): an app picks Flat (default), Soft
+  or Sharp once, with `<html data-style>`, and every component follows. Components, colours, type and layout are shared.
 - **One accent.** `primary-*` (Semi default green `#00AE42`; a product may override it, see §2b) for actions,
   selection and focus. Status colours carry meaning only (§3).
 - **Phone first.** Used from iPhone and iPad: no horizontal page scroll at 375px, touch targets ≥ 36px (44px for nav),
@@ -890,7 +890,7 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
 - **Radius scale (style tokens):** tiny marks (checkbox, colour swatch, key cap, inline code) `rounded-chip` · controls,
   inputs, buttons, inner tiles and list rows `rounded-control` · cards, popovers, menus, toasts `rounded-card` · panels,
   hero, modals, drawers, sidebar `rounded-panel` · filter chips, pills, avatars, badges, dots `rounded-full`. Values per
-  style (Flat 4 · 8 · 12 · 16px, Soft 6 · 12 · 20 · 24px): `docs/STYLES.md`. Never the raw scale (`rounded`,
+  style (Flat 4 · 8 · 12 · 16px, Soft 6 · 12 · 20 · 24px, Sharp 2 · 0 · 0 · 0): `docs/STYLES.md`. Never the raw scale (`rounded`,
   `rounded-lg/xl/2xl`) or `rounded-[Npx]`: they would not follow the style (`radius-token`).
 - **Control height:** all toolbar buttons, filter chips, pills, search inputs, custom selects and date pickers use
   `h-[34px]` and `text-label font-medium` so toolbar rows align evenly.
@@ -1556,22 +1556,22 @@ Nếu một dự án mới thực sự cần một icon mới chưa có trong da
 
 # Semi styles
 
-A **style** is the shape of the whole UI: the radii and the resting card shadow. An app picks one style, once; every
+A **style** is the shape of the whole UI: the radii and the resting card shadow. An app picks one style, once (Flat, Soft or Sharp); every
 `@semi/ui` component and class constant follows it. Everything else is shared by all styles: components and their API,
 colours and both themes (light / dark), type scale, spacing, layout (AppShell, PageTitle, SubpageToolbar …), icons,
 accessibility and lint rules.
 
-| | Flat (default) | Soft |
-|---|---|---|
-| For | Dense, information-first screens: dashboards, tools, admin | Calmer, friendlier screens: consumer apps, storefronts, onboarding |
-| `rounded-chip` | 4px | 6px |
-| `rounded-control` | 8px | 12px |
-| `rounded-card` | 12px | 20px |
-| `rounded-panel` | 16px | 24px |
-| `shadow-card` | none (the border separates cards) | soft neutral shadow, tinted for the theme |
+| | Flat (default) | Soft | Sharp |
+|---|---|---|---|
+| For | Dense, information-first screens: dashboards, tools, admin | Calmer, friendlier screens: consumer apps, storefronts, onboarding | Bold, editorial screens: landing pages, portfolios, creative tools |
+| `rounded-chip` | 4px | 6px | 2px |
+| `rounded-control` | 8px | 12px | 0 |
+| `rounded-card` | 12px | 20px | 0 |
+| `rounded-panel` | 16px | 24px | 0 |
+| `shadow-card` | none (the border separates cards) | soft neutral shadow, tinted for the theme | hard 4px offset shadow in the strong line colour |
 
 Source: `tokens/styles/<id>.json` → `npm run build:tokens` → `[data-style="<id>"]` blocks in `tokens.css` and the list
-in `tokens/styles.json` (`@semi/ui/styles.json`). Preview: the Flat / Soft switch at the bottom of the Storybook sidebar.
+in `tokens/styles.json` (`@semi/ui/styles.json`). Preview: the Flat / Soft / Sharp switch at the bottom of the Storybook sidebar.
 
 ## Picking a style in an app
 

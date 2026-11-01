@@ -22,7 +22,7 @@ hook of the `semi-design` plugin).
   Minimal text: no subtitle or caption under page titles, no captions that repeat what an icon already says.
 - **Flat, no glow, no gradients.** No gradient fills, no blurred colour blobs, no coloured `shadow-[0_0_…]` glows
   (buttons, cards, status dots, power buttons). Depth comes from the surface tokens and translucent white overlays
-  (plus the style's neutral resting card shadow `shadow-card`: none in Flat, soft in Soft);
+  (plus the style's neutral resting card shadow `shadow-card`: none in Flat, soft in Soft, a hard offset in Sharp);
   emphasis ("on", active, running) comes from a flat primary fill or a `border-primary-500/30` border.
   The only gradient is the skeleton shimmer sweep in `base.css`.
 - **Colour on content, not on chrome.** The nav menu is neutral (grey icons, no count badges; active item =
@@ -33,8 +33,8 @@ hook of the `semi-design` plugin).
   sticky toolbar row: pill filter tabs on the left, the icon-only primary CTA (`BTN_PRIMARY` + `BTN_ICON`) + secondary
   filter/search/refresh controls on the right (§4). All toolbar controls share `h-[34px]` and `text-label font-medium`.
 - **Cards, not lines.** Group content in rounded cards (`rounded-card`) on the dark page; nested facts sit in tonal tiles.
-- **One style per app.** Radii and the card shadow are style tokens (`docs/STYLES.md`): an app picks Flat (default) or
-  Soft once, with `<html data-style>`, and every component follows. Components, colours, type and layout are shared.
+- **One style per app.** Radii and the card shadow are style tokens (`docs/STYLES.md`): an app picks Flat (default), Soft
+  or Sharp once, with `<html data-style>`, and every component follows. Components, colours, type and layout are shared.
 - **One accent.** `primary-*` (Semi default green `#00AE42`; a product may override it, see §2b) for actions,
   selection and focus. Status colours carry meaning only (§3).
 - **Phone first.** Used from iPhone and iPad: no horizontal page scroll at 375px, touch targets ≥ 36px (44px for nav),
@@ -316,7 +316,7 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
 - **Radius scale (style tokens):** tiny marks (checkbox, colour swatch, key cap, inline code) `rounded-chip` · controls,
   inputs, buttons, inner tiles and list rows `rounded-control` · cards, popovers, menus, toasts `rounded-card` · panels,
   hero, modals, drawers, sidebar `rounded-panel` · filter chips, pills, avatars, badges, dots `rounded-full`. Values per
-  style (Flat 4 · 8 · 12 · 16px, Soft 6 · 12 · 20 · 24px): `docs/STYLES.md`. Never the raw scale (`rounded`,
+  style (Flat 4 · 8 · 12 · 16px, Soft 6 · 12 · 20 · 24px, Sharp 2 · 0 · 0 · 0): `docs/STYLES.md`. Never the raw scale (`rounded`,
   `rounded-lg/xl/2xl`) or `rounded-[Npx]`: they would not follow the style (`radius-token`).
 - **Control height:** all toolbar buttons, filter chips, pills, search inputs, custom selects and date pickers use
   `h-[34px]` and `text-label font-medium` so toolbar rows align evenly.

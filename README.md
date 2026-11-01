@@ -8,10 +8,10 @@ Xây dựng cho **Next.js 16 + React 19 + Tailwind CSS 4**, hỗ trợ chuyển 
 
 Repository này đóng gói **2 sản phẩm trong cùng 1 tag phiên bản (semver)**:
 1. **Plugin cho AI Agent (`semi-design`):** chứa bộ quy tắc luôn bật (`rules/AGENTS.md` — tự động hướng dẫn agent mỗi khi viết hoặc sửa giao diện), hook tự chạy lint khi sửa file (`hooks.json`), và **7 slash commands**. App mới: `/semi-init`. App có sẵn (đã hay chưa có Semi): `/semi-audit` rồi `/semi-fix`, và cũng là cách kiểm tra định kỳ. Lên bản mới: `/semi-update`. Đổi style: `/semi-style`:
-   - `/semi-init` — **Tạo app mới** (thư mục trống): hỏi chọn style (Flat, Soft, …), rồi dựng Next.js + Tailwind 4 + `@semi/ui` + trang mẫu, sạch ngay, không cần audit hay fix.
+   - `/semi-init` — **Tạo app mới** (thư mục trống): hỏi chọn style (Flat, Soft, Sharp), rồi dựng Next.js + Tailwind 4 + `@semi/ui` + trang mẫu, sạch ngay, không cần audit hay fix.
    - `/semi-audit` — **Kiểm tra** (không sửa code): in tóm tắt ngắn và ghi mọi vấn đề kèm `file:dòng` vào `semi-audit.md`.
    - `/semi-fix` — **Sửa theo `semi-audit.md`, từng giai đoạn:** nền móng (cài `@semi/ui`, CSS, provider; giữ nguyên Next / Tailwind; so ảnh trước / sau) → codemod token → sửa tay → cấu trúc theo quyết định. Kiểm tra lại tới khi sạch rồi xoá file.
-   - `/semi-style` — **Đổi style** của app (Flat ↔ Soft …): chỉ đổi bo góc và bóng thẻ, component / màu / bố cục giữ nguyên; so ảnh trước / sau.
+   - `/semi-style` — **Đổi style** của app (Flat / Soft / Sharp): chỉ đổi bo góc và bóng thẻ, component / màu / bố cục giữ nguyên; so ảnh trước / sau.
    - `/semi-update` — **Nâng cấp phiên bản** `@semi/ui` lên tag mới nhất và chạy migration của các bản mới (sửa code theo thay đổi lớn của chính bản đó), rồi `tsc`. Không audit, không refactor.
    - `/semi-propose` — **Đề xuất tính năng từ dự án con** (quét nhu cầu chưa được `@semi/ui` đáp ứng tại dự án thực tế, cấu trúc issue chuẩn và tạo issue trực tiếp trên GitHub repo lõi).
    - `/semi-triage` — **Đánh giá & Tổng quát hóa Issue (Dành cho Core)** (đọc issue trên GitHub, phân tích tính đúng đắn, đối chiếu rulebook, và thiết kế giải pháp tổng quát cho toàn hệ sinh thái mà không break rule).
@@ -84,8 +84,9 @@ Chỉ để lên bản mới: cài tag mới, in CHANGELOG các bản đã bỏ 
 ```
 Style là dáng của cả giao diện: bo góc (`rounded-chip` · `control` · `card` · `panel`) và bóng thẻ (`shadow-card`). Mọi
 style dùng chung component, màu, chữ, bố cục và cả hai theme sáng / tối. Hiện có **Flat** (mặc định: viền mảnh, không
-bóng, cho dashboard / công cụ) và **Soft** (bo lớn, bóng nhẹ, cho app người dùng cuối). Danh sách: `tokens/styles.json`,
-mô tả: `docs/STYLES.md`. Xem thử trong Storybook (nút Flat / Soft ở chân sidebar).
+bóng, cho dashboard / công cụ), **Soft** (bo lớn, bóng nhẹ, cho app người dùng cuối) và **Sharp** (góc vuông, bóng
+lệch cứng, cho landing page / portfolio / công cụ sáng tạo). Danh sách: `tokens/styles.json`,
+mô tả: `docs/STYLES.md`. Xem thử trong Storybook (nút Flat / Soft / Sharp ở chân sidebar).
 
 ### Đề xuất tính năng mới từ dự án con (Khi gặp thiếu sót hoặc nhu cầu chưa đáp ứng)
 ```text

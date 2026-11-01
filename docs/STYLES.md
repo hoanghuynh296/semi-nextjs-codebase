@@ -1,21 +1,21 @@
 # Semi styles
 
-A **style** is the shape of the whole UI: the radii and the resting card shadow. An app picks one style, once; every
+A **style** is the shape of the whole UI: the radii and the resting card shadow. An app picks one style, once (Flat, Soft or Sharp); every
 `@semi/ui` component and class constant follows it. Everything else is shared by all styles: components and their API,
 colours and both themes (light / dark), type scale, spacing, layout (AppShell, PageTitle, SubpageToolbar …), icons,
 accessibility and lint rules.
 
-| | Flat (default) | Soft |
-|---|---|---|
-| For | Dense, information-first screens: dashboards, tools, admin | Calmer, friendlier screens: consumer apps, storefronts, onboarding |
-| `rounded-chip` | 4px | 6px |
-| `rounded-control` | 8px | 12px |
-| `rounded-card` | 12px | 20px |
-| `rounded-panel` | 16px | 24px |
-| `shadow-card` | none (the border separates cards) | soft neutral shadow, tinted for the theme |
+| | Flat (default) | Soft | Sharp |
+|---|---|---|---|
+| For | Dense, information-first screens: dashboards, tools, admin | Calmer, friendlier screens: consumer apps, storefronts, onboarding | Bold, editorial screens: landing pages, portfolios, creative tools |
+| `rounded-chip` | 4px | 6px | 2px |
+| `rounded-control` | 8px | 12px | 0 |
+| `rounded-card` | 12px | 20px | 0 |
+| `rounded-panel` | 16px | 24px | 0 |
+| `shadow-card` | none (the border separates cards) | soft neutral shadow, tinted for the theme | hard 4px offset shadow in the strong line colour |
 
 Source: `tokens/styles/<id>.json` → `npm run build:tokens` → `[data-style="<id>"]` blocks in `tokens.css` and the list
-in `tokens/styles.json` (`@semi/ui/styles.json`). Preview: the Flat / Soft switch at the bottom of the Storybook sidebar.
+in `tokens/styles.json` (`@semi/ui/styles.json`). Preview: the Flat / Soft / Sharp switch at the bottom of the Storybook sidebar.
 
 ## Picking a style in an app
 

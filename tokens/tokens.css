@@ -504,7 +504,7 @@
   --shadow-float: var(--semi-shadow-float);
 }
 
-/* Styles (tokens/styles/*.json, docs/STYLES.md): set data-style="flat|soft" on <html> or a wrapper; default flat */
+/* Styles (tokens/styles/*.json, docs/STYLES.md): set data-style="flat|sharp|soft" on <html> or a wrapper; default flat */
 @theme inline {
   --radius-chip: var(--semi-radius-chip); /* Small marks: checkboxes, inline code, count marks */
   --radius-control: var(--semi-radius-control); /* Buttons, inputs, selects, tiles, list rows */
@@ -523,6 +523,16 @@
   --semi-radius-card: 0.75rem;
   --semi-radius-panel: 1rem;
   --semi-shadow-card: 0 0 #0000;
+}
+
+/* Style: Sharp. Square corners and a hard offset shadow under cards. Bold, editorial screens: landing pages, portfolios, creative tools. */
+[data-style="sharp"],
+[data-style="sharp"] [data-theme] {
+  --semi-radius-chip: 0.125rem;
+  --semi-radius-control: 0;
+  --semi-radius-card: 0;
+  --semi-radius-panel: 0;
+  --semi-shadow-card: 4px 4px 0 var(--semi-line-hover);
 }
 
 /* Style: Soft. Larger radii and a soft resting shadow under cards. Calmer, friendlier screens: consumer apps, storefronts, onboarding. */

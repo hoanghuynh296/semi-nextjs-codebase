@@ -136,7 +136,7 @@ test("stored theme is applied before the first paint and survives reload", async
   expect(await page.evaluate(() => localStorage.getItem("semi-theme"))).toBe("dark");
 });
 
-test("styles: Soft is applied before paint, changes the shape tokens and passes contrast in both themes", async ({ page }) => {
+test("styles: Soft is applied before paint, Soft and Sharp change the shape tokens and pass contrast in both themes", async ({ page }) => {
   const radius = () => page.evaluate(() => getComputedStyle(document.querySelector(".rounded-card")!).borderTopLeftRadius);
   await open(page, "/components.html", "dark");
   expect(await radius()).toBe("12px"); // Flat, the default
@@ -146,6 +146,12 @@ test("styles: Soft is applied before paint, changes the shape tokens and passes 
   await page.reload();
   expect(await page.evaluate(() => (window as unknown as { __firstPaintStyle?: string }).__firstPaintStyle)).toBe("soft");
   await page.addStyleTag({ content: "*,*::before,*::after{transition:none!important;animation:none!important}" }); // reload drops it
+  for (const theme of THEMES) {
+    await page.getByRole("radio", { name: theme === "dark" ? "Tối" : "Sáng" }).first().click();
+    expect(await lowContrast(page)).toEqual([]);
+  }
+  await page.getByRole("radio", { name: "Sharp" }).click();
+  expect(await radius()).toBe("0px");
   for (const theme of THEMES) {
     await page.getByRole("radio", { name: theme === "dark" ? "Tối" : "Sáng" }).first().click();
     expect(await lowContrast(page)).toEqual([]);
