@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import list from "../../../examples/list.generated.json";
-import { SiteShell } from "../../SiteShell";
 import { ComponentPage } from "../../../site/ComponentPage";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
@@ -18,8 +17,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   return (
-    <SiteShell>
+    <>
       <ComponentPage id={id} markdownHref={`${BASE}/docs/components/${id}.md`} />
-    </SiteShell>
+    </>
   );
 }

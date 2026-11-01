@@ -33,6 +33,12 @@ export interface ShellNavSection {
   loadingCount?: number;
 }
 
+/** "Chat model picker" → "CMP", "Button" → "Bu": the initials of the words, or the first letters of a single word. */
+const abbreviate = (label: string) => {
+  const words = label.trim().split(/\s+/);
+  return words.length > 1 ? words.map((w) => w[0]).join("").slice(0, 3).toUpperCase() : label.slice(0, 2);
+};
+
 export function AppShell({
   productName,
   logoIcon = "sparkles",
@@ -109,6 +115,8 @@ export function AppShell({
     collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2.5 lg:px-2.5"
   }`;
   const navLabelClass = `${collapsed ? "hidden" : "hidden lg:block"} flex-1 min-w-0 truncate text-left`;
+  // the narrow rail (collapsed, or below lg) shows a short name in place of the label, since menu items have no icon
+  const navShortClass = `${collapsed ? "block" : "block lg:hidden"} text-caption font-semibold leading-none truncate max-w-full`;
 
   // Phone bottom tabs: up to 5 primary tabs; if there are more items in the app, add a "Menu" sheet toggle
   const pinnedItems = mobileTabIds
@@ -131,7 +139,9 @@ export function AppShell({
       : "text-muted hover:text-contrast hover:bg-field";
     const inner = (
       <>
-        <Icon name={item.icon} className="w-4 h-4 shrink-0" />
+        <span className={navShortClass} aria-hidden>
+          {item.shortLabel ?? abbreviate(item.label)}
+        </span>
         <span className={navLabelClass}>{item.label}</span>
       </>
     );
@@ -320,7 +330,6 @@ export function AppShell({
                           }`}
                           aria-hidden
                         >
-                          <div className="w-4 h-4 rounded-chip shimmer shrink-0" />
                           <div
                             className={`${collapsed ? "hidden" : "hidden lg:block"} h-3 rounded-chip shimmer`}
                             style={{ width: `${55 + ((i * 19) % 35)}%` }}

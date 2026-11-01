@@ -1,7 +1,6 @@
 import Link from "next/link";
 import list from "../examples/list.generated.json";
 import pkg from "../package.json";
-import { SiteShell } from "./SiteShell";
 import { PageTitle } from "../src/PageTitle";
 import { Icon, type IconName } from "../src/Icon";
 import { CARD, CARD_HOVER, SECTION_HEAD, SECTION_TITLE } from "../styles/surfaces";
@@ -33,7 +32,7 @@ const INSTALL = `npm install github:hoanghuynh296/semi-nextjs-codebase#v${pkg.ve
 
 export default function HomePage() {
   return (
-    <SiteShell>
+    <>
       <div className="space-y-3">
         <PageTitle title="Semi Design System" />
         <p className="text-ui-lg text-body max-w-3xl leading-relaxed">
@@ -79,6 +78,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-    </SiteShell>
+    </>
   );
 }

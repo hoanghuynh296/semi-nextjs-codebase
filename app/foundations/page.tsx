@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { SiteShell } from "../SiteShell";
 import { Icon, IconTile, type IconName, type TileTone, TILE_TONES } from "../../src/Icon";
 import { ICON_CATALOG, type IconDomain, suggestIcon } from "../../src/iconCatalog";
 import { PageTitle } from "../../src/PageTitle";
@@ -75,7 +74,7 @@ export default function FoundationsPage() {
   const totalCount = Object.keys(ICON_CATALOG).length;
 
   return (
-    <SiteShell>
+    <>
       {/* Page Header */}
       <div className="space-y-3 pb-2 border-b border-line/60">
         <PageTitle title="Foundations & Icon Catalogue" />
@@ -439,6 +438,6 @@ export default function FoundationsPage() {
           </div>
         </div>
       </section>
-    </SiteShell>
+    </>
   );
 }

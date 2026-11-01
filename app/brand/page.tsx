@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { SiteShell } from "../SiteShell";
 import { ShowcaseSection, DemoLabel } from "../Showcase";
 import { PageTitle } from "../../src/PageTitle";
 import { Button } from "../../src/Button";
@@ -74,7 +73,7 @@ export default function BrandPage() {
   } --neutral ${brand.neutral}${brand.palettes && brand.neutral === "preset" ? ` --palette ${Object.entries(brand.palettes).map(([k, v]) => `${k}=${v}`).join(",")}` : ""} --style ${brand.styles.default} --allow ${brand.styles.allowed.join(",")} --sans "${brand.fonts.sans}" --display "${brand.fonts.display}"`;
 
   return (
-    <SiteShell>
+    <>
       <div className="space-y-3 pb-2 border-b border-line/60">
         <PageTitle title="Brand preview" />
         <p className="text-ui text-muted max-w-3xl leading-relaxed">
@@ -243,6 +242,6 @@ export default function BrandPage() {
           )
         )}
       </ShowcaseSection>
-    </SiteShell>
+    </>
   );
 }

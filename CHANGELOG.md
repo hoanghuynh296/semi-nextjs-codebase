@@ -4,6 +4,14 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.13.1] - 2026-11-01
+
+### Changed
+- **Side menu items have no icon** (`AppShell`): the item shows its label alone. In the narrow rail (collapsed, or below `lg`) the item shows its `shortLabel`, or the initials of its label, in place of the icon; the full label is the tooltip. Group headers keep their icon, and the phone tab bar and "Menu" sheet keep theirs.
+
+### Fixed
+- **The side menu no longer resets when a page is opened.** Every page mounted its own shell, so the menu remounted on each navigation and its scroll position went back to the top. The docs shell (`SiteShell`) now lives in the root layout and stays mounted across pages.
+
 ## [0.13.0] - 2026-11-01
 
 ### Added

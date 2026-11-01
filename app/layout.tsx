@@ -5,6 +5,7 @@ import { ThemeScript } from "../src/ThemeScript";
 import { ToastHost } from "../src/Toast";
 import { ConfirmHost } from "../src/confirmDialog";
 import { STYLE_SCRIPT } from "./styleScript";
+import { SiteShell } from "./SiteShell";
 import "./globals.css";
 
 // The fonts of every style (tokens/styles/*.json "fonts"), so the style switch previews them. An app loads only its own.
@@ -39,7 +40,8 @@ export default function RootLayout({
         <ThemeProvider defaultTheme="dark">
           <ToastHost />
           <ConfirmHost />
-          {children}
+          {/* One shell for every page: the menu keeps its scroll and state when the page changes */}
+          <SiteShell>{children}</SiteShell>
         </ThemeProvider>
       </body>
     </html>

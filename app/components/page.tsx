@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import list from "../../examples/list.generated.json";
-import { SiteShell } from "../SiteShell";
 import { ComponentIndex } from "../../site/ComponentIndex";
 import { PageTitle } from "../../src/PageTitle";
 
@@ -11,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function ComponentsPage() {
   return (
-    <SiteShell>
+    <>
       <div className="space-y-3">
         <PageTitle title="Component" />
         <p className="text-ui-lg text-body max-w-3xl leading-relaxed">
@@ -19,6 +18,6 @@ export default function ComponentsPage() {
         </p>
       </div>
       <ComponentIndex />
-    </SiteShell>
+    </>
   );
 }
