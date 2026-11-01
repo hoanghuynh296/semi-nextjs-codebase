@@ -30,7 +30,14 @@ Type and press Enter: a fake assistant streams an answer; Stop, retry and new ch
 import { useEffect, useRef, useState } from "react";
 import { AIChat, ChatIntro, ChatSuggestion, ChatSuggestions, type ChatItem } from "@semi/ui";
 
-const ANSWER = "Với **PETG**: đầu phun 240–250°C, quạt 30–50%, bật `Z-hop` 0.4 mm để giảm kéo sợi.";
+const ANSWER = `Với **PETG**, thử các bước sau:
+
+1. Nhiệt độ đầu phun **240–250°C**, bàn nhiệt 80°C
+2. Quạt làm mát 30–50% (cao hơn dễ tách lớp)
+3. Bật \`Z-hop\` 0.4 mm để giảm kéo sợi
+4. Retraction 0.8 mm ở 40 mm/s, tăng thêm 0.2 mm nếu vẫn còn sợi
+
+Nếu vẫn kéo sợi, sấy cuộn nhựa 65°C trong 4 giờ: PETG hút ẩm nhanh.`;
 
 export default function AIChatWorkspace() {
   const [messages, setMessages] = useState<ChatItem[]>([]);
