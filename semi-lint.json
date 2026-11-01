@@ -32,6 +32,7 @@
     ]
   },
   "ignore": [
-    "examples/registry.generated.ts"
+    "examples/registry.generated.ts",
+    "site/foundations.generated.ts"
   ]
 }

@@ -220,17 +220,15 @@ test("styles: Soft is applied before paint, Soft and Sharp change the shape toke
   expect(await radius()).toBe("0px");
 });
 
-test("styles: a palette applies before paint and resets when the style changes", async ({ page }) => {
+test("styles: a palette applies before paint; the docs offer styles only, no palette picker", async ({ page }) => {
   const canvas = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
   await open(page, "/components/", "light", "sharp", "paper");
   expect(await page.evaluate(() => (window as unknown as { __firstPaintStyle?: string }).__firstPaintStyle)).toBe("sharp");
   await expect(page.locator("html")).toHaveAttribute("data-palette", "paper");
   expect(await canvas()).toBe("rgb(242, 236, 224)"); // Paper canvas
-  await page.getByRole("radiogroup", { name: "Palette" }).getByRole("radio", { name: "Mono" }).click();
-  expect(await canvas()).toBe("rgb(255, 255, 255)");
+  await expect(page.getByRole("radiogroup", { name: "Palette" })).toHaveCount(0);
   await page.getByRole("radiogroup", { name: "Style" }).getByRole("radio", { name: "Soft" }).click();
-  await expect(page.locator("html")).not.toHaveAttribute("data-palette", /.+/);
-  await expect(page.getByRole("radiogroup", { name: "Palette" }).getByRole("radio", { name: "Sand" })).toHaveAttribute("aria-checked", "true");
+  await expect(page.locator("html")).toHaveAttribute("data-style", "soft");
 });
 
 test("brand preview: a #brand= link recolours every page, passes contrast in both themes, and turns off", async ({ page }) => {

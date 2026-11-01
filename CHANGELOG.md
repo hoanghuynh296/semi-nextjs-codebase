@@ -4,6 +4,12 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.13.3] - 2026-11-01
+
+### Changed
+- **Docs site: no palette picker.** The footer offers the styles (Flat, Soft, Sharp) only; the palette options (Graphite, Slate, Olive…) are gone from the design system pages. Apps can still set `data-palette` as before (`docs/STYLES.md`).
+- **The Foundations page is generated from `tokens/`.** `scripts/foundations.mjs` writes `site/foundations.generated.ts` (surfaces and text per theme, the type scale, each style's radius, control height, card border and fonts) during `build:manifest`. The page no longer repeats hand-typed hex values, so it cannot drift from the tokens.
+
 ## [0.13.2] - 2026-11-01
 
 ### Changed

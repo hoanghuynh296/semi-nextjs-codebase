@@ -7,6 +7,7 @@ import { PageTitle } from "../../src/PageTitle";
 import { TAG, TONE_DOT } from "../../src/Chip";
 import { Pills } from "../../src/Pills";
 import { CARD, CARD_HOVER } from "../../styles/surfaces";
+import { FOUNDATIONS } from "../../site/foundations.generated";
 
 const DOMAIN_OPTIONS: { id: string; label: string; count?: number }[] = [
   { id: "all", label: "Tất cả" },
@@ -102,56 +103,64 @@ export default function FoundationsPage() {
         </div>
       </div>
 
-      {/* SECTION 1: Surfaces & Radius Tokens */}
+      {/* SECTION 1: Surfaces, text and styles — read from tokens/ (site/foundations.generated.ts) */}
       <section id="surfaces" className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="layers" className="w-4 h-4 text-accent-fg" />
-            <span>Dark Surfaces & Tokens Scale</span>
+            <span>Surfaces & text</span>
           </h2>
-          <span className="text-caption text-muted font-medium">Bento 5-Surface Architecture</span>
+          <span className="text-caption text-muted font-medium">Giá trị theo từng theme</span>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-          <div className="p-3.5 rounded-card bg-canvas border border-line space-y-2">
-            <span className="text-caption font-medium text-muted block">bg-canvas</span>
-            <div className="text-ui font-semibold text-body">#111111</div>
-            <p className="text-caption text-muted leading-normal">Khung ngoài cùng AppShell, lớp bọc toàn trang</p>
-          </div>
-          <div className="p-3.5 rounded-card bg-app border border-line space-y-2">
-            <span className="text-caption font-medium text-muted block">bg-app</span>
-            <div className="text-ui font-semibold text-body">#181818</div>
-            <p className="text-caption text-muted leading-normal">Nền chính của content panel, trang nội dung</p>
-          </div>
-          <div className="p-3.5 rounded-card bg-panel border border-line space-y-2">
-            <span className="text-caption font-medium text-muted block">bg-panel</span>
-            <div className="text-ui font-semibold text-body">#262626</div>
-            <p className="text-caption text-muted leading-normal">Thẻ Card, Sidebar Bento, Header thanh công cụ</p>
-          </div>
-          <div className="p-3.5 rounded-card bg-field border border-line space-y-2">
-            <span className="text-caption font-medium text-muted block">bg-field</span>
-            <div className="text-ui font-semibold text-body">#2E2E2E</div>
-            <p className="text-caption text-muted leading-normal">Thân Modal, popup menu, dropdown panel</p>
-          </div>
-          <div className="p-3.5 rounded-card bg-raised border border-line space-y-2">
-            <span className="text-caption font-medium text-muted block">bg-raised</span>
-            <div className="text-ui font-semibold text-body">#383838</div>
-            <p className="text-caption text-muted leading-normal">Trạng thái Hover trên bảng dữ liệu, track fills</p>
-          </div>
+          {FOUNDATIONS.surfaces.map((t) => (
+            <div key={t.key} className={`p-3.5 rounded-card ${t.cls} border border-line space-y-2`}>
+              <span className="text-caption font-medium text-muted block">{t.cls}</span>
+              <div className="text-caption text-body tabular-nums">Tối {t.dark}</div>
+              <div className="text-caption text-body tabular-nums">Sáng {t.light}</div>
+              <p className="text-caption text-muted leading-normal">{t.note}</p>
+            </div>
+          ))}
         </div>
 
-        {/* Radius rule banner */}
-        <div className="p-3.5 rounded-card bg-panel border border-line flex flex-wrap items-center justify-between gap-4 text-label">
-          <div className="flex items-center gap-2 text-body">
-            <Icon name="info" className="w-4 h-4 text-tone-sky shrink-0" />
-            <span>
-              <strong>Bán kính viền (Radii):</strong> <code className="text-accent-fg">rounded-chip</code> (Marks) · <code className="text-accent-fg">rounded-control</code> (Controls, tiles) · <code className="text-accent-fg">rounded-card</code> (Cards) · <code className="text-accent-fg">rounded-panel</code> (Panels/Modal) · <code className="text-accent-fg">rounded-full</code> (Chips/Pills). Giá trị do style quyết định (Flat 4 · 8 · 12 · 16px).
-            </span>
-          </div>
-          <span className="text-caption px-2.5 py-1 rounded-chip bg-red-500/10 text-danger-fg font-medium">
-            Không dùng rounded-lg / rounded-[Npx] (linter)
-          </span>
+        <div className="rounded-card bg-panel border border-line divide-y divide-divider">
+          {FOUNDATIONS.text.map((t) => (
+            <div key={t.key} className="grid gap-2 px-3.5 py-2.5 text-label sm:grid-cols-[180px_1fr_auto] sm:items-center">
+              <code className="text-body">{t.cls}</code>
+              <span className="text-muted">{t.note}</span>
+              <span className="text-caption text-muted tabular-nums">
+                {t.dark} · {t.light}
+              </span>
+            </div>
+          ))}
         </div>
+
+        <h3 className="text-ui-lg font-semibold text-body pt-2">Styles</h3>
+        <div className="grid gap-3 md:grid-cols-3">
+          {FOUNDATIONS.styles.map((st) => (
+            <div key={st.id} className={`${CARD} p-4 space-y-3`}>
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-title font-semibold text-contrast">{st.name}</span>
+                <code className="text-caption text-muted">data-style=&quot;{st.id}&quot;</code>
+              </div>
+              <p className="text-label text-muted leading-relaxed">{st.description}</p>
+              <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1.5 text-label">
+                <dt className="text-muted">Bo góc</dt>
+                <dd className="text-body tabular-nums">{[st.radius.chip, st.radius.control, st.radius.card, st.radius.panel].join(" · ")}</dd>
+                <dt className="text-muted">Control</dt>
+                <dd className="text-body tabular-nums">{st.controlHeight} · ô nhập {st.fieldHeight}</dd>
+                <dt className="text-muted">Viền card</dt>
+                <dd className="text-body break-all">{st.cardBorder}</dd>
+                <dt className="text-muted">Font</dt>
+                <dd className="text-body">{st.fonts.join(" + ")}</dd>
+              </dl>
+            </div>
+          ))}
+        </div>
+        <p className="text-caption text-muted">
+          Bo góc luôn dùng tên token: <code className="text-accent-fg">rounded-chip</code> · <code className="text-accent-fg">rounded-control</code> · <code className="text-accent-fg">rounded-card</code> · <code className="text-accent-fg">rounded-panel</code>. Không dùng rounded-lg hay rounded-[Npx] (semi-lint).
+        </p>
       </section>
 
       {/* SECTION 2: Typography Scale */}
@@ -159,36 +168,23 @@ export default function FoundationsPage() {
         <div className="flex items-center justify-between">
           <h2 className="text-title font-semibold text-body flex items-center gap-2">
             <Icon name="code" className="w-4 h-4 text-accent-fg" />
-            <span>Typography Scale & Constraints</span>
+            <span>Typography scale</span>
           </h2>
           <span className="text-caption text-muted">font-medium / font-semibold only</span>
         </div>
 
-        <div className="p-4 rounded-card bg-panel border border-line space-y-3">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-1.5 p-3 rounded-control bg-panel/[0.03]">
-              <span className="text-caption text-muted block font-medium">Page Title (22px - 26px)</span>
-              <div className="font-display text-heading sm:text-heading-lg text-contrast">
-                Montserrat Alternates
-              </div>
-              <p className="text-caption text-muted">Dùng cho tiêu đề trang chính thông qua component PageTitle</p>
+        <div className="rounded-card bg-panel border border-line divide-y divide-divider">
+          {FOUNDATIONS.type.map((t) => (
+            <div key={t.cls} className="flex flex-wrap items-baseline gap-x-4 gap-y-1 px-3.5 py-2.5">
+              <code className="text-label text-muted w-40 shrink-0">{t.cls}</code>
+              <span className="text-caption text-muted tabular-nums w-12 shrink-0">{t.size}</span>
+              <span className={`${t.cls} text-contrast font-medium min-w-0`}>Máy in X1 Carbon · 12.450.000 ₫</span>
             </div>
-            <div className="space-y-1.5 p-3 rounded-control bg-panel/[0.03]">
-              <span className="text-caption text-muted block font-medium">KPI & Figures (18px - 22px)</span>
-              <div className="text-heading-sm font-semibold text-contrast tabular-nums">
-                12.450.000 ₫ <span className="text-success-fg text-ui font-medium">+15.8%</span>
-              </div>
-              <p className="text-caption text-muted">Luôn dùng tabular-nums cho số đo, số tiền, giờ in</p>
-            </div>
-            <div className="space-y-1.5 p-3 rounded-control bg-panel/[0.03]">
-              <span className="text-caption text-muted block font-medium">Body / UI (11px - 15px)</span>
-              <div className="text-ui text-body font-medium leading-relaxed">
-                Geist Sans với font-feature-settings &quot;ss02&quot;
-              </div>
-              <p className="text-caption text-muted">Không dùng các lớp cỡ chữ cũ; tối thiểu là text-caption</p>
-            </div>
-          </div>
+          ))}
         </div>
+        <p className="text-caption text-muted">
+          Số đo, tiền, giờ in luôn <code className="text-accent-fg">tabular-nums</code>. Tiêu đề trang dùng <code className="text-accent-fg">PageTitle</code> (font-display).
+        </p>
       </section>
 
       {/* SECTION 3: Interactive Icon Catalogue (Core Feature) */}

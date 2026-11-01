@@ -8,6 +8,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import ts from "typescript";
+import { foundationsSource } from "./foundations.mjs";
 
 export const GROUPS = ["Actions", "Forms", "Overlays", "Navigation & layout", "Data display", "Feedback", "AI", "Blocks", "Setup"];
 const MAX_LITERALS = 10; // a longer literal union (IconName, SemanticTone…) is shown by its alias name
@@ -216,6 +217,7 @@ export function buildDocs(root, { exported }) {
     "examples/registry.generated.ts": registry,
     "examples/list.generated.json": list,
     "docs/components/README.md": index + "\n",
+    "site/foundations.generated.ts": foundationsSource(root),
     ...Object.fromEntries(docs.map((d) => [`docs/components/${d.id}.md`, markdown[d.id]])),
   };
   return { files, docs, api, problems };
