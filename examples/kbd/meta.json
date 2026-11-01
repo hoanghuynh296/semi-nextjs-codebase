@@ -1,0 +1,20 @@
+{
+  "title": "Kbd",
+  "group": "Data display",
+  "description": "A key or a shortcut (⌘ K, Ctrl Enter) as key caps, for menus, tooltips, the command palette and help text.",
+  "components": [
+    "Kbd"
+  ],
+  "when": [
+    "Show the shortcut of an action next to it."
+  ],
+  "a11y": [
+    "Rendered as <kbd>; screen readers read the key names."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "Keys and shortcuts"
+    }
+  ]
+}

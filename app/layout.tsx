@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Montserrat_Alternates, Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import { ThemeProvider } from "../src/ThemeProvider";
 import { ThemeScript } from "../src/ThemeScript";
+import { ToastHost } from "../src/Toast";
+import { ConfirmHost } from "../src/confirmDialog";
 import { STYLE_SCRIPT } from "./styleScript";
 import "./globals.css";
 
@@ -35,6 +37,8 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-canvas text-body antialiased selection:bg-primary-500/20 selection:text-accent-fg">
         <ThemeProvider defaultTheme="dark">
+          <ToastHost />
+          <ConfirmHost />
           {children}
         </ThemeProvider>
       </body>

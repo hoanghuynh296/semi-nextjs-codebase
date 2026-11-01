@@ -1,4 +1,4 @@
-import { ThemeProvider, ThemeScript, ToastHost } from "@semi/ui";
+import { ConfirmHost, ThemeProvider, ThemeScript, ToastHost } from "@semi/ui";
 import brand from "./brand.json";
 import { fontVariables } from "./fonts";
 import { Shell } from "./Shell";
@@ -23,6 +23,7 @@ export default function RootLayout({ children }) {
         <ThemeProvider defaultTheme="dark">
           <Shell>{children}</Shell>
           <ToastHost />
+          <ConfirmHost />
         </ThemeProvider>
       </body>
     </html>

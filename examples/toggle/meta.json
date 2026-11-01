@@ -1,0 +1,35 @@
+{
+  "title": "Toggle",
+  "group": "Actions",
+  "description": "Buttons that stay pressed. Toggle for one (pin, mute, bold); ToggleGroup for a set of icon or short options, one or several at a time (list / grid view, text styles).",
+  "components": [
+    "Toggle",
+    "ToggleGroup"
+  ],
+  "when": [
+    "A view mode with icons; text formatting; a pin / follow / mute switch on a toolbar."
+  ],
+  "instead": [
+    {
+      "need": "Filter a list by text options",
+      "use": "Pills"
+    },
+    {
+      "need": "A setting saved immediately with a label",
+      "use": "Switch"
+    }
+  ],
+  "a11y": [
+    "Toggle uses aria-pressed. ToggleGroup type=\"single\" is a radio group (←/→ move and select), type=\"multiple\" a toolbar of pressed buttons. Icon-only options need aria-label."
+  ],
+  "examples": [
+    {
+      "file": "toggle",
+      "title": "Toggle"
+    },
+    {
+      "file": "group",
+      "title": "View mode (single) and styles (multiple)"
+    }
+  ]
+}

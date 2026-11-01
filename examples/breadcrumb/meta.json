@@ -1,0 +1,35 @@
+{
+  "title": "Breadcrumb",
+  "group": "Navigation & layout",
+  "description": "Where the page sits: a trail of links ending with the current page. Long trails collapse their middle into a “…” menu.",
+  "components": [
+    "Breadcrumb"
+  ],
+  "when": [
+    "Detail pages deep in a hierarchy (Kho › Vật liệu › PLA đen)."
+  ],
+  "instead": [
+    {
+      "need": "Top-level pages of an app",
+      "use": "AppShell navigation"
+    },
+    {
+      "need": "Sibling views",
+      "use": "PageTabsTitle"
+    }
+  ],
+  "a11y": [
+    "A nav landmark (“Đường dẫn”) with an ordered list; the last item has aria-current=\"page\"."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "Trail"
+    },
+    {
+      "file": "collapsed",
+      "title": "Collapsed",
+      "description": "More items than maxItems keep the first and the last two; the rest open from “…”."
+    }
+  ]
+}

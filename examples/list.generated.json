@@ -6,6 +6,12 @@
     "description": "The action control: one primary per area, secondary for the rest, danger for destructive actions, ghost for quiet ones. Spinner shows work in progress inside the control that runs it."
   },
   {
+    "id": "button-group",
+    "title": "Button group",
+    "group": "Actions",
+    "description": "Joins related buttons into one segmented control: shared borders, outer corners only (‹ Hôm nay ›, Lưu | ▾)."
+  },
+  {
     "id": "chip",
     "title": "Chip",
     "group": "Actions",
@@ -24,6 +30,18 @@
     "description": "A single-choice filter of 2–5 options on one track (segmented look). The left side of a SubpageToolbar."
   },
   {
+    "id": "toggle",
+    "title": "Toggle",
+    "group": "Actions",
+    "description": "Buttons that stay pressed. Toggle for one (pin, mute, bold); ToggleGroup for a set of icon or short options, one or several at a time (list / grid view, text styles)."
+  },
+  {
+    "id": "calendar",
+    "title": "Calendar",
+    "group": "Forms",
+    "description": "A month grid to pick one day or a range (YYYY-MM-DD, weeks start on Monday). DatePicker shows it in a popover; place it inline for schedules and report filters."
+  },
+  {
     "id": "checkbox",
     "title": "Checkbox",
     "group": "Forms",
@@ -39,13 +57,19 @@
     "id": "date-picker",
     "title": "Date picker",
     "group": "Forms",
-    "description": "A calendar popover for one date (YYYY-MM-DD), with min / max. Never type=\"date\"."
+    "description": "A date field with a Calendar popover (YYYY-MM-DD, min / max). Never type=\"date\"."
   },
   {
     "id": "field",
     "title": "Field, Input, Textarea",
     "group": "Forms",
     "description": "Field gives any control a label, a hint and an error, wired for screen readers. Input and Textarea are the standard text controls (bg-field, h-field)."
+  },
+  {
+    "id": "input-group",
+    "title": "Input group",
+    "group": "Forms",
+    "description": "An input with fixed parts around it: a prefix (https://), a unit (kg, ₫), an icon or a small button (copy, show password)."
   },
   {
     "id": "number-input",
@@ -63,7 +87,7 @@
     "id": "search-input",
     "title": "Search input",
     "group": "Forms",
-    "description": "The toolbar search field: icon, clear button, h-control height. SubpageToolbar includes one."
+    "description": "The toolbar search: an icon button that opens into a field (clear button, h-control); it collapses again when empty and focus leaves. SubpageToolbar includes one."
   },
   {
     "id": "select",
@@ -72,10 +96,22 @@
     "description": "CustomSelect: pick one value from a list, in a field, in a toolbar, inline in a row or bare. Never the native <select>."
   },
   {
+    "id": "slider",
+    "title": "Slider",
+    "group": "Forms",
+    "description": "Pick a number in a range by dragging: one thumb, or two with range for a min–max pair."
+  },
+  {
     "id": "switch",
     "title": "Switch",
     "group": "Forms",
     "description": "An on / off toggle for settings that apply immediately."
+  },
+  {
+    "id": "command",
+    "title": "Command",
+    "group": "Overlays",
+    "description": "A command palette: type to filter actions and pages, ↑/↓ to move, Enter to run. Command is the inline list; CommandDialog opens it over the page, usually on ⌘K (useHotkey). Matching ignores case and Vietnamese marks."
   },
   {
     "id": "confirm-dialog",
@@ -84,10 +120,22 @@
     "description": "confirmDialog() asks one yes / no question and resolves to true or false. Mount ConfirmHost once in the root layout. Never window.confirm."
   },
   {
+    "id": "context-menu",
+    "title": "Context menu",
+    "group": "Overlays",
+    "description": "The menu of an area opened at the pointer: right-click, long-press on touch, or the Menu key / Shift+F10 when the area has focus."
+  },
+  {
     "id": "drawer",
     "title": "Drawer",
     "group": "Overlays",
-    "description": "A panel that slides in from the right, left or bottom, with title and footer; a sheet on phones."
+    "description": "A panel that slides in from the right, left, bottom or top (a sheet), with title and footer."
+  },
+  {
+    "id": "hover-card",
+    "title": "Hover card",
+    "group": "Overlays",
+    "description": "A preview card while the pointer rests on, or focus is on, a link: a person, a product, an order."
   },
   {
     "id": "menu",
@@ -100,6 +148,12 @@
     "title": "Modal",
     "group": "Overlays",
     "description": "The shared dialog: full screen on phones, a centred panel from sm up, with title, description, body and footer. Focus is trapped and returns to the opener."
+  },
+  {
+    "id": "popover",
+    "title": "Popover",
+    "group": "Overlays",
+    "description": "A small non-modal panel under its trigger for interactive content: a quick form, filters, a picker."
   },
   {
     "id": "toast",
@@ -126,6 +180,12 @@
     "description": "The frame of a multi-page app: a floating bento sidebar (w-52, collapses to a w-14 icon rail) on bg-canvas, the content panel beside it, and MobileTabBar at the bottom on phones. This docs site is an AppShell."
   },
   {
+    "id": "breadcrumb",
+    "title": "Breadcrumb",
+    "group": "Navigation & layout",
+    "description": "Where the page sits: a trail of links ending with the current page. Long trails collapse their middle into a “…” menu."
+  },
+  {
     "id": "page-actions",
     "title": "Page actions",
     "group": "Navigation & layout",
@@ -142,6 +202,12 @@
     "title": "Pagination",
     "group": "Navigation & layout",
     "description": "Page numbers with previous / next for long tables. For card lists prefer auto-loading with “Xem thêm”."
+  },
+  {
+    "id": "scroll-area",
+    "title": "Scroll area",
+    "group": "Navigation & layout",
+    "description": "A fixed-size scrolling region (a long list in a card, a log). Semi hides scrollbars, so it marks the edges that have more content, can show a thin scrollbar, and is reachable by keyboard."
   },
   {
     "id": "side-panel",
@@ -162,6 +228,12 @@
     "description": "Switch between panels of content inside a page or card: underline (default) or segmented, with icons and counts."
   },
   {
+    "id": "accordion",
+    "title": "Accordion",
+    "group": "Data display",
+    "description": "A list of sections where one (or several) open at a time: FAQs, settings groups, help."
+  },
+  {
     "id": "avatar",
     "title": "Avatar",
     "group": "Data display",
@@ -180,10 +252,28 @@
     "description": "The bento content card: panel fill and the style's card border, radius and resting shadow. interactive adds hover / press, active marks the selected or running item."
   },
   {
+    "id": "collapsible",
+    "title": "Collapsible",
+    "group": "Data display",
+    "description": "One section that opens and closes under its trigger row (advanced options, details of a log line)."
+  },
+  {
+    "id": "data-table",
+    "title": "Data table",
+    "group": "Data display",
+    "description": "A table that sorts, filters, selects and pages rows on the client, built on Table: give it rows and columns, it keeps the state (or you control it)."
+  },
+  {
     "id": "icon",
     "title": "Icon",
     "group": "Data display",
     "description": "The semantic icon registry (stroke 1.75, 24px grid). IconTile is the rounded tinted square that leads cards and dialogs."
+  },
+  {
+    "id": "kbd",
+    "title": "Kbd",
+    "group": "Data display",
+    "description": "A key or a shortcut (⌘ K, Ctrl Enter) as key caps, for menus, tooltips, the command palette and help text."
   },
   {
     "id": "kpi-card",
@@ -196,6 +286,12 @@
     "title": "Markdown",
     "group": "Data display",
     "description": "Renders AI or user text safely: paragraphs, lists, bold, inline code and links (as ExternalLink). No HTML."
+  },
+  {
+    "id": "separator",
+    "title": "Separator",
+    "group": "Data display",
+    "description": "A thin divider between groups of content: horizontal, vertical, or with a short label in the middle (“hoặc”)."
   },
   {
     "id": "table",

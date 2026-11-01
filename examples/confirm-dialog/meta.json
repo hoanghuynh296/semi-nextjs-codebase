@@ -29,5 +29,8 @@
       "file": "danger",
       "title": "Destructive confirmation"
     }
+  ],
+  "notes": [
+    "<ConfirmHost /> goes once in the root layout (see Theme › Root layout); confirmDialog() works from any event handler."
   ]
 }

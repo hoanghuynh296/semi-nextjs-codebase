@@ -558,12 +558,25 @@ options; more → `CustomSelect`).
 | Hint for an icon-only control | `Tooltip` (never essential text: touch screens do not show it) |
 | Feedback after an action | `toast({ title, tone, action })` + `<ToastHost />` in the layout |
 | Persistent message in a page | `Alert` (tone, title, action, `onDismiss`) |
-| Secondary task beside the page | `Drawer` (right / left / bottom sheet) |
+| Secondary task beside the page | `Drawer` (right / left / bottom / top sheet) |
 | Sections of one record | `Tabs` (underline; `segmented` inside a toolbar); 2–4 sibling pages → `PageTabsTitle` |
 | Compared rows | `Table` + `THead` / `TBody` / `TR` / `TH` / `TD numeric`; cells stay on one line and the table scrolls sideways on phones (`TD wrap` for a long-text column); entity overviews stay Bento `Card`s |
 | Progress / quota | `Progress` (determinate or indeterminate) |
 | People | `Avatar` (photo or initials on a stable tone) |
 | Nothing to show yet | `EmptyState` (icon, one line, action) |
+| Related buttons as one control | `ButtonGroup` (‹ Hôm nay ›, Lưu + `Menu`) |
+| Pressed state / icon option sets | `Toggle` (one, `aria-pressed`); `ToggleGroup` (`type` single = radio group, multiple = toolbar). Text filters stay `Pills` |
+| Fixed parts around an input | `InputGroup` (`start` / `end`: prefix, unit, small button) |
+| A number by dragging | `Slider` (one thumb, or `range` for min–max; `format` for units) |
+| Pick a day / a range on the page | `Calendar` (`mode` single / range); a date field → `DatePicker` (uses Calendar) |
+| Where the page sits | `Breadcrumb` (collapses the middle into "…" past `maxItems`) |
+| Hide / show sections | `Collapsible` (one), `Accordion` (list; `type` single / multiple) |
+| Small interactive panel under a trigger | `Popover` (non-modal dialog); a hover preview of a link → `HoverCard` |
+| Actions at the pointer | `ContextMenu` (right-click, long-press, Menu key); the same actions must exist in a visible `Menu` |
+| Jump / run anything from the keyboard | `CommandDialog` + `useHotkey` (⌘K), `Command` inline; matching ignores Vietnamese marks |
+| Sort / filter / select / page rows | `DataTable` (`columns`, `search`, `selectable` + `bulkActions`, `pageSize`, `loading`) |
+| Fixed-height scrolling list | `ScrollArea` (edge lines, optional thin scrollbar, keyboard focusable) |
+| Divider / key cap | `Separator` (horizontal, vertical, with a label); `Kbd` (`keys={["⌘", "K"]}`) |
 
 The full inventory with props is generated into `components.json` (`npm run build:manifest`).
 

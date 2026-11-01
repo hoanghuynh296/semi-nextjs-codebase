@@ -470,3 +470,114 @@ test("agents: llms.txt links every component page and its markdown, and everythi
   await page.goto("/components/");
   await expect(page.locator('link[rel="alternate"][href$="llms.txt"]')).toHaveCount(1);
 });
+
+// ─── Components added in 0.10 ────────────────────────────────────────────────────────────────────────────────────
+
+test("Command: ⌘K opens it, matching ignores Vietnamese marks, Enter runs, Escape closes", async ({ page }) => {
+  await open(page, "/components/command/", "dark");
+  await page.keyboard.press("ControlOrMeta+k");
+  const dialog = page.getByRole("dialog", { name: "Bảng lệnh" });
+  await expect(dialog).toBeVisible();
+  const input = dialog.getByRole("combobox");
+  await expect(input).toBeFocused();
+  await input.fill("don hang");
+  await expect(dialog.getByRole("option").first()).toHaveText(/Đơn hàng/);
+  await expect(input).toHaveAttribute("aria-activedescendant", /.+/);
+  await input.press("Enter");
+  await expect(dialog).toBeHidden();
+  await expect(page.getByText("Mở Đơn hàng")).toBeVisible();
+  await page.keyboard.press("ControlOrMeta+k");
+  await expect(dialog).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+});
+
+test("DataTable: sorts with aria-sort, searches without marks, selects a page and pages", async ({ page }) => {
+  await open(page, "/components/data-table/", "dark");
+  const ex = example(page, "data-table/orders");
+  const table = ex.getByRole("table", { name: "Đơn hàng" });
+  const header = table.getByRole("columnheader", { name: /Mã đơn/ });
+  await expect(header).toHaveAttribute("aria-sort", "none");
+  await header.getByRole("button").click();
+  await expect(header).toHaveAttribute("aria-sort", "ascending");
+  await expect(table.getByRole("row").nth(1)).toContainText("SO-1040");
+  await header.getByRole("button").click();
+  await expect(header).toHaveAttribute("aria-sort", "descending");
+  await expect(table.getByRole("row").nth(1)).toContainText("SO-1062");
+  await ex.getByRole("button", { name: "Tìm mã đơn, khách hàng…" }).click(); // SearchInput opens from its icon button
+  const search = ex.getByPlaceholder("Tìm mã đơn, khách hàng…");
+  await search.fill("hoang ha");
+  await expect(table.getByRole("row")).toHaveCount(1 + 4); // header + the 4 orders of Hoàng Hà
+  await search.fill("");
+  await table.getByRole("checkbox", { name: "Chọn tất cả" }).check();
+  await expect(ex.getByText("Đã chọn 8")).toBeVisible();
+  await expect(ex.getByRole("button", { name: "Huỷ đơn" })).toBeVisible();
+  await ex.getByRole("navigation", { name: "Phân trang" }).getByRole("button", { name: "Trang sau" }).click();
+  await expect(table.getByRole("checkbox", { name: "Chọn tất cả" })).not.toBeChecked();
+});
+
+test("Accordion and ToggleGroup move with the arrow keys", async ({ page }) => {
+  await open(page, "/components/accordion/", "dark");
+  const faq = example(page, "accordion/faq");
+  const first = faq.getByRole("button", { name: "Vì sao PETG bị kéo sợi?" });
+  await expect(first).toHaveAttribute("aria-expanded", "true");
+  await first.focus();
+  await page.keyboard.press("ArrowDown");
+  await expect(faq.getByRole("button", { name: "Bản in bị cong góc?" })).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(faq.getByRole("button", { name: "Bản in bị cong góc?" })).toHaveAttribute("aria-expanded", "true");
+  await expect(first).toHaveAttribute("aria-expanded", "false"); // single: one open at a time
+  await open(page, "/components/toggle/", "dark");
+  const view = page.getByRole("radiogroup", { name: "Chế độ xem" });
+  await view.getByRole("radio", { name: "Lưới" }).focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(view.getByRole("radio", { name: "Danh sách" })).toBeFocused();
+  await expect(view.getByRole("radio", { name: "Danh sách" })).toHaveAttribute("aria-checked", "true");
+});
+
+test("Slider and Calendar work from the keyboard; DatePicker returns focus", async ({ page }) => {
+  await open(page, "/components/slider/", "dark");
+  const thumb = example(page, "slider/single").getByRole("slider");
+  await thumb.focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(thumb).toHaveAttribute("aria-valuenow", "25");
+  await page.keyboard.press("End");
+  await expect(thumb).toHaveAttribute("aria-valuetext", "100%");
+  await open(page, "/components/calendar/", "dark");
+  const cal = example(page, "calendar/single");
+  await cal.getByRole("button", { name: "12/11/2026" }).click();
+  await page.keyboard.press("ArrowRight");
+  await expect(cal.getByRole("button", { name: "13/11/2026" })).toBeFocused();
+  await page.keyboard.press("PageDown");
+  await expect(cal.getByRole("button", { name: "13/12/2026" })).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(cal.getByRole("gridcell", { selected: true })).toContainText("13");
+  await open(page, "/components/date-picker/", "dark");
+  const trigger = page.getByRole("button", { name: /^Ngày in:/ });
+  await trigger.click();
+  await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("Enter");
+  await expect(trigger).toHaveAccessibleName("Ngày in: 02/11/2026");
+  await expect(trigger).toBeFocused();
+});
+
+test("Popover moves focus in and returns it; ContextMenu opens with Shift+F10", async ({ page }) => {
+  await open(page, "/components/popover/", "dark");
+  const opener = page.getByRole("button", { name: "Đổi tên" });
+  await opener.click();
+  const pop = page.getByRole("dialog", { name: "Đổi tên máy in" });
+  await expect(pop).toBeVisible();
+  await expect(pop.getByRole("textbox")).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(pop).toBeHidden();
+  await expect(opener).toBeFocused();
+  await open(page, "/components/context-menu/", "dark");
+  const area = example(page, "context-menu/file").locator("[tabindex='0']").first();
+  await area.focus();
+  await page.keyboard.press("Shift+F10");
+  await expect(page.getByRole("menu", { name: "Thao tác tệp" })).toBeVisible();
+  await expect(page.getByRole("menuitem", { name: "Mở" })).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("menu")).toBeHidden();
+  await expect(area).toBeFocused();
+});

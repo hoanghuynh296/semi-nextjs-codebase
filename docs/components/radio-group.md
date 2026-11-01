@@ -57,7 +57,7 @@ export default function RadioGroupBasic() {
 | `options` * | `RadioOption<T>[]` |  |  |
 | `label` | `React.ReactNode` |  | Group label (announced for the whole group). |
 | `name` | `string` |  |  |
-| `direction` | `'vertical' \| 'horizontal'` | `"vertical"` |  |
+| `direction` | `'horizontal' \| 'vertical'` | `"vertical"` |  |
 | `className` | `string` |  |  |
 
 ## Accessibility

@@ -30,5 +30,8 @@
       "file": "tones",
       "title": "Tones and actions"
     }
+  ],
+  "notes": [
+    "<ToastHost /> goes once in the root layout (see Theme › Root layout); every toast() call anywhere shows there."
   ]
 }

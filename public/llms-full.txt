@@ -1,4 +1,4 @@
-# Semi Design System (@semi/ui v0.9.0)
+# Semi Design System (@semi/ui v0.10.0)
 
 > The shared UI of every Semi app: semantic tokens that work in light and dark mode, React components (Next.js, Tailwind CSS 4) and the rules agents follow. Every component has a page with live examples and a markdown twin for agents.
 
@@ -6,7 +6,7 @@ Install `@semi/ui`, import components from `@semi/ui`, class constants from `@se
 
 ## Machine-readable
 
-- [components.json](./components.json): all 80 components, hooks and constants with props, summaries and their doc page
+- [components.json](./components.json): all 98 components, hooks and constants with props, summaries and their doc page
 - [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
@@ -30,28 +30,37 @@ Install `@semi/ui`, import components from `@semi/ui`, class constants from `@se
 ### Actions
 
 - [Button](./components/button/) ([markdown](./docs/components/button.md)): The action control: one primary per area, secondary for the rest, danger for destructive actions, ghost for quiet ones. Spinner shows work in progress inside the control that runs it. Components: Button, Spinner.
+- [Button group](./components/button-group/) ([markdown](./docs/components/button-group.md)): Joins related buttons into one segmented control: shared borders, outer corners only (‹ Hôm nay ›, Lưu | ▾). Components: ButtonGroup.
 - [Chip](./components/chip/) ([markdown](./docs/components/chip.md)): A pill-shaped toggle for filters and tags. Neutral when off; active uses the high-contrast surface, with colour only on its dot or icon (tone). Components: Chip.
 - [External link](./components/external-link/) ([markdown](./docs/components/external-link.md)): A link to another site: opens a new tab on desktop and the external browser inside a mobile WebView, with an external-link icon. Components: ExternalLink.
 - [Pills](./components/pills/) ([markdown](./docs/components/pills.md)): A single-choice filter of 2–5 options on one track (segmented look). The left side of a SubpageToolbar. Components: Pills.
+- [Toggle](./components/toggle/) ([markdown](./docs/components/toggle.md)): Buttons that stay pressed. Toggle for one (pin, mute, bold); ToggleGroup for a set of icon or short options, one or several at a time (list / grid view, text styles). Components: Toggle, ToggleGroup.
 
 ### Forms
 
+- [Calendar](./components/calendar/) ([markdown](./docs/components/calendar.md)): A month grid to pick one day or a range (YYYY-MM-DD, weeks start on Monday). DatePicker shows it in a popover; place it inline for schedules and report filters. Components: Calendar.
 - [Checkbox](./components/checkbox/) ([markdown](./docs/components/checkbox.md)): A native checkbox with label and description, checked fill in the accent, and an indeterminate state for “select all”. Components: Checkbox.
 - [Combobox](./components/combobox/) ([markdown](./docs/components/combobox.md)): CustomCombobox: type to filter a long list, then pick one value. Components: CustomCombobox.
-- [Date picker](./components/date-picker/) ([markdown](./docs/components/date-picker.md)): A calendar popover for one date (YYYY-MM-DD), with min / max. Never type="date". Components: DatePicker.
+- [Date picker](./components/date-picker/) ([markdown](./docs/components/date-picker.md)): A date field with a Calendar popover (YYYY-MM-DD, min / max). Never type="date". Components: DatePicker.
 - [Field, Input, Textarea](./components/field/) ([markdown](./docs/components/field.md)): Field gives any control a label, a hint and an error, wired for screen readers. Input and Textarea are the standard text controls (bg-field, h-field). Components: Field, Input, Textarea.
+- [Input group](./components/input-group/) ([markdown](./docs/components/input-group.md)): An input with fixed parts around it: a prefix (https://), a unit (kg, ₫), an icon or a small button (copy, show password). Components: InputGroup.
 - [Number input](./components/number-input/) ([markdown](./docs/components/number-input.md)): NumberInput: numbers with a touch keypad (NumPadPopup) on phones and tablets, plain typing elsewhere. Never type="number". Components: NumberInput, NumPadPopup.
 - [Radio group](./components/radio-group/) ([markdown](./docs/components/radio-group.md)): Exactly one option of a few, each with an optional description; vertical by default. Components: RadioGroup.
-- [Search input](./components/search-input/) ([markdown](./docs/components/search-input.md)): The toolbar search field: icon, clear button, h-control height. SubpageToolbar includes one. Components: SearchInput.
+- [Search input](./components/search-input/) ([markdown](./docs/components/search-input.md)): The toolbar search: an icon button that opens into a field (clear button, h-control); it collapses again when empty and focus leaves. SubpageToolbar includes one. Components: SearchInput.
 - [Select](./components/select/) ([markdown](./docs/components/select.md)): CustomSelect: pick one value from a list, in a field, in a toolbar, inline in a row or bare. Never the native <select>. Components: CustomSelect.
+- [Slider](./components/slider/) ([markdown](./docs/components/slider.md)): Pick a number in a range by dragging: one thumb, or two with range for a min–max pair. Components: Slider.
 - [Switch](./components/switch/) ([markdown](./docs/components/switch.md)): An on / off toggle for settings that apply immediately. Components: Switch.
 
 ### Overlays
 
+- [Command](./components/command/) ([markdown](./docs/components/command.md)): A command palette: type to filter actions and pages, ↑/↓ to move, Enter to run. Command is the inline list; CommandDialog opens it over the page, usually on ⌘K (useHotkey). Matching ignores case and Vietnamese marks. Components: Command, CommandDialog.
 - [Confirm dialog](./components/confirm-dialog/) ([markdown](./docs/components/confirm-dialog.md)): confirmDialog() asks one yes / no question and resolves to true or false. Mount ConfirmHost once in the root layout. Never window.confirm. Components: ConfirmHost.
-- [Drawer](./components/drawer/) ([markdown](./docs/components/drawer.md)): A panel that slides in from the right, left or bottom, with title and footer; a sheet on phones. Components: Drawer.
+- [Context menu](./components/context-menu/) ([markdown](./docs/components/context-menu.md)): The menu of an area opened at the pointer: right-click, long-press on touch, or the Menu key / Shift+F10 when the area has focus. Components: ContextMenu.
+- [Drawer](./components/drawer/) ([markdown](./docs/components/drawer.md)): A panel that slides in from the right, left, bottom or top (a sheet), with title and footer. Components: Drawer.
+- [Hover card](./components/hover-card/) ([markdown](./docs/components/hover-card.md)): A preview card while the pointer rests on, or focus is on, a link: a person, a product, an order. Components: HoverCard.
 - [Menu](./components/menu/) ([markdown](./docs/components/menu.md)): The overflow menu of a row or card: a ⋯ trigger (or your own) with items, icons, separators and a danger item last. Components: Menu.
 - [Modal](./components/modal/) ([markdown](./docs/components/modal.md)): The shared dialog: full screen on phones, a centred panel from sm up, with title, description, body and footer. Focus is trapped and returns to the opener. Components: Modal.
+- [Popover](./components/popover/) ([markdown](./docs/components/popover.md)): A small non-modal panel under its trigger for interactive content: a quick form, filters, a picker. Components: Popover.
 - [Toast](./components/toast/) ([markdown](./docs/components/toast.md)): toast() shows a short message after an action, with a tone and an optional action (Hoàn tác). Mount ToastHost once in the root layout. Components: ToastHost.
 - [Tooltip](./components/tooltip/) ([markdown](./docs/components/tooltip.md)): A short label on hover or focus, mostly for icon-only buttons. Components: Tooltip.
 
@@ -59,21 +68,28 @@ Install `@semi/ui`, import components from `@semi/ui`, class constants from `@se
 
 - [App header](./components/app-header/) ([markdown](./docs/components/app-header.md)): The top bar of a stand-alone tool app: logo + title go home, the module name, and one primary action on the right. No Home button. Components: AppHeader.
 - [App shell](./components/app-shell/) ([markdown](./docs/components/app-shell.md)): The frame of a multi-page app: a floating bento sidebar (w-52, collapses to a w-14 icon rail) on bg-canvas, the content panel beside it, and MobileTabBar at the bottom on phones. This docs site is an AppShell. Components: AppShell, MobileTabBar.
+- [Breadcrumb](./components/breadcrumb/) ([markdown](./docs/components/breadcrumb.md)): Where the page sits: a trail of links ending with the current page. Long trails collapse their middle into a “…” menu. Components: Breadcrumb.
 - [Page actions](./components/page-actions/) ([markdown](./docs/components/page-actions.md)): Lets a page put its actions into a slot of the shared header: PageActionsProvider wraps the layout, PageActionsSlot marks where they render, PageActions sends them from the page. Components: PageActions, PageActionsProvider, PageActionsSlot.
 - [Page title](./components/page-title/) ([markdown](./docs/components/page-title.md)): PageTitle is the large display title of a page (text only). PageTabsTitle turns it into 2–4 underline tabs for sibling pages. Components: PageTitle, PageTabsTitle.
 - [Pagination](./components/pagination/) ([markdown](./docs/components/pagination.md)): Page numbers with previous / next for long tables. For card lists prefer auto-loading with “Xem thêm”. Components: Pagination.
+- [Scroll area](./components/scroll-area/) ([markdown](./docs/components/scroll-area.md)): A fixed-size scrolling region (a long list in a card, a log). Semi hides scrollbars, so it marks the edges that have more content, can show a thin scrollbar, and is reachable by keyboard. Components: ScrollArea.
 - [Side panel](./components/side-panel/) ([markdown](./docs/components/side-panel.md)): A 320px tool panel beside a canvas that collapses to a 48px rail; SidePanelToggle is its collapse button. Components: SidePanel, SidePanelToggle.
 - [Subpage toolbar](./components/subpage-toolbar/) ([markdown](./docs/components/subpage-toolbar.md)): The sticky row under a page title: filters on the left; search, refresh and the icon-only primary action on the right. RefreshButton spins while its promise runs. Components: SubpageToolbar, RefreshButton.
 - [Tabs](./components/tabs/) ([markdown](./docs/components/tabs.md)): Switch between panels of content inside a page or card: underline (default) or segmented, with icons and counts. Components: Tabs.
 
 ### Data display
 
+- [Accordion](./components/accordion/) ([markdown](./docs/components/accordion.md)): A list of sections where one (or several) open at a time: FAQs, settings groups, help. Components: Accordion.
 - [Avatar](./components/avatar/) ([markdown](./docs/components/avatar.md)): A person or team: their image, or initials on a tone picked from the name. Components: Avatar.
 - [Badge](./components/badge/) ([markdown](./docs/components/badge.md)): A read-only status or tag in a tone (10% fill, 20% border, theme-safe text), with an optional dot or icon. Components: Badge.
 - [Card](./components/card/) ([markdown](./docs/components/card.md)): The bento content card: panel fill and the style's card border, radius and resting shadow. interactive adds hover / press, active marks the selected or running item. Components: Card.
+- [Collapsible](./components/collapsible/) ([markdown](./docs/components/collapsible.md)): One section that opens and closes under its trigger row (advanced options, details of a log line). Components: Collapsible.
+- [Data table](./components/data-table/) ([markdown](./docs/components/data-table.md)): A table that sorts, filters, selects and pages rows on the client, built on Table: give it rows and columns, it keeps the state (or you control it). Components: DataTable.
 - [Icon](./components/icon/) ([markdown](./docs/components/icon.md)): The semantic icon registry (stroke 1.75, 24px grid). IconTile is the rounded tinted square that leads cards and dialogs. Components: Icon, IconTile.
+- [Kbd](./components/kbd/) ([markdown](./docs/components/kbd.md)): A key or a shortcut (⌘ K, Ctrl Enter) as key caps, for menus, tooltips, the command palette and help text. Components: Kbd.
 - [KPI card](./components/kpi-card/) ([markdown](./docs/components/kpi-card.md)): A metric card: label, a large tabular figure, a sub line coloured good / danger, and an icon in its tone. Components: KpiCard.
 - [Markdown](./components/markdown/) ([markdown](./docs/components/markdown.md)): Renders AI or user text safely: paragraphs, lists, bold, inline code and links (as ExternalLink). No HTML. Components: Markdown.
+- [Separator](./components/separator/) ([markdown](./docs/components/separator.md)): A thin divider between groups of content: horizontal, vertical, or with a short label in the middle (“hoặc”). Components: Separator.
 - [Table](./components/table/) ([markdown](./docs/components/table.md)): A dense table for rows compared column by column. Cells stay on one line (the table scrolls sideways on phones); TD wrap for a long-text column, numeric for figures. Components: Table, THead, TBody, TR, TH, TD.
 
 ### Feedback
@@ -198,49 +214,62 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (80)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (98)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `AppHeader`: `AppHeader`
 - `AppShell`: `AppShell`
 - `Badge`: `Badge`
+- `Breadcrumb`: `Breadcrumb`
 - `Button`: `Spinner`, `Button`
+- `ButtonGroup`: `ButtonGroup`
+- `Calendar`: `Calendar`
 - `Card`: `Card`
 - `Chat`: `ChatAvatar`, `ChatThinking`, `UserMessage`, `AssistantMessage`, `ChatError`, `ChatCopyButton`, `ChatIntro`, `ChatSuggestion`, `ChatSuggestions`, `ChatList`, `ChatComposer`, `ChatModelPicker`, `ChatView`, `ChatPanel`, `ChatAnswer`, `AIChat`
 - `Chip`: `Chip`
 - `Choice`: `Checkbox`, `Switch`, `RadioGroup`
+- `Command`: `Command`, `CommandDialog`
 - `CustomCombobox`: `CustomCombobox`
 - `CustomSelect`: `CustomSelect`
+- `DataTable`: `DataTable`
 - `DatePicker`: `DatePicker`
+- `Disclosure`: `Collapsible`, `Accordion`
 - `Drawer`: `Drawer`
 - `ExternalLink`: `ExternalLink`
 - `Feedback`: `Alert`, `Progress`, `Avatar`, `EmptyState`
 - `Field`: `Field`, `Input`, `Textarea`
 - `Icon`: `Icon`, `IconTile`
+- `InputGroup`: `InputGroup`
+- `Kbd`: `Kbd`
 - `KpiCard`: `KpiCard`
 - `Markdown`: `Markdown`
 - `MobileTabBar`: `MobileTabBar`
 - `Modal`: `Modal`
 - `NumPadPopup`: `NumPadPopup`
 - `NumberInput`: `NumberInput`
-- `Overlay`: `Tooltip`, `Menu`
+- `Overlay`: `Tooltip`, `Menu`, `ContextMenu`
 - `PageActions`: `PageActionsProvider`, `PageActionsSlot`, `PageActions`
 - `PageTitle`: `PageTitle`, `PageTabsTitle`
 - `Pagination`: `Pagination`
 - `Pills`: `Pills`
+- `Popover`: `Popover`, `HoverCard`
 - `RefreshButton`: `RefreshButton`
+- `ScrollArea`: `ScrollArea`
 - `SearchInput`: `SearchInput`
+- `Separator`: `Separator`
 - `SidePanel`: `SidePanelToggle`, `SidePanel`
 - `Skeleton`: `Skeleton`, `Loading`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton`
+- `Slider`: `Slider`
 - `SubpageToolbar`: `SubpageToolbar`
 - `Table`: `Table`, `THead`, `TBody`, `TR`, `TH`, `TD`
 - `Tabs`: `Tabs`
 - `ThemeProvider`: `ThemeProvider`, `ThemeToggle`, `ThemeSwitcher`
 - `ThemeScript`: `ThemeScript`
 - `Toast`: `ToastHost`
+- `Toggle`: `Toggle`, `ToggleGroup`
 - `confirmDialog`: `ConfirmHost`
 - `locale`: `SemiLocaleProvider`
 
-**Hooks:** `useField`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useSemiLocale` · **Functions:** `chipClass`, `chipIconClass`, `pageWindow`, `themeScript`, `toast`, `dismissToast`, `confirmDialog`, `cn`
+**Hooks:** `useHotkey`, `useField`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useSemiLocale` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `pageWindow`, `themeScript`, `toast`, `dismissToast`, `confirmDialog`, `cn`
 <!-- generated:components:end -->
 
 
@@ -808,12 +837,25 @@ options; more → `CustomSelect`).
 | Hint for an icon-only control | `Tooltip` (never essential text: touch screens do not show it) |
 | Feedback after an action | `toast({ title, tone, action })` + `<ToastHost />` in the layout |
 | Persistent message in a page | `Alert` (tone, title, action, `onDismiss`) |
-| Secondary task beside the page | `Drawer` (right / left / bottom sheet) |
+| Secondary task beside the page | `Drawer` (right / left / bottom / top sheet) |
 | Sections of one record | `Tabs` (underline; `segmented` inside a toolbar); 2–4 sibling pages → `PageTabsTitle` |
 | Compared rows | `Table` + `THead` / `TBody` / `TR` / `TH` / `TD numeric`; cells stay on one line and the table scrolls sideways on phones (`TD wrap` for a long-text column); entity overviews stay Bento `Card`s |
 | Progress / quota | `Progress` (determinate or indeterminate) |
 | People | `Avatar` (photo or initials on a stable tone) |
 | Nothing to show yet | `EmptyState` (icon, one line, action) |
+| Related buttons as one control | `ButtonGroup` (‹ Hôm nay ›, Lưu + `Menu`) |
+| Pressed state / icon option sets | `Toggle` (one, `aria-pressed`); `ToggleGroup` (`type` single = radio group, multiple = toolbar). Text filters stay `Pills` |
+| Fixed parts around an input | `InputGroup` (`start` / `end`: prefix, unit, small button) |
+| A number by dragging | `Slider` (one thumb, or `range` for min–max; `format` for units) |
+| Pick a day / a range on the page | `Calendar` (`mode` single / range); a date field → `DatePicker` (uses Calendar) |
+| Where the page sits | `Breadcrumb` (collapses the middle into "…" past `maxItems`) |
+| Hide / show sections | `Collapsible` (one), `Accordion` (list; `type` single / multiple) |
+| Small interactive panel under a trigger | `Popover` (non-modal dialog); a hover preview of a link → `HoverCard` |
+| Actions at the pointer | `ContextMenu` (right-click, long-press, Menu key); the same actions must exist in a visible `Menu` |
+| Jump / run anything from the keyboard | `CommandDialog` + `useHotkey` (⌘K), `Command` inline; matching ignores Vietnamese marks |
+| Sort / filter / select / page rows | `DataTable` (`columns`, `search`, `selectable` + `bulkActions`, `pageSize`, `loading`) |
+| Fixed-height scrolling list | `ScrollArea` (edge lines, optional thin scrollbar, keyboard focusable) |
+| Divider / key cap | `Separator` (horizontal, vertical, with a label); `Kbd` (`keys={["⌘", "K"]}`) |
 
 The full inventory with props is generated into `components.json` (`npm run build:manifest`).
 
@@ -1770,6 +1812,80 @@ Indeterminate activity mark for a button or field running its own action (§13b:
 
 ---
 
+<!-- docs/components/button-group.md -->
+
+# Button group
+
+Joins related buttons into one segmented control: shared borders, outer corners only (‹ Hôm nay ›, Lưu | ▾).
+
+## When to use
+
+- Previous / today / next; a primary action with its overflow menu; zoom − / +.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Choose one value | ToggleGroup or Pills |
+
+## Import
+
+```tsx
+import { ButtonGroup } from "@semi/ui";
+```
+
+## Examples
+
+### Navigation and split button
+
+```tsx
+import { Button, ButtonGroup, Menu } from "@semi/ui";
+
+export default function ButtonGroupBasic() {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <ButtonGroup label="Điều hướng ngày">
+        <Button iconOnly icon="back" aria-label="Ngày trước" />
+        <Button>Hôm nay</Button>
+        <Button iconOnly icon="chevron" aria-label="Ngày sau" />
+      </ButtonGroup>
+      <ButtonGroup label="Lưu">
+        <Button variant="primary" icon="check">
+          Lưu
+        </Button>
+        <Menu
+          label="Tuỳ chọn lưu"
+          items={[
+            { label: "Lưu bản nháp", icon: "fileText", onSelect: () => undefined },
+            { label: "Lưu và in", icon: "printer", onSelect: () => undefined },
+          ]}
+        />
+      </ButtonGroup>
+    </div>
+  );
+}
+```
+
+## API
+
+### ButtonGroup
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `label` | `string` |  | Accessible name of the group ("Điều hướng ngày"). |
+| `orientation` | `'horizontal' \| 'vertical'` | `"horizontal"` |  |
+| `className` | `string` |  |  |
+| `children` * | `React.ReactNode` |  | Button elements (Button, or anything styled with BTN_*). |
+
+## Accessibility
+
+- role="group" with a label; each button keeps its own name.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/button-group/ and the types in src/ -->
+
+
+---
+
 <!-- docs/components/chip.md -->
 
 # Chip
@@ -1923,6 +2039,7 @@ A single-choice filter of 2–5 options on one track (segmented look). The left 
 | Switch panels of content | Tabs |
 | Many filters, several at once | Chip |
 | Sibling pages | PageTabsTitle |
+| Icon options or several on at once | ToggleGroup |
 
 ## Import
 
@@ -1970,9 +2087,217 @@ export default function PillsBasic() {
 
 ## Accessibility
 
-- Rendered as a radio group: arrow keys move, the selected option is announced.
+- Each option is a button with aria-pressed; Tab moves between options. For an icon set or a radio-group keyboard model use ToggleGroup.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/pills/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/toggle.md -->
+
+# Toggle
+
+Buttons that stay pressed. Toggle for one (pin, mute, bold); ToggleGroup for a set of icon or short options, one or several at a time (list / grid view, text styles).
+
+## When to use
+
+- A view mode with icons; text formatting; a pin / follow / mute switch on a toolbar.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Filter a list by text options | Pills |
+| A setting saved immediately with a label | Switch |
+
+## Import
+
+```tsx
+import { Toggle, ToggleGroup } from "@semi/ui";
+```
+
+## Examples
+
+### Toggle
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Toggle } from "@semi/ui";
+
+export default function ToggleBasic() {
+  const [pinned, setPinned] = useState(false);
+  return (
+    <Toggle pressed={pinned} onPressedChange={setPinned} icon="pin">
+      {pinned ? "Đã ghim" : "Ghim"}
+    </Toggle>
+  );
+}
+```
+
+### View mode (single) and styles (multiple)
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { ToggleGroup } from "@semi/ui";
+
+export default function ToggleGroupBasic() {
+  const [view, setView] = useState<("grid" | "list")[]>(["grid"]);
+  const [styles, setStyles] = useState<("bold" | "italic" | "code")[]>(["bold"]);
+  return (
+    <div className="flex flex-wrap gap-3">
+      <ToggleGroup
+        label="Chế độ xem"
+        value={view}
+        onChange={setView}
+        options={[
+          { key: "grid", icon: "grid", "aria-label": "Lưới" },
+          { key: "list", icon: "menu", "aria-label": "Danh sách" },
+        ]}
+      />
+      <ToggleGroup
+        type="multiple"
+        label="Kiểu chữ"
+        value={styles}
+        onChange={setStyles}
+        options={[
+          { key: "bold", label: "Đậm" },
+          { key: "italic", label: "Nghiêng" },
+          { key: "code", icon: "code", "aria-label": "Code" },
+        ]}
+      />
+    </div>
+  );
+}
+```
+
+## API
+
+### Toggle
+
+One button that stays pressed (aria-pressed). Icon-only needs an aria-label.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `pressed` * | `boolean` |  |  |
+| `onPressedChange` * | `(pressed: boolean) => void` |  |  |
+| `icon` | `IconName` |  |  |
+| `disabled` | `boolean` |  |  |
+| `className` | `string` |  |  |
+| `children` | `React.ReactNode` |  |  |
+| `aria-label` | `string` |  |  |
+| `title` | `string` |  |  |
+
+### ToggleGroup
+
+A set of toggles on one track. type="single" (default) behaves like a radio group (←/→ move and select);
+type="multiple" is a toolbar of independent toggles. Value is a list of keys in both cases.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `options` * | `ToggleOption<T>[]` |  |  |
+| `value` * | `T[]` |  |  |
+| `onChange` * | `(value: T[]) => void` |  |  |
+| `type` | `'single' \| 'multiple'` | `"single"` |  |
+| `label` * | `string` |  | Accessible name of the group. |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- Toggle uses aria-pressed. ToggleGroup type="single" is a radio group (←/→ move and select), type="multiple" a toolbar of pressed buttons. Icon-only options need aria-label.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/toggle/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/calendar.md -->
+
+# Calendar
+
+A month grid to pick one day or a range (YYYY-MM-DD, weeks start on Monday). DatePicker shows it in a popover; place it inline for schedules and report filters.
+
+## When to use
+
+- Inline date selection on a page; picking a date range for a report.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A date field in a form | DatePicker |
+
+## Import
+
+```tsx
+import { Calendar, isoDay, parseDay, type DayRange } from "@semi/ui";
+```
+
+## Examples
+
+### One day
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Calendar } from "@semi/ui";
+
+export default function CalendarSingle() {
+  const [day, setDay] = useState("2026-11-12");
+  return <Calendar value={day} onChange={setDay} min="2026-11-01" />;
+}
+```
+
+### Range
+
+Click a start day, then an end day.
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Calendar, type DayRange } from "@semi/ui";
+
+export default function CalendarRange() {
+  const [range, setRange] = useState<DayRange>({ start: "2026-11-03", end: "2026-11-09" });
+  return (
+    <div className="space-y-2">
+      <Calendar mode="range" value={range} onChange={setRange} />
+      <p className="text-label text-muted tabular-nums">
+        {range.start ?? "…"} → {range.end ?? "…"}
+      </p>
+    </div>
+  );
+}
+```
+
+## API
+
+### Calendar
+
+A grid of days (role="grid"): arrows move by day / week, Home / End to the start / end of the week, PageUp /
+PageDown by month (Shift: by year), Enter / Space pick. Only the focused day is in the tab order.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `min` | `string` |  | Earliest / latest selectable day ("YYYY-MM-DD"). |
+| `max` | `string` |  |  |
+| `autoFocus` | `boolean` |  | Move focus into the grid when it mounts (DatePicker does). |
+| `className` | `string` |  |  |
+| `mode` | `'single' \| 'range'` |  |  |
+| `value` * | `string \| DayRange` |  |  |
+| `onChange` * | `(value: string) => void \| (value: DayRange) => void` |  |  |
+
+## Accessibility
+
+- role="grid": arrows move by day / week, Home / End to the week's ends, PageUp / PageDown by month (Shift: year), Enter / Space pick; today has aria-current="date".
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/calendar/ and the types in src/ -->
 
 
 ---
@@ -2142,11 +2467,17 @@ export default function ComboboxBasic() {
 
 # Date picker
 
-A calendar popover for one date (YYYY-MM-DD), with min / max. Never type="date".
+A date field with a Calendar popover (YYYY-MM-DD, min / max). Never type="date".
 
 ## When to use
 
 - Schedule a job, filter by day, set a due date.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Pick on the page, or a range | Calendar |
 
 ## Import
 
@@ -2185,7 +2516,7 @@ export default function DatePickerBasic() {
 
 ## Accessibility
 
-- Arrow keys move by day / week, Enter picks, Escape closes; give it an ariaLabel when there is no Field.
+- The button's name includes the chosen date; the popover is a dialog with the Calendar grid (arrows, PageUp / PageDown, Enter); Escape closes and returns focus to the button.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/date-picker/ and the types in src/ -->
 
@@ -2306,6 +2637,82 @@ Multi-line text on the field surface (FIELD_TEXTAREA).
 - The error is announced when it appears; required adds a visible mark and aria-required.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/field/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/input-group.md -->
+
+# Input group
+
+An input with fixed parts around it: a prefix (https://), a unit (kg, ₫), an icon or a small button (copy, show password).
+
+## When to use
+
+- Money and units, URLs and domains, a copy or reveal button inside the field.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Just an icon | Input with icon |
+
+## Import
+
+```tsx
+import { InputGroup } from "@semi/ui";
+```
+
+## Examples
+
+### Prefix, unit and button
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Button, Field, Input, InputGroup } from "@semi/ui";
+
+export default function InputGroupAddons() {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="grid gap-4 max-w-md">
+      <Field label="Website">
+        <InputGroup start="https://">
+          <Input placeholder="3dnoobs.vn" />
+        </InputGroup>
+      </Field>
+      <Field label="Giá bán">
+        <InputGroup end="₫">
+          <Input defaultValue="250.000" className="tabular-nums" />
+        </InputGroup>
+      </Field>
+      <Field label="Mật khẩu Wi-Fi máy in">
+        <InputGroup end={<Button size="sm" variant="ghost" iconOnly icon={show ? "eyeOff" : "eye"} aria-label={show ? "Ẩn" : "Hiện"} onClick={() => setShow((v) => !v)} />}>
+          <Input type={show ? "text" : "password"} defaultValue="noobs-2026" />
+        </InputGroup>
+      </Field>
+    </div>
+  );
+}
+```
+
+## API
+
+### InputGroup
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `start` | `React.ReactNode` |  | Before the input: text ("https://"), an <Icon />, a small Button. |
+| `end` | `React.ReactNode` |  | After the input: a unit ("kg"), a Button (copy, show password). |
+| `className` | `string` |  |  |
+| `children` * | `React.ReactNode` |  | One Input (or Textarea / NumberInput). |
+
+## Accessibility
+
+- The Input inside keeps its label from Field; buttons in the group need their own aria-label.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/input-group/ and the types in src/ -->
 
 
 ---
@@ -2445,7 +2852,7 @@ export default function RadioGroupBasic() {
 | `options` * | `RadioOption<T>[]` |  |  |
 | `label` | `React.ReactNode` |  | Group label (announced for the whole group). |
 | `name` | `string` |  |  |
-| `direction` | `'vertical' \| 'horizontal'` | `"vertical"` |  |
+| `direction` | `'horizontal' \| 'vertical'` | `"vertical"` |  |
 | `className` | `string` |  |  |
 
 ## Accessibility
@@ -2461,7 +2868,7 @@ export default function RadioGroupBasic() {
 
 # Search input
 
-The toolbar search field: icon, clear button, h-control height. SubpageToolbar includes one.
+The toolbar search: an icon button that opens into a field (clear button, h-control); it collapses again when empty and focus leaves. SubpageToolbar includes one.
 
 ## When to use
 
@@ -2509,7 +2916,7 @@ export default function SearchInputBasic() {
 
 ## Accessibility
 
-- A labelled search input; the clear button has its own label and returns focus to the field.
+- The icon button and the field are labelled by label (default: the placeholder); Escape clears and collapses it.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/search-input/ and the types in src/ -->
 
@@ -2625,6 +3032,101 @@ export default function SelectToolbar() {
 
 ---
 
+<!-- docs/components/slider.md -->
+
+# Slider
+
+Pick a number in a range by dragging: one thumb, or two with range for a min–max pair.
+
+## When to use
+
+- Values where the position matters more than the exact number (volume, opacity, infill, price range filters).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| An exact number | NumberInput |
+
+## Import
+
+```tsx
+import { Slider } from "@semi/ui";
+```
+
+## Examples
+
+### Single
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Slider } from "@semi/ui";
+
+export default function SliderSingle() {
+  const [infill, setInfill] = useState(20);
+  return <Slider label="Độ đặc (infill)" value={infill} onChange={setInfill} step={5} showValue format={(v) => `${v}%`} className="max-w-sm" />;
+}
+```
+
+### Range
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Slider } from "@semi/ui";
+
+export default function SliderRange() {
+  const [price, setPrice] = useState<[number, number]>([100, 600]);
+  return (
+    <Slider
+      range
+      label="Khoảng giá"
+      value={price}
+      onChange={setPrice}
+      min={0}
+      max={1000}
+      step={50}
+      showValue
+      format={(v) => `${v}k ₫`}
+      className="max-w-sm"
+    />
+  );
+}
+```
+
+## API
+
+### Slider
+
+One or two thumbs (role="slider"): ←/↓ and →/↑ step, PageUp / PageDown jump 10 steps, Home / End go to the ends;
+drag or click the track. `value` is a number, or [low, high] with `range`.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `min` | `number` |  |  |
+| `max` | `number` |  |  |
+| `step` | `number` |  |  |
+| `label` * | `string` |  | Visible label above the track (also the accessible name). |
+| `showValue` | `boolean` |  | Show the formatted value next to the label. |
+| `format` | `(value: number) => string` |  | Text of a value (units, %): read by screen readers too (aria-valuetext). |
+| `disabled` | `boolean` |  |  |
+| `className` | `string` |  |  |
+| `range` | `boolean` |  |  |
+| `value` * | `number \| [number, number]` |  |  |
+| `onChange` * | `(value: number) => void \| (value: [number, number]) => void` |  |  |
+
+## Accessibility
+
+- role="slider" per thumb with aria-valuenow / aria-valuetext (format): arrows step, PageUp / PageDown jump, Home / End go to the ends.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/slider/ and the types in src/ -->
+
+
+---
+
 <!-- docs/components/switch.md -->
 
 # Switch
@@ -2693,6 +3195,125 @@ export default function SwitchBasic() {
 
 ---
 
+<!-- docs/components/command.md -->
+
+# Command
+
+A command palette: type to filter actions and pages, ↑/↓ to move, Enter to run. Command is the inline list; CommandDialog opens it over the page, usually on ⌘K (useHotkey). Matching ignores case and Vietnamese marks.
+
+## When to use
+
+- Jump anywhere and run any action from the keyboard (⌘K) in apps with many pages.
+- A searchable action list inside a Popover.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Pick one value in a form | CustomCombobox |
+| Filter the list on the page | SearchInput |
+
+## Import
+
+```tsx
+import { Command, CommandDialog, useHotkey, filterCommands, normalizeSearch, type CommandItem } from "@semi/ui";
+```
+
+## Examples
+
+### ⌘K palette
+
+Press ⌘K (Ctrl+K) or the button; try typing “don hang” without marks.
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Button, CommandDialog, Kbd, toast, useHotkey, type CommandItem } from "@semi/ui";
+
+export default function CommandPalette() {
+  const [open, setOpen] = useState(false);
+  useHotkey(() => setOpen((v) => !v));
+  const go = (title: string) => () => toast({ title });
+  const items: CommandItem[] = [
+    { id: "orders", label: "Đơn hàng", group: "Trang", icon: "bag", onSelect: go("Mở Đơn hàng") },
+    { id: "printers", label: "Máy in", group: "Trang", icon: "printer", keywords: ["printer"], onSelect: go("Mở Máy in") },
+    { id: "inventory", label: "Kho vật liệu", group: "Trang", icon: "box", onSelect: go("Mở Kho") },
+    { id: "new-order", label: "Tạo đơn hàng", group: "Thao tác", icon: "plus", shortcut: ["⌘", "N"], onSelect: go("Tạo đơn") },
+    { id: "theme", label: "Đổi giao diện sáng / tối", group: "Thao tác", icon: "moon", onSelect: go("Đổi giao diện") },
+  ];
+  return (
+    <>
+      <Button icon="search" onClick={() => setOpen(true)}>
+        Tìm nhanh <Kbd keys={["⌘", "K"]} />
+      </Button>
+      <CommandDialog open={open} onOpenChange={setOpen} items={items} />
+    </>
+  );
+}
+```
+
+### Inline
+
+```tsx
+"use client";
+
+import { Command, toast } from "@semi/ui";
+
+export default function CommandInline() {
+  return (
+    <div className="h-72 max-w-md rounded-card border border-line bg-panel overflow-hidden">
+      <Command
+        items={[
+          { id: "pla", label: "PLA đen", group: "Vật liệu", icon: "box", onSelect: () => toast({ title: "PLA đen" }) },
+          { id: "petg", label: "PETG trong", group: "Vật liệu", icon: "box", onSelect: () => toast({ title: "PETG trong" }) },
+          { id: "x1", label: "X1 Carbon 03", group: "Máy in", icon: "printer", onSelect: () => toast({ title: "X1 Carbon 03" }) },
+          { id: "a1", label: "A1 Mini 01", group: "Máy in", icon: "printer", disabled: true, onSelect: () => undefined },
+        ]}
+        placeholder="Tìm vật liệu, máy in…"
+      />
+    </div>
+  );
+}
+```
+
+## API
+
+### Command
+
+The searchable list itself (inside a page, a Popover or CommandDialog). The input is an ARIA combobox that owns a
+listbox; the active option follows aria-activedescendant so focus never leaves the input.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `items` * | `CommandItem[]` |  |  |
+| `placeholder` | `string` |  |  |
+| `emptyText` | `React.ReactNode` |  | Shown when nothing matches (default from the locale). |
+| `onEscape` | `() => void` |  | Escape on an empty query (CommandDialog closes). |
+| `autoFocus` | `boolean` | `false` |  |
+| `className` | `string` |  |  |
+
+### CommandDialog
+
+The command palette over the page: a modal dialog near the top, closed by Escape, a click outside or a pick.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `open` * | `boolean` |  |  |
+| `onOpenChange` * | `(open: boolean) => void` |  |  |
+| `items` * | `CommandItem[]` |  |  |
+| `placeholder` | `string` |  |  |
+| `emptyText` | `React.ReactNode` |  |  |
+
+## Accessibility
+
+- The input is an ARIA combobox owning a listbox (aria-activedescendant), so focus stays in the input; groups are labelled; the dialog traps focus and Escape closes it.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/command/ and the types in src/ -->
+
+
+---
+
 <!-- docs/components/confirm-dialog.md -->
 
 # Confirm dialog
@@ -2724,7 +3345,7 @@ import { ConfirmHost, confirmDialog } from "@semi/ui";
 "use client";
 
 import { useState } from "react";
-import { Button, ConfirmHost, confirmDialog } from "@semi/ui";
+import { Button, confirmDialog } from "@semi/ui";
 
 export default function ConfirmDanger() {
   const [result, setResult] = useState("");
@@ -2739,8 +3360,6 @@ export default function ConfirmDanger() {
   };
   return (
     <div className="flex items-center gap-3">
-      {/* Once in the root layout of a real app */}
-      <ConfirmHost />
       <Button variant="danger" icon="trash" onClick={remove}>
         Xoá bản in
       </Button>
@@ -2762,7 +3381,85 @@ No props of its own.
 
 - An alertdialog: focus starts on the safe button (Huỷ), Escape cancels.
 
+## Notes
+
+- <ConfirmHost /> goes once in the root layout (see Theme › Root layout); confirmDialog() works from any event handler.
+
 <!-- GENERATED by scripts/build-docs.mjs from examples/confirm-dialog/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/context-menu.md -->
+
+# Context menu
+
+The menu of an area opened at the pointer: right-click, long-press on touch, or the Menu key / Shift+F10 when the area has focus.
+
+## When to use
+
+- Power-user shortcuts on canvases, file grids and rows, when the same actions also exist in a visible Menu or toolbar.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| The only way to reach an action | Menu (visible trigger) |
+
+## Import
+
+```tsx
+import { ContextMenu } from "@semi/ui";
+```
+
+## Examples
+
+### On a file card
+
+```tsx
+import { ContextMenu, IconTile, toast } from "@semi/ui";
+
+export default function ContextMenuFile() {
+  return (
+    <ContextMenu
+      label="Thao tác tệp"
+      items={[
+        { label: "Mở", icon: "external", onSelect: () => toast({ title: "Mở tệp" }) },
+        { label: "Nhân bản", icon: "copy", shortcut: "⌘D", onSelect: () => toast({ title: "Đã nhân bản", tone: "success" }) },
+        { label: "Xoá", icon: "trash", danger: true, separator: true, onSelect: () => toast({ title: "Đã xoá", tone: "danger" }) },
+      ]}
+    >
+      <div className="flex w-64 items-center gap-3 rounded-card border border-line bg-field p-3">
+        <IconTile name="fileCode" tone="sky" />
+        <div className="min-w-0">
+          <div className="text-ui font-medium text-contrast truncate">vo-hop-dieu-khien.gcode</div>
+          <div className="text-caption text-muted">Chuột phải (hoặc giữ) để mở menu</div>
+        </div>
+      </div>
+    </ContextMenu>
+  );
+}
+```
+
+## API
+
+### ContextMenu
+
+The menu of an area opened at the pointer: right-click, long-press on touch, or the Menu key / Shift+F10 when the
+area has focus. Use for power-user shortcuts that also exist elsewhere (a row's Menu, a toolbar button).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `items` * | `MenuItem[]` |  |  |
+| `label` | `string` |  | Accessible name of the menu. |
+| `className` | `string` |  |  |
+| `children` * | `React.ReactNode` |  | The area that opens the menu (it becomes focusable). |
+
+## Accessibility
+
+- The area is focusable; Menu key / Shift+F10 open the menu, which behaves like Menu (arrows, Escape returns focus).
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/context-menu/ and the types in src/ -->
 
 
 ---
@@ -2771,11 +3468,12 @@ No props of its own.
 
 # Drawer
 
-A panel that slides in from the right, left or bottom, with title and footer; a sheet on phones.
+A panel that slides in from the right, left, bottom or top (a sheet), with title and footer.
 
 ## When to use
 
 - Filters of a list, details of a row, a secondary form that keeps the page visible.
+- A sheet from the top (announcements, a global search) with side="top".
 
 ## Use something else when
 
@@ -2833,6 +3531,35 @@ export default function DrawerFilters() {
 }
 ```
 
+### Sides
+
+side picks the edge: right (default), left, bottom (phone-style sheet) or top.
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Button, Drawer } from "@semi/ui";
+
+type Side = "right" | "left" | "bottom" | "top";
+
+export default function DrawerSides() {
+  const [side, setSide] = useState<Side | null>(null);
+  return (
+    <div className="flex flex-wrap gap-2">
+      {(["right", "left", "bottom", "top"] as const).map((s) => (
+        <Button key={s} onClick={() => setSide(s)}>
+          {s}
+        </Button>
+      ))}
+      <Drawer open={side !== null} onClose={() => setSide(null)} side={side ?? "right"} title={`Sheet: ${side ?? ""}`}>
+        <p className="text-ui text-body">Nội dung phụ, trang bên dưới vẫn giữ nguyên.</p>
+      </Drawer>
+    </div>
+  );
+}
+```
+
 ## API
 
 ### Drawer
@@ -2842,7 +3569,7 @@ export default function DrawerFilters() {
 | `open` * | `boolean` |  |  |
 | `onClose` * | `() => void` |  |  |
 | `title` * | `React.ReactNode` |  |  |
-| `side` | `'left' \| 'right' \| 'bottom'` | `"right"` |  |
+| `side` | `'left' \| 'right' \| 'bottom' \| 'top'` | `"right"` | right (default) / left: side sheet; bottom: phone-style sheet; top: a sheet from the top (announcements, search). |
 | `footer` | `React.ReactNode` |  | Actions pinned to the bottom (MODAL_FOOT). |
 | `className` | `string` |  | Width override for side drawers (e.g. "sm:max-w-lg"). |
 | `children` * | `React.ReactNode` |  |  |
@@ -2852,6 +3579,89 @@ export default function DrawerFilters() {
 - A modal dialog: focus trap, Escape, focus returns to the opener; the title labels it.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/drawer/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/hover-card.md -->
+
+# Hover card
+
+A preview card while the pointer rests on, or focus is on, a link: a person, a product, an order.
+
+## When to use
+
+- Peek at a linked record without opening it.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Anything people must act on | Popover (click) |
+| A one-line label | Tooltip |
+
+## Import
+
+```tsx
+import { HoverCard } from "@semi/ui";
+```
+
+## Examples
+
+### Person
+
+```tsx
+import { Avatar, Badge, HoverCard } from "@semi/ui";
+
+export default function HoverCardUser() {
+  return (
+    <p className="text-ui text-body">
+      Đơn được duyệt bởi{" "}
+      <HoverCard
+        trigger={
+          <a href="#minh-anh" className="font-medium text-accent-fg underline-offset-2 hover:underline">
+            Minh Anh
+          </a>
+        }
+      >
+        <div className="flex items-start gap-3">
+          <Avatar name="Minh Anh" />
+          <div className="space-y-1">
+            <div className="text-ui font-semibold text-contrast">Minh Anh</div>
+            <div className="text-label text-muted">Quản lý xưởng · Khu A</div>
+            <Badge tone="emerald" dot size="sm">
+              Đang trực
+            </Badge>
+          </div>
+        </div>
+      </HoverCard>
+      .
+    </p>
+  );
+}
+```
+
+## API
+
+### HoverCard
+
+A preview card while the pointer rests on (or keyboard focus is on) its trigger, usually a link. It adds detail
+only: touch screens never show it, so the link must work without it.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `trigger` * | `ReactElement<unknown, string \| JSXElementConstructor<any>>` |  | A link or button; it keeps its own name and action. |
+| `openDelay` | `number` | `400` |  |
+| `closeDelay` | `number` | `150` |  |
+| `width` | `number` | `260` |  |
+| `className` | `string` |  |  |
+| `children` * | `React.ReactNode` |  |  |
+
+## Accessibility
+
+- Opens on hover and keyboard focus, closes on Escape; touch screens never show it, so the link must work alone.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/hover-card/ and the types in src/ -->
 
 
 ---
@@ -3019,6 +3829,110 @@ export default function ModalBasic() {
 
 ---
 
+<!-- docs/components/popover.md -->
+
+# Popover
+
+A small non-modal panel under its trigger for interactive content: a quick form, filters, a picker.
+
+## When to use
+
+- Quick edits without leaving the page (rename, set a limit), compact filter forms.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A list of actions | Menu |
+| A focused multi-step task | Modal |
+| A read-only preview on hover | HoverCard |
+| A one-line hint | Tooltip |
+
+## Import
+
+```tsx
+import { Popover } from "@semi/ui";
+```
+
+## Examples
+
+### Quick edit
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Button, Field, Input, Popover } from "@semi/ui";
+
+export default function PopoverQuickEdit() {
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("X1 Carbon 03");
+  const [draft, setDraft] = useState(name);
+  return (
+    <div className="flex items-center gap-3">
+      <span className="text-ui font-medium text-contrast">{name}</span>
+      <Popover
+        label="Đổi tên máy in"
+        open={open}
+        onOpenChange={(o) => {
+          setOpen(o);
+          if (o) setDraft(name);
+        }}
+        trigger={<Button size="sm" icon="edit">Đổi tên</Button>}
+      >
+        <form
+          className="space-y-3"
+          onSubmit={(e) => {
+            e.preventDefault();
+            setName(draft);
+            setOpen(false);
+          }}
+        >
+          <Field label="Tên máy in">
+            <Input value={draft} onChange={(e) => setDraft(e.target.value)} />
+          </Field>
+          <div className="flex justify-end gap-2">
+            <Button size="sm" onClick={() => setOpen(false)}>
+              Huỷ
+            </Button>
+            <Button size="sm" variant="primary" type="submit">
+              Lưu
+            </Button>
+          </div>
+        </form>
+      </Popover>
+    </div>
+  );
+}
+```
+
+## API
+
+### Popover
+
+A non-modal dialog under its trigger. Focus moves into it; Escape, a click outside or tabbing out closes it, and
+Escape returns focus to the trigger. Controlled with `open` + `onOpenChange`, or on its own.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `trigger` * | `ReactElement<unknown, string \| JSXElementConstructor<any>>` |  | The element that toggles it (usually a Button). |
+| `label` * | `string` |  | Accessible name of the panel. |
+| `align` | `'left' \| 'right' \| 'center'` | `"left"` |  |
+| `width` | `number` | `280` | Minimum width in px (it grows with its content up to the viewport). |
+| `open` | `boolean` |  |  |
+| `onOpenChange` | `(open: boolean) => void` |  |  |
+| `className` | `string` |  |  |
+| `children` * | `React.ReactNode` |  |  |
+
+## Accessibility
+
+- A labelled dialog: focus moves in, Escape closes and returns focus to the trigger, clicking outside or tabbing out closes it.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/popover/ and the types in src/ -->
+
+
+---
+
 <!-- docs/components/toast.md -->
 
 # Toast
@@ -3049,13 +3963,11 @@ import { ToastHost, toast, dismissToast } from "@semi/ui";
 ```tsx
 "use client";
 
-import { Button, ToastHost, toast } from "@semi/ui";
+import { Button, toast } from "@semi/ui";
 
 export default function ToastTones() {
   return (
     <div className="flex flex-wrap gap-2">
-      {/* Once in the root layout of a real app */}
-      <ToastHost />
       <Button onClick={() => toast({ title: "Đã lưu thay đổi", tone: "success", action: { label: "Hoàn tác", onClick: () => toast({ title: "Đã hoàn tác" }) } })}>
         Thành công + hoàn tác
       </Button>
@@ -3077,6 +3989,10 @@ No props of its own.
 ## Accessibility
 
 - A live region (polite, assertive for danger); toasts with an action stay until dismissed or wait longer.
+
+## Notes
+
+- <ToastHost /> goes once in the root layout (see Theme › Root layout); every toast() call anywhere shows there.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/toast/ and the types in src/ -->
 
@@ -3321,6 +4237,91 @@ export default function Shell({ children }: { children: React.ReactNode }) {
 
 ---
 
+<!-- docs/components/breadcrumb.md -->
+
+# Breadcrumb
+
+Where the page sits: a trail of links ending with the current page. Long trails collapse their middle into a “…” menu.
+
+## When to use
+
+- Detail pages deep in a hierarchy (Kho › Vật liệu › PLA đen).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Top-level pages of an app | AppShell navigation |
+| Sibling views | PageTabsTitle |
+
+## Import
+
+```tsx
+import { Breadcrumb } from "@semi/ui";
+```
+
+## Examples
+
+### Trail
+
+```tsx
+import { Breadcrumb } from "@semi/ui";
+
+export default function BreadcrumbBasic() {
+  return (
+    <Breadcrumb
+      items={[
+        { label: "Kho", href: "/inventory", icon: "box" },
+        { label: "Vật liệu", href: "/inventory/materials" },
+        { label: "PLA đen 1kg" },
+      ]}
+    />
+  );
+}
+```
+
+### Collapsed
+
+More items than maxItems keep the first and the last two; the rest open from “…”.
+
+```tsx
+import { Breadcrumb } from "@semi/ui";
+
+export default function BreadcrumbCollapsed() {
+  return (
+    <Breadcrumb
+      maxItems={3}
+      items={[
+        { label: "Xưởng", href: "/" },
+        { label: "Khu A", href: "/a" },
+        { label: "Dãy 2", href: "/a/2" },
+        { label: "Máy in", href: "/a/2/printers" },
+        { label: "X1 Carbon 03" },
+      ]}
+    />
+  );
+}
+```
+
+## API
+
+### Breadcrumb
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `items` * | `BreadcrumbItem[]` |  |  |
+| `maxItems` | `number` | `4` | More items than this collapse the middle ones into a "…" menu (first + last two stay). |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- A nav landmark (“Đường dẫn”) with an ordered list; the last item has aria-current="page".
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/breadcrumb/ and the types in src/ -->
+
+
+---
+
 <!-- docs/components/page-actions.md -->
 
 # Page actions
@@ -3552,6 +4553,73 @@ export default function PaginationBasic() {
 - A nav landmark; the current page has aria-current="page"; arrows are labelled.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/pagination/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/scroll-area.md -->
+
+# Scroll area
+
+A fixed-size scrolling region (a long list in a card, a log). Semi hides scrollbars, so it marks the edges that have more content, can show a thin scrollbar, and is reachable by keyboard.
+
+## When to use
+
+- A list or log inside a card that must keep its height.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A wide table | Table (scrolls sideways by itself) |
+
+## Import
+
+```tsx
+import { ScrollArea } from "@semi/ui";
+```
+
+## Examples
+
+### Log in a card
+
+```tsx
+import { Card, ScrollArea } from "@semi/ui";
+
+const LINES = Array.from({ length: 24 }, (_, i) => `12:${String(i).padStart(2, "0")}  Lớp ${i + 120}/310 · đầu phun 220°C`);
+
+export default function ScrollAreaLog() {
+  return (
+    <Card className="p-0 max-w-md">
+      <ScrollArea label="Nhật ký in" className="h-48">
+        <ul className="p-3 space-y-1 text-label text-body tabular-nums">
+          {LINES.map((l) => (
+            <li key={l}>{l}</li>
+          ))}
+        </ul>
+      </ScrollArea>
+    </Card>
+  );
+}
+```
+
+## API
+
+### ScrollArea
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `label` * | `string` |  | Accessible name of the region (it is focusable when it scrolls, so keyboard users can scroll it). |
+| `orientation` | `'horizontal' \| 'vertical' \| 'both'` | `"vertical"` |  |
+| `scrollbar` | `boolean` | `false` | Show a thin scrollbar (hidden everywhere else in Semi). |
+| `className` | `string` |  | Give it a size here: "h-64", "max-h-80", "w-full". |
+| `children` * | `React.ReactNode` |  |  |
+
+## Accessibility
+
+- A labelled region that becomes focusable when it scrolls, so arrow keys scroll it.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/scroll-area/ and the types in src/ -->
 
 
 ---
@@ -3840,6 +4908,96 @@ export default function TabsSegmented() {
 
 ---
 
+<!-- docs/components/accordion.md -->
+
+# Accordion
+
+A list of sections where one (or several) open at a time: FAQs, settings groups, help.
+
+## When to use
+
+- FAQs and help; long settings split into groups.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| One section | Collapsible |
+| Switch whole panels | Tabs |
+
+## Import
+
+```tsx
+import { Accordion } from "@semi/ui";
+```
+
+## Examples
+
+### FAQ
+
+```tsx
+import { Accordion } from "@semi/ui";
+
+export default function AccordionFaq() {
+  return (
+    <Accordion
+      defaultValue={["petg"]}
+      items={[
+        { key: "petg", title: "Vì sao PETG bị kéo sợi?", content: "Giảm nhiệt độ 5–10°C, tăng retraction và bật Z-hop." },
+        { key: "warp", title: "Bản in bị cong góc?", content: "Lau bàn bằng cồn, dùng brim 5 mm và tắt quạt ở 3 lớp đầu." },
+        { key: "clog", title: "Đầu phun bị tắc phải làm sao?", content: "Chạy cold pull 2–3 lần; nếu vẫn tắc, thay đầu phun." },
+      ]}
+    />
+  );
+}
+```
+
+### Several open
+
+```tsx
+import { Accordion } from "@semi/ui";
+
+export default function AccordionMultiple() {
+  return (
+    <Accordion
+      type="multiple"
+      defaultValue={["network", "storage"]}
+      items={[
+        { key: "network", title: "Mạng", content: "Wi-Fi: Xuong-A · IP 192.168.1.42" },
+        { key: "storage", title: "Bộ nhớ", content: "Đã dùng 12,4 / 32 GB" },
+        { key: "firmware", title: "Firmware", content: "1.08 (mới nhất)", disabled: true },
+      ]}
+    />
+  );
+}
+```
+
+## API
+
+### Accordion
+
+A list of sections, one (type="single", default) or several (type="multiple") open at a time. ↑/↓ move between
+headers, Home / End jump; each header is a button inside a heading (level), its panel a labelled region.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `items` * | `AccordionItem[]` |  |  |
+| `type` | `'single' \| 'multiple'` | `"single"` |  |
+| `value` | `string[]` |  | Open item keys (controlled). |
+| `defaultValue` | `string[]` | `[]` |  |
+| `onChange` | `(open: string[]) => void` |  |  |
+| `headingLevel` | `2 \| 3 \| 4 \| 5 \| 6` | `3` | Heading level of the headers in the page outline. |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- Each header is a button inside a heading (headingLevel), with aria-expanded; ↑/↓ Home End move between headers; panels are labelled regions.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/accordion/ and the types in src/ -->
+
+
+---
+
 <!-- docs/components/avatar.md -->
 
 # Avatar
@@ -4066,6 +5224,217 @@ export default function CardStates() {
 
 ---
 
+<!-- docs/components/collapsible.md -->
+
+# Collapsible
+
+One section that opens and closes under its trigger row (advanced options, details of a log line).
+
+## When to use
+
+- Hide rarely used options (“Tuỳ chọn khác”), long details.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Several sections, one open at a time | Accordion |
+
+## Import
+
+```tsx
+import { Collapsible } from "@semi/ui";
+```
+
+## Examples
+
+### Advanced options
+
+```tsx
+import { Collapsible, Field, Input } from "@semi/ui";
+
+export default function CollapsibleBasic() {
+  return (
+    <Collapsible title="Tuỳ chọn khác" className="max-w-md">
+      <div className="space-y-3">
+        <Field label="Nhiệt độ bàn">
+          <Input defaultValue="60 °C" />
+        </Field>
+        <Field label="Tốc độ quạt">
+          <Input defaultValue="40%" />
+        </Field>
+      </div>
+    </Collapsible>
+  );
+}
+```
+
+## API
+
+### Collapsible
+
+One section that opens and closes under its trigger row.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `title` * | `React.ReactNode` |  | The trigger row (text, optionally with an icon or a count). |
+| `open` | `boolean` |  |  |
+| `defaultOpen` | `boolean` | `false` |  |
+| `onOpenChange` | `(open: boolean) => void` |  |  |
+| `className` | `string` |  |  |
+| `children` * | `React.ReactNode` |  |  |
+
+## Accessibility
+
+- The trigger is a button with aria-expanded / aria-controls; hidden content is out of the tab order.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/collapsible/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/data-table.md -->
+
+# Data table
+
+A table that sorts, filters, selects and pages rows on the client, built on Table: give it rows and columns, it keeps the state (or you control it).
+
+## When to use
+
+- Admin lists: orders, customers, inventory, logs — sort by a column, search, act on several rows.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A static table with no interaction | Table |
+| Entities with images and states | a grid of Card |
+| Server-side paging and sorting | control sort / page, pass the current page's rows |
+
+## Import
+
+```tsx
+import { DataTable, type DataTableColumn, type DataTableSort } from "@semi/ui";
+```
+
+## Examples
+
+### Orders: search, sort, select, page
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Badge, Button, DataTable, SearchInput, toast, type DataTableColumn } from "@semi/ui";
+
+type Order = { id: string; customer: string; status: "paid" | "pending" | "refunded"; total: number; date: string };
+const STATUS = { paid: ["emerald", "Đã thanh toán"], pending: ["amber", "Chờ xử lý"], refunded: ["rose", "Hoàn tiền"] } as const;
+const ORDERS: Order[] = Array.from({ length: 23 }, (_, i) => ({
+  id: `SO-${1040 + i}`,
+  customer: ["Nguyễn An", "Trần Bình", "Lê Chi", "Phạm Dũng", "Hoàng Hà"][i % 5],
+  status: (["paid", "pending", "refunded"] as const)[i % 3],
+  total: 180_000 + ((i * 97_000) % 2_400_000),
+  date: `2026-10-${String(1 + (i % 28)).padStart(2, "0")}`,
+}));
+
+const COLUMNS: DataTableColumn<Order>[] = [
+  { key: "id", header: "Mã đơn", sortable: true, cell: (o) => <span className="font-medium text-contrast">{o.id}</span> },
+  { key: "customer", header: "Khách hàng", sortable: true },
+  { key: "status", header: "Trạng thái", value: (o) => STATUS[o.status][1], cell: (o) => <Badge tone={STATUS[o.status][0]} dot>{STATUS[o.status][1]}</Badge> },
+  { key: "date", header: "Ngày", sortable: true },
+  { key: "total", header: "Tổng", sortable: true, numeric: true, cell: (o) => `${o.total.toLocaleString("vi-VN")} ₫` },
+];
+
+export default function DataTableOrders() {
+  const [q, setQ] = useState("");
+  return (
+    <div className="space-y-3">
+      <SearchInput value={q} onChange={setQ} placeholder="Tìm mã đơn, khách hàng…" className="w-64" />
+      <DataTable
+        label="Đơn hàng"
+        rows={ORDERS}
+        columns={COLUMNS}
+        getRowId={(o) => o.id}
+        search={q}
+        defaultSort={{ key: "date", dir: "desc" }}
+        selectable
+        bulkActions={(ids) => (
+          <Button size="sm" variant="danger" icon="trash" onClick={() => toast({ title: `Đã huỷ ${ids.length} đơn`, tone: "danger" })}>
+            Huỷ đơn
+          </Button>
+        )}
+        pageSize={8}
+      />
+    </div>
+  );
+}
+```
+
+### Loading and empty
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Button, DataTable } from "@semi/ui";
+
+export default function DataTableStates() {
+  const [loading, setLoading] = useState(true);
+  return (
+    <div className="space-y-3">
+      <Button size="sm" onClick={() => setLoading((v) => !v)}>
+        {loading ? "Xem trạng thái rỗng" : "Xem đang tải"}
+      </Button>
+      <DataTable
+        label="Máy in"
+        rows={[] as { id: string; name: string }[]}
+        columns={[{ key: "name", header: "Tên máy" }]}
+        getRowId={(r) => r.id}
+        loading={loading}
+        pageSize={4}
+      />
+    </div>
+  );
+}
+```
+
+## API
+
+### DataTable
+
+Sort by a column header (click again to reverse; aria-sort on the header), filter with `search` (every searchable
+column, case and Vietnamese marks ignored), select rows with a checkbox column (select-all on the page, bulk
+actions bar), page with Pagination. Shows skeleton rows while `loading` and an EmptyState when nothing is left.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `rows` * | `T[]` |  |  |
+| `columns` * | `DataTableColumn<T>[]` |  |  |
+| `getRowId` * | `(row: T) => string` |  |  |
+| `label` * | `string` |  | Accessible name of the table (a visually hidden caption). |
+| `search` | `string` | `""` | Filter text, usually from the toolbar's SearchInput. |
+| `sort` | `null \| DataTableSort` |  |  |
+| `defaultSort` | `DataTableSort` |  |  |
+| `onSortChange` | `(sort: DataTableSort \| null) => void` |  |  |
+| `selectable` | `boolean` | `false` | Add a checkbox column. |
+| `selected` | `string[]` |  |  |
+| `onSelectedChange` | `(ids: string[]) => void` |  |  |
+| `bulkActions` | `(ids: string[]) => ReactNode` |  | Shown above the table while rows are selected: buttons that act on the selection. |
+| `pageSize` | `number` | `0` | Rows per page; 0 shows all rows. |
+| `loading` | `boolean` | `false` |  |
+| `empty` | `React.ReactNode` |  | Shown when there are no rows (or none match the search). |
+| `onRowClick` | `(row: T) => void` |  | Make rows clickable (open the record). Keep a link or button in the row for keyboard users. |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- Sortable headers are buttons with aria-sort on the header cell; the caption names the table; row checkboxes and select-all are labelled; aria-busy while loading.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/data-table/ and the types in src/ -->
+
+
+---
+
 <!-- docs/components/icon.md -->
 
 # Icon
@@ -4135,6 +5504,57 @@ Rounded square with an icon: the leading visual of cards, list rows and dialogs.
 - Decorative by default (aria-hidden); pass title when the icon alone carries meaning.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/icon/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/kbd.md -->
+
+# Kbd
+
+A key or a shortcut (⌘ K, Ctrl Enter) as key caps, for menus, tooltips, the command palette and help text.
+
+## When to use
+
+- Show the shortcut of an action next to it.
+
+## Import
+
+```tsx
+import { Kbd } from "@semi/ui";
+```
+
+## Examples
+
+### Keys and shortcuts
+
+```tsx
+import { Kbd } from "@semi/ui";
+
+export default function KbdBasic() {
+  return (
+    <p className="flex flex-wrap items-center gap-2 text-ui text-body">
+      Mở bảng lệnh <Kbd keys={["⌘", "K"]} /> · Gửi <Kbd keys={["Ctrl", "Enter"]} /> · Đóng <Kbd>Esc</Kbd>
+    </p>
+  );
+}
+```
+
+## API
+
+### Kbd
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `keys` | `string[]` |  | Several keys of one shortcut: ["⌘", "K"] renders two key caps. |
+| `children` | `React.ReactNode` |  | One key when `keys` is not given. |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- Rendered as <kbd>; screen readers read the key names.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/kbd/ and the types in src/ -->
 
 
 ---
@@ -4248,6 +5668,76 @@ export default function MarkdownBasic() {
 - Links become ExternalLink (new tab announced).
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/markdown/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/separator.md -->
+
+# Separator
+
+A thin divider between groups of content: horizontal, vertical, or with a short label in the middle (“hoặc”).
+
+## When to use
+
+- Split groups inside a card or menu; “hoặc” between two ways to sign in.
+- A vertical rule between toolbar groups.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Space between sections | a gap (space-y-*) — most layouts need no line |
+
+## Import
+
+```tsx
+import { Separator } from "@semi/ui";
+```
+
+## Examples
+
+### Horizontal, label and vertical
+
+```tsx
+import { Button, Separator } from "@semi/ui";
+
+export default function SeparatorBasic() {
+  return (
+    <div className="space-y-4 max-w-sm">
+      <p className="text-ui text-body">Thông tin máy in</p>
+      <Separator />
+      <Button variant="primary" fullWidth>
+        Đăng nhập bằng email
+      </Button>
+      <Separator label="hoặc" />
+      <Button fullWidth>Đăng nhập bằng Google</Button>
+      <div className="flex h-6 items-center gap-3 text-label text-muted">
+        <span>Máy in</span>
+        <Separator orientation="vertical" />
+        <span>Vật liệu</span>
+      </div>
+    </div>
+  );
+}
+```
+
+## API
+
+### Separator
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `orientation` | `'horizontal' \| 'vertical'` | `"horizontal"` |  |
+| `label` | `React.ReactNode` |  | Short text in the middle of a horizontal line ("hoặc"). |
+| `decorative` | `boolean` | `true` | true (default): purely visual, hidden from screen readers. false: announced as a separator. |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- Decorative by default (hidden from screen readers); decorative={false} announces a separator.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/separator/ and the types in src/ -->
 
 
 ---

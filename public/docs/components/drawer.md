@@ -1,10 +1,11 @@
 # Drawer
 
-A panel that slides in from the right, left or bottom, with title and footer; a sheet on phones.
+A panel that slides in from the right, left, bottom or top (a sheet), with title and footer.
 
 ## When to use
 
 - Filters of a list, details of a row, a secondary form that keeps the page visible.
+- A sheet from the top (announcements, a global search) with side="top".
 
 ## Use something else when
 
@@ -62,6 +63,35 @@ export default function DrawerFilters() {
 }
 ```
 
+### Sides
+
+side picks the edge: right (default), left, bottom (phone-style sheet) or top.
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Button, Drawer } from "@semi/ui";
+
+type Side = "right" | "left" | "bottom" | "top";
+
+export default function DrawerSides() {
+  const [side, setSide] = useState<Side | null>(null);
+  return (
+    <div className="flex flex-wrap gap-2">
+      {(["right", "left", "bottom", "top"] as const).map((s) => (
+        <Button key={s} onClick={() => setSide(s)}>
+          {s}
+        </Button>
+      ))}
+      <Drawer open={side !== null} onClose={() => setSide(null)} side={side ?? "right"} title={`Sheet: ${side ?? ""}`}>
+        <p className="text-ui text-body">Nội dung phụ, trang bên dưới vẫn giữ nguyên.</p>
+      </Drawer>
+    </div>
+  );
+}
+```
+
 ## API
 
 ### Drawer
@@ -71,7 +101,7 @@ export default function DrawerFilters() {
 | `open` * | `boolean` |  |  |
 | `onClose` * | `() => void` |  |  |
 | `title` * | `React.ReactNode` |  |  |
-| `side` | `'left' \| 'right' \| 'bottom'` | `"right"` |  |
+| `side` | `'left' \| 'right' \| 'bottom' \| 'top'` | `"right"` | right (default) / left: side sheet; bottom: phone-style sheet; top: a sheet from the top (announcements, search). |
 | `footer` | `React.ReactNode` |  | Actions pinned to the bottom (MODAL_FOOT). |
 | `className` | `string` |  | Width override for side drawers (e.g. "sm:max-w-lg"). |
 | `children` * | `React.ReactNode` |  |  |

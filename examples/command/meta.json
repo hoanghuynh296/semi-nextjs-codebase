@@ -1,0 +1,43 @@
+{
+  "title": "Command",
+  "group": "Overlays",
+  "description": "A command palette: type to filter actions and pages, ↑/↓ to move, Enter to run. Command is the inline list; CommandDialog opens it over the page, usually on ⌘K (useHotkey). Matching ignores case and Vietnamese marks.",
+  "components": [
+    "Command",
+    "CommandDialog"
+  ],
+  "imports": [
+    "useHotkey",
+    "filterCommands",
+    "normalizeSearch",
+    "type CommandItem"
+  ],
+  "when": [
+    "Jump anywhere and run any action from the keyboard (⌘K) in apps with many pages.",
+    "A searchable action list inside a Popover."
+  ],
+  "instead": [
+    {
+      "need": "Pick one value in a form",
+      "use": "CustomCombobox"
+    },
+    {
+      "need": "Filter the list on the page",
+      "use": "SearchInput"
+    }
+  ],
+  "a11y": [
+    "The input is an ARIA combobox owning a listbox (aria-activedescendant), so focus stays in the input; groups are labelled; the dialog traps focus and Escape closes it."
+  ],
+  "examples": [
+    {
+      "file": "dialog",
+      "title": "⌘K palette",
+      "description": "Press ⌘K (Ctrl+K) or the button; try typing “don hang” without marks."
+    },
+    {
+      "file": "inline",
+      "title": "Inline"
+    }
+  ]
+}

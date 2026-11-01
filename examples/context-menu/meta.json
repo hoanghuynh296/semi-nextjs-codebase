@@ -1,0 +1,26 @@
+{
+  "title": "Context menu",
+  "group": "Overlays",
+  "description": "The menu of an area opened at the pointer: right-click, long-press on touch, or the Menu key / Shift+F10 when the area has focus.",
+  "components": [
+    "ContextMenu"
+  ],
+  "when": [
+    "Power-user shortcuts on canvases, file grids and rows, when the same actions also exist in a visible Menu or toolbar."
+  ],
+  "instead": [
+    {
+      "need": "The only way to reach an action",
+      "use": "Menu (visible trigger)"
+    }
+  ],
+  "a11y": [
+    "The area is focusable; Menu key / Shift+F10 open the menu, which behaves like Menu (arrows, Escape returns focus)."
+  ],
+  "examples": [
+    {
+      "file": "file",
+      "title": "On a file card"
+    }
+  ]
+}

@@ -4,6 +4,21 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-11-01
+
+### Added
+- **18 new pieces, no external libraries, each with a doc page and examples:** `Separator`, `Kbd`, `Breadcrumb` (collapses past `maxItems`), `ButtonGroup`, `InputGroup` (prefix / unit / button), `Toggle` + `ToggleGroup` (single = radio group, multiple = toolbar), `Collapsible`, `Accordion` (single / multiple, arrow keys), `Popover` (non-modal dialog), `HoverCard`, `ContextMenu` (right-click, long-press, Menu key / Shift+F10), `Command` + `CommandDialog` + `useHotkey` (⌘K palette; matching ignores Vietnamese marks: `normalizeSearch`, `filterCommands`), `Slider` (one thumb or `range`), `Calendar` (single / range, full grid keyboard), `ScrollArea` (edge lines, thin scrollbar, keyboard focusable), `DataTable` (sort with aria-sort, search, select + bulk actions, paging, loading and empty states).
+- `Drawer side="top"` (a sheet from the top); `MenuItem.shortcut`.
+- Locale strings for the new parts (`weekdaysShort`, `monthYear`, `command*`, `selectAll`, `selectRow`, `selectedCount`, `sortBy`, `showHidden`, `value`).
+
+### Changed
+- `DatePicker` uses `Calendar`: arrow / PageUp / PageDown keys in the grid, focus returns to the button, month and weekday names from the locale (no hard-coded Vietnamese).
+- `Menu` and `ContextMenu` share one panel (same keyboard and look).
+- The docs site mounts `ToastHost` and `ConfirmHost` once in its layout, like an app; examples no longer render their own hosts.
+
+### Fixed
+- Docs: `Pills` and `SearchInput` accessibility notes now describe what they really do.
+
 ## [0.9.0] - 2026-11-01
 
 ### Added

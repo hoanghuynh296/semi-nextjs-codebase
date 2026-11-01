@@ -1,0 +1,26 @@
+{
+  "title": "Button group",
+  "group": "Actions",
+  "description": "Joins related buttons into one segmented control: shared borders, outer corners only (‹ Hôm nay ›, Lưu | ▾).",
+  "components": [
+    "ButtonGroup"
+  ],
+  "when": [
+    "Previous / today / next; a primary action with its overflow menu; zoom − / +."
+  ],
+  "instead": [
+    {
+      "need": "Choose one value",
+      "use": "ToggleGroup or Pills"
+    }
+  ],
+  "a11y": [
+    "role=\"group\" with a label; each button keeps its own name."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "Navigation and split button"
+    }
+  ]
+}

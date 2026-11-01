@@ -1,0 +1,30 @@
+{
+  "title": "Slider",
+  "group": "Forms",
+  "description": "Pick a number in a range by dragging: one thumb, or two with range for a min–max pair.",
+  "components": [
+    "Slider"
+  ],
+  "when": [
+    "Values where the position matters more than the exact number (volume, opacity, infill, price range filters)."
+  ],
+  "instead": [
+    {
+      "need": "An exact number",
+      "use": "NumberInput"
+    }
+  ],
+  "a11y": [
+    "role=\"slider\" per thumb with aria-valuenow / aria-valuetext (format): arrows step, PageUp / PageDown jump, Home / End go to the ends."
+  ],
+  "examples": [
+    {
+      "file": "single",
+      "title": "Single"
+    },
+    {
+      "file": "range",
+      "title": "Range"
+    }
+  ]
+}

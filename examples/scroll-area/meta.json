@@ -1,0 +1,26 @@
+{
+  "title": "Scroll area",
+  "group": "Navigation & layout",
+  "description": "A fixed-size scrolling region (a long list in a card, a log). Semi hides scrollbars, so it marks the edges that have more content, can show a thin scrollbar, and is reachable by keyboard.",
+  "components": [
+    "ScrollArea"
+  ],
+  "when": [
+    "A list or log inside a card that must keep its height."
+  ],
+  "instead": [
+    {
+      "need": "A wide table",
+      "use": "Table (scrolls sideways by itself)"
+    }
+  ],
+  "a11y": [
+    "A labelled region that becomes focusable when it scrolls, so arrow keys scroll it."
+  ],
+  "examples": [
+    {
+      "file": "log",
+      "title": "Log in a card"
+    }
+  ]
+}

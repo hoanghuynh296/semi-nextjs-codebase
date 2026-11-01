@@ -1,7 +1,7 @@
 {
   "title": "Date picker",
   "group": "Forms",
-  "description": "A calendar popover for one date (YYYY-MM-DD), with min / max. Never type=\"date\".",
+  "description": "A date field with a Calendar popover (YYYY-MM-DD, min / max). Never type=\"date\".",
   "components": [
     "DatePicker"
   ],
@@ -9,12 +9,18 @@
     "Schedule a job, filter by day, set a due date."
   ],
   "a11y": [
-    "Arrow keys move by day / week, Enter picks, Escape closes; give it an ariaLabel when there is no Field."
+    "The button's name includes the chosen date; the popover is a dialog with the Calendar grid (arrows, PageUp / PageDown, Enter); Escape closes and returns focus to the button."
   ],
   "examples": [
     {
       "file": "basic",
       "title": "Basic"
+    }
+  ],
+  "instead": [
+    {
+      "need": "Pick on the page, or a range",
+      "use": "Calendar"
     }
   ]
 }

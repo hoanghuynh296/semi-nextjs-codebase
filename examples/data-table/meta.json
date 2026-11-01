@@ -1,0 +1,42 @@
+{
+  "title": "Data table",
+  "group": "Data display",
+  "description": "A table that sorts, filters, selects and pages rows on the client, built on Table: give it rows and columns, it keeps the state (or you control it).",
+  "components": [
+    "DataTable"
+  ],
+  "imports": [
+    "type DataTableColumn",
+    "type DataTableSort"
+  ],
+  "when": [
+    "Admin lists: orders, customers, inventory, logs — sort by a column, search, act on several rows."
+  ],
+  "instead": [
+    {
+      "need": "A static table with no interaction",
+      "use": "Table"
+    },
+    {
+      "need": "Entities with images and states",
+      "use": "a grid of Card"
+    },
+    {
+      "need": "Server-side paging and sorting",
+      "use": "control sort / page, pass the current page's rows"
+    }
+  ],
+  "a11y": [
+    "Sortable headers are buttons with aria-sort on the header cell; the caption names the table; row checkboxes and select-all are labelled; aria-busy while loading."
+  ],
+  "examples": [
+    {
+      "file": "orders",
+      "title": "Orders: search, sort, select, page"
+    },
+    {
+      "file": "states",
+      "title": "Loading and empty"
+    }
+  ]
+}

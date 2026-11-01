@@ -97,47 +97,60 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (80)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (98)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `AppHeader`: `AppHeader`
 - `AppShell`: `AppShell`
 - `Badge`: `Badge`
+- `Breadcrumb`: `Breadcrumb`
 - `Button`: `Spinner`, `Button`
+- `ButtonGroup`: `ButtonGroup`
+- `Calendar`: `Calendar`
 - `Card`: `Card`
 - `Chat`: `ChatAvatar`, `ChatThinking`, `UserMessage`, `AssistantMessage`, `ChatError`, `ChatCopyButton`, `ChatIntro`, `ChatSuggestion`, `ChatSuggestions`, `ChatList`, `ChatComposer`, `ChatModelPicker`, `ChatView`, `ChatPanel`, `ChatAnswer`, `AIChat`
 - `Chip`: `Chip`
 - `Choice`: `Checkbox`, `Switch`, `RadioGroup`
+- `Command`: `Command`, `CommandDialog`
 - `CustomCombobox`: `CustomCombobox`
 - `CustomSelect`: `CustomSelect`
+- `DataTable`: `DataTable`
 - `DatePicker`: `DatePicker`
+- `Disclosure`: `Collapsible`, `Accordion`
 - `Drawer`: `Drawer`
 - `ExternalLink`: `ExternalLink`
 - `Feedback`: `Alert`, `Progress`, `Avatar`, `EmptyState`
 - `Field`: `Field`, `Input`, `Textarea`
 - `Icon`: `Icon`, `IconTile`
+- `InputGroup`: `InputGroup`
+- `Kbd`: `Kbd`
 - `KpiCard`: `KpiCard`
 - `Markdown`: `Markdown`
 - `MobileTabBar`: `MobileTabBar`
 - `Modal`: `Modal`
 - `NumPadPopup`: `NumPadPopup`
 - `NumberInput`: `NumberInput`
-- `Overlay`: `Tooltip`, `Menu`
+- `Overlay`: `Tooltip`, `Menu`, `ContextMenu`
 - `PageActions`: `PageActionsProvider`, `PageActionsSlot`, `PageActions`
 - `PageTitle`: `PageTitle`, `PageTabsTitle`
 - `Pagination`: `Pagination`
 - `Pills`: `Pills`
+- `Popover`: `Popover`, `HoverCard`
 - `RefreshButton`: `RefreshButton`
+- `ScrollArea`: `ScrollArea`
 - `SearchInput`: `SearchInput`
+- `Separator`: `Separator`
 - `SidePanel`: `SidePanelToggle`, `SidePanel`
 - `Skeleton`: `Skeleton`, `Loading`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton`
+- `Slider`: `Slider`
 - `SubpageToolbar`: `SubpageToolbar`
 - `Table`: `Table`, `THead`, `TBody`, `TR`, `TH`, `TD`
 - `Tabs`: `Tabs`
 - `ThemeProvider`: `ThemeProvider`, `ThemeToggle`, `ThemeSwitcher`
 - `ThemeScript`: `ThemeScript`
 - `Toast`: `ToastHost`
+- `Toggle`: `Toggle`, `ToggleGroup`
 - `confirmDialog`: `ConfirmHost`
 - `locale`: `SemiLocaleProvider`
 
-**Hooks:** `useField`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useSemiLocale` · **Functions:** `chipClass`, `chipIconClass`, `pageWindow`, `themeScript`, `toast`, `dismissToast`, `confirmDialog`, `cn`
+**Hooks:** `useHotkey`, `useField`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useSemiLocale` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `pageWindow`, `themeScript`, `toast`, `dismissToast`, `confirmDialog`, `cn`
 <!-- generated:components:end -->

@@ -58,6 +58,17 @@ export const vi = {
   chatEffort: "Mức suy nghĩ",
   copy: "Sao chép",
   copied: "Đã sao chép",
+  weekdaysShort: ["T2", "T3", "T4", "T5", "T6", "T7", "CN"],
+  monthYear: (month: number, year: number) => `Tháng ${month}, ${year}`,
+  commandPlaceholder: "Gõ lệnh hoặc tìm kiếm…",
+  commandEmpty: "Không có kết quả",
+  commandLabel: "Bảng lệnh",
+  selectAll: "Chọn tất cả",
+  selectRow: "Chọn dòng",
+  selectedCount: (n: number) => `Đã chọn ${n}`,
+  sortBy: (column: string) => `Sắp xếp theo ${column}`,
+  showHidden: "Hiện các mục ẩn",
+  value: "Giá trị",
 };
 
 export type SemiStrings = typeof vi;
@@ -116,6 +127,17 @@ export const en: SemiStrings = {
   chatEffort: "Thinking effort",
   copy: "Copy",
   copied: "Copied",
+  weekdaysShort: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
+  monthYear: (month, year) => `${["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][month - 1]} ${year}`,
+  commandPlaceholder: "Type a command or search…",
+  commandEmpty: "No results",
+  commandLabel: "Command palette",
+  selectAll: "Select all",
+  selectRow: "Select row",
+  selectedCount: (n) => `${n} selected`,
+  sortBy: (column) => `Sort by ${column}`,
+  showHidden: "Show hidden items",
+  value: "Value",
 };
 
 const LocaleContext = createContext<SemiStrings>(vi);

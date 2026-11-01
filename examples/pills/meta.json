@@ -21,10 +21,14 @@
     {
       "need": "Sibling pages",
       "use": "PageTabsTitle"
+    },
+    {
+      "need": "Icon options or several on at once",
+      "use": "ToggleGroup"
     }
   ],
   "a11y": [
-    "Rendered as a radio group: arrow keys move, the selected option is announced."
+    "Each option is a button with aria-pressed; Tab moves between options. For an icon set or a radio-group keyboard model use ToggleGroup."
   ],
   "examples": [
     {

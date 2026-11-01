@@ -1,0 +1,38 @@
+{
+  "title": "Popover",
+  "group": "Overlays",
+  "description": "A small non-modal panel under its trigger for interactive content: a quick form, filters, a picker.",
+  "components": [
+    "Popover"
+  ],
+  "when": [
+    "Quick edits without leaving the page (rename, set a limit), compact filter forms."
+  ],
+  "instead": [
+    {
+      "need": "A list of actions",
+      "use": "Menu"
+    },
+    {
+      "need": "A focused multi-step task",
+      "use": "Modal"
+    },
+    {
+      "need": "A read-only preview on hover",
+      "use": "HoverCard"
+    },
+    {
+      "need": "A one-line hint",
+      "use": "Tooltip"
+    }
+  ],
+  "a11y": [
+    "A labelled dialog: focus moves in, Escape closes and returns focus to the trigger, clicking outside or tabbing out closes it."
+  ],
+  "examples": [
+    {
+      "file": "quick-edit",
+      "title": "Quick edit"
+    }
+  ]
+}

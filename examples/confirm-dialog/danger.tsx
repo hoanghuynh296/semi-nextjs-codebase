@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button, ConfirmHost, confirmDialog } from "@semi/ui";
+import { Button, confirmDialog } from "@semi/ui";
 
 export default function ConfirmDanger() {
   const [result, setResult] = useState("");
@@ -16,8 +16,6 @@ export default function ConfirmDanger() {
   };
   return (
     <div className="flex items-center gap-3">
-      {/* Once in the root layout of a real app */}
-      <ConfirmHost />
       <Button variant="danger" icon="trash" onClick={remove}>
         Xoá bản in
       </Button>

@@ -1,0 +1,26 @@
+{
+  "title": "Collapsible",
+  "group": "Data display",
+  "description": "One section that opens and closes under its trigger row (advanced options, details of a log line).",
+  "components": [
+    "Collapsible"
+  ],
+  "when": [
+    "Hide rarely used options (“Tuỳ chọn khác”), long details."
+  ],
+  "instead": [
+    {
+      "need": "Several sections, one open at a time",
+      "use": "Accordion"
+    }
+  ],
+  "a11y": [
+    "The trigger is a button with aria-expanded / aria-controls; hidden content is out of the tab order."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "Advanced options"
+    }
+  ]
+}

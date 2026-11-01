@@ -1,0 +1,36 @@
+{
+  "title": "Calendar",
+  "group": "Forms",
+  "description": "A month grid to pick one day or a range (YYYY-MM-DD, weeks start on Monday). DatePicker shows it in a popover; place it inline for schedules and report filters.",
+  "components": [
+    "Calendar"
+  ],
+  "imports": [
+    "isoDay",
+    "parseDay",
+    "type DayRange"
+  ],
+  "when": [
+    "Inline date selection on a page; picking a date range for a report."
+  ],
+  "instead": [
+    {
+      "need": "A date field in a form",
+      "use": "DatePicker"
+    }
+  ],
+  "a11y": [
+    "role=\"grid\": arrows move by day / week, Home / End to the week's ends, PageUp / PageDown by month (Shift: year), Enter / Space pick; today has aria-current=\"date\"."
+  ],
+  "examples": [
+    {
+      "file": "single",
+      "title": "One day"
+    },
+    {
+      "file": "range",
+      "title": "Range",
+      "description": "Click a start day, then an end day."
+    }
+  ]
+}

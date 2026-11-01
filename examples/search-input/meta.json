@@ -1,7 +1,7 @@
 {
   "title": "Search input",
   "group": "Forms",
-  "description": "The toolbar search field: icon, clear button, h-control height. SubpageToolbar includes one.",
+  "description": "The toolbar search: an icon button that opens into a field (clear button, h-control); it collapses again when empty and focus leaves. SubpageToolbar includes one.",
   "components": [
     "SearchInput"
   ],
@@ -15,7 +15,7 @@
     }
   ],
   "a11y": [
-    "A labelled search input; the clear button has its own label and returns focus to the field."
+    "The icon button and the field are labelled by label (default: the placeholder); Escape clears and collapses it."
   ],
   "examples": [
     {

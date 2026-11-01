@@ -1,0 +1,34 @@
+{
+  "title": "Accordion",
+  "group": "Data display",
+  "description": "A list of sections where one (or several) open at a time: FAQs, settings groups, help.",
+  "components": [
+    "Accordion"
+  ],
+  "when": [
+    "FAQs and help; long settings split into groups."
+  ],
+  "instead": [
+    {
+      "need": "One section",
+      "use": "Collapsible"
+    },
+    {
+      "need": "Switch whole panels",
+      "use": "Tabs"
+    }
+  ],
+  "a11y": [
+    "Each header is a button inside a heading (headingLevel), with aria-expanded; ↑/↓ Home End move between headers; panels are labelled regions."
+  ],
+  "examples": [
+    {
+      "file": "faq",
+      "title": "FAQ"
+    },
+    {
+      "file": "multiple",
+      "title": "Several open"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "title": "Separator",
+  "group": "Data display",
+  "description": "A thin divider between groups of content: horizontal, vertical, or with a short label in the middle (“hoặc”).",
+  "components": [
+    "Separator"
+  ],
+  "when": [
+    "Split groups inside a card or menu; “hoặc” between two ways to sign in.",
+    "A vertical rule between toolbar groups."
+  ],
+  "instead": [
+    {
+      "need": "Space between sections",
+      "use": "a gap (space-y-*) — most layouts need no line"
+    }
+  ],
+  "a11y": [
+    "Decorative by default (hidden from screen readers); decorative={false} announces a separator."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "Horizontal, label and vertical"
+    }
+  ]
+}

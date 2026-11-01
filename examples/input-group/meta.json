@@ -1,0 +1,26 @@
+{
+  "title": "Input group",
+  "group": "Forms",
+  "description": "An input with fixed parts around it: a prefix (https://), a unit (kg, ₫), an icon or a small button (copy, show password).",
+  "components": [
+    "InputGroup"
+  ],
+  "when": [
+    "Money and units, URLs and domains, a copy or reveal button inside the field."
+  ],
+  "instead": [
+    {
+      "need": "Just an icon",
+      "use": "Input with icon"
+    }
+  ],
+  "a11y": [
+    "The Input inside keeps its label from Field; buttons in the group need their own aria-label."
+  ],
+  "examples": [
+    {
+      "file": "addons",
+      "title": "Prefix, unit and button"
+    }
+  ]
+}

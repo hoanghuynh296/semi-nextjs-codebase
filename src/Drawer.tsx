@@ -1,7 +1,8 @@
 "use client";
 
 // Side sheet for secondary tasks that keep the page in view (filters, record details, settings).
-// Right edge on desktop by default; `side="bottom"` gives a phone-style bottom sheet. Same dialog behaviour as Modal.
+// Right edge on desktop by default; `side="bottom"` gives a phone-style bottom sheet, `side="top"` one from the top.
+// Same dialog behaviour as Modal.
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Icon } from "./Icon";
@@ -10,10 +11,11 @@ import { useSemiLocale } from "./locale";
 import { MODAL_CLOSE, MODAL_FOOT, MODAL_TITLE } from "../styles/surfaces";
 import { cn } from "../styles/utils";
 
-const PANEL: Record<"right" | "left" | "bottom", string> = {
+const PANEL: Record<"right" | "left" | "bottom" | "top", string> = {
   right: "inset-y-0 right-0 w-full sm:max-w-md sm:border-l slide-panel-in",
   left: "inset-y-0 left-0 w-full sm:max-w-md sm:border-r",
   bottom: "inset-x-0 bottom-0 max-h-[85dvh] rounded-t-panel border-t",
+  top: "inset-x-0 top-0 max-h-[85dvh] rounded-b-panel border-b",
 };
 
 export function Drawer({
@@ -28,7 +30,8 @@ export function Drawer({
   open: boolean;
   onClose: () => void;
   title: React.ReactNode;
-  side?: "right" | "left" | "bottom";
+  /** right (default) / left: side sheet; bottom: phone-style sheet; top: a sheet from the top (announcements, search). */
+  side?: "right" | "left" | "bottom" | "top";
   /** Actions pinned to the bottom (MODAL_FOOT). */
   footer?: React.ReactNode;
   /** Width override for side drawers (e.g. "sm:max-w-lg"). */

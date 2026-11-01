@@ -1,12 +1,13 @@
 {
   "title": "Drawer",
   "group": "Overlays",
-  "description": "A panel that slides in from the right, left or bottom, with title and footer; a sheet on phones.",
+  "description": "A panel that slides in from the right, left, bottom or top (a sheet), with title and footer.",
   "components": [
     "Drawer"
   ],
   "when": [
-    "Filters of a list, details of a row, a secondary form that keeps the page visible."
+    "Filters of a list, details of a row, a secondary form that keeps the page visible.",
+    "A sheet from the top (announcements, a global search) with side=\"top\"."
   ],
   "instead": [
     {
@@ -25,6 +26,11 @@
     {
       "file": "filters",
       "title": "Filters"
+    },
+    {
+      "file": "sides",
+      "title": "Sides",
+      "description": "side picks the edge: right (default), left, bottom (phone-style sheet) or top."
     }
   ]
 }
