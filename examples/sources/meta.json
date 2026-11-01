@@ -1,0 +1,24 @@
+{
+  "title": "Sources",
+  "group": "AI",
+  "description": "Where an answer came from: Citation marks inside the text (numbered, linked) and a Sources list under the answer that opens to the pages.",
+  "components": [
+    "Sources",
+    "Citation"
+  ],
+  "imports": [
+    "type Source"
+  ],
+  "when": [
+    "Answers built from search or documents (RAG); every claim that came from a page."
+  ],
+  "a11y": [
+    "Citations are links named “Nguồn 2: title”; the list is a disclosure with an ordered list of external links (new tab)."
+  ],
+  "examples": [
+    {
+      "file": "answer",
+      "title": "Answer with citations"
+    }
+  ]
+}

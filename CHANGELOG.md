@@ -4,6 +4,18 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-11-01
+
+### Added
+- **AI agent parts, each with a doc page:** `Reasoning` (open while it streams, folds to “Đã suy luận trong N giây”), `ToolCall` (status badge, input / output as JSON, error), `Sources` + `Citation` (numbered links that match), `TaskList` (plan with step marks and progress, running step `aria-current`), `ActionConfirmation` (human-in-the-loop approve / reject; the outcome stays in the log), `Terminal` (streamed command output that follows the end, exit code, copy; ANSI codes stripped), `FileTree` (keyboard tree with added / modified / deleted marks), `ContextMeter` (context window ring, amber from 80%, red from 95%). Types `ToolCallStatus`, `Source`, `TaskStep`, `TaskStatus`, `FileNode`.
+- **Agent run** doc page: one full agent turn composed from the parts, to copy.
+- `examples/list.json` lists each doc's `components`.
+- Locale strings for the agent parts (`reasoning`, `reasoned`, `toolStatus`, `toolInput`, `toolOutput`, `sources`, `source`, `taskStatus`, `taskProgress`, `approve`, `reject`, `approved`, `rejected`, `exitCode`, `fileChange`, `contextUsage`, `contextDetail`).
+
+### Fixed
+- Charts redraw after switching back from the table view (the size observer followed the old element).
+- Docs: a pattern page with no component of its own shows no empty import line.
+
 ## [0.11.0] - 2026-11-01
 
 ### Added

@@ -1,0 +1,26 @@
+{
+  "title": "Context meter",
+  "group": "AI",
+  "description": "How full the model's context window is: a small ring with the percent, token counts in a tooltip; amber from 80%, red from 95%.",
+  "components": [
+    "ContextMeter"
+  ],
+  "when": [
+    "Next to the composer or model picker in long chats and agent sessions."
+  ],
+  "instead": [
+    {
+      "need": "A quota or upload progress",
+      "use": "Progress"
+    }
+  ],
+  "a11y": [
+    "role=\"meter\" with aria-valuetext “12K / 200K token (6%)”; focusable so keyboard users get the tooltip; colour is backed by the percent."
+  ],
+  "examples": [
+    {
+      "file": "levels",
+      "title": "Levels"
+    }
+  ]
+}

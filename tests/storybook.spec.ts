@@ -187,9 +187,11 @@ for (const d of docs) {
   test(`doc page · ${d.id}: title, import, examples and API`, async ({ page, request }) => {
     await open(page, `/components/${d.id}/`, "dark");
     await expect(page).toHaveTitle(`${d.title} — Semi Design System`);
-    await expect(page.locator("article").getByText(/^import \{.*\} from "@semi\/ui";$/)).toBeVisible();
     expect(await page.locator("[data-example]").count()).toBeGreaterThan(0);
-    await expect(page.getByRole("heading", { name: "API" })).toBeVisible();
+    if (d.components.length) {
+      await expect(page.locator("article").getByText(/^import \{ \w.*\} from "@semi\/ui";$/)).toBeVisible();
+      await expect(page.getByRole("heading", { name: "API" })).toBeVisible();
+    } else await expect(page.getByRole("heading", { name: "Import" })).toHaveCount(0); // a pattern page (agent-run)
     expect((await request.get(`/docs/components/${d.id}.md`)).status()).toBe(200);
   });
 }
@@ -643,4 +645,33 @@ test("NavigationMenu opens a panel of links and Escape returns focus", async ({ 
   await page.keyboard.press("Escape");
   await expect(trigger).toHaveAttribute("aria-expanded", "false");
   await expect(trigger).toBeFocused();
+});
+
+test("Agent parts: tool call opens, approval replaces its buttons, file tree moves from the keyboard", async ({ page }) => {
+  await open(page, "/components/tool-call/", "dark");
+  const slice = page.getByRole("button", { name: /Cắt lớp mô hình/ });
+  await expect(slice).toHaveAttribute("aria-expanded", "false");
+  await slice.click();
+  await expect(slice).toHaveAttribute("aria-expanded", "true");
+  await expect(page.getByText('"layer": 0.2')).toBeVisible();
+
+  await open(page, "/components/action-confirmation/", "dark");
+  const mail = page.getByRole("group", { name: "Gửi email báo giá cho 3 khách hàng?" });
+  await mail.getByRole("button", { name: "Gửi 3 email" }).click();
+  await expect(mail.getByText("Đã cho phép")).toBeVisible();
+  await expect(mail.getByRole("button")).toHaveCount(0);
+
+  await open(page, "/components/file-tree/", "dark");
+  const tree = page.getByRole("tree", { name: "Tệp đã thay đổi" });
+  await tree.getByRole("treeitem", { name: /^src/ }).first().focus();
+  await page.keyboard.press("ArrowLeft");
+  await expect(tree.getByRole("treeitem", { name: /^src/ }).first()).toHaveAttribute("aria-expanded", "false");
+  await page.keyboard.press("ArrowDown");
+  await expect(tree.getByRole("treeitem", { name: /^package\.json/ })).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(tree.getByRole("treeitem", { name: /^package\.json/ })).toHaveAttribute("aria-selected", "true");
+  await expect(example(page, "file-tree/changes").getByText("package.json", { exact: true }).last()).toBeVisible();
+
+  await open(page, "/components/context-meter/", "dark");
+  await expect(page.getByRole("meter").first()).toHaveAttribute("aria-valuetext", /12\.4K \/ 200K token \(6%\)/);
 });

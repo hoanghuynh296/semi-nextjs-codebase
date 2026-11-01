@@ -1,0 +1,29 @@
+{
+  "title": "Reasoning",
+  "group": "AI",
+  "description": "The model's reasoning above its answer: open while it streams, folded to “Đã suy luận trong N giây” when done, reopenable.",
+  "components": [
+    "Reasoning"
+  ],
+  "when": [
+    "Models that expose thinking / reasoning text; show it before the AssistantMessage body."
+  ],
+  "instead": [
+    {
+      "need": "A wait with no text yet",
+      "use": "ChatThinking"
+    }
+  ],
+  "a11y": [
+    "A disclosure button (aria-expanded); the reasoning text is not a live region, so screen readers hear the answer, not every reasoning token."
+  ],
+  "notes": [
+    "Pass busy while reasoning streams; once a person toggles it, Reasoning stops opening and closing by itself."
+  ],
+  "examples": [
+    {
+      "file": "streaming",
+      "title": "Streaming, then folded"
+    }
+  ]
+}

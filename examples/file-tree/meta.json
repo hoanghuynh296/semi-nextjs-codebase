@@ -1,0 +1,29 @@
+{
+  "title": "File tree",
+  "group": "AI",
+  "description": "Files and folders as a keyboard tree, with A / M / D marks for what an agent added, modified or deleted; select a file to open it.",
+  "components": [
+    "FileTree"
+  ],
+  "imports": [
+    "type FileNode"
+  ],
+  "when": [
+    "Changes an agent made, a repo or export browser, attachments with folders."
+  ],
+  "instead": [
+    {
+      "need": "A flat list of files",
+      "use": "Item in an ItemGroup"
+    }
+  ],
+  "a11y": [
+    "role=\"tree\" with treeitems (aria-level, aria-expanded, aria-selected); ↑/↓, →/← open and close, Home / End, Enter selects; change marks have text for screen readers."
+  ],
+  "examples": [
+    {
+      "file": "changes",
+      "title": "Changed files"
+    }
+  ]
+}

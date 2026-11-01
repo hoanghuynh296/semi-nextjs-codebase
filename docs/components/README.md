@@ -101,9 +101,18 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 
 | Doc | Components | When to use |
 |---|---|---|
+| [Action confirmation](action-confirmation.md) | `ActionConfirmation` | Human-in-the-loop: any agent action that is outward-facing, costs money or cannot be undone. |
+| [Agent run](agent-run.md) |  | Starting an agent chat or run log; shows how the AI parts sit together in a ChatList. |
 | [AI chat](ai-chat.md) | `AIChat`, `ChatPanel`, `ChatView` | Every AI conversation in a Semi app (assistant beside a workspace, help over a modal). |
 | [Chat messages](chat-messages.md) | `UserMessage`, `AssistantMessage`, `ChatAnswer`, `ChatAvatar`, `ChatCopyButton`, `ChatError`, `ChatThinking`, `ChatIntro`, `ChatSuggestion`, `ChatSuggestions`, `ChatList`, `ChatComposer` | A chat that does not fit AIChat's layout; AI output inside another feature. |
 | [Chat model picker](chat-model-picker.md) | `ChatModelPicker` | Let people pick the provider, model and thinking effort of an AI feature. |
+| [Context meter](context-meter.md) | `ContextMeter` | Next to the composer or model picker in long chats and agent sessions. |
+| [File tree](file-tree.md) | `FileTree` | Changes an agent made, a repo or export browser, attachments with folders. |
+| [Reasoning](reasoning.md) | `Reasoning` | Models that expose thinking / reasoning text; show it before the AssistantMessage body. |
+| [Sources](sources.md) | `Sources`, `Citation` | Answers built from search or documents (RAG); every claim that came from a page. |
+| [Task list](task-list.md) | `TaskList` | Multi-step agent work (plans, migrations, onboarding jobs) people watch progress on. |
+| [Terminal](terminal.md) | `Terminal` | Agents and jobs that run shell commands, builds, deploy logs. |
+| [Tool call](tool-call.md) | `ToolCall` | Agent runs and chats where the model calls functions, MCP tools or APIs. |
 
 ## Setup
 

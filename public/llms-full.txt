@@ -1,4 +1,4 @@
-# Semi Design System (@semi/ui v0.11.0)
+# Semi Design System (@semi/ui v0.12.0)
 
 > The shared UI of every Semi app: semantic tokens that work in light and dark mode, React components (Next.js, Tailwind CSS 4) and the rules agents follow. Every component has a page with live examples and a markdown twin for agents.
 
@@ -6,7 +6,7 @@ Install `@semi/ui`, import components from `@semi/ui`, class constants from `@se
 
 ## Machine-readable
 
-- [components.json](./components.json): all 112 components, hooks and constants with props, summaries and their doc page
+- [components.json](./components.json): all 121 components, hooks and constants with props, summaries and their doc page
 - [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
@@ -111,9 +111,18 @@ Install `@semi/ui`, import components from `@semi/ui`, class constants from `@se
 
 ### AI
 
+- [Action confirmation](./components/action-confirmation/) ([markdown](./docs/components/action-confirmation.md)): An action the agent wants to take that needs a person's OK (send, delete, pay, run a command): what it will do, then Cho phép / Từ chối; the outcome replaces the buttons once decided. Components: ActionConfirmation.
+- [Agent run](./components/agent-run/) ([markdown](./docs/components/agent-run.md)): A full agent turn composed from the parts: the user's request, reasoning, a plan, tool calls, an approval and the answer with sources — the pattern to copy for agent UIs. Components: .
 - [AI chat](./components/ai-chat/) ([markdown](./docs/components/ai-chat.md)): AIChat is the ready-made assistant panel: ChatPanel (side panel or full screen, resizable, keyboard inset) around ChatView (list + composer). UI only: the app keeps the messages, streams the answer and calls the model. Components: AIChat, ChatPanel, ChatView.
 - [Chat messages](./components/chat-messages/) ([markdown](./docs/components/chat-messages.md)): The parts of a conversation, to compose your own chat: UserMessage, AssistantMessage (+ ChatAnswer for a ChatItem), ChatThinking, ChatError, ChatCopyButton, ChatAvatar, ChatIntro, ChatSuggestion(s), ChatList and ChatComposer. Components: UserMessage, AssistantMessage, ChatAnswer, ChatAvatar, ChatCopyButton, ChatError, ChatThinking, ChatIntro, ChatSuggestion, ChatSuggestions, ChatList, ChatComposer.
 - [Chat model picker](./components/chat-model-picker/) ([markdown](./docs/components/chat-model-picker.md)): Provider → model → effort chips, for the toolbar of a chat composer. The lists are app data. Components: ChatModelPicker.
+- [Context meter](./components/context-meter/) ([markdown](./docs/components/context-meter.md)): How full the model's context window is: a small ring with the percent, token counts in a tooltip; amber from 80%, red from 95%. Components: ContextMeter.
+- [File tree](./components/file-tree/) ([markdown](./docs/components/file-tree.md)): Files and folders as a keyboard tree, with A / M / D marks for what an agent added, modified or deleted; select a file to open it. Components: FileTree.
+- [Reasoning](./components/reasoning/) ([markdown](./docs/components/reasoning.md)): The model's reasoning above its answer: open while it streams, folded to “Đã suy luận trong N giây” when done, reopenable. Components: Reasoning.
+- [Sources](./components/sources/) ([markdown](./docs/components/sources.md)): Where an answer came from: Citation marks inside the text (numbered, linked) and a Sources list under the answer that opens to the pages. Components: Sources, Citation.
+- [Task list](./components/task-list/) ([markdown](./docs/components/task-list.md)): The agent's plan: steps with a status mark (chưa làm, đang làm, xong, lỗi, bỏ qua), an optional line under each, and a progress count. Components: TaskList.
+- [Terminal](./components/terminal/) ([markdown](./docs/components/terminal.md)): A command and its output: streams and follows the end (unless people scroll up), shows a spinner while running and the exit code when done, with a copy button. Components: Terminal.
+- [Tool call](./components/tool-call/) ([markdown](./docs/components/tool-call.md)): One tool the agent called: its name in words, a status badge (chờ, đang chạy, xong, lỗi, chờ duyệt), and on open the input and output (JSON formatted). Components: ToolCall.
 
 ### Setup
 
@@ -224,8 +233,9 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (112)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (121)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
+- `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
 - `AppShell`: `AppShell`
 - `AspectRatio`: `AspectRatio`
@@ -281,6 +291,7 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
 - `SubpageToolbar`: `SubpageToolbar`
 - `Table`: `Table`, `THead`, `TBody`, `TR`, `TH`, `TD`
 - `Tabs`: `Tabs`
+- `Terminal`: `Terminal`
 - `ThemeProvider`: `ThemeProvider`, `ThemeToggle`, `ThemeSwitcher`
 - `ThemeScript`: `ThemeScript`
 - `Toast`: `ToastHost`
@@ -783,6 +794,15 @@ are the app's); the parts draw it and report `onSend` / `onStop` / `onRetry` / `
   (label + three dots, before the first token), `ChatError` (status tint, optional retry). Empty conversation:
   `ChatIntro` + `ChatSuggestions` of `ChatSuggestion` rows (`href` = external link). `CHAT_ROW` / `CHAT_CHIP` for
   custom rows and chips.
+- **Agent parts (`Agent.tsx`, `Terminal.tsx`):** what an agent does, in the order it happened, inside the same
+  `ChatList`. `Reasoning` (open while it streams, folds to "Đã suy luận trong N giây"), `ToolCall` (name in words +
+  status badge: pending / running / done / error / awaiting; opens to the input and output as JSON), `TaskList` (the
+  plan: step marks + "2/5 bước"; the running step is `aria-current`), `ActionConfirmation` (human in the loop: every
+  outward-facing, paid or irreversible action waits for Cho phép / Từ chối, and the outcome stays in the log; `danger`
+  for what cannot be undone), `Terminal` (command + streamed output, follows the end unless scrolled up, exit code),
+  `FileTree` (keyboard tree with A / M / D change marks), `Sources` + `Citation` (numbered links that match),
+  `ContextMeter` (context window ring in the composer `toolbar`; amber from 80%, red from 95%). Details stay behind
+  disclosures and are never live regions: only the answer is announced. Example to copy: the *Agent run* doc page.
 - **Behaviour built in, do not re-implement:** Enter sends, Shift+Enter breaks the line, Enter while an input method
   composes (Telex / VNI) does not send; the field grows to 45% of the screen; focus returns to it after a typed
   question is answered; the list follows new text only while the reader is at the bottom (else a "jump to latest"
@@ -7161,6 +7181,153 @@ Wrapper that tells assistive tech the region is loading. `relative` keeps the ab
 
 ---
 
+<!-- docs/components/action-confirmation.md -->
+
+# Action confirmation
+
+An action the agent wants to take that needs a person's OK (send, delete, pay, run a command): what it will do, then Cho phép / Từ chối; the outcome replaces the buttons once decided.
+
+## When to use
+
+- Human-in-the-loop: any agent action that is outward-facing, costs money or cannot be undone.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Confirming a person's own action | confirmDialog |
+
+## Import
+
+```tsx
+import { ActionConfirmation } from "@semi/ui";
+```
+
+## Examples
+
+### Approve or reject
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { ActionConfirmation } from "@semi/ui";
+
+export default function ActionConfirmationApprove() {
+  const [mail, setMail] = useState<"pending" | "approved" | "rejected">("pending");
+  const [wipe, setWipe] = useState<"pending" | "approved" | "rejected">("pending");
+  return (
+    <div className="flex flex-col gap-3 max-w-xl">
+      <ActionConfirmation title="Gửi email báo giá cho 3 khách hàng?" icon="send" approveLabel="Gửi 3 email" state={mail} onApprove={() => setMail("approved")} onReject={() => setMail("rejected")}>
+        an@example.com, binh@example.com, chi@example.com
+      </ActionConfirmation>
+      <ActionConfirmation title="Xoá 128 tệp G-code cũ hơn 90 ngày?" icon="trash" danger approveLabel="Xoá 128 tệp" state={wipe} onApprove={() => setWipe("approved")} onReject={() => setWipe("rejected")}>
+        Không thể khôi phục sau khi xoá.
+      </ActionConfirmation>
+    </div>
+  );
+}
+```
+
+## API
+
+### ActionConfirmation
+
+An action the agent wants to take that needs a person's OK (send an email, delete files, spend money). Shows what
+it will do, then Cho phép / Từ chối; once decided, the outcome replaces the buttons so the log stays readable.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `title` * | `React.ReactNode` |  | What it will do, as a question or a short line (“Gửi email cho 3 khách hàng?”). |
+| `icon` | `IconName` | `"shield"` |  |
+| `state` | `'pending' \| 'approved' \| 'rejected'` | `"pending"` |  |
+| `danger` | `boolean` | `false` | The action cannot be undone: the approve button is red. |
+| `approveLabel` | `string` |  |  |
+| `rejectLabel` | `string` |  |  |
+| `onApprove` * | `() => void` |  |  |
+| `onReject` * | `() => void` |  |  |
+| `className` | `string` |  |  |
+| `children` | `React.ReactNode` |  | The details (recipients, files, the command). |
+
+## Accessibility
+
+- A labelled group; buttons say what they do (approveLabel “Gửi 3 email”); danger makes the approve button red for actions that cannot be undone.
+
+## Notes
+
+- Keep it in the conversation after the decision (state) so the log shows who allowed what.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/action-confirmation/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/agent-run.md -->
+
+# Agent run
+
+A full agent turn composed from the parts: the user's request, reasoning, a plan, tool calls, an approval and the answer with sources — the pattern to copy for agent UIs.
+
+## When to use
+
+- Starting an agent chat or run log; shows how the AI parts sit together in a ChatList.
+
+## Examples
+
+### One agent turn
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { ActionConfirmation, AssistantMessage, ChatComposer, ContextMeter, Reasoning, Sources, TaskList, ToolCall, UserMessage } from "@semi/ui";
+
+export default function AgentRunTurn() {
+  const [ok, setOk] = useState<"pending" | "approved" | "rejected">("pending");
+  const [draft, setDraft] = useState("");
+  return (
+    <div className="flex h-[640px] flex-col bg-panel">
+      <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-4 p-4">
+        <UserMessage>Xếp lịch in 20 giá đỡ PETG cho đơn #1042 và báo khách.</UserMessage>
+        <Reasoning duration={3}>Cần một máy in rảnh có PETG, ước lượng thời gian rồi gửi email cho khách.</Reasoning>
+        <TaskList
+          title="Kế hoạch"
+          steps={[
+            { label: "Tìm máy in rảnh", status: "done" },
+            { label: "Ước lượng thời gian in", status: "done" },
+            { label: "Gửi email cho khách", status: ok === "approved" ? "done" : ok === "rejected" ? "skipped" : "running" },
+          ]}
+        />
+        <ToolCall name="search_printers" title="Tìm máy in rảnh" icon="search" status="done" input={{ material: "PETG" }} output={[{ id: "x1c-03", queue: 0 }]} />
+        <ToolCall name="estimate" title="Ước lượng thời gian" icon="clock" status="done" output="20 bản · 6 giờ 40 phút" />
+        <ToolCall name="send_email" title="Gửi email cho khách" icon="send" status={ok === "pending" ? "awaiting" : ok === "approved" ? "done" : "error"} error="Bạn đã từ chối." defaultOpen>
+          <ActionConfirmation title="Gửi email cho an@example.com?" icon="send" state={ok} onApprove={() => setOk("approved")} onReject={() => setOk("rejected")}>
+            “Đơn #1042 sẽ in xong lúc 17:40 hôm nay.”
+          </ActionConfirmation>
+        </ToolCall>
+        {ok !== "pending" && (
+          <AssistantMessage actions={<Sources sources={[{ title: "Lịch máy in", href: "https://example.com/schedule" }]} />}>
+            Đã xếp đơn #1042 vào X1 Carbon 03, xong lúc 17:40{ok === "approved" ? " và đã báo khách." : ". Chưa gửi email cho khách."}
+          </AssistantMessage>
+        )}
+      </div>
+      <ChatComposer value={draft} onChange={setDraft} onSend={() => setDraft("")} toolbar={<ContextMeter used={48_200} total={200_000} />} />
+    </div>
+  );
+}
+```
+
+## API
+
+## Accessibility
+
+- Order follows what happened; only the answer text is announced (ChatList), tool and reasoning details stay behind disclosures.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/agent-run/ and the types in src/ -->
+
+
+---
+
 <!-- docs/components/ai-chat.md -->
 
 # AI chat
@@ -7701,6 +7868,543 @@ next question).
 - Each chip is a select button with its own label; changing the provider resets the model.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/chat-model-picker/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/context-meter.md -->
+
+# Context meter
+
+How full the model's context window is: a small ring with the percent, token counts in a tooltip; amber from 80%, red from 95%.
+
+## When to use
+
+- Next to the composer or model picker in long chats and agent sessions.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A quota or upload progress | Progress |
+
+## Import
+
+```tsx
+import { ContextMeter } from "@semi/ui";
+```
+
+## Examples
+
+### Levels
+
+```tsx
+import { ContextMeter } from "@semi/ui";
+
+export default function ContextMeterLevels() {
+  return (
+    <div className="flex flex-wrap items-center gap-4">
+      <ContextMeter used={12_400} total={200_000} />
+      <ContextMeter used={168_000} total={200_000} />
+      <ContextMeter used={196_500} total={200_000} />
+    </div>
+  );
+}
+```
+
+## API
+
+### ContextMeter
+
+How much of the model's context window is used: a small ring and the percent (role="meter"), with the token counts
+in a tooltip. Turns amber from 80% and red from 95%, when the app should summarise or start a new chat.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `used` * | `number` |  |  |
+| `total` * | `number` |  |  |
+| `label` | `string` |  |  |
+| `showValue` | `boolean` | `true` |  |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- role="meter" with aria-valuetext “12K / 200K token (6%)”; focusable so keyboard users get the tooltip; colour is backed by the percent.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/context-meter/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/file-tree.md -->
+
+# File tree
+
+Files and folders as a keyboard tree, with A / M / D marks for what an agent added, modified or deleted; select a file to open it.
+
+## When to use
+
+- Changes an agent made, a repo or export browser, attachments with folders.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A flat list of files | Item in an ItemGroup |
+
+## Import
+
+```tsx
+import { FileTree, type FileNode } from "@semi/ui";
+```
+
+## Examples
+
+### Changed files
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { FileTree, type FileNode } from "@semi/ui";
+
+const FILES: FileNode[] = [
+  {
+    name: "src",
+    children: [
+      { name: "components", children: [{ name: "PrinterCard.tsx", change: "modified" }, { name: "QueueList.tsx", change: "added" }, { name: "OldQueue.tsx", change: "deleted" }] },
+      { name: "app.tsx" },
+    ],
+  },
+  { name: "package.json", change: "modified" },
+  { name: "README.md" },
+];
+
+export default function FileTreeChanges() {
+  const [file, setFile] = useState("src/components/PrinterCard.tsx");
+  return (
+    <div className="grid gap-3 @xl:grid-cols-[240px_1fr]">
+      <FileTree label="Tệp đã thay đổi" files={FILES} selected={file} onSelect={setFile} className="rounded-card border border-line bg-panel p-1.5" />
+      <div className="rounded-card border border-line p-3 text-label text-muted break-all">{file}</div>
+    </div>
+  );
+}
+```
+
+## API
+
+### FileTree
+
+Files and folders (a repo, a diff, an export): a keyboard tree (role="tree"). ↑/↓ move, → opens a folder or enters
+it, ← closes it or goes to the parent, Home / End, Enter selects a file (or toggles a folder). Paths are the names
+joined by "/".
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `files` * | `FileNode[]` |  |  |
+| `label` * | `string` |  | Accessible name of the tree. |
+| `selected` | `string` |  | Path of the selected file. |
+| `onSelect` | `(path: string, node: FileNode) => void` |  |  |
+| `defaultExpanded` | `string[]` |  | Folder paths open at first (default: every folder). |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- role="tree" with treeitems (aria-level, aria-expanded, aria-selected); ↑/↓, →/← open and close, Home / End, Enter selects; change marks have text for screen readers.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/file-tree/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/reasoning.md -->
+
+# Reasoning
+
+The model's reasoning above its answer: open while it streams, folded to “Đã suy luận trong N giây” when done, reopenable.
+
+## When to use
+
+- Models that expose thinking / reasoning text; show it before the AssistantMessage body.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A wait with no text yet | ChatThinking |
+
+## Import
+
+```tsx
+import { Reasoning } from "@semi/ui";
+```
+
+## Examples
+
+### Streaming, then folded
+
+```tsx
+"use client";
+
+import { useEffect, useState } from "react";
+import { AssistantMessage, Button, Reasoning } from "@semi/ui";
+
+const STEPS = ["Người dùng hỏi về nhiệt độ in PETG.", "Nhà sản xuất khuyên 230–250°C cho đầu phun 0,4 mm.", "Bàn nhiệt 70–80°C để bám tốt mà không bị dính chặt.", "Nên giảm quạt làm mát để lớp dính nhau hơn."];
+
+export default function ReasoningStreaming() {
+  const [shown, setShown] = useState(STEPS.length);
+  const busy = shown < STEPS.length;
+  useEffect(() => {
+    if (!busy) return;
+    const id = setTimeout(() => setShown((n) => n + 1), 700);
+    return () => clearTimeout(id);
+  }, [busy, shown]);
+  return (
+    <div className="flex flex-col gap-3 max-w-xl">
+      <Reasoning busy={busy} duration={4}>
+        {STEPS.slice(0, shown).join("\n")}
+      </Reasoning>
+      {!busy && <AssistantMessage>In PETG ở 240°C, bàn nhiệt 75°C và quạt khoảng 30–50%.</AssistantMessage>}
+      <div>
+        <Button size="sm" variant="secondary" icon="refresh" onClick={() => setShown(0)}>
+          Chạy lại
+        </Button>
+      </div>
+    </div>
+  );
+}
+```
+
+## API
+
+### Reasoning
+
+The model's reasoning above its answer. Open while `busy` (the text streams in), folded to “Đã suy luận trong 12
+giây” once it is done; people can open it again. A toggle by the user wins over the automatic open / close.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `busy` | `boolean` | `false` | The model is still reasoning. |
+| `duration` | `number` |  | Seconds it took, shown once done. |
+| `defaultOpen` | `boolean` |  | Start open (default: open only while busy). |
+| `className` | `string` |  |  |
+| `children` * | `React.ReactNode` |  |  |
+
+## Accessibility
+
+- A disclosure button (aria-expanded); the reasoning text is not a live region, so screen readers hear the answer, not every reasoning token.
+
+## Notes
+
+- Pass busy while reasoning streams; once a person toggles it, Reasoning stops opening and closing by itself.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/reasoning/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/sources.md -->
+
+# Sources
+
+Where an answer came from: Citation marks inside the text (numbered, linked) and a Sources list under the answer that opens to the pages.
+
+## When to use
+
+- Answers built from search or documents (RAG); every claim that came from a page.
+
+## Import
+
+```tsx
+import { Sources, Citation, type Source } from "@semi/ui";
+```
+
+## Examples
+
+### Answer with citations
+
+```tsx
+import { AssistantMessage, Citation, Sources, type Source } from "@semi/ui";
+
+const SOURCES: Source[] = [
+  { title: "Hướng dẫn in PETG", href: "https://example.com/petg-guide", description: "Nhiệt độ, quạt và bàn nhiệt" },
+  { title: "Bảng thông số vật liệu", href: "https://docs.example.com/materials" },
+  { title: "Diễn đàn: PETG bị kéo sợi", href: "https://forum.example.com/t/petg-stringing" },
+];
+
+export default function SourcesAnswer() {
+  return (
+    <div className="max-w-xl">
+      <AssistantMessage actions={<Sources sources={SOURCES} />}>
+        In PETG ở 230–250°C<Citation n={1} source={SOURCES[0]} />, bàn nhiệt 70–80°C<Citation n={2} source={SOURCES[1]} />. Kéo sợi thường giảm khi tăng rút
+        nhựa lên 1–2 mm<Citation n={3} source={SOURCES[2]} />.
+      </AssistantMessage>
+    </div>
+  );
+}
+```
+
+## API
+
+### Sources
+
+“3 nguồn” under an answer, opening to the numbered list of pages it used (numbers match its `Citation`s).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `sources` * | `Source[]` |  |  |
+| `defaultOpen` | `boolean` | `false` |  |
+| `className` | `string` |  |  |
+
+### Citation
+
+A numbered citation inside answer text, linking to its source; hover or focus shows the title.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `n` * | `number` |  |  |
+| `source` * | `Source` |  |  |
+
+## Accessibility
+
+- Citations are links named “Nguồn 2: title”; the list is a disclosure with an ordered list of external links (new tab).
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/sources/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/task-list.md -->
+
+# Task list
+
+The agent's plan: steps with a status mark (chưa làm, đang làm, xong, lỗi, bỏ qua), an optional line under each, and a progress count.
+
+## When to use
+
+- Multi-step agent work (plans, migrations, onboarding jobs) people watch progress on.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Steps of a form | sections of the form |
+| One running bar | Progress |
+
+## Import
+
+```tsx
+import { TaskList, type TaskStep, type TaskStatus } from "@semi/ui";
+```
+
+## Examples
+
+### Plan in progress
+
+```tsx
+import { TaskList } from "@semi/ui";
+
+export default function TaskListPlan() {
+  return (
+    <TaskList
+      className="max-w-md"
+      title="In 20 giá đỡ cho đơn #1042"
+      steps={[
+        { label: "Kiểm tra tệp mô hình", status: "done" },
+        { label: "Chọn máy in còn trống", status: "done", detail: "X1 Carbon 03, PETG đen" },
+        { label: "Cắt lớp và ước lượng thời gian", status: "running" },
+        { label: "Đặt lịch in", status: "pending" },
+        { label: "Gửi báo giá cho khách", status: "skipped", detail: "Khách đã thanh toán trước" },
+      ]}
+    />
+  );
+}
+```
+
+## API
+
+### TaskList
+
+The agent's plan: steps with their status and a progress count. The running step is marked aria-current.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `title` | `React.ReactNode` |  |  |
+| `steps` * | `TaskStep[]` |  |  |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- An ordered list; each step's status is also text (visually hidden); the running step has aria-current="step".
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/task-list/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/terminal.md -->
+
+# Terminal
+
+A command and its output: streams and follows the end (unless people scroll up), shows a spinner while running and the exit code when done, with a copy button.
+
+## When to use
+
+- Agents and jobs that run shell commands, builds, deploy logs.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A snippet to copy | CodeBlock |
+| A tool call with JSON in / out | ToolCall |
+
+## Import
+
+```tsx
+import { Terminal } from "@semi/ui";
+```
+
+## Examples
+
+### A build that streams
+
+```tsx
+"use client";
+
+import { useEffect, useState } from "react";
+import { Button, Terminal } from "@semi/ui";
+
+const LINES = ["> semi-docs@0.12.0 build", "> next build", "", "  Next.js 16", "  Creating an optimized production build", "  Compiled successfully", "  Generating static pages (128/128)", "", "Done in 14.2s"];
+
+export default function TerminalRun() {
+  const [n, setN] = useState(LINES.length);
+  const running = n < LINES.length;
+  useEffect(() => {
+    if (!running) return;
+    const id = setTimeout(() => setN((x) => x + 1), 400);
+    return () => clearTimeout(id);
+  }, [running, n]);
+  return (
+    <div className="flex flex-col gap-3 max-w-xl">
+      <Terminal command="npm run build" output={LINES.slice(0, n).join("\n")} status={running ? "running" : "done"} exitCode={0} maxHeight={220} />
+      <Terminal command="npm test" output={"FAIL tests/queue.test.ts\n1 failed, 42 passed"} exitCode={1} />
+      <div>
+        <Button size="sm" variant="secondary" icon="play" onClick={() => setN(0)}>
+          Chạy lại
+        </Button>
+      </div>
+    </div>
+  );
+}
+```
+
+## API
+
+### Terminal
+
+Follows the end of the output while it streams, unless people scrolled up to read. The log is focusable (keyboard
+scrolling) and not a live region: output read aloud line by line would drown everything else.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `command` | `string` |  | The command line, shown first after “$”. |
+| `output` * | `string` |  |  |
+| `title` | `string` |  | Name above the output (default: the command). |
+| `status` | `'running' \| 'done'` | `"done"` |  |
+| `exitCode` | `number` |  | Shown once done: 0 green, anything else red. |
+| `maxHeight` | `number` | `320` | Height in px before the output scrolls. |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- The log is focusable for keyboard scrolling and not a live region (streamed lines are not read aloud); status is text (exit code).
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/terminal/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/tool-call.md -->
+
+# Tool call
+
+One tool the agent called: its name in words, a status badge (chờ, đang chạy, xong, lỗi, chờ duyệt), and on open the input and output (JSON formatted).
+
+## When to use
+
+- Agent runs and chats where the model calls functions, MCP tools or APIs.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A shell command and its output | Terminal |
+| A list of planned steps | TaskList |
+
+## Import
+
+```tsx
+import { ToolCall, type ToolCallStatus } from "@semi/ui";
+```
+
+## Examples
+
+### Every state
+
+```tsx
+import { ToolCall } from "@semi/ui";
+
+export default function ToolCallStates() {
+  return (
+    <div className="flex flex-col gap-2 max-w-xl">
+      <ToolCall
+        name="search_printers"
+        title="Tìm máy in rảnh"
+        icon="search"
+        status="done"
+        defaultOpen
+        input={{ material: "PETG", nozzle: 0.4 }}
+        output={[{ id: "x1c-03", name: "X1 Carbon 03", queue: 0 }]}
+      />
+      <ToolCall name="slice_model" title="Cắt lớp mô hình" icon="layers" status="running" input={{ file: "gia-do.stl", layer: 0.2 }} />
+      <ToolCall name="upload_gcode" title="Gửi G-code tới máy in" icon="upload" status="error" error="Máy in đang offline." input={{ printer: "x1c-03" }} />
+      <ToolCall name="notify" title="Báo khách hàng" icon="bell" status="pending" />
+    </div>
+  );
+}
+```
+
+## API
+
+### ToolCall
+
+One tool the agent called: a row with its name and status that opens to show the input (arguments) and the output.
+Strings show as they are, anything else as formatted JSON; `error` shows in place of the output.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `name` * | `string` |  | The tool's id ("search_files"). |
+| `title` | `React.ReactNode` |  | What it does in words ("Tìm tệp cấu hình"); the row shows it instead of the name. |
+| `icon` | `IconName` | `"wrench"` |  |
+| `status` * | `'pending' \| 'running' \| 'done' \| 'error' \| 'awaiting'` |  |  |
+| `input` | `unknown` |  | Arguments: a string or any JSON value. |
+| `output` | `unknown` |  | Result: a string or any JSON value. |
+| `error` | `React.ReactNode` |  | Error message when status is "error". |
+| `defaultOpen` | `boolean` | `false` |  |
+| `className` | `string` |  |  |
+| `children` | `React.ReactNode` |  | Anything else under the output (a preview, an ActionConfirmation). |
+
+## Accessibility
+
+- The row is a disclosure button; status is text in the badge, not colour only; an error is role="alert".
+
+## Notes
+
+- Give title in words (“Tìm máy in rảnh”); name (the tool id) shows inside.
+- Put an ActionConfirmation inside (children) when the call waits for approval.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/tool-call/ and the types in src/ -->
 
 
 ---

@@ -1,0 +1,30 @@
+{
+  "title": "Terminal",
+  "group": "AI",
+  "description": "A command and its output: streams and follows the end (unless people scroll up), shows a spinner while running and the exit code when done, with a copy button.",
+  "components": [
+    "Terminal"
+  ],
+  "when": [
+    "Agents and jobs that run shell commands, builds, deploy logs."
+  ],
+  "instead": [
+    {
+      "need": "A snippet to copy",
+      "use": "CodeBlock"
+    },
+    {
+      "need": "A tool call with JSON in / out",
+      "use": "ToolCall"
+    }
+  ],
+  "a11y": [
+    "The log is focusable for keyboard scrolling and not a live region (streamed lines are not read aloud); status is text (exit code)."
+  ],
+  "examples": [
+    {
+      "file": "run",
+      "title": "A build that streams"
+    }
+  ]
+}

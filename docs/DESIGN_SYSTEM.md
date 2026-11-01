@@ -485,6 +485,15 @@ are the app's); the parts draw it and report `onSend` / `onStop` / `onRetry` / `
   (label + three dots, before the first token), `ChatError` (status tint, optional retry). Empty conversation:
   `ChatIntro` + `ChatSuggestions` of `ChatSuggestion` rows (`href` = external link). `CHAT_ROW` / `CHAT_CHIP` for
   custom rows and chips.
+- **Agent parts (`Agent.tsx`, `Terminal.tsx`):** what an agent does, in the order it happened, inside the same
+  `ChatList`. `Reasoning` (open while it streams, folds to "Đã suy luận trong N giây"), `ToolCall` (name in words +
+  status badge: pending / running / done / error / awaiting; opens to the input and output as JSON), `TaskList` (the
+  plan: step marks + "2/5 bước"; the running step is `aria-current`), `ActionConfirmation` (human in the loop: every
+  outward-facing, paid or irreversible action waits for Cho phép / Từ chối, and the outcome stays in the log; `danger`
+  for what cannot be undone), `Terminal` (command + streamed output, follows the end unless scrolled up, exit code),
+  `FileTree` (keyboard tree with A / M / D change marks), `Sources` + `Citation` (numbered links that match),
+  `ContextMeter` (context window ring in the composer `toolbar`; amber from 80%, red from 95%). Details stay behind
+  disclosures and are never live regions: only the answer is announced. Example to copy: the *Agent run* doc page.
 - **Behaviour built in, do not re-implement:** Enter sends, Shift+Enter breaks the line, Enter while an input method
   composes (Telex / VNI) does not send; the field grows to 45% of the screen; focus returns to it after a typed
   question is answered; the list follows new text only while the reader is at the bottom (else a "jump to latest"

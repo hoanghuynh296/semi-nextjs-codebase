@@ -23,10 +23,12 @@
     ],
     "font-mono": [
       "site/",
-      "src/CodeBlock.tsx"
+      "src/CodeBlock.tsx",
+      "src/Terminal.tsx"
     ],
     "thick-stroke": [
-      "src/Chart.tsx"
+      "src/Chart.tsx",
+      "src/Agent.tsx"
     ]
   },
   "ignore": [

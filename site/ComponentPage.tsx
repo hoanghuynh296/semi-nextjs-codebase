@@ -89,10 +89,12 @@ export function ComponentPage({ id, markdownHref }: { id: string; markdownHref?:
         </section>
       )}
 
-      <section className="space-y-2">
-        <Heading>Import</Heading>
-        <CodeBlock code={doc.imports} />
-      </section>
+      {doc.imports && (
+        <section className="space-y-2">
+          <Heading>Import</Heading>
+          <CodeBlock code={doc.imports} />
+        </section>
+      )}
 
       <section className="space-y-6">
         <Heading>Ví dụ</Heading>

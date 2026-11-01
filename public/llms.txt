@@ -1,4 +1,4 @@
-# Semi Design System (@semi/ui v0.11.0)
+# Semi Design System (@semi/ui v0.12.0)
 
 > The shared UI of every Semi app: semantic tokens that work in light and dark mode, React components (Next.js, Tailwind CSS 4) and the rules agents follow. Every component has a page with live examples and a markdown twin for agents.
 
@@ -6,7 +6,7 @@ Install `@semi/ui`, import components from `@semi/ui`, class constants from `@se
 
 ## Machine-readable
 
-- [components.json](./components.json): all 112 components, hooks and constants with props, summaries and their doc page
+- [components.json](./components.json): all 121 components, hooks and constants with props, summaries and their doc page
 - [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
@@ -111,9 +111,18 @@ Install `@semi/ui`, import components from `@semi/ui`, class constants from `@se
 
 ### AI
 
+- [Action confirmation](./components/action-confirmation/) ([markdown](./docs/components/action-confirmation.md)): An action the agent wants to take that needs a person's OK (send, delete, pay, run a command): what it will do, then Cho phép / Từ chối; the outcome replaces the buttons once decided. Components: ActionConfirmation.
+- [Agent run](./components/agent-run/) ([markdown](./docs/components/agent-run.md)): A full agent turn composed from the parts: the user's request, reasoning, a plan, tool calls, an approval and the answer with sources — the pattern to copy for agent UIs. Components: .
 - [AI chat](./components/ai-chat/) ([markdown](./docs/components/ai-chat.md)): AIChat is the ready-made assistant panel: ChatPanel (side panel or full screen, resizable, keyboard inset) around ChatView (list + composer). UI only: the app keeps the messages, streams the answer and calls the model. Components: AIChat, ChatPanel, ChatView.
 - [Chat messages](./components/chat-messages/) ([markdown](./docs/components/chat-messages.md)): The parts of a conversation, to compose your own chat: UserMessage, AssistantMessage (+ ChatAnswer for a ChatItem), ChatThinking, ChatError, ChatCopyButton, ChatAvatar, ChatIntro, ChatSuggestion(s), ChatList and ChatComposer. Components: UserMessage, AssistantMessage, ChatAnswer, ChatAvatar, ChatCopyButton, ChatError, ChatThinking, ChatIntro, ChatSuggestion, ChatSuggestions, ChatList, ChatComposer.
 - [Chat model picker](./components/chat-model-picker/) ([markdown](./docs/components/chat-model-picker.md)): Provider → model → effort chips, for the toolbar of a chat composer. The lists are app data. Components: ChatModelPicker.
+- [Context meter](./components/context-meter/) ([markdown](./docs/components/context-meter.md)): How full the model's context window is: a small ring with the percent, token counts in a tooltip; amber from 80%, red from 95%. Components: ContextMeter.
+- [File tree](./components/file-tree/) ([markdown](./docs/components/file-tree.md)): Files and folders as a keyboard tree, with A / M / D marks for what an agent added, modified or deleted; select a file to open it. Components: FileTree.
+- [Reasoning](./components/reasoning/) ([markdown](./docs/components/reasoning.md)): The model's reasoning above its answer: open while it streams, folded to “Đã suy luận trong N giây” when done, reopenable. Components: Reasoning.
+- [Sources](./components/sources/) ([markdown](./docs/components/sources.md)): Where an answer came from: Citation marks inside the text (numbered, linked) and a Sources list under the answer that opens to the pages. Components: Sources, Citation.
+- [Task list](./components/task-list/) ([markdown](./docs/components/task-list.md)): The agent's plan: steps with a status mark (chưa làm, đang làm, xong, lỗi, bỏ qua), an optional line under each, and a progress count. Components: TaskList.
+- [Terminal](./components/terminal/) ([markdown](./docs/components/terminal.md)): A command and its output: streams and follows the end (unless people scroll up), shows a spinner while running and the exit code when done, with a copy button. Components: Terminal.
+- [Tool call](./components/tool-call/) ([markdown](./docs/components/tool-call.md)): One tool the agent called: its name in words, a status badge (chờ, đang chạy, xong, lỗi, chờ duyệt), and on open the input and output (JSON formatted). Components: ToolCall.
 
 ### Setup
 

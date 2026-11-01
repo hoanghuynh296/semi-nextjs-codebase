@@ -38,6 +38,8 @@ export * from "./Feedback";
 export * from "./Table";
 export * from "./Drawer";
 export * from "./Chat";
+export * from "./Agent";
+export * from "./Terminal";
 export * from "./Separator";
 export * from "./Kbd";
 export * from "./Breadcrumb";

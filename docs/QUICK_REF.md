@@ -97,8 +97,9 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (112)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (121)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
+- `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
 - `AppShell`: `AppShell`
 - `AspectRatio`: `AspectRatio`
@@ -154,6 +155,7 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
 - `SubpageToolbar`: `SubpageToolbar`
 - `Table`: `Table`, `THead`, `TBody`, `TR`, `TH`, `TD`
 - `Tabs`: `Tabs`
+- `Terminal`: `Terminal`
 - `ThemeProvider`: `ThemeProvider`, `ThemeToggle`, `ThemeSwitcher`
 - `ThemeScript`: `ThemeScript`
 - `Toast`: `ToastHost`

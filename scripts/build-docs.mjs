@@ -2,7 +2,7 @@
 //   examples/registry.generated.ts   what the docs site renders (site/): meta, example code + component, API tables
 //   docs/components/<id>.md           one page per doc for agents (also served at /docs/components/<id>.md)
 //   docs/components/README.md         the index: every doc, its components, when to use it
-//   examples/list.generated.json      id / title / group / description of every doc (static params, metadata)
+//   examples/list.generated.json      id / title / group / description / components of every doc (static params, metadata)
 // Props come from the TypeScript types of src/ (name, type, required, default, TSDoc), so the API tables never drift.
 // Used by scripts/build-manifest.mjs (which writes the files and checks they are fresh).
 import { existsSync, readdirSync, readFileSync } from "node:fs";
@@ -118,7 +118,7 @@ export function docMarkdown(doc, api) {
   const lines = [`# ${doc.title}`, "", doc.description, ""];
   if (doc.when?.length) lines.push("## When to use", "", ...doc.when.map((w) => `- ${w}`), "");
   if (doc.instead?.length) lines.push("## Use something else when", "", "| Need | Use |", "|---|---|", ...doc.instead.map((i) => `| ${cell(i.need)} | ${cell(i.use)} |`), "");
-  lines.push("## Import", "", "```tsx", doc.imports, "```", "");
+  if (doc.imports) lines.push("## Import", "", "```tsx", doc.imports, "```", "");
   lines.push("## Examples", "");
   for (const ex of doc.examples) lines.push(`### ${ex.title}`, "", ...(ex.description ? [ex.description, ""] : []), "```tsx", ex.code, "```", "");
   lines.push("## API", "");
@@ -152,7 +152,10 @@ export function buildDocs(root, { exported }) {
       if (/from "\.\.?\//.test(ex.code)) problems.push(`examples/${d.id}/${ex.file}.tsx: import from "@semi/ui", not a relative path (examples are copied by agents)`);
     }
   }
-  for (const d of docs) d.imports = `import { ${[...d.components, ...(d.imports ?? [])].join(", ")} } from "@semi/ui";`;
+  for (const d of docs) {
+    const names = [...d.components, ...(d.imports ?? [])];
+    d.imports = names.length ? `import { ${names.join(", ")} } from "@semi/ui";` : ""; // pattern pages (agent-run) import in their examples
+  }
   const markdown = Object.fromEntries(docs.map((d) => [d.id, docMarkdown(d, api)]));
 
   const ident = (id, file) => `${id}_${file}`.replace(/[^A-Za-z0-9_]/g, "_");
@@ -208,7 +211,7 @@ export function buildDocs(root, { exported }) {
   ].join("\n");
 
   // A light list for server code (static params, metadata) that must not import the example components.
-  const list = JSON.stringify(docs.map((d) => ({ id: d.id, title: d.title, group: d.group, description: d.description })), null, 2) + "\n";
+  const list = JSON.stringify(docs.map((d) => ({ id: d.id, title: d.title, group: d.group, description: d.description, components: d.components })), null, 2) + "\n";
   const files = {
     "examples/registry.generated.ts": registry,
     "examples/list.generated.json": list,

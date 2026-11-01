@@ -1,0 +1,29 @@
+{
+  "title": "Action confirmation",
+  "group": "AI",
+  "description": "An action the agent wants to take that needs a person's OK (send, delete, pay, run a command): what it will do, then Cho phép / Từ chối; the outcome replaces the buttons once decided.",
+  "components": [
+    "ActionConfirmation"
+  ],
+  "when": [
+    "Human-in-the-loop: any agent action that is outward-facing, costs money or cannot be undone."
+  ],
+  "instead": [
+    {
+      "need": "Confirming a person's own action",
+      "use": "confirmDialog"
+    }
+  ],
+  "a11y": [
+    "A labelled group; buttons say what they do (approveLabel “Gửi 3 email”); danger makes the approve button red for actions that cannot be undone."
+  ],
+  "notes": [
+    "Keep it in the conversation after the decision (state) so the log shows who allowed what."
+  ],
+  "examples": [
+    {
+      "file": "approve",
+      "title": "Approve or reject"
+    }
+  ]
+}

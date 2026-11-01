@@ -1,0 +1,37 @@
+{
+  "title": "Tool call",
+  "group": "AI",
+  "description": "One tool the agent called: its name in words, a status badge (chờ, đang chạy, xong, lỗi, chờ duyệt), and on open the input and output (JSON formatted).",
+  "components": [
+    "ToolCall"
+  ],
+  "imports": [
+    "type ToolCallStatus"
+  ],
+  "when": [
+    "Agent runs and chats where the model calls functions, MCP tools or APIs."
+  ],
+  "instead": [
+    {
+      "need": "A shell command and its output",
+      "use": "Terminal"
+    },
+    {
+      "need": "A list of planned steps",
+      "use": "TaskList"
+    }
+  ],
+  "a11y": [
+    "The row is a disclosure button; status is text in the badge, not colour only; an error is role=\"alert\"."
+  ],
+  "notes": [
+    "Give title in words (“Tìm máy in rảnh”); name (the tool id) shows inside.",
+    "Put an ActionConfirmation inside (children) when the call waits for approval."
+  ],
+  "examples": [
+    {
+      "file": "states",
+      "title": "Every state"
+    }
+  ]
+}

@@ -3,414 +3,744 @@
     "id": "button",
     "title": "Button",
     "group": "Actions",
-    "description": "The action control: one primary per area, secondary for the rest, danger for destructive actions, ghost for quiet ones. Spinner shows work in progress inside the control that runs it."
+    "description": "The action control: one primary per area, secondary for the rest, danger for destructive actions, ghost for quiet ones. Spinner shows work in progress inside the control that runs it.",
+    "components": [
+      "Button",
+      "Spinner"
+    ]
   },
   {
     "id": "button-group",
     "title": "Button group",
     "group": "Actions",
-    "description": "Joins related buttons into one segmented control: shared borders, outer corners only (‹ Hôm nay ›, Lưu | ▾)."
+    "description": "Joins related buttons into one segmented control: shared borders, outer corners only (‹ Hôm nay ›, Lưu | ▾).",
+    "components": [
+      "ButtonGroup"
+    ]
   },
   {
     "id": "chip",
     "title": "Chip",
     "group": "Actions",
-    "description": "A pill-shaped toggle for filters and tags. Neutral when off; active uses the high-contrast surface, with colour only on its dot or icon (tone)."
+    "description": "A pill-shaped toggle for filters and tags. Neutral when off; active uses the high-contrast surface, with colour only on its dot or icon (tone).",
+    "components": [
+      "Chip"
+    ]
   },
   {
     "id": "external-link",
     "title": "External link",
     "group": "Actions",
-    "description": "A link to another site: opens a new tab on desktop and the external browser inside a mobile WebView, with an external-link icon."
+    "description": "A link to another site: opens a new tab on desktop and the external browser inside a mobile WebView, with an external-link icon.",
+    "components": [
+      "ExternalLink"
+    ]
   },
   {
     "id": "pills",
     "title": "Pills",
     "group": "Actions",
-    "description": "A single-choice filter of 2–5 options on one track (segmented look). The left side of a SubpageToolbar."
+    "description": "A single-choice filter of 2–5 options on one track (segmented look). The left side of a SubpageToolbar.",
+    "components": [
+      "Pills"
+    ]
   },
   {
     "id": "toggle",
     "title": "Toggle",
     "group": "Actions",
-    "description": "Buttons that stay pressed. Toggle for one (pin, mute, bold); ToggleGroup for a set of icon or short options, one or several at a time (list / grid view, text styles)."
+    "description": "Buttons that stay pressed. Toggle for one (pin, mute, bold); ToggleGroup for a set of icon or short options, one or several at a time (list / grid view, text styles).",
+    "components": [
+      "Toggle",
+      "ToggleGroup"
+    ]
   },
   {
     "id": "calendar",
     "title": "Calendar",
     "group": "Forms",
-    "description": "A month grid to pick one day or a range (YYYY-MM-DD, weeks start on Monday). DatePicker shows it in a popover; place it inline for schedules and report filters."
+    "description": "A month grid to pick one day or a range (YYYY-MM-DD, weeks start on Monday). DatePicker shows it in a popover; place it inline for schedules and report filters.",
+    "components": [
+      "Calendar"
+    ]
   },
   {
     "id": "checkbox",
     "title": "Checkbox",
     "group": "Forms",
-    "description": "A native checkbox with label and description, checked fill in the accent, and an indeterminate state for “select all”."
+    "description": "A native checkbox with label and description, checked fill in the accent, and an indeterminate state for “select all”.",
+    "components": [
+      "Checkbox"
+    ]
   },
   {
     "id": "combobox",
     "title": "Combobox",
     "group": "Forms",
-    "description": "CustomCombobox: type to filter a long list, then pick one value."
+    "description": "CustomCombobox: type to filter a long list, then pick one value.",
+    "components": [
+      "CustomCombobox"
+    ]
   },
   {
     "id": "date-picker",
     "title": "Date picker",
     "group": "Forms",
-    "description": "A date field with a Calendar popover (YYYY-MM-DD, min / max). Never type=\"date\"."
+    "description": "A date field with a Calendar popover (YYYY-MM-DD, min / max). Never type=\"date\".",
+    "components": [
+      "DatePicker"
+    ]
   },
   {
     "id": "field",
     "title": "Field, Input, Textarea",
     "group": "Forms",
-    "description": "Field gives any control a label, a hint and an error, wired for screen readers. Input and Textarea are the standard text controls (bg-field, h-field)."
+    "description": "Field gives any control a label, a hint and an error, wired for screen readers. Input and Textarea are the standard text controls (bg-field, h-field).",
+    "components": [
+      "Field",
+      "Input",
+      "Textarea"
+    ]
   },
   {
     "id": "input-group",
     "title": "Input group",
     "group": "Forms",
-    "description": "An input with fixed parts around it: a prefix (https://), a unit (kg, ₫), an icon or a small button (copy, show password)."
+    "description": "An input with fixed parts around it: a prefix (https://), a unit (kg, ₫), an icon or a small button (copy, show password).",
+    "components": [
+      "InputGroup"
+    ]
   },
   {
     "id": "input-otp",
     "title": "Input OTP",
     "group": "Forms",
-    "description": "One-time code entry (OTP, PIN, 2FA): boxes on screen, one real input underneath, so paste, SMS autofill, screen readers and the number keypad work like a normal field."
+    "description": "One-time code entry (OTP, PIN, 2FA): boxes on screen, one real input underneath, so paste, SMS autofill, screen readers and the number keypad work like a normal field.",
+    "components": [
+      "InputOTP"
+    ]
   },
   {
     "id": "number-input",
     "title": "Number input",
     "group": "Forms",
-    "description": "NumberInput: numbers with a touch keypad (NumPadPopup) on phones and tablets, plain typing elsewhere. Never type=\"number\"."
+    "description": "NumberInput: numbers with a touch keypad (NumPadPopup) on phones and tablets, plain typing elsewhere. Never type=\"number\".",
+    "components": [
+      "NumberInput",
+      "NumPadPopup"
+    ]
   },
   {
     "id": "radio-group",
     "title": "Radio group",
     "group": "Forms",
-    "description": "Exactly one option of a few, each with an optional description; vertical by default."
+    "description": "Exactly one option of a few, each with an optional description; vertical by default.",
+    "components": [
+      "RadioGroup"
+    ]
   },
   {
     "id": "search-input",
     "title": "Search input",
     "group": "Forms",
-    "description": "The toolbar search: an icon button that opens into a field (clear button, h-control); it collapses again when empty and focus leaves. SubpageToolbar includes one."
+    "description": "The toolbar search: an icon button that opens into a field (clear button, h-control); it collapses again when empty and focus leaves. SubpageToolbar includes one.",
+    "components": [
+      "SearchInput"
+    ]
   },
   {
     "id": "select",
     "title": "Select",
     "group": "Forms",
-    "description": "CustomSelect: pick one value from a list, in a field, in a toolbar, inline in a row or bare. Never the native <select>."
+    "description": "CustomSelect: pick one value from a list, in a field, in a toolbar, inline in a row or bare. Never the native <select>.",
+    "components": [
+      "CustomSelect"
+    ]
   },
   {
     "id": "slider",
     "title": "Slider",
     "group": "Forms",
-    "description": "Pick a number in a range by dragging: one thumb, or two with range for a min–max pair."
+    "description": "Pick a number in a range by dragging: one thumb, or two with range for a min–max pair.",
+    "components": [
+      "Slider"
+    ]
   },
   {
     "id": "switch",
     "title": "Switch",
     "group": "Forms",
-    "description": "An on / off toggle for settings that apply immediately."
+    "description": "An on / off toggle for settings that apply immediately.",
+    "components": [
+      "Switch"
+    ]
   },
   {
     "id": "command",
     "title": "Command",
     "group": "Overlays",
-    "description": "A command palette: type to filter actions and pages, ↑/↓ to move, Enter to run. Command is the inline list; CommandDialog opens it over the page, usually on ⌘K (useHotkey). Matching ignores case and Vietnamese marks."
+    "description": "A command palette: type to filter actions and pages, ↑/↓ to move, Enter to run. Command is the inline list; CommandDialog opens it over the page, usually on ⌘K (useHotkey). Matching ignores case and Vietnamese marks.",
+    "components": [
+      "Command",
+      "CommandDialog"
+    ]
   },
   {
     "id": "confirm-dialog",
     "title": "Confirm dialog",
     "group": "Overlays",
-    "description": "confirmDialog() asks one yes / no question and resolves to true or false. Mount ConfirmHost once in the root layout. Never window.confirm."
+    "description": "confirmDialog() asks one yes / no question and resolves to true or false. Mount ConfirmHost once in the root layout. Never window.confirm.",
+    "components": [
+      "ConfirmHost"
+    ]
   },
   {
     "id": "context-menu",
     "title": "Context menu",
     "group": "Overlays",
-    "description": "The menu of an area opened at the pointer: right-click, long-press on touch, or the Menu key / Shift+F10 when the area has focus."
+    "description": "The menu of an area opened at the pointer: right-click, long-press on touch, or the Menu key / Shift+F10 when the area has focus.",
+    "components": [
+      "ContextMenu"
+    ]
   },
   {
     "id": "drawer",
     "title": "Drawer",
     "group": "Overlays",
-    "description": "A panel that slides in from the right, left, bottom or top (a sheet), with title and footer."
+    "description": "A panel that slides in from the right, left, bottom or top (a sheet), with title and footer.",
+    "components": [
+      "Drawer"
+    ]
   },
   {
     "id": "hover-card",
     "title": "Hover card",
     "group": "Overlays",
-    "description": "A preview card while the pointer rests on, or focus is on, a link: a person, a product, an order."
+    "description": "A preview card while the pointer rests on, or focus is on, a link: a person, a product, an order.",
+    "components": [
+      "HoverCard"
+    ]
   },
   {
     "id": "menu",
     "title": "Menu",
     "group": "Overlays",
-    "description": "The overflow menu of a row or card: a ⋯ trigger (or your own) with items, icons, separators and a danger item last."
+    "description": "The overflow menu of a row or card: a ⋯ trigger (or your own) with items, icons, separators and a danger item last.",
+    "components": [
+      "Menu"
+    ]
   },
   {
     "id": "modal",
     "title": "Modal",
     "group": "Overlays",
-    "description": "The shared dialog: full screen on phones, a centred panel from sm up, with title, description, body and footer. Focus is trapped and returns to the opener."
+    "description": "The shared dialog: full screen on phones, a centred panel from sm up, with title, description, body and footer. Focus is trapped and returns to the opener.",
+    "components": [
+      "Modal"
+    ]
   },
   {
     "id": "popover",
     "title": "Popover",
     "group": "Overlays",
-    "description": "A small non-modal panel under its trigger for interactive content: a quick form, filters, a picker."
+    "description": "A small non-modal panel under its trigger for interactive content: a quick form, filters, a picker.",
+    "components": [
+      "Popover"
+    ]
   },
   {
     "id": "toast",
     "title": "Toast",
     "group": "Overlays",
-    "description": "toast() shows a short message after an action, with a tone and an optional action (Hoàn tác). Mount ToastHost once in the root layout."
+    "description": "toast() shows a short message after an action, with a tone and an optional action (Hoàn tác). Mount ToastHost once in the root layout.",
+    "components": [
+      "ToastHost"
+    ]
   },
   {
     "id": "tooltip",
     "title": "Tooltip",
     "group": "Overlays",
-    "description": "A short label on hover or focus, mostly for icon-only buttons."
+    "description": "A short label on hover or focus, mostly for icon-only buttons.",
+    "components": [
+      "Tooltip"
+    ]
   },
   {
     "id": "app-header",
     "title": "App header",
     "group": "Navigation & layout",
-    "description": "The top bar of a stand-alone tool app: logo + title go home, the module name, and one primary action on the right. No Home button."
+    "description": "The top bar of a stand-alone tool app: logo + title go home, the module name, and one primary action on the right. No Home button.",
+    "components": [
+      "AppHeader"
+    ]
   },
   {
     "id": "app-shell",
     "title": "App shell",
     "group": "Navigation & layout",
-    "description": "The frame of a multi-page app: a floating bento sidebar (w-52, collapses to a w-14 icon rail) on bg-canvas, the content panel beside it, and MobileTabBar at the bottom on phones. This docs site is an AppShell."
+    "description": "The frame of a multi-page app: a floating bento sidebar (w-52, collapses to a w-14 icon rail) on bg-canvas, the content panel beside it, and MobileTabBar at the bottom on phones. This docs site is an AppShell.",
+    "components": [
+      "AppShell",
+      "MobileTabBar"
+    ]
   },
   {
     "id": "breadcrumb",
     "title": "Breadcrumb",
     "group": "Navigation & layout",
-    "description": "Where the page sits: a trail of links ending with the current page. Long trails collapse their middle into a “…” menu."
+    "description": "Where the page sits: a trail of links ending with the current page. Long trails collapse their middle into a “…” menu.",
+    "components": [
+      "Breadcrumb"
+    ]
   },
   {
     "id": "menubar",
     "title": "Menubar",
     "group": "Navigation & layout",
-    "description": "The menu bar of a desktop-style tool (Tệp · Sửa · Xem): menus that open from a bar and behave like Menu."
+    "description": "The menu bar of a desktop-style tool (Tệp · Sửa · Xem): menus that open from a bar and behave like Menu.",
+    "components": [
+      "Menubar"
+    ]
   },
   {
     "id": "navigation-menu",
     "title": "Navigation menu",
     "group": "Navigation & layout",
-    "description": "Top navigation of a website or landing page: links, and items that open a panel of links with descriptions. Below md it becomes one menu button with a sheet."
+    "description": "Top navigation of a website or landing page: links, and items that open a panel of links with descriptions. Below md it becomes one menu button with a sheet.",
+    "components": [
+      "NavigationMenu"
+    ]
   },
   {
     "id": "page-actions",
     "title": "Page actions",
     "group": "Navigation & layout",
-    "description": "Lets a page put its actions into a slot of the shared header: PageActionsProvider wraps the layout, PageActionsSlot marks where they render, PageActions sends them from the page."
+    "description": "Lets a page put its actions into a slot of the shared header: PageActionsProvider wraps the layout, PageActionsSlot marks where they render, PageActions sends them from the page.",
+    "components": [
+      "PageActions",
+      "PageActionsProvider",
+      "PageActionsSlot"
+    ]
   },
   {
     "id": "page-title",
     "title": "Page title",
     "group": "Navigation & layout",
-    "description": "PageTitle is the large display title of a page (text only). PageTabsTitle turns it into 2–4 underline tabs for sibling pages."
+    "description": "PageTitle is the large display title of a page (text only). PageTabsTitle turns it into 2–4 underline tabs for sibling pages.",
+    "components": [
+      "PageTitle",
+      "PageTabsTitle"
+    ]
   },
   {
     "id": "pagination",
     "title": "Pagination",
     "group": "Navigation & layout",
-    "description": "Page numbers with previous / next for long tables. For card lists prefer auto-loading with “Xem thêm”."
+    "description": "Page numbers with previous / next for long tables. For card lists prefer auto-loading with “Xem thêm”.",
+    "components": [
+      "Pagination"
+    ]
   },
   {
     "id": "resizable",
     "title": "Resizable panels",
     "group": "Navigation & layout",
-    "description": "Panels side by side or stacked with handles to resize them (an editor beside a preview, a list beside details). Sizes are percentages and can be remembered."
+    "description": "Panels side by side or stacked with handles to resize them (an editor beside a preview, a list beside details). Sizes are percentages and can be remembered.",
+    "components": [
+      "ResizablePanels"
+    ]
   },
   {
     "id": "scroll-area",
     "title": "Scroll area",
     "group": "Navigation & layout",
-    "description": "A fixed-size scrolling region (a long list in a card, a log). Semi hides scrollbars, so it marks the edges that have more content, can show a thin scrollbar, and is reachable by keyboard."
+    "description": "A fixed-size scrolling region (a long list in a card, a log). Semi hides scrollbars, so it marks the edges that have more content, can show a thin scrollbar, and is reachable by keyboard.",
+    "components": [
+      "ScrollArea"
+    ]
   },
   {
     "id": "side-panel",
     "title": "Side panel",
     "group": "Navigation & layout",
-    "description": "A 320px tool panel beside a canvas that collapses to a 48px rail; SidePanelToggle is its collapse button."
+    "description": "A 320px tool panel beside a canvas that collapses to a 48px rail; SidePanelToggle is its collapse button.",
+    "components": [
+      "SidePanel",
+      "SidePanelToggle"
+    ]
   },
   {
     "id": "subpage-toolbar",
     "title": "Subpage toolbar",
     "group": "Navigation & layout",
-    "description": "The sticky row under a page title: filters on the left; search, refresh and the icon-only primary action on the right. RefreshButton spins while its promise runs."
+    "description": "The sticky row under a page title: filters on the left; search, refresh and the icon-only primary action on the right. RefreshButton spins while its promise runs.",
+    "components": [
+      "SubpageToolbar",
+      "RefreshButton"
+    ]
   },
   {
     "id": "tabs",
     "title": "Tabs",
     "group": "Navigation & layout",
-    "description": "Switch between panels of content inside a page or card: underline (default) or segmented, with icons and counts."
+    "description": "Switch between panels of content inside a page or card: underline (default) or segmented, with icons and counts.",
+    "components": [
+      "Tabs"
+    ]
   },
   {
     "id": "accordion",
     "title": "Accordion",
     "group": "Data display",
-    "description": "A list of sections where one (or several) open at a time: FAQs, settings groups, help."
+    "description": "A list of sections where one (or several) open at a time: FAQs, settings groups, help.",
+    "components": [
+      "Accordion"
+    ]
   },
   {
     "id": "aspect-ratio",
     "title": "Aspect ratio",
     "group": "Data display",
-    "description": "Keeps media at a fixed ratio while its width follows the layout (images, video, maps, 3D previews)."
+    "description": "Keeps media at a fixed ratio while its width follows the layout (images, video, maps, 3D previews).",
+    "components": [
+      "AspectRatio"
+    ]
   },
   {
     "id": "avatar",
     "title": "Avatar",
     "group": "Data display",
-    "description": "A person or team: their image, or initials on a tone picked from the name."
+    "description": "A person or team: their image, or initials on a tone picked from the name.",
+    "components": [
+      "Avatar"
+    ]
   },
   {
     "id": "badge",
     "title": "Badge",
     "group": "Data display",
-    "description": "A read-only status or tag in a tone (10% fill, 20% border, theme-safe text), with an optional dot or icon."
+    "description": "A read-only status or tag in a tone (10% fill, 20% border, theme-safe text), with an optional dot or icon.",
+    "components": [
+      "Badge"
+    ]
   },
   {
     "id": "card",
     "title": "Card",
     "group": "Data display",
-    "description": "The bento content card: panel fill and the style's card border, radius and resting shadow. interactive adds hover / press, active marks the selected or running item."
+    "description": "The bento content card: panel fill and the style's card border, radius and resting shadow. interactive adds hover / press, active marks the selected or running item.",
+    "components": [
+      "Card"
+    ]
   },
   {
     "id": "carousel",
     "title": "Carousel",
     "group": "Data display",
-    "description": "Slides in a row that scroll by swipe, trackpad, arrow keys, buttons or dots (CSS scroll-snap, no library). Phones show one slide and a peek of the next."
+    "description": "Slides in a row that scroll by swipe, trackpad, arrow keys, buttons or dots (CSS scroll-snap, no library). Phones show one slide and a peek of the next.",
+    "components": [
+      "Carousel"
+    ]
   },
   {
     "id": "chart",
     "title": "Chart",
     "group": "Data display",
-    "description": "Charts in SVG on Semi tokens, no library: BarChart (grouped or stacked columns), LineChart (optional area wash), DonutChart (parts of a whole) and Sparkline (a trend in a tile). Series use the fixed chart-1…8 colours (validated for colour-blind readers in both themes); every chart has a legend for 2+ series, a hover / keyboard tooltip and a table view."
+    "description": "Charts in SVG on Semi tokens, no library: BarChart (grouped or stacked columns), LineChart (optional area wash), DonutChart (parts of a whole) and Sparkline (a trend in a tile). Series use the fixed chart-1…8 colours (validated for colour-blind readers in both themes); every chart has a legend for 2+ series, a hover / keyboard tooltip and a table view.",
+    "components": [
+      "BarChart",
+      "LineChart",
+      "DonutChart",
+      "Sparkline"
+    ]
   },
   {
     "id": "code-block",
     "title": "Code block",
     "group": "Data display",
-    "description": "Code to read or copy: a mono block with a copy button and an optional title (file name); long lines scroll sideways. Plain text, no highlighting."
+    "description": "Code to read or copy: a mono block with a copy button and an optional title (file name); long lines scroll sideways. Plain text, no highlighting.",
+    "components": [
+      "CodeBlock"
+    ]
   },
   {
     "id": "collapsible",
     "title": "Collapsible",
     "group": "Data display",
-    "description": "One section that opens and closes under its trigger row (advanced options, details of a log line)."
+    "description": "One section that opens and closes under its trigger row (advanced options, details of a log line).",
+    "components": [
+      "Collapsible"
+    ]
   },
   {
     "id": "data-table",
     "title": "Data table",
     "group": "Data display",
-    "description": "A table that sorts, filters, selects and pages rows on the client, built on Table: give it rows and columns, it keeps the state (or you control it)."
+    "description": "A table that sorts, filters, selects and pages rows on the client, built on Table: give it rows and columns, it keeps the state (or you control it).",
+    "components": [
+      "DataTable"
+    ]
   },
   {
     "id": "icon",
     "title": "Icon",
     "group": "Data display",
-    "description": "The semantic icon registry (stroke 1.75, 24px grid). IconTile is the rounded tinted square that leads cards and dialogs."
+    "description": "The semantic icon registry (stroke 1.75, 24px grid). IconTile is the rounded tinted square that leads cards and dialogs.",
+    "components": [
+      "Icon",
+      "IconTile"
+    ]
   },
   {
     "id": "item",
     "title": "Item",
     "group": "Data display",
-    "description": "A list row — leading icon / avatar / image, title and description, meta on the right, actions — and ItemGroup, which stacks rows in a card with dividers."
+    "description": "A list row — leading icon / avatar / image, title and description, meta on the right, actions — and ItemGroup, which stacks rows in a card with dividers.",
+    "components": [
+      "Item",
+      "ItemGroup"
+    ]
   },
   {
     "id": "kbd",
     "title": "Kbd",
     "group": "Data display",
-    "description": "A key or a shortcut (⌘ K, Ctrl Enter) as key caps, for menus, tooltips, the command palette and help text."
+    "description": "A key or a shortcut (⌘ K, Ctrl Enter) as key caps, for menus, tooltips, the command palette and help text.",
+    "components": [
+      "Kbd"
+    ]
   },
   {
     "id": "kpi-card",
     "title": "KPI card",
     "group": "Data display",
-    "description": "A metric card: label, a large tabular figure, a sub line coloured good / danger, and an icon in its tone."
+    "description": "A metric card: label, a large tabular figure, a sub line coloured good / danger, and an icon in its tone.",
+    "components": [
+      "KpiCard"
+    ]
   },
   {
     "id": "markdown",
     "title": "Markdown",
     "group": "Data display",
-    "description": "Renders AI or user text safely: paragraphs, lists, bold, inline code and links (as ExternalLink). No HTML."
+    "description": "Renders AI or user text safely: paragraphs, lists, bold, inline code and links (as ExternalLink). No HTML.",
+    "components": [
+      "Markdown"
+    ]
   },
   {
     "id": "separator",
     "title": "Separator",
     "group": "Data display",
-    "description": "A thin divider between groups of content: horizontal, vertical, or with a short label in the middle (“hoặc”)."
+    "description": "A thin divider between groups of content: horizontal, vertical, or with a short label in the middle (“hoặc”).",
+    "components": [
+      "Separator"
+    ]
   },
   {
     "id": "table",
     "title": "Table",
     "group": "Data display",
-    "description": "A dense table for rows compared column by column. Cells stay on one line (the table scrolls sideways on phones); TD wrap for a long-text column, numeric for figures."
+    "description": "A dense table for rows compared column by column. Cells stay on one line (the table scrolls sideways on phones); TD wrap for a long-text column, numeric for figures.",
+    "components": [
+      "Table",
+      "THead",
+      "TBody",
+      "TR",
+      "TH",
+      "TD"
+    ]
   },
   {
     "id": "typography",
     "title": "Typography",
     "group": "Data display",
-    "description": "The type scale (text-caption 11 … text-display 26, font-display for titles) and Prose, which styles long-form text — headings, paragraphs, lists, links, quotes, inline code — from that scale."
+    "description": "The type scale (text-caption 11 … text-display 26, font-display for titles) and Prose, which styles long-form text — headings, paragraphs, lists, links, quotes, inline code — from that scale.",
+    "components": [
+      "Prose"
+    ]
   },
   {
     "id": "alert",
     "title": "Alert",
     "group": "Feedback",
-    "description": "A message that stays on the page: info, success, warning, danger, with a title, an action and an optional dismiss."
+    "description": "A message that stays on the page: info, success, warning, danger, with a title, an action and an optional dismiss.",
+    "components": [
+      "Alert"
+    ]
   },
   {
     "id": "empty-state",
     "title": "Empty state",
     "group": "Feedback",
-    "description": "What an empty list or page shows: an icon, one short title, a description and the action that fills it."
+    "description": "What an empty list or page shows: an icon, one short title, a description and the action that fills it.",
+    "components": [
+      "EmptyState"
+    ]
   },
   {
     "id": "progress",
     "title": "Progress",
     "group": "Feedback",
-    "description": "A determinate bar with value, or an indeterminate one when the end is unknown; tones for success and danger."
+    "description": "A determinate bar with value, or an indeterminate one when the end is unknown; tones for success and danger.",
+    "components": [
+      "Progress"
+    ]
   },
   {
     "id": "skeleton",
     "title": "Skeleton",
     "group": "Feedback",
-    "description": "Shimmer placeholders while content loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton; Loading announces the region. Never “Đang tải…” text."
+    "description": "Shimmer placeholders while content loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton; Loading announces the region. Never “Đang tải…” text.",
+    "components": [
+      "Skeleton",
+      "SkeletonCard",
+      "SkeletonGrid",
+      "SkeletonRows",
+      "PageSkeleton",
+      "Loading"
+    ]
+  },
+  {
+    "id": "action-confirmation",
+    "title": "Action confirmation",
+    "group": "AI",
+    "description": "An action the agent wants to take that needs a person's OK (send, delete, pay, run a command): what it will do, then Cho phép / Từ chối; the outcome replaces the buttons once decided.",
+    "components": [
+      "ActionConfirmation"
+    ]
+  },
+  {
+    "id": "agent-run",
+    "title": "Agent run",
+    "group": "AI",
+    "description": "A full agent turn composed from the parts: the user's request, reasoning, a plan, tool calls, an approval and the answer with sources — the pattern to copy for agent UIs.",
+    "components": []
   },
   {
     "id": "ai-chat",
     "title": "AI chat",
     "group": "AI",
-    "description": "AIChat is the ready-made assistant panel: ChatPanel (side panel or full screen, resizable, keyboard inset) around ChatView (list + composer). UI only: the app keeps the messages, streams the answer and calls the model."
+    "description": "AIChat is the ready-made assistant panel: ChatPanel (side panel or full screen, resizable, keyboard inset) around ChatView (list + composer). UI only: the app keeps the messages, streams the answer and calls the model.",
+    "components": [
+      "AIChat",
+      "ChatPanel",
+      "ChatView"
+    ]
   },
   {
     "id": "chat-messages",
     "title": "Chat messages",
     "group": "AI",
-    "description": "The parts of a conversation, to compose your own chat: UserMessage, AssistantMessage (+ ChatAnswer for a ChatItem), ChatThinking, ChatError, ChatCopyButton, ChatAvatar, ChatIntro, ChatSuggestion(s), ChatList and ChatComposer."
+    "description": "The parts of a conversation, to compose your own chat: UserMessage, AssistantMessage (+ ChatAnswer for a ChatItem), ChatThinking, ChatError, ChatCopyButton, ChatAvatar, ChatIntro, ChatSuggestion(s), ChatList and ChatComposer.",
+    "components": [
+      "UserMessage",
+      "AssistantMessage",
+      "ChatAnswer",
+      "ChatAvatar",
+      "ChatCopyButton",
+      "ChatError",
+      "ChatThinking",
+      "ChatIntro",
+      "ChatSuggestion",
+      "ChatSuggestions",
+      "ChatList",
+      "ChatComposer"
+    ]
   },
   {
     "id": "chat-model-picker",
     "title": "Chat model picker",
     "group": "AI",
-    "description": "Provider → model → effort chips, for the toolbar of a chat composer. The lists are app data."
+    "description": "Provider → model → effort chips, for the toolbar of a chat composer. The lists are app data.",
+    "components": [
+      "ChatModelPicker"
+    ]
+  },
+  {
+    "id": "context-meter",
+    "title": "Context meter",
+    "group": "AI",
+    "description": "How full the model's context window is: a small ring with the percent, token counts in a tooltip; amber from 80%, red from 95%.",
+    "components": [
+      "ContextMeter"
+    ]
+  },
+  {
+    "id": "file-tree",
+    "title": "File tree",
+    "group": "AI",
+    "description": "Files and folders as a keyboard tree, with A / M / D marks for what an agent added, modified or deleted; select a file to open it.",
+    "components": [
+      "FileTree"
+    ]
+  },
+  {
+    "id": "reasoning",
+    "title": "Reasoning",
+    "group": "AI",
+    "description": "The model's reasoning above its answer: open while it streams, folded to “Đã suy luận trong N giây” when done, reopenable.",
+    "components": [
+      "Reasoning"
+    ]
+  },
+  {
+    "id": "sources",
+    "title": "Sources",
+    "group": "AI",
+    "description": "Where an answer came from: Citation marks inside the text (numbered, linked) and a Sources list under the answer that opens to the pages.",
+    "components": [
+      "Sources",
+      "Citation"
+    ]
+  },
+  {
+    "id": "task-list",
+    "title": "Task list",
+    "group": "AI",
+    "description": "The agent's plan: steps with a status mark (chưa làm, đang làm, xong, lỗi, bỏ qua), an optional line under each, and a progress count.",
+    "components": [
+      "TaskList"
+    ]
+  },
+  {
+    "id": "terminal",
+    "title": "Terminal",
+    "group": "AI",
+    "description": "A command and its output: streams and follows the end (unless people scroll up), shows a spinner while running and the exit code when done, with a copy button.",
+    "components": [
+      "Terminal"
+    ]
+  },
+  {
+    "id": "tool-call",
+    "title": "Tool call",
+    "group": "AI",
+    "description": "One tool the agent called: its name in words, a status badge (chờ, đang chạy, xong, lỗi, chờ duyệt), and on open the input and output (JSON formatted).",
+    "components": [
+      "ToolCall"
+    ]
   },
   {
     "id": "locale",
     "title": "Locale",
     "group": "Setup",
-    "description": "SemiLocaleProvider sets the UI strings of every Semi component (Vietnamese by default, English shipped, override any string)."
+    "description": "SemiLocaleProvider sets the UI strings of every Semi component (Vietnamese by default, English shipped, override any string).",
+    "components": [
+      "SemiLocaleProvider"
+    ]
   },
   {
     "id": "theme",
     "title": "Theme",
     "group": "Setup",
-    "description": "Light / dark / system: ThemeScript applies the stored theme before paint, ThemeProvider keeps it, ThemeSwitcher (three-way) and ThemeToggle switch it. data-theme on any element re-scopes every token inside it."
+    "description": "Light / dark / system: ThemeScript applies the stored theme before paint, ThemeProvider keeps it, ThemeSwitcher (three-way) and ThemeToggle switch it. data-theme on any element re-scopes every token inside it.",
+    "components": [
+      "ThemeProvider",
+      "ThemeScript",
+      "ThemeSwitcher",
+      "ThemeToggle"
+    ]
   }
 ]

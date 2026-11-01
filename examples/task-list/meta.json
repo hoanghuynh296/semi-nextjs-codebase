@@ -1,0 +1,34 @@
+{
+  "title": "Task list",
+  "group": "AI",
+  "description": "The agent's plan: steps with a status mark (chưa làm, đang làm, xong, lỗi, bỏ qua), an optional line under each, and a progress count.",
+  "components": [
+    "TaskList"
+  ],
+  "imports": [
+    "type TaskStep",
+    "type TaskStatus"
+  ],
+  "when": [
+    "Multi-step agent work (plans, migrations, onboarding jobs) people watch progress on."
+  ],
+  "instead": [
+    {
+      "need": "Steps of a form",
+      "use": "sections of the form"
+    },
+    {
+      "need": "One running bar",
+      "use": "Progress"
+    }
+  ],
+  "a11y": [
+    "An ordered list; each step's status is also text (visually hidden); the running step has aria-current=\"step\"."
+  ],
+  "examples": [
+    {
+      "file": "plan",
+      "title": "Plan in progress"
+    }
+  ]
+}

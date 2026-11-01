@@ -1,0 +1,19 @@
+{
+  "title": "Agent run",
+  "group": "AI",
+  "description": "A full agent turn composed from the parts: the user's request, reasoning, a plan, tool calls, an approval and the answer with sources — the pattern to copy for agent UIs.",
+  "components": [],
+  "when": [
+    "Starting an agent chat or run log; shows how the AI parts sit together in a ChatList."
+  ],
+  "a11y": [
+    "Order follows what happened; only the answer text is announced (ChatList), tool and reasoning details stay behind disclosures."
+  ],
+  "examples": [
+    {
+      "file": "turn",
+      "title": "One agent turn",
+      "preview": "frame"
+    }
+  ]
+}
