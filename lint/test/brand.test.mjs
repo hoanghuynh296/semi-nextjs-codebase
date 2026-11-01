@@ -69,6 +69,10 @@ test("neutrals: tinted takes the primary's hue, preset copies the chosen palette
   assert.deepEqual(Object.keys(tinted.tokens.neutrals), ["soft"]);
   const panel = hexToOklch(tinted.tokens.neutrals.soft.dark["color-panel"]);
   assert.ok(Math.abs(panel.h - hexToOklch("#2563EB").h) < 15, "dark panel leans blue");
+  // surfaces stay near neutral: a colour cast on large areas is what people see as "ám màu"
+  for (const k of ["color-canvas", "color-app", "color-panel", "color-field"]) for (const theme of ["dark", "light"]) {
+    assert.ok(hexToOklch(tinted.tokens.neutrals.soft[theme][k]).c < 0.006, `${theme} ${k} chroma`);
+  }
   const preset = generateBrand(brand({ neutral: "preset", palettes: { soft: "sage" } }), { tokens, styles });
   const sage = styles.styles.find((s) => s.id === "soft").palettes.find((p) => p.id === "sage").semantic;
   assert.equal(preset.tokens.neutrals.soft.light["color-canvas"], sage["color-canvas"].light);

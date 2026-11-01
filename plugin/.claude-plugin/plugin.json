@@ -1,6 +1,6 @@
 {
   "name": "semi-design",
-  "version": "0.13.1",
+  "version": "0.13.2",
   "description": "Semi Design System rules, lint hook, docs MCP server (semi_search, semi_docs, semi_example, semi_block) and /semi-ui, /semi-init, /semi-audit, /semi-fix, /semi-update, /semi-style, /semi-brand, /semi-propose, /semi-triage skills for Next.js 16 + React 19 + Tailwind 4 web projects.",
   "repository": "https://github.com/hoanghuynh296/semi-nextjs-codebase"
 }

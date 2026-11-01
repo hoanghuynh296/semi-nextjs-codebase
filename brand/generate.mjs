@@ -19,8 +19,13 @@ export const NEUTRAL_KEYS = [
 const SURFACES = ["color-canvas", "color-app", "color-panel", "color-field", "color-raised"];
 const THEMES = ["dark", "light"];
 const AA = 4.5;
-/** How much of the primary's hue each style's tinted neutrals take (OKLCH chroma of surfaces). */
+/**
+ * How much of the primary's hue each style's tinted neutrals take (OKLCH chroma). Surfaces (canvas, app, panel, field,
+ * raised) take very little: large areas tinted at 0.01 read as a colour cast, while popular systems keep backgrounds
+ * near 0–0.003 (Tailwind slate-50 ≈ 0.003, Radix slate-1 ≈ 0.002, shadcn Neutral 0). Text and lines carry more.
+ */
 const TINT = { flat: 0.01, soft: 0.016, sharp: 0.005 };
+const SURFACE_TINT = { flat: 0.003, soft: 0.004, sharp: 0.002 };
 /** Fonts known to work with next/font/google; weight is only needed for fonts without a variable version. */
 export const FONTS = {
   Geist: {},
@@ -178,7 +183,11 @@ export function generateBrand(brand, { tokens, styles, version = "" }) {
       const n = { ...base[theme] };
       if (brand.neutral === "tinted") {
         const ch = TINT[st.id] ?? 0.01;
-        for (const k of NEUTRAL_KEYS) n[k] = tint(n[k], hue, k.startsWith("color-text") ? ch * 0.6 : k.startsWith("color-line") || k === "color-divider" ? ch * 2 : ch);
+        const surf = SURFACE_TINT[st.id] ?? 0.003;
+        for (const k of NEUTRAL_KEYS) {
+          const c = SURFACES.includes(k) ? surf : k.startsWith("color-text") ? ch * 0.6 : k.startsWith("color-line") || k === "color-divider" ? ch * 2 : ch;
+          n[k] = tint(n[k], hue, c);
+        }
       }
       neutrals[st.id][theme] = fixText(n, theme);
     }

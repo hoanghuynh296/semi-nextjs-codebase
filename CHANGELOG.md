@@ -4,6 +4,11 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.13.2] - 2026-11-01
+
+### Changed
+- **Tinted brands: surfaces are nearly neutral.** `brand/generate.mjs` tinted canvas, app, panel, field and raised with the primary's hue at chroma 0.010 (Flat), which read as a colour cast over large areas. Surfaces now take 0.003 (Flat), 0.004 (Soft) and 0.002 (Sharp), near Tailwind slate-50 (≈ 0.003) and Radix slate-1 (≈ 0.002). Text and borders keep their tint. A brand with `"neutral": "tinted"` gets new neutrals after `/semi-brand update` in the brand repo, then `/semi-update` in each product.
+
 ## [0.13.1] - 2026-11-01
 
 ### Changed
