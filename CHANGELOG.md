@@ -4,6 +4,16 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.16.0] - 2026-11-01
+
+### Changed
+- **The brand kit preview is a brand book**, not a copy of the docs site. Three tabs: *Thương hiệu* (cover with logo, name, tagline and personality on the brand colour; who the brand is for; logo on both backgrounds with clear space, the mark at 16–48px and what not to do: stretch, recolour, rotate, add effects, busy backgrounds; colours by role and the share of a screen each takes; type specimens; voice with do / don't and its texts on real components in light and dark; imagery), *Ứng dụng* (dashboard, phone app, landing page and email, light and dark, texts from the voice; the landing hero follows the accent use) and *UI kit* (scales, button and text shades with their distance from the brand colour, type scale, contrast table, downloads of `brand.css`, `brand.json` and the logos, and every component page in the Semi docs shell). The brand book pages have a top bar instead of the component sidebar.
+- Without a logo version for dark backgrounds, the preview's top bar and sample screens show the mark (if any) next to the name on dark instead of a logo that may not read.
+
+### Added
+- `brief.tagline` in `brand.json` (one line, ≤ 90 characters; `set tagline=…`): on the cover, the landing page and in BRAND.md.
+- `color.mix` in `dist/brand.json`: the rough share of a screen for neutrals, surfaces, the primary and the secondary colour, from the accent use (restrained 80 / 15 / 5 %, balanced 70 / 20 / 10, expressive 55 / 25 / 20). BRAND.md and AGENTS.brand.md state it.
+
 ## [0.15.0] - 2026-11-01
 
 ### Added

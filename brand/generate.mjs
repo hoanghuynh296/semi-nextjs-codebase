@@ -119,9 +119,9 @@ export const MICROCOPY = [
   "Không phụ đề dưới tiêu đề trang; nhãn ngắn, icon đi trước chữ",
 ];
 const ACCENT_USE = {
-  restrained: { label: "Tiết chế", rule: "Màu chính chỉ cho hành động chính (một nút chính mỗi vùng), mục đang chọn, link và focus. Nền màu chính diện rộng: không." },
-  balanced: { label: "Cân bằng", rule: "Như tiết chế, thêm nền nhạt bg-accent-subtle cho khối nổi bật (banner, thẻ khuyến nghị), tối đa một khối mỗi màn hình." },
-  expressive: { label: "Phóng khoáng", rule: "Được dùng nền bg-accent cho hero / banner và icon lớn màu chính; vẫn chỉ một nút chính mỗi vùng." },
+  restrained: { label: "Tiết chế", mix: { neutral: 80, surface: 15, accent: 5 }, rule: "Màu chính chỉ cho hành động chính (một nút chính mỗi vùng), mục đang chọn, link và focus. Nền màu chính diện rộng: không." },
+  balanced: { label: "Cân bằng", mix: { neutral: 70, surface: 20, accent: 10 }, rule: "Như tiết chế, thêm nền nhạt bg-accent-subtle cho khối nổi bật (banner, thẻ khuyến nghị), tối đa một khối mỗi màn hình." },
+  expressive: { label: "Phóng khoáng", mix: { neutral: 55, surface: 25, accent: 20 }, rule: "Được dùng nền bg-accent cho hero / banner và icon lớn màu chính; vẫn chỉ một nút chính mỗi vùng." },
 };
 const SECONDARY_ROLE = {
   highlight: "điểm nhấn: badge \"Mới\", ngôi sao, số nổi bật (bg-secondary-solid + text-on-secondary, text-secondary-fg)",
@@ -134,9 +134,10 @@ const strList = (v) => Array.isArray(v) && v.every(str);
 function validateGuide(brand, errors, warnings) {
   const b = brand.brief;
   if (b !== undefined) {
-    if (typeof b !== "object" || b === null) fail(errors, "brief: phải là object { audience, product, personality }");
+    if (typeof b !== "object" || b === null) fail(errors, "brief: phải là object { product, audience, personality, tagline }");
     else {
       for (const k of ["audience", "product"]) if (b[k] !== undefined && !str(b[k])) fail(errors, `brief.${k}: phải là chữ`);
+      if (b.tagline !== undefined && (!str(b.tagline) || b.tagline.length > 90)) fail(errors, "brief.tagline: một câu ngắn, tối đa 90 ký tự");
       if (b.personality !== undefined && (!strList(b.personality) || b.personality.length > 5)) fail(errors, "brief.personality: 1–5 tính từ, vd. [\"thân thiện\", \"chính xác\"]");
     }
   }
@@ -178,6 +179,19 @@ function validateGuide(brand, errors, warnings) {
   if (!brand.voice) warnings.push("Chưa có giọng văn (voice): agent sẽ viết chữ theo mặc định trung tính. Thêm voice để sản phẩm nói đúng giọng thương hiệu");
 }
 
+/**
+ * How much of a screen each colour role takes, in % (the 60-30-10 idea, by accent use): neutrals (canvas, text),
+ * surfaces (panels, fields), accent (buttons, links, selection) and, with a secondary colour, a share of the accent.
+ */
+function colorMix(accent, secondary) {
+  const m = { ...ACCENT_USE[accent].mix };
+  if (secondary) {
+    m.secondary = Math.max(2, Math.round(m.accent * 0.3));
+    m.accent -= m.secondary;
+  }
+  return m;
+}
+
 /** The guideline with defaults filled in: what BRAND.md, AGENTS.brand.md, the preview and agents read. */
 export function resolveGuide(brand) {
   const v = brand.voice ?? {};
@@ -204,6 +218,7 @@ export function resolveGuide(brand) {
       accent,
       accentLabel: ACCENT_USE[accent].label,
       accentRule: ACCENT_USE[accent].rule,
+      mix: colorMix(accent, Boolean(brand.secondary)),
       secondaryRole,
       secondaryRule: secondaryRole ? SECONDARY_ROLE[secondaryRole] : null,
     },

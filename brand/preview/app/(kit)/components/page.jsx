@@ -1,6 +1,6 @@
 import { PageTitle } from "@semi/ui";
 import { ComponentIndex } from "@semi/ui/site";
-import brand from "../brand.json";
+import brand from "../../brand.json";
 
 export const metadata = { title: `Component — ${brand.name}` };
 

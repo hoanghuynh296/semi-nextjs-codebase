@@ -41,6 +41,10 @@ export function preparePreview(cwd) {
   cpSync(join(cwd, "dist", "brand.css"), join(dir, "app", "brand.css"));
   writeFileSync(join(dir, "app", "brand.json"), JSON.stringify(kit, null, 2) + "\n");
   writeFileSync(join(dir, "app", "fonts.js"), fontsModule(kit.fonts));
+  // The UI kit page links these for download.
+  mkdirSync(join(dir, "public", "kit"), { recursive: true });
+  cpSync(join(cwd, "dist", "brand.css"), join(dir, "public", "kit", "brand.css"));
+  cpSync(join(cwd, "dist", "brand.json"), join(dir, "public", "kit", "brand.json"));
   rmSync(join(dir, "public", "logo"), { recursive: true, force: true });
   if (existsSync(join(cwd, "dist", "logo"))) cpSync(join(cwd, "dist", "logo"), join(dir, "public", "logo"), { recursive: true });
   return dir;
@@ -100,6 +104,7 @@ function guideMd(t) {
   const out = [];
   if (g.brief) {
     out.push("## Thương hiệu này cho ai\n");
+    if (g.brief.tagline) out.push(`> ${g.brief.tagline}\n`);
     if (g.brief.product) out.push(`**Sản phẩm:** ${g.brief.product}  `);
     if (g.brief.audience) out.push(`**Người dùng:** ${g.brief.audience}  `);
     if (g.brief.personality?.length) out.push(`**Tính cách:** ${g.brief.personality.join(", ")}`);
@@ -123,6 +128,7 @@ function guideMd(t) {
   }
   out.push("## Cách dùng màu\n");
   out.push(`**Mức dùng màu chính: ${g.color.accentLabel}.** ${g.color.accentRule}\n`);
+  out.push(`Tỉ lệ trên một màn hình (ước lượng): ${Object.entries(g.color.mix).map(([k, n]) => `${{ neutral: "trung tính", surface: "bề mặt", accent: "màu chính", secondary: "màu phụ" }[k]} ${n}%`).join(" · ")}.\n`);
   out.push(bullets([
     "Màu chính là màu của hành động: nút chính (`bg-accent` + `text-on-accent`), link và chữ nhấn (`text-accent-fg`), mục đang chọn (`bg-accent-subtle`, `border-accent-line`), focus (`ring-focus`)",
     ...(g.color.secondaryRule ? [`Màu phụ chỉ cho ${g.color.secondaryRule}; không dùng cho nút hành động`] : []),
@@ -200,6 +206,7 @@ function agentsMd({ tokens: t }, styles) {
     "",
     "**Colour**",
     `- Accent use: **${g.color.accentLabel}**. ${g.color.accentRule}`,
+    `- Share of a screen, roughly: ${Object.entries(g.color.mix).map(([k, n]) => `${k} ${n}%`).join(", ")}.`,
     "- One primary button per area (`Button variant=\"primary\"`); everything else secondary or ghost.",
     "- States: `ring-focus`, `border-focus`, `bg-accent-subtle`, `border-accent-line`; coloured text `text-accent-fg`. Never `primary-500/15`-style classes (`accent-state-token`).",
     ...(g.color.secondaryRule ? [`- Secondary colour only for ${g.color.secondaryRule}. Never a secondary-coloured action button.`] : ["- This brand has no secondary colour: do not add one."]),

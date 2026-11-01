@@ -1,12 +1,11 @@
 import { ConfirmHost, ThemeProvider, ThemeScript, ToastHost } from "@semi/ui";
 import brand from "./brand.json";
 import { fontVariables } from "./fonts";
-import { Shell } from "./Shell";
 import "./globals.css";
 
 export const metadata = {
   title: `${brand.name} — brand preview`,
-  description: `The ${brand.name} brand on the Semi Design System: colours, type, components and contrast.`,
+  description: `The ${brand.name} brand on the Semi Design System: logo, colours, type, voice, sample screens and every component.`,
 };
 
 // The style picked in the preview is applied before paint, like the theme.
@@ -21,7 +20,7 @@ export default function RootLayout({ children }) {
       </head>
       <body className="min-h-screen bg-canvas text-body font-sans antialiased">
         <ThemeProvider defaultTheme="dark">
-          <Shell>{children}</Shell>
+          {children}
           <ToastHost />
           <ConfirmHost />
         </ThemeProvider>

@@ -115,6 +115,12 @@ test("guideline: brief, logo, voice, colour use and imagery are validated; defau
   assert.ok(g.voice.rules.some((r) => /viết tắt/.test(r)), "formal tone rules");
   assert.ok(g.voice.rules.some((r) => /Nút: động từ/.test(r)), "shared microcopy rules");
   assert.match(g.color.secondaryRule, /badge/);
+  assert.deepEqual(plain.tokens.guide.color.mix, { neutral: 80, surface: 15, accent: 5 }, "restrained: share of a screen");
+  const mix = g.color.mix;
+  assert.ok(mix.secondary > 0 && mix.accent + mix.secondary === 5, "the secondary takes a share of the accent");
+  assert.equal(Object.values(mix).reduce((a, b) => a + b), 100);
+  assert.match(validateBrand(brand({ brief: { tagline: "x".repeat(91) } }), { styles }).errors.join("\n"), /brief.tagline/);
+  assert.equal(generateBrand(brand({ brief: { tagline: "In 3D chính xác ngay lần đầu" } }), { tokens, styles }).tokens.guide.brief.tagline, "In 3D chính xác ngay lần đầu");
 });
 
 test("neutrals: tinted takes the primary's hue, preset copies the style's own neutrals; only allowed styles are emitted", () => {
@@ -201,7 +207,7 @@ test("preview site: the template plus this brand's data, fonts module and CSS la
   writeFileSync(join(dir, "brand.json"), JSON.stringify(brand({ name: "3D Noobs", package: "@3dnoobs/brand", fonts: { sans: "Inter", display: "Montserrat Alternates" } })));
   execFileSync("node", [CLI, "build"], { cwd: dir });
   const out = preparePreview(dir);
-  for (const f of ["next.config.mjs", "postcss.config.mjs", "app/layout.jsx", "app/page.jsx", "app/globals.css", "app/brand.css", "app/brand.json"]) assert.ok(readFileSync(join(out, f), "utf8").length > 20, f);
+  for (const f of ["next.config.mjs", "postcss.config.mjs", "app/layout.jsx", "app/parts.jsx", "app/(brand)/page.jsx", "app/(brand)/apps/page.jsx", "app/(kit)/kit/page.jsx", "app/(kit)/components/page.jsx", "app/globals.css", "app/brand.css", "app/brand.json", "public/kit/brand.css", "public/kit/brand.json"]) assert.ok(readFileSync(join(out, f), "utf8").length > 20, f);
   const fonts = readFileSync(join(out, "app/fonts.js"), "utf8");
   assert.match(fonts, /import \{ Inter, Montserrat_Alternates \} from "next\/font\/google";/);
   assert.match(fonts, /weight: \["600","700"\]/);

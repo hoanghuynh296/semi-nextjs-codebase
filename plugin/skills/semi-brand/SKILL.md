@@ -22,7 +22,8 @@ Run this skill **in the brand kit repo**, never in a product. Products use the k
    brand.json (the docs site's Brand preview copies one with "Copy lệnh cho agent"), save it to a file, create with
    `--from <file>` and ask only what is missing.
    - **Brief:** what the product is, who uses it (age, context: phone in a hurry, desk all day), 3 personality words
-     ("nhanh, vui vẻ, đáng tin"). Stored as `product`, `audience`, `personality`.
+     ("nhanh, vui vẻ, đáng tin"), and a one-line tagline if they have one. Stored as `product`, `audience`,
+     `personality`, `tagline`.
    - Brand name and package name (`@<scope>/brand`).
    - **Logo** (recommended): ask for the files (SVG best; a dark-background version and a square mark if they have
      them), put them in `assets/`. For an SVG run `brand.mjs colors assets/logo.svg` and offer its colours as the
@@ -57,9 +58,10 @@ Run this skill **in the brand kit repo**, never in a product. Products use the k
    ```bash
    node "<path-to-this-skill>/scripts/brand.mjs" preview --cwd "<dir>"     # run_in_background; http://localhost:4600
    ```
-   It renders the brand with real `@semi/ui` components: a sample product screen in light and dark side by side (texts
-   from the voice), the logo on both backgrounds with its clear space, the voice and colour-use rules, colours, type,
-   the contrast table, and every component page; theme and allowed styles switchable. Open it in the browser when you can, read the contrast table and the warnings, and
+   It is a brand book rendered with real `@semi/ui` components, in three tabs: **Thương hiệu** (cover, brief, logo
+   with clear space and misuse examples, colours by role with the share of a screen, type, voice, imagery),
+   **Ứng dụng** (dashboard, phone app, landing page, email, light and dark, texts from the voice) and **UI kit**
+   (scales, contrast table, downloads, every component page); theme and allowed styles switch in the top bar. Open it in the browser when you can, read the contrast table and the warnings, and
    tell the user in a few lines: always say when the button is not the exact brand colour in a theme (`fidelity`,
    ΔE > 0.08, with the reason the warning gives) and any "lưu ý" row, since those are what a designer would notice. Keep the server running while they adjust: `set` rebuilds and the page updates.
 5. **Adjust** what the user asks ("darker primary", "use the preset neutrals"):
@@ -68,7 +70,7 @@ Run this skill **in the brand kit repo**, never in a product. Products use the k
    ```
    Keys: `primary`, `secondary` (`none` to remove), `name`, `neutral`, `allow`, `style`, `sans`, `display`;
    guideline: `tone`, `address`, `we`, `emoji`, `accent`, `secondaryRole`, `product`, `audience`,
-   `personality` (comma list), `logo`, `logoDark`, `mark` (paths in the kit), `imagery`. Lists (`voice.do`,
+   `personality` (comma list), `tagline`, `logo`, `logoDark`, `mark` (paths in the kit), `imagery`. Lists (`voice.do`,
    `voice.dont`) and `voice.examples` are edited in `brand.json` directly, then `brand.mjs build`. It rebuilds and says the change level.
 6. **Release** when the user approves: `npm run check`, `node brand.mjs bump --cwd "<dir>" 1.0.0`, commit, push to the
    brand's GitHub repo (ask the user to create it if needed), tag `v1.0.0`, push the tag. Then turn on GitHub Pages

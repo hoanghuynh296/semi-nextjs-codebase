@@ -61,10 +61,17 @@ và Next.js (cho trang preview), sinh `dist/`.
 **Bước 3. Xem trước ngay trong repo brand và chỉnh**
 
 Agent chạy trang preview **của chính repo brand** (`npm run preview`) và gửi link local:
-**http://localhost:4600**. Trang dựng bằng `@semi/ui` thật cùng `brand.css` của kit: một màn hình sản phẩm mẫu ở theme
-sáng và tối cạnh nhau (chữ lấy từ giọng văn), logo trên hai nền kèm khoảng trống, giọng văn, cách dùng màu, màu, chữ,
-nút & form, thẻ, bảng, thông báo… trong màu 3D Noobs, đổi sáng / tối ở chân menu và giữa các style được phép, kèm bảng điểm đọc rõ. Trang
-gồm phần tổng quan thương hiệu và **toàn bộ component của Semi** (cùng các trang như docs của Semi: ví dụ, code, API).
+**http://localhost:4600**. Trang dựng bằng `@semi/ui` thật cùng `brand.css` của kit và là một **brand book** có 3 tab:
+
+- **Thương hiệu:** bìa (logo, tên, câu tagline, 3 từ tính cách trên nền màu chính), thương hiệu này là ai, logo (hai
+  nền, khoảng trống, biểu tượng ở 16–48px, và những cách **không được làm**: kéo méo, đổi màu, xoay, thêm bóng, đặt trên
+  nền rối), màu theo vai trò kèm **tỉ lệ màu trên một màn hình**, chữ (mẫu font có dấu tiếng Việt, câu tagline), giọng
+  văn (nên / không nên, nút, lỗi, trạng thái trống ở sáng và tối), hình ảnh.
+- **Ứng dụng:** dashboard, ứng dụng điện thoại, trang giới thiệu, email, mỗi màn ở sáng và tối, chữ theo giọng văn.
+- **UI kit** (cho developer): thang màu, sắc của nút và chữ ở từng theme và độ lệch với màu thương hiệu, cỡ chữ, bảng
+  điểm đọc rõ, tải `brand.css`, `brand.json` và logo, cùng **toàn bộ component của Semi** (ví dụ, code, API).
+
+Đổi sáng / tối và giữa các style được phép ở thanh trên.
 
 👉 *Bạn làm:* mở link, nhìn và nói điều muốn đổi ("màu chính đậm hơn", "dùng màu trung tính có sẵn"). *Agent làm:* sửa
 `brand.json`, sinh lại; trang đang mở tự cập nhật.
@@ -185,7 +192,7 @@ Brand kit ghi nó chạy với `@semi/ui` nào (`"semi": "^0.6"` trong `brand.js
   "neutral": "tinted",
   "styles": { "default": "flat", "allowed": ["flat", "soft"] },
   "fonts": { "sans": "Geist", "display": "Montserrat Alternates" },
-  "brief": { "product": "Phần mềm quản lý máy in 3D", "audience": "Maker 18–35 tuổi, dùng cả ngày trên máy tính", "personality": ["chính xác", "thân thiện", "kỹ thuật"] },
+  "brief": { "product": "Phần mềm quản lý máy in 3D", "audience": "Maker 18–35 tuổi, dùng cả ngày trên máy tính", "personality": ["chính xác", "thân thiện", "kỹ thuật"], "tagline": "In 3D chính xác ngay lần đầu" },
   "logo": { "full": "assets/logo.svg", "fullDark": "assets/logo-dark.svg", "mark": "assets/mark.svg" },
   "voice": {
     "tone": "friendly", "address": "bạn", "we": "3D Noobs", "emoji": false,
@@ -207,10 +214,10 @@ Brand kit ghi nó chạy với `@semi/ui` nào (`"semi": "^0.6"` trong `brand.js
 | `styles.default`, `styles.allowed` | `flat` · `soft` · `sharp` | Ít nhất một; `default` phải nằm trong `allowed` |
 | `fonts.sans`, `fonts.display` | Tên Google Font | `next/font/google` phải có font đó |
 | `semi` | Dải phiên bản `@semi/ui` | `/semi-brand update` cập nhật |
-| `brief` | `product`, `audience`, `personality` (1–5 tính từ) | Tuỳ chọn; vào BRAND.md và luật cho agent ("chọn chữ, mật độ, hình ảnh cho họ") |
+| `brief` | `product`, `audience`, `personality` (1–5 tính từ), `tagline` (một câu, ≤ 90 ký tự) | Tuỳ chọn; vào BRAND.md và luật cho agent ("chọn chữ, mật độ, hình ảnh cho họ") |
 | `logo` | `full` (bắt buộc khi có logo), `fullDark`, `mark`: đường dẫn trong repo kit (.svg nên dùng, .png, .webp); `clearspace` (× chiều cao, mặc định 0.5), `minWidth` (px, mặc định 80) | Build copy vào `dist/logo/full.svg` … để sản phẩm import; thiếu file là lỗi |
 | `voice` | `tone`: `friendly` · `neutral` · `formal`; `address` (gọi người dùng), `we` (tự xưng), `emoji`, `do`, `dont`, `examples` (`button`, `success`, `error`, `empty`, `confirm`) | Tuỳ chọn, mặc định trung tính, gọi "bạn". Luật viết chung của Semi (nút, lỗi, trạng thái trống) luôn kèm theo |
-| `color` | `accent`: `restrained` · `balanced` · `expressive`; `secondaryRole`: `highlight` · `badge` · `illustration` | Mặc định tiết chế, màu phụ là điểm nhấn |
+| `color` | `accent`: `restrained` · `balanced` · `expressive`; `secondaryRole`: `highlight` · `badge` · `illustration` | Mặc định tiết chế, màu phụ là điểm nhấn. Mức dùng màu quyết định tỉ lệ màu trên một màn hình (tiết chế 80 / 15 / 5 %, cân bằng 70 / 20 / 10, phóng khoáng 55 / 25 / 20: trung tính / bề mặt / màu chính; màu phụ lấy khoảng 30 % phần màu chính) |
 | `imagery` | Một đoạn mô tả ảnh / minh hoạ | Tuỳ chọn |
 
 ### Semi sinh màu thế nào

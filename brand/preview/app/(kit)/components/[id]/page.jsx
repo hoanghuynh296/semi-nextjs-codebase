@@ -1,6 +1,6 @@
 import list from "@semi/ui/examples/list.json";
 import { ComponentPage } from "@semi/ui/site";
-import brand from "../../brand.json";
+import brand from "../../../brand.json";
 
 export function generateStaticParams() {
   return list.map((d) => ({ id: d.id }));

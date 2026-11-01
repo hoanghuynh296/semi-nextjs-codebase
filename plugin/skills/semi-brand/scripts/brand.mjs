@@ -186,7 +186,7 @@ function applyPair(brand, key, value) {
     brand.color ||= {};
     if (v === null) delete brand.color[key];
     else brand.color[key] = v;
-  } else if (key === "product" || key === "audience" || key === "personality") {
+  } else if (key === "product" || key === "audience" || key === "personality" || key === "tagline") {
     brand.brief ||= {};
     if (v === null) delete brand.brief[key];
     else brand.brief[key] = key === "personality" ? v.split(",").map((x) => x.trim()).filter(Boolean) : v;
@@ -203,7 +203,7 @@ function applyPair(brand, key, value) {
     else brand.imagery = v;
   } else
     throw new Error(
-      `không biết khoá "${key}" (primary, secondary, name, neutral, allow, style, sans, display, tone, address, we, emoji, accent, secondaryRole, product, audience, personality, logo, logoDark, mark, imagery)`,
+      `không biết khoá "${key}" (primary, secondary, name, neutral, allow, style, sans, display, tone, address, we, emoji, accent, secondaryRole, product, audience, personality, tagline, logo, logoDark, mark, imagery)`,
     );
 }
 
