@@ -119,5 +119,18 @@ test("style: the audit asks for one, foundation --style applies it, /semi-style 
   assert.match(readFileSync(join(web, "app/layout.tsx"), "utf8"), /<html data-style="flat" lang="vi"/);
   assert.match(execFileSync("node", [STYLE, "--cwd", root], { encoding: "utf8" }), /style flat\n {2}● flat/);
   assert.throws(() => execFileSync("node", [STYLE, "--cwd", root, "--to", "glass"], { stdio: "pipe" }));
+  // Palettes: --palette alone recolours the current style; the default palette is written as no palette.
+  execFileSync("node", [STYLE, "--cwd", root, "--palette", "slate"], { stdio: "pipe" });
+  assert.match(readFileSync(join(web, "app/layout.tsx"), "utf8"), /<html data-style="flat" data-palette="slate" lang="vi"/);
+  assert.equal(JSON.parse(readFileSync(join(web, "semi-lint.json"), "utf8")).palette, "slate");
+  assert.equal(styleIssue(), undefined);
+  writeFileSync(join(web, "semi-lint.json"), JSON.stringify({ ...JSON.parse(readFileSync(join(web, "semi-lint.json"), "utf8")), palette: "olive" }));
+  assert.match(styleIssue().what, /data-palette="olive"/);
+  execFileSync("node", [STYLE, "--cwd", root, "--to", "sharp", "--palette", "paper"], { stdio: "pipe" });
+  assert.match(readFileSync(join(web, "app/layout.tsx"), "utf8"), /<html data-style="sharp" data-palette="paper" lang="vi"/);
+  execFileSync("node", [STYLE, "--cwd", root, "--to", "sharp", "--palette", "ink"], { stdio: "pipe" });
+  assert.match(readFileSync(join(web, "app/layout.tsx"), "utf8"), /<html data-style="sharp" lang="vi"/);
+  assert.equal(JSON.parse(readFileSync(join(web, "semi-lint.json"), "utf8")).palette, undefined);
+  assert.throws(() => execFileSync("node", [STYLE, "--cwd", root, "--palette", "slate"], { stdio: "pipe" })); // not a Sharp palette
   rmSync(root, { recursive: true });
 });

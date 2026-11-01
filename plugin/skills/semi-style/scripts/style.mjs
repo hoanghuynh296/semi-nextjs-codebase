@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 // /semi-style helper: shows or switches the Semi style of every app that uses @semi/ui. Zero external deps.
 //   node style.mjs --cwd <root>                         list: each app's style and the styles its @semi/ui has
-//   node style.mjs --cwd <root> --to <id> [--only dir]  switch: semi-lint.json "style" + <html data-style> in the
-//                                                       root layout (all apps, or the one under dir)
+//   node style.mjs --cwd <root> --to <id> [--palette <id>] [--only dir]
+//                                                       switch: semi-lint.json "style" / "palette" + <html data-style
+//                                                       data-palette> in the root layout (all apps, or the one under dir);
+//                                                       --palette alone changes the palette of the current style
 // A style changes the look (neutral colours, fonts, radii, card border / shadow, control sizes); components, the accent
 // and status colours and the layout stay as they are. The style's fonts are added to the layout by hand (printed).
 import { readFileSync } from "node:fs";
@@ -14,10 +16,12 @@ const argv = process.argv.slice(2);
 let root = process.cwd();
 let to = null;
 let only = null;
+let palette = null;
 for (let i = 0; i < argv.length; i++) {
   if (argv[i] === "--cwd" && argv[i + 1]) root = argv[++i];
   else if (argv[i] === "--to" && argv[i + 1]) to = argv[++i];
   else if (argv[i] === "--only" && argv[i + 1]) only = argv[++i];
+  else if (argv[i] === "--palette" && argv[i + 1]) palette = argv[++i];
 }
 root = resolve(root);
 const onlyAbs = only ? resolve(root, only) : null;
@@ -42,21 +46,24 @@ for (const dir of apps) {
     continue;
   }
   const st = readStyleState(dir);
-  if (!to) {
+  const target = to || (palette ? st.declared || list.default : null);
+  if (!target) {
     const current = st.declared ? `${st.declared}${st.applied === st.declared ? "" : ` (chưa áp dụng: <html data-style="${st.applied ?? ""}">)`}` : `chưa chọn (đang hiện ${list.default})`;
     console.log(`${name}: style ${current}`);
-    for (const s of list.styles) console.log(`  ${s.id === (st.declared || list.default) ? "●" : "○"} ${s.id} (${s.name}): ${s.description}`);
+    for (const s of list.styles) {
+      const on = s.id === (st.declared || list.default);
+      console.log(`  ${on ? "●" : "○"} ${s.id} (${s.name}): ${s.description}`);
+      for (const [i, p] of (s.palettes ?? []).entries())
+        console.log(`      ${on && (st.palette ?? s.palettes[0].id) === p.id ? "●" : "○"} --palette ${p.id}${i ? "" : " (mặc định)"}: ${p.description}`);
+    }
     continue;
   }
-  if (st.declared === to && st.applied === to) {
-    console.log(`${name}: đã dùng ${to}.`);
-    continue;
-  }
-  const r = wireStyle(dir, to);
-  console.log(`${name}: ${st.declared || list.default} → ${to}. ${r.message}`);
+  const r = wireStyle(dir, target, palette);
+  const from = `${st.declared || list.default}${st.palette ? `/${st.palette}` : ""}`;
+  console.log(`${name}: ${from} → ${target}${palette ? `/${palette}` : ""}. ${r.message}`);
   if (!r.ok) exitCode = 1;
-  const next = list.styles.find((s) => s.id === to);
+  const next = list.styles.find((s) => s.id === target);
   if (r.ok && next && missingStyleFonts(dir, next).length) console.log(`${name}: ${styleFontHint(r.layout, next)}`);
 }
-if (to && !exitCode) console.log(`\nChụp lại các trang đã chụp trước đó (cả hai theme) để so.`);
+if ((to || palette) && !exitCode) console.log(`\nChụp lại các trang đã chụp trước đó (cả hai theme) để so.`);
 process.exit(exitCode);

@@ -1,8 +1,8 @@
 {
-  "$note": "A Semi style: the look every component reads. tokens = shape, card border, fonts, control sizes; semantic = neutral surface / text / line colours per theme (accent, status and tone colours stay shared). Every style sets the same token keys; semantic keys are optional overrides of tokens/tokens.json. fonts = what the app loads with next/font. Edit, then npm run build:tokens. docs/STYLES.md describes each style.",
+  "$note": "A Semi style: the look every component reads. tokens = shape, card border, fonts, control sizes; palettes = the colour variants of the style (the first is the default): each one's semantic = neutral surface / text / line colours per theme, overriding tokens/tokens.json (accent, status and tone colours stay shared). Every style sets the same token keys. fonts = what the app loads with next/font. Edit, then npm run build:tokens. docs/STYLES.md describes each style.",
   "name": "Flat",
   "default": true,
-  "description": "Cool greys, thin borders, no card shadows, medium radii, compact 34px controls, Geist. Dense, information-first screens: dashboards, tools, admin.",
+  "description": "Cool neutral greys, thin borders, no card shadows, medium radii, compact 34px controls, Geist. Dense, information-first screens: dashboards, tools, admin.",
   "fonts": [
     {
       "family": "Geist",
@@ -60,5 +60,115 @@
       "value": "36px",
       "note": "Form inputs and selects (h-field)"
     }
-  }
+  },
+  "palettes": [
+    {
+      "id": "graphite",
+      "name": "Graphite",
+      "description": "Neutral cool grey (the original Semi look).",
+      "semantic": {}
+    },
+    {
+      "id": "slate",
+      "name": "Slate",
+      "description": "Blue-tinted greys: calm, technical.",
+      "semantic": {
+        "color-canvas": {
+          "dark": "#0b0e14",
+          "light": "#eef2f7"
+        },
+        "color-app": {
+          "dark": "#10141c",
+          "light": "#ffffff"
+        },
+        "color-panel": {
+          "dark": "#161b25",
+          "light": "#ffffff"
+        },
+        "color-field": {
+          "dark": "#1c2230",
+          "light": "#eef2f7"
+        },
+        "color-raised": {
+          "dark": "#262d3d",
+          "light": "#dde4ee"
+        },
+        "color-text-contrast": {
+          "dark": "#f8fafc",
+          "light": "#0f172a"
+        },
+        "color-text-body": {
+          "dark": "#cbd5e1",
+          "light": "#334155"
+        },
+        "color-text-muted": {
+          "dark": "#8a96a8",
+          "light": "#56637a"
+        },
+        "color-line": {
+          "dark": "rgba(203, 213, 225, 0.09)",
+          "light": "rgba(15, 23, 42, 0.09)"
+        },
+        "color-line-hover": {
+          "dark": "rgba(203, 213, 225, 0.18)",
+          "light": "rgba(15, 23, 42, 0.18)"
+        },
+        "color-divider": {
+          "dark": "rgba(203, 213, 225, 0.06)",
+          "light": "rgba(15, 23, 42, 0.06)"
+        }
+      }
+    },
+    {
+      "id": "olive",
+      "name": "Olive",
+      "description": "Green-grey neutrals: natural, quiet.",
+      "semantic": {
+        "color-canvas": {
+          "dark": "#0d0f0c",
+          "light": "#f0f2ec"
+        },
+        "color-app": {
+          "dark": "#121511",
+          "light": "#ffffff"
+        },
+        "color-panel": {
+          "dark": "#191c17",
+          "light": "#ffffff"
+        },
+        "color-field": {
+          "dark": "#20241d",
+          "light": "#f0f2ec"
+        },
+        "color-raised": {
+          "dark": "#2b3027",
+          "light": "#e0e4d8"
+        },
+        "color-text-contrast": {
+          "dark": "#f7f8f4",
+          "light": "#1a1f14"
+        },
+        "color-text-body": {
+          "dark": "#d3d7cb",
+          "light": "#3d4535"
+        },
+        "color-text-muted": {
+          "dark": "#929987",
+          "light": "#5c6551"
+        },
+        "color-line": {
+          "dark": "rgba(211, 215, 203, 0.09)",
+          "light": "rgba(26, 31, 20, 0.09)"
+        },
+        "color-line-hover": {
+          "dark": "rgba(211, 215, 203, 0.18)",
+          "light": "rgba(26, 31, 20, 0.18)"
+        },
+        "color-divider": {
+          "dark": "rgba(211, 215, 203, 0.06)",
+          "light": "rgba(26, 31, 20, 0.06)"
+        }
+      }
+    }
+  ]
 }

@@ -27,6 +27,7 @@ function parseArgs(argv) {
     nextVersion: "latest",
     tailwindVersion: "latest",
     style: null,
+    palette: null,
   };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -36,6 +37,7 @@ function parseArgs(argv) {
     else if (a === "--next-version" && argv[i + 1]) opts.nextVersion = argv[++i];
     else if (a === "--tailwind-version" && argv[i + 1]) opts.tailwindVersion = argv[++i];
     else if (a === "--style" && argv[i + 1]) opts.style = argv[++i];
+    else if (a === "--palette" && argv[i + 1]) opts.palette = argv[++i];
   }
   return opts;
 }
@@ -264,7 +266,9 @@ wireGlobalsCss(webDir);
 wireSemiLintConfig(webDir);
 wireAgentsMd(opts.cwd, installedVersion);
 writeNewProjectStarter(webDir, opts.appName, (semiStyles(webDir) || styles).styles.find((s) => s.id === opts.style) ?? styles.styles[0]);
-console.log(wireStyle(webDir, opts.style).message);
+const styled = wireStyle(webDir, opts.style, opts.palette);
+console.log(styled.message);
+if (!styled.ok) process.exit(2);
 
 console.log("\nRunning verification (semi-lint + tsc + next build)...");
 const failed = [

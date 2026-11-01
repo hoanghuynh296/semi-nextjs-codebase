@@ -1,7 +1,7 @@
 {
-  "$note": "A Semi style: the look every component reads. tokens = shape, card border, fonts, control sizes; semantic = neutral surface / text / line colours per theme (accent, status and tone colours stay shared). Every style sets the same token keys; semantic keys are optional overrides of tokens/tokens.json. fonts = what the app loads with next/font. Edit, then npm run build:tokens. docs/STYLES.md describes each style.",
+  "$note": "A Semi style: the look every component reads. tokens = shape, card border, fonts, control sizes; palettes = the colour variants of the style (the first is the default): each one's semantic = neutral surface / text / line colours per theme, overriding tokens/tokens.json (accent, status and tone colours stay shared). Every style sets the same token keys. fonts = what the app loads with next/font. Edit, then npm run build:tokens. docs/STYLES.md describes each style.",
   "name": "Soft",
-  "description": "Warm neutrals, borderless cards lifted by a soft shadow, large radii, roomy 40px controls, Plus Jakarta Sans. Calm, friendly screens: consumer apps, storefronts, onboarding.",
+  "description": "Warm, tinted neutrals, borderless cards lifted by a soft shadow, large radii, roomy 40px controls, Plus Jakarta Sans. Calm, friendly screens: consumer apps, storefronts, onboarding.",
   "fonts": [
     {
       "family": "Plus Jakarta Sans",
@@ -42,54 +42,171 @@
       "value": "44px"
     }
   },
-  "semantic": {
-    "color-canvas": {
-      "dark": "#12100e",
-      "light": "#f3eee7"
+  "palettes": [
+    {
+      "id": "sand",
+      "name": "Sand",
+      "description": "Warm sand and espresso.",
+      "semantic": {
+        "color-canvas": {
+          "dark": "#12100e",
+          "light": "#f3eee7"
+        },
+        "color-app": {
+          "dark": "#181512",
+          "light": "#faf7f2"
+        },
+        "color-panel": {
+          "dark": "#211d19",
+          "light": "#ffffff"
+        },
+        "color-field": {
+          "dark": "#2a2520",
+          "light": "#f3eee7"
+        },
+        "color-raised": {
+          "dark": "#36302a",
+          "light": "#e8e0d5"
+        },
+        "color-text-contrast": {
+          "dark": "#fbf8f3",
+          "light": "#1f1a14"
+        },
+        "color-text-body": {
+          "dark": "#ded7cd",
+          "light": "#463d33"
+        },
+        "color-text-muted": {
+          "dark": "#a49b90",
+          "light": "#665c51"
+        },
+        "color-line": {
+          "dark": "rgba(255, 238, 214, 0.09)",
+          "light": "rgba(60, 40, 20, 0.09)"
+        },
+        "color-line-hover": {
+          "dark": "rgba(255, 238, 214, 0.18)",
+          "light": "rgba(60, 40, 20, 0.18)"
+        },
+        "color-divider": {
+          "dark": "rgba(255, 238, 214, 0.06)",
+          "light": "rgba(60, 40, 20, 0.06)"
+        },
+        "shadow-tint": {
+          "dark": "rgb(0 0 0 / 0.45)",
+          "light": "rgb(60 40 20 / 0.12)"
+        }
+      }
     },
-    "color-app": {
-      "dark": "#181512",
-      "light": "#faf7f2"
+    {
+      "id": "blush",
+      "name": "Blush",
+      "description": "Rosy, gentle neutrals.",
+      "semantic": {
+        "color-canvas": {
+          "dark": "#141012",
+          "light": "#f6eef1"
+        },
+        "color-app": {
+          "dark": "#1a1518",
+          "light": "#fcf8f9"
+        },
+        "color-panel": {
+          "dark": "#231c20",
+          "light": "#ffffff"
+        },
+        "color-field": {
+          "dark": "#2c2328",
+          "light": "#f6eef1"
+        },
+        "color-raised": {
+          "dark": "#382d33",
+          "light": "#ecdfe4"
+        },
+        "color-text-contrast": {
+          "dark": "#fcf7f9",
+          "light": "#24161c"
+        },
+        "color-text-body": {
+          "dark": "#e2d4da",
+          "light": "#4b3740"
+        },
+        "color-text-muted": {
+          "dark": "#a8969f",
+          "light": "#6c5560"
+        },
+        "color-line": {
+          "dark": "rgba(255, 220, 235, 0.09)",
+          "light": "rgba(70, 30, 50, 0.09)"
+        },
+        "color-line-hover": {
+          "dark": "rgba(255, 220, 235, 0.18)",
+          "light": "rgba(70, 30, 50, 0.18)"
+        },
+        "color-divider": {
+          "dark": "rgba(255, 220, 235, 0.06)",
+          "light": "rgba(70, 30, 50, 0.06)"
+        },
+        "shadow-tint": {
+          "dark": "rgb(0 0 0 / 0.45)",
+          "light": "rgb(70 30 50 / 0.12)"
+        }
+      }
     },
-    "color-panel": {
-      "dark": "#211d19",
-      "light": "#ffffff"
-    },
-    "color-field": {
-      "dark": "#2a2520",
-      "light": "#f3eee7"
-    },
-    "color-raised": {
-      "dark": "#36302a",
-      "light": "#e8e0d5"
-    },
-    "color-text-contrast": {
-      "dark": "#fbf8f3",
-      "light": "#1f1a14"
-    },
-    "color-text-body": {
-      "dark": "#ded7cd",
-      "light": "#463d33"
-    },
-    "color-text-muted": {
-      "dark": "#a49b90",
-      "light": "#665c51"
-    },
-    "color-line": {
-      "dark": "rgba(255, 238, 214, 0.09)",
-      "light": "rgba(60, 40, 20, 0.09)"
-    },
-    "color-line-hover": {
-      "dark": "rgba(255, 238, 214, 0.18)",
-      "light": "rgba(60, 40, 20, 0.18)"
-    },
-    "color-divider": {
-      "dark": "rgba(255, 238, 214, 0.06)",
-      "light": "rgba(60, 40, 20, 0.06)"
-    },
-    "shadow-tint": {
-      "dark": "rgb(0 0 0 / 0.45)",
-      "light": "rgb(60 40 20 / 0.12)"
+    {
+      "id": "sage",
+      "name": "Sage",
+      "description": "Soft green-grey, fresh and calm.",
+      "semantic": {
+        "color-canvas": {
+          "dark": "#0f1210",
+          "light": "#edf2ee"
+        },
+        "color-app": {
+          "dark": "#141815",
+          "light": "#f8faf8"
+        },
+        "color-panel": {
+          "dark": "#1b201c",
+          "light": "#ffffff"
+        },
+        "color-field": {
+          "dark": "#232924",
+          "light": "#edf2ee"
+        },
+        "color-raised": {
+          "dark": "#2e352f",
+          "light": "#dde6df"
+        },
+        "color-text-contrast": {
+          "dark": "#f6f9f6",
+          "light": "#15201a"
+        },
+        "color-text-body": {
+          "dark": "#d4ddd5",
+          "light": "#37463c"
+        },
+        "color-text-muted": {
+          "dark": "#96a398",
+          "light": "#56665a"
+        },
+        "color-line": {
+          "dark": "rgba(214, 236, 220, 0.09)",
+          "light": "rgba(20, 50, 30, 0.09)"
+        },
+        "color-line-hover": {
+          "dark": "rgba(214, 236, 220, 0.18)",
+          "light": "rgba(20, 50, 30, 0.18)"
+        },
+        "color-divider": {
+          "dark": "rgba(214, 236, 220, 0.06)",
+          "light": "rgba(20, 50, 30, 0.06)"
+        },
+        "shadow-tint": {
+          "dark": "rgb(0 0 0 / 0.45)",
+          "light": "rgb(20 50 30 / 0.12)"
+        }
+      }
     }
-  }
+  ]
 }

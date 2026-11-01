@@ -489,8 +489,10 @@ export function auditSingleApp(cwd) {
   const styleIds = styleList ? styleList.styles.map((s) => s.id) : [];
   if (styleList && (!style.declared || !styleIds.includes(style.declared)))
     setup("style", "semi-lint.json", style.declared ? `style "${style.declared}" không có trong @semi/ui` : "chưa chọn style", `hỏi người dùng chọn style (${styleIds.join(" / ")}), rồi foundation --style <id>`);
-  else if (styleList && style.applied !== style.declared)
-    setup("style", style.layout || "app/layout.tsx", `<html> chưa có data-style="${style.declared}"`, `foundation --style ${style.declared}`);
+  else if (styleList && style.palette && !styleList.styles.find((s) => s.id === style.declared).palettes?.some((p) => p.id === style.palette))
+    setup("style", "semi-lint.json", `palette "${style.palette}" không có trong style ${style.declared}`, `hỏi người dùng chọn palette, rồi foundation --style ${style.declared} --palette <id>`);
+  else if (styleList && (style.applied !== style.declared || style.appliedPalette !== style.palette))
+    setup("style", style.layout || "app/layout.tsx", `<html> chưa khớp semi-lint.json (data-style="${style.declared}"${style.palette ? ` data-palette="${style.palette}"` : ", không data-palette"})`, `foundation --style ${style.declared}${style.palette ? ` --palette ${style.palette}` : ""}`);
   else if (styleList) {
     const missing = missingStyleFonts(cwd, styleList.styles.find((s) => s.id === style.declared));
     if (missing.length) setup("style-fonts", style.layout, `layout chưa tải font ${missing.map((f) => f.family).join(", ")} của style ${style.declared}`, "next/font như foundation in ra", "manual");
@@ -543,6 +545,7 @@ export function auditSingleApp(cwd) {
       isTailwindV4,
       hasSemiUi,
       style: style.declared,
+      palette: style.palette,
       semiUiVersion: (() => {
         try {
           return JSON.parse(readFileSync(join(cwd, "node_modules/@semi/ui/package.json"), "utf8")).version;
@@ -706,7 +709,7 @@ export function formatSummary(r, reportPath = REPORT_FILE) {
     `|---|---|---|---:|---|---:|`,
     ...apps.map(
       (a) =>
-        `| \`${nameOf(r, a)}\` | ${a.stack.semiUiVersion || (a.stack.hasSemiUi ? "có" : "chưa cài")}${a.stack.style ? ` · ${a.stack.style}` : ""} | ${a.stack.nextVersion || "—"} · ${a.stack.tailwindVersion || "—"} | ${a.inventory.coverage.percent}% | ${stage(a)} | ${a.issues.length} |`,
+        `| \`${nameOf(r, a)}\` | ${a.stack.semiUiVersion || (a.stack.hasSemiUi ? "có" : "chưa cài")}${a.stack.style ? ` · ${a.stack.style}${a.stack.palette ? `/${a.stack.palette}` : ""}` : ""} | ${a.stack.nextVersion || "—"} · ${a.stack.tailwindVersion || "—"} | ${a.inventory.coverage.percent}% | ${stage(a)} | ${a.issues.length} |`,
     ),
     ``,
   ];

@@ -165,37 +165,51 @@ export function findRootLayout(appDir) {
   return ["app/layout.tsx", "src/app/layout.tsx", "app/layout.jsx", "src/app/layout.jsx"].find((f) => existsSync(join(appDir, f))) || null;
 }
 
-/** An app's style: what semi-lint.json declares and what <html data-style> in the root layout applies. */
+/**
+ * An app's style and palette: what semi-lint.json declares ("style", "palette") and what <html data-style
+ * data-palette> in the root layout applies. A missing palette means the style's default (first) palette.
+ */
 export function readStyleState(appDir) {
-  let declared = null;
+  let cfg = {};
   try {
-    declared = JSON.parse(readFileSync(join(appDir, "semi-lint.json"), "utf8")).style ?? null;
+    cfg = JSON.parse(readFileSync(join(appDir, "semi-lint.json"), "utf8"));
   } catch {}
   const layout = findRootLayout(appDir);
   const html = layout ? readFileSync(join(appDir, layout), "utf8").match(/<html\b[^>]*>/) : null;
-  const applied = html ? (html[0].match(/\bdata-style=["']([\w-]+)["']/)?.[1] ?? null) : null;
-  return { declared, applied, layout, hasHtml: Boolean(html) };
+  const attr = (name) => (html ? (html[0].match(new RegExp(`\\bdata-${name}=["']([\\w-]+)["']`))?.[1] ?? null) : null);
+  return { declared: cfg.style ?? null, palette: cfg.palette ?? null, applied: attr("style"), appliedPalette: attr("palette"), layout, hasHtml: Boolean(html) };
 }
 
+/** <html …> with data-style / data-palette replaced by `attrs` (written right after <html, style first). */
+const withStyleAttrs = (tag, attrs) => tag.replace(/\s+data-(?:style|palette)=["'][\w-]*["']/g, "").replace(/^<html\b/, `<html ${attrs}`);
+
 /**
- * Pick a style: "style" in semi-lint.json and data-style on <html> in the root layout (the one place an app sets it).
- * Returns { layout, ok, message }; ok is false when the id is unknown or the layout has no <html> tag to edit.
+ * Pick a style and palette: "style" / "palette" in semi-lint.json and data-style / data-palette on <html> in the root
+ * layout (the one place an app sets them). The style's default palette is written as no palette at all.
+ * Returns { layout, ok, message }; ok is false for an unknown id or a layout without an <html> tag.
  */
-export function wireStyle(appDir, id) {
+export function wireStyle(appDir, id, paletteId = null) {
   const list = semiStyles(appDir);
   if (!list) return { ok: false, message: "@semi/ui đã cài chưa có style: chạy /semi-update trước" };
-  if (!list.styles.some((s) => s.id === id)) return { ok: false, message: `style "${id}" không có; chọn: ${list.styles.map((s) => s.id).join(", ")}` };
+  const style = list.styles.find((s) => s.id === id);
+  if (!style) return { ok: false, message: `style "${id}" không có; chọn: ${list.styles.map((s) => s.id).join(", ")}` };
+  const palettes = style.palettes ?? [];
+  if (paletteId && !palettes.some((p) => p.id === paletteId))
+    return { ok: false, message: `palette "${paletteId}" không có trong ${style.name}; chọn: ${palettes.map((p) => p.id).join(", ")}` };
+  const palette = paletteId && paletteId !== palettes[0]?.id ? paletteId : null;
   const cfgPath = join(appDir, "semi-lint.json");
   const cfg = existsSync(cfgPath) ? JSON.parse(readFileSync(cfgPath, "utf8")) : {};
   cfg.style = id;
+  if (palette) cfg.palette = palette;
+  else delete cfg.palette;
   writeFileSync(cfgPath, JSON.stringify(cfg, null, 2) + "\n");
   const layout = findRootLayout(appDir);
   const src = layout ? readFileSync(join(appDir, layout), "utf8") : "";
   const html = src.match(/<html\b[^>]*>/);
-  if (!html) return { ok: false, layout, message: `không thấy thẻ <html> trong ${layout || "app/layout.tsx"}: thêm data-style="${id}" vào <html> bằng tay` };
-  const tag = /\bdata-style=["'][\w-]*["']/.test(html[0]) ? html[0].replace(/\bdata-style=["'][\w-]*["']/, `data-style="${id}"`) : html[0].replace(/^<html\b/, `<html data-style="${id}"`);
-  writeFileSync(join(appDir, layout), src.replace(html[0], tag));
-  return { ok: true, layout, message: `${layout} ← <html data-style="${id}">, semi-lint.json ← "style": "${id}"` };
+  const attrs = `data-style="${id}"${palette ? ` data-palette="${palette}"` : ""}`;
+  if (!html) return { ok: false, layout, message: `không thấy thẻ <html> trong ${layout || "app/layout.tsx"}: thêm ${attrs} vào <html> bằng tay` };
+  writeFileSync(join(appDir, layout), src.replace(html[0], withStyleAttrs(html[0], attrs)));
+  return { ok: true, layout, message: `${layout} ← <html ${attrs}>, semi-lint.json ← "style": "${id}"${palette ? `, "palette": "${palette}"` : ""}` };
 }
 
 /** next/font code for a style's fonts: { importLine, decls, classNames } (classNames is a template-literal fragment). */

@@ -99,22 +99,73 @@
   },
   "styles": {
     "default": "flat",
-    "apply": "<html data-style=\"<id>\"> + \"style\" in semi-lint.json (docs/STYLES.md)",
+    "apply": "<html data-style=\"<id>\" data-palette=\"<id>\"> + \"style\" / \"palette\" in semi-lint.json; the first palette is the default (docs/STYLES.md)",
     "list": [
       {
         "id": "flat",
         "name": "Flat",
-        "description": "Cool greys, thin borders, no card shadows, medium radii, compact 34px controls, Geist. Dense, information-first screens: dashboards, tools, admin."
+        "description": "Cool neutral greys, thin borders, no card shadows, medium radii, compact 34px controls, Geist. Dense, information-first screens: dashboards, tools, admin.",
+        "palettes": [
+          {
+            "id": "graphite",
+            "name": "Graphite",
+            "description": "Neutral cool grey (the original Semi look)."
+          },
+          {
+            "id": "slate",
+            "name": "Slate",
+            "description": "Blue-tinted greys: calm, technical."
+          },
+          {
+            "id": "olive",
+            "name": "Olive",
+            "description": "Green-grey neutrals: natural, quiet."
+          }
+        ]
       },
       {
         "id": "sharp",
         "name": "Sharp",
-        "description": "Pure black and white, strong 2px borders, square corners, a hard offset shadow, Space Grotesk. Bold, editorial screens: landing pages, portfolios, creative tools."
+        "description": "Off-black ink and off-white, strong 2px borders, square corners, a hard offset shadow, Space Grotesk. Bold, editorial screens: landing pages, portfolios, creative tools.",
+        "palettes": [
+          {
+            "id": "ink",
+            "name": "Ink",
+            "description": "Off-black and off-white: graphic without glare."
+          },
+          {
+            "id": "paper",
+            "name": "Paper",
+            "description": "Cream paper and sepia ink: editorial, printed."
+          },
+          {
+            "id": "mono",
+            "name": "Mono",
+            "description": "Pure black and white, maximum contrast."
+          }
+        ]
       },
       {
         "id": "soft",
         "name": "Soft",
-        "description": "Warm neutrals, borderless cards lifted by a soft shadow, large radii, roomy 40px controls, Plus Jakarta Sans. Calm, friendly screens: consumer apps, storefronts, onboarding."
+        "description": "Warm, tinted neutrals, borderless cards lifted by a soft shadow, large radii, roomy 40px controls, Plus Jakarta Sans. Calm, friendly screens: consumer apps, storefronts, onboarding.",
+        "palettes": [
+          {
+            "id": "sand",
+            "name": "Sand",
+            "description": "Warm sand and espresso."
+          },
+          {
+            "id": "blush",
+            "name": "Blush",
+            "description": "Rosy, gentle neutrals."
+          },
+          {
+            "id": "sage",
+            "name": "Sage",
+            "description": "Soft green-grey, fresh and calm."
+          }
+        ]
       }
     ]
   },

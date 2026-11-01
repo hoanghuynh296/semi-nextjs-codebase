@@ -86,8 +86,10 @@ Style là diện mạo của cả giao diện: màu nền / chữ / viền, font
 dùng chung component, bố cục, màu thương hiệu, màu trạng thái và cả hai theme sáng / tối. Hiện có **Flat** (mặc định:
 xám lạnh, Geist, viền mảnh, gọn 34px, cho dashboard / công cụ), **Soft** (xám ấm, Plus Jakarta Sans, thẻ không viền
 có bóng mềm, bo lớn, thoáng 40px, cho app người dùng cuối) và **Sharp** (đen trắng, Space Grotesk, viền 2px, góc
-vuông, bóng lệch cứng, cho landing page / portfolio / công cụ sáng tạo). Danh sách: `tokens/styles.json`,
-mô tả: `docs/STYLES.md`. Xem thử trong Storybook (nút Flat / Soft / Sharp ở chân sidebar).
+vuông, bóng lệch cứng, cho landing page / portfolio / công cụ sáng tạo). Mỗi style có **3 palette** (biến thể màu
+trung tính): Flat = Graphite · Slate · Olive, Soft = Sand · Blush · Sage, Sharp = Ink · Paper · Mono (palette đầu là
+mặc định). Đổi chỉ màu: `/semi-style` rồi chọn palette. Danh sách: `tokens/styles.json`,
+mô tả: `docs/STYLES.md`. Xem thử trong Storybook (nút chọn style và palette ở chân sidebar).
 
 ### Đề xuất tính năng mới từ dự án con (Khi gặp thiếu sót hoặc nhu cầu chưa đáp ứng)
 ```text

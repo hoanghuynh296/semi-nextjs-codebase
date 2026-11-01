@@ -107,7 +107,7 @@ const manifest = {
     z: Object.keys(tokens.z),
     style: Object.keys(styleList.styles[0].tokens),
   },
-  styles: { default: styleList.default, apply: '<html data-style="<id>"> + "style" in semi-lint.json (docs/STYLES.md)', list: styleList.styles.map(({ id, name, description }) => ({ id, name, description })) },
+  styles: { default: styleList.default, apply: '<html data-style="<id>" data-palette="<id>"> + "style" / "palette" in semi-lint.json; the first palette is the default (docs/STYLES.md)', list: styleList.styles.map(({ id, name, description, palettes }) => ({ id, name, description, palettes: palettes.map(({ id, name, description }) => ({ id, name, description })) })) },
   icons: iconNames,
   components: items.filter((i) => i.kind === "component"),
   hooks: items.filter((i) => i.kind === "hook"),
@@ -201,7 +201,10 @@ for (const i of [...manifest.components, ...manifest.hooks])
   if (!new RegExp(`\\b${i.name}\\b`).test(designSystem)) drift.push(`docs/DESIGN_SYSTEM.md: ${i.kind} ${i.name} (${i.module}) is not described`);
 const stylesDoc = read("docs/STYLES.md");
 const styleHead = stylesDoc.split("\n").find((l) => l.startsWith("| |")) || "";
-for (const st of styleList.styles) if (!styleHead.includes(st.name)) drift.push(`docs/STYLES.md: style ${st.name} (${st.id}) has no column in the table`);
+for (const st of styleList.styles) {
+  if (!styleHead.includes(st.name)) drift.push(`docs/STYLES.md: style ${st.name} (${st.id}) has no column in the table`);
+  for (const p of st.palettes) if (!stylesDoc.includes(`| ${st.name} | ${p.name}`) && !stylesDoc.includes(`| ${st.name} | **${p.name}**`)) drift.push(`docs/STYLES.md: palette ${st.name} / ${p.name} has no row in the Palettes table`);
+}
 if (drift.length) {
   console.error(`docs and code out of sync:\n- ${drift.join("\n- ")}`);
   process.exit(1);

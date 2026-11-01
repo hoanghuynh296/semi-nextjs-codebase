@@ -7,11 +7,14 @@ import styleList from "../tokens/styles.json" with { type: "json" };
 const PAGES = ["/foundations.html", "/components.html", "/primitives.html", "/patterns.html", "/chat.html"];
 const THEMES = ["dark", "light"] as const;
 const STYLES = styleList.styles.map((s) => s.id);
+/** Every style × palette (the first palette is the style's default, set without data-palette). */
+const LOOKS = styleList.styles.flatMap((s) => s.palettes.map((p, i) => ({ style: s.id, palette: i ? p.id : undefined, name: `${s.id}/${p.id}` })));
 
-async function open(page: Page, path: string, theme: "dark" | "light" | "system", style?: string) {
-  await page.addInitScript(([t, s]) => {
+async function open(page: Page, path: string, theme: "dark" | "light" | "system", style?: string, palette?: string) {
+  await page.addInitScript(([t, s, p]) => {
     localStorage.setItem("semi-theme", t);
     if (s) localStorage.setItem("semi-style", s);
+    if (p) localStorage.setItem("semi-palette", p);
     // Theme as soon as <body> exists = what the first paint uses (the inline ThemeScript runs in <head>).
     new MutationObserver((_, obs) => {
       if (document.body) {
@@ -20,7 +23,7 @@ async function open(page: Page, path: string, theme: "dark" | "light" | "system"
         obs.disconnect();
       }
     }).observe(document, { childList: true, subtree: true });
-  }, [theme, style ?? ""] as const);
+  }, [theme, style ?? "", palette ?? ""] as const);
   await page.goto(path);
   await page.addStyleTag({ content: "*,*::before,*::after{transition:none!important;animation:none!important}" });
 }
@@ -81,9 +84,9 @@ function lowContrast(page: Page) {
 
 for (const path of PAGES) {
   for (const theme of THEMES) {
-    for (const style of STYLES) {
-      test(`contrast AA · ${style} · ${theme} · ${path}`, async ({ page }) => {
-        await open(page, path, theme, style);
+    for (const look of LOOKS) {
+      test(`contrast AA · ${look.name} · ${theme} · ${path}`, async ({ page }) => {
+        await open(page, path, theme, look.style, look.palette);
         await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
         expect(await lowContrast(page)).toEqual([]);
       });
@@ -163,6 +166,19 @@ test("styles: Soft is applied before paint, Soft and Sharp change the shape toke
     await page.getByRole("radio", { name: theme === "dark" ? "Tối" : "Sáng" }).first().click();
     expect(await lowContrast(page)).toEqual([]);
   }
+});
+
+test("styles: a palette applies before paint and resets when the style changes", async ({ page }) => {
+  const canvas = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+  await open(page, "/components.html", "light", "sharp", "paper");
+  expect(await page.evaluate(() => (window as unknown as { __firstPaintStyle?: string }).__firstPaintStyle)).toBe("sharp");
+  await expect(page.locator("html")).toHaveAttribute("data-palette", "paper");
+  expect(await canvas()).toBe("rgb(242, 236, 224)"); // Paper canvas
+  await page.getByRole("radiogroup", { name: "Palette" }).getByRole("radio", { name: "Mono" }).click();
+  expect(await canvas()).toBe("rgb(255, 255, 255)");
+  await page.getByRole("radiogroup", { name: "Style" }).getByRole("radio", { name: "Soft" }).click();
+  await expect(page.locator("html")).not.toHaveAttribute("data-palette", /.+/);
+  await expect(page.getByRole("radiogroup", { name: "Palette" }).getByRole("radio", { name: "Sand" })).toHaveAttribute("aria-checked", "true");
 });
 
 test("system theme follows prefers-color-scheme", async ({ browser }) => {

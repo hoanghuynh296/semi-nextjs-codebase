@@ -21,7 +21,8 @@
 //     "disable": ["loading-text"],                  // rule ids turned off (record why in your app's doc)
 //     "keep": { "tables": "reports need dense tables" }, // /semi-audit structural checks the team chose to keep
 //                                                     // (reason string = whole app, array = path prefixes)
-//     "style": "soft"                               // the app's style (docs/STYLES.md), = <html data-style> in the layout
+//     "style": "soft", "palette": "sage"            // the app's style and palette (docs/STYLES.md), = <html data-style
+//                                                     // data-palette> in the layout; no palette = the style's first
 //   }
 // A rule that the Semi docs add and that can be grepped belongs here too (change it in the semi repo, not per app).
 import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
