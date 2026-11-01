@@ -2,9 +2,9 @@
 // /semi-brand helper: creates, edits and updates a brand kit repo (docs/BRANDS.md). Zero external deps; the colour
 // work is done by the kit's own @semi/ui (semi-brand build).
 //   node brand.mjs create --cwd <dir> --name "3D Noobs" --package @3dnoobs/brand --primary "#00AE42"
-//        [--secondary "#hex"] [--neutral tinted|preset] [--palette soft=sage] [--style flat] [--allow flat,soft]
+//        [--secondary "#hex"] [--neutral tinted|preset] [--style flat] [--allow flat,soft]
 //        [--sans Geist] [--display "Montserrat Alternates"]
-//   node brand.mjs set --cwd <dir> primary=#00C853 secondary=none neutral=preset palette.soft=sage allow=flat,soft
+//   node brand.mjs set --cwd <dir> primary=#00C853 secondary=none neutral=preset allow=flat,soft
 //        style=flat sans=Inter display=Inter        edit brand.json, then build
 //   node brand.mjs build|check --cwd <dir>          the kit's semi-brand
 //   node brand.mjs preview --cwd <dir> [--port N]   serve the kit's preview site (http://localhost:4600); keep it running
@@ -178,11 +178,7 @@ function applyPair(brand, key, value) {
   else if (key === "allow") brand.styles.allowed = v.split(",").map((x) => x.trim()).filter(Boolean);
   else if (key === "style") brand.styles.default = v;
   else if (key === "sans" || key === "display") brand.fonts[key] = v;
-  else if (key.startsWith("palette.")) {
-    brand.palettes ||= {};
-    if (v) brand.palettes[key.slice(8)] = v;
-    else delete brand.palettes[key.slice(8)];
-  } else if (["tone", "address", "we", "emoji"].includes(key)) {
+  else if (["tone", "address", "we", "emoji"].includes(key)) {
     brand.voice ||= {};
     if (v === null) delete brand.voice[key];
     else brand.voice[key] = key === "emoji" ? v === "true" : v;
@@ -207,7 +203,7 @@ function applyPair(brand, key, value) {
     else brand.imagery = v;
   } else
     throw new Error(
-      `không biết khoá "${key}" (primary, secondary, name, neutral, allow, style, sans, display, palette.<style>, tone, address, we, emoji, accent, secondaryRole, product, audience, personality, logo, logoDark, mark, imagery)`,
+      `không biết khoá "${key}" (primary, secondary, name, neutral, allow, style, sans, display, tone, address, we, emoji, accent, secondaryRole, product, audience, personality, logo, logoDark, mark, imagery)`,
     );
 }
 
@@ -259,7 +255,6 @@ if (cmd === "create") {
     for (const k of ["name", "package", "primary", "secondary", "neutral"]) if (src[k] && !opts[k]) opts[k] = src[k];
     if (src.styles && !opts.style) (opts.style = src.styles.default), (opts.allow = src.styles.allowed.join(","));
     if (src.fonts) (opts.sans ||= src.fonts.sans), (opts.display ||= src.fonts.display);
-    if (src.palettes && !opts.palette) opts.palette = Object.entries(src.palettes).map(([k, v]) => `${k}=${v}`).join(",");
     opts.guide = JSON.stringify(Object.fromEntries(["brief", "logo", "voice", "color", "imagery"].filter((k) => src[k] !== undefined).map((k) => [k, src[k]])));
   }
   if (existsSync(brandPath)) {
@@ -280,7 +275,6 @@ if (cmd === "create") {
     primary: opts.primary,
     secondary: opts.secondary && opts.secondary !== "none" ? opts.secondary : null,
     neutral: opts.neutral || "tinted",
-    ...(opts.palette ? { palettes: Object.fromEntries(opts.palette.split(",").map((p) => p.split("="))) } : {}),
     styles: { default: style, allowed: (opts.allow || style).split(",").map((s) => s.trim()) },
     fonts: { sans: opts.sans || "Geist", display: opts.display || "Montserrat Alternates" },
     ...(opts.guide ? JSON.parse(opts.guide) : {}),

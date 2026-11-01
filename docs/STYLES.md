@@ -8,31 +8,17 @@ per app: §2b), status and tone colours, both themes (light / dark), icons, acce
 | | Flat (default) | Soft | Sharp |
 |---|---|---|---|
 | For | Dense, information-first screens: dashboards, tools, admin | Calm, friendly screens: consumer apps, storefronts, onboarding | Bold, editorial screens: landing pages, portfolios, creative tools |
-| Palettes (first = default) | Graphite · Slate · Olive | Sand · Blush · Sage | Ink · Paper · Mono |
 | Fonts | Geist + Montserrat Alternates (titles) | Plus Jakarta Sans | Space Grotesk |
 | Card (`border-card`, `shadow-card`) | 1px line border, no shadow | No visible border, soft lifted shadow | 2px solid border, hard 4px offset shadow |
 | Lines (`border-line`) | 8–9% | 9%, tinted | 18–32%, strong |
 | `rounded-chip` / `control` / `card` / `panel` | 4 · 8 · 12 · 16px | 6 · 12 · 20 · 24px | 2 · 0 · 0 · 0 |
 | `h-control` / `h-field` | 34 / 36px | 40 / 44px | 36 / 40px |
 
-Every style × palette passes WCAG AA on every Storybook page in both themes (Playwright, `npm run test:ui`).
+Every style passes WCAG AA on every Storybook page in both themes (Playwright, `npm run test:ui`).
 
-## Palettes
-
-Each style has three colour variants. A palette changes only the neutral colours (canvas, app, panel, field, raised,
-text, lines) of both themes; the accent stays the product's brand and status colours keep their meaning.
-
-| Style | Palette | Look |
-|---|---|---|
-| Flat | **Graphite** (default) | Neutral cool grey, the original Semi look |
-| Flat | Slate | Blue-tinted greys: calm, technical |
-| Flat | Olive | Green-grey neutrals: natural, quiet |
-| Soft | **Sand** (default) | Warm sand and espresso |
-| Soft | Blush | Rosy, gentle neutrals |
-| Soft | Sage | Soft green-grey, fresh and calm |
-| Sharp | **Ink** (default) | Off-black and off-white: graphic without glare |
-| Sharp | Paper | Cream paper and sepia ink: editorial, printed |
-| Sharp | Mono | Pure black and white, maximum contrast |
+Each style sets its own neutral colours (`semantic` in `tokens/styles/<id>.json`, both themes): Flat uses the shared
+neutrals of `tokens/tokens.json`, Soft a warm sand, Sharp off-black and off-white. The accent stays the product's brand
+and the status colours keep their meaning.
 
 Source: `tokens/styles/<id>.json` (`tokens`: shape, card border, fonts, sizes; `semantic`: neutral colours per theme;
 `fonts`: what the app loads) → `npm run build:tokens` → `[data-style="<id>"]` blocks in `tokens.css` and the list in
@@ -40,17 +26,17 @@ Source: `tokens/styles/<id>.json` (`tokens`: shape, card border, fonts, sizes; `
 sidebar.
 
 A brand kit (docs/BRANDS.md) builds on these: it picks the allowed styles and either tints their neutrals with its
-primary or keeps a palette, so products of a brand never set `data-palette` themselves.
+primary or keeps the style's own neutrals (`"neutral": "preset"`), so products of a brand never set neutral colours.
 
 ## Picking a style in an app
 
 ```tsx
-// app/layout.tsx: data-style on <html> (off = Flat), data-palette for a palette other than the style's first
-<html lang="vi" data-style="soft" data-palette="sage" suppressHydrationWarning>
+// app/layout.tsx: data-style on <html> (off = Flat)
+<html lang="vi" data-style="soft" suppressHydrationWarning>
 ```
 
 plus the style's fonts with `next/font` (the `fonts` list in `@semi/ui/styles.json`; Soft: `Plus_Jakarta_Sans` with
-`variable: "--font-jakarta"` on `<html className>`), and the same ids in `semi-lint.json` (`"style": "soft"`, `"palette": "sage"`; no `palette` = the default one).
+`variable: "--font-jakarta"` on `<html className>`), and the same id in `semi-lint.json` (`"style": "soft"`).
 `/semi-audit` checks all three against each other. `/semi-init`
 asks for the style of a new app, `/semi-fix` foundation for an existing one, `/semi-style` switches it later. A wrapper
 with `data-style` re-styles only its subtree (used by Storybook previews), not something an app needs.
@@ -74,8 +60,8 @@ with `data-style` re-styles only its subtree (used by Storybook previews), not s
 ## Adding a style (maintainers)
 
 1. Copy `tokens/styles/flat.json` to `tokens/styles/<id>.json`; set `name`, `description`, `fonts` (Google fonts
-   `next/font` can load, with their CSS variable), every token (the build fails when a key is missing or extra) and the
-   `palettes` (three, the first is the default; each one's `semantic` sets the neutrals it changes, dark + light). Exactly one file has `"default": true`. Load its fonts in
+   `next/font` can load, with their CSS variable), every token (the build fails when a key is missing or extra) and,
+   when it has its own neutrals, `semantic` (dark + light). Exactly one file has `"default": true`. Load its fonts in
    `app/layout.tsx` of the Storybook.
 2. `npm run build:tokens`, then add its column above. `check:manifest` fails while a style has no column here.
 3. `npm run build:storybook && npm run test:ui`: contrast and phone layout run for every style in both themes.

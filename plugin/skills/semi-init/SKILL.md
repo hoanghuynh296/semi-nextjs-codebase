@@ -24,15 +24,14 @@ The user should **never** have to run `npm install` or config commands: you run 
    folder too: it prints the apps it found and exits 10.)
 2. **Ask** (`ask_question`). If the product belongs to a brand (the user names it, or gives a brand kit repo), pass
    `--brand <spec>` and ask only the app title, export mode and a style among the brand's allowed ones: colours, fonts
-   and palettes come from the brand.
+   and neutrals come from the brand.
    - Next.js version: `(Recommended) latest`, or a version.
    - App title, and the export mode: Next.js server (default) or static export (`output: "export"`).
    - Style: one option per style in `tokens/styles.json` of this plugin (`skills/semi-audit/scripts/vendor/styles.json`),
      with its description; `(Recommended)` on the default (Flat) unless the app is clearly consumer-facing (Soft).
-   - Palette of that style: its three `palettes` with descriptions, `(Recommended)` on the first (the default).
 3. **Create:**
    ```bash
-   node "<path-to-this-skill>/scripts/init.mjs" --cwd "<target-dir>" --app-name "<App Title>" --next-version "<latest|ver>" --style "<id>" [--palette "<id>"] [--brand "<github:owner/repo | file:../kit>"] [--static-export]
+   node "<path-to-this-skill>/scripts/init.mjs" --cwd "<target-dir>" --app-name "<App Title>" --next-version "<latest|ver>" --style "<id>" [--brand "<github:owner/repo | file:../kit>"] [--static-export]
    ```
    It runs `create-next-app` (TypeScript, Tailwind 4, App Router), installs `@semi/ui` from the latest tag of
    `github:hoanghuynh296/semi-nextjs-codebase`, sets `transpilePackages`, wires `tokens.css` + `base.css` + `@source`

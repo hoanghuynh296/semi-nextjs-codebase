@@ -4,7 +4,7 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
-## [0.14.0] - 2026-11-01
+## [0.15.0] - 2026-11-01
 
 ### Added
 - **Accent state tokens:** `ring-focus` / `border-focus` (focus ring, focused field), `bg-accent-subtle` / `bg-accent-subtle-hover` (selected, active), `border-accent-line` (selected border). They follow `accent-fg`, so they reach 3:1 in both themes for every brand. Every component and class constant uses them (`FOCUS_RING`, `FIELD_INPUT`, `CARD_ACTIVE`, Pagination, Combobox, Calendar, Chat, AppShell …).
@@ -22,8 +22,16 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 - The focus ring is now solid `accent-fg` (was `primary-500` at 50%): more visible in Semi's own green too.
 
 ### Migration
-- `0.14.0-accent-state-tokens` rewrites brand-scale state classes in apps (`ring-primary-500/50` → `ring-focus`, `bg-primary-500/15` → `bg-accent-subtle`, `border-primary-500/30` → `border-accent-line`, `focus:border-primary-*` → `border-focus`). Solid fills (`bg-primary-500`) are left alone: if one carries text, use `bg-accent` + `text-on-accent`.
+- `0.15.0-accent-state-tokens` rewrites brand-scale state classes in apps (`ring-primary-500/50` → `ring-focus`, `bg-primary-500/15` → `bg-accent-subtle`, `border-primary-500/30` → `border-accent-line`, `focus:border-primary-*` → `border-focus`). Solid fills (`bg-primary-500`) are left alone: if one carries text, use `bg-accent` + `text-on-accent`.
 - Brand kits: run `/semi-brand update`. Most brands' shades and buttons change, so it reports a **major** change; products then get it through `/semi-update` (asked first).
+
+## [0.14.0] - 2026-11-01
+
+### Removed (breaking)
+- **Palettes are gone.** Each style used to have three colour variants of its neutrals (`data-palette`, `"palette"` in `semi-lint.json`, `palettes` in `tokens/styles.json`, `--palette` in `/semi-init`, `/semi-fix`, `/semi-style`, `palette.<style>` in `/semi-brand`). No app or brand kit used them, and the design system pages no longer offered them. Now each style has its own neutrals (`semantic` in `tokens/styles/<id>.json`): Flat the shared neutrals, Soft the former default Sand, Sharp the former default Ink. Looks by default do not change.
+- **Migration** `0.14.0-remove-palette` (run by `/semi-update`): removes `"palette"` from `semi-lint.json` and `data-palette` from `<html>`. `/semi-audit` reports a leftover palette until `/semi-fix` cleans it up.
+- **Apps on a non-default palette change look.** The migration cannot keep their colours. Before updating one, ask the user whether to keep the look: the palette's values are in git history (`git show v0.13.3:tokens/styles/soft.json`, `…/sharp.json`, `…/flat.json`). Brand kits: remove `"palettes"` from `brand.json` (a warning until then); `"neutral": "preset"` keeps the style's own neutrals.
+- The docs site has no palette picker (since 0.13.3) and its style tests cover the three styles.
 
 ## [0.13.3] - 2026-11-01
 

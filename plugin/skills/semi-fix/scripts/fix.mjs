@@ -2,7 +2,7 @@
 // /semi-fix helper: works from semi-audit.md (written by /semi-audit), one phase at a time. Zero external deps.
 //   node fix.mjs --cwd <root>                      plan: re-audits when semi-audit.md is missing or older than the code,
 //                                                  then prints the summary (the agent reads semi-audit.md for details)
-//   node fix.mjs --cwd <root> foundation [--brand <spec>] [--style <id>] [--palette <id>]
+//   node fix.mjs --cwd <root> foundation [--brand <spec>] [--style <id>]
 //                                                  phase 1: install @semi/ui (Next / Tailwind untouched),
 //                                                  transpilePackages, Semi CSS, semi-lint.json + baseline, AGENTS.md,
 //                                                  the style the user chose (<html data-style>); prints the layout
@@ -39,13 +39,11 @@ let root = process.cwd();
 let mode = "plan";
 let only = null;
 let styleArg = null;
-let paletteArg = null;
 let brandArg = null;
 for (let i = 0; i < argv.length; i++) {
   if (argv[i] === "--cwd" && argv[i + 1]) root = argv[++i];
   else if (argv[i] === "--only" && argv[i + 1]) only = argv[++i];
   else if (argv[i] === "--style" && argv[i + 1]) styleArg = argv[++i];
-  else if (argv[i] === "--palette" && argv[i + 1]) paletteArg = argv[++i];
   else if (argv[i] === "--brand" && argv[i + 1]) brandArg = argv[++i];
   else if (argv[i] === "--verify") mode = "verify";
   else if (["foundation", "tokens"].includes(argv[i])) mode = argv[i];
@@ -125,7 +123,7 @@ if (mode === "foundation") {
       const kit = readBrand(app.cwd).kit;
       const st = readStyleState(app.cwd);
       if (!styleArg && (!st.declared || !kit.styles.allowed.includes(st.declared))) styleArg = kit.styles.default;
-      if (styleArg || st.palette || st.appliedPalette) todo.add("style");
+      if (styleArg) todo.add("style");
     }
     if (todo.has("style")) {
       const brandKit = readBrand(app.cwd)?.kit;
@@ -140,11 +138,10 @@ if (mode === "foundation") {
         for (const s of list.styles) {
           if (brandKit && !brandKit.styles.allowed.includes(s.id)) continue;
           console.log(`  ${s.id}${s.id === list.default ? " (mặc định, gần giao diện app cũ nhất)" : ""}: ${s.description}`);
-          if (!brandKit) for (const [i, p] of (s.palettes ?? []).entries()) console.log(`      --palette ${p.id}${i ? "" : " (mặc định)"}: ${p.description}`);
         }
         process.exitCode = 1;
       } else {
-        const r = wireStyle(app.cwd, id, brandKit ? null : paletteArg ?? (styleArg && styleArg !== declared ? null : state.palette));
+        const r = wireStyle(app.cwd, id);
         console.log(`${name}: ${r.message}`);
         if (!r.ok) process.exitCode = 1;
       }

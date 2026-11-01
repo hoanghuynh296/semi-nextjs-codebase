@@ -119,20 +119,6 @@ export default function BrandPage() {
               options={brand.styles.allowed.map((id) => ({ key: id, label: styleList.styles.find((s) => s.id === id)!.name }))}
             />
           </Field>
-          {brand.neutral === "preset" &&
-            brand.styles.allowed.map((id) => {
-              const st = styleList.styles.find((s) => s.id === id)!;
-              return (
-                <Field key={id} label={`Palette của ${st.name}`}>
-                  <CustomSelect
-                    variant="field"
-                    value={brand.palettes?.[id] ?? st.palettes[0].id}
-                    onChange={(v) => update({ palettes: { ...brand.palettes, [id]: v } })}
-                    options={st.palettes.map((p) => ({ value: p.id, label: p.name }))}
-                  />
-                </Field>
-              );
-            })}
           <Field label="Font giao diện">
             <CustomSelect variant="field" value={brand.fonts.sans} onChange={(v) => update({ fonts: { ...brand.fonts, sans: v } })} options={FONT_OPTIONS} />
           </Field>

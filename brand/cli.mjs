@@ -207,7 +207,7 @@ function agentsMd({ tokens: t }, styles) {
     `- Never define brand colours or override Semi tokens in this app (\`--color-primary-*\`, \`--semi-*\`, \`@theme\` colours, hex values): \`semi-lint\` blocks it (\`brand-override\`).`,
     "",
     "**Type and style**",
-    `- Style: ${allowed} only (\`data-style\` on \`<html>\`, \`"style"\` in \`semi-lint.json\`, switch with \`/semi-style\`). No \`data-palette\`: the brand sets the neutrals.`,
+    `- Style: ${allowed} only (\`data-style\` on \`<html>\`, \`"style"\` in \`semi-lint.json\`, switch with \`/semi-style\`).`,
     `- Fonts: ${t.fonts.map((f) => f.family).join(" + ")}, loaded with \`next/font\` in the root layout (\`${t.fonts.map((f) => f.variable).join("`, `")}\`). Titles and KPI figures \`font-display\`, everything else \`font-sans\`.`,
     "",
     ...(g.logo

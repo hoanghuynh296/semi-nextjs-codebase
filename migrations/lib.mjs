@@ -25,7 +25,7 @@ export function renameProp(src, component, from, to) {
 }
 
 /**
- * Brand-scale state classes → themed accent tokens (0.14.0): ring-primary-500/50 → ring-focus, focus:border-primary-*
+ * Brand-scale state classes → themed accent tokens (0.15.0): ring-primary-500/50 → ring-focus, focus:border-primary-*
  * → border-focus, bg-primary-500/5…15 → bg-accent-subtle, /20…25 → bg-accent-subtle-hover, border-primary-500/20…60 →
  * border-accent-line. Variants (hover:, focus-visible:, md:) are kept. Solid fills (bg-primary-500) are left alone.
  */

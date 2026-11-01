@@ -109,7 +109,7 @@ const manifest = {
     z: Object.keys(tokens.z),
     style: Object.keys(styleList.styles[0].tokens),
   },
-  styles: { default: styleList.default, apply: '<html data-style="<id>" data-palette="<id>"> + "style" / "palette" in semi-lint.json; the first palette is the default (docs/STYLES.md)', list: styleList.styles.map(({ id, name, description, palettes }) => ({ id, name, description, palettes: palettes.map(({ id, name, description }) => ({ id, name, description })) })) },
+  styles: { default: styleList.default, apply: '<html data-style="<id>"> + "style" in semi-lint.json (docs/STYLES.md)', list: styleList.styles.map(({ id, name, description }) => ({ id, name, description })) },
   icons: iconNames,
   components: items.filter((i) => i.kind === "component"),
   hooks: items.filter((i) => i.kind === "hook"),
@@ -151,7 +151,7 @@ const DOCS = [
   ["docs/AGENT_TOOLS.md", "AGENT_TOOLS.md", "Agent tools: the semi CLI (search, docs, example, add) and the MCP server, and the page blocks"],
   ["docs/ICONS.md", "ICONS.md", "Semantic icon guide: which icon means what"],
   ["docs/BRANDS.md", "BRANDS.md", "Brands: brand kits (brand.json → brand.css), the step-by-step flow from a new brand to its first product, which command when"],
-  ["docs/STYLES.md", "STYLES.md", "Styles (Flat, Soft, Sharp) and palettes: what each changes, how an app picks one"],
+  ["docs/STYLES.md", "STYLES.md", "Styles (Flat, Soft, Sharp): what each changes, how an app picks one"],
   ["plugin/rules/AGENTS.md", "agent-rules.md", "Rules block for a consumer app's AGENTS.md / CLAUDE.md"],
   ["tokens/tokens.css", "tokens.css", "Generated design tokens (CSS variables for both themes)"],
 ];
@@ -212,7 +212,6 @@ const stylesDoc = read("docs/STYLES.md");
 const styleHead = stylesDoc.split("\n").find((l) => l.startsWith("| |")) || "";
 for (const st of styleList.styles) {
   if (!styleHead.includes(st.name)) drift.push(`docs/STYLES.md: style ${st.name} (${st.id}) has no column in the table`);
-  for (const p of st.palettes) if (!stylesDoc.includes(`| ${st.name} | ${p.name}`) && !stylesDoc.includes(`| ${st.name} | **${p.name}**`)) drift.push(`docs/STYLES.md: palette ${st.name} / ${p.name} has no row in the Palettes table`);
 }
 if (drift.length) {
   console.error(`docs and code out of sync:\n- ${drift.join("\n- ")}`);

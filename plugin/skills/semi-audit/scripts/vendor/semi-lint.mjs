@@ -23,8 +23,7 @@
 //     "keep": { "tables": "reports need dense tables" }, // /semi-audit structural checks the team chose to keep
 //                                                     // (reason string = whole app, array = path prefixes)
 //     "brand": "@3dnoobs/brand",                   // the app's brand kit (docs/BRANDS.md): turns on brand-override
-//     "style": "soft", "palette": "sage"            // the app's style and palette (docs/STYLES.md), = <html data-style
-//                                                     // data-palette> in the layout; no palette = the style's first
+//     "style": "soft"                              // the app's style (docs/STYLES.md), = <html data-style> in the layout
 //   }
 // A rule that the Semi docs add and that can be grepped belongs here too (change it in the semi repo, not per app).
 import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";

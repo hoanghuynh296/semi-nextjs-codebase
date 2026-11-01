@@ -74,3 +74,21 @@ test("runMigrations runs only the pending ones and reports changed files", async
   assert.match(readFileSync(join(app, "app/page.tsx"), "utf8"), /<New \/>/);
   rmSync(app, { recursive: true });
 });
+
+test("remove-palette: drops semi-lint.json palette and <html data-palette>, keeps the rest; a second run changes nothing", async () => {
+  const { default: migrate, version } = await import("../../migrations/0.14.0-remove-palette.mjs");
+  assert.equal(version, "0.14.0");
+  const app = mkdtempSync(join(tmpdir(), "palette-"));
+  writeFileSync(join(app, "semi-lint.json"), JSON.stringify({ style: "soft", palette: "sage" }, null, 2));
+  const layout = join(app, "app/layout.tsx");
+  mkdirSync(join(app, "app"));
+  writeFileSync(layout, `export default function L({ children }) {\n  return <html data-style="soft" data-palette="sage" lang="vi">{children}</html>;\n}\n`);
+  const ctx = (files) => ({ appDir: app, files, read: (p) => readFileSync(p, "utf8"), write: (p, t) => writeFileSync(p, t) });
+  await migrate(ctx([layout]));
+  assert.deepEqual(JSON.parse(readFileSync(join(app, "semi-lint.json"), "utf8")), { style: "soft" });
+  assert.match(readFileSync(layout, "utf8"), /<html data-style="soft" lang="vi">/);
+  const once = readFileSync(layout, "utf8");
+  await migrate(ctx([layout]));
+  assert.equal(readFileSync(layout, "utf8"), once, "second run changes nothing");
+  rmSync(app, { recursive: true });
+});

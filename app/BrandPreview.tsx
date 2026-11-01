@@ -19,7 +19,6 @@ export type Brand = {
   primary: string;
   secondary?: string | null;
   neutral: "tinted" | "preset";
-  palettes?: Record<string, string>;
   styles: { default: string; allowed: string[] };
   fonts: { sans: string; display: string };
   semi?: string;

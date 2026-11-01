@@ -1,4 +1,4 @@
-# Semi Design System (@semi/ui v0.14.0)
+# Semi Design System (@semi/ui v0.15.0)
 
 > The shared UI of every Semi app: semantic tokens that work in light and dark mode, React components (Next.js, Tailwind CSS 4) and the rules agents follow. Every component has a page with live examples and a markdown twin for agents.
 
@@ -16,7 +16,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [AGENT_TOOLS.md](./docs/AGENT_TOOLS.md): Agent tools: the semi CLI (search, docs, example, add) and the MCP server, and the page blocks
 - [ICONS.md](./docs/ICONS.md): Semantic icon guide: which icon means what
 - [BRANDS.md](./docs/BRANDS.md): Brands: brand kits (brand.json → brand.css), the step-by-step flow from a new brand to its first product, which command when
-- [STYLES.md](./docs/STYLES.md): Styles (Flat, Soft, Sharp) and palettes: what each changes, how an app picks one
+- [STYLES.md](./docs/STYLES.md): Styles (Flat, Soft, Sharp): what each changes, how an app picks one
 - [agent-rules.md](./docs/agent-rules.md): Rules block for a consumer app's AGENTS.md / CLAUDE.md
 - [tokens.css](./docs/tokens.css): Generated design tokens (CSS variables for both themes)
 - [llms-full.txt](./llms-full.txt): this file followed by all the docs above and every component doc

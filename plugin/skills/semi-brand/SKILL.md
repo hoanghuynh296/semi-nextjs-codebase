@@ -30,8 +30,8 @@ Run this skill **in the brand kit repo**, never in a product. Products use the k
    - Primary colour (hex). Never invent one: it is the brand's own decision.
    - Secondary colour: none (Recommended unless the logo has a second colour) or a hex, and its role: highlight
      (Recommended), badge or illustration.
-   - Neutrals: "tinted" (Recommended: the styles' greys lean towards the primary) or "preset" (the style palettes as
-     they are; then ask which palette per allowed style).
+   - Neutrals: "tinted" (Recommended: the styles' greys lean towards the primary) or "preset" (each style's own
+     neutrals as they are).
    - Style, from the brief (`docs/STYLES.md`): dashboards / tools → Flat; consumer apps → Soft; editorial / landing →
      Sharp. If the user is unsure, allow all three at first so they can switch styles in the preview, and narrow
      `allow` before releasing.
@@ -64,10 +64,10 @@ Run this skill **in the brand kit repo**, never in a product. Products use the k
    ΔE > 0.08, with the reason the warning gives) and any "lưu ý" row, since those are what a designer would notice. Keep the server running while they adjust: `set` rebuilds and the page updates.
 5. **Adjust** what the user asks ("darker primary", "use the preset neutrals"):
    ```bash
-   node "<path-to-this-skill>/scripts/brand.mjs" set --cwd "<dir>" primary=#008f36 neutral=preset palette.soft=sage
+   node "<path-to-this-skill>/scripts/brand.mjs" set --cwd "<dir>" primary=#008f36 neutral=preset
    ```
-   Keys: `primary`, `secondary` (`none` to remove), `name`, `neutral`, `allow`, `style`, `sans`, `display`,
-   `palette.<style>`; guideline: `tone`, `address`, `we`, `emoji`, `accent`, `secondaryRole`, `product`, `audience`,
+   Keys: `primary`, `secondary` (`none` to remove), `name`, `neutral`, `allow`, `style`, `sans`, `display`;
+   guideline: `tone`, `address`, `we`, `emoji`, `accent`, `secondaryRole`, `product`, `audience`,
    `personality` (comma list), `logo`, `logoDark`, `mark` (paths in the kit), `imagery`. Lists (`voice.do`,
    `voice.dont`) and `voice.examples` are edited in `brand.json` directly, then `brand.mjs build`. It rebuilds and says the change level.
 6. **Release** when the user approves: `npm run check`, `node brand.mjs bump --cwd "<dir>" 1.0.0`, commit, push to the
