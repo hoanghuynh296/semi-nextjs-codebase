@@ -1,8 +1,8 @@
 # Release migrations
 
 Code changes a release of `@semi/ui` ships for its **own breaking changes** (a renamed component, prop or class
-constant, a removed API with a 1:1 replacement). `/semi-update` runs the migrations of every release between the
-app's old version and the new one, in version order. They are not an audit: rule checks stay in `/semi-audit`.
+constant, a removed API with a 1:1 replacement). `/semi-sync` runs the migrations of every release between the
+app's old version and the new one, in version order. They are not an audit: rule checks stay in `/semi-check`.
 
 One file per change, `migrations/<version>-<id>.mjs`:
 

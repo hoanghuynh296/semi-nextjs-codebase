@@ -1,7 +1,15 @@
 # Thương hiệu trên Semi (brand kit)
 
-Semi là bộ kit gốc để làm phần mềm cho nhiều thương hiệu (công ty con, khách hàng). Mỗi thương hiệu có **một brand kit
-riêng** sinh ra từ Semi; mọi sản phẩm của thương hiệu đó dùng brand kit, nên luôn cùng màu, cùng font, cùng luật.
+**Bắt đầu từ đây.** Semi là brand builder: bạn định nghĩa thương hiệu một lần, mọi sản phẩm và mọi agent làm theo.
+Mỗi thương hiệu (công ty con, khách hàng) có **một brand kit riêng** sinh ra từ Semi: logo, màu, font, giọng văn, style
+được phép, kèm một brand book để xem. Mọi sản phẩm của thương hiệu cài brand kit, nên luôn cùng nhận diện, cùng luật.
+
+| Bạn đang ở | Gõ | Để làm gì |
+|---|---|---|
+| Repo brand | `/semi-brand` | Tạo hoặc sửa thương hiệu, xem brand book, ra bản |
+| Thư mục trống | `/semi-new-app` | Tạo sản phẩm mới của thương hiệu |
+| App có sẵn | `/semi-check` | Kiểm tra app theo brand và Semi, rồi sửa khi bạn đồng ý |
+| App có sẵn | `/semi-sync` | Brand kit hoặc Semi có bản mới: kéo về |
 
 ```
 Semi core (@semi/ui)              cố định cho mọi thương hiệu
@@ -9,18 +17,19 @@ Semi core (@semi/ui)              cố định cho mọi thương hiệu
         │  /semi-brand
         ▼
 Brand kit (vd. @3dnoobs/brand)    lựa chọn của một thương hiệu, repo GitHub riêng
-  brand.json (bạn chọn) → dist/brand.css, dist/brand.json, BRAND.md, AGENTS.brand.md
-        │  /semi-init --brand  ·  /semi-update
+  brand.json (bạn chọn) → dist/brand.css, dist/brand.json, dist/logo/, BRAND.md, AGENTS.brand.md, brand book
+        │  /semi-new-app --brand  ·  /semi-sync
         ▼
 Sản phẩm (Manager, Store, …)       chỉ dùng: không tự chọn màu / font, không ghi đè token
 ```
 
-- **Bạn chỉ quyết định vài thứ**, một lần, trong repo brand: màu chính, màu phụ (tuỳ chọn), màu trung tính, các style
-  được dùng, font. Phần còn lại (thang màu, màu cho nền tối / sáng, chữ trên nút, đảm bảo đọc rõ) do Semi tự sinh.
+- **Bạn chỉ quyết định vài thứ**, một lần, trong repo brand: brief (sản phẩm, người dùng, tính cách), logo, màu chính,
+  màu phụ (tuỳ chọn), màu trung tính, các style được dùng, font, giọng văn, mức dùng màu, và chữ ký (mật độ, cách dùng chữ, hoạ tiết; bỏ trống thì Semi suy từ brief). Phần còn lại (thang màu, màu cho nền tối / sáng, chữ trên nút, đảm bảo đọc rõ) do Semi tự sinh.
 - **Mọi màu đều đạt chuẩn đọc rõ (WCAG AA)** ở cả theme sáng và tối: bộ sinh tự chỉnh, và báo lỗi nếu một màu không
   thể dùng được.
 - **Sản phẩm không thể đi lệch:** `semi-lint` chặn việc ghi đè màu thương hiệu trong sản phẩm (`brand-override`),
-  `/semi-audit` kiểm tra sản phẩm đang dùng đúng brand kit, đúng style được phép.
+  `/semi-check` kiểm tra sản phẩm đang dùng đúng brand kit, đúng style được phép.
+- **Agent viết đúng giọng thương hiệu:** trong sản phẩm, agent hỏi `semi_brand` trước khi viết chữ, đặt màu hay logo.
 
 ---
 
@@ -61,10 +70,17 @@ và Next.js (cho trang preview), sinh `dist/`.
 **Bước 3. Xem trước ngay trong repo brand và chỉnh**
 
 Agent chạy trang preview **của chính repo brand** (`npm run preview`) và gửi link local:
-**http://localhost:4600**. Trang dựng bằng `@semi/ui` thật cùng `brand.css` của kit: một màn hình sản phẩm mẫu ở theme
-sáng và tối cạnh nhau (chữ lấy từ giọng văn), logo trên hai nền kèm khoảng trống, giọng văn, cách dùng màu, màu, chữ,
-nút & form, thẻ, bảng, thông báo… trong màu 3D Noobs, đổi sáng / tối ở chân menu và giữa các style được phép, kèm bảng điểm đọc rõ. Trang
-gồm phần tổng quan thương hiệu và **toàn bộ component của Semi** (cùng các trang như docs của Semi: ví dụ, code, API).
+**http://localhost:4600**. Trang dựng bằng `@semi/ui` thật cùng `brand.css` của kit và là một **brand book** có 3 tab:
+
+- **Thương hiệu:** bìa (logo, tên, câu tagline, 3 từ tính cách trên nền màu chính), thương hiệu này là ai, logo (hai
+  nền, khoảng trống, biểu tượng ở 16–48px, và những cách **không được làm**: kéo méo, đổi màu, xoay, thêm bóng, đặt trên
+  nền rối), màu theo vai trò kèm **tỉ lệ màu trên một màn hình**, chữ (mẫu font có dấu tiếng Việt, câu tagline), giọng
+  văn (nên / không nên, nút, lỗi, trạng thái trống ở sáng và tối), hình ảnh.
+- **Ứng dụng:** dashboard, ứng dụng điện thoại, trang giới thiệu, email, mỗi màn ở sáng và tối, chữ theo giọng văn.
+- **UI kit** (cho developer): thang màu, sắc của nút và chữ ở từng theme và độ lệch với màu thương hiệu, cỡ chữ, bảng
+  điểm đọc rõ, tải `brand.css`, `brand.json` và logo, cùng **toàn bộ component của Semi** (ví dụ, code, API).
+
+Đổi sáng / tối và giữa các style được phép ở thanh trên.
 
 👉 *Bạn làm:* mở link, nhìn và nói điều muốn đổi ("màu chính đậm hơn", "dùng màu trung tính có sẵn"). *Agent làm:* sửa
 `brand.json`, sinh lại; trang đang mở tự cập nhật.
@@ -99,7 +115,7 @@ mỗi lần push lên main nó build lại. Từ đây 3D Noobs có bộ nhận 
 **Bước 5. Tạo thư mục trống và gõ**
 
 ```text
-/semi-init --brand github:3dnoobs/brand
+/semi-new-app --brand github:3dnoobs/brand
 ```
 
 Agent chỉ hỏi tên app ("3D Noobs Manager") và style (trong danh sách brand cho phép: app quản lý chọn Flat). Không hỏi
@@ -138,20 +154,20 @@ hay `--semi-…` trong CSS của app, `semi-lint` chặn (`brand-override`): mà
 
 | Chuyện | Bạn làm | Ở đâu |
 |---|---|---|
-| Làm thêm app **Store** | `/semi-init --brand github:3dnoobs/brand`, chọn Soft | Thư mục mới |
+| Làm thêm app **Store** | `/semi-new-app --brand github:3dnoobs/brand`, chọn Soft | Thư mục mới |
 | 3D Noobs **đổi màu chính** | `/semi-brand` → "đổi primary sang `#00C853`" → xem trước → tag mới | Repo brand |
-| … rồi đưa vào các app | `/semi-update` (đổi màu thấy rõ: agent hỏi trước) | Từng app |
+| … rồi đưa vào các app | `/semi-sync` (đổi màu thấy rõ: agent hỏi trước) | Từng app |
 | **Semi** ra bản mới | `/semi-brand update` (sinh lại kit) | Repo brand |
-| … rồi đưa vào các app | `/semi-update` | Từng app |
-| App đổi sang style khác **đã được cho phép** | `/semi-style` | Repo app |
-| Style **chưa được cho phép** | `/semi-brand` (thêm vào danh sách) → `/semi-update` → `/semi-style` | Repo brand → app |
-| Kiểm tra định kỳ | `/semi-audit` → `/semi-fix` | Từng app |
+| … rồi đưa vào các app | `/semi-sync` | Từng app |
+| App đổi sang style khác **đã được cho phép** | Nói với agent ("đổi sang Soft") | Repo app |
+| Style **chưa được cho phép** | `/semi-brand` (thêm vào danh sách) → `/semi-sync` → nói với agent | Repo brand → app |
+| Kiểm tra định kỳ | `/semi-check` | Từng app |
 
 ---
 
 ## Khi nào dùng lệnh nào
 
-| | `/semi-brand` · `/semi-brand update` | `/semi-update` |
+| | `/semi-brand` · `/semi-brand update` | `/semi-sync` |
 |---|---|---|
 | Chạy ở | Repo **brand kit** | Repo **sản phẩm** |
 | Làm gì | Tạo / sửa lựa chọn thương hiệu (`/semi-brand`); sinh lại kit cho bản Semi mới, không đổi lựa chọn (`/semi-brand update`) | Đưa sản phẩm lên `@semi/ui` và brand kit mới nhất tương thích, chạy migration, `tsc` |
@@ -163,14 +179,14 @@ Luôn đi **từ trên xuống**: Semi → brand kit → sản phẩm.
 
 **Phiên bản brand kit:**
 
-| Mức | Khi nào | `/semi-update` ở sản phẩm |
+| Mức | Khi nào | `/semi-sync` ở sản phẩm |
 |---|---|---|
 | patch | Sinh lại, giao diện không đổi | Tự cập nhật |
 | minor | Thêm lựa chọn (style được phép, màu phụ, token mới) | Tự cập nhật |
 | major | Màu / font thương hiệu đổi, thấy rõ | Hỏi trước (`--accept-major`) |
 
-Brand kit ghi nó chạy với `@semi/ui` nào (`"semi": "^0.6"` trong `brand.json`). Nếu Semi mới nhất nằm ngoài dải đó,
-`/semi-update` giữ Semi ở bản tương thích mới nhất và nhắc chạy `/semi-brand update` trong repo brand.
+Brand kit ghi nó chạy với `@semi/ui` nào (`"semi": "^0.16"` trong `brand.json`). Nếu Semi mới nhất nằm ngoài dải đó,
+`/semi-sync` giữ Semi ở bản tương thích mới nhất và nhắc chạy `/semi-brand update` trong repo brand.
 
 ---
 
@@ -185,7 +201,7 @@ Brand kit ghi nó chạy với `@semi/ui` nào (`"semi": "^0.6"` trong `brand.js
   "neutral": "tinted",
   "styles": { "default": "flat", "allowed": ["flat", "soft"] },
   "fonts": { "sans": "Geist", "display": "Montserrat Alternates" },
-  "brief": { "product": "Phần mềm quản lý máy in 3D", "audience": "Maker 18–35 tuổi, dùng cả ngày trên máy tính", "personality": ["chính xác", "thân thiện", "kỹ thuật"] },
+  "brief": { "product": "Phần mềm quản lý máy in 3D", "audience": "Maker 18–35 tuổi, dùng cả ngày trên máy tính", "personality": ["chính xác", "thân thiện", "kỹ thuật"], "tagline": "In 3D chính xác ngay lần đầu" },
   "logo": { "full": "assets/logo.svg", "fullDark": "assets/logo-dark.svg", "mark": "assets/mark.svg" },
   "voice": {
     "tone": "friendly", "address": "bạn", "we": "3D Noobs", "emoji": false,
@@ -194,7 +210,10 @@ Brand kit ghi nó chạy với `@semi/ui` nào (`"semi": "^0.6"` trong `brand.js
   },
   "color": { "accent": "restrained" },
   "imagery": "Ảnh bản in thật trên nền tối, chụp gần; không ảnh stock.",
-  "semi": "^0.6"
+  "density": "compact",
+  "typography": { "scale": "even", "title": "regular", "figures": "display" },
+  "motif": "mark",
+  "semi": "^0.17"
 }
 ```
 
@@ -207,11 +226,24 @@ Brand kit ghi nó chạy với `@semi/ui` nào (`"semi": "^0.6"` trong `brand.js
 | `styles.default`, `styles.allowed` | `flat` · `soft` · `sharp` | Ít nhất một; `default` phải nằm trong `allowed` |
 | `fonts.sans`, `fonts.display` | Tên Google Font | `next/font/google` phải có font đó |
 | `semi` | Dải phiên bản `@semi/ui` | `/semi-brand update` cập nhật |
-| `brief` | `product`, `audience`, `personality` (1–5 tính từ) | Tuỳ chọn; vào BRAND.md và luật cho agent ("chọn chữ, mật độ, hình ảnh cho họ") |
+| `brief` | `product`, `audience`, `personality` (1–5 tính từ), `tagline` (một câu, ≤ 90 ký tự) | Tuỳ chọn; vào BRAND.md và luật cho agent ("chọn chữ, mật độ, hình ảnh cho họ") |
 | `logo` | `full` (bắt buộc khi có logo), `fullDark`, `mark`: đường dẫn trong repo kit (.svg nên dùng, .png, .webp); `clearspace` (× chiều cao, mặc định 0.5), `minWidth` (px, mặc định 80) | Build copy vào `dist/logo/full.svg` … để sản phẩm import; thiếu file là lỗi |
 | `voice` | `tone`: `friendly` · `neutral` · `formal`; `address` (gọi người dùng), `we` (tự xưng), `emoji`, `do`, `dont`, `examples` (`button`, `success`, `error`, `empty`, `confirm`) | Tuỳ chọn, mặc định trung tính, gọi "bạn". Luật viết chung của Semi (nút, lỗi, trạng thái trống) luôn kèm theo |
-| `color` | `accent`: `restrained` · `balanced` · `expressive`; `secondaryRole`: `highlight` · `badge` · `illustration` | Mặc định tiết chế, màu phụ là điểm nhấn |
+| `color` | `accent`: `restrained` · `balanced` · `expressive`; `secondaryRole`: `highlight` · `badge` · `illustration` | Mặc định tiết chế, màu phụ là điểm nhấn. Mức dùng màu quyết định tỉ lệ màu trên một màn hình (tiết chế 80 / 15 / 5 %, cân bằng 70 / 20 / 10, phóng khoáng 55 / 25 / 20: trung tính / bề mặt / màu chính; màu phụ lấy khoảng 30 % phần màu chính) |
 | `imagery` | Một đoạn mô tả ảnh / minh hoạ | Tuỳ chọn |
+| `density` | `compact` · `regular` · `airy` | Tuỳ chọn, mặc định suy từ brief. Đổi đơn vị khoảng cách của Tailwind (`--spacing`): mọi `p-*`, `gap-*` gọn hơn hoặc thoáng hơn |
+| `typography` | `scale`: `even` · `contrast`; `title`: `light` · `regular` · `strong`; `figures`: `sans` · `display` | Tuỳ chọn, suy từ brief. Cỡ tiêu đề và số lớn, nét tiêu đề (`font-title`), font của con số lớn (`font-figure`) |
+| `motif` | `mark` · `dots` · `lines` · `grid` · `none` | Tuỳ chọn, suy từ brief (có mark SVG thì dùng mark). Hoạ tiết của `<BrandPattern>` |
+
+### Chữ ký thương hiệu
+
+Hai thương hiệu khác nhau không chỉ ở màu. `density`, `typography` và `motif` là chữ ký: mật độ, cách dùng chữ, con số
+và hoạ tiết. Thiếu lựa chọn nào thì bộ sinh suy từ brief (công cụ dùng cả ngày → gọn; "táo bạo", "trẻ trung" → cỡ
+chữ tương phản, tiêu đề đậm; "sang trọng", "tinh tế" → thoáng, tiêu đề mảnh; có mark SVG → hoạ tiết từ mark) và
+BRAND.md ghi "suy từ brief" bên cạnh. Component của Semi tự đổi theo (`PageTitle`, `KpiCard`, mọi padding), sản phẩm
+không cần sửa code; `<BrandPattern>` và `<BrandFigure>` đưa hoạ tiết và con số lớn vào màn hình. Brand book có mục
+"Chữ ký thương hiệu" để xem. Sản phẩm không được tự đặt các biến này (`brand-override`). Quy tắc bố cục đi kèm (tránh
+giao diện "AI" chung chung): `DESIGN_SYSTEM.md` §19.
 
 ### Semi sinh màu thế nào
 

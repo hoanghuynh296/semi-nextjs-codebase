@@ -4,6 +4,43 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.17.0] - 2026-11-01
+
+### Added
+- **Brand signature** in `brand.json`: `density` (compact · regular · airy), `typography` (`scale` even · contrast, `title` light · regular · strong, `figures` sans · display) and `motif` (mark · dots · lines · grid · none). All optional: what a kit leaves out is inferred from its brief (a tool used all day → compact, "táo bạo" → contrast and strong titles, an SVG logo mark → a motif made of the mark), and BRAND.md marks what was inferred. `brand.css` sets them as `--brand-*` variables; BRAND.md, AGENTS.brand.md and `semi_brand signature` / `semi brand signature` explain them. `/semi-brand` asks them (`set density= scale= title= figures= motif=`, `auto` to go back to the inference).
+- **Style tokens read by every component:** `--spacing` (Tailwind's spacing unit, so the brand's density scales every padding and gap), `font-title` (title and figure weight) and `font-figure` (the font of big numbers). Sharp now has bold titles and figures in its display font; Flat and Soft look as before.
+- **`BrandPattern`** (the brand's motif as a decorative layer for heroes, empty states and covers) and **`BrandFigure`** (one big number in the brand's figure font), with a doc and examples (`examples/brand`).
+- **`KpiCard featured`:** the screen's main number, larger and two columns wide.
+- **Composition rules against the generic AI screen** (`DESIGN_SYSTEM.md` §19, QUICK_REF, the plugin rules, `semi-ui` and AGENTS.brand.md): one main block per screen, neutral icons, proof instead of three feature cards, icons only where they help, sample text from the brief, varied rhythm. `/semi-check` reviews key screens against them (phase 4b).
+- **`decorative-icon-tones` lint rule** (ratchet): three or more `iconTone` colours in one file.
+- Brand book: a "Chữ ký thương hiệu" section (the choices with their rules, a hero with the motif and a big figure, a KPI row).
+
+### Changed
+- **`KpiCard` icons are neutral by default** (`iconTone` was `sky`): give a colour only when it means a status. The figure uses `font-figure font-title`. Pass `iconTone` explicitly to keep a coloured icon.
+- `PageTitle` / `PageTabsTitle` use `font-title` (semibold unless the brand or style says otherwise).
+- The `dashboard` block, the KPI and sparkline examples and the brand book's sample screens lead with one featured number, without decorative icon colours; the brand book's landing page shows a big figure and a customer quote instead of three feature cards, and the motif in its hero.
+- **The `/semi-new-app` starter is the brand's first screen**, not a 3D-printer dashboard: a hero with the brand's motif, its tagline, product line and button text from the brand kit, and an empty state in its voice.
+- `brand-override` also blocks `--brand-*`, `--spacing`, `--font-figure` and `--font-weight-title` in an app with a brand kit.
+- `ScrollArea` is focusable from the server HTML on (it measured only after hydration, so an early keyboard user or a11y check met a scrolling region without a tab stop).
+- `DESIGN_SYSTEM.md` §2b now describes brand kits (it still told products to override `primary-*` in their CSS).
+
+### Migration
+- Nothing to run. Kits rebuilt with this release get a signature inferred from their brief, so density and title weight may change a little; set `density`, `typography` and `motif` in `brand.json` to pin them. Apps that relied on the old sky default of `KpiCard`'s icon pass `iconTone="sky"`.
+
+## [0.16.0] - 2026-11-01
+
+### Changed
+- **The brand kit preview is a brand book**, not a copy of the docs site. Three tabs: *Thương hiệu* (cover with logo, name, tagline and personality on the brand colour; who the brand is for; logo on both backgrounds with clear space, the mark at 16–48px and what not to do: stretch, recolour, rotate, add effects, busy backgrounds; colours by role and the share of a screen each takes; type specimens; voice with do / don't and its texts on real components in light and dark; imagery), *Ứng dụng* (dashboard, phone app, landing page and email, light and dark, texts from the voice; the landing hero follows the accent use) and *UI kit* (scales, button and text shades with their distance from the brand colour, type scale, contrast table, downloads of `brand.css`, `brand.json` and the logos, and every component page in the Semi docs shell). The brand book pages have a top bar instead of the component sidebar.
+- Without a logo version for dark backgrounds, the preview's top bar and sample screens show the mark (if any) next to the name on dark instead of a logo that may not read.
+
+- **Four commands, one per place:** `/semi-brand` (brand repo), `/semi-new-app` (empty folder; was `/semi-init`, now asks the brand first and offers only its allowed styles), `/semi-check` (existing app: checks against the brand and Semi, writes `semi-check.md`, asks, then fixes phase by phase; merges `/semi-audit` and `/semi-fix`), `/semi-sync` (new brand kit or Semi release; was `/semi-update`). The old names stay one release as aliases that point to the new ones. The report file is `semi-check.md` (was `semi-audit.md`). README, plugin descriptions and docs now present Semi as a brand builder.
+- **`/semi-style` is removed as a command.** Style is a brand decision (`/semi-brand` sets the allowed styles), an app picks one at `/semi-init`, and a later switch is asked in words: the `semi-ui` skill carries the steps and the script moved to `skills/semi-init/scripts/style.mjs`. No app changes.
+- **`semi-ui` runs on its own** whenever the agent builds UI in a Semi app (its description says so); docs and the plugin no longer list `/semi-ui` as a command to type. It now asks `semi_brand` before writing UI text or placing colour.
+
+### Added
+- `brief.tagline` in `brand.json` (one line, ≤ 90 characters; `set tagline=…`): on the cover, the landing page and in BRAND.md.
+- `color.mix` in `dist/brand.json`: the rough share of a screen for neutrals, surfaces, the primary and the secondary colour, from the accent use (restrained 80 / 15 / 5 %, balanced 70 / 20 / 10, expressive 55 / 25 / 20). BRAND.md and AGENTS.brand.md state it.
+
 ## [0.15.0] - 2026-11-01
 
 ### Added

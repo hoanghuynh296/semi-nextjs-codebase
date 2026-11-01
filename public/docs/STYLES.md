@@ -13,6 +13,8 @@ per app: §2b), status and tone colours, both themes (light / dark), icons, acce
 | Lines (`border-line`) | 8–9% | 9%, tinted | 18–32%, strong |
 | `rounded-chip` / `control` / `card` / `panel` | 4 · 8 · 12 · 16px | 6 · 12 · 20 · 24px | 2 · 0 · 0 · 0 |
 | `h-control` / `h-field` | 34 / 36px | 40 / 44px | 36 / 40px |
+| Titles and figures (`font-title`, `font-figure`) | Semibold, figures in the sans | Semibold, figures in the sans | Bold, figures in the display font |
+| Spacing unit (`--spacing`) | 0.25rem | 0.25rem | 0.25rem |
 
 Every style passes WCAG AA on every Storybook page in both themes (Playwright, `npm run test:ui`).
 
@@ -27,6 +29,8 @@ sidebar.
 
 A brand kit (docs/BRANDS.md) builds on these: it picks the allowed styles and either tints their neutrals with its
 primary or keeps the style's own neutrals (`"neutral": "preset"`), so products of a brand never set neutral colours.
+Its signature (density, type scale, title weight, figure font, motif; DESIGN_SYSTEM.md §19) overrides the last two
+rows of the table through `--brand-*` variables the style tokens read.
 
 ## Picking a style in an app
 
@@ -37,8 +41,8 @@ primary or keeps the style's own neutrals (`"neutral": "preset"`), so products o
 
 plus the style's fonts with `next/font` (the `fonts` list in `@semi/ui/styles.json`; Soft: `Plus_Jakarta_Sans` with
 `variable: "--font-jakarta"` on `<html className>`), and the same id in `semi-lint.json` (`"style": "soft"`).
-`/semi-audit` checks all three against each other. `/semi-init`
-asks for the style of a new app, `/semi-fix` foundation for an existing one, `/semi-style` switches it later. A wrapper
+`/semi-check` checks all three against each other. `/semi-new-app`
+asks for the style of a new app, `/semi-check` foundation for an existing one, the agent switches it later when asked (the `semi-ui` skill). A wrapper
 with `data-style` re-styles only its subtree (used by Storybook previews), not something an app needs.
 
 ## Rules
@@ -46,7 +50,7 @@ with `data-style` re-styles only its subtree (used by Storybook previews), not s
 - Use the style tokens only: `rounded-chip` (marks, checkboxes, inline code) · `rounded-control` (buttons, inputs,
   selects, tiles, list rows) · `rounded-card` (cards, popovers, menus, toasts) · `rounded-panel` (hero, modal, drawer,
   sheet, sidebar) · `rounded-full` / `rounded-none` (the same in every style) · `shadow-card` (resting cards, in `CARD`).
-  `semi-lint` (`radius-token`) flags `rounded`, `rounded-sm/md/lg/xl/2xl` and `rounded-[Npx]`; the `/semi-fix` token
+  `semi-lint` (`radius-token`) flags `rounded`, `rounded-sm/md/lg/xl/2xl` and `rounded-[Npx]`; the `/semi-check` token
   codemod maps them (`lg` → `control`, `xl` → `card`, `2xl` → `panel`, `sm` / `md` / bare → `chip`; `shadow-sm` → `shadow-card`).
 - An app never writes per-style CSS or `[data-style=…]` selectors: when one screen needs another shape, the style is
   missing a token, so propose it upstream (`/semi-propose`).

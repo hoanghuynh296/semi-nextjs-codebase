@@ -1,4 +1,4 @@
-// Token-level codemod from physical Tailwind colours / sizes / radii to Semi tokens (used by /semi-init). No dependencies.
+// Token-level codemod from physical Tailwind colours / sizes / radii to Semi tokens (used by /semi-new-app). No dependencies.
 //
 // It rewrites class tokens only inside string literals (lint/classes.mjs), never prose or comments, keeps variants
 // (hover:, md:, group-hover:) and collapses legacy pairs: in "bg-white dark:bg-slate-900" the base maps to bg-panel,

@@ -32,7 +32,10 @@
         "font-sans": "var(--font-sans-family, var(--font-geist)), Geist, Inter, -apple-system, BlinkMacSystemFont, \"SF Pro Text\", sans-serif",
         "font-display": "var(--font-display-family, var(--font-montserrat-alternates)), \"Montserrat Alternates\", var(--font-geist), sans-serif",
         "spacing-control": "34px",
-        "spacing-field": "36px"
+        "spacing-field": "36px",
+        "font-figure": "var(--brand-font-figure, var(--semi-font-sans))",
+        "font-weight-title": "var(--brand-title-weight, 600)",
+        "spacing": "var(--brand-spacing, 0.25rem)"
       },
       "semantic": {}
     },
@@ -57,7 +60,10 @@
         "font-sans": "var(--font-sans-family, var(--font-space-grotesk)), \"Space Grotesk\", -apple-system, BlinkMacSystemFont, \"SF Pro Text\", sans-serif",
         "font-display": "var(--font-display-family, var(--font-space-grotesk)), \"Space Grotesk\", sans-serif",
         "spacing-control": "36px",
-        "spacing-field": "40px"
+        "spacing-field": "40px",
+        "font-figure": "var(--brand-font-figure, var(--semi-font-display))",
+        "font-weight-title": "var(--brand-title-weight, 700)",
+        "spacing": "var(--brand-spacing, 0.25rem)"
       },
       "semantic": {
         "color-canvas": {
@@ -127,7 +133,10 @@
         "font-sans": "var(--font-sans-family, var(--font-jakarta)), \"Plus Jakarta Sans\", -apple-system, BlinkMacSystemFont, \"SF Pro Text\", sans-serif",
         "font-display": "var(--font-display-family, var(--font-jakarta)), \"Plus Jakarta Sans\", sans-serif",
         "spacing-control": "40px",
-        "spacing-field": "44px"
+        "spacing-field": "44px",
+        "font-figure": "var(--brand-font-figure, var(--semi-font-sans))",
+        "font-weight-title": "var(--brand-title-weight, 600)",
+        "spacing": "var(--brand-spacing, 0.25rem)"
       },
       "semantic": {
         "color-canvas": {

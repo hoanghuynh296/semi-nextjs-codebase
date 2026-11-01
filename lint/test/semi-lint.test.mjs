@@ -31,3 +31,14 @@ test("ignore: generated files are not scanned", () => {
   assert.deepEqual(files, ["a.tsx"]);
   rmSync(dir, { recursive: true });
 });
+
+test("decorative-icon-tones: three or more icon colours in a file are counted once, two are not", () => {
+  const dir = mkdtempSync(join(tmpdir(), "semi-lint-"));
+  const file = join(dir, "page.tsx");
+  writeFileSync(file, '<KpiCard label="a" value="1" icon="coin" iconTone="green" />\n<KpiCard label="b" value="2" icon="box" iconTone="sky" />\n<KpiCard label="c" value="3" icon="zap" iconTone="violet" />\n');
+  const r = scan([file], {}, dir);
+  assert.deepEqual(r.hits.filter((h) => h.rule === "decorative-icon-tones").map((h) => h.line), [1]);
+  writeFileSync(file, '<KpiCard label="a" value="1" icon="clock" iconTone="amber" />\n<KpiCard label="b" value="2" icon="check" iconTone="green" />\n');
+  assert.equal(scan([file], {}, dir).hits.filter((h) => h.rule === "decorative-icon-tones").length, 0);
+  rmSync(dir, { recursive: true });
+});

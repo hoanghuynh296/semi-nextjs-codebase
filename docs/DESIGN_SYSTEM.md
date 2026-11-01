@@ -8,8 +8,9 @@ skills, AGENTS.md and plan docs only point here. A rule that lives in two places
 
 Apps read this file from `node_modules/@semi/ui/docs/DESIGN_SYSTEM.md` (the version they installed).
 
-The UI is a **restrained dark product theme** with a **bento card layout**: dark page, rounded cards with thin borders,
-a neutral icon menu, uniform chips and tags with coloured dots, one green accent for actions, few words.
+The UI is a **restrained product theme, dark and light,** with a **bento card layout**: neutral page, rounded cards with thin
+borders, a neutral icon menu, uniform chips and tags with coloured dots, one accent (the brand's primary colour, Semi green
+without a brand kit) for actions, few words. A brand kit (`BRANDS.md`) sets the colours, fonts, voice and allowed styles.
 
 Quick cheatsheet: `QUICK_REF.md`. Tokens: `@semi/ui/tokens.css` (generated from `tokens/tokens.json`). Base layer:
 `@semi/ui/base.css`. Shared building blocks: `@semi/ui` (components) and `@semi/ui/styles` (class constants), see §16;
@@ -37,7 +38,7 @@ hook of the `semi-design` plugin).
 - **One style per app.** The look is a style (`docs/STYLES.md`): neutral colours, fonts, radii, card border and shadow,
   control sizes. An app picks Flat (default), Soft or Sharp once, with `<html data-style>`, and every component follows.
   Components, layout, the type scale, the accent and status colours are shared by every style.
-- **One accent.** `primary-*` (Semi default green `#00AE42`; a product may override it, see §2b) for actions,
+- **One accent.** `primary-*` (Semi default green `#00AE42`; a product gets its own from its brand kit, see §2b) for actions,
   selection and focus. Status colours carry meaning only (§3).
 - **Phone first.** Used from iPhone and iPad: no horizontal page scroll at 375px, touch targets ≥ 36px (44px for nav),
   the home logo header is hidden under 768px (`md`).
@@ -170,24 +171,14 @@ Hardcoding physical palette classes such as `bg-white`, `text-slate-900`, `borde
 - In Light Mode, text with `text-white` disappears completely on the white page background.
 By using `bg-panel` and `text-contrast`, your UI seamlessly flips from dark obsidian to crisp slate without writing a single media query.
 
-## 2b. Brand colour per product
+## 2b. Brand per product
 
-`primary-*` is the only token a product may change. Override it in the app's own CSS **after** the Semi import, with
-the full 50–900 scale (keep 500 = main, 400 = hover):
-
-```css
-@import "tailwindcss";
-@import "@semi/ui/tokens.css";
-@import "@semi/ui/base.css";
-@theme {
-  --color-primary: #3B82F6;
-  --color-primary-50: #EFF6FF; /* … 100–800 … */
-  --color-primary-500: #3B82F6;
-  --color-primary-900: #1E3A8A;
-}
-```
-
-Surfaces, greys, status colours, radius and type stay Semi's. Record the product's brand hex in its own AGENTS.md.
+A product's brand comes from its **brand kit** (`docs/BRANDS.md`), never from its own CSS: the kit's `dist/brand.css`
+(imported after `@semi/ui/tokens.css`) sets the primary / secondary scales, the themed accent tokens, the neutrals per
+style, the fonts and the brand signature (density, title weight, figure font, type scale, motif; §19). With
+`"brand"` in `semi-lint.json`, the app may not set any of them (`brand-override`: `--color-primary-*`, `--semi-*`,
+`--brand-*`, `--spacing`, the font variables). An app without a kit uses Semi's own green and Flat. A brand change is
+made in the brand repo (`/semi-brand`) and reaches products with `/semi-sync`.
 
 ## 3. Colour meaning
 
@@ -524,7 +515,8 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 |---|---|
 | `@semi/ui` → `AppShell.tsx`, `MobileTabBar.tsx` | `AppShell` (floating Bento 2-panel frame, collapsible `w-52`/`w-14` menu), `MobileTabBar`, `TAB_BAR_PAD` (§4) |
 | `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle`, `PageTabsTitle` (underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh) (§4a) |
-| `KpiCard.tsx`, `Modal.tsx` | `KpiCard` (`18px–22px` metric card with shimmer), `Modal` (shared portal dialog with `MODAL_HEAD` + `MODAL_FOOT`) (§13, §14) |
+| `KpiCard.tsx`, `Modal.tsx` | `KpiCard` (metric card in the brand's figure font, neutral icon, `featured` for the screen's main number, shimmer), `Modal` (shared portal dialog with `MODAL_HEAD` + `MODAL_FOOT`) (§13, §14) |
+| `Brand.tsx` | `BrandPattern` (the brand's motif as a decorative layer), `BrandFigure` (a big number in the brand's figure font) (§19) |
 | `Icon.tsx` | `Icon`, `ICONS`, `IconName`, `IconTile`, `TILE_TONES`, `TONE_TEXT`, `TileTone` |
 | `AppHeader.tsx` | `AppHeader` (stand-alone app top bar, §4b) |
 | `PageActions.tsx` | `PageActions` (a tab's header buttons), `PageActionsSlot` + `PageActionsProvider` |
@@ -618,18 +610,52 @@ The full inventory with props is generated into `components.json` (`npm run buil
 - Strings: shared components never hard-code UI text; they read `useSemiLocale()` (Vietnamese default). Apps switch
   language with `<SemiLocaleProvider locale={en}>` or override single strings (`locale={{ close: "Thoát" }}`).
 
+## 19. Brand signature & the generic AI look
+
+Every AI-made app tends towards the same screen: sidebar, title, four equal KPI cards with a coloured icon each, a
+table; a landing page with a hero and three feature cards ("Fast / Secure / Dedicated"). Semi screens avoid it in two
+ways.
+
+**The brand's signature** (brand.json `density`, `typography`, `motif`; inferred from the brief when left out) changes
+more than colour, through tokens the components already read:
+
+| Choice | Token | Read by |
+|---|---|---|
+| Density compact / regular / airy | `--spacing` (Tailwind's unit: every `p-*`, `gap-*`, `space-*`) | everything |
+| Type scale even / contrast | `--text-kpi` … `--text-display` | `PageTitle`, `KpiCard`, headings |
+| Title weight light / regular / strong | `font-title` (`--font-weight-title`) | `PageTitle`, `PageTabsTitle`, `KpiCard`, `BrandFigure` |
+| Figures sans / display | `font-figure` | `KpiCard`, `BrandFigure` |
+| Motif mark / dots / lines / grid / none | `--brand-motif`, `--brand-motif-size` | `BrandPattern` |
+
+Styles set the defaults (Sharp: strong titles, figures in the display font). Apps use `font-title` and `font-figure`
+for their own titles and big numbers, and never override the variables (`brand-override`).
+
+**Composition rules** (agents and reviewers; `/semi-check` reviews them, `semi-lint` catches the colour one):
+
+- One main block per screen, bigger than the rest: the thing the user came for. `KpiCard featured` for the main
+  number of a row; not four equal cards by default.
+- KPI and card icons are neutral or left out; colour means a status (`tone`, a status `iconTone`), never one
+  decorative colour per card (`decorative-icon-tones`: three or more icon colours in a file).
+- No row of three feature cards with an icon, a one-word title and a vague promise: show proof (a product shot,
+  `BrandFigure` with a real number, a customer quote).
+- Icons where they help scanning (navigation, actions, status), not in front of every label or row.
+- Sample, placeholder and empty-state text comes from the brand's brief and voice, never "Lorem", "John Doe", "Acme"
+  or another product's domain.
+- Vary the rhythm: plain sections, dividers and white space next to cards, not every block a card with the same
+  padding. `BrandPattern` gives open areas (hero, empty state, cover) the brand's look; never behind tables or forms.
+
 ## Anti-patterns (enforced by `semi-lint`)
 
 - **Physical / literal colors (`no-literal-palette`):** Never use neutral / white / black colour classes on any prefix or variant (`bg-white`, `text-slate-900`, `border-b-gray-200`, `divide-zinc-100`, `ring-slate-300`, `from-white`, `dark:bg-slate-800`). Always use Semantic Tokens (`bg-panel`, `bg-field`, `text-contrast`, `text-body`, `text-muted`, `border-line`, `divide-divider`).
 - **Fixed chromatic text (`no-fixed-tone-text`):** `text-emerald-400`, `text-rose-700 dark:text-rose-300`, `fill-amber-500` cannot pass contrast in both themes: use `text-accent-fg`, `text-*-fg` or `text-tone-<hue>`.
-- **Brand scale as a state colour (`accent-state-token`):** `ring-primary-500/50`, `bg-primary-500/15`, `border-primary-500/30` are not themed and vanish for light brands on light surfaces (a yellow ring is ≈ 1.3:1 on white): use `ring-focus`, `border-focus`, `bg-accent-subtle` / `bg-accent-subtle-hover`, `border-accent-line`. `/semi-fix` rewrites them.
+- **Brand scale as a state colour (`accent-state-token`):** `ring-primary-500/50`, `bg-primary-500/15`, `border-primary-500/30` are not themed and vanish for light brands on light surfaces (a yellow ring is ≈ 1.3:1 on white): use `ring-focus`, `border-focus`, `bg-accent-subtle` / `bg-accent-subtle-hover`, `border-accent-line`. `/semi-check` rewrites them.
 - **Solid pastel surfaces (`no-solid-pastel-surfaces`), arbitrary colours (`hex-colour-class`), literal colours in code (`literal-colour-value`), off-scale sizes (`arbitrary-text-size`).**
 - The colour / size rules read class tokens from every string literal (className, `cn()`, constants, template parts, `@apply`), not lines, so any spelling of a colour is caught.
 - **Overriding Card component (`card-class-override`):** Never pass any `bg-*` or `shadow-*` (with or without a variant such as `hover:`) to `<Card />`; use `TONAL_CONTAINER` on a plain element for a tinted card.
 - Gradients, glow blobs, coloured glow shadows (`shadow-[0_0_…]`), "glassmorphism" panels.
 - Solid greys for surfaces (`bg-gray-800/900`), `border-gray-700`, hard-coded hex colour classes (`bg-[#...]`, `text-[#...]`).
 - `font-bold` / `extrabold` / `black`; `text-[9px]` / `text-[10px]`; `text-xs` / `text-sm`; `uppercase` labels; ALL-CAPS button text.
-- Raw or arbitrary radii (`rounded-lg`, `rounded-[10px]`) instead of the style tokens; `font-mono` for numbers; coloured icon tiles in front of every card title.
+- Raw or arbitrary radii (`rounded-lg`, `rounded-[10px]`) instead of the style tokens; `font-mono` for numbers; coloured icon tiles in front of every card title; one decorative icon colour per card (`decorative-icon-tones`, §19).
 - Emoji or unicode pictograms as icons; filled glyphs mixed with stroke icons; stroke 2+; new inline `<svg>` paths.
 - Native `<select>`, `type="date"`, `type="number"`, `window.confirm` / `alert`.
 - "Đang tải…" text or a page spinner instead of a skeleton.

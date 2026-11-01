@@ -1,11 +1,11 @@
-// node --test lint/test — release migrations (migrations/*.mjs), their helpers and the /semi-update runner.
+// node --test lint/test — release migrations (migrations/*.mjs), their helpers and the /semi-sync runner.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { accentStateTokens, renameExport, renameProp } from "../../migrations/lib.mjs";
-import { cmpVersion, loadMigrations, pending, runMigrations } from "../../plugin/skills/semi-update/scripts/migrate.mjs";
+import { cmpVersion, loadMigrations, pending, runMigrations } from "../../plugin/skills/semi-sync/scripts/migrate.mjs";
 
 const root = new URL("../..", import.meta.url).pathname;
 const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));

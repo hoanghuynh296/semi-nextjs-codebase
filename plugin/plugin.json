@@ -1,21 +1,18 @@
 {
   "name": "semi-design",
   "displayName": "Semi Design System",
-  "version": "0.15.0",
-  "description": "Semi Design System rules, lint hook, docs MCP server (semi_search, semi_docs, semi_example, semi_block, semi_brand) and /semi-ui, /semi-init, /semi-audit, /semi-fix, /semi-update, /semi-style, /semi-brand, /semi-propose, /semi-triage skills for Next.js 16 + React 19 + Tailwind 4 web projects.",
+  "version": "0.17.0",
+  "description": "Semi brand builder for Next.js 16 + React 19 + Tailwind 4: /semi-brand (brand kit and brand book), /semi-new-app (a product of the brand), /semi-check (check and fix an app), /semi-sync (new brand kit or Semi release); plus UI rules, lint hook and the docs MCP server (semi_search, semi_docs, semi_example, semi_block, semi_brand). Maintainers: /semi-propose, /semi-triage.",
   "logo": "assets/logo.svg",
   "repository": {
     "type": "git",
     "url": "https://github.com/hoanghuynh296/semi-nextjs-codebase"
   },
   "suggestedPrompts": [
-    "Run /semi-ui to build a page or component from Semi components and blocks",
-    "Run /semi-init to create a new app on the Semi Design System",
-    "Run /semi-audit to check this app against the Semi Design System (first step for an existing app)",
-    "Run /semi-fix to fix the issues the last /semi-audit found",
-    "Run /semi-update to upgrade @semi/ui and apply its release migrations",
-    "Run /semi-style to switch this app to another Semi style (Flat, Soft, Sharp)",
-    "Run /semi-brand to create a brand kit (colours, fonts, logo, voice, styles) that every product of the brand uses",
+    "Run /semi-brand in a brand repo to create or change a brand (logo, colours, fonts, voice, styles) and its brand book",
+    "Run /semi-new-app in an empty folder to create a new product of a brand",
+    "Run /semi-check in an existing app to check it against its brand and Semi, then fix it",
+    "Run /semi-sync in an app when its brand kit or Semi has a new release",
     "Run /semi-propose to analyze project gaps and submit a feature request to Semi Design System",
     "Run /semi-triage to evaluate and generalize incoming ecosystem issues"
   ]

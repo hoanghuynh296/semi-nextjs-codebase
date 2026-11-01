@@ -34,7 +34,7 @@ if (server) {
     description: "Why the Semi docs tools are not available here and how to add them.",
     inputSchema: { type: "object", properties: {} },
   };
-  const why = "This project has no @semi/ui 0.13+ installed. New app: /semi-init. Existing app: /semi-audit then /semi-fix (installs @semi/ui). Older @semi/ui: /semi-update. Then restart the agent session.";
+  const why = "This project has no @semi/ui 0.13+ installed. New app: /semi-new-app. Existing app: /semi-check (installs @semi/ui). Older @semi/ui: /semi-sync. Then restart the agent session.";
   createInterface({ input: process.stdin }).on("line", (line) => {
     let m;
     try {

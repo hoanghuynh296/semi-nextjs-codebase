@@ -10,8 +10,8 @@ here; Semi derives the rest (scales, accent / on-accent shades of both themes, n
 checks WCAG AA. The user guide with the full step-by-step example is `node_modules/@semi/ui/docs/BRANDS.md` (in the
 Semi repo: `docs/BRANDS.md`); point the user to it.
 
-Run this skill **in the brand kit repo**, never in a product. Products use the kit with `/semi-init --brand`,
-`/semi-update` and `/semi-style`.
+Run this skill **in the brand kit repo**, never in a product. Products use the kit with `/semi-new-app --brand`,
+and `/semi-sync`.
 
 ## Create a brand (empty folder)
 
@@ -22,7 +22,8 @@ Run this skill **in the brand kit repo**, never in a product. Products use the k
    brand.json (the docs site's Brand preview copies one with "Copy lệnh cho agent"), save it to a file, create with
    `--from <file>` and ask only what is missing.
    - **Brief:** what the product is, who uses it (age, context: phone in a hurry, desk all day), 3 personality words
-     ("nhanh, vui vẻ, đáng tin"). Stored as `product`, `audience`, `personality`.
+     ("nhanh, vui vẻ, đáng tin"), and a one-line tagline if they have one. Stored as `product`, `audience`,
+     `personality`, `tagline`.
    - Brand name and package name (`@<scope>/brand`).
    - **Logo** (recommended): ask for the files (SVG best; a dark-background version and a square mark if they have
      them), put them in `assets/`. For an SVG run `brand.mjs colors assets/logo.svg` and offer its colours as the
@@ -44,6 +45,12 @@ Run this skill **in the brand kit repo**, never in a product. Products use the k
      into `brand.json` → `voice.do`, `voice.dont`, `voice.examples` (`{ "button": [...], "error": "…", "empty": "…" }`).
    - **Colour use:** how much accent: restrained (Recommended for tools), balanced, expressive (consumer, marketing).
    - Imagery (optional): one or two sentences on photos / illustration.
+   - **Signature** (what makes the brand's screens its own beyond colour; one question with the inferred values as
+     the Recommended option): the build already infers them from the brief (`BRAND.md` → "Chữ ký thương hiệu" says which
+     were inferred), so say what it inferred and why, and offer to change: density compact / regular / airy (tools all
+     day → compact; consumer, premium → airy), type scale even / contrast (contrast for bold, editorial, marketing),
+     title weight light / regular / strong, big numbers in the sans or the display font, and the motif: the logo mark
+     (needs an SVG mark), dots, lines, grid or none. Show them on the preview's "Chữ ký thương hiệu" section.
 3. **Create:**
    ```bash
    node "<path-to-this-skill>/scripts/brand.mjs" create --cwd "<dir>" --name "<Name>" --package "@scope/brand" \
@@ -57,9 +64,10 @@ Run this skill **in the brand kit repo**, never in a product. Products use the k
    ```bash
    node "<path-to-this-skill>/scripts/brand.mjs" preview --cwd "<dir>"     # run_in_background; http://localhost:4600
    ```
-   It renders the brand with real `@semi/ui` components: a sample product screen in light and dark side by side (texts
-   from the voice), the logo on both backgrounds with its clear space, the voice and colour-use rules, colours, type,
-   the contrast table, and every component page; theme and allowed styles switchable. Open it in the browser when you can, read the contrast table and the warnings, and
+   It is a brand book rendered with real `@semi/ui` components, in three tabs: **Thương hiệu** (cover, brief, logo
+   with clear space and misuse examples, colours by role with the share of a screen, type, signature, voice, imagery),
+   **Ứng dụng** (dashboard, phone app, landing page, email, light and dark, texts from the voice) and **UI kit**
+   (scales, contrast table, downloads, every component page); theme and allowed styles switch in the top bar. Open it in the browser when you can, read the contrast table and the warnings, and
    tell the user in a few lines: always say when the button is not the exact brand colour in a theme (`fidelity`,
    ΔE > 0.08, with the reason the warning gives) and any "lưu ý" row, since those are what a designer would notice. Keep the server running while they adjust: `set` rebuilds and the page updates.
 5. **Adjust** what the user asks ("darker primary", "use the preset neutrals"):
@@ -68,7 +76,8 @@ Run this skill **in the brand kit repo**, never in a product. Products use the k
    ```
    Keys: `primary`, `secondary` (`none` to remove), `name`, `neutral`, `allow`, `style`, `sans`, `display`;
    guideline: `tone`, `address`, `we`, `emoji`, `accent`, `secondaryRole`, `product`, `audience`,
-   `personality` (comma list), `logo`, `logoDark`, `mark` (paths in the kit), `imagery`. Lists (`voice.do`,
+   `personality` (comma list), `tagline`, `logo`, `logoDark`, `mark` (paths in the kit), `imagery`; signature:
+   `density`, `scale`, `title`, `figures`, `motif` (`auto` goes back to what the brief implies). Lists (`voice.do`,
    `voice.dont`) and `voice.examples` are edited in `brand.json` directly, then `brand.mjs build`. It rebuilds and says the change level.
 6. **Release** when the user approves: `npm run check`, `node brand.mjs bump --cwd "<dir>" 1.0.0`, commit, push to the
    brand's GitHub repo (ask the user to create it if needed), tag `v1.0.0`, push the tag. Then turn on GitHub Pages
@@ -79,13 +88,13 @@ Run this skill **in the brand kit repo**, never in a product. Products use the k
    The `brand-pages.yml` workflow builds the static preview (`semi-brand site`) and publishes it at
    `https://<owner>.github.io/<repo>/` on every push to main; give the user that link once the run is green
    (`gh run watch`). A private repo needs a GitHub plan with private Pages; otherwise suggest a public brand repo or
-   the local preview. Products install the kit with `/semi-init --brand github:<owner>/<repo>`.
+   the local preview. Products install the kit with `/semi-new-app --brand github:<owner>/<repo>`.
 
 ## Change a brand (existing kit)
 
 Same as steps 5–6: `set …` for the change, preview, then bump by the level it prints (major when colours / fonts that
 people see change, minor for new options such as an allowed style, patch otherwise) and tag. Then tell the user to run
-`/semi-update` in each product (a major one asks first).
+`/semi-sync` in each product (a major one asks first).
 
 ## `/semi-brand update` (new @semi/ui)
 
@@ -95,4 +104,4 @@ node "<path-to-this-skill>/scripts/brand.mjs" update --cwd "<kit-dir>"
 
 Installs the newest `@semi/ui`, sets `"semi"` in `brand.json` to it, adds what an older kit lacks (preview site deps
 and scripts, `.gitignore`, the Pages workflow), rebuilds, and prints the change level. Bump by that
-level, commit, tag, push; then products get it with `/semi-update`. It never changes the brand's choices.
+level, commit, tag, push; then products get it with `/semi-sync`. It never changes the brand's choices.

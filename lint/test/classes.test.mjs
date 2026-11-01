@@ -1,4 +1,4 @@
-// node --test lint/test — class-token analysis behind semi-lint, /semi-audit and the /semi-init codemod.
+// node --test lint/test — class-token analysis behind semi-lint, /semi-check and the /semi-new-app codemod.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { analyse, colourRule, extractStrings, splitToken } from "../classes.mjs";

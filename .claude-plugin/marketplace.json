@@ -7,8 +7,8 @@
     {
       "name": "semi-design",
       "source": "./plugin",
-      "description": "Semi Design System plugin: UI rules, lint hook, docs MCP server and /semi-ui, /semi-init, /semi-audit, /semi-fix, /semi-update, /semi-style, /semi-brand, /semi-propose, /semi-triage skills for Next.js + Tailwind 4 apps.",
-      "version": "0.15.0"
+      "description": "Semi brand builder for Next.js 16 + React 19 + Tailwind 4: /semi-brand (brand kit and brand book), /semi-new-app (a product of the brand), /semi-check (check and fix an app), /semi-sync (new brand kit or Semi release); plus UI rules, lint hook and the docs MCP server (semi_search, semi_docs, semi_example, semi_block, semi_brand). Maintainers: /semi-propose, /semi-triage.",
+      "version": "0.17.0"
     }
   ]
 }

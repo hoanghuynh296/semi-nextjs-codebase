@@ -73,6 +73,7 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Aspect ratio](aspect-ratio.md) | `AspectRatio` | Thumbnails and media that must not jump while loading. |
 | [Avatar](avatar.md) | `Avatar` | Owners, assignees, customers in rows and cards. |
 | [Badge](badge.md) | `Badge` | Status of a row or card (Đã thanh toán, Lỗi), a plan or role tag. |
+| [Brand signature](brand.md) | `BrandPattern`, `BrandFigure` | A landing hero, a report cover, an empty state or an avatar placeholder needs the brand's look (BrandPattern). |
 | [Card](card.md) | `Card` | Group the content of a page in cards; nested facts in TILE. |
 | [Carousel](carousel.md) | `Carousel` | Product photos, featured items, onboarding steps. |
 | [Chart](chart.md) | `BarChart`, `LineChart`, `DonutChart`, `Sparkline` | Compare categories (BarChart), show change over time (LineChart), parts of a whole with ≤ 5 parts (DonutChart), a trend next to a KPI (Sparkline). |
@@ -82,7 +83,7 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Icon](icon.md) | `Icon`, `IconTile` | Every icon in the UI: pick the semantic name (trash = delete, close = dismiss, refresh = reload). See docs/ICONS.md. |
 | [Item](item.md) | `Item`, `ItemGroup` | Settings lists, files, members, notifications, linked records. |
 | [Kbd](kbd.md) | `Kbd` | Show the shortcut of an action next to it. |
-| [KPI card](kpi-card.md) | `KpiCard` | The metric row at the top of a dashboard (2–4 per row). |
+| [KPI card](kpi-card.md) | `KpiCard` | The metric row at the top of a dashboard (2–4 per row), with the screen's main number as the featured card. |
 | [Markdown](markdown.md) | `Markdown` | Answers of an AI assistant, release notes, short rich text. |
 | [Separator](separator.md) | `Separator` | Split groups inside a card or menu; “hoặc” between two ways to sign in. |
 | [Table](table.md) | `Table`, `THead`, `TBody`, `TR`, `TH`, `TD` | Orders, invoices, logs: rows compared by column. |

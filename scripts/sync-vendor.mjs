@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// The plugin ships on its own (marketplace source ./plugin), so /semi-audit carries copies of the lint and tokens.
-// This keeps those copies byte-identical to the sources (/semi-init imports the codemod from the same folder).
+// The plugin ships on its own (marketplace source ./plugin), so /semi-check carries copies of the lint and tokens.
+// This keeps those copies byte-identical to the sources (/semi-new-app imports the codemod from the same folder).
 //   node scripts/sync-vendor.mjs           copy lint/*.mjs + tokens/tokens.json + tokens/styles.json into the plugin
 //   node scripts/sync-vendor.mjs --check   exit 1 when a copy is stale (npm run check)
 import { copyFileSync, existsSync, readFileSync } from "node:fs";
@@ -8,7 +8,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const VENDOR = "plugin/skills/semi-audit/scripts/vendor";
+const VENDOR = "plugin/skills/semi-check/scripts/vendor";
 const COPIES = [
   ["lint/semi-lint.mjs", `${VENDOR}/semi-lint.mjs`],
   ["lint/classes.mjs", `${VENDOR}/classes.mjs`],

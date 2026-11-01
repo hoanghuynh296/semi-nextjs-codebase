@@ -2,7 +2,7 @@
 
 // A scrolling region with a fixed size (a long list in a card, a wide table, a log). Semi hides scrollbars, so the
 // region shows a line on each edge that has more content, can show a thin scrollbar, and is reachable by keyboard.
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { cn } from "../styles/utils";
 
 export function ScrollArea({
@@ -22,7 +22,9 @@ export function ScrollArea({
   children: React.ReactNode;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [edges, setEdges] = useState({ top: false, bottom: false, left: false, right: false, scrolls: false });
+  // scrolls starts true: the server HTML and the page before hydration keep the region focusable (it usually scrolls);
+  // the first measure removes the tab stop when it does not.
+  const [edges, setEdges] = useState({ top: false, bottom: false, left: false, right: false, scrolls: true });
   const measure = useCallback(() => {
     const el = ref.current;
     if (!el) return;
@@ -35,7 +37,8 @@ export function ScrollArea({
     const scrolls = (y && el.scrollHeight > el.clientHeight + 1) || (x && el.scrollWidth > el.clientWidth + 1);
     setEdges((e) => (e.top === top && e.bottom === bottom && e.left === left && e.right === right && e.scrolls === scrolls ? e : { top, bottom, left, right, scrolls }));
   }, [orientation]);
-  useEffect(() => {
+  // Measured before paint, so the edge lines and the tab stop are right on the first frame.
+  useLayoutEffect(() => {
     measure();
     const el = ref.current;
     if (!el) return;

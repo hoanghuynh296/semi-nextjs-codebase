@@ -115,6 +115,12 @@ test("guideline: brief, logo, voice, colour use and imagery are validated; defau
   assert.ok(g.voice.rules.some((r) => /viết tắt/.test(r)), "formal tone rules");
   assert.ok(g.voice.rules.some((r) => /Nút: động từ/.test(r)), "shared microcopy rules");
   assert.match(g.color.secondaryRule, /badge/);
+  assert.deepEqual(plain.tokens.guide.color.mix, { neutral: 80, surface: 15, accent: 5 }, "restrained: share of a screen");
+  const mix = g.color.mix;
+  assert.ok(mix.secondary > 0 && mix.accent + mix.secondary === 5, "the secondary takes a share of the accent");
+  assert.equal(Object.values(mix).reduce((a, b) => a + b), 100);
+  assert.match(validateBrand(brand({ brief: { tagline: "x".repeat(91) } }), { styles }).errors.join("\n"), /brief.tagline/);
+  assert.equal(generateBrand(brand({ brief: { tagline: "In 3D chính xác ngay lần đầu" } }), { tokens, styles }).tokens.guide.brief.tagline, "In 3D chính xác ngay lần đầu");
 });
 
 test("neutrals: tinted takes the primary's hue, preset copies the style's own neutrals; only allowed styles are emitted", () => {
@@ -189,9 +195,9 @@ test("brand-override: an app with a brand kit may not set brand colours, fonts o
   const dir = mkdtempSync(join(tmpdir(), "semi-brand-lint-"));
   mkdirSync(join(dir, "app"));
   const css = join(dir, "app/globals.css");
-  writeFileSync(css, `@import "@3dnoobs/brand/dist/brand.css";\n:root { --color-primary-500: #ff0000; }\n@theme { --font-sans: Arial; }\n.x { --semi-panel: #fff; --my-gap: 4px; }\n`);
+  writeFileSync(css, `@import "@3dnoobs/brand/dist/brand.css";\n:root { --color-primary-500: #ff0000; }\n@theme { --font-sans: Arial; }\n.x { --semi-panel: #fff; --my-gap: 4px; }\n:root { --brand-spacing: 0.3rem; --spacing: 5px; }\n.y { --spacing-gutter: 4px; }\n`);
   const withBrand = scan([css], { brand: "@3dnoobs/brand" }, dir).hard.filter((h) => h.rule === "brand-override");
-  assert.deepEqual(withBrand.map((h) => h.line), [2, 3, 4]);
+  assert.deepEqual(withBrand.map((h) => h.line), [2, 3, 4, 5]);
   assert.equal(scan([css], {}, dir).hard.filter((h) => h.rule === "brand-override").length, 0); // only with a brand
   rmSync(dir, { recursive: true });
 });
@@ -201,7 +207,7 @@ test("preview site: the template plus this brand's data, fonts module and CSS la
   writeFileSync(join(dir, "brand.json"), JSON.stringify(brand({ name: "3D Noobs", package: "@3dnoobs/brand", fonts: { sans: "Inter", display: "Montserrat Alternates" } })));
   execFileSync("node", [CLI, "build"], { cwd: dir });
   const out = preparePreview(dir);
-  for (const f of ["next.config.mjs", "postcss.config.mjs", "app/layout.jsx", "app/page.jsx", "app/globals.css", "app/brand.css", "app/brand.json"]) assert.ok(readFileSync(join(out, f), "utf8").length > 20, f);
+  for (const f of ["next.config.mjs", "postcss.config.mjs", "app/layout.jsx", "app/parts.jsx", "app/(brand)/page.jsx", "app/(brand)/apps/page.jsx", "app/(kit)/kit/page.jsx", "app/(kit)/components/page.jsx", "app/globals.css", "app/brand.css", "app/brand.json", "public/kit/brand.css", "public/kit/brand.json"]) assert.ok(readFileSync(join(out, f), "utf8").length > 20, f);
   const fonts = readFileSync(join(out, "app/fonts.js"), "utf8");
   assert.match(fonts, /import \{ Inter, Montserrat_Alternates \} from "next\/font\/google";/);
   assert.match(fonts, /weight: \["600","700"\]/);
@@ -209,4 +215,37 @@ test("preview site: the template plus this brand's data, fonts module and CSS la
   assert.equal(readFileSync(join(out, "app/brand.css"), "utf8"), readFileSync(join(dir, "dist/brand.css"), "utf8"));
   assert.match(readFileSync(join(out, "next.config.mjs"), "utf8"), /SEMI_BRAND_BASE_PATH/);
   rmSync(dir, { recursive: true });
+});
+
+test("signature: brief infers density, type and motif; explicit choices win and land in brand.css", () => {
+  const tool = generateBrand(brand({ brief: { product: "Phần mềm quản lý kho", personality: ["chính xác", "kỹ thuật"] } }), { tokens, styles });
+  const s = tool.tokens.guide.signature;
+  assert.equal(s.density, "compact");
+  assert.equal(s.motif, "grid");
+  assert.deepEqual(s.inferred.sort(), ["density", "motif", "typography.figures", "typography.scale", "typography.title"]);
+  assert.match(tool.css, /--brand-spacing: 0\.225rem/);
+  assert.doesNotMatch(tool.css, /--text-display:/); // even scale keeps Semi's sizes
+
+  const bold = generateBrand(brand({ brief: { personality: ["táo bạo", "trẻ trung"] } }), { tokens, styles }).tokens.guide.signature;
+  assert.deepEqual([bold.scale, bold.title, bold.figures], ["contrast", "strong", "display"]);
+
+  const chosen = generateBrand(brand({ density: "airy", typography: { scale: "contrast", title: "light", figures: "sans" }, motif: "none" }), { tokens, styles });
+  assert.deepEqual(chosen.tokens.guide.signature.inferred, []);
+  assert.match(chosen.css, /--brand-spacing: 0\.2875rem/);
+  assert.match(chosen.css, /--brand-title-weight: 400/);
+  assert.match(chosen.css, /--text-display: 34px/);
+  assert.match(chosen.css, /--brand-motif: linear-gradient\(transparent, transparent\)/);
+
+  const { errors } = validateBrand(brand({ density: "tight", typography: { title: "black" }, motif: "mark" }), { styles });
+  assert.equal(errors.length, 3);
+});
+
+test("signature: a mark motif tiles the logo mark SVG as a mask", () => {
+  const mark = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="#FF6B00"/></svg>';
+  const r = generateBrand(brand({ logo: { full: "assets/logo.svg", mark: "assets/mark.svg" } }), { tokens, styles, markSvg: mark });
+  assert.equal(r.tokens.guide.signature.motif, "mark");
+  assert.match(r.css, /--brand-motif: url\("data:image\/svg\+xml,%3Csvg[^"]*viewBox%3D%220%200%2010%2010%22/);
+  assert.match(r.css, /--brand-motif-size: 48px/);
+  const missing = generateBrand(brand({ logo: { full: "assets/logo.svg", mark: "assets/mark.svg" } }), { tokens, styles });
+  assert.match(missing.warnings.join("\n"), /motif "mark"/);
 });

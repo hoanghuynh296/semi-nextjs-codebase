@@ -119,24 +119,96 @@ export const MICROCOPY = [
   "Không phụ đề dưới tiêu đề trang; nhãn ngắn, icon đi trước chữ",
 ];
 const ACCENT_USE = {
-  restrained: { label: "Tiết chế", rule: "Màu chính chỉ cho hành động chính (một nút chính mỗi vùng), mục đang chọn, link và focus. Nền màu chính diện rộng: không." },
-  balanced: { label: "Cân bằng", rule: "Như tiết chế, thêm nền nhạt bg-accent-subtle cho khối nổi bật (banner, thẻ khuyến nghị), tối đa một khối mỗi màn hình." },
-  expressive: { label: "Phóng khoáng", rule: "Được dùng nền bg-accent cho hero / banner và icon lớn màu chính; vẫn chỉ một nút chính mỗi vùng." },
+  restrained: { label: "Tiết chế", mix: { neutral: 80, surface: 15, accent: 5 }, rule: "Màu chính chỉ cho hành động chính (một nút chính mỗi vùng), mục đang chọn, link và focus. Nền màu chính diện rộng: không." },
+  balanced: { label: "Cân bằng", mix: { neutral: 70, surface: 20, accent: 10 }, rule: "Như tiết chế, thêm nền nhạt bg-accent-subtle cho khối nổi bật (banner, thẻ khuyến nghị), tối đa một khối mỗi màn hình." },
+  expressive: { label: "Phóng khoáng", mix: { neutral: 55, surface: 25, accent: 20 }, rule: "Được dùng nền bg-accent cho hero / banner và icon lớn màu chính; vẫn chỉ một nút chính mỗi vùng." },
 };
 const SECONDARY_ROLE = {
   highlight: "điểm nhấn: badge \"Mới\", ngôi sao, số nổi bật (bg-secondary-solid + text-on-secondary, text-secondary-fg)",
   badge: "nhãn và badge phân loại (bg-secondary-solid + text-on-secondary)",
   illustration: "minh hoạ và biểu đồ trang trí (secondary-*), không cho chữ hay nút",
 };
+/**
+ * The brand's signature: what makes two brands differ beyond colour (density, typography, motif). Each choice has a
+ * label for people, a rule for agents and the CSS it sets. Missing choices are inferred from the brief (inferSignature).
+ */
+export const DENSITY = {
+  compact: { label: "Gọn", spacing: "0.225rem", rule: "Nhiều thông tin trên một màn hình: khoảng cách nhỏ, bảng và danh sách dày, ít khoảng trống trang trí." },
+  regular: { label: "Vừa", spacing: "0.25rem", rule: "Khoảng cách mặc định của Semi." },
+  airy: { label: "Thoáng", spacing: "0.2875rem", rule: "Ít thứ hơn trên một màn hình, khoảng trống rộng; mỗi màn một việc chính, ưu tiên khối lớn hơn bảng dày." },
+};
+export const TYPE_SCALE = {
+  even: { label: "Đều", rule: "Tiêu đề chỉ lớn hơn chữ thường một chút: giao diện điềm tĩnh, thông tin là chính." },
+  contrast: {
+    label: "Tương phản",
+    sizes: { "text-kpi": "22px", "text-heading-sm": "22px", "text-heading": "26px", "text-heading-lg": "30px", "text-display": "34px" },
+    rule: "Tiêu đề và con số lớn hẳn so với chữ thường: mỗi màn có một điểm nhìn chính rõ ràng.",
+  },
+};
+export const TITLE_WEIGHT = {
+  light: { label: "Mảnh", weight: 400, rule: "Tiêu đề và con số nét mảnh: tinh tế, nhiều khoảng trống quanh chữ." },
+  regular: { label: "Vừa", weight: 600, rule: "Tiêu đề và con số nét vừa (semibold)." },
+  strong: { label: "Đậm", weight: 700, rule: "Tiêu đề và con số nét đậm: mạnh, dứt khoát." },
+};
+export const FIGURES = {
+  sans: { label: "Font chữ thường", rule: "Con số lớn (KPI, BrandFigure) dùng font chữ thường." },
+  display: { label: "Font hiển thị", rule: "Con số lớn (KPI, BrandFigure) dùng font hiển thị của thương hiệu: số là một phần của nhận diện." },
+};
+/** Repeating motifs, drawn as a mask (BrandPattern colours it). mark = a tile of the brand's own mark (SVG). */
+export const MOTIFS = {
+  mark: { label: "Từ logo", rule: "Hoạ tiết là mark của logo lặp lại." },
+  dots: { label: "Chấm", rule: "Hoạ tiết chấm đều." },
+  lines: { label: "Sọc chéo", rule: "Hoạ tiết sọc chéo mảnh." },
+  grid: { label: "Lưới", rule: "Hoạ tiết lưới mảnh, như giấy kỹ thuật." },
+  none: { label: "Không dùng", rule: "Thương hiệu không dùng hoạ tiết: BrandPattern không vẽ gì." },
+};
+const MOTIF_SVG = {
+  dots: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><circle cx="8" cy="8" r="1.5"/></svg>',
+  lines: '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"><path d="M-3 3l6-6M0 12L12 0M9 15l6-6" stroke="black" stroke-width="1.25"/></svg>',
+  grid: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><path d="M24 0H0v24" fill="none" stroke="black" stroke-width="1"/></svg>',
+};
+const MOTIF_SIZE = { dots: "16px", lines: "12px", grid: "24px", mark: "48px" };
+
+const has = (text, words) => words.some((w) => text.includes(w));
+/** Choices the brief implies, for the ones brand.json leaves out. Words in Vietnamese and English. */
+export function inferSignature(brand) {
+  const b = brand.brief ?? {};
+  const text = [...(b.personality ?? []), b.product ?? "", b.audience ?? ""].join(" ").toLowerCase();
+  const bold = has(text, ["mạnh mẽ", "táo bạo", "năng động", "cá tính", "nổi bật", "trẻ trung", "bold", "energetic", "playful", "loud"]);
+  const elegant = has(text, ["sang trọng", "tinh tế", "thanh lịch", "cao cấp", "nhẹ nhàng", "tối giản", "elegant", "luxury", "premium", "minimal", "calm"]);
+  const dense = has(text, ["cả ngày", "quản lý", "quản trị", "công cụ", "kỹ thuật", "chuyên nghiệp", "chính xác", "dữ liệu", "báo cáo", "admin", "dashboard", "tool", "pro", "technical", "precise", "data"]);
+  const airy = elegant || has(text, ["thư giãn", "thoải mái", "vui vẻ", "thân thiện", "tiêu dùng", "gia đình", "trẻ em", "relaxed", "friendly", "consumer", "family"]);
+  const accent = brand.color?.accent ?? "restrained";
+  const scale = bold || accent === "expressive" || has(text, ["biên tập", "tạp chí", "editorial"]) ? "contrast" : "even";
+  return {
+    density: dense && !airy ? "compact" : airy && !dense ? "airy" : "regular",
+    typography: { scale, title: bold ? "strong" : elegant ? "light" : "regular", figures: scale === "contrast" || elegant ? "display" : "sans" },
+    motif: brand.logo?.mark && /\.svg$/i.test(brand.logo.mark) ? "mark" : has(text, ["kỹ thuật", "chính xác", "technical", "precise", "kỹ sư"]) ? "grid" : bold ? "lines" : "dots",
+  };
+}
+
+/** A mark SVG as one tile of a repeating motif: the mark centred at half the tile, as a mask (shape only). */
+export function markTile(svg) {
+  const m = /<svg\b([^>]*)>([\s\S]*)<\/svg>/i.exec(svg ?? "");
+  if (!m) return null;
+  const attr = (n) => new RegExp(`\\b${n}=["']([^"']+)["']`).exec(m[1])?.[1];
+  const box = attr("viewBox") ?? (attr("width") && attr("height") ? `0 0 ${parseFloat(attr("width"))} ${parseFloat(attr("height"))}` : null);
+  if (!box) return null;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48"><svg x="17" y="17" width="14" height="14" viewBox="${box}">${m[2]}</svg></svg>`;
+}
+
+const dataUri = (svg) => `url("data:image/svg+xml,${encodeURIComponent(svg).replace(/'/g, "%27").replace(/\(/g, "%28").replace(/\)/g, "%29")}")`;
+
 const str = (v) => typeof v === "string" && v.trim().length > 0;
 const strList = (v) => Array.isArray(v) && v.every(str);
 
 function validateGuide(brand, errors, warnings) {
   const b = brand.brief;
   if (b !== undefined) {
-    if (typeof b !== "object" || b === null) fail(errors, "brief: phải là object { audience, product, personality }");
+    if (typeof b !== "object" || b === null) fail(errors, "brief: phải là object { product, audience, personality, tagline }");
     else {
       for (const k of ["audience", "product"]) if (b[k] !== undefined && !str(b[k])) fail(errors, `brief.${k}: phải là chữ`);
+      if (b.tagline !== undefined && (!str(b.tagline) || b.tagline.length > 90)) fail(errors, "brief.tagline: một câu ngắn, tối đa 90 ký tự");
       if (b.personality !== undefined && (!strList(b.personality) || b.personality.length > 5)) fail(errors, "brief.personality: 1–5 tính từ, vd. [\"thân thiện\", \"chính xác\"]");
     }
   }
@@ -175,7 +247,32 @@ function validateGuide(brand, errors, warnings) {
     }
   }
   if (brand.imagery !== undefined && !str(brand.imagery)) fail(errors, "imagery: một đoạn mô tả ảnh / minh hoạ");
+  if (brand.density !== undefined && !DENSITY[brand.density]) fail(errors, `density: "${brand.density}" phải là ${Object.keys(DENSITY).join(", ")}`);
+  const ty = brand.typography;
+  if (ty !== undefined) {
+    if (typeof ty !== "object" || ty === null) fail(errors, "typography: phải là object { scale, title, figures }");
+    else {
+      if (ty.scale !== undefined && !TYPE_SCALE[ty.scale]) fail(errors, `typography.scale: "${ty.scale}" phải là ${Object.keys(TYPE_SCALE).join(", ")}`);
+      if (ty.title !== undefined && !TITLE_WEIGHT[ty.title]) fail(errors, `typography.title: "${ty.title}" phải là ${Object.keys(TITLE_WEIGHT).join(", ")}`);
+      if (ty.figures !== undefined && !FIGURES[ty.figures]) fail(errors, `typography.figures: "${ty.figures}" phải là ${Object.keys(FIGURES).join(", ")}`);
+    }
+  }
+  if (brand.motif !== undefined && !MOTIFS[brand.motif]) fail(errors, `motif: "${brand.motif}" phải là ${Object.keys(MOTIFS).join(", ")}`);
+  if (brand.motif === "mark" && !(brand.logo?.mark && /\.svg$/i.test(brand.logo.mark))) fail(errors, "motif: \"mark\" cần logo.mark là file .svg");
   if (!brand.voice) warnings.push("Chưa có giọng văn (voice): agent sẽ viết chữ theo mặc định trung tính. Thêm voice để sản phẩm nói đúng giọng thương hiệu");
+}
+
+/**
+ * How much of a screen each colour role takes, in % (the 60-30-10 idea, by accent use): neutrals (canvas, text),
+ * surfaces (panels, fields), accent (buttons, links, selection) and, with a secondary colour, a share of the accent.
+ */
+function colorMix(accent, secondary) {
+  const m = { ...ACCENT_USE[accent].mix };
+  if (secondary) {
+    m.secondary = Math.max(2, Math.round(m.accent * 0.3));
+    m.accent -= m.secondary;
+  }
+  return m;
 }
 
 /** The guideline with defaults filled in: what BRAND.md, AGENTS.brand.md, the preview and agents read. */
@@ -204,11 +301,56 @@ export function resolveGuide(brand) {
       accent,
       accentLabel: ACCENT_USE[accent].label,
       accentRule: ACCENT_USE[accent].rule,
+      mix: colorMix(accent, Boolean(brand.secondary)),
       secondaryRole,
       secondaryRule: secondaryRole ? SECONDARY_ROLE[secondaryRole] : null,
     },
     imagery: brand.imagery ?? null,
+    signature: resolveSignature(brand),
   };
+}
+
+/** density, typography and motif with the brief's inference filling the gaps; `inferred` lists what was guessed. */
+export function resolveSignature(brand) {
+  const guess = inferSignature(brand);
+  const ty = brand.typography ?? {};
+  const inferred = [];
+  const pick = (key, given, fallback) => (given !== undefined ? given : (inferred.push(key), fallback));
+  const density = pick("density", brand.density, guess.density);
+  const scale = pick("typography.scale", ty.scale, guess.typography.scale);
+  const title = pick("typography.title", ty.title, guess.typography.title);
+  const figures = pick("typography.figures", ty.figures, guess.typography.figures);
+  const motif = pick("motif", brand.motif, guess.motif);
+  return {
+    density,
+    densityLabel: DENSITY[density].label,
+    densityRule: DENSITY[density].rule,
+    scale,
+    scaleLabel: TYPE_SCALE[scale].label,
+    scaleRule: TYPE_SCALE[scale].rule,
+    title,
+    titleLabel: TITLE_WEIGHT[title].label,
+    titleRule: TITLE_WEIGHT[title].rule,
+    figures,
+    figuresLabel: FIGURES[figures].label,
+    figuresRule: FIGURES[figures].rule,
+    motif,
+    motifLabel: MOTIFS[motif].label,
+    motifRule: MOTIFS[motif].rule,
+    inferred,
+  };
+}
+
+/** CSS variables of the signature (on :root): density, title weight, figure font, motif mask; the type scale apart. */
+export function signatureVars(sig, markSvg) {
+  const motif = sig.motif === "mark" ? markTile(markSvg) : sig.motif === "none" ? null : MOTIF_SVG[sig.motif];
+  return [
+    ["--brand-spacing", DENSITY[sig.density].spacing],
+    ["--brand-title-weight", String(TITLE_WEIGHT[sig.title].weight)],
+    ["--brand-font-figure", sig.figures === "display" ? "var(--semi-font-display)" : "var(--semi-font-sans)"],
+    ["--brand-motif", motif ? dataUri(motif) : "linear-gradient(transparent, transparent)"],
+    ["--brand-motif-size", MOTIF_SIZE[sig.motif] ?? "16px"],
+  ];
 }
 
 /** The shade a brand colour sits on: the one whose ladder lightness is closest to it. */
@@ -328,7 +470,7 @@ function fixText(n, theme) {
 }
 
 /** Every token of a brand, its CSS and a contrast report. Throws when validateBrand finds errors. */
-export function generateBrand(brand, { tokens, styles, version = "" }) {
+export function generateBrand(brand, { tokens, styles, version = "", markSvg = null }) {
   const { errors, warnings } = validateBrand(brand, { styles });
   if (errors.length) throw Object.assign(new Error(`brand.json không hợp lệ:\n- ${errors.join("\n- ")}`), { errors });
   const allowed = brand.styles.allowed.map((id) => styles.styles.find((s) => s.id === id));
@@ -427,6 +569,8 @@ export function generateBrand(brand, { tokens, styles, version = "" }) {
     guide: resolveGuide(brand),
     fonts,
   };
+  if (out.guide.signature.motif === "mark" && !markTile(markSvg)) warnings.push("motif \"mark\": không đọc được SVG của logo.mark (cần thẻ <svg> có viewBox), hoạ tiết tạm để trống");
+  out.signatureCss = signatureVars(out.guide.signature, markSvg);
   return { tokens: out, css: brandCss(out, version), fonts, report, warnings };
 }
 
@@ -478,6 +622,14 @@ export function brandCss(t, version, { runtime = false, loadedFonts = [] } = {})
   if (t.secondary)
     css += `${runtime ? ":root" : "@theme inline"} {\n  --color-secondary-fg: var(--semi-secondary-fg);\n  --color-secondary-solid: var(--semi-secondary-solid);\n  --color-on-secondary: var(--semi-on-secondary);\n}\n\n`;
   css += block([":root"], [["--font-sans-family", family("sans")], ["--font-display-family", family("display")]]) + "\n";
+  // Signature: density, title weight, figure font, motif (read by the style tokens and BrandPattern), type scale.
+  const sig = t.guide?.signature;
+  if (sig) {
+    css += `/* Signature: density ${sig.density}, type ${sig.scale} / ${sig.title} / figures ${sig.figures}, motif ${sig.motif} */\n`;
+    css += block([":root"], t.signatureCss ?? signatureVars(sig)) + "\n";
+    const sizes = TYPE_SCALE[sig.scale].sizes;
+    if (sizes) css += `${runtime ? ":root" : "@theme"} {\n${Object.entries(sizes).map(([k, v]) => `  --${k}: ${v};`).join("\n")}\n}\n\n`;
+  }
   // Accent: every style, every theme scope (the same selectors Semi's own theme tokens use).
   const scopes = (theme, extra = []) => [
     ...extra,
