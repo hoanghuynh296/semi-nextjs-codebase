@@ -4,6 +4,8 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-11-01
+
 ### Added
 - **Brand kits:** Semi is now a multi-brand kit: Semi core → a brand kit per brand (its own repo) → products. `brand.json` holds the few choices (primary, optional secondary, neutrals tinted from the primary or a style preset, allowed styles, fonts); `@semi/ui/brand` (`generateBrand`, OKLCH, no dependencies) derives the 50–900 scales, the accent / on-accent / accent-fg shades of both themes and the neutrals of every allowed style, choosing the first shades that reach WCAG AA. `semi-brand build | check | preview` (new bin) writes `dist/brand.css`, `dist/brand.json`, `BRAND.md` and `AGENTS.brand.md`.
 - **`/semi-brand`:** creates a kit (`create`), changes its choices (`set`, with the change level), `/semi-brand update` regenerates it for a newer `@semi/ui`, `bump` versions it. Products: `/semi-init --brand <spec>`, `/semi-fix foundation --brand`, `/semi-audit` checks the kit is installed and wired (`brand`), its styles and fonts; `/semi-update` updates the kit first (asks before a major one, `--accept-major`) and keeps `@semi/ui` inside the kit's `"semi"` range; `/semi-style` offers only the brand's styles. `semi-lint` `brand-override` (hard, apps with a brand) blocks local `--color-primary-*`, `--semi-*` and font tokens in CSS.
