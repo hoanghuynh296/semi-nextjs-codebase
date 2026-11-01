@@ -18,7 +18,9 @@
     "./styles.json": "./tokens/styles.json",
     "./brand": "./brand/generate.mjs",
     "./package.json": "./package.json",
-    "./components.json": "./components.json"
+    "./components.json": "./components.json",
+    "./site": "./site/index.ts",
+    "./examples/list.json": "./examples/list.generated.json"
   },
   "bin": {
     "semi-lint": "lint/semi-lint.mjs",
@@ -30,6 +32,8 @@
     "tokens",
     "lint",
     "brand",
+    "examples",
+    "site",
     "docs",
     "migrations",
     "CHANGELOG.md",

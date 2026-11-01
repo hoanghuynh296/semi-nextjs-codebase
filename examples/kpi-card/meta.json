@@ -1,0 +1,20 @@
+{
+  "title": "KPI card",
+  "group": "Data display",
+  "description": "A metric card: label, a large tabular figure, a sub line coloured good / danger, and an icon in its tone.",
+  "components": [
+    "KpiCard"
+  ],
+  "when": [
+    "The metric row at the top of a dashboard (2–4 per row)."
+  ],
+  "a11y": [
+    "hint becomes the card's title (tooltip); the figure uses tabular-nums."
+  ],
+  "examples": [
+    {
+      "file": "row",
+      "title": "Dashboard row"
+    }
+  ]
+}

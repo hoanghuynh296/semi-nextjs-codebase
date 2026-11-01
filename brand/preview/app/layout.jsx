@@ -1,6 +1,7 @@
 import { ThemeProvider, ThemeScript, ToastHost } from "@semi/ui";
 import brand from "./brand.json";
 import { fontVariables } from "./fonts";
+import { Shell } from "./Shell";
 import "./globals.css";
 
 export const metadata = {
@@ -20,7 +21,7 @@ export default function RootLayout({ children }) {
       </head>
       <body className="min-h-screen bg-canvas text-body font-sans antialiased">
         <ThemeProvider defaultTheme="dark">
-          {children}
+          <Shell>{children}</Shell>
           <ToastHost />
         </ThemeProvider>
       </body>

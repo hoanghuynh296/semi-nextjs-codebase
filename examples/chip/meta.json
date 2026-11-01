@@ -1,0 +1,32 @@
+{
+  "title": "Chip",
+  "group": "Actions",
+  "description": "A pill-shaped toggle for filters and tags. Neutral when off; active uses the high-contrast surface, with colour only on its dot or icon (tone).",
+  "components": [
+    "Chip"
+  ],
+  "when": [
+    "Several filters that can be on at once (materials, device types).",
+    "Removable active filters above a list."
+  ],
+  "instead": [
+    {
+      "need": "Exactly one of 2–5 options",
+      "use": "Pills"
+    },
+    {
+      "need": "A read-only status",
+      "use": "Badge"
+    }
+  ],
+  "a11y": [
+    "A button with aria-pressed when it toggles; keep the text short."
+  ],
+  "examples": [
+    {
+      "file": "toggle",
+      "title": "Toggle filters",
+      "description": "tone colours the dot of what the chip filters; the chip itself stays neutral."
+    }
+  ]
+}

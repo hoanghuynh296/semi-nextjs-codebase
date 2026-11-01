@@ -1,0 +1,29 @@
+{
+  "title": "Pagination",
+  "group": "Navigation & layout",
+  "description": "Page numbers with previous / next for long tables. For card lists prefer auto-loading with “Xem thêm”.",
+  "components": [
+    "Pagination"
+  ],
+  "imports": [
+    "pageWindow"
+  ],
+  "when": [
+    "Server-paged tables and reports."
+  ],
+  "instead": [
+    {
+      "need": "A feed or card grid",
+      "use": "auto-load near the end + a “Xem thêm” Button"
+    }
+  ],
+  "a11y": [
+    "A nav landmark; the current page has aria-current=\"page\"; arrows are labelled."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "Basic"
+    }
+  ]
+}

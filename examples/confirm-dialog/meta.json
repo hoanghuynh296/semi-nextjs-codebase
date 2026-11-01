@@ -1,0 +1,33 @@
+{
+  "title": "Confirm dialog",
+  "group": "Overlays",
+  "description": "confirmDialog() asks one yes / no question and resolves to true or false. Mount ConfirmHost once in the root layout. Never window.confirm.",
+  "components": [
+    "ConfirmHost"
+  ],
+  "imports": [
+    "confirmDialog"
+  ],
+  "when": [
+    "Before deleting, stopping a print or discarding changes."
+  ],
+  "instead": [
+    {
+      "need": "A form or several fields",
+      "use": "Modal"
+    },
+    {
+      "need": "Undo instead of asking",
+      "use": "toast() with an action"
+    }
+  ],
+  "a11y": [
+    "An alertdialog: focus starts on the safe button (Huỷ), Escape cancels."
+  ],
+  "examples": [
+    {
+      "file": "danger",
+      "title": "Destructive confirmation"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "title": "Subpage toolbar",
+  "group": "Navigation & layout",
+  "description": "The sticky row under a page title: filters on the left; search, refresh and the icon-only primary action on the right. RefreshButton spins while its promise runs.",
+  "components": [
+    "SubpageToolbar",
+    "RefreshButton"
+  ],
+  "when": [
+    "Every list or grid page."
+  ],
+  "instead": [
+    {
+      "need": "Actions of a tool app",
+      "use": "AppHeader"
+    }
+  ],
+  "a11y": [
+    "The primary action is icon-only, so primaryActionLabel is required (aria-label + title)."
+  ],
+  "examples": [
+    {
+      "file": "list-page",
+      "title": "List page"
+    },
+    {
+      "file": "refresh",
+      "title": "RefreshButton"
+    }
+  ]
+}

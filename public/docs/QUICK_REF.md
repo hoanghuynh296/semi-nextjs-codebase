@@ -1,6 +1,7 @@
 # Semi Design System — Quick Reference
 
-Cheatsheet of `DESIGN_SYSTEM.md`, which is the **single source of truth for UI rules** across the Semi ecosystem: a new
+Component pages for agents: `docs/components/README.md` → `docs/components/<id>.md` (when to use, what instead, examples,
+API from the types). Cheatsheet of `DESIGN_SYSTEM.md`, which is the **single source of truth for UI rules** across the Semi ecosystem: a new
 or changed rule goes into `docs/DESIGN_SYSTEM.md`, `docs/QUICK_REF.md`, `docs/DECISIONS.md` (+ `lint/semi-lint.mjs` when
 checkable) in the `semi-nextjs-codebase` repo, tagged with a new release. Never record UI rules in agent memory, skills
 or per-project `AGENTS.md`.

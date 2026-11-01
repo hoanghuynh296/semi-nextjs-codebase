@@ -1,0 +1,35 @@
+{
+  "title": "Checkbox",
+  "group": "Forms",
+  "description": "A native checkbox with label and description, checked fill in the accent, and an indeterminate state for “select all”.",
+  "components": [
+    "Checkbox"
+  ],
+  "when": [
+    "Opt in to something in a form (accept terms, include archived).",
+    "Select rows; “select all” with indeterminate."
+  ],
+  "instead": [
+    {
+      "need": "A setting that applies at once",
+      "use": "Switch"
+    },
+    {
+      "need": "Exactly one option of a few",
+      "use": "RadioGroup"
+    }
+  ],
+  "a11y": [
+    "A real <input type=\"checkbox\">: Space toggles, label clicks toggle, description is linked."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "With description"
+    },
+    {
+      "file": "states",
+      "title": "Indeterminate and disabled"
+    }
+  ]
+}

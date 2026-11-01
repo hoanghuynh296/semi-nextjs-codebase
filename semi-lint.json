@@ -2,7 +2,9 @@
   "scan": [
     "src",
     "styles",
-    "app"
+    "app",
+    "site",
+    "examples"
   ],
   "baseline": "semi-lint-baseline.json",
   "skip": {
@@ -19,7 +21,10 @@
       "src/locale.tsx"
     ],
     "font-mono": [
-      "app/Showcase.tsx"
+      "site/"
     ]
-  }
+  },
+  "ignore": [
+    "examples/registry.generated.ts"
+  ]
 }

@@ -1,0 +1,26 @@
+{
+  "title": "Switch",
+  "group": "Forms",
+  "description": "An on / off toggle for settings that apply immediately.",
+  "components": [
+    "Switch"
+  ],
+  "when": [
+    "Settings that take effect at once (notifications, dark sync, auto-print)."
+  ],
+  "instead": [
+    {
+      "need": "A choice saved with a form",
+      "use": "Checkbox"
+    }
+  ],
+  "a11y": [
+    "role=\"switch\" with aria-checked; Space toggles; label and description are linked."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "Basic and small"
+    }
+  ]
+}

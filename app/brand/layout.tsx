@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
-import { STORY_PAGES } from "../usage";
 
-const page = STORY_PAGES.find((p) => p.path === "brand")!;
-
-export const metadata: Metadata = { title: `${page.title} — Semi Design System`, description: page.summary };
+export const metadata: Metadata = { title: "Brand preview — Semi Design System", description: "Preview a brand (primary, neutrals, styles, fonts) on every page before creating its brand kit; contrast report." };
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return children;

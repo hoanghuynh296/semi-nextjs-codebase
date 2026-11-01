@@ -1,0 +1,35 @@
+{
+  "title": "Tabs",
+  "group": "Navigation & layout",
+  "description": "Switch between panels of content inside a page or card: underline (default) or segmented, with icons and counts.",
+  "components": [
+    "Tabs"
+  ],
+  "when": [
+    "Sections of one object: Tổng quan / Hoạt động / Cài đặt.",
+    "A segmented period switch that changes a panel (variant=\"segmented\")."
+  ],
+  "instead": [
+    {
+      "need": "Sibling pages of an area",
+      "use": "PageTabsTitle"
+    },
+    {
+      "need": "Filter a list (no panels)",
+      "use": "Pills"
+    }
+  ],
+  "a11y": [
+    "tablist / tab / tabpanel; ←/→, Home, End move; the panel is linked to its tab."
+  ],
+  "examples": [
+    {
+      "file": "underline",
+      "title": "Underline with panels"
+    },
+    {
+      "file": "segmented",
+      "title": "Segmented"
+    }
+  ]
+}

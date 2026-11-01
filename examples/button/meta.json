@@ -1,0 +1,28 @@
+{
+  "title": "Button",
+  "group": "Actions",
+  "description": "The action control: one primary per area, secondary for the rest, danger for destructive actions, ghost for quiet ones. Spinner shows work in progress inside the control that runs it.",
+  "components": ["Button", "Spinner"],
+  "when": [
+    "Any action: save, create, refresh, delete, open a dialog.",
+    "Icon-only toolbar actions (iconOnly + aria-label).",
+    "Dialog footers (size=\"modal\": 44px touch target on phones)."
+  ],
+  "instead": [
+    { "need": "Go to another page", "use": "next/link (styled with BTN_* from @semi/ui/styles when it must look like a button)" },
+    { "need": "Link to another site", "use": "ExternalLink" },
+    { "need": "Pick one of 2–5 filters", "use": "Pills" },
+    { "need": "Turn a setting on / off", "use": "Switch" }
+  ],
+  "a11y": [
+    "Renders a real <button type=\"button\"> (pass type=\"submit\" in forms).",
+    "iconOnly requires aria-label (the types enforce it); keep a title for the tooltip.",
+    "loading sets aria-busy and blocks clicks; the visible focus ring stays."
+  ],
+  "examples": [
+    { "file": "variants", "title": "Variants", "description": "primary for the main action of an area, secondary (default) for the rest, danger for destructive, ghost for quiet actions." },
+    { "file": "icons", "title": "Icon and icon-only", "description": "icon adds a leading icon; iconOnly needs an aria-label." },
+    { "file": "loading", "title": "Loading", "description": "loading swaps the icon for a spinner and blocks clicks." },
+    { "file": "sizes", "title": "Sizes", "description": "sm for dense rows, md (default) for toolbars and forms, modal for dialog footers." }
+  ]
+}

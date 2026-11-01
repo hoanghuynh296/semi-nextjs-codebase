@@ -1,0 +1,34 @@
+{
+  "title": "Modal",
+  "group": "Overlays",
+  "description": "The shared dialog: full screen on phones, a centred panel from sm up, with title, description, body and footer. Focus is trapped and returns to the opener.",
+  "components": [
+    "Modal"
+  ],
+  "when": [
+    "A short task that needs the user's full attention (edit settings, create an item)."
+  ],
+  "instead": [
+    {
+      "need": "Yes / no before a destructive action",
+      "use": "confirmDialog()"
+    },
+    {
+      "need": "Filters or details beside the page",
+      "use": "Drawer"
+    },
+    {
+      "need": "A short message after an action",
+      "use": "toast()"
+    }
+  ],
+  "a11y": [
+    "role=\"dialog\" + aria-modal, labelled by the title; Escape and the close button close it; focus trap and focus return built in; page scroll is locked."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "Form in a modal"
+    }
+  ]
+}

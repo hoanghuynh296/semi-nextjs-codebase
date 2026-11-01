@@ -12,9 +12,11 @@ const jakarta = Plus_Jakarta_Sans({ subsets: ["latin", "vietnamese"], variable: 
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin", "vietnamese"], variable: "--font-space-grotesk" });
 const FONT_VARS = [geist, montserratAlternates, jakarta, spaceGrotesk].map((f) => f.variable).join(" ");
 
+const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 export const metadata: Metadata = {
-  title: "Semi Design System — Catalogue & Storybook",
-  description: "Foundations, design tokens, semantic icons & components for the Semi ecosystem.",
+  title: "Semi Design System",
+  description: "Components, tokens, styles and brand kits for every Semi app, documented for people and agents: live examples, exact code, generated API, markdown for each component.",
 };
 
 export default function RootLayout({
@@ -27,9 +29,9 @@ export default function RootLayout({
       <head>
         <ThemeScript defaultTheme="dark" />
         <script dangerouslySetInnerHTML={{ __html: STYLE_SCRIPT }} />
-        {/* Text form of this Storybook for agents (relative: works under the GitHub Pages base path) */}
-        <link rel="alternate" type="text/plain" href="llms.txt" title="llms.txt — Semi Design System for agents" />
-        <link rel="alternate" type="application/json" href="components.json" title="components.json — component manifest" />
+        {/* Text form of these docs for agents (under the GitHub Pages base path when set) */}
+        <link rel="alternate" type="text/plain" href={`${BASE}/llms.txt`} title="llms.txt — Semi Design System for agents" />
+        <link rel="alternate" type="application/json" href={`${BASE}/components.json`} title="components.json — component manifest" />
       </head>
       <body className="min-h-screen bg-canvas text-body antialiased selection:bg-primary-500/20 selection:text-accent-fg">
         <ThemeProvider defaultTheme="dark">

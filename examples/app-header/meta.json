@@ -1,0 +1,31 @@
+{
+  "title": "App header",
+  "group": "Navigation & layout",
+  "description": "The top bar of a stand-alone tool app: logo + title go home, the module name, and one primary action on the right. No Home button.",
+  "components": [
+    "AppHeader"
+  ],
+  "imports": [
+    "HEADER_ICON_BTN",
+    "HEADER_ICON_OFF",
+    "headerPrimary"
+  ],
+  "when": [
+    "Single-screen tools: 3D editors, slicers, colour tools."
+  ],
+  "instead": [
+    {
+      "need": "An app with several pages",
+      "use": "AppShell"
+    }
+  ],
+  "a11y": [
+    "A banner landmark; the home link is labelled; icon buttons need aria-label."
+  ],
+  "examples": [
+    {
+      "file": "tool",
+      "title": "Tool app"
+    }
+  ]
+}

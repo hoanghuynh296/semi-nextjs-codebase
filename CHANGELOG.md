@@ -4,6 +4,18 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+### Added
+- **Component docs, agent first:** every component has a doc in `examples/<id>/` (`meta.json`: description, when to use, what to use instead, accessibility; one file per example, imports from `@semi/ui` only). `npm run build:manifest` generates the API tables from the TypeScript types (types, defaults, required props, TSDoc), `docs/components/<id>.md` for agents (shipped in the package and served at `/docs/components/<id>.md`), `docs/components/README.md` and the registry the docs site renders. `components.json` links each component to its page (`doc`); `llms.txt` lists every page. `check:manifest` fails when a component has no doc or an example imports a missing export; `typecheck` covers every example. Guide: `docs/COMPONENT_DOCS.md`.
+- **New docs site** (replaces the Storybook pages, same URL, Semi's own look): introduction, component index with a live example of each, one page per component (Preview / Code per example, import line, API, accessibility, "Copy page" markdown), foundations, brand preview. The docs UI ships as `@semi/ui/site` (`DocsShell`, `ComponentPage`, `ComponentIndex`, `ExampleBlock`, `CodeBlock`).
+- **Brand kit previews show every component:** the kit's preview site renders the same docs pages in the brand's colours (overview + all component pages).
+- `semi-lint.json` `"ignore"`: path prefixes not scanned (generated files).
+
+### Fixed
+- `sr-only` text no longer stretches the document (a required `Field` in a long page let the whole page scroll past the shell).
+- `DatePicker` and `ChatModelPicker` buttons: the accessible name now contains the visible value (WCAG 2.5.3).
+- `external-link` lint: `<ExternalLink href="https://…">` (the fix itself) is no longer flagged.
+- Brand preview: the menu marks the page you are on (it was stuck on the first section).
+
 ## [0.8.1] - 2026-11-01
 
 ### Fixed

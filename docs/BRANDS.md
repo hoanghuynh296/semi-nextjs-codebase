@@ -55,7 +55,8 @@ và Next.js (cho trang preview), sinh `dist/`.
 
 Agent chạy trang preview **của chính repo brand** (`npm run preview`) và gửi link local:
 **http://localhost:4600**. Trang dựng bằng `@semi/ui` thật cùng `brand.css` của kit: màu, chữ, nút & form, thẻ, bảng,
-thông báo… trong màu 3D Noobs, đổi sáng / tối ở chân menu và giữa các style được phép, kèm bảng điểm đọc rõ.
+thông báo… trong màu 3D Noobs, đổi sáng / tối ở chân menu và giữa các style được phép, kèm bảng điểm đọc rõ. Trang
+gồm phần tổng quan thương hiệu và **toàn bộ component của Semi** (cùng các trang như docs của Semi: ví dụ, code, API).
 
 👉 *Bạn làm:* mở link, nhìn và nói điều muốn đổi ("màu chính đậm hơn", "dùng màu trung tính có sẵn"). *Agent làm:* sửa
 `brand.json`, sinh lại; trang đang mở tự cập nhật.

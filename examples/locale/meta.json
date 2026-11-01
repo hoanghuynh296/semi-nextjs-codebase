@@ -1,0 +1,25 @@
+{
+  "title": "Locale",
+  "group": "Setup",
+  "description": "SemiLocaleProvider sets the UI strings of every Semi component (Vietnamese by default, English shipped, override any string).",
+  "components": [
+    "SemiLocaleProvider"
+  ],
+  "imports": [
+    "en",
+    "vi",
+    "useSemiLocale"
+  ],
+  "when": [
+    "An app in English, or one that renames a built-in label."
+  ],
+  "a11y": [
+    "Button labels, aria-labels and announcements all come from the locale."
+  ],
+  "examples": [
+    {
+      "file": "english",
+      "title": "English"
+    }
+  ]
+}

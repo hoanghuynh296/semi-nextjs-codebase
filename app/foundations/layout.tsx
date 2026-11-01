@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
-import { STORY_PAGES } from "../usage";
 
-const page = STORY_PAGES.find((p) => p.path === "foundations")!;
-
-export const metadata: Metadata = { title: `${page.title} — Semi Design System`, description: page.summary };
+export const metadata: Metadata = { title: "Foundations & icon — Semi Design System", description: "Surface tokens, the type scale and the searchable icon registry." };
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return children;

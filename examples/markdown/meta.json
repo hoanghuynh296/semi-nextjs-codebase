@@ -1,0 +1,20 @@
+{
+  "title": "Markdown",
+  "group": "Data display",
+  "description": "Renders AI or user text safely: paragraphs, lists, bold, inline code and links (as ExternalLink). No HTML.",
+  "components": [
+    "Markdown"
+  ],
+  "when": [
+    "Answers of an AI assistant, release notes, short rich text."
+  ],
+  "a11y": [
+    "Links become ExternalLink (new tab announced)."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "AI answer"
+    }
+  ]
+}

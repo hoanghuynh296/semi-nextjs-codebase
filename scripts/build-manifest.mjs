@@ -5,9 +5,10 @@
 //   node scripts/build-manifest.mjs --check  exit 1 when any of them is stale (npm run check)
 // Each entry: name, kind (component | hook | function | constant | type-scale), module, client, summary (JSDoc or
 // the file's header comment), props (names of the destructured parameters, for components).
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { buildDocs, GROUPS } from "./build-docs.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
@@ -114,8 +115,6 @@ const manifest = {
   functions: items.filter((i) => i.kind === "function"),
   constants: items.filter((i) => i.kind === "constant"),
 };
-const json = JSON.stringify(manifest, null, 2) + "\n";
-
 const byModule = {};
 for (const c of manifest.components) (byModule[c.module] ||= []).push(c.name);
 const generated = [
@@ -133,70 +132,75 @@ const quickRef = readFileSync(quickRefPath, "utf8");
 const markerRx = /<!-- generated:components:start[\s\S]*?<!-- generated:components:end -->/;
 const nextQuickRef = markerRx.test(quickRef) ? quickRef.replace(markerRx, generated) : `${quickRef.trimEnd()}\n\n## Component inventory\n\n${generated}\n`;
 
-// Agent files served by the Storybook export (public/ is copied as is): llms.txt = index + every section's usage code
-// (app/usage.ts, the data the pages render), llms-full.txt = that + the docs, plus raw copies of the docs and manifest.
-const { STORY_PAGES, STORY_SECTIONS } = await import("../app/usage.ts");
+// Agent files served by the docs site (public/ is copied as is): llms.txt = index of every doc page and its markdown,
+// llms-full.txt = that + the rule docs + every component doc; plus raw copies of the docs and the manifest.
 const read = (rel) => readFileSync(join(root, rel), "utf8");
+const typeNames = readdirSync(join(root, "src"))
+  .filter((f) => /\.tsx?$/.test(f))
+  .flatMap((f) => [...read(`src/${f}`).matchAll(/^export (?:type|interface) (\w+)/gm)].map((x) => x[1]));
+const exported = new Set([...items.map((i) => i.name), ...typeNames]);
+const built = buildDocs(root, { exported });
+const docOf = Object.fromEntries(built.docs.flatMap((d) => d.components.map((c) => [c, d.id])));
+for (const c of manifest.components) if (docOf[c.name]) c.doc = `docs/components/${docOf[c.name]}.md`;
+const json = JSON.stringify(manifest, null, 2) + "\n";
 const DOCS = [
   ["docs/QUICK_REF.md", "QUICK_REF.md", "Quick reference: the rules and imports to read before any UI change"],
   ["docs/DESIGN_SYSTEM.md", "DESIGN_SYSTEM.md", "Full design system rules (layout, colour, components, accessibility, anti-patterns)"],
+  ["docs/COMPONENT_DOCS.md", "COMPONENT_DOCS.md", "How the component docs are built (examples/, meta.json, generated API) and how agents should use them"],
   ["docs/ICONS.md", "ICONS.md", "Semantic icon guide: which icon means what"],
   ["docs/BRANDS.md", "BRANDS.md", "Brands: brand kits (brand.json → brand.css), the step-by-step flow from a new brand to its first product, which command when"],
-  ["docs/STYLES.md", "STYLES.md", "Styles (Flat, Soft): what each changes, how an app picks one, the radius / shadow tokens"],
+  ["docs/STYLES.md", "STYLES.md", "Styles (Flat, Soft, Sharp) and palettes: what each changes, how an app picks one"],
   ["plugin/rules/AGENTS.md", "agent-rules.md", "Rules block for a consumer app's AGENTS.md / CLAUDE.md"],
   ["tokens/tokens.css", "tokens.css", "Generated design tokens (CSS variables for both themes)"],
 ];
 const llms = [
   `# Semi Design System (${pkg.name} v${pkg.version})`,
   "",
-  "> The shared UI of every Semi app: semantic tokens that work in light and dark mode, React components (Next.js, Tailwind CSS 4) and the rules agents follow. This Storybook shows each component live; this file is its text form.",
+  "> The shared UI of every Semi app: semantic tokens that work in light and dark mode, React components (Next.js, Tailwind CSS 4) and the rules agents follow. Every component has a page with live examples and a markdown twin for agents.",
   "",
-  `Install \`${pkg.name}\`, import components from \`${manifest.import.components}\`, class constants from \`${manifest.import.styles}\`, CSS ${manifest.import.css.map((c) => `\`${c}\``).join(" + ")}. Before writing UI read QUICK_REF.md; pick components from components.json; never invent local colours, sizes or wrapper components; check with \`npx semi-lint\`.`,
+  `Install \`${pkg.name}\`, import components from \`${manifest.import.components}\`, class constants from \`${manifest.import.styles}\`, CSS ${manifest.import.css.map((c) => `\`${c}\``).join(" + ")}. Before writing UI read QUICK_REF.md; pick the component from docs/components/README.md, read its page, copy an example; never invent local colours, sizes or wrapper components; check with \`npx semi-lint\`.`,
   "",
   "## Machine-readable",
   "",
-  `- [components.json](./components.json): all ${manifest.components.length} components, hooks and constants with props and one-line summaries`,
+  `- [components.json](./components.json): all ${manifest.components.length} components, hooks and constants with props, summaries and their doc page`,
+  "- [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it",
   ...DOCS.map(([, out, what]) => `- [${out}](./docs/${out}): ${what}`),
-  "- [llms-full.txt](./llms-full.txt): this file followed by all the docs above",
+  "- [llms-full.txt](./llms-full.txt): this file followed by all the docs above and every component doc",
   "",
   "## Pages",
   "",
-  ...STORY_PAGES.map((p) => `- [${p.title}](./${p.path}.html): ${p.summary}`),
+  "- [Introduction](./): what Semi is, install, resources for agents",
+  "- [Components](./components/): every component with a live example",
+  "- [Foundations](./foundations/): surface tokens, type scale, icon registry",
+  "- [Brand preview](./brand/): preview a brand on every page before creating its kit",
   "",
-  ...STORY_PAGES.flatMap((p) => [
-    `## ${p.title} (./${p.path}.html)`,
-    "",
-    ...Object.entries(STORY_SECTIONS)
-      .filter(([, sec]) => sec.page === p.path)
-      .flatMap(([id, sec]) => [`### ${sec.title} (./${p.path}.html#${id})`, "", sec.when, "", "```tsx", sec.code, "```", ""]),
-  ]),
+  "## Components",
+  "",
+  ...GROUPS.flatMap((g) => {
+    const list = built.docs.filter((d) => d.group === g);
+    return list.length
+      ? [`### ${g}`, "", ...list.map((d) => `- [${d.title}](./components/${d.id}/) ([markdown](./docs/components/${d.id}.md)): ${d.description} Components: ${d.components.join(", ")}.`), ""]
+      : [];
+  }),
 ].join("\n");
-const llmsFull = [llms, ...DOCS.filter(([src]) => src.endsWith(".md")).map(([src]) => `\n\n---\n\n<!-- ${src} -->\n\n${read(src)}`)].join("");
+const llmsFull = [
+  llms,
+  ...DOCS.filter(([src]) => src.endsWith(".md")).map(([src]) => `\n\n---\n\n<!-- ${src} -->\n\n${src === "docs/QUICK_REF.md" ? nextQuickRef : read(src)}`),
+  ...built.docs.map((d) => `\n\n---\n\n<!-- docs/components/${d.id}.md -->\n\n${built.files[`docs/components/${d.id}.md`]}`),
+].join("");
 const publicFiles = {
+  ...built.files,
   "public/llms.txt": llms,
   "public/llms-full.txt": llmsFull,
   "public/components.json": json,
   ...Object.fromEntries(DOCS.map(([src, out]) => [`public/docs/${out}`, src === "docs/QUICK_REF.md" ? nextQuickRef : read(src)])),
+  ...Object.fromEntries(Object.entries(built.files).filter(([k]) => k.startsWith("docs/components/")).map(([k, v]) => [`public/${k}`, v])),
 };
-// Drift between the hand-written docs and the code (both modes fail): usage code imports only real exports, every
-// Storybook section has usage and the other way round, every component / hook is described in DESIGN_SYSTEM.md, every
-// style has a column in STYLES.md.
-const drift = [];
-const typeNames = readdirSync(join(root, "src"))
-  .filter((f) => /\.tsx?$/.test(f))
-  .flatMap((f) => [...read(`src/${f}`).matchAll(/^export (?:type|interface) (\w+)/gm)].map((x) => x[1]));
-const exported = new Set([...items.map((i) => i.name), ...typeNames]);
-for (const [id, sec] of Object.entries(STORY_SECTIONS)) {
-  if (!STORY_PAGES.some((p) => p.path === sec.page)) drift.push(`app/usage.ts ${id}: unknown page "${sec.page}"`);
-  for (const [, names] of sec.code.matchAll(/import\s*\{([^}]*)\}\s*from\s*"@semi\/ui(?:\/styles)?"/g))
-    for (const n of names.split(",").map((x) => x.trim().replace(/^type\s+/, "").split(/\s+as\s+/)[0]).filter(Boolean))
-      if (!exported.has(n)) drift.push(`app/usage.ts ${id}: imports "${n}", which @semi/ui does not export`);
-}
-for (const p of STORY_PAGES) {
-  const ids = [...read(`app/${p.path}/page.tsx`).matchAll(/<(?:ShowcaseSection|section)\b[^>]*\bid="([\w-]+)"/g)].map((x) => x[1]);
-  for (const id of ids) if (STORY_SECTIONS[id]?.page !== p.path) drift.push(`app/${p.path}/page.tsx #${id}: no usage entry in app/usage.ts`);
-  for (const [id, sec] of Object.entries(STORY_SECTIONS)) if (sec.page === p.path && !ids.includes(id)) drift.push(`app/usage.ts ${id}: no section #${id} on app/${p.path}/page.tsx`);
-}
+// Drift between the docs and the code (both modes fail): examples import only real exports and say which components
+// they document, every component has a doc, every component / hook is named in DESIGN_SYSTEM.md, every style has a
+// column in STYLES.md.
+const drift = [...built.problems];
+for (const c of manifest.components) if (!docOf[c.name]) drift.push(`${c.module}: component ${c.name} has no doc (add it to "components" of an examples/<id>/meta.json)`);
 const designSystem = read("docs/DESIGN_SYSTEM.md");
 for (const i of [...manifest.components, ...manifest.hooks])
   if (!new RegExp(`\\b${i.name}\\b`).test(designSystem)) drift.push(`docs/DESIGN_SYSTEM.md: ${i.kind} ${i.name} (${i.module}) is not described`);
@@ -225,7 +229,11 @@ if (process.argv.includes("--check")) {
 } else {
   writeFileSync(manifestPath, json);
   writeFileSync(quickRefPath, nextQuickRef);
-  mkdirSync(join(root, "public/docs"), { recursive: true });
-  for (const [rel, text] of Object.entries(publicFiles)) writeFileSync(join(root, rel), text);
+  // Component docs are regenerated as a set: a removed doc must not linger.
+  for (const dir of ["docs/components", "public/docs/components"]) rmSync(join(root, dir), { recursive: true, force: true });
+  for (const [rel, text] of Object.entries(publicFiles)) {
+    mkdirSync(dirname(join(root, rel)), { recursive: true });
+    writeFileSync(join(root, rel), text);
+  }
   console.log(`wrote components.json (${manifest.components.length} components, ${manifest.hooks.length} hooks, ${manifest.constants.length} constants, ${iconNames.length} icons)`);
 }

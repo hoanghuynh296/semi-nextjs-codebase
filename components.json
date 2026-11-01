@@ -359,7 +359,8 @@
         "logoIcon",
         "homeHref",
         "homeLabel"
-      ]
+      ],
+      "doc": "docs/components/app-header.md"
     },
     {
       "name": "AppShell",
@@ -380,7 +381,8 @@
         "storageKey",
         "children",
         "containerClassName"
-      ]
+      ],
+      "doc": "docs/components/app-shell.md"
     },
     {
       "name": "Badge",
@@ -395,7 +397,8 @@
         "children",
         "className",
         "size"
-      ]
+      ],
+      "doc": "docs/components/badge.md"
     },
     {
       "name": "Spinner",
@@ -406,7 +409,8 @@
       "props": [
         "className",
         "label"
-      ]
+      ],
+      "doc": "docs/components/button.md"
     },
     {
       "name": "Button",
@@ -426,7 +430,8 @@
         "disabled",
         "className",
         "children"
-      ]
+      ],
+      "doc": "docs/components/button.md"
     },
     {
       "name": "Card",
@@ -438,7 +443,8 @@
         "interactive",
         "active",
         "className"
-      ]
+      ],
+      "doc": "docs/components/card.md"
     },
     {
       "name": "ChatAvatar",
@@ -449,7 +455,8 @@
       "props": [
         "busy",
         "icon"
-      ]
+      ],
+      "doc": "docs/components/chat-messages.md"
     },
     {
       "name": "ChatThinking",
@@ -459,7 +466,8 @@
       "summary": "\"Đang suy nghĩ\" (or what the AI is doing) with three bouncing dots, while no text has come yet. */",
       "props": [
         "label"
-      ]
+      ],
+      "doc": "docs/components/chat-messages.md"
     },
     {
       "name": "UserMessage",
@@ -470,7 +478,8 @@
       "props": [
         "failed",
         "children"
-      ]
+      ],
+      "doc": "docs/components/chat-messages.md"
     },
     {
       "name": "AssistantMessage",
@@ -482,7 +491,8 @@
         "busy",
         "actions",
         "children"
-      ]
+      ],
+      "doc": "docs/components/chat-messages.md"
     },
     {
       "name": "ChatError",
@@ -494,7 +504,8 @@
         "tone",
         "onRetry",
         "children"
-      ]
+      ],
+      "doc": "docs/components/chat-messages.md"
     },
     {
       "name": "ChatCopyButton",
@@ -504,7 +515,8 @@
       "summary": "Copies `text` (an answer, a code block); shows a check for a moment. */",
       "props": [
         "text"
-      ]
+      ],
+      "doc": "docs/components/chat-messages.md"
     },
     {
       "name": "ChatIntro",
@@ -516,7 +528,8 @@
         "icon",
         "title",
         "children"
-      ]
+      ],
+      "doc": "docs/components/chat-messages.md"
     },
     {
       "name": "ChatSuggestion",
@@ -530,7 +543,8 @@
         "onClick",
         "href",
         "children"
-      ]
+      ],
+      "doc": "docs/components/chat-messages.md"
     },
     {
       "name": "ChatSuggestions",
@@ -541,7 +555,8 @@
       "props": [
         "label",
         "children"
-      ]
+      ],
+      "doc": "docs/components/chat-messages.md"
     },
     {
       "name": "ChatList",
@@ -555,7 +570,8 @@
         "label",
         "empty",
         "children"
-      ]
+      ],
+      "doc": "docs/components/chat-messages.md"
     },
     {
       "name": "ChatComposer",
@@ -576,7 +592,8 @@
         "rows",
         "inputRef",
         "toolbar"
-      ]
+      ],
+      "doc": "docs/components/chat-messages.md"
     },
     {
       "name": "ChatModelPicker",
@@ -595,7 +612,8 @@
         "effort",
         "onEffortChange",
         "disabled"
-      ]
+      ],
+      "doc": "docs/components/chat-model-picker.md"
     },
     {
       "name": "ChatView",
@@ -612,7 +630,8 @@
         "empty",
         "composer",
         "children"
-      ]
+      ],
+      "doc": "docs/components/ai-chat.md"
     },
     {
       "name": "ChatPanel",
@@ -633,7 +652,8 @@
         "defaultWidth",
         "widthKey",
         "children"
-      ]
+      ],
+      "doc": "docs/components/ai-chat.md"
     },
     {
       "name": "ChatAnswer",
@@ -645,7 +665,8 @@
         "msg",
         "onRetry",
         "copyable"
-      ]
+      ],
+      "doc": "docs/components/chat-messages.md"
     },
     {
       "name": "AIChat",
@@ -678,7 +699,8 @@
         "value",
         "onValueChange",
         "widthKey"
-      ]
+      ],
+      "doc": "docs/components/ai-chat.md"
     },
     {
       "name": "Chip",
@@ -693,7 +715,8 @@
         "title",
         "tone",
         "className"
-      ]
+      ],
+      "doc": "docs/components/chip.md"
     },
     {
       "name": "Checkbox",
@@ -710,7 +733,8 @@
         "disabled",
         "id",
         "className"
-      ]
+      ],
+      "doc": "docs/components/checkbox.md"
     },
     {
       "name": "Switch",
@@ -727,7 +751,8 @@
         "size",
         "id",
         "className"
-      ]
+      ],
+      "doc": "docs/components/switch.md"
     },
     {
       "name": "RadioGroup",
@@ -743,7 +768,8 @@
         "name",
         "direction",
         "className"
-      ]
+      ],
+      "doc": "docs/components/radio-group.md"
     },
     {
       "name": "CustomCombobox",
@@ -762,7 +788,8 @@
         "aria-describedby",
         "aria-invalid",
         "disabled"
-      ]
+      ],
+      "doc": "docs/components/combobox.md"
     },
     {
       "name": "CustomSelect",
@@ -785,7 +812,8 @@
         "id",
         "title",
         "aria-label"
-      ]
+      ],
+      "doc": "docs/components/select.md"
     },
     {
       "name": "DatePicker",
@@ -800,7 +828,8 @@
         "max",
         "ariaLabel",
         "className"
-      ]
+      ],
+      "doc": "docs/components/date-picker.md"
     },
     {
       "name": "Drawer",
@@ -816,7 +845,8 @@
         "footer",
         "className",
         "children"
-      ]
+      ],
+      "doc": "docs/components/drawer.md"
     },
     {
       "name": "ExternalLink",
@@ -827,7 +857,8 @@
       "props": [
         "href",
         "children"
-      ]
+      ],
+      "doc": "docs/components/external-link.md"
     },
     {
       "name": "Alert",
@@ -843,7 +874,8 @@
         "action",
         "onDismiss",
         "className"
-      ]
+      ],
+      "doc": "docs/components/alert.md"
     },
     {
       "name": "Progress",
@@ -859,7 +891,8 @@
         "showValue",
         "size",
         "className"
-      ]
+      ],
+      "doc": "docs/components/progress.md"
     },
     {
       "name": "Avatar",
@@ -872,7 +905,8 @@
         "src",
         "size",
         "className"
-      ]
+      ],
+      "doc": "docs/components/avatar.md"
     },
     {
       "name": "EmptyState",
@@ -886,7 +920,8 @@
         "description",
         "action",
         "className"
-      ]
+      ],
+      "doc": "docs/components/empty-state.md"
     },
     {
       "name": "Field",
@@ -902,7 +937,8 @@
         "id",
         "className",
         "children"
-      ]
+      ],
+      "doc": "docs/components/field.md"
     },
     {
       "name": "Input",
@@ -914,7 +950,8 @@
         "ref",
         "icon",
         "className"
-      ]
+      ],
+      "doc": "docs/components/field.md"
     },
     {
       "name": "Textarea",
@@ -926,7 +963,8 @@
         "ref",
         "className",
         "rows"
-      ]
+      ],
+      "doc": "docs/components/field.md"
     },
     {
       "name": "Icon",
@@ -939,7 +977,8 @@
         "className",
         "strokeWidth",
         "title"
-      ]
+      ],
+      "doc": "docs/components/icon.md"
     },
     {
       "name": "IconTile",
@@ -952,7 +991,8 @@
         "tone",
         "size",
         "className"
-      ]
+      ],
+      "doc": "docs/components/icon.md"
     },
     {
       "name": "KpiCard",
@@ -970,7 +1010,8 @@
         "iconTone",
         "loading",
         "className"
-      ]
+      ],
+      "doc": "docs/components/kpi-card.md"
     },
     {
       "name": "Markdown",
@@ -980,7 +1021,8 @@
       "summary": "Light markdown for AI answers: paragraphs, headings (as bold lines), lists, **bold**, `code`, links.",
       "props": [
         "text"
-      ]
+      ],
+      "doc": "docs/components/markdown.md"
     },
     {
       "name": "MobileTabBar",
@@ -995,7 +1037,8 @@
         "moreOpen",
         "onToggleMore",
         "moreLabel"
-      ]
+      ],
+      "doc": "docs/components/app-shell.md"
     },
     {
       "name": "Modal",
@@ -1012,7 +1055,8 @@
         "maxWidth",
         "closeOnBackdrop",
         "children"
-      ]
+      ],
+      "doc": "docs/components/modal.md"
     },
     {
       "name": "NumPadPopup",
@@ -1028,7 +1072,8 @@
         "allowPercent",
         "onCommit",
         "onClose"
-      ]
+      ],
+      "doc": "docs/components/number-input.md"
     },
     {
       "name": "NumberInput",
@@ -1045,7 +1090,8 @@
         "readOnly",
         "disabled",
         "type"
-      ]
+      ],
+      "doc": "docs/components/number-input.md"
     },
     {
       "name": "Tooltip",
@@ -1057,7 +1103,8 @@
         "content",
         "children",
         "side"
-      ]
+      ],
+      "doc": "docs/components/tooltip.md"
     },
     {
       "name": "Menu",
@@ -1070,7 +1117,8 @@
         "label",
         "align",
         "trigger"
-      ]
+      ],
+      "doc": "docs/components/menu.md"
     },
     {
       "name": "PageActionsProvider",
@@ -1080,7 +1128,8 @@
       "summary": "Page-level actions (Thêm máy in, Thêm automation…) live in the top-right corner of the page header.",
       "props": [
         "children"
-      ]
+      ],
+      "doc": "docs/components/page-actions.md"
     },
     {
       "name": "PageActionsSlot",
@@ -1090,7 +1139,8 @@
       "summary": "Where the actions appear: the right end of the page header row. */",
       "props": [
         "className"
-      ]
+      ],
+      "doc": "docs/components/page-actions.md"
     },
     {
       "name": "PageActions",
@@ -1100,7 +1150,8 @@
       "summary": "Renders its children in the page header slot (inline when the page has no slot). */",
       "props": [
         "children"
-      ]
+      ],
+      "doc": "docs/components/page-actions.md"
     },
     {
       "name": "PageTitle",
@@ -1111,7 +1162,8 @@
       "props": [
         "title",
         "className"
-      ]
+      ],
+      "doc": "docs/components/page-title.md"
     },
     {
       "name": "PageTabsTitle",
@@ -1125,7 +1177,8 @@
         "onChange",
         "ariaLabel",
         "className"
-      ]
+      ],
+      "doc": "docs/components/page-title.md"
     },
     {
       "name": "Pagination",
@@ -1138,7 +1191,8 @@
         "pages",
         "onChange",
         "className"
-      ]
+      ],
+      "doc": "docs/components/pagination.md"
     },
     {
       "name": "Pills",
@@ -1151,7 +1205,8 @@
         "options",
         "onChange",
         "className"
-      ]
+      ],
+      "doc": "docs/components/pills.md"
     },
     {
       "name": "RefreshButton",
@@ -1163,7 +1218,8 @@
         "onRefresh",
         "className",
         "label"
-      ]
+      ],
+      "doc": "docs/components/subpage-toolbar.md"
     },
     {
       "name": "SearchInput",
@@ -1177,7 +1233,8 @@
         "placeholder",
         "className",
         "label"
-      ]
+      ],
+      "doc": "docs/components/search-input.md"
     },
     {
       "name": "SidePanelToggle",
@@ -1187,7 +1244,8 @@
       "summary": "The collapse toggle placed at the top of the panel content (next to the first label). */",
       "props": [
         "onClick"
-      ]
+      ],
+      "doc": "docs/components/side-panel.md"
     },
     {
       "name": "SidePanel",
@@ -1201,7 +1259,8 @@
         "onToggleCollapse",
         "width",
         "children"
-      ]
+      ],
+      "doc": "docs/components/side-panel.md"
     },
     {
       "name": "Skeleton",
@@ -1212,7 +1271,8 @@
       "props": [
         "className",
         "style"
-      ]
+      ],
+      "doc": "docs/components/skeleton.md"
     },
     {
       "name": "Loading",
@@ -1224,7 +1284,8 @@
         "children",
         "className",
         "label"
-      ]
+      ],
+      "doc": "docs/components/skeleton.md"
     },
     {
       "name": "SkeletonCard",
@@ -1235,7 +1296,8 @@
       "props": [
         "body",
         "className"
-      ]
+      ],
+      "doc": "docs/components/skeleton.md"
     },
     {
       "name": "SkeletonGrid",
@@ -1248,7 +1310,8 @@
         "className",
         "body",
         "label"
-      ]
+      ],
+      "doc": "docs/components/skeleton.md"
     },
     {
       "name": "SkeletonRows",
@@ -1260,7 +1323,8 @@
         "count",
         "className",
         "label"
-      ]
+      ],
+      "doc": "docs/components/skeleton.md"
     },
     {
       "name": "PageSkeleton",
@@ -1268,7 +1332,8 @@
       "module": "src/Skeleton.tsx",
       "client": true,
       "summary": "Whole-page placeholder (Suspense fallbacks): title row + a grid of cards. */",
-      "props": []
+      "props": [],
+      "doc": "docs/components/skeleton.md"
     },
     {
       "name": "SubpageToolbar",
@@ -1287,7 +1352,8 @@
         "searchPlaceholder",
         "onRefresh",
         "className"
-      ]
+      ],
+      "doc": "docs/components/subpage-toolbar.md"
     },
     {
       "name": "Table",
@@ -1298,7 +1364,8 @@
       "props": [
         "className",
         "children"
-      ]
+      ],
+      "doc": "docs/components/table.md"
     },
     {
       "name": "THead",
@@ -1306,7 +1373,8 @@
       "module": "src/Table.tsx",
       "client": false,
       "summary": "Dense data table (transactions, logs, admin lists).",
-      "props": []
+      "props": [],
+      "doc": "docs/components/table.md"
     },
     {
       "name": "TBody",
@@ -1316,7 +1384,8 @@
       "summary": "Dense data table (transactions, logs, admin lists).",
       "props": [
         "className"
-      ]
+      ],
+      "doc": "docs/components/table.md"
     },
     {
       "name": "TR",
@@ -1327,7 +1396,8 @@
       "props": [
         "className",
         "onClick"
-      ]
+      ],
+      "doc": "docs/components/table.md"
     },
     {
       "name": "TH",
@@ -1338,7 +1408,8 @@
       "props": [
         "align",
         "className"
-      ]
+      ],
+      "doc": "docs/components/table.md"
     },
     {
       "name": "TD",
@@ -1351,7 +1422,8 @@
         "numeric",
         "wrap",
         "className"
-      ]
+      ],
+      "doc": "docs/components/table.md"
     },
     {
       "name": "Tabs",
@@ -1367,7 +1439,8 @@
         "label",
         "className",
         "panelClassName"
-      ]
+      ],
+      "doc": "docs/components/tabs.md"
     },
     {
       "name": "ThemeProvider",
@@ -1380,7 +1453,8 @@
         "defaultTheme",
         "storageKey",
         "attribute"
-      ]
+      ],
+      "doc": "docs/components/theme.md"
     },
     {
       "name": "ThemeToggle",
@@ -1391,7 +1465,8 @@
       "props": [
         "className",
         "size"
-      ]
+      ],
+      "doc": "docs/components/theme.md"
     },
     {
       "name": "ThemeSwitcher",
@@ -1404,7 +1479,8 @@
         "fullWidth",
         "labels",
         "className"
-      ]
+      ],
+      "doc": "docs/components/theme.md"
     },
     {
       "name": "ThemeScript",
@@ -1412,7 +1488,8 @@
       "module": "src/ThemeScript.tsx",
       "client": false,
       "summary": "Render inside <head> of the root layout, with the same options as ThemeProvider: /",
-      "props": []
+      "props": [],
+      "doc": "docs/components/theme.md"
     },
     {
       "name": "ToastHost",
@@ -1420,7 +1497,8 @@
       "module": "src/Toast.tsx",
       "client": true,
       "summary": "Toast stack: top on phones (clear of the tab bar), bottom-right from sm. */",
-      "props": []
+      "props": [],
+      "doc": "docs/components/toast.md"
     },
     {
       "name": "ConfirmHost",
@@ -1428,7 +1506,8 @@
       "module": "src/confirmDialog.tsx",
       "client": true,
       "summary": "Mounted once in the root layout; renders the dialog opened by `confirmDialog()`. */",
-      "props": []
+      "props": [],
+      "doc": "docs/components/confirm-dialog.md"
     },
     {
       "name": "SemiLocaleProvider",
@@ -1439,7 +1518,8 @@
       "props": [
         "locale",
         "children"
-      ]
+      ],
+      "doc": "docs/components/locale.md"
     }
   ],
   "hooks": [

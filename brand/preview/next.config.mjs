@@ -10,6 +10,8 @@ const nextConfig = {
   output: "export",
   basePath,
   images: { unoptimized: true },
+  // /components/button/ → components/button/index.html (GitHub Pages serves nested routes as is).
+  trailingSlash: true,
   transpilePackages: ["@semi/ui"],
   // .preview/ has no package.json of its own: modules come from the kit's node_modules one level up.
   turbopack: { root: resolve(dirname(fileURLToPath(import.meta.url)), "..") },

@@ -1,0 +1,40 @@
+{
+  "title": "AI chat",
+  "group": "AI",
+  "description": "AIChat is the ready-made assistant panel: ChatPanel (side panel or full screen, resizable, keyboard inset) around ChatView (list + composer). UI only: the app keeps the messages, streams the answer and calls the model.",
+  "components": [
+    "AIChat",
+    "ChatPanel",
+    "ChatView"
+  ],
+  "imports": [
+    "type ChatItem"
+  ],
+  "when": [
+    "Every AI conversation in a Semi app (assistant beside a workspace, help over a modal)."
+  ],
+  "instead": [
+    {
+      "need": "A different layout of the same parts",
+      "use": "ChatPanel + ChatView + the message parts (Chat messages doc)"
+    }
+  ],
+  "a11y": [
+    "The list announces one message per finished answer; Enter sends, Shift+Enter breaks the line, IME composition is safe; placement=\"screen\" is a dialog where Escape closes only the chat."
+  ],
+  "notes": [
+    "The model picker goes in toolbar (ChatModelPicker); provider and model lists are app data."
+  ],
+  "examples": [
+    {
+      "file": "workspace",
+      "title": "Assistant beside a workspace",
+      "description": "Type and press Enter: a fake assistant streams an answer; Stop, retry and new chat work."
+    },
+    {
+      "file": "over-modal",
+      "title": "Over a modal",
+      "description": "placement=\"screen\" opens the assistant as a dialog over everything; Escape closes only the chat."
+    }
+  ]
+}

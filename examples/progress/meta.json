@@ -1,0 +1,26 @@
+{
+  "title": "Progress",
+  "group": "Feedback",
+  "description": "A determinate bar with value, or an indeterminate one when the end is unknown; tones for success and danger.",
+  "components": [
+    "Progress"
+  ],
+  "when": [
+    "Print progress, upload, storage used."
+  ],
+  "instead": [
+    {
+      "need": "Content still loading",
+      "use": "Skeleton"
+    }
+  ],
+  "a11y": [
+    "role=\"progressbar\" with aria-valuenow / max; the label names it."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "Values and tones"
+    }
+  ]
+}

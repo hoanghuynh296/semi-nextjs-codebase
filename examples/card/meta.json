@@ -1,0 +1,43 @@
+{
+  "title": "Card",
+  "group": "Data display",
+  "description": "The bento content card: panel fill and the style's card border, radius and resting shadow. interactive adds hover / press, active marks the selected or running item.",
+  "components": [
+    "Card"
+  ],
+  "imports": [
+    "CARD",
+    "CARD_HOVER",
+    "CARD_ACTIVE",
+    "TILE"
+  ],
+  "when": [
+    "Group the content of a page in cards; nested facts in TILE."
+  ],
+  "instead": [
+    {
+      "need": "A metric",
+      "use": "KpiCard"
+    },
+    {
+      "need": "A tinted callout",
+      "use": "Alert or TONAL_CONTAINER"
+    }
+  ],
+  "a11y": [
+    "A clickable card is a link or button inside the card, not a div with onClick."
+  ],
+  "notes": [
+    "Pass padding and layout only: no bg-* or shadow-* on <Card> (card-class-override)."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "Content card"
+    },
+    {
+      "file": "states",
+      "title": "Interactive and active"
+    }
+  ]
+}

@@ -75,7 +75,7 @@ export function DatePicker({
     <div ref={ref} className={`relative inline-block ${className}`}>
       <button
         type="button"
-        aria-label={ariaLabel}
+        aria-label={ariaLabel ? `${ariaLabel}: ${label}` : undefined}
         aria-haspopup="dialog"
         aria-expanded={open}
         onClick={toggle}

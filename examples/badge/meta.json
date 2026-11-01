@@ -1,0 +1,30 @@
+{
+  "title": "Badge",
+  "group": "Data display",
+  "description": "A read-only status or tag in a tone (10% fill, 20% border, theme-safe text), with an optional dot or icon.",
+  "components": [
+    "Badge"
+  ],
+  "when": [
+    "Status of a row or card (Đã thanh toán, Lỗi), a plan or role tag."
+  ],
+  "instead": [
+    {
+      "need": "Something clickable",
+      "use": "Chip"
+    },
+    {
+      "need": "A count next to a title",
+      "use": "COUNT_PILL"
+    }
+  ],
+  "a11y": [
+    "Text, not colour alone, carries the meaning; it never wraps."
+  ],
+  "examples": [
+    {
+      "file": "tones",
+      "title": "Tones"
+    }
+  ]
+}

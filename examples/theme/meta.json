@@ -1,0 +1,37 @@
+{
+  "title": "Theme",
+  "group": "Setup",
+  "description": "Light / dark / system: ThemeScript applies the stored theme before paint, ThemeProvider keeps it, ThemeSwitcher (three-way) and ThemeToggle switch it. data-theme on any element re-scopes every token inside it.",
+  "components": [
+    "ThemeProvider",
+    "ThemeScript",
+    "ThemeSwitcher",
+    "ThemeToggle"
+  ],
+  "imports": [
+    "useTheme",
+    "themeScript"
+  ],
+  "when": [
+    "Once in every app's root layout; the switcher in settings or the sidebar footer."
+  ],
+  "a11y": [
+    "ThemeSwitcher is a radio group; nothing is marked selected until the stored theme is known (no flash)."
+  ],
+  "examples": [
+    {
+      "file": "switchers",
+      "title": "Switchers"
+    },
+    {
+      "file": "scope",
+      "title": "Scoped theme",
+      "description": "data-theme on a wrapper fixes the theme of everything inside it."
+    },
+    {
+      "file": "layout",
+      "title": "Root layout",
+      "preview": "none"
+    }
+  ]
+}

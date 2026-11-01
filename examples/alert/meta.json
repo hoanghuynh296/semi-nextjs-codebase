@@ -1,0 +1,34 @@
+{
+  "title": "Alert",
+  "group": "Feedback",
+  "description": "A message that stays on the page: info, success, warning, danger, with a title, an action and an optional dismiss.",
+  "components": [
+    "Alert"
+  ],
+  "when": [
+    "State the user must see while working (firmware update, low material, failed print)."
+  ],
+  "instead": [
+    {
+      "need": "A passing confirmation",
+      "use": "toast()"
+    },
+    {
+      "need": "Ask before acting",
+      "use": "confirmDialog()"
+    }
+  ],
+  "a11y": [
+    "role=\"status\" (role=\"alert\" for danger); the dismiss button is labelled."
+  ],
+  "examples": [
+    {
+      "file": "tones",
+      "title": "Tones"
+    },
+    {
+      "file": "dismiss",
+      "title": "Dismissible"
+    }
+  ]
+}

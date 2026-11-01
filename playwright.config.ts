@@ -1,4 +1,4 @@
-// Browser checks of the Storybook build (npm run test:ui): contrast in both themes, axe, theme behaviour.
+// Browser checks of the docs build (npm run test:ui): contrast in both themes, axe, theme behaviour, every doc page.
 // Uses the installed Google Chrome (GitHub's ubuntu runners ship it), so no browser download is needed.
 import { defineConfig } from "@playwright/test";
 
@@ -12,7 +12,7 @@ export default defineConfig({
   webServer: {
     // Serves the static export in out/ (npm run build:storybook first).
     command: `node scripts/serve-static.mjs out ${PORT}`,
-    url: `http://127.0.0.1:${PORT}/components.html`,
+    url: `http://127.0.0.1:${PORT}/components/`,
     reuseExistingServer: !process.env.CI,
   },
 });

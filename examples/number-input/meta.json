@@ -1,0 +1,30 @@
+{
+  "title": "Number input",
+  "group": "Forms",
+  "description": "NumberInput: numbers with a touch keypad (NumPadPopup) on phones and tablets, plain typing elsewhere. Never type=\"number\".",
+  "components": [
+    "NumberInput",
+    "NumPadPopup"
+  ],
+  "imports": [
+    "FIELD_INPUT"
+  ],
+  "when": [
+    "Quantities, temperatures, prices, percentages."
+  ],
+  "instead": [
+    {
+      "need": "A range picked by dragging",
+      "use": "a slider (coming in a later release)"
+    }
+  ],
+  "a11y": [
+    "inputMode=\"decimal\" or numeric; the keypad is a dialog with focus trap and Escape."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "With unit"
+    }
+  ]
+}

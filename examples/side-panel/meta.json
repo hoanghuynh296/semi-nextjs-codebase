@@ -1,0 +1,27 @@
+{
+  "title": "Side panel",
+  "group": "Navigation & layout",
+  "description": "A 320px tool panel beside a canvas that collapses to a 48px rail; SidePanelToggle is its collapse button.",
+  "components": [
+    "SidePanel",
+    "SidePanelToggle"
+  ],
+  "when": [
+    "Settings or layers beside a 3D view, map or editor."
+  ],
+  "instead": [
+    {
+      "need": "Temporary filters or details",
+      "use": "Drawer"
+    }
+  ],
+  "a11y": [
+    "The toggle is labelled from the locale and keeps focus; the collapsed rail stays reachable."
+  ],
+  "examples": [
+    {
+      "file": "canvas",
+      "title": "Beside a canvas"
+    }
+  ]
+}

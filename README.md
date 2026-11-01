@@ -1,6 +1,6 @@
 # Semi Design System (`@semi/ui` + `semi-design` plugin)
 
-> 🌟 **Live Storybook & Icon Catalogue:** [https://hoanghuynh296.github.io/semi-nextjs-codebase/](https://hoanghuynh296.github.io/semi-nextjs-codebase/)
+> 🌟 **Docs (component, ví dụ, API, brand preview):** [https://hoanghuynh296.github.io/semi-nextjs-codebase/](https://hoanghuynh296.github.io/semi-nextjs-codebase/) · cho agent: [`llms.txt`](https://hoanghuynh296.github.io/semi-nextjs-codebase/llms.txt), `docs/components/<id>.md`
 > Xem trực tiếp trên web toàn bộ **170 icons** (search real-time, click copy JSX), Two-Tier Semantic Tokens, Dual-Theme (Dark + Light mode) và Showcase các components chuẩn Bento AppShell.
 
 Hệ thống Design System dùng chung cho toàn bộ dự án web thuộc hệ sinh thái **Semi** (bao gồm **3D Noobs Studio**, `iot`, `bmcu` và các ứng dụng web mới).
@@ -87,7 +87,7 @@ Chỉ để lên bản mới: cài tag mới, in CHANGELOG các bản đã bỏ 
 Semi là bộ kit gốc cho nhiều thương hiệu: **Semi core → brand kit (một repo / thương hiệu) → sản phẩm**. Bạn chỉ quyết
 vài thứ một lần trong repo brand; sản phẩm chỉ cài kit, không tự chọn màu hay font (`brand-override` chặn).
 `/semi-update` ở sản phẩm cập nhật cả `@semi/ui` lẫn brand kit (đổi màu thương hiệu thấy rõ thì hỏi trước). Xem thử
-thương hiệu: trang **Brand preview** của Storybook. **Ví dụ từng bước 3D Noobs → app Manager và bảng "lệnh nào khi
+thương hiệu: trang **Brand preview** của docs. **Ví dụ từng bước 3D Noobs → app Manager và bảng "lệnh nào khi
 nào": [docs/BRANDS.md](docs/BRANDS.md).**
 
 ### Đổi style
@@ -101,7 +101,7 @@ có bóng mềm, bo lớn, thoáng 40px, cho app người dùng cuối) và **Sh
 vuông, bóng lệch cứng, cho landing page / portfolio / công cụ sáng tạo). Mỗi style có **3 palette** (biến thể màu
 trung tính): Flat = Graphite · Slate · Olive, Soft = Sand · Blush · Sage, Sharp = Ink · Paper · Mono (palette đầu là
 mặc định). Đổi chỉ màu: `/semi-style` rồi chọn palette. Danh sách: `tokens/styles.json`,
-mô tả: `docs/STYLES.md`. Xem thử trong Storybook (nút chọn style và palette ở chân sidebar).
+mô tả: `docs/STYLES.md`. Xem thử trên trang docs (nút chọn style và palette ở chân sidebar).
 
 ### Đề xuất tính năng mới từ dự án con (Khi gặp thiếu sót hoặc nhu cầu chưa đáp ứng)
 ```text

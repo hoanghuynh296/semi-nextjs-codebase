@@ -1,0 +1,26 @@
+{
+  "title": "Tooltip",
+  "group": "Overlays",
+  "description": "A short label on hover or focus, mostly for icon-only buttons.",
+  "components": [
+    "Tooltip"
+  ],
+  "when": [
+    "Name an icon-only control; add a short hint to a truncated value."
+  ],
+  "instead": [
+    {
+      "need": "Information people must read",
+      "use": "visible text or an Alert"
+    }
+  ],
+  "a11y": [
+    "Shown on focus too, linked with aria-describedby; never the only place of essential information."
+  ],
+  "examples": [
+    {
+      "file": "icon-button",
+      "title": "On an icon button"
+    }
+  ]
+}

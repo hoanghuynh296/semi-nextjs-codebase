@@ -1,0 +1,26 @@
+{
+  "title": "Search input",
+  "group": "Forms",
+  "description": "The toolbar search field: icon, clear button, h-control height. SubpageToolbar includes one.",
+  "components": [
+    "SearchInput"
+  ],
+  "when": [
+    "Filter the list or grid on the current page."
+  ],
+  "instead": [
+    {
+      "need": "Search inside a form",
+      "use": "Field + Input with icon=\"search\""
+    }
+  ],
+  "a11y": [
+    "A labelled search input; the clear button has its own label and returns focus to the field."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "Basic"
+    }
+  ]
+}

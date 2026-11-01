@@ -1,469 +1,95 @@
 # Semi Design System (@semi/ui v0.8.1)
 
-> The shared UI of every Semi app: semantic tokens that work in light and dark mode, React components (Next.js, Tailwind CSS 4) and the rules agents follow. This Storybook shows each component live; this file is its text form.
+> The shared UI of every Semi app: semantic tokens that work in light and dark mode, React components (Next.js, Tailwind CSS 4) and the rules agents follow. Every component has a page with live examples and a markdown twin for agents.
 
-Install `@semi/ui`, import components from `@semi/ui`, class constants from `@semi/ui/styles`, CSS `@semi/ui/tokens.css` + `@semi/ui/base.css`. Before writing UI read QUICK_REF.md; pick components from components.json; never invent local colours, sizes or wrapper components; check with `npx semi-lint`.
+Install `@semi/ui`, import components from `@semi/ui`, class constants from `@semi/ui/styles`, CSS `@semi/ui/tokens.css` + `@semi/ui/base.css`. Before writing UI read QUICK_REF.md; pick the component from docs/components/README.md, read its page, copy an example; never invent local colours, sizes or wrapper components; check with `npx semi-lint`.
 
 ## Machine-readable
 
-- [components.json](./components.json): all 80 components, hooks and constants with props and one-line summaries
+- [components.json](./components.json): all 80 components, hooks and constants with props, summaries and their doc page
+- [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
+- [COMPONENT_DOCS.md](./docs/COMPONENT_DOCS.md): How the component docs are built (examples/, meta.json, generated API) and how agents should use them
 - [ICONS.md](./docs/ICONS.md): Semantic icon guide: which icon means what
 - [BRANDS.md](./docs/BRANDS.md): Brands: brand kits (brand.json → brand.css), the step-by-step flow from a new brand to its first product, which command when
-- [STYLES.md](./docs/STYLES.md): Styles (Flat, Soft): what each changes, how an app picks one, the radius / shadow tokens
+- [STYLES.md](./docs/STYLES.md): Styles (Flat, Soft, Sharp) and palettes: what each changes, how an app picks one
 - [agent-rules.md](./docs/agent-rules.md): Rules block for a consumer app's AGENTS.md / CLAUDE.md
 - [tokens.css](./docs/tokens.css): Generated design tokens (CSS variables for both themes)
-- [llms-full.txt](./llms-full.txt): this file followed by all the docs above
+- [llms-full.txt](./llms-full.txt): this file followed by all the docs above and every component doc
 
 ## Pages
 
-- [Foundations & Icons](./foundations.html): Surface tokens, the type scale and the searchable icon registry.
-- [Components Showcase](./components.html): Theme switching, toolbars, buttons, form controls, KPI cards, chips, dialogs and skeletons.
-- [Primitives & Forms](./primitives.html): Button, Field, choices, Tabs, Tooltip, Menu, Drawer, Toast, Alert, Progress, Table, EmptyState, locale.
-- [Layout Patterns](./patterns.html): Page tabs and header actions, the tool-app header, SidePanel, Markdown and skeleton layouts.
-- [AI Chat](./chat.html): The standard AI chat panel (AIChat), its parts and the provider / model / effort picker.
-- [Brand preview](./brand.html): Preview a brand (primary, neutrals, styles, fonts) on every page before creating its brand kit; contrast report.
-
-## Foundations & Icons (./foundations.html)
-
-### Surfaces & tokens (./foundations.html#surfaces)
-
-Every background, text and border colour: semantic tokens that switch with the theme, never palette classes.
-
-```tsx
-<div className="bg-canvas">            {/* app frame */}
-  <main className="bg-app">           {/* content area */}
-    <section className="bg-panel border border-line rounded-card">   {/* card */}
-      <h2 className="text-contrast">Title</h2>
-      <p className="text-body">Body</p>
-      <span className="text-muted">Caption</span>
-      <input className="bg-field" />   {/* or FIELD_INPUT */}
-    </section>
-  </main>
-</div>
-// Status: bg-danger-bg border-danger-border text-danger-fg (success / warning / info), bg-*-solid for dots and bars
-```
-
-### Type scale (./foundations.html#typography)
-
-All text sizes; font-medium / font-semibold only, sentence case, tabular-nums for numbers.
-
-```tsx
-text-caption 11 · text-label 12 · text-ui 13 (default UI) · text-ui-lg 14 · text-title 15 · text-title-lg 16
-text-kpi 18 / sm:text-heading 22 (KpiCard) · text-heading 22 / sm:text-display 26 (PageTitle)
-// no Tailwind text-xs / text-sm / text-base and no arbitrary pixel sizes
-```
-
-### Icon registry (./foundations.html#icons)
-
-Every icon; pick by meaning from docs/ICONS.md (trash = delete, close = dismiss, refresh = sync).
-
-```tsx
-import { Icon, IconTile } from "@semi/ui";
-
-<Icon name="refresh" className="w-4 h-4" />
-<IconTile name="printer" tone="green" size="md" />
-```
-
-## Components Showcase (./components.html)
-
-### Theme (light · dark · system) (./components.html#theme)
-
-Theme setup of every app: applied before paint, stored, follows the OS on system.
-
-```tsx
-// app/layout.tsx
-import { ThemeScript, ThemeProvider, ToastHost, ConfirmHost } from "@semi/ui";
-
-<html lang="vi" suppressHydrationWarning>
-  <head><ThemeScript /></head>
-  <body className="bg-canvas text-body">
-    <ThemeProvider>{children}<ToastHost /><ConfirmHost /></ThemeProvider>
-  </body>
-</html>
-
-// settings / sidebar footer
-<ThemeSwitcher fullWidth />   // or <ThemeToggle /> in a collapsed rail
-```
-
-### SubpageToolbar (./components.html#subpage-toolbar)
-
-The sticky toolbar of a list page: filters left; add + search + refresh right.
-
-```tsx
-import { SubpageToolbar, Pills } from "@semi/ui";
-
-<SubpageToolbar
-  left={<Pills value={filter} onChange={setFilter} options={[{ key: "all", label: "Tất cả" }, { key: "printing", label: "Đang in" }]} />}
-  onPrimaryAction={openCreate}
-  primaryActionLabel="Thêm máy in"
-  searchValue={q}
-  onSearchChange={setQ}
-  onRefresh={reload}
-/>
-```
-
-### Buttons (./components.html#buttons)
-
-Actions: one primary per area, secondary for the rest, danger for destructive, icon-only with aria-label.
-
-```tsx
-import { Button } from "@semi/ui";
-
-<Button variant="primary" icon="play" onClick={start}>Bắt đầu in</Button>
-<Button icon="edit">Sửa</Button>
-<Button variant="danger" icon="trash">Xoá</Button>
-<Button iconOnly icon="plus" aria-label="Thêm" />
-<Button variant="primary" loading={saving}>Lưu</Button>
-// class form: BTN_PRIMARY / BTN_SECONDARY / BTN_DANGER / BTN_GHOST (+ BTN_SM, BTN_ICON) from @semi/ui/styles
-```
-
-### Form controls (./components.html#form-controls)
-
-Selects, comboboxes, numbers and dates: never the browser's own select, number or date inputs.
-
-```tsx
-import { Field, CustomSelect, CustomCombobox, NumberInput, DatePicker, Input } from "@semi/ui";
-
-<Field label="Máy in"><CustomSelect variant="field" value={printer} onChange={setPrinter} options={printers} /></Field>
-<Field label="Vật liệu"><CustomCombobox value={mat} onChange={setMat} options={materials} /></Field>
-<Field label="Nhiệt độ"><NumberInput value={temp} onChange={(e) => setTemp(e.target.value)} unit="°C" integer /></Field>
-<DatePicker value={date} onChange={setDate} ariaLabel="Ngày in" />
-<Field label="Tên bản in" hint="Hiện trên thẻ"><Input value={name} onChange={(e) => setName(e.target.value)} /></Field>
-```
-
-### KPI cards & Pagination (./components.html#kpi)
-
-Headline numbers of a dashboard (tabular-nums, shimmer while loading) and paged lists.
-
-```tsx
-import { KpiCard, Pagination } from "@semi/ui";
-
-<KpiCard label="Tổng sản lượng" value="1.842" sub="+12.4% so với tuần trước" icon="box" tone="good" loading={loading} />
-<Pagination page={page} pages={8} onChange={setPage} />
-```
-
-### Chips & badges (./components.html#chips)
-
-Badge = read-only status / tag; Chip = on-off filter; Pills = single choice.
-
-```tsx
-import { Badge, Chip } from "@semi/ui";
-
-<Badge tone="emerald" dot>Hoàn thành</Badge>
-<Badge tone="amber" icon="clock">Đang xử lý</Badge>
-<Chip active={on} onClick={() => setOn(!on)} tone="purple">Bambu Lab PLA</Chip>
-```
-
-### Modal & confirmDialog (./components.html#dialogs)
-
-Dialogs (full screen on phones) and confirmations: never window.confirm / alert.
-
-```tsx
-import { Modal, Button, confirmDialog } from "@semi/ui";
-
-<Modal open={open} onClose={close} title="Sửa máy in" footer={<Button size="modal" variant="primary" onClick={save}>Lưu</Button>}>
-  …form…
-</Modal>
-
-if (await confirmDialog({ title: "Xoá máy in?", message: "Không thể hoàn tác.", confirmLabel: "Xoá", tone: "danger" })) remove();
-```
-
-### Skeletons (./components.html#skeletons)
-
-Loading states: shimmer shapes of the real layout, never loading text or page spinners.
-
-```tsx
-import { Loading, SkeletonCard, SkeletonRows, SkeletonGrid } from "@semi/ui";
-
-{loading ? <SkeletonGrid count={3} className="grid md:grid-cols-3 gap-3" /> : <Cards />}
-<Loading><SkeletonRows count={5} /></Loading>   {/* Loading announces the region (role=status) */}
-```
-
-## Primitives & Forms (./primitives.html)
-
-### Button & Spinner (./primitives.html#button)
-
-The component form of the button classes; Spinner only inside the control running an action.
-
-```tsx
-import { Button, Spinner } from "@semi/ui";
-
-<Button variant="primary" size="md" icon="check">Lưu</Button>
-<Button size="sm" variant="ghost">Xem thêm</Button>
-<Button size="modal" variant="secondary">Huỷ</Button>
-<Spinner label="Đang lưu" />
-```
-
-### Field · Input · Textarea (./primitives.html#field)
-
-Any labelled input: label, hint and error are wired for screen readers automatically.
-
-```tsx
-import { Field, Input, Textarea } from "@semi/ui";
-
-<Field label="Tên máy in" hint="Hiện trên thẻ" error={errors.name} required>
-  <Input icon="printer" value={name} onChange={(e) => setName(e.target.value)} />
-</Field>
-<Field label="Ghi chú"><Textarea rows={3} value={note} onChange={(e) => setNote(e.target.value)} /></Field>
-```
-
-### Checkbox · Switch · RadioGroup (./primitives.html#choice)
-
-Booleans and single choice with labels and descriptions; Switch for settings that apply at once.
-
-```tsx
-import { Checkbox, Switch, RadioGroup } from "@semi/ui";
-
-<Checkbox checked={auto} onChange={setAuto} label="Tự động in khi rảnh" description="Máy nhận job tiếp theo" />
-<Switch checked={notify} onChange={setNotify} label="Thông báo khi in xong" />
-<RadioGroup label="Gói dịch vụ" value={plan} onChange={setPlan}
-  options={[{ value: "free", label: "Free" }, { value: "pro", label: "Pro", description: "Tối đa 10 máy" }]} />
-```
-
-### Tabs (./primitives.html#tabs)
-
-Switching views inside a card or page section (←/→, Home, End); segmented for compact toggles.
-
-```tsx
-import { Tabs } from "@semi/ui";
-
-<Tabs value={tab} onChange={setTab} items={[
-  { key: "overview", label: "Tổng quan", icon: "gauge", content: <Overview /> },
-  { key: "activity", label: "Hoạt động", count: 12, content: <Activity /> },
-]} />
-<Tabs variant="segmented" value={range} onChange={setRange} items={[{ key: "day", label: "Ngày" }, { key: "week", label: "Tuần" }]} />
-```
-
-### Tooltip · Menu · Drawer · Toast (./primitives.html#overlay)
-
-Hints on icon buttons, overflow actions, side sheets for secondary tasks, and transient feedback.
-
-```tsx
-import { Tooltip, Menu, Drawer, toast } from "@semi/ui";
-
-<Tooltip content="Làm mới"><Button iconOnly icon="refresh" aria-label="Làm mới" /></Tooltip>
-<Menu items={[{ label: "Đổi tên", icon: "edit", onSelect: rename }, { label: "Xoá", icon: "trash", danger: true, onSelect: remove }]} />
-<Drawer open={open} onClose={close} title="Bộ lọc">…</Drawer>
-toast({ tone: "success", title: "Đã lưu" });   // <ToastHost /> mounted once in the root layout
-```
-
-### Alert · Progress (./primitives.html#alert)
-
-Callouts inside a page (status tint + icon + optional action) and determinate / indeterminate progress.
-
-```tsx
-import { Alert, Progress, Button } from "@semi/ui";
-
-<Alert tone="warning" title="Sắp hết nhựa" action={<Button size="sm">Đặt thêm</Button>}>Cuộn PLA còn 80 g.</Alert>
-<Progress label="Tiến độ in" value={64} showValue />
-<Progress label="Đang xử lý" />   {/* no value = indeterminate */}
-```
-
-### Table · Avatar · Badge (./primitives.html#table)
-
-Rows compared column by column; cells stay on one line and the table scrolls sideways on phones.
-
-```tsx
-import { Table, THead, TBody, TR, TH, TD, Avatar, Badge } from "@semi/ui";
-
-<Table>
-  <THead><TR><TH>Mã đơn</TH><TH>Khách hàng</TH><TH align="right">Tổng</TH></TR></THead>
-  <TBody>
-    {rows.map((r) => (
-      <TR key={r.id} onClick={() => open(r)}>
-        <TD>{r.code}</TD>
-        <TD><Avatar name={r.customer} size="sm" /> {r.customer}</TD>
-        <TD numeric>{r.total}</TD>
-      </TR>
-    ))}
-  </TBody>
-</Table>
-```
-
-### EmptyState (./primitives.html#empty)
-
-An empty list or first run: icon, one line, optional description and the action that adds the first item.
-
-```tsx
-import { EmptyState, Button } from "@semi/ui";
-
-<EmptyState icon="printer" title="Chưa có máy in nào" description="Thêm máy in đầu tiên để theo dõi tiến độ."
-  action={<Button variant="primary" icon="plus" onClick={add}>Thêm máy in</Button>} />
-```
-
-### Locale (SemiLocaleProvider) (./primitives.html#locale)
-
-UI strings of the shared components: Vietnamese by default, English shipped, any key overridable.
-
-```tsx
-import { SemiLocaleProvider, en } from "@semi/ui";
-
-<SemiLocaleProvider locale={en}>{children}</SemiLocaleProvider>
-<SemiLocaleProvider locale={{ close: "Đóng lại" }}>…</SemiLocaleProvider>   // partial override
-```
-
-## Layout Patterns (./patterns.html)
-
-### PageTabsTitle · PageActions (./patterns.html#page-tabs)
-
-2–4 sibling pages under one title; the page's buttons go to the header slot.
-
-```tsx
-import { PageTabsTitle, PageActions, Button } from "@semi/ui";
-
-<PageTabsTitle tabs={[{ key: "printers", label: "Máy in" }, { key: "jobs", label: "Job in" }]} value={view} onChange={setView} />
-<PageActions><Button variant="primary" iconOnly icon="plus" aria-label="Thêm máy in" /></PageActions>
-```
-
-### AppHeader (tool apps) (./patterns.html#app-header)
-
-Top bar of a stand-alone tool / 3D app: logo + title go home, one primary action on the right.
-
-```tsx
-import { AppHeader, headerPrimary } from "@semi/ui";
-
-<AppHeader title="Phối màu" productName="3D Noobs" logoIcon="palette" homeHref="/">
-  <button className={headerPrimary(ready)} onClick={done}>Xong</button>
-</AppHeader>
-```
-
-### SidePanel (./patterns.html#side-panel)
-
-The left settings panel of a tool app (320px), collapsing to a thin rail.
-
-```tsx
-import { SidePanel, SidePanelToggle } from "@semi/ui";
-
-<div className="h-full flex">
-  <SidePanel collapsed={collapsed} onToggleCollapse={() => setCollapsed(!collapsed)}>
-    <SidePanelToggle onClick={() => setCollapsed(true)} /> …settings…
-  </SidePanel>
-  <div className="flex-1 min-w-0">…canvas…</div>
-</div>
-```
-
-### Markdown (AI text) (./patterns.html#markdown)
-
-Any AI-written text: paragraphs, lists, bold, code and links (ExternalLink); never raw strings.
-
-```tsx
-import { Markdown } from "@semi/ui";
-
-<Markdown text={answer} />
-```
-
-### Skeletons (./patterns.html#layout-skeletons)
-
-Page-level loading shapes that match the layout being loaded.
-
-```tsx
-import { Loading, PageSkeleton, SkeletonGrid } from "@semi/ui";
-
-<Loading><PageSkeleton /></Loading>
-<SkeletonGrid count={3} className="grid grid-cols-1 md:grid-cols-3 gap-3" />
-```
-
-## AI Chat (./chat.html)
-
-### AIChat (workspace panel) (./chat.html#ai-chat)
-
-Every AI conversation. UI only: the app keeps the messages, streams the answer and owns the provider / model lists.
-
-```tsx
-import { AIChat, ChatIntro, ChatSuggestions, ChatSuggestion, ChatModelPicker, type ChatItem } from "@semi/ui";
-
-<div className="relative">   {/* the panel fills the nearest positioned parent; placement="screen" covers the page */}
-  <AIChat
-    title="Trợ lý AI"
-    shown={open}
-    onClose={() => setOpen(false)}
-    messages={messages}            // ChatItem[]: { id, role, content (Markdown), pending?, error?, failed? }
-    busy={streaming}
-    onSend={ask}
-    onStop={abort}
-    onRetry={retry}
-    onNewChat={reset}
-    toolbar={
-      <ChatModelPicker
-        providers={providers}      // [{ value, label, icon: <logo /> }]: shown when more than one
-        provider={provider} onProviderChange={setProvider}
-        models={models} model={model} onModelChange={setModel}
-        efforts={efforts} effort={effort} onEffortChange={setEffort}   // only when the model takes one
-      />
-    }
-    empty={
-      <>
-        <ChatIntro title="Hỏi gì về bản in?">Trợ lý biết máy in và cài đặt của bạn.</ChatIntro>
-        <ChatSuggestions label="Gợi ý">
-          <ChatSuggestion onClick={() => ask("Vì sao PETG bị kéo sợi?")}>Vì sao PETG bị kéo sợi?</ChatSuggestion>
-        </ChatSuggestions>
-      </>
-    }
-  />
-</div>
-```
-
-### Parts (./chat.html#chat-parts)
-
-Compose a custom chat (e.g. inside a settings tab) from the same parts AIChat uses.
-
-```tsx
-import { ChatPanel, ChatView, ChatComposer, UserMessage, AssistantMessage, ChatAnswer, ChatError,
-  ChatThinking, ChatCopyButton, Markdown } from "@semi/ui";
-
-<ChatPanel title="Trợ lý AI" onClose={close} onNewChat={messages.length ? reset : undefined}>
-  <ChatView busy={busy} empty={!messages.length}
-    composer={<ChatComposer value={text} onChange={setText} onSend={ask} busy={busy} onStop={abort} toolbar={picker} />}>
-    <UserMessage>Vì sao bản in bị kéo sợi?</UserMessage>
-    <AssistantMessage busy={busy} actions={<ChatCopyButton text={answer} />}>
-      {answer ? <Markdown text={answer} /> : <ChatThinking />}
-    </AssistantMessage>
-    <ChatError onRetry={retry}>Không kết nối được tới model.</ChatError>
-  </ChatView>
-</ChatPanel>
-```
-
-## Brand preview (./brand.html)
-
-### Brand choices (brand.json) (./brand.html#brand-choices)
-
-The few decisions a brand makes, once, in its own brand kit repo (docs/BRANDS.md). Products never pick colours or fonts.
-
-```tsx
-// brand.json of the kit repo (e.g. github:3dnoobs/brand)
-{
-  "name": "3D Noobs",
-  "package": "@3dnoobs/brand",
-  "primary": "#00AE42",
-  "secondary": null,
-  "neutral": "tinted",
-  "styles": { "default": "flat", "allowed": ["flat", "soft"] },
-  "fonts": { "sans": "Geist", "display": "Montserrat Alternates" }
-}
-
-// create / change it with the plugin, then build the kit
-/semi-brand            // in the brand kit repo
-npm run build          // semi-brand build → dist/brand.css, dist/brand.json, BRAND.md, AGENTS.brand.md
-```
-
-### What Semi derives (./brand.html#brand-result)
-
-Scales, accent / on-accent shades of both themes and the neutrals of every allowed style, checked for WCAG AA. A product only installs the kit.
-
-```tsx
-// a product of the brand
-/semi-init --brand github:3dnoobs/brand
-
-/* app/globals.css (written by /semi-init) */
-@import "@semi/ui/tokens.css";
-@import "@semi/ui/base.css";
-@import "@3dnoobs/brand/dist/brand.css";
-
-// semi-lint.json: "brand": "@3dnoobs/brand" → brand-override blocks local colour / font tokens
-
-// in code: semantic tokens only
-<Button variant="primary">Lưu</Button>
-<span className="text-accent-fg">…</span>
-```
+- [Introduction](./): what Semi is, install, resources for agents
+- [Components](./components/): every component with a live example
+- [Foundations](./foundations/): surface tokens, type scale, icon registry
+- [Brand preview](./brand/): preview a brand on every page before creating its kit
+
+## Components
+
+### Actions
+
+- [Button](./components/button/) ([markdown](./docs/components/button.md)): The action control: one primary per area, secondary for the rest, danger for destructive actions, ghost for quiet ones. Spinner shows work in progress inside the control that runs it. Components: Button, Spinner.
+- [Chip](./components/chip/) ([markdown](./docs/components/chip.md)): A pill-shaped toggle for filters and tags. Neutral when off; active uses the high-contrast surface, with colour only on its dot or icon (tone). Components: Chip.
+- [External link](./components/external-link/) ([markdown](./docs/components/external-link.md)): A link to another site: opens a new tab on desktop and the external browser inside a mobile WebView, with an external-link icon. Components: ExternalLink.
+- [Pills](./components/pills/) ([markdown](./docs/components/pills.md)): A single-choice filter of 2–5 options on one track (segmented look). The left side of a SubpageToolbar. Components: Pills.
+
+### Forms
+
+- [Checkbox](./components/checkbox/) ([markdown](./docs/components/checkbox.md)): A native checkbox with label and description, checked fill in the accent, and an indeterminate state for “select all”. Components: Checkbox.
+- [Combobox](./components/combobox/) ([markdown](./docs/components/combobox.md)): CustomCombobox: type to filter a long list, then pick one value. Components: CustomCombobox.
+- [Date picker](./components/date-picker/) ([markdown](./docs/components/date-picker.md)): A calendar popover for one date (YYYY-MM-DD), with min / max. Never type="date". Components: DatePicker.
+- [Field, Input, Textarea](./components/field/) ([markdown](./docs/components/field.md)): Field gives any control a label, a hint and an error, wired for screen readers. Input and Textarea are the standard text controls (bg-field, h-field). Components: Field, Input, Textarea.
+- [Number input](./components/number-input/) ([markdown](./docs/components/number-input.md)): NumberInput: numbers with a touch keypad (NumPadPopup) on phones and tablets, plain typing elsewhere. Never type="number". Components: NumberInput, NumPadPopup.
+- [Radio group](./components/radio-group/) ([markdown](./docs/components/radio-group.md)): Exactly one option of a few, each with an optional description; vertical by default. Components: RadioGroup.
+- [Search input](./components/search-input/) ([markdown](./docs/components/search-input.md)): The toolbar search field: icon, clear button, h-control height. SubpageToolbar includes one. Components: SearchInput.
+- [Select](./components/select/) ([markdown](./docs/components/select.md)): CustomSelect: pick one value from a list, in a field, in a toolbar, inline in a row or bare. Never the native <select>. Components: CustomSelect.
+- [Switch](./components/switch/) ([markdown](./docs/components/switch.md)): An on / off toggle for settings that apply immediately. Components: Switch.
+
+### Overlays
+
+- [Confirm dialog](./components/confirm-dialog/) ([markdown](./docs/components/confirm-dialog.md)): confirmDialog() asks one yes / no question and resolves to true or false. Mount ConfirmHost once in the root layout. Never window.confirm. Components: ConfirmHost.
+- [Drawer](./components/drawer/) ([markdown](./docs/components/drawer.md)): A panel that slides in from the right, left or bottom, with title and footer; a sheet on phones. Components: Drawer.
+- [Menu](./components/menu/) ([markdown](./docs/components/menu.md)): The overflow menu of a row or card: a ⋯ trigger (or your own) with items, icons, separators and a danger item last. Components: Menu.
+- [Modal](./components/modal/) ([markdown](./docs/components/modal.md)): The shared dialog: full screen on phones, a centred panel from sm up, with title, description, body and footer. Focus is trapped and returns to the opener. Components: Modal.
+- [Toast](./components/toast/) ([markdown](./docs/components/toast.md)): toast() shows a short message after an action, with a tone and an optional action (Hoàn tác). Mount ToastHost once in the root layout. Components: ToastHost.
+- [Tooltip](./components/tooltip/) ([markdown](./docs/components/tooltip.md)): A short label on hover or focus, mostly for icon-only buttons. Components: Tooltip.
+
+### Navigation & layout
+
+- [App header](./components/app-header/) ([markdown](./docs/components/app-header.md)): The top bar of a stand-alone tool app: logo + title go home, the module name, and one primary action on the right. No Home button. Components: AppHeader.
+- [App shell](./components/app-shell/) ([markdown](./docs/components/app-shell.md)): The frame of a multi-page app: a floating bento sidebar (w-52, collapses to a w-14 icon rail) on bg-canvas, the content panel beside it, and MobileTabBar at the bottom on phones. This docs site is an AppShell. Components: AppShell, MobileTabBar.
+- [Page actions](./components/page-actions/) ([markdown](./docs/components/page-actions.md)): Lets a page put its actions into a slot of the shared header: PageActionsProvider wraps the layout, PageActionsSlot marks where they render, PageActions sends them from the page. Components: PageActions, PageActionsProvider, PageActionsSlot.
+- [Page title](./components/page-title/) ([markdown](./docs/components/page-title.md)): PageTitle is the large display title of a page (text only). PageTabsTitle turns it into 2–4 underline tabs for sibling pages. Components: PageTitle, PageTabsTitle.
+- [Pagination](./components/pagination/) ([markdown](./docs/components/pagination.md)): Page numbers with previous / next for long tables. For card lists prefer auto-loading with “Xem thêm”. Components: Pagination.
+- [Side panel](./components/side-panel/) ([markdown](./docs/components/side-panel.md)): A 320px tool panel beside a canvas that collapses to a 48px rail; SidePanelToggle is its collapse button. Components: SidePanel, SidePanelToggle.
+- [Subpage toolbar](./components/subpage-toolbar/) ([markdown](./docs/components/subpage-toolbar.md)): The sticky row under a page title: filters on the left; search, refresh and the icon-only primary action on the right. RefreshButton spins while its promise runs. Components: SubpageToolbar, RefreshButton.
+- [Tabs](./components/tabs/) ([markdown](./docs/components/tabs.md)): Switch between panels of content inside a page or card: underline (default) or segmented, with icons and counts. Components: Tabs.
+
+### Data display
+
+- [Avatar](./components/avatar/) ([markdown](./docs/components/avatar.md)): A person or team: their image, or initials on a tone picked from the name. Components: Avatar.
+- [Badge](./components/badge/) ([markdown](./docs/components/badge.md)): A read-only status or tag in a tone (10% fill, 20% border, theme-safe text), with an optional dot or icon. Components: Badge.
+- [Card](./components/card/) ([markdown](./docs/components/card.md)): The bento content card: panel fill and the style's card border, radius and resting shadow. interactive adds hover / press, active marks the selected or running item. Components: Card.
+- [Icon](./components/icon/) ([markdown](./docs/components/icon.md)): The semantic icon registry (stroke 1.75, 24px grid). IconTile is the rounded tinted square that leads cards and dialogs. Components: Icon, IconTile.
+- [KPI card](./components/kpi-card/) ([markdown](./docs/components/kpi-card.md)): A metric card: label, a large tabular figure, a sub line coloured good / danger, and an icon in its tone. Components: KpiCard.
+- [Markdown](./components/markdown/) ([markdown](./docs/components/markdown.md)): Renders AI or user text safely: paragraphs, lists, bold, inline code and links (as ExternalLink). No HTML. Components: Markdown.
+- [Table](./components/table/) ([markdown](./docs/components/table.md)): A dense table for rows compared column by column. Cells stay on one line (the table scrolls sideways on phones); TD wrap for a long-text column, numeric for figures. Components: Table, THead, TBody, TR, TH, TD.
+
+### Feedback
+
+- [Alert](./components/alert/) ([markdown](./docs/components/alert.md)): A message that stays on the page: info, success, warning, danger, with a title, an action and an optional dismiss. Components: Alert.
+- [Empty state](./components/empty-state/) ([markdown](./docs/components/empty-state.md)): What an empty list or page shows: an icon, one short title, a description and the action that fills it. Components: EmptyState.
+- [Progress](./components/progress/) ([markdown](./docs/components/progress.md)): A determinate bar with value, or an indeterminate one when the end is unknown; tones for success and danger. Components: Progress.
+- [Skeleton](./components/skeleton/) ([markdown](./docs/components/skeleton.md)): Shimmer placeholders while content loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton; Loading announces the region. Never “Đang tải…” text. Components: Skeleton, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton, Loading.
+
+### AI
+
+- [AI chat](./components/ai-chat/) ([markdown](./docs/components/ai-chat.md)): AIChat is the ready-made assistant panel: ChatPanel (side panel or full screen, resizable, keyboard inset) around ChatView (list + composer). UI only: the app keeps the messages, streams the answer and calls the model. Components: AIChat, ChatPanel, ChatView.
+- [Chat messages](./components/chat-messages/) ([markdown](./docs/components/chat-messages.md)): The parts of a conversation, to compose your own chat: UserMessage, AssistantMessage (+ ChatAnswer for a ChatItem), ChatThinking, ChatError, ChatCopyButton, ChatAvatar, ChatIntro, ChatSuggestion(s), ChatList and ChatComposer. Components: UserMessage, AssistantMessage, ChatAnswer, ChatAvatar, ChatCopyButton, ChatError, ChatThinking, ChatIntro, ChatSuggestion, ChatSuggestions, ChatList, ChatComposer.
+- [Chat model picker](./components/chat-model-picker/) ([markdown](./docs/components/chat-model-picker.md)): Provider → model → effort chips, for the toolbar of a chat composer. The lists are app data. Components: ChatModelPicker.
+
+### Setup
+
+- [Locale](./components/locale/) ([markdown](./docs/components/locale.md)): SemiLocaleProvider sets the UI strings of every Semi component (Vietnamese by default, English shipped, override any string). Components: SemiLocaleProvider.
+- [Theme](./components/theme/) ([markdown](./docs/components/theme.md)): Light / dark / system: ThemeScript applies the stored theme before paint, ThemeProvider keeps it, ThemeSwitcher (three-way) and ThemeToggle switch it. data-theme on any element re-scopes every token inside it. Components: ThemeProvider, ThemeScript, ThemeSwitcher, ThemeToggle.

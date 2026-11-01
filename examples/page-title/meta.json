@@ -1,0 +1,39 @@
+{
+  "title": "Page title",
+  "group": "Navigation & layout",
+  "description": "PageTitle is the large display title of a page (text only). PageTabsTitle turns it into 2–4 underline tabs for sibling pages.",
+  "components": [
+    "PageTitle",
+    "PageTabsTitle"
+  ],
+  "when": [
+    "The first line of every page (PageTitle).",
+    "2–4 sibling views of one area: Máy in / Job in (PageTabsTitle)."
+  ],
+  "instead": [
+    {
+      "need": "Tabs inside a card or panel",
+      "use": "Tabs"
+    },
+    {
+      "need": "A filter",
+      "use": "Pills"
+    }
+  ],
+  "a11y": [
+    "PageTitle is the page h1. PageTabsTitle is a tablist with arrow-key navigation."
+  ],
+  "notes": [
+    "No subtitle under the title and no text buttons on the title row: actions go to PageActions or the toolbar."
+  ],
+  "examples": [
+    {
+      "file": "title",
+      "title": "PageTitle"
+    },
+    {
+      "file": "tabs",
+      "title": "PageTabsTitle"
+    }
+  ]
+}

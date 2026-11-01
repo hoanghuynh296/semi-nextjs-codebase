@@ -1,0 +1,45 @@
+{
+  "title": "Chat messages",
+  "group": "AI",
+  "description": "The parts of a conversation, to compose your own chat: UserMessage, AssistantMessage (+ ChatAnswer for a ChatItem), ChatThinking, ChatError, ChatCopyButton, ChatAvatar, ChatIntro, ChatSuggestion(s), ChatList and ChatComposer.",
+  "components": [
+    "UserMessage",
+    "AssistantMessage",
+    "ChatAnswer",
+    "ChatAvatar",
+    "ChatCopyButton",
+    "ChatError",
+    "ChatThinking",
+    "ChatIntro",
+    "ChatSuggestion",
+    "ChatSuggestions",
+    "ChatList",
+    "ChatComposer"
+  ],
+  "imports": [
+    "CHAT_CHIP",
+    "CHAT_ROW"
+  ],
+  "when": [
+    "A chat that does not fit AIChat's layout; AI output inside another feature."
+  ],
+  "instead": [
+    {
+      "need": "A standard assistant panel",
+      "use": "AIChat"
+    }
+  ],
+  "a11y": [
+    "ChatList keeps scroll position while the user reads up and offers “jump to latest”; ChatComposer is a labelled textarea with send / stop buttons."
+  ],
+  "examples": [
+    {
+      "file": "parts",
+      "title": "Messages"
+    },
+    {
+      "file": "compose",
+      "title": "Your own chat from parts"
+    }
+  ]
+}

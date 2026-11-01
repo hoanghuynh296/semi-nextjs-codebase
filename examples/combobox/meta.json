@@ -1,0 +1,26 @@
+{
+  "title": "Combobox",
+  "group": "Forms",
+  "description": "CustomCombobox: type to filter a long list, then pick one value.",
+  "components": [
+    "CustomCombobox"
+  ],
+  "when": [
+    "Long lists the user searches (materials, customers, SKUs)."
+  ],
+  "instead": [
+    {
+      "need": "A short fixed list",
+      "use": "CustomSelect"
+    }
+  ],
+  "a11y": [
+    "ARIA combobox: arrows move through matches, Enter picks, Escape clears / closes; works inside Field."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "Searchable list"
+    }
+  ]
+}

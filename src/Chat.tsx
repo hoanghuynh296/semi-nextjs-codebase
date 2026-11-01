@@ -503,7 +503,7 @@ export function ChatModelPicker({
         onChange={onModelChange}
         options={models}
         disabled={disabled}
-        aria-label={t.chatModel}
+        aria-label={`${t.chatModel}: ${models.find((m) => m.value === model)?.label ?? ""}`}
         title={t.chatModel}
       />
       {efforts.length > 0 && effort !== undefined && onEffortChange && (
@@ -514,7 +514,7 @@ export function ChatModelPicker({
           onChange={onEffortChange}
           options={efforts}
           disabled={disabled}
-          aria-label={t.chatEffort}
+          aria-label={`${t.chatEffort}: ${efforts.find((e) => e.value === effort)?.label ?? ""}`}
           title={t.chatEffort}
         />
       )}

@@ -21,14 +21,27 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "paths": {
+      "@semi/ui": [
+        "./src/index.ts"
+      ],
+      "@semi/ui/styles": [
+        "./styles/index.ts"
+      ],
+      "@semi/ui/styles.json": [
+        "./tokens/styles.json"
+      ]
+    }
   },
   "include": [
-    "src",
-    "styles",
-    "app",
+    ".next/dev/types/**/*.ts",
     ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts"
+    "app",
+    "examples",
+    "site",
+    "src",
+    "styles"
   ],
   "exclude": [
     "node_modules"

@@ -1,0 +1,260 @@
+[
+  {
+    "id": "button",
+    "title": "Button",
+    "group": "Actions",
+    "description": "The action control: one primary per area, secondary for the rest, danger for destructive actions, ghost for quiet ones. Spinner shows work in progress inside the control that runs it."
+  },
+  {
+    "id": "chip",
+    "title": "Chip",
+    "group": "Actions",
+    "description": "A pill-shaped toggle for filters and tags. Neutral when off; active uses the high-contrast surface, with colour only on its dot or icon (tone)."
+  },
+  {
+    "id": "external-link",
+    "title": "External link",
+    "group": "Actions",
+    "description": "A link to another site: opens a new tab on desktop and the external browser inside a mobile WebView, with an external-link icon."
+  },
+  {
+    "id": "pills",
+    "title": "Pills",
+    "group": "Actions",
+    "description": "A single-choice filter of 2–5 options on one track (segmented look). The left side of a SubpageToolbar."
+  },
+  {
+    "id": "checkbox",
+    "title": "Checkbox",
+    "group": "Forms",
+    "description": "A native checkbox with label and description, checked fill in the accent, and an indeterminate state for “select all”."
+  },
+  {
+    "id": "combobox",
+    "title": "Combobox",
+    "group": "Forms",
+    "description": "CustomCombobox: type to filter a long list, then pick one value."
+  },
+  {
+    "id": "date-picker",
+    "title": "Date picker",
+    "group": "Forms",
+    "description": "A calendar popover for one date (YYYY-MM-DD), with min / max. Never type=\"date\"."
+  },
+  {
+    "id": "field",
+    "title": "Field, Input, Textarea",
+    "group": "Forms",
+    "description": "Field gives any control a label, a hint and an error, wired for screen readers. Input and Textarea are the standard text controls (bg-field, h-field)."
+  },
+  {
+    "id": "number-input",
+    "title": "Number input",
+    "group": "Forms",
+    "description": "NumberInput: numbers with a touch keypad (NumPadPopup) on phones and tablets, plain typing elsewhere. Never type=\"number\"."
+  },
+  {
+    "id": "radio-group",
+    "title": "Radio group",
+    "group": "Forms",
+    "description": "Exactly one option of a few, each with an optional description; vertical by default."
+  },
+  {
+    "id": "search-input",
+    "title": "Search input",
+    "group": "Forms",
+    "description": "The toolbar search field: icon, clear button, h-control height. SubpageToolbar includes one."
+  },
+  {
+    "id": "select",
+    "title": "Select",
+    "group": "Forms",
+    "description": "CustomSelect: pick one value from a list, in a field, in a toolbar, inline in a row or bare. Never the native <select>."
+  },
+  {
+    "id": "switch",
+    "title": "Switch",
+    "group": "Forms",
+    "description": "An on / off toggle for settings that apply immediately."
+  },
+  {
+    "id": "confirm-dialog",
+    "title": "Confirm dialog",
+    "group": "Overlays",
+    "description": "confirmDialog() asks one yes / no question and resolves to true or false. Mount ConfirmHost once in the root layout. Never window.confirm."
+  },
+  {
+    "id": "drawer",
+    "title": "Drawer",
+    "group": "Overlays",
+    "description": "A panel that slides in from the right, left or bottom, with title and footer; a sheet on phones."
+  },
+  {
+    "id": "menu",
+    "title": "Menu",
+    "group": "Overlays",
+    "description": "The overflow menu of a row or card: a ⋯ trigger (or your own) with items, icons, separators and a danger item last."
+  },
+  {
+    "id": "modal",
+    "title": "Modal",
+    "group": "Overlays",
+    "description": "The shared dialog: full screen on phones, a centred panel from sm up, with title, description, body and footer. Focus is trapped and returns to the opener."
+  },
+  {
+    "id": "toast",
+    "title": "Toast",
+    "group": "Overlays",
+    "description": "toast() shows a short message after an action, with a tone and an optional action (Hoàn tác). Mount ToastHost once in the root layout."
+  },
+  {
+    "id": "tooltip",
+    "title": "Tooltip",
+    "group": "Overlays",
+    "description": "A short label on hover or focus, mostly for icon-only buttons."
+  },
+  {
+    "id": "app-header",
+    "title": "App header",
+    "group": "Navigation & layout",
+    "description": "The top bar of a stand-alone tool app: logo + title go home, the module name, and one primary action on the right. No Home button."
+  },
+  {
+    "id": "app-shell",
+    "title": "App shell",
+    "group": "Navigation & layout",
+    "description": "The frame of a multi-page app: a floating bento sidebar (w-52, collapses to a w-14 icon rail) on bg-canvas, the content panel beside it, and MobileTabBar at the bottom on phones. This docs site is an AppShell."
+  },
+  {
+    "id": "page-actions",
+    "title": "Page actions",
+    "group": "Navigation & layout",
+    "description": "Lets a page put its actions into a slot of the shared header: PageActionsProvider wraps the layout, PageActionsSlot marks where they render, PageActions sends them from the page."
+  },
+  {
+    "id": "page-title",
+    "title": "Page title",
+    "group": "Navigation & layout",
+    "description": "PageTitle is the large display title of a page (text only). PageTabsTitle turns it into 2–4 underline tabs for sibling pages."
+  },
+  {
+    "id": "pagination",
+    "title": "Pagination",
+    "group": "Navigation & layout",
+    "description": "Page numbers with previous / next for long tables. For card lists prefer auto-loading with “Xem thêm”."
+  },
+  {
+    "id": "side-panel",
+    "title": "Side panel",
+    "group": "Navigation & layout",
+    "description": "A 320px tool panel beside a canvas that collapses to a 48px rail; SidePanelToggle is its collapse button."
+  },
+  {
+    "id": "subpage-toolbar",
+    "title": "Subpage toolbar",
+    "group": "Navigation & layout",
+    "description": "The sticky row under a page title: filters on the left; search, refresh and the icon-only primary action on the right. RefreshButton spins while its promise runs."
+  },
+  {
+    "id": "tabs",
+    "title": "Tabs",
+    "group": "Navigation & layout",
+    "description": "Switch between panels of content inside a page or card: underline (default) or segmented, with icons and counts."
+  },
+  {
+    "id": "avatar",
+    "title": "Avatar",
+    "group": "Data display",
+    "description": "A person or team: their image, or initials on a tone picked from the name."
+  },
+  {
+    "id": "badge",
+    "title": "Badge",
+    "group": "Data display",
+    "description": "A read-only status or tag in a tone (10% fill, 20% border, theme-safe text), with an optional dot or icon."
+  },
+  {
+    "id": "card",
+    "title": "Card",
+    "group": "Data display",
+    "description": "The bento content card: panel fill and the style's card border, radius and resting shadow. interactive adds hover / press, active marks the selected or running item."
+  },
+  {
+    "id": "icon",
+    "title": "Icon",
+    "group": "Data display",
+    "description": "The semantic icon registry (stroke 1.75, 24px grid). IconTile is the rounded tinted square that leads cards and dialogs."
+  },
+  {
+    "id": "kpi-card",
+    "title": "KPI card",
+    "group": "Data display",
+    "description": "A metric card: label, a large tabular figure, a sub line coloured good / danger, and an icon in its tone."
+  },
+  {
+    "id": "markdown",
+    "title": "Markdown",
+    "group": "Data display",
+    "description": "Renders AI or user text safely: paragraphs, lists, bold, inline code and links (as ExternalLink). No HTML."
+  },
+  {
+    "id": "table",
+    "title": "Table",
+    "group": "Data display",
+    "description": "A dense table for rows compared column by column. Cells stay on one line (the table scrolls sideways on phones); TD wrap for a long-text column, numeric for figures."
+  },
+  {
+    "id": "alert",
+    "title": "Alert",
+    "group": "Feedback",
+    "description": "A message that stays on the page: info, success, warning, danger, with a title, an action and an optional dismiss."
+  },
+  {
+    "id": "empty-state",
+    "title": "Empty state",
+    "group": "Feedback",
+    "description": "What an empty list or page shows: an icon, one short title, a description and the action that fills it."
+  },
+  {
+    "id": "progress",
+    "title": "Progress",
+    "group": "Feedback",
+    "description": "A determinate bar with value, or an indeterminate one when the end is unknown; tones for success and danger."
+  },
+  {
+    "id": "skeleton",
+    "title": "Skeleton",
+    "group": "Feedback",
+    "description": "Shimmer placeholders while content loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton; Loading announces the region. Never “Đang tải…” text."
+  },
+  {
+    "id": "ai-chat",
+    "title": "AI chat",
+    "group": "AI",
+    "description": "AIChat is the ready-made assistant panel: ChatPanel (side panel or full screen, resizable, keyboard inset) around ChatView (list + composer). UI only: the app keeps the messages, streams the answer and calls the model."
+  },
+  {
+    "id": "chat-messages",
+    "title": "Chat messages",
+    "group": "AI",
+    "description": "The parts of a conversation, to compose your own chat: UserMessage, AssistantMessage (+ ChatAnswer for a ChatItem), ChatThinking, ChatError, ChatCopyButton, ChatAvatar, ChatIntro, ChatSuggestion(s), ChatList and ChatComposer."
+  },
+  {
+    "id": "chat-model-picker",
+    "title": "Chat model picker",
+    "group": "AI",
+    "description": "Provider → model → effort chips, for the toolbar of a chat composer. The lists are app data."
+  },
+  {
+    "id": "locale",
+    "title": "Locale",
+    "group": "Setup",
+    "description": "SemiLocaleProvider sets the UI strings of every Semi component (Vietnamese by default, English shipped, override any string)."
+  },
+  {
+    "id": "theme",
+    "title": "Theme",
+    "group": "Setup",
+    "description": "Light / dark / system: ThemeScript applies the stored theme before paint, ThemeProvider keeps it, ThemeSwitcher (three-way) and ThemeToggle switch it. data-theme on any element re-scopes every token inside it."
+  }
+]

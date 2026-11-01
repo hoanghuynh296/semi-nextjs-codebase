@@ -1,0 +1,20 @@
+{
+  "title": "Avatar",
+  "group": "Data display",
+  "description": "A person or team: their image, or initials on a tone picked from the name.",
+  "components": [
+    "Avatar"
+  ],
+  "when": [
+    "Owners, assignees, customers in rows and cards."
+  ],
+  "a11y": [
+    "The name is the accessible label; decorative next to a visible name."
+  ],
+  "examples": [
+    {
+      "file": "sizes",
+      "title": "Sizes"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "title": "Skeleton",
+  "group": "Feedback",
+  "description": "Shimmer placeholders while content loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton; Loading announces the region. Never “Đang tải…” text.",
+  "components": [
+    "Skeleton",
+    "SkeletonCard",
+    "SkeletonGrid",
+    "SkeletonRows",
+    "PageSkeleton",
+    "Loading"
+  ],
+  "when": [
+    "Any content that is loading: show its shape."
+  ],
+  "instead": [
+    {
+      "need": "An action in progress",
+      "use": "Button loading or Spinner"
+    },
+    {
+      "need": "A known amount of work",
+      "use": "Progress"
+    }
+  ],
+  "a11y": [
+    "Loading (and the Skeleton* groups with label) set role=\"status\" + aria-busy so screen readers hear one message."
+  ],
+  "examples": [
+    {
+      "file": "card-rows",
+      "title": "Card and rows"
+    },
+    {
+      "file": "page",
+      "title": "Page and grid"
+    }
+  ]
+}

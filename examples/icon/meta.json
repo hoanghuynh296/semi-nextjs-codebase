@@ -1,0 +1,31 @@
+{
+  "title": "Icon",
+  "group": "Data display",
+  "description": "The semantic icon registry (stroke 1.75, 24px grid). IconTile is the rounded tinted square that leads cards and dialogs.",
+  "components": [
+    "Icon",
+    "IconTile"
+  ],
+  "imports": [
+    "ICONS",
+    "suggestIcon"
+  ],
+  "when": [
+    "Every icon in the UI: pick the semantic name (trash = delete, close = dismiss, refresh = reload). See docs/ICONS.md."
+  ],
+  "instead": [
+    {
+      "need": "A missing icon",
+      "use": "add it to ICONS in @semi/ui (/semi-propose), never an inline <svg>"
+    }
+  ],
+  "a11y": [
+    "Decorative by default (aria-hidden); pass title when the icon alone carries meaning."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "Icons and tiles"
+    }
+  ]
+}

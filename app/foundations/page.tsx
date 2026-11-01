@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { StorybookShell } from "../StorybookShell";
-import { StoryUsage } from "../Showcase";
+import { SiteShell } from "../SiteShell";
 import { Icon, IconTile, type IconName, type TileTone, TILE_TONES } from "../../src/Icon";
 import { ICON_CATALOG, type IconDomain, suggestIcon } from "../../src/iconCatalog";
 import { PageTitle } from "../../src/PageTitle";
@@ -76,7 +75,7 @@ export default function FoundationsPage() {
   const totalCount = Object.keys(ICON_CATALOG).length;
 
   return (
-    <StorybookShell>
+    <SiteShell>
       {/* Page Header */}
       <div className="space-y-3 pb-2 border-b border-line/60">
         <PageTitle title="Foundations & Icon Catalogue" />
@@ -154,7 +153,6 @@ export default function FoundationsPage() {
             Không dùng rounded-lg / rounded-[Npx] (linter)
           </span>
         </div>
-        <StoryUsage id="surfaces" />
       </section>
 
       {/* SECTION 2: Typography Scale */}
@@ -192,7 +190,6 @@ export default function FoundationsPage() {
             </div>
           </div>
         </div>
-        <StoryUsage id="typography" />
       </section>
 
       {/* SECTION 3: Interactive Icon Catalogue (Core Feature) */}
@@ -441,8 +438,7 @@ export default function FoundationsPage() {
             )}
           </div>
         </div>
-        <StoryUsage id="icons" />
       </section>
-    </StorybookShell>
+    </SiteShell>
   );
 }

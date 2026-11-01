@@ -17,6 +17,7 @@
 //     "scan": ["app", "components"],                // dirs (relative to cwd) scanned for .ts/.tsx
 //     "baseline": "semi-lint-baseline.json",
 //     "skip": { "inline-svg-path": ["components/brand/Logo.tsx"] },   // rule id → path prefixes it ignores
+//     "ignore": ["src/generated"],                  // path prefixes not scanned at all (generated files)
 //     "only": { "viewport-grid-cols": ["components/catalog/"] },      // rule id → only these path prefixes
 //     "disable": ["loading-text"],                  // rule ids turned off (record why in your app's doc)
 //     "keep": { "tables": "reports need dense tables" }, // /semi-audit structural checks the team chose to keep
@@ -67,7 +68,8 @@ export const HARD = [
     "use canonical IconName (e.g. trash for delete, close for cancel/x, refresh for reload, settings for gear, filter for funnel, user for profile, bell for notifications, tag for category/label). See docs/ICONS.md",
   ],
   ["home-button", /name="home"/, "app headers have no Home button: logo + title go home (AppHeader)"],
-  ["external-link", /window\.open\(|href=\{?["'`]https?:\/\//, "links to other sites use ExternalLink from @semi/ui"],
+  // An external href on anything but <ExternalLink> (which is the fix, so it must not be flagged).
+  ["external-link", /window\.open\(|<(?!ExternalLink\b)[A-Za-z][\w.]*\b[^>]*\bhref=\{?["'`]https?:\/\//, "links to other sites use ExternalLink from @semi/ui"],
   [
     "app-chrome-copy",
     /h-(?:\[34px\]|control) px-4 rounded-(?:lg|control) text-(?:\[12px\]|label) font-semibold|p-1 sm:p-1\.5 rounded-(?:2xl|panel) z-20|rounded-(?:2xl|panel) p-1 gap-1 select-none shadow-(?:xl|float)/,
@@ -147,12 +149,14 @@ function walk(dir, out) {
 
 export function filesToScan(cfg, cwd, only) {
   const roots = cfg.scan.map((d) => resolve(cwd, d));
+  const ignored = (cfg.ignore || []).map((d) => resolve(cwd, d));
+  const kept = (p) => !ignored.some((i) => p === i || p.startsWith(i + sep));
   if (only) {
     return only
       .map((f) => resolve(cwd, f))
-      .filter((p) => SOURCE_RX.test(p) && !p.endsWith(".d.ts") && existsSync(p) && roots.some((r) => p === r || p.startsWith(r + sep)));
+      .filter((p) => SOURCE_RX.test(p) && !p.endsWith(".d.ts") && existsSync(p) && roots.some((r) => p === r || p.startsWith(r + sep)) && kept(p));
   }
-  return roots.flatMap((r) => walk(r, [])).sort();
+  return roots.flatMap((r) => walk(r, [])).filter(kept).sort();
 }
 
 const isComment = (line) => /^\s*(\/\/|\*|\/\*)/.test(line);

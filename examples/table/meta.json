@@ -1,0 +1,31 @@
+{
+  "title": "Table",
+  "group": "Data display",
+  "description": "A dense table for rows compared column by column. Cells stay on one line (the table scrolls sideways on phones); TD wrap for a long-text column, numeric for figures.",
+  "components": [
+    "Table",
+    "THead",
+    "TBody",
+    "TR",
+    "TH",
+    "TD"
+  ],
+  "when": [
+    "Orders, invoices, logs: rows compared by column."
+  ],
+  "instead": [
+    {
+      "need": "Entities with images or many states",
+      "use": "a grid of Card"
+    }
+  ],
+  "a11y": [
+    "Real <table> semantics; a clickable TR is reachable by keyboard (Enter)."
+  ],
+  "examples": [
+    {
+      "file": "orders",
+      "title": "Orders"
+    }
+  ]
+}

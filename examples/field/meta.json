@@ -1,0 +1,51 @@
+{
+  "title": "Field, Input, Textarea",
+  "group": "Forms",
+  "description": "Field gives any control a label, a hint and an error, wired for screen readers. Input and Textarea are the standard text controls (bg-field, h-field).",
+  "components": [
+    "Field",
+    "Input",
+    "Textarea"
+  ],
+  "when": [
+    "Every form control: wrap it in Field instead of writing a <label>.",
+    "Text, email, password, search inside forms; multi-line notes."
+  ],
+  "instead": [
+    {
+      "need": "Numbers with a touch keypad",
+      "use": "NumberInput"
+    },
+    {
+      "need": "A date",
+      "use": "DatePicker"
+    },
+    {
+      "need": "Pick from a list",
+      "use": "CustomSelect or CustomCombobox"
+    },
+    {
+      "need": "Filter a list in a toolbar",
+      "use": "SearchInput"
+    }
+  ],
+  "a11y": [
+    "Field links label (htmlFor), hint and error (aria-describedby) and sets aria-invalid on error.",
+    "The error is announced when it appears; required adds a visible mark and aria-required."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "Label and hint"
+    },
+    {
+      "file": "validation",
+      "title": "Error and required",
+      "description": "Pass error to show the message under the control and mark it invalid."
+    },
+    {
+      "file": "textarea",
+      "title": "Textarea"
+    }
+  ]
+}

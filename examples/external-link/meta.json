@@ -1,0 +1,30 @@
+{
+  "title": "External link",
+  "group": "Actions",
+  "description": "A link to another site: opens a new tab on desktop and the external browser inside a mobile WebView, with an external-link icon.",
+  "components": [
+    "ExternalLink"
+  ],
+  "when": [
+    "Any link that leaves the app (docs, GitHub, a payment page)."
+  ],
+  "instead": [
+    {
+      "need": "A page inside the app",
+      "use": "next/link"
+    },
+    {
+      "need": "An action",
+      "use": "Button"
+    }
+  ],
+  "a11y": [
+    "Says it opens in a new tab (visually hidden text) and keeps rel=\"noopener noreferrer\"."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "Basic"
+    }
+  ]
+}

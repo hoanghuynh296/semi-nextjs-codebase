@@ -1,0 +1,20 @@
+{
+  "title": "Date picker",
+  "group": "Forms",
+  "description": "A calendar popover for one date (YYYY-MM-DD), with min / max. Never type=\"date\".",
+  "components": [
+    "DatePicker"
+  ],
+  "when": [
+    "Schedule a job, filter by day, set a due date."
+  ],
+  "a11y": [
+    "Arrow keys move by day / week, Enter picks, Escape closes; give it an ariaLabel when there is no Field."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "Basic"
+    }
+  ]
+}

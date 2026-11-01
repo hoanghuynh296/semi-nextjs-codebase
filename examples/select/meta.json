@@ -1,0 +1,35 @@
+{
+  "title": "Select",
+  "group": "Forms",
+  "description": "CustomSelect: pick one value from a list, in a field, in a toolbar, inline in a row or bare. Never the native <select>.",
+  "components": [
+    "CustomSelect"
+  ],
+  "when": [
+    "One value from a short or medium list (printers, regions).",
+    "A compact sort / group control in a toolbar (variant=\"toolbar\")."
+  ],
+  "instead": [
+    {
+      "need": "A long list the user types into",
+      "use": "CustomCombobox"
+    },
+    {
+      "need": "2–5 visible options",
+      "use": "Pills or RadioGroup"
+    }
+  ],
+  "a11y": [
+    "A listbox button: Enter / Space / arrows open it, type-ahead jumps, Escape closes and returns focus."
+  ],
+  "examples": [
+    {
+      "file": "field",
+      "title": "In a form"
+    },
+    {
+      "file": "toolbar",
+      "title": "In a toolbar"
+    }
+  ]
+}

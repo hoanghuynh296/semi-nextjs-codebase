@@ -1,0 +1,30 @@
+{
+  "title": "Menu",
+  "group": "Overlays",
+  "description": "The overflow menu of a row or card: a ⋯ trigger (or your own) with items, icons, separators and a danger item last.",
+  "components": [
+    "Menu"
+  ],
+  "when": [
+    "Secondary actions of a row or card (Đổi tên, Nhân bản, Xoá)."
+  ],
+  "instead": [
+    {
+      "need": "One or two visible actions",
+      "use": "Button"
+    },
+    {
+      "need": "Pick a value",
+      "use": "CustomSelect"
+    }
+  ],
+  "a11y": [
+    "role=\"menu\": Enter / Space / ↓ open, arrows move, Escape closes and returns focus to the trigger."
+  ],
+  "examples": [
+    {
+      "file": "row-actions",
+      "title": "Row actions"
+    }
+  ]
+}

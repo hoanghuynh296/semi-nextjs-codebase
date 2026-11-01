@@ -1,0 +1,20 @@
+{
+  "title": "Empty state",
+  "group": "Feedback",
+  "description": "What an empty list or page shows: an icon, one short title, a description and the action that fills it.",
+  "components": [
+    "EmptyState"
+  ],
+  "when": [
+    "No items yet, no search results, a feature not set up."
+  ],
+  "a11y": [
+    "The title is a heading; the action is a normal button."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "First item"
+    }
+  ]
+}

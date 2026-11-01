@@ -1,0 +1,22 @@
+{
+  "title": "Page actions",
+  "group": "Navigation & layout",
+  "description": "Lets a page put its actions into a slot of the shared header: PageActionsProvider wraps the layout, PageActionsSlot marks where they render, PageActions sends them from the page.",
+  "components": [
+    "PageActions",
+    "PageActionsProvider",
+    "PageActionsSlot"
+  ],
+  "when": [
+    "A layout owns the header row but the page decides the actions (PageTabsTitle + “+”)."
+  ],
+  "a11y": [
+    "Rendered through a portal into the slot, so tab order follows the header."
+  ],
+  "examples": [
+    {
+      "file": "slot",
+      "title": "Actions in the header slot"
+    }
+  ]
+}

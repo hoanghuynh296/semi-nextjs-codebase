@@ -1,472 +1,98 @@
 # Semi Design System (@semi/ui v0.8.1)
 
-> The shared UI of every Semi app: semantic tokens that work in light and dark mode, React components (Next.js, Tailwind CSS 4) and the rules agents follow. This Storybook shows each component live; this file is its text form.
+> The shared UI of every Semi app: semantic tokens that work in light and dark mode, React components (Next.js, Tailwind CSS 4) and the rules agents follow. Every component has a page with live examples and a markdown twin for agents.
 
-Install `@semi/ui`, import components from `@semi/ui`, class constants from `@semi/ui/styles`, CSS `@semi/ui/tokens.css` + `@semi/ui/base.css`. Before writing UI read QUICK_REF.md; pick components from components.json; never invent local colours, sizes or wrapper components; check with `npx semi-lint`.
+Install `@semi/ui`, import components from `@semi/ui`, class constants from `@semi/ui/styles`, CSS `@semi/ui/tokens.css` + `@semi/ui/base.css`. Before writing UI read QUICK_REF.md; pick the component from docs/components/README.md, read its page, copy an example; never invent local colours, sizes or wrapper components; check with `npx semi-lint`.
 
 ## Machine-readable
 
-- [components.json](./components.json): all 80 components, hooks and constants with props and one-line summaries
+- [components.json](./components.json): all 80 components, hooks and constants with props, summaries and their doc page
+- [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
+- [COMPONENT_DOCS.md](./docs/COMPONENT_DOCS.md): How the component docs are built (examples/, meta.json, generated API) and how agents should use them
 - [ICONS.md](./docs/ICONS.md): Semantic icon guide: which icon means what
 - [BRANDS.md](./docs/BRANDS.md): Brands: brand kits (brand.json → brand.css), the step-by-step flow from a new brand to its first product, which command when
-- [STYLES.md](./docs/STYLES.md): Styles (Flat, Soft): what each changes, how an app picks one, the radius / shadow tokens
+- [STYLES.md](./docs/STYLES.md): Styles (Flat, Soft, Sharp) and palettes: what each changes, how an app picks one
 - [agent-rules.md](./docs/agent-rules.md): Rules block for a consumer app's AGENTS.md / CLAUDE.md
 - [tokens.css](./docs/tokens.css): Generated design tokens (CSS variables for both themes)
-- [llms-full.txt](./llms-full.txt): this file followed by all the docs above
+- [llms-full.txt](./llms-full.txt): this file followed by all the docs above and every component doc
 
 ## Pages
 
-- [Foundations & Icons](./foundations.html): Surface tokens, the type scale and the searchable icon registry.
-- [Components Showcase](./components.html): Theme switching, toolbars, buttons, form controls, KPI cards, chips, dialogs and skeletons.
-- [Primitives & Forms](./primitives.html): Button, Field, choices, Tabs, Tooltip, Menu, Drawer, Toast, Alert, Progress, Table, EmptyState, locale.
-- [Layout Patterns](./patterns.html): Page tabs and header actions, the tool-app header, SidePanel, Markdown and skeleton layouts.
-- [AI Chat](./chat.html): The standard AI chat panel (AIChat), its parts and the provider / model / effort picker.
-- [Brand preview](./brand.html): Preview a brand (primary, neutrals, styles, fonts) on every page before creating its brand kit; contrast report.
-
-## Foundations & Icons (./foundations.html)
-
-### Surfaces & tokens (./foundations.html#surfaces)
-
-Every background, text and border colour: semantic tokens that switch with the theme, never palette classes.
-
-```tsx
-<div className="bg-canvas">            {/* app frame */}
-  <main className="bg-app">           {/* content area */}
-    <section className="bg-panel border border-line rounded-card">   {/* card */}
-      <h2 className="text-contrast">Title</h2>
-      <p className="text-body">Body</p>
-      <span className="text-muted">Caption</span>
-      <input className="bg-field" />   {/* or FIELD_INPUT */}
-    </section>
-  </main>
-</div>
-// Status: bg-danger-bg border-danger-border text-danger-fg (success / warning / info), bg-*-solid for dots and bars
-```
-
-### Type scale (./foundations.html#typography)
-
-All text sizes; font-medium / font-semibold only, sentence case, tabular-nums for numbers.
-
-```tsx
-text-caption 11 · text-label 12 · text-ui 13 (default UI) · text-ui-lg 14 · text-title 15 · text-title-lg 16
-text-kpi 18 / sm:text-heading 22 (KpiCard) · text-heading 22 / sm:text-display 26 (PageTitle)
-// no Tailwind text-xs / text-sm / text-base and no arbitrary pixel sizes
-```
-
-### Icon registry (./foundations.html#icons)
-
-Every icon; pick by meaning from docs/ICONS.md (trash = delete, close = dismiss, refresh = sync).
-
-```tsx
-import { Icon, IconTile } from "@semi/ui";
-
-<Icon name="refresh" className="w-4 h-4" />
-<IconTile name="printer" tone="green" size="md" />
-```
-
-## Components Showcase (./components.html)
-
-### Theme (light · dark · system) (./components.html#theme)
-
-Theme setup of every app: applied before paint, stored, follows the OS on system.
-
-```tsx
-// app/layout.tsx
-import { ThemeScript, ThemeProvider, ToastHost, ConfirmHost } from "@semi/ui";
-
-<html lang="vi" suppressHydrationWarning>
-  <head><ThemeScript /></head>
-  <body className="bg-canvas text-body">
-    <ThemeProvider>{children}<ToastHost /><ConfirmHost /></ThemeProvider>
-  </body>
-</html>
-
-// settings / sidebar footer
-<ThemeSwitcher fullWidth />   // or <ThemeToggle /> in a collapsed rail
-```
-
-### SubpageToolbar (./components.html#subpage-toolbar)
-
-The sticky toolbar of a list page: filters left; add + search + refresh right.
-
-```tsx
-import { SubpageToolbar, Pills } from "@semi/ui";
-
-<SubpageToolbar
-  left={<Pills value={filter} onChange={setFilter} options={[{ key: "all", label: "Tất cả" }, { key: "printing", label: "Đang in" }]} />}
-  onPrimaryAction={openCreate}
-  primaryActionLabel="Thêm máy in"
-  searchValue={q}
-  onSearchChange={setQ}
-  onRefresh={reload}
-/>
-```
-
-### Buttons (./components.html#buttons)
-
-Actions: one primary per area, secondary for the rest, danger for destructive, icon-only with aria-label.
-
-```tsx
-import { Button } from "@semi/ui";
-
-<Button variant="primary" icon="play" onClick={start}>Bắt đầu in</Button>
-<Button icon="edit">Sửa</Button>
-<Button variant="danger" icon="trash">Xoá</Button>
-<Button iconOnly icon="plus" aria-label="Thêm" />
-<Button variant="primary" loading={saving}>Lưu</Button>
-// class form: BTN_PRIMARY / BTN_SECONDARY / BTN_DANGER / BTN_GHOST (+ BTN_SM, BTN_ICON) from @semi/ui/styles
-```
-
-### Form controls (./components.html#form-controls)
-
-Selects, comboboxes, numbers and dates: never the browser's own select, number or date inputs.
-
-```tsx
-import { Field, CustomSelect, CustomCombobox, NumberInput, DatePicker, Input } from "@semi/ui";
-
-<Field label="Máy in"><CustomSelect variant="field" value={printer} onChange={setPrinter} options={printers} /></Field>
-<Field label="Vật liệu"><CustomCombobox value={mat} onChange={setMat} options={materials} /></Field>
-<Field label="Nhiệt độ"><NumberInput value={temp} onChange={(e) => setTemp(e.target.value)} unit="°C" integer /></Field>
-<DatePicker value={date} onChange={setDate} ariaLabel="Ngày in" />
-<Field label="Tên bản in" hint="Hiện trên thẻ"><Input value={name} onChange={(e) => setName(e.target.value)} /></Field>
-```
-
-### KPI cards & Pagination (./components.html#kpi)
-
-Headline numbers of a dashboard (tabular-nums, shimmer while loading) and paged lists.
-
-```tsx
-import { KpiCard, Pagination } from "@semi/ui";
-
-<KpiCard label="Tổng sản lượng" value="1.842" sub="+12.4% so với tuần trước" icon="box" tone="good" loading={loading} />
-<Pagination page={page} pages={8} onChange={setPage} />
-```
-
-### Chips & badges (./components.html#chips)
-
-Badge = read-only status / tag; Chip = on-off filter; Pills = single choice.
-
-```tsx
-import { Badge, Chip } from "@semi/ui";
-
-<Badge tone="emerald" dot>Hoàn thành</Badge>
-<Badge tone="amber" icon="clock">Đang xử lý</Badge>
-<Chip active={on} onClick={() => setOn(!on)} tone="purple">Bambu Lab PLA</Chip>
-```
-
-### Modal & confirmDialog (./components.html#dialogs)
-
-Dialogs (full screen on phones) and confirmations: never window.confirm / alert.
-
-```tsx
-import { Modal, Button, confirmDialog } from "@semi/ui";
-
-<Modal open={open} onClose={close} title="Sửa máy in" footer={<Button size="modal" variant="primary" onClick={save}>Lưu</Button>}>
-  …form…
-</Modal>
-
-if (await confirmDialog({ title: "Xoá máy in?", message: "Không thể hoàn tác.", confirmLabel: "Xoá", tone: "danger" })) remove();
-```
-
-### Skeletons (./components.html#skeletons)
-
-Loading states: shimmer shapes of the real layout, never loading text or page spinners.
-
-```tsx
-import { Loading, SkeletonCard, SkeletonRows, SkeletonGrid } from "@semi/ui";
-
-{loading ? <SkeletonGrid count={3} className="grid md:grid-cols-3 gap-3" /> : <Cards />}
-<Loading><SkeletonRows count={5} /></Loading>   {/* Loading announces the region (role=status) */}
-```
-
-## Primitives & Forms (./primitives.html)
-
-### Button & Spinner (./primitives.html#button)
-
-The component form of the button classes; Spinner only inside the control running an action.
-
-```tsx
-import { Button, Spinner } from "@semi/ui";
-
-<Button variant="primary" size="md" icon="check">Lưu</Button>
-<Button size="sm" variant="ghost">Xem thêm</Button>
-<Button size="modal" variant="secondary">Huỷ</Button>
-<Spinner label="Đang lưu" />
-```
-
-### Field · Input · Textarea (./primitives.html#field)
-
-Any labelled input: label, hint and error are wired for screen readers automatically.
-
-```tsx
-import { Field, Input, Textarea } from "@semi/ui";
-
-<Field label="Tên máy in" hint="Hiện trên thẻ" error={errors.name} required>
-  <Input icon="printer" value={name} onChange={(e) => setName(e.target.value)} />
-</Field>
-<Field label="Ghi chú"><Textarea rows={3} value={note} onChange={(e) => setNote(e.target.value)} /></Field>
-```
-
-### Checkbox · Switch · RadioGroup (./primitives.html#choice)
-
-Booleans and single choice with labels and descriptions; Switch for settings that apply at once.
-
-```tsx
-import { Checkbox, Switch, RadioGroup } from "@semi/ui";
-
-<Checkbox checked={auto} onChange={setAuto} label="Tự động in khi rảnh" description="Máy nhận job tiếp theo" />
-<Switch checked={notify} onChange={setNotify} label="Thông báo khi in xong" />
-<RadioGroup label="Gói dịch vụ" value={plan} onChange={setPlan}
-  options={[{ value: "free", label: "Free" }, { value: "pro", label: "Pro", description: "Tối đa 10 máy" }]} />
-```
-
-### Tabs (./primitives.html#tabs)
-
-Switching views inside a card or page section (←/→, Home, End); segmented for compact toggles.
-
-```tsx
-import { Tabs } from "@semi/ui";
-
-<Tabs value={tab} onChange={setTab} items={[
-  { key: "overview", label: "Tổng quan", icon: "gauge", content: <Overview /> },
-  { key: "activity", label: "Hoạt động", count: 12, content: <Activity /> },
-]} />
-<Tabs variant="segmented" value={range} onChange={setRange} items={[{ key: "day", label: "Ngày" }, { key: "week", label: "Tuần" }]} />
-```
-
-### Tooltip · Menu · Drawer · Toast (./primitives.html#overlay)
-
-Hints on icon buttons, overflow actions, side sheets for secondary tasks, and transient feedback.
-
-```tsx
-import { Tooltip, Menu, Drawer, toast } from "@semi/ui";
-
-<Tooltip content="Làm mới"><Button iconOnly icon="refresh" aria-label="Làm mới" /></Tooltip>
-<Menu items={[{ label: "Đổi tên", icon: "edit", onSelect: rename }, { label: "Xoá", icon: "trash", danger: true, onSelect: remove }]} />
-<Drawer open={open} onClose={close} title="Bộ lọc">…</Drawer>
-toast({ tone: "success", title: "Đã lưu" });   // <ToastHost /> mounted once in the root layout
-```
-
-### Alert · Progress (./primitives.html#alert)
-
-Callouts inside a page (status tint + icon + optional action) and determinate / indeterminate progress.
-
-```tsx
-import { Alert, Progress, Button } from "@semi/ui";
-
-<Alert tone="warning" title="Sắp hết nhựa" action={<Button size="sm">Đặt thêm</Button>}>Cuộn PLA còn 80 g.</Alert>
-<Progress label="Tiến độ in" value={64} showValue />
-<Progress label="Đang xử lý" />   {/* no value = indeterminate */}
-```
-
-### Table · Avatar · Badge (./primitives.html#table)
-
-Rows compared column by column; cells stay on one line and the table scrolls sideways on phones.
-
-```tsx
-import { Table, THead, TBody, TR, TH, TD, Avatar, Badge } from "@semi/ui";
-
-<Table>
-  <THead><TR><TH>Mã đơn</TH><TH>Khách hàng</TH><TH align="right">Tổng</TH></TR></THead>
-  <TBody>
-    {rows.map((r) => (
-      <TR key={r.id} onClick={() => open(r)}>
-        <TD>{r.code}</TD>
-        <TD><Avatar name={r.customer} size="sm" /> {r.customer}</TD>
-        <TD numeric>{r.total}</TD>
-      </TR>
-    ))}
-  </TBody>
-</Table>
-```
-
-### EmptyState (./primitives.html#empty)
-
-An empty list or first run: icon, one line, optional description and the action that adds the first item.
-
-```tsx
-import { EmptyState, Button } from "@semi/ui";
-
-<EmptyState icon="printer" title="Chưa có máy in nào" description="Thêm máy in đầu tiên để theo dõi tiến độ."
-  action={<Button variant="primary" icon="plus" onClick={add}>Thêm máy in</Button>} />
-```
-
-### Locale (SemiLocaleProvider) (./primitives.html#locale)
-
-UI strings of the shared components: Vietnamese by default, English shipped, any key overridable.
-
-```tsx
-import { SemiLocaleProvider, en } from "@semi/ui";
-
-<SemiLocaleProvider locale={en}>{children}</SemiLocaleProvider>
-<SemiLocaleProvider locale={{ close: "Đóng lại" }}>…</SemiLocaleProvider>   // partial override
-```
-
-## Layout Patterns (./patterns.html)
-
-### PageTabsTitle · PageActions (./patterns.html#page-tabs)
-
-2–4 sibling pages under one title; the page's buttons go to the header slot.
-
-```tsx
-import { PageTabsTitle, PageActions, Button } from "@semi/ui";
-
-<PageTabsTitle tabs={[{ key: "printers", label: "Máy in" }, { key: "jobs", label: "Job in" }]} value={view} onChange={setView} />
-<PageActions><Button variant="primary" iconOnly icon="plus" aria-label="Thêm máy in" /></PageActions>
-```
-
-### AppHeader (tool apps) (./patterns.html#app-header)
-
-Top bar of a stand-alone tool / 3D app: logo + title go home, one primary action on the right.
-
-```tsx
-import { AppHeader, headerPrimary } from "@semi/ui";
-
-<AppHeader title="Phối màu" productName="3D Noobs" logoIcon="palette" homeHref="/">
-  <button className={headerPrimary(ready)} onClick={done}>Xong</button>
-</AppHeader>
-```
-
-### SidePanel (./patterns.html#side-panel)
-
-The left settings panel of a tool app (320px), collapsing to a thin rail.
-
-```tsx
-import { SidePanel, SidePanelToggle } from "@semi/ui";
-
-<div className="h-full flex">
-  <SidePanel collapsed={collapsed} onToggleCollapse={() => setCollapsed(!collapsed)}>
-    <SidePanelToggle onClick={() => setCollapsed(true)} /> …settings…
-  </SidePanel>
-  <div className="flex-1 min-w-0">…canvas…</div>
-</div>
-```
-
-### Markdown (AI text) (./patterns.html#markdown)
-
-Any AI-written text: paragraphs, lists, bold, code and links (ExternalLink); never raw strings.
-
-```tsx
-import { Markdown } from "@semi/ui";
-
-<Markdown text={answer} />
-```
-
-### Skeletons (./patterns.html#layout-skeletons)
-
-Page-level loading shapes that match the layout being loaded.
-
-```tsx
-import { Loading, PageSkeleton, SkeletonGrid } from "@semi/ui";
-
-<Loading><PageSkeleton /></Loading>
-<SkeletonGrid count={3} className="grid grid-cols-1 md:grid-cols-3 gap-3" />
-```
-
-## AI Chat (./chat.html)
-
-### AIChat (workspace panel) (./chat.html#ai-chat)
-
-Every AI conversation. UI only: the app keeps the messages, streams the answer and owns the provider / model lists.
-
-```tsx
-import { AIChat, ChatIntro, ChatSuggestions, ChatSuggestion, ChatModelPicker, type ChatItem } from "@semi/ui";
-
-<div className="relative">   {/* the panel fills the nearest positioned parent; placement="screen" covers the page */}
-  <AIChat
-    title="Trợ lý AI"
-    shown={open}
-    onClose={() => setOpen(false)}
-    messages={messages}            // ChatItem[]: { id, role, content (Markdown), pending?, error?, failed? }
-    busy={streaming}
-    onSend={ask}
-    onStop={abort}
-    onRetry={retry}
-    onNewChat={reset}
-    toolbar={
-      <ChatModelPicker
-        providers={providers}      // [{ value, label, icon: <logo /> }]: shown when more than one
-        provider={provider} onProviderChange={setProvider}
-        models={models} model={model} onModelChange={setModel}
-        efforts={efforts} effort={effort} onEffortChange={setEffort}   // only when the model takes one
-      />
-    }
-    empty={
-      <>
-        <ChatIntro title="Hỏi gì về bản in?">Trợ lý biết máy in và cài đặt của bạn.</ChatIntro>
-        <ChatSuggestions label="Gợi ý">
-          <ChatSuggestion onClick={() => ask("Vì sao PETG bị kéo sợi?")}>Vì sao PETG bị kéo sợi?</ChatSuggestion>
-        </ChatSuggestions>
-      </>
-    }
-  />
-</div>
-```
-
-### Parts (./chat.html#chat-parts)
-
-Compose a custom chat (e.g. inside a settings tab) from the same parts AIChat uses.
-
-```tsx
-import { ChatPanel, ChatView, ChatComposer, UserMessage, AssistantMessage, ChatAnswer, ChatError,
-  ChatThinking, ChatCopyButton, Markdown } from "@semi/ui";
-
-<ChatPanel title="Trợ lý AI" onClose={close} onNewChat={messages.length ? reset : undefined}>
-  <ChatView busy={busy} empty={!messages.length}
-    composer={<ChatComposer value={text} onChange={setText} onSend={ask} busy={busy} onStop={abort} toolbar={picker} />}>
-    <UserMessage>Vì sao bản in bị kéo sợi?</UserMessage>
-    <AssistantMessage busy={busy} actions={<ChatCopyButton text={answer} />}>
-      {answer ? <Markdown text={answer} /> : <ChatThinking />}
-    </AssistantMessage>
-    <ChatError onRetry={retry}>Không kết nối được tới model.</ChatError>
-  </ChatView>
-</ChatPanel>
-```
-
-## Brand preview (./brand.html)
-
-### Brand choices (brand.json) (./brand.html#brand-choices)
-
-The few decisions a brand makes, once, in its own brand kit repo (docs/BRANDS.md). Products never pick colours or fonts.
-
-```tsx
-// brand.json of the kit repo (e.g. github:3dnoobs/brand)
-{
-  "name": "3D Noobs",
-  "package": "@3dnoobs/brand",
-  "primary": "#00AE42",
-  "secondary": null,
-  "neutral": "tinted",
-  "styles": { "default": "flat", "allowed": ["flat", "soft"] },
-  "fonts": { "sans": "Geist", "display": "Montserrat Alternates" }
-}
-
-// create / change it with the plugin, then build the kit
-/semi-brand            // in the brand kit repo
-npm run build          // semi-brand build → dist/brand.css, dist/brand.json, BRAND.md, AGENTS.brand.md
-```
-
-### What Semi derives (./brand.html#brand-result)
-
-Scales, accent / on-accent shades of both themes and the neutrals of every allowed style, checked for WCAG AA. A product only installs the kit.
-
-```tsx
-// a product of the brand
-/semi-init --brand github:3dnoobs/brand
-
-/* app/globals.css (written by /semi-init) */
-@import "@semi/ui/tokens.css";
-@import "@semi/ui/base.css";
-@import "@3dnoobs/brand/dist/brand.css";
-
-// semi-lint.json: "brand": "@3dnoobs/brand" → brand-override blocks local colour / font tokens
-
-// in code: semantic tokens only
-<Button variant="primary">Lưu</Button>
-<span className="text-accent-fg">…</span>
-```
+- [Introduction](./): what Semi is, install, resources for agents
+- [Components](./components/): every component with a live example
+- [Foundations](./foundations/): surface tokens, type scale, icon registry
+- [Brand preview](./brand/): preview a brand on every page before creating its kit
+
+## Components
+
+### Actions
+
+- [Button](./components/button/) ([markdown](./docs/components/button.md)): The action control: one primary per area, secondary for the rest, danger for destructive actions, ghost for quiet ones. Spinner shows work in progress inside the control that runs it. Components: Button, Spinner.
+- [Chip](./components/chip/) ([markdown](./docs/components/chip.md)): A pill-shaped toggle for filters and tags. Neutral when off; active uses the high-contrast surface, with colour only on its dot or icon (tone). Components: Chip.
+- [External link](./components/external-link/) ([markdown](./docs/components/external-link.md)): A link to another site: opens a new tab on desktop and the external browser inside a mobile WebView, with an external-link icon. Components: ExternalLink.
+- [Pills](./components/pills/) ([markdown](./docs/components/pills.md)): A single-choice filter of 2–5 options on one track (segmented look). The left side of a SubpageToolbar. Components: Pills.
+
+### Forms
+
+- [Checkbox](./components/checkbox/) ([markdown](./docs/components/checkbox.md)): A native checkbox with label and description, checked fill in the accent, and an indeterminate state for “select all”. Components: Checkbox.
+- [Combobox](./components/combobox/) ([markdown](./docs/components/combobox.md)): CustomCombobox: type to filter a long list, then pick one value. Components: CustomCombobox.
+- [Date picker](./components/date-picker/) ([markdown](./docs/components/date-picker.md)): A calendar popover for one date (YYYY-MM-DD), with min / max. Never type="date". Components: DatePicker.
+- [Field, Input, Textarea](./components/field/) ([markdown](./docs/components/field.md)): Field gives any control a label, a hint and an error, wired for screen readers. Input and Textarea are the standard text controls (bg-field, h-field). Components: Field, Input, Textarea.
+- [Number input](./components/number-input/) ([markdown](./docs/components/number-input.md)): NumberInput: numbers with a touch keypad (NumPadPopup) on phones and tablets, plain typing elsewhere. Never type="number". Components: NumberInput, NumPadPopup.
+- [Radio group](./components/radio-group/) ([markdown](./docs/components/radio-group.md)): Exactly one option of a few, each with an optional description; vertical by default. Components: RadioGroup.
+- [Search input](./components/search-input/) ([markdown](./docs/components/search-input.md)): The toolbar search field: icon, clear button, h-control height. SubpageToolbar includes one. Components: SearchInput.
+- [Select](./components/select/) ([markdown](./docs/components/select.md)): CustomSelect: pick one value from a list, in a field, in a toolbar, inline in a row or bare. Never the native <select>. Components: CustomSelect.
+- [Switch](./components/switch/) ([markdown](./docs/components/switch.md)): An on / off toggle for settings that apply immediately. Components: Switch.
+
+### Overlays
+
+- [Confirm dialog](./components/confirm-dialog/) ([markdown](./docs/components/confirm-dialog.md)): confirmDialog() asks one yes / no question and resolves to true or false. Mount ConfirmHost once in the root layout. Never window.confirm. Components: ConfirmHost.
+- [Drawer](./components/drawer/) ([markdown](./docs/components/drawer.md)): A panel that slides in from the right, left or bottom, with title and footer; a sheet on phones. Components: Drawer.
+- [Menu](./components/menu/) ([markdown](./docs/components/menu.md)): The overflow menu of a row or card: a ⋯ trigger (or your own) with items, icons, separators and a danger item last. Components: Menu.
+- [Modal](./components/modal/) ([markdown](./docs/components/modal.md)): The shared dialog: full screen on phones, a centred panel from sm up, with title, description, body and footer. Focus is trapped and returns to the opener. Components: Modal.
+- [Toast](./components/toast/) ([markdown](./docs/components/toast.md)): toast() shows a short message after an action, with a tone and an optional action (Hoàn tác). Mount ToastHost once in the root layout. Components: ToastHost.
+- [Tooltip](./components/tooltip/) ([markdown](./docs/components/tooltip.md)): A short label on hover or focus, mostly for icon-only buttons. Components: Tooltip.
+
+### Navigation & layout
+
+- [App header](./components/app-header/) ([markdown](./docs/components/app-header.md)): The top bar of a stand-alone tool app: logo + title go home, the module name, and one primary action on the right. No Home button. Components: AppHeader.
+- [App shell](./components/app-shell/) ([markdown](./docs/components/app-shell.md)): The frame of a multi-page app: a floating bento sidebar (w-52, collapses to a w-14 icon rail) on bg-canvas, the content panel beside it, and MobileTabBar at the bottom on phones. This docs site is an AppShell. Components: AppShell, MobileTabBar.
+- [Page actions](./components/page-actions/) ([markdown](./docs/components/page-actions.md)): Lets a page put its actions into a slot of the shared header: PageActionsProvider wraps the layout, PageActionsSlot marks where they render, PageActions sends them from the page. Components: PageActions, PageActionsProvider, PageActionsSlot.
+- [Page title](./components/page-title/) ([markdown](./docs/components/page-title.md)): PageTitle is the large display title of a page (text only). PageTabsTitle turns it into 2–4 underline tabs for sibling pages. Components: PageTitle, PageTabsTitle.
+- [Pagination](./components/pagination/) ([markdown](./docs/components/pagination.md)): Page numbers with previous / next for long tables. For card lists prefer auto-loading with “Xem thêm”. Components: Pagination.
+- [Side panel](./components/side-panel/) ([markdown](./docs/components/side-panel.md)): A 320px tool panel beside a canvas that collapses to a 48px rail; SidePanelToggle is its collapse button. Components: SidePanel, SidePanelToggle.
+- [Subpage toolbar](./components/subpage-toolbar/) ([markdown](./docs/components/subpage-toolbar.md)): The sticky row under a page title: filters on the left; search, refresh and the icon-only primary action on the right. RefreshButton spins while its promise runs. Components: SubpageToolbar, RefreshButton.
+- [Tabs](./components/tabs/) ([markdown](./docs/components/tabs.md)): Switch between panels of content inside a page or card: underline (default) or segmented, with icons and counts. Components: Tabs.
+
+### Data display
+
+- [Avatar](./components/avatar/) ([markdown](./docs/components/avatar.md)): A person or team: their image, or initials on a tone picked from the name. Components: Avatar.
+- [Badge](./components/badge/) ([markdown](./docs/components/badge.md)): A read-only status or tag in a tone (10% fill, 20% border, theme-safe text), with an optional dot or icon. Components: Badge.
+- [Card](./components/card/) ([markdown](./docs/components/card.md)): The bento content card: panel fill and the style's card border, radius and resting shadow. interactive adds hover / press, active marks the selected or running item. Components: Card.
+- [Icon](./components/icon/) ([markdown](./docs/components/icon.md)): The semantic icon registry (stroke 1.75, 24px grid). IconTile is the rounded tinted square that leads cards and dialogs. Components: Icon, IconTile.
+- [KPI card](./components/kpi-card/) ([markdown](./docs/components/kpi-card.md)): A metric card: label, a large tabular figure, a sub line coloured good / danger, and an icon in its tone. Components: KpiCard.
+- [Markdown](./components/markdown/) ([markdown](./docs/components/markdown.md)): Renders AI or user text safely: paragraphs, lists, bold, inline code and links (as ExternalLink). No HTML. Components: Markdown.
+- [Table](./components/table/) ([markdown](./docs/components/table.md)): A dense table for rows compared column by column. Cells stay on one line (the table scrolls sideways on phones); TD wrap for a long-text column, numeric for figures. Components: Table, THead, TBody, TR, TH, TD.
+
+### Feedback
+
+- [Alert](./components/alert/) ([markdown](./docs/components/alert.md)): A message that stays on the page: info, success, warning, danger, with a title, an action and an optional dismiss. Components: Alert.
+- [Empty state](./components/empty-state/) ([markdown](./docs/components/empty-state.md)): What an empty list or page shows: an icon, one short title, a description and the action that fills it. Components: EmptyState.
+- [Progress](./components/progress/) ([markdown](./docs/components/progress.md)): A determinate bar with value, or an indeterminate one when the end is unknown; tones for success and danger. Components: Progress.
+- [Skeleton](./components/skeleton/) ([markdown](./docs/components/skeleton.md)): Shimmer placeholders while content loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton; Loading announces the region. Never “Đang tải…” text. Components: Skeleton, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton, Loading.
+
+### AI
+
+- [AI chat](./components/ai-chat/) ([markdown](./docs/components/ai-chat.md)): AIChat is the ready-made assistant panel: ChatPanel (side panel or full screen, resizable, keyboard inset) around ChatView (list + composer). UI only: the app keeps the messages, streams the answer and calls the model. Components: AIChat, ChatPanel, ChatView.
+- [Chat messages](./components/chat-messages/) ([markdown](./docs/components/chat-messages.md)): The parts of a conversation, to compose your own chat: UserMessage, AssistantMessage (+ ChatAnswer for a ChatItem), ChatThinking, ChatError, ChatCopyButton, ChatAvatar, ChatIntro, ChatSuggestion(s), ChatList and ChatComposer. Components: UserMessage, AssistantMessage, ChatAnswer, ChatAvatar, ChatCopyButton, ChatError, ChatThinking, ChatIntro, ChatSuggestion, ChatSuggestions, ChatList, ChatComposer.
+- [Chat model picker](./components/chat-model-picker/) ([markdown](./docs/components/chat-model-picker.md)): Provider → model → effort chips, for the toolbar of a chat composer. The lists are app data. Components: ChatModelPicker.
+
+### Setup
+
+- [Locale](./components/locale/) ([markdown](./docs/components/locale.md)): SemiLocaleProvider sets the UI strings of every Semi component (Vietnamese by default, English shipped, override any string). Components: SemiLocaleProvider.
+- [Theme](./components/theme/) ([markdown](./docs/components/theme.md)): Light / dark / system: ThemeScript applies the stored theme before paint, ThemeProvider keeps it, ThemeSwitcher (three-way) and ThemeToggle switch it. data-theme on any element re-scopes every token inside it. Components: ThemeProvider, ThemeScript, ThemeSwitcher, ThemeToggle.
 
 
 ---
@@ -475,7 +101,8 @@ Scales, accent / on-accent shades of both themes and the neutrals of every allow
 
 # Semi Design System — Quick Reference
 
-Cheatsheet of `DESIGN_SYSTEM.md`, which is the **single source of truth for UI rules** across the Semi ecosystem: a new
+Component pages for agents: `docs/components/README.md` → `docs/components/<id>.md` (when to use, what instead, examples,
+API from the types). Cheatsheet of `DESIGN_SYSTEM.md`, which is the **single source of truth for UI rules** across the Semi ecosystem: a new
 or changed rule goes into `docs/DESIGN_SYSTEM.md`, `docs/QUICK_REF.md`, `docs/DECISIONS.md` (+ `lint/semi-lint.mjs` when
 checkable) in the `semi-nextjs-codebase` repo, tagged with a new release. Never record UI rules in agent memory, skills
 or per-project `AGENTS.md`.
@@ -1239,6 +866,60 @@ The history of decisions is in `DECISIONS.md`.
 
 ---
 
+<!-- docs/COMPONENT_DOCS.md -->
+
+# Component docs (agent first)
+
+Every Semi component is documented the same way, for people and agents at once, from one source that cannot drift.
+
+## For agents: how to use them
+
+1. Find the component in `node_modules/@semi/ui/docs/components/README.md` (by group, with "when to use").
+2. Read its page `node_modules/@semi/ui/docs/components/<id>.md`: what it is, when to use it and **what to use
+   instead**, the import line, examples, the API table (types, defaults, required props), accessibility.
+3. Copy the closest example: every example is a real file (`node_modules/@semi/ui/examples/<id>/<example>.tsx`) that
+   type-checks against the release you have, with imports from `@semi/ui` only.
+4. Check with `npx semi-lint`.
+
+The same pages are on the docs site (`/components/<id>/`, with live previews and a "Copy page" button that copies the
+markdown) and in `llms.txt` / `llms-full.txt`. `components.json` links each component to its page (`doc`).
+
+## For maintainers: how they are built
+
+```
+examples/<id>/meta.json        hand-written: title, group, description, components, when, instead, a11y, notes,
+                               imports (extra names for the import line), examples [{ file, title, description, preview }]
+examples/<id>/<file>.tsx       one example per file: `export default function Name()`, imports from "@semi/ui" only
+        │  npm run build:manifest (scripts/build-docs.mjs)
+        ▼
+examples/registry.generated.ts what the docs site renders (site/): meta + example code + the component itself + API
+docs/components/<id>.md        the agent page (also public/docs/components/<id>.md)
+docs/components/README.md      the index
+```
+
+- **API tables come from the TypeScript types** of `src/` (props this library declares, their types, defaults from
+  the destructuring, TSDoc comments, required flags across union props). Write TSDoc on props: it is the description.
+- `check:manifest` fails when a generated file is stale, an example imports something `@semi/ui` does not export or a
+  relative path, an example has no default export, a meta names a component that does not exist, or **a component
+  has no doc**. `npm run typecheck` type-checks every example.
+- `preview: "none"` shows an example as code only (it fills the viewport: AppShell, a root layout).
+- Groups: Actions, Forms, Overlays, Navigation & layout, Data display, Feedback, AI, Setup.
+- `site/` (`@semi/ui/site`) is the docs UI: `DocsShell` (AppShell with the component menu), `ComponentPage`,
+  `ComponentIndex`, `ExampleBlock`, `CodeBlock`. The Semi docs (`app/`) and every brand kit's preview site
+  (`brand/preview`) render it, so a brand sees every component in its colours.
+
+### Adding a component
+
+1. The component in `src/` with typed props and TSDoc, exported from `src/index.ts`.
+2. `examples/<id>/meta.json` + at least one example (usually 2–4: the default, variants, states, a real composition).
+   `when` and `instead` matter most: they are how an agent picks the right component.
+3. Mention it in `docs/DESIGN_SYSTEM.md` (§16 / §17), `CHANGELOG.md`.
+4. `npm run build:manifest && npm run check`, then `npm run build:storybook && npm run test:ui` (every doc page is
+   checked for contrast in both themes, axe and phone width).
+
+
+---
+
 <!-- docs/ICONS.md -->
 
 # Semi Design System — Icon Registry & Semantic Guide
@@ -1662,7 +1343,8 @@ và Next.js (cho trang preview), sinh `dist/`.
 
 Agent chạy trang preview **của chính repo brand** (`npm run preview`) và gửi link local:
 **http://localhost:4600**. Trang dựng bằng `@semi/ui` thật cùng `brand.css` của kit: màu, chữ, nút & form, thẻ, bảng,
-thông báo… trong màu 3D Noobs, đổi sáng / tối ở chân menu và giữa các style được phép, kèm bảng điểm đọc rõ.
+thông báo… trong màu 3D Noobs, đổi sáng / tối ở chân menu và giữa các style được phép, kèm bảng điểm đọc rõ. Trang
+gồm phần tổng quan thương hiệu và **toàn bộ component của Semi** (cùng các trang như docs của Semi: ví dụ, code, API).
 
 👉 *Bạn làm:* mở link, nhìn và nói điều muốn đổi ("màu chính đậm hơn", "dùng màu trung tính có sẵn"). *Agent làm:* sửa
 `brand.json`, sinh lại; trang đang mở tự cập nhật.
@@ -1898,7 +1580,7 @@ with `data-style` re-styles only its subtree (used by Storybook previews), not s
 
 All web UI in the Semi ecosystem MUST follow the **Semi Design System** (`@semi/ui`, repo `https://github.com/hoanghuynh296/semi-nextjs-codebase`).
 
-1. **Single source of truth:** Read `node_modules/@semi/ui/docs/QUICK_REF.md` (and `node_modules/@semi/ui/docs/DESIGN_SYSTEM.md` for details) before editing any UI file. Do not invent local colour classes, font sizes, radii, or custom wrapper barrels (`components/ui.tsx`).
+1. **Single source of truth:** Read `node_modules/@semi/ui/docs/QUICK_REF.md` (and `node_modules/@semi/ui/docs/DESIGN_SYSTEM.md` for details) before editing any UI file. Pick components from `node_modules/@semi/ui/docs/components/README.md`, read the component's page (`docs/components/<id>.md`: when to use, what to use instead, API, accessibility) and start from one of its examples (`node_modules/@semi/ui/examples/<id>/*.tsx`). Do not invent local colour classes, font sizes, radii, or custom wrapper barrels (`components/ui.tsx`).
 2. **Use `@semi/ui` and `@semi/ui/styles` directly:**
    - **Layout & Page Structure (`@semi/ui`):** `AppShell` (floating 2-panel Bento frame on `bg-canvas` with collapsible `w-52`/`w-14` sidebar and `MobileTabBar` on phones — never use a fixed `border-r` or `-translate-x-full` hamburger `<aside>`), `PageTitle` / `PageTabsTitle` (text-only display title or underline group tabs — never place text buttons on the title row), `SubpageToolbar` (`STICKY_TOOLBAR` with filters left and icon-only `BTN_PRIMARY BTN_ICON` + `SearchInput` + `RefreshButton` right), `KpiCard` (`18px–22px` tabular-nums metric card), `Modal` (shared portal dialog with `MODAL_HEAD` + `MODAL_FOOT`), `ThemeScript` (in `<head>`, with `<html suppressHydrationWarning>`) + `ThemeProvider` / `ThemeSwitcher` / `ThemeToggle` (dual-theme Dark/Light/System via `data-theme`), `Card` (`interactive`, `active`; no `bg-*`/`shadow-*` overrides).
    - **Primitives (`@semi/ui`):** `Button` (`variant`, `size`, `icon`, `iconOnly` + `aria-label`, `loading`), `Field` + `Input` / `Textarea` (label, hint, error wired for screen readers), `Checkbox`, `Switch`, `RadioGroup`, `Tabs`, `Tooltip`, `Menu` (overflow actions), `toast()` + `ToastHost`, `Alert`, `Progress`, `Avatar`, `EmptyState`, `Table` (`THead`/`TBody`/`TR`/`TH`/`TD`), `Drawer`, `Spinner`, `SemiLocaleProvider` (UI strings, `vi` default / `en`). Inventory with props: `node_modules/@semi/ui/components.json`.
@@ -1919,3 +1601,3878 @@ All web UI in the Semi ecosystem MUST follow the **Semi Design System** (`@semi/
 6. **Never fork rules per project:** When the user changes a shared UI rule, update `docs/DESIGN_SYSTEM.md`, `docs/QUICK_REF.md`, `docs/DECISIONS.md`, and `lint/semi-lint.mjs` in the `semi-nextjs-codebase` repository and release a new tag — never record shared UI rules only in a consumer project's `AGENTS.md` or agent memory. App-specific patterns belong in the app's own `docs/UI_EXTENSIONS.md`.
 7. **Verification:** Run `npx semi-lint` (or `npm run semi:lint`) before finishing any UI change. For a whole-app check run `/semi-audit` (writes `semi-audit.md`), then `/semi-fix` to fix what it found; `/semi-update` moves to a newer `@semi/ui` and runs that release's migrations (no audit); `/semi-style` switches the style; `/semi-brand` creates or changes a brand kit (in its own repo).
 <!-- semi-design-system:end -->
+
+
+---
+
+<!-- docs/components/button.md -->
+
+# Button
+
+The action control: one primary per area, secondary for the rest, danger for destructive actions, ghost for quiet ones. Spinner shows work in progress inside the control that runs it.
+
+## When to use
+
+- Any action: save, create, refresh, delete, open a dialog.
+- Icon-only toolbar actions (iconOnly + aria-label).
+- Dialog footers (size="modal": 44px touch target on phones).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Go to another page | next/link (styled with BTN_* from @semi/ui/styles when it must look like a button) |
+| Link to another site | ExternalLink |
+| Pick one of 2–5 filters | Pills |
+| Turn a setting on / off | Switch |
+
+## Import
+
+```tsx
+import { Button, Spinner } from "@semi/ui";
+```
+
+## Examples
+
+### Variants
+
+primary for the main action of an area, secondary (default) for the rest, danger for destructive, ghost for quiet actions.
+
+```tsx
+import { Button } from "@semi/ui";
+
+export default function ButtonVariants() {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <Button variant="primary">Lưu</Button>
+      <Button>Huỷ</Button>
+      <Button variant="danger">Xoá</Button>
+      <Button variant="ghost">Xem thêm</Button>
+      <Button disabled>Không khả dụng</Button>
+    </div>
+  );
+}
+```
+
+### Icon and icon-only
+
+icon adds a leading icon; iconOnly needs an aria-label.
+
+```tsx
+import { Button } from "@semi/ui";
+
+export default function ButtonIcons() {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <Button variant="primary" icon="plus">
+        Thêm máy in
+      </Button>
+      <Button icon="refresh">Làm mới</Button>
+      <Button variant="danger" icon="trash">
+        Xoá
+      </Button>
+      <Button variant="primary" iconOnly icon="plus" aria-label="Thêm mới" title="Thêm mới" />
+      <Button iconOnly icon="download" aria-label="Tải xuống" title="Tải xuống" />
+    </div>
+  );
+}
+```
+
+### Loading
+
+loading swaps the icon for a spinner and blocks clicks.
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Button, Spinner } from "@semi/ui";
+
+export default function ButtonLoading() {
+  const [saving, setSaving] = useState(false);
+  const save = () => {
+    setSaving(true);
+    setTimeout(() => setSaving(false), 1200);
+  };
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button variant="primary" icon="check" loading={saving} onClick={save}>
+        {saving ? "Đang lưu" : "Lưu"}
+      </Button>
+      <Spinner label="Đang đồng bộ" />
+    </div>
+  );
+}
+```
+
+### Sizes
+
+sm for dense rows, md (default) for toolbars and forms, modal for dialog footers.
+
+```tsx
+import { Button } from "@semi/ui";
+
+export default function ButtonSizes() {
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center gap-2">
+        <Button size="sm" icon="edit">
+          Sửa (sm)
+        </Button>
+        <Button icon="edit">Sửa (md)</Button>
+      </div>
+      <div className="flex gap-2 max-w-sm">
+        <Button size="modal" className="flex-1">
+          Huỷ
+        </Button>
+        <Button size="modal" variant="primary" className="flex-1">
+          Xác nhận
+        </Button>
+      </div>
+    </div>
+  );
+}
+```
+
+## API
+
+### Button
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `ref` | `React.Ref<HTMLButtonElement>` |  |  |
+| `variant` | `'primary' \| 'secondary' \| 'danger' \| 'ghost'` | `"secondary"` |  |
+| `size` | `'sm' \| 'md' \| 'modal'` | `"md"` | md = h-control toolbar / form (34px in Flat) · sm = 28px dense rows · modal = 44px on phones, 34px from sm (dialog footers). |
+| `icon` | `IconName` |  | Leading icon from the Semi registry. |
+| `loading` | `boolean` | `false` | Shows a spinner in place of the icon and blocks clicks (aria-busy). |
+| `fullWidth` | `boolean` | `false` |  |
+| `iconOnly` | `boolean` | `false` |  |
+| `children` | `React.ReactNode \| undefined` |  |  |
+| `aria-label` | `string` |  | Defines a string value that labels the current element. |
+
+### Spinner
+
+Indeterminate activity mark for a button or field running its own action (§13b: no page spinners).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `className` | `string` | `"w-4 h-4"` |  |
+| `label` | `string` |  |  |
+
+## Accessibility
+
+- Renders a real <button type="button"> (pass type="submit" in forms).
+- iconOnly requires aria-label (the types enforce it); keep a title for the tooltip.
+- loading sets aria-busy and blocks clicks; the visible focus ring stays.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/button/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/chip.md -->
+
+# Chip
+
+A pill-shaped toggle for filters and tags. Neutral when off; active uses the high-contrast surface, with colour only on its dot or icon (tone).
+
+## When to use
+
+- Several filters that can be on at once (materials, device types).
+- Removable active filters above a list.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Exactly one of 2–5 options | Pills |
+| A read-only status | Badge |
+
+## Import
+
+```tsx
+import { Chip } from "@semi/ui";
+```
+
+## Examples
+
+### Toggle filters
+
+tone colours the dot of what the chip filters; the chip itself stays neutral.
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Chip } from "@semi/ui";
+
+const MATERIALS = [
+  { key: "pla", label: "PLA", tone: "green" },
+  { key: "petg", label: "PETG", tone: "sky" },
+  { key: "tpu", label: "TPU", tone: "pink" },
+] as const;
+
+export default function ChipToggle() {
+  const [on, setOn] = useState<string[]>(["pla"]);
+  const toggle = (k: string) => setOn((v) => (v.includes(k) ? v.filter((x) => x !== k) : [...v, k]));
+  return (
+    <div className="flex flex-wrap gap-2">
+      {MATERIALS.map((m) => (
+        <Chip key={m.key} tone={m.tone} active={on.includes(m.key)} onClick={() => toggle(m.key)}>
+          {m.label}
+        </Chip>
+      ))}
+    </div>
+  );
+}
+```
+
+## API
+
+### Chip
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `active` * | `boolean` |  |  |
+| `onClick` * | `() => void` |  |  |
+| `children` * | `React.ReactNode` |  |  |
+| `title` | `string` |  |  |
+| `tone` | `SemanticTone` |  | Optional theme-matching chromatic tone when active. Defaults to neutral raised surface. |
+| `className` | `string` | `""` |  |
+
+## Accessibility
+
+- A button with aria-pressed when it toggles; keep the text short.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/chip/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/external-link.md -->
+
+# External link
+
+A link to another site: opens a new tab on desktop and the external browser inside a mobile WebView, with an external-link icon.
+
+## When to use
+
+- Any link that leaves the app (docs, GitHub, a payment page).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A page inside the app | next/link |
+| An action | Button |
+
+## Import
+
+```tsx
+import { ExternalLink } from "@semi/ui";
+```
+
+## Examples
+
+### Basic
+
+```tsx
+import { ExternalLink } from "@semi/ui";
+
+export default function ExternalLinkBasic() {
+  return (
+    <p className="text-ui text-body">
+      Xem hướng dẫn chi tiết tại <ExternalLink href="https://example.com/guide">trang tài liệu</ExternalLink>.
+    </p>
+  );
+}
+```
+
+## API
+
+### ExternalLink
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `href` * | `string` |  |  |
+
+## Accessibility
+
+- Says it opens in a new tab (visually hidden text) and keeps rel="noopener noreferrer".
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/external-link/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/pills.md -->
+
+# Pills
+
+A single-choice filter of 2–5 options on one track (segmented look). The left side of a SubpageToolbar.
+
+## When to use
+
+- Filter a list by status or period: Tất cả / Đang in / Xong.
+- Switch a small view mode with no panels.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Switch panels of content | Tabs |
+| Many filters, several at once | Chip |
+| Sibling pages | PageTabsTitle |
+
+## Import
+
+```tsx
+import { Pills } from "@semi/ui";
+```
+
+## Examples
+
+### Status filter
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Pills } from "@semi/ui";
+
+export default function PillsBasic() {
+  const [status, setStatus] = useState("all");
+  return (
+    <Pills
+      value={status}
+      onChange={setStatus}
+      options={[
+        { key: "all", label: "Tất cả" },
+        { key: "printing", label: "Đang in" },
+        { key: "idle", label: "Chờ lệnh" },
+        { key: "error", label: "Lỗi" },
+      ]}
+    />
+  );
+}
+```
+
+## API
+
+### Pills
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `value` * | `T` |  |  |
+| `options` * | `{ key: T; label: ReactNode; title?: string \| undefined; }[]` |  |  |
+| `onChange` * | `(v: T) => void` |  |  |
+| `className` | `string` | `""` |  |
+
+## Accessibility
+
+- Rendered as a radio group: arrow keys move, the selected option is announced.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/pills/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/checkbox.md -->
+
+# Checkbox
+
+A native checkbox with label and description, checked fill in the accent, and an indeterminate state for “select all”.
+
+## When to use
+
+- Opt in to something in a form (accept terms, include archived).
+- Select rows; “select all” with indeterminate.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A setting that applies at once | Switch |
+| Exactly one option of a few | RadioGroup |
+
+## Import
+
+```tsx
+import { Checkbox } from "@semi/ui";
+```
+
+## Examples
+
+### With description
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Checkbox } from "@semi/ui";
+
+export default function CheckboxBasic() {
+  const [auto, setAuto] = useState(true);
+  return <Checkbox checked={auto} onChange={setAuto} label="Tự động in khi rảnh" description="Máy nhận job tiếp theo trong hàng đợi." />;
+}
+```
+
+### Indeterminate and disabled
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Checkbox } from "@semi/ui";
+
+export default function CheckboxStates() {
+  const [all, setAll] = useState(false);
+  return (
+    <div className="flex flex-col gap-3">
+      <Checkbox checked={all} indeterminate={!all} onChange={setAll} label="Chọn tất cả" />
+      <Checkbox checked={false} onChange={() => undefined} label="Không khả dụng" disabled />
+    </div>
+  );
+}
+```
+
+## API
+
+### Checkbox
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `checked` * | `boolean` |  |  |
+| `onChange` * | `(checked: boolean) => void` |  |  |
+| `label` | `React.ReactNode` |  |  |
+| `description` | `React.ReactNode` |  |  |
+| `indeterminate` | `boolean` | `false` | Mixed state ("some selected") for a select-all box. |
+| `disabled` | `boolean` | `false` |  |
+| `id` | `string` |  |  |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- A real <input type="checkbox">: Space toggles, label clicks toggle, description is linked.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/checkbox/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/combobox.md -->
+
+# Combobox
+
+CustomCombobox: type to filter a long list, then pick one value.
+
+## When to use
+
+- Long lists the user searches (materials, customers, SKUs).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A short fixed list | CustomSelect |
+
+## Import
+
+```tsx
+import { CustomCombobox } from "@semi/ui";
+```
+
+## Examples
+
+### Searchable list
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { CustomCombobox, Field } from "@semi/ui";
+
+export default function ComboboxBasic() {
+  const [material, setMaterial] = useState("pla_matte");
+  return (
+    <Field label="Vật liệu">
+      <CustomCombobox
+        value={material}
+        onChange={setMaterial}
+        placeholder="Tìm loại nhựa…"
+        options={[
+          { value: "pla_matte", label: "eSUN PLA Matte Black" },
+          { value: "petg_hf", label: "Bambu PETG-HF White" },
+          { value: "abs_fire", label: "Polymaker ABS Fire Red" },
+          { value: "tpu_95a", label: "Inland TPU 95A Orange" },
+        ]}
+      />
+    </Field>
+  );
+}
+```
+
+## API
+
+### CustomCombobox
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `value` * | `string` |  |  |
+| `onChange` * | `(val: string) => void` |  |  |
+| `options` * | `(string \| Option)[]` |  |  |
+| `placeholder` | `string` |  |  |
+| `required` | `boolean` | `false` |  |
+| `id` | `string` |  |  |
+| `aria-label` | `string` |  |  |
+| `aria-describedby` | `string` |  |  |
+| `aria-invalid` | `boolean` |  |  |
+| `disabled` | `boolean` | `false` |  |
+
+## Accessibility
+
+- ARIA combobox: arrows move through matches, Enter picks, Escape clears / closes; works inside Field.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/combobox/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/date-picker.md -->
+
+# Date picker
+
+A calendar popover for one date (YYYY-MM-DD), with min / max. Never type="date".
+
+## When to use
+
+- Schedule a job, filter by day, set a due date.
+
+## Import
+
+```tsx
+import { DatePicker } from "@semi/ui";
+```
+
+## Examples
+
+### Basic
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { DatePicker } from "@semi/ui";
+
+export default function DatePickerBasic() {
+  const [date, setDate] = useState("2026-11-01");
+  return <DatePicker value={date} onChange={setDate} min="2026-10-01" ariaLabel="Ngày in" />;
+}
+```
+
+## API
+
+### DatePicker
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `value` * | `string` |  |  |
+| `onChange` * | `(value: string) => void` |  |  |
+| `min` | `string` |  | Earliest / latest selectable day ("YYYY-MM-DD"). |
+| `max` | `string` |  |  |
+| `ariaLabel` | `string` |  |  |
+| `className` | `string` | `""` |  |
+
+## Accessibility
+
+- Arrow keys move by day / week, Enter picks, Escape closes; give it an ariaLabel when there is no Field.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/date-picker/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/field.md -->
+
+# Field, Input, Textarea
+
+Field gives any control a label, a hint and an error, wired for screen readers. Input and Textarea are the standard text controls (bg-field, h-field).
+
+## When to use
+
+- Every form control: wrap it in Field instead of writing a <label>.
+- Text, email, password, search inside forms; multi-line notes.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Numbers with a touch keypad | NumberInput |
+| A date | DatePicker |
+| Pick from a list | CustomSelect or CustomCombobox |
+| Filter a list in a toolbar | SearchInput |
+
+## Import
+
+```tsx
+import { Field, Input, Textarea } from "@semi/ui";
+```
+
+## Examples
+
+### Label and hint
+
+```tsx
+import { Field, Input } from "@semi/ui";
+
+export default function FieldBasic() {
+  return (
+    <Field label="Tên máy in" hint="Hiện trên thẻ và trong thông báo.">
+      <Input placeholder="VD: X1 Carbon xưởng A" icon="printer" />
+    </Field>
+  );
+}
+```
+
+### Error and required
+
+Pass error to show the message under the control and mark it invalid.
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Field, Input } from "@semi/ui";
+
+export default function FieldValidation() {
+  const [name, setName] = useState("ab");
+  const error = name.length > 0 && name.length < 3 ? "Tên cần ít nhất 3 ký tự." : undefined;
+  return (
+    <Field label="Tên dự án" required error={error}>
+      <Input value={name} onChange={(e) => setName(e.target.value)} />
+    </Field>
+  );
+}
+```
+
+### Textarea
+
+```tsx
+import { Field, Textarea } from "@semi/ui";
+
+export default function FieldTextarea() {
+  return (
+    <Field label="Ghi chú">
+      <Textarea rows={3} placeholder="Ghi chú cho đơn in…" />
+    </Field>
+  );
+}
+```
+
+## API
+
+### Field
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `label` * | `React.ReactNode` |  |  |
+| `hint` | `React.ReactNode` |  | One short helper line under the control (hidden while an error shows). |
+| `error` | `React.ReactNode` |  | Error message; marks the control aria-invalid and announces the message. |
+| `required` | `boolean` | `false` |  |
+| `id` | `string` |  |  |
+| `className` | `string` |  |  |
+| `children` * | `React.ReactNode` |  |  |
+
+### Input
+
+Text input on the field surface (FIELD_INPUT). For numbers use NumberInput, for dates DatePicker.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `ref` | `React.Ref<HTMLInputElement>` |  |  |
+| `icon` | `IconName` |  | Leading icon inside the field. |
+
+### Textarea
+
+Multi-line text on the field surface (FIELD_TEXTAREA).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `ref` | `React.Ref<HTMLTextAreaElement>` |  |  |
+
+## Accessibility
+
+- Field links label (htmlFor), hint and error (aria-describedby) and sets aria-invalid on error.
+- The error is announced when it appears; required adds a visible mark and aria-required.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/field/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/number-input.md -->
+
+# Number input
+
+NumberInput: numbers with a touch keypad (NumPadPopup) on phones and tablets, plain typing elsewhere. Never type="number".
+
+## When to use
+
+- Quantities, temperatures, prices, percentages.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A range picked by dragging | a slider (coming in a later release) |
+
+## Import
+
+```tsx
+import { NumberInput, NumPadPopup, FIELD_INPUT } from "@semi/ui";
+```
+
+## Examples
+
+### With unit
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { FIELD_INPUT, Field, NumberInput } from "@semi/ui";
+
+export default function NumberInputBasic() {
+  const [temp, setTemp] = useState("220");
+  return (
+    <Field label="Nhiệt độ đầu phun" hint="Trên màn hình cảm ứng mở bàn phím số.">
+      <NumberInput className={FIELD_INPUT} value={temp} onChange={(e) => setTemp(e.target.value)} unit="°C" integer numpadLabel="Nhiệt độ" />
+    </Field>
+  );
+}
+```
+
+## API
+
+### NumberInput
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `ref` | `React.Ref<HTMLInputElement>` |  |  |
+| `numpadLabel` | `string` |  | Title shown on the numpad (defaults to aria-label / placeholder). |
+| `unit` | `string` |  | Unit shown next to the value on the numpad. |
+| `integer` | `boolean` |  | Whole numbers only (no decimal key). |
+
+### NumPadPopup
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `label` * | `string` |  |  |
+| `unit` | `string` |  |  |
+| `initial` * | `string` |  |  |
+| `integer` | `boolean` |  | whole numbers only |
+| `allowPercent` | `boolean` |  | allow a trailing % (value like "15%") |
+| `onCommit` * | `(value: string) => void` |  |  |
+| `onClose` * | `() => void` |  |  |
+
+## Accessibility
+
+- inputMode="decimal" or numeric; the keypad is a dialog with focus trap and Escape.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/number-input/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/radio-group.md -->
+
+# Radio group
+
+Exactly one option of a few, each with an optional description; vertical by default.
+
+## When to use
+
+- 2–5 options where the descriptions help the choice (plans, shipping).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A filter on a list | Pills |
+| More than 5 options | CustomSelect |
+
+## Import
+
+```tsx
+import { RadioGroup } from "@semi/ui";
+```
+
+## Examples
+
+### Plans
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { RadioGroup } from "@semi/ui";
+
+export default function RadioGroupBasic() {
+  const [plan, setPlan] = useState<"free" | "pro" | "team">("pro");
+  return (
+    <RadioGroup
+      label="Gói dịch vụ"
+      value={plan}
+      onChange={setPlan}
+      options={[
+        { value: "free", label: "Free", description: "1 máy in" },
+        { value: "pro", label: "Pro", description: "Tối đa 10 máy" },
+        { value: "team", label: "Team", description: "Không giới hạn", disabled: true },
+      ]}
+    />
+  );
+}
+```
+
+## API
+
+### RadioGroup
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `value` * | `T` |  |  |
+| `onChange` * | `(value: T) => void` |  |  |
+| `options` * | `RadioOption<T>[]` |  |  |
+| `label` | `React.ReactNode` |  | Group label (announced for the whole group). |
+| `name` | `string` |  |  |
+| `direction` | `'vertical' \| 'horizontal'` | `"vertical"` |  |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- A native radio group with a group label: arrow keys move and select.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/radio-group/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/search-input.md -->
+
+# Search input
+
+The toolbar search field: icon, clear button, h-control height. SubpageToolbar includes one.
+
+## When to use
+
+- Filter the list or grid on the current page.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Search inside a form | Field + Input with icon="search" |
+
+## Import
+
+```tsx
+import { SearchInput } from "@semi/ui";
+```
+
+## Examples
+
+### Basic
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { SearchInput } from "@semi/ui";
+
+export default function SearchInputBasic() {
+  const [q, setQ] = useState("");
+  return <SearchInput value={q} onChange={setQ} placeholder="Tìm máy in…" className="w-64" />;
+}
+```
+
+## API
+
+### SearchInput
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `value` * | `string` |  |  |
+| `onChange` * | `(v: string) => void` |  |  |
+| `placeholder` * | `string` |  |  |
+| `className` | `string` | `"w-40 sm:w-48"` |  |
+| `label` | `string` |  |  |
+
+## Accessibility
+
+- A labelled search input; the clear button has its own label and returns focus to the field.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/search-input/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/select.md -->
+
+# Select
+
+CustomSelect: pick one value from a list, in a field, in a toolbar, inline in a row or bare. Never the native <select>.
+
+## When to use
+
+- One value from a short or medium list (printers, regions).
+- A compact sort / group control in a toolbar (variant="toolbar").
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A long list the user types into | CustomCombobox |
+| 2–5 visible options | Pills or RadioGroup |
+
+## Import
+
+```tsx
+import { CustomSelect } from "@semi/ui";
+```
+
+## Examples
+
+### In a form
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { CustomSelect, Field } from "@semi/ui";
+
+export default function SelectField() {
+  const [printer, setPrinter] = useState("x1c");
+  return (
+    <Field label="Máy in">
+      <CustomSelect
+        variant="field"
+        value={printer}
+        onChange={setPrinter}
+        options={[
+          { value: "x1c", label: "Bambu Lab X1-Carbon" },
+          { value: "p1s", label: "Bambu Lab P1S" },
+          { value: "a1", label: "Bambu Lab A1 Mini" },
+        ]}
+      />
+    </Field>
+  );
+}
+```
+
+### In a toolbar
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { CustomSelect } from "@semi/ui";
+
+export default function SelectToolbar() {
+  const [sort, setSort] = useState("recent");
+  return (
+    <CustomSelect
+      variant="toolbar"
+      aria-label="Sắp xếp"
+      value={sort}
+      onChange={setSort}
+      options={[
+        { value: "recent", label: "Mới nhất" },
+        { value: "name", label: "Tên A–Z" },
+        { value: "status", label: "Trạng thái" },
+      ]}
+    />
+  );
+}
+```
+
+## API
+
+### CustomSelect
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `value` * | `string` |  |  |
+| `onChange` * | `(val: string) => void` |  |  |
+| `options` * | `CustomSelectOption[]` |  |  |
+| `placeholder` | `string` |  |  |
+| `className` | `string` | `""` |  |
+| `align` | `'left' \| 'right'` | `"left"` | Which edge the option list lines up with (use "right" for a select at the right edge of the screen). |
+| `iconsInList` | `boolean` | `false` | Show each option's icon in the list too (default: only on the button). |
+| `iconOnly` | `boolean` | `false` | The button shows only the selected option's icon (its label becomes the tooltip), e.g. the AI profile logo. |
+| `variant` | `'toolbar' \| 'field' \| 'inline' \| 'bare'` | `"toolbar"` | toolbar = h-control toolbar control (34px in Flat) · field = full-width form field · inline = bare text inside a row · bare = no trigger styling (the caller passes it in buttonClassName, e.g. the automation code chips) |
+| `disabled` | `boolean` | `false` |  |
+| `buttonClassName` | `string` | `""` | Extra classes on the button (e.g. a "modified value" colour). |
+| `id` | `string` |  |  |
+| `aria-label` | `string` |  |  |
+| `title` | `string` |  |  |
+
+## Accessibility
+
+- A listbox button: Enter / Space / arrows open it, type-ahead jumps, Escape closes and returns focus.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/select/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/switch.md -->
+
+# Switch
+
+An on / off toggle for settings that apply immediately.
+
+## When to use
+
+- Settings that take effect at once (notifications, dark sync, auto-print).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A choice saved with a form | Checkbox |
+
+## Import
+
+```tsx
+import { Switch } from "@semi/ui";
+```
+
+## Examples
+
+### Basic and small
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Switch } from "@semi/ui";
+
+export default function SwitchBasic() {
+  const [notify, setNotify] = useState(true);
+  const [quiet, setQuiet] = useState(false);
+  return (
+    <div className="flex flex-col gap-3">
+      <Switch checked={notify} onChange={setNotify} label="Thông báo khi in xong" description="Gửi qua ứng dụng và email." />
+      <Switch checked={quiet} onChange={setQuiet} size="sm" label="Chế độ im lặng" />
+    </div>
+  );
+}
+```
+
+## API
+
+### Switch
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `checked` * | `boolean` |  |  |
+| `onChange` * | `(checked: boolean) => void` |  |  |
+| `label` | `React.ReactNode` |  |  |
+| `description` | `React.ReactNode` |  |  |
+| `disabled` | `boolean` | `false` |  |
+| `size` | `'sm' \| 'md'` | `"md"` |  |
+| `id` | `string` |  |  |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- role="switch" with aria-checked; Space toggles; label and description are linked.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/switch/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/confirm-dialog.md -->
+
+# Confirm dialog
+
+confirmDialog() asks one yes / no question and resolves to true or false. Mount ConfirmHost once in the root layout. Never window.confirm.
+
+## When to use
+
+- Before deleting, stopping a print or discarding changes.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A form or several fields | Modal |
+| Undo instead of asking | toast() with an action |
+
+## Import
+
+```tsx
+import { ConfirmHost, confirmDialog } from "@semi/ui";
+```
+
+## Examples
+
+### Destructive confirmation
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Button, ConfirmHost, confirmDialog } from "@semi/ui";
+
+export default function ConfirmDanger() {
+  const [result, setResult] = useState("");
+  const remove = async () => {
+    const ok = await confirmDialog({
+      title: "Xoá bản in mẫu?",
+      message: "Tệp G-code và dữ liệu lát cắt sẽ bị xoá vĩnh viễn.",
+      confirmLabel: "Xoá",
+      tone: "danger",
+    });
+    setResult(ok ? "Đã xoá" : "Đã huỷ");
+  };
+  return (
+    <div className="flex items-center gap-3">
+      {/* Once in the root layout of a real app */}
+      <ConfirmHost />
+      <Button variant="danger" icon="trash" onClick={remove}>
+        Xoá bản in
+      </Button>
+      {result && <span className="text-label text-muted">{result}</span>}
+    </div>
+  );
+}
+```
+
+## API
+
+### ConfirmHost
+
+Mounted once in the root layout; renders the dialog opened by `confirmDialog()`.
+
+No props of its own.
+
+## Accessibility
+
+- An alertdialog: focus starts on the safe button (Huỷ), Escape cancels.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/confirm-dialog/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/drawer.md -->
+
+# Drawer
+
+A panel that slides in from the right, left or bottom, with title and footer; a sheet on phones.
+
+## When to use
+
+- Filters of a list, details of a row, a secondary form that keeps the page visible.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A focused task | Modal |
+| A persistent tool panel beside a canvas | SidePanel |
+
+## Import
+
+```tsx
+import { Drawer } from "@semi/ui";
+```
+
+## Examples
+
+### Filters
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Button, Checkbox, Drawer, Field, Input } from "@semi/ui";
+
+export default function DrawerFilters() {
+  const [open, setOpen] = useState(false);
+  const [online, setOnline] = useState(true);
+  return (
+    <>
+      <Button icon="filter" onClick={() => setOpen(true)}>
+        Bộ lọc
+      </Button>
+      <Drawer
+        open={open}
+        onClose={() => setOpen(false)}
+        title="Bộ lọc"
+        footer={
+          <>
+            <Button size="modal" onClick={() => setOpen(false)}>
+              Huỷ
+            </Button>
+            <Button size="modal" variant="primary" onClick={() => setOpen(false)}>
+              Áp dụng
+            </Button>
+          </>
+        }
+      >
+        <Field label="Từ khoá">
+          <Input placeholder="Tên, mã đơn…" icon="search" />
+        </Field>
+        <Checkbox checked={online} onChange={setOnline} label="Chỉ máy đang online" />
+      </Drawer>
+    </>
+  );
+}
+```
+
+## API
+
+### Drawer
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `open` * | `boolean` |  |  |
+| `onClose` * | `() => void` |  |  |
+| `title` * | `React.ReactNode` |  |  |
+| `side` | `'left' \| 'right' \| 'bottom'` | `"right"` |  |
+| `footer` | `React.ReactNode` |  | Actions pinned to the bottom (MODAL_FOOT). |
+| `className` | `string` |  | Width override for side drawers (e.g. "sm:max-w-lg"). |
+| `children` * | `React.ReactNode` |  |  |
+
+## Accessibility
+
+- A modal dialog: focus trap, Escape, focus returns to the opener; the title labels it.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/drawer/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/menu.md -->
+
+# Menu
+
+The overflow menu of a row or card: a ⋯ trigger (or your own) with items, icons, separators and a danger item last.
+
+## When to use
+
+- Secondary actions of a row or card (Đổi tên, Nhân bản, Xoá).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| One or two visible actions | Button |
+| Pick a value | CustomSelect |
+
+## Import
+
+```tsx
+import { Menu } from "@semi/ui";
+```
+
+## Examples
+
+### Row actions
+
+```tsx
+"use client";
+
+import { Menu, toast } from "@semi/ui";
+
+export default function MenuRowActions() {
+  return (
+    <Menu
+      label="Thao tác máy in"
+      items={[
+        { label: "Đổi tên", icon: "edit", onSelect: () => toast({ title: "Đổi tên" }) },
+        { label: "Nhân bản", icon: "copy", onSelect: () => toast({ title: "Đã nhân bản", tone: "success" }) },
+        { label: "Tạm dừng", icon: "pause", onSelect: () => undefined, disabled: true },
+        { label: "Xoá", icon: "trash", danger: true, separator: true, onSelect: () => toast({ title: "Không xoá được", description: "Máy đang in.", tone: "danger" }) },
+      ]}
+    />
+  );
+}
+```
+
+## API
+
+### Menu
+
+Action menu behind a trigger button (row / card overflow actions). ↑/↓ move, Enter / Space pick, Escape closes and
+returns focus. Default trigger: icon-only "more" button; pass `trigger` (an element) to use your own.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `items` * | `MenuItem[]` |  |  |
+| `label` | `string` |  | Accessible name of the default trigger. |
+| `align` | `'left' \| 'right'` | `"right"` |  |
+| `trigger` | `ReactElement<unknown, string \| JSXElementConstructor<any>>` |  |  |
+
+## Accessibility
+
+- role="menu": Enter / Space / ↓ open, arrows move, Escape closes and returns focus to the trigger.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/menu/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/modal.md -->
+
+# Modal
+
+The shared dialog: full screen on phones, a centred panel from sm up, with title, description, body and footer. Focus is trapped and returns to the opener.
+
+## When to use
+
+- A short task that needs the user's full attention (edit settings, create an item).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Yes / no before a destructive action | confirmDialog() |
+| Filters or details beside the page | Drawer |
+| A short message after an action | toast() |
+
+## Import
+
+```tsx
+import { Modal } from "@semi/ui";
+```
+
+## Examples
+
+### Form in a modal
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Button, Field, Input, Modal } from "@semi/ui";
+
+export default function ModalBasic() {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button icon="sliders" onClick={() => setOpen(true)}>
+        Cấu hình in
+      </Button>
+      <Modal
+        open={open}
+        onClose={() => setOpen(false)}
+        title="Cấu hình in nâng cao"
+        description="Áp dụng cho các bản in tiếp theo."
+        footer={
+          <>
+            <Button size="modal" onClick={() => setOpen(false)}>
+              Huỷ
+            </Button>
+            <Button size="modal" variant="primary" onClick={() => setOpen(false)}>
+              Lưu
+            </Button>
+          </>
+        }
+      >
+        <Field label="Tốc độ lớp đầu">
+          <Input defaultValue="50 mm/s" />
+        </Field>
+        <Field label="Độ dày lớp">
+          <Input defaultValue="0.20 mm" />
+        </Field>
+      </Modal>
+    </>
+  );
+}
+```
+
+## API
+
+### Modal
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `open` * | `boolean` |  |  |
+| `onClose` * | `() => void` |  |  |
+| `title` * | `React.ReactNode` |  |  |
+| `description` | `React.ReactNode` |  | Optional one-line description under the title (announced with the dialog). |
+| `footer` | `React.ReactNode` |  | Action buttons rendered inside MODAL_FOOT (use MODAL_BTN_PRIMARY / MODAL_BTN_SECONDARY / MODAL_BTN_DANGER or <Button size="modal">). |
+| `maxWidth` | `string` | `"max-w-lg"` | Width class on >= sm screens (e.g. "max-w-md", "max-w-lg", "max-w-2xl"). |
+| `closeOnBackdrop` | `boolean` | `true` | Close when the backdrop is clicked (turn off for forms that would lose input). |
+| `children` * | `React.ReactNode` |  |  |
+
+## Accessibility
+
+- role="dialog" + aria-modal, labelled by the title; Escape and the close button close it; focus trap and focus return built in; page scroll is locked.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/modal/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/toast.md -->
+
+# Toast
+
+toast() shows a short message after an action, with a tone and an optional action (Hoàn tác). Mount ToastHost once in the root layout.
+
+## When to use
+
+- Confirm an action happened (Đã lưu), warn about something passing (mất kết nối), offer undo.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A message that must stay on the page | Alert |
+| Ask before acting | confirmDialog() |
+
+## Import
+
+```tsx
+import { ToastHost, toast, dismissToast } from "@semi/ui";
+```
+
+## Examples
+
+### Tones and actions
+
+```tsx
+"use client";
+
+import { Button, ToastHost, toast } from "@semi/ui";
+
+export default function ToastTones() {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {/* Once in the root layout of a real app */}
+      <ToastHost />
+      <Button onClick={() => toast({ title: "Đã lưu thay đổi", tone: "success", action: { label: "Hoàn tác", onClick: () => toast({ title: "Đã hoàn tác" }) } })}>
+        Thành công + hoàn tác
+      </Button>
+      <Button onClick={() => toast({ title: "Mất kết nối máy in", description: "Thử lại sau vài giây.", tone: "warning" })}>Cảnh báo</Button>
+      <Button onClick={() => toast({ title: "Tệp sẽ được gửi khi máy rảnh", tone: "info", duration: 0 })}>Không tự tắt</Button>
+    </div>
+  );
+}
+```
+
+## API
+
+### ToastHost
+
+Toast stack: top on phones (clear of the tab bar), bottom-right from sm.
+
+No props of its own.
+
+## Accessibility
+
+- A live region (polite, assertive for danger); toasts with an action stay until dismissed or wait longer.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/toast/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/tooltip.md -->
+
+# Tooltip
+
+A short label on hover or focus, mostly for icon-only buttons.
+
+## When to use
+
+- Name an icon-only control; add a short hint to a truncated value.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Information people must read | visible text or an Alert |
+
+## Import
+
+```tsx
+import { Tooltip } from "@semi/ui";
+```
+
+## Examples
+
+### On an icon button
+
+```tsx
+import { Button, Tooltip } from "@semi/ui";
+
+export default function TooltipIconButton() {
+  return (
+    <div className="flex gap-2">
+      <Tooltip content="Đồng bộ lại dữ liệu">
+        <Button iconOnly icon="refresh" aria-label="Làm mới" />
+      </Tooltip>
+      <Tooltip content="Tải báo cáo" side="bottom">
+        <Button iconOnly icon="download" aria-label="Tải báo cáo" />
+      </Tooltip>
+    </div>
+  );
+}
+```
+
+## API
+
+### Tooltip
+
+Short hint for an icon-only control (one line, no interactive content). The trigger keeps its own aria-label;
+the tooltip is linked with aria-describedby. Touch screens show nothing: never put essential text in a tooltip.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `content` * | `React.ReactNode` |  |  |
+| `children` * | `ReactElement<unknown, string \| JSXElementConstructor<any>>` |  |  |
+| `side` | `'bottom' \| 'top'` | `"top"` |  |
+
+## Accessibility
+
+- Shown on focus too, linked with aria-describedby; never the only place of essential information.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/tooltip/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/app-header.md -->
+
+# App header
+
+The top bar of a stand-alone tool app: logo + title go home, the module name, and one primary action on the right. No Home button.
+
+## When to use
+
+- Single-screen tools: 3D editors, slicers, colour tools.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| An app with several pages | AppShell |
+
+## Import
+
+```tsx
+import { AppHeader, HEADER_ICON_BTN, HEADER_ICON_OFF, headerPrimary } from "@semi/ui";
+```
+
+## Examples
+
+### Tool app
+
+```tsx
+import { AppHeader, HEADER_ICON_BTN, HEADER_ICON_OFF, Icon, headerPrimary } from "@semi/ui";
+
+export default function AppHeaderTool() {
+  return (
+    <div className="rounded-card border border-line overflow-hidden">
+      <AppHeader title="Phối màu" productName="3D Noobs" logoIcon="palette" homeHref="#">
+        <button type="button" className={`${HEADER_ICON_BTN} ${HEADER_ICON_OFF}`} aria-label="Trợ lý AI" title="Trợ lý AI">
+          <Icon name="sparkles" className="w-4 h-4" />
+        </button>
+        <button type="button" className={headerPrimary(true)}>
+          Xong
+        </button>
+      </AppHeader>
+    </div>
+  );
+}
+```
+
+## API
+
+### AppHeader
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `title` | `string` |  | Stand-alone app title; without it the bar is the home page's logo bar. |
+| `children` | `React.ReactNode` |  | Right-hand side (app actions). Wrap in a `flex-1` element to centre something. |
+| `onHome` | `() => void` |  | Click on the logo + title. Default: plain link to `/`. |
+| `hideTitleOnPhone` | `boolean` | `false` | Only the logo on phones (dense toolbars). |
+| `className` | `string` | `""` |  |
+| `productName` | `string` | `"Semi"` | Product name shown on the home bar (no `title`). |
+| `logo` | `React.ReactNode` |  | Custom logo node; replaces the default icon tile. |
+| `logoIcon` | `IconName` | `"sparkles"` | Icon of the default logo tile. |
+| `homeHref` | `string` | `"/"` | Where the logo + title link goes. |
+| `homeLabel` | `string` |  | Tooltip / aria text of the logo link. |
+
+## Accessibility
+
+- A banner landmark; the home link is labelled; icon buttons need aria-label.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/app-header/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/app-shell.md -->
+
+# App shell
+
+The frame of a multi-page app: a floating bento sidebar (w-52, collapses to a w-14 icon rail) on bg-canvas, the content panel beside it, and MobileTabBar at the bottom on phones. This docs site is an AppShell.
+
+## When to use
+
+- Every app with several pages (dashboards, admin, store back office).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A single-screen tool or editor (3D, canvas) | AppHeader |
+
+## Import
+
+```tsx
+import { AppShell, MobileTabBar } from "@semi/ui";
+```
+
+## Examples
+
+### Root layout
+
+AppShell fills the viewport, so it is shown as code: this very page is the live example.
+
+```tsx
+"use client";
+
+import { usePathname } from "next/navigation";
+import { AppShell, ThemeSwitcher, type ShellNavSection } from "@semi/ui";
+
+const SECTIONS: ShellNavSection[] = [
+  {
+    label: "Quản lý",
+    items: [
+      { id: "overview", label: "Tổng quan", icon: "grid", href: "/" },
+      { id: "printers", label: "Máy in", icon: "printer", href: "/printers" },
+      { id: "orders", label: "Đơn hàng", icon: "bag", href: "/orders" },
+    ],
+  },
+  { label: "Hệ thống", items: [{ id: "settings", label: "Cài đặt", icon: "settings", href: "/settings" }] },
+];
+
+export default function Shell({ children }: { children: React.ReactNode }) {
+  const path = usePathname();
+  const active = SECTIONS.flatMap((s) => s.items).find((i) => i.href !== "/" && path.startsWith(i.href ?? ""))?.id ?? "overview";
+  return (
+    <AppShell productName="3D Noobs Manager" logoIcon="printer" sections={SECTIONS} activeId={active} footer={() => <ThemeSwitcher fullWidth />}>
+      {children}
+    </AppShell>
+  );
+}
+```
+
+## API
+
+### AppShell
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `productName` * | `string` |  | Product title shown in the sidebar header (e.g. "3D Noobs Studio", "Auton"). |
+| `logoIcon` | `IconName` | `"sparkles"` | Icon inside the default 24x24 brand tile. |
+| `logo` | `React.ReactNode` |  | Optional custom logo element replacing the default brand tile. |
+| `sections` * | `ShellNavSection[]` |  | Navigation groups separated by thin dividers in the left panel. |
+| `activeId` * | `string` |  | Currently active item id (or route path). |
+| `onSelect` | `(id: string) => void` |  | Callback when a tab is clicked (optional if items use `href` routing). |
+| `primaryCta` | `{ label: string; icon: IconName; href?: string; external?: boolean; onClick?: () => void; }` |  | Optional highlighted CTA button at the top of the sidebar (e.g. Slicer launcher). |
+| `footer` | `React.ReactNode \| ((state: { collapsed: boolean }) => React.ReactNode)` |  | Footer content at the bottom of the sidebar. Receives `{ collapsed }` so it can hide text in rail mode. |
+| `mobileTabIds` | `string[]` |  | Up to 5 item ids to pin on the phone bottom tab bar (defaults to the first 5 items). |
+| `storageKey` | `string` | `"semi_sidebar_collapsed"` | localStorage key for persisting sidebar collapsed state. |
+| `children` * | `React.ReactNode` |  |  |
+| `containerClassName` | `string` | `""` |  |
+
+### MobileTabBar
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `tabs` * | `MobileTabItem[]` |  |  |
+| `active` * | `string` |  |  |
+| `onSelect` | `(id: string) => void` |  |  |
+| `moreOpen` | `boolean` | `false` | When the app has more routes than fit on the bottom bar, show a final "Menu" tab that opens a sheet. |
+| `onToggleMore` | `() => void` |  |  |
+| `moreLabel` | `string` | `"Menu"` |  |
+
+## Accessibility
+
+- The sidebar is a nav landmark; the active item has aria-current; the collapse state is remembered per app (storageKey).
+
+## Notes
+
+- Render it once in the root layout (or a route group layout); pages render only their content.
+- Use next/link hrefs for items; onSelect is for in-page sections.
+- MobileTabBar is used by AppShell; render it yourself only in a custom shell.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/app-shell/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/page-actions.md -->
+
+# Page actions
+
+Lets a page put its actions into a slot of the shared header: PageActionsProvider wraps the layout, PageActionsSlot marks where they render, PageActions sends them from the page.
+
+## When to use
+
+- A layout owns the header row but the page decides the actions (PageTabsTitle + “+”).
+
+## Import
+
+```tsx
+import { PageActions, PageActionsProvider, PageActionsSlot } from "@semi/ui";
+```
+
+## Examples
+
+### Actions in the header slot
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Button, PageActions, PageActionsProvider, PageActionsSlot, PageTabsTitle } from "@semi/ui";
+
+export default function PageActionsSlotExample() {
+  const [view, setView] = useState<"printers" | "jobs">("printers");
+  return (
+    <PageActionsProvider>
+      <div className="flex items-end gap-3">
+        <PageTabsTitle
+          value={view}
+          onChange={setView}
+          tabs={[
+            { key: "printers", label: "Máy in" },
+            { key: "jobs", label: "Job in" },
+          ]}
+        />
+        <PageActionsSlot className="ml-auto" />
+      </div>
+      {/* Declared by the page content, shown in the slot above */}
+      <PageActions>
+        <Button variant="primary" iconOnly icon="plus" aria-label={view === "printers" ? "Thêm máy in" : "Tạo job"} />
+      </PageActions>
+    </PageActionsProvider>
+  );
+}
+```
+
+## API
+
+### PageActions
+
+Renders its children in the page header slot (inline when the page has no slot).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `children` * | `React.ReactNode` |  |  |
+
+### PageActionsProvider
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `children` * | `React.ReactNode` |  |  |
+
+### PageActionsSlot
+
+Where the actions appear: the right end of the page header row.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `className` | `string` | `""` |  |
+
+## Accessibility
+
+- Rendered through a portal into the slot, so tab order follows the header.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/page-actions/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/page-title.md -->
+
+# Page title
+
+PageTitle is the large display title of a page (text only). PageTabsTitle turns it into 2–4 underline tabs for sibling pages.
+
+## When to use
+
+- The first line of every page (PageTitle).
+- 2–4 sibling views of one area: Máy in / Job in (PageTabsTitle).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Tabs inside a card or panel | Tabs |
+| A filter | Pills |
+
+## Import
+
+```tsx
+import { PageTitle, PageTabsTitle } from "@semi/ui";
+```
+
+## Examples
+
+### PageTitle
+
+```tsx
+import { PageTitle } from "@semi/ui";
+
+export default function PageTitleBasic() {
+  return <PageTitle title="Máy in" />;
+}
+```
+
+### PageTabsTitle
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { PageTabsTitle } from "@semi/ui";
+
+export default function PageTabsTitleBasic() {
+  const [view, setView] = useState<"printers" | "jobs">("printers");
+  return (
+    <PageTabsTitle
+      value={view}
+      onChange={setView}
+      tabs={[
+        { key: "printers", label: "Máy in" },
+        { key: "jobs", label: "Job in" },
+      ]}
+    />
+  );
+}
+```
+
+## API
+
+### PageTitle
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `title` * | `React.ReactNode` |  |  |
+| `className` | `string` | `""` |  |
+
+### PageTabsTitle
+
+Underline display tabs used when a view groups 2–4 sibling sub-pages (e.g. "Máy in / Job in", "Sản phẩm / Danh mục").
+Replaces putting a separate <Pills> bar directly under a <PageTitle>.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `tabs` * | `PageTabOption<T>[]` |  |  |
+| `value` * | `T` |  |  |
+| `onChange` * | `(key: T) => void` |  |  |
+| `ariaLabel` | `string` |  |  |
+| `className` | `string` | `""` |  |
+
+## Accessibility
+
+- PageTitle is the page h1. PageTabsTitle is a tablist with arrow-key navigation.
+
+## Notes
+
+- No subtitle under the title and no text buttons on the title row: actions go to PageActions or the toolbar.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/page-title/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/pagination.md -->
+
+# Pagination
+
+Page numbers with previous / next for long tables. For card lists prefer auto-loading with “Xem thêm”.
+
+## When to use
+
+- Server-paged tables and reports.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A feed or card grid | auto-load near the end + a “Xem thêm” Button |
+
+## Import
+
+```tsx
+import { Pagination, pageWindow } from "@semi/ui";
+```
+
+## Examples
+
+### Basic
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Pagination } from "@semi/ui";
+
+export default function PaginationBasic() {
+  const [page, setPage] = useState(3);
+  return <Pagination page={page} pages={12} onChange={setPage} />;
+}
+```
+
+## API
+
+### Pagination
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `page` * | `number` |  | Current page, 1-based. |
+| `pages` * | `number` |  |  |
+| `onChange` * | `(page: number) => void` |  |  |
+| `className` | `string` | `""` |  |
+
+## Accessibility
+
+- A nav landmark; the current page has aria-current="page"; arrows are labelled.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/pagination/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/side-panel.md -->
+
+# Side panel
+
+A 320px tool panel beside a canvas that collapses to a 48px rail; SidePanelToggle is its collapse button.
+
+## When to use
+
+- Settings or layers beside a 3D view, map or editor.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Temporary filters or details | Drawer |
+
+## Import
+
+```tsx
+import { SidePanel, SidePanelToggle } from "@semi/ui";
+```
+
+## Examples
+
+### Beside a canvas
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { SidePanel, SidePanelToggle, Skeleton } from "@semi/ui";
+
+export default function SidePanelCanvas() {
+  const [collapsed, setCollapsed] = useState(false);
+  return (
+    <div className="h-64 flex rounded-card border border-line overflow-hidden bg-canvas">
+      <SidePanel collapsed={collapsed} onToggleCollapse={() => setCollapsed((v) => !v)}>
+        <div className="p-3 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-label font-medium text-muted">Cài đặt lát cắt</span>
+            <SidePanelToggle onClick={() => setCollapsed(true)} />
+          </div>
+          <Skeleton className="h-8" />
+          <Skeleton className="h-8" />
+        </div>
+      </SidePanel>
+      <div className="flex-1 flex items-center justify-center text-label text-muted">Canvas / 3D view</div>
+    </div>
+  );
+}
+```
+
+## API
+
+### SidePanel
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `id` | `string` |  |  |
+| `collapsed` * | `boolean` |  |  |
+| `onToggleCollapse` * | `() => void` |  |  |
+| `width` | `number` | `SIDE_PANEL_WIDTH` |  |
+| `children` * | `React.ReactNode` |  |  |
+
+### SidePanelToggle
+
+The collapse toggle placed at the top of the panel content (next to the first label).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `onClick` * | `() => void` |  |  |
+
+## Accessibility
+
+- The toggle is labelled from the locale and keeps focus; the collapsed rail stays reachable.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/side-panel/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/subpage-toolbar.md -->
+
+# Subpage toolbar
+
+The sticky row under a page title: filters on the left; search, refresh and the icon-only primary action on the right. RefreshButton spins while its promise runs.
+
+## When to use
+
+- Every list or grid page.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Actions of a tool app | AppHeader |
+
+## Import
+
+```tsx
+import { SubpageToolbar, RefreshButton } from "@semi/ui";
+```
+
+## Examples
+
+### List page
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Pills, SubpageToolbar, toast } from "@semi/ui";
+
+export default function SubpageToolbarListPage() {
+  const [status, setStatus] = useState("all");
+  const [q, setQ] = useState("");
+  return (
+    <SubpageToolbar
+      left={
+        <Pills
+          value={status}
+          onChange={setStatus}
+          options={[
+            { key: "all", label: "Tất cả" },
+            { key: "printing", label: "Đang in" },
+            { key: "idle", label: "Chờ lệnh" },
+          ]}
+        />
+      }
+      searchValue={q}
+      onSearchChange={setQ}
+      searchPlaceholder="Tìm máy in…"
+      onRefresh={() => new Promise((r) => setTimeout(r, 800))}
+      onPrimaryAction={() => toast({ title: "Thêm máy in" })}
+      primaryActionLabel="Thêm máy in"
+    />
+  );
+}
+```
+
+### RefreshButton
+
+```tsx
+import { RefreshButton } from "@semi/ui";
+
+export default function RefreshButtonBasic() {
+  return <RefreshButton onRefresh={() => new Promise((r) => setTimeout(r, 1000))} />;
+}
+```
+
+## API
+
+### SubpageToolbar
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `left` | `React.ReactNode` |  | Filter controls on the left (Pills, Chip, CustomSelect). |
+| `right` | `React.ReactNode` |  | Optional extra controls on the right (placed before the primary icon button). |
+| `onPrimaryAction` | `() => void` |  | Click handler for the icon-only primary CTA button (e.g. "Thêm"). |
+| `primaryActionLabel` | `string` |  | Accessible title & aria-label for the icon-only primary CTA button. |
+| `primaryActionIcon` | `IconName` | `"plus"` | Icon for the primary CTA button (default: "plus"). |
+| `searchValue` | `string` |  | Search query value (renders a SearchInput when onSearchChange is provided). |
+| `onSearchChange` | `(val: string) => void` |  | Search change handler. |
+| `searchPlaceholder` | `string` |  | Placeholder for SearchInput. |
+| `onRefresh` | `() => unknown` |  | Async or sync reload callback (renders RefreshButton when provided). |
+| `className` | `string` | `""` |  |
+
+### RefreshButton
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `onRefresh` * | `() => unknown` |  |  |
+| `className` | `string` | `""` |  |
+| `label` | `string` |  |  |
+
+## Accessibility
+
+- The primary action is icon-only, so primaryActionLabel is required (aria-label + title).
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/subpage-toolbar/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/tabs.md -->
+
+# Tabs
+
+Switch between panels of content inside a page or card: underline (default) or segmented, with icons and counts.
+
+## When to use
+
+- Sections of one object: Tổng quan / Hoạt động / Cài đặt.
+- A segmented period switch that changes a panel (variant="segmented").
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Sibling pages of an area | PageTabsTitle |
+| Filter a list (no panels) | Pills |
+
+## Import
+
+```tsx
+import { Tabs } from "@semi/ui";
+```
+
+## Examples
+
+### Underline with panels
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Tabs } from "@semi/ui";
+
+export default function TabsUnderline() {
+  const [tab, setTab] = useState<"overview" | "activity" | "settings">("overview");
+  return (
+    <Tabs
+      label="Chi tiết máy in"
+      value={tab}
+      onChange={setTab}
+      items={[
+        { key: "overview", label: "Tổng quan", icon: "gauge", content: <p className="text-ui text-body">Nhiệt độ, tiến độ và camera.</p> },
+        { key: "activity", label: "Hoạt động", count: 12, content: <p className="text-ui text-body">12 sự kiện trong 24 giờ qua.</p> },
+        { key: "settings", label: "Cài đặt", icon: "settings", content: <p className="text-ui text-body">Tên, nhóm và quyền truy cập.</p> },
+      ]}
+    />
+  );
+}
+```
+
+### Segmented
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Tabs } from "@semi/ui";
+
+export default function TabsSegmented() {
+  const [range, setRange] = useState<"day" | "week" | "month">("week");
+  return (
+    <Tabs
+      variant="segmented"
+      label="Khoảng thời gian"
+      value={range}
+      onChange={setRange}
+      items={[
+        { key: "day", label: "Ngày" },
+        { key: "week", label: "Tuần" },
+        { key: "month", label: "Tháng" },
+      ]}
+    />
+  );
+}
+```
+
+## API
+
+### Tabs
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `items` * | `TabItem<T>[]` |  |  |
+| `value` * | `T` |  |  |
+| `onChange` * | `(key: T) => void` |  |  |
+| `variant` | `'underline' \| 'segmented'` | `"underline"` | underline = section tabs inside a card or page · segmented = compact switch inside a toolbar. |
+| `label` | `string` |  | Accessible name of the tab list. |
+| `className` | `string` |  |  |
+| `panelClassName` | `string` | `"pt-4"` |  |
+
+## Accessibility
+
+- tablist / tab / tabpanel; ←/→, Home, End move; the panel is linked to its tab.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/tabs/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/avatar.md -->
+
+# Avatar
+
+A person or team: their image, or initials on a tone picked from the name.
+
+## When to use
+
+- Owners, assignees, customers in rows and cards.
+
+## Import
+
+```tsx
+import { Avatar } from "@semi/ui";
+```
+
+## Examples
+
+### Sizes
+
+```tsx
+import { Avatar } from "@semi/ui";
+
+export default function AvatarSizes() {
+  return (
+    <div className="flex items-center gap-3">
+      <Avatar name="Hoàng Huỳnh" size="lg" />
+      <Avatar name="Semi Team" />
+      <Avatar name="Lan" size="sm" />
+    </div>
+  );
+}
+```
+
+## API
+
+### Avatar
+
+Person or team mark: photo, else initials on a tone picked from the name (stable per name).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `name` * | `string` |  |  |
+| `src` | `string` |  |  |
+| `size` | `'sm' \| 'md' \| 'lg'` | `"md"` |  |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- The name is the accessible label; decorative next to a visible name.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/avatar/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/badge.md -->
+
+# Badge
+
+A read-only status or tag in a tone (10% fill, 20% border, theme-safe text), with an optional dot or icon.
+
+## When to use
+
+- Status of a row or card (Đã thanh toán, Lỗi), a plan or role tag.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Something clickable | Chip |
+| A count next to a title | COUNT_PILL |
+
+## Import
+
+```tsx
+import { Badge } from "@semi/ui";
+```
+
+## Examples
+
+### Tones
+
+```tsx
+import { Badge } from "@semi/ui";
+
+export default function BadgeTones() {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <Badge tone="emerald" dot>
+        Hoàn thành
+      </Badge>
+      <Badge tone="amber" dot>
+        Đang xử lý
+      </Badge>
+      <Badge tone="rose" dot>
+        Thất bại
+      </Badge>
+      <Badge tone="sky" icon="server">
+        Đồng bộ
+      </Badge>
+      <Badge tone="purple" icon="sparkles">
+        Pro
+      </Badge>
+      <Badge tone="gray" size="sm">
+        Nháp
+      </Badge>
+    </div>
+  );
+}
+```
+
+## API
+
+### Badge
+
+Standard Bento Tag/Badge primitive with dual-theme tonal matching.
+Uses 10% alpha fill + 20% alpha border + high-contrast text adapted for dark and light modes.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `tone` | `SemanticTone` | `"gray"` | Chromatic tone matching the theme. Defaults to "gray". |
+| `icon` | `IconName` |  | Optional leading icon from the Semi standard registry. |
+| `dot` | `boolean` |  | Optional leading status dot in the tone's color. |
+| `children` * | `React.ReactNode` |  |  |
+| `className` | `string` | `""` |  |
+| `size` | `'sm' \| 'md'` | `"md"` |  |
+
+## Accessibility
+
+- Text, not colour alone, carries the meaning; it never wraps.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/badge/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/card.md -->
+
+# Card
+
+The bento content card: panel fill and the style's card border, radius and resting shadow. interactive adds hover / press, active marks the selected or running item.
+
+## When to use
+
+- Group the content of a page in cards; nested facts in TILE.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A metric | KpiCard |
+| A tinted callout | Alert or TONAL_CONTAINER |
+
+## Import
+
+```tsx
+import { Card, CARD, CARD_HOVER, CARD_ACTIVE, TILE } from "@semi/ui";
+```
+
+## Examples
+
+### Content card
+
+```tsx
+import { Badge, Card } from "@semi/ui";
+
+export default function CardBasic() {
+  return (
+    <Card className="p-4 space-y-2 max-w-sm">
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-ui font-semibold text-contrast">X1 Carbon · Xưởng A</span>
+        <Badge tone="emerald" dot>
+          Online
+        </Badge>
+      </div>
+      <p className="text-label text-muted">Đang in: vỏ hộp điều khiển · còn 42 phút</p>
+    </Card>
+  );
+}
+```
+
+### Interactive and active
+
+```tsx
+import { Card, TILE } from "@semi/ui";
+
+export default function CardStates() {
+  return (
+    <div className="grid gap-3 sm:grid-cols-2 max-w-xl">
+      <Card interactive className="p-4 space-y-2">
+        <div className="text-ui font-semibold text-contrast">P1S · Xưởng B</div>
+        <div className={`${TILE} p-2 text-label text-body tabular-nums`}>Đầu phun 220°C · Bàn 60°C</div>
+      </Card>
+      <Card interactive active className="p-4 space-y-2">
+        <div className="text-ui font-semibold text-contrast">A1 Mini · đang in</div>
+        <div className={`${TILE} p-2 text-label text-body tabular-nums`}>Tiến độ 64%</div>
+      </Card>
+    </div>
+  );
+}
+```
+
+## API
+
+### Card
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `interactive` | `boolean` | `false` | Clickable card (opens a detail view): hover border + press scale. |
+| `active` | `boolean` | `false` | "On" / selected card: primary border, no glow. |
+| `ref` | `React.Ref<HTMLDivElement>` |  |  |
+
+## Accessibility
+
+- A clickable card is a link or button inside the card, not a div with onClick.
+
+## Notes
+
+- Pass padding and layout only: no bg-* or shadow-* on <Card> (card-class-override).
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/card/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/icon.md -->
+
+# Icon
+
+The semantic icon registry (stroke 1.75, 24px grid). IconTile is the rounded tinted square that leads cards and dialogs.
+
+## When to use
+
+- Every icon in the UI: pick the semantic name (trash = delete, close = dismiss, refresh = reload). See docs/ICONS.md.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A missing icon | add it to ICONS in @semi/ui (/semi-propose), never an inline <svg> |
+
+## Import
+
+```tsx
+import { Icon, IconTile, ICONS, suggestIcon } from "@semi/ui";
+```
+
+## Examples
+
+### Icons and tiles
+
+```tsx
+import { Icon, IconTile } from "@semi/ui";
+
+export default function IconBasic() {
+  return (
+    <div className="flex flex-wrap items-center gap-4">
+      <Icon name="printer" className="w-5 h-5 text-body" />
+      <Icon name="trash" className="w-5 h-5 text-danger-fg" title="Xoá" />
+      <Icon name="refresh" className="w-5 h-5 text-accent-fg" />
+      <IconTile name="box" tone="green" />
+      <IconTile name="camera" tone="sky" size="lg" />
+    </div>
+  );
+}
+```
+
+## API
+
+### Icon
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `name` * | `IconName` |  |  |
+| `className` | `string` | `"w-4 h-4"` |  |
+| `strokeWidth` | `number` | `1.75` |  |
+| `title` | `string` |  |  |
+
+### IconTile
+
+Rounded square with an icon: the leading visual of cards, list rows and dialogs.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `name` * | `IconName` |  |  |
+| `tone` | `'violet' \| 'sky' \| 'green' \| 'amber' \| 'pink' \| 'gray'` | `"green"` |  |
+| `size` | `'sm' \| 'md' \| 'lg'` | `"md"` |  |
+| `className` | `string` | `""` |  |
+
+## Accessibility
+
+- Decorative by default (aria-hidden); pass title when the icon alone carries meaning.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/icon/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/kpi-card.md -->
+
+# KPI card
+
+A metric card: label, a large tabular figure, a sub line coloured good / danger, and an icon in its tone.
+
+## When to use
+
+- The metric row at the top of a dashboard (2–4 per row).
+
+## Import
+
+```tsx
+import { KpiCard } from "@semi/ui";
+```
+
+## Examples
+
+### Dashboard row
+
+```tsx
+import { KpiCard } from "@semi/ui";
+
+export default function KpiCardRow() {
+  return (
+    <div className="grid gap-3 grid-cols-2 @3xl:grid-cols-4">
+      <KpiCard label="Sản lượng in" value="1.842" sub="+12.4% so với tuần trước" tone="good" icon="box" iconTone="green" />
+      <KpiCard label="Doanh thu" value="48,2 tr ₫" sub="+8.6% so với tháng trước" tone="good" icon="coin" iconTone="pink" />
+      <KpiCard label="Giờ máy chạy" value="5.420 h" sub="-2.1%" tone="danger" icon="clock" iconTone="sky" />
+      <KpiCard label="Tỉ lệ thành công" value="98.7%" icon="check" iconTone="violet" loading={false} />
+    </div>
+  );
+}
+```
+
+## API
+
+### KpiCard
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `label` * | `string` |  |  |
+| `value` * | `React.ReactNode` |  |  |
+| `sub` | `React.ReactNode` |  |  |
+| `tone` | `'danger' \| 'good'` |  |  |
+| `hint` | `string` |  |  |
+| `icon` | `IconName` |  |  |
+| `iconTone` | `'violet' \| 'sky' \| 'green' \| 'amber' \| 'pink' \| 'gray'` | `"sky"` |  |
+| `loading` | `boolean` | `false` | Show a shimmer skeleton in place of the value while loading. |
+| `className` | `string` | `""` |  |
+
+## Accessibility
+
+- hint becomes the card's title (tooltip); the figure uses tabular-nums.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/kpi-card/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/markdown.md -->
+
+# Markdown
+
+Renders AI or user text safely: paragraphs, lists, bold, inline code and links (as ExternalLink). No HTML.
+
+## When to use
+
+- Answers of an AI assistant, release notes, short rich text.
+
+## Import
+
+```tsx
+import { Markdown } from "@semi/ui";
+```
+
+## Examples
+
+### AI answer
+
+```tsx
+import { Markdown } from "@semi/ui";
+
+const TEXT = `## Gợi ý cài đặt
+Với **PETG**, giảm quạt xuống 30% và tăng nhiệt độ đầu phun lên 245°C.
+
+- Bật \`Z-hop\` khi di chuyển
+- Lớp đầu tiên: 0.24 mm
+
+Xem thêm tại https://example.com/petg-guide`;
+
+export default function MarkdownBasic() {
+  return <Markdown text={TEXT} />;
+}
+```
+
+## API
+
+### Markdown
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `text` * | `string` |  |  |
+
+## Accessibility
+
+- Links become ExternalLink (new tab announced).
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/markdown/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/table.md -->
+
+# Table
+
+A dense table for rows compared column by column. Cells stay on one line (the table scrolls sideways on phones); TD wrap for a long-text column, numeric for figures.
+
+## When to use
+
+- Orders, invoices, logs: rows compared by column.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Entities with images or many states | a grid of Card |
+
+## Import
+
+```tsx
+import { Table, THead, TBody, TR, TH, TD } from "@semi/ui";
+```
+
+## Examples
+
+### Orders
+
+```tsx
+import { Avatar, Badge, Table, TBody, TD, TH, THead, TR } from "@semi/ui";
+
+const ORDERS = [
+  { id: "SO-1042", customer: "Nguyễn An", status: ["emerald", "Đã thanh toán"], total: 1_250_000 },
+  { id: "SO-1043", customer: "Trần Bình", status: ["amber", "Chờ xử lý"], total: 480_000 },
+  { id: "SO-1044", customer: "Lê Chi", status: ["rose", "Hoàn tiền"], total: 2_100_000 },
+] as const;
+
+export default function TableOrders() {
+  return (
+    <div className="rounded-card border border-line overflow-hidden">
+      <Table>
+        <THead>
+          <TR>
+            <TH>Mã đơn</TH>
+            <TH>Khách hàng</TH>
+            <TH>Trạng thái</TH>
+            <TH align="right">Tổng</TH>
+          </TR>
+        </THead>
+        <TBody>
+          {ORDERS.map((o) => (
+            <TR key={o.id}>
+              <TD className="font-medium text-contrast">{o.id}</TD>
+              <TD>
+                <span className="inline-flex items-center gap-2">
+                  <Avatar name={o.customer} size="sm" />
+                  {o.customer}
+                </span>
+              </TD>
+              <TD>
+                <Badge tone={o.status[0]} dot>
+                  {o.status[1]}
+                </Badge>
+              </TD>
+              <TD numeric>{o.total.toLocaleString("vi-VN")} ₫</TD>
+            </TR>
+          ))}
+        </TBody>
+      </Table>
+    </div>
+  );
+}
+```
+
+## API
+
+### Table
+
+No props of its own.
+
+### THead
+
+No props of its own.
+
+### TBody
+
+No props of its own.
+
+### TR
+
+A clickable row (onClick) gets the hover fill and a pointer; give it a link or button inside for keyboard users.
+
+No props of its own.
+
+### TH
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `align` | `'left' \| 'right' \| 'center'` | `"left"` |  |
+
+### TD
+
+`numeric` right-aligns and sets tabular-nums (money, counts, dates); `wrap` lets long text wrap (min 12rem wide).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `align` | `'left' \| 'right' \| 'center'` |  |  |
+| `numeric` | `boolean` | `false` |  |
+| `wrap` | `boolean` | `false` |  |
+
+## Accessibility
+
+- Real <table> semantics; a clickable TR is reachable by keyboard (Enter).
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/table/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/alert.md -->
+
+# Alert
+
+A message that stays on the page: info, success, warning, danger, with a title, an action and an optional dismiss.
+
+## When to use
+
+- State the user must see while working (firmware update, low material, failed print).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A passing confirmation | toast() |
+| Ask before acting | confirmDialog() |
+
+## Import
+
+```tsx
+import { Alert } from "@semi/ui";
+```
+
+## Examples
+
+### Tones
+
+```tsx
+import { Alert, Button } from "@semi/ui";
+
+export default function AlertTones() {
+  return (
+    <div className="grid gap-3 @2xl:grid-cols-2">
+      <Alert tone="info" title="Bản cập nhật mới">
+        Firmware 1.08 đã sẵn sàng cho 3 máy.
+      </Alert>
+      <Alert tone="success" title="Đã kết nối">
+        Máy X1 Carbon đang online.
+      </Alert>
+      <Alert tone="warning" title="Sắp hết nhựa" action={<Button size="sm">Đặt thêm</Button>}>
+        Cuộn PLA đen còn khoảng 80 g.
+      </Alert>
+      <Alert tone="danger" title="In thất bại">
+        Đầu phun bị tắc ở lớp 132.
+      </Alert>
+    </div>
+  );
+}
+```
+
+### Dismissible
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Alert, Button } from "@semi/ui";
+
+export default function AlertDismiss() {
+  const [open, setOpen] = useState(true);
+  return open ? (
+    <Alert tone="warning" title="Mất kết nối camera" onDismiss={() => setOpen(false)}>
+      Ảnh sẽ cập nhật lại khi máy online.
+    </Alert>
+  ) : (
+    <Button size="sm" onClick={() => setOpen(true)}>
+      Hiện lại
+    </Button>
+  );
+}
+```
+
+## API
+
+### Alert
+
+Callout inside a page or form (docs/DESIGN_SYSTEM.md §3b): tinted surface, tone icon, optional action / dismiss.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `tone` | `'danger' \| 'info' \| 'success' \| 'warning'` | `"info"` |  |
+| `title` | `React.ReactNode` |  |  |
+| `children` | `React.ReactNode` |  |  |
+| `icon` | `IconName` |  | Override the tone's icon. |
+| `action` | `React.ReactNode` |  | A button or link shown under the text. |
+| `onDismiss` | `() => void` |  |  |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- role="status" (role="alert" for danger); the dismiss button is labelled.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/alert/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/empty-state.md -->
+
+# Empty state
+
+What an empty list or page shows: an icon, one short title, a description and the action that fills it.
+
+## When to use
+
+- No items yet, no search results, a feature not set up.
+
+## Import
+
+```tsx
+import { EmptyState } from "@semi/ui";
+```
+
+## Examples
+
+### First item
+
+```tsx
+import { Button, EmptyState } from "@semi/ui";
+
+export default function EmptyStateBasic() {
+  return (
+    <EmptyState
+      icon="printer"
+      title="Chưa có máy in nào"
+      description="Thêm máy in đầu tiên để theo dõi tiến độ và nhiệt độ."
+      action={
+        <Button variant="primary" icon="plus">
+          Thêm máy in
+        </Button>
+      }
+    />
+  );
+}
+```
+
+## API
+
+### EmptyState
+
+Empty list / first-run state: icon, one short line, optional description and action (EMPTY surface).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `icon` | `IconName` | `"box"` |  |
+| `title` | `React.ReactNode` |  |  |
+| `description` | `React.ReactNode` |  |  |
+| `action` | `React.ReactNode` |  |  |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- The title is a heading; the action is a normal button.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/empty-state/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/progress.md -->
+
+# Progress
+
+A determinate bar with value, or an indeterminate one when the end is unknown; tones for success and danger.
+
+## When to use
+
+- Print progress, upload, storage used.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Content still loading | Skeleton |
+
+## Import
+
+```tsx
+import { Progress } from "@semi/ui";
+```
+
+## Examples
+
+### Values and tones
+
+```tsx
+import { Progress } from "@semi/ui";
+
+export default function ProgressBasic() {
+  return (
+    <div className="grid gap-4 @2xl:grid-cols-2">
+      <Progress label="Tiến độ in" value={64} showValue />
+      <Progress label="Dung lượng" value={92} tone="danger" showValue />
+      <Progress label="Đang xử lý" />
+      <Progress label="Đã tải" value={30} tone="success" size="sm" />
+    </div>
+  );
+}
+```
+
+## API
+
+### Progress
+
+Determinate or indeterminate progress bar (uploads, quotas, print progress).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `value` | `number` |  | Omit for an indeterminate bar. |
+| `max` | `number` | `100` |  |
+| `tone` | `'danger' \| 'info' \| 'success' \| 'warning' \| 'accent'` | `"accent"` |  |
+| `label` | `React.ReactNode` |  | Visible label above the bar (also its accessible name). |
+| `showValue` | `boolean` | `false` |  |
+| `size` | `'sm' \| 'md'` | `"md"` |  |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- role="progressbar" with aria-valuenow / max; the label names it.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/progress/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/skeleton.md -->
+
+# Skeleton
+
+Shimmer placeholders while content loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton; Loading announces the region. Never “Đang tải…” text.
+
+## When to use
+
+- Any content that is loading: show its shape.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| An action in progress | Button loading or Spinner |
+| A known amount of work | Progress |
+
+## Import
+
+```tsx
+import { Skeleton, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton, Loading } from "@semi/ui";
+```
+
+## Examples
+
+### Card and rows
+
+```tsx
+import { SkeletonCard, SkeletonRows } from "@semi/ui";
+
+export default function SkeletonCardRows() {
+  return (
+    <div className="grid gap-4 @2xl:grid-cols-2">
+      <SkeletonCard />
+      <SkeletonRows count={3} />
+    </div>
+  );
+}
+```
+
+### Page and grid
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Button, Loading, PageSkeleton, SkeletonGrid } from "@semi/ui";
+
+export default function SkeletonPage() {
+  const [shape, setShape] = useState<"grid" | "page">("grid");
+  return (
+    <div className="space-y-3">
+      <div className="flex gap-2">
+        <Button size="sm" variant={shape === "grid" ? "primary" : "secondary"} onClick={() => setShape("grid")}>
+          SkeletonGrid
+        </Button>
+        <Button size="sm" variant={shape === "page" ? "primary" : "secondary"} onClick={() => setShape("page")}>
+          PageSkeleton
+        </Button>
+      </div>
+      {shape === "grid" ? (
+        <SkeletonGrid count={3} className="grid grid-cols-1 @2xl:grid-cols-3 gap-3" />
+      ) : (
+        <Loading>
+          <PageSkeleton />
+        </Loading>
+      )}
+    </div>
+  );
+}
+```
+
+## API
+
+### Skeleton
+
+One shimmering block; size and radius come from className (default rounded-control).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `className` | `string` | `""` |  |
+| `style` | `CSSProperties` |  |  |
+
+### SkeletonCard
+
+Card placeholder: icon tile + two text lines, then an optional body block.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `body` | `null \| string` | `"h-24"` |  |
+| `className` | `string` | `""` |  |
+
+### SkeletonGrid
+
+Grid of card placeholders (the grid classes should match the real grid).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `count` | `number` | `6` |  |
+| `className` | `string` | `"grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3"` |  |
+| `body` | `null \| string` | `"h-24"` |  |
+| `label` | `string` |  |  |
+
+### SkeletonRows
+
+List row placeholders (dialog lists, tables).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `count` | `number` | `5` |  |
+| `className` | `string` | `"flex flex-col gap-2"` |  |
+| `label` | `string` |  |  |
+
+### PageSkeleton
+
+Whole-page placeholder (Suspense fallbacks): title row + a grid of cards.
+
+No props of its own.
+
+### Loading
+
+Wrapper that tells assistive tech the region is loading. `relative` keeps the absolute sr-only label inside scroll containers.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `children` * | `React.ReactNode` |  |  |
+| `className` | `string` | `""` |  |
+| `label` | `string` |  |  |
+
+## Accessibility
+
+- Loading (and the Skeleton* groups with label) set role="status" + aria-busy so screen readers hear one message.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/skeleton/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/ai-chat.md -->
+
+# AI chat
+
+AIChat is the ready-made assistant panel: ChatPanel (side panel or full screen, resizable, keyboard inset) around ChatView (list + composer). UI only: the app keeps the messages, streams the answer and calls the model.
+
+## When to use
+
+- Every AI conversation in a Semi app (assistant beside a workspace, help over a modal).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A different layout of the same parts | ChatPanel + ChatView + the message parts (Chat messages doc) |
+
+## Import
+
+```tsx
+import { AIChat, ChatPanel, ChatView, type ChatItem } from "@semi/ui";
+```
+
+## Examples
+
+### Assistant beside a workspace
+
+Type and press Enter: a fake assistant streams an answer; Stop, retry and new chat work.
+
+```tsx
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { AIChat, ChatIntro, ChatSuggestion, ChatSuggestions, type ChatItem } from "@semi/ui";
+
+const ANSWER = "Với **PETG**: đầu phun 240–250°C, quạt 30–50%, bật `Z-hop` 0.4 mm để giảm kéo sợi.";
+
+export default function AIChatWorkspace() {
+  const [messages, setMessages] = useState<ChatItem[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [draft, setDraft] = useState("");
+  const timer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const stop = () => {
+    if (timer.current) clearInterval(timer.current);
+    setBusy(false);
+    setMessages((ms) => ms.map((m) => (m.pending ? { ...m, pending: false } : m)));
+  };
+  useEffect(() => stop, []);
+  const send = (text: string) => {
+    const id = Date.now();
+    setMessages((ms) => [...ms, { id: `u${id}`, role: "user", content: text }, { id, role: "assistant", content: "", pending: true }]);
+    setBusy(true);
+    let i = 0;
+    timer.current = setInterval(() => {
+      i = Math.min(ANSWER.length, i + 4);
+      setMessages((ms) => ms.map((m) => (m.id === id ? { ...m, content: ANSWER.slice(0, i), pending: i < ANSWER.length } : m)));
+      if (i >= ANSWER.length) stop();
+    }, 30);
+  };
+  return (
+    <div className="relative h-[480px] rounded-card bg-canvas border border-line overflow-hidden">
+      <div className="absolute inset-0 flex items-center justify-center text-label text-muted">Canvas / workspace</div>
+      <AIChat
+        title="Trợ lý AI"
+        placement="workspace"
+        shown
+        onClose={() => undefined}
+        messages={messages}
+        busy={busy}
+        onSend={send}
+        onStop={stop}
+        onRetry={() => send("Thử lại")}
+        onNewChat={() => setMessages([])}
+        value={draft}
+        onValueChange={setDraft}
+        placeholder="Hỏi về cài đặt in…"
+        widthKey={null}
+        empty={
+          <>
+            <ChatIntro title="Hỏi gì về bản in?">Trợ lý biết máy in, vật liệu và cài đặt slicer của bạn.</ChatIntro>
+            <ChatSuggestions label="Gợi ý">
+              <ChatSuggestion icon="sparkles" onClick={() => send("Vì sao PETG bị kéo sợi?")}>
+                Vì sao PETG bị kéo sợi?
+              </ChatSuggestion>
+            </ChatSuggestions>
+          </>
+        }
+      />
+    </div>
+  );
+}
+```
+
+### Over a modal
+
+placement="screen" opens the assistant as a dialog over everything; Escape closes only the chat.
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { AIChat, Button, Modal, type ChatItem } from "@semi/ui";
+
+export default function AIChatOverModal() {
+  const [modal, setModal] = useState(false);
+  const [chat, setChat] = useState(false);
+  const [messages, setMessages] = useState<ChatItem[]>([]);
+  return (
+    <>
+      <Button icon="layers" onClick={() => setModal(true)}>
+        Mở lỗi máy in
+      </Button>
+      <Modal open={modal} onClose={() => setModal(false)} title="Lỗi máy in: HMS 0300-0100" description="Mở trợ lý AI ngay trên modal">
+        <p className="text-ui text-body">placement=&quot;screen&quot; phủ cả trang: Esc chỉ đóng trợ lý, modal bên dưới vẫn giữ.</p>
+        <Button variant="primary" icon="sparkles" onClick={() => setChat(true)}>
+          Hỏi AI về lỗi này
+        </Button>
+      </Modal>
+      {chat && (
+        <AIChat
+          title="Trợ lý AI"
+          placement="screen"
+          shown={chat}
+          onClose={() => setChat(false)}
+          messages={messages}
+          busy={false}
+          onSend={(text) => setMessages((ms) => [...ms, { id: Date.now(), role: "user", content: text }])}
+          onStop={() => undefined}
+          onRetry={() => undefined}
+          onNewChat={() => setMessages([])}
+          widthKey={null}
+        />
+      )}
+    </>
+  );
+}
+```
+
+## API
+
+### AIChat
+
+ChatPanel + ChatView + ChatComposer with the messages drawn the standard way. The app owns `messages` and `busy`;
+the composer text is kept here unless `value` / `onValueChange` are passed (to fill it from a suggestion).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `title` * | `string` |  |  |
+| `icon` | `IconName` |  |  |
+| `placement` | `'workspace' \| 'screen'` |  |  |
+| `shown` | `boolean` |  |  |
+| `onClose` * | `() => void` |  |  |
+| `loading` | `boolean` | `false` |  |
+| `setup` | `React.ReactNode` |  |  |
+| `messages` * | `M[]` |  |  |
+| `busy` * | `boolean` |  |  |
+| `onSend` * | `(text: string) => void` |  |  |
+| `onStop` | `() => void` |  |  |
+| `onRetry` | `(m: M) => void` |  | Retry for a failed answer (gets that message). |
+| `onNewChat` | `() => void` |  | Clears the conversation; the button shows once there is a message. |
+| `placeholder` | `string` |  |  |
+| `empty` | `React.ReactNode` |  | Shown while there is no message (ChatIntro, ChatSuggestions). |
+| `listEnd` | `React.ReactNode` |  | Under the last message (follow-up choices, a note). |
+| `toolbar` | `React.ReactNode` |  | Under the field (model picker, attachments). |
+| `actions` | `React.ReactNode` |  |  |
+| `renderUser` | `(m: M) => ReactNode` |  |  |
+| `renderAnswer` | `(m: M) => ReactNode` |  |  |
+| `composer` | `boolean` | `true` | false hides the composer (read-only conversation). |
+| `value` | `string` |  |  |
+| `onValueChange` | `(text: string) => void` |  |  |
+| `widthKey` | `null \| string` |  |  |
+
+### ChatPanel
+
+The side panel an AI conversation opens in. `placement="workspace"`: inside the nearest positioned parent, beside
+the content (a tool's canvas, the page). `"screen"`: over the whole page as a dialog, also above an open Modal.
+Phones always get the full screen. Resizable from `sm` (remembered per `widthKey`); Escape and × close it.
+Keep it mounted with `shown={false}` while it slides out, then unmount.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `title` * | `string` |  |  |
+| `icon` | `IconName` | `"sparkles"` |  |
+| `placement` | `'workspace' \| 'screen'` | `"workspace"` |  |
+| `shown` | `boolean` | `true` | false while the panel animates out. |
+| `onClose` * | `() => void` |  |  |
+| `onNewChat` | `() => void` |  | Shows the "new chat" button (pass it only once there is a conversation). |
+| `newChatDisabled` | `boolean` | `false` |  |
+| `actions` | `React.ReactNode` |  | Extra header buttons, before "new chat" and close. |
+| `resizable` | `boolean` | `true` |  |
+| `defaultWidth` | `number` | `CHAT_PANEL_WIDTH` |  |
+| `widthKey` | `null \| string` | `"semi-chat-panel-width"` | localStorage key of the width; null = do not remember. |
+| `children` * | `React.ReactNode` |  | Usually a ChatView. |
+
+### ChatView
+
+Loading skeleton, `setup` (e.g. "AI is not set up" + a settings button) in place of the chat, or the list above the composer.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `loading` | `boolean` | `false` |  |
+| `setup` | `React.ReactNode` |  |  |
+| `busy` | `boolean` |  |  |
+| `announcement` | `string` |  |  |
+| `label` | `string` |  |  |
+| `empty` | `boolean` |  | Only the intro is showing (see ChatList). |
+| `composer` | `React.ReactNode` |  |  |
+| `children` * | `React.ReactNode` |  |  |
+
+## Accessibility
+
+- The list announces one message per finished answer; Enter sends, Shift+Enter breaks the line, IME composition is safe; placement="screen" is a dialog where Escape closes only the chat.
+
+## Notes
+
+- The model picker goes in toolbar (ChatModelPicker); provider and model lists are app data.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/ai-chat/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/chat-messages.md -->
+
+# Chat messages
+
+The parts of a conversation, to compose your own chat: UserMessage, AssistantMessage (+ ChatAnswer for a ChatItem), ChatThinking, ChatError, ChatCopyButton, ChatAvatar, ChatIntro, ChatSuggestion(s), ChatList and ChatComposer.
+
+## When to use
+
+- A chat that does not fit AIChat's layout; AI output inside another feature.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A standard assistant panel | AIChat |
+
+## Import
+
+```tsx
+import { UserMessage, AssistantMessage, ChatAnswer, ChatAvatar, ChatCopyButton, ChatError, ChatThinking, ChatIntro, ChatSuggestion, ChatSuggestions, ChatList, ChatComposer, CHAT_CHIP, CHAT_ROW } from "@semi/ui";
+```
+
+## Examples
+
+### Messages
+
+```tsx
+import { AssistantMessage, ChatCopyButton, ChatError, ChatThinking, Markdown, UserMessage } from "@semi/ui";
+
+const ANSWER = "Giảm quạt xuống **30%** và bật `Z-hop` khi di chuyển.";
+
+export default function ChatMessagesParts() {
+  return (
+    <div className="flex flex-col gap-4 max-w-xl">
+      <UserMessage>Vì sao bản in PETG bị kéo sợi?</UserMessage>
+      <AssistantMessage actions={<ChatCopyButton text={ANSWER} />}>
+        <Markdown text={ANSWER} />
+      </AssistantMessage>
+      <AssistantMessage busy>
+        <ChatThinking label="Đang đọc cài đặt máy in" />
+      </AssistantMessage>
+      <ChatError onRetry={() => undefined}>Không kết nối được tới model.</ChatError>
+      <ChatError tone="warning">Câu trả lời bị cắt vì quá dài.</ChatError>
+    </div>
+  );
+}
+```
+
+### Your own chat from parts
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { ChatComposer, ChatIntro, ChatList, UserMessage } from "@semi/ui";
+
+export default function ChatMessagesCompose() {
+  const [items, setItems] = useState<string[]>([]);
+  const [text, setText] = useState("");
+  return (
+    <div className="flex h-80 max-w-xl flex-col rounded-card border border-line bg-panel">
+      <ChatList label="Ghi chú" empty={items.length === 0}>
+        {items.length === 0 ? (
+          <ChatIntro title="Ghi chú cho đơn in">Viết gì đó rồi Enter.</ChatIntro>
+        ) : (
+          items.map((t, i) => <UserMessage key={i}>{t}</UserMessage>)
+        )}
+      </ChatList>
+      <div className="p-2">
+        <ChatComposer
+          value={text}
+          onChange={setText}
+          onSend={(t) => {
+            setItems((v) => [...v, t]);
+            setText("");
+          }}
+          placeholder="Viết ghi chú…"
+        />
+      </div>
+    </div>
+  );
+}
+```
+
+## API
+
+### UserMessage
+
+The user's message, right-aligned. `failed`: its answer failed (shown dimmed, not sent again).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `failed` | `boolean` | `false` |  |
+| `children` * | `React.ReactNode` |  |  |
+
+### AssistantMessage
+
+An AI answer, left-aligned behind the avatar. `actions` (copy, feedback) show under it once it is done.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `busy` | `boolean` | `false` |  |
+| `actions` | `React.ReactNode` |  |  |
+| `children` * | `React.ReactNode` |  |  |
+
+### ChatAnswer
+
+An answer as most chats show it: the error (with retry), the Markdown text with copy, or "thinking" while empty.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `msg` * | `ChatItem` |  |  |
+| `onRetry` | `() => void` |  |  |
+| `copyable` | `boolean` | `true` |  |
+
+### ChatAvatar
+
+Small sparkles tile in front of every AI answer (pulses while it streams).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `busy` | `boolean` | `false` |  |
+| `icon` | `IconName` | `"sparkles"` |  |
+
+### ChatCopyButton
+
+Copies `text` (an answer, a code block); shows a check for a moment.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `text` * | `string` |  |  |
+
+### ChatError
+
+A failed answer (or an AI note in a warning tone), with an optional retry.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `tone` | `'danger' \| 'warning'` | `"danger"` |  |
+| `onRetry` | `() => void` |  |  |
+| `children` * | `React.ReactNode` |  |  |
+
+### ChatThinking
+
+"Đang suy nghĩ" (or what the AI is doing) with three bouncing dots, while no text has come yet.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `label` | `string` |  |  |
+
+### ChatIntro
+
+Icon, title and one line above an empty conversation.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `icon` | `IconName` | `"sparkles"` |  |
+| `title` * | `React.ReactNode` |  |  |
+| `children` | `React.ReactNode` |  |  |
+
+### ChatSuggestion
+
+One suggested request (a button), or with `href` a link to another site (opens outside the app).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `icon` | `IconName` | `"sparkles"` |  |
+| `disabled` | `boolean` |  |  |
+| `onClick` | `() => void` |  |  |
+| `href` | `string` |  |  |
+| `children` * | `React.ReactNode` |  |  |
+
+### ChatSuggestions
+
+A column of ChatSuggestion rows, with an optional small heading.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `label` | `React.ReactNode` |  |  |
+| `children` * | `React.ReactNode` |  |  |
+
+### ChatList
+
+The scrolling message list (role="log"). Follows new text only while the reader is at the bottom: scrolled up to
+read, it stays put and offers "jump to latest". Streamed tokens are not read out one by one; when `busy` ends the
+finished answer (`announcement`, else "answer complete") is announced once. `empty` (only the intro / suggestions
+showing) keeps it at the top so the intro is read from its start.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `busy` | `boolean` | `false` |  |
+| `announcement` | `string` |  |  |
+| `empty` | `boolean` | `false` |  |
+| `label` | `string` |  | Accessible name of the log (the panel title). |
+| `children` * | `React.ReactNode` |  |  |
+
+### ChatComposer
+
+The question field with send / stop, and an optional `toolbar` under it (model picker, attachments). Controlled:
+the caller keeps the text (so it can fill it, e.g. from a suggestion). Enter sends, Shift+Enter breaks the line, and
+Enter while an input method is composing (Vietnamese Telex / VNI, CJK) only confirms the word. Focus returns to the
+field once the answer to a typed question is done (not after one the app started itself: that would pop up the
+keyboard on a tablet).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `value` * | `string` |  |  |
+| `onChange` * | `(text: string) => void` |  |  |
+| `onSend` * | `(text: string) => void` |  | Gets the trimmed text; the field is not cleared here. |
+| `busy` | `boolean` | `false` |  |
+| `onStop` | `() => void` |  | Shown as a Stop button while `busy`. |
+| `placeholder` | `string` |  |  |
+| `ariaLabel` | `string` |  |  |
+| `disabled` | `boolean` | `false` |  |
+| `maxLength` | `number` | `4000` |  |
+| `rows` | `number` | `1` |  |
+| `inputRef` | `RefObject<HTMLTextAreaElement \| null>` |  |  |
+| `toolbar` | `React.ReactNode` |  |  |
+
+## Accessibility
+
+- ChatList keeps scroll position while the user reads up and offers “jump to latest”; ChatComposer is a labelled textarea with send / stop buttons.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/chat-messages/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/chat-model-picker.md -->
+
+# Chat model picker
+
+Provider → model → effort chips, for the toolbar of a chat composer. The lists are app data.
+
+## When to use
+
+- Let people pick the provider, model and thinking effort of an AI feature.
+
+## Import
+
+```tsx
+import { ChatModelPicker, CHAT_PICK_CHIP } from "@semi/ui";
+```
+
+## Examples
+
+### Provider, model, effort
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { ChatModelPicker, Icon } from "@semi/ui";
+
+const PROVIDERS = [
+  { id: "claude", name: "Claude", models: [{ id: "opus", label: "Opus 5.5", efforts: true }, { id: "haiku", label: "Haiku 5.5" }] },
+  { id: "local", name: "Ollama (máy này)", models: [{ id: "llama", label: "llama-local" }] },
+];
+
+export default function ChatModelPickerBasic() {
+  const [provider, setProvider] = useState("claude");
+  const [model, setModel] = useState("opus");
+  const [effort, setEffort] = useState("");
+  const current = PROVIDERS.find((p) => p.id === provider)!;
+  const hasEffort = current.models.find((m) => m.id === model && "efforts" in m);
+  return (
+    <ChatModelPicker
+      providers={PROVIDERS.map((p) => ({ value: p.id, label: p.name, icon: <Icon name="sparkles" className="w-3.5 h-3.5" /> }))}
+      provider={provider}
+      onProviderChange={(v) => {
+        setProvider(v);
+        setModel(PROVIDERS.find((p) => p.id === v)!.models[0].id);
+      }}
+      models={current.models.map((m) => ({ value: m.id, label: m.label }))}
+      model={model}
+      onModelChange={setModel}
+      efforts={hasEffort ? [{ value: "", label: "Tự động" }, { value: "high", label: "Nghĩ kỹ" }] : []}
+      effort={effort}
+      onEffortChange={setEffort}
+    />
+  );
+}
+```
+
+## API
+
+### ChatModelPicker
+
+Provider, model and thinking-effort chips, like the model picker of the Claude / Gemini apps; pass it as the
+composer `toolbar`. UI only: the app lists what is ready and remembers the pick. The provider chip shows only when
+more than one provider is offered, as its logo (`icon`; the name is the tooltip and the label in the list); the
+effort chip only when the model takes one. The chips stay usable while an answer streams (the pick applies to the
+next question).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `providers` | `CustomSelectOption[]` | `[]` | Ready providers / profiles (Claude, OpenAI, a local server…): `icon` = its logo in the text colour. |
+| `provider` | `string` |  |  |
+| `onProviderChange` | `(value: string) => void` |  |  |
+| `models` * | `CustomSelectOption[]` |  | The current provider's models (`title` e.g. "default of this provider"). |
+| `model` * | `string` |  |  |
+| `onModelChange` * | `(value: string) => void` |  |  |
+| `efforts` | `CustomSelectOption[]` | `[]` | Thinking levels the current model takes (empty = no effort chip). |
+| `effort` | `string` |  |  |
+| `onEffortChange` | `(value: string) => void` |  |  |
+| `disabled` | `boolean` | `false` |  |
+
+## Accessibility
+
+- Each chip is a select button with its own label; changing the provider resets the model.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/chat-model-picker/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/locale.md -->
+
+# Locale
+
+SemiLocaleProvider sets the UI strings of every Semi component (Vietnamese by default, English shipped, override any string).
+
+## When to use
+
+- An app in English, or one that renames a built-in label.
+
+## Import
+
+```tsx
+import { SemiLocaleProvider, en, vi, useSemiLocale } from "@semi/ui";
+```
+
+## Examples
+
+### English
+
+```tsx
+"use client";
+
+import { Menu, SemiLocaleProvider, en, useSemiLocale } from "@semi/ui";
+
+function Probe() {
+  const t = useSemiLocale();
+  return (
+    <span className="text-label text-muted">
+      close = <span className="text-contrast">{t.close}</span> · search = <span className="text-contrast">{t.search}</span>
+    </span>
+  );
+}
+
+export default function LocaleEnglish() {
+  return (
+    <div className="space-y-3">
+      <Probe />
+      <SemiLocaleProvider locale={en}>
+        <div className="flex items-center gap-3">
+          <Probe />
+          <Menu items={[{ label: "Rename", icon: "edit", onSelect: () => undefined }]} />
+        </div>
+      </SemiLocaleProvider>
+    </div>
+  );
+}
+```
+
+## API
+
+### SemiLocaleProvider
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `locale` * | `Partial<SemiStrings>` |  |  |
+| `children` * | `React.ReactNode` |  |  |
+
+## Accessibility
+
+- Button labels, aria-labels and announcements all come from the locale.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/locale/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/theme.md -->
+
+# Theme
+
+Light / dark / system: ThemeScript applies the stored theme before paint, ThemeProvider keeps it, ThemeSwitcher (three-way) and ThemeToggle switch it. data-theme on any element re-scopes every token inside it.
+
+## When to use
+
+- Once in every app's root layout; the switcher in settings or the sidebar footer.
+
+## Import
+
+```tsx
+import { ThemeProvider, ThemeScript, ThemeSwitcher, ThemeToggle, useTheme, themeScript } from "@semi/ui";
+```
+
+## Examples
+
+### Switchers
+
+```tsx
+"use client";
+
+import { ThemeSwitcher, ThemeToggle, useTheme } from "@semi/ui";
+
+export default function ThemeSwitchers() {
+  const { theme, resolvedTheme } = useTheme();
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <ThemeSwitcher showLabels />
+      <ThemeSwitcher />
+      <ThemeToggle />
+      <span className="text-label text-muted tabular-nums">
+        theme = {theme} · resolved = {resolvedTheme}
+      </span>
+    </div>
+  );
+}
+```
+
+### Scoped theme
+
+data-theme on a wrapper fixes the theme of everything inside it.
+
+```tsx
+import { Badge, Button, Card } from "@semi/ui";
+
+export default function ThemeScope() {
+  return (
+    <div className="grid gap-3 @2xl:grid-cols-2">
+      {(["light", "dark"] as const).map((t) => (
+        <div key={t} data-theme={t} className="rounded-card border border-line bg-canvas p-3">
+          <Card className="p-3 space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-ui font-semibold text-contrast">data-theme="{t}"</span>
+              <Badge tone="emerald" dot>
+                Online
+              </Badge>
+            </div>
+            <Button variant="primary" icon="check">
+              Lưu
+            </Button>
+          </Card>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+### Root layout
+
+```tsx
+import { ConfirmHost, ThemeProvider, ThemeScript, ToastHost } from "@semi/ui";
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="vi" suppressHydrationWarning>
+      <head>
+        <ThemeScript />
+      </head>
+      <body className="bg-canvas text-body">
+        <ThemeProvider>
+          {children}
+          <ToastHost />
+          <ConfirmHost />
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+## API
+
+### ThemeProvider
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `children` * | `React.ReactNode` |  |  |
+| `defaultTheme` | `'light' \| 'dark' \| 'system'` | `"dark"` |  |
+| `storageKey` | `string` | `"semi-theme"` |  |
+| `attribute` | `string` | `"data-theme"` |  |
+
+### ThemeScript
+
+Render inside <head> of the root layout, with the same options as ThemeProvider:
+  <html lang="vi" suppressHydrationWarning><head><ThemeScript /></head><body><ThemeProvider>…
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `defaultTheme` | `'light' \| 'dark' \| 'system'` |  |  |
+| `storageKey` | `string` |  |  |
+| `attribute` | `string` |  |  |
+
+### ThemeSwitcher
+
+Three-way theme picker (Sáng · Tối · Hệ thống) for settings pages and sidebar footers. ThemeToggle is the one-tap dark/light flip.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `showLabels` | `boolean` | `false` | Show the text label next to each icon (default: icons only, label in the tooltip). |
+| `fullWidth` | `boolean` | `false` | Stretch to the container width (sidebar footers, settings rows). |
+| `labels` | `Record<Theme, string>` |  | Override the labels (default: the SemiLocaleProvider strings). |
+| `className` | `string` | `""` |  |
+
+### ThemeToggle
+
+Theme toggle button: seamlessly switches between Dark and Light mode.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `className` | `string` | `""` |  |
+| `size` | `'sm' \| 'md'` | `"md"` |  |
+
+## Accessibility
+
+- ThemeSwitcher is a radio group; nothing is marked selected until the stored theme is known (no flash).
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/theme/ and the types in src/ -->

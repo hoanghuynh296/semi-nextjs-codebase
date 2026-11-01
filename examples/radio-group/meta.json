@@ -1,0 +1,30 @@
+{
+  "title": "Radio group",
+  "group": "Forms",
+  "description": "Exactly one option of a few, each with an optional description; vertical by default.",
+  "components": [
+    "RadioGroup"
+  ],
+  "when": [
+    "2–5 options where the descriptions help the choice (plans, shipping)."
+  ],
+  "instead": [
+    {
+      "need": "A filter on a list",
+      "use": "Pills"
+    },
+    {
+      "need": "More than 5 options",
+      "use": "CustomSelect"
+    }
+  ],
+  "a11y": [
+    "A native radio group with a group label: arrow keys move and select."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "Plans"
+    }
+  ]
+}

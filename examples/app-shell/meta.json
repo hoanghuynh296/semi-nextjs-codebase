@@ -1,0 +1,34 @@
+{
+  "title": "App shell",
+  "group": "Navigation & layout",
+  "description": "The frame of a multi-page app: a floating bento sidebar (w-52, collapses to a w-14 icon rail) on bg-canvas, the content panel beside it, and MobileTabBar at the bottom on phones. This docs site is an AppShell.",
+  "components": [
+    "AppShell",
+    "MobileTabBar"
+  ],
+  "when": [
+    "Every app with several pages (dashboards, admin, store back office)."
+  ],
+  "instead": [
+    {
+      "need": "A single-screen tool or editor (3D, canvas)",
+      "use": "AppHeader"
+    }
+  ],
+  "a11y": [
+    "The sidebar is a nav landmark; the active item has aria-current; the collapse state is remembered per app (storageKey)."
+  ],
+  "notes": [
+    "Render it once in the root layout (or a route group layout); pages render only their content.",
+    "Use next/link hrefs for items; onSelect is for in-page sections.",
+    "MobileTabBar is used by AppShell; render it yourself only in a custom shell."
+  ],
+  "examples": [
+    {
+      "file": "layout",
+      "title": "Root layout",
+      "preview": "none",
+      "description": "AppShell fills the viewport, so it is shown as code: this very page is the live example."
+    }
+  ]
+}

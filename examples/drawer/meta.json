@@ -1,0 +1,30 @@
+{
+  "title": "Drawer",
+  "group": "Overlays",
+  "description": "A panel that slides in from the right, left or bottom, with title and footer; a sheet on phones.",
+  "components": [
+    "Drawer"
+  ],
+  "when": [
+    "Filters of a list, details of a row, a secondary form that keeps the page visible."
+  ],
+  "instead": [
+    {
+      "need": "A focused task",
+      "use": "Modal"
+    },
+    {
+      "need": "A persistent tool panel beside a canvas",
+      "use": "SidePanel"
+    }
+  ],
+  "a11y": [
+    "A modal dialog: focus trap, Escape, focus returns to the opener; the title labels it."
+  ],
+  "examples": [
+    {
+      "file": "filters",
+      "title": "Filters"
+    }
+  ]
+}

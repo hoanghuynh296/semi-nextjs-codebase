@@ -1,0 +1,23 @@
+{
+  "title": "Chat model picker",
+  "group": "AI",
+  "description": "Provider → model → effort chips, for the toolbar of a chat composer. The lists are app data.",
+  "components": [
+    "ChatModelPicker"
+  ],
+  "imports": [
+    "CHAT_PICK_CHIP"
+  ],
+  "when": [
+    "Let people pick the provider, model and thinking effort of an AI feature."
+  ],
+  "a11y": [
+    "Each chip is a select button with its own label; changing the provider resets the model."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "Provider, model, effort"
+    }
+  ]
+}

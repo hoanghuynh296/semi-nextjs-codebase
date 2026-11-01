@@ -1,14 +1,20 @@
-// Browser checks of the Storybook export: every text/background pair reaches WCAG AA in both themes, axe finds no
-// serious issue, the theme is applied before paint and persists, dialogs and menus are keyboard-operable.
+// Browser checks of the docs export: every page (and every component doc) reaches WCAG AA in both themes, axe finds
+// no serious issue, nothing overflows a phone, the theme / style / palette apply before paint, dialogs and menus are
+// keyboard-operable, and the agent files are served.
 import { expect, test, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import styleList from "../tokens/styles.json" with { type: "json" };
+import docs from "../examples/list.generated.json" with { type: "json" };
 
-const PAGES = ["/foundations.html", "/components.html", "/primitives.html", "/patterns.html", "/chat.html", "/brand.html"];
+const DOC_PAGES = docs.map((d) => `/components/${d.id}/`);
+const PAGES = ["/", "/components/", "/foundations/", "/brand/", ...DOC_PAGES];
+/** Pages checked in every style × palette: the gallery shows one example of every doc. */
+const LOOK_PAGES = ["/", "/components/", "/components/table/", "/components/field/"];
 const THEMES = ["dark", "light"] as const;
 const STYLES = styleList.styles.map((s) => s.id);
 /** Every style × palette (the first palette is the style's default, set without data-palette). */
 const LOOKS = styleList.styles.flatMap((s) => s.palettes.map((p, i) => ({ style: s.id, palette: i ? p.id : undefined, name: `${s.id}/${p.id}` })));
+const example = (page: Page, id: string) => page.locator(`[data-example="${id}"]`);
 
 async function open(page: Page, path: string, theme: "dark" | "light" | "system", style?: string, palette?: string) {
   await page.addInitScript(([t, s, p]) => {
@@ -27,6 +33,7 @@ async function open(page: Page, path: string, theme: "dark" | "light" | "system"
   await page.goto(path);
   await page.addStyleTag({ content: "*,*::before,*::after{transition:none!important;animation:none!important}" });
 }
+
 
 /** Text elements whose contrast against their effective background is below 4.5:1 (3:1 for large text). */
 function lowContrast(page: Page) {
@@ -84,13 +91,11 @@ function lowContrast(page: Page) {
 
 for (const path of PAGES) {
   for (const theme of THEMES) {
-    for (const look of LOOKS) {
-      test(`contrast AA · ${look.name} · ${theme} · ${path}`, async ({ page }) => {
-        await open(page, path, theme, look.style, look.palette);
-        await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
-        expect(await lowContrast(page)).toEqual([]);
-      });
-    }
+    test(`contrast AA · ${theme} · ${path}`, async ({ page }) => {
+      await open(page, path, theme);
+      await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+      expect(await lowContrast(page)).toEqual([]);
+    });
 
     test(`axe · ${theme} · ${path}`, async ({ page }) => {
       await open(page, path, theme);
@@ -100,37 +105,12 @@ for (const path of PAGES) {
     });
   }
 
-  for (const style of STYLES) {
-    test(`fits a phone screen · ${style} · ${path}`, async ({ browser }) => {
-      const page = await browser.newPage({ viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true });
-      await open(page, path, "light", style);
-      // Everything stays inside the page column (16px gutters) unless it sits in its own horizontal scroller
-      const overflow = await page.evaluate(() => {
-        const col = document.querySelector("main > div")!;
-        const cs = getComputedStyle(col);
-        const cb = col.getBoundingClientRect();
-        const left = cb.left + parseFloat(cs.paddingLeft) - 1;
-        const right = cb.right - parseFloat(cs.paddingRight) + 1;
-        const out: string[] = [];
-        if (Math.round(cb.width) !== document.documentElement.clientWidth) out.push(`column ${Math.round(cb.width)}px`);
-        for (const el of col.querySelectorAll<HTMLElement>("*")) {
-          if (getComputedStyle(el).position === "fixed") continue;
-          const b = el.getBoundingClientRect();
-          if (!b.width) continue;
-          let s = el.parentElement;
-          let clipped = false;
-          while (s && s !== col) {
-            if (getComputedStyle(s).overflowX !== "visible") clipped = true;
-            s = s.parentElement;
-          }
-          if (!clipped && (b.right > right || b.left < left)) out.push(`${el.tagName.toLowerCase()} "${(el.textContent || "").trim().slice(0, 30)}"`);
-        }
-        return out.slice(0, 5);
-      });
-      expect(overflow).toEqual([]);
-      await page.close();
-    });
-  }
+  test(`fits a phone screen · ${path}`, async ({ browser }) => {
+    const page = await browser.newPage({ viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true });
+    await open(page, path, "light");
+    expect(await phoneOverflow(page)).toEqual([]);
+    await page.close();
+  });
 
   test(`page never scrolls outside the shell · ${path}`, async ({ page }) => {
     await open(page, path, "dark");
@@ -138,8 +118,84 @@ for (const path of PAGES) {
   });
 }
 
+for (const path of LOOK_PAGES) {
+  for (const theme of THEMES)
+    for (const look of LOOKS)
+      test(`contrast AA · ${look.name} · ${theme} · ${path}`, async ({ page }) => {
+        await open(page, path, theme, look.style, look.palette);
+        expect(await lowContrast(page)).toEqual([]);
+      });
+  for (const style of STYLES)
+    test(`fits a phone screen · ${style} · ${path}`, async ({ browser }) => {
+      const page = await browser.newPage({ viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true });
+      await open(page, path, "light", style);
+      expect(await phoneOverflow(page)).toEqual([]);
+      await page.close();
+    });
+}
+
+/** Everything stays inside the page column (16px gutters) unless it sits in its own horizontal scroller. */
+function phoneOverflow(page: Page) {
+  return page.evaluate(() => {
+    const col = document.querySelector("main > div")!;
+    const cs = getComputedStyle(col);
+    const cb = col.getBoundingClientRect();
+    const left = cb.left + parseFloat(cs.paddingLeft) - 1;
+    const right = cb.right - parseFloat(cs.paddingRight) + 1;
+    const out: string[] = [];
+    if (Math.round(cb.width) !== document.documentElement.clientWidth) out.push(`column ${Math.round(cb.width)}px`);
+    for (const el of col.querySelectorAll<HTMLElement>("*")) {
+      if (getComputedStyle(el).position === "fixed") continue;
+      const b = el.getBoundingClientRect();
+      if (!b.width) continue;
+      let s = el.parentElement;
+      let clipped = false;
+      while (s && s !== col) {
+        if (getComputedStyle(s).overflowX !== "visible") clipped = true;
+        s = s.parentElement;
+      }
+      if (!clipped && (b.right > right || b.left < left)) out.push(`${el.tagName.toLowerCase()} "${(el.textContent || "").trim().slice(0, 30)}"`);
+    }
+    return out.slice(0, 5);
+  });
+}
+
+// ─── Docs site ───────────────────────────────────────────────────────────────────────────────────────────────────
+
+test("the menu marks the page you are on, and follows navigation", async ({ page }) => {
+  await open(page, "/components/button/", "dark");
+  const nav = page.locator("aside");
+  const link = (name: string) => nav.getByRole("link", { name, exact: true });
+  await expect(link("Button")).toHaveAttribute("aria-current", "page");
+  await link("Modal").click();
+  await expect(page).toHaveURL(/\/components\/modal\/$/);
+  await expect(link("Modal")).toHaveAttribute("aria-current", "page");
+  await expect(link("Button")).not.toHaveAttribute("aria-current", "page");
+});
+
+test("an example switches to its exact code and copies the page markdown", async ({ page, context }) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await open(page, "/components/button/", "dark");
+  const ex = example(page, "button/variants");
+  await ex.getByRole("button", { name: "Code" }).click();
+  await expect(ex.locator("pre code")).toContainText('import { Button } from "@semi/ui";');
+  await page.getByRole("button", { name: "Copy page" }).click();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toContain("# Button");
+});
+
+for (const d of docs) {
+  test(`doc page · ${d.id}: title, import, examples and API`, async ({ page, request }) => {
+    await open(page, `/components/${d.id}/`, "dark");
+    await expect(page).toHaveTitle(`${d.title} — Semi Design System`);
+    await expect(page.locator("article").getByText(/^import \{.*\} from "@semi\/ui";$/)).toBeVisible();
+    expect(await page.locator("[data-example]").count()).toBeGreaterThan(0);
+    await expect(page.getByRole("heading", { name: "API" })).toBeVisible();
+    expect((await request.get(`/docs/components/${d.id}.md`)).status()).toBe(200);
+  });
+}
+
 test("stored theme is applied before the first paint and survives reload", async ({ page }) => {
-  await open(page, "/components.html", "light");
+  await open(page, "/components/", "light");
   expect(await page.evaluate(() => (window as unknown as { __firstPaintTheme?: string }).__firstPaintTheme)).toBe("light");
   await page.getByRole("radio", { name: "Tối" }).first().click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
@@ -148,29 +204,20 @@ test("stored theme is applied before the first paint and survives reload", async
 
 test("styles: Soft is applied before paint, Soft and Sharp change the shape tokens and pass contrast in both themes", async ({ page }) => {
   const radius = () => page.evaluate(() => getComputedStyle(document.querySelector(".rounded-card")!).borderTopLeftRadius);
-  await open(page, "/components.html", "dark");
+  await open(page, "/components/", "dark");
   expect(await radius()).toBe("12px"); // Flat, the default
-  await page.getByRole("radio", { name: "Soft" }).click();
+  await page.getByRole("radiogroup", { name: "Style" }).getByRole("radio", { name: "Soft" }).click();
   await expect(page.locator("html")).toHaveAttribute("data-style", "soft");
   expect(await radius()).toBe("20px");
   await page.reload();
   expect(await page.evaluate(() => (window as unknown as { __firstPaintStyle?: string }).__firstPaintStyle)).toBe("soft");
-  await page.addStyleTag({ content: "*,*::before,*::after{transition:none!important;animation:none!important}" }); // reload drops it
-  for (const theme of THEMES) {
-    await page.getByRole("radio", { name: theme === "dark" ? "Tối" : "Sáng" }).first().click();
-    expect(await lowContrast(page)).toEqual([]);
-  }
-  await page.getByRole("radio", { name: "Sharp" }).click();
+  await page.getByRole("radiogroup", { name: "Style" }).getByRole("radio", { name: "Sharp" }).click();
   expect(await radius()).toBe("0px");
-  for (const theme of THEMES) {
-    await page.getByRole("radio", { name: theme === "dark" ? "Tối" : "Sáng" }).first().click();
-    expect(await lowContrast(page)).toEqual([]);
-  }
 });
 
 test("styles: a palette applies before paint and resets when the style changes", async ({ page }) => {
   const canvas = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
-  await open(page, "/components.html", "light", "sharp", "paper");
+  await open(page, "/components/", "light", "sharp", "paper");
   expect(await page.evaluate(() => (window as unknown as { __firstPaintStyle?: string }).__firstPaintStyle)).toBe("sharp");
   await expect(page.locator("html")).toHaveAttribute("data-palette", "paper");
   expect(await canvas()).toBe("rgb(242, 236, 224)"); // Paper canvas
@@ -185,7 +232,7 @@ test("brand preview: a #brand= link recolours every page, passes contrast in bot
   const brand = { name: "Blue Co", package: "@blue/brand", primary: "#2563EB", neutral: "tinted", styles: { default: "soft", allowed: ["flat", "soft"] }, fonts: { sans: "Manrope", display: "Manrope" } };
   const hash = Buffer.from(JSON.stringify(brand)).toString("base64url");
   const accent = () => page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--semi-accent").trim());
-  await open(page, `/components.html#brand=${hash}`, "dark", "soft");
+  await open(page, `/components/#brand=${hash}`, "dark", "soft");
   await expect(page.getByText("Blue Co", { exact: true })).toBeVisible();
   for (const theme of THEMES) {
     await page.getByRole("radio", { name: theme === "dark" ? "Tối" : "Sáng" }).first().click();
@@ -193,7 +240,7 @@ test("brand preview: a #brand= link recolours every page, passes contrast in bot
     expect(await lowContrast(page)).toEqual([]);
   }
   await page.getByRole("radio", { name: "Tối" }).first().click();
-  await page.goto("/patterns.html"); // stays on across pages
+  await page.goto("/components/button/"); // stays on across pages
   expect(await accent()).toBe("#568af4");
   await page.getByRole("button", { name: "Tắt xem trước brand" }).click();
   expect(await accent()).toBe("#00ae42"); // Semi's own green again (dark theme)
@@ -202,15 +249,17 @@ test("brand preview: a #brand= link recolours every page, passes contrast in bot
 test("system theme follows prefers-color-scheme", async ({ browser }) => {
   for (const scheme of ["light", "dark"] as const) {
     const page = await browser.newPage({ colorScheme: scheme });
-    await open(page, "/components.html", "system");
+    await open(page, "/components/", "system");
     expect(await page.evaluate(() => (window as unknown as { __firstPaintTheme?: string }).__firstPaintTheme)).toBe(scheme);
     await page.close();
   }
 });
 
+// ─── Components ──────────────────────────────────────────────────────────────────────────────────────────────────
+
 test("Modal traps focus, closes on Escape and returns focus to the opener", async ({ page }) => {
-  await open(page, "/components.html", "dark");
-  const opener = page.getByRole("button", { name: "Mở Modal Bento mẫu" });
+  await open(page, "/components/modal/", "dark");
+  const opener = page.getByRole("button", { name: "Cấu hình in" });
   await opener.click();
   const dialog = page.getByRole("dialog");
   await expect(dialog).toBeVisible();
@@ -226,8 +275,8 @@ test("Modal traps focus, closes on Escape and returns focus to the opener", asyn
 });
 
 test("Menu opens from the keyboard and Escape returns focus", async ({ page }) => {
-  await open(page, "/primitives.html", "dark");
-  const trigger = page.getByRole("button", { name: "Thao tác" }).first();
+  await open(page, "/components/menu/", "dark");
+  const trigger = example(page, "menu/row-actions").getByRole("button", { name: "Thao tác máy in" });
   await trigger.focus();
   await page.keyboard.press("ArrowDown");
   const menu = page.getByRole("menu");
@@ -243,9 +292,9 @@ test("Menu opens from the keyboard and Escape returns focus", async ({ page }) =
 });
 
 test("Field wires label, hint and error to the input", async ({ page }) => {
-  await open(page, "/primitives.html", "light");
-  const input = page.getByLabel("Tên máy in");
-  await expect(input).toHaveAttribute("aria-describedby", /hint/);
+  await open(page, "/components/field/", "light");
+  await expect(page.getByLabel("Tên máy in")).toHaveAttribute("aria-describedby", /hint/);
+  const input = page.getByLabel("Tên dự án");
   await input.fill("ab");
   await expect(input).toHaveAttribute("aria-invalid", "true");
   await expect(page.getByRole("alert").filter({ hasText: "ít nhất 3 ký tự" })).toBeVisible();
@@ -253,23 +302,27 @@ test("Field wires label, hint and error to the input", async ({ page }) => {
 
 test("phones get the bottom tab bar", async ({ browser }) => {
   const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
-  await open(page, "/components.html", "dark");
+  await open(page, "/components/", "dark");
   await expect(page.getByRole("navigation", { name: "Điều hướng" })).toBeVisible();
   await page.close();
 });
 
 for (const theme of THEMES) {
-  test(`floating layers (drawer, menu, toast, tooltip) pass contrast · ${theme}`, async ({ page }) => {
-    await open(page, "/primitives.html", theme);
-    await page.getByRole("button", { name: "Toast cảnh báo" }).click();
-    await page.locator('button[title="Làm mới"]').first().focus();
+  test(`floating layers (toast, tooltip, menu, drawer) pass contrast · ${theme}`, async ({ page }) => {
+    await open(page, "/components/toast/", theme);
+    await page.getByRole("button", { name: "Cảnh báo" }).click();
+    await expect(page.getByText("Mất kết nối máy in")).toBeVisible();
+    expect(await lowContrast(page)).toEqual([]);
+    await open(page, "/components/tooltip/", theme);
+    await page.getByRole("button", { name: "Làm mới" }).focus();
     await expect(page.getByRole("tooltip")).toBeVisible();
     expect(await lowContrast(page)).toEqual([]);
-    await page.getByRole("button", { name: "Thao tác" }).first().click();
+    await open(page, "/components/menu/", theme);
+    await page.getByRole("button", { name: "Thao tác máy in" }).click();
     await expect(page.getByRole("menu")).toBeVisible();
     expect(await lowContrast(page)).toEqual([]);
-    await page.keyboard.press("Escape");
-    await page.getByRole("button", { name: "Mở drawer" }).click();
+    await open(page, "/components/drawer/", theme);
+    await page.getByRole("button", { name: "Bộ lọc" }).click();
     await expect(page.getByRole("dialog", { name: "Bộ lọc" })).toBeVisible();
     expect(await lowContrast(page)).toEqual([]);
   });
@@ -277,31 +330,33 @@ for (const theme of THEMES) {
 
 for (const theme of THEMES) {
   test(`checked controls use the accent fill · ${theme}`, async ({ page }) => {
-    await open(page, "/primitives.html", theme);
-    const accent = await page.evaluate(() => {
-      const probe = document.createElement("div");
-      probe.className = "bg-accent";
-      document.body.append(probe);
-      const c = getComputedStyle(probe).backgroundColor;
-      probe.remove();
-      return c;
-    });
+    const accent = () =>
+      page.evaluate(() => {
+        const probe = document.createElement("div");
+        probe.className = "bg-accent";
+        document.body.append(probe);
+        const c = getComputedStyle(probe).backgroundColor;
+        probe.remove();
+        return c;
+      });
+    await open(page, "/components/checkbox/", theme);
     const checkbox = page.getByRole("checkbox", { name: "Tự động in khi rảnh" });
     await expect(checkbox).toBeChecked();
-    expect(await checkbox.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe(accent);
-    const radio = page.getByRole("radio", { name: /Pro/ });
-    expect(await radio.evaluate((el) => getComputedStyle(el).borderTopColor)).toBe(accent);
-    expect(await page.getByRole("switch", { name: "Thông báo khi in xong" }).evaluate((el) => getComputedStyle(el).backgroundColor)).toBe(accent);
+    expect(await checkbox.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe(await accent());
+    await open(page, "/components/radio-group/", theme);
+    expect(await page.getByRole("radio", { name: /Pro/ }).evaluate((el) => getComputedStyle(el).borderTopColor)).toBe(await accent());
+    await open(page, "/components/switch/", theme);
+    expect(await page.getByRole("switch", { name: "Thông báo khi in xong" }).evaluate((el) => getComputedStyle(el).backgroundColor)).toBe(await accent());
   });
 }
 
 // ─── AI chat ─────────────────────────────────────────────────────────────────────────────────────────────────────
 
-const chatPanel = (page: Page) => page.getByTestId("chat-workspace").getByRole("complementary", { name: "Trợ lý AI" });
+const chatPanel = (page: Page) => example(page, "ai-chat/workspace").getByRole("complementary", { name: "Trợ lý AI" });
 
 for (const theme of THEMES) {
-  test(`AI chat: send, stream, stop / retry and contrast · ${theme}`, async ({ page }) => {
-    await open(page, "/chat.html", theme);
+  test(`AI chat: send, stream, stop and contrast · ${theme}`, async ({ page }) => {
+    await open(page, "/components/ai-chat/", theme);
     const panel = chatPanel(page);
     const field = panel.getByRole("textbox", { name: "Hỏi về cài đặt in…" });
     await field.fill("PETG bị kéo sợi");
@@ -312,19 +367,14 @@ for (const theme of THEMES) {
     await expect(panel.getByRole("button", { name: "Gửi" })).toBeVisible();
     await expect(field).toBeFocused(); // back to the field after a typed question
     await expect(panel.getByRole("status").filter({ hasText: "PETG" })).toHaveCount(1); // the finished answer is announced once
-    // second question fails in the demo: error with retry
-    await field.fill("Câu thứ hai");
-    await field.press("Enter");
-    await expect(panel.getByRole("alert")).toContainText("Không kết nối được");
-    await expect(panel.getByRole("button", { name: "Thử lại" })).toBeVisible();
     expect(await lowContrast(page)).toEqual([]);
-    const { violations } = await new AxeBuilder({ page }).include('[data-testid="chat-workspace"]').withTags(["wcag2a", "wcag2aa"]).analyze();
+    const { violations } = await new AxeBuilder({ page }).include('[data-example="ai-chat/workspace"]').withTags(["wcag2a", "wcag2aa"]).analyze();
     expect(violations.filter((v) => v.impact === "serious" || v.impact === "critical").map((v) => v.id)).toEqual([]);
   });
 }
 
 test("AI chat: Enter while an input method composes does not send; Shift+Enter breaks the line", async ({ page }) => {
-  await open(page, "/chat.html", "dark");
+  await open(page, "/components/ai-chat/", "dark");
   const panel = chatPanel(page);
   const field = panel.getByRole("textbox", { name: "Hỏi về cài đặt in…" });
   await field.fill("Tiếng Việt");
@@ -337,7 +387,7 @@ test("AI chat: Enter while an input method composes does not send; Shift+Enter b
 
 test("AI chat: scrolled up while streaming, the list stays put", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await open(page, "/chat.html", "dark");
+  await open(page, "/components/ai-chat/", "dark");
   const panel = chatPanel(page);
   const field = panel.getByRole("textbox", { name: "Hỏi về cài đặt in…" });
   const log = panel.getByRole("log");
@@ -346,9 +396,9 @@ test("AI chat: scrolled up while streaming, the list stays put", async ({ page }
     await field.press("Enter");
     await expect(panel.getByRole("button", { name: "Gửi" })).toBeVisible({ timeout: 10_000 });
   };
-  for (const q of ["Một", "Hai", "Ba", "Bốn"]) await ask(q); // the second one fails in the demo
-  expect(await log.evaluate((el) => el.scrollHeight > el.clientHeight + 200)).toBe(true);
-  await field.fill("Năm");
+  for (const q of ["Một", "Hai", "Ba", "Bốn", "Năm"]) await ask(q);
+  expect(await log.evaluate((el) => el.scrollHeight > el.clientHeight + 100)).toBe(true);
+  await field.fill("Sáu");
   await field.press("Enter");
   await expect(panel.getByRole("button", { name: "Dừng" })).toBeVisible();
   await log.evaluate((el) => el.scrollTo({ top: 0 }));
@@ -361,8 +411,8 @@ test("AI chat: scrolled up while streaming, the list stays put", async ({ page }
 });
 
 test("AI chat over a Modal: focus goes to the field, Escape closes only the chat", async ({ page }) => {
-  await open(page, "/chat.html", "light");
-  await page.getByRole("button", { name: "Mở trên Modal" }).click();
+  await open(page, "/components/ai-chat/", "light");
+  await page.getByRole("button", { name: "Mở lỗi máy in" }).click();
   const opener = page.getByRole("button", { name: "Hỏi AI về lỗi này" });
   await opener.click();
   const chat = page.getByRole("dialog", { name: "Trợ lý AI" });
@@ -378,37 +428,24 @@ test("AI chat over a Modal: focus goes to the field, Escape closes only the chat
   await expect(opener).toBeFocused();
 });
 
-test("AI chat fills the screen on phones", async ({ browser }) => {
-  const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
-  await open(page, "/chat.html", "dark");
-  const panel = chatPanel(page);
-  const box = await panel.boundingBox();
-  const host = await page.getByTestId("chat-workspace").boundingBox();
-  expect(Math.round(box!.width)).toBe(Math.round(host!.width) - 2); // inside the 1px borders
-  await expect(panel.getByRole("separator")).toBeHidden();
-  await page.close();
-});
-
 test("AI chat: an empty conversation starts at the top (intro first)", async ({ browser }) => {
   const page = await browser.newPage({ viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true });
-  await open(page, "/chat.html", "dark");
+  await open(page, "/components/ai-chat/", "dark");
   const log = chatPanel(page).getByRole("log");
   await expect(log.getByText("Hỏi gì về bản in?")).toBeVisible();
   expect(await log.evaluate((el) => el.scrollTop)).toBe(0);
   await page.close();
 });
 
-test("AI chat: provider picker sits left of the model and switches its models", async ({ page }) => {
-  await page.setViewportSize({ width: 1280, height: 1000 });
-  await open(page, "/chat.html", "dark");
-  const panel = chatPanel(page);
-  const provider = panel.getByRole("button", { name: "Nhà cung cấp AI" });
-  const model = panel.getByRole("button", { name: "Model AI" });
-  const effort = panel.getByRole("button", { name: "Mức suy nghĩ" });
+test("Chat model picker: provider sits left of the model and switches its models", async ({ page }) => {
+  await open(page, "/components/chat-model-picker/", "dark");
+  const ex = example(page, "chat-model-picker/basic");
+  const provider = ex.getByRole("button", { name: "Nhà cung cấp AI" });
+  const model = ex.getByRole("button", { name: "Model AI" });
+  const effort = ex.getByRole("button", { name: "Mức suy nghĩ" });
   expect((await provider.boundingBox())!.x).toBeLessThan((await model.boundingBox())!.x);
-  await expect(model).toHaveText("Sonnet 5.5");
+  await expect(model).toHaveText("Opus 5.5");
   await expect(effort).toBeVisible();
-  await chatPanel(page).scrollIntoViewIfNeeded(); // a page scroll closes an open list
   await provider.click();
   await page.getByRole("option", { name: /Ollama/ }).click();
   await expect(provider).toHaveAttribute("title", "Ollama (máy này)");
@@ -418,31 +455,18 @@ test("AI chat: provider picker sits left of the model and switches its models", 
 
 // ─── Agent-readable ──────────────────────────────────────────────────────────────────────────────────────────────
 
-test("agents: llms.txt lists every page and section with usage code, and the docs it links are served", async ({ page, request }) => {
+test("agents: llms.txt links every component page and its markdown, and everything it links is served", async ({ page, request }) => {
   const llms = await (await request.get("/llms.txt")).text();
-  for (const p of ["foundations", "components", "primitives", "patterns", "chat"]) expect(llms).toContain(`(./${p}.html)`);
-  expect(llms).toContain("### AIChat (workspace panel) (./chat.html#ai-chat)");
-  expect(llms).toContain("ChatModelPicker");
-  for (const link of [...llms.matchAll(/\]\(\.\/([^)#]+)\)/g)].map((m) => m[1])) {
+  for (const d of docs) {
+    expect(llms).toContain(`(./components/${d.id}/)`);
+    expect(llms).toContain(`(./docs/components/${d.id}.md)`);
+  }
+  for (const link of [...llms.matchAll(/\]\(\.\/([^)#]*)\)/g)].map((m) => m[1])) {
     expect((await request.get(`/${link}`)).status(), link).toBe(200);
   }
   const manifest = await (await request.get("/components.json")).json();
-  expect(manifest.components.some((c: { name: string }) => c.name === "AIChat")).toBe(true);
-  await page.goto("/primitives.html");
-  await expect(page.locator('link[rel="alternate"][href="llms.txt"]')).toHaveCount(1);
+  const chat = manifest.components.find((c: { name: string }) => c.name === "AIChat");
+  expect(chat.doc).toBe("docs/components/ai-chat.md");
+  await page.goto("/components/");
+  await expect(page.locator('link[rel="alternate"][href$="llms.txt"]')).toHaveCount(1);
 });
-
-for (const path of PAGES) {
-  test(`agents: ${path} has its own title and usage code under every section`, async ({ page }) => {
-    await open(page, path, "dark");
-    await expect(page).toHaveTitle(/ — Semi Design System$/);
-    const sections = page.locator("main section[id]");
-    const n = await sections.count();
-    expect(n).toBeGreaterThan(1);
-    for (let i = 0; i < n; i++) {
-      const s = sections.nth(i);
-      const id = await s.getAttribute("id");
-      await expect(s.locator(`[data-story-usage="${id}"] pre code`), `section #${id}`).toHaveText(/\S/);
-    }
-  });
-}

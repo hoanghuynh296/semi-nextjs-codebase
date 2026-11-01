@@ -1,0 +1,35 @@
+{
+  "title": "Pills",
+  "group": "Actions",
+  "description": "A single-choice filter of 2–5 options on one track (segmented look). The left side of a SubpageToolbar.",
+  "components": [
+    "Pills"
+  ],
+  "when": [
+    "Filter a list by status or period: Tất cả / Đang in / Xong.",
+    "Switch a small view mode with no panels."
+  ],
+  "instead": [
+    {
+      "need": "Switch panels of content",
+      "use": "Tabs"
+    },
+    {
+      "need": "Many filters, several at once",
+      "use": "Chip"
+    },
+    {
+      "need": "Sibling pages",
+      "use": "PageTabsTitle"
+    }
+  ],
+  "a11y": [
+    "Rendered as a radio group: arrow keys move, the selected option is announced."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "Status filter"
+    }
+  ]
+}
