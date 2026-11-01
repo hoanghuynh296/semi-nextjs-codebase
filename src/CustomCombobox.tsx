@@ -112,7 +112,7 @@ export function CustomCombobox({
           onFocus={() => setOpen(true)}
           onKeyDown={onKeyDown}
           placeholder={placeholder}
-          className="w-full h-9 bg-field border border-line hover:border-line-hover rounded-control pl-3 pr-8 text-ui text-contrast placeholder:text-muted focus:border-primary-500/60 transition outline-none disabled:opacity-40 aria-invalid:border-danger-border"
+          className="w-full h-field bg-field border border-line hover:border-line-hover rounded-control pl-3 pr-8 text-ui text-contrast placeholder:text-muted focus:border-primary-500/60 transition outline-none disabled:opacity-40 aria-invalid:border-danger-border"
         />
         <button
           type="button"

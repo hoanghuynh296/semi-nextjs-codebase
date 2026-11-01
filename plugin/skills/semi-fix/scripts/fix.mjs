@@ -17,10 +17,12 @@ import { detectMode, migrateSource } from "../../semi-audit/scripts/vendor/codem
 import {
   installSemiUi,
   installedSemiVersion,
+  missingStyleFonts,
   readStyleState,
   resolveTargetSpec,
   runLocal,
   semiStyles,
+  styleFontHint,
   wireAgentsMd,
   wireGlobalsCss,
   wireNextConfig,
@@ -107,6 +109,10 @@ if (mode === "foundation") {
         if (!r.ok) process.exitCode = 1;
       }
     }
+    // The style's fonts go into the layout by hand, like the providers (the layout is the app's own code).
+    const st = readStyleState(app.cwd);
+    const chosen = (semiStyles(app.cwd) || semiStyles()).styles.find((s) => s.id === (styleArg || st.declared));
+    if (chosen && st.layout && missingStyleFonts(app.cwd, chosen).length) console.log(`${name}: ${styleFontHint(st.layout, chosen)}`);
     wireAgentsMd(root, installedSemiVersion(app.cwd) || "latest");
     if (todo.has("providers")) {
       const layout = app.issues.find((i) => i.check === "providers").file;

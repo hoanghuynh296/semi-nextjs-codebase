@@ -10,6 +10,7 @@ import {
   installedSemiVersion,
   resolveTargetSpec,
   runLocal,
+  nextFontCode,
   semiStyles,
   wireAgentsMd,
   wireGlobalsCss,
@@ -39,21 +40,18 @@ function parseArgs(argv) {
   return opts;
 }
 
-function writeNewProjectStarter(webDir, appName) {
+function writeNewProjectStarter(webDir, appName, style) {
+  const fonts = nextFontCode(style);
   const layoutPath = join(webDir, "app", "layout.tsx");
   writeFileSync(
     layoutPath,
     `import type { Metadata } from "next";
-import { Geist, Montserrat_Alternates } from "next/font/google";
+${fonts.importLine}
 import { ConfirmHost, ThemeProvider, ThemeScript, ToastHost } from "@semi/ui";
 import "./globals.css";
 
-const geist = Geist({ subsets: ["latin", "vietnamese"], variable: "--font-geist" });
-const montserratAlternates = Montserrat_Alternates({
-  subsets: ["latin", "vietnamese"],
-  weight: ["600", "700"],
-  variable: "--font-montserrat-alternates",
-});
+// Fonts of the ${style.name} style (@semi/ui/styles.json)
+${fonts.decls}
 
 export const metadata: Metadata = {
   title: ${JSON.stringify(appName)},
@@ -62,7 +60,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="vi" data-theme="dark" className={\`dark \${geist.variable} \${montserratAlternates.variable}\`} suppressHydrationWarning>
+    <html lang="vi" data-theme="dark" className={\`dark ${fonts.classNames}\`} suppressHydrationWarning>
       <head>
         <ThemeScript defaultTheme="dark" />
       </head>
@@ -265,7 +263,7 @@ wireNextConfig(webDir, opts.staticExport);
 wireGlobalsCss(webDir);
 wireSemiLintConfig(webDir);
 wireAgentsMd(opts.cwd, installedVersion);
-writeNewProjectStarter(webDir, opts.appName);
+writeNewProjectStarter(webDir, opts.appName, (semiStyles(webDir) || styles).styles.find((s) => s.id === opts.style) ?? styles.styles[0]);
 console.log(wireStyle(webDir, opts.style).message);
 
 console.log("\nRunning verification (semi-lint + tsc + next build)...");

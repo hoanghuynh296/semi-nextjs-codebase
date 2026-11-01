@@ -198,6 +198,43 @@ export function wireStyle(appDir, id) {
   return { ok: true, layout, message: `${layout} ← <html data-style="${id}">, semi-lint.json ← "style": "${id}"` };
 }
 
+/** next/font code for a style's fonts: { importLine, decls, classNames } (classNames is a template-literal fragment). */
+export function nextFontCode(style) {
+  const fonts = style.fonts ?? [];
+  const id = (f) => f.nextFont.replace(/_(\w)/g, (_, c) => c.toUpperCase()).replace(/^\w/, (c) => c.toLowerCase());
+  return {
+    importLine: `import { ${fonts.map((f) => f.nextFont).join(", ")} } from "next/font/google";`,
+    decls: fonts
+      .map((f) => `const ${id(f)} = ${f.nextFont}({ subsets: ["latin", "vietnamese"], ${f.weight ? `weight: ${JSON.stringify(f.weight)}, ` : ""}variable: "${f.variable}" });`)
+      .join("\n"),
+    classNames: fonts.map((f) => `\${${id(f)}.variable}`).join(" "),
+  };
+}
+
+/**
+ * Fonts of a style that the root layout does not load (its CSS variable is never named). [] when the app sets its own
+ * fonts (--font-sans-family / --font-display-family) or has no layout.
+ */
+export function missingStyleFonts(appDir, style) {
+  const layout = findRootLayout(appDir);
+  if (!layout) return [];
+  const src = readFileSync(join(appDir, layout), "utf8");
+  const css = findGlobalsCss(appDir);
+  const own = /--font-(sans|display)-family/.test(src + (existsSync(css) ? readFileSync(css, "utf8") : ""));
+  return own ? [] : (style.fonts ?? []).filter((f) => !src.includes(f.variable));
+}
+
+/** Text telling a person how to load the fonts a style needs in the root layout. */
+export function styleFontHint(layout, style) {
+  const code = nextFontCode(style);
+  return [
+    `sửa tay ${layout}: tải font của style ${style.name} (giữ nguyên phần còn lại):`,
+    `  ${code.importLine}`,
+    ...code.decls.split("\n").map((l) => `  ${l}`),
+    `  <html className={\`… ${code.classNames}\`}>  (thêm biến font vào className của <html>; font cũ của style trước có thể bỏ)`,
+  ].join("\n");
+}
+
 export function wireAgentsMd(rootDir, version) {
   const rulesTemplatePath = join(PLUGIN_ROOT, "rules", "AGENTS.md");
   const baseBlock = existsSync(rulesTemplatePath)

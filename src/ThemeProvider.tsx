@@ -121,7 +121,7 @@ export function ThemeToggle({ className = "", size = "md" }: ThemeToggleProps) {
   const t = useSemiLocale();
   const { resolvedTheme, mounted, toggleTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
-  const sizeClasses = size === "sm" ? "w-7 h-7" : "w-[34px] h-[34px]";
+  const sizeClasses = size === "sm" ? "w-7 h-7" : "w-control h-control";
 
   return (
     <button
@@ -166,7 +166,7 @@ export function ThemeSwitcher({
     <div
       role="radiogroup"
       aria-label={t.theme}
-      className={`${fullWidth ? "flex w-full" : "inline-flex"} items-center gap-0.5 bg-field p-0.5 h-[34px] rounded-control border border-line shrink-0 ${className}`}
+      className={`${fullWidth ? "flex w-full" : "inline-flex"} items-center gap-0.5 bg-field p-0.5 h-control rounded-control border border-line shrink-0 ${className}`}
     >
       {THEME_OPTIONS.map(({ key, icon }) => {
         // Nothing is selected until the stored theme is known (avoids flashing defaultTheme as selected).

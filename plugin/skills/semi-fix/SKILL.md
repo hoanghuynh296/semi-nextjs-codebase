@@ -29,7 +29,8 @@ phases in order; each one leaves the app building, so you can stop (or open a PR
    ```
    It installs `@semi/ui` (Next.js and Tailwind stay as they are), adds `transpilePackages`, the Semi CSS block,
    `semi-lint.json` + a baseline of today's lint debt, the chosen style (`"style"` in `semi-lint.json`,
-   `data-style` on `<html>`), and the Semi block in `AGENTS.md`. Then do the `tay` items:
+   `data-style` on `<html>`), and the Semi block in `AGENTS.md`. It prints the `next/font` lines for the style's fonts:
+   add them to the layout with the providers. Then do the `tay` items:
    - **providers:** edit the root layout exactly as the script prints (`ThemeScript` / `ThemeProvider` with the
      `defaultTheme` it detected, so a light app stays light; `ToastHost`, `ConfirmHost`); keep everything else.
    - **tailwind-v4:** run `npx @tailwindcss/upgrade` in the app (the official tool), check the pages, run foundation again.

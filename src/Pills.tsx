@@ -15,7 +15,7 @@ export function Pills<T extends string>({
   className?: string;
 }) {
   return (
-    <div className={`inline-flex items-center gap-0.5 bg-panel p-0.5 h-[34px] rounded-control border border-line shrink-0 ${className}`}>
+    <div className={`inline-flex items-center gap-0.5 bg-panel p-0.5 h-control rounded-control border border-line shrink-0 ${className}`}>
       {options.map((o) => (
         <button
           key={o.key}

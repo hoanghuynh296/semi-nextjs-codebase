@@ -1,13 +1,14 @@
 ---
 name: semi-style
-description: Show or switch the Semi style (Flat, Soft, …) of apps that use @semi/ui - sets "style" in semi-lint.json and data-style on <html> in the root layout, then compares screenshots before / after in both themes. A style changes only shape tokens (radii, card shadow); components, colours and layout stay. Triggered by /semi-style.
+description: Show or switch the Semi style (Flat, Soft, Sharp) of apps that use @semi/ui - sets "style" in semi-lint.json and data-style on <html>, prints the next/font lines for the style's fonts, then compares screenshots before / after in both themes. A style changes neutral colours, fonts, radii, card border / shadow and control sizes; components, layout and the brand accent stay. Triggered by /semi-style.
 ---
 
 # Switch the Semi style (`/semi-style`)
 
-A Semi **style** is the shape of the whole UI: radii (`rounded-chip` · `control` · `card` · `panel`) and the resting
-card shadow (`shadow-card`). Every style has the same components, colours, type and layout rules, and both themes
-(light / dark). The styles are listed in `node_modules/@semi/ui/tokens/styles.json` and described in
+A Semi **style** is the look of the whole UI: neutral colours, fonts, radii (`rounded-chip` · `control` · `card` ·
+`panel`), card border and shadow (`border-card`, `shadow-card`) and control sizes (`h-control`, `h-field`). Every style
+has the same components, layout, accent and status colours, and both themes (light / dark). The styles are listed in
+`node_modules/@semi/ui/tokens/styles.json` and described in
 `node_modules/@semi/ui/docs/STYLES.md`.
 
 An app picks one style, once: `"style"` in `semi-lint.json` and `data-style` on `<html>` in the root layout. It is not
@@ -29,9 +30,11 @@ changing it later.
    ```bash
    node "<path-to-this-skill>/scripts/style.mjs" --cwd "<workspace-or-app-dir>" --to "<id>" [--only "<app-dir>"]
    ```
-   If the installed `@semi/ui` has no styles yet, run `/semi-update` first.
-5. **Screenshots after**, compare. Expected: radii and card shadows change everywhere at once. Places that did not
-   change use raw classes (`rounded-lg`, `rounded-[10px]`, `shadow-sm`): they are `radius-token` lint hits, fixed by
-   `/semi-audit` + `/semi-fix` (the token codemod maps them). Never add style-specific classes to the app.
+   If the installed `@semi/ui` has no styles yet, run `/semi-update` first. When the layout does not load the new
+   style's fonts, the script prints the `next/font` lines: add them to the root layout's imports and `<html className>`
+   (the old style's fonts can go, unless the app uses them elsewhere).
+5. **Screenshots after**, compare. Expected: colours, fonts, radii, card borders and control heights change everywhere
+   at once. Places that did not change use raw classes (`bg-white`, `rounded-lg`, `h-[34px]`, `shadow-sm`): they are lint hits (`no-literal-palette`, `radius-token` …), fixed
+   by `/semi-audit` + `/semi-fix` (the token codemod maps them). Never add style-specific classes to the app.
 6. **Report** in a few lines: old style → new style per app, and the files changed (`semi-lint.json`, the layout).
    Do not commit unless the user asks.

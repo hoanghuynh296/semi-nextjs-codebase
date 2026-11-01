@@ -3,19 +3,19 @@
 
 /** Icon-only header button (AI, toggles): 34 px square, bordered. Add `HEADER_ICON_ON` when on. */
 export const HEADER_ICON_BTN =
-  "w-[34px] h-[34px] rounded-control border border-line flex items-center justify-center transition outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 shrink-0 disabled:opacity-40";
+  "w-control h-control rounded-control border border-line flex items-center justify-center transition outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 shrink-0 disabled:opacity-40";
 export const HEADER_ICON_OFF = "text-muted hover:text-contrast hover:bg-raised";
 export const HEADER_ICON_ON = "bg-raised text-contrast";
 
 /** The app's main action at the right of the header (Slice, Phối màu, Xong). */
 export const headerPrimary = (enabled: boolean) =>
-  `h-[34px] px-4 rounded-control text-label font-semibold flex items-center justify-center gap-1.5 transition outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 select-none shrink-0 ${
+  `h-control px-4 rounded-control text-label font-semibold flex items-center justify-center gap-1.5 transition outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 select-none shrink-0 ${
     enabled ? "bg-accent hover:bg-accent-hover text-on-accent" : "bg-raised text-muted border border-line cursor-not-allowed"
   }`;
 
 /** Round pill buttons of the header centre (file badge, save). */
 export const HEADER_PILL =
-  "h-[34px] flex items-center gap-2 bg-field hover:bg-raised active:scale-95 border border-line hover:border-primary-500/50 rounded-full transition outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 text-body";
+  "h-control flex items-center gap-2 bg-field hover:bg-raised active:scale-95 border border-line hover:border-primary-500/50 rounded-full transition outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 text-body";
 
 /** Floating tool bar at the top centre of the 3D view (object tools). */
 export const VIEWPORT_TOOLBAR =

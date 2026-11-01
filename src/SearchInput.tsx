@@ -70,7 +70,7 @@ export function SearchInput({
         onClick={handleOpen}
         aria-label={label || placeholder}
         title={label || placeholder}
-        className="w-[34px] h-[34px] rounded-control bg-panel border border-line hover:border-line-hover text-muted hover:text-contrast flex items-center justify-center transition active:scale-95 shrink-0"
+        className="w-control h-control rounded-control bg-panel border border-line hover:border-line-hover text-muted hover:text-contrast flex items-center justify-center transition active:scale-95 shrink-0"
       >
         <Icon name="search" className="w-3.5 h-3.5" />
       </button>
@@ -91,7 +91,7 @@ export function SearchInput({
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         aria-label={label || placeholder}
-        className="w-full bg-panel border border-line hover:border-line-hover rounded-control pl-8 pr-7 h-[34px] text-label text-contrast placeholder:text-muted outline-none focus:border-line-hover transition"
+        className="w-full bg-panel border border-line hover:border-line-hover rounded-control pl-8 pr-7 h-control text-label text-contrast placeholder:text-muted outline-none focus:border-line-hover transition"
       />
       <button
         type="button"

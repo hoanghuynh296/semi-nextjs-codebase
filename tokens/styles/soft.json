@@ -1,12 +1,95 @@
 {
-  "$note": "A Semi style: the shape tokens every component reads (rounded-chip / control / card / panel, shadow-card). Every style sets the same keys; colours, type and layout stay shared. Edit, then npm run build:tokens. docs/STYLES.md describes each style.",
+  "$note": "A Semi style: the look every component reads. tokens = shape, card border, fonts, control sizes; semantic = neutral surface / text / line colours per theme (accent, status and tone colours stay shared). Every style sets the same token keys; semantic keys are optional overrides of tokens/tokens.json. fonts = what the app loads with next/font. Edit, then npm run build:tokens. docs/STYLES.md describes each style.",
   "name": "Soft",
-  "description": "Larger radii and a soft resting shadow under cards. Calmer, friendlier screens: consumer apps, storefronts, onboarding.",
+  "description": "Warm neutrals, borderless cards lifted by a soft shadow, large radii, roomy 40px controls, Plus Jakarta Sans. Calm, friendly screens: consumer apps, storefronts, onboarding.",
+  "fonts": [
+    {
+      "family": "Plus Jakarta Sans",
+      "variable": "--font-jakarta",
+      "nextFont": "Plus_Jakarta_Sans"
+    }
+  ],
   "tokens": {
-    "radius-chip": { "value": "0.375rem" },
-    "radius-control": { "value": "0.75rem" },
-    "radius-card": { "value": "1.25rem" },
-    "radius-panel": { "value": "1.5rem" },
-    "shadow-card": { "value": "0 1px 2px var(--semi-shadow-tint), 0 8px 24px -10px var(--semi-shadow-tint)", "note": "Tint follows the theme (--semi-shadow-tint)" }
+    "radius-chip": {
+      "value": "0.375rem"
+    },
+    "radius-control": {
+      "value": "0.75rem"
+    },
+    "radius-card": {
+      "value": "1.25rem"
+    },
+    "radius-panel": {
+      "value": "1.5rem"
+    },
+    "shadow-card": {
+      "value": "0 1px 2px var(--semi-shadow-tint), 0 10px 28px -10px var(--semi-shadow-tint)"
+    },
+    "card-border": {
+      "value": "1px solid transparent",
+      "note": "No visible border: the fill and shadow separate cards (hover / active still colour it)"
+    },
+    "font-sans": {
+      "value": "var(--font-sans-family, var(--font-jakarta)), \"Plus Jakarta Sans\", -apple-system, BlinkMacSystemFont, \"SF Pro Text\", sans-serif"
+    },
+    "font-display": {
+      "value": "var(--font-display-family, var(--font-jakarta)), \"Plus Jakarta Sans\", sans-serif"
+    },
+    "spacing-control": {
+      "value": "40px"
+    },
+    "spacing-field": {
+      "value": "44px"
+    }
+  },
+  "semantic": {
+    "color-canvas": {
+      "dark": "#12100e",
+      "light": "#f3eee7"
+    },
+    "color-app": {
+      "dark": "#181512",
+      "light": "#faf7f2"
+    },
+    "color-panel": {
+      "dark": "#211d19",
+      "light": "#ffffff"
+    },
+    "color-field": {
+      "dark": "#2a2520",
+      "light": "#f3eee7"
+    },
+    "color-raised": {
+      "dark": "#36302a",
+      "light": "#e8e0d5"
+    },
+    "color-text-contrast": {
+      "dark": "#fbf8f3",
+      "light": "#1f1a14"
+    },
+    "color-text-body": {
+      "dark": "#ded7cd",
+      "light": "#463d33"
+    },
+    "color-text-muted": {
+      "dark": "#a49b90",
+      "light": "#665c51"
+    },
+    "color-line": {
+      "dark": "rgba(255, 238, 214, 0.09)",
+      "light": "rgba(60, 40, 20, 0.09)"
+    },
+    "color-line-hover": {
+      "dark": "rgba(255, 238, 214, 0.18)",
+      "light": "rgba(60, 40, 20, 0.18)"
+    },
+    "color-divider": {
+      "dark": "rgba(255, 238, 214, 0.06)",
+      "light": "rgba(60, 40, 20, 0.06)"
+    },
+    "shadow-tint": {
+      "dark": "rgb(0 0 0 / 0.45)",
+      "light": "rgb(60 40 20 / 0.12)"
+    }
   }
 }

@@ -32,7 +32,7 @@ interface CustomSelectProps {
   iconsInList?: boolean;
   /** The button shows only the selected option's icon (its label becomes the tooltip), e.g. the AI profile logo. */
   iconOnly?: boolean;
-  /** toolbar = 34px toolbar control · field = full-width form field · inline = bare text inside a row ·
+  /** toolbar = h-control toolbar control (34px in Flat) · field = full-width form field · inline = bare text inside a row ·
    *  bare = no trigger styling (the caller passes it in buttonClassName, e.g. the automation code chips) */
   variant?: "toolbar" | "field" | "inline" | "bare";
   disabled?: boolean;
@@ -45,9 +45,9 @@ interface CustomSelectProps {
 
 const TRIGGER: Record<NonNullable<CustomSelectProps["variant"]>, string> = {
   toolbar:
-    "h-[34px] px-3 bg-panel border border-line rounded-control text-label font-medium text-body hover:border-line-hover",
+    "h-control px-3 bg-panel border border-line rounded-control text-label font-medium text-body hover:border-line-hover",
   field:
-    "w-full h-9 px-3 bg-field border border-line rounded-control text-ui text-contrast hover:border-line-hover focus-visible:border-primary-500/50",
+    "w-full h-field px-3 bg-field border border-line rounded-control text-ui text-contrast hover:border-line-hover focus-visible:border-primary-500/50",
   inline: "w-full h-7 px-0 bg-transparent text-label font-medium text-body hover:text-contrast",
   bare: "",
 };

@@ -34,6 +34,8 @@ const SIZES = { 11: "caption", 12: "label", 13: "ui", 14: "ui-lg", 15: "title", 
 export function mapUtility(utility, variants = [], mode = "light") {
   const size = utility.match(/^text-\[(\d+)px\]$/);
   if (size) return SIZES[size[1]] ? `text-${SIZES[size[1]]}` : null;
+  const control = utility.match(/^(h|w|size|min-h|min-w)-\[34px\]$/);
+  if (control) return `${control[1]}-control`; // the toolbar control size, which the style sets (34px in Flat)
   const radius = radiusToken(utility);
   if (radius !== undefined) return radius; // same value in the default style, follows the app's style after
   if (/^shadow(?:-sm|-md)?$/.test(utility)) return "shadow-card"; // a resting surface shadow: the style decides (none in Flat)

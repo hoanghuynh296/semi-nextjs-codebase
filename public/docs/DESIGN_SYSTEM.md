@@ -31,10 +31,11 @@ hook of the `semi-design` plugin).
   appear only where they carry a state.
 - **Unified sub-page toolbar.** Sub-pages open with a large `font-display` title (text only), followed by a single
   sticky toolbar row: pill filter tabs on the left, the icon-only primary CTA (`BTN_PRIMARY` + `BTN_ICON`) + secondary
-  filter/search/refresh controls on the right (§4). All toolbar controls share `h-[34px]` and `text-label font-medium`.
+  filter/search/refresh controls on the right (§4). All toolbar controls share `h-control` and `text-label font-medium`.
 - **Cards, not lines.** Group content in rounded cards (`rounded-card`) on the dark page; nested facts sit in tonal tiles.
-- **One style per app.** Radii and the card shadow are style tokens (`docs/STYLES.md`): an app picks Flat (default), Soft
-  or Sharp once, with `<html data-style>`, and every component follows. Components, colours, type and layout are shared.
+- **One style per app.** The look is a style (`docs/STYLES.md`): neutral colours, fonts, radii, card border and shadow,
+  control sizes. An app picks Flat (default), Soft or Sharp once, with `<html data-style>`, and every component follows.
+  Components, layout, the type scale, the accent and status colours are shared by every style.
 - **One accent.** `primary-*` (Semi default green `#00AE42`; a product may override it, see §2b) for actions,
   selection and focus. Status colours carry meaning only (§3).
 - **Phone first.** Used from iPhone and iPad: no horizontal page scroll at 375px, touch targets ≥ 36px (44px for nav),
@@ -190,7 +191,7 @@ Surfaces, greys, status colours, radius and type stay Semi's. Record the product
   pink · sky · amber · violet (indigo) · gray (advanced / unknown). Each app maps its areas to tones once (in its own
   extension doc) and keeps the mapping everywhere. The nav menu uses neutral grey `w-4 h-4` (16px) icons
   (`text-gray-400`, active `bg-white/[0.10] text-white`).
-- **Chips and tags** (`Chip.tsx`) all share one pill-tab style (`rounded-full h-[34px] px-3.5 text-label font-medium`):
+- **Chips and tags** (`Chip.tsx`) all share one pill-tab style (`rounded-full h-control px-3.5 text-label font-medium`):
   borderless ghost pills when off (`bg-transparent border-transparent text-gray-400 hover:text-gray-200 hover:bg-white/[0.04]`)
   and subtle filled pills when selected (`bg-white/[0.10] border-white/[0.08] text-white`, `chipClass(active)`); static
   tags use `TAG` (neutral). Per-item colour appears only on a leading dot (`TONE_DOT`) or icon (`chipIconClass(tone)`).
@@ -319,7 +320,8 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   style (Flat 4 · 8 · 12 · 16px, Soft 6 · 12 · 20 · 24px, Sharp 2 · 0 · 0 · 0): `docs/STYLES.md`. Never the raw scale (`rounded`,
   `rounded-lg/xl/2xl`) or `rounded-[Npx]`: they would not follow the style (`radius-token`).
 - **Control height:** all toolbar buttons, filter chips, pills, search inputs, custom selects and date pickers use
-  `h-[34px]` and `text-label font-medium` so toolbar rows align evenly.
+  `h-control` (34px in Flat, set by the style) and `text-label font-medium` so toolbar rows align evenly. Form inputs and
+  selects use `h-field` (36px in Flat). Never `h-[34px]`: it would not follow the style.
 - **Spacing scale:** 4 / 8 / 12 / 16 / 20 / 24 px. Card padding `p-4`, gaps inside a card `gap-3`, between cards
   `gap-3.5`–`gap-4`, between sections `gap-5`.
 - **Home shell (`md+`):** two inset `rounded-panel` panels inside a `bg-canvas` frame (`md:p-2 md:gap-2`): a collapsible
@@ -398,14 +400,14 @@ tiles use `w-11 h-11 rounded-card` with their area's `TILE_TONES`.
 
 ## 9. Buttons
 
-`BTN_PRIMARY` / `BTN_SECONDARY` / `BTN_DANGER` from `@semi/ui/styles` (`rounded-control`, `h-[34px]`,
+`BTN_PRIMARY` / `BTN_SECONDARY` / `BTN_DANGER` from `@semi/ui/styles` (`rounded-control`, `h-control`,
 `text-label font-medium`, flat). Icon-only: add `BTN_ICON`, or `ICON_BTN` (`w-7 h-7 rounded-control`) inside cards. Big
 state toggles (power) are round: `w-20 h-20 sm:w-24 sm:h-24 rounded-full`, flat `bg-primary-500 text-white` when on,
 `bg-white/[0.05]` when off. A running action shows a spinner inside its own button only.
 
 ## 10. Pills, chips, badges
 
-- Single choice: `Pills` (`h-[34px] rounded-control` track, active = `bg-white/[0.10] text-white`).
+- Single choice: `Pills` (`h-control rounded-control` track, active = `bg-white/[0.10] text-white`).
 - Sub-page filter tabs / chips: `Chip` (see §3 Chips). Static labels: `TAG`.
 - Filter chips may carry an icon and a count: icon `w-3.5 h-3.5` + label + `COUNT_PILL`.
 - Status pill: `STATUS_PILL` + `bg-<tone>-500/15 text-<tone>-300` with a status dot (§11).
@@ -542,7 +544,7 @@ with `aria-describedby`, sets `aria-invalid` and announces the error (`role="ale
 </Field>
 ```
 
-Input surface: `FIELD_INPUT` (`bg-field border border-line hover:border-line-hover rounded-control px-3 h-9 text-ui …
+Input surface: `FIELD_INPUT` (`bg-field border border-line hover:border-line-hover rounded-control px-3 h-field text-ui …
 focus:border-primary-500/50`); invalid adds `border-danger-border`. Never `focus:outline-none` without a visible focus
 border. Choices: `Checkbox` (with `indeterminate`), `Switch` (settings that apply at once), `RadioGroup` (2–5 exclusive
 options; more → `CustomSelect`).

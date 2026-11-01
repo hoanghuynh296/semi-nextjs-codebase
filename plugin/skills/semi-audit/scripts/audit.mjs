@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 import { HARD, RATCHET, loadConfig, scan as runSemiLintScan } from "./vendor/semi-lint.mjs";
 import { analyse } from "./vendor/classes.mjs";
 import { detectMode, migrateSource } from "./vendor/codemod.mjs";
-import { findGlobalsCss, readStyleState, semiStyles } from "../../semi-init/scripts/setup.mjs";
+import { findGlobalsCss, missingStyleFonts, readStyleState, semiStyles } from "../../semi-init/scripts/setup.mjs";
 
 export const REPORT_FILE = "semi-audit.md";
 /** The order /semi-fix works in; each phase leaves the app building. */
@@ -491,6 +491,10 @@ export function auditSingleApp(cwd) {
     setup("style", "semi-lint.json", style.declared ? `style "${style.declared}" không có trong @semi/ui` : "chưa chọn style", `hỏi người dùng chọn style (${styleIds.join(" / ")}), rồi foundation --style <id>`);
   else if (styleList && style.applied !== style.declared)
     setup("style", style.layout || "app/layout.tsx", `<html> chưa có data-style="${style.declared}"`, `foundation --style ${style.declared}`);
+  else if (styleList) {
+    const missing = missingStyleFonts(cwd, styleList.styles.find((s) => s.id === style.declared));
+    if (missing.length) setup("style-fonts", style.layout, `layout chưa tải font ${missing.map((f) => f.family).join(", ")} của style ${style.declared}`, "next/font như foundation in ra", "manual");
+  }
 
   if (!usesAppShell || legacySidebarFile)
     decide("app-shell", legacySidebarFile || layout || "layout.tsx", legacySidebarFile ? "sidebar cũ (aside border-r / drawer)" : "chưa có khung AppShell / AppHeader", "AppShell + MobileTabBar (app nhiều trang) hoặc AppHeader (app công cụ)");
@@ -516,7 +520,7 @@ export function auditSingleApp(cwd) {
     if (!css) continue;
     for (const f of analyse(src, { css: true })) if (!autoAt.has(`${rel}:${f.line}:${f.token}`)) issues.push({ phase: "lint", kind: "manual", rule: f.rule, file: rel, line: f.line, token: f.token });
   }
-  const STEP = ["semi-ui", "tailwind-v4", "transpile", "semi-css", "semi-lint-config", "providers", "style"];
+  const STEP = ["semi-ui", "tailwind-v4", "transpile", "semi-css", "semi-lint-config", "providers", "style", "style-fonts"];
   issues.sort(
     (a, b) =>
       PHASES.indexOf(a.phase) - PHASES.indexOf(b.phase) ||
@@ -652,6 +656,7 @@ const SETUP_NAMES = {
   "semi-lint-config": "semi-lint.json",
   providers: "provider trong layout",
   style: "chọn style",
+  "style-fonts": "font của style",
 };
 const appsOf = (r) => (r.apps?.length ? r.apps : r.exists ? [r] : []);
 const rootOf = (r) => r.root || r.cwd;

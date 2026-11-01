@@ -32,7 +32,7 @@ Phones (`< md`) hide the top logo header and use `MobileTabBar` at the bottom (n
 
 **Colour:** primary `#00AE42` (`primary-*`, overridable per project in `@theme`) = actions, focus, "on". `emerald-*` = status/success only.
 amber = busy/warning · rose = error/danger. Nav menu: grey 16px icons, no count badges, active = `bg-white/[0.10] text-contrast`.
-Chips (`Chip`, `chipClass(active)`): `rounded-full h-[34px] px-3.5`, ghost when off, active uses semantic high-contrast background; colour only on a
+Chips (`Chip`, `chipClass(active)`): `rounded-full h-control px-3.5`, ghost when off, active uses semantic high-contrast background; colour only on a
 leading dot or icon (`TONE_DOT`, `chipIconClass(tone)`). Card tiles keep their area tint. Flat: no gradients, no glow
 blobs, no `shadow-[0_0_…]` (status dots and power buttons too). Active card = `CARD_ACTIVE` (primary border).
 
@@ -51,7 +51,11 @@ layers `z-sticky` < `z-drawer` < `z-modal` < `z-dialog` < `z-keypad` < `z-popove
 `Modal` / `Drawer` / `confirmDialog` (focus trap, Escape, focus return) · keep `FOCUS_RING` on custom controls · UI text
 in shared components comes from `useSemiLocale()` (`<SemiLocaleProvider locale={en}>`).
 
-**Shape (style tokens, docs/STYLES.md):** marks / checkboxes / inline code `rounded-chip` · controls / tiles / rows
+**Style (docs/STYLES.md):** the app's style sets the neutral colours behind `bg-*` / `text-*` / `border-line`, the fonts
+(`font-sans`, `font-display`), control sizes `h-control` (toolbar buttons, pills, chips, search) / `h-field` (inputs,
+selects), the card border (`border-card`, in `CARD`) and the shape below. Never `h-[34px]` or a per-style class.
+
+**Shape (style tokens):** marks / checkboxes / inline code `rounded-chip` · controls / tiles / rows
 `rounded-control` · cards / popovers / menus / toasts `rounded-card` · panels / hero / modal / sidebar `rounded-panel` ·
 pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `CARD`; none in Flat). The app's style
 (`<html data-style>`: Flat by default, Soft or Sharp) sets the values. Never `rounded`, `rounded-lg/xl/2xl` or `rounded-[Npx]`.

@@ -24,16 +24,20 @@ const styles = readdirSync(stylesDir)
 const defaults = styles.filter((s) => s.default);
 if (defaults.length !== 1) throw new Error(`tokens/styles: exactly one style needs "default": true (found ${defaults.length})`);
 const styleKeys = Object.keys(defaults[0].tokens);
+/** Style tokens that are a utility of their own instead of a Tailwind theme variable: key → [utility, CSS property]. */
+const UTILITY_KEYS = { "card-border": ["border-card", "border"] };
 for (const s of styles) {
   const keys = Object.keys(s.tokens);
   const missing = styleKeys.filter((k) => !keys.includes(k));
   const extra = keys.filter((k) => !styleKeys.includes(k));
   if (missing.length || extra.length) throw new Error(`tokens/styles/${s.id}.json: missing [${missing}] extra [${extra}]`);
+  for (const [k, v] of Object.entries(s.semantic ?? {}))
+    if (!tokens.semantic[k] || !v.dark || !v.light) throw new Error(`tokens/styles/${s.id}.json: semantic ${k} must be a tokens.json semantic key with dark + light`);
 }
 styles.sort((a, b) => (b.default ? 1 : 0) - (a.default ? 1 : 0)); // default first: later blocks win on equal specificity
 
 const TITLES = {
-  font: "Fonts (apps load Geist + Montserrat Alternates with next/font and expose --font-geist / --font-montserrat-alternates, or set --font-sans-family / --font-display-family)",
+  font: "Monospace font (font-sans / font-display come from the style: tokens/styles/*.json)",
   brand: "Brand: primary-* = actions, focus, \"on\". Override per project in your own @theme after importing this file",
   status: "Status green (emerald-*): online, ready, success. Never an accent",
   semantic: "Semantic tokens (CSS variables mapped for Tailwind 4 @theme): auto-switches via data-theme=\"dark|light\"",
@@ -93,16 +97,28 @@ if (darkVars.length > 0) {
   out += `/* Semantic Tokens: Light Mode */\n[data-theme="light"],\n.light {\n${lightVars.join("\n")}\n}\n\n`;
   out += `/* data-theme="system": follows the OS without JS (ThemeScript resolves it to dark|light before paint) */\n@media (prefers-color-scheme: light) {\n  [data-theme="system"] {\n${lightVars.map((l) => "  " + l).join("\n")}\n  }\n}\n\n`;
   out += `/* --color-* runtime variables for app CSS (var(--color-panel)), re-resolved in every theme scope */\n:root,\n[data-theme],\n.dark,\n.light {\n${compatVars.join("\n")}\n}\n\n`;
-  // Styles: utilities read --semi-<key> (rounded-card → var(--semi-radius-card)); each style scope sets it. The
-  // [data-theme] descendants re-declare it so a value that uses a themed variable (shadow tint) follows a nested theme.
+  // Styles: utilities read --semi-<key> (rounded-card → var(--semi-radius-card)); each style scope sets it, plus the
+  // public --<key> for app CSS. The [data-theme] descendants re-declare them so a value that uses a themed variable
+  // (shadow tint, line colour) follows a nested theme. card-border is a utility of its own (border-card).
   const def = styles[0];
   const note = (raw) => (raw.note ? ` /* ${raw.note} */` : "");
+  const themeKeys = styleKeys.filter((k) => !UTILITY_KEYS[k]);
   out += `/* Styles (tokens/styles/*.json, docs/STYLES.md): set data-style="${styles.map((s) => s.id).join("|")}" on <html> or a wrapper; default ${def.id} */\n`;
-  out += `@theme inline {\n${styleKeys.map((k) => `  --${k}: var(--semi-${k});${note(def.tokens[k])}`).join("\n")}\n}\n\n`;
+  out += `@theme inline {\n${themeKeys.map((k) => `  --${k}: var(--semi-${k});${note(def.tokens[k])}`).join("\n")}\n}\n\n`;
+  out += Object.entries(UTILITY_KEYS).map(([k, [name, prop]]) => `/* ${def.tokens[k].note ?? k} */\n@utility ${name} {\n  ${prop}: var(--semi-${k});\n}\n\n`).join("");
   for (const s of styles) {
     const sel = [...(s.default ? [":root", "[data-theme]"] : []), `[data-style="${s.id}"]`, `[data-style="${s.id}"] [data-theme]`];
     out += `/* Style: ${s.name}. ${s.description} */\n${sel.join(",\n")} {\n`;
-    out += styleKeys.map((k) => `  --semi-${k}: ${s.tokens[k].value};`).join("\n") + "\n}\n\n";
+    out += styleKeys.map((k) => `  --semi-${k}: ${s.tokens[k].value};`).join("\n") + "\n";
+    out += themeKeys.map((k) => `  --${k}: var(--semi-${k});`).join("\n") + "\n}\n\n";
+    // Neutral colours of this style: the same --semi-* sources the themes set, scoped to the style.
+    const sem = Object.entries(s.semantic ?? {});
+    if (!sem.length) continue;
+    const scope = (themes) => themes.flatMap((t) => [`[data-style="${s.id}"][data-theme="${t}"]`, `[data-style="${s.id}"] [data-theme="${t}"]`]);
+    const vars = (mode, pad = "") => sem.map(([k, v]) => `${pad}  ${srcVar(k)}: ${v[mode]};`).join("\n");
+    out += `/* Style: ${s.name}, dark colours */\n${scope(["dark", "system"]).join(",\n")} {\n${vars("dark")}\n}\n\n`;
+    out += `/* Style: ${s.name}, light colours */\n${scope(["light"]).join(",\n")} {\n${vars("light")}\n}\n\n`;
+    out += `@media (prefers-color-scheme: light) {\n  ${scope(["system"]).join(",\n  ")} {\n${vars("light", "  ")}\n  }\n}\n\n`;
   }
   out += zKeys.map((k) => `@utility ${k} {\n  z-index: var(--${k});\n}\n`).join("") + "\n";
   out += `/* Utility fallbacks & direct semantic text/bg/border helpers */\n@layer utilities {\n` +
@@ -124,7 +140,14 @@ const styleList =
     {
       $note: "GENERATED by scripts/build-tokens.mjs from tokens/styles/*.json. An app picks one with <html data-style=\"id\">.",
       default: styles[0].id,
-      styles: styles.map((s) => ({ id: s.id, name: s.name, description: s.description, tokens: Object.fromEntries(styleKeys.map((k) => [k, s.tokens[k].value])) })),
+      styles: styles.map((s) => ({
+        id: s.id,
+        name: s.name,
+        description: s.description,
+        fonts: s.fonts ?? [],
+        tokens: Object.fromEntries(styleKeys.map((k) => [k, s.tokens[k].value])),
+        semantic: s.semantic ?? {},
+      })),
     },
     null,
     2,

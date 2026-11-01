@@ -2,9 +2,7 @@
    @semi/ui 0.6.0 · import after "tailwindcss": @import "@semi/ui/tokens.css"; */
 @theme {
 
-  /* Fonts (apps load Geist + Montserrat Alternates with next/font and expose --font-geist / --font-montserrat-alternates, or set --font-sans-family / --font-display-family) */
-  --font-sans: var(--font-sans-family, var(--font-geist)), Geist, Inter, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
-  --font-display: var(--font-display-family, var(--font-montserrat-alternates)), "Montserrat Alternates", var(--font-geist), sans-serif;
+  /* Monospace font (font-sans / font-display come from the style: tokens/styles/*.json) */
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
 
   /* Type scale: text-caption 11 · label 12 · ui 13 · ui-lg 14 · title 15 · title-lg 16 · kpi 18 · heading-sm 20 · heading 22 · heading-lg 24 · display 26 */
@@ -510,10 +508,19 @@
   --radius-control: var(--semi-radius-control); /* Buttons, inputs, selects, tiles, list rows */
   --radius-card: var(--semi-radius-card); /* Cards, popovers, menus, toasts */
   --radius-panel: var(--semi-radius-panel); /* Hero, modal, drawer, sheet, sidebar */
-  --shadow-card: var(--semi-shadow-card); /* Resting cards: none (the border separates them) */
+  --shadow-card: var(--semi-shadow-card); /* Resting card shadow */
+  --font-sans: var(--semi-font-sans); /* UI and body text */
+  --font-display: var(--semi-font-display); /* Page titles, KPI figures */
+  --spacing-control: var(--semi-spacing-control); /* Toolbar controls: buttons, pills, chips, search (h-control, w-control) */
+  --spacing-field: var(--semi-spacing-field); /* Form inputs and selects (h-field) */
 }
 
-/* Style: Flat. Thin borders, no card shadows, medium radii. Dense, information-first screens: dashboards, tools, admin. */
+/* Card / hero / sidebar border (border-card) */
+@utility border-card {
+  border: var(--semi-card-border);
+}
+
+/* Style: Flat. Cool greys, thin borders, no card shadows, medium radii, compact 34px controls, Geist. Dense, information-first screens: dashboards, tools, admin. */
 :root,
 [data-theme],
 [data-style="flat"],
@@ -523,9 +530,23 @@
   --semi-radius-card: 0.75rem;
   --semi-radius-panel: 1rem;
   --semi-shadow-card: 0 0 #0000;
+  --semi-card-border: 1px solid var(--semi-line);
+  --semi-font-sans: var(--font-sans-family, var(--font-geist)), Geist, Inter, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+  --semi-font-display: var(--font-display-family, var(--font-montserrat-alternates)), "Montserrat Alternates", var(--font-geist), sans-serif;
+  --semi-spacing-control: 34px;
+  --semi-spacing-field: 36px;
+  --radius-chip: var(--semi-radius-chip);
+  --radius-control: var(--semi-radius-control);
+  --radius-card: var(--semi-radius-card);
+  --radius-panel: var(--semi-radius-panel);
+  --shadow-card: var(--semi-shadow-card);
+  --font-sans: var(--semi-font-sans);
+  --font-display: var(--semi-font-display);
+  --spacing-control: var(--semi-spacing-control);
+  --spacing-field: var(--semi-spacing-field);
 }
 
-/* Style: Sharp. Square corners and a hard offset shadow under cards. Bold, editorial screens: landing pages, portfolios, creative tools. */
+/* Style: Sharp. Pure black and white, strong 2px borders, square corners, a hard offset shadow, Space Grotesk. Bold, editorial screens: landing pages, portfolios, creative tools. */
 [data-style="sharp"],
 [data-style="sharp"] [data-theme] {
   --semi-radius-chip: 0.125rem;
@@ -533,16 +554,149 @@
   --semi-radius-card: 0;
   --semi-radius-panel: 0;
   --semi-shadow-card: 4px 4px 0 var(--semi-line-hover);
+  --semi-card-border: 2px solid var(--semi-line-hover);
+  --semi-font-sans: var(--font-sans-family, var(--font-space-grotesk)), "Space Grotesk", -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+  --semi-font-display: var(--font-display-family, var(--font-space-grotesk)), "Space Grotesk", sans-serif;
+  --semi-spacing-control: 36px;
+  --semi-spacing-field: 40px;
+  --radius-chip: var(--semi-radius-chip);
+  --radius-control: var(--semi-radius-control);
+  --radius-card: var(--semi-radius-card);
+  --radius-panel: var(--semi-radius-panel);
+  --shadow-card: var(--semi-shadow-card);
+  --font-sans: var(--semi-font-sans);
+  --font-display: var(--semi-font-display);
+  --spacing-control: var(--semi-spacing-control);
+  --spacing-field: var(--semi-spacing-field);
 }
 
-/* Style: Soft. Larger radii and a soft resting shadow under cards. Calmer, friendlier screens: consumer apps, storefronts, onboarding. */
+/* Style: Sharp, dark colours */
+[data-style="sharp"][data-theme="dark"],
+[data-style="sharp"] [data-theme="dark"],
+[data-style="sharp"][data-theme="system"],
+[data-style="sharp"] [data-theme="system"] {
+  --semi-canvas: #000000;
+  --semi-app: #000000;
+  --semi-panel: #0a0a0a;
+  --semi-field: #161616;
+  --semi-raised: #262626;
+  --semi-text-contrast: #ffffff;
+  --semi-text-body: #e5e5e5;
+  --semi-text-muted: #a3a3a3;
+  --semi-line: rgba(255, 255, 255, 0.32);
+  --semi-line-hover: #ffffff;
+  --semi-divider: rgba(255, 255, 255, 0.14);
+}
+
+/* Style: Sharp, light colours */
+[data-style="sharp"][data-theme="light"],
+[data-style="sharp"] [data-theme="light"] {
+  --semi-canvas: #ffffff;
+  --semi-app: #ffffff;
+  --semi-panel: #ffffff;
+  --semi-field: #f4f4f4;
+  --semi-raised: #e5e5e5;
+  --semi-text-contrast: #000000;
+  --semi-text-body: #1f1f1f;
+  --semi-text-muted: #525252;
+  --semi-line: rgba(0, 0, 0, 0.32);
+  --semi-line-hover: #000000;
+  --semi-divider: rgba(0, 0, 0, 0.12);
+}
+
+@media (prefers-color-scheme: light) {
+  [data-style="sharp"][data-theme="system"],
+  [data-style="sharp"] [data-theme="system"] {
+    --semi-canvas: #ffffff;
+    --semi-app: #ffffff;
+    --semi-panel: #ffffff;
+    --semi-field: #f4f4f4;
+    --semi-raised: #e5e5e5;
+    --semi-text-contrast: #000000;
+    --semi-text-body: #1f1f1f;
+    --semi-text-muted: #525252;
+    --semi-line: rgba(0, 0, 0, 0.32);
+    --semi-line-hover: #000000;
+    --semi-divider: rgba(0, 0, 0, 0.12);
+  }
+}
+
+/* Style: Soft. Warm neutrals, borderless cards lifted by a soft shadow, large radii, roomy 40px controls, Plus Jakarta Sans. Calm, friendly screens: consumer apps, storefronts, onboarding. */
 [data-style="soft"],
 [data-style="soft"] [data-theme] {
   --semi-radius-chip: 0.375rem;
   --semi-radius-control: 0.75rem;
   --semi-radius-card: 1.25rem;
   --semi-radius-panel: 1.5rem;
-  --semi-shadow-card: 0 1px 2px var(--semi-shadow-tint), 0 8px 24px -10px var(--semi-shadow-tint);
+  --semi-shadow-card: 0 1px 2px var(--semi-shadow-tint), 0 10px 28px -10px var(--semi-shadow-tint);
+  --semi-card-border: 1px solid transparent;
+  --semi-font-sans: var(--font-sans-family, var(--font-jakarta)), "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+  --semi-font-display: var(--font-display-family, var(--font-jakarta)), "Plus Jakarta Sans", sans-serif;
+  --semi-spacing-control: 40px;
+  --semi-spacing-field: 44px;
+  --radius-chip: var(--semi-radius-chip);
+  --radius-control: var(--semi-radius-control);
+  --radius-card: var(--semi-radius-card);
+  --radius-panel: var(--semi-radius-panel);
+  --shadow-card: var(--semi-shadow-card);
+  --font-sans: var(--semi-font-sans);
+  --font-display: var(--semi-font-display);
+  --spacing-control: var(--semi-spacing-control);
+  --spacing-field: var(--semi-spacing-field);
+}
+
+/* Style: Soft, dark colours */
+[data-style="soft"][data-theme="dark"],
+[data-style="soft"] [data-theme="dark"],
+[data-style="soft"][data-theme="system"],
+[data-style="soft"] [data-theme="system"] {
+  --semi-canvas: #12100e;
+  --semi-app: #181512;
+  --semi-panel: #211d19;
+  --semi-field: #2a2520;
+  --semi-raised: #36302a;
+  --semi-text-contrast: #fbf8f3;
+  --semi-text-body: #ded7cd;
+  --semi-text-muted: #a49b90;
+  --semi-line: rgba(255, 238, 214, 0.09);
+  --semi-line-hover: rgba(255, 238, 214, 0.18);
+  --semi-divider: rgba(255, 238, 214, 0.06);
+  --semi-shadow-tint: rgb(0 0 0 / 0.45);
+}
+
+/* Style: Soft, light colours */
+[data-style="soft"][data-theme="light"],
+[data-style="soft"] [data-theme="light"] {
+  --semi-canvas: #f3eee7;
+  --semi-app: #faf7f2;
+  --semi-panel: #ffffff;
+  --semi-field: #f3eee7;
+  --semi-raised: #e8e0d5;
+  --semi-text-contrast: #1f1a14;
+  --semi-text-body: #463d33;
+  --semi-text-muted: #665c51;
+  --semi-line: rgba(60, 40, 20, 0.09);
+  --semi-line-hover: rgba(60, 40, 20, 0.18);
+  --semi-divider: rgba(60, 40, 20, 0.06);
+  --semi-shadow-tint: rgb(60 40 20 / 0.12);
+}
+
+@media (prefers-color-scheme: light) {
+  [data-style="soft"][data-theme="system"],
+  [data-style="soft"] [data-theme="system"] {
+    --semi-canvas: #f3eee7;
+    --semi-app: #faf7f2;
+    --semi-panel: #ffffff;
+    --semi-field: #f3eee7;
+    --semi-raised: #e8e0d5;
+    --semi-text-contrast: #1f1a14;
+    --semi-text-body: #463d33;
+    --semi-text-muted: #665c51;
+    --semi-line: rgba(60, 40, 20, 0.09);
+    --semi-line-hover: rgba(60, 40, 20, 0.18);
+    --semi-divider: rgba(60, 40, 20, 0.06);
+    --semi-shadow-tint: rgb(60 40 20 / 0.12);
+  }
 }
 
 @utility z-sticky {

@@ -3,11 +3,12 @@
 //   node style.mjs --cwd <root>                         list: each app's style and the styles its @semi/ui has
 //   node style.mjs --cwd <root> --to <id> [--only dir]  switch: semi-lint.json "style" + <html data-style> in the
 //                                                       root layout (all apps, or the one under dir)
-// A style only changes shape tokens (radii, card shadow): components, colours and layout stay as they are.
+// A style changes the look (neutral colours, fonts, radii, card border / shadow, control sizes); components, the accent
+// and status colours and the layout stay as they are. The style's fonts are added to the layout by hand (printed).
 import { readFileSync } from "node:fs";
 import { join, relative, resolve, sep } from "node:path";
 import { discoverFrontendApps } from "../../semi-audit/scripts/audit.mjs";
-import { readStyleState, semiStyles, wireStyle } from "../../semi-init/scripts/setup.mjs";
+import { missingStyleFonts, readStyleState, semiStyles, styleFontHint, wireStyle } from "../../semi-init/scripts/setup.mjs";
 
 const argv = process.argv.slice(2);
 let root = process.cwd();
@@ -54,6 +55,8 @@ for (const dir of apps) {
   const r = wireStyle(dir, to);
   console.log(`${name}: ${st.declared || list.default} → ${to}. ${r.message}`);
   if (!r.ok) exitCode = 1;
+  const next = list.styles.find((s) => s.id === to);
+  if (r.ok && next && missingStyleFonts(dir, next).length) console.log(`${name}: ${styleFontHint(r.layout, next)}`);
 }
 if (to && !exitCode) console.log(`\nChụp lại các trang đã chụp trước đó (cả hai theme) để so.`);
 process.exit(exitCode);

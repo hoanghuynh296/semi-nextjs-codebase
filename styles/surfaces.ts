@@ -1,13 +1,13 @@
 // Shared surface classes (docs/DESIGN_SYSTEM.md §5, §13, §15). Use these instead of re-typing them.
 
-/** Content card: panel fill, thin line border, card radius and the style's resting shadow (none in Flat). Add padding (p-4) at the call site. */
-export const CARD = "bg-panel border border-line rounded-card shadow-card min-w-0";
+/** Content card: panel fill, the style's card border, radius and resting shadow (Flat: thin line, no shadow). Add padding (p-4) at the call site. */
+export const CARD = "bg-panel border-card rounded-card shadow-card min-w-0";
 
 /** Clickable card (opens a detail view). */
 export const CARD_HOVER = `${CARD} hover:border-line-hover active:scale-[0.99] transition`;
 
 /** Plain hero panel at the top of a page. No glow (docs/DESIGN_SYSTEM.md, "Flat, no glow, no gradients"). */
-export const HERO = "relative overflow-hidden rounded-panel border border-line bg-panel shadow-card p-4 sm:p-6";
+export const HERO = "relative overflow-hidden rounded-panel border-card bg-panel shadow-card p-4 sm:p-6";
 
 /** Add to CARD for an active / "on" / printing card: primary border, no glow. */
 export const CARD_ACTIVE = "!border-primary-500/30";
@@ -147,7 +147,7 @@ export const FIELD_LABEL = "block text-label font-medium text-muted mb-1";
 
 /** Form text input: semantic field surface with crisp border-line. */
 export const FIELD_INPUT =
-  "w-full h-9 bg-field border border-line hover:border-line-hover rounded-control px-3 text-ui text-contrast placeholder:text-muted focus:outline-none focus:border-primary-500/50 focus:bg-raised transition-colors disabled:opacity-40";
+  "w-full h-field bg-field border border-line hover:border-line-hover rounded-control px-3 text-ui text-contrast placeholder:text-muted focus:outline-none focus:border-primary-500/50 focus:bg-raised transition-colors disabled:opacity-40";
 
 /** Form textarea: matches FIELD_INPUT contrast and focus border. */
 export const FIELD_TEXTAREA =
@@ -157,7 +157,7 @@ export const FIELD_TEXTAREA =
 export const SHELL_OUTER =
   "h-dvh overflow-hidden flex flex-col md:flex-row md:p-2 md:gap-2 bg-app md:bg-canvas text-body";
 export const SHELL_ASIDE =
-  "max-md:hidden shrink-0 rounded-panel bg-panel border border-line shadow-card flex flex-col overflow-hidden select-none transition-[width] duration-200";
+  "max-md:hidden shrink-0 rounded-panel bg-panel border-card shadow-card flex flex-col overflow-hidden select-none transition-[width] duration-200";
 export const SHELL_MAIN =
   "flex-1 min-w-0 min-h-0 md:rounded-panel bg-app md:border md:border-line overflow-y-auto overflow-x-hidden overscroll-contain flex flex-col";
 export const SHELL_CONTAINER =

@@ -8,7 +8,7 @@ import { TONE_TEXT, type TileTone } from "./Icon";
 import { type SemanticTone, TONAL_SURFACE } from "../styles/surfaces";
 
 export const CHIP_BASE =
-  "shrink-0 inline-flex items-center gap-1.5 px-3.5 h-[34px] rounded-full text-label font-medium whitespace-nowrap border transition outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 cursor-pointer";
+  "shrink-0 inline-flex items-center gap-1.5 px-3.5 h-control rounded-full text-label font-medium whitespace-nowrap border transition outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 cursor-pointer";
 
 const CHIP_ON = "bg-raised border-line text-contrast";
 

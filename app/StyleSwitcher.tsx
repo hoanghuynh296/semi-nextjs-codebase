@@ -17,7 +17,7 @@ export function StyleSwitcher() {
     setStyle(id);
   };
   return (
-    <div role="radiogroup" aria-label="Style" className="flex w-full items-center gap-0.5 bg-field p-0.5 h-[34px] rounded-control border border-line">
+    <div role="radiogroup" aria-label="Style" className="flex w-full items-center gap-0.5 bg-field p-0.5 h-control rounded-control border border-line">
       {styleList.styles.map((s) => {
         const on = style === s.id;
         return (

@@ -85,7 +85,7 @@ test("keep in semi-lint.json silences a structural check", () => {
 test("fix --codemod then a clean --verify deletes semi-audit.md", () => {
   const { root, web } = app();
   writeFileSync(join(web, "semi-lint.json"), JSON.stringify({ scan: ["app"], style: "flat", keep: { tables: "x", "app-shell": "x", "subpage-toolbar": "x" } }));
-  writeFileSync(join(web, "app/layout.tsx"), LAYOUT.replace("<html ", '<html data-style="flat" ').replace("<body>", "<body><ThemeProvider>").replace("</body>", "</ThemeProvider></body>"));
+  writeFileSync(join(web, "app/layout.tsx"), `// fonts: --font-geist --font-montserrat-alternates\n` + LAYOUT.replace("<html ", '<html data-style="flat" ').replace("<body>", "<body><ThemeProvider>").replace("</body>", "</ThemeProvider></body>"));
   writeAuditFile(auditProject(root), root);
   execFileSync("node", [FIX, "--cwd", root, "--codemod"]);
   assert.match(readFileSync(join(web, "app/page.tsx"), "utf8"), /bg-panel text-contrast/);
@@ -103,10 +103,15 @@ test("style: the audit asks for one, foundation --style applies it, /semi-style 
   assert.match(styleIssue().what, /chưa chọn style/);
   // Without --style the step is not guessed: it lists the styles and fails.
   assert.throws(() => execFileSync("node", [FIX, "--cwd", root, "foundation"], { stdio: "pipe" }));
-  execFileSync("node", [FIX, "--cwd", root, "foundation", "--style", "soft"], { stdio: "pipe" });
+  const out = execFileSync("node", [FIX, "--cwd", root, "foundation", "--style", "soft"], { encoding: "utf8" });
   assert.match(readFileSync(join(web, "app/layout.tsx"), "utf8"), /<html data-style="soft" lang="vi" suppressHydrationWarning>/);
   assert.equal(JSON.parse(readFileSync(join(web, "semi-lint.json"), "utf8")).style, "soft");
+  // The style's fonts are printed for the layout, and the audit asks for them until the layout loads them.
+  assert.match(out, /import \{ Plus_Jakarta_Sans \} from "next\/font\/google"/);
   assert.equal(styleIssue(), undefined);
+  assert.match(auditProject(root).apps[0].issues.find((i) => i.check === "style-fonts").what, /Plus Jakarta Sans/);
+  writeFileSync(join(web, "app/layout.tsx"), readFileSync(join(web, "app/layout.tsx"), "utf8").replace("<html ", "<html className={jakarta.variable /* --font-jakarta */} "));
+  assert.equal(auditProject(root).apps[0].issues.find((i) => i.check === "style-fonts"), undefined);
   // The layout drifting from semi-lint.json is a foundation issue again.
   writeFileSync(join(web, "app/layout.tsx"), LAYOUT);
   assert.match(styleIssue().what, /data-style="soft"/);

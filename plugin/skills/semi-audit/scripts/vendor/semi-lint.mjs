@@ -68,7 +68,7 @@ export const HARD = [
   ["external-link", /window\.open\(|href=\{?["'`]https?:\/\//, "links to other sites use ExternalLink from @semi/ui"],
   [
     "app-chrome-copy",
-    /h-\[34px\] px-4 rounded-(?:lg|control) text-(?:\[12px\]|label) font-semibold|p-1 sm:p-1\.5 rounded-(?:2xl|panel) z-20|rounded-(?:2xl|panel) p-1 gap-1 select-none shadow-(?:xl|float)/,
+    /h-(?:\[34px\]|control) px-4 rounded-(?:lg|control) text-(?:\[12px\]|label) font-semibold|p-1 sm:p-1\.5 rounded-(?:2xl|panel) z-20|rounded-(?:2xl|panel) p-1 gap-1 select-none shadow-(?:xl|float)/,
     "tool-app headers / canvas controls use @semi/ui/styles (headerPrimary, VIEWPORT_TOOLBAR, VIEWPORT_PILL…), not copies",
   ],
   [

@@ -2,13 +2,16 @@
 // serious issue, the theme is applied before paint and persists, dialogs and menus are keyboard-operable.
 import { expect, test, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import styleList from "../tokens/styles.json" with { type: "json" };
 
 const PAGES = ["/foundations.html", "/components.html", "/primitives.html", "/patterns.html", "/chat.html"];
 const THEMES = ["dark", "light"] as const;
+const STYLES = styleList.styles.map((s) => s.id);
 
-async function open(page: Page, path: string, theme: "dark" | "light" | "system") {
-  await page.addInitScript((t) => {
+async function open(page: Page, path: string, theme: "dark" | "light" | "system", style?: string) {
+  await page.addInitScript(([t, s]) => {
     localStorage.setItem("semi-theme", t);
+    if (s) localStorage.setItem("semi-style", s);
     // Theme as soon as <body> exists = what the first paint uses (the inline ThemeScript runs in <head>).
     new MutationObserver((_, obs) => {
       if (document.body) {
@@ -17,7 +20,7 @@ async function open(page: Page, path: string, theme: "dark" | "light" | "system"
         obs.disconnect();
       }
     }).observe(document, { childList: true, subtree: true });
-  }, theme);
+  }, [theme, style ?? ""] as const);
   await page.goto(path);
   await page.addStyleTag({ content: "*,*::before,*::after{transition:none!important;animation:none!important}" });
 }
@@ -78,11 +81,13 @@ function lowContrast(page: Page) {
 
 for (const path of PAGES) {
   for (const theme of THEMES) {
-    test(`contrast AA · ${theme} · ${path}`, async ({ page }) => {
-      await open(page, path, theme);
-      await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
-      expect(await lowContrast(page)).toEqual([]);
-    });
+    for (const style of STYLES) {
+      test(`contrast AA · ${style} · ${theme} · ${path}`, async ({ page }) => {
+        await open(page, path, theme, style);
+        await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+        expect(await lowContrast(page)).toEqual([]);
+      });
+    }
 
     test(`axe · ${theme} · ${path}`, async ({ page }) => {
       await open(page, path, theme);
@@ -92,35 +97,37 @@ for (const path of PAGES) {
     });
   }
 
-  test(`fits a phone screen · ${path}`, async ({ browser }) => {
-    const page = await browser.newPage({ viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true });
-    await open(page, path, "light");
-    // Everything stays inside the page column (16px gutters) unless it sits in its own horizontal scroller
-    const overflow = await page.evaluate(() => {
-      const col = document.querySelector("main > div")!;
-      const cs = getComputedStyle(col);
-      const cb = col.getBoundingClientRect();
-      const left = cb.left + parseFloat(cs.paddingLeft) - 1;
-      const right = cb.right - parseFloat(cs.paddingRight) + 1;
-      const out: string[] = [];
-      if (Math.round(cb.width) !== document.documentElement.clientWidth) out.push(`column ${Math.round(cb.width)}px`);
-      for (const el of col.querySelectorAll<HTMLElement>("*")) {
-        if (getComputedStyle(el).position === "fixed") continue;
-        const b = el.getBoundingClientRect();
-        if (!b.width) continue;
-        let s = el.parentElement;
-        let clipped = false;
-        while (s && s !== col) {
-          if (getComputedStyle(s).overflowX !== "visible") clipped = true;
-          s = s.parentElement;
+  for (const style of STYLES) {
+    test(`fits a phone screen · ${style} · ${path}`, async ({ browser }) => {
+      const page = await browser.newPage({ viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true });
+      await open(page, path, "light", style);
+      // Everything stays inside the page column (16px gutters) unless it sits in its own horizontal scroller
+      const overflow = await page.evaluate(() => {
+        const col = document.querySelector("main > div")!;
+        const cs = getComputedStyle(col);
+        const cb = col.getBoundingClientRect();
+        const left = cb.left + parseFloat(cs.paddingLeft) - 1;
+        const right = cb.right - parseFloat(cs.paddingRight) + 1;
+        const out: string[] = [];
+        if (Math.round(cb.width) !== document.documentElement.clientWidth) out.push(`column ${Math.round(cb.width)}px`);
+        for (const el of col.querySelectorAll<HTMLElement>("*")) {
+          if (getComputedStyle(el).position === "fixed") continue;
+          const b = el.getBoundingClientRect();
+          if (!b.width) continue;
+          let s = el.parentElement;
+          let clipped = false;
+          while (s && s !== col) {
+            if (getComputedStyle(s).overflowX !== "visible") clipped = true;
+            s = s.parentElement;
+          }
+          if (!clipped && (b.right > right || b.left < left)) out.push(`${el.tagName.toLowerCase()} "${(el.textContent || "").trim().slice(0, 30)}"`);
         }
-        if (!clipped && (b.right > right || b.left < left)) out.push(`${el.tagName.toLowerCase()} "${(el.textContent || "").trim().slice(0, 30)}"`);
-      }
-      return out.slice(0, 5);
+        return out.slice(0, 5);
+      });
+      expect(overflow).toEqual([]);
+      await page.close();
     });
-    expect(overflow).toEqual([]);
-    await page.close();
-  });
+  }
 
   test(`page never scrolls outside the shell · ${path}`, async ({ page }) => {
     await open(page, path, "dark");

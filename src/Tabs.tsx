@@ -67,7 +67,7 @@ export function Tabs<T extends string>({
         onKeyDown={onKeyDown}
         className={cn(
           "flex items-center no-scrollbar overflow-x-auto",
-          seg ? "inline-flex gap-0.5 bg-field p-0.5 h-[34px] rounded-control border border-line" : "gap-5 border-b border-divider",
+          seg ? "inline-flex gap-0.5 bg-field p-0.5 h-control rounded-control border border-line" : "gap-5 border-b border-divider",
         )}
       >
         {items.map((it) => {

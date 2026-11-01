@@ -28,7 +28,7 @@ an old `semi-audit.md`, so the file never describes problems that are already go
 
 | Phase | Issues | /semi-fix does |
 |---|---|---|
-| 1. Nền móng (`F…`) | `@semi/ui` not installed, `transpilePackages`, Semi CSS, `semi-lint.json`, layout providers, no style chosen (or `<html data-style>` not matching it), Tailwind v3 | `fix.mjs foundation --style <id>` (installs, keeps Next / Tailwind) + the layout by hand, screenshots before / after |
+| 1. Nền móng (`F…`) | `@semi/ui` not installed, `transpilePackages`, Semi CSS, `semi-lint.json`, layout providers, no style chosen (or `<html data-style>` not matching it, or its fonts not loaded), Tailwind v3 | `fix.mjs foundation --style <id>` (installs, keeps Next / Tailwind) + the layout by hand, screenshots before / after |
 | 2. Token | colour / size / radius classes the codemod maps safely (`rounded-lg` → `rounded-control`, `shadow-sm` → `shadow-card`) | `fix.mjs tokens [--only dir]` |
 | 3. Sửa tay (`L…`) | lint hits no codemod can fix safely | edits by hand |
 | 4. Cấu trúc (`D…`) | AppShell / AppHeader frame, local wrappers, list pages without `SubpageToolbar`, tables, components that duplicate `@semi/ui`, other UI libraries | asks: fix, or keep (`semi-lint.json` `keep`) |

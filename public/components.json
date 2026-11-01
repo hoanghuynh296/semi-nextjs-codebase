@@ -89,7 +89,12 @@
       "radius-control",
       "radius-card",
       "radius-panel",
-      "shadow-card"
+      "shadow-card",
+      "card-border",
+      "font-sans",
+      "font-display",
+      "spacing-control",
+      "spacing-field"
     ]
   },
   "styles": {
@@ -99,17 +104,17 @@
       {
         "id": "flat",
         "name": "Flat",
-        "description": "Thin borders, no card shadows, medium radii. Dense, information-first screens: dashboards, tools, admin."
+        "description": "Cool greys, thin borders, no card shadows, medium radii, compact 34px controls, Geist. Dense, information-first screens: dashboards, tools, admin."
       },
       {
         "id": "sharp",
         "name": "Sharp",
-        "description": "Square corners and a hard offset shadow under cards. Bold, editorial screens: landing pages, portfolios, creative tools."
+        "description": "Pure black and white, strong 2px borders, square corners, a hard offset shadow, Space Grotesk. Bold, editorial screens: landing pages, portfolios, creative tools."
       },
       {
         "id": "soft",
         "name": "Soft",
-        "description": "Larger radii and a soft resting shadow under cards. Calmer, friendlier screens: consumer apps, storefronts, onboarding."
+        "description": "Warm neutrals, borderless cards lifted by a soft shadow, large radii, roomy 40px controls, Plus Jakarta Sans. Calm, friendly screens: consumer apps, storefronts, onboarding."
       }
     ]
   },
@@ -1795,7 +1800,7 @@
       "kind": "constant",
       "module": "styles/surfaces.ts",
       "client": false,
-      "summary": "Content card: panel fill, thin line border, card radius and the style's resting shadow (none in Flat). Add padding (p-4) at the call site. */"
+      "summary": "Content card: panel fill, the style's card border, radius and resting shadow (Flat: thin line, no shadow). Add padding (p-4) at the call site. */"
     },
     {
       "name": "CARD_HOVER",

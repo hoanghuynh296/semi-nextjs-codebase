@@ -1,12 +1,91 @@
 {
-  "$note": "A Semi style: the shape tokens every component reads (rounded-chip / control / card / panel, shadow-card). Every style sets the same keys; colours, type and layout stay shared. Edit, then npm run build:tokens. docs/STYLES.md describes each style.",
+  "$note": "A Semi style: the look every component reads. tokens = shape, card border, fonts, control sizes; semantic = neutral surface / text / line colours per theme (accent, status and tone colours stay shared). Every style sets the same token keys; semantic keys are optional overrides of tokens/tokens.json. fonts = what the app loads with next/font. Edit, then npm run build:tokens. docs/STYLES.md describes each style.",
   "name": "Sharp",
-  "description": "Square corners and a hard offset shadow under cards. Bold, editorial screens: landing pages, portfolios, creative tools.",
+  "description": "Pure black and white, strong 2px borders, square corners, a hard offset shadow, Space Grotesk. Bold, editorial screens: landing pages, portfolios, creative tools.",
+  "fonts": [
+    {
+      "family": "Space Grotesk",
+      "variable": "--font-space-grotesk",
+      "nextFont": "Space_Grotesk"
+    }
+  ],
   "tokens": {
-    "radius-chip": { "value": "0.125rem" },
-    "radius-control": { "value": "0" },
-    "radius-card": { "value": "0" },
-    "radius-panel": { "value": "0" },
-    "shadow-card": { "value": "4px 4px 0 var(--semi-line-hover)", "note": "Hard offset shadow in the theme's strong line colour" }
+    "radius-chip": {
+      "value": "0.125rem"
+    },
+    "radius-control": {
+      "value": "0"
+    },
+    "radius-card": {
+      "value": "0"
+    },
+    "radius-panel": {
+      "value": "0"
+    },
+    "shadow-card": {
+      "value": "4px 4px 0 var(--semi-line-hover)",
+      "note": "Hard offset shadow in the strong line colour"
+    },
+    "card-border": {
+      "value": "2px solid var(--semi-line-hover)"
+    },
+    "font-sans": {
+      "value": "var(--font-sans-family, var(--font-space-grotesk)), \"Space Grotesk\", -apple-system, BlinkMacSystemFont, \"SF Pro Text\", sans-serif"
+    },
+    "font-display": {
+      "value": "var(--font-display-family, var(--font-space-grotesk)), \"Space Grotesk\", sans-serif"
+    },
+    "spacing-control": {
+      "value": "36px"
+    },
+    "spacing-field": {
+      "value": "40px"
+    }
+  },
+  "semantic": {
+    "color-canvas": {
+      "dark": "#000000",
+      "light": "#ffffff"
+    },
+    "color-app": {
+      "dark": "#000000",
+      "light": "#ffffff"
+    },
+    "color-panel": {
+      "dark": "#0a0a0a",
+      "light": "#ffffff"
+    },
+    "color-field": {
+      "dark": "#161616",
+      "light": "#f4f4f4"
+    },
+    "color-raised": {
+      "dark": "#262626",
+      "light": "#e5e5e5"
+    },
+    "color-text-contrast": {
+      "dark": "#ffffff",
+      "light": "#000000"
+    },
+    "color-text-body": {
+      "dark": "#e5e5e5",
+      "light": "#1f1f1f"
+    },
+    "color-text-muted": {
+      "dark": "#a3a3a3",
+      "light": "#525252"
+    },
+    "color-line": {
+      "dark": "rgba(255, 255, 255, 0.32)",
+      "light": "rgba(0, 0, 0, 0.32)"
+    },
+    "color-line-hover": {
+      "dark": "#ffffff",
+      "light": "#000000"
+    },
+    "color-divider": {
+      "dark": "rgba(255, 255, 255, 0.14)",
+      "light": "rgba(0, 0, 0, 0.12)"
+    }
   }
 }

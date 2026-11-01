@@ -46,7 +46,7 @@ const CLASSES: Record<ButtonSize, Record<ButtonVariant, string>> = {
 type Base = Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "children"> & {
   ref?: React.Ref<HTMLButtonElement>;
   variant?: ButtonVariant;
-  /** md = 34px toolbar / form · sm = 28px dense rows · modal = 44px on phones, 34px from sm (dialog footers). */
+  /** md = h-control toolbar / form (34px in Flat) · sm = 28px dense rows · modal = 44px on phones, 34px from sm (dialog footers). */
   size?: ButtonSize;
   /** Leading icon from the Semi registry. */
   icon?: IconName;
