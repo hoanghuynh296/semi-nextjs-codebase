@@ -37,8 +37,8 @@ primary or keeps the style's own neutrals (`"neutral": "preset"`), so products o
 
 plus the style's fonts with `next/font` (the `fonts` list in `@semi/ui/styles.json`; Soft: `Plus_Jakarta_Sans` with
 `variable: "--font-jakarta"` on `<html className>`), and the same id in `semi-lint.json` (`"style": "soft"`).
-`/semi-audit` checks all three against each other. `/semi-init`
-asks for the style of a new app, `/semi-fix` foundation for an existing one, the agent switches it later when asked (the `semi-ui` skill). A wrapper
+`/semi-check` checks all three against each other. `/semi-new-app`
+asks for the style of a new app, `/semi-check` foundation for an existing one, the agent switches it later when asked (the `semi-ui` skill). A wrapper
 with `data-style` re-styles only its subtree (used by Storybook previews), not something an app needs.
 
 ## Rules
@@ -46,7 +46,7 @@ with `data-style` re-styles only its subtree (used by Storybook previews), not s
 - Use the style tokens only: `rounded-chip` (marks, checkboxes, inline code) · `rounded-control` (buttons, inputs,
   selects, tiles, list rows) · `rounded-card` (cards, popovers, menus, toasts) · `rounded-panel` (hero, modal, drawer,
   sheet, sidebar) · `rounded-full` / `rounded-none` (the same in every style) · `shadow-card` (resting cards, in `CARD`).
-  `semi-lint` (`radius-token`) flags `rounded`, `rounded-sm/md/lg/xl/2xl` and `rounded-[Npx]`; the `/semi-fix` token
+  `semi-lint` (`radius-token`) flags `rounded`, `rounded-sm/md/lg/xl/2xl` and `rounded-[Npx]`; the `/semi-check` token
   codemod maps them (`lg` → `control`, `xl` → `card`, `2xl` → `panel`, `sm` / `md` / bare → `chip`; `shadow-sm` → `shadow-card`).
 - An app never writes per-style CSS or `[data-style=…]` selectors: when one screen needs another shape, the style is
   missing a token, so propose it upstream (`/semi-propose`).

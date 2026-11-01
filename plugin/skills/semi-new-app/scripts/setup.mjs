@@ -1,4 +1,4 @@
-// Setup steps shared by /semi-init (new app), /semi-fix (foundation of an existing app) and /semi-update. Each step
+// Setup steps shared by /semi-new-app (new app), /semi-check (foundation of an existing app) and /semi-sync. Each step
 // only adds what is missing and can run again safely.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve, sep } from "node:path";
@@ -196,7 +196,7 @@ export function wireSemiLintConfig(webDir) {
  * appDir when given (null when that version predates styles), else the plugin's copy of tokens/styles.json.
  */
 export function semiStyles(appDir) {
-  const file = appDir ? join(appDir, "node_modules", "@semi", "ui", "tokens", "styles.json") : join(PLUGIN_ROOT, "skills", "semi-audit", "scripts", "vendor", "styles.json");
+  const file = appDir ? join(appDir, "node_modules", "@semi", "ui", "tokens", "styles.json") : join(PLUGIN_ROOT, "skills", "semi-check", "scripts", "vendor", "styles.json");
   if (appDir && !existsSync(file)) return existsSync(join(appDir, "node_modules", "@semi", "ui")) ? null : semiStyles();
   return JSON.parse(readFileSync(file, "utf8"));
 }
@@ -215,7 +215,7 @@ export function readStyleState(appDir) {
   const layout = findRootLayout(appDir);
   const html = layout ? readFileSync(join(appDir, layout), "utf8").match(/<html\b[^>]*>/) : null;
   const attr = (name) => (html ? (html[0].match(new RegExp(`\\bdata-${name}=["']([\\w-]+)["']`))?.[1] ?? null) : null);
-  // palettes were removed in v0.14.0: a leftover "palette" or data-palette is cleaned up by /semi-fix
+  // palettes were removed in v0.14.0: a leftover "palette" or data-palette is cleaned up by /semi-check
   return { declared: cfg.style ?? null, applied: attr("style"), legacyPalette: cfg.palette ?? attr("palette"), layout, hasHtml: Boolean(html) };
 }
 
@@ -228,7 +228,7 @@ const withStyleAttrs = (tag, attrs) => tag.replace(/\s+data-(?:style|palette)=["
  */
 export function wireStyle(appDir, id) {
   const list = semiStyles(appDir);
-  if (!list) return { ok: false, message: "@semi/ui đã cài chưa có style: chạy /semi-update trước" };
+  if (!list) return { ok: false, message: "@semi/ui đã cài chưa có style: chạy /semi-sync trước" };
   const style = list.styles.find((s) => s.id === id);
   if (!style) return { ok: false, message: `style "${id}" không có; chọn: ${list.styles.map((s) => s.id).join(", ")}` };
   const brand = readBrand(appDir)?.kit;

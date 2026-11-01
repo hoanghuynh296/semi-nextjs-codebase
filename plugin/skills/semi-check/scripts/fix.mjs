@@ -1,19 +1,19 @@
 #!/usr/bin/env node
-// /semi-fix helper: works from semi-audit.md (written by /semi-audit), one phase at a time. Zero external deps.
-//   node fix.mjs --cwd <root>                      plan: re-audits when semi-audit.md is missing or older than the code,
-//                                                  then prints the summary (the agent reads semi-audit.md for details)
+// /semi-check helper: works from semi-check.md (written by /semi-check), one phase at a time. Zero external deps.
+//   node fix.mjs --cwd <root>                      plan: re-audits when semi-check.md is missing or older than the code,
+//                                                  then prints the summary (the agent reads semi-check.md for details)
 //   node fix.mjs --cwd <root> foundation [--brand <spec>] [--style <id>]
 //                                                  phase 1: install @semi/ui (Next / Tailwind untouched),
 //                                                  transpilePackages, Semi CSS, semi-lint.json + baseline, AGENTS.md,
 //                                                  the style the user chose (<html data-style>); prints the layout
 //                                                  providers to add by hand
 //   node fix.mjs --cwd <root> tokens [--only dir]  phase 2: token codemod (colour / size classes), all apps or one dir
-//   node fix.mjs --cwd <root> --verify             re-audit: rewrites semi-audit.md with what is left (deletes it when
+//   node fix.mjs --cwd <root> --verify             re-audit: rewrites semi-check.md with what is left (deletes it when
 //                                                  nothing is), runs semi-lint and tsc. Exit 1 while anything is left.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join, relative, resolve, sep } from "node:path";
-import { auditFileState, auditProject, formatSummary, scanTargets, totals, writeAuditFile } from "../../semi-audit/scripts/audit.mjs";
-import { detectMode, migrateSource } from "../../semi-audit/scripts/vendor/codemod.mjs";
+import { auditFileState, auditProject, formatSummary, scanTargets, totals, writeAuditFile } from "../../semi-check/scripts/audit.mjs";
+import { detectMode, migrateSource } from "../../semi-check/scripts/vendor/codemod.mjs";
 import {
   installSemiUi,
   appFonts,
@@ -32,7 +32,7 @@ import {
   wireNextConfig,
   wireSemiLintConfig,
   wireStyle,
-} from "../../semi-init/scripts/setup.mjs";
+} from "../../semi-new-app/scripts/setup.mjs";
 
 const argv = process.argv.slice(2);
 let root = process.cwd();
@@ -57,7 +57,7 @@ function audit() {
   return { report, path };
 }
 const shown = (p) => {
-  const rel = p ? relative(process.cwd(), p) : "semi-audit.md";
+  const rel = p ? relative(process.cwd(), p) : "semi-check.md";
   return rel && !rel.startsWith("..") ? rel : p;
 };
 const appsOf = (report) => (report.apps?.length ? report.apps : []);
@@ -65,9 +65,9 @@ const appsOf = (report) => (report.apps?.length ? report.apps : []);
 if (mode === "plan") {
   const state = auditFileState(root);
   if (state.fresh) console.log(`${shown(state.path)} còn khớp với code: dùng file này.\n`);
-  else console.log(state.exists ? `${shown(state.path)} cũ hơn code: audit lại.\n` : `Chưa có semi-audit.md: audit trước.\n`);
+  else console.log(state.exists ? `${shown(state.path)} cũ hơn code: audit lại.\n` : `Chưa có semi-check.md: audit trước.\n`);
   const { report, path } = audit();
-  process.stdout.write(formatSummary(report, shown(path)).replace("**Tiếp theo:** chạy **/semi-fix**.", "**Tiếp theo:** làm theo giai đoạn trong file chi tiết, từ giai đoạn đầu tiên còn vấn đề."));
+  process.stdout.write(formatSummary(report, shown(path)).replace("**Tiếp theo:** đồng ý để /semi-check sửa theo từng giai đoạn.", "**Tiếp theo:** làm theo giai đoạn trong file chi tiết, từ giai đoạn đầu tiên còn vấn đề."));
   process.exit(0);
 }
 
@@ -205,6 +205,6 @@ for (const app of appsOf(report)) {
   for (const [bin, args] of [["semi-lint", []], ["tsc", ["--noEmit"]]]) if (runLocal(app.cwd, bin, args).status !== 0) failed = true;
 }
 const t = totals(report);
-process.stdout.write("\n" + formatSummary(report, shown(path)).replace("**Tiếp theo:** chạy **/semi-fix**.", "**Còn lại:** làm tiếp theo file chi tiết."));
-console.log(t.total ? `\nCòn ${t.total} vấn đề, ${shown(path)} đã cập nhật.` : `\nHết vấn đề: đã xoá semi-audit.md.`);
+process.stdout.write("\n" + formatSummary(report, shown(path)).replace("**Tiếp theo:** đồng ý để /semi-check sửa theo từng giai đoạn.", "**Còn lại:** làm tiếp theo file chi tiết."));
+console.log(t.total ? `\nCòn ${t.total} vấn đề, ${shown(path)} đã cập nhật.` : `\nHết vấn đề: đã xoá semi-check.md.`);
 process.exit(t.total || failed ? 1 : 0);

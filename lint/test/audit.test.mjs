@@ -1,14 +1,14 @@
-// node --test lint/test — /semi-audit issue list, semi-audit.md and the /semi-fix loop on a throwaway app.
+// node --test lint/test — /semi-check issue list, semi-check.md and the /semi-check loop on a throwaway app.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { auditFileState, auditProject, totals, writeAuditFile } from "../../plugin/skills/semi-audit/scripts/audit.mjs";
+import { auditFileState, auditProject, totals, writeAuditFile } from "../../plugin/skills/semi-check/scripts/audit.mjs";
 
-const FIX = new URL("../../plugin/skills/semi-fix/scripts/fix.mjs", import.meta.url).pathname;
-const STYLE = new URL("../../plugin/skills/semi-init/scripts/style.mjs", import.meta.url).pathname;
+const FIX = new URL("../../plugin/skills/semi-check/scripts/fix.mjs", import.meta.url).pathname;
+const STYLE = new URL("../../plugin/skills/semi-new-app/scripts/style.mjs", import.meta.url).pathname;
 const LAYOUT = `export default function L({ children }) {\n  return (\n    <html lang="vi" suppressHydrationWarning>\n      <body>{children}</body>\n    </html>\n  );\n}\n`;
 
 function app() {
@@ -65,7 +65,7 @@ test("issues are sorted into decisions, hand fixes and codemod fixes with file:l
   rmSync(root, { recursive: true });
 });
 
-test("semi-audit.md goes stale when the code changes", () => {
+test("semi-check.md goes stale when the code changes", () => {
   const { root, web } = app();
   writeAuditFile(auditProject(root), root);
   writeFileSync(join(web, "app/page.tsx"), readFileSync(join(web, "app/page.tsx"), "utf8") + "// edit\n");
@@ -82,7 +82,7 @@ test("keep in semi-lint.json silences a structural check", () => {
   rmSync(root, { recursive: true });
 });
 
-test("fix --codemod then a clean --verify deletes semi-audit.md", () => {
+test("fix --codemod then a clean --verify deletes semi-check.md", () => {
   const { root, web } = app();
   writeFileSync(join(web, "semi-lint.json"), JSON.stringify({ scan: ["app"], style: "flat", keep: { tables: "x", "app-shell": "x", "subpage-toolbar": "x" } }));
   writeFileSync(join(web, "app/layout.tsx"), `// fonts: --font-geist --font-montserrat-alternates\n` + LAYOUT.replace("<html ", '<html data-style="flat" ').replace("<body>", "<body><ThemeProvider>").replace("</body>", "</ThemeProvider></body>"));
@@ -92,7 +92,7 @@ test("fix --codemod then a clean --verify deletes semi-audit.md", () => {
   writeFileSync(join(web, "app/page.tsx"), readFileSync(join(web, "app/page.tsx"), "utf8").replace("font-bold", "font-semibold"));
   execFileSync("node", [FIX, "--cwd", root, "--verify"]);
   assert.equal(totals(auditProject(root)).total, 0);
-  assert.equal(existsSync(join(root, "semi-audit.md")), false);
+  assert.equal(existsSync(join(root, "semi-check.md")), false);
   rmSync(root, { recursive: true });
 });
 

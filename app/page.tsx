@@ -28,7 +28,7 @@ const INSTALL = `npm install github:hoanghuynh296/semi-nextjs-codebase#v${pkg.ve
 @import "@semi/ui/tokens.css";
 @import "@semi/ui/base.css";
 
-// or let the agent do it: /semi-init (new app) · /semi-audit → /semi-fix (existing app)`;
+// or let the agent do it: /semi-new-app (new app) · /semi-check (existing app)`;
 
 export default function HomePage() {
   return (

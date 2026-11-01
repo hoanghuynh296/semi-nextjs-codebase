@@ -20,7 +20,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
-import { cmpSemver, detectPkgManager, resolveTargetSpec, runLocal } from "../../semi-init/scripts/setup.mjs";
+import { cmpSemver, detectPkgManager, resolveTargetSpec, runLocal } from "../../semi-new-app/scripts/setup.mjs";
 
 const argv = process.argv.slice(2);
 const cmd = argv[0];
@@ -167,7 +167,7 @@ Bộ nhận diện của **${b.name}** trên Semi Design System. File duy nhất
   \`.github/workflows/brand-pages.yml\` build lại mỗi lần push lên main)
 - Đổi lựa chọn: \`/semi-brand\` (hoặc sửa \`brand.json\`, rồi \`npm run build\`)
 - Bản Semi mới: \`/semi-brand update\`
-- Dùng trong sản phẩm mới: \`/semi-init --brand github:<owner>/<repo>\`; sản phẩm có sẵn: \`/semi-update\`
+- Dùng trong sản phẩm mới: \`/semi-new-app --brand github:<owner>/<repo>\`; sản phẩm có sẵn: \`/semi-sync\`
 
 Hướng dẫn đầy đủ: \`node_modules/@semi/ui/docs/BRANDS.md\`.
 `;
@@ -331,7 +331,7 @@ if (cmd === "set") {
   const r = kitBin("build");
   if (r.status === 0) {
     const level = changeLevel(before, builtTokens());
-    console.log(`Thay đổi này là mức ${level} (sản phẩm: ${level === "major" ? "/semi-update sẽ hỏi trước vì giao diện đổi" : "/semi-update tự nhận"}). Trang preview đang chạy tự cập nhật.`);
+    console.log(`Thay đổi này là mức ${level} (sản phẩm: ${level === "major" ? "/semi-sync sẽ hỏi trước vì giao diện đổi" : "/semi-sync tự nhận"}). Trang preview đang chạy tự cập nhật.`);
   }
   process.exit(r.status || 0);
 }

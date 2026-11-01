@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-// /semi-init: scaffolds a NEW Semi app (Next.js + Tailwind 4 + @semi/ui + starter pages). An existing app is not
-// touched: it adopts Semi with /semi-audit + /semi-fix (the foundation step there installs @semi/ui).
+// /semi-new-app: scaffolds a NEW Semi app (Next.js + Tailwind 4 + @semi/ui + starter pages). An existing app is not
+// touched: it adopts Semi with /semi-check (the foundation step there installs @semi/ui).
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
-import { discoverFrontendApps } from "../../semi-audit/scripts/audit.mjs";
+import { discoverFrontendApps } from "../../semi-check/scripts/audit.mjs";
 import {
   detectPkgManager,
   installedSemiVersion,
@@ -217,13 +217,13 @@ mkdirSync(opts.cwd, { recursive: true });
 
 const discovered = discoverFrontendApps(opts.cwd);
 if (discovered.length) {
-  // Existing code: /semi-init only scaffolds new apps, so nothing here changes it.
+  // Existing code: /semi-new-app only scaffolds new apps, so nothing here changes it.
   const apps = discovered.map((dir) => {
     const pkg = JSON.parse(readFileSync(join(dir, "package.json"), "utf8"));
     const deps = { ...pkg.dependencies, ...pkg.devDependencies };
     return { dir: relative(opts.cwd, dir) || ".", next: deps.next || null, tailwindcss: deps.tailwindcss || null, semiUi: deps["@semi/ui"] || null };
   });
-  console.log(JSON.stringify({ existing: true, apps, next: "/semi-audit, then /semi-fix" }, null, 2));
+  console.log(JSON.stringify({ existing: true, apps, next: "/semi-check" }, null, 2));
   process.exit(10);
 }
 const webDir = opts.cwd;

@@ -355,4 +355,4 @@ Nếu một dự án mới thực sự cần một icon mới chưa có trong da
 3. Lấy path SVG chuẩn Lucide (kích thước viewBox `0 0 24 24`).
 4. Thêm key vào `ICONS` trong [`src/Icon.tsx`](file:///Users/claw/Development/semi/core/nextjs-codebase/src/Icon.tsx).
 5. Đăng ký metadata vào `ICON_CATALOG` trong [`src/iconCatalog.ts`](file:///Users/claw/Development/semi/core/nextjs-codebase/src/iconCatalog.ts) và cập nhật file [`docs/ICONS.md`](file:///Users/claw/Development/semi/core/nextjs-codebase/docs/ICONS.md) này.
-6. Chạy `npm run check`, nâng version và tạo tag release mới. Mọi app khác chỉ cần chạy `/semi-update` là nhận được icon mới.
+6. Chạy `npm run check`, nâng version và tạo tag release mới. Mọi app khác chỉ cần chạy `/semi-sync` là nhận được icon mới.

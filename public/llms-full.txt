@@ -941,7 +941,7 @@ The full inventory with props is generated into `components.json` (`npm run buil
 
 - **Physical / literal colors (`no-literal-palette`):** Never use neutral / white / black colour classes on any prefix or variant (`bg-white`, `text-slate-900`, `border-b-gray-200`, `divide-zinc-100`, `ring-slate-300`, `from-white`, `dark:bg-slate-800`). Always use Semantic Tokens (`bg-panel`, `bg-field`, `text-contrast`, `text-body`, `text-muted`, `border-line`, `divide-divider`).
 - **Fixed chromatic text (`no-fixed-tone-text`):** `text-emerald-400`, `text-rose-700 dark:text-rose-300`, `fill-amber-500` cannot pass contrast in both themes: use `text-accent-fg`, `text-*-fg` or `text-tone-<hue>`.
-- **Brand scale as a state colour (`accent-state-token`):** `ring-primary-500/50`, `bg-primary-500/15`, `border-primary-500/30` are not themed and vanish for light brands on light surfaces (a yellow ring is ≈ 1.3:1 on white): use `ring-focus`, `border-focus`, `bg-accent-subtle` / `bg-accent-subtle-hover`, `border-accent-line`. `/semi-fix` rewrites them.
+- **Brand scale as a state colour (`accent-state-token`):** `ring-primary-500/50`, `bg-primary-500/15`, `border-primary-500/30` are not themed and vanish for light brands on light surfaces (a yellow ring is ≈ 1.3:1 on white): use `ring-focus`, `border-focus`, `bg-accent-subtle` / `bg-accent-subtle-hover`, `border-accent-line`. `/semi-check` rewrites them.
 - **Solid pastel surfaces (`no-solid-pastel-surfaces`), arbitrary colours (`hex-colour-class`), literal colours in code (`literal-colour-value`), off-scale sizes (`arbitrary-text-size`).**
 - The colour / size rules read class tokens from every string literal (className, `cn()`, constants, template parts, `@apply`), not lines, so any spelling of a colour is caught.
 - **Overriding Card component (`card-class-override`):** Never pass any `bg-*` or `shadow-*` (with or without a variant such as `hover:`) to `<Card />`; use `TONAL_CONTAINER` on a plain element for a tinted card.
@@ -1442,7 +1442,7 @@ Nếu một dự án mới thực sự cần một icon mới chưa có trong da
 3. Lấy path SVG chuẩn Lucide (kích thước viewBox `0 0 24 24`).
 4. Thêm key vào `ICONS` trong [`src/Icon.tsx`](file:///Users/claw/Development/semi/core/nextjs-codebase/src/Icon.tsx).
 5. Đăng ký metadata vào `ICON_CATALOG` trong [`src/iconCatalog.ts`](file:///Users/claw/Development/semi/core/nextjs-codebase/src/iconCatalog.ts) và cập nhật file [`docs/ICONS.md`](file:///Users/claw/Development/semi/core/nextjs-codebase/docs/ICONS.md) này.
-6. Chạy `npm run check`, nâng version và tạo tag release mới. Mọi app khác chỉ cần chạy `/semi-update` là nhận được icon mới.
+6. Chạy `npm run check`, nâng version và tạo tag release mới. Mọi app khác chỉ cần chạy `/semi-sync` là nhận được icon mới.
 
 
 ---
@@ -1461,7 +1461,7 @@ Semi core (@semi/ui)              cố định cho mọi thương hiệu
         ▼
 Brand kit (vd. @3dnoobs/brand)    lựa chọn của một thương hiệu, repo GitHub riêng
   brand.json (bạn chọn) → dist/brand.css, dist/brand.json, BRAND.md, AGENTS.brand.md
-        │  /semi-init --brand  ·  /semi-update
+        │  /semi-new-app --brand  ·  /semi-sync
         ▼
 Sản phẩm (Manager, Store, …)       chỉ dùng: không tự chọn màu / font, không ghi đè token
 ```
@@ -1471,7 +1471,7 @@ Sản phẩm (Manager, Store, …)       chỉ dùng: không tự chọn màu / 
 - **Mọi màu đều đạt chuẩn đọc rõ (WCAG AA)** ở cả theme sáng và tối: bộ sinh tự chỉnh, và báo lỗi nếu một màu không
   thể dùng được.
 - **Sản phẩm không thể đi lệch:** `semi-lint` chặn việc ghi đè màu thương hiệu trong sản phẩm (`brand-override`),
-  `/semi-audit` kiểm tra sản phẩm đang dùng đúng brand kit, đúng style được phép.
+  `/semi-check` kiểm tra sản phẩm đang dùng đúng brand kit, đúng style được phép.
 
 ---
 
@@ -1557,7 +1557,7 @@ mỗi lần push lên main nó build lại. Từ đây 3D Noobs có bộ nhận 
 **Bước 5. Tạo thư mục trống và gõ**
 
 ```text
-/semi-init --brand github:3dnoobs/brand
+/semi-new-app --brand github:3dnoobs/brand
 ```
 
 Agent chỉ hỏi tên app ("3D Noobs Manager") và style (trong danh sách brand cho phép: app quản lý chọn Flat). Không hỏi
@@ -1596,20 +1596,20 @@ hay `--semi-…` trong CSS của app, `semi-lint` chặn (`brand-override`): mà
 
 | Chuyện | Bạn làm | Ở đâu |
 |---|---|---|
-| Làm thêm app **Store** | `/semi-init --brand github:3dnoobs/brand`, chọn Soft | Thư mục mới |
+| Làm thêm app **Store** | `/semi-new-app --brand github:3dnoobs/brand`, chọn Soft | Thư mục mới |
 | 3D Noobs **đổi màu chính** | `/semi-brand` → "đổi primary sang `#00C853`" → xem trước → tag mới | Repo brand |
-| … rồi đưa vào các app | `/semi-update` (đổi màu thấy rõ: agent hỏi trước) | Từng app |
+| … rồi đưa vào các app | `/semi-sync` (đổi màu thấy rõ: agent hỏi trước) | Từng app |
 | **Semi** ra bản mới | `/semi-brand update` (sinh lại kit) | Repo brand |
-| … rồi đưa vào các app | `/semi-update` | Từng app |
+| … rồi đưa vào các app | `/semi-sync` | Từng app |
 | App đổi sang style khác **đã được cho phép** | Nói với agent ("đổi sang Soft") | Repo app |
-| Style **chưa được cho phép** | `/semi-brand` (thêm vào danh sách) → `/semi-update` → nói với agent | Repo brand → app |
-| Kiểm tra định kỳ | `/semi-audit` → `/semi-fix` | Từng app |
+| Style **chưa được cho phép** | `/semi-brand` (thêm vào danh sách) → `/semi-sync` → nói với agent | Repo brand → app |
+| Kiểm tra định kỳ | `/semi-check` | Từng app |
 
 ---
 
 ## Khi nào dùng lệnh nào
 
-| | `/semi-brand` · `/semi-brand update` | `/semi-update` |
+| | `/semi-brand` · `/semi-brand update` | `/semi-sync` |
 |---|---|---|
 | Chạy ở | Repo **brand kit** | Repo **sản phẩm** |
 | Làm gì | Tạo / sửa lựa chọn thương hiệu (`/semi-brand`); sinh lại kit cho bản Semi mới, không đổi lựa chọn (`/semi-brand update`) | Đưa sản phẩm lên `@semi/ui` và brand kit mới nhất tương thích, chạy migration, `tsc` |
@@ -1621,14 +1621,14 @@ Luôn đi **từ trên xuống**: Semi → brand kit → sản phẩm.
 
 **Phiên bản brand kit:**
 
-| Mức | Khi nào | `/semi-update` ở sản phẩm |
+| Mức | Khi nào | `/semi-sync` ở sản phẩm |
 |---|---|---|
 | patch | Sinh lại, giao diện không đổi | Tự cập nhật |
 | minor | Thêm lựa chọn (style được phép, màu phụ, token mới) | Tự cập nhật |
 | major | Màu / font thương hiệu đổi, thấy rõ | Hỏi trước (`--accept-major`) |
 
 Brand kit ghi nó chạy với `@semi/ui` nào (`"semi": "^0.6"` trong `brand.json`). Nếu Semi mới nhất nằm ngoài dải đó,
-`/semi-update` giữ Semi ở bản tương thích mới nhất và nhắc chạy `/semi-brand update` trong repo brand.
+`/semi-sync` giữ Semi ở bản tương thích mới nhất và nhắc chạy `/semi-brand update` trong repo brand.
 
 ---
 
@@ -1734,8 +1734,8 @@ primary or keeps the style's own neutrals (`"neutral": "preset"`), so products o
 
 plus the style's fonts with `next/font` (the `fonts` list in `@semi/ui/styles.json`; Soft: `Plus_Jakarta_Sans` with
 `variable: "--font-jakarta"` on `<html className>`), and the same id in `semi-lint.json` (`"style": "soft"`).
-`/semi-audit` checks all three against each other. `/semi-init`
-asks for the style of a new app, `/semi-fix` foundation for an existing one, the agent switches it later when asked (the `semi-ui` skill). A wrapper
+`/semi-check` checks all three against each other. `/semi-new-app`
+asks for the style of a new app, `/semi-check` foundation for an existing one, the agent switches it later when asked (the `semi-ui` skill). A wrapper
 with `data-style` re-styles only its subtree (used by Storybook previews), not something an app needs.
 
 ## Rules
@@ -1743,7 +1743,7 @@ with `data-style` re-styles only its subtree (used by Storybook previews), not s
 - Use the style tokens only: `rounded-chip` (marks, checkboxes, inline code) · `rounded-control` (buttons, inputs,
   selects, tiles, list rows) · `rounded-card` (cards, popovers, menus, toasts) · `rounded-panel` (hero, modal, drawer,
   sheet, sidebar) · `rounded-full` / `rounded-none` (the same in every style) · `shadow-card` (resting cards, in `CARD`).
-  `semi-lint` (`radius-token`) flags `rounded`, `rounded-sm/md/lg/xl/2xl` and `rounded-[Npx]`; the `/semi-fix` token
+  `semi-lint` (`radius-token`) flags `rounded`, `rounded-sm/md/lg/xl/2xl` and `rounded-[Npx]`; the `/semi-check` token
   codemod maps them (`lg` → `control`, `xl` → `card`, `2xl` → `panel`, `sm` / `md` / bare → `chip`; `shadow-sm` → `shadow-card`).
 - An app never writes per-style CSS or `[data-style=…]` selectors: when one screen needs another shape, the style is
   missing a token, so propose it upstream (`/semi-propose`).
@@ -1792,10 +1792,10 @@ All web UI in the Semi ecosystem MUST follow the **Semi Design System** (`@semi/
    - Controls: never native `<select>`, `type="date"`, `type="number"`, or `window.confirm`/`alert`. Never inline `<svg><path>` or unicode glyph icons (✕ ✓ ✗ ⚠) — use `<Icon name="…" />` (stroke 1.75). Always follow semantic icon mappings (`node_modules/@semi/ui/docs/ICONS.md`): `trash` for delete/remove (never `close`), `close` for dialog dismiss (never `trash`), `refresh` for reload/sync, `sliders` for parameters/tuning, `filter` for search filters, `user`/`users` for profiles/teams, `settings` for app configuration, `sun`/`moon` for theme toggling.
    - Loading: use `Skeleton` shapes, never `"Đang tải…"` text or full-page spinners (`Button loading` / `Spinner` only inside the control that runs the action).
    - Accessibility: every icon-only control has an `aria-label`; dialogs are `Modal` / `Drawer` / `confirmDialog` (focus trap, Escape, focus return built in); custom controls keep the visible focus ring (`FOCUS_RING`); UI strings come from `SemiLocaleProvider`, not hard-coded inside shared components.
-4. **Brand kits:** when `semi-lint.json` has `"brand"`, the product belongs to that brand (`node_modules/<brand>/BRAND.md`, rules block in `AGENTS.md`; `semi_brand` / `npx semi brand voice|color|logo` answer from it). Write UI text in the brand's voice (tone, how it addresses the user, its examples), use colour as its colour-use rule says and import the logo from the kit, never redraw it; never define colours, fonts or Semi tokens in the app (`brand-override`), only the brand's allowed styles. Never invent a brand colour: it comes from the user or the brand kit. Brand changes happen in the brand repo (`/semi-brand`), then `/semi-update` in the product (`node_modules/@semi/ui/docs/BRANDS.md`).
-5. **Gaps go upstream, not into local primitives:** If `@semi/ui` cannot express a need (missing component, prop, token, icon, or a lint false positive), first run `/semi-update` and re-check the docs; if the gap remains, run `/semi-propose` to file it on the core repo. Meanwhile keep a minimal compliant local workaround marked `// TODO(semi#<issue>)` and baseline (never broadly `skip`) any lint hits.
+4. **Brand kits:** when `semi-lint.json` has `"brand"`, the product belongs to that brand (`node_modules/<brand>/BRAND.md`, rules block in `AGENTS.md`; `semi_brand` / `npx semi brand voice|color|logo` answer from it). Write UI text in the brand's voice (tone, how it addresses the user, its examples), use colour as its colour-use rule says and import the logo from the kit, never redraw it; never define colours, fonts or Semi tokens in the app (`brand-override`), only the brand's allowed styles. Never invent a brand colour: it comes from the user or the brand kit. Brand changes happen in the brand repo (`/semi-brand`), then `/semi-sync` in the product (`node_modules/@semi/ui/docs/BRANDS.md`).
+5. **Gaps go upstream, not into local primitives:** If `@semi/ui` cannot express a need (missing component, prop, token, icon, or a lint false positive), first run `/semi-sync` and re-check the docs; if the gap remains, run `/semi-propose` to file it on the core repo. Meanwhile keep a minimal compliant local workaround marked `// TODO(semi#<issue>)` and baseline (never broadly `skip`) any lint hits.
 6. **Never fork rules per project:** When the user changes a shared UI rule, update `docs/DESIGN_SYSTEM.md`, `docs/QUICK_REF.md`, `docs/DECISIONS.md`, and `lint/semi-lint.mjs` in the `semi-nextjs-codebase` repository and release a new tag — never record shared UI rules only in a consumer project's `AGENTS.md` or agent memory. App-specific patterns belong in the app's own `docs/UI_EXTENSIONS.md`.
-7. **Verification:** Run `npx semi-lint` (or `npm run semi:lint`) before finishing any UI change. For a whole-app check run `/semi-audit` (writes `semi-audit.md`), then `/semi-fix` to fix what it found; `/semi-update` moves to a newer `@semi/ui` and runs that release's migrations (no audit); `/semi-brand` creates or changes a brand kit (in its own repo).
+7. **Verification:** Run `npx semi-lint` (or `npm run semi:lint`) before finishing any UI change. For a whole-app check run `/semi-check` (writes `semi-check.md`, then fixes it with the user's go-ahead); `/semi-sync` moves to a newer `@semi/ui` and runs that release's migrations (no audit); `/semi-brand` creates or changes a brand kit (in its own repo).
 <!-- semi-design-system:end -->
 
 

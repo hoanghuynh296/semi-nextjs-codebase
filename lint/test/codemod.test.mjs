@@ -1,4 +1,4 @@
-// node --test lint/test — the /semi-init token codemod.
+// node --test lint/test — the /semi-new-app token codemod.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { detectMode, migrateClassString, migrateSource } from "../codemod.mjs";

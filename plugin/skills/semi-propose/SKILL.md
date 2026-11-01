@@ -21,7 +21,7 @@ Output: declared/installed/latest `@semi/ui`, stack versions, local primitive fi
 Stop and do not file an issue if any of these hold:
 | Finding | Instead |
 |---|---|
-| `semiUi.outdated: true` and the latest `CHANGELOG.md` already covers it | Recommend `/semi-update` |
+| `semiUi.outdated: true` and the latest `CHANGELOG.md` already covers it | Recommend `/semi-sync` |
 | It exists already: check `node_modules/@semi/ui/docs/QUICK_REF.md`, `DESIGN_SYSTEM.md`, `ICONS.md` (aliases, too) and `src/index.ts` exports | Use the existing API |
 | It is business logic (data fetching, domain state machines, app-specific workflows) | Build it locally on `@semi/ui/styles` and record it in the app's `docs/UI_EXTENSIONS.md` |
 | The need only exists because the desired look breaks a Semi rule (gradients, shadows, white cards, `rounded-md`) | Explain the rule to the user and use the compliant pattern |
@@ -96,6 +96,6 @@ node "$SCRIPT" --create --title "[Component Request] DateRangePicker" --file /tm
 ## Step 5 — Keep working and report
 
 - While the issue is open, keep the local workaround minimal, compliant where possible, and mark it
-  `// TODO(semi#<issue>): replace with @semi/ui <Name>` so `/semi-update` can find it later.
+  `// TODO(semi#<issue>): replace with @semi/ui <Name>` so `/semi-sync` can find it later.
 - If the workaround needs a lint exception, record it in `semi-lint-baseline.json` (`--update-baseline`), never a broad `skip`.
 - Tell the user the issue link and that maintainers will review it with `/semi-triage`.

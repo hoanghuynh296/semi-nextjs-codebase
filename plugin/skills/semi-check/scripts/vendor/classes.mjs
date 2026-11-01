@@ -1,4 +1,4 @@
-// Class-token analysis shared by semi-lint, /semi-audit and the /semi-init codemod. No dependencies.
+// Class-token analysis shared by semi-lint, /semi-check and the /semi-new-app codemod. No dependencies.
 //
 // Regex over raw lines missed every new spelling of a colour (border-*-50, divide-*, from-*, …: issues #1–#4).
 // Instead, this reads every string literal of a file (className="…", cn("…"), const X = "…", template parts, object

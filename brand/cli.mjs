@@ -233,7 +233,7 @@ function agentsMd({ tokens: t }, styles) {
     ...(g.brief?.audience || g.brief?.personality?.length ? ["", `**Who it is for** — ${[g.brief.audience, g.brief.personality?.length ? `personality: ${g.brief.personality.join(", ")}` : null].filter(Boolean).join("; ")}. Choose words, density and imagery for them.`] : []),
     ...(g.imagery ? ["", `**Imagery** — ${g.imagery}`] : []),
     "",
-    "A change to the brand happens in the brand repo (`/semi-brand`), then `/semi-update` here.",
+    "A change to the brand happens in the brand repo (`/semi-brand`), then `/semi-sync` here.",
   ];
   return `<!-- semi-brand:start -->\n## Brand: ${t.name} (\`${t.package}\`)\n\n${lines.join("\n")}\n<!-- semi-brand:end -->\n`;
 }

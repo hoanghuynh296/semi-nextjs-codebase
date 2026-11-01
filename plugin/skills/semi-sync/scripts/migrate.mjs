@@ -1,9 +1,9 @@
 // Release migrations: code changes a @semi/ui release ships for its own breaking changes (node_modules/@semi/ui/
-// migrations/*.mjs). /semi-update runs the ones between the old and the new version, nothing else. Zero deps.
+// migrations/*.mjs). /semi-sync runs the ones between the old and the new version, nothing else. Zero deps.
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { pathToFileURL } from "node:url";
-import { scanTargets } from "../../semi-audit/scripts/audit.mjs";
+import { scanTargets } from "../../semi-check/scripts/audit.mjs";
 
 /** Compare x.y.z versions: < 0 when a is older. */
 export function cmpVersion(a, b) {

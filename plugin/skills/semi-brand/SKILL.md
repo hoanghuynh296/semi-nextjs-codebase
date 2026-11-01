@@ -10,8 +10,8 @@ here; Semi derives the rest (scales, accent / on-accent shades of both themes, n
 checks WCAG AA. The user guide with the full step-by-step example is `node_modules/@semi/ui/docs/BRANDS.md` (in the
 Semi repo: `docs/BRANDS.md`); point the user to it.
 
-Run this skill **in the brand kit repo**, never in a product. Products use the kit with `/semi-init --brand`,
-and `/semi-update`.
+Run this skill **in the brand kit repo**, never in a product. Products use the kit with `/semi-new-app --brand`,
+and `/semi-sync`.
 
 ## Create a brand (empty folder)
 
@@ -81,13 +81,13 @@ and `/semi-update`.
    The `brand-pages.yml` workflow builds the static preview (`semi-brand site`) and publishes it at
    `https://<owner>.github.io/<repo>/` on every push to main; give the user that link once the run is green
    (`gh run watch`). A private repo needs a GitHub plan with private Pages; otherwise suggest a public brand repo or
-   the local preview. Products install the kit with `/semi-init --brand github:<owner>/<repo>`.
+   the local preview. Products install the kit with `/semi-new-app --brand github:<owner>/<repo>`.
 
 ## Change a brand (existing kit)
 
 Same as steps 5–6: `set …` for the change, preview, then bump by the level it prints (major when colours / fonts that
 people see change, minor for new options such as an allowed style, patch otherwise) and tag. Then tell the user to run
-`/semi-update` in each product (a major one asks first).
+`/semi-sync` in each product (a major one asks first).
 
 ## `/semi-brand update` (new @semi/ui)
 
@@ -97,4 +97,4 @@ node "<path-to-this-skill>/scripts/brand.mjs" update --cwd "<kit-dir>"
 
 Installs the newest `@semi/ui`, sets `"semi"` in `brand.json` to it, adds what an older kit lacks (preview site deps
 and scripts, `.gitignore`, the Pages workflow), rebuilds, and prints the change level. Bump by that
-level, commit, tag, push; then products get it with `/semi-update`. It never changes the brand's choices.
+level, commit, tag, push; then products get it with `/semi-sync`. It never changes the brand's choices.

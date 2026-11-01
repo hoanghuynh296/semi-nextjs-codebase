@@ -139,7 +139,7 @@ export default function UiKit() {
       </Section>
       <Section title="Tải về và cài đặt" icon="download">
         <p className="text-ui text-body">
-          Trong một sản phẩm Next.js: <code className="text-accent-fg">/semi-init --brand {brand.package}</code> (hoặc <code className="text-accent-fg">/semi-update</code> khi
+          Trong một sản phẩm Next.js: <code className="text-accent-fg">/semi-new-app --brand {brand.package}</code> (hoặc <code className="text-accent-fg">/semi-sync</code> khi
           kit có bản mới). Agent tra luật của thương hiệu bằng <code className="text-accent-fg">npx semi brand</code> hoặc tool <code className="text-accent-fg">semi_brand</code>.
         </p>
         <div className="flex flex-wrap gap-2">

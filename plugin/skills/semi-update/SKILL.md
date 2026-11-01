@@ -1,29 +1,10 @@
 ---
 name: semi-update
-description: Upgrade every app that uses @semi/ui to the latest release tag from github:hoanghuynh296/semi-nextjs-codebase - install it, refresh the Semi rules block in AGENTS.md, show the CHANGELOG of the skipped releases, run those releases' migrations (code changes for their breaking changes), and check tsc. No audit, no refactor. Triggered by /semi-update.
+description: Renamed to /semi-sync (kept for one release). Use /semi-sync instead.
 ---
 
-# Upgrade Semi Design System (`/semi-update`)
+# `/semi-update` is now `/semi-sync`
 
-One job: move apps that already use `@semi/ui` to the latest release, including the code changes that release ships
-for its own breaking changes (release migrations, like Storybook `upgrade` or `ng update`). It does not audit or
-refactor (that is `/semi-audit` + `/semi-fix`); an app without `@semi/ui` adopts it with `/semi-audit` + `/semi-fix`.
-
-## Workflow
-
-1. Run the update on the workspace root:
-   ```bash
-   node "<path-to-this-skill>/scripts/update.mjs" --cwd "<workspace-or-app-dir>"
-   ```
-   Per app it installs the latest tag, refreshes the managed Semi block in `AGENTS.md`, prints the CHANGELOG sections
-   between the old and the new version, runs the migrations of those releases
-   (`node_modules/@semi/ui/migrations/<version>-<id>.mjs`, in version order) and runs `tsc`.
-2. Read the diff of the migrations. If `tsc` still fails, the CHANGELOG "Migration" notes say what the migrations
-   could not do by themselves: fix those call sites. That is part of finishing the upgrade; nothing else is changed.
-3. **Brand kit** (`"brand"` in `semi-lint.json`): it is updated first, to its newest tag. A major tag (brand colours /
-   fonts changed) is skipped with a message: ask the user, and if they agree run again with `--accept-major`. The kit's
-   `"semi"` range caps the `@semi/ui` version; when it holds the app back, the script says so: run `/semi-brand update`
-   in the brand repo, release, then `/semi-update` again.
-4. The app keeps its style. If the script says the style is gone from the new release, switch it with `node "<path-to-this-skill>/../semi-init/scripts/style.mjs" --cwd <dir> --to <id>` after asking the user which style.
-5. Report in a few lines: `old version → new version`, each migration that ran and the files it changed, and the
-   CHANGELOG points that matter for this app. New lint rules of the release show up at the next `/semi-audit`.
+Tell the user in one line that `/semi-update` was renamed to `/semi-sync`, then follow the `semi-sync` skill
+(`../semi-sync/SKILL.md`) for the request. The Semi commands: `/semi-brand` (brand repo), `/semi-new-app` (empty folder),
+`/semi-check` (existing app: check, then fix), `/semi-sync` (new brand kit or Semi release).

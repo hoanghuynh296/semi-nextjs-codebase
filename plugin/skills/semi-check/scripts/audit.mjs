@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// /semi-audit static & structural analyzer for existing web projects (including multi-app monorepos). Zero external deps.
-// It changes no source file: it prints a short summary and writes every issue to semi-audit.md, which /semi-fix works
+// /semi-check static & structural analyzer for existing web projects (including multi-app monorepos). Zero external deps.
+// It changes no source file: it prints a short summary and writes every issue to semi-check.md, which /semi-check works
 // from (deleted again once an audit finds nothing).
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
@@ -9,10 +9,10 @@ import { fileURLToPath } from "node:url";
 import { HARD, RATCHET, loadConfig, scan as runSemiLintScan } from "./vendor/semi-lint.mjs";
 import { analyse } from "./vendor/classes.mjs";
 import { detectMode, migrateSource } from "./vendor/codemod.mjs";
-import { findGlobalsCss, missingStyleFonts, readBrand, readStyleState, semiStyles } from "../../semi-init/scripts/setup.mjs";
+import { findGlobalsCss, missingStyleFonts, readBrand, readStyleState, semiStyles } from "../../semi-new-app/scripts/setup.mjs";
 
-export const REPORT_FILE = "semi-audit.md";
-/** The order /semi-fix works in; each phase leaves the app building. */
+export const REPORT_FILE = "semi-check.md";
+/** The order /semi-check works in; each phase leaves the app building. */
 export const PHASES = ["foundation", "tokens", "lint", "structure"];
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -165,7 +165,7 @@ export function scanTargets(cwd) {
   return { cfg, scanDirs: dirs, files };
 }
 
-/** Hash of everything the audit reads, so /semi-fix can tell whether semi-audit.md is still current. */
+/** Hash of everything the audit reads, so /semi-check can tell whether semi-check.md is still current. */
 export function fingerprint(cwd) {
   const h = createHash("sha1");
   for (const f of ["package.json", "semi-lint.json", ...scanTargets(cwd).files.map((p) => relative(cwd, p))]) {
@@ -454,7 +454,7 @@ export function auditSingleApp(cwd) {
     files: inventoryFiles.filter((f) => f.total).sort((a, b) => b.total - a.total),
   };
 
-  // Every issue, one entry each, for semi-audit.md and /semi-fix, in the order /semi-fix works:
+  // Every issue, one entry each, for semi-check.md and /semi-check, in the order /semi-check works:
   //   phase "foundation": install and wire Semi (kind "setup": fix.mjs foundation does it; "manual": by hand)
   //   phase "tokens":     kind "auto", the token codemod rewrites it
   //   phase "lint":       kind "manual", a rule hit no codemod can fix safely
@@ -497,7 +497,7 @@ export function auditSingleApp(cwd) {
 
   // Style (docs/STYLES.md): declared in semi-lint.json and applied as <html data-style> in the root layout.
   const style = readStyleState(cwd);
-  const styleList = semiStyles(cwd); // null: the installed @semi/ui predates styles (/semi-update brings them)
+  const styleList = semiStyles(cwd); // null: the installed @semi/ui predates styles (/semi-sync brings them)
   const styleIds = styleList ? styleList.styles.map((s) => s.id).filter((id) => !brandKit || brandKit.styles.allowed.includes(id)) : [];
   if (styleList && (!style.declared || !styleIds.includes(style.declared)))
     setup(
@@ -713,7 +713,7 @@ function phaseLines(a) {
 
 /** Short Vietnamese summary for the chat: one table, the next command, then the issues grouped in a few lines. */
 export function formatSummary(r, reportPath = REPORT_FILE) {
-  if (!r.exists) return `# Semi audit\n\nKhông thấy app Next.js / React nào. App mới: chạy **/semi-init**.\n`;
+  if (!r.exists) return `# Semi audit\n\nKhông thấy app Next.js / React nào. App mới: chạy **/semi-new-app**.\n`;
   const apps = appsOf(r);
   const t = totals(r);
   const stage = (a) => {
@@ -736,7 +736,7 @@ export function formatSummary(r, reportPath = REPORT_FILE) {
     lines.push(
       `**${t.total} vấn đề:** ${PHASES.filter((ph) => t[ph]).map((ph) => `${t[ph]} ${PHASE_NAMES[ph].toLowerCase()}`).join(" · ")}. Chi tiết: \`${reportPath}\`.`,
       ``,
-      `**Tiếp theo:** chạy **/semi-fix**.`,
+      `**Tiếp theo:** đồng ý để /semi-check sửa theo từng giai đoạn.`,
       ``,
       `## Vấn đề`,
     );
@@ -747,7 +747,7 @@ export function formatSummary(r, reportPath = REPORT_FILE) {
   return lines.join("\n") + "\n";
 }
 
-/** semi-audit.md: every issue by phase with file:line and what to do, plus a meta line /semi-fix uses to detect a stale file. */
+/** semi-check.md: every issue by phase with file:line and what to do, plus a meta line /semi-check uses to detect a stale file. */
 export function formatDetails(r) {
   const apps = appsOf(r);
   const t = totals(r);
@@ -757,7 +757,7 @@ export function formatDetails(r) {
     `<!-- semi-audit ${JSON.stringify(meta)} -->`,
     `# Semi audit: chi tiết`,
     ``,
-    `Sinh bởi /semi-audit để /semi-fix làm theo, từng giai đoạn một (mỗi giai đoạn xong app vẫn build được). Đừng sửa tay: chạy lại /semi-audit sau khi đổi code. File được xoá khi audit không còn vấn đề.`,
+    `Sinh bởi /semi-check; lệnh này cũng sửa theo đó, từng giai đoạn một (mỗi giai đoạn xong app vẫn build được). Đừng sửa tay: chạy lại /semi-check sau khi đổi code. File được xoá khi audit không còn vấn đề.`,
     ``,
     `**${t.total} vấn đề:** ${PHASES.filter((ph) => t[ph]).map((ph) => `${t[ph]} ${PHASE_NAMES[ph].toLowerCase()}`).join(" · ")}`,
   ];
@@ -800,7 +800,7 @@ export function formatDetails(r) {
   return lines.join("\n") + "\n";
 }
 
-/** Write semi-audit.md under root, or delete it when the audit found nothing. Returns the path, or null when clean. */
+/** Write semi-check.md under root, or delete it when the audit found nothing. Returns the path, or null when clean. */
 export function writeAuditFile(r, root = rootOf(r)) {
   const path = join(root, REPORT_FILE);
   if (!r.exists || !totals(r).total) {
@@ -811,7 +811,7 @@ export function writeAuditFile(r, root = rootOf(r)) {
   return path;
 }
 
-/** Meta line of an existing semi-audit.md (null when missing), and whether every app still has the same sources. */
+/** Meta line of an existing semi-check.md (null when missing), and whether every app still has the same sources. */
 export function auditFileState(root) {
   const path = join(root, REPORT_FILE);
   if (!existsSync(path)) return { path, exists: false, fresh: false };

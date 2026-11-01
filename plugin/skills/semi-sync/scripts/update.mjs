@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-// /semi-update helper: moves every app that uses @semi/ui to the latest release tag, refreshes the Semi rules block,
+// /semi-sync helper: moves every app that uses @semi/ui to the latest release tag, refreshes the Semi rules block,
 // prints the CHANGELOG of the skipped releases, runs their release migrations (node_modules/@semi/ui/migrations),
-// then tsc. No audit, no refactor (that is /semi-audit + /semi-fix).
+// then tsc. No audit, no refactor (that is /semi-check).
 import { existsSync, readFileSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
-import { discoverFrontendApps } from "../../semi-audit/scripts/audit.mjs";
+import { discoverFrontendApps } from "../../semi-check/scripts/audit.mjs";
 import {
   appFonts,
   cmpSemver,
@@ -22,7 +22,7 @@ import {
   styleFontHint,
   wireAgentsMd,
   wireBrand,
-} from "../../semi-init/scripts/setup.mjs";
+} from "../../semi-new-app/scripts/setup.mjs";
 import { cmpVersion, runMigrations } from "./migrate.mjs";
 
 let cwd = process.cwd();
@@ -38,7 +38,7 @@ const apps = discoverFrontendApps(cwd).filter((dir) => {
   return Boolean(pkg.dependencies?.["@semi/ui"] || pkg.devDependencies?.["@semi/ui"]);
 });
 if (!apps.length) {
-  console.error(`Không có app nào dùng @semi/ui dưới ${cwd}. App có sẵn: /semi-audit rồi /semi-fix. App mới: /semi-init.`);
+  console.error(`Không có app nào dùng @semi/ui dưới ${cwd}. App có sẵn: /semi-check. App mới: /semi-new-app.`);
   process.exit(1);
 }
 
@@ -81,7 +81,7 @@ for (const appDir of apps) {
   const kit = readBrand(appDir)?.kit ?? null;
   const target = resolveTargetSpec({ range: kit?.semi });
   const spec = target.spec;
-  if (target.limited) console.log(`${name}: brand ${kit.name} chỉ hỗ trợ @semi/ui ${kit.semi}: giữ ${target.version} (mới nhất là ${target.newest}). Chạy /semi-brand update trong repo brand, phát hành, rồi /semi-update lại.`);
+  if (target.limited) console.log(`${name}: brand ${kit.name} chỉ hỗ trợ @semi/ui ${kit.semi}: giữ ${target.version} (mới nhất là ${target.newest}). Chạy /semi-brand update trong repo brand, phát hành, rồi /semi-sync lại.`);
 
   const from = installedSemiVersion(appDir);
   console.log(`\n=== ${name}: @semi/ui ${from || "?"} → ${spec} ===`);

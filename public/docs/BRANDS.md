@@ -10,7 +10,7 @@ Semi core (@semi/ui)              cố định cho mọi thương hiệu
         ▼
 Brand kit (vd. @3dnoobs/brand)    lựa chọn của một thương hiệu, repo GitHub riêng
   brand.json (bạn chọn) → dist/brand.css, dist/brand.json, BRAND.md, AGENTS.brand.md
-        │  /semi-init --brand  ·  /semi-update
+        │  /semi-new-app --brand  ·  /semi-sync
         ▼
 Sản phẩm (Manager, Store, …)       chỉ dùng: không tự chọn màu / font, không ghi đè token
 ```
@@ -20,7 +20,7 @@ Sản phẩm (Manager, Store, …)       chỉ dùng: không tự chọn màu / 
 - **Mọi màu đều đạt chuẩn đọc rõ (WCAG AA)** ở cả theme sáng và tối: bộ sinh tự chỉnh, và báo lỗi nếu một màu không
   thể dùng được.
 - **Sản phẩm không thể đi lệch:** `semi-lint` chặn việc ghi đè màu thương hiệu trong sản phẩm (`brand-override`),
-  `/semi-audit` kiểm tra sản phẩm đang dùng đúng brand kit, đúng style được phép.
+  `/semi-check` kiểm tra sản phẩm đang dùng đúng brand kit, đúng style được phép.
 
 ---
 
@@ -106,7 +106,7 @@ mỗi lần push lên main nó build lại. Từ đây 3D Noobs có bộ nhận 
 **Bước 5. Tạo thư mục trống và gõ**
 
 ```text
-/semi-init --brand github:3dnoobs/brand
+/semi-new-app --brand github:3dnoobs/brand
 ```
 
 Agent chỉ hỏi tên app ("3D Noobs Manager") và style (trong danh sách brand cho phép: app quản lý chọn Flat). Không hỏi
@@ -145,20 +145,20 @@ hay `--semi-…` trong CSS của app, `semi-lint` chặn (`brand-override`): mà
 
 | Chuyện | Bạn làm | Ở đâu |
 |---|---|---|
-| Làm thêm app **Store** | `/semi-init --brand github:3dnoobs/brand`, chọn Soft | Thư mục mới |
+| Làm thêm app **Store** | `/semi-new-app --brand github:3dnoobs/brand`, chọn Soft | Thư mục mới |
 | 3D Noobs **đổi màu chính** | `/semi-brand` → "đổi primary sang `#00C853`" → xem trước → tag mới | Repo brand |
-| … rồi đưa vào các app | `/semi-update` (đổi màu thấy rõ: agent hỏi trước) | Từng app |
+| … rồi đưa vào các app | `/semi-sync` (đổi màu thấy rõ: agent hỏi trước) | Từng app |
 | **Semi** ra bản mới | `/semi-brand update` (sinh lại kit) | Repo brand |
-| … rồi đưa vào các app | `/semi-update` | Từng app |
+| … rồi đưa vào các app | `/semi-sync` | Từng app |
 | App đổi sang style khác **đã được cho phép** | Nói với agent ("đổi sang Soft") | Repo app |
-| Style **chưa được cho phép** | `/semi-brand` (thêm vào danh sách) → `/semi-update` → nói với agent | Repo brand → app |
-| Kiểm tra định kỳ | `/semi-audit` → `/semi-fix` | Từng app |
+| Style **chưa được cho phép** | `/semi-brand` (thêm vào danh sách) → `/semi-sync` → nói với agent | Repo brand → app |
+| Kiểm tra định kỳ | `/semi-check` | Từng app |
 
 ---
 
 ## Khi nào dùng lệnh nào
 
-| | `/semi-brand` · `/semi-brand update` | `/semi-update` |
+| | `/semi-brand` · `/semi-brand update` | `/semi-sync` |
 |---|---|---|
 | Chạy ở | Repo **brand kit** | Repo **sản phẩm** |
 | Làm gì | Tạo / sửa lựa chọn thương hiệu (`/semi-brand`); sinh lại kit cho bản Semi mới, không đổi lựa chọn (`/semi-brand update`) | Đưa sản phẩm lên `@semi/ui` và brand kit mới nhất tương thích, chạy migration, `tsc` |
@@ -170,14 +170,14 @@ Luôn đi **từ trên xuống**: Semi → brand kit → sản phẩm.
 
 **Phiên bản brand kit:**
 
-| Mức | Khi nào | `/semi-update` ở sản phẩm |
+| Mức | Khi nào | `/semi-sync` ở sản phẩm |
 |---|---|---|
 | patch | Sinh lại, giao diện không đổi | Tự cập nhật |
 | minor | Thêm lựa chọn (style được phép, màu phụ, token mới) | Tự cập nhật |
 | major | Màu / font thương hiệu đổi, thấy rõ | Hỏi trước (`--accept-major`) |
 
 Brand kit ghi nó chạy với `@semi/ui` nào (`"semi": "^0.6"` trong `brand.json`). Nếu Semi mới nhất nằm ngoài dải đó,
-`/semi-update` giữ Semi ở bản tương thích mới nhất và nhắc chạy `/semi-brand update` trong repo brand.
+`/semi-sync` giữ Semi ở bản tương thích mới nhất và nhắc chạy `/semi-brand update` trong repo brand.
 
 ---
 

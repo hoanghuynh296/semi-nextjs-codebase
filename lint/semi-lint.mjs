@@ -4,7 +4,7 @@
 //   npx semi-lint                     # scan the dirs in semi-lint.json
 //   npx semi-lint --files a.tsx b.ts  # only these files (agent edit hook); files outside "scan" are ignored
 //   npx semi-lint --update-baseline   # after fixing ratchet hits (or when adopting Semi): rewrite the baseline
-//   npx semi-lint --json              # machine-readable result (used by the semi-audit skill)
+//   npx semi-lint --json              # machine-readable result (used by the semi-check skill)
 //
 // Scans .ts/.tsx/.js/.jsx/.mjs (and @apply in .css). Colour and size rules read class tokens out of every string
 // literal (lint/classes.mjs), so className strings, cn() args, constants and template parts are all covered.
@@ -20,7 +20,7 @@
 //     "ignore": ["src/generated"],                  // path prefixes not scanned at all (generated files)
 //     "only": { "viewport-grid-cols": ["components/catalog/"] },      // rule id → only these path prefixes
 //     "disable": ["loading-text"],                  // rule ids turned off (record why in your app's doc)
-//     "keep": { "tables": "reports need dense tables" }, // /semi-audit structural checks the team chose to keep
+//     "keep": { "tables": "reports need dense tables" }, // /semi-check structural checks the team chose to keep
 //                                                     // (reason string = whole app, array = path prefixes)
 //     "brand": "@3dnoobs/brand",                   // the app's brand kit (docs/BRANDS.md): turns on brand-override
 //     "style": "soft"                              // the app's style (docs/STYLES.md), = <html data-style> in the layout

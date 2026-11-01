@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Style helper (used by /semi-ui when the user asks for another style, and by /semi-update): shows or switches the
+// Style helper (used by /semi-ui when the user asks for another style, and by /semi-sync): shows or switches the
 // Semi style of every app that uses @semi/ui. Zero external deps.
 //   node style.mjs --cwd <root>                         list: each app's style and the styles its @semi/ui has
 //   node style.mjs --cwd <root> --to <id> [--only dir]  switch: semi-lint.json "style" + <html data-style> in the root
@@ -8,7 +8,7 @@
 // and status colours and the layout stay as they are. The style's fonts are added to the layout by hand (printed).
 import { readFileSync } from "node:fs";
 import { join, relative, resolve, sep } from "node:path";
-import { discoverFrontendApps } from "../../semi-audit/scripts/audit.mjs";
+import { discoverFrontendApps } from "../../semi-check/scripts/audit.mjs";
 import { appFonts, missingStyleFonts, readBrand, readStyleState, semiStyles, styleFontHint, wireStyle } from "./setup.mjs";
 
 const argv = process.argv.slice(2);
@@ -29,7 +29,7 @@ const apps = discoverFrontendApps(root).filter((dir) => {
   return uses && (!onlyAbs || dir === onlyAbs || dir.startsWith(onlyAbs + sep) || onlyAbs.startsWith(dir + sep));
 });
 if (!apps.length) {
-  console.error(`Không có app nào dùng @semi/ui dưới ${only || root}. App có sẵn: /semi-audit rồi /semi-fix. App mới: /semi-init.`);
+  console.error(`Không có app nào dùng @semi/ui dưới ${only || root}. App có sẵn: /semi-check. App mới: /semi-new-app.`);
   process.exit(1);
 }
 
@@ -38,7 +38,7 @@ for (const dir of apps) {
   const name = relative(root, dir) || ".";
   const list = semiStyles(dir);
   if (!list) {
-    console.log(`${name}: @semi/ui đã cài chưa có style. Chạy /semi-update trước.`);
+    console.log(`${name}: @semi/ui đã cài chưa có style. Chạy /semi-sync trước.`);
     exitCode = 1;
     continue;
   }

@@ -79,7 +79,7 @@ For EXTENSION, a compliant local snippet built on `@semi/ui/styles`.
 - [ ] tokens/tokens.json → `npm run build:tokens`
 - [ ] styles/*.ts
 - [ ] src/*.tsx + export in src/index.ts + Storybook (`app/components`)
-- [ ] lint/semi-lint.mjs (+ sync plugin/skills/semi-audit/scripts/vendor/)
+- [ ] lint/semi-lint.mjs (+ sync plugin/skills/semi-check/scripts/vendor/)
 - [ ] docs: DESIGN_SYSTEM.md, QUICK_REF.md, DECISIONS.md, CHANGELOG.md
 - [ ] `npm run check` + `npm run build:storybook`
 - Target release: vX.Y.Z
@@ -102,4 +102,4 @@ EXTENSION / REJECT: close with `--close <n> --reason not_planned` once the propo
    ```bash
    node "$SCRIPT" --close <n> --reason completed --file /tmp/close-<n>.md
    ```
-   Tell the proposer: run `/semi-update`, then replace the `TODO(semi#<n>)` workaround.
+   Tell the proposer: run `/semi-sync`, then replace the `TODO(semi#<n>)` workaround.

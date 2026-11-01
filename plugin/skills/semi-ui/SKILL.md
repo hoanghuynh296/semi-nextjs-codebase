@@ -18,7 +18,7 @@ The docs answer from the installed `@semi/ui`, so they match the version the app
 | Whole pages (dashboard, list, settings, agent) | `semi_block { id? }` | `npx semi blocks`, `npx semi add <id>` |
 
 If neither works (`semi_status` answers, or `npx semi` is missing), the app has no `@semi/ui` 0.13+: new app →
-`/semi-init`, existing app → `/semi-audit` + `/semi-fix`, older version → `/semi-update`.
+`/semi-new-app`, existing app → `/semi-check`, older version → `/semi-sync`.
 
 ## Workflow
 
@@ -50,10 +50,10 @@ When the user asks for another style ("đổi sang Soft"). A style changes neutr
 shadow and control sizes for the whole app; components, layout, the accent and status colours stay. With a brand kit
 only the brand's allowed styles can be picked; another one is added in the brand repo with `/semi-brand`.
 
-1. Show the current style and the choices: `node "<path-to-this-skill>/../semi-init/scripts/style.mjs" --cwd "<dir>"`.
+1. Show the current style and the choices: `node "<path-to-this-skill>/../semi-new-app/scripts/style.mjs" --cwd "<dir>"`.
    Ask only when the user did not name one.
 2. Screenshots of 3–5 key pages in both themes, when the app runs.
 3. Switch: the same command with `--to "<id>" [--only "<app-dir>"]`. It sets `"style"` in `semi-lint.json` and
    `data-style` on `<html>`, and prints `next/font` lines when the layout lacks the style's fonts: add them.
 4. Screenshots after. A place that did not change uses raw classes (`bg-white`, `rounded-lg`, `h-[34px]`): a lint hit,
-   fixed by `/semi-audit` + `/semi-fix`. Report old → new style per app and the files changed.
+   fixed by `/semi-check`. Report old → new style per app and the files changed.
