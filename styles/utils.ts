@@ -8,7 +8,7 @@ export function cn(...parts: Array<string | false | null | undefined | 0>): stri
 
 /** Keyboard focus ring for custom controls (buttons, tabs, options). Visible on keyboard focus only. */
 export const FOCUS_RING =
-  "outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 focus-visible:ring-offset-1 focus-visible:ring-offset-panel";
+  "outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-1 focus-visible:ring-offset-panel";
 
 /** Full-screen backdrop of modals, dialogs and sheets (themed overlay colour + blur). Add a z-* layer. */
 export const OVERLAY = "fixed inset-0 bg-overlay backdrop-blur-lg";

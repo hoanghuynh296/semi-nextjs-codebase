@@ -305,7 +305,7 @@ export function ContextMenu({
       onPointerUp={clearPress}
       onPointerCancel={clearPress}
       onPointerMove={clearPress}
-      className={cn("outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 rounded-card", className)}
+      className={cn("outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-card", className)}
     >
       {children}
       {at && <span ref={anchorRef} aria-hidden style={{ position: "fixed", left: at.x, top: at.y, width: 0, height: 0 }} />}
@@ -374,7 +374,7 @@ export function Menubar({ menus, label, className }: { menus: MenubarMenu[]; /**
             e.preventDefault();
             keys[e.key]();
           }}
-          className={cn("h-7 px-2.5 rounded-control text-label font-medium transition outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50", open === i ? "bg-raised text-contrast" : "text-body hover:bg-field hover:text-contrast")}
+          className={cn("h-7 px-2.5 rounded-control text-label font-medium transition outline-none focus-visible:ring-2 focus-visible:ring-focus", open === i ? "bg-raised text-contrast" : "text-body hover:bg-field hover:text-contrast")}
         >
           {m.label}
         </button>

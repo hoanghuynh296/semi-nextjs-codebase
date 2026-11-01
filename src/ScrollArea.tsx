@@ -54,7 +54,7 @@ export function ScrollArea({
         tabIndex={edges.scrolls ? 0 : undefined}
         onScroll={measure}
         className={cn(
-          "h-full w-full overscroll-contain outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50",
+          "h-full w-full overscroll-contain outline-none focus-visible:ring-2 focus-visible:ring-focus",
           orientation === "vertical" ? "overflow-y-auto overflow-x-hidden" : orientation === "horizontal" ? "overflow-x-auto overflow-y-hidden" : "overflow-auto",
           scrollbar && "[scrollbar-width:thin] [scrollbar-color:var(--color-line-hover)_transparent]",
         )}

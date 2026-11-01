@@ -1,4 +1,4 @@
-# Semi Design System (@semi/ui v0.13.3)
+# Semi Design System (@semi/ui v0.14.0)
 
 > The shared UI of every Semi app: semantic tokens that work in light and dark mode, React components (Next.js, Tailwind CSS 4) and the rules agents follow. Every component has a page with live examples and a markdown twin for agents.
 
@@ -172,7 +172,7 @@ Phones (`< md`) hide the top logo header and use `MobileTabBar` at the bottom (n
 | `--color-line-hover` | `border-line-hover` | `rgba(255,255,255,0.16)` | `rgba(0,0,0,0.16)` (Slate-300) | Hover border state |
 | `--color-divider` | `border-divider` | `rgba(255,255,255,0.05)` | `rgba(0,0,0,0.05)` (Slate-100) | Subtle row & item separators |
 
-*Accent & status (AA in both themes):* solid action `bg-accent hover:bg-accent-hover text-on-accent` · primary text/icon `text-accent-fg` · status text `text-danger-fg` / `text-success-fg` / `text-warning-fg` / `text-info-fg` · tonal text `text-tone-<hue>`. Never `text-*-400` or `text-*-700 dark:text-*-300` in shared UI.
+*Accent & status (AA in both themes):* solid action `bg-accent hover:bg-accent-hover text-on-accent` · primary text/icon `text-accent-fg` · focus `ring-focus` / focused field `border-focus` · selected `bg-accent-subtle` (hover `bg-accent-subtle-hover`) + `border-accent-line` · status text `text-danger-fg` / `text-success-fg` / `text-warning-fg` / `text-info-fg` · tonal text `text-tone-<hue>`. Never `text-*-400` or `text-*-700 dark:text-*-300` in shared UI.
 
 *Theme:* `<html suppressHydrationWarning>` + `<ThemeScript />` in `<head>` (no flash) + `<ThemeProvider defaultTheme="dark">` (same options); `<ThemeSwitcher />` (Sáng · Tối · Hệ thống, settings / sidebar footer) or `<ThemeToggle />` (one-tap dark/light), or `const { theme, resolvedTheme, mounted, setTheme } = useTheme()`. `data-theme="system"` follows the OS.
 
@@ -229,6 +229,7 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
 ## Anti-patterns & Token Rules (enforced by `npx semi-lint`)
 - **No literal palette colors (`no-literal-palette`):** Never use direct physical classes like `bg-white`, `text-slate-900`, `border-slate-200`, `divide-slate-100`, `bg-slate-50`, `bg-gray-800/900`. Always use Semantic Tokens (`bg-panel`, `bg-field`, `text-contrast`, `text-body`, `text-muted`, `border-line`, `divide-divider`).
 - **No fixed chromatic text (`no-fixed-tone-text`):** `text-emerald-400`, `text-rose-700 dark:text-rose-300`, `fill-sky-500` → `text-accent-fg`, `text-*-fg`, `text-tone-<hue>`.
+- **No brand scale for states (`accent-state-token`):** `ring-primary-500/50`, `bg-primary-500/15`, `border-primary-500/30` → `ring-focus`, `bg-accent-subtle`, `border-accent-line` (themed, checked in both themes).
 - **No arbitrary colours / sizes:** `bg-[#…]`, `text-[rgb(…)]` (`hex-colour-class`), `"#fff"` in style props or configs (`literal-colour-value`), `text-[13px]` (`arbitrary-text-size`).
 - **No solid pastel surfaces (`no-solid-pastel-surfaces`):** Never use solid pastels (`bg-*-50`, `border-*-200`) for cards, rows, or containers; in dark mode they turn into glaring light rectangles. Use alpha transparency (`bg-amber-500/10 border-amber-500/20`) or standard `bg-panel`.
 - **Universal Tonal Theme-Matching:** Chromatic accents across ANY component (cards, alert banners, callouts, table rows, buttons, badges, chips) adapt seamlessly to both dark & light themes using alpha transparency: static fill `bg-<color>-500/10`, hover fill `hover:bg-<color>-500/15`, active fill `active:bg-<color>-500/20`, border `border-<color>-500/20`, hover border `hover:border-<color>-500/30`, and text `text-tone-<color>` (or `TONAL_CONTAINER` / `TONAL_HOVER` / `<Badge tone="...">`).
@@ -341,7 +342,8 @@ hook of the `semi-design` plugin).
 - **Flat, no glow, no gradients.** No gradient fills, no blurred colour blobs, no coloured `shadow-[0_0_…]` glows
   (buttons, cards, status dots, power buttons). Depth comes from the surface tokens and translucent white overlays
   (plus the style's neutral resting card shadow `shadow-card`: none in Flat, soft in Soft, a hard offset in Sharp);
-  emphasis ("on", active, running) comes from a flat primary fill or a `border-primary-500/30` border.
+  emphasis ("on", active, running) comes from a flat accent fill (`bg-accent`), a tint (`bg-accent-subtle`) or a
+  `border-accent-line` border.
   The only gradient is the skeleton shimmer sweep in `base.css`.
 - **Colour on content, not on chrome.** The nav menu is neutral (grey icons, no count badges; active item =
   `bg-white/[0.10] text-white`). Colour goes where it helps reading the content: a coloured dot or icon on filter chips
@@ -425,11 +427,17 @@ Semi architecture separates tokens into two tiers:
 | `--color-accent-hover` | `hover:bg-accent-hover` | Hover của nền accent | `primary-400` | `primary-800` |
 | `--color-on-accent` | `text-on-accent` | Chữ / icon trên `bg-accent` (≥ 4.5:1) | `#0c0d0e` | `#ffffff` |
 | `--color-accent-fg` | `text-accent-fg` | Chữ / icon màu primary trên surface (link, check, tab active) | `primary-400` | `primary-700` |
+| `--color-focus` | `ring-focus`, `border-focus` | Viền focus (`FOCUS_RING`), viền ô nhập đang gõ (≥ 3:1 trên mọi surface) | = `accent-fg` | = `accent-fg` |
+| `--color-accent-subtle` | `bg-accent-subtle` | Nền nhạt của mục đang chọn (option, trang hiện tại, pill active, IconTile) | `accent-fg` 14% | `accent-fg` 11% |
+| `--color-accent-subtle-hover` | `hover:bg-accent-subtle-hover` | Hover của nền nhạt accent | `accent-fg` 22% | `accent-fg` 18% |
+| `--color-accent-line` | `border-accent-line` | Viền của mục đang chọn (card được chọn, ngày hôm nay) | `accent-fg` 40% | `accent-fg` 40% |
 | `--color-danger-fg` · `success-fg` · `warning-fg` · `info-fg` | `text-danger-fg` … | Chữ trạng thái trên surface | `rose/emerald/amber/sky-400` | `-700` |
 | `--color-tone-<hue>` | `text-tone-<hue>` | Chữ tonal 12 hue (purple, violet, indigo, blue, sky, cyan, teal, emerald, amber, orange, rose, pink) | `<hue>-300` | `<hue>-700` |
 
 Mọi cặp chữ / nền ở trên đạt WCAG AA (≥ 4.5:1) ở cả hai theme. Không viết `text-*-400` hay `text-*-700 dark:text-*-300` trong component: dùng `text-accent-fg`, `text-*-fg` hoặc `text-tone-*`.
-Brand override: đổi `primary-*` trong `@theme` là đủ (accent đọc từ `primary-*`); nếu brand mới tối, đặt lại `--semi-on-accent` cho dark.
+Trạng thái (focus, chọn, hover) không dùng thang `primary-*` với alpha (`ring-primary-500/50`, `bg-primary-500/15`): thang đó
+không đổi theo theme nên biến mất với brand sáng trên nền sáng (`accent-state-token`). Brand: dùng brand kit
+(`docs/BRANDS.md`); bộ sinh màu đặt `accent`, `on-accent`, `accent-fg` cho từng theme, các token trạng thái đi theo `accent-fg`.
 
 **Cách sinh CSS:** giá trị theo theme nằm ở biến nguồn `--semi-*` (đặt trong `:root/[data-theme=dark]` và `[data-theme=light]`); utility đọc qua `@theme inline` (`bg-panel` → `var(--semi-panel)`), còn `--color-*` được khai báo lại ở mỗi theme scope cho CSS của app (`var(--color-panel)`).
 
@@ -872,7 +880,7 @@ with `aria-describedby`, sets `aria-invalid` and announces the error (`role="ale
 ```
 
 Input surface: `FIELD_INPUT` (`bg-field border border-line hover:border-line-hover rounded-control px-3 h-field text-ui …
-focus:border-primary-500/50`); invalid adds `border-danger-border`. Never `focus:outline-none` without a visible focus
+focus:border-focus`); invalid adds `border-danger-border`. Never `focus:outline-none` without a visible focus
 border. Choices: `Checkbox` (with `indeterminate`), `Switch` (settings that apply at once), `RadioGroup` (2–5 exclusive
 options; more → `CustomSelect`).
 
@@ -933,6 +941,7 @@ The full inventory with props is generated into `components.json` (`npm run buil
 
 - **Physical / literal colors (`no-literal-palette`):** Never use neutral / white / black colour classes on any prefix or variant (`bg-white`, `text-slate-900`, `border-b-gray-200`, `divide-zinc-100`, `ring-slate-300`, `from-white`, `dark:bg-slate-800`). Always use Semantic Tokens (`bg-panel`, `bg-field`, `text-contrast`, `text-body`, `text-muted`, `border-line`, `divide-divider`).
 - **Fixed chromatic text (`no-fixed-tone-text`):** `text-emerald-400`, `text-rose-700 dark:text-rose-300`, `fill-amber-500` cannot pass contrast in both themes: use `text-accent-fg`, `text-*-fg` or `text-tone-<hue>`.
+- **Brand scale as a state colour (`accent-state-token`):** `ring-primary-500/50`, `bg-primary-500/15`, `border-primary-500/30` are not themed and vanish for light brands on light surfaces (a yellow ring is ≈ 1.3:1 on white): use `ring-focus`, `border-focus`, `bg-accent-subtle` / `bg-accent-subtle-hover`, `border-accent-line`. `/semi-fix` rewrites them.
 - **Solid pastel surfaces (`no-solid-pastel-surfaces`), arbitrary colours (`hex-colour-class`), literal colours in code (`literal-colour-value`), off-scale sizes (`arbitrary-text-size`).**
 - The colour / size rules read class tokens from every string literal (className, `cn()`, constants, template parts, `@apply`), not lines, so any spelling of a colour is caught.
 - **Overriding Card component (`card-class-override`):** Never pass any `bg-*` or `shadow-*` (with or without a variant such as `hover:`) to `<Card />`; use `TONAL_CONTAINER` on a plain element for a tinted card.
@@ -1623,12 +1632,28 @@ Brand kit ghi nó chạy với `@semi/ui` nào (`"semi": "^0.6"` trong `brand.js
 | Khoá | Giá trị | Quy chuẩn |
 |---|---|---|
 | `name`, `package` | Tên hiển thị, tên npm (`@scope/brand`) | Bắt buộc |
-| `primary` | Hex | Bắt buộc. Không quá xám (độ đậm tối thiểu), bộ sinh tự chọn sắc độ đọc rõ |
+| `primary` | Hex | Bắt buộc. Không quá xám (độ đậm tối thiểu), bộ sinh tự chọn sắc độ đọc rõ (xem dưới) |
 | `secondary` | Hex hoặc `null` | Tuỳ chọn; sinh `secondary-50 … 900` (`bg-secondary-500`, `text-secondary-fg`) |
 | `neutral` | `"tinted"` / `"preset"` | `tinted`: màu trung tính của mỗi style phủ nhẹ tông màu chính. `preset`: giữ màu trung tính có sẵn của style; chọn palette từng style bằng `"palettes": { "soft": "sage" }` |
 | `styles.default`, `styles.allowed` | `flat` · `soft` · `sharp` | Ít nhất một; `default` phải nằm trong `allowed` |
 | `fonts.sans`, `fonts.display` | Tên Google Font | `next/font/google` phải có font đó |
 | `semi` | Dải phiên bản `@semi/ui` | `/semi-brand update` cập nhật |
+
+### Semi sinh màu thế nào
+
+- **Thang `primary-50 … 900`:** mỗi sắc độ có độ sáng cố định (OKLCH, giống nhau cho mọi thương hiệu), cùng tông với màu
+  chính. Màu chính nằm nguyên vẹn ở sắc độ gần nó nhất (`brandStep`: navy đậm ở `900`, vàng ở `200`, xanh lá Semi ở `500`);
+  `--color-primary` luôn là đúng mã đó. Vì vậy màu rất đậm hay rất nhạt không còn làm nửa thang trùng nhau.
+- **Nút chính (`bg-accent` + `text-on-accent`), mỗi theme:** trong mọi cặp sắc độ × chữ (trắng hoặc tối) đạt 4.5:1, chọn
+  sắc độ **gần màu thương hiệu nhất**. Nếu sắc độ đó gần như trùng với nền trang (< 3:1, vd. navy trên nền tối), lấy sắc
+  độ gần nhất có tách khỏi nền, miễn là không lệch quá xa; không có thì giữ màu thương hiệu và báo "lưu ý".
+- **Chữ màu chính (`text-accent-fg`):** sắc độ gần màu thương hiệu nhất đọc được 4.5:1 trên mọi nền và trên nền chọn
+  (`bg-accent-subtle`). Viền focus (`ring-focus`) và viền mục chọn (`border-accent-line`) đi theo nó.
+- **Màu phụ:** `secondary-*`, chữ `text-secondary-fg`, và nền đặc `bg-secondary-solid` + `text-on-secondary` (badge, điểm
+  nhấn), chọn theo cùng cách.
+- **Báo cáo** (`dist/brand.json` → `report`, BRAND.md, trang preview): chữ ≥ 4.5:1, viền focus ≥ 3:1, hover vẫn đọc được;
+  "nút tách khỏi nền" ≥ 3:1 là mục *lưu ý* (không chặn build). `fidelity` cho biết nút mỗi theme ở sắc độ nào và lệch màu
+  thương hiệu bao nhiêu (ΔE OKLab, 0 = đúng màu); lệch trên 0.08 có cảnh báo kèm lý do.
 
 Chi tiết kỹ thuật: bộ sinh màu nằm ở `@semi/ui/brand` (`generateBrand`), lệnh trong kit là `semi-brand build | check`
 (bin của `@semi/ui`). Style và palette có sẵn: [STYLES.md](STYLES.md).
@@ -1742,7 +1767,7 @@ All web UI in the Semi ecosystem MUST follow the **Semi Design System** (`@semi/
    - **Styles (`@semi/ui/styles`):** `SHELL_*`, `CARD`, `CARD_HOVER`, `CARD_ACTIVE`, `HERO`, `TILE`, `SECTION_*`, `STICKY_TOOLBAR`, `MODAL_*`, `FIELD_LABEL`, `FIELD_INPUT`, `FIELD_TEXTAREA`, `STATUS_DOT`, `STATUS_PILL`, `BTN_PRIMARY`, `BTN_SECONDARY`, `BTN_DANGER`, `BTN_GHOST`, `BTN_SM`, `BTN_ICON`, `MODAL_BTN_*`, `headerPrimary`, `VIEWPORT_*`, `TONAL_SURFACE`, `EMPTY_STATIC`, `cn()`, `FOCUS_RING`, `OVERLAY`.
 3. **Hard constraints (enforced by `npx semi-lint`):**
    - Flat surfaces & semantic tokens only (`bg-canvas`, `bg-app`, `bg-panel`, `bg-field`, `bg-raised`, `text-contrast`, `text-body`, `text-muted`, `border-line`, `border-divider`). Status surfaces: `bg-danger-bg border-danger-border text-danger-fg` (also success / warning / info, `bg-*-solid` for dots and bars). Backdrops `bg-overlay`; floating layers `shadow-overlay` (canvas controls `shadow-float`); global layers `z-sticky` < `z-drawer` < `z-modal` < `z-dialog` < `z-keypad` < `z-popover` < `z-toast` < `z-tooltip` (never `z-[9999]`). No gradients, no glow shadows (`shadow-[0_0_…]`), no drop shadows on surfaces other than `shadow-card`, no arbitrary colours (`bg-[#...]`, `text-[rgb(…)]`) and no literal colours in code (`"#fff"`).
-   - Never use physical Tailwind color classes (`bg-white`, `text-slate-900`, `border-slate-200`, `bg-slate-50`, `bg-gray-800/900`) directly in JSX (`no-literal-palette`). Use Semantic Tokens so interfaces adapt automatically to Dark and Light modes. Coloured text uses themed tokens, never fixed `-300/-400` shades or `dark:` pairs: `text-accent-fg` (primary text/icons), `text-danger-fg` / `text-success-fg` / `text-warning-fg` / `text-info-fg`, `text-tone-<hue>`; solid actions `bg-accent hover:bg-accent-hover text-on-accent` (or `BTN_PRIMARY`). Never pass background or shadow overrides to `<Card>` (`card-class-override`).
+   - Never use physical Tailwind color classes (`bg-white`, `text-slate-900`, `border-slate-200`, `bg-slate-50`, `bg-gray-800/900`) directly in JSX (`no-literal-palette`). Use Semantic Tokens so interfaces adapt automatically to Dark and Light modes. Accent states use themed tokens, never the brand scale with alpha (`accent-state-token`): `ring-focus` (focus), `border-focus` (focused field), `bg-accent-subtle` / `bg-accent-subtle-hover` (selected, active), `border-accent-line` (selected border), not `ring-primary-500/50` / `bg-primary-500/15`. Coloured text uses themed tokens, never fixed `-300/-400` shades or `dark:` pairs: `text-accent-fg` (primary text/icons), `text-danger-fg` / `text-success-fg` / `text-warning-fg` / `text-info-fg`, `text-tone-<hue>`; solid actions `bg-accent hover:bg-accent-hover text-on-accent` (or `BTN_PRIMARY`). Never pass background or shadow overrides to `<Card>` (`card-class-override`).
    - Never use solid pastel surface classes (`bg-*-50`, `border-*-200`) for cards or containers (`no-solid-pastel-surfaces`); use alpha transparency (`bg-amber-500/10 border-amber-500/20`) or standard `bg-panel`.
    - Typography: `font-medium` / `font-semibold` only (no `font-bold`); the type scale only: `text-caption` 11 · `text-label` 12 · `text-ui` 13 · `text-ui-lg` 14 · `text-title` 15 · `text-title-lg` 16 for UI/body, `text-kpi sm:text-heading` for KPI figures (`KpiCard`), `text-heading sm:text-display` for page titles (`PageTitle`); no `text-xs/sm/base` and no `text-[13px]`; `tabular-nums` for numbers (`font-mono` only for code); sentence case (no `uppercase` labels or ALL CAPS buttons).
    - Style: the app's style (Flat, Soft, Sharp) and its palette (3 colour variants each): `"style"` / `"palette"` in `semi-lint.json`, `data-style` / `data-palette` on `<html>`, its fonts loaded with `next/font`; `node_modules/@semi/ui/docs/STYLES.md`) sets the neutral colours, fonts (`font-sans`, `font-display`), control sizes (`h-control` for toolbar buttons / pills / chips / search, `h-field` for inputs and selects, never `h-[34px]`), the card border (`border-card`) and every radius and card shadow, so use the style tokens only: `rounded-chip` (marks, checkboxes, inline code), `rounded-control` (buttons, inputs, tiles, rows), `rounded-card` (cards, popovers, menus, toasts), `rounded-panel` (hero, modal, drawer, sidebar), `rounded-full` (pills, avatars, dots), `shadow-card` (resting card shadow, `CARD` has it). Never `rounded`, `rounded-sm/md/lg/xl/2xl` or `rounded-[Npx]` (`radius-token`), never per-style classes or `[data-style=…]` selectors in the app. Change the style with `/semi-style`.

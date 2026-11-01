@@ -27,7 +27,7 @@ export function CodeBlock({ code, title, className }: { code: string; /** File n
         </div>
       )}
       {!title && button}
-      <pre tabIndex={0} className={cn("overflow-x-auto p-3 text-label leading-relaxed text-body outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 rounded-control", !title && "pr-12")}>
+      <pre tabIndex={0} className={cn("overflow-x-auto p-3 text-label leading-relaxed text-body outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-control", !title && "pr-12")}>
         <code className="font-mono">{code}</code>
       </pre>
     </div>

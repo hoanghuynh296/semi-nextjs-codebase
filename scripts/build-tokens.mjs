@@ -40,7 +40,7 @@ styles.sort((a, b) => (b.default ? 1 : 0) - (a.default ? 1 : 0)); // default fir
 
 const TITLES = {
   font: "Monospace font (font-sans / font-display come from the style: tokens/styles/*.json)",
-  brand: "Brand: primary-* = actions, focus, \"on\". Override per project in your own @theme after importing this file",
+  brand: "Brand: primary-* = the brand scale (charts, illustrations). Components use the themed accent / focus tokens below; a brand kit (docs/BRANDS.md) sets both",
   status: "Status green (emerald-*): online, ready, success. Never an accent",
   semantic: "Semantic tokens (CSS variables mapped for Tailwind 4 @theme): auto-switches via data-theme=\"dark|light\"",
   gray: "Neutral gray (exact hex, zero blue cast)",

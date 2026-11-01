@@ -57,7 +57,7 @@ export function Carousel({
             go(index + (e.key === "ArrowRight" ? 1 : -1));
           }
         }}
-        className="flex gap-3 overflow-x-auto snap-x snap-mandatory overscroll-x-contain scroll-smooth rounded-card outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50"
+        className="flex gap-3 overflow-x-auto snap-x snap-mandatory overscroll-x-contain scroll-smooth rounded-card outline-none focus-visible:ring-2 focus-visible:ring-focus"
       >
         {slides.map((slide, i) => (
           <div key={i} role="group" aria-roledescription="slide" aria-label={t.slide(i + 1, slides.length)} className={cn("snap-start shrink-0 basis-[85%]", width)}>

@@ -182,12 +182,28 @@ Brand kit ghi nó chạy với `@semi/ui` nào (`"semi": "^0.6"` trong `brand.js
 | Khoá | Giá trị | Quy chuẩn |
 |---|---|---|
 | `name`, `package` | Tên hiển thị, tên npm (`@scope/brand`) | Bắt buộc |
-| `primary` | Hex | Bắt buộc. Không quá xám (độ đậm tối thiểu), bộ sinh tự chọn sắc độ đọc rõ |
+| `primary` | Hex | Bắt buộc. Không quá xám (độ đậm tối thiểu), bộ sinh tự chọn sắc độ đọc rõ (xem dưới) |
 | `secondary` | Hex hoặc `null` | Tuỳ chọn; sinh `secondary-50 … 900` (`bg-secondary-500`, `text-secondary-fg`) |
 | `neutral` | `"tinted"` / `"preset"` | `tinted`: màu trung tính của mỗi style phủ nhẹ tông màu chính. `preset`: giữ màu trung tính có sẵn của style; chọn palette từng style bằng `"palettes": { "soft": "sage" }` |
 | `styles.default`, `styles.allowed` | `flat` · `soft` · `sharp` | Ít nhất một; `default` phải nằm trong `allowed` |
 | `fonts.sans`, `fonts.display` | Tên Google Font | `next/font/google` phải có font đó |
 | `semi` | Dải phiên bản `@semi/ui` | `/semi-brand update` cập nhật |
+
+### Semi sinh màu thế nào
+
+- **Thang `primary-50 … 900`:** mỗi sắc độ có độ sáng cố định (OKLCH, giống nhau cho mọi thương hiệu), cùng tông với màu
+  chính. Màu chính nằm nguyên vẹn ở sắc độ gần nó nhất (`brandStep`: navy đậm ở `900`, vàng ở `200`, xanh lá Semi ở `500`);
+  `--color-primary` luôn là đúng mã đó. Vì vậy màu rất đậm hay rất nhạt không còn làm nửa thang trùng nhau.
+- **Nút chính (`bg-accent` + `text-on-accent`), mỗi theme:** trong mọi cặp sắc độ × chữ (trắng hoặc tối) đạt 4.5:1, chọn
+  sắc độ **gần màu thương hiệu nhất**. Nếu sắc độ đó gần như trùng với nền trang (< 3:1, vd. navy trên nền tối), lấy sắc
+  độ gần nhất có tách khỏi nền, miễn là không lệch quá xa; không có thì giữ màu thương hiệu và báo "lưu ý".
+- **Chữ màu chính (`text-accent-fg`):** sắc độ gần màu thương hiệu nhất đọc được 4.5:1 trên mọi nền và trên nền chọn
+  (`bg-accent-subtle`). Viền focus (`ring-focus`) và viền mục chọn (`border-accent-line`) đi theo nó.
+- **Màu phụ:** `secondary-*`, chữ `text-secondary-fg`, và nền đặc `bg-secondary-solid` + `text-on-secondary` (badge, điểm
+  nhấn), chọn theo cùng cách.
+- **Báo cáo** (`dist/brand.json` → `report`, BRAND.md, trang preview): chữ ≥ 4.5:1, viền focus ≥ 3:1, hover vẫn đọc được;
+  "nút tách khỏi nền" ≥ 3:1 là mục *lưu ý* (không chặn build). `fidelity` cho biết nút mỗi theme ở sắc độ nào và lệch màu
+  thương hiệu bao nhiêu (ΔE OKLab, 0 = đúng màu); lệch trên 0.08 có cảnh báo kèm lý do.
 
 Chi tiết kỹ thuật: bộ sinh màu nằm ở `@semi/ui/brand` (`generateBrand`), lệnh trong kit là `semi-brand build | check`
 (bin của `@semi/ui`). Style và palette có sẵn: [STYLES.md](STYLES.md).

@@ -95,7 +95,7 @@ export function ResizablePanels({
                 move(i, delta);
               }}
               className={cn(
-                "group relative shrink-0 bg-line outline-none focus-visible:bg-primary-500 hover:bg-line-hover touch-none",
+                "group relative shrink-0 bg-line outline-none focus-visible:bg-focus hover:bg-line-hover touch-none",
                 horizontal ? "w-px cursor-col-resize before:absolute before:inset-y-0 before:-inset-x-1.5" : "h-px cursor-row-resize before:absolute before:inset-x-0 before:-inset-y-1.5",
               )}
             />

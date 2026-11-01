@@ -72,7 +72,7 @@ export function Terminal({
           stuck.current = el.scrollHeight - el.scrollTop - el.clientHeight < 24;
         }}
         style={{ maxHeight }}
-        className="overflow-auto p-3 text-label leading-relaxed text-body font-mono outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500/50"
+        className="overflow-auto p-3 text-label leading-relaxed text-body font-mono outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus"
       >
         {command && (
           <div>

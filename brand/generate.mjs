@@ -4,10 +4,11 @@
 //   generateBrand(brand, { tokens, styles, version }) → { tokens, css, fonts, report }
 //
 // What the brand chooses (docs/BRANDS.md): primary, optional secondary, neutral ("tinted" from the primary or a style
-// "preset"), the styles it allows, fonts. What is derived: the 50…900 scales (OKLCH, same hue), the accent / on-accent /
-// accent-fg shades of each theme (the first shade that reaches 4.5:1), the neutrals of every allowed style. No
-// dependencies; Storybook's brand preview runs the same code in the browser.
-import { contrast, hexToOklch, hueDistance, isHex, oklchToHex, parseColor, rgbToOklch } from "./color.mjs";
+// "preset"), the styles it allows, fonts. What is derived: the 50…900 scales (fixed OKLCH lightness per shade, the
+// brand colour itself on the nearest shade), the accent / on-accent / accent-fg shades of each theme (the readable shade
+// closest to the brand colour), the neutrals of every allowed style. No dependencies; the docs site's brand preview
+// runs the same code in the browser.
+import { blend, contrast, deltaE, hexToOklch, hueDistance, isHex, oklchToHex, parseColor, rgbToOklch } from "./color.mjs";
 
 export const SHADES = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
 /** Semantic keys a brand's neutrals set (tokens/tokens.json "semantic"). */
@@ -19,6 +20,19 @@ export const NEUTRAL_KEYS = [
 const SURFACES = ["color-canvas", "color-app", "color-panel", "color-field", "color-raised"];
 const THEMES = ["dark", "light"];
 const AA = 4.5;
+/** WCAG 1.4.11: focus rings, selected borders and control fills must reach 3:1 against the surface. */
+const NON_TEXT = 3;
+/**
+ * OKLCH lightness of every shade, the same for every brand (close to Tailwind v4 / Radix steps), so primary-200 means
+ * the same thing in every brand and very dark or very light brand colours no longer squash half the scale together.
+ */
+export const LADDER = { 50: 0.975, 100: 0.945, 200: 0.89, 300: 0.815, 400: 0.725, 500: 0.635, 600: 0.55, 700: 0.47, 800: 0.39, 900: 0.31 };
+/** How far (OKLab ΔE) the button may move from the brand colour to stand out from the page (3:1) instead of blending in. */
+const FILL_REACH = 0.2;
+/** Alpha of the accent-subtle tint per theme (tokens.json): accent-fg text on it (selected option, active page) must read. */
+const SUBTLE = { dark: 0.14, light: 0.11 };
+/** Surfaces a solid button sits on (page, app frame, panel); fields and raised layers are not its background. */
+const PAGES = ["color-canvas", "color-app", "color-panel"];
 /**
  * How much of the primary's hue each style's tinted neutrals take (OKLCH chroma). Surfaces (canvas, app, panel, field,
  * raised) take very little: large areas tinted at 0.01 read as a colour cast, while popular systems keep backgrounds
@@ -84,41 +98,77 @@ export function validateBrand(brand, { styles }) {
   return { errors, warnings };
 }
 
-/** 50…900 from one colour: 500 is the colour itself, lighter / darker shades keep its hue in OKLCH. */
+/** The shade a brand colour sits on: the one whose ladder lightness is closest to it. */
+export function brandStep(hex) {
+  const { l } = hexToOklch(hex);
+  return SHADES.reduce((best, s) => (Math.abs(LADDER[s] - l) < Math.abs(LADDER[best] - l) ? s : best), 500);
+}
+
+/**
+ * 50…900 from one colour: every shade has the ladder's lightness and the colour's hue; the brand colour itself sits on
+ * its nearest shade (brandStep), unchanged. Chroma fades towards white and eases off towards black, and is lowered
+ * further only where sRGB cannot show it.
+ */
 export function scale(hex) {
   const { l, c, h } = hexToOklch(hex);
-  const up = { 400: 0.24, 300: 0.48, 200: 0.7, 100: 0.86, 50: 0.94 };
-  const down = { 600: 0.22, 700: 0.44, 800: 0.65, 900: 0.84 };
+  const step = brandStep(hex);
   const out = {};
   for (const s of SHADES) {
-    if (s === 500) out[s] = hex.toLowerCase().length === 4 ? oklchToHex({ l, c, h }) : hex.toLowerCase();
-    else if (up[s]) out[s] = oklchToHex({ l: l + (0.975 - l) * up[s], c: c * (1 - up[s]) ** 0.9, h });
-    else out[s] = oklchToHex({ l: l - (l - 0.24) * down[s], c: c * (1 - down[s] * 0.3), h });
+    if (s === step) {
+      out[s] = hex.toLowerCase().length === 4 ? oklchToHex({ l, c, h }) : hex.toLowerCase();
+      continue;
+    }
+    const L = LADDER[s];
+    const chroma = L > l ? c * (1 - (L - l) / (0.99 - l)) ** 1.1 : c * (1 - 0.35 * Math.min(1, (l - L) / Math.max(0.05, l - 0.2)));
+    out[s] = oklchToHex({ l: L, c: chroma, h });
   }
   return out;
 }
 
 const DARK_TEXT = "#0c0d0e";
 const WHITE = "#ffffff";
+const minContrast = (color, backgrounds) => Math.min(...backgrounds.map((bg) => contrast(color, bg)));
 
 /**
- * The accent fill of a theme: the preferred text colour first (dark text on a light-ish accent in the dark theme, white
- * on a deeper accent in the light theme, as Semi's own green; dark text in both for a very light brand colour), walking
- * away from 500; the other text colour only when no shade works with the preferred one.
+ * The solid fill of a theme (buttons, checked controls): of every shade × text colour that reads at AA, the one closest
+ * to the brand colour. When that one blends into the page (< 3:1, e.g. navy on a dark page), a shade within FILL_REACH
+ * of the brand that stands out is taken instead; if none does, the brand colour stays and the report says so. Ties go
+ * to the theme's usual text (dark text in the dark theme, white in the light theme).
  */
-function pickFill(sc, theme) {
-  // A very light brand colour (yellow, lime) keeps its own fill with dark text in the light theme too.
-  const light = hexToOklch(sc[500]).l >= 0.8;
-  const tries =
-    theme === "dark" || light
-      ? [[DARK_TEXT, [500, 400, 300, 200]], [WHITE, [500, 600, 700]]]
-      : [[WHITE, [500, 600, 700, 800]], [DARK_TEXT, [500, 400, 300]]];
-  for (const [on, order] of tries) for (const shade of order) if (contrast(sc[shade], on) >= AA) return { shade, on };
-  return { shade: theme === "dark" ? 300 : 800, on: theme === "dark" ? DARK_TEXT : WHITE };
+function pickFill(sc, brandHex, theme, surfaces) {
+  const usual = theme === "dark" ? DARK_TEXT : WHITE;
+  const cands = [];
+  for (const shade of SHADES)
+    for (const on of [DARK_TEXT, WHITE]) {
+      const ratio = contrast(sc[shade], on);
+      if (ratio >= AA) cands.push({ shade, on, ratio, de: deltaE(sc[shade], brandHex), page: minContrast(sc[shade], surfaces) });
+    }
+  if (!cands.length) return { shade: theme === "dark" ? 300 : 800, on: theme === "dark" ? DARK_TEXT : WHITE, de: 1, page: 0 };
+  const order = (a, b) => a.de - b.de || (a.on === usual ? -1 : 0) - (b.on === usual ? -1 : 0);
+  cands.sort(order);
+  const best = cands[0];
+  if (best.page >= NON_TEXT) return best;
+  return cands.find((c) => c.page >= NON_TEXT && c.de <= best.de + FILL_REACH) ?? best;
 }
 
-/** First shade (in order) that reads at AA on every surface; null when none does. */
-const pickText = (sc, order, surfaces) => order.find((s) => surfaces.every((bg) => contrast(sc[s], bg) >= AA)) ?? null;
+/** Hover of a fill: the next shade away from its text colour (lighter under dark text), or the other way when that one no longer reads. */
+function pickHover(sc, fill) {
+  const i = SHADES.indexOf(fill.shade);
+  const away = fill.on === DARK_TEXT ? [i - 1, i + 1] : [i + 1, i - 1];
+  for (const j of away) if (j >= 0 && j < SHADES.length && contrast(sc[SHADES[j]], fill.on) >= AA) return SHADES[j];
+  return SHADES[Math.min(SHADES.length - 1, Math.max(0, away[0]))];
+}
+
+/**
+ * Coloured text (accent-fg): the shade closest to the brand colour that reads at AA on every surface and on the
+ * accent-subtle tint of itself (selected rows, active pills). The focus ring and selected borders use it too.
+ */
+function pickText(sc, brandHex, theme, surfaces, pages) {
+  const reads = (s) => minContrast(sc[s], [...surfaces, ...pages.map((bg) => blend(sc[s], bg, SUBTLE[theme]))]);
+  const ok = SHADES.filter((s) => reads(s) >= AA).sort((a, b) => deltaE(sc[a], brandHex) - deltaE(sc[b], brandHex));
+  const shade = ok[0] ?? (theme === "dark" ? 50 : 900);
+  return { shade, ratio: reads(shade) };
+}
 
 /** Opaque version of a neutral (rgba lines are composited on the panel) for contrast checks. */
 function flatten(value, panel) {
@@ -196,38 +246,58 @@ export function generateBrand(brand, { tokens, styles, version = "" }) {
   // Accent shades: chosen against the surfaces of every allowed style.
   const report = [];
   const themes = {};
+  const fidelity = {};
+  const themeName = { dark: "tối", light: "sáng" };
   for (const theme of THEMES) {
     const surfaces = allowed.flatMap((st) => SURFACES.map((k) => neutrals[st.id][theme][k]));
-    const fill = pickFill(primary, theme);
-    const darker = (s) => SHADES[Math.min(SHADES.length - 1, SHADES.indexOf(s) + 1)];
-    const lighter = (s) => SHADES[Math.max(0, SHADES.indexOf(s) - 1)];
-    const hover = fill.on === DARK_TEXT ? lighter(fill.shade) : darker(fill.shade);
-    const fgOrder = theme === "dark" ? [400, 300, 200, 100, 50] : [600, 700, 800, 900];
-    const fg = pickText(primary, fgOrder, surfaces) ?? (theme === "dark" ? 50 : 900);
+    const pages = allowed.flatMap((st) => PAGES.map((k) => neutrals[st.id][theme][k]));
+    const fill = pickFill(primary, brand.primary, theme, pages);
+    const hover = pickHover(primary, fill);
+    const fg = pickText(primary, brand.primary, theme, surfaces, pages);
     themes[theme] = {
       "color-accent": primary[fill.shade],
       "color-accent-hover": primary[hover],
       "color-on-accent": fill.on,
-      "color-accent-fg": primary[fg],
+      "color-accent-fg": primary[fg.shade],
     };
-    report.push({ check: `nút chính (${theme})`, pair: `${fill.on} / primary-${fill.shade}`, ratio: contrast(fill.on, primary[fill.shade]) });
-    report.push({ check: `chữ màu chính (${theme})`, pair: `primary-${fg} / nền ${theme}`, ratio: Math.min(...surfaces.map((bg) => contrast(primary[fg], bg))) });
+    fidelity[theme] = { fill: fill.shade, text: fg.shade, deltaE: +fill.de.toFixed(3) };
+    const t = themeName[theme];
+    report.push({ check: `nút chính (${t})`, pair: `chữ ${fill.on} / primary-${fill.shade}`, ratio: contrast(fill.on, primary[fill.shade]), min: AA });
+    report.push({ check: `nút chính khi hover (${t})`, pair: `chữ ${fill.on} / primary-${hover}`, ratio: contrast(fill.on, primary[hover]), min: AA });
+    report.push({ check: `chữ màu chính (${t})`, pair: `primary-${fg.shade} / nền + nền chọn`, ratio: fg.ratio, min: AA });
+    report.push({ check: `viền focus (${t})`, pair: `primary-${fg.shade} / nền`, ratio: minContrast(primary[fg.shade], surfaces), min: NON_TEXT });
+    // Soft: a filled control may blend into the page (light brands on white) and still be usable through its text or
+    // check mark; reported so the person sees it, never a build failure.
+    report.push({ check: `nút tách khỏi nền (${t})`, pair: `primary-${fill.shade} / nền`, ratio: fill.page, min: NON_TEXT, soft: true });
+    if (fill.de > 0.08)
+      warnings.push(
+        `Theme ${t}: nút chính dùng primary-${fill.shade} (${primary[fill.shade]}) thay vì đúng màu thương hiệu ${brand.primary} (ΔE ${fill.de.toFixed(2)}), ` +
+          ([DARK_TEXT, WHITE].some((on) => contrast(brand.primary, on) >= AA)
+            ? "để nút tách khỏi nền (màu gốc gần như trùng với nền trang)"
+            : "vì cả chữ trắng lẫn chữ tối trên màu gốc đều chưa đạt 4.5:1"),
+      );
+    if (fill.page < NON_TEXT)
+      warnings.push(`Theme ${t}: nút màu thương hiệu chỉ tách khỏi nền ${fill.page.toFixed(2)}:1 (< 3:1). Nút vẫn đọc được nhờ chữ, nhưng công tắc, thanh trượt và ô chọn khó thấy hơn`);
     if (secondary) {
-      const sfg = pickText(secondary, fgOrder, surfaces) ?? (theme === "dark" ? 50 : 900);
-      themes[theme]["color-secondary-fg"] = secondary[sfg];
-      report.push({ check: `chữ màu phụ (${theme})`, pair: `secondary-${sfg} / nền ${theme}`, ratio: Math.min(...surfaces.map((bg) => contrast(secondary[sfg], bg))) });
+      const sfg = pickText(secondary, brand.secondary, theme, surfaces, pages);
+      const sfill = pickFill(secondary, brand.secondary, theme, pages);
+      themes[theme]["color-secondary-fg"] = secondary[sfg.shade];
+      themes[theme]["color-secondary-solid"] = secondary[sfill.shade];
+      themes[theme]["color-on-secondary"] = sfill.on;
+      report.push({ check: `chữ màu phụ (${t})`, pair: `secondary-${sfg.shade} / nền + nền chọn`, ratio: sfg.ratio, min: AA });
+      report.push({ check: `nền màu phụ (${t})`, pair: `chữ ${sfill.on} / secondary-${sfill.shade}`, ratio: contrast(sfill.on, secondary[sfill.shade]), min: AA });
     }
     for (const st of allowed) {
       const n = neutrals[st.id][theme];
       const worst = Math.min(...SURFACES.slice(0, 4).map((k) => contrast(n["color-text-muted"], n[k])));
-      report.push({ check: `chữ mờ ${st.name} (${theme})`, pair: `text-muted / nền`, ratio: worst });
+      report.push({ check: `chữ mờ ${st.name} (${t})`, pair: `text-muted / nền`, ratio: worst, min: AA });
     }
   }
-  for (const r of report) r.ok = r.ratio >= AA;
+  for (const r of report) r.ok = r.ratio >= r.min;
   for (const [status, h] of Object.entries(STATUS_HUES))
     if (hueDistance(hue, h) < 25)
       warnings.push(`Màu chính gần màu ${status === "success" ? "thành công (xanh lá)" : "lỗi (đỏ)"} của Semi: trạng thái luôn kèm icon hoặc chữ, đừng chỉ dựa vào màu`);
-  if (report.some((r) => !r.ok)) warnings.push("Có cặp màu chưa đạt AA: xem bảng contrast");
+  if (report.some((r) => !r.ok && !r.soft)) warnings.push("Có cặp màu chưa đạt AA: xem bảng contrast");
 
   const fonts = resolveFonts(brand, styles);
   const out = {
@@ -237,8 +307,10 @@ export function generateBrand(brand, { tokens, styles, version = "" }) {
     styles: brand.styles,
     neutral: brand.neutral,
     primary,
-    ...(secondary ? { secondary } : {}),
+    brandStep: brandStep(brand.primary),
+    ...(secondary ? { secondary, secondaryStep: brandStep(brand.secondary) } : {}),
     themes,
+    fidelity,
     neutrals,
     fonts,
   };
@@ -286,11 +358,12 @@ export function brandCss(t, version, { runtime = false, loadedFonts = [] } = {})
     return `var(${f.variable}), "${f.family}"`;
   };
   let css = `/* GENERATED by semi-brand from brand.json — do not edit. ${t.name} (${t.package})${version ? ` · @semi/ui ${version}` : ""}\n   Import after @semi/ui/tokens.css. docs: node_modules/@semi/ui/docs/BRANDS.md */\n`;
-  css += `${runtime ? ":root" : "@theme"} {\n  --color-primary: ${t.primary[500]};\n${SHADES.map((s) => `  --color-primary-${s}: ${t.primary[s]};`).join("\n")}\n`;
-  if (t.secondary) css += `  --color-secondary: ${t.secondary[500]};\n${SHADES.map((s) => `  --color-secondary-${s}: ${t.secondary[s]};`).join("\n")}\n`;
+  css += `${runtime ? ":root" : "@theme"} {\n  --color-primary: ${t.primary[t.brandStep ?? 500]};\n${SHADES.map((s) => `  --color-primary-${s}: ${t.primary[s]};`).join("\n")}\n`;
+  if (t.secondary) css += `  --color-secondary: ${t.secondary[t.secondaryStep ?? 500]};\n${SHADES.map((s) => `  --color-secondary-${s}: ${t.secondary[s]};`).join("\n")}\n`;
   if (runtime) for (const f of t.fonts) if (!loadedFonts.includes(f.variable)) css += `  ${f.variable}: "${f.family}";\n`;
   css += "}\n\n";
-  if (t.secondary) css += `${runtime ? ":root" : "@theme inline"} {\n  --color-secondary-fg: var(--semi-secondary-fg);\n}\n\n`;
+  if (t.secondary)
+    css += `${runtime ? ":root" : "@theme inline"} {\n  --color-secondary-fg: var(--semi-secondary-fg);\n  --color-secondary-solid: var(--semi-secondary-solid);\n  --color-on-secondary: var(--semi-on-secondary);\n}\n\n`;
   css += block([":root"], [["--font-sans-family", family("sans")], ["--font-display-family", family("display")]]) + "\n";
   // Accent: every style, every theme scope (the same selectors Semi's own theme tokens use).
   const scopes = (theme, extra = []) => [

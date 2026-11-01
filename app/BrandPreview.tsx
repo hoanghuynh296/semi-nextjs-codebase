@@ -26,9 +26,18 @@ export type Brand = {
 };
 
 export type BrandResult = {
-  tokens: { primary: Record<string, string>; secondary?: Record<string, string>; themes: Record<string, Record<string, string>>; fonts: { family: string; variable: string }[] };
+  tokens: {
+    primary: Record<string, string>;
+    secondary?: Record<string, string>;
+    brandStep: number;
+    themes: Record<string, Record<string, string>>;
+    /** Per theme: the shade of the button and of coloured text, and how far (OKLab ΔE) the button is from the brand colour. */
+    fidelity: Record<string, { fill: number; text: number; deltaE: number }>;
+    fonts: { family: string; variable: string }[];
+  };
   css: string;
-  report: { check: string; pair: string; ratio: number; ok: boolean }[];
+  /** min: 4.5 for text, 3 for focus rings and fills; soft: reported, never blocks the kit. */
+  report: { check: string; pair: string; ratio: number; min: number; ok: boolean; soft?: boolean }[];
   warnings: string[];
 };
 

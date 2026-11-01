@@ -175,7 +175,7 @@ function CartesianFrame({
               onKeyDown={onKey}
               onFocus={() => setActive((a) => a ?? data.length - 1)}
               onBlur={() => setActive(null)}
-              className="block outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 rounded-control"
+              className="block outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-control"
             >
               {ticks.map((v) => (
                 <g key={v}>
@@ -352,7 +352,7 @@ export function DonutChart({
           }}
           onBlur={() => setActive(null)}
           onPointerLeave={() => setActive(null)}
-          className="block outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 rounded-full"
+          className="block outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-full"
         >
           {arcs.map(({ a0, a1 }, i) =>
             a1 > a0 ? (

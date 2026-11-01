@@ -41,6 +41,7 @@ function Swatches({ label, scale }) {
 export default function BrandOverview() {
   const font = (role) => brand.fonts.find((f) => f.roles.includes(role))?.family;
   const ok = brand.report.filter((r) => r.ok).length;
+  const fid = brand.fidelity ?? {};
   return (
     <>
       <div className="space-y-3">
@@ -51,7 +52,7 @@ export default function BrandOverview() {
         </p>
       </div>
 
-      <Link href="/components/" className={`${CARD_HOVER} p-4 flex items-center gap-3 outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50`}>
+      <Link href="/components/" className={`${CARD_HOVER} p-4 flex items-center gap-3 outline-none focus-visible:ring-2 focus-visible:ring-focus`}>
         <Icon name="grid" className="w-5 h-5 text-accent-fg" />
         <div className="min-w-0">
           <div className="text-title font-semibold text-contrast">Tất cả component</div>
@@ -77,7 +78,9 @@ export default function BrandOverview() {
                 <span className="text-ui text-accent-fg font-medium">Chữ màu chính</span>
               </div>
               <div className="text-caption text-muted tabular-nums">
-                nút {brand.themes[t]["color-accent"]} · chữ trên nút {brand.themes[t]["color-on-accent"]} · chữ màu {brand.themes[t]["color-accent-fg"]}
+                nút {brand.themes[t]["color-accent"]}
+                {fid[t] ? (fid[t].deltaE === 0 ? " (đúng màu thương hiệu)" : ` (primary-${fid[t].fill}, lệch ΔE ${fid[t].deltaE.toFixed(2)})`) : ""} · chữ trên nút{" "}
+                {brand.themes[t]["color-on-accent"]} · chữ màu {brand.themes[t]["color-accent-fg"]}
               </div>
             </div>
           ))}
@@ -119,6 +122,7 @@ export default function BrandOverview() {
               <TH>Kiểm tra</TH>
               <TH>Cặp</TH>
               <TH align="right">Tỉ lệ</TH>
+              <TH align="right">Cần</TH>
               <TH>Kết quả</TH>
             </TR>
           </THead>
@@ -130,9 +134,12 @@ export default function BrandOverview() {
                 <TD align="right" numeric>
                   {r.ratio.toFixed(2)}
                 </TD>
+                <TD align="right" numeric>
+                  {r.min ?? 4.5}
+                </TD>
                 <TD>
-                  <Badge tone={r.ok ? "green" : "rose"} dot>
-                    {r.ok ? "Đạt" : "Chưa đạt"}
+                  <Badge tone={r.ok ? "green" : r.soft ? "amber" : "rose"} dot>
+                    {r.ok ? "Đạt" : r.soft ? "Lưu ý" : "Chưa đạt"}
                   </Badge>
                 </TD>
               </TR>

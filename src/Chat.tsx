@@ -24,7 +24,7 @@ import { cn, FOCUS_RING } from "../styles/utils";
 
 /** A tappable row in a chat (suggested request, follow-up choice, link): one look for all of them. */
 export const CHAT_ROW = cn(
-  "group w-full flex items-center gap-3 text-left text-ui text-body hover:text-contrast rounded-card bg-field hover:bg-raised border border-line hover:border-primary-500/30 px-3 py-2.5 transition disabled:opacity-40 disabled:pointer-events-none",
+  "group w-full flex items-center gap-3 text-left text-ui text-body hover:text-contrast rounded-card bg-field hover:bg-raised border border-line hover:border-accent-line px-3 py-2.5 transition disabled:opacity-40 disabled:pointer-events-none",
   FOCUS_RING,
 );
 /** A small label chip in a chat (events, tags the AI understands). */
@@ -34,7 +34,7 @@ const CHAT_LIST = "flex-1 overflow-y-auto overscroll-contain px-4 py-4 flex flex
 /** The bar that holds the composer at the bottom of a chat (clear of the home indicator on phones). */
 const COMPOSER_BAR = "relative p-3 border-t border-divider shrink-0 max-sm:pb-[max(0.75rem,env(safe-area-inset-bottom))]";
 /** The input box around the textarea and its buttons. */
-const COMPOSER_BOX = "flex flex-col gap-1 bg-field border border-line rounded-card p-1.5 pl-2 focus-within:border-primary-500/50 transition min-w-0";
+const COMPOSER_BOX = "flex flex-col gap-1 bg-field border border-line rounded-card p-1.5 pl-2 focus-within:border-focus transition min-w-0";
 /** The question field: grows with the text up to 45% of the screen, then scrolls inside. */
 const COMPOSER_FIELD =
   "flex-1 min-w-0 block resize-none max-h-[45dvh] overflow-y-auto bg-transparent px-1.5 py-1.5 text-ui text-contrast placeholder:text-muted outline-none disabled:opacity-40";
@@ -45,7 +45,7 @@ const SMALL_ACTION = cn("w-7 h-7 rounded-control text-muted hover:text-contrast 
 /** Small sparkles tile in front of every AI answer (pulses while it streams). */
 export function ChatAvatar({ busy = false, icon = "sparkles" }: { busy?: boolean; icon?: IconName }) {
   return (
-    <span className={cn("w-6 h-6 rounded-control bg-primary-500/15 text-accent-fg flex items-center justify-center shrink-0", busy && "motion-safe:animate-pulse")}>
+    <span className={cn("w-6 h-6 rounded-control bg-accent-subtle text-accent-fg flex items-center justify-center shrink-0", busy && "motion-safe:animate-pulse")}>
       <Icon name={icon} className="w-3.5 h-3.5" />
     </span>
   );
@@ -72,7 +72,7 @@ export function UserMessage({ failed = false, children }: { failed?: boolean; ch
     <div
       className={cn(
         "self-end max-w-[85%] rounded-panel rounded-br-chip px-3 py-2 text-ui whitespace-pre-wrap break-words border",
-        failed ? "bg-field border-line text-muted" : "bg-primary-500/15 border-primary-500/20 text-contrast",
+        failed ? "bg-field border-line text-muted" : "bg-accent-subtle border-accent-line text-contrast",
       )}
     >
       {children}
@@ -186,7 +186,7 @@ export function ChatSuggestion({
 }) {
   const body = (
     <>
-      <span className="w-7 h-7 rounded-control bg-primary-500/10 text-accent-fg flex items-center justify-center shrink-0">
+      <span className="w-7 h-7 rounded-control bg-accent-subtle text-accent-fg flex items-center justify-center shrink-0">
         <Icon name={icon} className="w-4 h-4" />
       </span>
       <span className="flex-1 min-w-0 leading-relaxed">{children}</span>
@@ -752,7 +752,7 @@ export function ChatPanel({
           className="max-sm:hidden absolute inset-y-0 left-0 w-1.5 z-10 cursor-col-resize touch-none select-none group outline-none hover:bg-accent focus-visible:bg-accent active:bg-accent-hover transition-colors duration-150"
         >
           <div className="absolute inset-y-0 -right-1.5 left-0 cursor-col-resize" />
-          <div className="absolute top-1/2 left-0.5 -translate-y-1/2 w-3.5 h-9 rounded-full bg-field border border-line group-hover:border-primary-500 flex items-center justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity shadow-float">
+          <div className="absolute top-1/2 left-0.5 -translate-y-1/2 w-3.5 h-9 rounded-full bg-field border border-line group-hover:border-accent-fg flex items-center justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity shadow-float">
             <div className="flex flex-col gap-0.5">
               {[0, 1, 2].map((i) => (
                 <div key={i} className="w-0.5 h-0.5 rounded-full bg-line-hover group-hover:bg-accent" />

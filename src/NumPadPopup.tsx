@@ -210,7 +210,7 @@ export function NumPadPopup({ label, unit, initial, integer, allowPercent, onCom
         >
           <span
             className={`text-heading-sm tabular-nums truncate flex-1 text-right text-contrast ${
-              fresh && text ? "bg-primary-500/25 rounded-chip px-1" : ""
+              fresh && text ? "bg-accent-subtle-hover rounded-chip px-1" : ""
             }`}
           >
             {text || <span className="text-muted">0</span>}

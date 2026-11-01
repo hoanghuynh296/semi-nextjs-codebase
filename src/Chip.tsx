@@ -8,7 +8,7 @@ import { TONE_TEXT, type TileTone } from "./Icon";
 import { type SemanticTone, TONAL_SURFACE } from "../styles/surfaces";
 
 export const CHIP_BASE =
-  "shrink-0 inline-flex items-center gap-1.5 px-3.5 h-control rounded-full text-label font-medium whitespace-nowrap border transition outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 cursor-pointer";
+  "shrink-0 inline-flex items-center gap-1.5 px-3.5 h-control rounded-full text-label font-medium whitespace-nowrap border transition outline-none focus-visible:ring-2 focus-visible:ring-focus cursor-pointer";
 
 const CHIP_ON = "bg-raised border-line text-contrast";
 
@@ -25,7 +25,7 @@ export const TAG = "inline-flex items-center gap-1.5 h-6 px-2 rounded-full bg-fi
 
 /** Solid dot in a tone (material / category chips and tags). */
 export const TONE_DOT: Record<TileTone, string> = {
-  green: "bg-primary-400",
+  green: "bg-accent",
   pink: "bg-pink-400",
   sky: "bg-sky-400",
   amber: "bg-amber-400",

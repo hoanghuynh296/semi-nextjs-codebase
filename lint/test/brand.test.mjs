@@ -5,8 +5,8 @@ import { execFileSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { contrast, hexToOklch } from "../../brand/color.mjs";
-import { generateBrand, scale, validateBrand } from "../../brand/generate.mjs";
+import { contrast, deltaE, hexToOklch } from "../../brand/color.mjs";
+import { LADDER, SHADES, brandStep, generateBrand, scale, validateBrand } from "../../brand/generate.mjs";
 import { scan } from "../semi-lint.mjs";
 import { preparePreview } from "../../brand/cli.mjs";
 
@@ -33,20 +33,55 @@ test("validation: grey colours, bad names and styles outside the allowed list ar
   assert.throws(() => generateBrand(brand({ primary: "green" }), { tokens, styles }), /primary/);
 });
 
-test("scale: 500 is the brand colour, the other shades keep its hue and get lighter / darker in order", () => {
-  const sc = scale("#2563EB");
-  assert.equal(sc[500], "#2563eb");
-  const ls = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900].map((s) => hexToOklch(sc[s]).l);
-  for (let i = 1; i < ls.length; i++) assert.ok(ls[i] < ls[i - 1], `shade ${i} is darker`);
+test("scale: fixed lightness per shade, the brand colour itself on its nearest shade, hue kept", () => {
+  for (const hex of ["#2563EB", "#0B1F3A", "#FFD600", "#00AE42"]) {
+    const sc = scale(hex);
+    const step = brandStep(hex);
+    assert.equal(sc[step], hex.toLowerCase(), `${hex} sits on ${step}`);
+    const ls = SHADES.map((s) => hexToOklch(sc[s]).l);
+    // No squashed ends: every neighbour pair differs by a visible step, even for near-black and near-white brands.
+    for (let i = 1; i < ls.length; i++) assert.ok(ls[i - 1] - ls[i] > 0.025, `${hex} ${SHADES[i]} is clearly darker than ${SHADES[i - 1]}`);
+    for (const s of SHADES) if (s !== step) assert.ok(Math.abs(hexToOklch(sc[s]).l - LADDER[s]) < 0.01, `${hex} ${s} on the ladder`);
+  }
   const hue = hexToOklch("#2563EB").h;
-  for (const s of [200, 400, 600, 800]) assert.ok(Math.abs(hexToOklch(sc[s]).h - hue) < 6, `shade ${s} keeps the hue`);
+  for (const s of [200, 400, 600, 800]) assert.ok(Math.abs(hexToOklch(scale("#2563EB")[s]).h - hue) < 6, `shade ${s} keeps the hue`);
+});
+
+test("fill: the readable shade closest to the brand; lifted only when it would vanish into the page", () => {
+  const themes = (primary) => generateBrand(brand({ primary }), { tokens, styles }).tokens.themes;
+  // Orange stays orange in the light theme (dark text) instead of turning brown under white text.
+  const orange = themes("#FF6B00").light;
+  assert.equal(orange["color-on-accent"], "#0c0d0e");
+  assert.ok(deltaE(orange["color-accent"], "#FF6B00") < 0.1, `orange light fill ${orange["color-accent"]}`);
+  // Navy keeps its exact colour in the light theme, and is lifted in the dark theme where it would blend in.
+  const navy = themes("#1E3A8A");
+  assert.equal(navy.light["color-accent"], "#1e3a8a");
+  assert.notEqual(navy.dark["color-accent"], "#1e3a8a");
+  assert.ok(contrast(navy.dark["color-accent"], "#181918") >= 3, "navy dark fill stands out from the panel");
+  // Hover always differs from the fill and still reads.
+  for (const p of ["#0B1F3A", "#FFD600", "#00FFFF", "#E11D48"]) {
+    for (const t of Object.values(themes(p))) {
+      assert.notEqual(t["color-accent-hover"], t["color-accent"], `${p} hover`);
+      assert.ok(contrast(t["color-accent-hover"], t["color-on-accent"]) >= 4.5, `${p} hover text`);
+    }
+  }
+});
+
+test("report: focus ring and hover are checked; a fill that blends into the page is a soft finding with a warning", () => {
+  const r = generateBrand(brand({ primary: "#FFD600" }), { tokens, styles });
+  assert.ok(r.report.some((x) => x.check.startsWith("viền focus") && x.min === 3 && x.ok));
+  assert.ok(r.report.some((x) => x.check.startsWith("nút chính khi hover") && x.ok));
+  const soft = r.report.find((x) => x.check === "nút tách khỏi nền (sáng)");
+  assert.ok(soft.soft && !soft.ok, "yellow on white is reported");
+  assert.ok(r.warnings.some((w) => /tách khỏi nền/.test(w)));
+  assert.deepEqual(r.tokens.fidelity.light, { fill: 200, text: r.tokens.fidelity.light.text, deltaE: 0 });
 });
 
 test("every pair reaches AA for very different brand colours, in every style and theme", () => {
   for (const primary of ["#00AE42", "#FACC15", "#2563EB", "#E11D48", "#14B8A6", "#7C3AED", "#F97316", "#0EA5E9", "#84CC16", "#DB2777", "#8B5CF6", "#B45309"]) {
     for (const neutral of ["tinted", "preset"]) {
       const r = generateBrand(brand({ primary, secondary: "#F59E0B", neutral }), { tokens, styles });
-      assert.deepEqual(r.report.filter((x) => !x.ok).map((x) => `${primary} ${neutral} ${x.check} ${x.ratio.toFixed(2)}`), []);
+      assert.deepEqual(r.report.filter((x) => !x.ok && !x.soft).map((x) => `${primary} ${neutral} ${x.check} ${x.ratio.toFixed(2)}`), []);
       for (const theme of ["dark", "light"]) {
         const t = r.tokens.themes[theme];
         assert.ok(contrast(t["color-accent"], t["color-on-accent"]) >= 4.5, `${primary} ${theme} button`);
@@ -87,8 +122,10 @@ test("css: primary scale in @theme, fonts through the family hooks, secondary ut
   assert.match(plain, /--font-display-family: var\(--font-montserrat-alternates\), "Montserrat Alternates";/);
   assert.doesNotMatch(plain, /secondary/);
   const two = generateBrand(brand({ secondary: "#7C3AED" }), { tokens, styles }).css;
-  assert.match(two, /--color-secondary-500: #7c3aed;/);
+  assert.match(two, /--color-secondary: #7c3aed;/);
+  assert.match(two, /--color-secondary-600: #7c3aed;/);
   assert.match(two, /--color-secondary-fg: var\(--semi-secondary-fg\);/);
+  assert.match(two, /--color-on-secondary: var\(--semi-on-secondary\);/);
 });
 
 test("semi-brand build writes the kit, check catches a stale file, storybook encodes brand.json", () => {

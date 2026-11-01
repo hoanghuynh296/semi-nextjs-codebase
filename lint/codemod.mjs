@@ -57,6 +57,11 @@ export function mapUtility(utility, variants = [], mode = "light") {
   // Chromatic hue
   if (c.family === "primary") {
     if (family === "text" || family === "icon") return `${c.prefix}-accent-fg`;
+    const focus = variants.some((v) => v.startsWith("focus"));
+    if (c.prefix === "ring" || c.prefix === "outline") return `${c.prefix}-focus`;
+    if (family === "border" && focus) return `${c.prefix}-focus`;
+    if (family === "border") return c.alpha && Number(c.alpha) <= 60 ? `${c.prefix}-accent-line` : `${c.prefix}-accent-fg`;
+    if (c.prefix === "bg" && c.alpha) return Number(c.alpha) <= 15 ? "bg-accent-subtle" : "bg-accent-subtle-hover";
     return undefined; // bg-primary-500 etc. are brand fills, kept
   }
   const tone = TONE[c.family];

@@ -24,7 +24,7 @@ export function InputGroup({
     <div
       className={cn(
         "flex items-stretch w-full h-field bg-field border border-line hover:border-line-hover rounded-control transition-colors overflow-hidden",
-        "focus-within:border-primary-500/50 focus-within:bg-raised",
+        "focus-within:border-focus focus-within:bg-raised",
         "[&_input]:h-full [&_input]:min-w-0 [&_input]:flex-1 [&_input]:!border-0 [&_input]:!bg-transparent [&_input]:!rounded-none [&_input]:!ring-0",
         start ? "[&_input]:!pl-0" : "",
         end ? "[&_input]:!pr-0" : "",

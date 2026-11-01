@@ -10,7 +10,7 @@ export const CARD_HOVER = `${CARD} hover:border-line-hover active:scale-[0.99] t
 export const HERO = "relative overflow-hidden rounded-panel border-card bg-panel shadow-card p-4 sm:p-6";
 
 /** Add to CARD for an active / "on" / printing card: primary border, no glow. */
-export const CARD_ACTIVE = "!border-primary-500/30";
+export const CARD_ACTIVE = "!border-accent-line";
 
 /** Flat status dot (add a size, e.g. `w-2 h-2 rounded-full`). */
 export const STATUS_DOT = {
@@ -40,7 +40,7 @@ export const SECTION_LINK = "ml-auto inline-flex items-center gap-1 text-label f
 
 /** Empty state: dashed card, icon above one short line. Usually a <button> that adds the first item. */
 export const EMPTY =
-  "rounded-card border border-dashed border-line p-8 flex flex-col items-center gap-2.5 text-center text-label text-muted hover:text-contrast hover:border-line-hover transition outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50";
+  "rounded-card border border-dashed border-line p-8 flex flex-col items-center gap-2.5 text-center text-label text-muted hover:text-contrast hover:border-line-hover transition outline-none focus-visible:ring-2 focus-visible:ring-focus";
 
 /** Non-interactive empty state (EmptyState): same dashed card as EMPTY without the hover. */
 export const EMPTY_STATIC =
@@ -48,13 +48,13 @@ export const EMPTY_STATIC =
 
 /** Square icon-only action button in a card header (edit, delete, more). */
 export const ICON_BTN =
-  "w-7 h-7 rounded-control flex items-center justify-center text-muted hover:text-contrast bg-field hover:bg-raised border border-line transition outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 active:scale-95";
+  "w-7 h-7 rounded-control flex items-center justify-center text-muted hover:text-contrast bg-field hover:bg-raised border border-line transition outline-none focus-visible:ring-2 focus-visible:ring-focus active:scale-95";
 export const ICON_BTN_DANGER =
-  "w-7 h-7 rounded-control flex items-center justify-center text-muted hover:text-danger-fg bg-field hover:bg-danger-bg active:bg-danger-border border border-line transition outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 active:scale-95";
+  "w-7 h-7 rounded-control flex items-center justify-center text-muted hover:text-danger-fg bg-field hover:bg-danger-bg active:bg-danger-border border border-line transition outline-none focus-visible:ring-2 focus-visible:ring-focus active:scale-95";
 
 /** Close button in modal headers: visible background pill with clear contrast, easily tappable on dark backgrounds. */
 export const MODAL_CLOSE =
-  "w-9 h-9 sm:w-8 sm:h-8 rounded-full bg-field hover:bg-raised text-muted hover:text-contrast flex items-center justify-center transition outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 border border-line active:scale-95 shrink-0";
+  "w-9 h-9 sm:w-8 sm:h-8 rounded-full bg-field hover:bg-raised text-muted hover:text-contrast flex items-center justify-center transition outline-none focus-visible:ring-2 focus-visible:ring-focus border border-line active:scale-95 shrink-0";
 
 /** Status pill (device state, job result): coloured 15% fill + 300 text. */
 export const STATUS_PILL = "inline-flex items-center gap-1.5 h-6 px-2 rounded-full text-caption font-medium whitespace-nowrap";
@@ -147,11 +147,11 @@ export const FIELD_LABEL = "block text-label font-medium text-muted mb-1";
 
 /** Form text input: semantic field surface with crisp border-line. */
 export const FIELD_INPUT =
-  "w-full h-field bg-field border border-line hover:border-line-hover rounded-control px-3 text-ui text-contrast placeholder:text-muted focus:outline-none focus:border-primary-500/50 focus:bg-raised transition-colors disabled:opacity-40";
+  "w-full h-field bg-field border border-line hover:border-line-hover rounded-control px-3 text-ui text-contrast placeholder:text-muted focus:outline-none focus:border-focus focus:bg-raised transition-colors disabled:opacity-40";
 
 /** Form textarea: matches FIELD_INPUT contrast and focus border. */
 export const FIELD_TEXTAREA =
-  "w-full bg-field border border-line hover:border-line-hover rounded-control px-3 py-2 text-ui text-contrast placeholder:text-muted focus:outline-none focus:border-primary-500/50 focus:bg-raised transition-colors disabled:opacity-40";
+  "w-full bg-field border border-line hover:border-line-hover rounded-control px-3 py-2 text-ui text-contrast placeholder:text-muted focus:outline-none focus:border-focus focus:bg-raised transition-colors disabled:opacity-40";
 
 /** 2-panel floating Bento shell classes (used by AppShell). */
 export const SHELL_OUTER =

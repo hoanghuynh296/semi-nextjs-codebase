@@ -110,7 +110,7 @@ export function Slider(props: SliderProps) {
             aria-disabled={disabled || undefined}
             onKeyDown={(e) => !disabled && onKey(e, i)}
             style={{ left: `${pct(v)}%` }}
-            className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-panel border-2 border-accent shadow-float outline-none focus-visible:ring-4 focus-visible:ring-primary-500/30"
+            className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-panel border-2 border-accent shadow-float outline-none focus-visible:ring-4 focus-visible:ring-focus"
           />
         ))}
       </div>

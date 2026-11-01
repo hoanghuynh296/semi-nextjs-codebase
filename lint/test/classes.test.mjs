@@ -21,9 +21,17 @@ test("issues #1–#4: every prefix that takes a colour is covered", () => {
 });
 
 test("allowed colours stay allowed", () => {
-  for (const u of ["bg-panel", "text-muted", "border-line", "bg-white/10", "bg-black/40", "bg-purple-500/10", "border-amber-500/20", "bg-emerald-400", "bg-primary-500", "text-accent-fg", "text-tone-sky", "bg-danger-bg", "text-on-accent", "ring-primary-500/50"]) {
+  for (const u of ["bg-panel", "text-muted", "border-line", "bg-white/10", "bg-black/40", "bg-purple-500/10", "border-amber-500/20", "bg-emerald-400", "bg-primary-500", "text-accent-fg", "text-tone-sky", "bg-danger-bg", "text-on-accent", "ring-focus", "bg-accent-subtle", "border-accent-line"]) {
     assert.equal(colourRule(u), null, u);
   }
+});
+
+test("the brand scale as a state colour is flagged: focus rings, tints and borders use the themed accent tokens", () => {
+  for (const u of ["ring-primary-500/50", "ring-primary-500", "bg-primary-500/15", "border-primary-500/30", "border-b-primary-400", "outline-primary-500"]) {
+    assert.equal(colourRule(u), "accent-state-token", u);
+  }
+  assert.equal(colourRule("bg-primary-500"), null, "a solid brand fill stays allowed");
+  assert.equal(colourRule("text-primary-400"), "no-fixed-tone-text");
 });
 
 test("chromatic text shades are flagged in any variant", () => {

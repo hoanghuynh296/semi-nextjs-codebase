@@ -17,7 +17,8 @@ Run this skill **in the brand kit repo**, never in a product. Products use the k
 
 1. Check the folder: if it has `brand.json`, it is an existing kit → go to "Change a brand". If it has a product
    (`package.json` with `next` / `react`), stop: brands live in their own repo.
-2. **Ask** (`AskUserQuestion`, at most 4 per call), only these:
+2. **Ask** (`AskUserQuestion`, at most 4 per call), only these. If the user pasted a brand.json (the docs site's Brand
+   preview copies one with "Copy lệnh cho agent"), take every choice it sets and ask only what is missing:
    - Brand name and package name (`@<scope>/brand`).
    - Primary colour (hex, or read it from a logo the user sends). Never invent one: it is the brand's own decision.
    - Secondary colour: none (Recommended) or a hex; you may suggest an analogous / complementary one.
@@ -41,7 +42,8 @@ Run this skill **in the brand kit repo**, never in a product. Products use the k
    ```
    It renders the brand with real `@semi/ui` components (colours, type, controls, cards, tables, contrast table; theme
    and allowed styles switchable). Open it in the browser when you can, read the contrast table and the warnings, and
-   tell the user in a few lines. Keep the server running while they adjust: `set` rebuilds and the page updates.
+   tell the user in a few lines: always say when the button is not the exact brand colour in a theme (`fidelity`,
+   ΔE > 0.08, with the reason the warning gives) and any "lưu ý" row, since those are what a designer would notice. Keep the server running while they adjust: `set` rebuilds and the page updates.
 5. **Adjust** what the user asks ("darker primary", "use the preset neutrals"):
    ```bash
    node "<path-to-this-skill>/scripts/brand.mjs" set --cwd "<dir>" primary=#008f36 neutral=preset palette.soft=sage

@@ -230,7 +230,7 @@ export default function FoundationsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Tìm kiếm icon (tên, alias, intent: 'checkout', 'database', 'xoá', 'giao hàng')..."
-                className="w-full h-10 pl-10 pr-4 rounded-control bg-panel/[0.05] border border-line focus:border-primary-400 focus:outline-none text-ui text-contrast placeholder:text-muted font-medium"
+                className="w-full h-10 pl-10 pr-4 rounded-control bg-panel/[0.05] border border-line focus:border-focus focus:outline-none text-ui text-contrast placeholder:text-muted font-medium"
               />
               <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted pointer-events-none">
                 <Icon name="search" className="w-4 h-4" />
@@ -296,7 +296,7 @@ export default function FoundationsPage() {
                   }}
                   className={`group relative p-3 rounded-card border transition-all cursor-pointer flex flex-col items-center justify-center gap-2 text-center select-none ${
                     isSelected
-                      ? "bg-panel/[0.08] border-primary-500/50  ring-1 ring-primary-500/30"
+                      ? "bg-panel/[0.08] border-accent-line ring-1 ring-accent-line"
                       : "bg-panel hover:bg-panel/[0.05] border-line hover:border-line-hover"
                   }`}
                   title={`Click để copy <Icon name="${name}" />`}
@@ -347,7 +347,7 @@ export default function FoundationsPage() {
                 Icon Semantic Inspector
               </span>
               {selectedMeta?.domain && (
-                <span className="px-2 py-0.5 rounded-full text-caption font-medium bg-primary-500/15 text-accent-fg">
+                <span className="px-2 py-0.5 rounded-full text-caption font-medium bg-accent-subtle text-accent-fg">
                   {selectedMeta.domain}
                 </span>
               )}
@@ -409,7 +409,7 @@ export default function FoundationsPage() {
                   <span className="text-caption font-semibold text-muted block">Mã nguồn JSX:</span>
                   <div
                     onClick={() => handleCopy(selectedMeta.name)}
-                    className="p-2.5 rounded-control bg-canvas border border-line text-caption text-accent-fg hover:border-primary-400 transition-colors cursor-pointer group flex items-center justify-between"
+                    className="p-2.5 rounded-control bg-canvas border border-line text-caption text-accent-fg hover:border-accent-fg transition-colors cursor-pointer group flex items-center justify-between"
                   >
                     <span>&lt;Icon name=&quot;{selectedMeta.name}&quot; /&gt;</span>
                     <Icon name="copy" className="w-3.5 h-3.5 text-muted group-hover:text-accent-fg" />

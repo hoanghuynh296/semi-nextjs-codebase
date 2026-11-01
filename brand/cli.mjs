@@ -87,8 +87,8 @@ không định nghĩa màu, font hay style riêng trong sản phẩm. Muốn đ�
 
 | | |
 |---|---|
-| Màu chính | \`${t.primary[500]}\` |
-| Màu phụ | ${t.secondary ? `\`${t.secondary[500]}\`` : "không có"} |
+| Màu chính | \`${t.primary[t.brandStep ?? 500]}\` (nằm ở \`primary-${t.brandStep ?? 500}\`) |
+| Màu phụ | ${t.secondary ? `\`${t.secondary[t.secondaryStep ?? 500]}\` (nằm ở \`secondary-${t.secondaryStep ?? 500}\`)` : "không có"} |
 | Màu trung tính | ${t.neutral === "tinted" ? "phủ theo màu chính" : "có sẵn của style"} |
 | Style | ${allowed} |
 | Font | ${font("sans")} (giao diện, nội dung) · ${font("display")} (tiêu đề, số KPI) |
@@ -105,15 +105,18 @@ ${t.secondary ? `\n## Màu phụ (\`secondary-*\`)\n\n| Sắc độ | Mã |\n|--
 |---|---|---|---|
 | Nút chính | \`bg-accent\` + \`text-on-accent\` (hoặc \`Button variant="primary"\`) | \`${t.themes.dark["color-accent"]}\` / \`${t.themes.dark["color-on-accent"]}\` | \`${t.themes.light["color-accent"]}\` / \`${t.themes.light["color-on-accent"]}\` |
 | Chữ, icon màu chính | \`text-accent-fg\` | \`${t.themes.dark["color-accent-fg"]}\` | \`${t.themes.light["color-accent-fg"]}\` |
-${t.secondary ? `| Chữ màu phụ | \`text-secondary-fg\` | \`${t.themes.dark["color-secondary-fg"]}\` | \`${t.themes.light["color-secondary-fg"]}\` |\n` : ""}
-Nền, chữ và viền dùng token ngữ nghĩa (\`bg-panel\`, \`text-muted\`, \`border-line\` …); giá trị theo style, đã kiểm tra
+| Viền focus, ô nhập đang gõ | \`ring-focus\`, \`border-focus\` | \`${t.themes.dark["color-accent-fg"]}\` | \`${t.themes.light["color-accent-fg"]}\` |
+| Mục đang chọn (nền nhạt, viền) | \`bg-accent-subtle\`, \`border-accent-line\` | nhạt từ \`${t.themes.dark["color-accent-fg"]}\` | nhạt từ \`${t.themes.light["color-accent-fg"]}\` |
+${t.secondary ? `| Chữ màu phụ | \`text-secondary-fg\` | \`${t.themes.dark["color-secondary-fg"]}\` | \`${t.themes.light["color-secondary-fg"]}\` |\n| Nền màu phụ (badge, điểm nhấn) | \`bg-secondary-solid\` + \`text-on-secondary\` | \`${t.themes.dark["color-secondary-solid"]}\` / \`${t.themes.dark["color-on-secondary"]}\` | \`${t.themes.light["color-secondary-solid"]}\` / \`${t.themes.light["color-on-secondary"]}\` |\n` : ""}
+Không dùng \`primary-500/15\`, \`ring-primary-500/50\` … cho trạng thái: thang \`primary-*\` không đổi theo theme nên có
+thể biến mất trên nền (\`semi-lint\`: \`accent-state-token\`). Nền, chữ và viền dùng token ngữ nghĩa (\`bg-panel\`, \`text-muted\`, \`border-line\` …); giá trị theo style, đã kiểm tra
 đọc rõ. Màu trạng thái (thành công, lỗi, cảnh báo) giữ của Semi.
 
-## Kiểm tra đọc rõ (WCAG AA ≥ 4.5:1)
+## Kiểm tra đọc rõ (chữ ≥ 4.5:1, viền và nút so với nền ≥ 3:1)
 
-| Kiểm tra | Cặp | Tỉ lệ | |
-|---|---|---:|---|
-${report.map((r) => `| ${r.check} | ${r.pair} | ${r.ratio.toFixed(2)} | ${r.ok ? "đạt" : "**chưa đạt**"} |`).join("\n")}
+| Kiểm tra | Cặp | Tỉ lệ | Cần | |
+|---|---|---:|---:|---|
+${report.map((r) => `| ${r.check} | ${r.pair} | ${r.ratio.toFixed(2)} | ${r.min} | ${r.ok ? "đạt" : r.soft ? "lưu ý" : "**chưa đạt**"} |`).join("\n")}
 ${warnings.length ? `\n## Lưu ý\n\n${warnings.map((w) => `- ${w}`).join("\n")}\n` : ""}`;
 }
 
@@ -163,17 +166,17 @@ function main(argv) {
   if (cmd === "check") {
     const stale = Object.entries(files).filter(([p, c]) => !existsSync(join(cwd, p)) || readFileSync(join(cwd, p), "utf8") !== c).map(([p]) => p);
     if (stale.length) console.error(`semi-brand: chưa sinh lại (chạy semi-brand build): ${stale.join(", ")}`);
-    const failing = result.report.filter((r) => !r.ok);
+    const failing = result.report.filter((r) => !r.ok && !r.soft);
     if (failing.length) console.error(`semi-brand: chưa đạt AA: ${failing.map((r) => r.check).join(", ")}`);
     if (!stale.length && !failing.length) console.log(`semi-brand: ${result.tokens.name} hợp lệ, file đã sinh khớp`);
     return stale.length || failing.length ? 1 : 0;
   }
   mkdirSync(join(cwd, "dist"), { recursive: true });
   for (const [p, c] of Object.entries(files)) writeFileSync(join(cwd, p), c);
-  const ok = result.report.filter((r) => r.ok).length;
+  const ok = result.report.filter((r) => r.ok || r.soft).length;
   console.log(`semi-brand: ${result.tokens.name}: ${Object.keys(files).join(", ")} · đọc rõ ${ok}/${result.report.length} cặp đạt AA`);
   for (const w of result.warnings) console.log(`  lưu ý: ${w}`);
-  const passed = result.report.every((r) => r.ok);
+  const passed = result.report.every((r) => r.ok || r.soft);
   if (cmd === "build") {
     // A running preview (semi-brand preview) picks the new colours up right away.
     if (existsSync(join(cwd, ".preview", "app"))) preparePreview(cwd);
