@@ -155,3 +155,36 @@ export function groups() {
 
 /** Folder names in examples/ (sanity check for the tests). */
 export const exampleDirs = () => readdirSync(join(root, "examples"), { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => e.name);
+
+/**
+ * The brand kit of the app in `cwd` (semi-lint.json "brand" → node_modules/<brand>/dist/brand.json + BRAND.md), so an
+ * agent asks "how does this brand write an error" instead of guessing. topic: all | voice | color | logo | brief | tokens.
+ */
+export function brand(topic = "all", cwd = process.cwd()) {
+  let dir = cwd;
+  while (!existsSync(join(dir, "semi-lint.json")) && dirname(dir) !== dir) dir = dirname(dir);
+  const cfgPath = join(dir, "semi-lint.json");
+  const pkg = existsSync(cfgPath) ? JSON.parse(readFileSync(cfgPath, "utf8")).brand : null;
+  if (!pkg) return { error: "This app has no brand kit (no \"brand\" in semi-lint.json): it uses Semi's own colours and fonts. Brands are made with /semi-brand in their own repo." };
+  const kit = join(dir, "node_modules", ...pkg.split("/"));
+  if (!existsSync(join(kit, "dist", "brand.json"))) return { error: `Brand kit ${pkg} is not installed (node_modules/${pkg}/dist/brand.json missing). Run the package manager install.` };
+  const b = JSON.parse(readFileSync(join(kit, "dist", "brand.json"), "utf8"));
+  const g = b.guide ?? {};
+  const head = { name: b.name, package: b.package, styles: b.styles, fonts: b.fonts.map((f) => f.family) };
+  switch (topic) {
+    case "voice":
+      return { ...head, voice: g.voice ?? null };
+    case "color":
+      return { ...head, color: g.color ?? null, themes: b.themes, fidelity: b.fidelity };
+    case "logo":
+      return { ...head, logo: g.logo ? { ...g.logo, import: Object.fromEntries(["full", "fullDark", "mark"].filter((k) => g.logo[`${k}Dist`]).map((k) => [k, `${pkg}/${g.logo[`${k}Dist`]}`])) } : null };
+    case "brief":
+      return { ...head, brief: g.brief ?? null, imagery: g.imagery ?? null };
+    case "tokens":
+      return { ...head, primary: b.primary, secondary: b.secondary ?? null, themes: b.themes };
+    default: {
+      const md = join(kit, "BRAND.md");
+      return { ...head, markdown: existsSync(md) ? readFileSync(md, "utf8") : null };
+    }
+  }
+}

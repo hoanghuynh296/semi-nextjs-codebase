@@ -41,12 +41,19 @@ Mở thư mục đó bằng Claude Code (hoặc agent có plugin `semi-design`).
 
 | Agent hỏi | Ví dụ trả lời | Ghi chú |
 |---|---|---|
+| Sản phẩm gì, cho ai, 3 từ tính cách | Phần mềm quản lý máy in 3D · maker 18–35 tuổi, dùng cả ngày trên máy tính · chính xác, thân thiện, kỹ thuật | Brief: agent dựa vào đây để gợi ý style, font, giọng văn (kèm lý do) |
 | Tên thương hiệu, tên package | 3D Noobs · `@3dnoobs/brand` | Package là tên sản phẩm sẽ cài |
-| Màu chính | `#00AE42` | Mã hex, hoặc gửi logo để agent đọc màu |
-| Màu phụ | (bỏ qua) | Tuỳ chọn; agent gợi ý theo hoà sắc |
+| Logo | `assets/logo.svg` (+ bản nền tối, biểu tượng vuông nếu có) | SVG: agent đọc màu từ file (`brand.mjs colors`); kit copy logo vào `dist/logo/` |
+| Màu chính | `#00AE42` | Mã hex, hoặc lấy từ logo |
+| Màu phụ, vai trò | (bỏ qua) | Tuỳ chọn; vai trò: điểm nhấn, badge hoặc minh hoạ |
 | Màu trung tính | Phủ theo màu chính | Hoặc giữ màu trung tính có sẵn của từng style |
-| Style mặc định, style được phép | Flat · Flat + Soft | Mỗi sản phẩm chọn trong danh sách này |
-| Font | Geist + Montserrat Alternates | Chọn trong danh sách, hoặc tên một Google Font |
+| Style mặc định, style được phép | Flat · Flat + Soft | Chưa chắc: cho phép cả ba để so trong preview, rồi thu lại |
+| Font | Geist + Montserrat Alternates | Chọn trong danh sách, hoặc tên một Google Font có tiếng Việt |
+| Giọng văn | Thân thiện · gọi "bạn" · không emoji | Agent soạn nháp 2 nên / 2 không nên và câu mẫu cho nút, lỗi, trạng thái trống để bạn sửa |
+| Mức dùng màu chính | Tiết chế | Tiết chế (công cụ) · cân bằng · phóng khoáng (tiêu dùng, marketing) |
+
+Đã có `brand.json` (vd. copy từ trang Brand preview của docs bằng "Copy lệnh cho agent")? Dán vào `/semi-brand`: agent
+lấy mọi lựa chọn trong đó và chỉ hỏi phần còn thiếu.
 
 👉 *Bạn làm:* chọn. *Agent làm:* tạo repo kit (`package.json`, `brand.json`, workflow GitHub Pages), cài `@semi/ui`
 và Next.js (cho trang preview), sinh `dist/`.
@@ -54,8 +61,9 @@ và Next.js (cho trang preview), sinh `dist/`.
 **Bước 3. Xem trước ngay trong repo brand và chỉnh**
 
 Agent chạy trang preview **của chính repo brand** (`npm run preview`) và gửi link local:
-**http://localhost:4600**. Trang dựng bằng `@semi/ui` thật cùng `brand.css` của kit: màu, chữ, nút & form, thẻ, bảng,
-thông báo… trong màu 3D Noobs, đổi sáng / tối ở chân menu và giữa các style được phép, kèm bảng điểm đọc rõ. Trang
+**http://localhost:4600**. Trang dựng bằng `@semi/ui` thật cùng `brand.css` của kit: một màn hình sản phẩm mẫu ở theme
+sáng và tối cạnh nhau (chữ lấy từ giọng văn), logo trên hai nền kèm khoảng trống, giọng văn, cách dùng màu, màu, chữ,
+nút & form, thẻ, bảng, thông báo… trong màu 3D Noobs, đổi sáng / tối ở chân menu và giữa các style được phép, kèm bảng điểm đọc rõ. Trang
 gồm phần tổng quan thương hiệu và **toàn bộ component của Semi** (cùng các trang như docs của Semi: ví dụ, code, API).
 
 👉 *Bạn làm:* mở link, nhìn và nói điều muốn đổi ("màu chính đậm hơn", "dùng màu trung tính có sẵn"). *Agent làm:* sửa
@@ -67,8 +75,10 @@ Repo kit sau bước này:
 brand.json          lựa chọn của bạn (file duy nhất người sửa)
 dist/brand.css      sinh ra: màu, font, màu trung tính cho từng style (đã kiểm tra đọc rõ)
 dist/brand.json     sinh ra: toàn bộ giá trị + font để sản phẩm nạp
-BRAND.md            sinh ra: guideline thương hiệu, người đọc được
-AGENTS.brand.md     sinh ra: luật cho agent ở mọi sản phẩm của thương hiệu
+assets/             logo (bạn đưa vào)
+dist/logo/          sinh ra: logo để sản phẩm import (@3dnoobs/brand/dist/logo/full.svg)
+BRAND.md            sinh ra: guideline thương hiệu (brief, logo, cách dùng màu, giọng văn, hình ảnh, màu, đọc rõ)
+AGENTS.brand.md     sinh ra: luật cho agent ở mọi sản phẩm (màu, style, logo, giọng văn, câu mẫu)
 package.json        "@3dnoobs/brand", phụ thuộc "@semi/ui" (+ Next.js cho trang preview)
 .github/workflows/brand-pages.yml   build trang preview và đăng lên GitHub Pages mỗi lần push
 .preview/           trang preview sinh ra khi chạy (không commit)
@@ -175,6 +185,15 @@ Brand kit ghi nó chạy với `@semi/ui` nào (`"semi": "^0.6"` trong `brand.js
   "neutral": "tinted",
   "styles": { "default": "flat", "allowed": ["flat", "soft"] },
   "fonts": { "sans": "Geist", "display": "Montserrat Alternates" },
+  "brief": { "product": "Phần mềm quản lý máy in 3D", "audience": "Maker 18–35 tuổi, dùng cả ngày trên máy tính", "personality": ["chính xác", "thân thiện", "kỹ thuật"] },
+  "logo": { "full": "assets/logo.svg", "fullDark": "assets/logo-dark.svg", "mark": "assets/mark.svg" },
+  "voice": {
+    "tone": "friendly", "address": "bạn", "we": "3D Noobs", "emoji": false,
+    "do": ["Gọi đúng tên máy in và vật liệu"], "dont": ["Dùng thuật ngữ G-code trong thông báo cho người mới"],
+    "examples": { "button": ["In ngay", "Thêm máy in"], "error": "Máy in mất kết nối. Kiểm tra Wi‑Fi rồi thử lại.", "empty": "Chưa có máy in nào. Thêm máy in đầu tiên để bắt đầu." }
+  },
+  "color": { "accent": "restrained" },
+  "imagery": "Ảnh bản in thật trên nền tối, chụp gần; không ảnh stock.",
   "semi": "^0.6"
 }
 ```
@@ -188,6 +207,11 @@ Brand kit ghi nó chạy với `@semi/ui` nào (`"semi": "^0.6"` trong `brand.js
 | `styles.default`, `styles.allowed` | `flat` · `soft` · `sharp` | Ít nhất một; `default` phải nằm trong `allowed` |
 | `fonts.sans`, `fonts.display` | Tên Google Font | `next/font/google` phải có font đó |
 | `semi` | Dải phiên bản `@semi/ui` | `/semi-brand update` cập nhật |
+| `brief` | `product`, `audience`, `personality` (1–5 tính từ) | Tuỳ chọn; vào BRAND.md và luật cho agent ("chọn chữ, mật độ, hình ảnh cho họ") |
+| `logo` | `full` (bắt buộc khi có logo), `fullDark`, `mark`: đường dẫn trong repo kit (.svg nên dùng, .png, .webp); `clearspace` (× chiều cao, mặc định 0.5), `minWidth` (px, mặc định 80) | Build copy vào `dist/logo/full.svg` … để sản phẩm import; thiếu file là lỗi |
+| `voice` | `tone`: `friendly` · `neutral` · `formal`; `address` (gọi người dùng), `we` (tự xưng), `emoji`, `do`, `dont`, `examples` (`button`, `success`, `error`, `empty`, `confirm`) | Tuỳ chọn, mặc định trung tính, gọi "bạn". Luật viết chung của Semi (nút, lỗi, trạng thái trống) luôn kèm theo |
+| `color` | `accent`: `restrained` · `balanced` · `expressive`; `secondaryRole`: `highlight` · `badge` · `illustration` | Mặc định tiết chế, màu phụ là điểm nhấn |
+| `imagery` | Một đoạn mô tả ảnh / minh hoạ | Tuỳ chọn |
 
 ### Semi sinh màu thế nào
 

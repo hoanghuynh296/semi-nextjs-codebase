@@ -99,6 +99,24 @@ test("Semi's own green stays itself: dark text on 500 in the dark theme, white o
   assert.deepEqual([y["color-accent"], y["color-on-accent"]], ["#facc15", "#0c0d0e"]);
 });
 
+test("guideline: brief, logo, voice, colour use and imagery are validated; defaults fill what the brand leaves out", () => {
+  const bad = validateBrand(brand({ voice: { tone: "loud", emoji: "no" }, color: { accent: "neon" }, logo: { full: "logo.gif" } }), { styles });
+  assert.match(bad.errors.join("\n"), /voice.tone/);
+  assert.match(bad.errors.join("\n"), /voice.emoji/);
+  assert.match(bad.errors.join("\n"), /color.accent/);
+  assert.match(bad.errors.join("\n"), /logo.full/);
+  const plain = generateBrand(brand(), { tokens, styles });
+  assert.equal(plain.tokens.guide.voice.tone, "neutral");
+  assert.equal(plain.tokens.guide.voice.custom, false);
+  assert.equal(plain.tokens.guide.color.accent, "restrained");
+  assert.ok(plain.warnings.some((w) => /giọng văn/.test(w)), "a brand without a voice is told to add one");
+  const g = generateBrand(brand({ secondary: "#F59E0B", voice: { tone: "formal", address: "quý khách" }, color: { secondaryRole: "badge" } }), { tokens, styles }).tokens.guide;
+  assert.equal(g.voice.address, "quý khách");
+  assert.ok(g.voice.rules.some((r) => /viết tắt/.test(r)), "formal tone rules");
+  assert.ok(g.voice.rules.some((r) => /Nút: động từ/.test(r)), "shared microcopy rules");
+  assert.match(g.color.secondaryRule, /badge/);
+});
+
 test("neutrals: tinted takes the primary's hue, preset copies the chosen palette; only allowed styles are emitted", () => {
   const tinted = generateBrand(brand({ primary: "#2563EB", styles: { default: "soft", allowed: ["soft"] } }), { tokens, styles });
   assert.deepEqual(Object.keys(tinted.tokens.neutrals), ["soft"]);
@@ -139,6 +157,30 @@ test("semi-brand build writes the kit, check catches a stale file, storybook enc
   assert.throws(() => execFileSync("node", [CLI, "check"], { cwd: dir, stdio: "pipe" }));
   const url = execFileSync("node", [CLI, "storybook"], { cwd: dir, encoding: "utf8" }).trim();
   assert.equal(JSON.parse(Buffer.from(url.split("#brand=")[1], "base64url").toString()).primary, "#2563EB");
+  rmSync(dir, { recursive: true });
+});
+
+test("kit with a logo and a voice: logo files land in dist/logo, BRAND.md and AGENTS.brand.md carry the guideline", () => {
+  const dir = mkdtempSync(join(tmpdir(), "semi-brand-"));
+  mkdirSync(join(dir, "assets"));
+  writeFileSync(join(dir, "assets", "logo.svg"), '<svg xmlns="http://www.w3.org/2000/svg"/>');
+  const b = brand({ logo: { full: "assets/logo.svg", mark: "assets/missing.svg" }, voice: { tone: "friendly", examples: { error: "Chưa lưu được. Thử lại nhé." } } });
+  writeFileSync(join(dir, "brand.json"), JSON.stringify(b));
+  assert.throws(() => execFileSync("node", [CLI, "build"], { cwd: dir, stdio: "pipe" }), /missing\.svg/);
+  delete b.logo.mark;
+  writeFileSync(join(dir, "brand.json"), JSON.stringify(b));
+  execFileSync("node", [CLI, "build"], { cwd: dir });
+  assert.ok(readFileSync(join(dir, "dist", "logo", "full.svg"), "utf8").includes("<svg"));
+  const md = readFileSync(join(dir, "BRAND.md"), "utf8");
+  for (const h of ["## Logo", "## Cách dùng màu", "## Giọng văn"]) assert.ok(md.includes(h), h);
+  assert.match(md, /@test\/brand\/dist\/logo\/full\.svg/);
+  const agents = readFileSync(join(dir, "AGENTS.brand.md"), "utf8");
+  assert.match(agents, /\*\*Voice \(UI text\)\*\* — Thân thiện/);
+  assert.match(agents, /Chưa lưu được\. Thử lại nhé\./);
+  assert.match(agents, /One primary button per area/);
+  execFileSync("node", [CLI, "check"], { cwd: dir });
+  writeFileSync(join(dir, "assets", "logo.svg"), '<svg xmlns="http://www.w3.org/2000/svg"><rect/></svg>');
+  assert.throws(() => execFileSync("node", [CLI, "check"], { cwd: dir, stdio: "pipe" }), "a changed logo makes the kit stale");
   rmSync(dir, { recursive: true });
 });
 

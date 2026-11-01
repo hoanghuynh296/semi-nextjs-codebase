@@ -12,6 +12,11 @@
 //   node brand.mjs pages --cwd <dir>                turn on GitHub Pages (source: GitHub Actions) for the kit repo
 //   node brand.mjs update --cwd <dir>               newest @semi/ui, "semi" range, rebuild, suggest the version bump
 //   node brand.mjs bump --cwd <dir> patch|minor|major|<x.y.z>
+//   node brand.mjs colors <logo.svg>                brand colours used in an SVG logo (most used first, greys left out)
+//   create … --from <brand.json>                    take every choice from a brand.json (the docs Brand preview copies one)
+//   set keys for the guideline: tone=friendly|neutral|formal address=bạn we="3D Noobs" emoji=false
+//        accent=restrained|balanced|expressive secondaryRole=highlight|badge|illustration imagery="…"
+//        product="…" audience="…" personality=nhanh,vui,đáng tin logo=assets/logo.svg logoDark=… mark=…
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -100,6 +105,7 @@ function scaffold() {
   for (const [k, v] of Object.entries(SCRIPTS)) if (pkg.scripts[k] !== v) (pkg.scripts[k] = v), (changed = true);
   pkg.devDependencies ||= {};
   for (const [k, v] of Object.entries(PREVIEW_DEPS)) if (!pkg.devDependencies[k]) (pkg.devDependencies[k] = v), (changed = true);
+  if (pkg.exports && !pkg.exports["./dist/logo/*"]) (pkg.exports["./dist/logo/*"] = "./dist/logo/*"), (changed = true); // logo files (brand.json "logo")
   if (changed) writeJson(pkgPath, pkg);
   const ignore = join(cwd, ".gitignore");
   const lines = existsSync(ignore) ? readFileSync(ignore, "utf8").split("\n").filter(Boolean) : [];
@@ -143,6 +149,11 @@ function changeLevel(before, after) {
       Object.keys(before.neutrals).every((s) => JSON.stringify(before.neutrals[s]) === JSON.stringify(after.neutrals[s])) && JSON.stringify(before.fonts) === JSON.stringify(after.fonts);
     return onlyAdded ? "minor" : "major";
   }
+  // Guideline: a new logo is visible in every product (major); voice, colour use, brief and imagery change how agents
+  // write and compose, not what is on screen today (minor).
+  const g = (t, k) => JSON.stringify(t.guide?.[k] ?? null);
+  if (g(before, "logo") !== g(after, "logo")) return before.guide?.logo ? "major" : "minor";
+  if (["voice", "color", "brief", "imagery"].some((k) => g(before, k) !== g(after, k))) return "minor";
   return JSON.stringify(before.styles) !== JSON.stringify(after.styles) ? "minor" : "patch";
 }
 
@@ -171,10 +182,86 @@ function applyPair(brand, key, value) {
     brand.palettes ||= {};
     if (v) brand.palettes[key.slice(8)] = v;
     else delete brand.palettes[key.slice(8)];
-  } else throw new Error(`không biết khoá "${key}" (primary, secondary, name, neutral, allow, style, sans, display, palette.<style>)`);
+  } else if (["tone", "address", "we", "emoji"].includes(key)) {
+    brand.voice ||= {};
+    if (v === null) delete brand.voice[key];
+    else brand.voice[key] = key === "emoji" ? v === "true" : v;
+  } else if (key === "accent" || key === "secondaryRole") {
+    brand.color ||= {};
+    if (v === null) delete brand.color[key];
+    else brand.color[key] = v;
+  } else if (key === "product" || key === "audience" || key === "personality") {
+    brand.brief ||= {};
+    if (v === null) delete brand.brief[key];
+    else brand.brief[key] = key === "personality" ? v.split(",").map((x) => x.trim()).filter(Boolean) : v;
+  } else if (key === "logo" || key === "logoDark" || key === "mark") {
+    const k = { logo: "full", logoDark: "fullDark", mark: "mark" }[key];
+    if (v === null && k === "full") delete brand.logo;
+    else {
+      brand.logo ||= {};
+      if (v === null) delete brand.logo[k];
+      else brand.logo[k] = v;
+    }
+  } else if (key === "imagery") {
+    if (v === null) delete brand.imagery;
+    else brand.imagery = v;
+  } else
+    throw new Error(
+      `không biết khoá "${key}" (primary, secondary, name, neutral, allow, style, sans, display, palette.<style>, tone, address, we, emoji, accent, secondaryRole, product, audience, personality, logo, logoDark, mark, imagery)`,
+    );
+}
+
+/** Colours an SVG logo uses (fill, stroke, stop-color, style), most used first; near-greys (black text, white) left out. */
+function svgColors(svg) {
+  const count = new Map();
+  const hex = (r, g, b) => `#${[r, g, b].map((x) => Math.round(x).toString(16).padStart(2, "0")).join("")}`.toUpperCase();
+  for (const m of svg.matchAll(/(?:fill|stroke|stop-color|color)\s*[:=]\s*["']?\s*(#[0-9a-f]{3,8}\b|rgba?\([^)]*\))/gi)) {
+    let c = m[1];
+    if (c.startsWith("#")) {
+      let h = c.slice(1);
+      if (h.length === 3 || h.length === 4) h = [...h.slice(0, 3)].map((x) => x + x).join("");
+      c = `#${h.slice(0, 6).toUpperCase()}`;
+    } else {
+      const [r, g, b] = c.match(/[\d.]+/g).map(Number);
+      c = hex(r, g, b);
+    }
+    count.set(c, (count.get(c) ?? 0) + 1);
+  }
+  return [...count.entries()]
+    .map(([c, n]) => {
+      const [r, g, b] = [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16));
+      return { hex: c, uses: n, saturation: (Math.max(r, g, b) - Math.min(r, g, b)) / 255 };
+    })
+    .filter((x) => x.saturation >= 0.12)
+    .sort((a, b) => b.uses - a.uses || b.saturation - a.saturation);
+}
+
+if (cmd === "colors") {
+  const file = pairs[0] ? resolve(cwd, pairs[0]) : null;
+  if (!file || !existsSync(file)) {
+    console.error("cần file logo: node brand.mjs colors <logo.svg>");
+    process.exit(2);
+  }
+  if (!/\.svg$/i.test(file)) {
+    console.error("Chỉ đọc được màu từ SVG. Ảnh PNG / JPG: xem ảnh và đọc màu bằng mắt, rồi hỏi người dùng mã hex chính xác (hoặc xin file SVG).");
+    process.exit(3);
+  }
+  const list = svgColors(readFileSync(file, "utf8"));
+  if (!list.length) console.log("Logo không có màu nào ngoài đen / trắng / xám: hỏi người dùng màu chính.");
+  else for (const c of list) console.log(`${c.hex}  dùng ${c.uses} lần`);
+  process.exit(0);
 }
 
 if (cmd === "create") {
+  if (opts.from) {
+    // A brand.json from the docs Brand preview or another kit: its choices become the flags below.
+    const src = readJson(resolve(cwd, opts.from));
+    for (const k of ["name", "package", "primary", "secondary", "neutral"]) if (src[k] && !opts[k]) opts[k] = src[k];
+    if (src.styles && !opts.style) (opts.style = src.styles.default), (opts.allow = src.styles.allowed.join(","));
+    if (src.fonts) (opts.sans ||= src.fonts.sans), (opts.display ||= src.fonts.display);
+    if (src.palettes && !opts.palette) opts.palette = Object.entries(src.palettes).map(([k, v]) => `${k}=${v}`).join(",");
+    opts.guide = JSON.stringify(Object.fromEntries(["brief", "logo", "voice", "color", "imagery"].filter((k) => src[k] !== undefined).map((k) => [k, src[k]])));
+  }
   if (existsSync(brandPath)) {
     console.error(`${brandPath} đã có: đây là brand kit có sẵn. Sửa bằng: node brand.mjs set …`);
     process.exit(10);
@@ -196,6 +283,7 @@ if (cmd === "create") {
     ...(opts.palette ? { palettes: Object.fromEntries(opts.palette.split(",").map((p) => p.split("="))) } : {}),
     styles: { default: style, allowed: (opts.allow || style).split(",").map((s) => s.trim()) },
     fonts: { sans: opts.sans || "Geist", display: opts.display || "Montserrat Alternates" },
+    ...(opts.guide ? JSON.parse(opts.guide) : {}),
     semi: `^${target.version}`,
   };
   writeJson(brandPath, brand);
@@ -208,6 +296,7 @@ if (cmd === "create") {
     files: ["dist", "brand.json", "BRAND.md", "AGENTS.brand.md"],
     exports: {
       "./dist/brand.css": "./dist/brand.css",
+      "./dist/logo/*": "./dist/logo/*",
       "./brand.json": "./dist/brand.json",
       "./BRAND.md": "./BRAND.md",
       "./AGENTS.brand.md": "./AGENTS.brand.md",

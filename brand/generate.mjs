@@ -95,7 +95,125 @@ export function validateBrand(brand, { styles }) {
       warnings.push(`fonts.${role}: "${family}" không nằm trong danh sách đã kiểm tra; nếu font không có bản variable, thêm "weight": ["400", "600"]`);
   }
   if (brand.semi && !/^[\^~]?\d+\.\d+(\.\d+)?$/.test(brand.semi)) fail(errors, `semi: "${brand.semi}" phải là dải phiên bản như ^0.6.0`);
+  validateGuide(brand, errors, warnings);
   return { errors, warnings };
+}
+
+// ── Guideline: what a brand designer writes besides colours and fonts (all optional; defaults below) ──────────────
+/** Tones a brand can speak in, with the rules an agent follows when it writes UI text. */
+export const TONES = {
+  friendly: {
+    label: "Thân thiện",
+    rules: ["Nói chuyện trực tiếp với người dùng, câu ngắn, ấm áp", "Được dùng câu cảm ơn ngắn sau một việc lớn (đặt hàng, tạo xong)", "Không đùa trong thông báo lỗi"],
+  },
+  neutral: {
+    label: "Trung tính",
+    rules: ["Ngắn, rõ, đúng sự việc", "Không cảm thán, không đùa", "Thuật ngữ nhất quán: một khái niệm, một từ"],
+  },
+  formal: {
+    label: "Trang trọng",
+    rules: ["Lịch sự, câu đầy đủ chủ ngữ", "Không viết tắt, không tiếng lóng, không emoji", "Xưng hô nhất quán trên mọi màn hình"],
+  },
+};
+/** Rules every Semi brand shares (DESIGN_SYSTEM.md: sentence case, minimal text, no loading text). */
+export const MICROCOPY = [
+  "Nút: động từ + đối tượng, tối đa 3 từ, viết hoa chữ đầu (Lưu, Tạo đơn hàng), không \"OK\" / \"Xác nhận\" chung chung",
+  "Lỗi: chuyện gì xảy ra + cách sửa, không đổ lỗi cho người dùng, không mã lỗi trần",
+  "Trạng thái trống: vì sao trống + một hành động để bắt đầu",
+  "Không viết \"Đang tải…\": dùng skeleton hoặc thanh tiến trình",
+  "Không phụ đề dưới tiêu đề trang; nhãn ngắn, icon đi trước chữ",
+];
+const ACCENT_USE = {
+  restrained: { label: "Tiết chế", rule: "Màu chính chỉ cho hành động chính (một nút chính mỗi vùng), mục đang chọn, link và focus. Nền màu chính diện rộng: không." },
+  balanced: { label: "Cân bằng", rule: "Như tiết chế, thêm nền nhạt bg-accent-subtle cho khối nổi bật (banner, thẻ khuyến nghị), tối đa một khối mỗi màn hình." },
+  expressive: { label: "Phóng khoáng", rule: "Được dùng nền bg-accent cho hero / banner và icon lớn màu chính; vẫn chỉ một nút chính mỗi vùng." },
+};
+const SECONDARY_ROLE = {
+  highlight: "điểm nhấn: badge \"Mới\", ngôi sao, số nổi bật (bg-secondary-solid + text-on-secondary, text-secondary-fg)",
+  badge: "nhãn và badge phân loại (bg-secondary-solid + text-on-secondary)",
+  illustration: "minh hoạ và biểu đồ trang trí (secondary-*), không cho chữ hay nút",
+};
+const str = (v) => typeof v === "string" && v.trim().length > 0;
+const strList = (v) => Array.isArray(v) && v.every(str);
+
+function validateGuide(brand, errors, warnings) {
+  const b = brand.brief;
+  if (b !== undefined) {
+    if (typeof b !== "object" || b === null) fail(errors, "brief: phải là object { audience, product, personality }");
+    else {
+      for (const k of ["audience", "product"]) if (b[k] !== undefined && !str(b[k])) fail(errors, `brief.${k}: phải là chữ`);
+      if (b.personality !== undefined && (!strList(b.personality) || b.personality.length > 5)) fail(errors, "brief.personality: 1–5 tính từ, vd. [\"thân thiện\", \"chính xác\"]");
+    }
+  }
+  const l = brand.logo;
+  if (l !== undefined) {
+    if (typeof l !== "object" || l === null) fail(errors, "logo: phải là object { full, fullDark?, mark?, clearspace?, minWidth? }");
+    else {
+      if (!str(l.full)) fail(errors, "logo.full: đường dẫn file logo trong repo brand, vd. assets/logo.svg");
+      for (const k of ["full", "fullDark", "mark"]) if (l[k] !== undefined && !/\.(svg|png|webp)$/i.test(String(l[k]))) fail(errors, `logo.${k}: cần file .svg, .png hoặc .webp`);
+      if (l.clearspace !== undefined && !(typeof l.clearspace === "number" && l.clearspace >= 0 && l.clearspace <= 2)) fail(errors, "logo.clearspace: số từ 0 đến 2 (bội của chiều cao logo)");
+      if (l.minWidth !== undefined && !(Number.isInteger(l.minWidth) && l.minWidth >= 16)) fail(errors, "logo.minWidth: số px nguyên ≥ 16");
+      if (str(l.full) && !/\.svg$/i.test(l.full)) warnings.push("logo.full: nên dùng SVG để logo nét ở mọi cỡ");
+    }
+  }
+  const v = brand.voice;
+  if (v !== undefined) {
+    if (typeof v !== "object" || v === null) fail(errors, "voice: phải là object { tone, address, we, emoji, do, dont, examples }");
+    else {
+      if (v.tone !== undefined && !TONES[v.tone]) fail(errors, `voice.tone: "${v.tone}" phải là ${Object.keys(TONES).join(", ")}`);
+      for (const k of ["address", "we"]) if (v[k] !== undefined && !str(v[k])) fail(errors, `voice.${k}: phải là chữ (vd. "bạn", "chúng tôi")`);
+      if (v.emoji !== undefined && typeof v.emoji !== "boolean") fail(errors, "voice.emoji: true hoặc false");
+      for (const k of ["do", "dont"]) if (v[k] !== undefined && !strList(v[k])) fail(errors, `voice.${k}: danh sách câu`);
+      if (v.examples !== undefined) {
+        if (typeof v.examples !== "object" || v.examples === null) fail(errors, "voice.examples: object { button, success, error, empty }");
+        else for (const [k, x] of Object.entries(v.examples)) if (!str(x) && !strList(x)) fail(errors, `voice.examples.${k}: chữ hoặc danh sách chữ`);
+      }
+    }
+  }
+  const c = brand.color;
+  if (c !== undefined) {
+    if (typeof c !== "object" || c === null) fail(errors, "color: phải là object { accent, secondaryRole }");
+    else {
+      if (c.accent !== undefined && !ACCENT_USE[c.accent]) fail(errors, `color.accent: "${c.accent}" phải là ${Object.keys(ACCENT_USE).join(", ")}`);
+      if (c.secondaryRole !== undefined && !SECONDARY_ROLE[c.secondaryRole]) fail(errors, `color.secondaryRole: "${c.secondaryRole}" phải là ${Object.keys(SECONDARY_ROLE).join(", ")}`);
+      if (c.secondaryRole && !brand.secondary) warnings.push("color.secondaryRole chỉ dùng khi có màu phụ");
+    }
+  }
+  if (brand.imagery !== undefined && !str(brand.imagery)) fail(errors, "imagery: một đoạn mô tả ảnh / minh hoạ");
+  if (!brand.voice) warnings.push("Chưa có giọng văn (voice): agent sẽ viết chữ theo mặc định trung tính. Thêm voice để sản phẩm nói đúng giọng thương hiệu");
+}
+
+/** The guideline with defaults filled in: what BRAND.md, AGENTS.brand.md, the preview and agents read. */
+export function resolveGuide(brand) {
+  const v = brand.voice ?? {};
+  const tone = v.tone ?? "neutral";
+  const c = brand.color ?? {};
+  const accent = c.accent ?? "restrained";
+  const secondaryRole = brand.secondary ? (c.secondaryRole ?? "highlight") : null;
+  return {
+    brief: brand.brief ?? null,
+    logo: brand.logo ? { clearspace: 0.5, minWidth: 80, ...brand.logo } : null,
+    voice: {
+      tone,
+      toneLabel: TONES[tone].label,
+      address: v.address ?? "bạn",
+      we: v.we ?? brand.name,
+      emoji: v.emoji ?? false,
+      rules: [...TONES[tone].rules, ...MICROCOPY],
+      do: v.do ?? [],
+      dont: v.dont ?? [],
+      examples: v.examples ?? {},
+      custom: Boolean(brand.voice),
+    },
+    color: {
+      accent,
+      accentLabel: ACCENT_USE[accent].label,
+      accentRule: ACCENT_USE[accent].rule,
+      secondaryRole,
+      secondaryRule: secondaryRole ? SECONDARY_ROLE[secondaryRole] : null,
+    },
+    imagery: brand.imagery ?? null,
+  };
 }
 
 /** The shade a brand colour sits on: the one whose ladder lightness is closest to it. */
@@ -312,6 +430,7 @@ export function generateBrand(brand, { tokens, styles, version = "" }) {
     themes,
     fidelity,
     neutrals,
+    guide: resolveGuide(brand),
     fonts,
   };
   return { tokens: out, css: brandCss(out, version), fonts, report, warnings };

@@ -9,6 +9,7 @@ const basePath = process.env.SEMI_BRAND_BASE_PATH || "";
 const nextConfig = {
   output: "export",
   basePath,
+  env: { NEXT_PUBLIC_BASE_PATH: basePath },
   images: { unoptimized: true },
   // /components/button/ → components/button/index.html (GitHub Pages serves nested routes as is).
   trailingSlash: true,
