@@ -199,8 +199,11 @@ for (const d of docs) {
 test("stored theme is applied before the first paint and survives reload", async ({ page }) => {
   await open(page, "/components/", "light");
   expect(await page.evaluate(() => (window as unknown as { __firstPaintTheme?: string }).__firstPaintTheme)).toBe("light");
-  await page.getByRole("radio", { name: "Tối" }).first().click();
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  // the static HTML is clickable before React hydrates (slow on CI with every preview on the page): retry the click
+  await expect(async () => {
+    await page.getByRole("radio", { name: "Tối" }).first().click();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark", { timeout: 1000 });
+  }).toPass();
   expect(await page.evaluate(() => localStorage.getItem("semi-theme"))).toBe("dark");
 });
 
