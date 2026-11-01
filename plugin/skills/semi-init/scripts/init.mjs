@@ -29,7 +29,6 @@ function parseArgs(argv) {
     nextVersion: "latest",
     tailwindVersion: "latest",
     style: null,
-    palette: null,
     brand: null,
   };
   for (let i = 0; i < argv.length; i++) {
@@ -40,7 +39,6 @@ function parseArgs(argv) {
     else if (a === "--next-version" && argv[i + 1]) opts.nextVersion = argv[++i];
     else if (a === "--tailwind-version" && argv[i + 1]) opts.tailwindVersion = argv[++i];
     else if (a === "--style" && argv[i + 1]) opts.style = argv[++i];
-    else if (a === "--palette" && argv[i + 1]) opts.palette = argv[++i];
     else if (a === "--brand" && argv[i + 1]) opts.brand = argv[++i];
   }
   return opts;
@@ -299,7 +297,7 @@ if (brandPkg) {
 const chosenStyle = (semiStyles(webDir) || styles).styles.find((s) => s.id === opts.style) ?? styles.styles[0];
 // Fonts: the brand's when there is one, else the style's.
 writeNewProjectStarter(webDir, opts.appName, brandKit ? { ...chosenStyle, name: brandKit.name, fonts: brandKit.fonts } : chosenStyle);
-const styled = wireStyle(webDir, opts.style, opts.palette);
+const styled = wireStyle(webDir, opts.style);
 console.log(styled.message);
 if (!styled.ok) process.exit(2);
 

@@ -11,12 +11,11 @@ has the same components, layout, accent and status colours, and both themes (lig
 `node_modules/@semi/ui/tokens/styles.json` and described in
 `node_modules/@semi/ui/docs/STYLES.md`.
 
-An app picks one style and one of its three palettes (colour variants of the neutrals), once: `"style"` / `"palette"`
-in `semi-lint.json` and `data-style` / `data-palette` on `<html>` in the root layout. It is not
-a per-user setting like the theme.
+An app picks one style, once: `"style"` in `semi-lint.json` and `data-style` on `<html>` in the root layout. It is not
+a per-user setting like the theme. Each style has its own neutral colours.
 
-With a brand kit (`"brand"` in `semi-lint.json`) only the brand's allowed styles can be picked and there are no
-palettes (the brand sets the neutrals); a style it does not allow is added in the brand repo with `/semi-brand`.
+With a brand kit (`"brand"` in `semi-lint.json`) only the brand's allowed styles can be picked (the brand sets the
+neutrals); a style it does not allow is added in the brand repo with `/semi-brand`.
 
 Where the style is chosen first: `/semi-init` (new app) and `/semi-fix` foundation (existing app). This command is for
 changing it later.
@@ -27,15 +26,12 @@ changing it later.
    ```bash
    node "<path-to-this-skill>/scripts/style.mjs" --cwd "<workspace-or-app-dir>"
    ```
-2. **Ask** (`AskUserQuestion`) which style, one option per style with its description; mark the current one. Then
-   which palette of that style (three, the first is the default). Skip what the user already named; "only another
-   colour" means a palette of the current style.
+2. **Ask** (`AskUserQuestion`) which style, one option per style with its description; mark the current one. Skip
+   it when the user already named one.
 3. **Screenshots before:** 3–5 key pages in both themes (dev server + browser, when available).
 4. **Switch:**
    ```bash
-   node "<path-to-this-skill>/scripts/style.mjs" --cwd "<workspace-or-app-dir>" --to "<id>" [--palette "<id>"] [--only "<app-dir>"]
-   # or only the colours of the current style:
-   node "<path-to-this-skill>/scripts/style.mjs" --cwd "<workspace-or-app-dir>" --palette "<id>"
+   node "<path-to-this-skill>/scripts/style.mjs" --cwd "<workspace-or-app-dir>" --to "<id>" [--only "<app-dir>"]
    ```
    If the installed `@semi/ui` has no styles yet, run `/semi-update` first. When the layout does not load the new
    style's fonts, the script prints the `next/font` lines: add them to the root layout's imports and `<html className>`

@@ -119,19 +119,14 @@ test("style: the audit asks for one, foundation --style applies it, /semi-style 
   assert.match(readFileSync(join(web, "app/layout.tsx"), "utf8"), /<html data-style="flat" lang="vi"/);
   assert.match(execFileSync("node", [STYLE, "--cwd", root], { encoding: "utf8" }), /style flat\n {2}● flat/);
   assert.throws(() => execFileSync("node", [STYLE, "--cwd", root, "--to", "glass"], { stdio: "pipe" }));
-  // Palettes: --palette alone recolours the current style; the default palette is written as no palette.
-  execFileSync("node", [STYLE, "--cwd", root, "--palette", "slate"], { stdio: "pipe" });
-  assert.match(readFileSync(join(web, "app/layout.tsx"), "utf8"), /<html data-style="flat" data-palette="slate" lang="vi"/);
-  assert.equal(JSON.parse(readFileSync(join(web, "semi-lint.json"), "utf8")).palette, "slate");
-  assert.equal(styleIssue(), undefined);
+  // Palettes were removed in v0.14.0: a leftover palette is an audit issue, and switching the style cleans it up.
   writeFileSync(join(web, "semi-lint.json"), JSON.stringify({ ...JSON.parse(readFileSync(join(web, "semi-lint.json"), "utf8")), palette: "olive" }));
-  assert.match(styleIssue().what, /data-palette="olive"/);
-  execFileSync("node", [STYLE, "--cwd", root, "--to", "sharp", "--palette", "paper"], { stdio: "pipe" });
-  assert.match(readFileSync(join(web, "app/layout.tsx"), "utf8"), /<html data-style="sharp" data-palette="paper" lang="vi"/);
-  execFileSync("node", [STYLE, "--cwd", root, "--to", "sharp", "--palette", "ink"], { stdio: "pipe" });
+  writeFileSync(join(web, "app/layout.tsx"), readFileSync(join(web, "app/layout.tsx"), "utf8").replace('<html data-style="flat"', '<html data-style="flat" data-palette="olive"'));
+  assert.match(styleIssue().what, /palette "olive" đã bỏ/);
+  execFileSync("node", [STYLE, "--cwd", root, "--to", "sharp"], { stdio: "pipe" });
   assert.match(readFileSync(join(web, "app/layout.tsx"), "utf8"), /<html data-style="sharp" lang="vi"/);
   assert.equal(JSON.parse(readFileSync(join(web, "semi-lint.json"), "utf8")).palette, undefined);
-  assert.throws(() => execFileSync("node", [STYLE, "--cwd", root, "--palette", "slate"], { stdio: "pipe" })); // not a Sharp palette
+  assert.equal(styleIssue(), undefined);
   rmSync(root, { recursive: true });
 });
 
@@ -162,8 +157,7 @@ test("brand kit in a product: the audit asks to wire it, foundation wires it, on
   assert.equal(issue("brand"), undefined);
   assert.equal(issue("style"), undefined);
   assert.match(issue("style-fonts").what, /Inter của brand 3D Noobs/);
-  // Palettes are the brand's job; Soft is allowed, Sharp is not.
-  assert.throws(() => execFileSync("node", [STYLE, "--cwd", root, "--palette", "slate"], { stdio: "pipe" }));
+  // The brand sets the neutrals; Soft is allowed, Sharp is not.
   assert.throws(() => execFileSync("node", [STYLE, "--cwd", root, "--to", "sharp"], { stdio: "pipe" }));
   execFileSync("node", [STYLE, "--cwd", root, "--to", "soft"], { stdio: "pipe" });
   assert.match(readFileSync(join(web, "app/layout.tsx"), "utf8"), /<html data-style="soft"/);

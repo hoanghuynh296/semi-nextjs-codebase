@@ -4,6 +4,14 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-11-01
+
+### Removed (breaking)
+- **Palettes are gone.** Each style used to have three colour variants of its neutrals (`data-palette`, `"palette"` in `semi-lint.json`, `palettes` in `tokens/styles.json`, `--palette` in `/semi-init`, `/semi-fix`, `/semi-style`, `palette.<style>` in `/semi-brand`). No app or brand kit used them, and the design system pages no longer offered them. Now each style has its own neutrals (`semantic` in `tokens/styles/<id>.json`): Flat the shared neutrals, Soft the former default Sand, Sharp the former default Ink. Looks by default do not change.
+- **Migration** `0.14.0-remove-palette` (run by `/semi-update`): removes `"palette"` from `semi-lint.json` and `data-palette` from `<html>`. `/semi-audit` reports a leftover palette until `/semi-fix` cleans it up.
+- **Apps on a non-default palette change look.** The migration cannot keep their colours. Before updating one, ask the user whether to keep the look: the palette's values are in git history (`git show v0.13.3:tokens/styles/soft.json`, `…/sharp.json`, `…/flat.json`). Brand kits: remove `"palettes"` from `brand.json` (a warning until then); `"neutral": "preset"` keeps the style's own neutrals.
+- The docs site has no palette picker (since 0.13.3) and its style tests cover the three styles.
+
 ## [0.13.3] - 2026-11-01
 
 ### Changed

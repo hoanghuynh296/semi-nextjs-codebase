@@ -21,8 +21,8 @@ Run this skill **in the brand kit repo**, never in a product. Products use the k
    - Brand name and package name (`@<scope>/brand`).
    - Primary colour (hex, or read it from a logo the user sends). Never invent one: it is the brand's own decision.
    - Secondary colour: none (Recommended) or a hex; you may suggest an analogous / complementary one.
-   - Neutrals: "tinted" (Recommended: the styles' greys lean towards the primary) or "preset" (the style palettes as
-     they are; then ask which palette per allowed style).
+   - Neutrals: "tinted" (Recommended: the styles' greys lean towards the primary) or "preset" (each style's own
+     neutrals as they are).
    - Default style and allowed styles (Flat / Soft / Sharp, `docs/STYLES.md`): dashboards / tools → Flat; consumer
      apps → Soft; editorial / landing → Sharp.
    - Fonts: sans and display, from Geist, Inter, Plus Jakarta Sans, Space Grotesk, Manrope, DM Sans, Nunito, Lexend,
@@ -44,10 +44,9 @@ Run this skill **in the brand kit repo**, never in a product. Products use the k
    tell the user in a few lines. Keep the server running while they adjust: `set` rebuilds and the page updates.
 5. **Adjust** what the user asks ("darker primary", "use the preset neutrals"):
    ```bash
-   node "<path-to-this-skill>/scripts/brand.mjs" set --cwd "<dir>" primary=#008f36 neutral=preset palette.soft=sage
+   node "<path-to-this-skill>/scripts/brand.mjs" set --cwd "<dir>" primary=#008f36 neutral=preset
    ```
-   Keys: `primary`, `secondary` (`none` to remove), `name`, `neutral`, `allow`, `style`, `sans`, `display`,
-   `palette.<style>`. It rebuilds and says the change level.
+   Keys: `primary`, `secondary` (`none` to remove), `name`, `neutral`, `allow`, `style`, `sans`, `display`. It rebuilds and says the change level.
 6. **Release** when the user approves: `npm run check`, `node brand.mjs bump --cwd "<dir>" 1.0.0`, commit, push to the
    brand's GitHub repo (ask the user to create it if needed), tag `v1.0.0`, push the tag. Then turn on GitHub Pages
    once (ask first: it publishes the preview):

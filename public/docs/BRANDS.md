@@ -184,10 +184,10 @@ Brand kit ghi nó chạy với `@semi/ui` nào (`"semi": "^0.6"` trong `brand.js
 | `name`, `package` | Tên hiển thị, tên npm (`@scope/brand`) | Bắt buộc |
 | `primary` | Hex | Bắt buộc. Không quá xám (độ đậm tối thiểu), bộ sinh tự chọn sắc độ đọc rõ |
 | `secondary` | Hex hoặc `null` | Tuỳ chọn; sinh `secondary-50 … 900` (`bg-secondary-500`, `text-secondary-fg`) |
-| `neutral` | `"tinted"` / `"preset"` | `tinted`: màu trung tính của mỗi style phủ nhẹ tông màu chính. `preset`: giữ màu trung tính có sẵn của style; chọn palette từng style bằng `"palettes": { "soft": "sage" }` |
+| `neutral` | `"tinted"` / `"preset"` | `tinted`: màu trung tính của mỗi style phủ nhẹ tông màu chính (bề mặt gần như trung tính, chữ và viền có tông rõ hơn). `preset`: giữ màu trung tính có sẵn của style |
 | `styles.default`, `styles.allowed` | `flat` · `soft` · `sharp` | Ít nhất một; `default` phải nằm trong `allowed` |
 | `fonts.sans`, `fonts.display` | Tên Google Font | `next/font/google` phải có font đó |
 | `semi` | Dải phiên bản `@semi/ui` | `/semi-brand update` cập nhật |
 
 Chi tiết kỹ thuật: bộ sinh màu nằm ở `@semi/ui/brand` (`generateBrand`), lệnh trong kit là `semi-brand build | check`
-(bin của `@semi/ui`). Style và palette có sẵn: [STYLES.md](STYLES.md).
+(bin của `@semi/ui`). Style có sẵn: [STYLES.md](STYLES.md).

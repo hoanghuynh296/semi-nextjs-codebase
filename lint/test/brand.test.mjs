@@ -64,7 +64,7 @@ test("Semi's own green stays itself: dark text on 500 in the dark theme, white o
   assert.deepEqual([y["color-accent"], y["color-on-accent"]], ["#facc15", "#0c0d0e"]);
 });
 
-test("neutrals: tinted takes the primary's hue, preset copies the chosen palette; only allowed styles are emitted", () => {
+test("neutrals: tinted takes the primary's hue, preset copies the style's own neutrals; only allowed styles are emitted", () => {
   const tinted = generateBrand(brand({ primary: "#2563EB", styles: { default: "soft", allowed: ["soft"] } }), { tokens, styles });
   assert.deepEqual(Object.keys(tinted.tokens.neutrals), ["soft"]);
   const panel = hexToOklch(tinted.tokens.neutrals.soft.dark["color-panel"]);
@@ -73,9 +73,10 @@ test("neutrals: tinted takes the primary's hue, preset copies the chosen palette
   for (const k of ["color-canvas", "color-app", "color-panel", "color-field"]) for (const theme of ["dark", "light"]) {
     assert.ok(hexToOklch(tinted.tokens.neutrals.soft[theme][k]).c < 0.006, `${theme} ${k} chroma`);
   }
-  const preset = generateBrand(brand({ neutral: "preset", palettes: { soft: "sage" } }), { tokens, styles });
-  const sage = styles.styles.find((s) => s.id === "soft").palettes.find((p) => p.id === "sage").semantic;
-  assert.equal(preset.tokens.neutrals.soft.light["color-canvas"], sage["color-canvas"].light);
+  const preset = generateBrand(brand({ neutral: "preset" }), { tokens, styles });
+  const own = styles.styles.find((s) => s.id === "soft").semantic;
+  assert.equal(preset.tokens.neutrals.soft.light["color-canvas"], own["color-canvas"].light);
+  assert.ok(!/palette/.test(JSON.stringify(preset.tokens)), "no palette in the output");
   assert.match(preset.css, /\[data-style="sharp"\]\[data-theme="dark"\]/);
   assert.doesNotMatch(tinted.css, /data-style="flat"/);
 });

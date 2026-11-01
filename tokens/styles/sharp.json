@@ -1,5 +1,5 @@
 {
-  "$note": "A Semi style: the look every component reads. tokens = shape, card border, fonts, control sizes; palettes = the colour variants of the style (the first is the default): each one's semantic = neutral surface / text / line colours per theme, overriding tokens/tokens.json (accent, status and tone colours stay shared). Every style sets the same token keys. fonts = what the app loads with next/font. Edit, then npm run build:tokens. docs/STYLES.md describes each style.",
+  "$note": "A Semi style: the look every component reads. tokens = shape, card border, fonts, control sizes; semantic = the neutral colours the style sets (both themes); omitted = the shared neutrals of tokens/tokens.json.",
   "name": "Sharp",
   "description": "Off-black ink and off-white, strong 2px borders, square corners, a hard offset shadow, Space Grotesk. Bold, editorial screens: landing pages, portfolios, creative tools.",
   "fonts": [
@@ -42,159 +42,50 @@
       "value": "40px"
     }
   },
-  "palettes": [
-    {
-      "id": "ink",
-      "name": "Ink",
-      "description": "Off-black and off-white: graphic without glare.",
-      "semantic": {
-        "color-canvas": {
-          "dark": "#0e0e0e",
-          "light": "#f7f7f4"
-        },
-        "color-app": {
-          "dark": "#121212",
-          "light": "#fbfbf9"
-        },
-        "color-panel": {
-          "dark": "#181818",
-          "light": "#ffffff"
-        },
-        "color-field": {
-          "dark": "#202020",
-          "light": "#f0f0ec"
-        },
-        "color-raised": {
-          "dark": "#2a2a2a",
-          "light": "#e2e2dd"
-        },
-        "color-text-contrast": {
-          "dark": "#f5f5f2",
-          "light": "#141414"
-        },
-        "color-text-body": {
-          "dark": "#d6d6d2",
-          "light": "#333331"
-        },
-        "color-text-muted": {
-          "dark": "#9a9a96",
-          "light": "#5c5c58"
-        },
-        "color-line": {
-          "dark": "rgba(245, 245, 242, 0.2)",
-          "light": "rgba(20, 20, 20, 0.18)"
-        },
-        "color-line-hover": {
-          "dark": "rgba(245, 245, 242, 0.55)",
-          "light": "rgba(20, 20, 20, 0.7)"
-        },
-        "color-divider": {
-          "dark": "rgba(245, 245, 242, 0.1)",
-          "light": "rgba(20, 20, 20, 0.09)"
-        }
-      }
+  "semantic": {
+    "color-canvas": {
+      "dark": "#0e0e0e",
+      "light": "#f7f7f4"
     },
-    {
-      "id": "paper",
-      "name": "Paper",
-      "description": "Cream paper and sepia ink: editorial, printed.",
-      "semantic": {
-        "color-canvas": {
-          "dark": "#16130e",
-          "light": "#f2ece0"
-        },
-        "color-app": {
-          "dark": "#1b1812",
-          "light": "#f8f3ea"
-        },
-        "color-panel": {
-          "dark": "#221e17",
-          "light": "#fffcf6"
-        },
-        "color-field": {
-          "dark": "#2a251d",
-          "light": "#efe8da"
-        },
-        "color-raised": {
-          "dark": "#353026",
-          "light": "#e3dac8"
-        },
-        "color-text-contrast": {
-          "dark": "#f6f0e4",
-          "light": "#231d12"
-        },
-        "color-text-body": {
-          "dark": "#ddd3c1",
-          "light": "#4a3f2c"
-        },
-        "color-text-muted": {
-          "dark": "#a69c88",
-          "light": "#6a5d46"
-        },
-        "color-line": {
-          "dark": "rgba(246, 240, 228, 0.2)",
-          "light": "rgba(35, 29, 18, 0.18)"
-        },
-        "color-line-hover": {
-          "dark": "rgba(246, 240, 228, 0.5)",
-          "light": "rgba(35, 29, 18, 0.65)"
-        },
-        "color-divider": {
-          "dark": "rgba(246, 240, 228, 0.1)",
-          "light": "rgba(35, 29, 18, 0.09)"
-        }
-      }
+    "color-app": {
+      "dark": "#121212",
+      "light": "#fbfbf9"
     },
-    {
-      "id": "mono",
-      "name": "Mono",
-      "description": "Pure black and white, maximum contrast.",
-      "semantic": {
-        "color-canvas": {
-          "dark": "#000000",
-          "light": "#ffffff"
-        },
-        "color-app": {
-          "dark": "#000000",
-          "light": "#ffffff"
-        },
-        "color-panel": {
-          "dark": "#0a0a0a",
-          "light": "#ffffff"
-        },
-        "color-field": {
-          "dark": "#161616",
-          "light": "#f4f4f4"
-        },
-        "color-raised": {
-          "dark": "#262626",
-          "light": "#e5e5e5"
-        },
-        "color-text-contrast": {
-          "dark": "#ffffff",
-          "light": "#000000"
-        },
-        "color-text-body": {
-          "dark": "#e5e5e5",
-          "light": "#1f1f1f"
-        },
-        "color-text-muted": {
-          "dark": "#a3a3a3",
-          "light": "#525252"
-        },
-        "color-line": {
-          "dark": "rgba(255, 255, 255, 0.32)",
-          "light": "rgba(0, 0, 0, 0.32)"
-        },
-        "color-line-hover": {
-          "dark": "#ffffff",
-          "light": "#000000"
-        },
-        "color-divider": {
-          "dark": "rgba(255, 255, 255, 0.14)",
-          "light": "rgba(0, 0, 0, 0.12)"
-        }
-      }
+    "color-panel": {
+      "dark": "#181818",
+      "light": "#ffffff"
+    },
+    "color-field": {
+      "dark": "#202020",
+      "light": "#f0f0ec"
+    },
+    "color-raised": {
+      "dark": "#2a2a2a",
+      "light": "#e2e2dd"
+    },
+    "color-text-contrast": {
+      "dark": "#f5f5f2",
+      "light": "#141414"
+    },
+    "color-text-body": {
+      "dark": "#d6d6d2",
+      "light": "#333331"
+    },
+    "color-text-muted": {
+      "dark": "#9a9a96",
+      "light": "#5c5c58"
+    },
+    "color-line": {
+      "dark": "rgba(245, 245, 242, 0.2)",
+      "light": "rgba(20, 20, 20, 0.18)"
+    },
+    "color-line-hover": {
+      "dark": "rgba(245, 245, 242, 0.55)",
+      "light": "rgba(20, 20, 20, 0.7)"
+    },
+    "color-divider": {
+      "dark": "rgba(245, 245, 242, 0.1)",
+      "light": "rgba(20, 20, 20, 0.09)"
     }
-  ]
+  }
 }

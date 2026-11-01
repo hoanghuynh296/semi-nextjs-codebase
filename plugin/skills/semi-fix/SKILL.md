@@ -19,17 +19,16 @@ phases in order; each one leaves the app building, so you can stop (or open a PR
 2. **Ask the decisions now**, so the answers are known before you start (`AskUserQuestion`, up to 4 per call):
    - **Style**, when phase 1 has a `style` item: one option per style (`fix.mjs foundation` without `--style` lists
      them with descriptions). `(Recommended)` on the default, Flat: it is the closest to an existing app's look.
-     Then its **palette** (three per style, the first is the default; pick the one closest to the app's current greys).
    - **Structure** (phase 4, ids `D…`): "fix as proposed (Recommended)" or "keep". For "keep", add the check to
      `semi-lint.json`: `"keep": { "<check>": "<the user's reason>" }` (or an array of path prefixes). Never keep
      something the user did not choose to keep.
 3. **Phase 1 — Foundation** (`F…`). It changes how the app looks, so first take screenshots of 3–5 key pages in the
    app's current theme (dev server + browser, when available). Then:
    ```bash
-   node "<path-to-this-skill>/scripts/fix.mjs" --cwd "<audited-dir>" foundation --style "<id>" [--palette "<id>"] [--brand "<github:owner/repo>"]
+   node "<path-to-this-skill>/scripts/fix.mjs" --cwd "<audited-dir>" foundation --style "<id>" [--brand "<github:owner/repo>"]
    ```
    With a brand (`--brand` to adopt one, or `"brand"` already in `semi-lint.json`) it installs and wires the kit, uses
-   the brand's default style unless you pass an allowed one, and no palette: colours and fonts are the brand's.
+   the brand's default style unless you pass an allowed one, colours and fonts are the brand's.
    It installs `@semi/ui` (Next.js and Tailwind stay as they are), adds `transpilePackages`, the Semi CSS block,
    `semi-lint.json` + a baseline of today's lint debt, the chosen style (`"style"` in `semi-lint.json`,
    `data-style` on `<html>`), and the Semi block in `AGENTS.md`. It prints the `next/font` lines for the style's fonts:

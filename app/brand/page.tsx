@@ -70,7 +70,7 @@ export default function BrandPage() {
   const brandJson = JSON.stringify(brand, null, 2);
   const command = `node <plugin>/skills/semi-brand/scripts/brand.mjs create --cwd . --name "${brand.name}" --package "${brand.package}" --primary "${brand.primary}"${
     brand.secondary ? ` --secondary "${brand.secondary}"` : ""
-  } --neutral ${brand.neutral}${brand.palettes && brand.neutral === "preset" ? ` --palette ${Object.entries(brand.palettes).map(([k, v]) => `${k}=${v}`).join(",")}` : ""} --style ${brand.styles.default} --allow ${brand.styles.allowed.join(",")} --sans "${brand.fonts.sans}" --display "${brand.fonts.display}"`;
+  } --neutral ${brand.neutral} --style ${brand.styles.default} --allow ${brand.styles.allowed.join(",")} --sans "${brand.fonts.sans}" --display "${brand.fonts.display}"`;
 
   return (
     <>
@@ -120,20 +120,6 @@ export default function BrandPage() {
               options={brand.styles.allowed.map((id) => ({ key: id, label: styleList.styles.find((s) => s.id === id)!.name }))}
             />
           </Field>
-          {brand.neutral === "preset" &&
-            brand.styles.allowed.map((id) => {
-              const st = styleList.styles.find((s) => s.id === id)!;
-              return (
-                <Field key={id} label={`Palette của ${st.name}`}>
-                  <CustomSelect
-                    variant="field"
-                    value={brand.palettes?.[id] ?? st.palettes[0].id}
-                    onChange={(v) => update({ palettes: { ...brand.palettes, [id]: v } })}
-                    options={st.palettes.map((p) => ({ value: p.id, label: p.name }))}
-                  />
-                </Field>
-              );
-            })}
           <Field label="Font giao diện">
             <CustomSelect variant="field" value={brand.fonts.sans} onChange={(v) => update({ fonts: { ...brand.fonts, sans: v } })} options={FONT_OPTIONS} />
           </Field>

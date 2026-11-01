@@ -67,12 +67,7 @@ export function validateBrand(brand, { styles }) {
   if (!allowed.length) fail(errors, "styles.allowed: cần ít nhất một style");
   for (const s of allowed) if (!ids.includes(s)) fail(errors, `styles.allowed: "${s}" không có; chọn trong ${ids.join(", ")}`);
   if (!allowed.includes(brand.styles?.default)) fail(errors, `styles.default: "${brand.styles?.default ?? ""}" phải nằm trong styles.allowed`);
-  for (const [sid, pid] of Object.entries(brand.palettes ?? {})) {
-    const st = styles.styles.find((s) => s.id === sid);
-    if (!st) fail(errors, `palettes: style "${sid}" không có`);
-    else if (!st.palettes.some((p) => p.id === pid)) fail(errors, `palettes.${sid}: "${pid}" không có; chọn ${st.palettes.map((p) => p.id).join(", ")}`);
-    if (brand.neutral !== "preset") warnings.push(`palettes chỉ dùng khi neutral = "preset"`);
-  }
+  if (brand.palettes) warnings.push("palettes đã bỏ (v0.14.0): xoá khỏi brand.json; neutral \"preset\" dùng màu trung tính của chính style");
   for (const role of ["sans", "display"]) {
     const f = brand.fonts?.[role];
     const family = typeof f === "string" ? f : f?.family;
@@ -140,12 +135,11 @@ function tint(value, hue, chroma) {
   return `rgba(${Math.round(p.r * 255)}, ${Math.round(p.g * 255)}, ${Math.round(p.b * 255)}, ${+c.a.toFixed(3)})`;
 }
 
-/** The neutrals a style starts from (its default palette over tokens.json), or the brand's chosen preset palette. */
-function baseNeutrals(style, tokens, paletteId) {
-  const pal = style.palettes.find((p) => p.id === paletteId) ?? style.palettes[0];
+/** The neutrals a style starts from: its own (semantic in tokens/styles/<id>.json), else the shared ones of tokens.json. */
+function baseNeutrals(style, tokens) {
   const out = { dark: {}, light: {} };
   for (const k of NEUTRAL_KEYS) {
-    const v = pal.semantic?.[k] ?? tokens.semantic[k];
+    const v = style.semantic?.[k] ?? tokens.semantic[k];
     out.dark[k] = v.dark;
     out.light[k] = v.light;
   }
@@ -177,7 +171,7 @@ export function generateBrand(brand, { tokens, styles, version = "" }) {
   // Neutrals of every allowed style, both themes.
   const neutrals = {};
   for (const st of allowed) {
-    const base = baseNeutrals(st, tokens, brand.palettes?.[st.id]);
+    const base = baseNeutrals(st, tokens);
     neutrals[st.id] = {};
     for (const theme of THEMES) {
       const n = { ...base[theme] };

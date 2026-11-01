@@ -1,5 +1,5 @@
 // Browser checks of the docs export: every page (and every component doc) reaches WCAG AA in both themes, axe finds
-// no serious issue, nothing overflows a phone, the theme / style / palette apply before paint, dialogs and menus are
+// no serious issue, nothing overflows a phone, the theme / style apply before paint, dialogs and menus are
 // keyboard-operable, and the agent files are served.
 import { expect, test, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
@@ -8,19 +8,17 @@ import docs from "../examples/list.generated.json" with { type: "json" };
 
 const DOC_PAGES = docs.map((d) => `/components/${d.id}/`);
 const PAGES = ["/", "/components/", "/foundations/", "/brand/", ...DOC_PAGES];
-/** Pages checked in every style × palette: the gallery shows one example of every doc. */
+/** Pages checked in every style: the gallery shows one example of every doc. */
 const LOOK_PAGES = ["/", "/components/", "/components/table/", "/components/field/"];
 const THEMES = ["dark", "light"] as const;
 const STYLES = styleList.styles.map((s) => s.id);
-/** Every style × palette (the first palette is the style's default, set without data-palette). */
-const LOOKS = styleList.styles.flatMap((s) => s.palettes.map((p, i) => ({ style: s.id, palette: i ? p.id : undefined, name: `${s.id}/${p.id}` })));
+const LOOKS = styleList.styles.map((s) => ({ style: s.id, name: s.id }));
 const example = (page: Page, id: string) => page.locator(`[data-example="${id}"]`);
 
-async function open(page: Page, path: string, theme: "dark" | "light" | "system", style?: string, palette?: string) {
-  await page.addInitScript(([t, s, p]) => {
+async function open(page: Page, path: string, theme: "dark" | "light" | "system", style?: string) {
+  await page.addInitScript(([t, s]) => {
     localStorage.setItem("semi-theme", t);
     if (s) localStorage.setItem("semi-style", s);
-    if (p) localStorage.setItem("semi-palette", p);
     // Theme as soon as <body> exists = what the first paint uses (the inline ThemeScript runs in <head>).
     new MutationObserver((_, obs) => {
       if (document.body) {
@@ -29,7 +27,7 @@ async function open(page: Page, path: string, theme: "dark" | "light" | "system"
         obs.disconnect();
       }
     }).observe(document, { childList: true, subtree: true });
-  }, [theme, style ?? "", palette ?? ""] as const);
+  }, [theme, style ?? ""] as const);
   await page.goto(path);
   await page.addStyleTag({ content: "*,*::before,*::after{transition:none!important;animation:none!important}" });
 }
@@ -122,7 +120,7 @@ for (const path of LOOK_PAGES) {
   for (const theme of THEMES)
     for (const look of LOOKS)
       test(`contrast AA · ${look.name} · ${theme} · ${path}`, async ({ page }) => {
-        await open(page, path, theme, look.style, look.palette);
+        await open(page, path, theme, look.style);
         expect(await lowContrast(page)).toEqual([]);
       });
   for (const style of STYLES)
@@ -220,12 +218,10 @@ test("styles: Soft is applied before paint, Soft and Sharp change the shape toke
   expect(await radius()).toBe("0px");
 });
 
-test("styles: a palette applies before paint; the docs offer styles only, no palette picker", async ({ page }) => {
-  const canvas = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
-  await open(page, "/components/", "light", "sharp", "paper");
+test("styles: the docs offer the three styles only, and the chosen one applies before paint", async ({ page }) => {
+  await open(page, "/components/", "light", "sharp");
   expect(await page.evaluate(() => (window as unknown as { __firstPaintStyle?: string }).__firstPaintStyle)).toBe("sharp");
-  await expect(page.locator("html")).toHaveAttribute("data-palette", "paper");
-  expect(await canvas()).toBe("rgb(242, 236, 224)"); // Paper canvas
+  await expect(page.getByRole("radiogroup", { name: "Style" }).getByRole("radio")).toHaveCount(3);
   await expect(page.getByRole("radiogroup", { name: "Palette" })).toHaveCount(0);
   await page.getByRole("radiogroup", { name: "Style" }).getByRole("radio", { name: "Soft" }).click();
   await expect(page.locator("html")).toHaveAttribute("data-style", "soft");

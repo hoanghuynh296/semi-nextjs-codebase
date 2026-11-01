@@ -1,4 +1,4 @@
-# Semi Design System (@semi/ui v0.13.3)
+# Semi Design System (@semi/ui v0.14.0)
 
 > The shared UI of every Semi app: semantic tokens that work in light and dark mode, React components (Next.js, Tailwind CSS 4) and the rules agents follow. Every component has a page with live examples and a markdown twin for agents.
 
@@ -16,7 +16,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [AGENT_TOOLS.md](./docs/AGENT_TOOLS.md): Agent tools: the semi CLI (search, docs, example, add) and the MCP server, and the page blocks
 - [ICONS.md](./docs/ICONS.md): Semantic icon guide: which icon means what
 - [BRANDS.md](./docs/BRANDS.md): Brands: brand kits (brand.json → brand.css), the step-by-step flow from a new brand to its first product, which command when
-- [STYLES.md](./docs/STYLES.md): Styles (Flat, Soft, Sharp) and palettes: what each changes, how an app picks one
+- [STYLES.md](./docs/STYLES.md): Styles (Flat, Soft, Sharp): what each changes, how an app picks one
 - [agent-rules.md](./docs/agent-rules.md): Rules block for a consumer app's AGENTS.md / CLAUDE.md
 - [tokens.css](./docs/tokens.css): Generated design tokens (CSS variables for both themes)
 - [llms-full.txt](./llms-full.txt): this file followed by all the docs above and every component doc
@@ -1625,13 +1625,13 @@ Brand kit ghi nó chạy với `@semi/ui` nào (`"semi": "^0.6"` trong `brand.js
 | `name`, `package` | Tên hiển thị, tên npm (`@scope/brand`) | Bắt buộc |
 | `primary` | Hex | Bắt buộc. Không quá xám (độ đậm tối thiểu), bộ sinh tự chọn sắc độ đọc rõ |
 | `secondary` | Hex hoặc `null` | Tuỳ chọn; sinh `secondary-50 … 900` (`bg-secondary-500`, `text-secondary-fg`) |
-| `neutral` | `"tinted"` / `"preset"` | `tinted`: màu trung tính của mỗi style phủ nhẹ tông màu chính. `preset`: giữ màu trung tính có sẵn của style; chọn palette từng style bằng `"palettes": { "soft": "sage" }` |
+| `neutral` | `"tinted"` / `"preset"` | `tinted`: màu trung tính của mỗi style phủ nhẹ tông màu chính (bề mặt gần như trung tính, chữ và viền có tông rõ hơn). `preset`: giữ màu trung tính có sẵn của style |
 | `styles.default`, `styles.allowed` | `flat` · `soft` · `sharp` | Ít nhất một; `default` phải nằm trong `allowed` |
 | `fonts.sans`, `fonts.display` | Tên Google Font | `next/font/google` phải có font đó |
 | `semi` | Dải phiên bản `@semi/ui` | `/semi-brand update` cập nhật |
 
 Chi tiết kỹ thuật: bộ sinh màu nằm ở `@semi/ui/brand` (`generateBrand`), lệnh trong kit là `semi-brand build | check`
-(bin của `@semi/ui`). Style và palette có sẵn: [STYLES.md](STYLES.md).
+(bin của `@semi/ui`). Style có sẵn: [STYLES.md](STYLES.md).
 
 
 ---
@@ -1648,31 +1648,17 @@ per app: §2b), status and tone colours, both themes (light / dark), icons, acce
 | | Flat (default) | Soft | Sharp |
 |---|---|---|---|
 | For | Dense, information-first screens: dashboards, tools, admin | Calm, friendly screens: consumer apps, storefronts, onboarding | Bold, editorial screens: landing pages, portfolios, creative tools |
-| Palettes (first = default) | Graphite · Slate · Olive | Sand · Blush · Sage | Ink · Paper · Mono |
 | Fonts | Geist + Montserrat Alternates (titles) | Plus Jakarta Sans | Space Grotesk |
 | Card (`border-card`, `shadow-card`) | 1px line border, no shadow | No visible border, soft lifted shadow | 2px solid border, hard 4px offset shadow |
 | Lines (`border-line`) | 8–9% | 9%, tinted | 18–32%, strong |
 | `rounded-chip` / `control` / `card` / `panel` | 4 · 8 · 12 · 16px | 6 · 12 · 20 · 24px | 2 · 0 · 0 · 0 |
 | `h-control` / `h-field` | 34 / 36px | 40 / 44px | 36 / 40px |
 
-Every style × palette passes WCAG AA on every Storybook page in both themes (Playwright, `npm run test:ui`).
+Every style passes WCAG AA on every Storybook page in both themes (Playwright, `npm run test:ui`).
 
-## Palettes
-
-Each style has three colour variants. A palette changes only the neutral colours (canvas, app, panel, field, raised,
-text, lines) of both themes; the accent stays the product's brand and status colours keep their meaning.
-
-| Style | Palette | Look |
-|---|---|---|
-| Flat | **Graphite** (default) | Neutral cool grey, the original Semi look |
-| Flat | Slate | Blue-tinted greys: calm, technical |
-| Flat | Olive | Green-grey neutrals: natural, quiet |
-| Soft | **Sand** (default) | Warm sand and espresso |
-| Soft | Blush | Rosy, gentle neutrals |
-| Soft | Sage | Soft green-grey, fresh and calm |
-| Sharp | **Ink** (default) | Off-black and off-white: graphic without glare |
-| Sharp | Paper | Cream paper and sepia ink: editorial, printed |
-| Sharp | Mono | Pure black and white, maximum contrast |
+Each style sets its own neutral colours (`semantic` in `tokens/styles/<id>.json`, both themes): Flat uses the shared
+neutrals of `tokens/tokens.json`, Soft a warm sand, Sharp off-black and off-white. The accent stays the product's brand
+and the status colours keep their meaning.
 
 Source: `tokens/styles/<id>.json` (`tokens`: shape, card border, fonts, sizes; `semantic`: neutral colours per theme;
 `fonts`: what the app loads) → `npm run build:tokens` → `[data-style="<id>"]` blocks in `tokens.css` and the list in
@@ -1680,17 +1666,17 @@ Source: `tokens/styles/<id>.json` (`tokens`: shape, card border, fonts, sizes; `
 sidebar.
 
 A brand kit (docs/BRANDS.md) builds on these: it picks the allowed styles and either tints their neutrals with its
-primary or keeps a palette, so products of a brand never set `data-palette` themselves.
+primary or keeps the style's own neutrals (`"neutral": "preset"`), so products of a brand never set neutral colours.
 
 ## Picking a style in an app
 
 ```tsx
-// app/layout.tsx: data-style on <html> (off = Flat), data-palette for a palette other than the style's first
-<html lang="vi" data-style="soft" data-palette="sage" suppressHydrationWarning>
+// app/layout.tsx: data-style on <html> (off = Flat)
+<html lang="vi" data-style="soft" suppressHydrationWarning>
 ```
 
 plus the style's fonts with `next/font` (the `fonts` list in `@semi/ui/styles.json`; Soft: `Plus_Jakarta_Sans` with
-`variable: "--font-jakarta"` on `<html className>`), and the same ids in `semi-lint.json` (`"style": "soft"`, `"palette": "sage"`; no `palette` = the default one).
+`variable: "--font-jakarta"` on `<html className>`), and the same id in `semi-lint.json` (`"style": "soft"`).
 `/semi-audit` checks all three against each other. `/semi-init`
 asks for the style of a new app, `/semi-fix` foundation for an existing one, `/semi-style` switches it later. A wrapper
 with `data-style` re-styles only its subtree (used by Storybook previews), not something an app needs.
@@ -1714,8 +1700,8 @@ with `data-style` re-styles only its subtree (used by Storybook previews), not s
 ## Adding a style (maintainers)
 
 1. Copy `tokens/styles/flat.json` to `tokens/styles/<id>.json`; set `name`, `description`, `fonts` (Google fonts
-   `next/font` can load, with their CSS variable), every token (the build fails when a key is missing or extra) and the
-   `palettes` (three, the first is the default; each one's `semantic` sets the neutrals it changes, dark + light). Exactly one file has `"default": true`. Load its fonts in
+   `next/font` can load, with their CSS variable), every token (the build fails when a key is missing or extra) and,
+   when it has its own neutrals, `semantic` (dark + light). Exactly one file has `"default": true`. Load its fonts in
    `app/layout.tsx` of the Storybook.
 2. `npm run build:tokens`, then add its column above. `check:manifest` fails while a style has no column here.
 3. `npm run build:storybook && npm run test:ui`: contrast and phone layout run for every style in both themes.
@@ -1745,11 +1731,11 @@ All web UI in the Semi ecosystem MUST follow the **Semi Design System** (`@semi/
    - Never use physical Tailwind color classes (`bg-white`, `text-slate-900`, `border-slate-200`, `bg-slate-50`, `bg-gray-800/900`) directly in JSX (`no-literal-palette`). Use Semantic Tokens so interfaces adapt automatically to Dark and Light modes. Coloured text uses themed tokens, never fixed `-300/-400` shades or `dark:` pairs: `text-accent-fg` (primary text/icons), `text-danger-fg` / `text-success-fg` / `text-warning-fg` / `text-info-fg`, `text-tone-<hue>`; solid actions `bg-accent hover:bg-accent-hover text-on-accent` (or `BTN_PRIMARY`). Never pass background or shadow overrides to `<Card>` (`card-class-override`).
    - Never use solid pastel surface classes (`bg-*-50`, `border-*-200`) for cards or containers (`no-solid-pastel-surfaces`); use alpha transparency (`bg-amber-500/10 border-amber-500/20`) or standard `bg-panel`.
    - Typography: `font-medium` / `font-semibold` only (no `font-bold`); the type scale only: `text-caption` 11 · `text-label` 12 · `text-ui` 13 · `text-ui-lg` 14 · `text-title` 15 · `text-title-lg` 16 for UI/body, `text-kpi sm:text-heading` for KPI figures (`KpiCard`), `text-heading sm:text-display` for page titles (`PageTitle`); no `text-xs/sm/base` and no `text-[13px]`; `tabular-nums` for numbers (`font-mono` only for code); sentence case (no `uppercase` labels or ALL CAPS buttons).
-   - Style: the app's style (Flat, Soft, Sharp) and its palette (3 colour variants each): `"style"` / `"palette"` in `semi-lint.json`, `data-style` / `data-palette` on `<html>`, its fonts loaded with `next/font`; `node_modules/@semi/ui/docs/STYLES.md`) sets the neutral colours, fonts (`font-sans`, `font-display`), control sizes (`h-control` for toolbar buttons / pills / chips / search, `h-field` for inputs and selects, never `h-[34px]`), the card border (`border-card`) and every radius and card shadow, so use the style tokens only: `rounded-chip` (marks, checkboxes, inline code), `rounded-control` (buttons, inputs, tiles, rows), `rounded-card` (cards, popovers, menus, toasts), `rounded-panel` (hero, modal, drawer, sidebar), `rounded-full` (pills, avatars, dots), `shadow-card` (resting card shadow, `CARD` has it). Never `rounded`, `rounded-sm/md/lg/xl/2xl` or `rounded-[Npx]` (`radius-token`), never per-style classes or `[data-style=…]` selectors in the app. Change the style with `/semi-style`.
+   - Style: the app's style (Flat, Soft, Sharp): `"style"` in `semi-lint.json`, `data-style` on `<html>`, its fonts loaded with `next/font`; `node_modules/@semi/ui/docs/STYLES.md`) sets the neutral colours, fonts (`font-sans`, `font-display`), control sizes (`h-control` for toolbar buttons / pills / chips / search, `h-field` for inputs and selects, never `h-[34px]`), the card border (`border-card`) and every radius and card shadow, so use the style tokens only: `rounded-chip` (marks, checkboxes, inline code), `rounded-control` (buttons, inputs, tiles, rows), `rounded-card` (cards, popovers, menus, toasts), `rounded-panel` (hero, modal, drawer, sidebar), `rounded-full` (pills, avatars, dots), `shadow-card` (resting card shadow, `CARD` has it). Never `rounded`, `rounded-sm/md/lg/xl/2xl` or `rounded-[Npx]` (`radius-token`), never per-style classes or `[data-style=…]` selectors in the app. Change the style with `/semi-style`.
    - Controls: never native `<select>`, `type="date"`, `type="number"`, or `window.confirm`/`alert`. Never inline `<svg><path>` or unicode glyph icons (✕ ✓ ✗ ⚠) — use `<Icon name="…" />` (stroke 1.75). Always follow semantic icon mappings (`node_modules/@semi/ui/docs/ICONS.md`): `trash` for delete/remove (never `close`), `close` for dialog dismiss (never `trash`), `refresh` for reload/sync, `sliders` for parameters/tuning, `filter` for search filters, `user`/`users` for profiles/teams, `settings` for app configuration, `sun`/`moon` for theme toggling.
    - Loading: use `Skeleton` shapes, never `"Đang tải…"` text or full-page spinners (`Button loading` / `Spinner` only inside the control that runs the action).
    - Accessibility: every icon-only control has an `aria-label`; dialogs are `Modal` / `Drawer` / `confirmDialog` (focus trap, Escape, focus return built in); custom controls keep the visible focus ring (`FOCUS_RING`); UI strings come from `SemiLocaleProvider`, not hard-coded inside shared components.
-4. **Brand kits:** when `semi-lint.json` has `"brand"`, the product belongs to that brand (`node_modules/<brand>/BRAND.md`, rules block in `AGENTS.md`): never define colours, fonts or Semi tokens in the app (`brand-override`), only the brand's allowed styles, no `data-palette`. Never invent a brand colour: it comes from the user or the brand kit. Brand changes happen in the brand repo (`/semi-brand`), then `/semi-update` in the product (`node_modules/@semi/ui/docs/BRANDS.md`).
+4. **Brand kits:** when `semi-lint.json` has `"brand"`, the product belongs to that brand (`node_modules/<brand>/BRAND.md`, rules block in `AGENTS.md`): never define colours, fonts or Semi tokens in the app (`brand-override`), only the brand's allowed styles. Never invent a brand colour: it comes from the user or the brand kit. Brand changes happen in the brand repo (`/semi-brand`), then `/semi-update` in the product (`node_modules/@semi/ui/docs/BRANDS.md`).
 5. **Gaps go upstream, not into local primitives:** If `@semi/ui` cannot express a need (missing component, prop, token, icon, or a lint false positive), first run `/semi-update` and re-check the docs; if the gap remains, run `/semi-propose` to file it on the core repo. Meanwhile keep a minimal compliant local workaround marked `// TODO(semi#<issue>)` and baseline (never broadly `skip`) any lint hits.
 6. **Never fork rules per project:** When the user changes a shared UI rule, update `docs/DESIGN_SYSTEM.md`, `docs/QUICK_REF.md`, `docs/DECISIONS.md`, and `lint/semi-lint.mjs` in the `semi-nextjs-codebase` repository and release a new tag — never record shared UI rules only in a consumer project's `AGENTS.md` or agent memory. App-specific patterns belong in the app's own `docs/UI_EXTENSIONS.md`.
 7. **Verification:** Run `npx semi-lint` (or `npm run semi:lint`) before finishing any UI change. For a whole-app check run `/semi-audit` (writes `semi-audit.md`), then `/semi-fix` to fix what it found; `/semi-update` moves to a newer `@semi/ui` and runs that release's migrations (no audit); `/semi-style` switches the style; `/semi-brand` creates or changes a brand kit (in its own repo).

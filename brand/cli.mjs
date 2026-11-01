@@ -128,8 +128,7 @@ This product belongs to the **${t.name}** brand. Its colours, fonts and allowed 
 - Never define brand colours or override Semi tokens in this app (\`--color-primary-*\`, \`--semi-*\`, \`@theme\` colours,
   hex values): \`semi-lint\` blocks it (\`brand-override\`). Use the semantic tokens (\`bg-accent\`, \`text-accent-fg\`,
   \`bg-panel\` …)${t.secondary ? " and `secondary-*` / `text-secondary-fg` for the secondary colour" : ""}.
-- Style: ${allowed} only (\`data-style\` on \`<html>\`, \`"style"\` in \`semi-lint.json\`, switch with \`/semi-style\`). No
-  \`data-palette\`: the brand sets the neutrals.
+- Style: ${allowed} only (\`data-style\` on \`<html>\`, \`"style"\` in \`semi-lint.json\`, switch with \`/semi-style\`).
 - Fonts: ${t.fonts.map((f) => f.family).join(" + ")}, loaded with \`next/font\` in the root layout (\`${t.fonts.map((f) => f.variable).join("`, `")}\`).
 - A change to the brand happens in the brand repo (\`/semi-brand\`), then \`/semi-update\` here.
 <!-- semi-brand:end -->
