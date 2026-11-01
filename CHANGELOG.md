@@ -21,6 +21,7 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 - The `dashboard` block, the KPI and sparkline examples and the brand book's sample screens lead with one featured number, without decorative icon colours; the brand book's landing page shows a big figure and a customer quote instead of three feature cards, and the motif in its hero.
 - **The `/semi-new-app` starter is the brand's first screen**, not a 3D-printer dashboard: a hero with the brand's motif, its tagline, product line and button text from the brand kit, and an empty state in its voice.
 - `brand-override` also blocks `--brand-*`, `--spacing`, `--font-figure` and `--font-weight-title` in an app with a brand kit.
+- `ScrollArea` is focusable from the server HTML on (it measured only after hydration, so an early keyboard user or a11y check met a scrolling region without a tab stop).
 - `DESIGN_SYSTEM.md` §2b now describes brand kits (it still told products to override `primary-*` in their CSS).
 
 ### Migration
