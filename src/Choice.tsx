@@ -48,7 +48,7 @@ export function Checkbox({
           aria-describedby={description ? `${id}-desc` : undefined}
           onChange={(e) => onChange(e.target.checked)}
           className={cn(
-            "peer appearance-none w-4 h-4 rounded border transition cursor-pointer disabled:cursor-not-allowed",
+            "peer appearance-none w-4 h-4 rounded-chip border transition cursor-pointer disabled:cursor-not-allowed",
             on ? "bg-accent border-transparent" : "bg-field border-line-hover",
             FOCUS_RING,
           )}

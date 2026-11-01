@@ -45,9 +45,9 @@ interface CustomSelectProps {
 
 const TRIGGER: Record<NonNullable<CustomSelectProps["variant"]>, string> = {
   toolbar:
-    "h-[34px] px-3 bg-panel border border-line rounded-lg text-label font-medium text-body hover:border-line-hover",
+    "h-[34px] px-3 bg-panel border border-line rounded-control text-label font-medium text-body hover:border-line-hover",
   field:
-    "w-full h-9 px-3 bg-field border border-line rounded-lg text-ui text-contrast hover:border-line-hover focus-visible:border-primary-500/50",
+    "w-full h-9 px-3 bg-field border border-line rounded-control text-ui text-contrast hover:border-line-hover focus-visible:border-primary-500/50",
   inline: "w-full h-7 px-0 bg-transparent text-label font-medium text-body hover:text-contrast",
   bare: "",
 };
@@ -185,7 +185,7 @@ export function CustomSelect({
             id={listId}
             role="listbox"
             style={{ left: pos.left, top: pos.top, bottom: pos.bottom, minWidth: pos.minWidth, maxHeight: pos.maxHeight }}
-            className="fixed z-popover max-w-[calc(100vw-16px)] overflow-y-auto overscroll-contain bg-panel border border-line rounded-xl shadow-overlay p-1 flex flex-col gap-0.5"
+            className="fixed z-popover max-w-[calc(100vw-16px)] overflow-y-auto overscroll-contain bg-panel border border-line rounded-card shadow-overlay p-1 flex flex-col gap-0.5"
           >
             {options.length === 0 && <div className="px-3 py-2 text-label text-muted">{placeholder}</div>}
             {options.map((opt, i) => {
@@ -203,7 +203,7 @@ export function CustomSelect({
                     title={opt.title}
                     onClick={() => pick(opt)}
                     onPointerEnter={() => setActive(i)}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-label transition cursor-pointer flex items-center justify-between gap-3 disabled:opacity-40 disabled:cursor-not-allowed ${
+                    className={`w-full text-left px-3 py-2 rounded-control text-label transition cursor-pointer flex items-center justify-between gap-3 disabled:opacity-40 disabled:cursor-not-allowed ${
                       isSelected
                         ? "bg-raised text-contrast font-medium"
                         : i === active

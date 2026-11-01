@@ -7,10 +7,11 @@ Hệ thống Design System dùng chung cho toàn bộ dự án web thuộc hệ 
 Xây dựng cho **Next.js 16 + React 19 + Tailwind CSS 4**, hỗ trợ chuyển đổi giao diện Dark/Light mượt mà không cần `dark:bg-...` thủ công nhờ kiến trúc Semantic Tokens.
 
 Repository này đóng gói **2 sản phẩm trong cùng 1 tag phiên bản (semver)**:
-1. **Plugin cho AI Agent (`semi-design`):** chứa bộ quy tắc luôn bật (`rules/AGENTS.md` — tự động hướng dẫn agent mỗi khi viết hoặc sửa giao diện), hook tự chạy lint khi sửa file (`hooks.json`), và **6 slash commands**. App mới: `/semi-init`. App có sẵn (đã hay chưa có Semi): `/semi-audit` rồi `/semi-fix`, và cũng là cách kiểm tra định kỳ. Lên bản mới: `/semi-update`:
-   - `/semi-init` — **Tạo app mới** (thư mục trống): Next.js + Tailwind 4 + `@semi/ui` + trang mẫu, sạch ngay, không cần audit hay fix.
+1. **Plugin cho AI Agent (`semi-design`):** chứa bộ quy tắc luôn bật (`rules/AGENTS.md` — tự động hướng dẫn agent mỗi khi viết hoặc sửa giao diện), hook tự chạy lint khi sửa file (`hooks.json`), và **7 slash commands**. App mới: `/semi-init`. App có sẵn (đã hay chưa có Semi): `/semi-audit` rồi `/semi-fix`, và cũng là cách kiểm tra định kỳ. Lên bản mới: `/semi-update`. Đổi style: `/semi-style`:
+   - `/semi-init` — **Tạo app mới** (thư mục trống): hỏi chọn style (Flat, Soft, …), rồi dựng Next.js + Tailwind 4 + `@semi/ui` + trang mẫu, sạch ngay, không cần audit hay fix.
    - `/semi-audit` — **Kiểm tra** (không sửa code): in tóm tắt ngắn và ghi mọi vấn đề kèm `file:dòng` vào `semi-audit.md`.
    - `/semi-fix` — **Sửa theo `semi-audit.md`, từng giai đoạn:** nền móng (cài `@semi/ui`, CSS, provider; giữ nguyên Next / Tailwind; so ảnh trước / sau) → codemod token → sửa tay → cấu trúc theo quyết định. Kiểm tra lại tới khi sạch rồi xoá file.
+   - `/semi-style` — **Đổi style** của app (Flat ↔ Soft …): chỉ đổi bo góc và bóng thẻ, component / màu / bố cục giữ nguyên; so ảnh trước / sau.
    - `/semi-update` — **Nâng cấp phiên bản** `@semi/ui` lên tag mới nhất và chạy migration của các bản mới (sửa code theo thay đổi lớn của chính bản đó), rồi `tsc`. Không audit, không refactor.
    - `/semi-propose` — **Đề xuất tính năng từ dự án con** (quét nhu cầu chưa được `@semi/ui` đáp ứng tại dự án thực tế, cấu trúc issue chuẩn và tạo issue trực tiếp trên GitHub repo lõi).
    - `/semi-triage` — **Đánh giá & Tổng quát hóa Issue (Dành cho Core)** (đọc issue trên GitHub, phân tích tính đúng đắn, đối chiếu rulebook, và thiết kế giải pháp tổng quát cho toàn hệ sinh thái mà không break rule).
@@ -51,7 +52,8 @@ Agent sẽ tự động:
 2. Cài đặt `@semi/ui` từ tag mới nhất của `github:hoanghuynh296/semi-nextjs-codebase`.
 3. Cấu hình `transpilePackages: ["@semi/ui"]`, nối `@semi/ui/tokens.css` + `@semi/ui/base.css` + `@source` vào `app/globals.css`.
 4. Dựng sẵn `layout.tsx` (font Geist + Montserrat Alternates, `<ConfirmHost />`) và trang mẫu chuẩn Semi (`AppHeader`, `HERO`, `STICKY_TOOLBAR`, `CARD`, `Pills`, `Chip`, `CustomSelect`, `SearchInput`).
-5. Tạo `semi-lint.json`, `AGENTS.md` và kiểm tra `semi-lint` + `tsc` + `npm run build`.
+5. Áp style đã chọn (`data-style` trên `<html>`, `"style"` trong `semi-lint.json`).
+6. Tạo `semi-lint.json`, `AGENTS.md` và kiểm tra `semi-lint` + `tsc` + `npm run build`.
 
 ### Trường hợp 2: Dự án có sẵn (đã hay chưa có `@semi/ui`), và kiểm tra định kỳ
 ```text
@@ -61,9 +63,9 @@ Agent sẽ tự động:
 `/semi-audit` không sửa code: in tóm tắt ngắn và ghi mọi vấn đề kèm `file:dòng` vào `semi-audit.md`, chia 4 giai đoạn.
 `/semi-fix` làm theo thứ tự đó, mỗi giai đoạn xong app vẫn build được:
 1. **Nền móng:** cài `@semi/ui` (giữ nguyên phiên bản Next.js / Tailwind), `transpilePackages`, CSS của Semi, provider
-   trong layout (theme mặc định giữ đúng sáng / tối như app đang có), `semi-lint.json` + baseline. Chụp vài trang trước
-   và sau để so.
-2. **Token:** codemod đổi class màu / cỡ chữ sang token, có thể làm từng module (`--only`).
+   trong layout (theme mặc định giữ đúng sáng / tối như app đang có), `semi-lint.json` + baseline, style do bạn chọn
+   (mặc định Flat, gần app cũ nhất). Chụp vài trang trước và sau để so.
+2. **Token:** codemod đổi class màu / cỡ chữ / bo góc sang token, có thể làm từng module (`--only`).
 3. **Sửa tay:** lỗi lint còn lại.
 4. **Cấu trúc:** AppShell / AppHeader, bảng, component trùng… theo quyết định của nhóm. Cái nào giữ nguyên thì ghi
    vào `semi-lint.json`: `"keep": { "tables": "lý do" }`, audit sẽ không hỏi lại.
@@ -75,6 +77,15 @@ Khi sạch, `semi-audit.md` được xoá. Muốn audit tự chạy trong CI c�
 /semi-update
 ```
 Chỉ để lên bản mới: cài tag mới, in CHANGELOG các bản đã bỏ qua, chạy migration của các bản đó, rồi `tsc`. Luật mới (nếu có) sẽ hiện ở lần `/semi-audit` kế tiếp.
+
+### Đổi style
+```text
+/semi-style
+```
+Style là dáng của cả giao diện: bo góc (`rounded-chip` · `control` · `card` · `panel`) và bóng thẻ (`shadow-card`). Mọi
+style dùng chung component, màu, chữ, bố cục và cả hai theme sáng / tối. Hiện có **Flat** (mặc định: viền mảnh, không
+bóng, cho dashboard / công cụ) và **Soft** (bo lớn, bóng nhẹ, cho app người dùng cuối). Danh sách: `tokens/styles.json`,
+mô tả: `docs/STYLES.md`. Xem thử trong Storybook (nút Flat / Soft ở chân sidebar).
 
 ### Đề xuất tính năng mới từ dự án con (Khi gặp thiếu sót hoặc nhu cầu chưa đáp ứng)
 ```text

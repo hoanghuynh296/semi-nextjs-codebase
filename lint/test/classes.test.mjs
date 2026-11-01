@@ -51,11 +51,19 @@ test("classes outside className are found: constants, cn() args, objects, templa
   const src = [
     'const TONE = { a: "bg-white", b: `border ${on ? "border-slate-200" : "border-line"}` };',
     'cn("p-4", active && "text-gray-900")',
-    "const t = `rounded-xl ${x} divide-gray-100`;",
+    "const t = `rounded-card ${x} divide-gray-100`;",
   ].join("\n");
   assert.deepEqual(
     analyse(src).map((f) => `${f.line}:${f.token}`),
     ["1:bg-white", "1:border-slate-200", "2:text-gray-900", "3:divide-gray-100"],
+  );
+});
+
+test("raw radii are style debt; style tokens, full and none are fine", () => {
+  const src = 'const a = "rounded rounded-lg md:rounded-t-xl rounded-[10px] rounded-card rounded-full rounded-none rounded-tl-panel";';
+  assert.deepEqual(
+    analyse(src).map((f) => `${f.rule}:${f.token}`),
+    ["radius-token:rounded", "radius-token:rounded-lg", "radius-token:md:rounded-t-xl", "radius-token:rounded-[10px]"],
   );
 });
 

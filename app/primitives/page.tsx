@@ -238,7 +238,7 @@ export default function PrimitivesPage() {
       </ShowcaseSection>
 
       <ShowcaseSection id="table" title="Table · Avatar · Badge" icon="grid" meta="dense rows · tabular-nums">
-        <div className="rounded-xl border border-line overflow-hidden">
+        <div className="rounded-card border border-line overflow-hidden">
           <Table>
             <THead>
               <TR>

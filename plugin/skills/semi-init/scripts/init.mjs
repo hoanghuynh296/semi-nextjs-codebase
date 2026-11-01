@@ -10,10 +10,12 @@ import {
   installedSemiVersion,
   resolveTargetSpec,
   runLocal,
+  semiStyles,
   wireAgentsMd,
   wireGlobalsCss,
   wireNextConfig,
   wireSemiLintConfig,
+  wireStyle,
 } from "./setup.mjs";
 
 function parseArgs(argv) {
@@ -23,6 +25,7 @@ function parseArgs(argv) {
     appName: "Semi App",
     nextVersion: "latest",
     tailwindVersion: "latest",
+    style: null,
   };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -31,6 +34,7 @@ function parseArgs(argv) {
     else if (a === "--app-name" && argv[i + 1]) opts.appName = argv[++i];
     else if (a === "--next-version" && argv[i + 1]) opts.nextVersion = argv[++i];
     else if (a === "--tailwind-version" && argv[i + 1]) opts.tailwindVersion = argv[++i];
+    else if (a === "--style" && argv[i + 1]) opts.style = argv[++i];
   }
   return opts;
 }
@@ -221,6 +225,12 @@ if (discovered.length) {
   process.exit(10);
 }
 const webDir = opts.cwd;
+const styles = semiStyles();
+opts.style ||= styles.default;
+if (!styles.styles.some((s) => s.id === opts.style)) {
+  console.error(`--style ${opts.style}: không có style này. Chọn: ${styles.styles.map((s) => s.id).join(", ")}`);
+  process.exit(2);
+}
 const { spec } = resolveTargetSpec();
 
 const cnaTag = opts.nextVersion && opts.nextVersion !== "keep" ? opts.nextVersion : "latest";
@@ -256,6 +266,7 @@ wireGlobalsCss(webDir);
 wireSemiLintConfig(webDir);
 wireAgentsMd(opts.cwd, installedVersion);
 writeNewProjectStarter(webDir, opts.appName);
+console.log(wireStyle(webDir, opts.style).message);
 
 console.log("\nRunning verification (semi-lint + tsc + next build)...");
 const failed = [
@@ -264,4 +275,4 @@ const failed = [
   spawnSync(pm, ["run", "build"], { cwd: webDir, stdio: "inherit" }),
 ].some((r) => r.status !== 0);
 if (failed) process.exit(1);
-console.log(`\nNew Semi app (@semi/ui v${installedVersion}) created and verified in ${webDir}`);
+console.log(`\nNew Semi app (@semi/ui v${installedVersion}, style ${opts.style}) created and verified in ${webDir}`);

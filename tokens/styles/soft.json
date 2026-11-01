@@ -1,0 +1,12 @@
+{
+  "$note": "A Semi style: the shape tokens every component reads (rounded-chip / control / card / panel, shadow-card). Every style sets the same keys; colours, type and layout stay shared. Edit, then npm run build:tokens. docs/STYLES.md describes each style.",
+  "name": "Soft",
+  "description": "Larger radii and a soft resting shadow under cards. Calmer, friendlier screens: consumer apps, storefronts, onboarding.",
+  "tokens": {
+    "radius-chip": { "value": "0.375rem" },
+    "radius-control": { "value": "0.75rem" },
+    "radius-card": { "value": "1.25rem" },
+    "radius-panel": { "value": "1.5rem" },
+    "shadow-card": { "value": "0 1px 2px var(--semi-shadow-tint), 0 8px 24px -10px var(--semi-shadow-tint)", "note": "Tint follows the theme (--semi-shadow-tint)" }
+  }
+}

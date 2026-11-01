@@ -1,7 +1,7 @@
 "use client";
 
 // Shared modal dialog of the Semi Design System (docs/DESIGN_SYSTEM.md §14).
-// Full screen on phones (< sm), centred rounded-2xl dialog from sm up, with standard MODAL_HEAD + MODAL_FOOT.
+// Full screen on phones (< sm), centred rounded-panel dialog from sm up, with standard MODAL_HEAD + MODAL_FOOT.
 // Focus moves into the dialog and stays there, returns to the opener on close; the page behind does not scroll.
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";

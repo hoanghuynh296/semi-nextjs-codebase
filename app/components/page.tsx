@@ -32,7 +32,7 @@ const GITHUB_URL = "https" + "://github.com/hoanghuynh296/semi-nextjs-codebase";
 /** A fixed-theme preview: data-theme on any element re-scopes every semantic token inside it. */
 function ThemeScopePreview({ theme }: { theme: "dark" | "light" }) {
   return (
-    <div data-theme={theme} className={`${theme} p-3 rounded-xl bg-canvas border border-line space-y-2`}>
+    <div data-theme={theme} className={`${theme} p-3 rounded-card bg-canvas border border-line space-y-2`}>
       <span className="text-caption font-medium text-muted block">data-theme=&quot;{theme}&quot;</span>
       <Card className="p-3 space-y-2">
         <div className="flex items-center justify-between gap-2">
@@ -132,7 +132,7 @@ export default function ComponentsShowcasePage() {
           <span className="text-caption text-muted pl-6 sm:pl-0 sm:text-right">ThemeScript · ThemeProvider</span>
         </div>
 
-        <div className="p-4 rounded-xl bg-panel border border-line space-y-4">
+        <div className="p-4 rounded-card bg-panel border border-line space-y-4">
           <div className="flex flex-wrap items-center gap-3">
             <ThemeSwitcher showLabels />
             <ThemeSwitcher />
@@ -161,11 +161,11 @@ export default function ComponentsShowcasePage() {
           <span className="text-caption text-muted pl-6 sm:pl-0 sm:text-right">STICKY_TOOLBAR Pattern</span>
         </div>
 
-        <div className="p-4 rounded-xl bg-panel border border-line space-y-3">
+        <div className="p-4 rounded-card bg-panel border border-line space-y-3">
           <p className="text-label text-muted">
             Toolbar chuẩn luôn có bộ lọc bên trái và nhóm nút thao tác (Search, Refresh, Nút thêm mới dạng icon-only BTN_ICON) ở bên phải:
           </p>
-          <div className="p-2 rounded-xl bg-canvas border border-line">
+          <div className="p-2 rounded-card bg-canvas border border-line">
             <SubpageToolbar
               left={
                 <div className="flex items-center gap-2">
@@ -215,7 +215,7 @@ export default function ComponentsShowcasePage() {
           <span className="text-caption text-muted font-medium">@semi/ui/styles</span>
         </div>
 
-        <div className="p-4 rounded-xl bg-panel border border-line space-y-4">
+        <div className="p-4 rounded-card bg-panel border border-line space-y-4">
           <div className="flex flex-wrap items-center gap-3">
             <button type="button" className={BTN_PRIMARY}>
               <Icon name="play" />
@@ -258,7 +258,7 @@ export default function ComponentsShowcasePage() {
           <span className="text-caption text-muted pl-6 sm:pl-0 sm:text-right">Dark-first Form Components</span>
         </div>
 
-        <div className="p-4 rounded-xl bg-panel border border-line">
+        <div className="p-4 rounded-card bg-panel border border-line">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* CustomSelect */}
             <Field label="Chọn máy in đích (CustomSelect)">
@@ -362,7 +362,7 @@ export default function ComponentsShowcasePage() {
         </div>
 
         {/* Pagination demo */}
-        <div className="p-3 rounded-xl bg-panel border border-line flex flex-wrap items-center justify-between gap-2">
+        <div className="p-3 rounded-card bg-panel border border-line flex flex-wrap items-center justify-between gap-2">
           <span className="text-label text-muted">Component Pagination (Phân trang):</span>
           <Pagination
             page={currentPage}
@@ -383,7 +383,7 @@ export default function ComponentsShowcasePage() {
           <span className="text-caption text-muted pl-6 sm:pl-0 sm:text-right">Semi Tonal Coding</span>
         </div>
 
-        <div className="p-4 rounded-xl bg-panel border border-line space-y-4">
+        <div className="p-4 rounded-card bg-panel border border-line space-y-4">
           <div>
             <div className="text-label font-medium text-muted mb-2">Dual-Theme Tonal Badges (&lt;Badge tone="..."&gt;):</div>
             <div className="flex flex-wrap items-center gap-2">
@@ -431,7 +431,7 @@ export default function ComponentsShowcasePage() {
           <span className="text-caption text-muted pl-6 sm:pl-0 sm:text-right">Modal Portal & ConfirmHost</span>
         </div>
 
-        <div className="p-4 rounded-xl bg-panel border border-line space-y-3">
+        <div className="p-4 rounded-card bg-panel border border-line space-y-3">
           <div className="flex flex-wrap items-center gap-3">
             <button
               type="button"
@@ -452,7 +452,7 @@ export default function ComponentsShowcasePage() {
             </button>
 
             {confirmResult && (
-              <span className="text-label font-medium text-accent-fg px-3 py-1.5 rounded-lg bg-panel/[0.05] border border-line">
+              <span className="text-label font-medium text-accent-fg px-3 py-1.5 rounded-control bg-panel/[0.05] border border-line">
                 {confirmResult}
               </span>
             )}
@@ -467,7 +467,7 @@ export default function ComponentsShowcasePage() {
         >
           <div className="space-y-4">
             <p className="text-ui text-body leading-relaxed">
-              Modal của Semi sử dụng lớp nền <code className="text-accent-fg">bg-field</code> với bán kính <code className="text-accent-fg">rounded-2xl</code>, có header và nút đóng chuẩn Semantic Icon.
+              Modal của Semi sử dụng lớp nền <code className="text-accent-fg">bg-field</code> với bán kính <code className="text-accent-fg">rounded-panel</code>, có header và nút đóng chuẩn Semantic Icon.
             </p>
 
             <Field label="Tốc độ in lớp đầu tiên (First Layer Speed)">
@@ -513,11 +513,11 @@ export default function ComponentsShowcasePage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-4 rounded-xl bg-panel border border-line space-y-2">
+          <div className="p-4 rounded-card bg-panel border border-line space-y-2">
             <span className="text-caption text-muted font-medium block">SkeletonCard (Khung card đang nạp dữ liệu):</span>
             <SkeletonCard />
           </div>
-          <div className="p-4 rounded-xl bg-panel border border-line space-y-2">
+          <div className="p-4 rounded-card bg-panel border border-line space-y-2">
             <span className="text-caption text-muted font-medium block">SkeletonRows (Hàng bảng dữ liệu):</span>
             <SkeletonRows count={3} />
           </div>

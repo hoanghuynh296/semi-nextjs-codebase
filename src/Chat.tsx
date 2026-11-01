@@ -24,28 +24,28 @@ import { cn, FOCUS_RING } from "../styles/utils";
 
 /** A tappable row in a chat (suggested request, follow-up choice, link): one look for all of them. */
 export const CHAT_ROW = cn(
-  "group w-full flex items-center gap-3 text-left text-ui text-body hover:text-contrast rounded-xl bg-field hover:bg-raised border border-line hover:border-primary-500/30 px-3 py-2.5 transition disabled:opacity-40 disabled:pointer-events-none",
+  "group w-full flex items-center gap-3 text-left text-ui text-body hover:text-contrast rounded-card bg-field hover:bg-raised border border-line hover:border-primary-500/30 px-3 py-2.5 transition disabled:opacity-40 disabled:pointer-events-none",
   FOCUS_RING,
 );
 /** A small label chip in a chat (events, tags the AI understands). */
-export const CHAT_CHIP = "text-label text-body rounded-lg bg-field border border-line px-2 py-1";
+export const CHAT_CHIP = "text-label text-body rounded-control bg-field border border-line px-2 py-1";
 /** The scrolling message list. */
 const CHAT_LIST = "flex-1 overflow-y-auto overscroll-contain px-4 py-4 flex flex-col gap-4 min-h-0";
 /** The bar that holds the composer at the bottom of a chat (clear of the home indicator on phones). */
 const COMPOSER_BAR = "relative p-3 border-t border-divider shrink-0 max-sm:pb-[max(0.75rem,env(safe-area-inset-bottom))]";
 /** The input box around the textarea and its buttons. */
-const COMPOSER_BOX = "flex flex-col gap-1 bg-field border border-line rounded-xl p-1.5 pl-2 focus-within:border-primary-500/50 transition min-w-0";
+const COMPOSER_BOX = "flex flex-col gap-1 bg-field border border-line rounded-card p-1.5 pl-2 focus-within:border-primary-500/50 transition min-w-0";
 /** The question field: grows with the text up to 45% of the screen, then scrolls inside. */
 const COMPOSER_FIELD =
   "flex-1 min-w-0 block resize-none max-h-[45dvh] overflow-y-auto bg-transparent px-1.5 py-1.5 text-ui text-contrast placeholder:text-muted outline-none disabled:opacity-40";
-const SMALL_ACTION = cn("w-7 h-7 rounded-lg text-muted hover:text-contrast hover:bg-raised flex items-center justify-center transition shrink-0", FOCUS_RING);
+const SMALL_ACTION = cn("w-7 h-7 rounded-control text-muted hover:text-contrast hover:bg-raised flex items-center justify-center transition shrink-0", FOCUS_RING);
 
 // ─── Messages ────────────────────────────────────────────────────────────────────────────────────────────────────
 
 /** Small sparkles tile in front of every AI answer (pulses while it streams). */
 export function ChatAvatar({ busy = false, icon = "sparkles" }: { busy?: boolean; icon?: IconName }) {
   return (
-    <span className={cn("w-6 h-6 rounded-lg bg-primary-500/15 text-accent-fg flex items-center justify-center shrink-0", busy && "motion-safe:animate-pulse")}>
+    <span className={cn("w-6 h-6 rounded-control bg-primary-500/15 text-accent-fg flex items-center justify-center shrink-0", busy && "motion-safe:animate-pulse")}>
       <Icon name={icon} className="w-3.5 h-3.5" />
     </span>
   );
@@ -71,7 +71,7 @@ export function UserMessage({ failed = false, children }: { failed?: boolean; ch
   return (
     <div
       className={cn(
-        "self-end max-w-[85%] rounded-2xl rounded-br-md px-3 py-2 text-ui whitespace-pre-wrap break-words border",
+        "self-end max-w-[85%] rounded-panel rounded-br-chip px-3 py-2 text-ui whitespace-pre-wrap break-words border",
         failed ? "bg-field border-line text-muted" : "bg-primary-500/15 border-primary-500/20 text-contrast",
       )}
     >
@@ -115,12 +115,12 @@ export function ChatError({
   const s = STATUS_ICON[tone];
   return (
     <div role={tone === "danger" ? "alert" : "status"} className="self-start flex gap-2 max-w-[96%]">
-      <span className={cn("w-6 h-6 rounded-lg border flex items-center justify-center shrink-0", s.surface, s.fg)}>
+      <span className={cn("w-6 h-6 rounded-control border flex items-center justify-center shrink-0", s.surface, s.fg)}>
         <Icon name="alert" className="w-3.5 h-3.5" />
       </span>
       <div className="min-w-0 flex flex-col items-start gap-1.5">
         {/* body colour like Alert: tone text on its tint misses AA on canvas in light mode */}
-        <div className={cn("text-ui text-body rounded-xl px-3 py-2 break-words border", s.surface)}>{children}</div>
+        <div className={cn("text-ui text-body rounded-card px-3 py-2 break-words border", s.surface)}>{children}</div>
         {onRetry && (
           <Button size="sm" variant="ghost" icon="refresh" onClick={onRetry}>
             {t.chatRetry}
@@ -186,7 +186,7 @@ export function ChatSuggestion({
 }) {
   const body = (
     <>
-      <span className="w-7 h-7 rounded-lg bg-primary-500/10 text-accent-fg flex items-center justify-center shrink-0">
+      <span className="w-7 h-7 rounded-control bg-primary-500/10 text-accent-fg flex items-center justify-center shrink-0">
         <Icon name={icon} className="w-4 h-4" />
       </span>
       <span className="flex-1 min-w-0 leading-relaxed">{children}</span>

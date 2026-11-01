@@ -15,6 +15,7 @@
     "./tokens.css": "./tokens/tokens.css",
     "./base.css": "./styles/base.css",
     "./tokens.json": "./tokens/tokens.json",
+    "./styles.json": "./tokens/styles.json",
     "./package.json": "./package.json",
     "./components.json": "./components.json"
   },

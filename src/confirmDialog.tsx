@@ -73,7 +73,7 @@ export function ConfirmHost() {
         role="alertdialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="bg-panel border border-line rounded-2xl w-full max-w-sm shadow-overlay overflow-hidden"
+        className="bg-panel border border-line rounded-panel w-full max-w-sm shadow-overlay overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <div className={`px-5 pt-5 pb-4 space-y-2 ${c.icon ? "text-center" : ""}`}>

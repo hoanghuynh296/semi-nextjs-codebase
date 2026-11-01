@@ -150,6 +150,54 @@ export function wireSemiLintConfig(webDir) {
   return cfgPath;
 }
 
+/**
+ * The Semi styles ({ default, styles: [{ id, name, description, tokens }] }): those of the @semi/ui installed in
+ * appDir when given (null when that version predates styles), else the plugin's copy of tokens/styles.json.
+ */
+export function semiStyles(appDir) {
+  const file = appDir ? join(appDir, "node_modules", "@semi", "ui", "tokens", "styles.json") : join(PLUGIN_ROOT, "skills", "semi-audit", "scripts", "vendor", "styles.json");
+  if (appDir && !existsSync(file)) return existsSync(join(appDir, "node_modules", "@semi", "ui")) ? null : semiStyles();
+  return JSON.parse(readFileSync(file, "utf8"));
+}
+
+/** The root layout of an App Router app (relative path), or null. */
+export function findRootLayout(appDir) {
+  return ["app/layout.tsx", "src/app/layout.tsx", "app/layout.jsx", "src/app/layout.jsx"].find((f) => existsSync(join(appDir, f))) || null;
+}
+
+/** An app's style: what semi-lint.json declares and what <html data-style> in the root layout applies. */
+export function readStyleState(appDir) {
+  let declared = null;
+  try {
+    declared = JSON.parse(readFileSync(join(appDir, "semi-lint.json"), "utf8")).style ?? null;
+  } catch {}
+  const layout = findRootLayout(appDir);
+  const html = layout ? readFileSync(join(appDir, layout), "utf8").match(/<html\b[^>]*>/) : null;
+  const applied = html ? (html[0].match(/\bdata-style=["']([\w-]+)["']/)?.[1] ?? null) : null;
+  return { declared, applied, layout, hasHtml: Boolean(html) };
+}
+
+/**
+ * Pick a style: "style" in semi-lint.json and data-style on <html> in the root layout (the one place an app sets it).
+ * Returns { layout, ok, message }; ok is false when the id is unknown or the layout has no <html> tag to edit.
+ */
+export function wireStyle(appDir, id) {
+  const list = semiStyles(appDir);
+  if (!list) return { ok: false, message: "@semi/ui đã cài chưa có style: chạy /semi-update trước" };
+  if (!list.styles.some((s) => s.id === id)) return { ok: false, message: `style "${id}" không có; chọn: ${list.styles.map((s) => s.id).join(", ")}` };
+  const cfgPath = join(appDir, "semi-lint.json");
+  const cfg = existsSync(cfgPath) ? JSON.parse(readFileSync(cfgPath, "utf8")) : {};
+  cfg.style = id;
+  writeFileSync(cfgPath, JSON.stringify(cfg, null, 2) + "\n");
+  const layout = findRootLayout(appDir);
+  const src = layout ? readFileSync(join(appDir, layout), "utf8") : "";
+  const html = src.match(/<html\b[^>]*>/);
+  if (!html) return { ok: false, layout, message: `không thấy thẻ <html> trong ${layout || "app/layout.tsx"}: thêm data-style="${id}" vào <html> bằng tay` };
+  const tag = /\bdata-style=["'][\w-]*["']/.test(html[0]) ? html[0].replace(/\bdata-style=["'][\w-]*["']/, `data-style="${id}"`) : html[0].replace(/^<html\b/, `<html data-style="${id}"`);
+  writeFileSync(join(appDir, layout), src.replace(html[0], tag));
+  return { ok: true, layout, message: `${layout} ← <html data-style="${id}">, semi-lint.json ← "style": "${id}"` };
+}
+
 export function wireAgentsMd(rootDir, version) {
   const rulesTemplatePath = join(PLUGIN_ROOT, "rules", "AGENTS.md");
   const baseBlock = existsSync(rulesTemplatePath)

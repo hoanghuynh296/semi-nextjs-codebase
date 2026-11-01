@@ -196,7 +196,7 @@ export default function ChatPage() {
             Mở trên Modal
           </Button>
         </div>
-        <div className="relative h-[560px] rounded-xl bg-canvas border border-line overflow-hidden" data-testid="chat-workspace">
+        <div className="relative h-[560px] rounded-card bg-canvas border border-line overflow-hidden" data-testid="chat-workspace">
           <div className="absolute inset-0 flex items-center justify-center text-label text-muted">Canvas / workspace</div>
           {panel && <DemoChat placement="workspace" shown={panel} onClose={() => setPanel(false)} />}
         </div>
@@ -209,7 +209,7 @@ export default function ChatPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div className="space-y-3">
             <DemoLabel>UserMessage · AssistantMessage · ChatCopyButton</DemoLabel>
-            <div className="flex flex-col gap-4 rounded-xl bg-canvas border border-line p-4">
+            <div className="flex flex-col gap-4 rounded-card bg-canvas border border-line p-4">
               <UserMessage>Vì sao bản in PETG bị kéo sợi?</UserMessage>
               <AssistantMessage actions={<ChatCopyButton text={ANSWER} />}>
                 <Markdown text={ANSWER} />
@@ -219,7 +219,7 @@ export default function ChatPage() {
           </div>
           <div className="space-y-3">
             <DemoLabel>ChatThinking · ChatError · CHAT_CHIP</DemoLabel>
-            <div className="flex flex-col gap-4 rounded-xl bg-canvas border border-line p-4">
+            <div className="flex flex-col gap-4 rounded-card bg-canvas border border-line p-4">
               <AssistantMessage busy>
                 <ChatThinking label="Đang đọc cài đặt máy in" />
               </AssistantMessage>

@@ -5,7 +5,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 import { discoverFrontendApps } from "../../semi-audit/scripts/audit.mjs";
-import { installSemiUi, installedSemiVersion, resolveTargetSpec, runLocal, wireAgentsMd } from "../../semi-init/scripts/setup.mjs";
+import { installSemiUi, installedSemiVersion, readStyleState, resolveTargetSpec, runLocal, semiStyles, wireAgentsMd } from "../../semi-init/scripts/setup.mjs";
 import { cmpVersion, runMigrations } from "./migrate.mjs";
 
 let cwd = process.cwd();
@@ -66,6 +66,12 @@ for (const appDir of apps) {
     for (const m of done)
       console.log(`${name}: migration ${m.version} ${m.id} (${m.description}): ${m.changed.length ? m.changed.join(", ") : "không có gì để đổi"}`);
   }
+
+  // The app keeps its style; a release that renames or drops one ships a migration for it, so this only warns.
+  const style = readStyleState(appDir).declared;
+  const styles = semiStyles(appDir);
+  if (style && styles && !styles.styles.some((s) => s.id === style))
+    console.log(`${name}: style "${style}" không còn trong ${to} (${styles.styles.map((s) => s.id).join(", ")}): chạy /semi-style.`);
 
   // Only checks the upgrade itself (an API the app uses changed and no migration covers it).
   if (runLocal(appDir, "tsc", ["--noEmit"]).status !== 0) exitCode = 1;

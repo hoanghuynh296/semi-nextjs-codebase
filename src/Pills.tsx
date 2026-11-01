@@ -15,7 +15,7 @@ export function Pills<T extends string>({
   className?: string;
 }) {
   return (
-    <div className={`inline-flex items-center gap-0.5 bg-panel p-0.5 h-[34px] rounded-lg border border-line shrink-0 ${className}`}>
+    <div className={`inline-flex items-center gap-0.5 bg-panel p-0.5 h-[34px] rounded-control border border-line shrink-0 ${className}`}>
       {options.map((o) => (
         <button
           key={o.key}
@@ -23,7 +23,7 @@ export function Pills<T extends string>({
           title={o.title}
           aria-pressed={value === o.key}
           onClick={() => onChange(o.key)}
-          className={`px-2.5 h-full rounded-lg text-label font-medium whitespace-nowrap transition cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 ${
+          className={`px-2.5 h-full rounded-control text-label font-medium whitespace-nowrap transition cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 ${
             value === o.key ? "bg-raised text-contrast" : "text-muted hover:text-contrast"
           }`}
         >

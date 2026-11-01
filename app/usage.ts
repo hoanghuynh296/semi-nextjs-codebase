@@ -34,7 +34,7 @@ export const STORY_SECTIONS: Record<string, StorySection> = {
     when: "Every background, text and border colour: semantic tokens that switch with the theme, never palette classes.",
     code: `<div className="bg-canvas">            {/* app frame */}
   <main className="bg-app">           {/* content area */}
-    <section className="bg-panel border border-line rounded-xl">   {/* card */}
+    <section className="bg-panel border border-line rounded-card">   {/* card */}
       <h2 className="text-contrast">Title</h2>
       <p className="text-body">Body</p>
       <span className="text-muted">Caption</span>

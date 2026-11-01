@@ -29,7 +29,9 @@ test("dark-first apps map dark shades", () => {
 });
 
 test("sizes and shadows", () => {
-  assert.equal(m("text-[13px] sm:text-[22px] shadow-sm rounded-xl"), "text-ui sm:text-heading rounded-xl");
+  assert.equal(m("text-[13px] sm:text-[22px] shadow-sm rounded-xl"), "text-ui sm:text-heading shadow-card rounded-card");
+  assert.equal(m("rounded md:rounded-lg rounded-t-2xl hover:rounded-sm rounded-full"), "rounded-chip md:rounded-control rounded-t-panel hover:rounded-chip rounded-full");
+  assert.deepEqual(migrateClassString("rounded-[10px]").unresolved, ["rounded-[10px]"]);
   assert.equal(m("shadow-2xl"), "shadow-overlay");
 });
 

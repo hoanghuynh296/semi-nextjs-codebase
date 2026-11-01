@@ -7,6 +7,7 @@ import { AppShell, type ShellNavSection } from "../src/AppShell";
 import { ICONS } from "../src/Icon";
 import { ThemeSwitcher, ThemeToggle } from "../src/ThemeProvider";
 import pkg from "../package.json";
+import { StyleSwitcher } from "./StyleSwitcher";
 
 const ICON_COUNT = Object.keys(ICONS).length;
 
@@ -108,6 +109,7 @@ export function StorybookShell({ children }: { children: React.ReactNode }) {
         ) : (
           <div className="flex flex-col gap-2">
             <ThemeSwitcher fullWidth />
+            <StyleSwitcher />
             <div className="flex items-center justify-between text-caption text-muted px-1">
               <span className="tabular-nums">@semi/ui v{pkg.version}</span>
               <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 text-success-fg font-medium tabular-nums">

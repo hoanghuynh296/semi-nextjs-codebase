@@ -129,7 +129,7 @@ export function ThemeToggle({ className = "", size = "md" }: ThemeToggleProps) {
       onClick={toggleTheme}
       title={isDark ? t.toLight : t.toDark}
       aria-label={isDark ? t.toLight : t.toDark}
-      className={`${sizeClasses} rounded-lg bg-field hover:bg-raised border border-line text-muted hover:text-contrast flex items-center justify-center transition active:scale-95 cursor-pointer shrink-0 ${className}`}
+      className={`${sizeClasses} rounded-control bg-field hover:bg-raised border border-line text-muted hover:text-contrast flex items-center justify-center transition active:scale-95 cursor-pointer shrink-0 ${className}`}
     >
       <Icon name={isDark ? "sun" : "moon"} className={`${size === "sm" ? "w-3.5 h-3.5" : "w-4 h-4"} transition-opacity ${mounted ? "" : "opacity-0"}`} />
     </button>
@@ -166,7 +166,7 @@ export function ThemeSwitcher({
     <div
       role="radiogroup"
       aria-label={t.theme}
-      className={`${fullWidth ? "flex w-full" : "inline-flex"} items-center gap-0.5 bg-field p-0.5 h-[34px] rounded-lg border border-line shrink-0 ${className}`}
+      className={`${fullWidth ? "flex w-full" : "inline-flex"} items-center gap-0.5 bg-field p-0.5 h-[34px] rounded-control border border-line shrink-0 ${className}`}
     >
       {THEME_OPTIONS.map(({ key, icon }) => {
         // Nothing is selected until the stored theme is known (avoids flashing defaultTheme as selected).
@@ -180,7 +180,7 @@ export function ThemeSwitcher({
             aria-label={labels[key]}
             title={labels[key]}
             onClick={() => setTheme(key)}
-            className={`${fullWidth ? "flex-1" : ""} ${showLabels ? "px-2.5" : "w-8"} h-full rounded-lg inline-flex items-center justify-center gap-1.5 text-label font-medium whitespace-nowrap transition cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 ${
+            className={`${fullWidth ? "flex-1" : ""} ${showLabels ? "px-2.5" : "w-8"} h-full rounded-control inline-flex items-center justify-center gap-1.5 text-label font-medium whitespace-nowrap transition cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 ${
               on ? "bg-raised text-contrast" : "text-muted hover:text-contrast"
             }`}
           >

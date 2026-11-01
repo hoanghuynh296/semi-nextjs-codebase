@@ -1,9 +1,10 @@
 #!/usr/bin/env node
-// tokens/tokens.json (single source) → tokens/tokens.css (Tailwind 4 @theme).
-//   node scripts/build-tokens.mjs           write tokens/tokens.css
-//   node scripts/build-tokens.mjs --check   exit 1 when tokens.css is stale (CI / pre-tag)
+// tokens/tokens.json + tokens/styles/*.json (single source) → tokens/tokens.css (Tailwind 4 @theme) and
+// tokens/styles.json (the style list read by Storybook, the manifest and the plugin).
+//   node scripts/build-tokens.mjs           write both
+//   node scripts/build-tokens.mjs --check   exit 1 when one is stale (CI / pre-tag)
 // Output is deterministic (same JSON → byte-identical CSS).
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, readdirSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -12,6 +13,24 @@ const src = join(root, "tokens", "tokens.json");
 const dst = join(root, "tokens", "tokens.css");
 const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
 const tokens = JSON.parse(readFileSync(src, "utf8"));
+const stylesDir = join(root, "tokens", "styles");
+const stylesDst = join(root, "tokens", "styles.json");
+
+// Styles: every file sets the same shape keys; exactly one is the default (what an app without data-style gets).
+const styles = readdirSync(stylesDir)
+  .filter((f) => f.endsWith(".json"))
+  .sort()
+  .map((f) => ({ id: f.replace(/\.json$/, ""), ...JSON.parse(readFileSync(join(stylesDir, f), "utf8")) }));
+const defaults = styles.filter((s) => s.default);
+if (defaults.length !== 1) throw new Error(`tokens/styles: exactly one style needs "default": true (found ${defaults.length})`);
+const styleKeys = Object.keys(defaults[0].tokens);
+for (const s of styles) {
+  const keys = Object.keys(s.tokens);
+  const missing = styleKeys.filter((k) => !keys.includes(k));
+  const extra = keys.filter((k) => !styleKeys.includes(k));
+  if (missing.length || extra.length) throw new Error(`tokens/styles/${s.id}.json: missing [${missing}] extra [${extra}]`);
+}
+styles.sort((a, b) => (b.default ? 1 : 0) - (a.default ? 1 : 0)); // default first: later blocks win on equal specificity
 
 const TITLES = {
   font: "Fonts (apps load Geist + Montserrat Alternates with next/font and expose --font-geist / --font-montserrat-alternates, or set --font-sans-family / --font-display-family)",
@@ -42,6 +61,12 @@ for (const [group, entries] of Object.entries(tokens)) {
   if (group.startsWith("$")) continue;
   if (group === "semantic") {
     for (const [key, raw] of Object.entries(entries)) {
+      if (raw.private) {
+        // Only the themed source variable (read by other tokens, e.g. Soft's shadow-card), no utility.
+        darkVars.push(`  ${srcVar(key)}: ${raw.dark};`);
+        lightVars.push(`  ${srcVar(key)}: ${raw.light};`);
+        continue;
+      }
       const note = raw.note ? ` /* ${raw.note} */` : "";
       // An aliased key (color-text-contrast → color-contrast) only gets the alias as a utility (text-contrast).
       inlineVars.push(`  --${raw.alias ?? key}: var(${srcVar(key)});${note}`);
@@ -68,6 +93,17 @@ if (darkVars.length > 0) {
   out += `/* Semantic Tokens: Light Mode */\n[data-theme="light"],\n.light {\n${lightVars.join("\n")}\n}\n\n`;
   out += `/* data-theme="system": follows the OS without JS (ThemeScript resolves it to dark|light before paint) */\n@media (prefers-color-scheme: light) {\n  [data-theme="system"] {\n${lightVars.map((l) => "  " + l).join("\n")}\n  }\n}\n\n`;
   out += `/* --color-* runtime variables for app CSS (var(--color-panel)), re-resolved in every theme scope */\n:root,\n[data-theme],\n.dark,\n.light {\n${compatVars.join("\n")}\n}\n\n`;
+  // Styles: utilities read --semi-<key> (rounded-card → var(--semi-radius-card)); each style scope sets it. The
+  // [data-theme] descendants re-declare it so a value that uses a themed variable (shadow tint) follows a nested theme.
+  const def = styles[0];
+  const note = (raw) => (raw.note ? ` /* ${raw.note} */` : "");
+  out += `/* Styles (tokens/styles/*.json, docs/STYLES.md): set data-style="${styles.map((s) => s.id).join("|")}" on <html> or a wrapper; default ${def.id} */\n`;
+  out += `@theme inline {\n${styleKeys.map((k) => `  --${k}: var(--semi-${k});${note(def.tokens[k])}`).join("\n")}\n}\n\n`;
+  for (const s of styles) {
+    const sel = [...(s.default ? [":root", "[data-theme]"] : []), `[data-style="${s.id}"]`, `[data-style="${s.id}"] [data-theme]`];
+    out += `/* Style: ${s.name}. ${s.description} */\n${sel.join(",\n")} {\n`;
+    out += styleKeys.map((k) => `  --semi-${k}: ${s.tokens[k].value};`).join("\n") + "\n}\n\n";
+  }
   out += zKeys.map((k) => `@utility ${k} {\n  z-index: var(--${k});\n}\n`).join("") + "\n";
   out += `/* Utility fallbacks & direct semantic text/bg/border helpers */\n@layer utilities {\n` +
     `  .text-contrast { color: var(--color-text-contrast); }\n` +
@@ -83,14 +119,26 @@ if (darkVars.length > 0) {
     `}\n`;
 }
 
+const styleList =
+  JSON.stringify(
+    {
+      $note: "GENERATED by scripts/build-tokens.mjs from tokens/styles/*.json. An app picks one with <html data-style=\"id\">.",
+      default: styles[0].id,
+      styles: styles.map((s) => ({ id: s.id, name: s.name, description: s.description, tokens: Object.fromEntries(styleKeys.map((k) => [k, s.tokens[k].value])) })),
+    },
+    null,
+    2,
+  ) + "\n";
+
 if (process.argv.includes("--check")) {
-  const cur = existsSync(dst) ? readFileSync(dst, "utf8") : "";
-  if (cur !== out) {
-    console.error("tokens/tokens.css is stale: run node scripts/build-tokens.mjs");
+  const read = (p) => (existsSync(p) ? readFileSync(p, "utf8") : "");
+  if (read(dst) !== out || read(stylesDst) !== styleList) {
+    console.error("tokens/tokens.css or tokens/styles.json is stale: run node scripts/build-tokens.mjs");
     process.exit(1);
   }
   console.log("tokens.css up to date");
 } else {
   writeFileSync(dst, out);
+  writeFileSync(stylesDst, styleList);
   console.log(`wrote tokens/tokens.css (${out.split("\n").filter((l) => l.trim().startsWith("--")).length} tokens)`);
 }

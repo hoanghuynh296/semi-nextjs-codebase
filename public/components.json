@@ -58,7 +58,8 @@
       "on-solid",
       "overlay",
       "shadow-overlay",
-      "shadow-float"
+      "shadow-float",
+      "shadow-tint"
     ],
     "type": [
       "text-caption",
@@ -82,6 +83,29 @@
       "z-popover",
       "z-toast",
       "z-tooltip"
+    ],
+    "style": [
+      "radius-chip",
+      "radius-control",
+      "radius-card",
+      "radius-panel",
+      "shadow-card"
+    ]
+  },
+  "styles": {
+    "default": "flat",
+    "apply": "<html data-style=\"<id>\"> + \"style\" in semi-lint.json (docs/STYLES.md)",
+    "list": [
+      {
+        "id": "flat",
+        "name": "Flat",
+        "description": "Thin borders, no card shadows, medium radii. Dense, information-first screens: dashboards, tools, admin."
+      },
+      {
+        "id": "soft",
+        "name": "Soft",
+        "description": "Larger radii and a soft resting shadow under cards. Calmer, friendlier screens: consumer apps, storefronts, onboarding."
+      }
     ]
   },
   "icons": [
@@ -281,7 +305,7 @@
       "kind": "component",
       "module": "src/AppShell.tsx",
       "client": true,
-      "summary": "2-panel floating Bento shell of the Semi Design System (docs/DESIGN_SYSTEM.md §4): - Outer bg-canvas (#111111) with md:p-2 md:gap-2 - Collapsible rounded-2xl bg-panel left menu (w-52 <-> w-14 icon rail, persisted in localStorage) - Rounded-2xl bg-app right content panel with max-w-[1440px] container - Mobile (< md): hides the top logo header and renders MobileTabBar at the bottom (plus a bottom sheet if >5 routes)",
+      "summary": "2-panel floating Bento shell of the Semi Design System (docs/DESIGN_SYSTEM.md §4): - Outer bg-canvas (#111111) with md:p-2 md:gap-2 - Collapsible rounded-panel bg-panel left menu (w-52 <-> w-14 icon rail, persisted in localStorage) - Rounded-2xl bg-app right content panel with max-w-[1440px] container - Mobile (< md): hides the top logo header and renders MobileTabBar at the bottom (plus a bottom sheet if >5 routes)",
       "props": [
         "productName",
         "logoIcon",
@@ -1123,7 +1147,7 @@
       "kind": "component",
       "module": "src/Skeleton.tsx",
       "client": true,
-      "summary": "One shimmering block; size and radius come from className (default rounded-lg). */",
+      "summary": "One shimmering block; size and radius come from className (default rounded-control). */",
       "props": [
         "className",
         "style"
@@ -1766,7 +1790,7 @@
       "kind": "constant",
       "module": "styles/surfaces.ts",
       "client": false,
-      "summary": "Content card: panel fill, thin line border, large radius. Add padding (p-4) at the call site. */"
+      "summary": "Content card: panel fill, thin line border, card radius and the style's resting shadow (none in Flat). Add padding (p-4) at the call site. */"
     },
     {
       "name": "CARD_HOVER",
@@ -1780,7 +1804,7 @@
       "kind": "constant",
       "module": "styles/surfaces.ts",
       "client": false,
-      "summary": "Plain hero panel at the top of a page. Flat: no glow (docs/DESIGN_SYSTEM.md, \"Flat, no glow, no gradients\"). */"
+      "summary": "Plain hero panel at the top of a page. No glow (docs/DESIGN_SYSTEM.md, \"Flat, no glow, no gradients\"). */"
     },
     {
       "name": "CARD_ACTIVE",
@@ -1913,7 +1937,7 @@
       "kind": "constant",
       "module": "styles/surfaces.ts",
       "client": false,
-      "summary": "Modal shell: backdrop + panel. Phones (< sm): full screen (edge-to-edge, h-dvh, rounded-none, border-0). iPad / desktop (>= sm): centred dialog (max-h-[92dvh], rounded-2xl, border-line). Pass only the max-width at the call site (`max-w-md`…). /"
+      "summary": "Modal shell: backdrop + panel. Phones (< sm): full screen (edge-to-edge, h-dvh, rounded-none, border-0). iPad / desktop (>= sm): centred dialog (max-h-[92dvh], rounded-panel, border-line). Pass only the max-width at the call site (`max-w-md`…). /"
     },
     {
       "name": "MODAL_PANEL",

@@ -1,10 +1,10 @@
-// Token-level codemod from physical Tailwind colours / sizes to Semi tokens (used by /semi-init). No dependencies.
+// Token-level codemod from physical Tailwind colours / sizes / radii to Semi tokens (used by /semi-init). No dependencies.
 //
 // It rewrites class tokens only inside string literals (lint/classes.mjs), never prose or comments, keeps variants
 // (hover:, md:, group-hover:) and collapses legacy pairs: in "bg-white dark:bg-slate-900" the base maps to bg-panel,
 // which already switches with the theme, so the dark: override is dropped. Whatever has no safe mapping is reported
 // as unresolved for a person to decide; nothing is guessed.
-import { analyse, extractApply, extractStrings, parseColour, splitToken, tokensOf } from "./classes.mjs";
+import { analyse, extractApply, extractStrings, parseColour, radiusToken, splitToken, tokensOf } from "./classes.mjs";
 
 /** Neutral → semantic token, per utility family. "?" = depends on whether the app was light- or dark-first. */
 const NEUTRAL = {
@@ -34,7 +34,9 @@ const SIZES = { 11: "caption", 12: "label", 13: "ui", 14: "ui-lg", 15: "title", 
 export function mapUtility(utility, variants = [], mode = "light") {
   const size = utility.match(/^text-\[(\d+)px\]$/);
   if (size) return SIZES[size[1]] ? `text-${SIZES[size[1]]}` : null;
-  if (/^shadow(?:-sm|-md)?$/.test(utility)) return ""; // flat: no drop shadows on surfaces
+  const radius = radiusToken(utility);
+  if (radius !== undefined) return radius; // same value in the default style, follows the app's style after
+  if (/^shadow(?:-sm|-md)?$/.test(utility)) return "shadow-card"; // a resting surface shadow: the style decides (none in Flat)
   if (/^shadow-(?:lg|xl|2xl)$/.test(utility)) return "shadow-overlay"; // big shadows only ever meant "floating layer"
 
   const c = parseColour(utility);

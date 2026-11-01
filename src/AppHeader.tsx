@@ -46,7 +46,7 @@ export function AppHeader({
   const brand = (
     <>
       {logo ?? (
-        <span className="w-6 h-6 rounded-lg bg-field border border-line text-contrast flex items-center justify-center shrink-0">
+        <span className="w-6 h-6 rounded-control bg-field border border-line text-contrast flex items-center justify-center shrink-0">
           <Icon name={logoIcon} className="w-3.5 h-3.5 text-accent-fg" />
         </span>
       )}
@@ -58,7 +58,7 @@ export function AppHeader({
     </>
   );
   const brandClass =
-    "min-w-0 shrink flex items-center gap-2 rounded-lg -mx-1.5 px-1.5 py-1 hover:bg-raised active:scale-95 transition";
+    "min-w-0 shrink flex items-center gap-2 rounded-control -mx-1.5 px-1.5 py-1 hover:bg-raised active:scale-95 transition";
   return (
     <header
       className={`${app ? "block" : "hidden md:block"} sticky top-0 bg-app/95 backdrop-blur-xl border-b border-divider z-sticky shrink-0 select-none ${className}`}

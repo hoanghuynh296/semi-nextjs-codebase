@@ -1,0 +1,13 @@
+{
+  "$note": "A Semi style: the shape tokens every component reads (rounded-chip / control / card / panel, shadow-card). Every style sets the same keys; colours, type and layout stay shared. Edit, then npm run build:tokens. docs/STYLES.md describes each style.",
+  "name": "Flat",
+  "default": true,
+  "description": "Thin borders, no card shadows, medium radii. Dense, information-first screens: dashboards, tools, admin.",
+  "tokens": {
+    "radius-chip": { "value": "0.25rem", "note": "Small marks: checkboxes, inline code, count marks" },
+    "radius-control": { "value": "0.5rem", "note": "Buttons, inputs, selects, tiles, list rows" },
+    "radius-card": { "value": "0.75rem", "note": "Cards, popovers, menus, toasts" },
+    "radius-panel": { "value": "1rem", "note": "Hero, modal, drawer, sheet, sidebar" },
+    "shadow-card": { "value": "0 0 #0000", "note": "Resting cards: none (the border separates them)" }
+  }
+}

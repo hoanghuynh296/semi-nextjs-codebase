@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 import { HARD, RATCHET, loadConfig, scan as runSemiLintScan } from "./vendor/semi-lint.mjs";
 import { analyse } from "./vendor/classes.mjs";
 import { detectMode, migrateSource } from "./vendor/codemod.mjs";
-import { findGlobalsCss } from "../../semi-init/scripts/setup.mjs";
+import { findGlobalsCss, readStyleState, semiStyles } from "../../semi-init/scripts/setup.mjs";
 
 export const REPORT_FILE = "semi-audit.md";
 /** The order /semi-fix works in; each phase leaves the app building. */
@@ -483,6 +483,14 @@ export function auditSingleApp(cwd) {
   const layout = ["app/layout.tsx", "src/app/layout.tsx", "app/layout.jsx", "src/app/layout.jsx"].find((f) => existsSync(join(cwd, f)));
   if (layout && !/\bThemeProvider\b/.test(readFileSync(join(cwd, layout), "utf8")))
     setup("providers", layout, "layout chưa có ThemeScript / ThemeProvider / ToastHost / ConfirmHost", `bọc layout, defaultTheme="${mode === "dark" ? "dark" : "light"}" theo giao diện hiện tại`, "manual");
+  // Style (docs/STYLES.md): declared in semi-lint.json and applied as <html data-style> in the root layout.
+  const style = readStyleState(cwd);
+  const styleList = semiStyles(cwd); // null: the installed @semi/ui predates styles (/semi-update brings them)
+  const styleIds = styleList ? styleList.styles.map((s) => s.id) : [];
+  if (styleList && (!style.declared || !styleIds.includes(style.declared)))
+    setup("style", "semi-lint.json", style.declared ? `style "${style.declared}" không có trong @semi/ui` : "chưa chọn style", `hỏi người dùng chọn style (${styleIds.join(" / ")}), rồi foundation --style <id>`);
+  else if (styleList && style.applied !== style.declared)
+    setup("style", style.layout || "app/layout.tsx", `<html> chưa có data-style="${style.declared}"`, `foundation --style ${style.declared}`);
 
   if (!usesAppShell || legacySidebarFile)
     decide("app-shell", legacySidebarFile || layout || "layout.tsx", legacySidebarFile ? "sidebar cũ (aside border-r / drawer)" : "chưa có khung AppShell / AppHeader", "AppShell + MobileTabBar (app nhiều trang) hoặc AppHeader (app công cụ)");
@@ -508,7 +516,7 @@ export function auditSingleApp(cwd) {
     if (!css) continue;
     for (const f of analyse(src, { css: true })) if (!autoAt.has(`${rel}:${f.line}:${f.token}`)) issues.push({ phase: "lint", kind: "manual", rule: f.rule, file: rel, line: f.line, token: f.token });
   }
-  const STEP = ["semi-ui", "tailwind-v4", "transpile", "semi-css", "semi-lint-config", "providers"];
+  const STEP = ["semi-ui", "tailwind-v4", "transpile", "semi-css", "semi-lint-config", "providers", "style"];
   issues.sort(
     (a, b) =>
       PHASES.indexOf(a.phase) - PHASES.indexOf(b.phase) ||
@@ -530,6 +538,7 @@ export function auditSingleApp(cwd) {
       tailwindVersion: twVersion,
       isTailwindV4,
       hasSemiUi,
+      style: style.declared,
       semiUiVersion: (() => {
         try {
           return JSON.parse(readFileSync(join(cwd, "node_modules/@semi/ui/package.json"), "utf8")).version;
@@ -642,6 +651,7 @@ const SETUP_NAMES = {
   "semi-css": "CSS của Semi",
   "semi-lint-config": "semi-lint.json",
   providers: "provider trong layout",
+  style: "chọn style",
 };
 const appsOf = (r) => (r.apps?.length ? r.apps : r.exists ? [r] : []);
 const rootOf = (r) => r.root || r.cwd;
@@ -691,7 +701,7 @@ export function formatSummary(r, reportPath = REPORT_FILE) {
     `|---|---|---|---:|---|---:|`,
     ...apps.map(
       (a) =>
-        `| \`${nameOf(r, a)}\` | ${a.stack.semiUiVersion || (a.stack.hasSemiUi ? "có" : "chưa cài")} | ${a.stack.nextVersion || "—"} · ${a.stack.tailwindVersion || "—"} | ${a.inventory.coverage.percent}% | ${stage(a)} | ${a.issues.length} |`,
+        `| \`${nameOf(r, a)}\` | ${a.stack.semiUiVersion || (a.stack.hasSemiUi ? "có" : "chưa cài")}${a.stack.style ? ` · ${a.stack.style}` : ""} | ${a.stack.nextVersion || "—"} · ${a.stack.tailwindVersion || "—"} | ${a.inventory.coverage.percent}% | ${stage(a)} | ${a.issues.length} |`,
     ),
     ``,
   ];

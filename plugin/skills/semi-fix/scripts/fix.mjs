@@ -2,9 +2,11 @@
 // /semi-fix helper: works from semi-audit.md (written by /semi-audit), one phase at a time. Zero external deps.
 //   node fix.mjs --cwd <root>                      plan: re-audits when semi-audit.md is missing or older than the code,
 //                                                  then prints the summary (the agent reads semi-audit.md for details)
-//   node fix.mjs --cwd <root> foundation           phase 1: install @semi/ui (Next / Tailwind untouched),
-//                                                  transpilePackages, Semi CSS, semi-lint.json + baseline, AGENTS.md;
-//                                                  prints the layout providers to add by hand
+//   node fix.mjs --cwd <root> foundation [--style <id>]
+//                                                  phase 1: install @semi/ui (Next / Tailwind untouched),
+//                                                  transpilePackages, Semi CSS, semi-lint.json + baseline, AGENTS.md,
+//                                                  the style the user chose (<html data-style>); prints the layout
+//                                                  providers to add by hand
 //   node fix.mjs --cwd <root> tokens [--only dir]  phase 2: token codemod (colour / size classes), all apps or one dir
 //   node fix.mjs --cwd <root> --verify             re-audit: rewrites semi-audit.md with what is left (deletes it when
 //                                                  nothing is), runs semi-lint and tsc. Exit 1 while anything is left.
@@ -12,15 +14,29 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join, relative, resolve, sep } from "node:path";
 import { auditFileState, auditProject, formatSummary, scanTargets, totals, writeAuditFile } from "../../semi-audit/scripts/audit.mjs";
 import { detectMode, migrateSource } from "../../semi-audit/scripts/vendor/codemod.mjs";
-import { installSemiUi, installedSemiVersion, resolveTargetSpec, runLocal, wireAgentsMd, wireGlobalsCss, wireNextConfig, wireSemiLintConfig } from "../../semi-init/scripts/setup.mjs";
+import {
+  installSemiUi,
+  installedSemiVersion,
+  readStyleState,
+  resolveTargetSpec,
+  runLocal,
+  semiStyles,
+  wireAgentsMd,
+  wireGlobalsCss,
+  wireNextConfig,
+  wireSemiLintConfig,
+  wireStyle,
+} from "../../semi-init/scripts/setup.mjs";
 
 const argv = process.argv.slice(2);
 let root = process.cwd();
 let mode = "plan";
 let only = null;
+let styleArg = null;
 for (let i = 0; i < argv.length; i++) {
   if (argv[i] === "--cwd" && argv[i + 1]) root = argv[++i];
   else if (argv[i] === "--only" && argv[i + 1]) only = argv[++i];
+  else if (argv[i] === "--style" && argv[i + 1]) styleArg = argv[++i];
   else if (argv[i] === "--verify") mode = "verify";
   else if (["foundation", "tokens"].includes(argv[i])) mode = argv[i];
   else if (argv[i] === "--codemod") mode = "tokens"; // old name
@@ -76,6 +92,20 @@ if (mode === "foundation") {
       wireSemiLintConfig(app.cwd);
       // Today's debt becomes the baseline, so the edit hook blocks only new debt; the later phases shrink it.
       runLocal(app.cwd, "semi-lint", ["--update-baseline"]);
+    }
+    if (todo.has("style")) {
+      const list = semiStyles(app.cwd) || semiStyles();
+      const declared = readStyleState(app.cwd).declared;
+      const id = styleArg || (list.styles.some((s) => s.id === declared) ? declared : null);
+      if (!id) {
+        console.log(`${name}: chưa chọn style. Hỏi người dùng, rồi chạy lại foundation --style <id>:`);
+        for (const s of list.styles) console.log(`  ${s.id}${s.id === list.default ? " (mặc định, gần giao diện app cũ nhất)" : ""}: ${s.description}`);
+        process.exitCode = 1;
+      } else {
+        const r = wireStyle(app.cwd, id);
+        console.log(`${name}: ${r.message}`);
+        if (!r.ok) process.exitCode = 1;
+      }
     }
     wireAgentsMd(root, installedSemiVersion(app.cwd) || "latest");
     if (todo.has("providers")) {

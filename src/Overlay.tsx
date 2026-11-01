@@ -59,7 +59,7 @@ export function Tooltip({ content, children, side = "top" }: { content: React.Re
             id={id}
             role="tooltip"
             style={{ left: pos.left, top: pos.top, bottom: pos.bottom }}
-            className="fixed z-tooltip max-w-[260px] px-2 py-1 rounded-lg bg-raised border border-line text-label text-contrast shadow-overlay pointer-events-none"
+            className="fixed z-tooltip max-w-[260px] px-2 py-1 rounded-control bg-raised border border-line text-label text-contrast shadow-overlay pointer-events-none"
           >
             {content}
           </div>,
@@ -187,7 +187,7 @@ export function Menu({
             aria-label={label}
             onKeyDown={onMenuKey}
             style={{ left: pos.left, top: pos.top, bottom: pos.bottom, minWidth: pos.minWidth, maxHeight: pos.maxHeight }}
-            className="fixed z-popover overflow-y-auto overscroll-contain bg-panel border border-line rounded-xl shadow-overlay p-1 flex flex-col gap-0.5"
+            className="fixed z-popover overflow-y-auto overscroll-contain bg-panel border border-line rounded-card shadow-overlay p-1 flex flex-col gap-0.5"
           >
             {items.map((it, i) => (
               <React.Fragment key={i}>
@@ -204,7 +204,7 @@ export function Menu({
                     it.onSelect();
                   }}
                   className={cn(
-                    "w-full text-left px-3 py-2 rounded-lg text-label flex items-center gap-2 transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed outline-none",
+                    "w-full text-left px-3 py-2 rounded-control text-label flex items-center gap-2 transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed outline-none",
                     it.danger ? "text-danger-fg hover:bg-danger-bg focus-visible:bg-danger-bg" : "text-body hover:bg-raised hover:text-contrast focus-visible:bg-raised focus-visible:text-contrast",
                   )}
                 >

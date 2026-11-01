@@ -13,6 +13,7 @@ async function open(page: Page, path: string, theme: "dark" | "light" | "system"
     new MutationObserver((_, obs) => {
       if (document.body) {
         (window as unknown as { __firstPaintTheme?: string }).__firstPaintTheme = document.documentElement?.dataset.theme;
+        (window as unknown as { __firstPaintStyle?: string }).__firstPaintStyle = document.documentElement?.dataset.style;
         obs.disconnect();
       }
     }).observe(document, { childList: true, subtree: true });
@@ -133,6 +134,22 @@ test("stored theme is applied before the first paint and survives reload", async
   await page.getByRole("radio", { name: "Tối" }).first().click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   expect(await page.evaluate(() => localStorage.getItem("semi-theme"))).toBe("dark");
+});
+
+test("styles: Soft is applied before paint, changes the shape tokens and passes contrast in both themes", async ({ page }) => {
+  const radius = () => page.evaluate(() => getComputedStyle(document.querySelector(".rounded-card")!).borderTopLeftRadius);
+  await open(page, "/components.html", "dark");
+  expect(await radius()).toBe("12px"); // Flat, the default
+  await page.getByRole("radio", { name: "Soft" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-style", "soft");
+  expect(await radius()).toBe("20px");
+  await page.reload();
+  expect(await page.evaluate(() => (window as unknown as { __firstPaintStyle?: string }).__firstPaintStyle)).toBe("soft");
+  await page.addStyleTag({ content: "*,*::before,*::after{transition:none!important;animation:none!important}" }); // reload drops it
+  for (const theme of THEMES) {
+    await page.getByRole("radio", { name: theme === "dark" ? "Tối" : "Sáng" }).first().click();
+    expect(await lowContrast(page)).toEqual([]);
+  }
 });
 
 test("system theme follows prefers-color-scheme", async ({ browser }) => {

@@ -18,7 +18,7 @@ export function pageWindow(page: number, pages: number): (number | null)[] {
   return out;
 }
 
-const BTN = "min-w-[32px] h-8 px-2 rounded-lg text-label font-medium tabular-nums inline-flex items-center justify-center transition";
+const BTN = "min-w-[32px] h-8 px-2 rounded-control text-label font-medium tabular-nums inline-flex items-center justify-center transition";
 
 export function Pagination({
   page,

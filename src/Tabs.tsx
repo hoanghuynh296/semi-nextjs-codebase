@@ -67,7 +67,7 @@ export function Tabs<T extends string>({
         onKeyDown={onKeyDown}
         className={cn(
           "flex items-center no-scrollbar overflow-x-auto",
-          seg ? "inline-flex gap-0.5 bg-field p-0.5 h-[34px] rounded-lg border border-line" : "gap-5 border-b border-divider",
+          seg ? "inline-flex gap-0.5 bg-field p-0.5 h-[34px] rounded-control border border-line" : "gap-5 border-b border-divider",
         )}
       >
         {items.map((it) => {
@@ -88,7 +88,7 @@ export function Tabs<T extends string>({
                 "inline-flex items-center gap-1.5 whitespace-nowrap text-label font-medium transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0",
                 FOCUS_RING,
                 seg
-                  ? cn("h-full px-2.5 rounded-lg", on ? "bg-raised text-contrast" : "text-muted hover:text-contrast")
+                  ? cn("h-full px-2.5 rounded-control", on ? "bg-raised text-contrast" : "text-muted hover:text-contrast")
                   : cn("h-9 -mb-px border-b-2", on ? "border-accent text-contrast" : "border-transparent text-muted hover:text-contrast"),
               )}
             >

@@ -31,7 +31,7 @@ export function Alert({
   const t = useSemiLocale();
   const s = STATUS_ICON[tone];
   return (
-    <div role={tone === "danger" ? "alert" : "status"} className={cn("rounded-xl border p-3 flex items-start gap-2.5", s.surface, className)}>
+    <div role={tone === "danger" ? "alert" : "status"} className={cn("rounded-card border p-3 flex items-start gap-2.5", s.surface, className)}>
       <Icon name={icon ?? s.icon} className={cn("w-4 h-4 mt-px shrink-0", s.fg)} />
       <div className="flex-1 min-w-0 space-y-1">
         {title && <div className={cn("text-ui font-medium", s.fg)}>{title}</div>}
@@ -43,7 +43,7 @@ export function Alert({
           type="button"
           aria-label={t.dismiss}
           onClick={onDismiss}
-          className={cn("w-6 h-6 rounded-lg text-muted hover:text-contrast flex items-center justify-center transition shrink-0 cursor-pointer", FOCUS_RING)}
+          className={cn("w-6 h-6 rounded-control text-muted hover:text-contrast flex items-center justify-center transition shrink-0 cursor-pointer", FOCUS_RING)}
         >
           <Icon name="close" className="w-3.5 h-3.5" />
         </button>
@@ -144,7 +144,7 @@ export function EmptyState({
   const t = useSemiLocale();
   return (
     <div className={cn(EMPTY_STATIC, className)}>
-      <span className="w-9 h-9 rounded-xl bg-field border border-line flex items-center justify-center text-muted">
+      <span className="w-9 h-9 rounded-card bg-field border border-line flex items-center justify-center text-muted">
         <Icon name={icon} className="w-4 h-4" />
       </span>
       <div className="text-ui font-medium text-contrast">{title ?? t.noData}</div>

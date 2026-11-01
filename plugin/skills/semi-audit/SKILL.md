@@ -6,7 +6,7 @@ description: Check a project against the Semi Design System (@semi/ui) - the fir
 # Semi Design System Health Check (`/semi-audit`)
 
 The Semi commands: new app → `/semi-init`. Existing app (first adoption or periodic check) → `/semi-audit`, then
-`/semi-fix` when it finds issues. Newer `@semi/ui` → `/semi-update`.
+`/semi-fix` when it finds issues. Newer `@semi/ui` → `/semi-update`. Another style → `/semi-style`.
 
 `/semi-audit` changes **no source file** and installs nothing. Its only output file is `semi-audit.md` at the folder it
 audits: every issue with `file:line` and what to do. `/semi-fix` works from it. When the audit finds nothing it deletes
@@ -28,8 +28,8 @@ an old `semi-audit.md`, so the file never describes problems that are already go
 
 | Phase | Issues | /semi-fix does |
 |---|---|---|
-| 1. Nền móng (`F…`) | `@semi/ui` not installed, `transpilePackages`, Semi CSS, `semi-lint.json`, layout providers, Tailwind v3 | `fix.mjs foundation` (installs, keeps Next / Tailwind) + the layout by hand, screenshots before / after |
-| 2. Token | colour / size classes the codemod maps safely | `fix.mjs tokens [--only dir]` |
+| 1. Nền móng (`F…`) | `@semi/ui` not installed, `transpilePackages`, Semi CSS, `semi-lint.json`, layout providers, no style chosen (or `<html data-style>` not matching it), Tailwind v3 | `fix.mjs foundation --style <id>` (installs, keeps Next / Tailwind) + the layout by hand, screenshots before / after |
+| 2. Token | colour / size / radius classes the codemod maps safely (`rounded-lg` → `rounded-control`, `shadow-sm` → `shadow-card`) | `fix.mjs tokens [--only dir]` |
 | 3. Sửa tay (`L…`) | lint hits no codemod can fix safely | edits by hand |
 | 4. Cấu trúc (`D…`) | AppShell / AppHeader frame, local wrappers, list pages without `SubpageToolbar`, tables, components that duplicate `@semi/ui`, other UI libraries | asks: fix, or keep (`semi-lint.json` `keep`) |
 

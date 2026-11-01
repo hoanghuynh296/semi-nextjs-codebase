@@ -13,7 +13,7 @@ import { cn } from "../styles/utils";
 const PANEL: Record<"right" | "left" | "bottom", string> = {
   right: "inset-y-0 right-0 w-full sm:max-w-md sm:border-l slide-panel-in",
   left: "inset-y-0 left-0 w-full sm:max-w-md sm:border-r",
-  bottom: "inset-x-0 bottom-0 max-h-[85dvh] rounded-t-2xl border-t",
+  bottom: "inset-x-0 bottom-0 max-h-[85dvh] rounded-t-panel border-t",
 };
 
 export function Drawer({

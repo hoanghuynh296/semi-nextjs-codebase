@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // The plugin ships on its own (marketplace source ./plugin), so /semi-audit carries copies of the lint and tokens.
 // This keeps those copies byte-identical to the sources (/semi-init imports the codemod from the same folder).
-//   node scripts/sync-vendor.mjs           copy lint/*.mjs + tokens/tokens.json into the plugin
+//   node scripts/sync-vendor.mjs           copy lint/*.mjs + tokens/tokens.json + tokens/styles.json into the plugin
 //   node scripts/sync-vendor.mjs --check   exit 1 when a copy is stale (npm run check)
 import { copyFileSync, existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -14,6 +14,7 @@ const COPIES = [
   ["lint/classes.mjs", `${VENDOR}/classes.mjs`],
   ["lint/codemod.mjs", `${VENDOR}/codemod.mjs`],
   ["tokens/tokens.json", `${VENDOR}/tokens.json`],
+  ["tokens/styles.json", `${VENDOR}/styles.json`],
   // Antigravity loads every file in plugin/rules; semi-ui.md must stay identical to AGENTS.md.
   ["plugin/rules/AGENTS.md", "plugin/rules/semi-ui.md"],
 ];

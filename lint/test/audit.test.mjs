@@ -8,6 +8,8 @@ import { join } from "node:path";
 import { auditFileState, auditProject, totals, writeAuditFile } from "../../plugin/skills/semi-audit/scripts/audit.mjs";
 
 const FIX = new URL("../../plugin/skills/semi-fix/scripts/fix.mjs", import.meta.url).pathname;
+const STYLE = new URL("../../plugin/skills/semi-style/scripts/style.mjs", import.meta.url).pathname;
+const LAYOUT = `export default function L({ children }) {\n  return (\n    <html lang="vi" suppressHydrationWarning>\n      <body>{children}</body>\n    </html>\n  );\n}\n`;
 
 function app() {
   const root = mkdtempSync(join(tmpdir(), "semi-audit-"));
@@ -31,7 +33,7 @@ test("an app without Semi starts at the foundation phase", () => {
   const issues = auditProject(root).apps[0].issues;
   assert.deepEqual(
     issues.filter((i) => i.phase === "foundation").map((i) => i.check),
-    ["semi-ui", "transpile", "semi-css", "semi-lint-config", "providers"],
+    ["semi-ui", "transpile", "semi-css", "semi-lint-config", "providers", "style"],
   );
   assert.equal(issues[0].phase, "foundation");
   rmSync(root, { recursive: true });
@@ -82,7 +84,8 @@ test("keep in semi-lint.json silences a structural check", () => {
 
 test("fix --codemod then a clean --verify deletes semi-audit.md", () => {
   const { root, web } = app();
-  writeFileSync(join(web, "semi-lint.json"), JSON.stringify({ scan: ["app"], keep: { tables: "x", "app-shell": "x", "subpage-toolbar": "x" } }));
+  writeFileSync(join(web, "semi-lint.json"), JSON.stringify({ scan: ["app"], style: "flat", keep: { tables: "x", "app-shell": "x", "subpage-toolbar": "x" } }));
+  writeFileSync(join(web, "app/layout.tsx"), LAYOUT.replace("<html ", '<html data-style="flat" ').replace("<body>", "<body><ThemeProvider>").replace("</body>", "</ThemeProvider></body>"));
   writeAuditFile(auditProject(root), root);
   execFileSync("node", [FIX, "--cwd", root, "--codemod"]);
   assert.match(readFileSync(join(web, "app/page.tsx"), "utf8"), /bg-panel text-contrast/);
@@ -90,5 +93,26 @@ test("fix --codemod then a clean --verify deletes semi-audit.md", () => {
   execFileSync("node", [FIX, "--cwd", root, "--verify"]);
   assert.equal(totals(auditProject(root)).total, 0);
   assert.equal(existsSync(join(root, "semi-audit.md")), false);
+  rmSync(root, { recursive: true });
+});
+
+test("style: the audit asks for one, foundation --style applies it, /semi-style switches it", () => {
+  const { root, web } = app();
+  writeFileSync(join(web, "app/layout.tsx"), LAYOUT);
+  const styleIssue = () => auditProject(root).apps[0].issues.find((i) => i.check === "style");
+  assert.match(styleIssue().what, /chưa chọn style/);
+  // Without --style the step is not guessed: it lists the styles and fails.
+  assert.throws(() => execFileSync("node", [FIX, "--cwd", root, "foundation"], { stdio: "pipe" }));
+  execFileSync("node", [FIX, "--cwd", root, "foundation", "--style", "soft"], { stdio: "pipe" });
+  assert.match(readFileSync(join(web, "app/layout.tsx"), "utf8"), /<html data-style="soft" lang="vi" suppressHydrationWarning>/);
+  assert.equal(JSON.parse(readFileSync(join(web, "semi-lint.json"), "utf8")).style, "soft");
+  assert.equal(styleIssue(), undefined);
+  // The layout drifting from semi-lint.json is a foundation issue again.
+  writeFileSync(join(web, "app/layout.tsx"), LAYOUT);
+  assert.match(styleIssue().what, /data-style="soft"/);
+  execFileSync("node", [STYLE, "--cwd", root, "--to", "flat"], { stdio: "pipe" });
+  assert.match(readFileSync(join(web, "app/layout.tsx"), "utf8"), /<html data-style="flat" lang="vi"/);
+  assert.match(execFileSync("node", [STYLE, "--cwd", root], { encoding: "utf8" }), /style flat\n {2}● flat/);
+  assert.throws(() => execFileSync("node", [STYLE, "--cwd", root, "--to", "glass"], { stdio: "pipe" }));
   rmSync(root, { recursive: true });
 });

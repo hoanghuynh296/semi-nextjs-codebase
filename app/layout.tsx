@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "../src/ThemeProvider";
 import { ThemeScript } from "../src/ThemeScript";
+import { STYLE_SCRIPT } from "./styleScript";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -17,6 +18,7 @@ export default function RootLayout({
     <html lang="vi" data-theme="dark" className="dark" suppressHydrationWarning>
       <head>
         <ThemeScript defaultTheme="dark" />
+        <script dangerouslySetInnerHTML={{ __html: STYLE_SCRIPT }} />
         {/* Text form of this Storybook for agents (relative: works under the GitHub Pages base path) */}
         <link rel="alternate" type="text/plain" href="llms.txt" title="llms.txt — Semi Design System for agents" />
         <link rel="alternate" type="application/json" href="components.json" title="components.json — component manifest" />

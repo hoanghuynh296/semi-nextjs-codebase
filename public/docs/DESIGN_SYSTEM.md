@@ -21,7 +21,8 @@ hook of the `semi-design` plugin).
 - **Icons over words.** Every nav item, card, section, empty state and dialog leads with an icon (tile or inline).
   Minimal text: no subtitle or caption under page titles, no captions that repeat what an icon already says.
 - **Flat, no glow, no gradients.** No gradient fills, no blurred colour blobs, no coloured `shadow-[0_0_…]` glows
-  (buttons, cards, status dots, power buttons). Depth comes from the surface tokens and translucent white overlays;
+  (buttons, cards, status dots, power buttons). Depth comes from the surface tokens and translucent white overlays
+  (plus the style's neutral resting card shadow `shadow-card`: none in Flat, soft in Soft);
   emphasis ("on", active, running) comes from a flat primary fill or a `border-primary-500/30` border.
   The only gradient is the skeleton shimmer sweep in `base.css`.
 - **Colour on content, not on chrome.** The nav menu is neutral (grey icons, no count badges; active item =
@@ -31,7 +32,9 @@ hook of the `semi-design` plugin).
 - **Unified sub-page toolbar.** Sub-pages open with a large `font-display` title (text only), followed by a single
   sticky toolbar row: pill filter tabs on the left, the icon-only primary CTA (`BTN_PRIMARY` + `BTN_ICON`) + secondary
   filter/search/refresh controls on the right (§4). All toolbar controls share `h-[34px]` and `text-label font-medium`.
-- **Cards, not lines.** Group content in rounded cards (`rounded-xl`, 12px) on the dark page; nested facts sit in tonal tiles.
+- **Cards, not lines.** Group content in rounded cards (`rounded-card`) on the dark page; nested facts sit in tonal tiles.
+- **One style per app.** Radii and the card shadow are style tokens (`docs/STYLES.md`): an app picks Flat (default) or
+  Soft once, with `<html data-style>`, and every component follows. Components, colours, type and layout are shared.
 - **One accent.** `primary-*` (Semi default green `#00AE42`; a product may override it, see §2b) for actions,
   selection and focus. Status colours carry meaning only (§3).
 - **Phone first.** Used from iPhone and iPad: no horizontal page scroll at 375px, touch targets ≥ 36px (44px for nav),
@@ -122,7 +125,8 @@ Brand override: đổi `primary-*` trong `@theme` là đủ (accent đọc từ 
 | Controls floating over a canvas | `shadow-float` |
 | Global stacking | `z-sticky` 30 < `z-drawer` 40 < `z-modal` 50 < `z-dialog` 60 < `z-keypad` 70 < `z-popover` 80 < `z-toast` 90 < `z-tooltip` 95 |
 
-Surfaces stay flat: no `shadow-sm/md` on cards. Local stacking inside one component keeps `z-10` / `z-20`; anything
+Surfaces stay flat: no `shadow-sm/md` on cards; a resting card shadow is `shadow-card` only (already in `CARD`, `HERO`,
+`SHELL_ASIDE`), whose value comes from the style. Local stacking inside one component keeps `z-10` / `z-20`; anything
 that covers the page uses a layer token, never `z-[9999]`. Easing: `ease-out-soft` (entering), `ease-in-soft` (leaving).
 
 ### Theme Switching Mechanism
@@ -203,9 +207,9 @@ Instead, follow the canonical Semi patterns:
 1. **Categorized / Feature Cards:**
    Keep the card shell neutral using standard `CARD` / `bg-panel border-line`, and express category color on the icon tile:
    ```tsx
-   <div className="bg-panel rounded-xl border border-line p-4">
+   <div className="bg-panel rounded-card border border-line p-4">
      <div className="flex items-center gap-2">
-       <span className="p-1.5 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+       <span className="p-1.5 rounded-control bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
          <Icon name="plug" className="w-4 h-4" />
        </span>
        <span className="text-ui font-semibold text-contrast">{title}</span>
@@ -217,7 +221,7 @@ Instead, follow the canonical Semi patterns:
    When an inline banner or callout needs a chromatic tint (info, warning, success), use 10% alpha container fill with 20% alpha border:
    ```tsx
    {/* Amber warning callout */}
-   <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-label">
+   <div className="flex items-center gap-2 px-3 py-2.5 rounded-control bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-label">
      <Icon name="alertTriangle" className="w-4 h-4 shrink-0" />
      <span>{warningMessage}</span>
    </div>
@@ -252,27 +256,27 @@ Instead, the Semi Design System **adapts all chromatic components** to **Two-Tie
 #### 1. Tonal Bento Card / Stat Widget
 ```tsx
 // Before (Legacy Light Mode only):
-<div className="rounded-xl border border-purple-200 bg-purple-50 p-4 text-purple-900 hover:bg-purple-100 hover:border-purple-300">
+<div className="rounded-card border border-purple-200 bg-purple-50 p-4 text-purple-900 hover:bg-purple-100 hover:border-purple-300">
   <p className="text-sm font-semibold">Pro Subscription</p>
 </div>
 
 // After (Universal Theme-Matching):
-<div className="rounded-xl border border-purple-500/20 bg-purple-500/10 p-4 text-purple-700 dark:text-purple-300 hover:bg-purple-500/15 hover:border-purple-500/30">
+<div className="rounded-card border border-purple-500/20 bg-purple-500/10 p-4 text-purple-700 dark:text-purple-300 hover:bg-purple-500/15 hover:border-purple-500/30">
   <p className="text-ui-lg font-semibold">Pro Subscription</p>
 </div>
 // Or using @semi/ui/styles:
-<div className={cn("rounded-xl p-4", TONAL_CONTAINER.purple, TONAL_HOVER.purple)}>...</div>
+<div className={cn("rounded-card p-4", TONAL_CONTAINER.purple, TONAL_HOVER.purple)}>...</div>
 ```
 
 #### 2. Alert Banner / Callout
 ```tsx
 // Before:
-<div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-amber-800">
+<div className="rounded-control border border-amber-200 bg-amber-50 p-3 text-amber-800">
   <span>Your license expires soon.</span>
 </div>
 
 // After:
-<div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-3 text-amber-700 dark:text-amber-300">
+<div className="rounded-control border border-amber-500/20 bg-amber-500/10 p-3 text-amber-700 dark:text-amber-300">
   <span className="text-ui font-medium">Your license expires soon.</span>
 </div>
 ```
@@ -309,14 +313,16 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
 
 ## 4. Layout
 
-- **Radius scale:** controls, inputs, buttons and inner tiles `rounded-lg` (8px) · cards `rounded-xl` (12px) · panels,
-  hero and modals `rounded-2xl` (16px) · filter chips, pills, avatars, badges `rounded-full`. Tiny inline marks
-  (a colour swatch, a key cap) may use `rounded` (4px). No `rounded-md`.
+- **Radius scale (style tokens):** tiny marks (checkbox, colour swatch, key cap, inline code) `rounded-chip` · controls,
+  inputs, buttons, inner tiles and list rows `rounded-control` · cards, popovers, menus, toasts `rounded-card` · panels,
+  hero, modals, drawers, sidebar `rounded-panel` · filter chips, pills, avatars, badges, dots `rounded-full`. Values per
+  style (Flat 4 · 8 · 12 · 16px, Soft 6 · 12 · 20 · 24px): `docs/STYLES.md`. Never the raw scale (`rounded`,
+  `rounded-lg/xl/2xl`) or `rounded-[Npx]`: they would not follow the style (`radius-token`).
 - **Control height:** all toolbar buttons, filter chips, pills, search inputs, custom selects and date pickers use
   `h-[34px]` and `text-label font-medium` so toolbar rows align evenly.
 - **Spacing scale:** 4 / 8 / 12 / 16 / 20 / 24 px. Card padding `p-4`, gaps inside a card `gap-3`, between cards
   `gap-3.5`–`gap-4`, between sections `gap-5`.
-- **Home shell (`md+`):** two inset `rounded-2xl` panels inside a `bg-canvas` frame (`md:p-2 md:gap-2`): a collapsible
+- **Home shell (`md+`):** two inset `rounded-panel` panels inside a `bg-canvas` frame (`md:p-2 md:gap-2`): a collapsible
   left **Panel Menu** (`w-52`, or `w-14` collapsed, toggled via the `sidebar` icon button) and a right **Panel
   Content** (`bg-app`) holding a full-width content container (`max-w-[1440px] px-4 sm:px-6`). Phones (`< md`) use a
   bottom tab bar with the same tabs (icons `w-5 h-5`).
@@ -371,14 +377,14 @@ Card header row: `IconTile` (or the item's image) · name (`text-ui-lg font-semi
 
 ## 6. Hero card
 
-`HERO` (`rounded-2xl p-4 sm:p-6`): a plain panel for the top block of a page. No glow blob.
+`HERO` (`rounded-panel p-4 sm:p-6`): a plain panel for the top block of a page. No glow blob.
 
 ## 7. Icon tile
 
 `<IconTile name="box" tone="green" size="sm|md|lg" />`: rounded square with a soft tint of the area's tone.
 `sm` 28px (list rows) · `md` 36px (card headers) · `lg` 44px (dialogs, empty states). Nav items use a grey `w-4 h-4`
 icon in a `h-8` row; the active item uses a neutral tonal fill (`bg-white/[0.10] text-white`). Dashboard quick feature
-tiles use `w-11 h-11 rounded-xl` with their area's `TILE_TONES`.
+tiles use `w-11 h-11 rounded-card` with their area's `TILE_TONES`.
 
 ## 8. Section heading
 
@@ -392,14 +398,14 @@ tiles use `w-11 h-11 rounded-xl` with their area's `TILE_TONES`.
 
 ## 9. Buttons
 
-`BTN_PRIMARY` / `BTN_SECONDARY` / `BTN_DANGER` from `@semi/ui/styles` (`rounded-lg`, `h-[34px]`,
-`text-label font-medium`, flat). Icon-only: add `BTN_ICON`, or `ICON_BTN` (`w-7 h-7 rounded-lg`) inside cards. Big
+`BTN_PRIMARY` / `BTN_SECONDARY` / `BTN_DANGER` from `@semi/ui/styles` (`rounded-control`, `h-[34px]`,
+`text-label font-medium`, flat). Icon-only: add `BTN_ICON`, or `ICON_BTN` (`w-7 h-7 rounded-control`) inside cards. Big
 state toggles (power) are round: `w-20 h-20 sm:w-24 sm:h-24 rounded-full`, flat `bg-primary-500 text-white` when on,
 `bg-white/[0.05]` when off. A running action shows a spinner inside its own button only.
 
 ## 10. Pills, chips, badges
 
-- Single choice: `Pills` (`h-[34px] rounded-lg` track, active = `bg-white/[0.10] text-white`).
+- Single choice: `Pills` (`h-[34px] rounded-control` track, active = `bg-white/[0.10] text-white`).
 - Sub-page filter tabs / chips: `Chip` (see §3 Chips). Static labels: `TAG`.
 - Filter chips may carry an icon and a count: icon `w-3.5 h-3.5` + label + `COUNT_PILL`.
 - Status pill: `STATUS_PILL` + `bg-<tone>-500/15 text-<tone>-300` with a status dot (§11).
@@ -413,13 +419,13 @@ Size `w-2 h-2` (`w-1.5 h-1.5` inline in a caption).
 
 ## 12. Tiles & readings
 
-Nested facts (readings, KPIs, sensor values) sit in `TILE` (`rounded-lg bg-white/[0.04] border border-white/[0.06]`)
+Nested facts (readings, KPIs, sensor values) sit in `TILE` (`rounded-control bg-white/[0.04] border border-white/[0.06]`)
 with an icon above or before a `tabular-nums` value. Progress is a ring or a `h-1.5 rounded-full` bar in
 `primary-500` on `bg-white/[0.08]`.
 
 ## 13. Empty state
 
-`EMPTY`: dashed `rounded-xl` card with an icon in a `w-12 h-12 rounded-xl bg-white/[0.05]` square above one short
+`EMPTY`: dashed `rounded-card` card with an icon in a `w-12 h-12 rounded-card bg-white/[0.05]` square above one short
 line. Make it the button that adds the first item when there is one.
 
 ## 13b. Loading (shimmer skeleton)
@@ -438,7 +444,7 @@ field while it loads: a `w-3 h-3` spinner + "Đang tải …" in `text-label tex
 ## 14. Modal & dialog
 
 `MODAL_BACKDROP` (`bg-black/70 backdrop-blur-lg`) + `MODAL_PANEL` (`bg-field border-line`): full screen on phones
-(`max-sm:h-dvh max-sm:rounded-none max-sm:border-0`, edge-to-edge), a centred `rounded-2xl` dialog from `sm` up.
+(`max-sm:h-dvh max-sm:rounded-none max-sm:border-0`, edge-to-edge), a centred `rounded-panel` dialog from `sm` up.
 The panel caps itself at `92dvh` and scrolls; pass only a width (`max-w-md`…) and, for a fixed header / footer,
 `flex flex-col` with a `flex-1 overflow-y-auto` body. `MODAL_HEAD` / `MODAL_TITLE` / `MODAL_FOOT`: header = `IconTile`
 + title + close `MODAL_CLOSE`; footer buttons right-aligned, stretched on a phone. Buttons are `MODAL_BTN_*`.
@@ -536,7 +542,7 @@ with `aria-describedby`, sets `aria-invalid` and announces the error (`role="ale
 </Field>
 ```
 
-Input surface: `FIELD_INPUT` (`bg-field border border-line hover:border-line-hover rounded-lg px-3 h-9 text-ui …
+Input surface: `FIELD_INPUT` (`bg-field border border-line hover:border-line-hover rounded-control px-3 h-9 text-ui …
 focus:border-primary-500/50`); invalid adds `border-danger-border`. Never `focus:outline-none` without a visible focus
 border. Choices: `Checkbox` (with `indeterminate`), `Switch` (settings that apply at once), `RadioGroup` (2–5 exclusive
 options; more → `CustomSelect`).
@@ -581,7 +587,7 @@ The full inventory with props is generated into `components.json` (`npm run buil
 - Gradients, glow blobs, coloured glow shadows (`shadow-[0_0_…]`), "glassmorphism" panels.
 - Solid greys for surfaces (`bg-gray-800/900`), `border-gray-700`, hard-coded hex colour classes (`bg-[#...]`, `text-[#...]`).
 - `font-bold` / `extrabold` / `black`; `text-[9px]` / `text-[10px]`; `text-xs` / `text-sm`; `uppercase` labels; ALL-CAPS button text.
-- Off-scale radii (`rounded-md`); `font-mono` for numbers; coloured icon tiles in front of every card title.
+- Raw or arbitrary radii (`rounded-lg`, `rounded-[10px]`) instead of the style tokens; `font-mono` for numbers; coloured icon tiles in front of every card title.
 - Emoji or unicode pictograms as icons; filled glyphs mixed with stroke icons; stroke 2+; new inline `<svg>` paths.
 - Native `<select>`, `type="date"`, `type="number"`, `window.confirm` / `alert`.
 - "Đang tải…" text or a page spinner instead of a skeleton.

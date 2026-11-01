@@ -38,7 +38,7 @@ export default function PatternsPage() {
 
       <ShowcaseSection id="page-tabs" title="PageTabsTitle · PageActions" icon="layers" meta="2–4 sibling pages · actions in the header slot">
         <PageActionsProvider>
-          <div className="flex items-end gap-3 rounded-xl bg-canvas border border-line p-4">
+          <div className="flex items-end gap-3 rounded-card bg-canvas border border-line p-4">
             <PageTabsTitle
               tabs={[
                 { key: "printers", label: "Máy in" },
@@ -57,7 +57,7 @@ export default function PatternsPage() {
       </ShowcaseSection>
 
       <ShowcaseSection id="app-header" title="AppHeader (tool apps)" icon="sliders" meta="logo + title go home · one primary action">
-        <div className="rounded-xl border border-line overflow-hidden">
+        <div className="rounded-card border border-line overflow-hidden">
           <AppHeader title="Phối màu" productName="Semi" logoIcon="palette" homeHref="#">
             <button type="button" className={`${HEADER_ICON_BTN} ${HEADER_ICON_OFF}`} aria-label="Trợ lý AI" title="Trợ lý AI">
               <Icon name="sparkles" className="w-4 h-4" />
@@ -70,7 +70,7 @@ export default function PatternsPage() {
       </ShowcaseSection>
 
       <ShowcaseSection id="side-panel" title="SidePanel" icon="sidebar" meta="320px · collapses to a rail">
-        <div className="h-64 flex rounded-xl border border-line overflow-hidden bg-canvas">
+        <div className="h-64 flex rounded-card border border-line overflow-hidden bg-canvas">
           <SidePanel collapsed={collapsed} onToggleCollapse={() => setCollapsed((v) => !v)}>
             <div className="p-3 space-y-2">
               <DemoLabel>Cài đặt lát cắt</DemoLabel>

@@ -19,8 +19,10 @@
 //     "skip": { "inline-svg-path": ["components/brand/Logo.tsx"] },   // rule id → path prefixes it ignores
 //     "only": { "viewport-grid-cols": ["components/catalog/"] },      // rule id → only these path prefixes
 //     "disable": ["loading-text"],                  // rule ids turned off (record why in your app's doc)
-//     "keep": { "tables": "reports need dense tables" }  // /semi-audit structural checks the team chose to keep
-//   }                                                     // (reason string = whole app, array = path prefixes)
+//     "keep": { "tables": "reports need dense tables" }, // /semi-audit structural checks the team chose to keep
+//                                                     // (reason string = whole app, array = path prefixes)
+//     "style": "soft"                               // the app's style (docs/STYLES.md), = <html data-style> in the layout
+//   }
 // A rule that the Semi docs add and that can be grepped belongs here too (change it in the semi repo, not per app).
 import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { join, relative, resolve, sep } from "node:path";
@@ -32,7 +34,6 @@ export const HARD = [
   ["tiny-text", /text-\[(8|9|10)px\]/, "minimum text size is text-caption (11px)"],
   ["uppercase-label", /uppercase tracking-(wide|wider|widest)|tracking-(wide|wider|widest) uppercase/, "labels are sentence case"],
   ["native-select", /<select\b/, "use CustomSelect from @semi/ui"],
-  ["rounded-md", /\brounded-md\b/, "radius scale: rounded (tiny marks) / lg / xl / 2xl / full"],
   [
     "tw-text-size",
     /\btext-(xs|sm|base|lg|xl)\b/,
@@ -42,7 +43,7 @@ export const HARD = [
   [
     "legacy-shell-aside",
     /\bw-(56|60|64)\b[^"'\n]*\bborder-r\b|\b-translate-x-full\b/,
-    "use AppShell from @semi/ui (floating rounded-2xl bento sidebar + MobileTabBar), not a fixed border-r or hamburger drawer <aside>",
+    "use AppShell from @semi/ui (floating rounded-panel bento sidebar + MobileTabBar), not a fixed border-r or hamburger drawer <aside>",
   ],
   [
     "legacy-ui-wrapper",
@@ -67,7 +68,7 @@ export const HARD = [
   ["external-link", /window\.open\(|href=\{?["'`]https?:\/\//, "links to other sites use ExternalLink from @semi/ui"],
   [
     "app-chrome-copy",
-    /h-\[34px\] px-4 rounded-lg text-(?:\[12px\]|label) font-semibold|p-1 sm:p-1\.5 rounded-2xl z-20|rounded-2xl p-1 gap-1 select-none shadow-(?:xl|float)/,
+    /h-\[34px\] px-4 rounded-(?:lg|control) text-(?:\[12px\]|label) font-semibold|p-1 sm:p-1\.5 rounded-(?:2xl|panel) z-20|rounded-(?:2xl|panel) p-1 gap-1 select-none shadow-(?:xl|float)/,
     "tool-app headers / canvas controls use @semi/ui/styles (headerPrimary, VIEWPORT_TOOLBAR, VIEWPORT_PILL…), not copies",
   ],
   [
@@ -103,6 +104,7 @@ export const RATCHET = [
   ],
   ["hex-colour-class", null, "No arbitrary colour values (bg-[#fff], text-[rgb(…)], border-[hsl(…)]): use colour tokens."],
   ["literal-colour-value", null, "No literal CSS colours in code (\"#fff\", \"rgb(…)\" in style props or configs): use var(--color-…) tokens."],
+  ["radius-token", null, "Radii are style tokens: rounded-chip (marks, checkboxes, inline code) · rounded-control (buttons, inputs, tiles, rows) · rounded-card · rounded-panel (hero, modal, drawer, sidebar), plus rounded-full / rounded-none. Not rounded / rounded-lg / rounded-xl / rounded-[Npx]: those do not follow the app's style."],
   ["arbitrary-text-size", null, "Use the type scale instead of text-[Npx]: text-caption 11 · label 12 · ui 13 · ui-lg 14 · title 15 · title-lg 16 · kpi 18 · heading-sm 20 · heading 22 · heading-lg 24 · display 26."],
   ["all-caps-label", /\>\s*[A-ZĐẮẰẲẴẶÂẤẦẨẪẬÊẾỀỂỄỆÔỐỒỔỖỘƠỚỜỞỠỢƯỨỪỬỮỰ]{4,}(?:[ .·…]+[A-ZĐ0-9…]+)*\s*</g, "button / label text is sentence case"],
   ["inline-svg-path", /<path\b/g, "add the icon to ICONS in @semi/ui (Icon.tsx) instead of inline <path>"],

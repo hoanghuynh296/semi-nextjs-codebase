@@ -74,9 +74,9 @@ function ToastCard({ item }: { item: ToastItem }) {
       role={tone === "danger" ? "alert" : "status"}
       onPointerEnter={stop}
       onPointerLeave={start}
-      className="pointer-events-auto w-full sm:w-[360px] bg-panel border border-line rounded-xl shadow-overlay p-3 flex items-start gap-2.5"
+      className="pointer-events-auto w-full sm:w-[360px] bg-panel border border-line rounded-card shadow-overlay p-3 flex items-start gap-2.5"
     >
-      <span className={cn("mt-px w-6 h-6 rounded-lg border flex items-center justify-center shrink-0", s.surface, s.fg)}>
+      <span className={cn("mt-px w-6 h-6 rounded-control border flex items-center justify-center shrink-0", s.surface, s.fg)}>
         <Icon name={s.icon} className="w-3.5 h-3.5" />
       </span>
       <div className="flex-1 min-w-0">
@@ -89,7 +89,7 @@ function ToastCard({ item }: { item: ToastItem }) {
               item.action!.onClick();
               dismissToast(item.id);
             }}
-            className={cn("mt-1.5 text-label font-medium text-accent-fg hover:text-contrast transition cursor-pointer rounded", FOCUS_RING)}
+            className={cn("mt-1.5 text-label font-medium text-accent-fg hover:text-contrast transition cursor-pointer rounded-chip", FOCUS_RING)}
           >
             {item.action.label}
           </button>
@@ -99,7 +99,7 @@ function ToastCard({ item }: { item: ToastItem }) {
         type="button"
         aria-label={t.dismiss}
         onClick={() => dismissToast(item.id)}
-        className={cn("w-6 h-6 rounded-lg text-muted hover:text-contrast hover:bg-raised flex items-center justify-center transition shrink-0 cursor-pointer", FOCUS_RING)}
+        className={cn("w-6 h-6 rounded-control text-muted hover:text-contrast hover:bg-raised flex items-center justify-center transition shrink-0 cursor-pointer", FOCUS_RING)}
       >
         <Icon name="close" className="w-3.5 h-3.5" />
       </button>

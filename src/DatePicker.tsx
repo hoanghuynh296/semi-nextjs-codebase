@@ -79,7 +79,7 @@ export function DatePicker({
         aria-haspopup="dialog"
         aria-expanded={open}
         onClick={toggle}
-        className="flex items-center gap-2 bg-panel border border-line rounded-lg text-contrast text-label font-medium tabular-nums px-2.5 h-[34px] hover:border-line-hover focus:outline-none focus:border-line-hover transition"
+        className="flex items-center gap-2 bg-panel border border-line rounded-control text-contrast text-label font-medium tabular-nums px-2.5 h-[34px] hover:border-line-hover focus:outline-none focus:border-line-hover transition"
       >
         <span>{label}</span>
         <Icon name="calendar" className="w-4 h-4 text-muted" />
@@ -89,16 +89,16 @@ export function DatePicker({
         <div
           role="dialog"
           aria-label={ariaLabel}
-          className="absolute right-0 mt-1.5 w-[264px] bg-panel/95 backdrop-blur-xl border border-line rounded-xl shadow-overlay z-popover p-3 flex flex-col gap-2"
+          className="absolute right-0 mt-1.5 w-[264px] bg-panel/95 backdrop-blur-xl border border-line rounded-card shadow-overlay z-popover p-3 flex flex-col gap-2"
         >
           <div className="flex items-center justify-between">
-            <button type="button" aria-label={t.prevMonth} onClick={() => shift(-1)} className="w-8 h-8 rounded-lg flex items-center justify-center text-muted hover:text-contrast hover:bg-raised transition">
+            <button type="button" aria-label={t.prevMonth} onClick={() => shift(-1)} className="w-8 h-8 rounded-control flex items-center justify-center text-muted hover:text-contrast hover:bg-raised transition">
               <Icon name="back" className="w-4 h-4" />
             </button>
             <span className="text-ui font-medium text-contrast tabular-nums">
               Tháng {view.m + 1}, {view.y}
             </span>
-            <button type="button" aria-label={t.nextMonth} onClick={() => shift(1)} className="w-8 h-8 rounded-lg flex items-center justify-center text-muted hover:text-contrast hover:bg-raised transition">
+            <button type="button" aria-label={t.nextMonth} onClick={() => shift(1)} className="w-8 h-8 rounded-control flex items-center justify-center text-muted hover:text-contrast hover:bg-raised transition">
               <Icon name="chevron" className="w-4 h-4" />
             </button>
           </div>
@@ -124,7 +124,7 @@ export function DatePicker({
                     onChange(key);
                     setOpen(false);
                   }}
-                  className={`h-8 rounded-lg text-label tabular-nums flex items-center justify-center transition disabled:opacity-30 disabled:pointer-events-none ${
+                  className={`h-8 rounded-control text-label tabular-nums flex items-center justify-center transition disabled:opacity-30 disabled:pointer-events-none ${
                     isSel
                       ? "bg-primary-500/20 text-accent-fg font-medium"
                       : key === today

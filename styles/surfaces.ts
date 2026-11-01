@@ -1,13 +1,13 @@
-// Shared surface classes of the Dashboard style (docs/DESIGN_SYSTEM.md §5, §13, §15). Use these instead of re-typing them.
+// Shared surface classes (docs/DESIGN_SYSTEM.md §5, §13, §15). Use these instead of re-typing them.
 
-/** Content card: panel fill, thin line border, large radius. Add padding (p-4) at the call site. */
-export const CARD = "bg-panel border border-line rounded-xl min-w-0";
+/** Content card: panel fill, thin line border, card radius and the style's resting shadow (none in Flat). Add padding (p-4) at the call site. */
+export const CARD = "bg-panel border border-line rounded-card shadow-card min-w-0";
 
 /** Clickable card (opens a detail view). */
 export const CARD_HOVER = `${CARD} hover:border-line-hover active:scale-[0.99] transition`;
 
-/** Plain hero panel at the top of a page. Flat: no glow (docs/DESIGN_SYSTEM.md, "Flat, no glow, no gradients"). */
-export const HERO = "relative overflow-hidden rounded-2xl border border-line bg-panel p-4 sm:p-6";
+/** Plain hero panel at the top of a page. No glow (docs/DESIGN_SYSTEM.md, "Flat, no glow, no gradients"). */
+export const HERO = "relative overflow-hidden rounded-panel border border-line bg-panel shadow-card p-4 sm:p-6";
 
 /** Add to CARD for an active / "on" / printing card: primary border, no glow. */
 export const CARD_ACTIVE = "!border-primary-500/30";
@@ -28,7 +28,7 @@ export const STICKY_TOOLBAR =
   "sticky top-0 max-md:top-[env(safe-area-inset-top)] z-sticky -mx-4 sm:-mx-6 px-4 sm:px-6 -my-2.5 py-2.5 bg-app before:absolute before:inset-x-0 before:bottom-full before:h-[env(safe-area-inset-top)] before:bg-app";
 
 /** Tonal tile inside a card (stats, readings, nested rows). */
-export const TILE = "rounded-lg bg-field border border-line";
+export const TILE = "rounded-control bg-field border border-line";
 
 /** Section heading row: <div className={SECTION_HEAD}><h2 className={SECTION_TITLE}>…</h2><span className={COUNT_PILL}>3</span></div> */
 export const SECTION_HEAD = "flex items-center gap-2 px-1";
@@ -40,17 +40,17 @@ export const SECTION_LINK = "ml-auto inline-flex items-center gap-1 text-label f
 
 /** Empty state: dashed card, icon above one short line. Usually a <button> that adds the first item. */
 export const EMPTY =
-  "rounded-xl border border-dashed border-line p-8 flex flex-col items-center gap-2.5 text-center text-label text-muted hover:text-contrast hover:border-line-hover transition outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50";
+  "rounded-card border border-dashed border-line p-8 flex flex-col items-center gap-2.5 text-center text-label text-muted hover:text-contrast hover:border-line-hover transition outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50";
 
 /** Non-interactive empty state (EmptyState): same dashed card as EMPTY without the hover. */
 export const EMPTY_STATIC =
-  "rounded-xl border border-dashed border-line p-8 flex flex-col items-center gap-2.5 text-center text-label text-muted";
+  "rounded-card border border-dashed border-line p-8 flex flex-col items-center gap-2.5 text-center text-label text-muted";
 
 /** Square icon-only action button in a card header (edit, delete, more). */
 export const ICON_BTN =
-  "w-7 h-7 rounded-lg flex items-center justify-center text-muted hover:text-contrast bg-field hover:bg-raised border border-line transition outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 active:scale-95";
+  "w-7 h-7 rounded-control flex items-center justify-center text-muted hover:text-contrast bg-field hover:bg-raised border border-line transition outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 active:scale-95";
 export const ICON_BTN_DANGER =
-  "w-7 h-7 rounded-lg flex items-center justify-center text-muted hover:text-danger-fg bg-field hover:bg-danger-bg active:bg-danger-border border border-line transition outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 active:scale-95";
+  "w-7 h-7 rounded-control flex items-center justify-center text-muted hover:text-danger-fg bg-field hover:bg-danger-bg active:bg-danger-border border border-line transition outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 active:scale-95";
 
 /** Close button in modal headers: visible background pill with clear contrast, easily tappable on dark backgrounds. */
 export const MODAL_CLOSE =
@@ -127,13 +127,13 @@ export const TONAL_HOVER: Record<SemanticTone, string> = {
 /**
  * Modal shell: backdrop + panel.
  * Phones (< sm): full screen (edge-to-edge, h-dvh, rounded-none, border-0).
- * iPad / desktop (>= sm): centred dialog (max-h-[92dvh], rounded-2xl, border-line).
+ * iPad / desktop (>= sm): centred dialog (max-h-[92dvh], rounded-panel, border-line).
  * Pass only the max-width at the call site (`max-w-md`…).
  */
 export const MODAL_BACKDROP =
   "fixed inset-0 z-modal flex items-stretch sm:items-center justify-center sm:p-4 bg-overlay backdrop-blur-lg";
 export const MODAL_PANEL =
-  "bg-panel border-line max-sm:border-0 sm:border max-sm:rounded-none sm:rounded-2xl w-full shadow-overlay max-sm:h-dvh max-sm:max-h-dvh sm:max-h-[92dvh] overflow-y-auto overscroll-contain flex flex-col";
+  "bg-panel border-line max-sm:border-0 sm:border max-sm:rounded-none sm:rounded-panel w-full shadow-overlay max-sm:h-dvh max-sm:max-h-dvh sm:max-h-[92dvh] overflow-y-auto overscroll-contain flex flex-col";
 /** Modal header row: icon/title left, close button right. Includes safe-area padding on mobile. */
 export const MODAL_HEAD = "px-5 pt-4 max-sm:pt-[max(1rem,env(safe-area-inset-top))] pb-3 flex items-center justify-between gap-3 shrink-0";
 /** Modal title. */
@@ -147,18 +147,18 @@ export const FIELD_LABEL = "block text-label font-medium text-muted mb-1";
 
 /** Form text input: semantic field surface with crisp border-line. */
 export const FIELD_INPUT =
-  "w-full h-9 bg-field border border-line hover:border-line-hover rounded-lg px-3 text-ui text-contrast placeholder:text-muted focus:outline-none focus:border-primary-500/50 focus:bg-raised transition-colors disabled:opacity-40";
+  "w-full h-9 bg-field border border-line hover:border-line-hover rounded-control px-3 text-ui text-contrast placeholder:text-muted focus:outline-none focus:border-primary-500/50 focus:bg-raised transition-colors disabled:opacity-40";
 
 /** Form textarea: matches FIELD_INPUT contrast and focus border. */
 export const FIELD_TEXTAREA =
-  "w-full bg-field border border-line hover:border-line-hover rounded-lg px-3 py-2 text-ui text-contrast placeholder:text-muted focus:outline-none focus:border-primary-500/50 focus:bg-raised transition-colors disabled:opacity-40";
+  "w-full bg-field border border-line hover:border-line-hover rounded-control px-3 py-2 text-ui text-contrast placeholder:text-muted focus:outline-none focus:border-primary-500/50 focus:bg-raised transition-colors disabled:opacity-40";
 
 /** 2-panel floating Bento shell classes (used by AppShell). */
 export const SHELL_OUTER =
   "h-dvh overflow-hidden flex flex-col md:flex-row md:p-2 md:gap-2 bg-app md:bg-canvas text-body";
 export const SHELL_ASIDE =
-  "max-md:hidden shrink-0 rounded-2xl bg-panel border border-line flex flex-col overflow-hidden select-none transition-[width] duration-200";
+  "max-md:hidden shrink-0 rounded-panel bg-panel border border-line shadow-card flex flex-col overflow-hidden select-none transition-[width] duration-200";
 export const SHELL_MAIN =
-  "flex-1 min-w-0 min-h-0 md:rounded-2xl bg-app md:border md:border-line overflow-y-auto overflow-x-hidden overscroll-contain flex flex-col";
+  "flex-1 min-w-0 min-h-0 md:rounded-panel bg-app md:border md:border-line overflow-y-auto overflow-x-hidden overscroll-contain flex flex-col";
 export const SHELL_CONTAINER =
   "flex-1 min-w-0 w-full max-w-[1440px] mx-auto px-4 sm:px-6 pt-[max(1rem,env(safe-area-inset-top))] sm:pt-8 pb-8 sm:pb-10 flex flex-col";

@@ -6,14 +6,15 @@ This repository (`hoanghuynh296/semi-nextjs-codebase`) is the **single source of
 
 ## Hard Rules for Maintaining This Repo
 
-1. **Never edit `tokens/tokens.css` by hand:** Edit `tokens/tokens.json` and run `npm run build:tokens`.
+1. **Never edit `tokens/tokens.css` or `tokens/styles.json` by hand:** Edit `tokens/tokens.json` / `tokens/styles/<id>.json` and run `npm run build:tokens`.
 2. **Docs and code change in the same commit:** see *Change checklist* below. A change is not done while a doc, a usage snippet or a Storybook demo still describes the old code.
 3. **Keep components generic across Semi brands:** Do not add domain-specific logic (e.g. 3D printer MQTT/slicer APIs or local app stores) to `src/`. Components must only depend on React, Next.js (`next/link`), and `@semi/ui` internals.
 4. **Always run `npm run check`** (`check:tokens` + `check:vendor` + `check:version` + `check:manifest` + `typecheck` + `semi-lint` + unit tests) before committing or tagging a release. After editing `lint/semi-lint.mjs` or `tokens/tokens.json`, run `npm run sync:vendor` (the plugin ships its own copies).
 5. **Versioning:** Run `npm run bump -- X.Y.Z` (updates `package.json`, `package-lock.json`, `plugin/plugin.json`, `plugin/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, and re-stamps `tokens.css`), and document every release in `CHANGELOG.md`.
 6. **Generated files:** `components.json`, the component inventory in `docs/QUICK_REF.md`, `public/llms.txt`, `public/llms-full.txt`, `public/components.json` and `public/docs/*` come from `npm run build:manifest`; never edit them by hand. `lint/*.mjs` changes need fixtures in `lint/test` (`npm test`).
 7. **Browser checks:** after UI changes run `npm run build:storybook && npm run test:ui` (contrast AA on every Storybook page in both themes, axe, theme before paint, keyboard flows). New components get a Storybook demo.
-8. **Contrast:** Shared UI uses themed tokens (`text-accent-fg`, `text-*-fg`, `text-tone-*`, `bg-accent` + `text-on-accent`), never fixed `-300/-400` shades or `dark:` pairs; every text/background pair must reach 4.5:1 in both themes.
+8. **Radii and card shadow are style tokens** (`rounded-chip|control|card|panel`, `shadow-card`, `docs/STYLES.md`): never `rounded-lg/xl/2xl` or `rounded-[Npx]` in `src/` or `styles/` (`radius-token`).
+9. **Contrast:** Shared UI uses themed tokens (`text-accent-fg`, `text-*-fg`, `text-tone-*`, `bg-accent` + `text-on-accent`), never fixed `-300/-400` shades or `dark:` pairs; every text/background pair must reach 4.5:1 in both themes.
 
 ## Change checklist (docs ↔ code)
 
@@ -25,12 +26,14 @@ This repository (`hoanghuynh296/semi-nextjs-codebase`) is the **single source of
 | A Storybook section | Its `app/usage.ts` entry (same id, `title`, `when`, `code`), and `<StoryUsage id>` / `ShowcaseSection id` on the page |
 | A breaking change (renamed / removed component, prop, constant, token) | A release migration `migrations/<version>-<id>.mjs` (`migrations/README.md`) + its test in `lint/test/migrations.test.mjs`, and a CHANGELOG "Migration" note for what it cannot do |
 | Tokens or lint | `npm run build:tokens` / `npm run sync:vendor` |
+| A style (new, or a value of one) | `tokens/styles/<id>.json` → `npm run build:tokens` + `npm run sync:vendor`, its column in `docs/STYLES.md`, Storybook check in both themes, `CHANGELOG.md` (renamed / removed style: a release migration) |
 
 Then run `npm run build:manifest` (regenerates the agent files) and `npm run check`. `check:manifest` fails when:
 - a generated file is stale;
 - a usage snippet imports a name `@semi/ui` does not export;
 - a Storybook section has no usage entry, or a usage entry has no section;
-- a component or hook is not named in `docs/DESIGN_SYSTEM.md`.
+- a component or hook is not named in `docs/DESIGN_SYSTEM.md`;
+- a style in `tokens/styles.json` has no column in `docs/STYLES.md`.
 
 It cannot check that prose still matches behaviour: when you change behaviour, reread the doc section yourself.
 

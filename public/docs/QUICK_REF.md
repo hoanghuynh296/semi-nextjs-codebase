@@ -6,7 +6,7 @@ checkable) in the `semi-nextjs-codebase` repo, tagged with a new release. Never 
 or per-project `AGENTS.md`.
 
 Style: restrained dark & light dual-theme (`data-theme="dark|light"`) + bento cards, flat (no gradients, no glow), minimal text, collapsible neutral
-left panel menu (`w-52` / `w-14`) floating on `bg-canvas` (`md:p-2 md:gap-2`), full-width right content panel (`md:rounded-2xl bg-app`),
+left panel menu (`w-52` / `w-14`) floating on `bg-canvas` (`md:p-2 md:gap-2`), full-width right content panel (`md:rounded-panel bg-app`),
 `font-display` page titles (`PageTitle` / `PageTabsTitle`, text only, no subtitle, no text buttons on the title row),
 sticky sub-page toolbar row (`SubpageToolbar`: filters left, icon-only primary CTA + `SearchInput` + `RefreshButton` right).
 Phones (`< md`) hide the top logo header and use `MobileTabBar` at the bottom (never a hamburger slide-over drawer).
@@ -51,8 +51,10 @@ layers `z-sticky` < `z-drawer` < `z-modal` < `z-dialog` < `z-keypad` < `z-popove
 `Modal` / `Drawer` / `confirmDialog` (focus trap, Escape, focus return) · keep `FOCUS_RING` on custom controls · UI text
 in shared components comes from `useSemiLocale()` (`<SemiLocaleProvider locale={en}>`).
 
-**Shape:** controls/tiles `rounded-lg` · cards `rounded-xl` · panels/hero/modal `rounded-2xl` · chips/pills/badges
-`rounded-full` · tiny swatches `rounded`. No `rounded-md`.
+**Shape (style tokens, docs/STYLES.md):** marks / checkboxes / inline code `rounded-chip` · controls / tiles / rows
+`rounded-control` · cards / popovers / menus / toasts `rounded-card` · panels / hero / modal / sidebar `rounded-panel` ·
+pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `CARD`; none in Flat). The app's style
+(`<html data-style>`, Flat by default, or Soft) sets the values. Never `rounded`, `rounded-lg/xl/2xl` or `rounded-[Npx]`.
 
 **Use the shared blocks (`@semi/ui` and `@semi/ui/styles`) — never create a local `ui.tsx` wrapper barrel:**
 - **Layout & Structure (`@semi/ui`):**
@@ -81,9 +83,9 @@ in shared components comes from `useSemiLocale()` (`<SemiLocaleProvider locale={
 - **No solid pastel surfaces (`no-solid-pastel-surfaces`):** Never use solid pastels (`bg-*-50`, `border-*-200`) for cards, rows, or containers; in dark mode they turn into glaring light rectangles. Use alpha transparency (`bg-amber-500/10 border-amber-500/20`) or standard `bg-panel`.
 - **Universal Tonal Theme-Matching:** Chromatic accents across ANY component (cards, alert banners, callouts, table rows, buttons, badges, chips) adapt seamlessly to both dark & light themes using alpha transparency: static fill `bg-<color>-500/10`, hover fill `hover:bg-<color>-500/15`, active fill `active:bg-<color>-500/20`, border `border-<color>-500/20`, hover border `hover:border-<color>-500/30`, and text `text-tone-<color>` (or `TONAL_CONTAINER` / `TONAL_HOVER` / `<Badge tone="...">`).
 - **No Card class override (`card-class-override`):** `<Card>` (`interactive`, `active`) owns its surface: no `bg-*` / `shadow-*` in its className.
-- **Surfaces & Shadows:** Gradients, glow, `shadow-[0_0_…]`, `shadow-sm/md/lg` are banned. Dark/Flat Bento UI relies on borders (`border-line`) rather than drop shadows.
+- **Surfaces & Shadows:** Gradients, glow, `shadow-[0_0_…]`, `shadow-sm/md/lg` are banned. Cards are separated by borders (`border-line`); their only resting shadow is `shadow-card`, which the style sets (none in Flat, soft in Soft).
 - **Typography:** `font-bold`, `text-[9|10px]`, `text-xs/sm`, uppercase labels, ALL CAPS buttons.
-- **Radii:** `rounded-md`.
+- **Radii (`radius-token`):** `rounded`, `rounded-sm/md/lg/xl/2xl`, `rounded-[Npx]` (they ignore the app's style); per-style classes or `[data-style=…]` selectors in an app.
 - **Navigation & Layout:** fixed `border-r` sidebars or `-translate-x-full` hamburger drawers (use `AppShell` + `MobileTabBar`) · local `ui.tsx` wrapper barrels (`PageHeader`, `Select`, `Input`, `Button`, `Modal`): use `Button`, `Field` + `Input`, `CustomSelect`, `Modal`, `EmptyState` from `@semi/ui`.
 - **Icons & Controls:** emoji / ✕ ✓ glyphs, stroke 2+, inline `<path>` · native `<select>` / date / number inputs, `window.confirm` · "Đang tải…" text · Home button in app headers, page subtitles, text buttons on the page title row.
 

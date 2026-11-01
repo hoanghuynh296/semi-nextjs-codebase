@@ -79,6 +79,23 @@ export function sizeRule(utility) {
   return /^text-\[\d+(?:\.\d+)?(?:px|rem|em)\]$/.test(utility) ? "arbitrary-text-size" : null;
 }
 
+const RADIUS = /^rounded(?:-(?:t|b|l|r|s|e|tl|tr|bl|br|ss|se|es|ee))?(?:-(sm|md|lg|xl|2xl|3xl|\[[^\]]+\]))?$/;
+/**
+ * rounded / rounded-lg / rounded-t-xl / rounded-[10px] → "radius-token". Radii are style tokens (rounded-chip ·
+ * control · card · panel, plus rounded-full / rounded-none), so a page follows the app's style (docs/STYLES.md).
+ */
+export function radiusRule(utility) {
+  return RADIUS.test(utility) ? "radius-token" : null;
+}
+
+/** Raw radius utility → its style token (rounded-t-2xl → rounded-t-panel), or null for an arbitrary value. */
+export function radiusToken(utility) {
+  const m = utility.match(/^(rounded(?:-(?:t|b|l|r|s|e|tl|tr|bl|br|ss|se|es|ee))?)(?:-(sm|md|lg|xl|2xl|3xl|\[[^\]]+\]))?$/);
+  if (!m) return undefined;
+  const to = { undefined: "chip", sm: "chip", md: "chip", lg: "control", xl: "card", "2xl": "panel", "3xl": "panel" }[m[2]];
+  return to ? `${m[1]}-${to}` : null;
+}
+
 const CSS_COLOUR_LITERAL = /^(?:#[0-9a-fA-F]{3}|#[0-9a-fA-F]{4}|#[0-9a-fA-F]{6}|#[0-9a-fA-F]{8}|(?:rgb|rgba|hsl|hsla|oklch)\([^)]*\))$/;
 /** A whole string literal that is a CSS colour ("#fff", "rgb(0 0 0 / .5)"): inline styles, chart configs. */
 export const isColourLiteral = (s) => CSS_COLOUR_LITERAL.test(s.trim());
@@ -238,7 +255,7 @@ export function extractApply(src) {
 export const tokensOf = (value) => value.split(/\s+/).filter(Boolean);
 
 /**
- * All colour / size findings of a file: [{ rule, line, token }].
+ * All colour / size / radius findings of a file: [{ rule, line, token }].
  * `css` selects @apply extraction; everything else is treated as JS/TS.
  */
 export function analyse(src, { css = false } = {}) {
@@ -252,7 +269,7 @@ export function analyse(src, { css = false } = {}) {
     for (const token of tokensOf(value)) {
       if (token.length > 80 || !/^[!\w[\-:&>*.#%/()@,=\]]+$/.test(token)) continue;
       const { utility } = splitToken(token);
-      const rule = colourRule(utility) ?? sizeRule(utility);
+      const rule = colourRule(utility) ?? sizeRule(utility) ?? radiusRule(utility);
       if (rule) findings.push({ rule, line, token });
     }
   }

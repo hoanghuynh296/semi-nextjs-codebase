@@ -112,7 +112,7 @@ export function CustomCombobox({
           onFocus={() => setOpen(true)}
           onKeyDown={onKeyDown}
           placeholder={placeholder}
-          className="w-full h-9 bg-field border border-line hover:border-line-hover rounded-lg pl-3 pr-8 text-ui text-contrast placeholder:text-muted focus:border-primary-500/60 transition outline-none disabled:opacity-40 aria-invalid:border-danger-border"
+          className="w-full h-9 bg-field border border-line hover:border-line-hover rounded-control pl-3 pr-8 text-ui text-contrast placeholder:text-muted focus:border-primary-500/60 transition outline-none disabled:opacity-40 aria-invalid:border-danger-border"
         />
         <button
           type="button"
@@ -130,7 +130,7 @@ export function CustomCombobox({
         <div
           id={listId}
           role="listbox"
-          className="absolute left-0 right-0 mt-1.5 max-h-56 overflow-y-auto bg-panel border border-line rounded-lg shadow-overlay z-popover p-1 flex flex-col gap-0.5"
+          className="absolute left-0 right-0 mt-1.5 max-h-56 overflow-y-auto bg-panel border border-line rounded-control shadow-overlay z-popover p-1 flex flex-col gap-0.5"
         >
           {filteredOptions.length === 0 ? (
             <div role="status" className="px-3 py-2 text-label text-muted">
@@ -148,7 +148,7 @@ export function CustomCombobox({
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => pick(opt)}
                   onPointerEnter={() => setActive(i)}
-                  className={`w-full text-left px-3 py-1.5 rounded-lg text-label transition cursor-pointer flex items-center justify-between ${
+                  className={`w-full text-left px-3 py-1.5 rounded-control text-label transition cursor-pointer flex items-center justify-between ${
                     isSelected
                       ? "bg-primary-500/15 text-accent-fg font-medium"
                       : i === active

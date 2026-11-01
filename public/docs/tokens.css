@@ -337,6 +337,7 @@
   --semi-overlay: rgba(0, 0, 0, 0.7);
   --semi-shadow-overlay: 0 24px 48px -12px rgb(0 0 0 / 0.6);
   --semi-shadow-float: 0 8px 24px -6px rgb(0 0 0 / 0.5);
+  --semi-shadow-tint: rgb(0 0 0 / 0.35);
 }
 
 /* Semantic Tokens: Light Mode */
@@ -389,6 +390,7 @@
   --semi-overlay: rgba(15, 23, 42, 0.4);
   --semi-shadow-overlay: 0 24px 48px -12px rgb(15 23 42 / 0.18);
   --semi-shadow-float: 0 8px 24px -6px rgb(15 23 42 / 0.12);
+  --semi-shadow-tint: rgb(15 23 42 / 0.07);
 }
 
 /* data-theme="system": follows the OS without JS (ThemeScript resolves it to dark|light before paint) */
@@ -441,6 +443,7 @@
     --semi-overlay: rgba(15, 23, 42, 0.4);
     --semi-shadow-overlay: 0 24px 48px -12px rgb(15 23 42 / 0.18);
     --semi-shadow-float: 0 8px 24px -6px rgb(15 23 42 / 0.12);
+    --semi-shadow-tint: rgb(15 23 42 / 0.07);
   }
 }
 
@@ -499,6 +502,37 @@
   --color-overlay: var(--semi-overlay);
   --shadow-overlay: var(--semi-shadow-overlay);
   --shadow-float: var(--semi-shadow-float);
+}
+
+/* Styles (tokens/styles/*.json, docs/STYLES.md): set data-style="flat|soft" on <html> or a wrapper; default flat */
+@theme inline {
+  --radius-chip: var(--semi-radius-chip); /* Small marks: checkboxes, inline code, count marks */
+  --radius-control: var(--semi-radius-control); /* Buttons, inputs, selects, tiles, list rows */
+  --radius-card: var(--semi-radius-card); /* Cards, popovers, menus, toasts */
+  --radius-panel: var(--semi-radius-panel); /* Hero, modal, drawer, sheet, sidebar */
+  --shadow-card: var(--semi-shadow-card); /* Resting cards: none (the border separates them) */
+}
+
+/* Style: Flat. Thin borders, no card shadows, medium radii. Dense, information-first screens: dashboards, tools, admin. */
+:root,
+[data-theme],
+[data-style="flat"],
+[data-style="flat"] [data-theme] {
+  --semi-radius-chip: 0.25rem;
+  --semi-radius-control: 0.5rem;
+  --semi-radius-card: 0.75rem;
+  --semi-radius-panel: 1rem;
+  --semi-shadow-card: 0 0 #0000;
+}
+
+/* Style: Soft. Larger radii and a soft resting shadow under cards. Calmer, friendlier screens: consumer apps, storefronts, onboarding. */
+[data-style="soft"],
+[data-style="soft"] [data-theme] {
+  --semi-radius-chip: 0.375rem;
+  --semi-radius-control: 0.75rem;
+  --semi-radius-card: 1.25rem;
+  --semi-radius-panel: 1.5rem;
+  --semi-shadow-card: 0 1px 2px var(--semi-shadow-tint), 0 8px 24px -10px var(--semi-shadow-tint);
 }
 
 @utility z-sticky {

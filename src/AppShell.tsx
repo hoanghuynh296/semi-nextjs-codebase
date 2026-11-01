@@ -2,7 +2,7 @@
 
 // 2-panel floating Bento shell of the Semi Design System (docs/DESIGN_SYSTEM.md §4):
 // - Outer bg-canvas (#111111) with md:p-2 md:gap-2
-// - Collapsible rounded-2xl bg-panel left menu (w-52 <-> w-14 icon rail, persisted in localStorage)
+// - Collapsible rounded-panel bg-panel left menu (w-52 <-> w-14 icon rail, persisted in localStorage)
 // - Rounded-2xl bg-app right content panel with max-w-[1440px] container
 // - Mobile (< md): hides the top logo header and renders MobileTabBar at the bottom (plus a bottom sheet if >5 routes)
 import React, { useEffect, useState } from "react";
@@ -105,7 +105,7 @@ export function AppShell({
   const allItems = sections.flatMap((s) => s.items);
   const firstItem = allItems[0];
 
-  const navItemClass = `w-full h-8 flex items-center rounded-lg text-label font-medium transition whitespace-nowrap cursor-pointer ${
+  const navItemClass = `w-full h-8 flex items-center rounded-control text-label font-medium transition whitespace-nowrap cursor-pointer ${
     collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2.5 lg:px-2.5"
   }`;
   const navLabelClass = `${collapsed ? "hidden" : "hidden lg:block"} flex-1 min-w-0 truncate text-left`;
@@ -194,7 +194,7 @@ export function AppShell({
   const brandNode = (
     <>
       {logo ?? (
-        <span className="w-6 h-6 rounded-lg bg-field border border-line text-contrast flex items-center justify-center shrink-0">
+        <span className="w-6 h-6 rounded-control bg-field border border-line text-contrast flex items-center justify-center shrink-0">
           <Icon name={logoIcon} className="w-3.5 h-3.5 text-accent-fg" />
         </span>
       )}
@@ -242,7 +242,7 @@ export function AppShell({
                 title={collapsed ? "Mở rộng menu" : "Thu gọn menu"}
                 className={`${
                   collapsed ? "flex" : "hidden lg:flex"
-                } w-7 h-7 rounded-lg items-center justify-center text-muted hover:text-contrast hover:bg-raised transition shrink-0 cursor-pointer`}
+                } w-7 h-7 rounded-control items-center justify-center text-muted hover:text-contrast hover:bg-raised transition shrink-0 cursor-pointer`}
               >
                 <Icon name="sidebar" className="w-3.5 h-3.5" />
               </button>
@@ -256,11 +256,11 @@ export function AppShell({
                   target={primaryCta.external ? "_blank" : undefined}
                   rel={primaryCta.external ? "noopener noreferrer" : undefined}
                   title={primaryCta.label}
-                  className={`shrink-0 w-full h-9 rounded-lg bg-primary-500/15 hover:bg-primary-500/25 border border-primary-500/30 hover:border-primary-500/50 text-contrast flex items-center text-label font-semibold transition active:scale-[0.99] ${
+                  className={`shrink-0 w-full h-9 rounded-control bg-primary-500/15 hover:bg-primary-500/25 border border-primary-500/30 hover:border-primary-500/50 text-contrast flex items-center text-label font-semibold transition active:scale-[0.99] ${
                     collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2 lg:px-2.5"
                   }`}
                 >
-                  <span className="w-5 h-5 rounded bg-accent text-on-accent flex items-center justify-center shrink-0">
+                  <span className="w-5 h-5 rounded-chip bg-accent text-on-accent flex items-center justify-center shrink-0">
                     <Icon name={primaryCta.icon} className="w-3.5 h-3.5" />
                   </span>
                   <span className={navLabelClass}>{primaryCta.label}</span>
@@ -270,11 +270,11 @@ export function AppShell({
                   type="button"
                   onClick={primaryCta.onClick}
                   title={primaryCta.label}
-                  className={`shrink-0 w-full h-9 rounded-lg bg-primary-500/15 hover:bg-primary-500/25 border border-primary-500/30 hover:border-primary-500/50 text-contrast flex items-center text-label font-semibold transition active:scale-[0.99] cursor-pointer ${
+                  className={`shrink-0 w-full h-9 rounded-control bg-primary-500/15 hover:bg-primary-500/25 border border-primary-500/30 hover:border-primary-500/50 text-contrast flex items-center text-label font-semibold transition active:scale-[0.99] cursor-pointer ${
                     collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2 lg:px-2.5"
                   }`}
                 >
-                  <span className="w-5 h-5 rounded bg-accent text-on-accent flex items-center justify-center shrink-0">
+                  <span className="w-5 h-5 rounded-chip bg-accent text-on-accent flex items-center justify-center shrink-0">
                     <Icon name={primaryCta.icon} className="w-3.5 h-3.5" />
                   </span>
                   <span className={navLabelClass}>{primaryCta.label}</span>
@@ -315,14 +315,14 @@ export function AppShell({
                       Array.from({ length: section.loadingCount ?? 5 }, (_, i) => (
                         <div
                           key={i}
-                          className={`w-full h-8 flex items-center rounded-lg ${
+                          className={`w-full h-8 flex items-center rounded-control ${
                             collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2.5 lg:px-2.5"
                           }`}
                           aria-hidden
                         >
-                          <div className="w-4 h-4 rounded shimmer shrink-0" />
+                          <div className="w-4 h-4 rounded-chip shimmer shrink-0" />
                           <div
-                            className={`${collapsed ? "hidden" : "hidden lg:block"} h-3 rounded shimmer`}
+                            className={`${collapsed ? "hidden" : "hidden lg:block"} h-3 rounded-chip shimmer`}
                             style={{ width: `${55 + ((i * 19) % 35)}%` }}
                           />
                         </div>
@@ -359,7 +359,7 @@ export function AppShell({
             onClick={() => setMoreOpen(false)}
           >
             <div
-              className="bg-panel border-t border-line rounded-t-2xl p-4 max-h-[75dvh] overflow-y-auto space-y-3"
+              className="bg-panel border-t border-line rounded-t-panel p-4 max-h-[75dvh] overflow-y-auto space-y-3"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between px-1">
@@ -376,7 +376,7 @@ export function AppShell({
               <div className="grid grid-cols-2 gap-1.5">
                 {allItems.map((item) => {
                   const active = activeId === item.id;
-                  const cls = `flex items-center gap-2.5 h-10 px-3 rounded-xl text-label font-medium transition ${
+                  const cls = `flex items-center gap-2.5 h-10 px-3 rounded-card text-label font-medium transition ${
                     active ? "bg-raised text-contrast" : "bg-field text-body hover:bg-raised hover:text-contrast"
                   }`;
                   if (item.href && !onSelect) {
