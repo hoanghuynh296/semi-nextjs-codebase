@@ -4,6 +4,8 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-11-01
+
 ### Added
 - **Brand kits get their own preview site:** `semi-brand preview` serves it locally (http://localhost:4600, live while the brand is adjusted) and `semi-brand site` exports it statically (`SEMI_BRAND_BASE_PATH` for GitHub Pages). It renders the brand with real `@semi/ui` components (colours, type, controls, cards, tables, contrast report; theme and allowed styles switchable); the template ships in `@semi/ui` (`brand/preview`), so `/semi-brand update` brings newer previews. `/semi-brand create` (and `update` for older kits) adds Next.js to the kit, `.preview/` to `.gitignore` and `.github/workflows/brand-pages.yml`, which builds and publishes the preview on GitHub Pages at every push; `brand.mjs pages` turns Pages on. `semi-brand storybook` keeps the Semi Storybook link (the old `preview`).
 
