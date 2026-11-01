@@ -9,7 +9,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import ts from "typescript";
 
-export const GROUPS = ["Actions", "Forms", "Overlays", "Navigation & layout", "Data display", "Feedback", "AI", "Setup"];
+export const GROUPS = ["Actions", "Forms", "Overlays", "Navigation & layout", "Data display", "Feedback", "AI", "Blocks", "Setup"];
 const MAX_LITERALS = 10; // a longer literal union (IconName, SemanticTone…) is shown by its alias name
 
 /** Read every examples/<id>/meta.json with its example sources. */

@@ -1,8 +1,10 @@
-# Semi Design System (@semi/ui v0.12.0)
+# Semi Design System (@semi/ui v0.13.0)
 
 > The shared UI of every Semi app: semantic tokens that work in light and dark mode, React components (Next.js, Tailwind CSS 4) and the rules agents follow. Every component has a page with live examples and a markdown twin for agents.
 
 Install `@semi/ui`, import components from `@semi/ui`, class constants from `@semi/ui/styles`, CSS `@semi/ui/tokens.css` + `@semi/ui/base.css`. Before writing UI read QUICK_REF.md; pick the component from docs/components/README.md, read its page, copy an example; never invent local colours, sizes or wrapper components; check with `npx semi-lint`.
+
+In a project with the package installed, ask the docs instead of reading files: `npx semi search "<need in words>"`, `npx semi docs <Component>`, `npx semi example <id>`, `npx semi add <block>` (dashboard, list-page, settings-page, agent-run), or `npx semi mcp` as an MCP server (tools semi_search, semi_docs, semi_example, semi_props, semi_list, semi_block; the semi-design plugin starts it). Guide: docs/AGENT_TOOLS.md.
 
 ## Machine-readable
 
@@ -11,6 +13,7 @@ Install `@semi/ui`, import components from `@semi/ui`, class constants from `@se
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
 - [COMPONENT_DOCS.md](./docs/COMPONENT_DOCS.md): How the component docs are built (examples/, meta.json, generated API) and how agents should use them
+- [AGENT_TOOLS.md](./docs/AGENT_TOOLS.md): Agent tools: the semi CLI (search, docs, example, add) and the MCP server, and the page blocks
 - [ICONS.md](./docs/ICONS.md): Semantic icon guide: which icon means what
 - [BRANDS.md](./docs/BRANDS.md): Brands: brand kits (brand.json → brand.css), the step-by-step flow from a new brand to its first product, which command when
 - [STYLES.md](./docs/STYLES.md): Styles (Flat, Soft, Sharp) and palettes: what each changes, how an app picks one
@@ -112,7 +115,6 @@ Install `@semi/ui`, import components from `@semi/ui`, class constants from `@se
 ### AI
 
 - [Action confirmation](./components/action-confirmation/) ([markdown](./docs/components/action-confirmation.md)): An action the agent wants to take that needs a person's OK (send, delete, pay, run a command): what it will do, then Cho phép / Từ chối; the outcome replaces the buttons once decided. Components: ActionConfirmation.
-- [Agent run](./components/agent-run/) ([markdown](./docs/components/agent-run.md)): A full agent turn composed from the parts: the user's request, reasoning, a plan, tool calls, an approval and the answer with sources — the pattern to copy for agent UIs. Components: .
 - [AI chat](./components/ai-chat/) ([markdown](./docs/components/ai-chat.md)): AIChat is the ready-made assistant panel: ChatPanel (side panel or full screen, resizable, keyboard inset) around ChatView (list + composer). UI only: the app keeps the messages, streams the answer and calls the model. Components: AIChat, ChatPanel, ChatView.
 - [Chat messages](./components/chat-messages/) ([markdown](./docs/components/chat-messages.md)): The parts of a conversation, to compose your own chat: UserMessage, AssistantMessage (+ ChatAnswer for a ChatItem), ChatThinking, ChatError, ChatCopyButton, ChatAvatar, ChatIntro, ChatSuggestion(s), ChatList and ChatComposer. Components: UserMessage, AssistantMessage, ChatAnswer, ChatAvatar, ChatCopyButton, ChatError, ChatThinking, ChatIntro, ChatSuggestion, ChatSuggestions, ChatList, ChatComposer.
 - [Chat model picker](./components/chat-model-picker/) ([markdown](./docs/components/chat-model-picker.md)): Provider → model → effort chips, for the toolbar of a chat composer. The lists are app data. Components: ChatModelPicker.
@@ -123,6 +125,13 @@ Install `@semi/ui`, import components from `@semi/ui`, class constants from `@se
 - [Task list](./components/task-list/) ([markdown](./docs/components/task-list.md)): The agent's plan: steps with a status mark (chưa làm, đang làm, xong, lỗi, bỏ qua), an optional line under each, and a progress count. Components: TaskList.
 - [Terminal](./components/terminal/) ([markdown](./docs/components/terminal.md)): A command and its output: streams and follows the end (unless people scroll up), shows a spinner while running and the exit code when done, with a copy button. Components: Terminal.
 - [Tool call](./components/tool-call/) ([markdown](./docs/components/tool-call.md)): One tool the agent called: its name in words, a status badge (chờ, đang chạy, xong, lỗi, chờ duyệt), and on open the input and output (JSON formatted). Components: ToolCall.
+
+### Blocks
+
+- [Agent workspace](./components/agent-run/) ([markdown](./docs/components/agent-run.md)): A full agent turn composed from the AI parts: the request, reasoning, a plan, tool calls, an approval, the answer with sources and a composer with the context meter. Copy it with `semi add agent-run`. Components: .
+- [Dashboard](./components/dashboard/) ([markdown](./docs/components/dashboard.md)): An overview page: title, KPI row with trends, a revenue chart, orders by status and the latest orders. Copy it with `semi add dashboard`, then replace the sample data. Components: .
+- [List page](./components/list-page/) ([markdown](./docs/components/list-page.md)): A records page: title, toolbar (status pills, search, refresh, add), a data table that sorts, selects and pages, bulk actions. Copy it with `semi add list-page`. Components: .
+- [Settings page](./components/settings-page/) ([markdown](./docs/components/settings-page.md)): A settings page: sections of rows with switches and links, a profile form with validation and one save action, and a danger zone. Copy it with `semi add settings-page`. Components: .
 
 ### Setup
 

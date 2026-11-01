@@ -493,7 +493,7 @@ are the app's); the parts draw it and report `onSend` / `onStop` / `onRetry` / `
   for what cannot be undone), `Terminal` (command + streamed output, follows the end unless scrolled up, exit code),
   `FileTree` (keyboard tree with A / M / D change marks), `Sources` + `Citation` (numbered links that match),
   `ContextMeter` (context window ring in the composer `toolbar`; amber from 80%, red from 95%). Details stay behind
-  disclosures and are never live regions: only the answer is announced. Example to copy: the *Agent run* doc page.
+  disclosures and are never live regions: only the answer is announced. Example to copy: the *Agent workspace* block (`semi add agent-run`).
 - **Behaviour built in, do not re-implement:** Enter sends, Shift+Enter breaks the line, Enter while an input method
   composes (Telex / VNI) does not send; the field grows to 45% of the screen; focus returns to it after a typed
   question is answered; the list follows new text only while the reader is at the bottom (else a "jump to latest"

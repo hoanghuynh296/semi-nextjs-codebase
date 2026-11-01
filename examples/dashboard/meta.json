@@ -1,0 +1,25 @@
+{
+  "title": "Dashboard",
+  "group": "Blocks",
+  "description": "An overview page: title, KPI row with trends, a revenue chart, orders by status and the latest orders. Copy it with `semi add dashboard`, then replace the sample data.",
+  "components": [],
+  "when": [
+    "The home page of an admin or operations app: a few numbers, one trend, what needs attention."
+  ],
+  "instead": [
+    {
+      "need": "A page that is mostly one list",
+      "use": "the List page block"
+    }
+  ],
+  "a11y": [
+    "One h1 (PageTitle); every chart has a table view; KPI trends say “so với tuần trước” in text, not colour only."
+  ],
+  "examples": [
+    {
+      "file": "page",
+      "title": "Overview",
+      "preview": "frame"
+    }
+  ]
+}

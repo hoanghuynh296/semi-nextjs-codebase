@@ -15,6 +15,7 @@ const GROUP_ICON: Record<string, IconName> = {
   "Data display": "grid",
   Feedback: "bell",
   AI: "sparkles",
+  Blocks: "shapes",
   Setup: "settings",
 };
 

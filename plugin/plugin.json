@@ -1,14 +1,15 @@
 {
   "name": "semi-design",
   "displayName": "Semi Design System",
-  "version": "0.12.0",
-  "description": "Semi Design System rules, lint hook, and /semi-init, /semi-audit, /semi-fix, /semi-update, /semi-style, /semi-brand, /semi-propose, /semi-triage skills for Next.js 16 + React 19 + Tailwind 4 web projects.",
+  "version": "0.13.0",
+  "description": "Semi Design System rules, lint hook, docs MCP server (semi_search, semi_docs, semi_example, semi_block) and /semi-ui, /semi-init, /semi-audit, /semi-fix, /semi-update, /semi-style, /semi-brand, /semi-propose, /semi-triage skills for Next.js 16 + React 19 + Tailwind 4 web projects.",
   "logo": "assets/logo.svg",
   "repository": {
     "type": "git",
     "url": "https://github.com/hoanghuynh296/semi-nextjs-codebase"
   },
   "suggestedPrompts": [
+    "Run /semi-ui to build a page or component from Semi components and blocks",
     "Run /semi-init to create a new app on the Semi Design System",
     "Run /semi-audit to check this app against the Semi Design System (first step for an existing app)",
     "Run /semi-fix to fix the issues the last /semi-audit found",

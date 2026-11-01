@@ -4,6 +4,18 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-11-01
+
+### Added
+- **`semi` CLI for agents** (`npx semi …`, no dependencies, answers from the installed package): `search` (a need in Vietnamese or English → ranked docs with why), `docs`, `example`, `props`, `list`, `blocks`, `add <block>` (writes a page into the app, never overwrites without `--force`); `--json` everywhere. Guide: `docs/AGENT_TOOLS.md`.
+- **MCP server** (`semi mcp`): tools `semi_search`, `semi_docs`, `semi_example`, `semi_props`, `semi_list`, `semi_block`. The `semi-design` plugin registers it as `semi` and starts the project's own `@semi/ui` (monorepos included); without it the server explains how to add Semi.
+- **Blocks** (new docs group): `dashboard`, `list-page`, `settings-page` and `agent-run` (now titled *Agent workspace*, moved from AI).
+- **`/semi-ui` skill:** build a page or component from Semi docs and blocks (search → docs → example → compose → semi-lint).
+- `llms.txt`, the consumer rules block and the README point agents to the CLI / MCP first.
+
+### Fixed
+- `components.json` summaries no longer end with the comment's closing `*/`.
+
 ## [0.12.0] - 2026-11-01
 
 ### Added

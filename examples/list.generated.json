@@ -612,13 +612,6 @@
     ]
   },
   {
-    "id": "agent-run",
-    "title": "Agent run",
-    "group": "AI",
-    "description": "A full agent turn composed from the parts: the user's request, reasoning, a plan, tool calls, an approval and the answer with sources — the pattern to copy for agent UIs.",
-    "components": []
-  },
-  {
     "id": "ai-chat",
     "title": "AI chat",
     "group": "AI",
@@ -721,6 +714,34 @@
     "components": [
       "ToolCall"
     ]
+  },
+  {
+    "id": "agent-run",
+    "title": "Agent workspace",
+    "group": "Blocks",
+    "description": "A full agent turn composed from the AI parts: the request, reasoning, a plan, tool calls, an approval, the answer with sources and a composer with the context meter. Copy it with `semi add agent-run`.",
+    "components": []
+  },
+  {
+    "id": "dashboard",
+    "title": "Dashboard",
+    "group": "Blocks",
+    "description": "An overview page: title, KPI row with trends, a revenue chart, orders by status and the latest orders. Copy it with `semi add dashboard`, then replace the sample data.",
+    "components": []
+  },
+  {
+    "id": "list-page",
+    "title": "List page",
+    "group": "Blocks",
+    "description": "A records page: title, toolbar (status pills, search, refresh, add), a data table that sorts, selects and pages, bulk actions. Copy it with `semi add list-page`.",
+    "components": []
+  },
+  {
+    "id": "settings-page",
+    "title": "Settings page",
+    "group": "Blocks",
+    "description": "A settings page: sections of rows with switches and links, a profile form with validation and one save action, and a danger zone. Copy it with `semi add settings-page`.",
+    "components": []
   },
   {
     "id": "locale",

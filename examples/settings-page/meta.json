@@ -1,0 +1,19 @@
+{
+  "title": "Settings page",
+  "group": "Blocks",
+  "description": "A settings page: sections of rows with switches and links, a profile form with validation and one save action, and a danger zone. Copy it with `semi add settings-page`.",
+  "components": [],
+  "when": [
+    "Account, workspace or device settings."
+  ],
+  "a11y": [
+    "Each section is a labelled ItemGroup; fields use Field (label, hint, error wired); the destructive action asks first (confirmDialog)."
+  ],
+  "examples": [
+    {
+      "file": "page",
+      "title": "Workspace settings",
+      "preview": "frame"
+    }
+  ]
+}

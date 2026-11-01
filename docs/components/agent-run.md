@@ -1,10 +1,10 @@
-# Agent run
+# Agent workspace
 
-A full agent turn composed from the parts: the user's request, reasoning, a plan, tool calls, an approval and the answer with sources — the pattern to copy for agent UIs.
+A full agent turn composed from the AI parts: the request, reasoning, a plan, tool calls, an approval, the answer with sources and a composer with the context meter. Copy it with `semi add agent-run`.
 
 ## When to use
 
-- Starting an agent chat or run log; shows how the AI parts sit together in a ChatList.
+- Starting an agent chat or run log; shows how the AI parts sit together in a ChatList; the AI doc pages link here.
 
 ## Examples
 

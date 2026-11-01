@@ -102,7 +102,6 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | Doc | Components | When to use |
 |---|---|---|
 | [Action confirmation](action-confirmation.md) | `ActionConfirmation` | Human-in-the-loop: any agent action that is outward-facing, costs money or cannot be undone. |
-| [Agent run](agent-run.md) |  | Starting an agent chat or run log; shows how the AI parts sit together in a ChatList. |
 | [AI chat](ai-chat.md) | `AIChat`, `ChatPanel`, `ChatView` | Every AI conversation in a Semi app (assistant beside a workspace, help over a modal). |
 | [Chat messages](chat-messages.md) | `UserMessage`, `AssistantMessage`, `ChatAnswer`, `ChatAvatar`, `ChatCopyButton`, `ChatError`, `ChatThinking`, `ChatIntro`, `ChatSuggestion`, `ChatSuggestions`, `ChatList`, `ChatComposer` | A chat that does not fit AIChat's layout; AI output inside another feature. |
 | [Chat model picker](chat-model-picker.md) | `ChatModelPicker` | Let people pick the provider, model and thinking effort of an AI feature. |
@@ -113,6 +112,15 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Task list](task-list.md) | `TaskList` | Multi-step agent work (plans, migrations, onboarding jobs) people watch progress on. |
 | [Terminal](terminal.md) | `Terminal` | Agents and jobs that run shell commands, builds, deploy logs. |
 | [Tool call](tool-call.md) | `ToolCall` | Agent runs and chats where the model calls functions, MCP tools or APIs. |
+
+## Blocks
+
+| Doc | Components | When to use |
+|---|---|---|
+| [Agent workspace](agent-run.md) |  | Starting an agent chat or run log; shows how the AI parts sit together in a ChatList; the AI doc pages link here. |
+| [Dashboard](dashboard.md) |  | The home page of an admin or operations app: a few numbers, one trend, what needs attention. |
+| [List page](list-page.md) |  | Orders, customers, products, jobs: any page whose job is to find and act on records. |
+| [Settings page](settings-page.md) |  | Account, workspace or device settings. |
 
 ## Setup
 

@@ -4,7 +4,9 @@ Every Semi component is documented the same way, for people and agents at once, 
 
 ## For agents: how to use them
 
-1. Find the component in `node_modules/@semi/ui/docs/components/README.md` (by group, with "when to use").
+1. Find the component: `semi_search` (MCP) or `npx semi search "<need>"` ranks docs for a need in words
+   (`docs/AGENT_TOOLS.md`); or browse `node_modules/@semi/ui/docs/components/README.md` (by group, with "when to use").
+   Whole pages start from a **Blocks** doc (`npx semi add <block>`).
 2. Read its page `node_modules/@semi/ui/docs/components/<id>.md`: what it is, when to use it and **what to use
    instead**, the import line, examples, the API table (types, defaults, required props), accessibility.
 3. Copy the closest example: every example is a real file (`node_modules/@semi/ui/examples/<id>/<example>.tsx`) that

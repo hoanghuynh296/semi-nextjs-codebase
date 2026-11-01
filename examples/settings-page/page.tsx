@@ -1,0 +1,61 @@
+"use client";
+
+import { useState } from "react";
+import { Button, Card, confirmDialog, CustomSelect, Field, Input, Item, ItemGroup, PageTitle, Switch, toast } from "@semi/ui";
+
+export default function SettingsPage() {
+  const [name, setName] = useState("Xưởng in A");
+  const [lang, setLang] = useState("vi");
+  const [notify, setNotify] = useState(true);
+  const [digest, setDigest] = useState(false);
+  const error = name.trim().length < 3 ? "Tên cần ít nhất 3 ký tự." : undefined;
+  return (
+    <div className="space-y-4">
+      <PageTitle title="Cài đặt" />
+      <Card className="p-4 space-y-4">
+        <h2 className="text-title font-medium text-contrast">Không gian làm việc</h2>
+        <div className="grid gap-4 @2xl:grid-cols-2">
+          <Field label="Tên" required error={error}>
+            <Input value={name} onChange={(e) => setName(e.target.value)} />
+          </Field>
+          <Field label="Ngôn ngữ">
+            <CustomSelect
+              variant="field"
+              value={lang}
+              onChange={setLang}
+              options={[
+                { value: "vi", label: "Tiếng Việt" },
+                { value: "en", label: "English" },
+              ]}
+            />
+          </Field>
+        </div>
+        <div className="flex justify-end">
+          <Button variant="primary" disabled={Boolean(error)} onClick={() => toast({ title: "Đã lưu", tone: "success" })}>
+            Lưu
+          </Button>
+        </div>
+      </Card>
+      <ItemGroup label="Thông báo" showLabel>
+        <Item icon="bell" title="Khi in xong hoặc lỗi" description="Gửi tới ứng dụng và email" actions={<Switch checked={notify} onChange={setNotify} label={<span className="sr-only">Khi in xong hoặc lỗi</span>} />} />
+        <Item icon="fileText" title="Báo cáo tuần" description="Thứ Hai, 8:00" actions={<Switch checked={digest} onChange={setDigest} label={<span className="sr-only">Báo cáo tuần</span>} />} />
+        <Item icon="key" title="Khoá API" description="Cho tích hợp và agent" href="#api-keys" />
+      </ItemGroup>
+      <Card className="p-4 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="text-title font-medium text-contrast">Xoá không gian làm việc</h2>
+          <p className="text-label text-muted">Xoá mọi máy in, đơn và lịch sử. Không thể khôi phục.</p>
+        </div>
+        <Button
+          variant="danger"
+          icon="trash"
+          onClick={async () => {
+            if (await confirmDialog({ title: "Xoá Xưởng in A?", message: "Mọi dữ liệu sẽ bị xoá vĩnh viễn.", confirmLabel: "Xoá", tone: "danger" })) toast({ title: "Đã xoá", tone: "danger" });
+          }}
+        >
+          Xoá
+        </Button>
+      </Card>
+    </div>
+  );
+}

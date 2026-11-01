@@ -1,8 +1,10 @@
-# Semi Design System (@semi/ui v0.12.0)
+# Semi Design System (@semi/ui v0.13.0)
 
 > The shared UI of every Semi app: semantic tokens that work in light and dark mode, React components (Next.js, Tailwind CSS 4) and the rules agents follow. Every component has a page with live examples and a markdown twin for agents.
 
 Install `@semi/ui`, import components from `@semi/ui`, class constants from `@semi/ui/styles`, CSS `@semi/ui/tokens.css` + `@semi/ui/base.css`. Before writing UI read QUICK_REF.md; pick the component from docs/components/README.md, read its page, copy an example; never invent local colours, sizes or wrapper components; check with `npx semi-lint`.
+
+In a project with the package installed, ask the docs instead of reading files: `npx semi search "<need in words>"`, `npx semi docs <Component>`, `npx semi example <id>`, `npx semi add <block>` (dashboard, list-page, settings-page, agent-run), or `npx semi mcp` as an MCP server (tools semi_search, semi_docs, semi_example, semi_props, semi_list, semi_block; the semi-design plugin starts it). Guide: docs/AGENT_TOOLS.md.
 
 ## Machine-readable
 
@@ -11,6 +13,7 @@ Install `@semi/ui`, import components from `@semi/ui`, class constants from `@se
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
 - [COMPONENT_DOCS.md](./docs/COMPONENT_DOCS.md): How the component docs are built (examples/, meta.json, generated API) and how agents should use them
+- [AGENT_TOOLS.md](./docs/AGENT_TOOLS.md): Agent tools: the semi CLI (search, docs, example, add) and the MCP server, and the page blocks
 - [ICONS.md](./docs/ICONS.md): Semantic icon guide: which icon means what
 - [BRANDS.md](./docs/BRANDS.md): Brands: brand kits (brand.json → brand.css), the step-by-step flow from a new brand to its first product, which command when
 - [STYLES.md](./docs/STYLES.md): Styles (Flat, Soft, Sharp) and palettes: what each changes, how an app picks one
@@ -112,7 +115,6 @@ Install `@semi/ui`, import components from `@semi/ui`, class constants from `@se
 ### AI
 
 - [Action confirmation](./components/action-confirmation/) ([markdown](./docs/components/action-confirmation.md)): An action the agent wants to take that needs a person's OK (send, delete, pay, run a command): what it will do, then Cho phép / Từ chối; the outcome replaces the buttons once decided. Components: ActionConfirmation.
-- [Agent run](./components/agent-run/) ([markdown](./docs/components/agent-run.md)): A full agent turn composed from the parts: the user's request, reasoning, a plan, tool calls, an approval and the answer with sources — the pattern to copy for agent UIs. Components: .
 - [AI chat](./components/ai-chat/) ([markdown](./docs/components/ai-chat.md)): AIChat is the ready-made assistant panel: ChatPanel (side panel or full screen, resizable, keyboard inset) around ChatView (list + composer). UI only: the app keeps the messages, streams the answer and calls the model. Components: AIChat, ChatPanel, ChatView.
 - [Chat messages](./components/chat-messages/) ([markdown](./docs/components/chat-messages.md)): The parts of a conversation, to compose your own chat: UserMessage, AssistantMessage (+ ChatAnswer for a ChatItem), ChatThinking, ChatError, ChatCopyButton, ChatAvatar, ChatIntro, ChatSuggestion(s), ChatList and ChatComposer. Components: UserMessage, AssistantMessage, ChatAnswer, ChatAvatar, ChatCopyButton, ChatError, ChatThinking, ChatIntro, ChatSuggestion, ChatSuggestions, ChatList, ChatComposer.
 - [Chat model picker](./components/chat-model-picker/) ([markdown](./docs/components/chat-model-picker.md)): Provider → model → effort chips, for the toolbar of a chat composer. The lists are app data. Components: ChatModelPicker.
@@ -123,6 +125,13 @@ Install `@semi/ui`, import components from `@semi/ui`, class constants from `@se
 - [Task list](./components/task-list/) ([markdown](./docs/components/task-list.md)): The agent's plan: steps with a status mark (chưa làm, đang làm, xong, lỗi, bỏ qua), an optional line under each, and a progress count. Components: TaskList.
 - [Terminal](./components/terminal/) ([markdown](./docs/components/terminal.md)): A command and its output: streams and follows the end (unless people scroll up), shows a spinner while running and the exit code when done, with a copy button. Components: Terminal.
 - [Tool call](./components/tool-call/) ([markdown](./docs/components/tool-call.md)): One tool the agent called: its name in words, a status badge (chờ, đang chạy, xong, lỗi, chờ duyệt), and on open the input and output (JSON formatted). Components: ToolCall.
+
+### Blocks
+
+- [Agent workspace](./components/agent-run/) ([markdown](./docs/components/agent-run.md)): A full agent turn composed from the AI parts: the request, reasoning, a plan, tool calls, an approval, the answer with sources and a composer with the context meter. Copy it with `semi add agent-run`. Components: .
+- [Dashboard](./components/dashboard/) ([markdown](./docs/components/dashboard.md)): An overview page: title, KPI row with trends, a revenue chart, orders by status and the latest orders. Copy it with `semi add dashboard`, then replace the sample data. Components: .
+- [List page](./components/list-page/) ([markdown](./docs/components/list-page.md)): A records page: title, toolbar (status pills, search, refresh, add), a data table that sorts, selects and pages, bulk actions. Copy it with `semi add list-page`. Components: .
+- [Settings page](./components/settings-page/) ([markdown](./docs/components/settings-page.md)): A settings page: sections of rows with switches and links, a profile form with validation and one save action, and a danger zone. Copy it with `semi add settings-page`. Components: .
 
 ### Setup
 
@@ -802,7 +811,7 @@ are the app's); the parts draw it and report `onSend` / `onStop` / `onRetry` / `
   for what cannot be undone), `Terminal` (command + streamed output, follows the end unless scrolled up, exit code),
   `FileTree` (keyboard tree with A / M / D change marks), `Sources` + `Citation` (numbered links that match),
   `ContextMeter` (context window ring in the composer `toolbar`; amber from 80%, red from 95%). Details stay behind
-  disclosures and are never live regions: only the answer is announced. Example to copy: the *Agent run* doc page.
+  disclosures and are never live regions: only the answer is announced. Example to copy: the *Agent workspace* block (`semi add agent-run`).
 - **Behaviour built in, do not re-implement:** Enter sends, Shift+Enter breaks the line, Enter while an input method
   composes (Telex / VNI) does not send; the field grows to 45% of the screen; focus returns to it after a typed
   question is answered; the list follows new text only while the reader is at the bottom (else a "jump to latest"
@@ -965,7 +974,9 @@ Every Semi component is documented the same way, for people and agents at once, 
 
 ## For agents: how to use them
 
-1. Find the component in `node_modules/@semi/ui/docs/components/README.md` (by group, with "when to use").
+1. Find the component: `semi_search` (MCP) or `npx semi search "<need>"` ranks docs for a need in words
+   (`docs/AGENT_TOOLS.md`); or browse `node_modules/@semi/ui/docs/components/README.md` (by group, with "when to use").
+   Whole pages start from a **Blocks** doc (`npx semi add <block>`).
 2. Read its page `node_modules/@semi/ui/docs/components/<id>.md`: what it is, when to use it and **what to use
    instead**, the import line, examples, the API table (types, defaults, required props), accessibility.
 3. Copy the closest example: every example is a real file (`node_modules/@semi/ui/examples/<id>/<example>.tsx`) that
@@ -1007,6 +1018,57 @@ docs/components/README.md      the index
 3. Mention it in `docs/DESIGN_SYSTEM.md` (§16 / §17), `CHANGELOG.md`.
 4. `npm run build:manifest && npm run check`, then `npm run build:storybook && npm run test:ui` (every doc page is
    checked for contrast in both themes, axe and phone width).
+
+
+---
+
+<!-- docs/AGENT_TOOLS.md -->
+
+# Agent tools (`semi` CLI, MCP server, blocks)
+
+Semi is built for agents first: an agent should never guess a component from memory or grep the package. It asks
+the docs, which ship inside `@semi/ui` and so always match the installed version.
+
+## The questions an agent asks
+
+| Question | MCP tool | CLI (`npx semi …`, add `--json` for structured output) |
+|---|---|---|
+| Which component fits this need? | `semi_search { query, limit? }` | `semi search "<need in words>"` |
+| How do I use it (when, instead, import, API, a11y)? | `semi_docs { name }` | `semi docs <doc id or Component>` |
+| What code do I start from? | `semi_example { name, file? }` | `semi example <id> [file]` |
+| What props does an export take? | `semi_props { name }` | `semi props <Component>` |
+| What exists, by group? | `semi_list { group? }` | `semi list [--group AI]` |
+| A whole page? | `semi_block { id? }` | `semi blocks`, `semi add <id> [--out path] [--force]` |
+
+**Search** takes plain words in Vietnamese or English ("bảng có sắp xếp và chọn dòng", "agent asks before sending
+email"). Vietnamese UI terms map to the English docs (bảng → table, sắp xếp → sort, biểu đồ → chart …), filler words
+are dropped, rare words weigh more (IDF), names weigh more than descriptions. A hit on another doc's *Use something
+else when* row points to the component that row names, with the row as `why` — that is how "pick a date range"
+lands on `Calendar` even though `DatePicker` mentions dates more.
+
+## MCP server
+
+`semi mcp` (also `node node_modules/@semi/ui/cli/mcp.mjs`) speaks MCP over stdio (newline-delimited JSON-RPC, no
+SDK). The `semi-design` plugin registers it as `semi` (`plugin/.mcp.json` → `plugin/mcp/launch.mjs`): the launcher
+finds the project's `node_modules/@semi/ui` (the folder, its parents, `apps/*`, `packages/*`); without it the server
+offers one tool, `semi_status`, that says how to add Semi.
+
+## Blocks
+
+Page-level compositions in the docs group **Blocks** (`examples/<id>/`, one `page.tsx`-shaped example each):
+`dashboard` (KPIs, charts, latest orders), `list-page` (toolbar, data table, bulk actions), `settings-page` (form,
+switch rows, danger zone), `agent-run` (an agent turn with every AI part). `semi add <id>` writes the block to
+`app/<id>/page.tsx` (`src/app` when it exists) and refuses to overwrite without `--force`. They are page bodies: the
+app's layout gives the `AppShell`.
+
+## For maintainers
+
+- The CLI and the server read `examples/list.generated.json`, `examples/<id>/meta.json`, `docs/components/<id>.md`
+  and `components.json` through `cli/core.mjs`; `npm run build:manifest` keeps them fresh. A new doc needs nothing
+  else to be searchable — but its `when` and `instead` are what search ranks on, so write them well.
+- A block is a doc with `"group": "Blocks"`, `"components": []` and one `"preview": "frame"` example.
+- Search vocabulary (Vietnamese → English terms, stop words) lives in `cli/core.mjs`; `lint/test/cli.test.mjs` pins
+  the queries agents rely on.
 
 
 ---
@@ -1671,12 +1733,12 @@ with `data-style` re-styles only its subtree (used by Storybook previews), not s
 
 All web UI in the Semi ecosystem MUST follow the **Semi Design System** (`@semi/ui`, repo `https://github.com/hoanghuynh296/semi-nextjs-codebase`).
 
-1. **Single source of truth:** Read `node_modules/@semi/ui/docs/QUICK_REF.md` (and `node_modules/@semi/ui/docs/DESIGN_SYSTEM.md` for details) before editing any UI file. Pick components from `node_modules/@semi/ui/docs/components/README.md`, read the component's page (`docs/components/<id>.md`: when to use, what to use instead, API, accessibility) and start from one of its examples (`node_modules/@semi/ui/examples/<id>/*.tsx`). Do not invent local colour classes, font sizes, radii, or custom wrapper barrels (`components/ui.tsx`).
+1. **Single source of truth, ask it first:** before writing UI, find the component for the need: the `semi` MCP tools (`semi_search` → `semi_docs` → `semi_example`, `semi_block` for whole pages) or the same from the terminal (`npx semi search "bảng có sắp xếp"`, `npx semi docs DataTable`, `npx semi example data-table`, `npx semi add dashboard`). They answer from the installed `@semi/ui`. Read the component's page (when to use, what to use instead, API, accessibility) and start from one of its examples; rules: `node_modules/@semi/ui/docs/QUICK_REF.md` (details in `docs/DESIGN_SYSTEM.md`). Do not invent local colour classes, font sizes, radii, or custom wrapper barrels (`components/ui.tsx`).
 2. **Use `@semi/ui` and `@semi/ui/styles` directly:**
    - **Layout & Page Structure (`@semi/ui`):** `AppShell` (floating 2-panel Bento frame on `bg-canvas` with collapsible `w-52`/`w-14` sidebar and `MobileTabBar` on phones — never use a fixed `border-r` or `-translate-x-full` hamburger `<aside>`), `PageTitle` / `PageTabsTitle` (text-only display title or underline group tabs — never place text buttons on the title row), `SubpageToolbar` (`STICKY_TOOLBAR` with filters left and icon-only `BTN_PRIMARY BTN_ICON` + `SearchInput` + `RefreshButton` right), `KpiCard` (`18px–22px` tabular-nums metric card), `Modal` (shared portal dialog with `MODAL_HEAD` + `MODAL_FOOT`), `ThemeScript` (in `<head>`, with `<html suppressHydrationWarning>`) + `ThemeProvider` / `ThemeSwitcher` / `ThemeToggle` (dual-theme Dark/Light/System via `data-theme`), `Card` (`interactive`, `active`; no `bg-*`/`shadow-*` overrides).
    - **Primitives (`@semi/ui`):** `Button` (`variant`, `size`, `icon`, `iconOnly` + `aria-label`, `loading`), `Field` + `Input` / `Textarea` (label, hint, error wired for screen readers), `Checkbox`, `Switch`, `RadioGroup`, `Tabs`, `Tooltip`, `Menu` (overflow actions), `toast()` + `ToastHost`, `Alert`, `Progress`, `Avatar`, `EmptyState`, `Table` (`THead`/`TBody`/`TR`/`TH`/`TD`), `Drawer`, `Spinner`, `SemiLocaleProvider` (UI strings, `vi` default / `en`). Inventory with props: `node_modules/@semi/ui/components.json`.
    - **Controls (`@semi/ui`):** `Icon`, `IconTile`, `AppHeader`, `PageActions`, `Chip`, `Pills`, `CustomSelect`, `CustomCombobox`, `NumberInput`, `DatePicker`, `SearchInput`, `Pagination`, `SidePanel`, `RefreshButton`, `Skeleton` (`SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton`), `confirmDialog` + `ConfirmHost`, `ExternalLink`, `Markdown`.
-   - **AI chat (`@semi/ui`):** `AIChat` (or `ChatPanel` > `ChatView` > `ChatList` + `ChatComposer` with `UserMessage`, `AssistantMessage`, `ChatError`, `ChatThinking`, `ChatIntro`, `ChatSuggestion`) for every AI conversation, with `ChatModelPicker` (provider → model → effort) as its `toolbar`; the app keeps messages, streaming and the provider / model lists. Never build its own composer, bubbles or chat panel.
+   - **AI chat (`@semi/ui`):** `AIChat` (or `ChatPanel` > `ChatView` > `ChatList` + `ChatComposer` with `UserMessage`, `AssistantMessage`, `ChatError`, `ChatThinking`, `ChatIntro`, `ChatSuggestion`) for every AI conversation, with `ChatModelPicker` (provider → model → effort) as its `toolbar`; the app keeps messages, streaming and the provider / model lists. Never build its own composer, bubbles or chat panel. Agent work shows with `Reasoning`, `ToolCall`, `TaskList`, `Terminal`, `FileTree`, `Sources` + `Citation`, `ContextMeter`; every outward-facing, paid or irreversible agent action waits for `ActionConfirmation`.
    - **Styles (`@semi/ui/styles`):** `SHELL_*`, `CARD`, `CARD_HOVER`, `CARD_ACTIVE`, `HERO`, `TILE`, `SECTION_*`, `STICKY_TOOLBAR`, `MODAL_*`, `FIELD_LABEL`, `FIELD_INPUT`, `FIELD_TEXTAREA`, `STATUS_DOT`, `STATUS_PILL`, `BTN_PRIMARY`, `BTN_SECONDARY`, `BTN_DANGER`, `BTN_GHOST`, `BTN_SM`, `BTN_ICON`, `MODAL_BTN_*`, `headerPrimary`, `VIEWPORT_*`, `TONAL_SURFACE`, `EMPTY_STATIC`, `cn()`, `FOCUS_RING`, `OVERLAY`.
 3. **Hard constraints (enforced by `npx semi-lint`):**
    - Flat surfaces & semantic tokens only (`bg-canvas`, `bg-app`, `bg-panel`, `bg-field`, `bg-raised`, `text-contrast`, `text-body`, `text-muted`, `border-line`, `border-divider`). Status surfaces: `bg-danger-bg border-danger-border text-danger-fg` (also success / warning / info, `bg-*-solid` for dots and bars). Backdrops `bg-overlay`; floating layers `shadow-overlay` (canvas controls `shadow-float`); global layers `z-sticky` < `z-drawer` < `z-modal` < `z-dialog` < `z-keypad` < `z-popover` < `z-toast` < `z-tooltip` (never `z-[9999]`). No gradients, no glow shadows (`shadow-[0_0_…]`), no drop shadows on surfaces other than `shadow-card`, no arbitrary colours (`bg-[#...]`, `text-[rgb(…)]`) and no literal colours in code (`"#fff"`).
@@ -7262,72 +7324,6 @@ it will do, then Cho phép / Từ chối; once decided, the outcome replaces the
 
 ---
 
-<!-- docs/components/agent-run.md -->
-
-# Agent run
-
-A full agent turn composed from the parts: the user's request, reasoning, a plan, tool calls, an approval and the answer with sources — the pattern to copy for agent UIs.
-
-## When to use
-
-- Starting an agent chat or run log; shows how the AI parts sit together in a ChatList.
-
-## Examples
-
-### One agent turn
-
-```tsx
-"use client";
-
-import { useState } from "react";
-import { ActionConfirmation, AssistantMessage, ChatComposer, ContextMeter, Reasoning, Sources, TaskList, ToolCall, UserMessage } from "@semi/ui";
-
-export default function AgentRunTurn() {
-  const [ok, setOk] = useState<"pending" | "approved" | "rejected">("pending");
-  const [draft, setDraft] = useState("");
-  return (
-    <div className="flex h-[640px] flex-col bg-panel">
-      <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-4 p-4">
-        <UserMessage>Xếp lịch in 20 giá đỡ PETG cho đơn #1042 và báo khách.</UserMessage>
-        <Reasoning duration={3}>Cần một máy in rảnh có PETG, ước lượng thời gian rồi gửi email cho khách.</Reasoning>
-        <TaskList
-          title="Kế hoạch"
-          steps={[
-            { label: "Tìm máy in rảnh", status: "done" },
-            { label: "Ước lượng thời gian in", status: "done" },
-            { label: "Gửi email cho khách", status: ok === "approved" ? "done" : ok === "rejected" ? "skipped" : "running" },
-          ]}
-        />
-        <ToolCall name="search_printers" title="Tìm máy in rảnh" icon="search" status="done" input={{ material: "PETG" }} output={[{ id: "x1c-03", queue: 0 }]} />
-        <ToolCall name="estimate" title="Ước lượng thời gian" icon="clock" status="done" output="20 bản · 6 giờ 40 phút" />
-        <ToolCall name="send_email" title="Gửi email cho khách" icon="send" status={ok === "pending" ? "awaiting" : ok === "approved" ? "done" : "error"} error="Bạn đã từ chối." defaultOpen>
-          <ActionConfirmation title="Gửi email cho an@example.com?" icon="send" state={ok} onApprove={() => setOk("approved")} onReject={() => setOk("rejected")}>
-            “Đơn #1042 sẽ in xong lúc 17:40 hôm nay.”
-          </ActionConfirmation>
-        </ToolCall>
-        {ok !== "pending" && (
-          <AssistantMessage actions={<Sources sources={[{ title: "Lịch máy in", href: "https://example.com/schedule" }]} />}>
-            Đã xếp đơn #1042 vào X1 Carbon 03, xong lúc 17:40{ok === "approved" ? " và đã báo khách." : ". Chưa gửi email cho khách."}
-          </AssistantMessage>
-        )}
-      </div>
-      <ChatComposer value={draft} onChange={setDraft} onSend={() => setDraft("")} toolbar={<ContextMeter used={48_200} total={200_000} />} />
-    </div>
-  );
-}
-```
-
-## API
-
-## Accessibility
-
-- Order follows what happened; only the answer text is announced (ChatList), tool and reasoning details stay behind disclosures.
-
-<!-- GENERATED by scripts/build-docs.mjs from examples/agent-run/ and the types in src/ -->
-
-
----
-
 <!-- docs/components/ai-chat.md -->
 
 # AI chat
@@ -8405,6 +8401,357 @@ Strings show as they are, anything else as formatted JSON; `error` shows in plac
 - Put an ActionConfirmation inside (children) when the call waits for approval.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/tool-call/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/agent-run.md -->
+
+# Agent workspace
+
+A full agent turn composed from the AI parts: the request, reasoning, a plan, tool calls, an approval, the answer with sources and a composer with the context meter. Copy it with `semi add agent-run`.
+
+## When to use
+
+- Starting an agent chat or run log; shows how the AI parts sit together in a ChatList; the AI doc pages link here.
+
+## Examples
+
+### One agent turn
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { ActionConfirmation, AssistantMessage, ChatComposer, ContextMeter, Reasoning, Sources, TaskList, ToolCall, UserMessage } from "@semi/ui";
+
+export default function AgentRunTurn() {
+  const [ok, setOk] = useState<"pending" | "approved" | "rejected">("pending");
+  const [draft, setDraft] = useState("");
+  return (
+    <div className="flex h-[640px] flex-col bg-panel">
+      <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-4 p-4">
+        <UserMessage>Xếp lịch in 20 giá đỡ PETG cho đơn #1042 và báo khách.</UserMessage>
+        <Reasoning duration={3}>Cần một máy in rảnh có PETG, ước lượng thời gian rồi gửi email cho khách.</Reasoning>
+        <TaskList
+          title="Kế hoạch"
+          steps={[
+            { label: "Tìm máy in rảnh", status: "done" },
+            { label: "Ước lượng thời gian in", status: "done" },
+            { label: "Gửi email cho khách", status: ok === "approved" ? "done" : ok === "rejected" ? "skipped" : "running" },
+          ]}
+        />
+        <ToolCall name="search_printers" title="Tìm máy in rảnh" icon="search" status="done" input={{ material: "PETG" }} output={[{ id: "x1c-03", queue: 0 }]} />
+        <ToolCall name="estimate" title="Ước lượng thời gian" icon="clock" status="done" output="20 bản · 6 giờ 40 phút" />
+        <ToolCall name="send_email" title="Gửi email cho khách" icon="send" status={ok === "pending" ? "awaiting" : ok === "approved" ? "done" : "error"} error="Bạn đã từ chối." defaultOpen>
+          <ActionConfirmation title="Gửi email cho an@example.com?" icon="send" state={ok} onApprove={() => setOk("approved")} onReject={() => setOk("rejected")}>
+            “Đơn #1042 sẽ in xong lúc 17:40 hôm nay.”
+          </ActionConfirmation>
+        </ToolCall>
+        {ok !== "pending" && (
+          <AssistantMessage actions={<Sources sources={[{ title: "Lịch máy in", href: "https://example.com/schedule" }]} />}>
+            Đã xếp đơn #1042 vào X1 Carbon 03, xong lúc 17:40{ok === "approved" ? " và đã báo khách." : ". Chưa gửi email cho khách."}
+          </AssistantMessage>
+        )}
+      </div>
+      <ChatComposer value={draft} onChange={setDraft} onSend={() => setDraft("")} toolbar={<ContextMeter used={48_200} total={200_000} />} />
+    </div>
+  );
+}
+```
+
+## API
+
+## Accessibility
+
+- Order follows what happened; only the answer text is announced (ChatList), tool and reasoning details stay behind disclosures.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/agent-run/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/dashboard.md -->
+
+# Dashboard
+
+An overview page: title, KPI row with trends, a revenue chart, orders by status and the latest orders. Copy it with `semi add dashboard`, then replace the sample data.
+
+## When to use
+
+- The home page of an admin or operations app: a few numbers, one trend, what needs attention.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A page that is mostly one list | the List page block |
+
+## Examples
+
+### Overview
+
+```tsx
+"use client";
+
+import { Badge, BarChart, Card, DonutChart, Item, ItemGroup, KpiCard, PageTitle, Sparkline } from "@semi/ui";
+
+const WEEKS = ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8"].map((w, i) => ({ week: w, online: 22 + i * 3 + (i % 3) * 4, store: 14 + i * 2 - (i % 2) * 3 }));
+const LATEST = [
+  { id: "SO-1062", customer: "Nguyễn An", total: "1.240.000 ₫", status: ["emerald", "Đã giao"] },
+  { id: "SO-1061", customer: "Trần Bình", total: "380.000 ₫", status: ["sky", "Đang in"] },
+  { id: "SO-1060", customer: "Lê Chi", total: "2.150.000 ₫", status: ["amber", "Chờ thanh toán"] },
+] as const;
+
+export default function DashboardPage() {
+  return (
+    <div className="space-y-4">
+      <PageTitle title="Tổng quan" />
+      <div className="grid gap-3 grid-cols-2 @3xl:grid-cols-4">
+        <KpiCard label="Doanh thu tuần" value="61,8 tr ₫" sub="+12% so với tuần trước" tone="good" icon="coin" iconTone="green" />
+        <KpiCard label="Đơn mới" value="148" sub="+9 so với tuần trước" tone="good" icon="receipt" iconTone="sky" />
+        <KpiCard label="Máy đang chạy" value="11/14" icon="printer" iconTone="violet" />
+        <KpiCard label="Tỉ lệ lỗi" value="1,8%" sub="-0,4 điểm" tone="good" icon="alert" iconTone="pink" />
+      </div>
+      <div className="grid gap-3 @4xl:grid-cols-[2fr_1fr]">
+        <Card className="p-4 space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="text-title font-medium text-contrast">Doanh thu theo kênh</h2>
+            <Sparkline label="Tổng doanh thu 8 tuần" values={WEEKS.map((w) => w.online + w.store)} />
+          </div>
+          <BarChart
+            stacked
+            label="Doanh thu theo kênh, 8 tuần (triệu ₫)"
+            data={WEEKS}
+            index="week"
+            series={[
+              { key: "online", label: "Online" },
+              { key: "store", label: "Cửa hàng" },
+            ]}
+            format={(v) => `${v} tr ₫`}
+          />
+        </Card>
+        <Card className="p-4 space-y-3">
+          <h2 className="text-title font-medium text-contrast">Đơn theo trạng thái</h2>
+          <DonutChart
+            label="Đơn theo trạng thái"
+            centerLabel="Tổng đơn"
+            data={[
+              { label: "Đã giao", value: 812 },
+              { label: "Đang in", value: 164 },
+              { label: "Chờ thanh toán", value: 96 },
+            ]}
+          />
+        </Card>
+      </div>
+      <ItemGroup label="Đơn mới nhất" showLabel>
+        {LATEST.map((o) => (
+          <Item key={o.id} icon="receipt" title={o.id} description={o.customer} meta={<span className="tabular-nums">{o.total}</span>} actions={<Badge tone={o.status[0]} dot size="sm">{o.status[1]}</Badge>} href={`#${o.id}`} />
+        ))}
+      </ItemGroup>
+    </div>
+  );
+}
+```
+
+## API
+
+## Accessibility
+
+- One h1 (PageTitle); every chart has a table view; KPI trends say “so với tuần trước” in text, not colour only.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/dashboard/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/list-page.md -->
+
+# List page
+
+A records page: title, toolbar (status pills, search, refresh, add), a data table that sorts, selects and pages, bulk actions. Copy it with `semi add list-page`.
+
+## When to use
+
+- Orders, customers, products, jobs: any page whose job is to find and act on records.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Entities people recognise by image and status | a grid of Card |
+
+## Examples
+
+### Orders
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Badge, Button, DataTable, PageTitle, Pills, SubpageToolbar, toast, type DataTableColumn } from "@semi/ui";
+
+type Order = { id: string; customer: string; status: "paid" | "pending" | "refunded"; total: number; date: string };
+const STATUS = { paid: ["emerald", "Đã thanh toán"], pending: ["amber", "Chờ xử lý"], refunded: ["rose", "Hoàn tiền"] } as const;
+const ORDERS: Order[] = Array.from({ length: 36 }, (_, i) => ({
+  id: `SO-${1040 + i}`,
+  customer: ["Nguyễn An", "Trần Bình", "Lê Chi", "Phạm Dũng", "Hoàng Hà", "Võ Lan"][i % 6],
+  status: (["paid", "pending", "paid", "refunded"] as const)[i % 4],
+  total: 180_000 + ((i * 97_000) % 2_400_000),
+  date: `2026-10-${String(1 + (i % 28)).padStart(2, "0")}`,
+}));
+
+const COLUMNS: DataTableColumn<Order>[] = [
+  { key: "id", header: "Mã đơn", sortable: true, cell: (o) => <span className="font-medium text-contrast">{o.id}</span> },
+  { key: "customer", header: "Khách hàng", sortable: true },
+  { key: "status", header: "Trạng thái", value: (o) => STATUS[o.status][1], cell: (o) => <Badge tone={STATUS[o.status][0]} dot>{STATUS[o.status][1]}</Badge> },
+  { key: "date", header: "Ngày", sortable: true },
+  { key: "total", header: "Tổng", sortable: true, numeric: true, cell: (o) => `${o.total.toLocaleString("vi-VN")} ₫` },
+];
+
+export default function ListPage() {
+  const [status, setStatus] = useState("all");
+  const [q, setQ] = useState("");
+  const rows = status === "all" ? ORDERS : ORDERS.filter((o) => o.status === status);
+  return (
+    <div className="space-y-4">
+      <PageTitle title="Đơn hàng" />
+      <SubpageToolbar
+        left={
+          <Pills
+            value={status}
+            onChange={setStatus}
+            options={[
+              { key: "all", label: "Tất cả" },
+              { key: "pending", label: "Chờ xử lý" },
+              { key: "paid", label: "Đã thanh toán" },
+              { key: "refunded", label: "Hoàn tiền" },
+            ]}
+          />
+        }
+        searchValue={q}
+        onSearchChange={setQ}
+        searchPlaceholder="Tìm mã đơn, khách hàng…"
+        onRefresh={() => new Promise((r) => setTimeout(r, 600))}
+        onPrimaryAction={() => toast({ title: "Tạo đơn mới" })}
+        primaryActionLabel="Tạo đơn"
+      />
+      <DataTable
+        label="Đơn hàng"
+        rows={rows}
+        columns={COLUMNS}
+        getRowId={(o) => o.id}
+        search={q}
+        defaultSort={{ key: "date", dir: "desc" }}
+        selectable
+        bulkActions={(ids) => (
+          <Button size="sm" variant="secondary" icon="download" onClick={() => toast({ title: `Đã xuất ${ids.length} đơn` })}>
+            Xuất CSV
+          </Button>
+        )}
+        pageSize={10}
+      />
+    </div>
+  );
+}
+```
+
+## API
+
+## Accessibility
+
+- Filters and search sit above the table they filter; the table has a caption; bulk actions appear as a labelled region.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/list-page/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/settings-page.md -->
+
+# Settings page
+
+A settings page: sections of rows with switches and links, a profile form with validation and one save action, and a danger zone. Copy it with `semi add settings-page`.
+
+## When to use
+
+- Account, workspace or device settings.
+
+## Examples
+
+### Workspace settings
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Button, Card, confirmDialog, CustomSelect, Field, Input, Item, ItemGroup, PageTitle, Switch, toast } from "@semi/ui";
+
+export default function SettingsPage() {
+  const [name, setName] = useState("Xưởng in A");
+  const [lang, setLang] = useState("vi");
+  const [notify, setNotify] = useState(true);
+  const [digest, setDigest] = useState(false);
+  const error = name.trim().length < 3 ? "Tên cần ít nhất 3 ký tự." : undefined;
+  return (
+    <div className="space-y-4">
+      <PageTitle title="Cài đặt" />
+      <Card className="p-4 space-y-4">
+        <h2 className="text-title font-medium text-contrast">Không gian làm việc</h2>
+        <div className="grid gap-4 @2xl:grid-cols-2">
+          <Field label="Tên" required error={error}>
+            <Input value={name} onChange={(e) => setName(e.target.value)} />
+          </Field>
+          <Field label="Ngôn ngữ">
+            <CustomSelect
+              variant="field"
+              value={lang}
+              onChange={setLang}
+              options={[
+                { value: "vi", label: "Tiếng Việt" },
+                { value: "en", label: "English" },
+              ]}
+            />
+          </Field>
+        </div>
+        <div className="flex justify-end">
+          <Button variant="primary" disabled={Boolean(error)} onClick={() => toast({ title: "Đã lưu", tone: "success" })}>
+            Lưu
+          </Button>
+        </div>
+      </Card>
+      <ItemGroup label="Thông báo" showLabel>
+        <Item icon="bell" title="Khi in xong hoặc lỗi" description="Gửi tới ứng dụng và email" actions={<Switch checked={notify} onChange={setNotify} label={<span className="sr-only">Khi in xong hoặc lỗi</span>} />} />
+        <Item icon="fileText" title="Báo cáo tuần" description="Thứ Hai, 8:00" actions={<Switch checked={digest} onChange={setDigest} label={<span className="sr-only">Báo cáo tuần</span>} />} />
+        <Item icon="key" title="Khoá API" description="Cho tích hợp và agent" href="#api-keys" />
+      </ItemGroup>
+      <Card className="p-4 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="text-title font-medium text-contrast">Xoá không gian làm việc</h2>
+          <p className="text-label text-muted">Xoá mọi máy in, đơn và lịch sử. Không thể khôi phục.</p>
+        </div>
+        <Button
+          variant="danger"
+          icon="trash"
+          onClick={async () => {
+            if (await confirmDialog({ title: "Xoá Xưởng in A?", message: "Mọi dữ liệu sẽ bị xoá vĩnh viễn.", confirmLabel: "Xoá", tone: "danger" })) toast({ title: "Đã xoá", tone: "danger" });
+          }}
+        >
+          Xoá
+        </Button>
+      </Card>
+    </div>
+  );
+}
+```
+
+## API
+
+## Accessibility
+
+- Each section is a labelled ItemGroup; fields use Field (label, hint, error wired); the destructive action asks first (confirmDialog).
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/settings-page/ and the types in src/ -->
 
 
 ---

@@ -16,6 +16,7 @@ const tokens = JSON.parse(readFileSync(join(root, "tokens/tokens.json"), "utf8")
 
 const clean = (c) =>
   c
+    .trim()
     .replace(/^\/\*\*?|\*\/$/g, "")
     .split("\n")
     .map((l) => l.replace(/^\s*\*\s?/, "").replace(/^\s*\/\/\s?/, "").trim())
@@ -147,6 +148,7 @@ const DOCS = [
   ["docs/QUICK_REF.md", "QUICK_REF.md", "Quick reference: the rules and imports to read before any UI change"],
   ["docs/DESIGN_SYSTEM.md", "DESIGN_SYSTEM.md", "Full design system rules (layout, colour, components, accessibility, anti-patterns)"],
   ["docs/COMPONENT_DOCS.md", "COMPONENT_DOCS.md", "How the component docs are built (examples/, meta.json, generated API) and how agents should use them"],
+  ["docs/AGENT_TOOLS.md", "AGENT_TOOLS.md", "Agent tools: the semi CLI (search, docs, example, add) and the MCP server, and the page blocks"],
   ["docs/ICONS.md", "ICONS.md", "Semantic icon guide: which icon means what"],
   ["docs/BRANDS.md", "BRANDS.md", "Brands: brand kits (brand.json → brand.css), the step-by-step flow from a new brand to its first product, which command when"],
   ["docs/STYLES.md", "STYLES.md", "Styles (Flat, Soft, Sharp) and palettes: what each changes, how an app picks one"],
@@ -159,6 +161,8 @@ const llms = [
   "> The shared UI of every Semi app: semantic tokens that work in light and dark mode, React components (Next.js, Tailwind CSS 4) and the rules agents follow. Every component has a page with live examples and a markdown twin for agents.",
   "",
   `Install \`${pkg.name}\`, import components from \`${manifest.import.components}\`, class constants from \`${manifest.import.styles}\`, CSS ${manifest.import.css.map((c) => `\`${c}\``).join(" + ")}. Before writing UI read QUICK_REF.md; pick the component from docs/components/README.md, read its page, copy an example; never invent local colours, sizes or wrapper components; check with \`npx semi-lint\`.`,
+  "",
+  "In a project with the package installed, ask the docs instead of reading files: `npx semi search \"<need in words>\"`, `npx semi docs <Component>`, `npx semi example <id>`, `npx semi add <block>` (dashboard, list-page, settings-page, agent-run), or `npx semi mcp` as an MCP server (tools semi_search, semi_docs, semi_example, semi_props, semi_list, semi_block; the semi-design plugin starts it). Guide: docs/AGENT_TOOLS.md.",
   "",
   "## Machine-readable",
   "",

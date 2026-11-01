@@ -103,6 +103,20 @@ trung tính): Flat = Graphite · Slate · Olive, Soft = Sand · Blush · Sage, S
 mặc định). Đổi chỉ màu: `/semi-style` rồi chọn palette. Danh sách: `tokens/styles.json`,
 mô tả: `docs/STYLES.md`. Xem thử trên trang docs (nút chọn style và palette ở chân sidebar).
 
+### Dựng giao diện với agent (`/semi-ui`, CLI `semi`, MCP)
+```text
+/semi-ui
+```
+Agent tìm đúng component hoặc block cho từng nhu cầu (gõ tiếng Việt hay tiếng Anh đều được), đọc trang docs của nó,
+bắt đầu từ ví dụ, ghép trang rồi chạy `semi-lint`. Plugin tự chạy MCP server `semi` (công cụ `semi_search`,
+`semi_docs`, `semi_example`, `semi_props`, `semi_list`, `semi_block`) đọc từ `@semi/ui` đã cài, nên luôn khớp phiên
+bản. Từ terminal cũng dùng được:
+```bash
+npx semi search "bảng có sắp xếp và chọn dòng"
+```
+`npx semi docs DataTable`, `npx semi example data-table`, `npx semi add dashboard` (block: dashboard, list-page,
+settings-page, agent-run). Chi tiết: `docs/AGENT_TOOLS.md`.
+
 ### Đề xuất tính năng mới từ dự án con (Khi gặp thiếu sót hoặc nhu cầu chưa đáp ứng)
 ```text
 /semi-propose

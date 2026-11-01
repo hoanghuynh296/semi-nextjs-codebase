@@ -1,0 +1,25 @@
+{
+  "title": "List page",
+  "group": "Blocks",
+  "description": "A records page: title, toolbar (status pills, search, refresh, add), a data table that sorts, selects and pages, bulk actions. Copy it with `semi add list-page`.",
+  "components": [],
+  "when": [
+    "Orders, customers, products, jobs: any page whose job is to find and act on records."
+  ],
+  "instead": [
+    {
+      "need": "Entities people recognise by image and status",
+      "use": "a grid of Card"
+    }
+  ],
+  "a11y": [
+    "Filters and search sit above the table they filter; the table has a caption; bulk actions appear as a labelled region."
+  ],
+  "examples": [
+    {
+      "file": "page",
+      "title": "Orders",
+      "preview": "frame"
+    }
+  ]
+}
