@@ -45,6 +45,12 @@ and `/semi-sync`.
      into `brand.json` → `voice.do`, `voice.dont`, `voice.examples` (`{ "button": [...], "error": "…", "empty": "…" }`).
    - **Colour use:** how much accent: restrained (Recommended for tools), balanced, expressive (consumer, marketing).
    - Imagery (optional): one or two sentences on photos / illustration.
+   - **Signature** (what makes the brand's screens its own beyond colour; one question with the inferred values as
+     the Recommended option): the build already infers them from the brief (`BRAND.md` → "Chữ ký thương hiệu" says which
+     were inferred), so say what it inferred and why, and offer to change: density compact / regular / airy (tools all
+     day → compact; consumer, premium → airy), type scale even / contrast (contrast for bold, editorial, marketing),
+     title weight light / regular / strong, big numbers in the sans or the display font, and the motif: the logo mark
+     (needs an SVG mark), dots, lines, grid or none. Show them on the preview's "Chữ ký thương hiệu" section.
 3. **Create:**
    ```bash
    node "<path-to-this-skill>/scripts/brand.mjs" create --cwd "<dir>" --name "<Name>" --package "@scope/brand" \
@@ -59,7 +65,7 @@ and `/semi-sync`.
    node "<path-to-this-skill>/scripts/brand.mjs" preview --cwd "<dir>"     # run_in_background; http://localhost:4600
    ```
    It is a brand book rendered with real `@semi/ui` components, in three tabs: **Thương hiệu** (cover, brief, logo
-   with clear space and misuse examples, colours by role with the share of a screen, type, voice, imagery),
+   with clear space and misuse examples, colours by role with the share of a screen, type, signature, voice, imagery),
    **Ứng dụng** (dashboard, phone app, landing page, email, light and dark, texts from the voice) and **UI kit**
    (scales, contrast table, downloads, every component page); theme and allowed styles switch in the top bar. Open it in the browser when you can, read the contrast table and the warnings, and
    tell the user in a few lines: always say when the button is not the exact brand colour in a theme (`fidelity`,
@@ -70,7 +76,8 @@ and `/semi-sync`.
    ```
    Keys: `primary`, `secondary` (`none` to remove), `name`, `neutral`, `allow`, `style`, `sans`, `display`;
    guideline: `tone`, `address`, `we`, `emoji`, `accent`, `secondaryRole`, `product`, `audience`,
-   `personality` (comma list), `tagline`, `logo`, `logoDark`, `mark` (paths in the kit), `imagery`. Lists (`voice.do`,
+   `personality` (comma list), `tagline`, `logo`, `logoDark`, `mark` (paths in the kit), `imagery`; signature:
+   `density`, `scale`, `title`, `figures`, `motif` (`auto` goes back to what the brief implies). Lists (`voice.do`,
    `voice.dont`) and `voice.examples` are edited in `brand.json` directly, then `brand.mjs build`. It rebuilds and says the change level.
 6. **Release** when the user approves: `npm run check`, `node brand.mjs bump --cwd "<dir>" 1.0.0`, commit, push to the
    brand's GitHub repo (ask the user to create it if needed), tag `v1.0.0`, push the tag. Then turn on GitHub Pages

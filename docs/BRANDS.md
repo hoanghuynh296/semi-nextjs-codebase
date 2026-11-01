@@ -24,7 +24,7 @@ Sản phẩm (Manager, Store, …)       chỉ dùng: không tự chọn màu / 
 ```
 
 - **Bạn chỉ quyết định vài thứ**, một lần, trong repo brand: brief (sản phẩm, người dùng, tính cách), logo, màu chính,
-  màu phụ (tuỳ chọn), màu trung tính, các style được dùng, font, giọng văn, mức dùng màu. Phần còn lại (thang màu, màu cho nền tối / sáng, chữ trên nút, đảm bảo đọc rõ) do Semi tự sinh.
+  màu phụ (tuỳ chọn), màu trung tính, các style được dùng, font, giọng văn, mức dùng màu, và chữ ký (mật độ, cách dùng chữ, hoạ tiết; bỏ trống thì Semi suy từ brief). Phần còn lại (thang màu, màu cho nền tối / sáng, chữ trên nút, đảm bảo đọc rõ) do Semi tự sinh.
 - **Mọi màu đều đạt chuẩn đọc rõ (WCAG AA)** ở cả theme sáng và tối: bộ sinh tự chỉnh, và báo lỗi nếu một màu không
   thể dùng được.
 - **Sản phẩm không thể đi lệch:** `semi-lint` chặn việc ghi đè màu thương hiệu trong sản phẩm (`brand-override`),
@@ -210,7 +210,10 @@ Brand kit ghi nó chạy với `@semi/ui` nào (`"semi": "^0.16"` trong `brand.j
   },
   "color": { "accent": "restrained" },
   "imagery": "Ảnh bản in thật trên nền tối, chụp gần; không ảnh stock.",
-  "semi": "^0.16"
+  "density": "compact",
+  "typography": { "scale": "even", "title": "regular", "figures": "display" },
+  "motif": "mark",
+  "semi": "^0.17"
 }
 ```
 
@@ -228,6 +231,19 @@ Brand kit ghi nó chạy với `@semi/ui` nào (`"semi": "^0.16"` trong `brand.j
 | `voice` | `tone`: `friendly` · `neutral` · `formal`; `address` (gọi người dùng), `we` (tự xưng), `emoji`, `do`, `dont`, `examples` (`button`, `success`, `error`, `empty`, `confirm`) | Tuỳ chọn, mặc định trung tính, gọi "bạn". Luật viết chung của Semi (nút, lỗi, trạng thái trống) luôn kèm theo |
 | `color` | `accent`: `restrained` · `balanced` · `expressive`; `secondaryRole`: `highlight` · `badge` · `illustration` | Mặc định tiết chế, màu phụ là điểm nhấn. Mức dùng màu quyết định tỉ lệ màu trên một màn hình (tiết chế 80 / 15 / 5 %, cân bằng 70 / 20 / 10, phóng khoáng 55 / 25 / 20: trung tính / bề mặt / màu chính; màu phụ lấy khoảng 30 % phần màu chính) |
 | `imagery` | Một đoạn mô tả ảnh / minh hoạ | Tuỳ chọn |
+| `density` | `compact` · `regular` · `airy` | Tuỳ chọn, mặc định suy từ brief. Đổi đơn vị khoảng cách của Tailwind (`--spacing`): mọi `p-*`, `gap-*` gọn hơn hoặc thoáng hơn |
+| `typography` | `scale`: `even` · `contrast`; `title`: `light` · `regular` · `strong`; `figures`: `sans` · `display` | Tuỳ chọn, suy từ brief. Cỡ tiêu đề và số lớn, nét tiêu đề (`font-title`), font của con số lớn (`font-figure`) |
+| `motif` | `mark` · `dots` · `lines` · `grid` · `none` | Tuỳ chọn, suy từ brief (có mark SVG thì dùng mark). Hoạ tiết của `<BrandPattern>` |
+
+### Chữ ký thương hiệu
+
+Hai thương hiệu khác nhau không chỉ ở màu. `density`, `typography` và `motif` là chữ ký: mật độ, cách dùng chữ, con số
+và hoạ tiết. Thiếu lựa chọn nào thì bộ sinh suy từ brief (công cụ dùng cả ngày → gọn; "táo bạo", "trẻ trung" → cỡ
+chữ tương phản, tiêu đề đậm; "sang trọng", "tinh tế" → thoáng, tiêu đề mảnh; có mark SVG → hoạ tiết từ mark) và
+BRAND.md ghi "suy từ brief" bên cạnh. Component của Semi tự đổi theo (`PageTitle`, `KpiCard`, mọi padding), sản phẩm
+không cần sửa code; `<BrandPattern>` và `<BrandFigure>` đưa hoạ tiết và con số lớn vào màn hình. Brand book có mục
+"Chữ ký thương hiệu" để xem. Sản phẩm không được tự đặt các biến này (`brand-override`). Quy tắc bố cục đi kèm (tránh
+giao diện "AI" chung chung): `DESIGN_SYSTEM.md` §19.
 
 ### Semi sinh màu thế nào
 

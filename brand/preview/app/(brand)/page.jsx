@@ -1,9 +1,9 @@
 "use client";
 
-// Brand book: who the brand is, its logo, colours, type, voice and imagery, in the order a designer presents them.
+// Brand book: who the brand is, its logo, colours, type, signature, voice and imagery, in the order a designer presents them.
 // The design system details (scales, contrast, components) are on the UI kit page. Copied into a brand kit's
 // .preview/ by semi-brand; do not edit there.
-import { Alert, Button, EmptyState, Icon } from "@semi/ui";
+import { Alert, BrandFigure, BrandPattern, Button, EmptyState, Icon, KpiCard } from "@semi/ui";
 import { CARD } from "@semi/ui/styles";
 import brand from "../brand.json";
 import { BothThemes, first, guide as g, logoSrc, MiniScreen, Section, THEME_NAME, THEMES } from "../parts";
@@ -233,13 +233,76 @@ function Type() {
         ))}
       </div>
       <div className={`${CARD} p-6 space-y-3`}>
-        <div className="font-display font-semibold text-contrast leading-tight" style={{ fontSize: "clamp(26px, 4vw, 40px)" }}>
+        <div className="font-display font-title text-contrast leading-tight" style={{ fontSize: "clamp(26px, 4vw, 40px)" }}>
           {b.tagline || `${brand.name}: rõ ràng, nhanh, đáng tin.`}
         </div>
         <p className="text-ui-lg text-body leading-relaxed max-w-2xl">
           {b.product ? `${b.product}. ` : ""}Đoạn văn dùng font giao diện: dễ đọc ở cỡ nhỏ, đủ dấu tiếng Việt, số liệu thẳng hàng trong bảng.
         </p>
       </div>
+    </Section>
+  );
+}
+
+const SIG_ROWS = [
+  ["Mật độ", "densityLabel", "densityRule", "density"],
+  ["Cỡ chữ", "scaleLabel", "scaleRule", "typography.scale"],
+  ["Nét tiêu đề", "titleLabel", "titleRule", "typography.title"],
+  ["Con số", "figuresLabel", "figuresRule", "typography.figures"],
+  ["Hoạ tiết", "motifLabel", "motifRule", "motif"],
+];
+
+/** What makes this brand's screens its own beyond colour: density, type, figures and motif, shown on real pieces. */
+function Signature() {
+  const s = g?.signature;
+  if (!s) return null;
+  const ex = g.voice.examples ?? {};
+  return (
+    <Section
+      title="Chữ ký thương hiệu"
+      icon="sparkles"
+      card={false}
+      lead="Những gì làm màn hình của thương hiệu này khác mọi sản phẩm khác, ngoài màu: mật độ, cách dùng chữ, con số và hoạ tiết. Component của Semi tự đổi theo."
+    >
+      <div className="grid gap-3 @2xl:grid-cols-[2fr_3fr]">
+        <dl className={`${CARD} p-5 divide-y divide-divider`}>
+          {SIG_ROWS.map(([label, l, rule, key]) => (
+            <div key={label} className="py-3 first:pt-0 last:pb-0 space-y-1">
+              <dt className="flex items-baseline gap-2">
+                <span className="text-label text-muted w-24 shrink-0">{label}</span>
+                <span className="text-title font-medium text-contrast">{s[l]}</span>
+                {s.inferred.includes(key) && <span className="text-caption text-muted">suy từ brief</span>}
+              </dt>
+              <dd className="text-label text-body pl-26">{s[rule]}</dd>
+            </div>
+          ))}
+        </dl>
+        <BothThemes wide>
+          {() => (
+            <div className="p-6 grid gap-6 @lg:grid-cols-2 @lg:items-center">
+              <div className="space-y-3">
+                <div className="font-display font-title text-heading-lg text-contrast leading-tight">{g.brief?.tagline ?? brand.name}</div>
+                <Button variant="primary">{first(ex.button, "Bắt đầu")}</Button>
+              </div>
+              <div className="relative overflow-hidden rounded-card bg-accent-subtle min-h-40 flex items-end p-3">
+                <BrandPattern area="full" />
+                <div className="relative rounded-card bg-panel border-card p-3">
+                  <BrandFigure value="4,8 / 5" label="Điểm đánh giá trung bình" />
+                </div>
+              </div>
+            </div>
+          )}
+        </BothThemes>
+      </div>
+      <BothThemes>
+        {() => (
+          <div className="p-4 grid grid-cols-2 gap-3 @container">
+            <KpiCard featured label="Doanh thu tháng" value="48,2 tr" sub="+8,6% so với tháng trước" />
+            <KpiCard label="Khách mới" value="312" />
+            <KpiCard label="Quay lại" value="41%" />
+          </div>
+        )}
+      </BothThemes>
     </Section>
   );
 }
@@ -309,6 +372,7 @@ export default function BrandBook() {
       <Logo />
       <Colors />
       <Type />
+      <Signature />
       <Voice />
       {g?.imagery && (
         <Section title="Hình ảnh" icon="camera">

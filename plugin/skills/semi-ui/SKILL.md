@@ -22,8 +22,10 @@ If neither works (`semi_status` answers, or `npx semi` is missing), the app has 
 
 ## Workflow
 
-0. **Brand first:** when `semi-lint.json` has `"brand"`, ask `semi_brand` (or `npx semi brand voice|color|logo`)
+0. **Brand first:** when `semi-lint.json` has `"brand"`, ask `semi_brand` (or `npx semi brand voice|color|logo|signature`)
    before writing UI text or choosing where colour goes, and write every label, error and empty state in that voice.
+   Its brief says who the product is for: sample data, placeholders and empty states come from that product, never
+   "Lorem", "John Doe", "Acme" or another domain.
 1. **Split the request into needs** in plain words ("filter orders by status", "pick a date range", "agent asks before
    sending"). Search each one; Vietnamese or English both work. Read `why` lines: they come from another component's
    "use something else when" table and usually name the right pick.
@@ -33,6 +35,11 @@ If neither works (`semi_status` answers, or `npx semi` is missing), the app has 
 3. **A whole page:** start from a block (`semi add dashboard` writes `app/dashboard/page.tsx`; `--out <path>` to
    choose, never `--force` over the user's file without asking). Replace the sample data with the app's data and
    types; keep the Semi components and their order.
+   Then make it this product's screen, not the generic AI one (`DESIGN_SYSTEM.md` §19): decide the one block the
+   user came for and make it the biggest (`KpiCard featured` for the main number, not four equal cards); keep KPI and
+   card icons neutral (colour only for a status); no row of three icon feature cards with vague promises (use
+   `BrandFigure`, a quote, a product shot); icons only where they help scanning; plain sections and white space next to
+   cards; `BrandPattern` in open areas (hero, empty state), never behind tables or forms.
 4. **A part:** copy the closest example and adapt it. Examples import from `@semi/ui` only and type-check, so keep
    their props and structure; change data, labels and handlers.
 5. **Compose, do not invent.** No local wrappers (`components/ui.tsx`), no raw `<select>` / `<table>` / `<dialog>`,

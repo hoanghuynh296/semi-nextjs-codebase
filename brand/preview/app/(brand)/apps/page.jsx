@@ -2,8 +2,7 @@
 
 // Applications: the brand on the screens a product actually ships (dashboard, phone app, landing page, email),
 // light and dark, with texts from the brand's voice. Copied into a brand kit's .preview/ by semi-brand.
-import { Badge, Button, Icon, KpiCard } from "@semi/ui";
-import { CARD } from "@semi/ui/styles";
+import { Badge, BrandFigure, BrandPattern, Button, Icon, KpiCard } from "@semi/ui";
 import brand from "../../brand.json";
 import { BothThemes, first, guide as g, Section, Wordmark } from "../../parts";
 
@@ -49,11 +48,11 @@ function Dashboard({ theme }) {
             </Button>
           </div>
         </div>
-        <div className="grid grid-cols-2 @lg:grid-cols-3 gap-2">
-          <KpiCard label="Hôm nay" value="128" icon="receipt" iconTone="green" />
-          <KpiCard label="Doanh thu" value="12,4 tr" icon="wallet" iconTone="green" />
+        <div className="grid grid-cols-2 @lg:grid-cols-4 gap-2">
+          <KpiCard featured label="Doanh thu hôm nay" value="12,4 tr" sub="+18% so với hôm qua" />
+          <KpiCard label="Đơn" value="128" />
           <div className="hidden @lg:block">
-            <KpiCard label="Khách mới" value="36" icon="users" iconTone="green" />
+            <KpiCard label="Khách mới" value="36" />
           </div>
         </div>
         <div className="rounded-card border border-line bg-panel divide-y divide-divider text-ui">
@@ -130,46 +129,37 @@ function Phone({ theme }) {
 
 function Landing({ theme }) {
   const b = g?.brief ?? {};
-  const features = [
-    ["zap", "Nhanh", "Xong việc trong vài chạm, không cần hướng dẫn."],
-    ["shield", "An toàn", "Dữ liệu được bảo vệ và sao lưu mỗi ngày."],
-    ["heart", "Tận tâm", `Đội ngũ ${brand.name} luôn sẵn sàng hỗ trợ ${you}.`],
-  ];
   return (
     <div>
       <div className="flex items-center gap-4 px-5 py-3 border-b border-line">
         <Wordmark theme={theme} className="h-5" />
-        <span className="hidden @lg:inline text-ui text-body ml-auto">Tính năng</span>
+        <span className="hidden @lg:inline text-ui text-body ml-auto">Sản phẩm</span>
         <span className="hidden @lg:inline text-ui text-body">Bảng giá</span>
         <span className="ml-auto @lg:ml-0">
-          <Button variant="primary">Dùng thử</Button>
+          <Button variant="primary">{first(ex.button, "Dùng thử")}</Button>
         </span>
       </div>
-      <div className={`px-5 py-10 space-y-4 ${expressive ? "bg-accent text-on-accent" : ""}`}>
-        <h3 className={`font-display font-semibold leading-tight max-w-lg ${expressive ? "" : "text-contrast"}`} style={{ fontSize: "clamp(26px, 4vw, 38px)" }}>
-          {b.tagline ?? `${brand.name} giúp ${you} làm nhiều hơn với ít công sức hơn`}
-        </h3>
-        <p className={`text-ui-lg leading-relaxed max-w-md ${expressive ? "" : "text-body"}`}>{b.product ?? "Một sản phẩm gọn gàng, dễ dùng cho mọi người."}</p>
-        <div className="flex flex-wrap gap-2">
-          {expressive ? (
-            <Button>{first(ex.button, "Bắt đầu miễn phí")}</Button>
-          ) : (
-            <>
-              <Button variant="primary">{first(ex.button, "Bắt đầu miễn phí")}</Button>
-              <Button>Xem demo</Button>
-            </>
-          )}
+      <div className={`px-5 py-10 grid gap-8 @2xl:grid-cols-2 @2xl:items-center ${expressive ? "bg-accent text-on-accent" : ""}`}>
+        <div className="space-y-4">
+          <h3 className={`font-display font-title leading-tight max-w-lg ${expressive ? "" : "text-contrast"}`} style={{ fontSize: "clamp(28px, 4.5vw, 44px)" }}>
+            {b.tagline ?? `${brand.name} giúp ${you} làm nhiều hơn với ít công sức hơn`}
+          </h3>
+          <p className={`text-ui-lg leading-relaxed max-w-md ${expressive ? "" : "text-body"}`}>{b.product ?? "Một sản phẩm gọn gàng, dễ dùng cho mọi người."}</p>
+          {expressive ? <Button>{first(ex.button, "Bắt đầu")}</Button> : <Button variant="primary">{first(ex.button, "Bắt đầu")}</Button>}
+        </div>
+        <div className={`relative overflow-hidden rounded-panel min-h-56 flex items-end p-4 ${expressive ? "bg-accent-hover" : "bg-accent-subtle"}`}>
+          <BrandPattern area="full" tone={expressive ? "on-accent" : "accent"} />
+          <div className="relative rounded-card bg-panel border-card p-4 shadow-card">
+            <BrandFigure size="xl" value="4,8 / 5" label="Điểm đánh giá trung bình" sub="Ví dụ: một con số thật thay cho ba thẻ tính năng" />
+          </div>
         </div>
       </div>
-      <div className="grid gap-3 @lg:grid-cols-3 px-5 pb-6 pt-2">
-        {features.map(([icon, t, d]) => (
-          <div key={t} className={`${CARD} p-4 space-y-1.5`}>
-            <Icon name={icon} className="w-5 h-5 text-accent-fg" />
-            <div className="text-title font-semibold text-contrast">{t}</div>
-            <div className="text-label text-body leading-relaxed">{d}</div>
-          </div>
-        ))}
-      </div>
+      <figure className="px-5 py-8 border-t border-line grid gap-2 @2xl:grid-cols-[1fr_3fr] @2xl:items-baseline">
+        <figcaption className="text-label text-muted">{b.audience ?? "Khách hàng"}</figcaption>
+        <blockquote className="font-display font-title text-heading-sm text-contrast leading-snug">
+          “Lần đầu dùng mà không phải hỏi ai. {cap(you)} thử là biết.”
+        </blockquote>
+      </figure>
     </div>
   );
 }
@@ -197,9 +187,9 @@ function Email({ theme }) {
 }
 
 const SCREENS = [
-  ["Dashboard", "chart", "Công cụ làm việc cả ngày trên máy tính: màu chính chỉ ở nút chính, mục đang chọn và link.", Dashboard, true],
+  ["Dashboard", "chart", "Công cụ làm việc cả ngày trên máy tính: một con số dẫn đầu, màu chính chỉ ở nút chính, mục đang chọn và link.", Dashboard, true],
   ["Ứng dụng điện thoại", "smartphone", "Màn hình nhỏ, dùng nhanh: một nút chính, thanh tab dưới.", Phone, false],
-  ["Trang giới thiệu", "megaphone", expressive ? "Mức dùng màu phóng khoáng: hero nền màu chính." : "Tiêu đề bằng font hiển thị, một lời kêu gọi chính.", Landing, true],
+  ["Trang giới thiệu", "megaphone", `${expressive ? "Mức dùng màu phóng khoáng: hero nền màu chính. " : ""}Tiêu đề bằng font hiển thị, một lời kêu gọi chính, bằng chứng thật (con số, lời khách hàng) thay cho ba thẻ tính năng.`, Landing, true],
   ["Email", "send", "Email giao dịch: logo, một nút, chân trang nhỏ.", Email, false],
 ];
 

@@ -44,7 +44,7 @@ function parseArgs(argv) {
   return opts;
 }
 
-function writeNewProjectStarter(webDir, appName, style) {
+function writeNewProjectStarter(webDir, appName, style, guide = null) {
   const fonts = nextFontCode(style);
   const layoutPath = join(webDir, "app", "layout.tsx");
   writeFileSync(
@@ -82,128 +82,49 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   );
 
   const pagePath = join(webDir, "app", "page.tsx");
+  // The first screen is the brand's, not a template's: headline, text and button come from the brand brief and voice
+  // (dist/brand.json) when there is a kit; the agent then builds the real screens from the brand book's applications.
+  const g = guide ?? {};
+  const first = (x) => (Array.isArray(x) ? x[0] : x);
+  const copy = {
+    title: g.brief?.tagline ?? `Chào mừng đến với ${appName}`,
+    lead: g.brief?.product ?? "Trang đầu tiên của sản phẩm. Thay nó bằng màn hình chính khi đã rõ người dùng đến đây để làm gì.",
+    action: first(g.voice?.examples?.button) ?? "Bắt đầu",
+    emptyTitle: "Chưa có gì ở đây",
+    empty: g.voice?.examples?.empty ?? "Dữ liệu sẽ hiện ở đây khi có. Bắt đầu bằng việc chính của sản phẩm.",
+  };
   writeFileSync(
     pagePath,
     `"use client";
 
 import React, { useState } from "react";
-import {
-  AppShell,
-  Chip,
-  CustomSelect,
-  IconTile,
-  KpiCard,
-  PageTitle,
-  Pills,
-  SubpageToolbar,
-  ThemeToggle,
-  confirmDialog,
-  type ShellNavSection,
-} from "@semi/ui";
-import { CARD, STATUS_DOT } from "@semi/ui/styles";
+import { AppShell, BrandPattern, Button, EmptyState, PageTitle, ThemeToggle, type ShellNavSection } from "@semi/ui";
 
+// Starter screen: replace it with the product's main screen (the brand book's "Ứng dụng" tab shows the brand on
+// real screens). Keep one main block per screen; avoid the generic AI look (DESIGN_SYSTEM.md §19).
 const SECTIONS: ShellNavSection[] = [
-  {
-    label: "Quản lý",
-    items: [
-      { id: "dashboard", label: "Tổng quan", shortLabel: "Trang chủ", icon: "grid" },
-      { id: "devices", label: "Thiết bị", icon: "printer" },
-      { id: "inventory", label: "Kho vật tư", icon: "spool" },
-      { id: "automation", label: "Tự động hoá", icon: "zap" },
-    ],
-  },
-  {
-    label: "Hệ thống",
-    items: [{ id: "settings", label: "Cài đặt", icon: "settings" }],
-  },
+  { label: "Ứng dụng", items: [{ id: "home", label: "Tổng quan", shortLabel: "Trang chủ", icon: "grid" }] },
+  { label: "Hệ thống", items: [{ id: "settings", label: "Cài đặt", icon: "settings" }] },
 ];
 
-const TABS = [
-  { key: "all", label: "Tất cả" },
-  { key: "online", label: "Trực tuyến" },
-  { key: "busy", label: "Đang chạy" },
-] as const;
-
 export default function HomePage() {
-  const [activeNav, setActiveNav] = useState("dashboard");
-  const [tab, setTab] = useState<string>("all");
-  const [query, setQuery] = useState("");
-  const [region, setRegion] = useState("vn");
-  const [pinnedOnly, setPinnedOnly] = useState(false);
-
+  const [activeNav, setActiveNav] = useState("home");
   return (
-    <AppShell
-      productName={${JSON.stringify(appName)}}
-      logoIcon="layers"
-      sections={SECTIONS}
-      activeId={activeNav}
-      onSelect={setActiveNav}
-    >
+    <AppShell productName={${JSON.stringify(appName)}} logoIcon="layers" sections={SECTIONS} activeId={activeNav} onSelect={setActiveNav}>
       <div className="flex items-center justify-between gap-4 pb-2">
         <PageTitle title={${JSON.stringify(appName)}} />
         <ThemeToggle />
       </div>
-
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
-        <KpiCard icon="printer" iconTone="green" label="Thiết bị trực tuyến" value="12 / 14" sub="Hoạt động ổn định" />
-        <KpiCard icon="zap" iconTone="sky" label="Tác vụ hôm nay" value="148" sub="Tỷ lệ thành công 99.2%" />
-        <KpiCard icon="spool" iconTone="violet" label="Tồn kho khả dụng" value="86" sub="4 mục sắp hết" />
-        <KpiCard icon="coin" iconTone="amber" label="Hiệu suất trung bình" value="42 ms" sub="Trong 24 giờ qua" />
-      </div>
-
-      <SubpageToolbar
-        left={
-          <>
-            <Pills options={[...TABS]} value={tab} onChange={setTab} />
-            <Chip active={pinnedOnly} onClick={() => setPinnedOnly((v) => !v)}>
-              <span>Đã ghim</span>
-            </Chip>
-            <CustomSelect
-              value={region}
-              onChange={setRegion}
-              options={[
-                { value: "vn", label: "Khu vực VN" },
-                { value: "sg", label: "Khu vực SG" },
-              ]}
-            />
-          </>
-        }
-        onPrimaryAction={() =>
-          confirmDialog({
-            title: "Tạo mục mới",
-            message: "Bạn có muốn khởi tạo bản ghi mới trong hệ thống Semi không?",
-            confirmLabel: "Tạo mới",
-          })
-        }
-        primaryActionLabel="Tạo mới"
-        searchValue={query}
-        onSearchChange={setQuery}
-        onRefresh={async () => {}}
-      />
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {[
-          { id: "01", name: "Thiết bị điều khiển trung tâm", status: "online" as const, metric: "99.8%" },
-          { id: "02", name: "Trạm xử lý dữ liệu thời gian thực", status: "printing" as const, metric: "42 ms" },
-          { id: "03", name: "Bộ lưu trữ nhật ký vận hành", status: "online" as const, metric: "1.2 TB" },
-        ].map((item) => (
-          <div key={item.id} className={\`\${CARD} p-4 space-y-3\`}>
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <IconTile name="printer" tone="sky" size="md" />
-                <div className="min-w-0">
-                  <div className="text-ui font-semibold text-contrast truncate">{item.name}</div>
-                  <div className="text-caption text-muted tabular-nums">Mã #{item.id}</div>
-                </div>
-              </div>
-              <span className={\`w-2 h-2 rounded-full shrink-0 \${STATUS_DOT[item.status]}\`} />
-            </div>
-            <div className="flex items-center justify-between pt-2 border-t border-divider text-label">
-              <span className="text-muted">Hiệu suất</span>
-              <span className="text-contrast font-medium tabular-nums">{item.metric}</span>
-            </div>
-          </div>
-        ))}
+      <div className="@container">
+      <section className="relative overflow-hidden rounded-panel border-card bg-panel mb-5">
+        <BrandPattern className="hidden @2xl:block" />
+        <div className="relative p-6 @2xl:p-10 space-y-4 @2xl:max-w-[50%]">
+          <h2 className="font-display font-title text-heading-lg @2xl:text-display leading-tight text-contrast">{${JSON.stringify(copy.title)}}</h2>
+          <p className="text-ui-lg text-body">{${JSON.stringify(copy.lead)}}</p>
+          <Button variant="primary">{${JSON.stringify(copy.action)}}</Button>
+        </div>
+      </section>
+      <EmptyState title=${JSON.stringify(copy.emptyTitle)} description=${JSON.stringify(copy.empty)} />
       </div>
     </AppShell>
   );
@@ -296,7 +217,7 @@ if (brandPkg) {
 }
 const chosenStyle = (semiStyles(webDir) || styles).styles.find((s) => s.id === opts.style) ?? styles.styles[0];
 // Fonts: the brand's when there is one, else the style's.
-writeNewProjectStarter(webDir, opts.appName, brandKit ? { ...chosenStyle, name: brandKit.name, fonts: brandKit.fonts } : chosenStyle);
+writeNewProjectStarter(webDir, opts.appName, brandKit ? { ...chosenStyle, name: brandKit.name, fonts: brandKit.fonts } : chosenStyle, brandKit?.guide);
 const styled = wireStyle(webDir, opts.style);
 console.log(styled.message);
 if (!styled.ok) process.exit(2);

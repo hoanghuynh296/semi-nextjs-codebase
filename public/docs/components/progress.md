@@ -47,7 +47,7 @@ Determinate or indeterminate progress bar (uploads, quotas, print progress).
 |---|---|---|---|
 | `value` | `number` |  | Omit for an indeterminate bar. |
 | `max` | `number` | `100` |  |
-| `tone` | `'danger' \| 'info' \| 'success' \| 'warning' \| 'accent'` | `"accent"` |  |
+| `tone` | `'danger' \| 'info' \| 'accent' \| 'success' \| 'warning'` | `"accent"` |  |
 | `label` | `React.ReactNode` |  | Visible label above the bar (also its accessible name). |
 | `showValue` | `boolean` | `false` |  |
 | `size` | `'sm' \| 'md'` | `"md"` |  |

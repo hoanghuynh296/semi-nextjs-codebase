@@ -96,7 +96,7 @@ export function BothThemes({ children, wide = false }) {
   );
 }
 
-/** A small product screen in one theme: KPI cards, a selected row, an error in the brand's voice, the buttons. */
+/** A small product screen in one theme: the leading figure, a selected row, an error in the brand's voice, the buttons. */
 export function MiniScreen({ theme }) {
   const ex = guide?.voice.examples ?? {};
   return (
@@ -105,8 +105,7 @@ export function MiniScreen({ theme }) {
         <Wordmark theme={theme} />
       </div>
       <div className="grid grid-cols-2 gap-2">
-        <KpiCard label="Đơn hôm nay" value="128" icon="receipt" iconTone="green" />
-        <KpiCard label="Doanh thu" value="12,4 tr" icon="wallet" iconTone="green" />
+        <KpiCard featured label="Doanh thu hôm nay" value="12,4 tr" sub="+18% so với hôm qua" />
       </div>
       <div className="rounded-card border border-line bg-panel divide-y divide-divider">
         <div className="flex items-center gap-2 px-3 py-2 bg-accent-subtle border-l-2 border-l-accent-fg">

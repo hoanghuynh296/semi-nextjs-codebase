@@ -1,10 +1,17 @@
 # KPI card
 
-A metric card: label, a large tabular figure, a sub line coloured good / danger, and an icon in its tone.
+A metric card: label, a large tabular figure in the brand's figure font, a sub line coloured good / danger. One featured card leads the row; icons are optional and neutral.
 
 ## When to use
 
-- The metric row at the top of a dashboard (2–4 per row).
+- The metric row at the top of a dashboard (2–4 per row), with the screen's main number as the featured card.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| One number that leads a section outside a card row (landing proof point, report cover) | BrandFigure |
+| A colour per card for decoration | none: iconTone only when the colour means a status |
 
 ## Import
 
@@ -14,7 +21,7 @@ import { KpiCard } from "@semi/ui";
 
 ## Examples
 
-### Dashboard row
+### Dashboard row with a featured figure
 
 ```tsx
 import { KpiCard } from "@semi/ui";
@@ -22,10 +29,9 @@ import { KpiCard } from "@semi/ui";
 export default function KpiCardRow() {
   return (
     <div className="grid gap-3 grid-cols-2 @3xl:grid-cols-4">
-      <KpiCard label="Sản lượng in" value="1.842" sub="+12.4% so với tuần trước" tone="good" icon="box" iconTone="green" />
-      <KpiCard label="Doanh thu" value="48,2 tr ₫" sub="+8.6% so với tháng trước" tone="good" icon="coin" iconTone="pink" />
-      <KpiCard label="Giờ máy chạy" value="5.420 h" sub="-2.1%" tone="danger" icon="clock" iconTone="sky" />
-      <KpiCard label="Tỉ lệ thành công" value="98.7%" icon="check" iconTone="violet" loading={false} />
+      <KpiCard featured label="Doanh thu tháng" value="48,2 tr ₫" sub="+8,6% so với tháng trước" tone="good" />
+      <KpiCard label="Đơn mới" value="1.842" sub="+12% so với tuần trước" />
+      <KpiCard label="Đơn trễ" value="14" sub="3 đơn quá 2 ngày" tone="danger" icon="clock" iconTone="amber" />
     </div>
   );
 }
@@ -39,11 +45,12 @@ export default function KpiCardRow() {
 |---|---|---|---|
 | `label` * | `string` |  |  |
 | `value` * | `React.ReactNode` |  |  |
-| `sub` | `React.ReactNode` |  |  |
-| `tone` | `'danger' \| 'good'` |  |  |
-| `hint` | `string` |  |  |
-| `icon` | `IconName` |  |  |
-| `iconTone` | `'violet' \| 'sky' \| 'green' \| 'amber' \| 'pink' \| 'gray'` | `"sky"` |  |
+| `sub` | `React.ReactNode` |  | A line under the figure (trend, comparison); coloured by `tone`. |
+| `tone` | `'danger' \| 'good'` |  | Colour of the figure when it is good or bad news. Leave unset for a neutral figure. |
+| `hint` | `string` |  | Becomes the card's title (tooltip). |
+| `icon` | `IconName` |  | Optional icon before the label. Most KPI rows read better without one. |
+| `iconTone` | `'violet' \| 'sky' \| 'green' \| 'amber' \| 'pink' \| 'gray'` |  | Colour of the icon. Unset = neutral (text-muted). Give a colour only when it means something (a status), never one decorative colour per card. |
+| `featured` | `boolean` | `false` | The screen's main number: larger figure, spans two columns of the grid it sits in. Use one per row at most. |
 | `loading` | `boolean` | `false` | Show a shimmer skeleton in place of the value while loading. |
 | `className` | `string` | `""` |  |
 

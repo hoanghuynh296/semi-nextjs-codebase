@@ -1,12 +1,12 @@
 {
   "title": "KPI card",
   "group": "Data display",
-  "description": "A metric card: label, a large tabular figure, a sub line coloured good / danger, and an icon in its tone.",
+  "description": "A metric card: label, a large tabular figure in the brand's figure font, a sub line coloured good / danger. One featured card leads the row; icons are optional and neutral.",
   "components": [
     "KpiCard"
   ],
   "when": [
-    "The metric row at the top of a dashboard (2–4 per row)."
+    "The metric row at the top of a dashboard (2–4 per row), with the screen's main number as the featured card."
   ],
   "a11y": [
     "hint becomes the card's title (tooltip); the figure uses tabular-nums."
@@ -14,7 +14,17 @@
   "examples": [
     {
       "file": "row",
-      "title": "Dashboard row"
+      "title": "Dashboard row with a featured figure"
+    }
+  ],
+  "instead": [
+    {
+      "need": "One number that leads a section outside a card row (landing proof point, report cover)",
+      "use": "BrandFigure"
+    },
+    {
+      "need": "A colour per card for decoration",
+      "use": "none: iconTone only when the colour means a status"
     }
   ]
 }

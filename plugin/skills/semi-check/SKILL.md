@@ -66,6 +66,12 @@ The check part changes **no source file**. Its only output is `semi-check.md` at
    `PageTitle` + `SubpageToolbar`, `Table` / Bento `Card` grids, `KpiCard`, `Modal`, `Field` + `Input`, …
    (`node_modules/@semi/ui/components.json` lists every export with props). A need `@semi/ui` cannot express →
    `/semi-propose` and a `// TODO(semi#<issue>)` workaround, not a new primitive.
+   Then **review the key screens against `DESIGN_SYSTEM.md` §19** (the generic AI look; a person's judgement, so
+   `semi-check.md` cannot list it): four equal KPI cards where one number matters most, a decorative icon colour per
+   card, a hero with three icon feature cards, an icon before every label, sample text unrelated to the product, every
+   block a card with the same padding. Show the user what you found per screen (a line each, with a screenshot when a
+   browser is available), propose the change (`KpiCard featured`, neutral icons, `BrandFigure` or a quote as proof,
+   `BrandPattern` in the hero, text from `semi_brand` brief / voice) and apply only what they accept.
 9. **Verify** after each phase (and each module):
    ```bash
    node "<path-to-this-skill>/scripts/fix.mjs" --cwd "<audited-dir>" --verify
@@ -85,6 +91,7 @@ The check part changes **no source file**. Its only output is `semi-check.md` at
 | 2. Token | colour / size / radius classes the codemod maps safely (`rounded-lg` → `rounded-control`, `shadow-sm` → `shadow-card`) | `fix.mjs tokens [--only dir]` |
 | 3. Sửa tay (`L…`) | lint hits no codemod can fix safely | edits by hand |
 | 4. Cấu trúc (`D…`) | AppShell / AppHeader frame, local wrappers, list pages without `SubpageToolbar`, tables, components that duplicate `@semi/ui`, other UI libraries | asks: fix, or keep (`semi-lint.json` `keep`) |
+| 4b. Không "AI" | the generic AI screen (`DESIGN_SYSTEM.md` §19; `decorative-icon-tones` is the only part lint finds, in phase 3) | reviewed by eye on the key screens, proposed, applied with the user's yes |
 
 Checks the team chose to keep are listed in `semi-lint.json` (`"keep": { "tables": "reason" }`, or an array of path
 prefixes) and only appear as one "Giữ nguyên" line.

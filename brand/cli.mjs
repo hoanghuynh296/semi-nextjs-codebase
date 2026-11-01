@@ -66,7 +66,9 @@ export function buildKit(cwd) {
   const tokens = readJson(join(pkgRoot, "tokens/tokens.json"));
   const styles = readJson(join(pkgRoot, "tokens/styles.json"));
   const version = readJson(join(pkgRoot, "package.json")).version;
-  const result = generateBrand(brand, { tokens, styles, version });
+  const markPath = brand.logo?.mark && /\.svg$/i.test(brand.logo.mark) ? join(cwd, brand.logo.mark) : null;
+  const markSvg = markPath && existsSync(markPath) ? readFileSync(markPath, "utf8") : null;
+  const result = generateBrand(brand, { tokens, styles, version, markSvg });
   // Logo files live in the kit repo (brand.json "logo"); the build copies them to dist/logo/ so products import them
   // from the package (@scope/brand/dist/logo/…) and the preview shows them.
   const logo = result.tokens.guide.logo;
@@ -88,6 +90,24 @@ export function buildKit(cwd) {
   };
   return { files, assets, result };
 }
+
+/** The patterns every AI-made screen shares; the brand rules ask agents to avoid them (docs/DESIGN_SYSTEM.md §19). */
+const GENERIC_UI = [
+  "Not every screen is sidebar + title + four equal KPI cards + a table: give each screen one main block (the thing the user came for) and make it bigger than the rest.",
+  "KPI icons stay neutral or are left out; colour on a KPI means something (`tone=\"good\"|\"danger\"`), never one decorative colour per card.",
+  "No row of three feature cards with an icon, a one-word title and a vague promise (“Fast”, “Secure”, “Dedicated”). Show proof instead: a product shot, a real number, a customer quote.",
+  "No icon in front of every label: icons where they help scanning (navigation, actions, status), not as decoration.",
+  "Sample and empty-state text comes from this brand's product and voice, never generic (“Lorem”, “John Doe”, “Acme”, orders for a product the brand does not sell).",
+  "Vary the rhythm: not every block a card with the same padding; use plain sections, dividers and white space too.",
+];
+const GENERIC_UI_VI = [
+  "Không phải màn nào cũng là sidebar + tiêu đề + bốn thẻ KPI bằng nhau + bảng: mỗi màn có một khối chính (việc người dùng đến để làm), lớn hơn phần còn lại",
+  "Icon trên thẻ KPI để trung tính hoặc bỏ; màu trên KPI phải có nghĩa (tốt / xấu), không mỗi thẻ một màu trang trí",
+  "Không làm hàng ba thẻ tính năng có icon, tiêu đề một chữ và lời hứa chung chung (“Nhanh”, “An toàn”, “Tận tâm”): đưa bằng chứng (ảnh sản phẩm, con số thật, lời khách hàng)",
+  "Không đặt icon trước mọi nhãn: icon chỉ ở chỗ giúp nhìn nhanh (điều hướng, hành động, trạng thái)",
+  "Chữ mẫu và trạng thái trống lấy từ sản phẩm và giọng văn của thương hiệu, không chữ chung chung",
+  "Đổi nhịp: không phải khối nào cũng là thẻ cùng padding; dùng cả vùng trơn, đường chia và khoảng trống",
+];
 
 const swatches = (sc) => SHADES.map((s) => `| ${s} | \`${sc[s]}\` |`).join("\n");
 const styleName = (styles, id) => styles.styles.find((s) => s.id === id)?.name ?? id;
@@ -143,6 +163,20 @@ function guideMd(t) {
   if (v.do.length) out.push(`\n**Nên**\n\n${bullets(v.do)}`);
   if (v.dont.length) out.push(`\n**Không nên**\n\n${bullets(v.dont)}`);
   if (Object.keys(v.examples).length) out.push(`\n| Chỗ | Ví dụ |\n|---|---|\n${exampleRows(v.examples)}`);
+  out.push("");
+  const sg = g.signature;
+  out.push("## Chữ ký thương hiệu\n");
+  out.push("Những gì làm sản phẩm của thương hiệu này khác sản phẩm khác ngoài màu: mật độ, cách dùng chữ và hoạ tiết.\n");
+  out.push("| | Lựa chọn | Nghĩa là |\n|---|---|---|");
+  const tag = (k) => (sg.inferred.includes(k) ? " *(suy từ brief)*" : "");
+  out.push(`| Mật độ | ${sg.densityLabel}${tag("density")} | ${sg.densityRule} |`);
+  out.push(`| Cỡ chữ | ${sg.scaleLabel}${tag("typography.scale")} | ${sg.scaleRule} |`);
+  out.push(`| Nét tiêu đề | ${sg.titleLabel}${tag("typography.title")} | ${sg.titleRule} |`);
+  out.push(`| Con số | ${sg.figuresLabel}${tag("typography.figures")} | ${sg.figuresRule} |`);
+  out.push(`| Hoạ tiết | ${sg.motifLabel}${tag("motif")} | ${sg.motifRule} Dùng qua \`<BrandPattern>\` ở hero, trạng thái trống, ảnh đại diện; không phủ lên bảng hay form. |`);
+  out.push("");
+  out.push("**Tránh giao diện chung chung** (thứ mọi sản phẩm làm bằng AI đều có):\n");
+  out.push(bullets(GENERIC_UI_VI));
   out.push("");
   if (g.imagery) out.push(`## Hình ảnh và minh hoạ\n\n${g.imagery}\n\nIcon: bộ icon của Semi (\`<Icon name>\`, nét 1.75), không trộn bộ icon khác.\n`);
   return out.join("\n");
@@ -215,7 +249,7 @@ function agentsMd({ tokens: t }, styles) {
     "",
     "**Type and style**",
     `- Style: ${allowed} only (\`data-style\` on \`<html>\`, \`"style"\` in \`semi-lint.json\`, switch on request).`,
-    `- Fonts: ${t.fonts.map((f) => f.family).join(" + ")}, loaded with \`next/font\` in the root layout (\`${t.fonts.map((f) => f.variable).join("`, `")}\`). Titles and KPI figures \`font-display\`, everything else \`font-sans\`.`,
+    `- Fonts: ${t.fonts.map((f) => f.family).join(" + ")}, loaded with \`next/font\` in the root layout (\`${t.fonts.map((f) => f.variable).join("`, `")}\`). Titles \`font-display\`, big numbers \`font-figure\`, everything else \`font-sans\`.`,
     "",
     ...(g.logo
       ? [
@@ -232,6 +266,11 @@ function agentsMd({ tokens: t }, styles) {
     ...Object.entries(v.examples).map(([k, x]) => `- Example (${k}): ${(Array.isArray(x) ? x : [x]).map((y) => `“${y}”`).join(" · ")}`),
     ...(g.brief?.audience || g.brief?.personality?.length ? ["", `**Who it is for** — ${[g.brief.audience, g.brief.personality?.length ? `personality: ${g.brief.personality.join(", ")}` : null].filter(Boolean).join("; ")}. Choose words, density and imagery for them.`] : []),
     ...(g.imagery ? ["", `**Imagery** — ${g.imagery}`] : []),
+    "",
+    `**Signature** — density **${g.signature.density}** (${g.signature.densityRule}); type scale **${g.signature.scale}**, titles **${g.signature.title}**, figures in the **${g.signature.figures}** font (\`font-figure\`, \`font-title\` and every padding follow it: never override them); motif **${g.signature.motif}** through \`<BrandPattern>\` (hero, empty state, cover image; never behind tables or forms). Big numbers: \`<BrandFigure>\` or \`<KpiCard featured>\`.`,
+    "",
+    "**Avoid the generic AI look**",
+    ...GENERIC_UI.map((r) => `- ${r}`),
     "",
     "A change to the brand happens in the brand repo (`/semi-brand`), then `/semi-sync` here.",
   ];

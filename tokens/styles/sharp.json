@@ -40,6 +40,15 @@
     },
     "spacing-field": {
       "value": "40px"
+    },
+    "font-figure": {
+      "value": "var(--brand-font-figure, var(--semi-font-display))"
+    },
+    "font-weight-title": {
+      "value": "var(--brand-title-weight, 700)"
+    },
+    "spacing": {
+      "value": "var(--brand-spacing, 0.25rem)"
     }
   },
   "semantic": {

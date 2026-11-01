@@ -4,6 +4,28 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.17.0] - 2026-11-01
+
+### Added
+- **Brand signature** in `brand.json`: `density` (compact · regular · airy), `typography` (`scale` even · contrast, `title` light · regular · strong, `figures` sans · display) and `motif` (mark · dots · lines · grid · none). All optional: what a kit leaves out is inferred from its brief (a tool used all day → compact, "táo bạo" → contrast and strong titles, an SVG logo mark → a motif made of the mark), and BRAND.md marks what was inferred. `brand.css` sets them as `--brand-*` variables; BRAND.md, AGENTS.brand.md and `semi_brand signature` / `semi brand signature` explain them. `/semi-brand` asks them (`set density= scale= title= figures= motif=`, `auto` to go back to the inference).
+- **Style tokens read by every component:** `--spacing` (Tailwind's spacing unit, so the brand's density scales every padding and gap), `font-title` (title and figure weight) and `font-figure` (the font of big numbers). Sharp now has bold titles and figures in its display font; Flat and Soft look as before.
+- **`BrandPattern`** (the brand's motif as a decorative layer for heroes, empty states and covers) and **`BrandFigure`** (one big number in the brand's figure font), with a doc and examples (`examples/brand`).
+- **`KpiCard featured`:** the screen's main number, larger and two columns wide.
+- **Composition rules against the generic AI screen** (`DESIGN_SYSTEM.md` §19, QUICK_REF, the plugin rules, `semi-ui` and AGENTS.brand.md): one main block per screen, neutral icons, proof instead of three feature cards, icons only where they help, sample text from the brief, varied rhythm. `/semi-check` reviews key screens against them (phase 4b).
+- **`decorative-icon-tones` lint rule** (ratchet): three or more `iconTone` colours in one file.
+- Brand book: a "Chữ ký thương hiệu" section (the choices with their rules, a hero with the motif and a big figure, a KPI row).
+
+### Changed
+- **`KpiCard` icons are neutral by default** (`iconTone` was `sky`): give a colour only when it means a status. The figure uses `font-figure font-title`. Pass `iconTone` explicitly to keep a coloured icon.
+- `PageTitle` / `PageTabsTitle` use `font-title` (semibold unless the brand or style says otherwise).
+- The `dashboard` block, the KPI and sparkline examples and the brand book's sample screens lead with one featured number, without decorative icon colours; the brand book's landing page shows a big figure and a customer quote instead of three feature cards, and the motif in its hero.
+- **The `/semi-new-app` starter is the brand's first screen**, not a 3D-printer dashboard: a hero with the brand's motif, its tagline, product line and button text from the brand kit, and an empty state in its voice.
+- `brand-override` also blocks `--brand-*`, `--spacing`, `--font-figure` and `--font-weight-title` in an app with a brand kit.
+- `DESIGN_SYSTEM.md` §2b now describes brand kits (it still told products to override `primary-*` in their CSS).
+
+### Migration
+- Nothing to run. Kits rebuilt with this release get a signature inferred from their brief, so density and title weight may change a little; set `density`, `typography` and `motif` in `brand.json` to pin them. Apps that relied on the old sky default of `KpiCard`'s icon pass `iconTone="sky"`.
+
 ## [0.16.0] - 2026-11-01
 
 ### Changed

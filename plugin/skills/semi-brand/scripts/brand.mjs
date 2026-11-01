@@ -17,6 +17,8 @@
 //   set keys for the guideline: tone=friendly|neutral|formal address=bạn we="3D Noobs" emoji=false
 //        accent=restrained|balanced|expressive secondaryRole=highlight|badge|illustration imagery="…"
 //        product="…" audience="…" personality=nhanh,vui,đáng tin logo=assets/logo.svg logoDark=… mark=…
+//        signature: density=compact|regular|airy scale=even|contrast title=light|regular|strong figures=sans|display
+//        motif=mark|dots|lines|grid|none (auto = back to what the brief implies)
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -153,7 +155,8 @@ function changeLevel(before, after) {
   // write and compose, not what is on screen today (minor).
   const g = (t, k) => JSON.stringify(t.guide?.[k] ?? null);
   if (g(before, "logo") !== g(after, "logo")) return before.guide?.logo ? "major" : "minor";
-  if (["voice", "color", "brief", "imagery"].some((k) => g(before, k) !== g(after, k))) return "minor";
+  // The signature (density, type, motif) changes every screen a little: minor, like a new allowed style.
+  if (["voice", "color", "brief", "imagery", "signature"].some((k) => g(before, k) !== g(after, k))) return "minor";
   return JSON.stringify(before.styles) !== JSON.stringify(after.styles) ? "minor" : "patch";
 }
 
@@ -201,9 +204,18 @@ function applyPair(brand, key, value) {
   } else if (key === "imagery") {
     if (v === null) delete brand.imagery;
     else brand.imagery = v;
+  } else if (key === "density" || key === "motif") {
+    // "auto" = back to what the brief implies; motif=none is a real choice (no motif).
+    if (value === "auto") delete brand[key];
+    else brand[key] = value;
+  } else if (key === "scale" || key === "title" || key === "figures") {
+    brand.typography ||= {};
+    if (value === "auto") delete brand.typography[key];
+    else brand.typography[key] = value;
+    if (!Object.keys(brand.typography).length) delete brand.typography;
   } else
     throw new Error(
-      `không biết khoá "${key}" (primary, secondary, name, neutral, allow, style, sans, display, tone, address, we, emoji, accent, secondaryRole, product, audience, personality, tagline, logo, logoDark, mark, imagery)`,
+      `không biết khoá "${key}" (primary, secondary, name, neutral, allow, style, sans, display, tone, address, we, emoji, accent, secondaryRole, product, audience, personality, tagline, logo, logoDark, mark, imagery, density, scale, title, figures, motif)`,
     );
 }
 
@@ -255,7 +267,7 @@ if (cmd === "create") {
     for (const k of ["name", "package", "primary", "secondary", "neutral"]) if (src[k] && !opts[k]) opts[k] = src[k];
     if (src.styles && !opts.style) (opts.style = src.styles.default), (opts.allow = src.styles.allowed.join(","));
     if (src.fonts) (opts.sans ||= src.fonts.sans), (opts.display ||= src.fonts.display);
-    opts.guide = JSON.stringify(Object.fromEntries(["brief", "logo", "voice", "color", "imagery"].filter((k) => src[k] !== undefined).map((k) => [k, src[k]])));
+    opts.guide = JSON.stringify(Object.fromEntries(["brief", "logo", "voice", "color", "imagery", "density", "typography", "motif"].filter((k) => src[k] !== undefined).map((k) => [k, src[k]])));
   }
   if (existsSync(brandPath)) {
     console.error(`${brandPath} đã có: đây là brand kit có sẵn. Sửa bằng: node brand.mjs set …`);

@@ -88,8 +88,8 @@ export const HARD = [
 /** CSS rule of apps that use a brand kit ("brand" in semi-lint.json): the brand alone sets these variables. */
 export const BRAND_OVERRIDE = [
   "brand-override",
-  /(?:^|[\s;{])--(?:color-(?:primary|secondary|accent|on-accent)[\w-]*|semi-[\w-]+|font-(?:sans|display)(?:-family)?)\s*:/,
-  "this app uses a brand kit: its colours, fonts and Semi tokens come only from the brand (change them in the brand repo with /semi-brand)",
+  /(?:^|[\s;{])--(?:color-(?:primary|secondary|accent|on-accent)[\w-]*|semi-[\w-]+|brand-[\w-]+|spacing|font-(?:sans|display|figure|weight-title)(?:-family)?)\s*:/,
+  "this app uses a brand kit: its colours, fonts, density, signature and Semi tokens come only from the brand (change them in the brand repo with /semi-brand)",
 ];
 /** Rules that are opt-in: they only run on the path prefixes listed in config "only". */
 const OPT_IN = new Set(["viewport-grid-cols"]);
@@ -126,7 +126,14 @@ export const RATCHET = [
   ["font-mono", /\bfont-mono\b/g, "numbers use tabular-nums; mono only for code"],
   ["narrow-container", /max-w-(4xl|5xl|6xl)\b/g, "content uses the full width"],
   ["loading-text", /^(?!.*(label|role="status")).*(Đang tải|Loading\.\.\.)/g, "show a skeleton or a progress bar, not loading text (§13b)"],
+  [
+    "decorative-icon-tones",
+    null,
+    "One decorative colour per card (iconTone green, sky, violet… in one file) is the generic AI look (§19): keep KPI and card icons neutral and give a colour only when it means a status.",
+  ],
 ];
+/** Distinct iconTone values in one file from which the colours read as decoration, not meaning. */
+const DECORATIVE_TONES = 3;
 
 const DEFAULT_CONFIG = { scan: ["app", "components"], baseline: "semi-lint-baseline.json", skip: {}, only: {}, disable: [] };
 
@@ -190,6 +197,10 @@ export function scan(paths, cfg, cwd) {
       });
     }
     if (css) continue;
+    if (!skipped("decorative-icon-tones", name)) {
+      const tones = [...src.matchAll(/\biconTone=["'{]+(\w+)/g)];
+      if (new Set(tones.map((m) => m[1])).size >= DECORATIVE_TONES) add("decorative-icon-tones", name, src.slice(0, tones[0].index).split("\n").length);
+    }
     src.split(/\r?\n/).forEach((raw, i) => {
       if (!raw.trim() || isComment(raw)) return;
       for (const [id, rx, msg] of HARD) {
