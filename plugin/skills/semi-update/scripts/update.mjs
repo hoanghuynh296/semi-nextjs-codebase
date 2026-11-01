@@ -115,7 +115,7 @@ for (const appDir of apps) {
   const style = readStyleState(appDir).declared;
   const styles = semiStyles(appDir);
   if (style && styles && !styles.styles.some((s) => s.id === style))
-    console.log(`${name}: style "${style}" không còn trong ${to} (${styles.styles.map((s) => s.id).join(", ")}): chạy /semi-style.`);
+    console.log(`${name}: style "${style}" không còn trong ${to} (${styles.styles.map((s) => s.id).join(", ")}): chọn style khác (nhờ agent đổi style).`);
 
   // Re-wire the brand (brand.css import, rules block) and say which fonts the layout still needs.
   if (kit) {

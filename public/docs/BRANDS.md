@@ -150,8 +150,8 @@ hay `--semi-…` trong CSS của app, `semi-lint` chặn (`brand-override`): mà
 | … rồi đưa vào các app | `/semi-update` (đổi màu thấy rõ: agent hỏi trước) | Từng app |
 | **Semi** ra bản mới | `/semi-brand update` (sinh lại kit) | Repo brand |
 | … rồi đưa vào các app | `/semi-update` | Từng app |
-| App đổi sang style khác **đã được cho phép** | `/semi-style` | Repo app |
-| Style **chưa được cho phép** | `/semi-brand` (thêm vào danh sách) → `/semi-update` → `/semi-style` | Repo brand → app |
+| App đổi sang style khác **đã được cho phép** | Nói với agent ("đổi sang Soft") | Repo app |
+| Style **chưa được cho phép** | `/semi-brand` (thêm vào danh sách) → `/semi-update` → nói với agent | Repo brand → app |
 | Kiểm tra định kỳ | `/semi-audit` → `/semi-fix` | Từng app |
 
 ---

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// /semi-style helper: shows or switches the Semi style of every app that uses @semi/ui. Zero external deps.
+// Style helper (used by /semi-ui when the user asks for another style, and by /semi-update): shows or switches the
+// Semi style of every app that uses @semi/ui. Zero external deps.
 //   node style.mjs --cwd <root>                         list: each app's style and the styles its @semi/ui has
 //   node style.mjs --cwd <root> --to <id> [--only dir]  switch: semi-lint.json "style" + <html data-style> in the root
 //                                                       layout (all apps, or the one under dir)
@@ -8,7 +9,7 @@
 import { readFileSync } from "node:fs";
 import { join, relative, resolve, sep } from "node:path";
 import { discoverFrontendApps } from "../../semi-audit/scripts/audit.mjs";
-import { appFonts, missingStyleFonts, readBrand, readStyleState, semiStyles, styleFontHint, wireStyle } from "../../semi-init/scripts/setup.mjs";
+import { appFonts, missingStyleFonts, readBrand, readStyleState, semiStyles, styleFontHint, wireStyle } from "./setup.mjs";
 
 const argv = process.argv.slice(2);
 let root = process.cwd();

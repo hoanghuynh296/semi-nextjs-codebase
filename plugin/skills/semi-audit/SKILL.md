@@ -6,7 +6,7 @@ description: Check a project against the Semi Design System (@semi/ui) - the fir
 # Semi Design System Health Check (`/semi-audit`)
 
 The Semi commands: new app → `/semi-init`. Existing app (first adoption or periodic check) → `/semi-audit`, then
-`/semi-fix` when it finds issues. Newer `@semi/ui` → `/semi-update`. Another style → `/semi-style`.
+`/semi-fix` when it finds issues. Newer `@semi/ui` → `/semi-update`. Another style: ask the agent (the `semi-ui` skill switches it).
 
 `/semi-audit` changes **no source file** and installs nothing. Its only output file is `semi-audit.md` at the folder it
 audits: every issue with `file:line` and what to do. `/semi-fix` works from it. When the audit finds nothing it deletes

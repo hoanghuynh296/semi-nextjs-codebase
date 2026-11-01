@@ -38,7 +38,7 @@ primary or keeps the style's own neutrals (`"neutral": "preset"`), so products o
 plus the style's fonts with `next/font` (the `fonts` list in `@semi/ui/styles.json`; Soft: `Plus_Jakarta_Sans` with
 `variable: "--font-jakarta"` on `<html className>`), and the same id in `semi-lint.json` (`"style": "soft"`).
 `/semi-audit` checks all three against each other. `/semi-init`
-asks for the style of a new app, `/semi-fix` foundation for an existing one, `/semi-style` switches it later. A wrapper
+asks for the style of a new app, `/semi-fix` foundation for an existing one, the agent switches it later when asked (the `semi-ui` skill). A wrapper
 with `data-style` re-styles only its subtree (used by Storybook previews), not something an app needs.
 
 ## Rules

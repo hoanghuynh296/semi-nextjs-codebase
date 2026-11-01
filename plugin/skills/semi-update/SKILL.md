@@ -24,6 +24,6 @@ refactor (that is `/semi-audit` + `/semi-fix`); an app without `@semi/ui` adopts
    fonts changed) is skipped with a message: ask the user, and if they agree run again with `--accept-major`. The kit's
    `"semi"` range caps the `@semi/ui` version; when it holds the app back, the script says so: run `/semi-brand update`
    in the brand repo, release, then `/semi-update` again.
-4. The app keeps its style. If the script says the style is gone from the new release, run `/semi-style`.
+4. The app keeps its style. If the script says the style is gone from the new release, switch it with `node "<path-to-this-skill>/../semi-init/scripts/style.mjs" --cwd <dir> --to <id>` after asking the user which style.
 5. Report in a few lines: `old version → new version`, each migration that ran and the files it changed, and the
    CHANGELOG points that matter for this app. New lint rules of the release show up at the next `/semi-audit`.

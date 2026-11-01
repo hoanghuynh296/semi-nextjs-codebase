@@ -8,7 +8,7 @@ import { join } from "node:path";
 import { auditFileState, auditProject, totals, writeAuditFile } from "../../plugin/skills/semi-audit/scripts/audit.mjs";
 
 const FIX = new URL("../../plugin/skills/semi-fix/scripts/fix.mjs", import.meta.url).pathname;
-const STYLE = new URL("../../plugin/skills/semi-style/scripts/style.mjs", import.meta.url).pathname;
+const STYLE = new URL("../../plugin/skills/semi-init/scripts/style.mjs", import.meta.url).pathname;
 const LAYOUT = `export default function L({ children }) {\n  return (\n    <html lang="vi" suppressHydrationWarning>\n      <body>{children}</body>\n    </html>\n  );\n}\n`;
 
 function app() {
@@ -96,7 +96,7 @@ test("fix --codemod then a clean --verify deletes semi-audit.md", () => {
   rmSync(root, { recursive: true });
 });
 
-test("style: the audit asks for one, foundation --style applies it, /semi-style switches it", () => {
+test("style: the audit asks for one, foundation --style applies it, style.mjs switches it", () => {
   const { root, web } = app();
   writeFileSync(join(web, "app/layout.tsx"), LAYOUT);
   const styleIssue = () => auditProject(root).apps[0].issues.find((i) => i.check === "style");

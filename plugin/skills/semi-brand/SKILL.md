@@ -11,7 +11,7 @@ checks WCAG AA. The user guide with the full step-by-step example is `node_modul
 Semi repo: `docs/BRANDS.md`); point the user to it.
 
 Run this skill **in the brand kit repo**, never in a product. Products use the kit with `/semi-init --brand`,
-`/semi-update` and `/semi-style`.
+and `/semi-update`.
 
 ## Create a brand (empty folder)
 

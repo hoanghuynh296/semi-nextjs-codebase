@@ -7,11 +7,10 @@ Hệ thống Design System dùng chung cho toàn bộ dự án web thuộc hệ 
 Xây dựng cho **Next.js 16 + React 19 + Tailwind CSS 4**, hỗ trợ chuyển đổi giao diện Dark/Light mượt mà không cần `dark:bg-...` thủ công nhờ kiến trúc Semantic Tokens.
 
 Repository này đóng gói **2 sản phẩm trong cùng 1 tag phiên bản (semver)**:
-1. **Plugin cho AI Agent (`semi-design`):** chứa bộ quy tắc luôn bật (`rules/AGENTS.md` — tự động hướng dẫn agent mỗi khi viết hoặc sửa giao diện), hook tự chạy lint khi sửa file (`hooks.json`), và **8 slash commands**. App mới: `/semi-init`. App có sẵn (đã hay chưa có Semi): `/semi-audit` rồi `/semi-fix`, và cũng là cách kiểm tra định kỳ. Lên bản mới: `/semi-update`. Đổi style: `/semi-style`. Tạo thương hiệu: `/semi-brand` (**hướng dẫn từng bước: [docs/BRANDS.md](docs/BRANDS.md)**):
+1. **Plugin cho AI Agent (`semi-design`):** chứa bộ quy tắc luôn bật (`rules/AGENTS.md` — tự động hướng dẫn agent mỗi khi viết hoặc sửa giao diện), hook tự chạy lint khi sửa file (`hooks.json`), và **các slash command**. App mới: `/semi-init`. App có sẵn (đã hay chưa có Semi): `/semi-audit` rồi `/semi-fix`, và cũng là cách kiểm tra định kỳ. Lên bản mới: `/semi-update`. Tạo thương hiệu: `/semi-brand` (**hướng dẫn từng bước: [docs/BRANDS.md](docs/BRANDS.md)**):
    - `/semi-init` — **Tạo app mới** (thư mục trống): hỏi chọn style (Flat, Soft, Sharp), rồi dựng Next.js + Tailwind 4 + `@semi/ui` + trang mẫu, sạch ngay, không cần audit hay fix.
    - `/semi-audit` — **Kiểm tra** (không sửa code): in tóm tắt ngắn và ghi mọi vấn đề kèm `file:dòng` vào `semi-audit.md`.
    - `/semi-fix` — **Sửa theo `semi-audit.md`, từng giai đoạn:** nền móng (cài `@semi/ui`, CSS, provider; giữ nguyên Next / Tailwind; so ảnh trước / sau) → codemod token → sửa tay → cấu trúc theo quyết định. Kiểm tra lại tới khi sạch rồi xoá file.
-   - `/semi-style` — **Đổi style** của app (Flat / Soft / Sharp): đổi màu trung tính, font, bo góc, viền / bóng thẻ, chiều cao control; component, bố cục, màu thương hiệu giữ nguyên; so ảnh trước / sau.
    - `/semi-brand` — **Tạo / sửa thương hiệu** (chạy trong repo brand riêng): chọn màu chính, màu phụ, màu trung tính, style được phép, font; Semi sinh phần còn lại (đã kiểm tra đọc rõ) thành brand kit. Mọi sản phẩm của thương hiệu cài kit này (`/semi-init --brand github:<owner>/<repo>`), nên luôn đi theo cùng một bộ nhận diện. `/semi-brand update` sinh lại kit cho bản Semi mới.
    - `/semi-update` — **Nâng cấp phiên bản** `@semi/ui` lên tag mới nhất và chạy migration của các bản mới (sửa code theo thay đổi lớn của chính bản đó), rồi `tsc`. Không audit, không refactor.
    - `/semi-propose` — **Đề xuất tính năng từ dự án con** (quét nhu cầu chưa được `@semi/ui` đáp ứng tại dự án thực tế, cấu trúc issue chuẩn và tạo issue trực tiếp trên GitHub repo lõi).
@@ -90,23 +89,17 @@ vài thứ một lần trong repo brand; sản phẩm chỉ cài kit, không t�
 thương hiệu: trang **Brand preview** của docs. **Ví dụ từng bước 3D Noobs → app Manager và bảng "lệnh nào khi
 nào": [docs/BRANDS.md](docs/BRANDS.md).**
 
-### Đổi style
-```text
-/semi-style
-```
+### Style
 Style là diện mạo của cả giao diện: màu nền / chữ / viền, font, bo góc, viền và bóng thẻ, chiều cao control. Mọi style
 dùng chung component, bố cục, màu thương hiệu, màu trạng thái và cả hai theme sáng / tối. Hiện có **Flat** (mặc định:
 xám lạnh, Geist, viền mảnh, gọn 34px, cho dashboard / công cụ), **Soft** (xám ấm, Plus Jakarta Sans, thẻ không viền
 có bóng mềm, bo lớn, thoáng 40px, cho app người dùng cuối) và **Sharp** (đen trắng, Space Grotesk, viền 2px, góc
-vuông, bóng lệch cứng, cho landing page / portfolio / công cụ sáng tạo). Mỗi style có màu trung tính riêng. Đổi
-style: `/semi-style`. Danh sách: `tokens/styles.json`, mô tả: `docs/STYLES.md`. Xem thử trên trang docs (nút chọn style
+vuông, bóng lệch cứng, cho landing page / portfolio / công cụ sáng tạo). Mỗi style có màu trung tính riêng. Style do
+thương hiệu chọn (`/semi-brand`) và app chọn một lần lúc `/semi-init`; muốn đổi sau, chỉ cần nói với agent ("đổi sang Soft"). Danh sách: `tokens/styles.json`, mô tả: `docs/STYLES.md`. Xem thử trên trang docs (nút chọn style
 ở chân sidebar).
 
-### Dựng giao diện với agent (`/semi-ui`, CLI `semi`, MCP)
-```text
-/semi-ui
-```
-Agent tìm đúng component hoặc block cho từng nhu cầu (gõ tiếng Việt hay tiếng Anh đều được), đọc trang docs của nó,
+### Dựng giao diện với agent (CLI `semi`, MCP)
+Không cần gõ lệnh: khi bạn nhờ agent làm giao diện trong app có Semi, skill `semi-ui` tự chạy. Agent tìm đúng component hoặc block cho từng nhu cầu (gõ tiếng Việt hay tiếng Anh đều được), đọc trang docs của nó,
 bắt đầu từ ví dụ, ghép trang rồi chạy `semi-lint`. Plugin tự chạy MCP server `semi` (công cụ `semi_search`,
 `semi_docs`, `semi_example`, `semi_props`, `semi_list`, `semi_block`, và `semi_brand` cho giọng văn, cách dùng màu,
 logo của brand kit) đọc từ `@semi/ui` đã cài, nên luôn khớp phiên

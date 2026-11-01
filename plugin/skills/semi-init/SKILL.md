@@ -13,7 +13,7 @@ The Semi commands, one job each:
 | New product of a brand | **`/semi-init --brand github:<owner>/<repo>`** (the brand kit made with `/semi-brand`) |
 | Existing app, with or without `@semi/ui` | **`/semi-audit`** → **`/semi-fix`** (installing Semi is the first phase of the fix) |
 | Move to a newer `@semi/ui` | **`/semi-update`** (also runs that release's migrations) |
-| Change the style (Flat, Soft, …) later | **`/semi-style`** |
+| Change the style (Flat, Soft, …) later | Ask the agent: the `semi-ui` skill switches it |
 
 The user should **never** have to run `npm install` or config commands: you run the script and only ask decisions.
 
