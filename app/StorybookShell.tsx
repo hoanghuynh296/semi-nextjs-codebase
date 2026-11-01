@@ -8,6 +8,7 @@ import { ICONS } from "../src/Icon";
 import { ThemeSwitcher, ThemeToggle } from "../src/ThemeProvider";
 import pkg from "../package.json";
 import { StyleSwitcher } from "./StyleSwitcher";
+import { BrandPreviewHost } from "./BrandPreview";
 
 const ICON_COUNT = Object.keys(ICONS).length;
 
@@ -15,7 +16,7 @@ export function StorybookShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   // Normalize active route
-  const activeId = ["components", "primitives", "patterns", "chat"].find((p) => pathname.includes(`/${p}`)) ?? "foundations";
+  const activeId = ["components", "primitives", "patterns", "chat", "brand"].find((p) => pathname.includes(`/${p}`)) ?? "foundations";
 
   const sections: ShellNavSection[] = [
     {
@@ -55,6 +56,13 @@ export function StorybookShell({ children }: { children: React.ReactNode }) {
           shortLabel: "Chat",
           icon: "sparkles",
           href: "./chat",
+        },
+        {
+          id: "brand",
+          label: "Brand preview",
+          shortLabel: "Brand",
+          icon: "palette",
+          href: "./brand",
         },
       ],
     },
@@ -125,6 +133,7 @@ export function StorybookShell({ children }: { children: React.ReactNode }) {
       <div className="w-full min-w-0 space-y-8">
         {children}
       </div>
+      <BrandPreviewHost />
     </AppShell>
   );
 }

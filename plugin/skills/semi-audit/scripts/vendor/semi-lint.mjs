@@ -21,6 +21,7 @@
 //     "disable": ["loading-text"],                  // rule ids turned off (record why in your app's doc)
 //     "keep": { "tables": "reports need dense tables" }, // /semi-audit structural checks the team chose to keep
 //                                                     // (reason string = whole app, array = path prefixes)
+//     "brand": "@3dnoobs/brand",                   // the app's brand kit (docs/BRANDS.md): turns on brand-override
 //     "style": "soft", "palette": "sage"            // the app's style and palette (docs/STYLES.md), = <html data-style
 //                                                     // data-palette> in the layout; no palette = the style's first
 //   }
@@ -82,6 +83,12 @@ export const HARD = [
     /(?<![@\w])(sm|md|lg|xl|2xl):grid-cols-/,
     "card grids beside a sidebar size columns by @container (@xl:grid-cols-…), not viewport breakpoints",
   ],
+];
+/** CSS rule of apps that use a brand kit ("brand" in semi-lint.json): the brand alone sets these variables. */
+export const BRAND_OVERRIDE = [
+  "brand-override",
+  /(?:^|[\s;{])--(?:color-(?:primary|secondary|accent|on-accent)[\w-]*|semi-[\w-]+|font-(?:sans|display)(?:-family)?)\s*:/,
+  "this app uses a brand kit: its colours, fonts and Semi tokens come only from the brand (change them in the brand repo with /semi-brand)",
 ];
 /** Rules that are opt-in: they only run on the path prefixes listed in config "only". */
 const OPT_IN = new Set(["viewport-grid-cols"]);
@@ -169,6 +176,11 @@ export function scan(paths, cfg, cwd) {
     const src = readFileSync(p, "utf8");
     const css = p.endsWith(".css");
     for (const f of analyse(src, { css })) if (!skipped(f.rule, name)) add(f.rule, name, f.line, f.token);
+    if (css && cfg.brand && !skipped(BRAND_OVERRIDE[0], name)) {
+      src.split(/\r?\n/).forEach((raw, i) => {
+        if (BRAND_OVERRIDE[1].test(raw)) hard.push({ file: name, line: i + 1, rule: BRAND_OVERRIDE[0], message: BRAND_OVERRIDE[2], text: raw.trim().slice(0, 140) });
+      });
+    }
     if (css) continue;
     src.split(/\r?\n/).forEach((raw, i) => {
       if (!raw.trim() || isComment(raw)) return;

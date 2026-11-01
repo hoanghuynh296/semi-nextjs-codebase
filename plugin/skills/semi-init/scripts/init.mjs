@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // /semi-init: scaffolds a NEW Semi app (Next.js + Tailwind 4 + @semi/ui + starter pages). An existing app is not
 // touched: it adopts Semi with /semi-audit + /semi-fix (the foundation step there installs @semi/ui).
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { discoverFrontendApps } from "../../semi-audit/scripts/audit.mjs";
@@ -10,11 +10,13 @@ import {
   installedSemiVersion,
   resolveTargetSpec,
   runLocal,
+  installPackage,
   nextFontCode,
   semiStyles,
   wireAgentsMd,
   wireGlobalsCss,
   wireNextConfig,
+  wireBrand,
   wireSemiLintConfig,
   wireStyle,
 } from "./setup.mjs";
@@ -28,6 +30,7 @@ function parseArgs(argv) {
     tailwindVersion: "latest",
     style: null,
     palette: null,
+    brand: null,
   };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -38,6 +41,7 @@ function parseArgs(argv) {
     else if (a === "--tailwind-version" && argv[i + 1]) opts.tailwindVersion = argv[++i];
     else if (a === "--style" && argv[i + 1]) opts.style = argv[++i];
     else if (a === "--palette" && argv[i + 1]) opts.palette = argv[++i];
+    else if (a === "--brand" && argv[i + 1]) opts.brand = argv[++i];
   }
   return opts;
 }
@@ -52,7 +56,7 @@ ${fonts.importLine}
 import { ConfirmHost, ThemeProvider, ThemeScript, ToastHost } from "@semi/ui";
 import "./globals.css";
 
-// Fonts of the ${style.name} style (@semi/ui/styles.json)
+// Fonts (${style.name})
 ${fonts.decls}
 
 export const metadata: Metadata = {
@@ -226,13 +230,11 @@ if (discovered.length) {
 }
 const webDir = opts.cwd;
 const styles = semiStyles();
-opts.style ||= styles.default;
-if (!styles.styles.some((s) => s.id === opts.style)) {
+if (!opts.brand) opts.style ||= styles.default; // with a brand, its default style once the kit is installed
+if (opts.style && !styles.styles.some((s) => s.id === opts.style)) {
   console.error(`--style ${opts.style}: không có style này. Chọn: ${styles.styles.map((s) => s.id).join(", ")}`);
   process.exit(2);
 }
-const { spec } = resolveTargetSpec();
-
 const cnaTag = opts.nextVersion && opts.nextVersion !== "keep" ? opts.nextVersion : "latest";
 console.log(`Scaffolding new Next.js (${cnaTag}) + Tailwind project in ${webDir}...`);
 const create = spawnSync(
@@ -241,6 +243,27 @@ const create = spawnSync(
   { cwd: webDir, stdio: "inherit" },
 );
 if (create.status !== 0) process.exit(create.status || 1);
+
+// The brand kit first: its "semi" range decides which @semi/ui to install.
+let brandPkg = null;
+let brandKit = null;
+if (opts.brand) {
+  console.log(`Installing brand kit (${opts.brand})...`);
+  const b = installPackage(webDir, opts.brand);
+  const kitFile = b.ok ? join(webDir, "node_modules", ...b.name.split("/"), "dist", "brand.json") : null;
+  if (!kitFile || !existsSync(kitFile)) {
+    console.error(`${opts.brand}: không cài được hoặc không phải brand kit (thiếu dist/brand.json). Tạo brand kit bằng /semi-brand.`);
+    process.exit(2);
+  }
+  brandPkg = b.name;
+  brandKit = JSON.parse(readFileSync(kitFile, "utf8"));
+  opts.style ||= brandKit.styles.default;
+  if (!brandKit.styles.allowed.includes(opts.style)) {
+    console.error(`--style ${opts.style}: brand ${brandKit.name} chỉ cho phép ${brandKit.styles.allowed.join(", ")}`);
+    process.exit(2);
+  }
+}
+const { spec } = resolveTargetSpec({ range: brandKit?.semi });
 
 // @semi/ui + semi:lint script (+ a Tailwind version when asked; create-next-app installs the latest)
 const pkgPath = join(webDir, "package.json");
@@ -262,10 +285,20 @@ if (inst.status !== 0) process.exit(inst.status || 1);
 const installedVersion = installedSemiVersion(webDir);
 
 wireNextConfig(webDir, opts.staticExport);
+// create-next-app's sample CSS (body Arial, --font-sans, --background / --foreground) would override Semi's fonts and
+// surfaces; a new app has nothing of its own in it yet, so it starts from Tailwind + the Semi block.
+writeFileSync(join(webDir, "app", "globals.css"), `@import "tailwindcss";\n`);
 wireGlobalsCss(webDir);
 wireSemiLintConfig(webDir);
 wireAgentsMd(opts.cwd, installedVersion);
-writeNewProjectStarter(webDir, opts.appName, (semiStyles(webDir) || styles).styles.find((s) => s.id === opts.style) ?? styles.styles[0]);
+if (brandPkg) {
+  const wired = wireBrand(webDir, opts.cwd, brandPkg);
+  console.log(wired.message);
+  if (!wired.ok) process.exit(2);
+}
+const chosenStyle = (semiStyles(webDir) || styles).styles.find((s) => s.id === opts.style) ?? styles.styles[0];
+// Fonts: the brand's when there is one, else the style's.
+writeNewProjectStarter(webDir, opts.appName, brandKit ? { ...chosenStyle, name: brandKit.name, fonts: brandKit.fonts } : chosenStyle);
 const styled = wireStyle(webDir, opts.style, opts.palette);
 console.log(styled.message);
 if (!styled.ok) process.exit(2);
@@ -277,4 +310,4 @@ const failed = [
   spawnSync(pm, ["run", "build"], { cwd: webDir, stdio: "inherit" }),
 ].some((r) => r.status !== 0);
 if (failed) process.exit(1);
-console.log(`\nNew Semi app (@semi/ui v${installedVersion}, style ${opts.style}) created and verified in ${webDir}`);
+console.log(`\nNew Semi app (@semi/ui v${installedVersion}${brandKit ? `, brand ${brandKit.name}` : ""}, style ${opts.style}) created and verified in ${webDir}`);

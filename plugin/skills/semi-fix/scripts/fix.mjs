@@ -2,7 +2,7 @@
 // /semi-fix helper: works from semi-audit.md (written by /semi-audit), one phase at a time. Zero external deps.
 //   node fix.mjs --cwd <root>                      plan: re-audits when semi-audit.md is missing or older than the code,
 //                                                  then prints the summary (the agent reads semi-audit.md for details)
-//   node fix.mjs --cwd <root> foundation [--style <id>] [--palette <id>]
+//   node fix.mjs --cwd <root> foundation [--brand <spec>] [--style <id>] [--palette <id>]
 //                                                  phase 1: install @semi/ui (Next / Tailwind untouched),
 //                                                  transpilePackages, Semi CSS, semi-lint.json + baseline, AGENTS.md,
 //                                                  the style the user chose (<html data-style>); prints the layout
@@ -16,14 +16,18 @@ import { auditFileState, auditProject, formatSummary, scanTargets, totals, write
 import { detectMode, migrateSource } from "../../semi-audit/scripts/vendor/codemod.mjs";
 import {
   installSemiUi,
+  appFonts,
+  installPackage,
   installedSemiVersion,
   missingStyleFonts,
+  readBrand,
   readStyleState,
   resolveTargetSpec,
   runLocal,
   semiStyles,
   styleFontHint,
   wireAgentsMd,
+  wireBrand,
   wireGlobalsCss,
   wireNextConfig,
   wireSemiLintConfig,
@@ -36,11 +40,13 @@ let mode = "plan";
 let only = null;
 let styleArg = null;
 let paletteArg = null;
+let brandArg = null;
 for (let i = 0; i < argv.length; i++) {
   if (argv[i] === "--cwd" && argv[i + 1]) root = argv[++i];
   else if (argv[i] === "--only" && argv[i + 1]) only = argv[++i];
   else if (argv[i] === "--style" && argv[i + 1]) styleArg = argv[++i];
   else if (argv[i] === "--palette" && argv[i + 1]) paletteArg = argv[++i];
+  else if (argv[i] === "--brand" && argv[i + 1]) brandArg = argv[++i];
   else if (argv[i] === "--verify") mode = "verify";
   else if (["foundation", "tokens"].includes(argv[i])) mode = argv[i];
   else if (argv[i] === "--codemod") mode = "tokens"; // old name
@@ -73,7 +79,7 @@ if (mode === "foundation") {
   for (const app of appsOf(report)) {
     const todo = new Set(app.issues.filter((i) => i.phase === "foundation").map((i) => i.check));
     const name = relative(root, app.cwd) || ".";
-    if (!todo.size) {
+    if (!todo.size && !brandArg) {
       console.log(`${name}: nền móng đã xong.`);
       continue;
     }
@@ -97,20 +103,48 @@ if (mode === "foundation") {
       // Today's debt becomes the baseline, so the edit hook blocks only new debt; the later phases shrink it.
       runLocal(app.cwd, "semi-lint", ["--update-baseline"]);
     }
+    // Brand kit: install it (--brand, or the declared one missing from node_modules) and wire it before the style,
+    // which must be one the brand allows.
+    if (brandArg || todo.has("brand")) {
+      let pkg = readBrand(app.cwd)?.pkg ?? null;
+      if (brandArg) {
+        const b = installPackage(app.cwd, brandArg);
+        if (!b.ok) {
+          console.log(`${name}: không cài được brand kit ${brandArg}`);
+          process.exitCode = 1;
+          continue;
+        }
+        pkg = b.name;
+      } else if (!readBrand(app.cwd)?.kit) installPackage(app.cwd, JSON.parse(readFileSync(join(app.cwd, "package.json"), "utf8")).dependencies?.[pkg] ?? pkg);
+      const r = wireBrand(app.cwd, root, pkg);
+      console.log(`${name}: ${r.message}`);
+      if (!r.ok) {
+        process.exitCode = 1;
+        continue;
+      }
+      const kit = readBrand(app.cwd).kit;
+      const st = readStyleState(app.cwd);
+      if (!styleArg && (!st.declared || !kit.styles.allowed.includes(st.declared))) styleArg = kit.styles.default;
+      if (styleArg || st.palette || st.appliedPalette) todo.add("style");
+    }
     if (todo.has("style")) {
+      const brandKit = readBrand(app.cwd)?.kit;
       const list = semiStyles(app.cwd) || semiStyles();
       const state = readStyleState(app.cwd);
       const declared = state.declared;
-      const id = styleArg || (list.styles.some((s) => s.id === declared) ? declared : null);
+      const valid = (sid) => list.styles.some((s) => s.id === sid) && (!brandKit || brandKit.styles.allowed.includes(sid));
+      // With a brand, its default style is already a decision; without one, the user picks.
+      const id = styleArg || (valid(declared) ? declared : null) || brandKit?.styles.default || null;
       if (!id) {
         console.log(`${name}: chưa chọn style. Hỏi người dùng, rồi chạy lại foundation --style <id>:`);
         for (const s of list.styles) {
+          if (brandKit && !brandKit.styles.allowed.includes(s.id)) continue;
           console.log(`  ${s.id}${s.id === list.default ? " (mặc định, gần giao diện app cũ nhất)" : ""}: ${s.description}`);
-          for (const [i, p] of (s.palettes ?? []).entries()) console.log(`      --palette ${p.id}${i ? "" : " (mặc định)"}: ${p.description}`);
+          if (!brandKit) for (const [i, p] of (s.palettes ?? []).entries()) console.log(`      --palette ${p.id}${i ? "" : " (mặc định)"}: ${p.description}`);
         }
         process.exitCode = 1;
       } else {
-        const r = wireStyle(app.cwd, id, paletteArg ?? (styleArg && styleArg !== declared ? null : state.palette));
+        const r = wireStyle(app.cwd, id, brandKit ? null : paletteArg ?? (styleArg && styleArg !== declared ? null : state.palette));
         console.log(`${name}: ${r.message}`);
         if (!r.ok) process.exitCode = 1;
       }
@@ -118,7 +152,7 @@ if (mode === "foundation") {
     // The style's fonts go into the layout by hand, like the providers (the layout is the app's own code).
     const st = readStyleState(app.cwd);
     const chosen = (semiStyles(app.cwd) || semiStyles()).styles.find((s) => s.id === (styleArg || st.declared));
-    if (chosen && st.layout && missingStyleFonts(app.cwd, chosen).length) console.log(`${name}: ${styleFontHint(st.layout, chosen)}`);
+    if (chosen && st.layout && missingStyleFonts(app.cwd, chosen).length) console.log(`${name}: ${styleFontHint(st.layout, chosen, appFonts(app.cwd, chosen))}`);
     wireAgentsMd(root, installedSemiVersion(app.cwd) || "latest");
     if (todo.has("providers")) {
       const layout = app.issues.find((i) => i.check === "providers").file;

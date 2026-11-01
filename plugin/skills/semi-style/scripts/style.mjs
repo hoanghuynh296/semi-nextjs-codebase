@@ -10,7 +10,7 @@
 import { readFileSync } from "node:fs";
 import { join, relative, resolve, sep } from "node:path";
 import { discoverFrontendApps } from "../../semi-audit/scripts/audit.mjs";
-import { missingStyleFonts, readStyleState, semiStyles, styleFontHint, wireStyle } from "../../semi-init/scripts/setup.mjs";
+import { appFonts, missingStyleFonts, readBrand, readStyleState, semiStyles, styleFontHint, wireStyle } from "../../semi-init/scripts/setup.mjs";
 
 const argv = process.argv.slice(2);
 let root = process.cwd();
@@ -46,14 +46,17 @@ for (const dir of apps) {
     continue;
   }
   const st = readStyleState(dir);
+  const brandKit = readBrand(dir)?.kit;
   const target = to || (palette ? st.declared || list.default : null);
   if (!target) {
     const current = st.declared ? `${st.declared}${st.applied === st.declared ? "" : ` (chưa áp dụng: <html data-style="${st.applied ?? ""}">)`}` : `chưa chọn (đang hiện ${list.default})`;
     console.log(`${name}: style ${current}`);
+    if (brandKit) console.log(`  brand ${brandKit.name}: style được phép ${brandKit.styles.allowed.join(", ")}; màu do brand đặt (không palette)`);
     for (const s of list.styles) {
+      if (brandKit && !brandKit.styles.allowed.includes(s.id)) continue;
       const on = s.id === (st.declared || list.default);
       console.log(`  ${on ? "●" : "○"} ${s.id} (${s.name}): ${s.description}`);
-      for (const [i, p] of (s.palettes ?? []).entries())
+      if (!brandKit) for (const [i, p] of (s.palettes ?? []).entries())
         console.log(`      ${on && (st.palette ?? s.palettes[0].id) === p.id ? "●" : "○"} --palette ${p.id}${i ? "" : " (mặc định)"}: ${p.description}`);
     }
     continue;
@@ -63,7 +66,7 @@ for (const dir of apps) {
   console.log(`${name}: ${from} → ${target}${palette ? `/${palette}` : ""}. ${r.message}`);
   if (!r.ok) exitCode = 1;
   const next = list.styles.find((s) => s.id === target);
-  if (r.ok && next && missingStyleFonts(dir, next).length) console.log(`${name}: ${styleFontHint(r.layout, next)}`);
+  if (r.ok && next && missingStyleFonts(dir, next).length) console.log(`${name}: ${styleFontHint(r.layout, next, appFonts(dir, next))}`);
 }
 if ((to || palette) && !exitCode) console.log(`\nChụp lại các trang đã chụp trước đó (cả hai theme) để so.`);
 process.exit(exitCode);

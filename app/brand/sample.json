@@ -1,0 +1,12 @@
+{
+  "brand": {
+    "name": "3D Noobs",
+    "package": "@3dnoobs/brand",
+    "primary": "#00AE42",
+    "secondary": null,
+    "neutral": "tinted",
+    "styles": { "default": "flat", "allowed": ["flat", "soft"] },
+    "fonts": { "sans": "Geist", "display": "Montserrat Alternates" }
+  },
+  "secondary": "#F59E0B"
+}

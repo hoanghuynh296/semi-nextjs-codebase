@@ -15,25 +15,65 @@ export function detectPkgManager(cwd) {
   return "npm";
 }
 
-export function resolveTargetSpec() {
+/** "1.2.3" vs "1.10.0" → -1 / 0 / 1 (a leading "v" is ignored). */
+export function cmpSemver(a, b) {
+  const pa = String(a).replace(/^v/, "").split(".").map(Number);
+  const pb = String(b).replace(/^v/, "").split(".").map(Number);
+  for (let i = 0; i < 3; i++) if ((pa[i] || 0) !== (pb[i] || 0)) return (pa[i] || 0) < (pb[i] || 0) ? -1 : 1;
+  return 0;
+}
+
+/** Does version satisfy "^1.2.0" / "~1.2.0" / "1.2.0" (caret on 0.x pins the minor, as npm does)? */
+export function satisfies(version, range) {
+  if (!range) return true;
+  const m = String(range).trim().match(/^([\^~]?)(\d+)\.(\d+)(?:\.(\d+))?$/);
+  if (!m) return true;
+  const [maj, min, pat] = [+m[2], +m[3], +(m[4] || 0)];
+  const v = String(version).replace(/^v/, "").split(".").map(Number);
+  if (cmpSemver(version, `${maj}.${min}.${pat}`) < 0) return false;
+  if (m[1] === "^") return maj > 0 ? v[0] === maj : min > 0 ? v[0] === 0 && v[1] === min : v[0] === 0 && v[1] === 0 && v[2] === pat;
+  if (m[1] === "~") return v[0] === maj && v[1] === min;
+  return cmpSemver(version, `${maj}.${min}.${pat}`) === 0;
+}
+
+/** Release tags (vX.Y.Z) of a git repo, oldest first; null when the repo cannot be reached. */
+export function gitTags(url) {
+  const ls = spawnSync("git", ["ls-remote", "--tags", "--refs", url], { encoding: "utf8", timeout: 15000 });
+  if (ls.status !== 0) return null;
+  return (ls.stdout || "")
+    .split(/\r?\n/)
+    .map((l) => l.split("refs/tags/")[1])
+    .filter((t) => t && /^v?\d+\.\d+\.\d+$/.test(t))
+    .sort(cmpSemver);
+}
+
+/** github:owner/repo[#ref] → { url, base, ref }; null for other specs (file:, npm names). */
+export function parseGithubSpec(spec) {
+  const m = String(spec).match(/^(?:github:)?([\w.-]+)\/([\w.-]+?)(?:\.git)?(?:#(.+))?$/);
+  if (!m || String(spec).startsWith("file:") || String(spec).startsWith(".")) return null;
+  return { url: `https://github.com/${m[1]}/${m[2]}.git`, base: `github:${m[1]}/${m[2]}`, ref: m[3] ?? null };
+}
+
+/**
+ * The @semi/ui spec to install: the latest release tag, or the latest one inside `range` (a brand kit's "semi") when
+ * given. SEMI_UI_SOURCE overrides it (local checkouts, tests).
+ */
+export function resolveTargetSpec({ range } = {}) {
   if (process.env.SEMI_UI_SOURCE) {
     return { spec: process.env.SEMI_UI_SOURCE, version: "0.1.0" };
   }
-  const ls = spawnSync("git", ["ls-remote", "--tags", "--refs", REPO_URL], { encoding: "utf8", timeout: 15000 });
-  if (ls.status !== 0) {
+  const tags = gitTags(REPO_URL);
+  if (!tags) {
     console.error(
       "ERROR: Cannot access private repository https://github.com/hoanghuynh296/semi-nextjs-codebase.\n" +
         "Action required: Run `gh auth login && gh auth setup-git` (or configure your GitHub SSH key), then run the command again.",
     );
     process.exit(2);
   }
-  const tags = (ls.stdout || "")
-    .split(/\r?\n/)
-    .map((l) => l.split("refs/tags/")[1])
-    .filter(Boolean)
-    .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-  const latest = tags[tags.length - 1] || "v0.1.0";
-  return { spec: `${GITHUB_SPEC_BASE}#${latest}`, version: latest.replace(/^v/, "") };
+  const fitting = range ? tags.filter((t) => satisfies(t, range)) : tags;
+  const latest = fitting[fitting.length - 1] || tags[tags.length - 1] || "v0.1.0";
+  const newest = tags[tags.length - 1];
+  return { spec: `${GITHUB_SPEC_BASE}#${latest}`, version: latest.replace(/^v/, ""), newest: newest?.replace(/^v/, ""), limited: Boolean(range && latest !== newest) };
 }
 
 export function findGlobalsCss(webDir) {
@@ -45,7 +85,7 @@ export function findGlobalsCss(webDir) {
   return candidates.find((p) => existsSync(p)) || candidates[0];
 }
 
-export function wireGlobalsCss(webDir) {
+export function wireGlobalsCss(webDir, brandPkg = readBrand(webDir)?.pkg ?? null) {
   const cssPath = findGlobalsCss(webDir);
   mkdirSync(dirname(cssPath), { recursive: true });
   const relNodeModules = relative(dirname(cssPath), join(webDir, "node_modules", "@semi", "ui"))
@@ -56,6 +96,7 @@ export function wireGlobalsCss(webDir) {
     `/* semi-design-system:start */`,
     `@import "@semi/ui/tokens.css";`,
     `@import "@semi/ui/base.css";`,
+    ...(brandPkg ? [`@import "${brandPkg}/dist/brand.css";`] : []),
     `@source "${relNodeModules}/src";`,
     `@source "${relNodeModules}/styles";`,
     `/* semi-design-system:end */`,
@@ -193,6 +234,10 @@ export function wireStyle(appDir, id, paletteId = null) {
   if (!list) return { ok: false, message: "@semi/ui đã cài chưa có style: chạy /semi-update trước" };
   const style = list.styles.find((s) => s.id === id);
   if (!style) return { ok: false, message: `style "${id}" không có; chọn: ${list.styles.map((s) => s.id).join(", ")}` };
+  const brand = readBrand(appDir)?.kit;
+  if (brand && !brand.styles.allowed.includes(id))
+    return { ok: false, message: `brand ${brand.name} không cho phép style "${id}" (được phép: ${brand.styles.allowed.join(", ")}); thêm nó trong repo brand bằng /semi-brand` };
+  if (brand && paletteId) return { ok: false, message: `brand ${brand.name} đặt màu trung tính: không dùng palette` };
   const palettes = style.palettes ?? [];
   if (paletteId && !palettes.some((p) => p.id === paletteId))
     return { ok: false, message: `palette "${paletteId}" không có trong ${style.name}; chọn: ${palettes.map((p) => p.id).join(", ")}` };
@@ -230,23 +275,99 @@ export function nextFontCode(style) {
  * fonts (--font-sans-family / --font-display-family) or has no layout.
  */
 export function missingStyleFonts(appDir, style) {
+  const fonts = appFonts(appDir, style);
   const layout = findRootLayout(appDir);
   if (!layout) return [];
   const src = readFileSync(join(appDir, layout), "utf8");
   const css = findGlobalsCss(appDir);
   const own = /--font-(sans|display)-family/.test(src + (existsSync(css) ? readFileSync(css, "utf8") : ""));
-  return own ? [] : (style.fonts ?? []).filter((f) => !src.includes(f.variable));
+  return own && !readBrand(appDir) ? [] : fonts.filter((f) => !src.includes(f.variable));
 }
 
 /** Text telling a person how to load the fonts a style needs in the root layout. */
-export function styleFontHint(layout, style) {
-  const code = nextFontCode(style);
+export function styleFontHint(layout, style, fonts = style.fonts) {
+  const code = nextFontCode({ ...style, fonts });
   return [
     `sửa tay ${layout}: tải font của style ${style.name} (giữ nguyên phần còn lại):`,
     `  ${code.importLine}`,
     ...code.decls.split("\n").map((l) => `  ${l}`),
     `  <html className={\`… ${code.classNames}\`}>  (thêm biến font vào className của <html>; font cũ của style trước có thể bỏ)`,
   ].join("\n");
+}
+
+// ---- Brand kits (docs/BRANDS.md) -------------------------------------------------------------------------------
+
+/** The app's brand kit: { pkg, dir, kit } from "brand" in semi-lint.json and node_modules/<pkg>/dist/brand.json.
+ * kit is null when the package is declared but not installed; the whole result is null without a brand. */
+export function readBrand(appDir) {
+  let pkg = null;
+  try {
+    pkg = JSON.parse(readFileSync(join(appDir, "semi-lint.json"), "utf8")).brand ?? null;
+  } catch {}
+  if (!pkg) return null;
+  const dir = join(appDir, "node_modules", ...pkg.split("/"));
+  const file = join(dir, "dist", "brand.json");
+  return { pkg, dir, kit: existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) : null };
+}
+
+/** Fonts the app loads: the brand's when it has one, else the style's. */
+export function appFonts(appDir, style) {
+  const b = readBrand(appDir);
+  return b?.kit ? b.kit.fonts : style?.fonts ?? [];
+}
+
+/**
+ * Install a package by spec (github:owner/repo[#tag], file:../dir) and return its name. A github spec without a tag
+ * gets the repo's latest release tag. npm installs links as copies (--install-links), like @semi/ui.
+ */
+export function installPackage(appDir, spec) {
+  const gh = parseGithubSpec(spec);
+  let resolved = spec;
+  if (gh && !gh.ref) {
+    const tags = gitTags(gh.url);
+    if (tags?.length) resolved = `${gh.base}#${tags[tags.length - 1]}`;
+  }
+  const pkgPath = join(appDir, "package.json");
+  const before = JSON.parse(readFileSync(pkgPath, "utf8"));
+  const pm = detectPkgManager(appDir);
+  const args = pm === "npm" ? ["install", "--install-links", resolved] : ["add", resolved];
+  const res = spawnSync(pm, args, { cwd: appDir, stdio: "inherit" });
+  if (res.status !== 0) return { ok: false, spec: resolved };
+  const after = JSON.parse(readFileSync(pkgPath, "utf8"));
+  const deps = { ...after.dependencies };
+  const name = Object.keys(deps).find((k) => deps[k] !== before.dependencies?.[k]) ?? Object.keys(deps).find((k) => deps[k] === resolved);
+  return { ok: Boolean(name), name, spec: resolved };
+}
+
+/** Write the brand's rules block (AGENTS.brand.md of the kit) into AGENTS.md, replacing an older one. */
+export function wireBrandAgents(rootDir, kitDir) {
+  const src = join(kitDir, "AGENTS.brand.md");
+  if (!existsSync(src)) return null;
+  const blockText = readFileSync(src, "utf8").trim();
+  const agentsPath = join(rootDir, "AGENTS.md");
+  let content = existsSync(agentsPath) ? readFileSync(agentsPath, "utf8") : "";
+  content = content.includes("<!-- semi-brand:start -->")
+    ? content.replace(/<!-- semi-brand:start -->[\s\S]*?<!-- semi-brand:end -->/, blockText)
+    : `${content.trimEnd()}\n\n${blockText}\n`;
+  writeFileSync(agentsPath, content.trimStart());
+  return agentsPath;
+}
+
+/**
+ * Use an installed brand kit: "brand" in semi-lint.json, the kit's brand.css in the Semi CSS block, its rules in
+ * AGENTS.md. The style must be one the brand allows (wireStyle checks it). Returns { ok, message }.
+ */
+export function wireBrand(appDir, rootDir, pkg) {
+  const dir = join(appDir, "node_modules", ...pkg.split("/"));
+  if (!existsSync(join(dir, "dist", "brand.json"))) return { ok: false, message: `${pkg} chưa cài hoặc không phải brand kit (thiếu dist/brand.json)` };
+  const cfgPath = join(appDir, "semi-lint.json");
+  const cfg = existsSync(cfgPath) ? JSON.parse(readFileSync(cfgPath, "utf8")) : {};
+  cfg.brand = pkg;
+  delete cfg.palette; // the brand sets the neutrals
+  writeFileSync(cfgPath, JSON.stringify(cfg, null, 2) + "\n");
+  const css = wireGlobalsCss(appDir, pkg);
+  wireBrandAgents(rootDir, dir);
+  return { ok: true, message: `${relative(appDir, css)} ← @import "${pkg}/dist/brand.css", semi-lint.json ← "brand": "${pkg}", AGENTS.md ← luật của brand` };
 }
 
 export function wireAgentsMd(rootDir, version) {

@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { auditFileState, auditProject, totals, writeAuditFile } from "../../plugin/skills/semi-audit/scripts/audit.mjs";
@@ -132,5 +132,40 @@ test("style: the audit asks for one, foundation --style applies it, /semi-style 
   assert.match(readFileSync(join(web, "app/layout.tsx"), "utf8"), /<html data-style="sharp" lang="vi"/);
   assert.equal(JSON.parse(readFileSync(join(web, "semi-lint.json"), "utf8")).palette, undefined);
   assert.throws(() => execFileSync("node", [STYLE, "--cwd", root, "--palette", "slate"], { stdio: "pipe" })); // not a Sharp palette
+  rmSync(root, { recursive: true });
+});
+
+test("brand kit in a product: the audit asks to wire it, foundation wires it, only the brand's styles and fonts count", () => {
+  const { root, web } = app();
+  // A built kit, as if installed from github:3dnoobs/brand.
+  const kit = join(web, "node_modules", "@3dnoobs", "brand");
+  mkdirSync(kit, { recursive: true });
+  writeFileSync(join(kit, "package.json"), JSON.stringify({ name: "@3dnoobs/brand", version: "1.0.0" }));
+  writeFileSync(join(kit, "brand.json"), JSON.stringify({ name: "3D Noobs", package: "@3dnoobs/brand", primary: "#00AE42", neutral: "tinted", styles: { default: "flat", allowed: ["flat", "soft"] }, fonts: { sans: "Inter", display: "Inter" } }));
+  execFileSync("node", [new URL("../../brand/cli.mjs", import.meta.url).pathname, "build"], { cwd: kit });
+  writeFileSync(join(web, "semi-lint.json"), JSON.stringify({ scan: ["app"], brand: "@3dnoobs/brand", keep: { tables: "x", "app-shell": "x", "subpage-toolbar": "x" } }));
+  writeFileSync(join(web, "app/layout.tsx"), LAYOUT.replace("<body>", "<body><ThemeProvider>").replace("</body>", "</ThemeProvider></body>"));
+  const issue = (check) => auditProject(root).apps[0].issues.find((i) => i.check === check);
+  assert.match(issue("brand").what, /brand\.css.*AGENTS\.md/);
+  assert.match(issue("style").fix, /flat \/ soft\)/); // Sharp is not offered: the brand does not allow it
+  assert.throws(() => execFileSync("node", [FIX, "--cwd", root, "foundation", "--style", "sharp"], { stdio: "pipe" }));
+  let out;
+  try {
+    out = execFileSync("node", [FIX, "--cwd", root, "foundation"], { encoding: "utf8" });
+  } catch (e) {
+    throw new Error(e.stdout + e.stderr);
+  }
+  assert.match(readFileSync(join(web, "app/globals.css"), "utf8"), /@import "@3dnoobs\/brand\/dist\/brand\.css";/);
+  assert.match(readFileSync(join(root, "AGENTS.md"), "utf8"), /<!-- semi-brand:start -->[\s\S]*3D Noobs/);
+  assert.match(readFileSync(join(web, "app/layout.tsx"), "utf8"), /<html data-style="flat"/);
+  assert.match(out, /import \{ Inter \} from "next\/font\/google"/); // the brand's font, not the style's Geist
+  assert.equal(issue("brand"), undefined);
+  assert.equal(issue("style"), undefined);
+  assert.match(issue("style-fonts").what, /Inter của brand 3D Noobs/);
+  // Palettes are the brand's job; Soft is allowed, Sharp is not.
+  assert.throws(() => execFileSync("node", [STYLE, "--cwd", root, "--palette", "slate"], { stdio: "pipe" }));
+  assert.throws(() => execFileSync("node", [STYLE, "--cwd", root, "--to", "sharp"], { stdio: "pipe" }));
+  execFileSync("node", [STYLE, "--cwd", root, "--to", "soft"], { stdio: "pipe" });
+  assert.match(readFileSync(join(web, "app/layout.tsx"), "utf8"), /<html data-style="soft"/);
   rmSync(root, { recursive: true });
 });

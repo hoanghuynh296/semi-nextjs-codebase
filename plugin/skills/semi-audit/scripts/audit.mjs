@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 import { HARD, RATCHET, loadConfig, scan as runSemiLintScan } from "./vendor/semi-lint.mjs";
 import { analyse } from "./vendor/classes.mjs";
 import { detectMode, migrateSource } from "./vendor/codemod.mjs";
-import { findGlobalsCss, missingStyleFonts, readStyleState, semiStyles } from "../../semi-init/scripts/setup.mjs";
+import { findGlobalsCss, missingStyleFonts, readBrand, readStyleState, semiStyles } from "../../semi-init/scripts/setup.mjs";
 
 export const REPORT_FILE = "semi-audit.md";
 /** The order /semi-fix works in; each phase leaves the app building. */
@@ -483,19 +483,38 @@ export function auditSingleApp(cwd) {
   const layout = ["app/layout.tsx", "src/app/layout.tsx", "app/layout.jsx", "src/app/layout.jsx"].find((f) => existsSync(join(cwd, f)));
   if (layout && !/\bThemeProvider\b/.test(readFileSync(join(cwd, layout), "utf8")))
     setup("providers", layout, "layout chưa có ThemeScript / ThemeProvider / ToastHost / ConfirmHost", `bọc layout, defaultTheme="${mode === "dark" ? "dark" : "light"}" theo giao diện hiện tại`, "manual");
+  // Brand kit (docs/BRANDS.md): installed, its brand.css in the Semi CSS block, its rules in AGENTS.md.
+  const brand = readBrand(cwd);
+  const brandKit = brand?.kit ?? null;
+  if (brand && !brandKit) setup("brand", "package.json", `brand kit ${brand.pkg} chưa cài`, "npm install, hoặc foundation --brand <github:owner/repo>");
+  else if (brand) {
+    const missing = [];
+    if (!existsSync(cssPath) || !readFileSync(cssPath, "utf8").includes(`${brand.pkg}/dist/brand.css`)) missing.push(`brand.css trong ${cssRel}`);
+    const agents = [cwd, dirname(cwd), dirname(dirname(cwd))].map((d) => join(d, "AGENTS.md")).filter((p) => existsSync(p));
+    if (!agents.some((p) => readFileSync(p, "utf8").includes("<!-- semi-brand:start -->"))) missing.push("luật brand trong AGENTS.md");
+    if (missing.length) setup("brand", cssRel, `chưa nối brand ${brandKit.name}: ${missing.join(", ")}`, "foundation (nối lại brand)");
+  }
+
   // Style (docs/STYLES.md): declared in semi-lint.json and applied as <html data-style> in the root layout.
   const style = readStyleState(cwd);
   const styleList = semiStyles(cwd); // null: the installed @semi/ui predates styles (/semi-update brings them)
-  const styleIds = styleList ? styleList.styles.map((s) => s.id) : [];
+  const styleIds = styleList ? styleList.styles.map((s) => s.id).filter((id) => !brandKit || brandKit.styles.allowed.includes(id)) : [];
   if (styleList && (!style.declared || !styleIds.includes(style.declared)))
-    setup("style", "semi-lint.json", style.declared ? `style "${style.declared}" không có trong @semi/ui` : "chưa chọn style", `hỏi người dùng chọn style (${styleIds.join(" / ")}), rồi foundation --style <id>`);
+    setup(
+      "style",
+      "semi-lint.json",
+      !style.declared ? "chưa chọn style" : brandKit && styleList.styles.some((s) => s.id === style.declared) ? `brand ${brandKit.name} không cho phép style "${style.declared}"` : `style "${style.declared}" không có trong @semi/ui`,
+      `hỏi người dùng chọn style (${styleIds.join(" / ")}), rồi foundation --style <id>`,
+    );
+  else if (styleList && brandKit && (style.palette || style.appliedPalette))
+    setup("style", style.layout || "semi-lint.json", `brand ${brandKit.name} đặt màu trung tính: bỏ palette / data-palette`, `foundation --style ${style.declared}`);
   else if (styleList && style.palette && !styleList.styles.find((s) => s.id === style.declared).palettes?.some((p) => p.id === style.palette))
     setup("style", "semi-lint.json", `palette "${style.palette}" không có trong style ${style.declared}`, `hỏi người dùng chọn palette, rồi foundation --style ${style.declared} --palette <id>`);
   else if (styleList && (style.applied !== style.declared || style.appliedPalette !== style.palette))
     setup("style", style.layout || "app/layout.tsx", `<html> chưa khớp semi-lint.json (data-style="${style.declared}"${style.palette ? ` data-palette="${style.palette}"` : ", không data-palette"})`, `foundation --style ${style.declared}${style.palette ? ` --palette ${style.palette}` : ""}`);
   else if (styleList) {
     const missing = missingStyleFonts(cwd, styleList.styles.find((s) => s.id === style.declared));
-    if (missing.length) setup("style-fonts", style.layout, `layout chưa tải font ${missing.map((f) => f.family).join(", ")} của style ${style.declared}`, "next/font như foundation in ra", "manual");
+    if (missing.length) setup("style-fonts", style.layout, `layout chưa tải font ${missing.map((f) => f.family).join(", ")} của ${brandKit ? `brand ${brandKit.name}` : `style ${style.declared}`}`, "next/font như foundation in ra", "manual");
   }
 
   if (!usesAppShell || legacySidebarFile)
@@ -522,7 +541,7 @@ export function auditSingleApp(cwd) {
     if (!css) continue;
     for (const f of analyse(src, { css: true })) if (!autoAt.has(`${rel}:${f.line}:${f.token}`)) issues.push({ phase: "lint", kind: "manual", rule: f.rule, file: rel, line: f.line, token: f.token });
   }
-  const STEP = ["semi-ui", "tailwind-v4", "transpile", "semi-css", "semi-lint-config", "providers", "style", "style-fonts"];
+  const STEP = ["semi-ui", "tailwind-v4", "transpile", "semi-css", "semi-lint-config", "providers", "brand", "style", "style-fonts"];
   issues.sort(
     (a, b) =>
       PHASES.indexOf(a.phase) - PHASES.indexOf(b.phase) ||
@@ -544,6 +563,7 @@ export function auditSingleApp(cwd) {
       tailwindVersion: twVersion,
       isTailwindV4,
       hasSemiUi,
+      brand: brand?.pkg ?? null,
       style: style.declared,
       palette: style.palette,
       semiUiVersion: (() => {
@@ -658,6 +678,7 @@ const SETUP_NAMES = {
   "semi-css": "CSS của Semi",
   "semi-lint-config": "semi-lint.json",
   providers: "provider trong layout",
+  brand: "brand kit",
   style: "chọn style",
   "style-fonts": "font của style",
 };

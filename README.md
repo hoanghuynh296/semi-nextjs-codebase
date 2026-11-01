@@ -7,11 +7,12 @@ Hệ thống Design System dùng chung cho toàn bộ dự án web thuộc hệ 
 Xây dựng cho **Next.js 16 + React 19 + Tailwind CSS 4**, hỗ trợ chuyển đổi giao diện Dark/Light mượt mà không cần `dark:bg-...` thủ công nhờ kiến trúc Semantic Tokens.
 
 Repository này đóng gói **2 sản phẩm trong cùng 1 tag phiên bản (semver)**:
-1. **Plugin cho AI Agent (`semi-design`):** chứa bộ quy tắc luôn bật (`rules/AGENTS.md` — tự động hướng dẫn agent mỗi khi viết hoặc sửa giao diện), hook tự chạy lint khi sửa file (`hooks.json`), và **7 slash commands**. App mới: `/semi-init`. App có sẵn (đã hay chưa có Semi): `/semi-audit` rồi `/semi-fix`, và cũng là cách kiểm tra định kỳ. Lên bản mới: `/semi-update`. Đổi style: `/semi-style`:
+1. **Plugin cho AI Agent (`semi-design`):** chứa bộ quy tắc luôn bật (`rules/AGENTS.md` — tự động hướng dẫn agent mỗi khi viết hoặc sửa giao diện), hook tự chạy lint khi sửa file (`hooks.json`), và **8 slash commands**. App mới: `/semi-init`. App có sẵn (đã hay chưa có Semi): `/semi-audit` rồi `/semi-fix`, và cũng là cách kiểm tra định kỳ. Lên bản mới: `/semi-update`. Đổi style: `/semi-style`. Tạo thương hiệu: `/semi-brand` (**hướng dẫn từng bước: [docs/BRANDS.md](docs/BRANDS.md)**):
    - `/semi-init` — **Tạo app mới** (thư mục trống): hỏi chọn style (Flat, Soft, Sharp), rồi dựng Next.js + Tailwind 4 + `@semi/ui` + trang mẫu, sạch ngay, không cần audit hay fix.
    - `/semi-audit` — **Kiểm tra** (không sửa code): in tóm tắt ngắn và ghi mọi vấn đề kèm `file:dòng` vào `semi-audit.md`.
    - `/semi-fix` — **Sửa theo `semi-audit.md`, từng giai đoạn:** nền móng (cài `@semi/ui`, CSS, provider; giữ nguyên Next / Tailwind; so ảnh trước / sau) → codemod token → sửa tay → cấu trúc theo quyết định. Kiểm tra lại tới khi sạch rồi xoá file.
    - `/semi-style` — **Đổi style** của app (Flat / Soft / Sharp): đổi màu trung tính, font, bo góc, viền / bóng thẻ, chiều cao control; component, bố cục, màu thương hiệu giữ nguyên; so ảnh trước / sau.
+   - `/semi-brand` — **Tạo / sửa thương hiệu** (chạy trong repo brand riêng): chọn màu chính, màu phụ, màu trung tính, style được phép, font; Semi sinh phần còn lại (đã kiểm tra đọc rõ) thành brand kit. Mọi sản phẩm của thương hiệu cài kit này (`/semi-init --brand github:<owner>/<repo>`), nên luôn đi theo cùng một bộ nhận diện. `/semi-brand update` sinh lại kit cho bản Semi mới.
    - `/semi-update` — **Nâng cấp phiên bản** `@semi/ui` lên tag mới nhất và chạy migration của các bản mới (sửa code theo thay đổi lớn của chính bản đó), rồi `tsc`. Không audit, không refactor.
    - `/semi-propose` — **Đề xuất tính năng từ dự án con** (quét nhu cầu chưa được `@semi/ui` đáp ứng tại dự án thực tế, cấu trúc issue chuẩn và tạo issue trực tiếp trên GitHub repo lõi).
    - `/semi-triage` — **Đánh giá & Tổng quát hóa Issue (Dành cho Core)** (đọc issue trên GitHub, phân tích tính đúng đắn, đối chiếu rulebook, và thiết kế giải pháp tổng quát cho toàn hệ sinh thái mà không break rule).
@@ -77,6 +78,17 @@ Khi sạch, `semi-audit.md` được xoá. Muốn audit tự chạy trong CI c�
 /semi-update
 ```
 Chỉ để lên bản mới: cài tag mới, in CHANGELOG các bản đã bỏ qua, chạy migration của các bản đó, rồi `tsc`. Luật mới (nếu có) sẽ hiện ở lần `/semi-audit` kế tiếp.
+
+### Thương hiệu riêng (brand kit)
+```text
+/semi-brand                                  # trong repo brand (vd. 3dnoobs/brand)
+/semi-init --brand github:3dnoobs/brand      # mỗi sản phẩm mới của thương hiệu
+```
+Semi là bộ kit gốc cho nhiều thương hiệu: **Semi core → brand kit (một repo / thương hiệu) → sản phẩm**. Bạn chỉ quyết
+vài thứ một lần trong repo brand; sản phẩm chỉ cài kit, không tự chọn màu hay font (`brand-override` chặn).
+`/semi-update` ở sản phẩm cập nhật cả `@semi/ui` lẫn brand kit (đổi màu thương hiệu thấy rõ thì hỏi trước). Xem thử
+thương hiệu: trang **Brand preview** của Storybook. **Ví dụ từng bước 3D Noobs → app Manager và bảng "lệnh nào khi
+nào": [docs/BRANDS.md](docs/BRANDS.md).**
 
 ### Đổi style
 ```text

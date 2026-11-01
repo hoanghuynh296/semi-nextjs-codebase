@@ -39,6 +39,9 @@ Source: `tokens/styles/<id>.json` (`tokens`: shape, card border, fonts, sizes; `
 `tokens/styles.json` (`@semi/ui/styles.json`). Preview: the Flat / Sharp / Soft switch at the bottom of the Storybook
 sidebar.
 
+A brand kit (docs/BRANDS.md) builds on these: it picks the allowed styles and either tints their neutrals with its
+primary or keeps a palette, so products of a brand never set `data-palette` themselves.
+
 ## Picking a style in an app
 
 ```tsx

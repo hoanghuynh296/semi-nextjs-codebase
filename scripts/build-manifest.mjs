@@ -141,6 +141,7 @@ const DOCS = [
   ["docs/QUICK_REF.md", "QUICK_REF.md", "Quick reference: the rules and imports to read before any UI change"],
   ["docs/DESIGN_SYSTEM.md", "DESIGN_SYSTEM.md", "Full design system rules (layout, colour, components, accessibility, anti-patterns)"],
   ["docs/ICONS.md", "ICONS.md", "Semantic icon guide: which icon means what"],
+  ["docs/BRANDS.md", "BRANDS.md", "Brands: brand kits (brand.json → brand.css), the step-by-step flow from a new brand to its first product, which command when"],
   ["docs/STYLES.md", "STYLES.md", "Styles (Flat, Soft): what each changes, how an app picks one, the radius / shadow tokens"],
   ["plugin/rules/AGENTS.md", "agent-rules.md", "Rules block for a consumer app's AGENTS.md / CLAUDE.md"],
   ["tokens/tokens.css", "tokens.css", "Generated design tokens (CSS variables for both themes)"],

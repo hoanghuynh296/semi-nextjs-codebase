@@ -2,7 +2,7 @@
   "name": "semi-design",
   "displayName": "Semi Design System",
   "version": "0.6.0",
-  "description": "Semi Design System rules, lint hook, and /semi-init, /semi-audit, /semi-fix, /semi-update, /semi-style, /semi-propose, /semi-triage skills for Next.js 16 + React 19 + Tailwind 4 web projects.",
+  "description": "Semi Design System rules, lint hook, and /semi-init, /semi-audit, /semi-fix, /semi-update, /semi-style, /semi-brand, /semi-propose, /semi-triage skills for Next.js 16 + React 19 + Tailwind 4 web projects.",
   "logo": "assets/logo.svg",
   "repository": {
     "type": "git",
@@ -14,6 +14,7 @@
     "Run /semi-fix to fix the issues the last /semi-audit found",
     "Run /semi-update to upgrade @semi/ui and apply its release migrations",
     "Run /semi-style to switch this app to another Semi style (Flat, Soft, Sharp)",
+    "Run /semi-brand to create a brand kit (colours, fonts, styles) that every product of the brand uses",
     "Run /semi-propose to analyze project gaps and submit a feature request to Semi Design System",
     "Run /semi-triage to evaluate and generalize incoming ecosystem issues"
   ]

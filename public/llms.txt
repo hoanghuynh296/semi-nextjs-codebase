@@ -10,6 +10,7 @@ Install `@semi/ui`, import components from `@semi/ui`, class constants from `@se
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
 - [ICONS.md](./docs/ICONS.md): Semantic icon guide: which icon means what
+- [BRANDS.md](./docs/BRANDS.md): Brands: brand kits (brand.json → brand.css), the step-by-step flow from a new brand to its first product, which command when
 - [STYLES.md](./docs/STYLES.md): Styles (Flat, Soft): what each changes, how an app picks one, the radius / shadow tokens
 - [agent-rules.md](./docs/agent-rules.md): Rules block for a consumer app's AGENTS.md / CLAUDE.md
 - [tokens.css](./docs/tokens.css): Generated design tokens (CSS variables for both themes)
@@ -22,6 +23,7 @@ Install `@semi/ui`, import components from `@semi/ui`, class constants from `@se
 - [Primitives & Forms](./primitives.html): Button, Field, choices, Tabs, Tooltip, Menu, Drawer, Toast, Alert, Progress, Table, EmptyState, locale.
 - [Layout Patterns](./patterns.html): Page tabs and header actions, the tool-app header, SidePanel, Markdown and skeleton layouts.
 - [AI Chat](./chat.html): The standard AI chat panel (AIChat), its parts and the provider / model / effort picker.
+- [Brand preview](./brand.html): Preview a brand (primary, neutrals, styles, fonts) on every page before creating its brand kit; contrast report.
 
 ## Foundations & Icons (./foundations.html)
 
@@ -421,4 +423,47 @@ import { ChatPanel, ChatView, ChatComposer, UserMessage, AssistantMessage, ChatA
     <ChatError onRetry={retry}>Không kết nối được tới model.</ChatError>
   </ChatView>
 </ChatPanel>
+```
+
+## Brand preview (./brand.html)
+
+### Brand choices (brand.json) (./brand.html#brand-choices)
+
+The few decisions a brand makes, once, in its own brand kit repo (docs/BRANDS.md). Products never pick colours or fonts.
+
+```tsx
+// brand.json of the kit repo (e.g. github:3dnoobs/brand)
+{
+  "name": "3D Noobs",
+  "package": "@3dnoobs/brand",
+  "primary": "#00AE42",
+  "secondary": null,
+  "neutral": "tinted",
+  "styles": { "default": "flat", "allowed": ["flat", "soft"] },
+  "fonts": { "sans": "Geist", "display": "Montserrat Alternates" }
+}
+
+// create / change it with the plugin, then build the kit
+/semi-brand            // in the brand kit repo
+npm run build          // semi-brand build → dist/brand.css, dist/brand.json, BRAND.md, AGENTS.brand.md
+```
+
+### What Semi derives (./brand.html#brand-result)
+
+Scales, accent / on-accent shades of both themes and the neutrals of every allowed style, checked for WCAG AA. A product only installs the kit.
+
+```tsx
+// a product of the brand
+/semi-init --brand github:3dnoobs/brand
+
+/* app/globals.css (written by /semi-init) */
+@import "@semi/ui/tokens.css";
+@import "@semi/ui/base.css";
+@import "@3dnoobs/brand/dist/brand.css";
+
+// semi-lint.json: "brand": "@3dnoobs/brand" → brand-override blocks local colour / font tokens
+
+// in code: semantic tokens only
+<Button variant="primary">Lưu</Button>
+<span className="text-accent-fg">…</span>
 ```

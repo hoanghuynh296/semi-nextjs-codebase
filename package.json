@@ -16,17 +16,20 @@
     "./base.css": "./styles/base.css",
     "./tokens.json": "./tokens/tokens.json",
     "./styles.json": "./tokens/styles.json",
+    "./brand": "./brand/generate.mjs",
     "./package.json": "./package.json",
     "./components.json": "./components.json"
   },
   "bin": {
-    "semi-lint": "lint/semi-lint.mjs"
+    "semi-lint": "lint/semi-lint.mjs",
+    "semi-brand": "brand/cli.mjs"
   },
   "files": [
     "src",
     "styles",
     "tokens",
     "lint",
+    "brand",
     "docs",
     "migrations",
     "CHANGELOG.md",

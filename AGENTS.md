@@ -26,6 +26,7 @@ This repository (`hoanghuynh296/semi-nextjs-codebase`) is the **single source of
 | A Storybook section | Its `app/usage.ts` entry (same id, `title`, `when`, `code`), and `<StoryUsage id>` / `ShowcaseSection id` on the page |
 | A breaking change (renamed / removed component, prop, constant, token) | A release migration `migrations/<version>-<id>.mjs` (`migrations/README.md`) + its test in `lint/test/migrations.test.mjs`, and a CHANGELOG "Migration" note for what it cannot do |
 | Tokens or lint | `npm run build:tokens` / `npm run sync:vendor` |
+| The brand generator / kit format (`brand/`) | `lint/test/brand.test.mjs`, `docs/BRANDS.md` (the user guide: keep its steps true), the Brand preview page if inputs change, `CHANGELOG.md` (kit format changes need `/semi-brand update` notes) |
 | A style (new, or a value of one) | `tokens/styles/<id>.json` → `npm run build:tokens` + `npm run sync:vendor`, its column in `docs/STYLES.md`, Storybook check in both themes, `CHANGELOG.md` (renamed / removed style: a release migration) |
 
 Then run `npm run build:manifest` (regenerates the agent files) and `npm run check`. `check:manifest` fails when:

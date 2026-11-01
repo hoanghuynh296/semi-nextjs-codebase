@@ -24,6 +24,7 @@ export const STORY_PAGES: StoryPage[] = [
   { path: "primitives", title: "Primitives & Forms", summary: "Button, Field, choices, Tabs, Tooltip, Menu, Drawer, Toast, Alert, Progress, Table, EmptyState, locale." },
   { path: "patterns", title: "Layout Patterns", summary: "Page tabs and header actions, the tool-app header, SidePanel, Markdown and skeleton layouts." },
   { path: "chat", title: "AI Chat", summary: "The standard AI chat panel (AIChat), its parts and the provider / model / effort picker." },
+  { path: "brand", title: "Brand preview", summary: "Preview a brand (primary, neutrals, styles, fonts) on every page before creating its brand kit; contrast report." },
 ];
 
 export const STORY_SECTIONS: Record<string, StorySection> = {
@@ -371,5 +372,43 @@ toast({ tone: "success", title: "Đã lưu" });   // <ToastHost /> mounted once 
     <ChatError onRetry={retry}>Không kết nối được tới model.</ChatError>
   </ChatView>
 </ChatPanel>`,
+  },
+  // ── brand ──
+  "brand-choices": {
+    page: "brand",
+    title: "Brand choices (brand.json)",
+    when: "The few decisions a brand makes, once, in its own brand kit repo (docs/BRANDS.md). Products never pick colours or fonts.",
+    code: `// brand.json of the kit repo (e.g. github:3dnoobs/brand)
+{
+  "name": "3D Noobs",
+  "package": "@3dnoobs/brand",
+  "primary": "#00AE42",
+  "secondary": null,
+  "neutral": "tinted",
+  "styles": { "default": "flat", "allowed": ["flat", "soft"] },
+  "fonts": { "sans": "Geist", "display": "Montserrat Alternates" }
+}
+
+// create / change it with the plugin, then build the kit
+/semi-brand            // in the brand kit repo
+npm run build          // semi-brand build → dist/brand.css, dist/brand.json, BRAND.md, AGENTS.brand.md`,
+  },
+  "brand-result": {
+    page: "brand",
+    title: "What Semi derives",
+    when: "Scales, accent / on-accent shades of both themes and the neutrals of every allowed style, checked for WCAG AA. A product only installs the kit.",
+    code: `// a product of the brand
+/semi-init --brand github:3dnoobs/brand
+
+/* app/globals.css (written by /semi-init) */
+@import "@semi/ui/tokens.css";
+@import "@semi/ui/base.css";
+@import "@3dnoobs/brand/dist/brand.css";
+
+// semi-lint.json: "brand": "@3dnoobs/brand" → brand-override blocks local colour / font tokens
+
+// in code: semantic tokens only
+<Button variant="primary">Lưu</Button>
+<span className="text-accent-fg">…</span>`,
   },
 };

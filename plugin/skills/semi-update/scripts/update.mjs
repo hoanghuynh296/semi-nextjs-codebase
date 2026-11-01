@@ -5,12 +5,33 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 import { discoverFrontendApps } from "../../semi-audit/scripts/audit.mjs";
-import { installSemiUi, installedSemiVersion, readStyleState, resolveTargetSpec, runLocal, semiStyles, wireAgentsMd } from "../../semi-init/scripts/setup.mjs";
+import {
+  appFonts,
+  cmpSemver,
+  gitTags,
+  installPackage,
+  installSemiUi,
+  installedSemiVersion,
+  missingStyleFonts,
+  parseGithubSpec,
+  readBrand,
+  readStyleState,
+  resolveTargetSpec,
+  runLocal,
+  semiStyles,
+  styleFontHint,
+  wireAgentsMd,
+  wireBrand,
+} from "../../semi-init/scripts/setup.mjs";
 import { cmpVersion, runMigrations } from "./migrate.mjs";
 
 let cwd = process.cwd();
 const argv = process.argv.slice(2);
-for (let i = 0; i < argv.length; i++) if (argv[i] === "--cwd" && argv[i + 1]) cwd = resolve(argv[++i]);
+let acceptMajor = false;
+for (let i = 0; i < argv.length; i++) {
+  if (argv[i] === "--cwd" && argv[i + 1]) cwd = resolve(argv[++i]);
+  else if (argv[i] === "--accept-major") acceptMajor = true;
+}
 
 const apps = discoverFrontendApps(cwd).filter((dir) => {
   const pkg = JSON.parse(readFileSync(join(dir, "package.json"), "utf8"));
@@ -33,12 +54,35 @@ function changelogBetween(text, from, to) {
     .trim();
 }
 
-const { spec } = resolveTargetSpec();
 let exitCode = 0;
 let printedChangelog = false;
 
 for (const appDir of apps) {
   const name = relative(cwd, appDir) || ".";
+  // Brand kit first (docs/BRANDS.md): its newest tag, unless that is a major change the user has not accepted; its
+  // "semi" range then caps which @semi/ui this app may get.
+  const brand = readBrand(appDir);
+  if (brand) {
+    const pkgJson = JSON.parse(readFileSync(join(appDir, "package.json"), "utf8"));
+    const depSpec = pkgJson.dependencies?.[brand.pkg] ?? pkgJson.devDependencies?.[brand.pkg];
+    const gh = depSpec ? parseGithubSpec(depSpec) : null;
+    const current = brand.kit ? JSON.parse(readFileSync(join(brand.dir, "package.json"), "utf8")).version : null;
+    const tags = gh ? gitTags(gh.url) : null;
+    const latest = tags?.length ? tags[tags.length - 1].replace(/^v/, "") : null;
+    if (gh && latest && current && cmpSemver(latest, current) <= 0) console.log(`${name}: brand ${brand.pkg} đã mới nhất (${current}).`);
+    else if (gh && latest && current && +latest.split(".")[0] > +current.split(".")[0] && !acceptMajor) {
+      console.log(`${name}: brand ${brand.pkg} ${current} → ${latest} là bản major (màu / font thương hiệu đổi, giao diện đổi). Hỏi người dùng; đồng ý thì chạy lại với --accept-major. Lần này giữ ${current}.`);
+    } else if (depSpec) {
+      const next = gh && latest ? `${gh.base}#v${latest}` : depSpec; // file: kits are simply reinstalled
+      console.log(`${name}: brand ${brand.pkg} ${current || "?"} → ${latest || "bản mới nhất ở " + depSpec}`);
+      if (!installPackage(appDir, next).ok) exitCode = 1;
+    }
+  }
+  const kit = readBrand(appDir)?.kit ?? null;
+  const target = resolveTargetSpec({ range: kit?.semi });
+  const spec = target.spec;
+  if (target.limited) console.log(`${name}: brand ${kit.name} chỉ hỗ trợ @semi/ui ${kit.semi}: giữ ${target.version} (mới nhất là ${target.newest}). Chạy /semi-brand update trong repo brand, phát hành, rồi /semi-update lại.`);
+
   const from = installedSemiVersion(appDir);
   console.log(`\n=== ${name}: @semi/ui ${from || "?"} → ${spec} ===`);
   if (!installSemiUi(appDir, spec)) {
@@ -72,6 +116,15 @@ for (const appDir of apps) {
   const styles = semiStyles(appDir);
   if (style && styles && !styles.styles.some((s) => s.id === style))
     console.log(`${name}: style "${style}" không còn trong ${to} (${styles.styles.map((s) => s.id).join(", ")}): chạy /semi-style.`);
+
+  // Re-wire the brand (brand.css import, rules block) and say which fonts the layout still needs.
+  if (kit) {
+    const w = wireBrand(appDir, cwd, readBrand(appDir).pkg);
+    if (!w.ok) exitCode = 1;
+    const st = readStyleState(appDir);
+    const chosen = semiStyles(appDir)?.styles.find((s) => s.id === st.declared);
+    if (chosen && st.layout && missingStyleFonts(appDir, chosen).length) console.log(`${name}: ${styleFontHint(st.layout, chosen, appFonts(appDir, chosen))}`);
+  }
 
   // Only checks the upgrade itself (an API the app uses changed and no migration covers it).
   if (runLocal(appDir, "tsc", ["--noEmit"]).status !== 0) exitCode = 1;

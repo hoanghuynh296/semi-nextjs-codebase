@@ -4,7 +4,7 @@ import { expect, test, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import styleList from "../tokens/styles.json" with { type: "json" };
 
-const PAGES = ["/foundations.html", "/components.html", "/primitives.html", "/patterns.html", "/chat.html"];
+const PAGES = ["/foundations.html", "/components.html", "/primitives.html", "/patterns.html", "/chat.html", "/brand.html"];
 const THEMES = ["dark", "light"] as const;
 const STYLES = styleList.styles.map((s) => s.id);
 /** Every style × palette (the first palette is the style's default, set without data-palette). */
@@ -179,6 +179,24 @@ test("styles: a palette applies before paint and resets when the style changes",
   await page.getByRole("radiogroup", { name: "Style" }).getByRole("radio", { name: "Soft" }).click();
   await expect(page.locator("html")).not.toHaveAttribute("data-palette", /.+/);
   await expect(page.getByRole("radiogroup", { name: "Palette" }).getByRole("radio", { name: "Sand" })).toHaveAttribute("aria-checked", "true");
+});
+
+test("brand preview: a #brand= link recolours every page, passes contrast in both themes, and turns off", async ({ page }) => {
+  const brand = { name: "Blue Co", package: "@blue/brand", primary: "#2563EB", neutral: "tinted", styles: { default: "soft", allowed: ["flat", "soft"] }, fonts: { sans: "Manrope", display: "Manrope" } };
+  const hash = Buffer.from(JSON.stringify(brand)).toString("base64url");
+  const accent = () => page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--semi-accent").trim());
+  await open(page, `/components.html#brand=${hash}`, "dark", "soft");
+  await expect(page.getByText("Blue Co", { exact: true })).toBeVisible();
+  for (const theme of THEMES) {
+    await page.getByRole("radio", { name: theme === "dark" ? "Tối" : "Sáng" }).first().click();
+    expect(await accent()).toBe(theme === "dark" ? "#568af4" : "#2563eb");
+    expect(await lowContrast(page)).toEqual([]);
+  }
+  await page.getByRole("radio", { name: "Tối" }).first().click();
+  await page.goto("/patterns.html"); // stays on across pages
+  expect(await accent()).toBe("#568af4");
+  await page.getByRole("button", { name: "Tắt xem trước brand" }).click();
+  expect(await accent()).toBe("#00ae42"); // Semi's own green again (dark theme)
 });
 
 test("system theme follows prefers-color-scheme", async ({ browser }) => {

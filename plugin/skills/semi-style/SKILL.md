@@ -15,6 +15,9 @@ An app picks one style and one of its three palettes (colour variants of the neu
 in `semi-lint.json` and `data-style` / `data-palette` on `<html>` in the root layout. It is not
 a per-user setting like the theme.
 
+With a brand kit (`"brand"` in `semi-lint.json`) only the brand's allowed styles can be picked and there are no
+palettes (the brand sets the neutrals); a style it does not allow is added in the brand repo with `/semi-brand`.
+
 Where the style is chosen first: `/semi-init` (new app) and `/semi-fix` foundation (existing app). This command is for
 changing it later.
 
