@@ -45,7 +45,7 @@ The user should **never** have to run `npm install` or config commands: you run 
    It runs `create-next-app` (TypeScript, Tailwind 4, App Router), installs `@semi/ui` from the latest tag of
    `github:hoanghuynh296/semi-nextjs-codebase`, sets `transpilePackages`, wires `tokens.css` + `base.css` + `@source`
    into `app/globals.css`, writes `app/layout.tsx` (the brand's or the style's fonts, `ThemeScript` / `ThemeProvider`
-   with the default theme, `ToastHost`, `ConfirmHost`, metadata from the brief) and a starter page for the kind
+   with the default theme, `ToastHost`, `ConfirmHost`, `TaskHost`, metadata from the brief) and a starter page for the kind
    (tool / app: `AppShell` with the brand's logo, its main figure as `KpiCard featured` and its sample items; store /
    landing: a top bar, a hero with the tagline, product line and button text, the proof figure and the sample items),
    `semi-lint.json` (with `"style"`, and `"density"` / `"typeScale"` when not the default), `data-style` (and

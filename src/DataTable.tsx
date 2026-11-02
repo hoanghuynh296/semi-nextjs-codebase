@@ -149,7 +149,7 @@ export function DataTable<T>({
                     indeterminate={onPage > 0 && onPage < visibleIds.length}
                     onChange={togglePage}
                     disabled={loading || visibleIds.length === 0}
-                    label={<span className="sr-only">{t.selectAll}</span>}
+                    aria-label={t.selectAll}
                   />
                 </TH>
               )}
@@ -193,7 +193,7 @@ export function DataTable<T>({
                     <TR key={id} onClick={onRowClick ? () => onRowClick(row) : undefined} aria-selected={selectable ? isSel : undefined} className={cn(isSel && "bg-accent-subtle")}>
                       {selectable && (
                         <TD onClick={(e) => e.stopPropagation()}>
-                          <Checkbox checked={isSel} onChange={(on) => toggleRow(id, on)} label={<span className="sr-only">{t.selectRow}</span>} />
+                          <Checkbox checked={isSel} onChange={(on) => toggleRow(id, on)} aria-label={t.selectRow} />
                         </TD>
                       )}
                       {columns.map((c) => (

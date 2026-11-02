@@ -209,7 +209,9 @@ ${t.secondary ? `\n## Màu phụ (\`secondary-*\`)\n\n| Sắc độ | Mã |\n|--
 | Mục đang chọn (nền nhạt, viền) | \`bg-accent-subtle\`, \`border-accent-line\` | nhạt từ \`${t.themes.dark["color-accent-fg"]}\` | nhạt từ \`${t.themes.light["color-accent-fg"]}\` |
 ${t.secondary ? `| Chữ màu phụ | \`text-secondary-fg\` | \`${t.themes.dark["color-secondary-fg"]}\` | \`${t.themes.light["color-secondary-fg"]}\` |\n| Nền màu phụ | \`bg-secondary-solid\` + \`text-on-secondary\` | \`${t.themes.dark["color-secondary-solid"]}\` / \`${t.themes.dark["color-on-secondary"]}\` | \`${t.themes.light["color-secondary-solid"]}\` / \`${t.themes.light["color-on-secondary"]}\` |\n` : ""}
 Không dùng \`primary-500/15\`, \`ring-primary-500/50\` … cho trạng thái: thang \`primary-*\` không đổi theo theme nên có
-thể biến mất trên nền (\`semi-lint\`: \`accent-state-token\`).${["dark", "light"].some((th) => t.fidelity?.[th]?.deltaE > 0.08) ? `\n\nNút chính không phải đúng mã màu thương hiệu ở theme ${["dark", "light"].filter((th) => t.fidelity[th].deltaE > 0.08).map((th) => (th === "dark" ? "tối" : "sáng")).join(" và ")}: đó là sắc độ gần nhất đọc rõ và tách khỏi nền (xem Lưu ý). Logo và hình ảnh vẫn dùng đúng mã.` : ""}
+thể biến mất trên nền (\`semi-lint\`: \`accent-state-token\`). Không tô nền hay viền bằng thang (\`bg-primary-500\`,
+\`border-primary-500\`): màu thương hiệu nằm ở \`primary-${t.brandStep ?? 500}\`, nút chính là \`bg-accent\` + \`text-on-accent\`;
+thang \`primary-*\` chỉ cho biểu đồ và hình minh hoạ (\`semi-lint\`: \`primary-fill\`).${["dark", "light"].some((th) => t.fidelity?.[th]?.deltaE > 0.08) ? `\n\nNút chính không phải đúng mã màu thương hiệu ở theme ${["dark", "light"].filter((th) => t.fidelity[th].deltaE > 0.08).map((th) => (th === "dark" ? "tối" : "sáng")).join(" và ")}: đó là sắc độ gần nhất đọc rõ và tách khỏi nền (xem Lưu ý). Logo và hình ảnh vẫn dùng đúng mã.` : ""}
 
 ## Kiểm tra đọc rõ (chữ ≥ 4.5:1, viền và nút so với nền ≥ 3:1)
 
@@ -231,7 +233,7 @@ function agentsMd({ tokens: t }, styles) {
     `- Accent use: **${g.color.accentLabel}**. ${g.color.accentRule}`,
     `- Share of a screen, roughly: ${Object.entries(g.color.mix).map(([k, n]) => `${k} ${n}%`).join(", ")}.`,
     "- One primary button per area (`Button variant=\"primary\"`); everything else secondary or ghost.",
-    "- States: `ring-focus`, `border-focus`, `bg-accent-subtle`, `border-accent-line`; coloured text `text-accent-fg`. Never `primary-500/15`-style classes (`accent-state-token`).",
+    "- States: `ring-focus`, `border-focus`, `bg-accent-subtle`, `border-accent-line`; coloured text `text-accent-fg`. Never `primary-500/15`-style classes (`accent-state-token`) or `bg-primary-500` fills (`primary-fill`): main actions are `bg-accent` + `text-on-accent`; `primary-*` is for charts and illustrations.",
     ...(g.color.secondaryRule ? [`- Secondary colour only for ${g.color.secondaryRule}. Never a secondary-coloured action button.`] : ["- This brand has no secondary colour: do not add one."]),
     "- Status (success, error, warning) keeps Semi's status tokens, never the brand colour.",
     `- Never define brand colours or override Semi tokens in this app (\`--color-primary-*\`, \`--semi-*\`, \`@theme\` colours, hex values): \`semi-lint\` blocks it (\`brand-override\`).`,

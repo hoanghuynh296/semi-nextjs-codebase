@@ -1,0 +1,48 @@
+{
+  "title": "Task host",
+  "group": "Feedback",
+  "description": "startTask() shows one blocking overlay for a job the user must wait for: label, current step, progress, elapsed time and an optional Cancel. Mount TaskHost once in the root layout, next to ToastHost and ConfirmHost.",
+  "components": [
+    "TaskHost"
+  ],
+  "imports": [
+    "startTask"
+  ],
+  "when": [
+    "The user started a job and cannot do anything useful until it finishes: an upload before printing, an import, a firmware update, a payment step, an AI job that the next screen needs."
+  ],
+  "instead": [
+    {
+      "need": "Work the user can keep going during (a background sync, an export)",
+      "use": "Progress inline, or toast() when it ends"
+    },
+    {
+      "need": "A page or section waiting for its data",
+      "use": "Skeleton"
+    },
+    {
+      "need": "A button running its own short action",
+      "use": "Button loading"
+    }
+  ],
+  "a11y": [
+    "An alertdialog named by the label, aria-busy while it runs; label and step sit in a polite live region, the elapsed time is not announced.",
+    "Focus stays inside (on Cancel when there is one); Escape and Cancel only exist when onCancel is set."
+  ],
+  "examples": [
+    {
+      "file": "upload",
+      "title": "Steps, progress, timer and Cancel"
+    },
+    {
+      "file": "fail",
+      "title": "No Cancel, ends with fail()",
+      "description": "fail() closes the overlay and shows a danger toast."
+    }
+  ],
+  "notes": [
+    "<TaskHost /> goes once in the root layout (see Theme › Root layout); startTask() works from any event handler.",
+    "One task at a time: startTask() while one runs replaces it, and the old handle does nothing. update({ value }) takes 0–100; leave value out for an indeterminate bar.",
+    "Cancel and Escape close the overlay first, then call onCancel: stop the job there."
+  ]
+}

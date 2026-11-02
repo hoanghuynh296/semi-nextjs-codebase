@@ -43,8 +43,20 @@ test("ambiguous or unsafe tokens are reported, not guessed", () => {
 });
 
 test("allowed classes are untouched", () => {
-  const v = "bg-panel border border-line bg-white/10 bg-emerald-400 bg-rose-500/10 bg-primary-500 p-4";
+  const v = "bg-panel border border-line bg-white/10 bg-emerald-400 bg-rose-500/10 bg-accent p-4";
   assert.equal(m(v), v);
+});
+
+test("primary-fill (#15): a brand fill with white text becomes the accent, other brand fills are reported", () => {
+  assert.equal(m("bg-primary-500 hover:bg-primary-600 text-white px-4"), "bg-accent hover:bg-accent-hover text-on-accent px-4");
+  assert.equal(m("bg-primary-600 dark:bg-primary-500 text-on-accent", "dark"), "bg-accent text-on-accent");
+  assert.equal(m("md:bg-primary-400 text-white"), "md:bg-primary-400 text-contrast", "only a base fill decides");
+  for (const v of ["bg-primary-500 p-4", "bg-primary-700 text-white", "h-2 bg-primary-400 rounded-full"]) {
+    const r = migrateClassString(v);
+    assert.ok(r.unresolved.some((t) => t.includes("bg-primary")), v);
+    assert.ok(r.value.includes("bg-primary"), v);
+  }
+  assert.deepEqual(analyse(`"${m("bg-primary-500 hover:bg-primary-600 text-white")}"`), []);
 });
 
 test("migrateSource only rewrites string literals and leaves a lint-clean file", () => {

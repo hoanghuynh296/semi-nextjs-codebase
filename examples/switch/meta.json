@@ -6,7 +6,8 @@
     "Switch"
   ],
   "when": [
-    "Settings that take effect at once (notifications, dark sync, auto-print)."
+    "Settings that take effect at once (notifications, dark sync, auto-print).",
+    "A switch on a card whose title names it: pass aria-labelledby (the title's id) or aria-label instead of a visible label."
   ],
   "instead": [
     {
@@ -15,12 +16,19 @@
     }
   ],
   "a11y": [
-    "role=\"switch\" with aria-checked; Space toggles; label and description are linked."
+    "role=\"switch\" with aria-checked; Space toggles; label and description are linked.",
+    "Without a visible label give aria-label or aria-labelledby (label wins); in development a switch with no name logs a warning.",
+    "On touch screens (any coarse pointer) the hit area is 44 × 44 px around the track; the visible size and layout do not change."
   ],
   "examples": [
     {
       "file": "basic",
       "title": "Basic and small"
+    },
+    {
+      "file": "card-header",
+      "title": "Named by a card title",
+      "description": "No visible label: aria-labelledby points at the card title."
     }
   ]
 }

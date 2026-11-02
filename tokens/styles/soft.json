@@ -61,15 +61,15 @@
       "light": "#faf7f2"
     },
     "color-panel": {
-      "dark": "#211d19",
+      "dark": "#26211d",
       "light": "#ffffff"
     },
     "color-field": {
-      "dark": "#2a2520",
+      "dark": "#2e2823",
       "light": "#f3eee7"
     },
     "color-raised": {
-      "dark": "#36302a",
+      "dark": "#39322c",
       "light": "#e8e0d5"
     },
     "color-text-contrast": {
@@ -81,15 +81,15 @@
       "light": "#463d33"
     },
     "color-text-muted": {
-      "dark": "#a49b90",
+      "dark": "#aea59a",
       "light": "#665c51"
     },
     "color-line": {
-      "dark": "rgba(255, 238, 214, 0.09)",
+      "dark": "rgba(255, 238, 214, 0.12)",
       "light": "rgba(60, 40, 20, 0.09)"
     },
     "color-line-hover": {
-      "dark": "rgba(255, 238, 214, 0.18)",
+      "dark": "rgba(255, 238, 214, 0.22)",
       "light": "rgba(60, 40, 20, 0.18)"
     },
     "color-divider": {

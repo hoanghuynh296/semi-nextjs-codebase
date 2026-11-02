@@ -4,6 +4,7 @@ import { ThemeProvider } from "../src/ThemeProvider";
 import { ThemeScript } from "../src/ThemeScript";
 import { ToastHost } from "../src/Toast";
 import { ConfirmHost } from "../src/confirmDialog";
+import { TaskHost } from "../src/TaskHost";
 import { STYLE_SCRIPT } from "./styleScript";
 import { SiteShell } from "./SiteShell";
 import "./globals.css";
@@ -40,6 +41,7 @@ export default function RootLayout({
         <ThemeProvider defaultTheme="dark">
           <ToastHost />
           <ConfirmHost />
+          <TaskHost />
           {/* One shell for every page: the menu keeps its scroll and state when the page changes */}
           <SiteShell>{children}</SiteShell>
         </ThemeProvider>

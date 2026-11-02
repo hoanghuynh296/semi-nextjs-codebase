@@ -96,14 +96,14 @@ Semi architecture separates tokens into two tiers:
 |---|---|---|---|---|
 | `--color-canvas` | `bg-canvas` | Nền ứng dụng ngoài cùng (outer bento shell) | `#0c0d0e` | `#f1f5f9` (Slate-100) |
 | `--color-app` | `bg-app` | Khung bề mặt màn hình chính (content panel) | `#121316` | `#ffffff` |
-| `--color-panel` | `bg-panel` | Thẻ Bento Card, Sidebar, Modal shell | `#18191c` | `#ffffff` |
-| `--color-field` | `bg-field` | Nền ô nhập liệu, header bảng | `#1e1f23` | `#f1f5f9` (Slate-100) |
-| `--color-raised` | `bg-raised` | Hover / track fills trên nền field hoặc panel | `#282a2f` | `#e2e8f0` (Slate-200) |
+| `--color-panel` | `bg-panel` | Thẻ Bento Card, Sidebar, Modal shell | `#202226` | `#ffffff` |
+| `--color-field` | `bg-field` | Nền ô nhập liệu, header bảng | `#272a2f` | `#f1f5f9` (Slate-100) |
+| `--color-raised` | `bg-raised` | Hover / track fills trên nền field hoặc panel | `#31343a` | `#e2e8f0` (Slate-200) |
 | `--color-text-contrast` | `text-contrast` | Tiêu đề, chữ độ tương phản cao | `#ffffff` | `#0f172a` (Slate-900) |
 | `--color-text-body` | `text-body` | Nội dung văn bản chính | `#d1d5db` (Gray-300) | `#334155` (Slate-700) |
-| `--color-text-muted` | `text-muted` | Nhãn phụ, placeholder, gợi ý | `#8b919a` | `#5b6779` |
-| `--color-line` | `border-line` | Đường viền card, bảng, khung | `rgba(255, 255, 255, 0.08)` | `rgba(0, 0, 0, 0.08)` (Slate-200) |
-| `--color-line-hover` | `border-line-hover` | Đường viền khi hover | `rgba(255, 255, 255, 0.16)` | `rgba(0, 0, 0, 0.16)` |
+| `--color-text-muted` | `text-muted` | Nhãn phụ, placeholder, gợi ý | `#9ba1aa` | `#5b6779` |
+| `--color-line` | `border-line` | Đường viền card, bảng, khung | `rgba(255, 255, 255, 0.12)` | `rgba(0, 0, 0, 0.08)` (Slate-200) |
+| `--color-line-hover` | `border-line-hover` | Đường viền khi hover | `rgba(255, 255, 255, 0.2)` | `rgba(0, 0, 0, 0.16)` |
 | `--color-divider` | `border-divider` | Đường phân cách nhẹ giữa các hàng | `rgba(255, 255, 255, 0.05)` | `rgba(0, 0, 0, 0.05)` (Slate-100) |
 | `--color-accent` | `bg-accent` | Nền nút chính / mark "on" (BTN_PRIMARY, headerPrimary) | `primary-500` | `primary-700` |
 | `--color-accent-hover` | `hover:bg-accent-hover` | Hover của nền accent | `primary-400` | `primary-800` |
@@ -118,7 +118,10 @@ Semi architecture separates tokens into two tiers:
 
 Mọi cặp chữ / nền ở trên đạt WCAG AA (≥ 4.5:1) ở cả hai theme. Không viết `text-*-400` hay `text-*-700 dark:text-*-300` trong component: dùng `text-accent-fg`, `text-*-fg` hoặc `text-tone-*`.
 Trạng thái (focus, chọn, hover) không dùng thang `primary-*` với alpha (`ring-primary-500/50`, `bg-primary-500/15`): thang đó
-không đổi theo theme nên biến mất với brand sáng trên nền sáng (`accent-state-token`). Brand: dùng brand kit
+không đổi theo theme nên biến mất với brand sáng trên nền sáng (`accent-state-token`). Nền và viền đặc cũng vậy
+(`bg-primary-500`, `border-primary-500`): màu thương hiệu chỉ nằm ở một sắc độ của thang (vàng ở `200`, navy ở `900`),
+nên `primary-500` có thể nhạt hay lệch hẳn; nền nút / mark "on" là `bg-accent` + `text-on-accent` (`primary-fill`).
+Thang `primary-*` chỉ dùng cho biểu đồ và hình minh hoạ. Brand: dùng brand kit
 (`docs/BRANDS.md`); bộ sinh màu đặt `accent`, `on-accent`, `accent-fg` cho từng theme, các token trạng thái đi theo `accent-fg`.
 
 **Cách sinh CSS:** giá trị theo theme nằm ở biến nguồn `--semi-*` (đặt trong `:root/[data-theme=dark]` và `[data-theme=light]`); utility đọc qua `@theme inline` (`bg-panel` → `var(--semi-panel)`), còn `--color-*` được khai báo lại ở mỗi theme scope cho CSS của app (`var(--color-panel)`).
@@ -244,7 +247,7 @@ Instead, the Semi Design System **adapts all chromatic components** to **Two-Tie
 
 | Component State | Dual-Theme Token Formula | Visual Behavior (Light & Dark) |
 |---|---|---|
-| **Static Surface** | `bg-<color>-500/10` | 10% soft tint on light; deep rich glow on `#18191c` dark panel |
+| **Static Surface** | `bg-<color>-500/10` | 10% soft tint on light; deep rich glow on `#202226` dark panel |
 | **Static Border** | `border-<color>-500/20` | 20% subtle alpha outline harmonizing with border-line |
 | **Interactive Hover Surface** | `hover:bg-<color>-500/15` | 15% reactive tint on hover |
 | **Interactive Hover Border** | `hover:border-<color>-500/30` | 30% crisp boundary on hover |
@@ -402,7 +405,7 @@ tiles use `w-11 h-11 rounded-card` with their area's `TILE_TONES`.
 
 `BTN_PRIMARY` / `BTN_SECONDARY` / `BTN_DANGER` from `@semi/ui/styles` (`rounded-control`, `h-control`,
 `text-label font-medium`, flat). Icon-only: add `BTN_ICON`, or `ICON_BTN` (`w-7 h-7 rounded-control`) inside cards. Big
-state toggles (power) are round: `w-20 h-20 sm:w-24 sm:h-24 rounded-full`, flat `bg-primary-500 text-white` when on,
+state toggles (power) are round: `w-20 h-20 sm:w-24 sm:h-24 rounded-full`, flat `bg-accent text-on-accent` when on,
 `bg-white/[0.05]` when off. A running action shows a spinner inside its own button only.
 
 ## 10. Pills, chips, badges
@@ -415,7 +418,7 @@ state toggles (power) are round: `w-20 h-20 sm:w-24 sm:h-24 rounded-full`, flat 
 
 ## 11. Status dot
 
-Flat dot next to state text, no glow: online `bg-emerald-400`, running `bg-primary-400 animate-pulse`,
+Flat dot next to state text, no glow: online `bg-emerald-400`, running `bg-accent animate-pulse`,
 busy/paused/connecting `bg-amber-400`, error `bg-rose-500`, offline `bg-gray-500`. Use `STATUS_DOT`.
 Size `w-2 h-2` (`w-1.5 h-1.5` inline in a caption).
 
@@ -423,7 +426,7 @@ Size `w-2 h-2` (`w-1.5 h-1.5` inline in a caption).
 
 Nested facts (readings, KPIs, sensor values) sit in `TILE` (`rounded-control bg-white/[0.04] border border-white/[0.06]`)
 with an icon above or before a `tabular-nums` value. Progress is a ring or a `h-1.5 rounded-full` bar in
-`primary-500` on `bg-white/[0.08]`.
+`bg-accent` on `bg-raised` (`Progress`).
 
 ## 13. Empty state
 
@@ -438,7 +441,11 @@ real grid's classes), `SkeletonRows` (lists, dialogs, tables), `PageSkeleton` (S
 `role="status"` / `aria-busy`; its `label` is for screen readers only). The sweep is the `.shimmer` class in
 `base.css` (stops under `prefers-reduced-motion`). Keep "not loaded yet" apart from "empty" (e.g. `undefined` =
 loading, `null` = failed, or a `loaded` flag) so an empty state never flashes before data. Long operations the user
-started (upload, export) show a progress bar with a short label and percentage.
+started (upload, export) show a progress bar with a short label and percentage. When the user cannot do anything
+useful until the job ends (upload before printing, import, firmware update, payment step), use the blocking overlay:
+`const task = startTask({ label, step, value, timer, onCancel })`, `task.update({ value })`, `task.done()` /
+`task.fail(title)` (closes and shows a danger toast), with `<TaskHost />` mounted once in the root layout beside
+`<ToastHost />` / `<ConfirmHost />`. One task at a time; Cancel and Escape only when `onCancel` is set.
 One exception: a list a form field fetches by itself in the background shows one small `role="status"` line under that
 field while it loads: a `w-3 h-3` spinner + "Đang tải …" in `text-label text-gray-500` (the text sits in the
 `role="status"` element, which the lint allows), gone when done; a failed fetch stays silent.
@@ -523,6 +530,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `PageActions.tsx` | `PageActions` (a tab's header buttons), `PageActionsSlot` + `PageActionsProvider` |
 | `Skeleton.tsx` | `Skeleton`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton`, `Loading` (§13b) |
 | `confirmDialog.tsx` | `confirmDialog()`, `ConfirmHost`, `ConfirmOptions` (§14) |
+| `TaskHost.tsx` | `startTask()`, `TaskHost`, `TaskOptions`, `TaskHandle` (blocking task overlay, §13b) |
 | `ThemeProvider.tsx` | `ThemeProvider`, `useTheme`, `ThemeToggle` (§2) |
 | `Markdown.tsx` | `Markdown` (AI answers) |
 | `Chat.tsx` | `AIChat`, `ChatPanel`, `ChatView`, `ChatList`, `ChatComposer`, `UserMessage`, `AssistantMessage`, `ChatAnswer`, `ChatError`, `ChatThinking`, `ChatIntro`, `ChatSuggestion(s)`, `ChatAvatar`, `ChatCopyButton`, `ChatModelPicker`, `CHAT_ROW`, `CHAT_CHIP`, `CHAT_PICK_CHIP`, `ChatItem` (§14b) |
@@ -556,7 +564,10 @@ with `aria-describedby`, sets `aria-invalid` and announces the error (`role="ale
 Input surface: `FIELD_INPUT` (`bg-field border border-line hover:border-line-hover rounded-control px-3 h-field text-ui …
 focus:border-focus`); invalid adds `border-danger-border`. Never `focus:outline-none` without a visible focus
 border. Choices: `Checkbox` (with `indeterminate`), `Switch` (settings that apply at once), `RadioGroup` (2–5 exclusive
-options; more → `CustomSelect`).
+options; more → `CustomSelect`). A `Switch` or `Checkbox` without a visible `label` (on a card whose title names it, a
+table row) gets `aria-labelledby` (the title's id) or `aria-label`; `label` wins, and in development an unnamed one logs
+a warning. On touch screens (`any-pointer: coarse`) both get a 44 × 44 px hit area from a pseudo-element, so the
+visible size (`size="sm" | "md"`) and the layout stay the same.
 
 ## 17. Primitives (`@semi/ui`)
 
@@ -566,6 +577,7 @@ options; more → `CustomSelect`).
 | Overflow actions of a row / card | `Menu` (icon-only "more" trigger; `danger` item last) |
 | Hint for an icon-only control | `Tooltip` (never essential text: touch screens do not show it) |
 | Feedback after an action | `toast({ title, tone, action })` + `<ToastHost />` in the layout |
+| A job the user must wait for | `startTask({ label, onCancel, timer })` + `<TaskHost />` in the layout |
 | Persistent message in a page | `Alert` (tone, title, action, `onDismiss`) |
 | Secondary task beside the page | `Drawer` (right / left / bottom / top sheet) |
 | Sections of one record | `Tabs` (underline; `segmented` inside a toolbar); 2–4 sibling pages → `PageTabsTitle` |
@@ -652,19 +664,21 @@ and never override the variables (`brand-override`).
 - **Physical / literal colors (`no-literal-palette`):** Never use neutral / white / black colour classes on any prefix or variant (`bg-white`, `text-slate-900`, `border-b-gray-200`, `divide-zinc-100`, `ring-slate-300`, `from-white`, `dark:bg-slate-800`). Always use Semantic Tokens (`bg-panel`, `bg-field`, `text-contrast`, `text-body`, `text-muted`, `border-line`, `divide-divider`).
 - **Fixed chromatic text (`no-fixed-tone-text`):** `text-emerald-400`, `text-rose-700 dark:text-rose-300`, `fill-amber-500` cannot pass contrast in both themes: use `text-accent-fg`, `text-*-fg` or `text-tone-<hue>`.
 - **Brand scale as a state colour (`accent-state-token`):** `ring-primary-500/50`, `bg-primary-500/15`, `border-primary-500/30` are not themed and vanish for light brands on light surfaces (a yellow ring is ≈ 1.3:1 on white): use `ring-focus`, `border-focus`, `bg-accent-subtle` / `bg-accent-subtle-hover`, `border-accent-line`. `/semi-check` rewrites them.
+- **Brand scale as a fill or border (`primary-fill`):** `bg-primary-500`, `hover:bg-primary-600`, `border-primary-500`. The brand colour sits on one step of the scale (yellow on `200`, navy on `900`), so a `primary-500` fill turns pale or off-brand with a brand kit. Main actions and "on" marks are `bg-accent hover:bg-accent-hover text-on-accent` (`BTN_PRIMARY`), selected borders `border-accent-line`, focused ones `border-focus`. `primary-*` is the scale for charts and illustrations: list those files under `skip`. The `/semi-check` codemod rewrites `bg-primary-400…600` to `bg-accent` when the same class list has `text-white` / `text-on-accent`, and reports the rest.
 - **Solid pastel surfaces (`no-solid-pastel-surfaces`), arbitrary colours (`hex-colour-class`), literal colours in code (`literal-colour-value`), off-scale sizes (`arbitrary-text-size`).**
 - The colour / size rules read class tokens from every string literal (className, `cn()`, constants, template parts, `@apply`), not lines, so any spelling of a colour is caught.
+- **Illustrations and data colours** (a device drawing, a 3D scene palette, other companies' logos) are content, not UI chrome: name each file under `skip` in `semi-lint.json` with a reason, for `literal-colour-value`, `inline-svg-path` or `no-literal-palette` only: `"skip": { "literal-colour-value": { "lib/scenePalette.ts": "data colours: 3D scene" } }`. The `/semi-check` audit lists each one ("Minh hoạ / màu dữ liệu") and its codemod leaves them; never a whole folder, never the baseline.
 - **Overriding Card component (`card-class-override`):** Never pass any `bg-*` or `shadow-*` (with or without a variant such as `hover:`) to `<Card />`; use `TONAL_CONTAINER` on a plain element for a tinted card.
 - Gradients, glow blobs, coloured glow shadows (`shadow-[0_0_…]`), "glassmorphism" panels.
 - Solid greys for surfaces (`bg-gray-800/900`), `border-gray-700`, hard-coded hex colour classes (`bg-[#...]`, `text-[#...]`).
 - `font-bold` / `extrabold` / `black`; `text-[9px]` / `text-[10px]`; `text-xs` / `text-sm`; `uppercase` labels; ALL-CAPS button text.
-- Raw or arbitrary radii (`rounded-lg`, `rounded-[10px]`) instead of the style tokens; `font-mono` for numbers; coloured icon tiles in front of every card title; one decorative icon colour per card (`decorative-icon-tones`, §19).
+- Raw or arbitrary radii (`rounded-lg`, `rounded-[10px]`) instead of the style tokens; `font-mono` for numbers (fine on `<code>`, `<pre>`, `CodeBlock`, `Terminal` and `textarea` / `contentEditable` code editors); coloured icon tiles in front of every card title; one decorative icon colour per card (`decorative-icon-tones`, §19).
 - Emoji or unicode pictograms as icons; filled glyphs mixed with stroke icons; stroke 2+; new inline `<svg>` paths.
 - Native `<select>`, `type="date"`, `type="number"`, `window.confirm` / `alert`.
-- "Đang tải…" text or a page spinner instead of a skeleton.
+- "Đang tải…" text or a page spinner instead of a skeleton (`loading-text`). A step label of a progress bar (`Progress label`, a call with a `fraction` / `value`), text in a `role="status"` / `role="progressbar"` element and a `TaskHost` label are fine.
 - A Home button in an app header; subtitles under page titles.
 - Coloured nav icons or count badges in the menu; chips or tags with different background colours.
-- Narrow `max-w-5xl` page containers that waste horizontal space.
+- Narrow `max-w-5xl` page containers that waste horizontal space (`narrow-container`; a dialog or drawer with `MODAL_PANEL`, `Modal`, `Drawer` or `role="dialog"` keeps its max width).
 - Copies of `@semi/ui/styles` class strings (app chrome) instead of the constants; `window.open` / bare external links.
 
 ## App extensions

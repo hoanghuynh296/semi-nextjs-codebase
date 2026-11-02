@@ -33,6 +33,7 @@ Khi cần hiển thị biểu tượng cho một hành động hoặc trạng th
 | **Tải file về máy / Xuất file** | `download` | `<Icon name="download" />` | Không dùng cho nút Lưu trên cloud |
 | **Tải file lên / Nhập file** | `upload` | `<Icon name="upload" />` | Dùng trong dropzone upload |
 | **Hoàn tác bước vừa làm** | `undo` | `<Icon name="undo" />` | Không dùng thay cho nút Back chuyển trang |
+| **Làm lại bước vừa hoàn tác** | `redo` | `<Icon name="redo" />` | Đi cặp với `undo`; không dùng cho tải lại (`refresh`) hay lặp media (`repeat`) |
 | **Khôi phục mặc định ban đầu** | `reset` | `<Icon name="reset" />` | Dùng trong form cấu hình / filter reset |
 | **Ghim mục lên đầu danh sách** | `pin` | `<Icon name="pin" />` | Dùng cho ghim tab/dự án/mục ưu tiên |
 | **Gửi lệnh / Gửi tin nhắn** | `send` | `<Icon name="send" />` | Dùng cho chat AI / G-code terminal |
@@ -215,6 +216,9 @@ Khi cần hiển thị biểu tượng cho một hành động hoặc trạng th
 | **Hợp nhất đối tượng (Merge)** | `merge` | `<Icon name="merge" />` | Hợp nhất các khối, gộp nhánh code hoặc liên kết dữ liệu |
 | **Xáo trộn ngẫu nhiên (Shuffle)** | `shuffle` | `<Icon name="shuffle" />` | Đổi thứ tự ngẫu nhiên, xáo trộn danh sách |
 | **Co giãn / Đổi kích thước (Scale)**| `resize` | `<Icon name="resize" />` | Co giãn kích thước đối tượng, điều chỉnh tỉ lệ khung |
+| **Tẩy (Eraser)** | `eraser` | `<Icon name="eraser" />` | Tẩy nét vẽ, vùng tô màu, mask; xoá bản ghi dùng `trash` |
+| **Đặt lại góc nhìn (Reset view)** | `viewReset` | `<Icon name="viewReset" />` | Camera / viewport về góc isometric mặc định; zoom vừa vùng chọn dùng `focus` |
+| **Lật ngang / Đối xứng (Flip)** | `flipHorizontal` | `<Icon name="flipHorizontal" />` | Lật ảnh / mô hình theo trục dọc, đổi bên trái ↔ phải; xoay theo góc dùng `rotateCw` |
 
 ---
 
@@ -344,6 +348,10 @@ Khi lập trình, nếu viết các từ khoá sau thì `semi-lint` hoặc `tsc`
 | `loop` | `repeat` | Lặp lại phát video dùng `repeat` |
 | `fast_forward`, `speed_up` | `fastForward` | Tua nhanh tốc độ dùng `fastForward` |
 | `crop_image` | `crop` | Cắt xén hình ảnh dùng `crop` |
+| `repeat_action` | `redo` | Làm lại bước vừa hoàn tác dùng `redo` |
+| `erase`, `clear_paint` | `eraser` | Tẩy nét vẽ / vùng tô dùng `eraser` |
+| `view_reset`, `iso`, `home_view` | `viewReset` | Đặt lại góc nhìn dùng `viewReset` |
+| `flip`, `mirror`, `swap_side`, `flip_side`, `flipSide` | `flipHorizontal` | Lật / đối xứng dùng `flipHorizontal` |
 
 ---
 

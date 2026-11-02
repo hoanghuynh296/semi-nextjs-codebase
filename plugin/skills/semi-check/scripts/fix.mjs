@@ -19,6 +19,7 @@ import { createRequire } from "node:module";
 import { join, relative, resolve, sep } from "node:path";
 import { auditFileState, auditProject, formatSummary, scanTargets, totals, writeAuditFile } from "../../semi-check/scripts/audit.mjs";
 import { migrateSource } from "../../semi-check/scripts/vendor/codemod.mjs";
+import { isSkipped } from "../../semi-check/scripts/vendor/semi-lint.mjs";
 import {
   installSemiUi,
   appFonts,
@@ -215,9 +216,9 @@ if (mode === "foundation") {
       manual.push(
         [
           `${name}: sửa ${layout} (giữ nguyên phần còn lại của layout):`,
-          `  import { ThemeScript, ThemeProvider, ToastHost, ConfirmHost } from "@semi/ui";`,
+          `  import { ThemeScript, ThemeProvider, ToastHost, ConfirmHost, TaskHost } from "@semi/ui";`,
           `  <html … suppressHydrationWarning>  <head><ThemeScript defaultTheme="${theme}" /></head>`,
-          `  <body …><ThemeProvider defaultTheme="${theme}">{children}<ToastHost /><ConfirmHost /></ThemeProvider></body>`,
+          `  <body …><ThemeProvider defaultTheme="${theme}">{children}<ToastHost /><ConfirmHost /><TaskHost /></ThemeProvider></body>`,
           `  defaultTheme="${theme}": app đang ${theme === "dark" ? "tối" : "sáng"}, giữ đúng như cũ.`,
         ].join("\n"),
       );
@@ -247,8 +248,10 @@ if (mode === "tokens") {
       process.exitCode = 1;
       continue;
     }
-    for (const p of scanTargets(app.cwd).files) {
+    const targets = scanTargets(app.cwd);
+    for (const p of targets.files) {
       if (onlyAbs && p !== onlyAbs && !p.startsWith(onlyAbs + sep)) continue;
+      if (isSkipped(targets.cfg, "no-literal-palette", relative(app.cwd, p).split(sep).join("/"))) continue; // illustration / data colours
       const src = readFileSync(p, "utf8");
       const css = p.endsWith(".css");
       const out = migrateSource(src, { css, mode: m });

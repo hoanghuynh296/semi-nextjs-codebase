@@ -17,14 +17,14 @@ Phones (`< md`) hide the top logo header and use `MobileTabBar` at the bottom (n
 |---|---|---|---|---|
 | `--color-canvas` | `bg-canvas` | `#0c0d0e` | `#f1f5f9` (Slate-100) | Outermost viewport frame |
 | `--color-app` | `bg-app` | `#121316` | `#ffffff` | Main workspace & content canvas |
-| `--color-panel` | `bg-panel` | `#18191c` | `#ffffff` | Bento Cards, Sidebar, Modals, Menus |
-| `--color-field` | `bg-field` | `#1e1f23` | `#f1f5f9` (Slate-100) | Form inputs (`FIELD_INPUT`), table headers |
+| `--color-panel` | `bg-panel` | `#202226` | `#ffffff` | Bento Cards, Sidebar, Modals, Menus |
+| `--color-field` | `bg-field` | `#272a2f` | `#f1f5f9` (Slate-100) | Form inputs (`FIELD_INPUT`), table headers |
 | `--color-raised` | `bg-raised` | `#26282e` | `#e2e8f0` (Slate-200) | Hover surface, subtle elevation, skeleton shimmer |
 | `--color-text-contrast` | `text-contrast` | `#ffffff` | `#0f172a` (Slate-900) | Headings, active state, high-contrast text |
 | `--color-text-body` | `text-body` | `#d1d5db` (Gray-300) | `#334155` (Slate-700) | Primary UI labels, body text |
-| `--color-text-muted` | `text-muted` | `#8b919a` | `#5b6779` | Captions, placeholders, inactive hints |
-| `--color-line` | `border-line` | `rgba(255,255,255,0.08)` | `rgba(0,0,0,0.08)` (Slate-200) | Borders on cards, panels, inputs, dividers |
-| `--color-line-hover` | `border-line-hover` | `rgba(255,255,255,0.16)` | `rgba(0,0,0,0.16)` (Slate-300) | Hover border state |
+| `--color-text-muted` | `text-muted` | `#9ba1aa` | `#5b6779` | Captions, placeholders, inactive hints |
+| `--color-line` | `border-line` | `rgba(255,255,255,0.12)` | `rgba(0,0,0,0.08)` (Slate-200) | Borders on cards, panels, inputs, dividers |
+| `--color-line-hover` | `border-line-hover` | `rgba(255,255,255,0.2)` | `rgba(0,0,0,0.16)` (Slate-300) | Hover border state |
 | `--color-divider` | `border-divider` | `rgba(255,255,255,0.05)` | `rgba(0,0,0,0.05)` (Slate-100) | Subtle row & item separators |
 
 *Accent & status (AA in both themes):* solid action `bg-accent hover:bg-accent-hover text-on-accent` · primary text/icon `text-accent-fg` · focus `ring-focus` / focused field `border-focus` · selected `bg-accent-subtle` (hover `bg-accent-subtle-hover`) + `border-accent-line` · status text `text-danger-fg` / `text-success-fg` / `text-warning-fg` / `text-info-fg` · tonal text `text-tone-<hue>`. Never `text-*-400` or `text-*-700 dark:text-*-300` in shared UI.
@@ -91,6 +91,7 @@ type scale are the product's (`data-density`, `data-type-scale` on `<html>`, `se
 - **No literal palette colors (`no-literal-palette`):** Never use direct physical classes like `bg-white`, `text-slate-900`, `border-slate-200`, `divide-slate-100`, `bg-slate-50`, `bg-gray-800/900`. Always use Semantic Tokens (`bg-panel`, `bg-field`, `text-contrast`, `text-body`, `text-muted`, `border-line`, `divide-divider`).
 - **No fixed chromatic text (`no-fixed-tone-text`):** `text-emerald-400`, `text-rose-700 dark:text-rose-300`, `fill-sky-500` → `text-accent-fg`, `text-*-fg`, `text-tone-<hue>`.
 - **No brand scale for states (`accent-state-token`):** `ring-primary-500/50`, `bg-primary-500/15`, `border-primary-500/30` → `ring-focus`, `bg-accent-subtle`, `border-accent-line` (themed, checked in both themes).
+- **No brand-scale fills (`primary-fill`):** `bg-primary-500 text-white`, `border-primary-500` → `bg-accent hover:bg-accent-hover text-on-accent`, `border-accent-line` / `border-focus`. The brand colour is one step of `primary-*`, so `primary-500` turns pale with a brand kit; the scale is for charts and illustrations (`skip` those files).
 - **No arbitrary colours / sizes:** `bg-[#…]`, `text-[rgb(…)]` (`hex-colour-class`), `"#fff"` in style props or configs (`literal-colour-value`), `text-[13px]` (`arbitrary-text-size`).
 - **No solid pastel surfaces (`no-solid-pastel-surfaces`):** Never use solid pastels (`bg-*-50`, `border-*-200`) for cards, rows, or containers; in dark mode they turn into glaring light rectangles. Use the themed status surfaces (`bg-warning-bg border-warning-border text-warning-fg`, also danger / success / info) or standard `bg-panel`.
 - **Universal Tonal Theme-Matching:** Chromatic accents across ANY component (cards, alert banners, callouts, table rows, buttons, badges, chips) adapt seamlessly to both dark & light themes using alpha transparency: static fill `bg-<color>-500/10`, hover fill `hover:bg-<color>-500/15`, active fill `active:bg-<color>-500/20`, border `border-<color>-500/20`, hover border `hover:border-<color>-500/30`, and text `text-tone-<color>` (or `TONAL_CONTAINER` / `TONAL_HOVER` / `<Badge tone="...">`).
@@ -99,12 +100,13 @@ type scale are the product's (`data-density`, `data-type-scale` on `<html>`, `se
 - **Typography:** `font-bold`, `text-[9|10px]`, `text-xs/sm`, uppercase labels, ALL CAPS buttons.
 - **Radii (`radius-token`):** `rounded`, `rounded-sm/md/lg/xl/2xl`, `rounded-[Npx]` (they ignore the app's style); per-style classes or `[data-style=…]` selectors in an app.
 - **Navigation & Layout:** fixed `border-r` sidebars or `-translate-x-full` hamburger drawers (use `AppShell` + `MobileTabBar`) · local `ui.tsx` wrapper barrels (`PageHeader`, `Select`, `Input`, `Button`, `Modal`): use `Button`, `Field` + `Input`, `CustomSelect`, `Modal`, `EmptyState` from `@semi/ui`.
-- **Icons & Controls:** emoji / ✕ ✓ glyphs, stroke 2+, inline `<path>` · native `<select>` / date / number inputs, `window.confirm` · "Đang tải…" text · Home button in app headers, page subtitles, text buttons on the page title row.
+- **Icons & Controls:** emoji / ✕ ✓ glyphs, stroke 2+, inline `<path>` · native `<select>` / date / number inputs, `window.confirm` · "Đang tải…" text (a progress step label or a `role="status"` line is fine) · Home button in app headers, page subtitles, text buttons on the page title row.
+- **Content colours:** illustrations and data palettes go under `skip` with a reason per file (`"skip": { "literal-colour-value": { "lib/scenePalette.ts": "data colours: 3D scene" } }`; `literal-colour-value`, `inline-svg-path`, `no-literal-palette` only), not in the baseline. `font-mono` only on code (`<code>`, `<pre>`, `CodeBlock`, `Terminal`, code editors); `max-w-4xl…6xl` only on dialogs and drawers.
 
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (121)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (122)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
@@ -162,6 +164,7 @@ type scale are the product's (`data-density`, `data-type-scale` on `<html>`, `se
 - `SubpageToolbar`: `SubpageToolbar`
 - `Table`: `Table`, `THead`, `TBody`, `TR`, `TH`, `TD`
 - `Tabs`: `Tabs`
+- `TaskHost`: `TaskHost`
 - `Terminal`: `Terminal`
 - `ThemeProvider`: `ThemeProvider`, `ThemeToggle`, `ThemeSwitcher`
 - `ThemeScript`: `ThemeScript`
@@ -170,5 +173,5 @@ type scale are the product's (`data-density`, `data-type-scale` on `<html>`, `se
 - `confirmDialog`: `ConfirmHost`
 - `locale`: `SemiLocaleProvider`
 
-**Hooks:** `useHotkey`, `useField`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useSemiLocale` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `pageWindow`, `themeScript`, `toast`, `dismissToast`, `confirmDialog`, `cn`
+**Hooks:** `useHotkey`, `useField`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useSemiLocale` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `pageWindow`, `startTask`, `themeScript`, `toast`, `dismissToast`, `confirmDialog`, `cn`
 <!-- generated:components:end -->

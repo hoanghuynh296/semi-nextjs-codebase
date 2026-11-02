@@ -1657,6 +1657,46 @@ export const ICON_CATALOG: Record<IconName, IconMeta> = {
     lucideEquivalent: "crop",
     keywords: ["cắt ảnh","crop","xén ảnh","cắt cúp","khung ảnh"],
   },
+  redo: {
+    name: "redo",
+    category: "action",
+    purpose: "Làm lại bước vừa hoàn tác",
+    do: "Dùng cạnh undo trong trình chỉnh sửa, canvas vẽ, trình soạn thảo 3D.",
+    dont: "Không dùng cho tải lại dữ liệu (dùng refresh) hay lặp lại phát media (dùng repeat).",
+    intents: ["làm lại", "redo", "khôi phục bước", "bước tiếp theo"],
+    lucideEquivalent: "redo",
+    keywords: ["làm lại", "redo", "khôi phục thao tác", "repeat action"],
+  },
+  eraser: {
+    name: "eraser",
+    category: "action",
+    purpose: "Công cụ tẩy: xoá nét vẽ, vùng tô màu hoặc điểm đánh dấu trên canvas",
+    do: "Dùng cho công cụ tẩy trong trình vẽ, tô màu bề mặt, chỉnh mask.",
+    dont: "Không dùng để xoá bản ghi hay tệp (dùng trash) hay xoá nội dung ô nhập (dùng close).",
+    intents: ["tẩy", "xoá nét vẽ", "eraser", "xoá vùng tô", "clear paint"],
+    lucideEquivalent: "eraser",
+    keywords: ["tẩy", "cục tẩy", "eraser", "xoá nét", "xoá màu"],
+  },
+  viewReset: {
+    name: "viewReset",
+    domain: "hardware_3d",
+    category: "action",
+    purpose: "Đưa camera / khung nhìn về góc mặc định (góc isometric ban đầu)",
+    do: "Dùng cho nút đặt lại góc nhìn trong viewport 3D, bản đồ, canvas có xoay / zoom.",
+    dont: "Không dùng cho zoom vừa đối tượng đang chọn (dùng focus) hay xoay tự do (dùng orbit).",
+    intents: ["đặt lại góc nhìn", "reset view", "góc mặc định", "home view", "isometric"],
+    keywords: ["đặt lại góc nhìn", "reset view", "isometric", "góc nhìn mặc định", "camera mặc định"],
+  },
+  flipHorizontal: {
+    name: "flipHorizontal",
+    category: "action",
+    purpose: "Lật / đối xứng theo trục dọc, đổi bên trái ↔ phải",
+    do: "Dùng cho lật ảnh hay mô hình theo chiều ngang, đối xứng gương, đổi mặt trái / phải.",
+    dont: "Không dùng cho xoay theo góc (dùng rotateCw / rotateCcw).",
+    intents: ["lật ngang", "đối xứng", "mirror", "flip", "đổi bên"],
+    lucideEquivalent: "flip-horizontal-2",
+    keywords: ["lật ngang", "lật", "flip", "mirror", "đối xứng", "đổi bên"],
+  },
 
 } as const;
 
@@ -2025,6 +2065,18 @@ export const ICON_ALIASES: Record<string, IconName> = {
   "fast-forward": "fastForward",
   speed_up: "fastForward",
   crop_image: "crop",
+  // Editors and 3D / canvas tools
+  repeat_action: "redo",
+  erase: "eraser",
+  clear_paint: "eraser",
+  view_reset: "viewReset",
+  iso: "viewReset",
+  home_view: "viewReset",
+  flip: "flipHorizontal",
+  mirror: "flipHorizontal",
+  swap_side: "flipHorizontal",
+  flip_side: "flipHorizontal",
+  flipSide: "flipHorizontal",
 };
 
 /** Get metadata of an icon or undefined if not found. */

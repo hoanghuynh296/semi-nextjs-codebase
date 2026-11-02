@@ -80,7 +80,7 @@ function writeNewProjectStarter(webDir, { appName, style, guide = null, kind = "
     join(webDir, "app", "layout.tsx"),
     `import type { Metadata } from "next";
 ${fonts.importLine}
-import { ConfirmHost, ThemeProvider, ThemeScript, ToastHost } from "@semi/ui";
+import { ConfirmHost, TaskHost, ThemeProvider, ThemeScript, ToastHost } from "@semi/ui";
 import "./globals.css";
 
 // Fonts (${style.name})
@@ -102,6 +102,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
           <ConfirmHost />
           <ToastHost />
+          <TaskHost />
         </ThemeProvider>
       </body>
     </html>

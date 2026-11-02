@@ -17,6 +17,9 @@
 //     "scan": ["app", "components"],                // dirs (relative to cwd) scanned for .ts/.tsx
 //     "baseline": "semi-lint-baseline.json",
 //     "skip": { "inline-svg-path": ["components/brand/Logo.tsx"] },   // rule id → path prefixes it ignores
+//     "skip": { "literal-colour-value": { "lib/scenePalette.ts": "data colours: 3D scene" } },
+//                                                     // illustration / data colours: path → reason (CONTENT_RULES only;
+//                                                     // the /semi-check audit lists each file with its reason)
 //     "ignore": ["src/generated"],                  // path prefixes not scanned at all (generated files)
 //     "only": { "viewport-grid-cols": ["components/catalog/"] },      // rule id → only these path prefixes
 //     "disable": ["loading-text"],                  // rule ids turned off (record why in your app's doc)
@@ -64,7 +67,7 @@ export const HARD = [
   ["glyph-icon", /[✓✔✕✖✗✘⚠☑☒]/, 'use <Icon name="close|check|alert" />, not unicode glyphs'],
   [
     "icon-alias",
-    /<(?:Icon|IconTile)\b[^>]*\bname=["'](delete|remove|bin|destroy|cancel|x|cross|dismiss|reload|sync|fetch|add|new|create|pencil|modify|rename|duplicate|clone|warning|danger|error|tick|done|success|gear|config|cog|preferences|parameters|adjust|tune|funnel|profile|account|customer|team|members|group|notification|notifications|category|label|badge|cart_item|shop|shopping|price|money|cost|parcel|inventory|fullscreen|maximize|minimize|exit_fullscreen|return|previous|next|forward|signout|sign_out|ai|magic|help|tooltip|confirm|accept|ok|mail|email|message|link|open_link|shutdown|turn_off|turn_on|power_off|scale|decrease|increase|shopping_bag|shopping-bag|shop_bag|credit_card|credit-card|payment|card|invoice|bill|shipping|delivery|delivered|package_check|package-check|discount|voucher|coupon|percentage|storefront|marketplace|balance|verified|official|mall|present|bonus|reward|wishlist|like|favorite|rating|review|rate|sku|scan|barcode_scan|qr|qr_code|qr-code|qrcode|vietqr|cash|money_bill|cod|bank|bank_transfer|bank-transfer|unboxing|package_open|package-open|cancel_order|cancelled_order|package_x|package-x|add_stock|new_order|package_plus|package-plus|order_list|invoice_list|orders|clipboard_list|clipboard-list|address|location|shipping_address|map_pin|map-pin|deal|hot_deal|flash_sale|badge_percent|badge-percent|hot|trending|best_seller|fire|marketing|promotion|campaign|broadcast|loyalty|membership|vip|trophy|calc|calculate|estimate|db|sql|storage|host|backend|mcu|processor|chip|mainboard|debug|issue|commit|git_commit|git-commit|pr|pull_request|pull-request|security|protect|ssl|firewall|token|api_key|secret|access_code|pulse|heartbeat|telemetry|growth|uptrend|trending_up|trending-up|downtrend|trending_down|trending-down|pie|pie_chart|pie-chart|chart_pie|speed|speedometer|temp|temperature|heat|nozzle_temp|bed_temp|spanner|tools|maintenance|repair|jog|jogging|translate|rotate|rotate_cw|rotate-cw|rotate_right|rotate_ccw|rotate-ccw|rotate_left|homing|origin|abl|auto_level|calibrate_bed|measure|measurement|dimension|distance|snap|lay_on_face|lay-on-face|magnetic_bed|eyedropper|color_picker|color-picker|pick_color|primitives|geometry|modifier|negative_volume|support_blocker|zoom_to_fit|center_view|center_model|view_orbit|orbit_camera|3d_orbit|usb_drive|flash_drive|ble|sd_card|sd-card|microsd|emmc|storage_card|hard-drive|motherboard|pcb|circuit-board|wire|wiring|power_backup|lidar|lidar_scan|scan-line|first_layer_scan|safety_alert|shield-alert|door_open|thermal_protection|document|doc|pdf|txt|readme|file_text|file-text|gcode|gcode_file|source_code|file_code|file-code|zip|archive|tar|file_zip|file_archive|file-archive|verified_file|file_check|file-check|new_file|add_file|file_plus|file-plus|excel|csv|spreadsheet|file_excel|file_spreadsheet|file-spreadsheet|new_folder|add_folder|folder_plus|folder-plus|open_folder|folder_open|folder-open|attach|attachment|clip|sound|speaker|volume|volume_2|volume-2|mute|silent|volume_x|volume-x|headset|earphones|microphone|voice|cam|webcam|timelapse|stream|cam_off|webcam_off|video_off|video-off|movie|reel|prev_track|prev_layer|skip_back|skip-back|next_track|next_layer|skip_forward|skip-forward|loop|fast_forward|fast-forward|speed_up|crop_image)["']/,
+    /<(?:Icon|IconTile)\b[^>]*\bname=["'](delete|remove|bin|destroy|cancel|x|cross|dismiss|reload|sync|fetch|add|new|create|pencil|modify|rename|duplicate|clone|warning|danger|error|tick|done|success|gear|config|cog|preferences|parameters|adjust|tune|funnel|profile|account|customer|team|members|group|notification|notifications|category|label|badge|cart_item|shop|shopping|price|money|cost|parcel|inventory|fullscreen|maximize|minimize|exit_fullscreen|return|previous|next|forward|signout|sign_out|ai|magic|help|tooltip|confirm|accept|ok|mail|email|message|link|open_link|shutdown|turn_off|turn_on|power_off|scale|decrease|increase|shopping_bag|shopping-bag|shop_bag|credit_card|credit-card|payment|card|invoice|bill|shipping|delivery|delivered|package_check|package-check|discount|voucher|coupon|percentage|storefront|marketplace|balance|verified|official|mall|present|bonus|reward|wishlist|like|favorite|rating|review|rate|sku|scan|barcode_scan|qr|qr_code|qr-code|qrcode|vietqr|cash|money_bill|cod|bank|bank_transfer|bank-transfer|unboxing|package_open|package-open|cancel_order|cancelled_order|package_x|package-x|add_stock|new_order|package_plus|package-plus|order_list|invoice_list|orders|clipboard_list|clipboard-list|address|location|shipping_address|map_pin|map-pin|deal|hot_deal|flash_sale|badge_percent|badge-percent|hot|trending|best_seller|fire|marketing|promotion|campaign|broadcast|loyalty|membership|vip|trophy|calc|calculate|estimate|db|sql|storage|host|backend|mcu|processor|chip|mainboard|debug|issue|commit|git_commit|git-commit|pr|pull_request|pull-request|security|protect|ssl|firewall|token|api_key|secret|access_code|pulse|heartbeat|telemetry|growth|uptrend|trending_up|trending-up|downtrend|trending_down|trending-down|pie|pie_chart|pie-chart|chart_pie|speed|speedometer|temp|temperature|heat|nozzle_temp|bed_temp|spanner|tools|maintenance|repair|jog|jogging|translate|rotate|rotate_cw|rotate-cw|rotate_right|rotate_ccw|rotate-ccw|rotate_left|homing|origin|abl|auto_level|calibrate_bed|measure|measurement|dimension|distance|snap|lay_on_face|lay-on-face|magnetic_bed|eyedropper|color_picker|color-picker|pick_color|primitives|geometry|modifier|negative_volume|support_blocker|zoom_to_fit|center_view|center_model|view_orbit|orbit_camera|3d_orbit|usb_drive|flash_drive|ble|sd_card|sd-card|microsd|emmc|storage_card|hard-drive|motherboard|pcb|circuit-board|wire|wiring|power_backup|lidar|lidar_scan|scan-line|first_layer_scan|safety_alert|shield-alert|door_open|thermal_protection|document|doc|pdf|txt|readme|file_text|file-text|gcode|gcode_file|source_code|file_code|file-code|zip|archive|tar|file_zip|file_archive|file-archive|verified_file|file_check|file-check|new_file|add_file|file_plus|file-plus|excel|csv|spreadsheet|file_excel|file_spreadsheet|file-spreadsheet|new_folder|add_folder|folder_plus|folder-plus|open_folder|folder_open|folder-open|attach|attachment|clip|sound|speaker|volume|volume_2|volume-2|mute|silent|volume_x|volume-x|headset|earphones|microphone|voice|cam|webcam|timelapse|stream|cam_off|webcam_off|video_off|video-off|movie|reel|prev_track|prev_layer|skip_back|skip-back|next_track|next_layer|skip_forward|skip-forward|loop|fast_forward|fast-forward|speed_up|crop_image|repeat_action|erase|clear_paint|view_reset|iso|home_view|flip|mirror|swap_side|flip_side|flipSide)["']/,
     "use canonical IconName (e.g. trash for delete, close for cancel/x, refresh for reload, settings for gear, filter for funnel, user for profile, bell for notifications, tag for category/label). See docs/ICONS.md",
   ],
   ["home-button", /name="home"/, "app headers have no Home button: logo + title go home (AppHeader)"],
@@ -117,6 +120,11 @@ export const RATCHET = [
     null,
     "Accent states use themed tokens, not the brand scale: ring-focus (focus ring), border-focus (focused field), bg-accent-subtle / bg-accent-subtle-hover (selected or hover tint), border-accent-line (selected border), bg-accent (fill). primary-N/alpha is not checked in either theme and disappears for light brands.",
   ],
+  [
+    "primary-fill",
+    null,
+    "Fills and borders use the themed accent tokens, not the brand scale: bg-accent hover:bg-accent-hover text-on-accent (main action, \"on\" mark), border-accent-line (selected) / border-focus (focused). The brand colour is one step of primary-*, so bg-primary-500 turns pale or wrong with a brand kit; primary-* is for charts and illustrations (\"skip\" those files).",
+  ],
   ["hex-colour-class", null, "No arbitrary colour values (bg-[#fff], text-[rgb(…)], border-[hsl(…)]): use colour tokens."],
   ["literal-colour-value", null, "No literal CSS colours in code (\"#fff\", \"rgb(…)\" in style props or configs): use var(--color-…) tokens."],
   ["radius-token", null, "Radii are style tokens: rounded-chip (marks, checkboxes, inline code) · rounded-control (buttons, inputs, tiles, rows) · rounded-card · rounded-panel (hero, modal, drawer, sidebar), plus rounded-full / rounded-none. Not rounded / rounded-lg / rounded-xl / rounded-[Npx]: those do not follow the app's style."],
@@ -125,14 +133,49 @@ export const RATCHET = [
   ["inline-svg-path", /<path\b/g, "add the icon to ICONS in @semi/ui (Icon.tsx) instead of inline <path>"],
   ["thick-stroke", /strokeWidth[=:]\s*\{?"?(2|2\.\d+|3)\b/g, "icon stroke is 1.75"],
   ["font-mono", /\bfont-mono\b/g, "numbers use tabular-nums; mono only for code"],
-  ["narrow-container", /max-w-(4xl|5xl|6xl)\b/g, "content uses the full width"],
-  ["loading-text", /^(?!.*(label|role="status")).*(Đang tải|Loading\.\.\.)/g, "show a skeleton or a progress bar, not loading text (§13b)"],
+  ["narrow-container", /max-w-(4xl|5xl|6xl)\b/g, "content uses the full width (dialogs and drawers keep their max width)"],
+  ["loading-text", /(Đang tải|Loading\.\.\.)/g, "show a skeleton or a progress bar, not loading text (§13b); a step label of a progress bar or a role=\"status\" line is fine"],
   [
     "decorative-icon-tones",
     null,
     "One decorative colour per card (iconTone green, sky, violet… in one file) is the generic AI look (§19): keep KPI and card icons neutral and give a colour only when it means a status.",
   ],
 ];
+/** Rules whose `skip` may name files with a reason ({ path: reason }): illustration and data colours, not UI chrome. */
+export const CONTENT_RULES = ["literal-colour-value", "inline-svg-path", "no-literal-palette"];
+
+/** The opening tag a hit sits in (back to its `<`, at most 4 lines up), or the line itself when there is none. */
+function tagAround(lines, i) {
+  const text = lines.slice(Math.max(0, i - 4), i + 1).join("\n");
+  const at = text.search(/<[A-Za-z][\w.]*[^<]*$/);
+  return at < 0 ? lines[i] : text.slice(at);
+}
+/** True when an element matching `open` (group 1 = its tag) opened in the 6 lines before the hit and is not closed yet. */
+function insideElement(lines, i, open) {
+  const text = lines.slice(Math.max(0, i - 6), i + 1).join("\n");
+  const opens = [...text.matchAll(open)];
+  if (!opens.length) return false;
+  const last = opens[opens.length - 1];
+  return !text.slice(last.index).includes(`</${last[1]}>`);
+}
+/**
+ * Places where a ratchet regex hit follows the rule (issue #16): what a line-based check can see reliably.
+ * (lines, i) → true when the hit on line i is allowed.
+ */
+const ALLOWED_IN = {
+  // A step label of a progress API (Progress label, run.show("…", { fraction })) or a status line is not loading text.
+  "loading-text": (lines, i) =>
+    /label|\b(?:fraction|value)\b\s*[=:,}]|role=["'](?:status|progressbar)["']/.test(lines[i]) ||
+    /role=["'](?:status|progressbar)["']|<Progress\b/.test(tagAround(lines, i)) ||
+    insideElement(lines, i, /<([A-Za-z][\w.]*)\b[^>]*role=["'](?:status|progressbar)["']/g),
+  // A dialog or drawer has a max width by design.
+  "narrow-container": (lines, i) => /\b(?:MODAL_PANEL|MODAL_[A-Z_]*)\b|<(?:Modal|Drawer)\b|role=["'](?:dialog|alertdialog)["']/.test(lines[i] + "\n" + tagAround(lines, i)),
+  // Mono is for code: <code>, <pre>, code editors (textarea, contentEditable), CodeBlock, Terminal.
+  "font-mono": (lines, i) =>
+    /<(?:code|pre|textarea|CodeBlock|Terminal)\b|contentEditable/.test(tagAround(lines, i)) ||
+    insideElement(lines, i, /<(code|pre|CodeBlock|Terminal)\b/g),
+};
+
 /** Distinct iconTone values in one file from which the colours read as decoration, not meaning. */
 const DECORATIVE_TONES = 3;
 
@@ -143,6 +186,30 @@ export function loadConfig(cwd = process.cwd()) {
   const user = existsSync(p) ? JSON.parse(readFileSync(p, "utf8")) : {};
   return { ...DEFAULT_CONFIG, ...user, _found: existsSync(p) };
 }
+
+/** Mistakes in semi-lint.json that would silently skip a rule: a reason object on another rule, an empty reason. */
+export function configErrors(cfg) {
+  const errors = [];
+  for (const [id, v] of Object.entries(cfg.skip || {})) {
+    if (Array.isArray(v)) continue;
+    if (!v || typeof v !== "object") errors.push(`skip.${id}: an array of path prefixes, or { "path": "reason" }`);
+    else if (!CONTENT_RULES.includes(id)) errors.push(`skip.${id}: a reason per path is only for ${CONTENT_RULES.join(", ")}; use an array`);
+    else for (const [path, reason] of Object.entries(v)) if (typeof reason !== "string" || !reason.trim()) errors.push(`skip.${id}."${path}": give the reason (illustration: …, data colours: …)`);
+  }
+  return errors;
+}
+
+/** Files skipped with a reason (illustration / data colours): [{ rule, path, reason }], for the audit. */
+export function skipReasons(cfg) {
+  return Object.entries(cfg.skip || {}).flatMap(([rule, v]) =>
+    v && !Array.isArray(v) && typeof v === "object" ? Object.entries(v).map(([path, reason]) => ({ rule, path, reason: String(reason) })) : [],
+  );
+}
+
+/** Path prefixes a rule skips, from either form of `skip`. */
+const skipPaths = (v) => (!v ? [] : Array.isArray(v) ? v : Object.keys(v));
+/** Whether semi-lint.json skips `rule` for the file `name` (relative to the app, posix). */
+export const isSkipped = (cfg, rule, name) => skipPaths(cfg.skip?.[rule]).some((s) => name.startsWith(s));
 
 const toPosix = (p) => p.split(sep).join("/");
 const SOURCE_RX = /\.(?:tsx?|jsx?|mjs|css)$/;
@@ -181,7 +248,7 @@ export function scan(paths, cfg, cwd) {
   const counts = Object.fromEntries(RATCHET.map(([id]) => [id, {}]));
   const lines = Object.fromEntries(RATCHET.map(([id]) => [id, {}])); // rule → file → first hit lines (for messages)
   const hits = []; // every ratchet hit { file, line, rule, token? } (the audit lists them all)
-  const skipped = (id, name) => disabled.has(id) || (skip[id] || []).some((s) => name.startsWith(s));
+  const skipped = (id, name) => disabled.has(id) || skipPaths(skip[id]).some((s) => name.startsWith(s));
   const add = (id, name, line, token) => {
     hits.push({ file: name, line, rule: id, ...(token ? { token } : {}) });
     counts[id][name] = (counts[id][name] || 0) + 1;
@@ -202,7 +269,8 @@ export function scan(paths, cfg, cwd) {
       const tones = [...src.matchAll(/\biconTone=["'{]+(\w+)/g)];
       if (new Set(tones.map((m) => m[1])).size >= DECORATIVE_TONES) add("decorative-icon-tones", name, src.slice(0, tones[0].index).split("\n").length);
     }
-    src.split(/\r?\n/).forEach((raw, i) => {
+    const rows = src.split(/\r?\n/);
+    rows.forEach((raw, i) => {
       if (!raw.trim() || isComment(raw)) return;
       for (const [id, rx, msg] of HARD) {
         if (skipped(id, name)) continue;
@@ -212,6 +280,7 @@ export function scan(paths, cfg, cwd) {
       }
       for (const [id, rx] of RATCHET) {
         if (!rx || skipped(id, name)) continue;
+        if (ALLOWED_IN[id]?.(rows, i)) continue;
         rx.lastIndex = 0;
         const c = (raw.match(rx) || []).length;
         for (let k = 0; k < c; k++) add(id, name, i + 1);
@@ -249,6 +318,11 @@ function main(argv) {
   }
   const cwd = process.cwd();
   const cfg = loadConfig(cwd);
+  const errors = configErrors(cfg);
+  if (errors.length) {
+    console.error(`semi-lint.json:\n${errors.map((e) => `  ${e}`).join("\n")}`);
+    return 2;
+  }
   const paths = filesToScan(cfg, cwd, args.files);
   const { hard, counts, lines } = scan(paths, cfg, cwd);
   const baselinePath = resolve(cwd, cfg.baseline);

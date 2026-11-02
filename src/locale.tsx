@@ -94,6 +94,7 @@ export const vi = {
   fileChange: { added: "Thêm mới", modified: "Đã sửa", deleted: "Đã xoá" } as Record<"added" | "modified" | "deleted", string>,
   contextUsage: "Ngữ cảnh đã dùng",
   contextDetail: (used: string, total: string, pct: number) => `${used} / ${total} token (${pct}%)`,
+  elapsed: (time: string) => `Đã chạy ${time}`,
 };
 
 export type SemiStrings = typeof vi;
@@ -188,6 +189,7 @@ export const en: SemiStrings = {
   fileChange: { added: "Added", modified: "Modified", deleted: "Deleted" },
   contextUsage: "Context used",
   contextDetail: (used, total, pct) => `${used} / ${total} tokens (${pct}%)`,
+  elapsed: (time) => `Elapsed ${time}`,
 };
 
 const LocaleContext = createContext<SemiStrings>(vi);

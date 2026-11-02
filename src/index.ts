@@ -34,6 +34,7 @@ export * from "./Choice";
 export * from "./Tabs";
 export * from "./Overlay";
 export * from "./Toast";
+export * from "./TaskHost";
 export * from "./Feedback";
 export * from "./Table";
 export * from "./Drawer";

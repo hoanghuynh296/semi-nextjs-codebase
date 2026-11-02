@@ -4,6 +4,29 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.20.0] - 2026-11-02
+
+Ecosystem proposals from the 3D Noobs Studio adoption (#10, #15–#19).
+
+### Added
+- **`TaskHost` + `startTask()`** (#19): one blocking overlay for a job the user must wait for (upload, import, firmware update, payment step): label, current step, progress (0–100 or indeterminate), elapsed time, optional Cancel / Escape (`onCancel`). `task.update()`, `task.done()`, `task.fail(title)` (closes and shows a danger toast). One task at a time: a new one replaces the old, whose handle then does nothing. An `alertdialog` with `aria-busy`, focus trapped. Mount `<TaskHost />` beside `<ToastHost />` / `<ConfirmHost />`; `/semi-new-app` and the `/semi-check` layout snippet now do. Doc: `examples/task-host/`.
+- **`aria-label` / `aria-labelledby` on `Switch` and `Checkbox`** (#17) for controls whose label is elsewhere (a card title, a table row); `label` wins; in development a control without any name logs a warning. **On touch screens both get a 44 × 44 px hit area** (`any-pointer-coarse:` pseudo-element), the visible size and layout unchanged. `DataTable` row boxes use `aria-label`.
+- `Progress` takes `aria-label` when the bar has no string `label`.
+- **Icons** (#18): `redo`, `eraser`, `viewReset` (reset the camera / view; not "fit to selection", that is `focus`), `flipHorizontal` (mirror / swap sides), with catalog entries and aliases (`repeat_action`, `erase`, `clear_paint`, `view_reset`, `iso`, `home_view`, `flip`, `mirror`, `swap_side`, `flip_side`, `flipSide`), which `icon-alias` flags.
+- **`primary-fill` lint rule** (ratchet, #15): solid `bg-primary-<n>` / `border-primary-<n>` in any variant. The brand colour sits on one step of the scale, so `bg-primary-500` turns pale or off-brand with a brand kit: fills use `bg-accent hover:bg-accent-hover text-on-accent`, borders `border-accent-line` / `border-focus`; `primary-*` stays for charts and illustrations (`skip` those files). The codemod rewrites `bg-primary-400…600` → `bg-accent` (hover → `bg-accent-hover`, `text-white` → `text-on-accent`) only when the class list has `text-white` / `text-on-accent`, and reports the rest.
+- **`skip` with a reason** (#16): `"skip": { "literal-colour-value": { "lib/scenePalette.ts": "data colours: 3D scene" } }` for `literal-colour-value`, `inline-svg-path` and `no-literal-palette` (illustrations, data palettes, partner logos). A reason is required (semi-lint exits 2 otherwise); the array form still works. The `/semi-check` audit lists each file ("Minh hoạ / màu dữ liệu") and the codemod leaves files skipped for `no-literal-palette`.
+
+### Changed
+- **Dark surfaces separate more** (#10): `panel` `#202226`, `field` `#272a2f`, `raised` `#31343a`, `text-muted` `#9ba1aa`, `line` white 12%, `line-hover` white 20% (app → panel 1.17:1, was 1.06; `text-muted` 4.8:1 on raised). Soft and Sharp get the same panel / field / raised lightness on their own hues (so a brand fill keeps 3:1 against every page). Light theme unchanged. Brand kits get it with `/semi-brand update`.
+- The docs no longer teach `bg-primary-500 text-white` (power toggle, running dot, progress bar): `bg-accent` + `text-on-accent`.
+
+### Fixed
+- Lint / audit false positives (#16): `loading-text` skips progress step labels (`label`, a `fraction` / `value` option) and text inside `role="status"` / `role="progressbar"`; `narrow-container` skips dialogs and drawers (`MODAL_PANEL`, `Modal`, `Drawer`, `role="dialog"`); `font-mono` is allowed on and inside `<code>`, `<pre>`, `CodeBlock`, `Terminal` and `textarea` / `contentEditable` editors. The audit's `duplicates` check skips a file that imports the `@semi/ui` component it is named like (and no longer skips one that only imports something else); `subpage-toolbar` only asks list / grid pages, not tool pages with `AppHeader` and a canvas.
+
+### Migration
+- Nothing to run. `primary-fill` is a new ratchet rule at 0 per file: run `/semi-check` (its codemod fixes the fills under white text), fix the rest by hand, or record the debt with `npx semi-lint --update-baseline`; chart / illustration files go under `skip`.
+- Add `<TaskHost />` to the root layout to use `startTask()`. Brand kits: `/semi-brand update` for the new dark surfaces.
+
 ## [0.19.1] - 2026-11-02
 
 `/semi-check` fixes from the first adoption of a large dark app.

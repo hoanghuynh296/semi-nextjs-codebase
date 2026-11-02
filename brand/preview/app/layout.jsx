@@ -1,4 +1,4 @@
-import { ConfirmHost, ThemeProvider, ThemeScript, ToastHost } from "@semi/ui";
+import { ConfirmHost, TaskHost, ThemeProvider, ThemeScript, ToastHost } from "@semi/ui";
 import brand from "./brand.json";
 import { fontVariables } from "./fonts";
 import "./globals.css";
@@ -23,6 +23,7 @@ export default function RootLayout({ children }) {
           {children}
           <ToastHost />
           <ConfirmHost />
+          <TaskHost />
         </ThemeProvider>
       </body>
     </html>

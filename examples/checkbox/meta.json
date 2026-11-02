@@ -20,7 +20,9 @@
     }
   ],
   "a11y": [
-    "A real <input type=\"checkbox\">: Space toggles, label clicks toggle, description is linked."
+    "A real <input type=\"checkbox\">: Space toggles, label clicks toggle, description is linked.",
+    "Without a visible label (row selection) give aria-label or aria-labelledby (label wins); in development a checkbox with no name logs a warning.",
+    "On touch screens (any coarse pointer) the hit area is 44 × 44 px around the box; the visible size and layout do not change."
   ],
   "examples": [
     {
@@ -30,6 +32,11 @@
     {
       "file": "states",
       "title": "Indeterminate and disabled"
+    },
+    {
+      "file": "row-select",
+      "title": "Row selection without a visible label",
+      "description": "aria-label names each box (\"Chọn đơn #1024\")."
     }
   ]
 }
