@@ -1,6 +1,6 @@
 # KPI card
 
-A metric card: label, a large tabular figure in the brand's figure font, a sub line coloured good / danger. One featured card leads the row; icons are optional and neutral.
+A metric card: label, a large tabular figure in the style's figure font, a sub line coloured good / danger. One featured card leads the row; icons are optional and neutral.
 
 ## When to use
 
@@ -10,7 +10,6 @@ A metric card: label, a large tabular figure in the brand's figure font, a sub l
 
 | Need | Use |
 |---|---|
-| One number that leads a section outside a card row (landing proof point, report cover) | BrandFigure |
 | A colour per card for decoration | none: iconTone only when the colour means a status |
 
 ## Import

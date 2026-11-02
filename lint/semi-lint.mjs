@@ -23,7 +23,8 @@
 //     "keep": { "tables": "reports need dense tables" }, // /semi-check structural checks the team chose to keep
 //                                                     // (reason string = whole app, array = path prefixes)
 //     "brand": "@3dnoobs/brand",                   // the app's brand kit (docs/BRANDS.md): turns on brand-override
-//     "style": "soft"                              // the app's style (docs/STYLES.md), = <html data-style> in the layout
+//     "style": "soft",                             // the app's style (docs/STYLES.md), = <html data-style> in the layout
+//     "density": "compact", "typeScale": "contrast" // the product's look (DESIGN_SYSTEM.md §19), = <html data-density / data-type-scale>
 //   }
 // A rule that the Semi docs add and that can be grepped belongs here too (change it in the semi repo, not per app).
 import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
@@ -88,8 +89,8 @@ export const HARD = [
 /** CSS rule of apps that use a brand kit ("brand" in semi-lint.json): the brand alone sets these variables. */
 export const BRAND_OVERRIDE = [
   "brand-override",
-  /(?:^|[\s;{])--(?:color-(?:primary|secondary|accent|on-accent)[\w-]*|semi-[\w-]+|brand-[\w-]+|spacing|font-(?:sans|display|figure|weight-title)(?:-family)?)\s*:/,
-  "this app uses a brand kit: its colours, fonts, density, signature and Semi tokens come only from the brand (change them in the brand repo with /semi-brand)",
+  /(?:^|[\s;{])--(?:color-(?:primary|secondary|accent|on-accent)[\w-]*|semi-[\w-]+|brand-[\w-]+|density-spacing|spacing|font-(?:sans|display|figure|weight-title)(?:-family)?)\s*:/,
+  "this app uses a brand kit: its colours, fonts and Semi tokens come only from the brand, density and type scale from semi-lint.json (change them in the brand repo with /semi-brand)",
 ];
 /** Rules that are opt-in: they only run on the path prefixes listed in config "only". */
 const OPT_IN = new Set(["viewport-grid-cols"]);

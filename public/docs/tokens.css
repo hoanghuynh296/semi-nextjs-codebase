@@ -573,9 +573,9 @@
   --font-display: var(--semi-font-display); /* Page titles, KPI figures */
   --spacing-control: var(--semi-spacing-control); /* Toolbar controls: buttons, pills, chips, search (h-control, w-control) */
   --spacing-field: var(--semi-spacing-field); /* Form inputs and selects (h-field) */
-  --font-figure: var(--semi-font-figure); /* Big numbers: KPI values, BrandFigure (font-figure). The brand may switch them to its display font */
-  --font-weight-title: var(--semi-font-weight-title); /* Weight of page titles and figures (font-title). The brand sets light / regular / strong */
-  --spacing: var(--semi-spacing); /* Tailwind spacing unit (p-4 = 4 × it). The brand's density scales every padding and gap */
+  --font-figure: var(--semi-font-figure); /* Big numbers: KPI values (font-figure) */
+  --font-weight-title: var(--semi-font-weight-title); /* Weight of page titles and figures (font-title) */
+  --spacing: var(--semi-spacing); /* Tailwind spacing unit (p-4 = 4 × it). The product's density (data-density on <html>) scales every padding and gap */
 }
 
 /* Card / hero / sidebar border (border-card) */
@@ -598,9 +598,9 @@
   --semi-font-display: var(--font-display-family, var(--font-montserrat-alternates)), "Montserrat Alternates", var(--font-geist), sans-serif;
   --semi-spacing-control: 34px;
   --semi-spacing-field: 36px;
-  --semi-font-figure: var(--brand-font-figure, var(--semi-font-sans));
-  --semi-font-weight-title: var(--brand-title-weight, 600);
-  --semi-spacing: var(--brand-spacing, 0.25rem);
+  --semi-font-figure: var(--semi-font-sans);
+  --semi-font-weight-title: 600;
+  --semi-spacing: var(--density-spacing, 0.25rem);
   --radius-chip: var(--semi-radius-chip);
   --radius-control: var(--semi-radius-control);
   --radius-card: var(--semi-radius-card);
@@ -628,9 +628,9 @@
   --semi-font-display: var(--font-display-family, var(--font-space-grotesk)), "Space Grotesk", sans-serif;
   --semi-spacing-control: 36px;
   --semi-spacing-field: 40px;
-  --semi-font-figure: var(--brand-font-figure, var(--semi-font-display));
-  --semi-font-weight-title: var(--brand-title-weight, 700);
-  --semi-spacing: var(--brand-spacing, 0.25rem);
+  --semi-font-figure: var(--semi-font-display);
+  --semi-font-weight-title: 700;
+  --semi-spacing: var(--density-spacing, 0.25rem);
   --radius-chip: var(--semi-radius-chip);
   --radius-control: var(--semi-radius-control);
   --radius-card: var(--semi-radius-card);
@@ -709,9 +709,9 @@
   --semi-font-display: var(--font-display-family, var(--font-jakarta)), "Plus Jakarta Sans", sans-serif;
   --semi-spacing-control: 40px;
   --semi-spacing-field: 44px;
-  --semi-font-figure: var(--brand-font-figure, var(--semi-font-sans));
-  --semi-font-weight-title: var(--brand-title-weight, 600);
-  --semi-spacing: var(--brand-spacing, 0.25rem);
+  --semi-font-figure: var(--semi-font-sans);
+  --semi-font-weight-title: 600;
+  --semi-spacing: var(--density-spacing, 0.25rem);
   --radius-chip: var(--semi-radius-chip);
   --radius-control: var(--semi-radius-control);
   --radius-card: var(--semi-radius-card);
@@ -778,6 +778,26 @@
     --semi-divider: rgba(60, 40, 20, 0.06);
     --semi-shadow-tint: rgb(60 40 20 / 0.12);
   }
+}
+
+/* Product: density (data-density="compact|regular|airy"), read by the style's spacing token */
+[data-density="compact"] { /* Tools used all day: more on a screen */
+  --density-spacing: 0.225rem;
+  --semi-spacing: 0.225rem;
+}
+
+[data-density="airy"] { /* Consumer, store, onboarding: one thing per screen, room around it */
+  --density-spacing: 0.2875rem;
+  --semi-spacing: 0.2875rem;
+}
+
+/* Product: type scale (data-type-scale="even|contrast") */
+[data-type-scale="contrast"] { /* Marketing, store, editorial: big titles and figures */
+  --text-kpi: 22px;
+  --text-heading-sm: 22px;
+  --text-heading: 26px;
+  --text-heading-lg: 30px;
+  --text-display: 34px;
 }
 
 @utility z-sticky {

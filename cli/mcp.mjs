@@ -66,8 +66,8 @@ const TOOLS = [
   },
   {
     name: "semi_brand",
-    description: "The brand of this app (its brand kit): topic 'voice' (tone, how to address the user, do / don't, example button / error / empty texts), 'color' (how much accent, secondary colour role, button shades per theme), 'logo' (files to import, clear space), 'brief' (audience, personality, imagery), 'signature' (density, type, big numbers, motif: what makes its screens its own), 'tokens', or 'all' (the full BRAND.md). Call it before writing UI text, picking colours or placing the logo.",
-    inputSchema: { type: "object", properties: { topic: { type: "string", enum: ["all", "voice", "color", "logo", "brief", "signature", "tokens"] } } },
+    description: "The brand of this app (its brand kit): topic 'voice' (tone, how to address the user, do / don't, example button / error / empty texts), 'color' (how much accent, secondary colour role, button shades per theme), 'logo' (files to import, clear space), 'brief' (audience, personality, imagery), 'tokens', or 'all' (the full BRAND.md). Call it before writing UI text, picking colours or placing the logo.",
+    inputSchema: { type: "object", properties: { topic: { type: "string", enum: ["all", "voice", "color", "logo", "brief", "tokens"] } } },
     run: ({ topic }) => {
       const r = core.brand(topic ?? "all");
       if (r.error) return { ...text(r.error), isError: true };

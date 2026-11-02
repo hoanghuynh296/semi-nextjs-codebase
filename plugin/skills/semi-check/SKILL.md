@@ -70,8 +70,8 @@ The check part changes **no source file**. Its only output is `semi-check.md` at
    `semi-check.md` cannot list it): four equal KPI cards where one number matters most, a decorative icon colour per
    card, a hero with three icon feature cards, an icon before every label, sample text unrelated to the product, every
    block a card with the same padding. Show the user what you found per screen (a line each, with a screenshot when a
-   browser is available), propose the change (`KpiCard featured`, neutral icons, `BrandFigure` or a quote as proof,
-   `BrandPattern` in the hero, text from `semi_brand` brief / voice) and apply only what they accept.
+   browser is available), propose the change (`KpiCard featured`, neutral icons, a real number or a quote as proof,
+   text from `semi_brand` brief / voice) and apply only what they accept.
 9. **Verify** after each phase (and each module):
    ```bash
    node "<path-to-this-skill>/scripts/fix.mjs" --cwd "<audited-dir>" --verify

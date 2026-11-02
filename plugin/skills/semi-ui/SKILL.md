@@ -22,7 +22,7 @@ If neither works (`semi_status` answers, or `npx semi` is missing), the app has 
 
 ## Workflow
 
-0. **Brand first:** when `semi-lint.json` has `"brand"`, ask `semi_brand` (or `npx semi brand voice|color|logo|signature`)
+0. **Brand first:** when `semi-lint.json` has `"brand"`, ask `semi_brand` (or `npx semi brand voice|color|logo`)
    before writing UI text or choosing where colour goes, and write every label, error and empty state in that voice.
    Its brief says who the product is for: sample data, placeholders and empty states come from that product, never
    "Lorem", "John Doe", "Acme" or another domain.
@@ -37,9 +37,9 @@ If neither works (`semi_status` answers, or `npx semi` is missing), the app has 
    types; keep the Semi components and their order.
    Then make it this product's screen, not the generic AI one (`DESIGN_SYSTEM.md` §19): decide the one block the
    user came for and make it the biggest (`KpiCard featured` for the main number, not four equal cards); keep KPI and
-   card icons neutral (colour only for a status); no row of three icon feature cards with vague promises (use
-   `BrandFigure`, a quote, a product shot); icons only where they help scanning; plain sections and white space next to
-   cards; `BrandPattern` in open areas (hero, empty state), never behind tables or forms.
+   card icons neutral (colour only for a status); no row of three icon feature cards with vague promises (use a real
+   number, a quote, a product shot); icons only where they help scanning; plain sections and white space next to
+   cards.
 4. **A part:** copy the closest example and adapt it. Examples import from `@semi/ui` only and type-check, so keep
    their props and structure; change data, labels and handlers.
 5. **Compose, do not invent.** No local wrappers (`components/ui.tsx`), no raw `<select>` / `<table>` / `<dialog>`,
@@ -64,3 +64,8 @@ only the brand's allowed styles can be picked; another one is added in the brand
    `data-style` on `<html>`, and prints `next/font` lines when the layout lacks the style's fonts: add them.
 4. Screenshots after. A place that did not change uses raw classes (`bg-white`, `rounded-lg`, `h-[34px]`): a lint hit,
    fixed by `/semi-check`. Report old → new style per app and the files changed.
+
+Density and type scale are the product's too (not the brand's: one brand has a dense dashboard and a roomy store).
+"Gọn hơn", "thoáng hơn", "chữ tiêu đề to hơn": the same script with `--density compact|regular|airy` and / or
+`--type-scale even|contrast`; it sets `"density"` / `"typeScale"` in `semi-lint.json` and `data-density` /
+`data-type-scale` on `<html>`. Never change paddings or text sizes by hand for this.

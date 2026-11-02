@@ -248,6 +248,33 @@ export function wireStyle(appDir, id) {
   return { ok: true, layout, message: `${layout} ← <html ${attrs}>, semi-lint.json ← "style": "${id}"` };
 }
 
+export const DENSITIES = ["compact", "regular", "airy"];
+export const TYPE_SCALES = ["even", "contrast"];
+
+/**
+ * The product's density and type scale (not the brand's: a brand has a dense dashboard and a roomy store):
+ * "density" / "typeScale" in semi-lint.json and data-density / data-type-scale on <html>. regular / even = no attribute.
+ */
+export function wireProductLook(appDir, { density, typeScale } = {}) {
+  if (density && !DENSITIES.includes(density)) return { ok: false, message: `--density ${density}: chọn ${DENSITIES.join(", ")}` };
+  if (typeScale && !TYPE_SCALES.includes(typeScale)) return { ok: false, message: `--type-scale ${typeScale}: chọn ${TYPE_SCALES.join(", ")}` };
+  const cfgPath = join(appDir, "semi-lint.json");
+  const cfg = existsSync(cfgPath) ? JSON.parse(readFileSync(cfgPath, "utf8")) : {};
+  const set = (k, v, def) => (v && v !== def ? (cfg[k] = v) : delete cfg[k]);
+  if (density) set("density", density, "regular");
+  if (typeScale) set("typeScale", typeScale, "even");
+  writeFileSync(cfgPath, JSON.stringify(cfg, null, 2) + "\n");
+  const layout = findRootLayout(appDir);
+  const src = layout ? readFileSync(join(appDir, layout), "utf8") : "";
+  const html = src.match(/<html\b[^>]*>/);
+  const attrs = [cfg.density ? `data-density="${cfg.density}"` : "", cfg.typeScale ? `data-type-scale="${cfg.typeScale}"` : ""].filter(Boolean).join(" ");
+  if (!html) return { ok: false, layout, message: `không thấy thẻ <html> trong ${layout || "app/layout.tsx"}: thêm ${attrs || "(không cần thuộc tính)"} bằng tay` };
+  let tag = html[0].replace(/\s+data-(?:density|type-scale)=["'][\w-]*["']/g, "");
+  if (attrs) tag = tag.replace(/^<html\b/, `<html ${attrs}`);
+  writeFileSync(join(appDir, layout), src.replace(html[0], tag));
+  return { ok: true, layout, message: `${layout} ← <html ${attrs || "(mật độ vừa, cỡ chữ đều)"}>, semi-lint.json ← density ${cfg.density ?? "regular"}, typeScale ${cfg.typeScale ?? "even"}` };
+}
+
 /** next/font code for a style's fonts: { importLine, decls, classNames } (classNames is a template-literal fragment). */
 export function nextFontCode(style) {
   const fonts = style.fonts ?? [];

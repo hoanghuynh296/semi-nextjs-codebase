@@ -22,7 +22,6 @@ export * from "./PageTitle";
 export * from "./SubpageToolbar";
 export * from "./Card";
 export * from "./KpiCard";
-export * from "./Brand";
 export * from "./Modal";
 export * from "./Markdown";
 export * from "./ExternalLink";

@@ -29,8 +29,8 @@ sidebar.
 
 A brand kit (docs/BRANDS.md) builds on these: it picks the allowed styles and either tints their neutrals with its
 primary or keeps the style's own neutrals (`"neutral": "preset"`), so products of a brand never set neutral colours.
-Its signature (density, type scale, title weight, figure font, motif; DESIGN_SYSTEM.md §19) overrides the last two
-rows of the table through `--brand-*` variables the style tokens read.
+The spacing unit follows the product's density (`data-density` on `<html>`; DESIGN_SYSTEM.md §19), not the style
+or the brand.
 
 ## Picking a style in an app
 

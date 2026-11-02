@@ -67,8 +67,7 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
   - `AppShell` (+ `MobileTabBar`, `TAB_BAR_PAD`): 2-panel floating Bento frame on `bg-canvas`, collapsible `w-52`/`w-14` sidebar with grouped `sections`, and mobile bottom tab bar.
   - `PageTitle`, `PageTabsTitle`: text-only display heading or underline tab heading (`h-[2.5px] bg-primary`).
   - `SubpageToolbar`: sticky toolbar (`STICKY_TOOLBAR`) with `left` filters and `right` icon-only `BTN_PRIMARY BTN_ICON` + `SearchInput` + `RefreshButton`.
-  - `KpiCard`: metric card with a `tabular-nums` value in the brand's figure font, optional neutral icon (`iconTone` only for a status), `featured` for the screen's main number, shimmer `loading` state.
-  - `BrandPattern` (the brand's motif behind a hero / empty state / cover) and `BrandFigure` (one big number that leads a section).
+  - `KpiCard`: metric card with a `tabular-nums` value in the style's figure font (`font-figure`), optional neutral icon (`iconTone` only for a status), `featured` for the screen's main number, shimmer `loading` state.
   - `Modal`: portal dialog with `MODAL_BACKDROP`, `MODAL_PANEL`, `MODAL_HEAD`, `MODAL_CLOSE`, and `footer` (`MODAL_FOOT`).
 - **Controls (`@semi/ui`):**
   - `Icon` (stroke 1.75, `w-4 h-4`), `IconTile` (`size="sm|md|lg"`). Follow semantic icon mapping in `docs/ICONS.md` (e.g. `trash` for delete, `close` for dialog dismiss, `refresh` for sync, `sliders` for parameters, `user` for profiles, `filter` for lists, `sun`/`moon` for theme). New icons go into `ICONS` in `@semi/ui` (never inline `<svg><path>`; no ✕ ✓ ✗ glyphs).
@@ -84,8 +83,9 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
 
 **Not the generic AI screen (§19):** one main block per screen (`KpiCard featured`, not four equal cards) · KPI icons
 neutral, colour only for a status (`decorative-icon-tones`) · no three feature cards with icons and vague promises: proof
-(`BrandFigure`, a quote, a product shot) · icons only where they help scanning · sample text from the brand brief ·
-plain sections and white space next to cards. Density, title weight, figure font and motif come from the brand.
+(a real number, a quote, a product shot) · icons only where they help scanning · sample text from the brand brief ·
+plain sections and white space next to cards. Title weight and figure font come from the style; density and
+type scale are the product's (`data-density`, `data-type-scale` on `<html>`, `semi-lint.json`).
 
 ## Anti-patterns & Token Rules (enforced by `npx semi-lint`)
 - **No literal palette colors (`no-literal-palette`):** Never use direct physical classes like `bg-white`, `text-slate-900`, `border-slate-200`, `divide-slate-100`, `bg-slate-50`, `bg-gray-800/900`. Always use Semantic Tokens (`bg-panel`, `bg-field`, `text-contrast`, `text-body`, `text-muted`, `border-line`, `divide-divider`).
@@ -104,14 +104,13 @@ plain sections and white space next to cards. Density, title weight, figure font
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (123)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (121)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
 - `AppShell`: `AppShell`
 - `AspectRatio`: `AspectRatio`
 - `Badge`: `Badge`
-- `Brand`: `BrandPattern`, `BrandFigure`
 - `Breadcrumb`: `Breadcrumb`
 - `Button`: `Spinner`, `Button`
 - `ButtonGroup`: `ButtonGroup`

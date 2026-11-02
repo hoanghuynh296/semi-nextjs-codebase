@@ -81,6 +81,7 @@ for (const [group, entries] of Object.entries(tokens)) {
     }
     continue;
   }
+  if (group === "product") continue; // emitted after the styles: [data-density], [data-type-scale]
   if (group === "z") zKeys.push(...Object.keys(entries));
   out += `\n  /* ${TITLES[group] ?? group} */\n`;
   for (const [key, raw] of Object.entries(entries)) {
@@ -123,6 +124,14 @@ if (darkVars.length > 0) {
       out += `@media (prefers-color-scheme: light) {\n  ${scope(["system"]).join(",\n  ")} {\n${vars("light", "  ")}\n  }\n}\n\n`;
     }
   }
+  // Product choices (tokens.json "product"): density scales Tailwind's spacing unit through the style tokens
+  // (--density-spacing, read by [data-theme] scopes below) and sets --semi-spacing itself for the element it is on, so
+  // it works on <html> and on any wrapper; the type scale overrides the large text sizes.
+  const prod = tokens.product;
+  out += `/* Product: density (data-density="${Object.keys(prod.density).join("|")}"), read by the style's spacing token */\n`;
+  for (const [id, d] of Object.entries(prod.density)) if (id !== "regular") out += `[data-density="${id}"] { /* ${d.note} */\n  --density-spacing: ${d.spacing};\n  --semi-spacing: ${d.spacing};\n}\n\n`;
+  out += `/* Product: type scale (data-type-scale="${Object.keys(prod.typeScale).join("|")}") */\n`;
+  for (const [id, t] of Object.entries(prod.typeScale)) if (t.sizes) out += `[data-type-scale="${id}"] { /* ${t.note} */\n${Object.entries(t.sizes).map(([k, v]) => `  --${k}: ${v};`).join("\n")}\n}\n\n`;
   out += zKeys.map((k) => `@utility ${k} {\n  z-index: var(--${k});\n}\n`).join("") + "\n";
   out += `/* Utility fallbacks & direct semantic text/bg/border helpers */\n@layer utilities {\n` +
     `  .text-contrast { color: var(--color-text-contrast); }\n` +
