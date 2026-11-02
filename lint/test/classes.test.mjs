@@ -98,3 +98,16 @@ test("extractStrings keeps line numbers across template literals", () => {
   const s = extractStrings('a\n`x\n${"y"}\nz`');
   assert.deepEqual(s.map((x) => [x.value.trim(), x.line]), [["x", 2], ["y", 3], ["z", 3]]);
 });
+
+test("isClassList: only strings whose every token is a class (issue #11)", async () => {
+  const { isClassList } = await import("../classes.mjs");
+  for (const v of ["bg-white p-4 hover:bg-slate-50", "[&>*+*]:mt-4 [&_li~li]:mt-1.5 md:dark:!text-gray-500 w-1/2 space-y-1.5 grid-cols-[1fr_auto] [&>*]:p-2 data-[state=open]:bg-field -mt-2 @container"])
+    assert.equal(isClassList(v), true, v);
+  for (const v of ["0 0 24 24", "M 8 4 C 20 4, 34 4, 44 4", "inset 0 0 0 1px", "opacity 0.2s ease, filter 0.2s ease", "Máy in và Job in", "useState(() Date.now())", "const x = 1", ""])
+    assert.equal(isClassList(v), false, v);
+});
+
+test("SVG / style attributes and tagged templates are not class positions (issue #11, #16)", () => {
+  assert.deepEqual(rules('const s = /* glsl */ `float rounded = 1.0; // bg-white`;\nconst t = glsl`rounded`;'), []);
+  assert.deepEqual(rules('<path d="M0 0 bg-white" /><div style={{ transition: "rounded" }} className="rounded" />'), ["radius-token:rounded"]);
+});

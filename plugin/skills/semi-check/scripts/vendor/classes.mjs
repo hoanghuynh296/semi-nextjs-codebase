@@ -105,8 +105,8 @@ const CSS_COLOUR_LITERAL = /^(?:#[0-9a-fA-F]{3}|#[0-9a-fA-F]{4}|#[0-9a-fA-F]{6}|
 export const isColourLiteral = (s) => CSS_COLOUR_LITERAL.test(s.trim());
 
 /**
- * Every string literal of a JS/TS(X) source with the line it starts on and its raw [start, end) offsets:
- * '…', "…", `…` (template text outside ${…}).
+ * Every string literal of a JS/TS(X) source with the line it starts on, its raw [start, end) offsets and the offset
+ * of its opening quote / backtick (`open`): '…', "…", `…` (template text outside ${…}).
  * Comments, regex literals and JSX text are skipped. A tokenizer, not a parser: it only has to find strings.
  */
 export function extractStrings(src) {
@@ -140,13 +140,14 @@ export function extractStrings(src) {
       }
       s += src[i++];
     }
-    out.push({ value: s, line: startLine, start, end: i });
+    out.push({ value: s, line: startLine, start, end: i, open: start - 1 });
     i++;
   }
 
   function readTemplate() {
     let startLine = line;
     let s = "";
+    const open = i;
     i++;
     let start = i;
     while (i < n && src[i] !== "`") {
@@ -156,7 +157,7 @@ export function extractStrings(src) {
         continue;
       }
       if (src[i] === "$" && src[i + 1] === "{") {
-        out.push({ value: s, line: startLine, start, end: i });
+        out.push({ value: s, line: startLine, start, end: i, open });
         s = "";
         i += 2;
         skipExpression();
@@ -167,7 +168,7 @@ export function extractStrings(src) {
       if (src[i] === "\n") line++;
       s += src[i++];
     }
-    out.push({ value: s, line: startLine, start, end: i });
+    out.push({ value: s, line: startLine, start, end: i, open });
     i++;
   }
 
@@ -255,6 +256,33 @@ export function extractApply(src) {
   return out;
 }
 
+// SVG geometry and inline style values ("0 0 24 24", "M 8 4 C …", "opacity 0.2s ease") and the bodies of tagged
+// templates (glsl`…`, /* glsl */ `…`, css`…`, sql`…`) are never class lists.
+const NOT_CLASS_ATTR = /(?:^|[\s{(,])(?:viewBox|d|points|transform|gradientTransform|patternTransform|pathLength|strokeDasharray|stroke-dasharray|style|path|transition|boxShadow|transform|filter|backgroundImage|clipPath|fontFamily|animation|gridTemplateColumns|gridTemplateRows|gridTemplateAreas)\s*[=:]\s*\{?\s*$/;
+const TAGGED_TEMPLATE = /(?:\b(?:glsl|wgsl|css|sql|gql|graphql|html|svg|md)|\/\*\s*(?:glsl|wgsl|css|sql|gql|graphql|html|svg)\s*\*\/)\s*$/;
+/** True when a string from extractStrings sits where no class list can be: an SVG / style attribute or a tagged template. */
+export function inNonClassPosition(src, s) {
+  if (s.open === undefined) return false;
+  const before = src.slice(Math.max(0, s.open - 60), s.open);
+  return src[s.open] === "`" ? TAGGED_TEMPLATE.test(before) || NOT_CLASS_ATTR.test(before) : NOT_CLASS_ATTR.test(before);
+}
+
+const UTILITY = /^-?@?[a-z][a-z0-9.-]*(?:\[[^\s\]]*\]|\([^\s)]*\))?(?:\/(?:[\w.%-]+|\[[^\s\]]*\]))?$|^\[[^\s\]]+\]$/;
+const VARIANT = /^[a-z0-9@*[][\w@*&>+~=.:/()%#,'"^$|![\]-]*$/;
+/**
+ * True when every token of a string is shaped like a Tailwind class (lower-case utility, optional variants and !).
+ * Prose ("Máy in và Job in"), numbers ("0 0 24 24"), SVG paths, CSS values and code that the tokenizer mistook for a
+ * string all fail, so the codemod never rewrites them.
+ */
+export function isClassList(value) {
+  const tokens = tokensOf(value);
+  return tokens.length > 0 && tokens.every((t) => {
+    if (t.length > 160 || /[^\x21-\x7e]/.test(t)) return false;
+    const { variants, utility } = splitToken(t);
+    return UTILITY.test(utility) && variants.every((v) => VARIANT.test(v));
+  });
+}
+
 /** Class-like tokens of one string (drops prose: only tokens shaped like utilities survive later checks). */
 export const tokensOf = (value) => value.split(/\s+/).filter(Boolean);
 
@@ -264,7 +292,7 @@ export const tokensOf = (value) => value.split(/\s+/).filter(Boolean);
  */
 export function analyse(src, { css = false } = {}) {
   const findings = [];
-  const strings = css ? extractApply(src) : extractStrings(src);
+  const strings = css ? extractApply(src) : extractStrings(src).filter((s) => !inNonClassPosition(src, s));
   for (const { value, line } of strings) {
     if (!css && isColourLiteral(value)) {
       findings.push({ rule: "literal-colour-value", line, token: value.trim() });
