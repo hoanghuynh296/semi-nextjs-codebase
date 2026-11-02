@@ -204,7 +204,7 @@ export default function Applications() {
         <h1 className="font-display text-display font-title text-contrast">Ứng dụng</h1>
         <p className="text-ui-lg text-body max-w-3xl leading-relaxed">
           {brand.name} trên những màn hình một sản phẩm thật sẽ có, sáng và tối cạnh nhau. Chữ mẫu theo giọng văn của thương hiệu
-          {brand.styles.allowed.length > 1 ? "; đổi style ở thanh trên để so sánh" : ""}. Mật độ và cỡ chữ là lựa chọn của từng sản phẩm, không phải
+          {brand.styles.allowed.length > 1 ? "; đổi style ở chân menu để so sánh" : ""}. Mật độ và cỡ chữ là lựa chọn của từng sản phẩm, không phải
           của thương hiệu: mỗi màn dưới đây dùng lựa chọn thường gặp cho loại sản phẩm đó (chọn khi tạo app bằng /semi-new-app).
         </p>
       </div>

@@ -2,7 +2,7 @@
 
 // UI kit (for developers): the brand's scales, the button and text shades per theme with their distance from the brand
 // colour, the type scale, the contrast report and the files to download. Every component of Semi in these colours is
-// one click away (/components/). The brand book itself is (brand)/. Copied into a brand kit's .preview/ by semi-brand.
+// one click away (/components/). The brand book pages (/, /apps/) share the same frame. Copied into a brand kit's .preview/ by semi-brand.
 import Link from "next/link";
 import { Alert, Badge, Button, Icon, PageTitle, Table, TBody, TD, TH, THead, TR } from "@semi/ui";
 import { CARD_HOVER } from "@semi/ui/styles";

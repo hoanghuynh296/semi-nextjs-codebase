@@ -80,7 +80,8 @@ Agent chạy trang preview **của chính repo brand** (`npm run preview`) và g
 - **UI kit** (cho developer): thang màu, sắc của nút và chữ ở từng theme và độ lệch với màu thương hiệu, cỡ chữ, bảng
   điểm đọc rõ, tải `brand.css`, `brand.json` và logo, cùng **toàn bộ component của Semi** (ví dụ, code, API).
 
-Đổi sáng / tối và giữa các style được phép ở thanh trên.
+Cả ba phần nằm chung một dashboard (menu bên trái, thanh tab dưới trên điện thoại), như trang component. Đổi sáng / tối
+và giữa các style được phép ở chân menu.
 
 👉 *Bạn làm:* mở link, nhìn và nói điều muốn đổi ("màu chính đậm hơn", "dùng màu trung tính có sẵn"). *Agent làm:* sửa
 `brand.json`, sinh lại; trang đang mở tự cập nhật.

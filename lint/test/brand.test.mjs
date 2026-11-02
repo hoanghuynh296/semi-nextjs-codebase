@@ -207,7 +207,7 @@ test("preview site: the template plus this brand's data, fonts module and CSS la
   writeFileSync(join(dir, "brand.json"), JSON.stringify(brand({ name: "3D Noobs", package: "@3dnoobs/brand", fonts: { sans: "Inter", display: "Montserrat Alternates" } })));
   execFileSync("node", [CLI, "build"], { cwd: dir });
   const out = preparePreview(dir);
-  for (const f of ["next.config.mjs", "postcss.config.mjs", "app/layout.jsx", "app/parts.jsx", "app/(brand)/page.jsx", "app/(brand)/apps/page.jsx", "app/(kit)/kit/page.jsx", "app/(kit)/components/page.jsx", "app/globals.css", "app/brand.css", "app/brand.json", "public/kit/brand.css", "public/kit/brand.json"]) assert.ok(readFileSync(join(out, f), "utf8").length > 20, f);
+  for (const f of ["next.config.mjs", "postcss.config.mjs", "app/layout.jsx", "app/parts.jsx", "app/(book)/layout.jsx", "app/(book)/page.jsx", "app/(book)/apps/page.jsx", "app/(book)/kit/page.jsx", "app/(book)/components/page.jsx", "app/globals.css", "app/brand.css", "app/brand.json", "public/kit/brand.css", "public/kit/brand.json"]) assert.ok(readFileSync(join(out, f), "utf8").length > 20, f);
   const fonts = readFileSync(join(out, "app/fonts.js"), "utf8");
   assert.match(fonts, /import \{ Inter, Montserrat_Alternates \} from "next\/font\/google";/);
   assert.match(fonts, /weight: \["600","700"\]/);

@@ -4,6 +4,9 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+### Changed
+- **The brand book is one dashboard:** the *Thương hiệu* and *Ứng dụng* pages moved from their own top-bar frame into the Semi docs shell the UI kit and component pages use (menu on the left, tab bar on phones with Thương hiệu, Ứng dụng, Kit, UI). Same URLs and content; theme and style switch at the foot of the menu. Kits get it with `/semi-brand update` (the preview template ships in `@semi/ui`).
+
 ## [0.18.0] - 2026-11-02
 
 First tagged release of the 0.17.0 work (0.17.0 was never tagged; the version files said 0.17.0 under the v0.18.0 tag, so the plugin kept showing 0.17.0).
