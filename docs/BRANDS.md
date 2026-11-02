@@ -210,7 +210,7 @@ Brand kit ghi nó chạy với `@semi/ui` nào (`"semi": "^0.16"` trong `brand.j
   },
   "color": { "accent": "restrained" },
   "imagery": "Ảnh bản in thật trên nền tối, chụp gần; không ảnh stock.",
-  "semi": "^0.17"
+  "semi": "^0.18"
 }
 ```
 

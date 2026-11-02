@@ -4,7 +4,9 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
-## [0.17.0] - 2026-11-02
+## [0.18.0] - 2026-11-02
+
+First tagged release of the 0.17.0 work (0.17.0 was never tagged; the version files said 0.17.0 under the v0.18.0 tag, so the plugin kept showing 0.17.0).
 
 ### Added
 - **Product density and type scale** (a product's choice, not the brand's: one brand has a dense dashboard and a roomy store): `data-density="compact|airy"` and `data-type-scale="contrast"` on `<html>` (or any wrapper), mirrored as `"density"` / `"typeScale"` in `semi-lint.json`. Density scales Tailwind's spacing unit, so every padding and gap follows; the contrast scale enlarges KPI figures and headings. `/semi-new-app` asks the kind of product and sets them (`--density`, `--type-scale`); `style.mjs` changes them later. The brand book's Ứng dụng tab shows each sample screen with its usual pick, and its top bar switches them.
