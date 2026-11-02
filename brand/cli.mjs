@@ -66,9 +66,7 @@ export function buildKit(cwd) {
   const tokens = readJson(join(pkgRoot, "tokens/tokens.json"));
   const styles = readJson(join(pkgRoot, "tokens/styles.json"));
   const version = readJson(join(pkgRoot, "package.json")).version;
-  const markPath = brand.logo?.mark && /\.svg$/i.test(brand.logo.mark) ? join(cwd, brand.logo.mark) : null;
-  const markSvg = markPath && existsSync(markPath) ? readFileSync(markPath, "utf8") : null;
-  const result = generateBrand(brand, { tokens, styles, version, markSvg });
+  const result = generateBrand(brand, { tokens, styles, version });
   // Logo files live in the kit repo (brand.json "logo"); the build copies them to dist/logo/ so products import them
   // from the package (@scope/brand/dist/logo/…) and the preview shows them.
   const logo = result.tokens.guide.logo;
@@ -164,17 +162,8 @@ function guideMd(t) {
   if (v.dont.length) out.push(`\n**Không nên**\n\n${bullets(v.dont)}`);
   if (Object.keys(v.examples).length) out.push(`\n| Chỗ | Ví dụ |\n|---|---|\n${exampleRows(v.examples)}`);
   out.push("");
-  const sg = g.signature;
-  out.push("## Chữ ký thương hiệu\n");
-  out.push("Những gì làm sản phẩm của thương hiệu này khác sản phẩm khác ngoài màu: mật độ, cách dùng chữ và hoạ tiết.\n");
-  out.push("| | Lựa chọn | Nghĩa là |\n|---|---|---|");
-  const tag = (k) => (sg.inferred.includes(k) ? " *(suy từ brief)*" : "");
-  out.push(`| Mật độ | ${sg.densityLabel}${tag("density")} | ${sg.densityRule} |`);
-  out.push(`| Cỡ chữ | ${sg.scaleLabel}${tag("typography.scale")} | ${sg.scaleRule} |`);
-  out.push(`| Nét tiêu đề | ${sg.titleLabel}${tag("typography.title")} | ${sg.titleRule} |`);
-  out.push(`| Con số | ${sg.figuresLabel}${tag("typography.figures")} | ${sg.figuresRule} |`);
-  out.push(`| Hoạ tiết | ${sg.motifLabel}${tag("motif")} | ${sg.motifRule} Dùng qua \`<BrandPattern>\` ở hero, trạng thái trống, ảnh đại diện; không phủ lên bảng hay form. |`);
-  out.push("");
+  out.push("## Bố cục\n");
+  out.push("Mật độ và cỡ chữ không phải của thương hiệu: mỗi sản phẩm tự chọn (dashboard thường gọn, web bán hàng thường thoáng và chữ tương phản), khi tạo app bằng `/semi-new-app`.\n");
   out.push("**Tránh giao diện chung chung** (thứ mọi sản phẩm làm bằng AI đều có):\n");
   out.push(bullets(GENERIC_UI_VI));
   out.push("");
@@ -264,10 +253,10 @@ function agentsMd({ tokens: t }, styles) {
     ...v.do.map((r) => `- Do: ${r}`),
     ...v.dont.map((r) => `- Don't: ${r}`),
     ...Object.entries(v.examples).map(([k, x]) => `- Example (${k}): ${(Array.isArray(x) ? x : [x]).map((y) => `“${y}”`).join(" · ")}`),
-    ...(g.brief?.audience || g.brief?.personality?.length ? ["", `**Who it is for** — ${[g.brief.audience, g.brief.personality?.length ? `personality: ${g.brief.personality.join(", ")}` : null].filter(Boolean).join("; ")}. Choose words, density and imagery for them.`] : []),
+    ...(g.brief?.audience || g.brief?.personality?.length ? ["", `**Who it is for** — ${[g.brief.audience, g.brief.personality?.length ? `personality: ${g.brief.personality.join(", ")}` : null].filter(Boolean).join("; ")}. Choose words and imagery for them.`] : []),
     ...(g.imagery ? ["", `**Imagery** — ${g.imagery}`] : []),
     "",
-    `**Signature** — density **${g.signature.density}** (${g.signature.densityRule}); type scale **${g.signature.scale}**, titles **${g.signature.title}**, figures in the **${g.signature.figures}** font (\`font-figure\`, \`font-title\` and every padding follow it: never override them); motif **${g.signature.motif}** through \`<BrandPattern>\` (hero, empty state, cover image; never behind tables or forms). Big numbers: \`<BrandFigure>\` or \`<KpiCard featured>\`.`,
+    "**Density and type scale** are this product's own choice (`data-density`, `data-type-scale` on `<html>`, mirrored in `semi-lint.json`), not the brand's. Big numbers: `<KpiCard featured>`.",
     "",
     "**Avoid the generic AI look**",
     ...GENERIC_UI.map((r) => `- ${r}`),

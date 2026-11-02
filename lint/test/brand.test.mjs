@@ -195,7 +195,7 @@ test("brand-override: an app with a brand kit may not set brand colours, fonts o
   const dir = mkdtempSync(join(tmpdir(), "semi-brand-lint-"));
   mkdirSync(join(dir, "app"));
   const css = join(dir, "app/globals.css");
-  writeFileSync(css, `@import "@3dnoobs/brand/dist/brand.css";\n:root { --color-primary-500: #ff0000; }\n@theme { --font-sans: Arial; }\n.x { --semi-panel: #fff; --my-gap: 4px; }\n:root { --brand-spacing: 0.3rem; --spacing: 5px; }\n.y { --spacing-gutter: 4px; }\n`);
+  writeFileSync(css, `@import "@3dnoobs/brand/dist/brand.css";\n:root { --color-primary-500: #ff0000; }\n@theme { --font-sans: Arial; }\n.x { --semi-panel: #fff; --my-gap: 4px; }\n:root { --brand-primary: #f00; --spacing: 5px; }\n.y { --spacing-gutter: 4px; }\n`);
   const withBrand = scan([css], { brand: "@3dnoobs/brand" }, dir).hard.filter((h) => h.rule === "brand-override");
   assert.deepEqual(withBrand.map((h) => h.line), [2, 3, 4, 5]);
   assert.equal(scan([css], {}, dir).hard.filter((h) => h.rule === "brand-override").length, 0); // only with a brand
@@ -217,35 +217,30 @@ test("preview site: the template plus this brand's data, fonts module and CSS la
   rmSync(dir, { recursive: true });
 });
 
-test("signature: brief infers density, type and motif; explicit choices win and land in brand.css", () => {
-  const tool = generateBrand(brand({ brief: { product: "Phần mềm quản lý kho", personality: ["chính xác", "kỹ thuật"] } }), { tokens, styles });
-  const s = tool.tokens.guide.signature;
-  assert.equal(s.density, "compact");
-  assert.equal(s.motif, "grid");
-  assert.deepEqual(s.inferred.sort(), ["density", "motif", "typography.figures", "typography.scale", "typography.title"]);
-  assert.match(tool.css, /--brand-spacing: 0\.225rem/);
-  assert.doesNotMatch(tool.css, /--text-display:/); // even scale keeps Semi's sizes
-
-  const bold = generateBrand(brand({ brief: { personality: ["táo bạo", "trẻ trung"] } }), { tokens, styles }).tokens.guide.signature;
-  assert.deepEqual([bold.scale, bold.title, bold.figures], ["contrast", "strong", "display"]);
-
-  const chosen = generateBrand(brand({ density: "airy", typography: { scale: "contrast", title: "light", figures: "sans" }, motif: "none" }), { tokens, styles });
-  assert.deepEqual(chosen.tokens.guide.signature.inferred, []);
-  assert.match(chosen.css, /--brand-spacing: 0\.2875rem/);
-  assert.match(chosen.css, /--brand-title-weight: 400/);
-  assert.match(chosen.css, /--text-display: 34px/);
-  assert.match(chosen.css, /--brand-motif: linear-gradient\(transparent, transparent\)/);
-
-  const { errors } = validateBrand(brand({ density: "tight", typography: { title: "black" }, motif: "mark" }), { styles });
-  assert.equal(errors.length, 3);
+test("brand.json: density, type scale, typography and motif are not brand choices (warnings, no CSS)", () => {
+  const r = generateBrand(brand({ brief: { personality: ["táo bạo"] } }), { tokens, styles });
+  assert.equal(r.tokens.guide.signature, undefined);
+  assert.doesNotMatch(r.css, /--brand-spacing|--brand-title-weight|--brand-motif|--text-display:/);
+  const old = validateBrand(brand({ density: "airy", typography: { scale: "contrast", title: "strong" }, motif: "dots" }), { styles });
+  assert.equal(old.errors.length, 0);
+  assert.match(old.warnings.join("\n"), /density: mật độ là lựa chọn của từng sản phẩm[\s\S]*typography: không còn dùng[\s\S]*motif: không còn dùng/);
 });
 
-test("signature: a mark motif tiles the logo mark SVG as a mask", () => {
-  const mark = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5" fill="#FF6B00"/></svg>';
-  const r = generateBrand(brand({ logo: { full: "assets/logo.svg", mark: "assets/mark.svg" } }), { tokens, styles, markSvg: mark });
-  assert.equal(r.tokens.guide.signature.motif, "mark");
-  assert.match(r.css, /--brand-motif: url\("data:image\/svg\+xml,%3Csvg[^"]*viewBox%3D%220%200%2010%2010%22/);
-  assert.match(r.css, /--brand-motif-size: 48px/);
-  const missing = generateBrand(brand({ logo: { full: "assets/logo.svg", mark: "assets/mark.svg" } }), { tokens, styles });
-  assert.match(missing.warnings.join("\n"), /motif "mark"/);
+test("product look: density and type scale live in the tokens, per element, and the app wires them on <html>", async () => {
+  const css = readFileSync(new URL("../../tokens/tokens.css", import.meta.url), "utf8");
+  assert.match(css, /\[data-density="compact"\] \{[^}]*--semi-spacing: 0\.225rem/);
+  assert.match(css, /\[data-type-scale="contrast"\] \{[^}]*--text-display: 34px/);
+  const { wireProductLook } = await import("../../plugin/skills/semi-new-app/scripts/setup.mjs");
+  const dir = mkdtempSync(join(tmpdir(), "semi-look-"));
+  mkdirSync(join(dir, "app"));
+  writeFileSync(join(dir, "app/layout.tsx"), '<html lang="vi" data-style="flat">\n');
+  writeFileSync(join(dir, "semi-lint.json"), '{ "style": "flat" }\n');
+  assert.equal(wireProductLook(dir, { density: "airy", typeScale: "contrast" }).ok, true);
+  assert.match(readFileSync(join(dir, "app/layout.tsx"), "utf8"), /<html data-density="airy" data-type-scale="contrast" lang="vi" data-style="flat">/);
+  assert.deepEqual(JSON.parse(readFileSync(join(dir, "semi-lint.json"), "utf8")), { style: "flat", density: "airy", typeScale: "contrast" });
+  assert.equal(wireProductLook(dir, { density: "regular" }).ok, true); // back to the default: attribute and key go
+  assert.doesNotMatch(readFileSync(join(dir, "app/layout.tsx"), "utf8"), /data-density/);
+  assert.equal(wireProductLook(dir, { density: "tight" }).ok, false);
+  rmSync(dir, { recursive: true });
 });
+

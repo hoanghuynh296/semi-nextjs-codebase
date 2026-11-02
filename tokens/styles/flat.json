@@ -61,16 +61,16 @@
       "note": "Form inputs and selects (h-field)"
     },
     "font-figure": {
-      "value": "var(--brand-font-figure, var(--semi-font-sans))",
-      "note": "Big numbers: KPI values, BrandFigure (font-figure). The brand may switch them to its display font"
+      "value": "var(--semi-font-sans)",
+      "note": "Big numbers: KPI values (font-figure)"
     },
     "font-weight-title": {
-      "value": "var(--brand-title-weight, 600)",
-      "note": "Weight of page titles and figures (font-title). The brand sets light / regular / strong"
+      "value": "600",
+      "note": "Weight of page titles and figures (font-title)"
     },
     "spacing": {
-      "value": "var(--brand-spacing, 0.25rem)",
-      "note": "Tailwind spacing unit (p-4 = 4 × it). The brand's density scales every padding and gap"
+      "value": "var(--density-spacing, 0.25rem)",
+      "note": "Tailwind spacing unit (p-4 = 4 × it). The product's density (data-density on <html>) scales every padding and gap"
     }
   }
 }

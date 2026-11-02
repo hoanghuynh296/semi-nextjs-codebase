@@ -1,6 +1,6 @@
 "use client";
 
-// KPI metric card of the Semi Design System. The figure uses the brand's figure font and title weight (font-figure,
+// KPI metric card of the Semi Design System. The figure uses the style's figure font and title weight (font-figure,
 // font-title) and tabular-nums; the icon is neutral unless iconTone gives it a meaning. featured = the one big number
 // a screen leads with (spans two columns in a grid, larger figure).
 import React from "react";

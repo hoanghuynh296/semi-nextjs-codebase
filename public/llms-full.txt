@@ -8,7 +8,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 ## Machine-readable
 
-- [components.json](./components.json): all 123 components, hooks and constants with props, summaries and their doc page
+- [components.json](./components.json): all 121 components, hooks and constants with props, summaries and their doc page
 - [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
@@ -90,7 +90,6 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Aspect ratio](./components/aspect-ratio/) ([markdown](./docs/components/aspect-ratio.md)): Keeps media at a fixed ratio while its width follows the layout (images, video, maps, 3D previews). Components: AspectRatio.
 - [Avatar](./components/avatar/) ([markdown](./docs/components/avatar.md)): A person or team: their image, or initials on a tone picked from the name. Components: Avatar.
 - [Badge](./components/badge/) ([markdown](./docs/components/badge.md)): A read-only status or tag in a tone (10% fill, 20% border, theme-safe text), with an optional dot or icon. Components: Badge.
-- [Brand signature](./components/brand/) ([markdown](./docs/components/brand.md)): The brand's own motif (BrandPattern) and its big number (BrandFigure): what makes a screen look like this brand and not like every other AI-made app. Components: BrandPattern, BrandFigure.
 - [Card](./components/card/) ([markdown](./docs/components/card.md)): The bento content card: panel fill and the style's card border, radius and resting shadow. interactive adds hover / press, active marks the selected or running item. Components: Card.
 - [Carousel](./components/carousel/) ([markdown](./docs/components/carousel.md)): Slides in a row that scroll by swipe, trackpad, arrow keys, buttons or dots (CSS scroll-snap, no library). Phones show one slide and a peek of the next. Components: Carousel.
 - [Chart](./components/chart/) ([markdown](./docs/components/chart.md)): Charts in SVG on Semi tokens, no library: BarChart (grouped or stacked columns), LineChart (optional area wash), DonutChart (parts of a whole) and Sparkline (a trend in a tile). Series use the fixed chart-1…8 colours (validated for colour-blind readers in both themes); every chart has a legend for 2+ series, a hover / keyboard tooltip and a table view. Components: BarChart, LineChart, DonutChart, Sparkline.
@@ -100,7 +99,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Icon](./components/icon/) ([markdown](./docs/components/icon.md)): The semantic icon registry (stroke 1.75, 24px grid). IconTile is the rounded tinted square that leads cards and dialogs. Components: Icon, IconTile.
 - [Item](./components/item/) ([markdown](./docs/components/item.md)): A list row — leading icon / avatar / image, title and description, meta on the right, actions — and ItemGroup, which stacks rows in a card with dividers. Components: Item, ItemGroup.
 - [Kbd](./components/kbd/) ([markdown](./docs/components/kbd.md)): A key or a shortcut (⌘ K, Ctrl Enter) as key caps, for menus, tooltips, the command palette and help text. Components: Kbd.
-- [KPI card](./components/kpi-card/) ([markdown](./docs/components/kpi-card.md)): A metric card: label, a large tabular figure in the brand's figure font, a sub line coloured good / danger. One featured card leads the row; icons are optional and neutral. Components: KpiCard.
+- [KPI card](./components/kpi-card/) ([markdown](./docs/components/kpi-card.md)): A metric card: label, a large tabular figure in the style's figure font, a sub line coloured good / danger. One featured card leads the row; icons are optional and neutral. Components: KpiCard.
 - [Markdown](./components/markdown/) ([markdown](./docs/components/markdown.md)): Renders AI or user text safely: paragraphs, lists, bold, inline code and links (as ExternalLink). No HTML. Components: Markdown.
 - [Separator](./components/separator/) ([markdown](./docs/components/separator.md)): A thin divider between groups of content: horizontal, vertical, or with a short label in the middle (“hoặc”). Components: Separator.
 - [Table](./components/table/) ([markdown](./docs/components/table.md)): A dense table for rows compared column by column. Cells stay on one line (the table scrolls sideways on phones); TD wrap for a long-text column, numeric for figures. Components: Table, THead, TBody, TR, TH, TD.
@@ -213,8 +212,7 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
   - `AppShell` (+ `MobileTabBar`, `TAB_BAR_PAD`): 2-panel floating Bento frame on `bg-canvas`, collapsible `w-52`/`w-14` sidebar with grouped `sections`, and mobile bottom tab bar.
   - `PageTitle`, `PageTabsTitle`: text-only display heading or underline tab heading (`h-[2.5px] bg-primary`).
   - `SubpageToolbar`: sticky toolbar (`STICKY_TOOLBAR`) with `left` filters and `right` icon-only `BTN_PRIMARY BTN_ICON` + `SearchInput` + `RefreshButton`.
-  - `KpiCard`: metric card with a `tabular-nums` value in the brand's figure font, optional neutral icon (`iconTone` only for a status), `featured` for the screen's main number, shimmer `loading` state.
-  - `BrandPattern` (the brand's motif behind a hero / empty state / cover) and `BrandFigure` (one big number that leads a section).
+  - `KpiCard`: metric card with a `tabular-nums` value in the style's figure font (`font-figure`), optional neutral icon (`iconTone` only for a status), `featured` for the screen's main number, shimmer `loading` state.
   - `Modal`: portal dialog with `MODAL_BACKDROP`, `MODAL_PANEL`, `MODAL_HEAD`, `MODAL_CLOSE`, and `footer` (`MODAL_FOOT`).
 - **Controls (`@semi/ui`):**
   - `Icon` (stroke 1.75, `w-4 h-4`), `IconTile` (`size="sm|md|lg"`). Follow semantic icon mapping in `docs/ICONS.md` (e.g. `trash` for delete, `close` for dialog dismiss, `refresh` for sync, `sliders` for parameters, `user` for profiles, `filter` for lists, `sun`/`moon` for theme). New icons go into `ICONS` in `@semi/ui` (never inline `<svg><path>`; no ✕ ✓ ✗ glyphs).
@@ -230,8 +228,9 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
 
 **Not the generic AI screen (§19):** one main block per screen (`KpiCard featured`, not four equal cards) · KPI icons
 neutral, colour only for a status (`decorative-icon-tones`) · no three feature cards with icons and vague promises: proof
-(`BrandFigure`, a quote, a product shot) · icons only where they help scanning · sample text from the brand brief ·
-plain sections and white space next to cards. Density, title weight, figure font and motif come from the brand.
+(a real number, a quote, a product shot) · icons only where they help scanning · sample text from the brand brief ·
+plain sections and white space next to cards. Title weight and figure font come from the style; density and
+type scale are the product's (`data-density`, `data-type-scale` on `<html>`, `semi-lint.json`).
 
 ## Anti-patterns & Token Rules (enforced by `npx semi-lint`)
 - **No literal palette colors (`no-literal-palette`):** Never use direct physical classes like `bg-white`, `text-slate-900`, `border-slate-200`, `divide-slate-100`, `bg-slate-50`, `bg-gray-800/900`. Always use Semantic Tokens (`bg-panel`, `bg-field`, `text-contrast`, `text-body`, `text-muted`, `border-line`, `divide-divider`).
@@ -250,14 +249,13 @@ plain sections and white space next to cards. Density, title weight, figure font
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (123)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (121)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
 - `AppShell`: `AppShell`
 - `AspectRatio`: `AspectRatio`
 - `Badge`: `Badge`
-- `Brand`: `BrandPattern`, `BrandFigure`
 - `Breadcrumb`: `Breadcrumb`
 - `Button`: `Spinner`, `Button`
 - `ButtonGroup`: `ButtonGroup`
@@ -502,9 +500,10 @@ By using `bg-panel` and `text-contrast`, your UI seamlessly flips from dark obsi
 
 A product's brand comes from its **brand kit** (`docs/BRANDS.md`), never from its own CSS: the kit's `dist/brand.css`
 (imported after `@semi/ui/tokens.css`) sets the primary / secondary scales, the themed accent tokens, the neutrals per
-style, the fonts and the brand signature (density, title weight, figure font, type scale, motif; §19). With
+style and the fonts. With
 `"brand"` in `semi-lint.json`, the app may not set any of them (`brand-override`: `--color-primary-*`, `--semi-*`,
-`--brand-*`, `--spacing`, the font variables). An app without a kit uses Semi's own green and Flat. A brand change is
+`--brand-*`, `--spacing`, `--density-spacing`, the font variables). Density and type scale are the product's own
+choice, not the brand's (§19). An app without a kit uses Semi's own green and Flat. A brand change is
 made in the brand repo (`/semi-brand`) and reaches products with `/semi-sync`.
 
 ## 3. Colour meaning
@@ -843,7 +842,6 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `@semi/ui` → `AppShell.tsx`, `MobileTabBar.tsx` | `AppShell` (floating Bento 2-panel frame, collapsible `w-52`/`w-14` menu), `MobileTabBar`, `TAB_BAR_PAD` (§4) |
 | `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle`, `PageTabsTitle` (underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh) (§4a) |
 | `KpiCard.tsx`, `Modal.tsx` | `KpiCard` (metric card in the brand's figure font, neutral icon, `featured` for the screen's main number, shimmer), `Modal` (shared portal dialog with `MODAL_HEAD` + `MODAL_FOOT`) (§13, §14) |
-| `Brand.tsx` | `BrandPattern` (the brand's motif as a decorative layer), `BrandFigure` (a big number in the brand's figure font) (§19) |
 | `Icon.tsx` | `Icon`, `ICONS`, `IconName`, `IconTile`, `TILE_TONES`, `TONE_TEXT`, `TileTone` |
 | `AppHeader.tsx` | `AppHeader` (stand-alone app top bar, §4b) |
 | `PageActions.tsx` | `PageActions` (a tab's header buttons), `PageActionsSlot` + `PageActionsProvider` |
@@ -937,25 +935,27 @@ The full inventory with props is generated into `components.json` (`npm run buil
 - Strings: shared components never hard-code UI text; they read `useSemiLocale()` (Vietnamese default). Apps switch
   language with `<SemiLocaleProvider locale={en}>` or override single strings (`locale={{ close: "Thoát" }}`).
 
-## 19. Brand signature & the generic AI look
+## 19. Product look & the generic AI look
 
 Every AI-made app tends towards the same screen: sidebar, title, four equal KPI cards with a coloured icon each, a
 table; a landing page with a hero and three feature cards ("Fast / Secure / Dedicated"). Semi screens avoid it in two
 ways.
 
-**The brand's signature** (brand.json `density`, `typography`, `motif`; inferred from the brief when left out) changes
-more than colour, through tokens the components already read:
+**The product's look.** Colour, fonts and voice come from the brand; the style sets shape, title weight and the font
+of big numbers. Density and type scale belong to each **product**, because one brand has a dense dashboard and a
+roomy store: `data-density` / `data-type-scale` on `<html>` (or any wrapper), mirrored as `"density"` /
+`"typeScale"` in `semi-lint.json`, picked in `/semi-new-app` by the kind of product.
 
-| Choice | Token | Read by |
-|---|---|---|
-| Density compact / regular / airy | `--spacing` (Tailwind's unit: every `p-*`, `gap-*`, `space-*`) | everything |
-| Type scale even / contrast | `--text-kpi` … `--text-display` | `PageTitle`, `KpiCard`, headings |
-| Title weight light / regular / strong | `font-title` (`--font-weight-title`) | `PageTitle`, `PageTabsTitle`, `KpiCard`, `BrandFigure` |
-| Figures sans / display | `font-figure` | `KpiCard`, `BrandFigure` |
-| Motif mark / dots / lines / grid / none | `--brand-motif`, `--brand-motif-size` | `BrandPattern` |
+| Choice | Set by | Token | Read by |
+|---|---|---|---|
+| Density compact / regular / airy | product | `--spacing` (Tailwind's unit: every `p-*`, `gap-*`, `space-*`) | everything |
+| Type scale even / contrast | product | `--text-kpi` … `--text-display` | `PageTitle`, `KpiCard`, headings |
+| Title weight | style | `font-title` (`--font-weight-title`) | `PageTitle`, `PageTabsTitle`, `KpiCard` |
+| Font of big numbers | style | `font-figure` | `KpiCard` |
 
-Styles set the defaults (Sharp: strong titles, figures in the display font). Apps use `font-title` and `font-figure`
-for their own titles and big numbers, and never override the variables (`brand-override`).
+Sharp has bold titles and figures in the display font; Flat and Soft semibold in the sans. Apps use `font-title`
+and `font-figure` for their own titles and big numbers, change density and type scale only through the attributes,
+and never override the variables (`brand-override`).
 
 **Composition rules** (agents and reviewers; `/semi-check` reviews them, `semi-lint` catches the colour one):
 
@@ -964,12 +964,12 @@ for their own titles and big numbers, and never override the variables (`brand-o
 - KPI and card icons are neutral or left out; colour means a status (`tone`, a status `iconTone`), never one
   decorative colour per card (`decorative-icon-tones`: three or more icon colours in a file).
 - No row of three feature cards with an icon, a one-word title and a vague promise: show proof (a product shot,
-  `BrandFigure` with a real number, a customer quote).
+  a real number in `font-figure`, a customer quote).
 - Icons where they help scanning (navigation, actions, status), not in front of every label or row.
 - Sample, placeholder and empty-state text comes from the brand's brief and voice, never "Lorem", "John Doe", "Acme"
   or another product's domain.
 - Vary the rhythm: plain sections, dividers and white space next to cards, not every block a card with the same
-  padding. `BrandPattern` gives open areas (hero, empty state, cover) the brand's look; never behind tables or forms.
+  padding.
 
 ## Anti-patterns (enforced by `semi-lint`)
 
@@ -1509,7 +1509,7 @@ Sản phẩm (Manager, Store, …)       chỉ dùng: không tự chọn màu / 
 ```
 
 - **Bạn chỉ quyết định vài thứ**, một lần, trong repo brand: brief (sản phẩm, người dùng, tính cách), logo, màu chính,
-  màu phụ (tuỳ chọn), màu trung tính, các style được dùng, font, giọng văn, mức dùng màu, và chữ ký (mật độ, cách dùng chữ, hoạ tiết; bỏ trống thì Semi suy từ brief). Phần còn lại (thang màu, màu cho nền tối / sáng, chữ trên nút, đảm bảo đọc rõ) do Semi tự sinh.
+  màu phụ (tuỳ chọn), màu trung tính, các style được dùng, font, giọng văn và mức dùng màu. Phần còn lại (thang màu, màu cho nền tối / sáng, chữ trên nút, đảm bảo đọc rõ) do Semi tự sinh.
 - **Mọi màu đều đạt chuẩn đọc rõ (WCAG AA)** ở cả theme sáng và tối: bộ sinh tự chỉnh, và báo lỗi nếu một màu không
   thể dùng được.
 - **Sản phẩm không thể đi lệch:** `semi-lint` chặn việc ghi đè màu thương hiệu trong sản phẩm (`brand-override`),
@@ -1695,9 +1695,6 @@ Brand kit ghi nó chạy với `@semi/ui` nào (`"semi": "^0.16"` trong `brand.j
   },
   "color": { "accent": "restrained" },
   "imagery": "Ảnh bản in thật trên nền tối, chụp gần; không ảnh stock.",
-  "density": "compact",
-  "typography": { "scale": "even", "title": "regular", "figures": "display" },
-  "motif": "mark",
   "semi": "^0.17"
 }
 ```
@@ -1711,24 +1708,19 @@ Brand kit ghi nó chạy với `@semi/ui` nào (`"semi": "^0.16"` trong `brand.j
 | `styles.default`, `styles.allowed` | `flat` · `soft` · `sharp` | Ít nhất một; `default` phải nằm trong `allowed` |
 | `fonts.sans`, `fonts.display` | Tên Google Font | `next/font/google` phải có font đó |
 | `semi` | Dải phiên bản `@semi/ui` | `/semi-brand update` cập nhật |
-| `brief` | `product`, `audience`, `personality` (1–5 tính từ), `tagline` (một câu, ≤ 90 ký tự) | Tuỳ chọn; vào BRAND.md và luật cho agent ("chọn chữ, mật độ, hình ảnh cho họ") |
+| `brief` | `product`, `audience`, `personality` (1–5 tính từ), `tagline` (một câu, ≤ 90 ký tự) | Tuỳ chọn; vào BRAND.md và luật cho agent ("chọn chữ, hình ảnh cho họ") |
 | `logo` | `full` (bắt buộc khi có logo), `fullDark`, `mark`: đường dẫn trong repo kit (.svg nên dùng, .png, .webp); `clearspace` (× chiều cao, mặc định 0.5), `minWidth` (px, mặc định 80) | Build copy vào `dist/logo/full.svg` … để sản phẩm import; thiếu file là lỗi |
 | `voice` | `tone`: `friendly` · `neutral` · `formal`; `address` (gọi người dùng), `we` (tự xưng), `emoji`, `do`, `dont`, `examples` (`button`, `success`, `error`, `empty`, `confirm`) | Tuỳ chọn, mặc định trung tính, gọi "bạn". Luật viết chung của Semi (nút, lỗi, trạng thái trống) luôn kèm theo |
 | `color` | `accent`: `restrained` · `balanced` · `expressive`; `secondaryRole`: `highlight` · `badge` · `illustration` | Mặc định tiết chế, màu phụ là điểm nhấn. Mức dùng màu quyết định tỉ lệ màu trên một màn hình (tiết chế 80 / 15 / 5 %, cân bằng 70 / 20 / 10, phóng khoáng 55 / 25 / 20: trung tính / bề mặt / màu chính; màu phụ lấy khoảng 30 % phần màu chính) |
 | `imagery` | Một đoạn mô tả ảnh / minh hoạ | Tuỳ chọn |
-| `density` | `compact` · `regular` · `airy` | Tuỳ chọn, mặc định suy từ brief. Đổi đơn vị khoảng cách của Tailwind (`--spacing`): mọi `p-*`, `gap-*` gọn hơn hoặc thoáng hơn |
-| `typography` | `scale`: `even` · `contrast`; `title`: `light` · `regular` · `strong`; `figures`: `sans` · `display` | Tuỳ chọn, suy từ brief. Cỡ tiêu đề và số lớn, nét tiêu đề (`font-title`), font của con số lớn (`font-figure`) |
-| `motif` | `mark` · `dots` · `lines` · `grid` · `none` | Tuỳ chọn, suy từ brief (có mark SVG thì dùng mark). Hoạ tiết của `<BrandPattern>` |
 
-### Chữ ký thương hiệu
+### Mật độ và cỡ chữ
 
-Hai thương hiệu khác nhau không chỉ ở màu. `density`, `typography` và `motif` là chữ ký: mật độ, cách dùng chữ, con số
-và hoạ tiết. Thiếu lựa chọn nào thì bộ sinh suy từ brief (công cụ dùng cả ngày → gọn; "táo bạo", "trẻ trung" → cỡ
-chữ tương phản, tiêu đề đậm; "sang trọng", "tinh tế" → thoáng, tiêu đề mảnh; có mark SVG → hoạ tiết từ mark) và
-BRAND.md ghi "suy từ brief" bên cạnh. Component của Semi tự đổi theo (`PageTitle`, `KpiCard`, mọi padding), sản phẩm
-không cần sửa code; `<BrandPattern>` và `<BrandFigure>` đưa hoạ tiết và con số lớn vào màn hình. Brand book có mục
-"Chữ ký thương hiệu" để xem. Sản phẩm không được tự đặt các biến này (`brand-override`). Quy tắc bố cục đi kèm (tránh
-giao diện "AI" chung chung): `DESIGN_SYSTEM.md` §19.
+**Mật độ và cỡ chữ không thuộc thương hiệu.** Một thương hiệu có nhiều sản phẩm: 3D Noobs có dashboard quản lý (cần
+gọn) và web bán hàng (cần thoáng, chữ tiêu đề lớn). Mỗi sản phẩm tự chọn khi tạo bằng `/semi-new-app` (theo loại sản
+phẩm), lưu ở `semi-lint.json` (`"density"`, `"typeScale"`) và `<html data-density data-type-scale>`; đổi sau bằng lời
+("gọn hơn", "chữ tiêu đề to hơn"). Tab Ứng dụng của brand book cho thấy mỗi màn với lựa chọn thường gặp của nó. Quy
+tắc bố cục đi kèm (tránh giao diện "AI" chung chung): `DESIGN_SYSTEM.md` §19.
 
 ### Semi sinh màu thế nào
 
@@ -1785,8 +1777,8 @@ sidebar.
 
 A brand kit (docs/BRANDS.md) builds on these: it picks the allowed styles and either tints their neutrals with its
 primary or keeps the style's own neutrals (`"neutral": "preset"`), so products of a brand never set neutral colours.
-Its signature (density, type scale, title weight, figure font, motif; DESIGN_SYSTEM.md §19) overrides the last two
-rows of the table through `--brand-*` variables the style tokens read.
+The spacing unit follows the product's density (`data-density` on `<html>`; DESIGN_SYSTEM.md §19), not the style
+or the brand.
 
 ## Picking a style in an app
 
@@ -1853,10 +1845,10 @@ All web UI in the Semi ecosystem MUST follow the **Semi Design System** (`@semi/
    - Typography: `font-medium` / `font-semibold` only (no `font-bold`); the type scale only: `text-caption` 11 · `text-label` 12 · `text-ui` 13 · `text-ui-lg` 14 · `text-title` 15 · `text-title-lg` 16 for UI/body, `text-kpi sm:text-heading` for KPI figures (`KpiCard`), `text-heading sm:text-display` for page titles (`PageTitle`); no `text-xs/sm/base` and no `text-[13px]`; `tabular-nums` for numbers (`font-mono` only for code); sentence case (no `uppercase` labels or ALL CAPS buttons).
    - Style: the app's style (Flat, Soft, Sharp): `"style"` in `semi-lint.json`, `data-style` on `<html>`, its fonts loaded with `next/font`; `node_modules/@semi/ui/docs/STYLES.md`) sets the neutral colours, fonts (`font-sans`, `font-display`), control sizes (`h-control` for toolbar buttons / pills / chips / search, `h-field` for inputs and selects, never `h-[34px]`), the card border (`border-card`) and every radius and card shadow, so use the style tokens only: `rounded-chip` (marks, checkboxes, inline code), `rounded-control` (buttons, inputs, tiles, rows), `rounded-card` (cards, popovers, menus, toasts), `rounded-panel` (hero, modal, drawer, sidebar), `rounded-full` (pills, avatars, dots), `shadow-card` (resting card shadow, `CARD` has it). Never `rounded`, `rounded-sm/md/lg/xl/2xl` or `rounded-[Npx]` (`radius-token`), never per-style classes or `[data-style=…]` selectors in the app. Change the style only when the user asks, with the `semi-ui` skill's style steps (within the brand's allowed styles).
    - Controls: never native `<select>`, `type="date"`, `type="number"`, or `window.confirm`/`alert`. Never inline `<svg><path>` or unicode glyph icons (✕ ✓ ✗ ⚠) — use `<Icon name="…" />` (stroke 1.75). Always follow semantic icon mappings (`node_modules/@semi/ui/docs/ICONS.md`): `trash` for delete/remove (never `close`), `close` for dialog dismiss (never `trash`), `refresh` for reload/sync, `sliders` for parameters/tuning, `filter` for search filters, `user`/`users` for profiles/teams, `settings` for app configuration, `sun`/`moon` for theme toggling.
-   - Not the generic AI screen (`docs/DESIGN_SYSTEM.md` §19): one main block per screen (`KpiCard featured`, not four equal cards); KPI and card icons neutral, colour only for a status (`decorative-icon-tones`); no three icon feature cards with vague promises (proof: `BrandFigure`, a quote, a product shot); icons only where they help scanning; sample and empty-state text from the product's brief and voice; plain sections and white space next to cards; the brand's motif with `BrandPattern` in open areas only. Titles and big numbers use `font-title` / `font-figure` (the brand sets weight, font and density).
+   - Not the generic AI screen (`docs/DESIGN_SYSTEM.md` §19): one main block per screen (`KpiCard featured`, not four equal cards); KPI and card icons neutral, colour only for a status (`decorative-icon-tones`); no three icon feature cards with vague promises (proof: a real number, a quote, a product shot); icons only where they help scanning; sample and empty-state text from the product's brief and voice; plain sections and white space next to cards. Titles and big numbers use `font-title` / `font-figure` (the style sets weight and font); density and type scale are this product's (`data-density`, `data-type-scale` on `<html>`, `"density"` / `"typeScale"` in `semi-lint.json`), never set by hand in paddings or text sizes.
    - Loading: use `Skeleton` shapes, never `"Đang tải…"` text or full-page spinners (`Button loading` / `Spinner` only inside the control that runs the action).
    - Accessibility: every icon-only control has an `aria-label`; dialogs are `Modal` / `Drawer` / `confirmDialog` (focus trap, Escape, focus return built in); custom controls keep the visible focus ring (`FOCUS_RING`); UI strings come from `SemiLocaleProvider`, not hard-coded inside shared components.
-4. **Brand kits:** when `semi-lint.json` has `"brand"`, the product belongs to that brand (`node_modules/<brand>/BRAND.md`, rules block in `AGENTS.md`; `semi_brand` / `npx semi brand voice|color|logo|signature` answer from it). Write UI text in the brand's voice (tone, how it addresses the user, its examples), use colour as its colour-use rule says and import the logo from the kit, never redraw it; never define colours, fonts or Semi tokens in the app (`brand-override`), only the brand's allowed styles. Never invent a brand colour: it comes from the user or the brand kit. Brand changes happen in the brand repo (`/semi-brand`), then `/semi-sync` in the product (`node_modules/@semi/ui/docs/BRANDS.md`).
+4. **Brand kits:** when `semi-lint.json` has `"brand"`, the product belongs to that brand (`node_modules/<brand>/BRAND.md`, rules block in `AGENTS.md`; `semi_brand` / `npx semi brand voice|color|logo` answer from it). Write UI text in the brand's voice (tone, how it addresses the user, its examples), use colour as its colour-use rule says and import the logo from the kit, never redraw it; never define colours, fonts or Semi tokens in the app (`brand-override`), only the brand's allowed styles. Never invent a brand colour: it comes from the user or the brand kit. Brand changes happen in the brand repo (`/semi-brand`), then `/semi-sync` in the product (`node_modules/@semi/ui/docs/BRANDS.md`).
 5. **Gaps go upstream, not into local primitives:** If `@semi/ui` cannot express a need (missing component, prop, token, icon, or a lint false positive), first run `/semi-sync` and re-check the docs; if the gap remains, run `/semi-propose` to file it on the core repo. Meanwhile keep a minimal compliant local workaround marked `// TODO(semi#<issue>)` and baseline (never broadly `skip`) any lint hits.
 6. **Never fork rules per project:** When the user changes a shared UI rule, update `docs/DESIGN_SYSTEM.md`, `docs/QUICK_REF.md`, `docs/DECISIONS.md`, and `lint/semi-lint.mjs` in the `semi-nextjs-codebase` repository and release a new tag — never record shared UI rules only in a consumer project's `AGENTS.md` or agent memory. App-specific patterns belong in the app's own `docs/UI_EXTENSIONS.md`.
 7. **Verification:** Run `npx semi-lint` (or `npm run semi:lint`) before finishing any UI change. For a whole-app check run `/semi-check` (writes `semi-check.md`, then fixes it with the user's go-ahead); `/semi-sync` moves to a newer `@semi/ui` and runs that release's migrations (no audit); `/semi-brand` creates or changes a brand kit (in its own repo).
@@ -5730,117 +5722,6 @@ Uses 10% alpha fill + 20% alpha border + high-contrast text adapted for dark and
 
 ---
 
-<!-- docs/components/brand.md -->
-
-# Brand signature
-
-The brand's own motif (BrandPattern) and its big number (BrandFigure): what makes a screen look like this brand and not like every other AI-made app.
-
-## When to use
-
-- A landing hero, a report cover, an empty state or an avatar placeholder needs the brand's look (BrandPattern).
-- A section leads with one number: a landing proof point, a report total, a dashboard's main figure outside a card (BrandFigure).
-
-## Use something else when
-
-| Need | Use |
-|---|---|
-| A metric in a row of cards | KpiCard (featured for the main one) |
-| Photos and illustrations | the brand's imagery rule in BRAND.md, not a pattern |
-| Decoration behind tables, forms or body text | nothing: the motif is for open space only |
-
-## Import
-
-```tsx
-import { BrandPattern, BrandFigure } from "@semi/ui";
-```
-
-## Examples
-
-### Hero with motif and proof figure
-
-```tsx
-import { BrandFigure, BrandPattern, Button } from "@semi/ui";
-
-export default function BrandHero() {
-  return (
-    <section className="rounded-panel border-card bg-panel">
-      <div className="grid gap-8 p-6 @2xl:grid-cols-[3fr_2fr] @2xl:items-center @2xl:p-10">
-        <div className="space-y-4">
-          <h2 className="font-display font-title text-heading-lg @2xl:text-display leading-tight text-contrast">Bữa trưa văn phòng, đặt trong 30 giây</h2>
-          <p className="text-ui-lg text-body max-w-md">Chọn món từ 40 bếp quanh toà nhà, giao đúng giờ nghỉ trưa.</p>
-          <Button variant="primary">Đặt món</Button>
-        </div>
-        <div className="relative overflow-hidden rounded-card bg-accent-subtle min-h-48 flex items-end p-4">
-          <BrandPattern area="full" />
-          <div className="relative rounded-card bg-panel border-card p-4">
-            <BrandFigure size="xl" value="12 phút" label="Thời gian giao trung bình" sub="Tháng 10, 3.200 đơn" />
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-```
-
-### Empty state on the motif
-
-```tsx
-import { BrandPattern, Button } from "@semi/ui";
-
-export default function BrandEmpty() {
-  return (
-    <div className="relative overflow-hidden rounded-card border-card bg-panel px-6 py-12">
-      <BrandPattern tone="muted" className="hidden @xl:block" />
-      <div className="relative max-w-sm space-y-3">
-        <h3 className="font-display font-title text-heading-sm text-contrast">Chưa có đơn nào hôm nay</h3>
-        <p className="text-ui text-body">Đơn mới hiện ở đây ngay khi khách đặt. Chia sẻ thực đơn để có đơn đầu tiên.</p>
-        <Button variant="primary">Chia sẻ thực đơn</Button>
-      </div>
-    </div>
-  );
-}
-```
-
-## API
-
-### BrandPattern
-
-The brand's repeating motif (from its logo mark, dots, lines or a grid; brand.json "motif") as a decorative layer.
-Put it first inside a `relative overflow-hidden` block: a hero, an empty state, a cover or avatar placeholder. Text
-never sits on the motif itself: keep it on the calm half (`area="end"`) or on a panel above it. Never behind tables or
-forms. Renders nothing visible when the brand chose no motif.
-
-| Prop | Type | Default | Description |
-|---|---|---|---|
-| `tone` | `'accent' \| 'muted' \| 'on-accent'` | `"accent"` | Colour of the motif: accent (on a neutral surface), muted, or on-accent (on a bg-accent hero). |
-| `area` | `'end' \| 'full'` | `"end"` | end = the end half only (text at the start stays on a calm background); full = the whole block. |
-| `className` | `string` | `""` |  |
-
-### BrandFigure
-
-A big number set in the brand's figure font and title weight: the one figure a landing section, a report cover or
-a dashboard leads with. For a metric among others in a card row use KpiCard (featured for the main one).
-
-| Prop | Type | Default | Description |
-|---|---|---|---|
-| `value` * | `React.ReactNode` |  |  |
-| `label` * | `React.ReactNode` |  | What the number counts, in a few words. |
-| `sub` | `React.ReactNode` |  | Optional context: period, comparison, source. |
-| `size` | `'lg' \| 'xl'` | `"lg"` | lg = display size; xl = hero size (1.6 × display). |
-| `onAccent` | `boolean` | `false` | On a bg-accent block (expressive hero): text-on-accent instead of the neutral text colours. |
-| `className` | `string` | `""` |  |
-
-## Accessibility
-
-- BrandPattern is aria-hidden and ignores the pointer; text on top keeps its own contrast.
-- BrandFigure is plain text: the label says what the number counts.
-
-<!-- GENERATED by scripts/build-docs.mjs from examples/brand/ and the types in src/ -->
-
-
----
-
 <!-- docs/components/card.md -->
 
 # Card
@@ -6715,7 +6596,7 @@ export default function KbdBasic() {
 
 # KPI card
 
-A metric card: label, a large tabular figure in the brand's figure font, a sub line coloured good / danger. One featured card leads the row; icons are optional and neutral.
+A metric card: label, a large tabular figure in the style's figure font, a sub line coloured good / danger. One featured card leads the row; icons are optional and neutral.
 
 ## When to use
 
@@ -6725,7 +6606,6 @@ A metric card: label, a large tabular figure in the brand's figure font, a sub l
 
 | Need | Use |
 |---|---|
-| One number that leads a section outside a card row (landing proof point, report cover) | BrandFigure |
 | A colour per card for decoration | none: iconTone only when the colour means a status |
 
 ## Import
@@ -7315,7 +7195,7 @@ Determinate or indeterminate progress bar (uploads, quotas, print progress).
 |---|---|---|---|
 | `value` | `number` |  | Omit for an indeterminate bar. |
 | `max` | `number` | `100` |  |
-| `tone` | `'danger' \| 'info' \| 'accent' \| 'success' \| 'warning'` | `"accent"` |  |
+| `tone` | `'danger' \| 'info' \| 'success' \| 'warning' \| 'accent'` | `"accent"` |  |
 | `label` | `React.ReactNode` |  | Visible label above the bar (also its accessible name). |
 | `showValue` | `boolean` | `false` |  |
 | `size` | `'sm' \| 'md'` | `"md"` |  |

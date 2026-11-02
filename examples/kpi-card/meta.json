@@ -1,7 +1,7 @@
 {
   "title": "KPI card",
   "group": "Data display",
-  "description": "A metric card: label, a large tabular figure in the brand's figure font, a sub line coloured good / danger. One featured card leads the row; icons are optional and neutral.",
+  "description": "A metric card: label, a large tabular figure in the style's figure font, a sub line coloured good / danger. One featured card leads the row; icons are optional and neutral.",
   "components": [
     "KpiCard"
   ],
@@ -18,10 +18,6 @@
     }
   ],
   "instead": [
-    {
-      "need": "One number that leads a section outside a card row (landing proof point, report cover)",
-      "use": "BrandFigure"
-    },
     {
       "need": "A colour per card for decoration",
       "use": "none: iconTone only when the colour means a status"

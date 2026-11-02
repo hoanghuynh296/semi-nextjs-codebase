@@ -19,6 +19,7 @@ import {
   wireBrand,
   wireSemiLintConfig,
   wireStyle,
+  wireProductLook,
 } from "./setup.mjs";
 
 function parseArgs(argv) {
@@ -30,6 +31,8 @@ function parseArgs(argv) {
     tailwindVersion: "latest",
     style: null,
     brand: null,
+    density: null,
+    typeScale: null,
   };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -40,6 +43,8 @@ function parseArgs(argv) {
     else if (a === "--tailwind-version" && argv[i + 1]) opts.tailwindVersion = argv[++i];
     else if (a === "--style" && argv[i + 1]) opts.style = argv[++i];
     else if (a === "--brand" && argv[i + 1]) opts.brand = argv[++i];
+    else if (a === "--density" && argv[i + 1]) opts.density = argv[++i];
+    else if (a === "--type-scale" && argv[i + 1]) opts.typeScale = argv[++i];
   }
   return opts;
 }
@@ -98,7 +103,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     `"use client";
 
 import React, { useState } from "react";
-import { AppShell, BrandPattern, Button, EmptyState, PageTitle, ThemeToggle, type ShellNavSection } from "@semi/ui";
+import { AppShell, Button, EmptyState, PageTitle, ThemeToggle, type ShellNavSection } from "@semi/ui";
 
 // Starter screen: replace it with the product's main screen (the brand book's "Ứng dụng" tab shows the brand on
 // real screens). Keep one main block per screen; avoid the generic AI look (DESIGN_SYSTEM.md §19).
@@ -116,9 +121,8 @@ export default function HomePage() {
         <ThemeToggle />
       </div>
       <div className="@container">
-      <section className="relative overflow-hidden rounded-panel border-card bg-panel mb-5">
-        <BrandPattern className="hidden @2xl:block" />
-        <div className="relative p-6 @2xl:p-10 space-y-4 @2xl:max-w-[50%]">
+      <section className="rounded-panel border-card bg-panel mb-5">
+        <div className="p-6 @2xl:p-10 space-y-4 @2xl:max-w-[60%]">
           <h2 className="font-display font-title text-heading-lg @2xl:text-display leading-tight text-contrast">{${JSON.stringify(copy.title)}}</h2>
           <p className="text-ui-lg text-body">{${JSON.stringify(copy.lead)}}</p>
           <Button variant="primary">{${JSON.stringify(copy.action)}}</Button>
@@ -221,6 +225,11 @@ writeNewProjectStarter(webDir, opts.appName, brandKit ? { ...chosenStyle, name: 
 const styled = wireStyle(webDir, opts.style);
 console.log(styled.message);
 if (!styled.ok) process.exit(2);
+if (opts.density || opts.typeScale) {
+  const look = wireProductLook(webDir, { density: opts.density, typeScale: opts.typeScale });
+  console.log(look.message);
+  if (!look.ok) process.exit(2);
+}
 
 console.log("\nRunning verification (semi-lint + tsc + next build)...");
 const failed = [

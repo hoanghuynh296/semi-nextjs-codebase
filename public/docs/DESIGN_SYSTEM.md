@@ -175,9 +175,10 @@ By using `bg-panel` and `text-contrast`, your UI seamlessly flips from dark obsi
 
 A product's brand comes from its **brand kit** (`docs/BRANDS.md`), never from its own CSS: the kit's `dist/brand.css`
 (imported after `@semi/ui/tokens.css`) sets the primary / secondary scales, the themed accent tokens, the neutrals per
-style, the fonts and the brand signature (density, title weight, figure font, type scale, motif; §19). With
+style and the fonts. With
 `"brand"` in `semi-lint.json`, the app may not set any of them (`brand-override`: `--color-primary-*`, `--semi-*`,
-`--brand-*`, `--spacing`, the font variables). An app without a kit uses Semi's own green and Flat. A brand change is
+`--brand-*`, `--spacing`, `--density-spacing`, the font variables). Density and type scale are the product's own
+choice, not the brand's (§19). An app without a kit uses Semi's own green and Flat. A brand change is
 made in the brand repo (`/semi-brand`) and reaches products with `/semi-sync`.
 
 ## 3. Colour meaning
@@ -516,7 +517,6 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `@semi/ui` → `AppShell.tsx`, `MobileTabBar.tsx` | `AppShell` (floating Bento 2-panel frame, collapsible `w-52`/`w-14` menu), `MobileTabBar`, `TAB_BAR_PAD` (§4) |
 | `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle`, `PageTabsTitle` (underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh) (§4a) |
 | `KpiCard.tsx`, `Modal.tsx` | `KpiCard` (metric card in the brand's figure font, neutral icon, `featured` for the screen's main number, shimmer), `Modal` (shared portal dialog with `MODAL_HEAD` + `MODAL_FOOT`) (§13, §14) |
-| `Brand.tsx` | `BrandPattern` (the brand's motif as a decorative layer), `BrandFigure` (a big number in the brand's figure font) (§19) |
 | `Icon.tsx` | `Icon`, `ICONS`, `IconName`, `IconTile`, `TILE_TONES`, `TONE_TEXT`, `TileTone` |
 | `AppHeader.tsx` | `AppHeader` (stand-alone app top bar, §4b) |
 | `PageActions.tsx` | `PageActions` (a tab's header buttons), `PageActionsSlot` + `PageActionsProvider` |
@@ -610,25 +610,27 @@ The full inventory with props is generated into `components.json` (`npm run buil
 - Strings: shared components never hard-code UI text; they read `useSemiLocale()` (Vietnamese default). Apps switch
   language with `<SemiLocaleProvider locale={en}>` or override single strings (`locale={{ close: "Thoát" }}`).
 
-## 19. Brand signature & the generic AI look
+## 19. Product look & the generic AI look
 
 Every AI-made app tends towards the same screen: sidebar, title, four equal KPI cards with a coloured icon each, a
 table; a landing page with a hero and three feature cards ("Fast / Secure / Dedicated"). Semi screens avoid it in two
 ways.
 
-**The brand's signature** (brand.json `density`, `typography`, `motif`; inferred from the brief when left out) changes
-more than colour, through tokens the components already read:
+**The product's look.** Colour, fonts and voice come from the brand; the style sets shape, title weight and the font
+of big numbers. Density and type scale belong to each **product**, because one brand has a dense dashboard and a
+roomy store: `data-density` / `data-type-scale` on `<html>` (or any wrapper), mirrored as `"density"` /
+`"typeScale"` in `semi-lint.json`, picked in `/semi-new-app` by the kind of product.
 
-| Choice | Token | Read by |
-|---|---|---|
-| Density compact / regular / airy | `--spacing` (Tailwind's unit: every `p-*`, `gap-*`, `space-*`) | everything |
-| Type scale even / contrast | `--text-kpi` … `--text-display` | `PageTitle`, `KpiCard`, headings |
-| Title weight light / regular / strong | `font-title` (`--font-weight-title`) | `PageTitle`, `PageTabsTitle`, `KpiCard`, `BrandFigure` |
-| Figures sans / display | `font-figure` | `KpiCard`, `BrandFigure` |
-| Motif mark / dots / lines / grid / none | `--brand-motif`, `--brand-motif-size` | `BrandPattern` |
+| Choice | Set by | Token | Read by |
+|---|---|---|---|
+| Density compact / regular / airy | product | `--spacing` (Tailwind's unit: every `p-*`, `gap-*`, `space-*`) | everything |
+| Type scale even / contrast | product | `--text-kpi` … `--text-display` | `PageTitle`, `KpiCard`, headings |
+| Title weight | style | `font-title` (`--font-weight-title`) | `PageTitle`, `PageTabsTitle`, `KpiCard` |
+| Font of big numbers | style | `font-figure` | `KpiCard` |
 
-Styles set the defaults (Sharp: strong titles, figures in the display font). Apps use `font-title` and `font-figure`
-for their own titles and big numbers, and never override the variables (`brand-override`).
+Sharp has bold titles and figures in the display font; Flat and Soft semibold in the sans. Apps use `font-title`
+and `font-figure` for their own titles and big numbers, change density and type scale only through the attributes,
+and never override the variables (`brand-override`).
 
 **Composition rules** (agents and reviewers; `/semi-check` reviews them, `semi-lint` catches the colour one):
 
@@ -637,12 +639,12 @@ for their own titles and big numbers, and never override the variables (`brand-o
 - KPI and card icons are neutral or left out; colour means a status (`tone`, a status `iconTone`), never one
   decorative colour per card (`decorative-icon-tones`: three or more icon colours in a file).
 - No row of three feature cards with an icon, a one-word title and a vague promise: show proof (a product shot,
-  `BrandFigure` with a real number, a customer quote).
+  a real number in `font-figure`, a customer quote).
 - Icons where they help scanning (navigation, actions, status), not in front of every label or row.
 - Sample, placeholder and empty-state text comes from the brand's brief and voice, never "Lorem", "John Doe", "Acme"
   or another product's domain.
 - Vary the rhythm: plain sections, dividers and white space next to cards, not every block a card with the same
-  padding. `BrandPattern` gives open areas (hero, empty state, cover) the brand's look; never behind tables or forms.
+  padding.
 
 ## Anti-patterns (enforced by `semi-lint`)
 

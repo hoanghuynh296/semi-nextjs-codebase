@@ -2,7 +2,7 @@
 
 // Applications: the brand on the screens a product actually ships (dashboard, phone app, landing page, email),
 // light and dark, with texts from the brand's voice. Copied into a brand kit's .preview/ by semi-brand.
-import { Badge, BrandFigure, BrandPattern, Button, Icon, KpiCard } from "@semi/ui";
+import { Badge, Button, Icon, KpiCard } from "@semi/ui";
 import brand from "../../brand.json";
 import { BothThemes, first, guide as g, Section, Wordmark } from "../../parts";
 
@@ -147,10 +147,11 @@ function Landing({ theme }) {
           <p className={`text-ui-lg leading-relaxed max-w-md ${expressive ? "" : "text-body"}`}>{b.product ?? "Một sản phẩm gọn gàng, dễ dùng cho mọi người."}</p>
           {expressive ? <Button>{first(ex.button, "Bắt đầu")}</Button> : <Button variant="primary">{first(ex.button, "Bắt đầu")}</Button>}
         </div>
-        <div className={`relative overflow-hidden rounded-panel min-h-56 flex items-end p-4 ${expressive ? "bg-accent-hover" : "bg-accent-subtle"}`}>
-          <BrandPattern area="full" tone={expressive ? "on-accent" : "accent"} />
-          <div className="relative rounded-card bg-panel border-card p-4 shadow-card">
-            <BrandFigure size="xl" value="4,8 / 5" label="Điểm đánh giá trung bình" sub="Ví dụ: một con số thật thay cho ba thẻ tính năng" />
+        <div className={`rounded-panel min-h-56 flex items-end p-4 ${expressive ? "bg-accent-hover" : "bg-accent-subtle"}`}>
+          <div className="rounded-card bg-panel border-card p-4 shadow-card space-y-1">
+            <div className="text-label text-muted">Điểm đánh giá trung bình</div>
+            <div className="font-figure font-title text-display text-contrast tabular-nums leading-none">4,8 / 5</div>
+            <div className="text-label text-body">Ví dụ: một con số thật thay cho ba thẻ tính năng</div>
           </div>
         </div>
       </div>
@@ -186,26 +187,36 @@ function Email({ theme }) {
   );
 }
 
+// Each product of a brand picks its own density and type scale (the brand does not): the sample screens show the
+// usual pick for their kind of product, so one brand reads the same in a dense tool and a roomy landing page.
+const LOOK_LABEL = { compact: "mật độ gọn", regular: "mật độ vừa", airy: "mật độ thoáng", even: "cỡ chữ đều", contrast: "cỡ chữ tương phản" };
 const SCREENS = [
-  ["Dashboard", "chart", "Công cụ làm việc cả ngày trên máy tính: một con số dẫn đầu, màu chính chỉ ở nút chính, mục đang chọn và link.", Dashboard, true],
-  ["Ứng dụng điện thoại", "smartphone", "Màn hình nhỏ, dùng nhanh: một nút chính, thanh tab dưới.", Phone, false],
-  ["Trang giới thiệu", "megaphone", `${expressive ? "Mức dùng màu phóng khoáng: hero nền màu chính. " : ""}Tiêu đề bằng font hiển thị, một lời kêu gọi chính, bằng chứng thật (con số, lời khách hàng) thay cho ba thẻ tính năng.`, Landing, true],
-  ["Email", "send", "Email giao dịch: logo, một nút, chân trang nhỏ.", Email, false],
+  ["Dashboard", "chart", "Công cụ làm việc cả ngày trên máy tính: một con số dẫn đầu, màu chính chỉ ở nút chính, mục đang chọn và link.", Dashboard, true, ["compact", "even"]],
+  ["Ứng dụng điện thoại", "smartphone", "Màn hình nhỏ, dùng nhanh: một nút chính, thanh tab dưới.", Phone, false, ["regular", "even"]],
+  ["Trang giới thiệu", "megaphone", `${expressive ? "Mức dùng màu phóng khoáng: hero nền màu chính. " : ""}Tiêu đề bằng font hiển thị, một lời kêu gọi chính, bằng chứng thật (con số, lời khách hàng) thay cho ba thẻ tính năng.`, Landing, true, ["airy", "contrast"]],
+  ["Email", "send", "Email giao dịch: logo, một nút, chân trang nhỏ.", Email, false, ["regular", "even"]],
 ];
 
 export default function Applications() {
   return (
     <>
       <div className="space-y-2">
-        <h1 className="font-display text-display font-semibold text-contrast">Ứng dụng</h1>
+        <h1 className="font-display text-display font-title text-contrast">Ứng dụng</h1>
         <p className="text-ui-lg text-body max-w-3xl leading-relaxed">
           {brand.name} trên những màn hình một sản phẩm thật sẽ có, sáng và tối cạnh nhau. Chữ mẫu theo giọng văn của thương hiệu
-          {brand.styles.allowed.length > 1 ? "; đổi style ở thanh trên để so sánh" : ""}.
+          {brand.styles.allowed.length > 1 ? "; đổi style ở thanh trên để so sánh" : ""}. Mật độ và cỡ chữ là lựa chọn của từng sản phẩm, không phải
+          của thương hiệu: mỗi màn dưới đây dùng lựa chọn thường gặp cho loại sản phẩm đó (chọn khi tạo app bằng /semi-new-app).
         </p>
       </div>
-      {SCREENS.map(([title, icon, lead, Screen, wide]) => (
-        <Section key={title} title={title} icon={icon} lead={lead} card={false}>
-          <BothThemes wide={wide}>{(t) => <div className="@container"><Screen theme={t} /></div>}</BothThemes>
+      {SCREENS.map(([title, icon, lead, Screen, wide, [density, scale]]) => (
+        <Section key={title} title={title} icon={icon} lead={`${lead} Sản phẩm này: ${LOOK_LABEL[density]}, ${LOOK_LABEL[scale]}.`} card={false}>
+          <BothThemes wide={wide}>
+            {(t) => (
+              <div className="@container" data-density={density === "regular" ? undefined : density} data-type-scale={scale === "even" ? undefined : scale}>
+                <Screen theme={t} />
+              </div>
+            )}
+          </BothThemes>
         </Section>
       ))}
     </>

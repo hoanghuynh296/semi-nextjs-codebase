@@ -180,12 +180,6 @@ export function brand(topic = "all", cwd = process.cwd()) {
       return { ...head, logo: g.logo ? { ...g.logo, import: Object.fromEntries(["full", "fullDark", "mark"].filter((k) => g.logo[`${k}Dist`]).map((k) => [k, `${pkg}/${g.logo[`${k}Dist`]}`])) } : null };
     case "brief":
       return { ...head, brief: g.brief ?? null, imagery: g.imagery ?? null };
-    case "signature":
-      return {
-        ...head,
-        signature: g.signature ?? null,
-        use: "Density, title weight and figure font apply through tokens (padding, font-title, font-figure): never override them. Motif: <BrandPattern> in heroes, empty states, covers. Big numbers: <BrandFigure> or <KpiCard featured>. Avoid the generic AI look (DESIGN_SYSTEM.md §19).",
-      };
     case "tokens":
       return { ...head, primary: b.primary, secondary: b.secondary ?? null, themes: b.themes };
     default: {

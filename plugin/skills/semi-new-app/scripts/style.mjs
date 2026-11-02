@@ -4,21 +4,28 @@
 //   node style.mjs --cwd <root>                         list: each app's style and the styles its @semi/ui has
 //   node style.mjs --cwd <root> --to <id> [--only dir]  switch: semi-lint.json "style" + <html data-style> in the root
 //                                                       layout (all apps, or the one under dir)
+//   node style.mjs --cwd <root> [--to <id>] --density compact|regular|airy --type-scale even|contrast [--only dir]
+//                                                       the product's density / type scale (data-density,
+//                                                       data-type-scale on <html>; not the brand's)
 // A style changes the look (neutral colours, fonts, radii, card border / shadow, control sizes); components, the accent
 // and status colours and the layout stay as they are. The style's fonts are added to the layout by hand (printed).
 import { readFileSync } from "node:fs";
 import { join, relative, resolve, sep } from "node:path";
 import { discoverFrontendApps } from "../../semi-check/scripts/audit.mjs";
-import { appFonts, missingStyleFonts, readBrand, readStyleState, semiStyles, styleFontHint, wireStyle } from "./setup.mjs";
+import { appFonts, missingStyleFonts, readBrand, readStyleState, semiStyles, styleFontHint, wireProductLook, wireStyle } from "./setup.mjs";
 
 const argv = process.argv.slice(2);
 let root = process.cwd();
 let to = null;
 let only = null;
+let density = null;
+let typeScale = null;
 for (let i = 0; i < argv.length; i++) {
   if (argv[i] === "--cwd" && argv[i + 1]) root = argv[++i];
   else if (argv[i] === "--to" && argv[i + 1]) to = argv[++i];
   else if (argv[i] === "--only" && argv[i + 1]) only = argv[++i];
+  else if (argv[i] === "--density" && argv[i + 1]) density = argv[++i];
+  else if (argv[i] === "--type-scale" && argv[i + 1]) typeScale = argv[++i];
 }
 root = resolve(root);
 const onlyAbs = only ? resolve(root, only) : null;
@@ -45,6 +52,12 @@ for (const dir of apps) {
   const st = readStyleState(dir);
   const brandKit = readBrand(dir)?.kit;
   const target = to;
+  if (density || typeScale) {
+    const r = wireProductLook(dir, { density, typeScale });
+    console.log(`${name}: ${r.message}`);
+    if (!r.ok) exitCode = 1;
+    if (!target) continue;
+  }
   if (!target) {
     const current = st.declared ? `${st.declared}${st.applied === st.declared ? "" : ` (chưa áp dụng: <html data-style="${st.applied ?? ""}">)`}` : `chưa chọn (đang hiện ${list.default})`;
     console.log(`${name}: style ${current}`);
@@ -62,5 +75,5 @@ for (const dir of apps) {
   const next = list.styles.find((s) => s.id === target);
   if (r.ok && next && missingStyleFonts(dir, next).length) console.log(`${name}: ${styleFontHint(r.layout, next, appFonts(dir, next))}`);
 }
-if (to && !exitCode) console.log(`\nChụp lại các trang đã chụp trước đó (cả hai theme) để so.`);
+if ((to || density || typeScale) && !exitCode) console.log(`\nChụp lại các trang đã chụp trước đó (cả hai theme) để so.`);
 process.exit(exitCode);

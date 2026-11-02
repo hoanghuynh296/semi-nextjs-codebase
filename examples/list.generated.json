@@ -426,16 +426,6 @@
     ]
   },
   {
-    "id": "brand",
-    "title": "Brand signature",
-    "group": "Data display",
-    "description": "The brand's own motif (BrandPattern) and its big number (BrandFigure): what makes a screen look like this brand and not like every other AI-made app.",
-    "components": [
-      "BrandPattern",
-      "BrandFigure"
-    ]
-  },
-  {
     "id": "card",
     "title": "Card",
     "group": "Data display",
@@ -525,7 +515,7 @@
     "id": "kpi-card",
     "title": "KPI card",
     "group": "Data display",
-    "description": "A metric card: label, a large tabular figure in the brand's figure font, a sub line coloured good / danger. One featured card leads the row; icons are optional and neutral.",
+    "description": "A metric card: label, a large tabular figure in the style's figure font, a sub line coloured good / danger. One featured card leads the row; icons are optional and neutral.",
     "components": [
       "KpiCard"
     ]
