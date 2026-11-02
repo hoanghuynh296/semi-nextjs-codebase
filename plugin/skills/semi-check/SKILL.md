@@ -1,6 +1,6 @@
 ---
 name: semi-check
-description: Check an existing app against its brand and the Semi Design System (@semi/ui), then fix it after the user agrees - the first adoption of Semi in an app (with or without @semi/ui) and the periodic check after. Audits every frontend app (foundation, brand kit, style, lint rules, colour / size tokens, structure), writes every issue with file:line by phase to semi-check.md, shows a short summary, asks, then fixes phase by phase (foundation, token codemod, hand fixes, structure) and verifies until clean. Triggered by /semi-check (formerly /semi-audit and /semi-fix).
+description: Check an existing app against its brand and the Semi Design System (@semi/ui), then fix it after the user agrees - the first adoption of Semi in an app (with or without @semi/ui) and the periodic check after. Audits every frontend app (foundation, brand kit, style, lint rules, colour / size tokens, structure), writes every issue with file:line by phase to semi-check.md, shows a short summary, asks, then fixes phase by phase (foundation, token codemod, hand fixes, structure) and verifies until clean. Triggered by /semi-check.
 ---
 
 # Check and fix an app (`/semi-check`)

@@ -24,6 +24,11 @@ and `/semi-sync`.
    - **Brief:** what the product is, who uses it (age, context: phone in a hurry, desk all day), 3 personality words
      ("nhanh, vui vẻ, đáng tin"), and a one-line tagline if they have one. Stored as `product`, `audience`,
      `personality`, `tagline`.
+   - **Sample content** (draft it from the brief, let the user correct): the product's main list ("Bản in"), 3 real
+     items of it ("Móc khoá logo PLA đen", …), the one figure a user opens the product for (`{ label, value, sub? }`)
+     and a proof figure for a landing page (`{ label, value }`). Stored in `brief.sample` (`list`, `items`, `metric`,
+     `proof`) by editing `brand.json`; the brand book's screens and every new app's first screen use it instead of
+     generic shop data.
    - Brand name and package name (`@<scope>/brand`).
    - **Logo** (recommended): ask for the files (SVG best; a dark-background version and a square mark if they have
      them), put them in `assets/`. For an SVG run `brand.mjs colors assets/logo.svg` and offer its colours as the
@@ -46,7 +51,7 @@ and `/semi-sync`.
    - **Colour use:** how much accent: restrained (Recommended for tools), balanced, expressive (consumer, marketing).
    - Imagery (optional): one or two sentences on photos / illustration.
    - Density and type scale are not brand choices: one brand has a dense dashboard and a roomy store, so each product
-     picks them in `/semi-new-app` (the preview's top bar switches them to compare).
+     picks them in `/semi-new-app` (the Ứng dụng page shows each sample screen with its usual pick).
 3. **Create:**
    ```bash
    node "<path-to-this-skill>/scripts/brand.mjs" create --cwd "<dir>" --name "<Name>" --package "@scope/brand" \
@@ -60,12 +65,18 @@ and `/semi-sync`.
    ```bash
    node "<path-to-this-skill>/scripts/brand.mjs" preview --cwd "<dir>"     # run_in_background; http://localhost:4600
    ```
-   It is a brand book rendered with real `@semi/ui` components, in three tabs: **Thương hiệu** (cover, brief, logo
+   It is a brand book rendered with real `@semi/ui` components, in one dashboard (the Semi docs shell: menu on the
+   left, a tab bar on phones) with three pages: **Thương hiệu** (cover, brief, logo
    with clear space and misuse examples, colours by role with the share of a screen, type, voice, imagery),
    **Ứng dụng** (dashboard, phone app, landing page, email, light and dark, texts from the voice) and **UI kit**
-   (scales, contrast table, downloads, every component page); theme, allowed styles, density and type scale switch in the top bar. Open it in the browser when you can, read the contrast table and the warnings, and
+   (scales, contrast table, downloads, then every component page); theme and allowed styles switch at the foot of the menu. Open it in the browser when you can, read the contrast table and the warnings, and
    tell the user in a few lines: always say when the button is not the exact brand colour in a theme (`fidelity`,
    ΔE > 0.08, with the reason the warning gives) and any "lưu ý" row, since those are what a designer would notice. Keep the server running while they adjust: `set` rebuilds and the page updates.
+   **Look before you hand it over** (a browser or Playwright, when you have one): open `/`, `/apps/` and `/kit/` at
+   375px and 1280px wide in both themes, take a screenshot of each and run this in the page:
+   `[...document.querySelectorAll("main *")].filter(e => { if (e.closest("aside, pre, [class*=overflow-x-auto]")) return false; const b = e.getBoundingClientRect(); return b.width && (b.right > innerWidth + 1 || (getComputedStyle(e).overflowX === "hidden" && e.scrollWidth > e.clientWidth + 2)); }).length`
+   (0 = nothing spills; tables and code blocks scroll on their own and are left out). A long name, tagline or sample item that breaks
+   a screen is fixed in `brand.json` (shorter text) or reported as a Semi bug with `/semi-propose`, never hidden.
 5. **Adjust** what the user asks ("darker primary", "use the preset neutrals"):
    ```bash
    node "<path-to-this-skill>/scripts/brand.mjs" set --cwd "<dir>" primary=#008f36 neutral=preset

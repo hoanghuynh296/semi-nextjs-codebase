@@ -90,7 +90,8 @@ function Brief() {
 
 const MISUSE = [
   ["Kéo méo", { transform: "scaleX(1.45)" }],
-  ["Đổi màu", { filter: "hue-rotate(150deg) saturate(1.6)" }],
+  // A text wordmark (no logo yet) is near-black, which a hue rotation leaves as it is: recolour it outright.
+  ["Đổi màu", { filter: "hue-rotate(150deg) saturate(1.6)" }, { color: "var(--color-tone-pink)" }],
   ["Xoay nghiêng", { transform: "rotate(-14deg)" }],
   ["Thêm bóng, hiệu ứng", { filter: "drop-shadow(3px 4px 0 rgba(0,0,0,.45))" }],
 ];
@@ -129,10 +130,10 @@ function Logo() {
       <div className="space-y-2">
         <h3 className="text-title font-semibold text-contrast px-1">Không được làm</h3>
         <div className="grid gap-3 grid-cols-2 @3xl:grid-cols-5">
-          {MISUSE.map(([label, css]) => (
+          {MISUSE.map(([label, css, textCss]) => (
             <figure key={label} className="space-y-1.5">
               <div data-theme="light" className="bg-canvas rounded-card border border-line h-28 flex items-center justify-center overflow-hidden">
-                <LogoArt theme="light" height={28} style={css} />
+                <LogoArt theme="light" height={28} style={!logoSrc("light") && textCss ? { ...css, ...textCss } : css} />
               </div>
               <figcaption className="flex items-center gap-1.5 text-label text-body px-1">
                 <Icon name="close" className="w-4 h-4 text-danger-fg shrink-0" />
@@ -171,7 +172,7 @@ function Colors() {
   const off = THEMES.filter((t) => (brand.fidelity?.[t]?.deltaE ?? 0) > 0.08);
   return (
     <Section title="Màu" icon="palette" card={false} lead={c ? `Mức dùng màu chính: ${c.accentLabel}. ${c.accentRule}` : undefined}>
-      <div className="grid gap-3 grid-cols-2 @3xl:grid-cols-5">
+      <div className={`grid gap-3 grid-cols-2 ${swatches.length === 5 ? "@3xl:grid-cols-5" : "@3xl:grid-cols-4"}`}>
         {swatches.map((s, i) => (
           <div key={s.name} className={`${CARD} overflow-hidden ${i === 0 ? "col-span-2 @3xl:col-span-1" : ""}`}>
             <div className={`h-24 ${s.cls} border-b border-line`} />

@@ -6,6 +6,7 @@ import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, write
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { auditFileState, auditProject, totals, writeAuditFile } from "../../plugin/skills/semi-check/scripts/audit.mjs";
+import { wireAgentsMd } from "../../plugin/skills/semi-new-app/scripts/setup.mjs";
 
 const FIX = new URL("../../plugin/skills/semi-check/scripts/fix.mjs", import.meta.url).pathname;
 const STYLE = new URL("../../plugin/skills/semi-new-app/scripts/style.mjs", import.meta.url).pathname;
@@ -86,6 +87,9 @@ test("fix --codemod then a clean --verify deletes semi-check.md", () => {
   const { root, web } = app();
   writeFileSync(join(web, "semi-lint.json"), JSON.stringify({ scan: ["app"], style: "flat", keep: { tables: "x", "app-shell": "x", "subpage-toolbar": "x" } }));
   writeFileSync(join(web, "app/layout.tsx"), `// fonts: --font-geist --font-montserrat-alternates\n` + LAYOUT.replace("<html ", '<html data-style="flat" ').replace("<body>", "<body><ThemeProvider>").replace("</body>", "</ThemeProvider></body>"));
+  // The agent rules are wired (AGENTS.md block + CLAUDE.md importing it), so only the code is left to fix.
+  writeFileSync(join(web, "AGENTS.md"), "<!-- semi-design-system:start -->\n# Semi\n<!-- semi-design-system:end -->\n");
+  writeFileSync(join(web, "CLAUDE.md"), "@AGENTS.md\n");
   writeAuditFile(auditProject(root), root);
   execFileSync("node", [FIX, "--cwd", root, "--codemod"]);
   assert.match(readFileSync(join(web, "app/page.tsx"), "utf8"), /bg-panel text-contrast/);
@@ -161,5 +165,21 @@ test("brand kit in a product: the audit asks to wire it, foundation wires it, on
   assert.throws(() => execFileSync("node", [STYLE, "--cwd", root, "--to", "sharp"], { stdio: "pipe" }));
   execFileSync("node", [STYLE, "--cwd", root, "--to", "soft"], { stdio: "pipe" });
   assert.match(readFileSync(join(web, "app/layout.tsx"), "utf8"), /<html data-style="soft"/);
+  rmSync(root, { recursive: true });
+});
+
+test("agent rules: the audit asks for the Semi block in AGENTS.md and CLAUDE.md importing it; foundation writes both", () => {
+  const { root, web } = app();
+  const issue = () => auditProject(root).apps[0].issues.find((i) => i.check === "agent-rules");
+  assert.match(issue().what, /AGENTS\.md[\s\S]*CLAUDE\.md/);
+  writeFileSync(join(web, "CLAUDE.md"), "# Notes of this app\n");
+  wireAgentsMd(web, "0.19.0");
+  assert.match(readFileSync(join(web, "AGENTS.md"), "utf8"), /<!-- semi-design-system:start -->/);
+  const claude = readFileSync(join(web, "CLAUDE.md"), "utf8");
+  assert.match(claude, /^@AGENTS\.md\n/);
+  assert.match(claude, /# Notes of this app/); // the app's own text stays
+  wireAgentsMd(web, "0.19.0");
+  assert.equal(readFileSync(join(web, "CLAUDE.md"), "utf8"), claude); // once
+  assert.equal(issue(), undefined);
   rmSync(root, { recursive: true });
 });

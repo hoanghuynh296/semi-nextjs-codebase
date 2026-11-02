@@ -31,5 +31,8 @@ jobs:
       - name: Build Next.js Static Storybook
         run: npx next build
 
-      - name: Browser checks (contrast AA both themes, axe, theme, keyboard)
+      - name: Build the sample brand book (tests/fixtures/brand.json)
+        run: npm run build:brand-book
+
+      - name: Browser checks (docs and brand book: contrast AA both themes, axe, phone widths, theme, keyboard)
         run: npm run test:ui

@@ -17,6 +17,8 @@ const COPIES = [
   ["tokens/styles.json", `${VENDOR}/styles.json`],
   // Antigravity loads every file in plugin/rules; semi-ui.md must stay identical to AGENTS.md.
   ["plugin/rules/AGENTS.md", "plugin/rules/semi-ui.md"],
+  // Claude Code reads hooks/hooks.json, other hosts the copy at the plugin root.
+  ["plugin/hooks/hooks.json", "plugin/hooks.json"],
 ];
 
 const check = process.argv.includes("--check");

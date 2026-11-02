@@ -480,6 +480,14 @@ export function auditSingleApp(cwd) {
   if (!existsSync(cssPath) || !readFileSync(cssPath, "utf8").includes("@semi/ui/tokens.css"))
     setup("semi-css", cssRel, "chưa import tokens.css + base.css của Semi", "khối semi-design-system trong globals.css (đổi giao diện: so ảnh trước / sau)");
   if (!lintCfg._found) setup("semi-lint-config", "semi-lint.json", "chưa có semi-lint.json", "semi-lint.json + baseline lint");
+  // Agent rules: the Semi block in AGENTS.md, and CLAUDE.md importing it (Claude Code reads CLAUDE.md, not AGENTS.md).
+  if (hasSemiUi) {
+    const near = (f) => [cwd, dirname(cwd), dirname(dirname(cwd))].map((d) => join(d, f)).filter((p) => existsSync(p)).map((p) => readFileSync(p, "utf8"));
+    const missingRules = [];
+    if (!near("AGENTS.md").some((t) => t.includes("<!-- semi-design-system:start -->"))) missingRules.push("khối luật Semi trong AGENTS.md");
+    if (!near("CLAUDE.md").some((t) => /^@AGENTS\.md\s*$/m.test(t))) missingRules.push("@AGENTS.md trong CLAUDE.md (Claude Code chỉ đọc CLAUDE.md)");
+    if (missingRules.length) setup("agent-rules", "AGENTS.md", `agent chưa đọc được luật Semi: thiếu ${missingRules.join(", ")}`, "foundation (ghi luật và nối CLAUDE.md)");
+  }
   const layout = ["app/layout.tsx", "src/app/layout.tsx", "app/layout.jsx", "src/app/layout.jsx"].find((f) => existsSync(join(cwd, f)));
   if (layout && !/\bThemeProvider\b/.test(readFileSync(join(cwd, layout), "utf8")))
     setup("providers", layout, "layout chưa có ThemeScript / ThemeProvider / ToastHost / ConfirmHost", `bọc layout, defaultTheme="${mode === "dark" ? "dark" : "light"}" theo giao diện hiện tại`, "manual");

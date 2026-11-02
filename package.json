@@ -1,6 +1,6 @@
 {
   "name": "@semi/ui",
-  "version": "0.18.0",
+  "version": "0.19.0",
   "private": true,
   "description": "Semi Design System: tokens, React components, class constants, lint and agent plugin for Next.js 16 + React 19 + Tailwind 4.",
   "license": "UNLICENSED",
@@ -59,6 +59,7 @@
     "lint": "node lint/semi-lint.mjs",
     "check": "npm run check:tokens && npm run check:vendor && npm run check:version && npm run check:manifest && npm run typecheck && npm run lint && npm test",
     "build:storybook": "next build",
+    "build:brand-book": "node scripts/build-brand-book.mjs",
     "dev": "next dev"
   },
   "peerDependencies": {

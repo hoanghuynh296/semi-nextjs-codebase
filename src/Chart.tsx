@@ -323,7 +323,10 @@ export function DonutChart({
       return arc;
     });
   }, [data, total]);
-  const point = (a: number, rad: number) => [r + rad * Math.cos(a), r + rad * Math.sin(a)];
+  // Rounded: Math.cos / Math.sin may differ in the last digits between Node and the browser, and an unrounded path
+  // string then fails hydration.
+  const round = (n: number) => Math.round(n * 1000) / 1000;
+  const point = (a: number, rad: number) => [round(r + rad * Math.cos(a)), round(r + rad * Math.sin(a))];
   const path = (a0: number, a1: number) => {
     const large = a1 - a0 > Math.PI ? 1 : 0;
     const [x0, y0] = point(a0, r - 1);

@@ -1,4 +1,4 @@
-# Semi Design System (@semi/ui v0.18.0)
+# Semi Design System (@semi/ui v0.19.0)
 
 > The shared UI of every Semi app: semantic tokens that work in light and dark mode, React components (Next.js, Tailwind CSS 4) and the rules agents follow. Every component has a page with live examples and a markdown twin for agents.
 
@@ -237,7 +237,7 @@ type scale are the product's (`data-density`, `data-type-scale` on `<html>`, `se
 - **No fixed chromatic text (`no-fixed-tone-text`):** `text-emerald-400`, `text-rose-700 dark:text-rose-300`, `fill-sky-500` → `text-accent-fg`, `text-*-fg`, `text-tone-<hue>`.
 - **No brand scale for states (`accent-state-token`):** `ring-primary-500/50`, `bg-primary-500/15`, `border-primary-500/30` → `ring-focus`, `bg-accent-subtle`, `border-accent-line` (themed, checked in both themes).
 - **No arbitrary colours / sizes:** `bg-[#…]`, `text-[rgb(…)]` (`hex-colour-class`), `"#fff"` in style props or configs (`literal-colour-value`), `text-[13px]` (`arbitrary-text-size`).
-- **No solid pastel surfaces (`no-solid-pastel-surfaces`):** Never use solid pastels (`bg-*-50`, `border-*-200`) for cards, rows, or containers; in dark mode they turn into glaring light rectangles. Use alpha transparency (`bg-amber-500/10 border-amber-500/20`) or standard `bg-panel`.
+- **No solid pastel surfaces (`no-solid-pastel-surfaces`):** Never use solid pastels (`bg-*-50`, `border-*-200`) for cards, rows, or containers; in dark mode they turn into glaring light rectangles. Use the themed status surfaces (`bg-warning-bg border-warning-border text-warning-fg`, also danger / success / info) or standard `bg-panel`.
 - **Universal Tonal Theme-Matching:** Chromatic accents across ANY component (cards, alert banners, callouts, table rows, buttons, badges, chips) adapt seamlessly to both dark & light themes using alpha transparency: static fill `bg-<color>-500/10`, hover fill `hover:bg-<color>-500/15`, active fill `active:bg-<color>-500/20`, border `border-<color>-500/20`, hover border `hover:border-<color>-500/30`, and text `text-tone-<color>` (or `TONAL_CONTAINER` / `TONAL_HOVER` / `<Badge tone="...">`).
 - **No Card class override (`card-class-override`):** `<Card>` (`interactive`, `active`) owns its surface: no `bg-*` / `shadow-*` in its className.
 - **Surfaces & Shadows:** Gradients, glow, `shadow-[0_0_…]`, `shadow-sm/md/lg` are banned. Cards are separated by borders (`border-line`); their only resting shadow is `shadow-card`, which the style sets (none in Flat, soft in Soft, hard offset in Sharp).
@@ -543,15 +543,16 @@ Instead, follow the canonical Semi patterns:
    </div>
    ```
 2. **Callout / Alert Banners:**
-   When an inline banner or callout needs a chromatic tint (info, warning, success), use 10% alpha container fill with 20% alpha border:
+   When an inline banner or callout needs a chromatic tint (info, warning, success, danger), use `<Alert tone>` or the
+   themed status surface tokens, which are tinted fills and borders tuned for AA text in both themes:
    ```tsx
-   {/* Amber warning callout */}
-   <div className="flex items-center gap-2 px-3 py-2.5 rounded-control bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-label">
+   {/* Warning callout */}
+   <div className="flex items-center gap-2 px-3 py-2.5 rounded-control bg-warning-bg text-warning-fg border border-warning-border text-label">
      <Icon name="alertTriangle" className="w-4 h-4 shrink-0" />
      <span>{warningMessage}</span>
    </div>
    ```
-   *Why alpha transparency works:* 10% opacity blends gracefully onto `#18191c` (`bg-panel`) in dark mode and onto `#ffffff` in light mode, maintaining ideal contrast and eliminating the need for complex mode-specific overrides.
+   *Why tokens:* the tint blends onto the panel in both themes, and `text-*-fg` is the shade that reaches 4.5:1 on it in each theme; a fixed `text-amber-600 dark:text-amber-400` pair cannot be checked and breaks under a brand or style.
 
 ## 3c. Universal Theme-Matching Tonal Architecture (All Components)
 
@@ -601,7 +602,7 @@ Instead, the Semi Design System **adapts all chromatic components** to **Two-Tie
 </div>
 
 // After:
-<div className="rounded-control border border-amber-500/20 bg-amber-500/10 p-3 text-amber-700 dark:text-amber-300">
+<div className="rounded-control border border-warning-border bg-warning-bg p-3 text-warning-fg">
   <span className="text-ui font-medium">Your license expires soon.</span>
 </div>
 ```
@@ -1565,7 +1566,8 @@ Agent chạy trang preview **của chính repo brand** (`npm run preview`) và g
 - **UI kit** (cho developer): thang màu, sắc của nút và chữ ở từng theme và độ lệch với màu thương hiệu, cỡ chữ, bảng
   điểm đọc rõ, tải `brand.css`, `brand.json` và logo, cùng **toàn bộ component của Semi** (ví dụ, code, API).
 
-Đổi sáng / tối và giữa các style được phép ở thanh trên.
+Cả ba phần nằm chung một dashboard (menu bên trái, thanh tab dưới trên điện thoại), như trang component. Đổi sáng / tối
+và giữa các style được phép ở chân menu.
 
 👉 *Bạn làm:* mở link, nhìn và nói điều muốn đổi ("màu chính đậm hơn", "dùng màu trung tính có sẵn"). *Agent làm:* sửa
 `brand.json`, sinh lại; trang đang mở tự cập nhật.
@@ -1603,9 +1605,10 @@ mỗi lần push lên main nó build lại. Từ đây 3D Noobs có bộ nhận 
 /semi-new-app --brand github:3dnoobs/brand
 ```
 
-Agent chỉ hỏi tên app ("3D Noobs Manager") và style (trong danh sách brand cho phép: app quản lý chọn Flat). Không hỏi
-màu, font: đã có trong brand.
-👉 *Bạn làm:* trả lời 2 câu.
+Agent hỏi tên app ("3D Noobs Manager"), style (trong danh sách brand cho phép: app quản lý chọn Flat), loại sản phẩm
+(công cụ dùng cả ngày · ứng dụng thường · web bán hàng · trang giới thiệu: quyết định màn đầu, mật độ, cỡ chữ và theme
+mặc định), cùng phiên bản Next.js và kiểu export (thường để mặc định). Không hỏi màu, font: đã có trong brand.
+👉 *Bạn làm:* trả lời vài câu.
 
 **Bước 6. Agent dựng app**
 
@@ -1622,12 +1625,15 @@ Next.js + `@semi/ui` + `@3dnoobs/brand`, rồi nối sẵn:
 ```
 
 ```tsx
-// app/layout.tsx: font của brand + style đã chọn
-<html data-style="flat" className={`dark ${geist.variable} ${montserratAlternates.variable}`}>
+// app/layout.tsx: font của brand, style và mật độ đã chọn, theme mặc định theo loại sản phẩm
+<html data-style="flat" data-density="compact" className={`dark ${beVietnamPro.variable} ${montserratAlternates.variable}`}>
+  <ThemeScript defaultTheme="system" />
 ```
 
-Cùng với `semi-lint.json` (`"brand": "@3dnoobs/brand"`, `"style": "flat"`), luật của brand trong `AGENTS.md`, trang mẫu
-(AppShell, KpiCard…), rồi kiểm tra `semi-lint` + `tsc` + build.
+Cùng với `semi-lint.json` (`"brand": "@3dnoobs/brand"`, `"style": "flat"`), luật Semi và luật của brand trong
+`AGENTS.md`, `CLAUDE.md` trỏ tới nó (`@AGENTS.md`, để Claude Code đọc), màn đầu theo loại sản phẩm (app quản lý:
+AppShell có logo của brand, con số chính và các mục mẫu từ `brief.sample`; web bán hàng: thanh trên, hero, bằng chứng),
+rồi kiểm tra `semi-lint` + `tsc` + build.
 👉 *Bạn làm:* không gì cả, đợi báo xong.
 
 **Bước 7. Phát triển như bình thường**
@@ -1686,7 +1692,15 @@ Brand kit ghi nó chạy với `@semi/ui` nào (`"semi": "^0.16"` trong `brand.j
   "neutral": "tinted",
   "styles": { "default": "flat", "allowed": ["flat", "soft"] },
   "fonts": { "sans": "Geist", "display": "Montserrat Alternates" },
-  "brief": { "product": "Phần mềm quản lý máy in 3D", "audience": "Maker 18–35 tuổi, dùng cả ngày trên máy tính", "personality": ["chính xác", "thân thiện", "kỹ thuật"], "tagline": "In 3D chính xác ngay lần đầu" },
+  "brief": {
+    "product": "Phần mềm quản lý máy in 3D", "audience": "Maker 18–35 tuổi, dùng cả ngày trên máy tính",
+    "personality": ["chính xác", "thân thiện", "kỹ thuật"], "tagline": "In 3D chính xác ngay lần đầu",
+    "sample": {
+      "list": "Bản in", "items": ["Móc khoá logo PLA đen", "Giá đỡ điện thoại gập được", "Chậu cây mini xoắn ốc"],
+      "metric": { "label": "Bản in đang chạy", "value": "12", "sub": "3 máy rảnh" },
+      "proof": { "label": "bản in đã giao cho người mới", "value": "12.000+" }
+    }
+  },
   "logo": { "full": "assets/logo.svg", "fullDark": "assets/logo-dark.svg", "mark": "assets/mark.svg" },
   "voice": {
     "tone": "friendly", "address": "bạn", "we": "3D Noobs", "emoji": false,
@@ -1708,7 +1722,7 @@ Brand kit ghi nó chạy với `@semi/ui` nào (`"semi": "^0.16"` trong `brand.j
 | `styles.default`, `styles.allowed` | `flat` · `soft` · `sharp` | Ít nhất một; `default` phải nằm trong `allowed` |
 | `fonts.sans`, `fonts.display` | Tên Google Font | `next/font/google` phải có font đó |
 | `semi` | Dải phiên bản `@semi/ui` | `/semi-brand update` cập nhật |
-| `brief` | `product`, `audience`, `personality` (1–5 tính từ), `tagline` (một câu, ≤ 90 ký tự) | Tuỳ chọn; vào BRAND.md và luật cho agent ("chọn chữ, hình ảnh cho họ") |
+| `brief` | `product`, `audience`, `personality` (1–5 tính từ), `tagline` (một câu, ≤ 90 ký tự); `sample`: `list` (tên danh sách chính), `items` (2–5 mục thật), `metric` (`{ label, value, sub? }`, con số người dùng mở app để xem), `proof` (`{ label, value }`, bằng chứng cho trang giới thiệu) | Tuỳ chọn; vào BRAND.md và luật cho agent ("chọn chữ, hình ảnh cho họ"). Thiếu `sample` thì build nhắc: màn mẫu của brand book và trang đầu của app mới dùng chữ của sản phẩm thay cho dữ liệu cửa hàng chung chung |
 | `logo` | `full` (bắt buộc khi có logo), `fullDark`, `mark`: đường dẫn trong repo kit (.svg nên dùng, .png, .webp); `clearspace` (× chiều cao, mặc định 0.5), `minWidth` (px, mặc định 80) | Build copy vào `dist/logo/full.svg` … để sản phẩm import; thiếu file là lỗi |
 | `voice` | `tone`: `friendly` · `neutral` · `formal`; `address` (gọi người dùng), `we` (tự xưng), `emoji`, `do`, `dont`, `examples` (`button`, `success`, `error`, `empty`, `confirm`) | Tuỳ chọn, mặc định trung tính, gọi "bạn". Luật viết chung của Semi (nút, lỗi, trạng thái trống) luôn kèm theo |
 | `color` | `accent`: `restrained` · `balanced` · `expressive`; `secondaryRole`: `highlight` · `badge` · `illustration` | Mặc định tiết chế, màu phụ là điểm nhấn. Mức dùng màu quyết định tỉ lệ màu trên một màn hình (tiết chế 80 / 15 / 5 %, cân bằng 70 / 20 / 10, phóng khoáng 55 / 25 / 20: trung tính / bề mặt / màu chính; màu phụ lấy khoảng 30 % phần màu chính) |
@@ -1829,29 +1843,20 @@ with `data-style` re-styles only its subtree (used by Storybook previews), not s
 <!-- semi-design-system:start -->
 # Semi Design System — UI Rules
 
-All web UI in the Semi ecosystem MUST follow the **Semi Design System** (`@semi/ui`, repo `https://github.com/hoanghuynh296/semi-nextjs-codebase`).
+All web UI here follows the **Semi Design System** (`@semi/ui`, repo `https://github.com/hoanghuynh296/semi-nextjs-codebase`). `npx semi-lint` enforces most of this; the full rules are `node_modules/@semi/ui/docs/QUICK_REF.md` (details in `docs/DESIGN_SYSTEM.md`).
 
-1. **Single source of truth, ask it first:** before writing UI, find the component for the need: the `semi` MCP tools (`semi_search` → `semi_docs` → `semi_example`, `semi_block` for whole pages) or the same from the terminal (`npx semi search "bảng có sắp xếp"`, `npx semi docs DataTable`, `npx semi example data-table`, `npx semi add dashboard`). They answer from the installed `@semi/ui`. Read the component's page (when to use, what to use instead, API, accessibility) and start from one of its examples; rules: `node_modules/@semi/ui/docs/QUICK_REF.md` (details in `docs/DESIGN_SYSTEM.md`). Do not invent local colour classes, font sizes, radii, or custom wrapper barrels (`components/ui.tsx`).
-2. **Use `@semi/ui` and `@semi/ui/styles` directly:**
-   - **Layout & Page Structure (`@semi/ui`):** `AppShell` (floating 2-panel Bento frame on `bg-canvas` with collapsible `w-52`/`w-14` sidebar and `MobileTabBar` on phones — never use a fixed `border-r` or `-translate-x-full` hamburger `<aside>`), `PageTitle` / `PageTabsTitle` (text-only display title or underline group tabs — never place text buttons on the title row), `SubpageToolbar` (`STICKY_TOOLBAR` with filters left and icon-only `BTN_PRIMARY BTN_ICON` + `SearchInput` + `RefreshButton` right), `KpiCard` (`18px–22px` tabular-nums metric card), `Modal` (shared portal dialog with `MODAL_HEAD` + `MODAL_FOOT`), `ThemeScript` (in `<head>`, with `<html suppressHydrationWarning>`) + `ThemeProvider` / `ThemeSwitcher` / `ThemeToggle` (dual-theme Dark/Light/System via `data-theme`), `Card` (`interactive`, `active`; no `bg-*`/`shadow-*` overrides).
-   - **Primitives (`@semi/ui`):** `Button` (`variant`, `size`, `icon`, `iconOnly` + `aria-label`, `loading`), `Field` + `Input` / `Textarea` (label, hint, error wired for screen readers), `Checkbox`, `Switch`, `RadioGroup`, `Tabs`, `Tooltip`, `Menu` (overflow actions), `toast()` + `ToastHost`, `Alert`, `Progress`, `Avatar`, `EmptyState`, `Table` (`THead`/`TBody`/`TR`/`TH`/`TD`), `Drawer`, `Spinner`, `SemiLocaleProvider` (UI strings, `vi` default / `en`). Inventory with props: `node_modules/@semi/ui/components.json`.
-   - **Controls (`@semi/ui`):** `Icon`, `IconTile`, `AppHeader`, `PageActions`, `Chip`, `Pills`, `CustomSelect`, `CustomCombobox`, `NumberInput`, `DatePicker`, `SearchInput`, `Pagination`, `SidePanel`, `RefreshButton`, `Skeleton` (`SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton`), `confirmDialog` + `ConfirmHost`, `ExternalLink`, `Markdown`.
-   - **AI chat (`@semi/ui`):** `AIChat` (or `ChatPanel` > `ChatView` > `ChatList` + `ChatComposer` with `UserMessage`, `AssistantMessage`, `ChatError`, `ChatThinking`, `ChatIntro`, `ChatSuggestion`) for every AI conversation, with `ChatModelPicker` (provider → model → effort) as its `toolbar`; the app keeps messages, streaming and the provider / model lists. Never build its own composer, bubbles or chat panel. Agent work shows with `Reasoning`, `ToolCall`, `TaskList`, `Terminal`, `FileTree`, `Sources` + `Citation`, `ContextMeter`; every outward-facing, paid or irreversible agent action waits for `ActionConfirmation`.
-   - **Styles (`@semi/ui/styles`):** `SHELL_*`, `CARD`, `CARD_HOVER`, `CARD_ACTIVE`, `HERO`, `TILE`, `SECTION_*`, `STICKY_TOOLBAR`, `MODAL_*`, `FIELD_LABEL`, `FIELD_INPUT`, `FIELD_TEXTAREA`, `STATUS_DOT`, `STATUS_PILL`, `BTN_PRIMARY`, `BTN_SECONDARY`, `BTN_DANGER`, `BTN_GHOST`, `BTN_SM`, `BTN_ICON`, `MODAL_BTN_*`, `headerPrimary`, `VIEWPORT_*`, `TONAL_SURFACE`, `EMPTY_STATIC`, `cn()`, `FOCUS_RING`, `OVERLAY`.
-3. **Hard constraints (enforced by `npx semi-lint`):**
-   - Flat surfaces & semantic tokens only (`bg-canvas`, `bg-app`, `bg-panel`, `bg-field`, `bg-raised`, `text-contrast`, `text-body`, `text-muted`, `border-line`, `border-divider`). Status surfaces: `bg-danger-bg border-danger-border text-danger-fg` (also success / warning / info, `bg-*-solid` for dots and bars). Backdrops `bg-overlay`; floating layers `shadow-overlay` (canvas controls `shadow-float`); global layers `z-sticky` < `z-drawer` < `z-modal` < `z-dialog` < `z-keypad` < `z-popover` < `z-toast` < `z-tooltip` (never `z-[9999]`). No gradients, no glow shadows (`shadow-[0_0_…]`), no drop shadows on surfaces other than `shadow-card`, no arbitrary colours (`bg-[#...]`, `text-[rgb(…)]`) and no literal colours in code (`"#fff"`).
-   - Never use physical Tailwind color classes (`bg-white`, `text-slate-900`, `border-slate-200`, `bg-slate-50`, `bg-gray-800/900`) directly in JSX (`no-literal-palette`). Use Semantic Tokens so interfaces adapt automatically to Dark and Light modes. Accent states use themed tokens, never the brand scale with alpha (`accent-state-token`): `ring-focus` (focus), `border-focus` (focused field), `bg-accent-subtle` / `bg-accent-subtle-hover` (selected, active), `border-accent-line` (selected border), not `ring-primary-500/50` / `bg-primary-500/15`. Coloured text uses themed tokens, never fixed `-300/-400` shades or `dark:` pairs: `text-accent-fg` (primary text/icons), `text-danger-fg` / `text-success-fg` / `text-warning-fg` / `text-info-fg`, `text-tone-<hue>`; solid actions `bg-accent hover:bg-accent-hover text-on-accent` (or `BTN_PRIMARY`). Never pass background or shadow overrides to `<Card>` (`card-class-override`).
-   - Never use solid pastel surface classes (`bg-*-50`, `border-*-200`) for cards or containers (`no-solid-pastel-surfaces`); use alpha transparency (`bg-amber-500/10 border-amber-500/20`) or standard `bg-panel`.
-   - Typography: `font-medium` / `font-semibold` only (no `font-bold`); the type scale only: `text-caption` 11 · `text-label` 12 · `text-ui` 13 · `text-ui-lg` 14 · `text-title` 15 · `text-title-lg` 16 for UI/body, `text-kpi sm:text-heading` for KPI figures (`KpiCard`), `text-heading sm:text-display` for page titles (`PageTitle`); no `text-xs/sm/base` and no `text-[13px]`; `tabular-nums` for numbers (`font-mono` only for code); sentence case (no `uppercase` labels or ALL CAPS buttons).
-   - Style: the app's style (Flat, Soft, Sharp): `"style"` in `semi-lint.json`, `data-style` on `<html>`, its fonts loaded with `next/font`; `node_modules/@semi/ui/docs/STYLES.md`) sets the neutral colours, fonts (`font-sans`, `font-display`), control sizes (`h-control` for toolbar buttons / pills / chips / search, `h-field` for inputs and selects, never `h-[34px]`), the card border (`border-card`) and every radius and card shadow, so use the style tokens only: `rounded-chip` (marks, checkboxes, inline code), `rounded-control` (buttons, inputs, tiles, rows), `rounded-card` (cards, popovers, menus, toasts), `rounded-panel` (hero, modal, drawer, sidebar), `rounded-full` (pills, avatars, dots), `shadow-card` (resting card shadow, `CARD` has it). Never `rounded`, `rounded-sm/md/lg/xl/2xl` or `rounded-[Npx]` (`radius-token`), never per-style classes or `[data-style=…]` selectors in the app. Change the style only when the user asks, with the `semi-ui` skill's style steps (within the brand's allowed styles).
-   - Controls: never native `<select>`, `type="date"`, `type="number"`, or `window.confirm`/`alert`. Never inline `<svg><path>` or unicode glyph icons (✕ ✓ ✗ ⚠) — use `<Icon name="…" />` (stroke 1.75). Always follow semantic icon mappings (`node_modules/@semi/ui/docs/ICONS.md`): `trash` for delete/remove (never `close`), `close` for dialog dismiss (never `trash`), `refresh` for reload/sync, `sliders` for parameters/tuning, `filter` for search filters, `user`/`users` for profiles/teams, `settings` for app configuration, `sun`/`moon` for theme toggling.
-   - Not the generic AI screen (`docs/DESIGN_SYSTEM.md` §19): one main block per screen (`KpiCard featured`, not four equal cards); KPI and card icons neutral, colour only for a status (`decorative-icon-tones`); no three icon feature cards with vague promises (proof: a real number, a quote, a product shot); icons only where they help scanning; sample and empty-state text from the product's brief and voice; plain sections and white space next to cards. Titles and big numbers use `font-title` / `font-figure` (the style sets weight and font); density and type scale are this product's (`data-density`, `data-type-scale` on `<html>`, `"density"` / `"typeScale"` in `semi-lint.json`), never set by hand in paddings or text sizes.
-   - Loading: use `Skeleton` shapes, never `"Đang tải…"` text or full-page spinners (`Button loading` / `Spinner` only inside the control that runs the action).
-   - Accessibility: every icon-only control has an `aria-label`; dialogs are `Modal` / `Drawer` / `confirmDialog` (focus trap, Escape, focus return built in); custom controls keep the visible focus ring (`FOCUS_RING`); UI strings come from `SemiLocaleProvider`, not hard-coded inside shared components.
-4. **Brand kits:** when `semi-lint.json` has `"brand"`, the product belongs to that brand (`node_modules/<brand>/BRAND.md`, rules block in `AGENTS.md`; `semi_brand` / `npx semi brand voice|color|logo` answer from it). Write UI text in the brand's voice (tone, how it addresses the user, its examples), use colour as its colour-use rule says and import the logo from the kit, never redraw it; never define colours, fonts or Semi tokens in the app (`brand-override`), only the brand's allowed styles. Never invent a brand colour: it comes from the user or the brand kit. Brand changes happen in the brand repo (`/semi-brand`), then `/semi-sync` in the product (`node_modules/@semi/ui/docs/BRANDS.md`).
-5. **Gaps go upstream, not into local primitives:** If `@semi/ui` cannot express a need (missing component, prop, token, icon, or a lint false positive), first run `/semi-sync` and re-check the docs; if the gap remains, run `/semi-propose` to file it on the core repo. Meanwhile keep a minimal compliant local workaround marked `// TODO(semi#<issue>)` and baseline (never broadly `skip`) any lint hits.
-6. **Never fork rules per project:** When the user changes a shared UI rule, update `docs/DESIGN_SYSTEM.md`, `docs/QUICK_REF.md`, `docs/DECISIONS.md`, and `lint/semi-lint.mjs` in the `semi-nextjs-codebase` repository and release a new tag — never record shared UI rules only in a consumer project's `AGENTS.md` or agent memory. App-specific patterns belong in the app's own `docs/UI_EXTENSIONS.md`.
-7. **Verification:** Run `npx semi-lint` (or `npm run semi:lint`) before finishing any UI change. For a whole-app check run `/semi-check` (writes `semi-check.md`, then fixes it with the user's go-ahead); `/semi-sync` moves to a newer `@semi/ui` and runs that release's migrations (no audit); `/semi-brand` creates or changes a brand kit (in its own repo).
+1. **Ask Semi before writing UI.** Find the component for each need with the `semi` MCP tools (`semi_search` → `semi_docs` → `semi_example`; `semi_block` for whole pages; `semi_props` for props) or the terminal (`npx semi search "bảng có sắp xếp"`, `npx semi docs DataTable`, `npx semi example data-table`, `npx semi add dashboard`). They answer from the installed `@semi/ui`. Read *When to use*, *Use something else when* and *Accessibility*, then start from an example.
+2. **Compose, never re-create.** Import from `@semi/ui` and `@semi/ui/styles` directly. No local wrappers (`components/ui.tsx`), no raw `<select>`, `<table>`, `<dialog>`, `type="date"`, `type="number"`, `window.confirm` / `alert`, no inline `<svg>` or glyph icons (`<Icon name>`, mapping in `docs/ICONS.md`). Every AI conversation is `AIChat`; agent work uses `Reasoning`, `ToolCall`, `TaskList`, `Terminal`, `Sources`; an outward-facing, paid or irreversible agent action waits for `ActionConfirmation`. Pages sit in `AppShell` (or `AppHeader` for a one-screen tool) with `PageTitle`; dialogs are `Modal` / `Drawer` / `confirmDialog`; loading is `Skeleton`, never "Đang tải…" text.
+3. **Tokens only** (dual theme, any brand, any style):
+   - Surfaces and text: `bg-canvas|app|panel|field|raised`, `text-contrast|body|muted`, `border-line|divider`; status `bg-*-bg border-*-border text-*-fg` (danger, success, warning, info). Accent: `bg-accent text-on-accent` (or `BTN_PRIMARY`), `text-accent-fg`, `bg-accent-subtle`, `border-accent-line`, `ring-focus`. Never physical colours (`bg-white`, `text-slate-900`, `text-amber-600 dark:text-amber-400`), arbitrary colours (`bg-[#…]`), `primary-N/alpha`, gradients or glow shadows.
+   - Type scale only: `text-caption|label|ui|ui-lg|title|title-lg`, `text-kpi`, `text-heading`, `text-display`; `font-medium` / `font-semibold`, titles and big numbers `font-title` / `font-figure`; `tabular-nums` for numbers; sentence case.
+   - Shape and size come from the app's style (`"style"` in `semi-lint.json`, `data-style` on `<html>`): `rounded-chip|control|card|panel|full`, `shadow-card`, `h-control`, `h-field`. Never `rounded-lg`, `rounded-[Npx]`, `h-[34px]` or `[data-style]` selectors. Density and type scale are this product's (`data-density`, `data-type-scale`): never tune paddings or text sizes by hand for that.
+   - Layers: `z-sticky` < `z-drawer` < `z-modal` < `z-dialog` < `z-popover` < `z-toast` < `z-tooltip`; never `z-[9999]`.
+4. **Not the generic AI screen** (`DESIGN_SYSTEM.md` §19): one main block per screen (`KpiCard featured`, not four equal cards); icons neutral unless they mean a status; proof (a real number, a quote, a product shot) instead of three icon feature cards; icons only where they help scanning; sample data and empty states from this product, never "Lorem", "John Doe" or another domain.
+5. **Brand** (when `semi-lint.json` has `"brand"`): ask `semi_brand` (or `npx semi brand voice|color|logo|brief`) before writing UI text or placing colour. Write in the brand's voice, use colour as its colour-use rule says, import the logo from the kit, use only its allowed styles; never define colours, fonts or Semi tokens in the app (`brand-override`). Brand changes happen in the brand repo with `/semi-brand`, then `/semi-sync` here.
+6. **Accessibility:** icon-only controls have `aria-label`; custom controls keep `FOCUS_RING`; every text / background pair reaches 4.5:1 in both themes.
+7. **Gaps go upstream.** When `@semi/ui` cannot express a need, run `/semi-sync`, re-check the docs, then `/semi-propose`; meanwhile a minimal compliant workaround marked `// TODO(semi#<issue>)`, baselined, never a broad `skip`. Shared rules change in the Semi repo, never only in this file; app-specific patterns go in `docs/UI_EXTENSIONS.md`.
+8. **Before finishing:** `npx semi-lint` clean, `npx tsc --noEmit`, and the page checked in both themes and at phone width. Whole-app check: `/semi-check`; newer Semi or brand kit: `/semi-sync`.
 <!-- semi-design-system:end -->
 
 

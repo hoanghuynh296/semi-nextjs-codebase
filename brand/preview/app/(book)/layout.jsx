@@ -1,7 +1,7 @@
 "use client";
 
-// UI kit frame: the Semi docs shell (@semi/ui/site) with every component of Semi in this brand, for developers.
-// The brand book pages ((brand)/) have their own top bar.
+// The brand book frame: the Semi docs shell (@semi/ui/site) around every page: Thương hiệu, Ứng dụng, the UI kit and
+// every component of Semi in this brand. Theme and style switch at the foot of the menu.
 import { ThemeSwitcher, ThemeToggle } from "@semi/ui";
 import { DocsShell } from "@semi/ui/site";
 import brand from "../brand.json";
@@ -12,7 +12,7 @@ export default function KitLayout({ children }) {
     <DocsShell
       productName={brand.name}
       logoIcon="palette"
-      mobileTabIds={["home", "kit", "components"]}
+      mobileTabIds={["home", "apps", "kit", "components"]}
       sections={[
         {
           label: "Brand book",

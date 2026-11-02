@@ -1,6 +1,6 @@
 ---
 name: semi-sync
-description: Bring every app up to date with its brand kit and Semi - upgrade @semi/ui (and the brand kit, when the app has one) to the latest release tag from github:hoanghuynh296/semi-nextjs-codebase - install it, refresh the Semi rules block in AGENTS.md, show the CHANGELOG of the skipped releases, run those releases' migrations (code changes for their breaking changes), and check tsc. No audit, no refactor. Triggered by /semi-sync (formerly /semi-update).
+description: Bring every app up to date with its brand kit and Semi - upgrade @semi/ui (and the brand kit, when the app has one) to the latest release tag from github:hoanghuynh296/semi-nextjs-codebase - install it, refresh the Semi rules block in AGENTS.md, show the CHANGELOG of the skipped releases, run those releases' migrations (code changes for their breaking changes), and check tsc. No audit, no refactor. Triggered by /semi-sync.
 ---
 
 # Sync an app with its brand and Semi (`/semi-sync`)

@@ -1,0 +1,27 @@
+{
+  "name": "3D Noobs",
+  "package": "@3dnoobs/brand",
+  "primary": "#00AE42",
+  "secondary": "#FF8A00",
+  "neutral": "tinted",
+  "styles": { "default": "flat", "allowed": ["flat", "soft", "sharp"] },
+  "fonts": { "sans": "Be Vietnam Pro", "display": "Montserrat Alternates" },
+  "brief": {
+    "product": "Cửa hàng và cộng đồng in 3D cho người mới",
+    "audience": "Người mới chơi in 3D, 18–35 tuổi, xem trên điện thoại",
+    "personality": ["thân thiện", "nhanh", "đáng tin"],
+    "tagline": "In 3D dễ như bấm nút",
+    "sample": {
+      "list": "Bản in",
+      "items": ["Móc khoá logo PLA đen", "Giá đỡ điện thoại gập được", "Chậu cây mini xoắn ốc"],
+      "metric": { "label": "Bản in đang chạy", "value": "12", "sub": "3 máy rảnh" },
+      "proof": { "label": "bản in đã giao cho người mới", "value": "12.000+" }
+    }
+  },
+  "voice": {
+    "tone": "friendly", "address": "bạn", "we": "3D Noobs", "emoji": false,
+    "do": ["Gọi đúng tên máy in và vật liệu"], "dont": ["Dùng thuật ngữ G-code với người mới"],
+    "examples": { "button": ["In ngay", "Thêm máy in"], "error": "Máy in mất kết nối. Kiểm tra Wi‑Fi rồi thử lại.", "empty": "Chưa có bản in nào. Chọn một mẫu để in thử." }
+  },
+  "color": { "accent": "balanced", "secondaryRole": "highlight" }
+}
