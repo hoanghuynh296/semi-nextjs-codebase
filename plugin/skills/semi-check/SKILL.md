@@ -25,7 +25,9 @@ The check part changes **no source file**. Its only output is `semi-check.md` at
    ```bash
    node "<path-to-this-skill>/scripts/audit.mjs" --cwd "<workspace-or-app-dir>"
    ```
-   No app at all → stop and point to `/semi-new-app`. Nothing found → say so and stop.
+   No app at all → stop and point to `/semi-new-app`. Nothing found → say so and stop. Folders git ignores and nested
+   repositories (their own `.git`) are left out, one "Bỏ qua …" line each; `--include <dir>` (audit and `fix.mjs`)
+   checks one on purpose when the user asks.
 2. **Show** the summary it prints, as is (Vietnamese, short): a table per app with its phase and issue count, then the
    issues grouped in a few lines. Link `semi-check.md` for the details; do not add long lists.
 3. **Ask** (`AskUserQuestion`) whether to fix now: "Sửa hết theo thứ tự (Recommended)", "Chỉ phase 1–2 (nền móng,
@@ -33,6 +35,8 @@ The check part changes **no source file**. Its only output is `semi-check.md` at
 4. **Ask the decisions now**, so the answers are known before you start (`AskUserQuestion`, up to 4 per call):
    - **Style**, when phase 1 has a `style` item: one option per style (`fix.mjs foundation` without `--style` lists
      them with descriptions). `(Recommended)` on the default, Flat: it is the closest to an existing app's look.
+   - **Theme**, when the `providers` item says the theme is not clear ("chưa rõ app sáng hay tối"): ask whether the app
+     is light or dark today, and pass `--theme dark|light` to `fix.mjs` (foundation and tokens). Never guess light.
    - **Structure** (phase 4, ids `D…`): "fix as proposed (Recommended)" or "keep". For "keep", add the check to
      `semi-lint.json`: `"keep": { "<check>": "<the user's reason>" }` (or an array of path prefixes). Never keep
      something the user did not choose to keep.
@@ -46,9 +50,12 @@ The check part changes **no source file**. Its only output is `semi-check.md` at
    It installs `@semi/ui` (Next.js and Tailwind stay as they are), adds `transpilePackages`, the Semi CSS block,
    `semi-lint.json` + a baseline of today's lint debt, the chosen style (`"style"` in `semi-lint.json`,
    `data-style` on `<html>`), and the Semi block in `AGENTS.md`. It prints the `next/font` lines for the style's fonts:
-   add them to the layout with the providers. Then do the `tay` items:
+   add them to the layout with the providers. It prints only what it wrote; whatever it could not do goes in one
+   **Làm tay** list at the end, and a failed install stops it with exit 1 (npm's error is printed above; fix the
+   app's peer conflict, never add `--legacy-peer-deps` on your own, and run foundation again). Then do the `Làm tay` items:
    - **providers:** edit the root layout exactly as the script prints (`ThemeScript` / `ThemeProvider` with the
-     `defaultTheme` it detected, so a light app stays light; `ToastHost`, `ConfirmHost`); keep everything else.
+     `defaultTheme` it detected from the page background, so the app keeps its theme; `ToastHost`, `ConfirmHost`);
+     keep everything else.
    - **tailwind-v4:** run `npx @tailwindcss/upgrade` in the app (the official tool), check the pages, run foundation again.
 
    Take the same screenshots again and compare. Expected: fonts, greys, radius and borders move slightly towards Semi.
@@ -58,7 +65,11 @@ The check part changes **no source file**. Its only output is `semi-check.md` at
    node "<path-to-this-skill>/scripts/fix.mjs" --cwd "<audited-dir>" tokens --only "<app>/<module-dir>"
    ```
    Read the diff: it only rewrites class strings to tokens (colours, sizes, `rounded-*` → `rounded-chip|control|card|panel`,
-   `shadow-sm` → `shadow-card`), so the page then follows the app's style.
+   `shadow-sm` → `shadow-card`), so the page then follows the app's style. A string is changed only when every token is a
+   class, token for token (spacing, line breaks and order stay); SVG geometry, style values and `glsl` / `css`
+   templates are never touched. Strings it skipped and files it refused (the result would not parse) are listed: look
+   at them by hand. `--dry-run` shows the counts without writing. In a dark app, solid `bg-white` / `bg-black` are
+   left for you (knobs, swatches, logo tiles are white on purpose).
 7. **Phase 3 — Hand fixes** (`L…`), file by file, using the rule texts in the `Luật` section and
    `node_modules/@semi/ui/docs/QUICK_REF.md`. Pick an `@semi/ui` component or a semantic token; never re-add a physical
    colour, a local wrapper, a `skip` for a whole folder or a higher baseline.
@@ -88,7 +99,7 @@ The check part changes **no source file**. Its only output is `semi-check.md` at
 | Phase | Issues | How it is fixed |
 |---|---|---|
 | 1. Nền móng (`F…`) | `@semi/ui` not installed, `transpilePackages`, Semi CSS, `semi-lint.json`, layout providers, brand kit not installed / not wired (`brand`), no style chosen (or one the brand does not allow, or `<html data-style>` not matching it, or its fonts not loaded), Tailwind v3 | `fix.mjs foundation --style <id>` (installs, keeps Next / Tailwind) + the layout by hand, screenshots before / after |
-| 2. Token | colour / size / radius classes the codemod maps safely (`rounded-lg` → `rounded-control`, `shadow-sm` → `shadow-card`) | `fix.mjs tokens [--only dir]` |
+| 2. Token | colour / size / radius classes the codemod maps safely (`rounded-lg` → `rounded-control`, `shadow-sm` → `shadow-card`) | `fix.mjs tokens [--only dir] [--dry-run] [--theme dark\|light]` |
 | 3. Sửa tay (`L…`) | lint hits no codemod can fix safely | edits by hand |
 | 4. Cấu trúc (`D…`) | AppShell / AppHeader frame, local wrappers, list pages without `SubpageToolbar`, tables, components that duplicate `@semi/ui`, other UI libraries | asks: fix, or keep (`semi-lint.json` `keep`) |
 | 4b. Không "AI" | the generic AI screen (`DESIGN_SYSTEM.md` §19; `decorative-icon-tones` is the only part lint finds, in phase 3) | reviewed by eye on the key screens, proposed, applied with the user's yes |

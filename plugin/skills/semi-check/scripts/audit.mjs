@@ -2,13 +2,14 @@
 // /semi-check static & structural analyzer for existing web projects (including multi-app monorepos). Zero external deps.
 // It changes no source file: it prints a short summary and writes every issue to semi-check.md, which /semi-check works
 // from (deleted again once an audit finds nothing).
+import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { basename, dirname, extname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { HARD, RATCHET, loadConfig, scan as runSemiLintScan } from "./vendor/semi-lint.mjs";
 import { analyse } from "./vendor/classes.mjs";
-import { detectMode, migrateSource } from "./vendor/codemod.mjs";
+import { detectTheme, migrateSource } from "./vendor/codemod.mjs";
 import { findGlobalsCss, missingStyleFonts, readBrand, readStyleState, semiStyles } from "../../semi-new-app/scripts/setup.mjs";
 
 export const REPORT_FILE = "semi-check.md";
@@ -116,13 +117,32 @@ function walkCode(dir, out = []) {
   return out;
 }
 
-/** Discover all Next.js / React frontend packages under rawCwd (up to depth 4). */
-export function discoverFrontendApps(rawCwd = process.cwd()) {
+/** Folders git ignores under root (absolute, no trailing slash), or an empty set outside a git work tree. */
+function gitIgnoredDirs(root) {
+  const r = spawnSync("git", ["-C", root, "ls-files", "--others", "--ignored", "--exclude-standard", "--directory"], { encoding: "utf8" });
+  if (r.status !== 0 || !r.stdout) return new Set();
+  return new Set(r.stdout.split("\n").filter((l) => l.endsWith("/")).map((l) => resolve(root, l.slice(0, -1))));
+}
+
+/**
+ * Discover all Next.js / React frontend packages under rawCwd (up to depth 4). Skips what the repository does not ship:
+ * folders git ignores (scratch copies, cloned data) and nested repositories (their own .git: submodules, vendored
+ * editors), each listed in `skipped`, unless a path in `include` asks for it. Returns the app dirs, with `.skipped`.
+ */
+export function discoverFrontendApps(rawCwd = process.cwd(), { include = [] } = {}) {
   const root = resolve(rawCwd);
   const found = [];
+  const skipped = [];
+  const ignored = gitIgnoredDirs(root);
+  const included = include.map((d) => resolve(root, d));
+  const isIncluded = (dir) => included.some((d) => dir === d || dir.startsWith(d + sep) || d.startsWith(dir + sep));
 
   function search(dir, depth) {
     if (depth > 4 || !existsSync(dir)) return;
+    if (dir !== root && !isIncluded(dir)) {
+      if (ignored.has(dir)) return skipped.push({ dir: relative(root, dir), reason: "git-ignored" });
+      if (existsSync(join(dir, ".git"))) return skipped.push({ dir: relative(root, dir), reason: "nested-repo" });
+    }
     const pkgPath = join(dir, "package.json");
     if (existsSync(pkgPath)) {
       try {
@@ -150,7 +170,25 @@ export function discoverFrontendApps(rawCwd = process.cwd()) {
   }
 
   search(root, 0);
+  // Only the skipped folders that hold an app are worth a line.
+  found.skipped = skipped.filter((x) => hasApp(join(root, x.dir)));
   return found;
+}
+
+/** Whether a folder holds a Next.js / React package within depth 3 (for the "skipped" lines). */
+function hasApp(dir, depth = 0) {
+  if (depth > 3 || !existsSync(dir)) return false;
+  try {
+    const pkg = JSON.parse(readFileSync(join(dir, "package.json"), "utf8"));
+    if ({ ...pkg.dependencies, ...pkg.devDependencies }.next || { ...pkg.dependencies, ...pkg.devDependencies }.react) return true;
+  } catch {
+    // no package.json
+  }
+  try {
+    return readdirSync(dir).some((n) => !["node_modules", ".git", ".next", "dist", "build", "out"].includes(n) && statSync(join(dir, n)).isDirectory() && hasApp(join(dir, n), depth + 1));
+  } catch {
+    return false;
+  }
 }
 
 /** The dirs and files the audit reads in one app (semi-lint.json "scan" when present). */
@@ -459,7 +497,15 @@ export function auditSingleApp(cwd) {
   //   phase "tokens":     kind "auto", the token codemod rewrites it
   //   phase "lint":       kind "manual", a rule hit no codemod can fix safely
   //   phase "structure":  kind "decision", fix or keep (semi-lint.json "keep"), the team decides
-  const mode = detectMode(sources);
+  // The app's own theme (dark-first apps are common): from what its page paints, the class count only as a last resort.
+  // "unknown" previews the light mapping; fix.mjs then asks for --theme instead of guessing.
+  const themeSources = [...sources];
+  for (const f of [relative(cwd, findGlobalsCss(cwd)), "app/layout.tsx", "src/app/layout.tsx", "app/layout.jsx", "src/app/layout.jsx"]) {
+    const rel = f.split(sep).join("/");
+    if (existsSync(join(cwd, f)) && !themeSources.some((x) => x.rel === rel)) themeSources.push({ rel, p: rel, src: readFileSync(join(cwd, f), "utf8"), css: f.endsWith(".css") });
+  }
+  const theme = detectTheme(themeSources.map((x) => ({ p: x.p ?? x.rel, src: x.src, css: x.css })));
+  const mode = theme.theme === "dark" ? "dark" : "light";
   const keep = lintCfg.keep || {};
   const kept = [];
   const issues = [];
@@ -490,7 +536,7 @@ export function auditSingleApp(cwd) {
   }
   const layout = ["app/layout.tsx", "src/app/layout.tsx", "app/layout.jsx", "src/app/layout.jsx"].find((f) => existsSync(join(cwd, f)));
   if (layout && !/\bThemeProvider\b/.test(readFileSync(join(cwd, layout), "utf8")))
-    setup("providers", layout, "layout chưa có ThemeScript / ThemeProvider / ToastHost / ConfirmHost", `bọc layout, defaultTheme="${mode === "dark" ? "dark" : "light"}" theo giao diện hiện tại`, "manual");
+    setup("providers", layout, "layout chưa có ThemeScript / ThemeProvider / ToastHost / ConfirmHost", theme.theme === "unknown" ? `bọc layout; chưa rõ app sáng hay tối (${theme.evidence}): hỏi người dùng, rồi foundation --theme dark|light` : `bọc layout, defaultTheme="${mode}" theo giao diện hiện tại (${theme.evidence})`, "manual");
   // Brand kit (docs/BRANDS.md): installed, its brand.css in the Semi CSS block, its rules in AGENTS.md.
   const brand = readBrand(cwd);
   const brandKit = brand?.kit ?? null;
@@ -562,6 +608,7 @@ export function auditSingleApp(cwd) {
     issues,
     kept,
     legacyMode: mode,
+    theme,
     inventory,
     stack: {
       nextVersion,
@@ -638,14 +685,15 @@ export function auditSingleApp(cwd) {
   };
 }
 
-export function auditProject(rawCwd = process.cwd()) {
-  const apps = discoverFrontendApps(rawCwd);
+export function auditProject(rawCwd = process.cwd(), { include = [] } = {}) {
+  const apps = discoverFrontendApps(rawCwd, { include });
+  const skipped = apps.skipped;
   if (apps.length === 0) {
-    return { exists: false, cwd: resolve(rawCwd), apps: [], message: "No package.json found — treat as a new project." };
+    return { exists: false, cwd: resolve(rawCwd), apps: [], skipped, message: "No package.json found — treat as a new project." };
   }
   const reports = apps.map((dir) => auditSingleApp(dir));
   if (reports.length === 1) {
-    return { ...reports[0], root: resolve(rawCwd), apps: reports };
+    return { ...reports[0], root: resolve(rawCwd), apps: reports, skipped };
   }
   const multiAppQuestion = {
     id: "monorepo-target-apps",
@@ -661,6 +709,7 @@ export function auditProject(rawCwd = process.cwd()) {
     cwd: resolve(rawCwd),
     root: resolve(rawCwd),
     apps: reports,
+    skipped,
     questions: [multiAppQuestion, ...reports.flatMap((r) => r.questions)],
   };
 }
@@ -752,7 +801,15 @@ export function formatSummary(r, reportPath = REPORT_FILE) {
   }
   const kept = apps.flatMap((a) => a.kept);
   if (kept.length) lines.push(``, `Giữ nguyên theo \`keep\` trong semi-lint.json: ${countBy(kept, "check").map(([c, n]) => `${CHECK_NAMES[c] || c} ×${n}`).join(", ")}.`);
+  lines.push(...skippedLines(r));
   return lines.join("\n") + "\n";
+}
+
+/** One line per app folder the audit left out (git-ignored, nested repository); --include <dir> checks it. */
+function skippedLines(r) {
+  if (!r.skipped?.length) return [];
+  const why = { "git-ignored": "Bỏ qua thư mục git bỏ qua", "nested-repo": "Bỏ qua repo con" };
+  return ["", ...r.skipped.map((x) => `${why[x.reason]}: \`${x.dir}\``), "(Muốn kiểm tra: --include <thư mục>.)"];
 }
 
 /** semi-check.md: every issue by phase with file:line and what to do, plus a meta line /semi-check uses to detect a stale file. */
@@ -841,6 +898,7 @@ if (isMain) {
   let write = true;
   let ci = false;
   let inventoryPath = null;
+  const include = [];
   const argv = process.argv.slice(2);
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === "--cwd" && argv[i + 1]) cwd = argv[++i];
@@ -851,8 +909,9 @@ if (isMain) {
       write = false;
     }
     else if (argv[i] === "--inventory" && argv[i + 1]) inventoryPath = argv[++i];
+    else if (argv[i] === "--include" && argv[i + 1]) include.push(argv[++i]);
   }
-  const report = auditProject(cwd);
+  const report = auditProject(cwd, { include });
   if (inventoryPath) {
     const apps = report.apps?.length ? report.apps : [report];
     writeFileSync(inventoryPath, JSON.stringify({ apps: apps.map((a) => ({ cwd: a.cwd, ...a.inventory })) }, null, 2) + "\n");

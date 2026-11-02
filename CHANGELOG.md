@@ -4,6 +4,20 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.19.1] - 2026-11-02
+
+`/semi-check` fixes from the first adoption of a large dark app.
+
+### Fixed
+- **The token codemod could delete source code** (#11). It deduplicated and re-joined every string it rewrote, so a "string" the tokenizer misread (code between two quotes in a big file) lost its repeated words, and real strings broke: `viewBox="0 0 24 24"` → `"0 24"`, SVG paths, `transition` values, UI text. Now a string changes only when every token is a Tailwind class, token for token (spacing, line breaks and order stay, nothing is deduplicated); `viewBox` / `d` / `points` / `style` values and tagged templates (`glsl`, `css`, `sql`, `/* glsl */`) are never touched. Before writing, a file is parsed with the app's own `typescript`; a result that no longer parses is not written. Skipped strings and refused files are listed. `tokens --dry-run` prints the counts and writes nothing.
+- **A dark app was detected as light** (#12): `foundation` printed `defaultTheme="light"` and the codemod mapped greys for a light app. One detector (`detectTheme`) now reads what the page paints: `defaultTheme` / `data-theme` / `class="dark"` in the root layout, the `html` / `body` background and surface variables in the CSS (dark-mode blocks ignored), and only then the class count. When the signals disagree or are missing it says so and stops; `/semi-check` asks the user and passes `--theme dark|light` (both phases). In a dark app, solid `bg-white` / `bg-black` / `text-black` are reported for a person instead of turning into `bg-panel` / `bg-canvas`.
+- **`foundation` reported undone steps as done** (#13). A failed install puts `package.json` back (with `@semi/ui` listed but not installed, the next run skipped the install and never created the lint baseline), prints what to do and stops with exit 1. `transpilePackages` is added to configs exported as a function (`const base: NextConfig = {…}` or its `return {…}`), a named variable or `defineConfig({…})`; a shape it cannot edit is in the final **Làm tay** list instead of a "done" line. `<html>` is found outside comments and strings (`data-style` went into a comment that mentioned `<html>`). `--verify` creates the baseline when it is missing.
+- **The audit counted copies and other repositories** (#14): folders git ignores and nested repositories (their own `.git`) are left out with one "Bỏ qua …" line each; `--include <dir>` checks one on purpose.
+- `semi-lint`: class rules no longer fire inside SVG / style values or tagged templates (`rounded` in a GLSL shader, part of #16).
+
+### Migration
+- Nothing to run. Apps that already ran the 0.19.0 codemod: check its diff for shortened `viewBox` / `d` / `transition` strings and collapsed lines (`git diff --stat` shows files that lost many lines).
+
 ## [0.19.0] - 2026-11-02
 
 ### Added

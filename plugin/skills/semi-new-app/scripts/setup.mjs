@@ -114,6 +114,30 @@ export function wireGlobalsCss(webDir, brandPkg = readBrand(webDir)?.pkg ?? null
   return cssPath;
 }
 
+/**
+ * Where the config object of a next.config opens (a match whose end is just after its `{`), or null:
+ * `const nextConfig = {`, `export default {`, `module.exports = {`, `defineConfig({`, the variable that
+ * `export default X` names, and in a config exported as a function, a `const x: NextConfig = {` or its `return {`.
+ */
+function configObjectOpening(content) {
+  const code = maskCode(content);
+  const find = (re) => {
+    const m = re.exec(code);
+    return m ? Object.assign([content.slice(m.index, m.index + m[0].length)], { index: m.index }) : null;
+  };
+  const direct = find(/(?:\bnextConfig\s*(?::\s*NextConfig)?\s*=\s*\{|export\s+default\s*\{|module\.exports\s*=\s*\{|\bdefineConfig\s*\(\s*\{)/);
+  if (direct) return direct;
+  const named = code.match(/(?:export\s+default|module\.exports\s*=)\s*([A-Za-z_$][\w$]*)\s*;?/)?.[1];
+  if (named) {
+    const v = find(new RegExp(`\\b(?:const|let|var)\\s+${named}\\s*(?::\\s*[\\w.<>]+)?\\s*=\\s*\\{`));
+    if (v) return v;
+  }
+  if (/(?:export\s+default|module\.exports\s*=)\s*(?:async\s+)?(?:function\b|\([^)]*\)\s*=>|[A-Za-z_$][\w$]*\s*=>)/.test(code) || (named && new RegExp(`function\\s+${named}\\b|\\b${named}\\s*=\\s*(?:async\\s*)?\\(`).test(code)))
+    return find(/\b(?:const|let)\s+[A-Za-z_$][\w$]*\s*:\s*NextConfig\s*=\s*\{/) ?? find(/\breturn\s*\{/);
+  return null;
+}
+
+/** Add @semi/ui to transpilePackages. Returns the file written, or null when its shape needs a person (warned). */
 export function wireNextConfig(webDir, staticExport) {
   const tsPath = join(webDir, "next.config.ts");
   const mjsPath = join(webDir, "next.config.mjs");
@@ -143,11 +167,15 @@ export function wireNextConfig(webDir, staticExport) {
     if (/transpilePackages\s*:\s*\[/.test(content)) {
       content = content.replace(/transpilePackages\s*:\s*\[/, `transpilePackages: ["@semi/ui", `);
     } else {
-      // const nextConfig = { … } | export default { … } | module.exports = { … }
-      const open = /(nextConfig\s*(?::\s*NextConfig)?\s*=\s*\{|export\s+default\s*\{|module\.exports\s*=\s*\{)/;
-      if (open.test(content))
-        content = content.replace(open, `$1\n  transpilePackages: ["@semi/ui"],${staticExport && !content.includes("output:") ? `\n  output: "export",` : ""}`);
-      else console.warn(`${target}: add transpilePackages: ["@semi/ui"] by hand (config shape not recognised)`);
+      const open = configObjectOpening(content);
+      if (open) {
+        const at = open.index + open[0].length;
+        const indent = content.slice(at).match(/^\r?\n([ \t]*)\S/)?.[1] ?? "  "; // the object's own indentation
+        content = content.slice(0, at) + `\n${indent}transpilePackages: ["@semi/ui"],${staticExport && !content.includes("output:") ? `\n${indent}output: "export",` : ""}` + content.slice(at);
+      } else {
+        console.warn(`${target}: add transpilePackages: ["@semi/ui"] by hand (config shape not recognised)`);
+        return null;
+      }
     }
   }
   if (staticExport || content.includes(`output: "export"`) || content.includes(`output: 'export'`)) {
@@ -206,6 +234,42 @@ export function findRootLayout(appDir) {
   return ["app/layout.tsx", "src/app/layout.tsx", "app/layout.jsx", "src/app/layout.jsx"].find((f) => existsSync(join(appDir, f))) || null;
 }
 
+/** Source with comments and string literals blanked to spaces (same offsets), so a regex sees only code and JSX. */
+function maskCode(src) {
+  let out = "";
+  let i = 0;
+  const blank = (str) => str.replace(/[^\n]/g, " ");
+  while (i < src.length) {
+    const ch = src[i];
+    let end = -1;
+    if (ch === "/" && src[i + 1] === "/") end = src.indexOf("\n", i) === -1 ? src.length : src.indexOf("\n", i);
+    else if (ch === "/" && src[i + 1] === "*") end = src.indexOf("*/", i + 2) === -1 ? src.length : src.indexOf("*/", i + 2) + 2;
+    else if (ch === "'" || ch === '"' || ch === "`") {
+      let j = i + 1;
+      while (j < src.length && src[j] !== ch && !(ch !== "`" && src[j] === "\n")) j += src[j] === "\\" ? 2 : 1;
+      end = Math.min(src.length, j + 1);
+      out += ch + blank(src.slice(i + 1, end - 1)) + (end - 1 > i ? src[end - 1] : "");
+      i = end;
+      continue;
+    }
+    if (end === -1) {
+      out += ch;
+      i++;
+      continue;
+    }
+    out += blank(src.slice(i, end));
+    i = end;
+  }
+  return out;
+}
+
+/** The real <html …> opening tag of a layout ({ index, tag }), never one inside a comment or a string; or null. */
+export function findHtmlTag(src) {
+  const m = maskCode(src).match(/<html\b[^>]*>/);
+  return m ? { index: m.index, tag: src.slice(m.index, m.index + m[0].length) } : null;
+}
+const replaceHtmlTag = (src, html, tag) => src.slice(0, html.index) + tag + src.slice(html.index + html.tag.length);
+
 /** An app's style: what semi-lint.json declares ("style") and what <html data-style> in the root layout applies. */
 export function readStyleState(appDir) {
   let cfg = {};
@@ -213,8 +277,8 @@ export function readStyleState(appDir) {
     cfg = JSON.parse(readFileSync(join(appDir, "semi-lint.json"), "utf8"));
   } catch {}
   const layout = findRootLayout(appDir);
-  const html = layout ? readFileSync(join(appDir, layout), "utf8").match(/<html\b[^>]*>/) : null;
-  const attr = (name) => (html ? (html[0].match(new RegExp(`\\bdata-${name}=["']([\\w-]+)["']`))?.[1] ?? null) : null);
+  const html = layout ? findHtmlTag(readFileSync(join(appDir, layout), "utf8")) : null;
+  const attr = (name) => (html ? (html.tag.match(new RegExp(`\\bdata-${name}=["']([\\w-]+)["']`))?.[1] ?? null) : null);
   // palettes were removed in v0.14.0: a leftover "palette" or data-palette is cleaned up by /semi-check
   return { declared: cfg.style ?? null, applied: attr("style"), legacyPalette: cfg.palette ?? attr("palette"), layout, hasHtml: Boolean(html) };
 }
@@ -241,10 +305,10 @@ export function wireStyle(appDir, id) {
   writeFileSync(cfgPath, JSON.stringify(cfg, null, 2) + "\n");
   const layout = findRootLayout(appDir);
   const src = layout ? readFileSync(join(appDir, layout), "utf8") : "";
-  const html = src.match(/<html\b[^>]*>/);
+  const html = findHtmlTag(src);
   const attrs = `data-style="${id}"`;
   if (!html) return { ok: false, layout, message: `không thấy thẻ <html> trong ${layout || "app/layout.tsx"}: thêm ${attrs} vào <html> bằng tay` };
-  writeFileSync(join(appDir, layout), src.replace(html[0], withStyleAttrs(html[0], attrs)));
+  writeFileSync(join(appDir, layout), replaceHtmlTag(src, html, withStyleAttrs(html.tag, attrs)));
   return { ok: true, layout, message: `${layout} ← <html ${attrs}>, semi-lint.json ← "style": "${id}"` };
 }
 
@@ -266,12 +330,12 @@ export function wireProductLook(appDir, { density, typeScale } = {}) {
   writeFileSync(cfgPath, JSON.stringify(cfg, null, 2) + "\n");
   const layout = findRootLayout(appDir);
   const src = layout ? readFileSync(join(appDir, layout), "utf8") : "";
-  const html = src.match(/<html\b[^>]*>/);
+  const html = findHtmlTag(src);
   const attrs = [cfg.density ? `data-density="${cfg.density}"` : "", cfg.typeScale ? `data-type-scale="${cfg.typeScale}"` : ""].filter(Boolean).join(" ");
   if (!html) return { ok: false, layout, message: `không thấy thẻ <html> trong ${layout || "app/layout.tsx"}: thêm ${attrs || "(không cần thuộc tính)"} bằng tay` };
-  let tag = html[0].replace(/\s+data-(?:density|type-scale)=["'][\w-]*["']/g, "");
+  let tag = html.tag.replace(/\s+data-(?:density|type-scale)=["'][\w-]*["']/g, "");
   if (attrs) tag = tag.replace(/^<html\b/, `<html ${attrs}`);
-  writeFileSync(join(appDir, layout), src.replace(html[0], tag));
+  writeFileSync(join(appDir, layout), replaceHtmlTag(src, html, tag));
   return { ok: true, layout, message: `${layout} ← <html ${attrs || "(mật độ vừa, cỡ chữ đều)"}>, semi-lint.json ← density ${cfg.density ?? "regular"}, typeScale ${cfg.typeScale ?? "even"}` };
 }
 
@@ -350,7 +414,10 @@ export function installPackage(appDir, spec) {
   const pm = detectPkgManager(appDir);
   const args = pm === "npm" ? ["install", "--install-links", resolved] : ["add", resolved];
   const res = spawnSync(pm, args, { cwd: appDir, stdio: "inherit" });
-  if (res.status !== 0) return { ok: false, spec: resolved };
+  if (res.status !== 0) {
+    console.error(installFailHint(pm));
+    return { ok: false, spec: resolved };
+  }
   const after = JSON.parse(readFileSync(pkgPath, "utf8"));
   const deps = { ...after.dependencies };
   const name = Object.keys(deps).find((k) => deps[k] !== before.dependencies?.[k]) ?? Object.keys(deps).find((k) => deps[k] === resolved);
@@ -440,6 +507,10 @@ export function installedSemiVersion(appDir) {
   }
 }
 
+/** What to do after a failed install (npm's own error lines are printed above it). */
+export const installFailHint = (pm) =>
+  `${pm} install lỗi (xem dòng lỗi đầu tiên ở trên; ERESOLVE là xung đột peer dependency có sẵn trong app). Sửa xung đột trong package.json rồi chạy lại; không tự thêm --legacy-peer-deps.`;
+
 /** Point package.json at spec (adds the semi:lint script) and install. Never touches next / tailwindcss. */
 export function installSemiUi(appDir, spec) {
   const pkgPath = join(appDir, "package.json");
@@ -447,6 +518,7 @@ export function installSemiUi(appDir, spec) {
   if (pkg.devDependencies?.["@semi/ui"]) pkg.devDependencies["@semi/ui"] = spec;
   else (pkg.dependencies ||= {})["@semi/ui"] = spec;
   (pkg.scripts ||= {})["semi:lint"] = "semi-lint";
+  const before = readFileSync(pkgPath, "utf8");
   writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
   const pm = detectPkgManager(appDir);
   // Name the package: a bare `npm install` keeps the commit package-lock.json already has for a git dependency, so an
@@ -454,7 +526,12 @@ export function installSemiUi(appDir, spec) {
   const dev = Boolean(pkg.devDependencies?.["@semi/ui"]);
   const args = pm === "npm" ? ["install", "--install-links", ...(dev ? ["-D"] : []), `@semi/ui@${spec}`] : ["add", ...(dev ? ["-D"] : []), `@semi/ui@${spec}`];
   const res = spawnSync(pm, args, { cwd: appDir, stdio: "inherit" });
-  if (res.status !== 0) return false;
+  if (res.status !== 0) {
+    // Put package.json back: with @semi/ui listed but not installed, the next run would think the step is done.
+    writeFileSync(pkgPath, before);
+    console.error(installFailHint(pm));
+    return false;
+  }
   // Say it plainly when the installed version is not the one asked for (a stale lock or cache).
   const want = String(spec).match(/#v?(\d+\.\d+\.\d+)$/)?.[1];
   const got = installedSemiVersion(appDir);

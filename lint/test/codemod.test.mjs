@@ -1,7 +1,7 @@
 // node --test lint/test — the /semi-new-app token codemod.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { detectMode, migrateClassString, migrateSource } from "../codemod.mjs";
+import { detectMode, detectTheme, migrateClassString, migrateSource } from "../codemod.mjs";
 import { analyse } from "../classes.mjs";
 
 const m = (v, mode) => migrateClassString(v, mode).value;
@@ -70,4 +70,48 @@ test("migrateSource only rewrites string literals and leaves a lint-clean file",
 test("detectMode", () => {
   assert.equal(detectMode([{ src: '"bg-slate-900 bg-slate-800 bg-white"' }]), "dark");
   assert.equal(detectMode([{ src: '"bg-white bg-slate-50 dark:bg-slate-900"' }]), "light");
+});
+
+test("strings that are not class lists are never rewritten, and nothing is deduplicated (issue #11)", () => {
+  const src = [
+    'export const Icon = () => <svg viewBox="0 0 24 24"><path d="M 8 4 C 20 4, 34 4, 44 4" /></svg>;',
+    'const style = { boxShadow: "inset 0 0 0 1px", transition: "opacity 0.2s ease, filter 0.2s ease" };',
+    'const label = "Máy in và Job in";',
+    'const shader = /* glsl */ `uniform vec3 white; // bg-white rounded`;',
+    'const odd = "bg-white text-slate-900 = const x = bg-white";',
+    'const dup = "p-2 bg-white p-2";',
+  ].join("\n");
+  const { code, skipped } = migrateSource(src);
+  const lines = code.split("\n");
+  assert.equal(lines.length, 6);
+  for (const i of [0, 1, 2, 3, 4]) assert.equal(lines[i], src.split("\n")[i]);
+  assert.equal(lines[5], 'const dup = "p-2 bg-panel p-2";');
+  assert.deepEqual(skipped.map((s) => s.line), [5]);
+});
+
+test("token for token: whitespace and line breaks of a class string stay (issue #11)", () => {
+  assert.equal(m("flex\n    bg-white\n    dark:bg-slate-900\n    p-4"), "flex\n    bg-panel\n    p-4");
+  assert.equal(m("  bg-white  dark:bg-slate-900  text-slate-900  "), "  bg-panel  text-contrast  ");
+  assert.equal(m("dark:bg-slate-900 bg-white"), "bg-panel");
+});
+
+test("dark apps: solid white / black are left for a person (issue #12)", () => {
+  const r = migrateClassString("bg-white bg-black text-black text-white", "dark");
+  assert.equal(r.value, "bg-white bg-black text-black text-contrast");
+  assert.deepEqual(r.unresolved, ["bg-white", "bg-black", "text-black"]);
+  assert.equal(m("bg-white text-black"), "bg-panel text-contrast");
+});
+
+test("detectTheme reads what the page paints (issue #12)", () => {
+  const layout = { src: 'export default function L({ children }) { return <html lang="vi"><body className="min-h-full flex">{children}</body></html>; }' };
+  const knobs = { src: '"bg-white bg-white bg-white bg-white bg-white"' };
+  const darkCss = { p: "app/globals.css", css: true, src: "@theme { --color-app: #181818; --color-panel: #262626; }\nbody { background: var(--color-app); }" };
+  assert.deepEqual(detectTheme([layout, darkCss, knobs]), { theme: "dark", evidence: "nền body #181818 (app/globals.css), --color-app: #181818" });
+  const lightWithDarkMode = { css: true, src: ":root { --background: #ffffff; }\n@media (prefers-color-scheme: dark) { :root { --background: #0a0a0a; } }\nbody { background: var(--background); }" };
+  assert.equal(detectTheme([layout, lightWithDarkMode]).theme, "light");
+  assert.equal(detectTheme([{ src: '<html className="dark"><body>' }, { css: true, src: "body { background: #fff; }" }]).theme, "dark");
+  assert.equal(detectTheme([{ src: '<ThemeProvider defaultTheme="dark">' + "<html>" }]).theme, "dark");
+  assert.equal(detectTheme([{ css: true, src: "html { background: #111; }\nbody { background: #fff; }" }]).theme, "unknown");
+  assert.equal(detectTheme([{ src: '"bg-white bg-slate-900"' }]).theme, "unknown");
+  assert.equal(detectTheme([]).theme, "unknown");
 });

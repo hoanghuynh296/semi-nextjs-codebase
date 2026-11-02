@@ -183,3 +183,61 @@ test("agent rules: the audit asks for the Semi block in AGENTS.md and CLAUDE.md 
   assert.equal(issue(), undefined);
   rmSync(root, { recursive: true });
 });
+
+test("discovery skips git-ignored folders and nested repositories; --include brings one back (issue #14)", () => {
+  const { root, web } = app();
+  execFileSync("git", ["init", "-q", root]);
+  writeFileSync(join(root, ".gitignore"), "_scratch/\n");
+  for (const dir of ["_scratch/copy/web", "data/editor"]) {
+    mkdirSync(join(root, dir, "app"), { recursive: true });
+    cpSync(join(web, "package.json"), join(root, dir, "package.json"));
+  }
+  mkdirSync(join(root, "data/editor/.git"));
+  const r = auditProject(root);
+  assert.deepEqual(r.apps.map((a) => a.cwd), [web]);
+  assert.deepEqual(r.skipped, [{ dir: "_scratch", reason: "git-ignored" }, { dir: join("data", "editor"), reason: "nested-repo" }]);
+  assert.equal(auditProject(root, { include: ["data/editor"] }).apps.length, 2);
+  const out = execFileSync("node", [new URL("../../plugin/skills/semi-check/scripts/audit.mjs", import.meta.url).pathname, "--cwd", root, "--no-write"], { encoding: "utf8" });
+  assert.match(out, /Bỏ qua repo con: `data\/editor`/);
+  rmSync(root, { recursive: true });
+});
+
+test("tokens: --dry-run writes nothing, --theme overrides the audit, unknown theme stops (issue #11, #12)", () => {
+  const { root, web } = app();
+  writeFileSync(join(web, "app/page.tsx"), `export default function Page() {\n  return <main className="bg-white bg-slate-900 text-slate-300">x</main>;\n}\n`);
+  const page = () => readFileSync(join(web, "app/page.tsx"), "utf8");
+  const before = page();
+  // One light and one dark class, nothing on the page: the script asks instead of guessing light.
+  assert.throws(() => execFileSync("node", [FIX, "--cwd", root, "tokens"], { stdio: "pipe" }));
+  assert.equal(page(), before);
+  const dry = execFileSync("node", [FIX, "--cwd", root, "tokens", "--theme", "dark", "--dry-run"], { encoding: "utf8" });
+  assert.match(dry, /\(thử, chưa ghi\)/);
+  assert.equal(page(), before);
+  execFileSync("node", [FIX, "--cwd", root, "tokens", "--theme", "dark"], { stdio: "pipe" });
+  assert.match(page(), /className="bg-white bg-app text-body"/);
+  rmSync(root, { recursive: true });
+});
+
+test("foundation: a config exported as a function, <html> in a comment (issue #13)", async () => {
+  const { wireNextConfig, wireStyle, readStyleState, findHtmlTag } = await import("../../plugin/skills/semi-new-app/scripts/setup.mjs");
+  const { web, root } = app();
+  writeFileSync(
+    join(web, "next.config.ts"),
+    `import type { NextConfig } from "next";\nexport default function config(phase: string): NextConfig {\n  const base: NextConfig = {\n    images: { unoptimized: true },\n  };\n  return base;\n}\n`,
+  );
+  rmSync(join(web, "next.config.mjs"));
+  assert.ok(wireNextConfig(web, false));
+  assert.match(readFileSync(join(web, "next.config.ts"), "utf8"), /const base: NextConfig = \{\n {4}transpilePackages: \["@semi\/ui"\],\n {4}images/);
+  writeFileSync(join(web, "next.config.ts"), `import cfg from "./base";\nexport default cfg;\n`);
+  assert.equal(wireNextConfig(web, false), null);
+  assert.equal(findHtmlTag(`// the <html> tag below\nconst s = "<html>";\n<html lang="vi">`).tag, '<html lang="vi">');
+  writeFileSync(join(web, "app/layout.tsx"), `// ThemeScript goes in <head>, data-style on <html>\n` + LAYOUT);
+  mkdirSync(join(web, "node_modules/@semi/ui/tokens"), { recursive: true });
+  cpSync(new URL("../../tokens/styles.json", import.meta.url).pathname, join(web, "node_modules/@semi/ui/tokens/styles.json"));
+  assert.equal(wireStyle(web, "flat").ok, true);
+  const layout = readFileSync(join(web, "app/layout.tsx"), "utf8");
+  assert.match(layout, /^\/\/ ThemeScript goes in <head>, data-style on <html>\n/);
+  assert.match(layout, /<html data-style="flat" lang="vi"/);
+  assert.equal(readStyleState(web).applied, "flat");
+  rmSync(root, { recursive: true });
+});
