@@ -8,6 +8,18 @@ import { cn, FOCUS_RING } from "../styles/utils";
 
 const LABEL = "text-ui text-body";
 const DESC = "text-label text-muted";
+// On a touch screen (any coarse pointer) the control's hit area grows to 44 × 44 px around it; the visible size and the
+// layout stay. A pseudo-element of the clickable element, so no JS (same detection as useCoarsePointer).
+const TOUCH_TARGET =
+  "any-pointer-coarse:before:absolute any-pointer-coarse:before:top-1/2 any-pointer-coarse:before:left-1/2 any-pointer-coarse:before:size-[44px] any-pointer-coarse:before:-translate-1/2";
+
+/** Dev-only console warning for a control screen readers cannot name (no label, aria-label or aria-labelledby). */
+function useNameWarning(component: string, named: boolean) {
+  useEffect(() => {
+    if (!named && typeof process !== "undefined" && process.env.NODE_ENV !== "production")
+      console.warn(`@semi/ui ${component}: no label, aria-label or aria-labelledby, so screen readers announce it without a name.`);
+  }, [component, named]);
+}
 
 export function Checkbox({
   checked,
@@ -18,9 +30,12 @@ export function Checkbox({
   disabled = false,
   id: idProp,
   className,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledby,
 }: {
   checked: boolean;
   onChange: (checked: boolean) => void;
+  /** Visible label; it names the checkbox and is part of the hit area. */
   label?: React.ReactNode;
   description?: React.ReactNode;
   /** Mixed state ("some selected") for a select-all box. */
@@ -28,23 +43,30 @@ export function Checkbox({
   disabled?: boolean;
   id?: string;
   className?: string;
+  /** Name for screen readers when there is no visible `label` (a row's select box: "Chọn đơn #1024"). `label` wins. */
+  "aria-label"?: string;
+  /** Id of the element that names the checkbox when its text is elsewhere (a table cell, a card title). `label` wins. */
+  "aria-labelledby"?: string;
 }) {
   const auto = useId();
   const id = idProp ?? auto;
   const ref = useRef<HTMLInputElement>(null);
+  useNameWarning("Checkbox", Boolean(label || ariaLabel || ariaLabelledby));
   useEffect(() => {
     if (ref.current) ref.current.indeterminate = indeterminate;
   }, [indeterminate]);
   const on = checked || indeterminate;
   return (
     <label htmlFor={id} className={cn("inline-flex items-start gap-2.5 cursor-pointer select-none", disabled && "opacity-40 cursor-not-allowed", className)}>
-      <span className="relative mt-0.5 w-4 h-4 shrink-0">
+      <span className={cn("relative mt-0.5 w-4 h-4 shrink-0", TOUCH_TARGET)}>
         <input
           ref={ref}
           id={id}
           type="checkbox"
           checked={checked}
           disabled={disabled}
+          aria-label={label ? undefined : ariaLabel}
+          aria-labelledby={label ? undefined : ariaLabelledby}
           aria-describedby={description ? `${id}-desc` : undefined}
           onChange={(e) => onChange(e.target.checked)}
           className={cn(
@@ -81,18 +103,27 @@ export function Switch({
   size = "md",
   id: idProp,
   className,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledby,
 }: {
   checked: boolean;
   onChange: (checked: boolean) => void;
+  /** Visible label; it names the switch. */
   label?: React.ReactNode;
   description?: React.ReactNode;
   disabled?: boolean;
+  /** Visible size only: on touch screens both sizes get a 44 × 44 px hit area. */
   size?: "sm" | "md";
   id?: string;
   className?: string;
+  /** Name for screen readers when the switch has no visible `label` ("Bật automation Nhắc bảo trì"). `label` wins. */
+  "aria-label"?: string;
+  /** Id of the element that names the switch when its text is elsewhere (a card header). `label` wins. */
+  "aria-labelledby"?: string;
 }) {
   const auto = useId();
   const id = idProp ?? auto;
+  useNameWarning("Switch", Boolean(label || ariaLabel || ariaLabelledby));
   const track = size === "sm" ? "w-7 h-4" : "w-9 h-5";
   const knob = size === "sm" ? "w-3 h-3" : "w-4 h-4";
   const shift = size === "sm" ? "translate-x-3" : "translate-x-4";
@@ -102,13 +133,15 @@ export function Switch({
       type="button"
       role="switch"
       aria-checked={checked}
-      aria-labelledby={label ? `${id}-label` : undefined}
+      aria-labelledby={label ? `${id}-label` : ariaLabelledby}
+      aria-label={label ? undefined : ariaLabel}
       aria-describedby={description ? `${id}-desc` : undefined}
       disabled={disabled}
       onClick={() => onChange(!checked)}
       className={cn(
         "relative shrink-0 rounded-full border transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed p-px",
         track,
+        TOUCH_TARGET,
         checked ? "bg-accent border-transparent" : "bg-raised border-line",
         FOCUS_RING,
       )}

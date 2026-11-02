@@ -69,7 +69,7 @@ export default function ThemeScope() {
 ### Root layout
 
 ```tsx
-import { ConfirmHost, ThemeProvider, ThemeScript, ToastHost } from "@semi/ui";
+import { ConfirmHost, TaskHost, ThemeProvider, ThemeScript, ToastHost } from "@semi/ui";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -82,6 +82,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
           <ToastHost />
           <ConfirmHost />
+          <TaskHost />
         </ThemeProvider>
       </body>
     </html>

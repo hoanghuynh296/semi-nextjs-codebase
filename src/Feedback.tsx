@@ -69,6 +69,7 @@ export function Progress({
   showValue = false,
   size = "md",
   className,
+  "aria-label": ariaLabel,
 }: {
   /** Omit for an indeterminate bar. */
   value?: number;
@@ -79,6 +80,8 @@ export function Progress({
   showValue?: boolean;
   size?: "sm" | "md";
   className?: string;
+  /** Accessible name when there is no string `label` (the bar's text is elsewhere). */
+  "aria-label"?: string;
 }) {
   const pct = value === undefined ? undefined : Math.max(0, Math.min(100, (value / max) * 100));
   return (
@@ -94,7 +97,7 @@ export function Progress({
         aria-valuemin={0}
         aria-valuemax={max}
         aria-valuenow={value}
-        aria-label={typeof label === "string" ? label : undefined}
+        aria-label={typeof label === "string" ? label : ariaLabel}
         className={cn("relative w-full overflow-hidden rounded-full bg-raised", size === "sm" ? "h-1" : "h-1.5")}
       >
         <div

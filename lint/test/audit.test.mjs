@@ -5,7 +5,7 @@ import { execFileSync } from "node:child_process";
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { auditFileState, auditProject, totals, writeAuditFile } from "../../plugin/skills/semi-check/scripts/audit.mjs";
+import { auditFileState, auditProject, formatSummary, totals, writeAuditFile } from "../../plugin/skills/semi-check/scripts/audit.mjs";
 import { wireAgentsMd } from "../../plugin/skills/semi-new-app/scripts/setup.mjs";
 
 const FIX = new URL("../../plugin/skills/semi-check/scripts/fix.mjs", import.meta.url).pathname;
@@ -239,5 +239,26 @@ test("foundation: a config exported as a function, <html> in a comment (issue #1
   assert.match(layout, /^\/\/ ThemeScript goes in <head>, data-style on <html>\n/);
   assert.match(layout, /<html data-style="flat" lang="vi"/);
   assert.equal(readStyleState(web).applied, "flat");
+  rmSync(root, { recursive: true });
+});
+
+test("#16: a file composing the @semi/ui component it is named like is not a duplicate; tool pages need no toolbar; content skips are listed", () => {
+  const { root, web } = app();
+  mkdirSync(join(web, "components"));
+  mkdirSync(join(web, "app/slicer"));
+  writeFileSync(join(web, "components/Header.tsx"), `import { AppHeader, Button } from "@semi/ui";\nexport function Header() { return <AppHeader title="x" />; }\n`);
+  writeFileSync(join(web, "components/Dialog.tsx"), `import { Button } from "@semi/ui";\nexport function Dialog() { return <div role="dialog"><Button>x</Button></div>; }\n`);
+  writeFileSync(join(web, "components/Drawing.tsx"), `export const Drawing = () => <svg className="fill-white" />;\n`);
+  writeFileSync(join(web, "app/slicer/page.tsx"), `import { AppHeader } from "@semi/ui";\nexport default function S() { return <><AppHeader title="x" /><canvas />{[1].map((i) => <i key={i} />)}</>; }\n`);
+  writeFileSync(join(web, "semi-lint.json"), JSON.stringify({ scan: ["app", "components"], skip: { "no-literal-palette": { "components/Drawing.tsx": "illustration: device colours" } } }));
+  const r = auditProject(root);
+  const issues = r.apps[0].issues;
+  const checks = issues.map((i) => `${i.check}:${i.file}`);
+  assert.ok(!checks.includes("duplicates:components/Header.tsx"));
+  assert.ok(checks.includes("duplicates:components/Dialog.tsx"), "imports Button, not Modal: still a copy");
+  assert.ok(!checks.includes("subpage-toolbar:app/slicer/page.tsx"));
+  assert.ok(checks.includes("subpage-toolbar:app/page.tsx"));
+  assert.ok(!issues.some((i) => i.file === "components/Drawing.tsx"), "no codemod or lint issue for a content file");
+  assert.match(formatSummary(r), /Minh hoạ \/ màu dữ liệu: `components\/Drawing\.tsx` \(`no-literal-palette`\): illustration: device colours/);
   rmSync(root, { recursive: true });
 });

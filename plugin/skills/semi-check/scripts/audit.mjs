@@ -7,7 +7,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { basename, dirname, extname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
-import { HARD, RATCHET, loadConfig, scan as runSemiLintScan } from "./vendor/semi-lint.mjs";
+import { HARD, RATCHET, isSkipped, loadConfig, scan as runSemiLintScan, skipReasons } from "./vendor/semi-lint.mjs";
 import { analyse } from "./vendor/classes.mjs";
 import { detectTheme, migrateSource } from "./vendor/codemod.mjs";
 import { findGlobalsCss, missingStyleFonts, readBrand, readStyleState, semiStyles } from "../../semi-new-app/scripts/setup.mjs";
@@ -90,6 +90,27 @@ const SEMI_COMPONENT_MAP = [
   { pattern: /^(button|btn|iconbutton)$/i, semi: "BTN_PRIMARY / BTN_SECONDARY / BTN_DANGER (@semi/ui/styles)" },
   { pattern: /^(card|panel|surface)$/i, semi: "CARD / CARD_HOVER (@semi/ui/styles)" },
 ];
+
+/** Names a file imports from @semi/ui or @semi/ui/styles. */
+function semiImports(src) {
+  const names = new Set();
+  for (const m of src.matchAll(/import\s*(?:type\s*)?\{([^}]*)\}\s*from\s*["']@semi\/ui(?:\/styles)?["']/g)) {
+    for (const part of m[1].split(",")) {
+      const name = part.trim().replace(/^type\s+/, "").split(/\s+as\s+/)[0].trim();
+      if (name) names.add(name);
+    }
+  }
+  return names;
+}
+
+/**
+ * A page that renders a list or grid of items (a `.map(` into a table, grid, list or cards), so it needs a
+ * SubpageToolbar. A tool page (AppHeader with a canvas / viewport) is not one, whatever it maps (#16).
+ */
+export function isListPage(src) {
+  if (/\bAppHeader\b/.test(src) && /<canvas\b|\bCanvas\b|\bVIEWPORT_[A-Z_]+|\bviewport\b/i.test(src)) return false;
+  return /\.map\(/.test(src) && /<(?:table|Table|DataTable|ul|ol|Card|Item)\b|\bgrid\b|\bgrid-cols-|\bCARD\b/.test(src);
+}
 
 const UI_LIBS = [
   ["@mui/material", "Material UI (MUI)"],
@@ -309,7 +330,7 @@ export function auditSingleApp(cwd) {
     if (/\b(AppShell|AppHeader)\b/.test(text)) usesAppShell = true; // AppHeader: the Semi frame of tool apps
     if (/<aside[^>]*\b(border-r|-translate-x-full)\b/.test(text)) legacySidebarFile = rel;
     if (/\b(SubpageToolbar|STICKY_TOOLBAR)\b/.test(text)) toolbarPagesCount++;
-    else if (/(?:^|\/)page\.tsx$/.test(rel) && /\.map\(/.test(text)) pagesWithoutToolbar.push(rel); // list pages only
+    else if (/(?:^|\/)page\.tsx$/.test(rel) && isListPage(text)) pagesWithoutToolbar.push(rel);
     if (/\bPagination\b/.test(text)) paginationPagesCount++;
     if (/\bKpiCard\b/.test(text)) usesKpiCard = true;
     if (/function\s+KPICard\b/.test(text)) customKpiCardFile = rel;
@@ -342,10 +363,13 @@ export function auditSingleApp(cwd) {
     const rel = relative(cwd, file).split(sep).join("/");
     const stem = basename(file, extname(file));
     const src = readFileSync(file, "utf8");
-    // A duplicate defines its own component and does not build on @semi/ui (a thin Semi-based wrapper is fine).
-    if (!/export\s+(?:default\s+)?(?:function|const)\s+[A-Z]/.test(src) || !/<[A-Za-z]/.test(src) || /from\s+["']@semi\/ui(?:\/styles)?["']/.test(src)) continue;
+    // A duplicate defines its own component. A file that imports the @semi/ui component it is named like composes it
+    // (Header.tsx rendering <AppHeader> with the page's buttons), so it is not a copy (#16).
+    if (!/export\s+(?:default\s+)?(?:function|const)\s+[A-Z]/.test(src) || !/<[A-Za-z]/.test(src)) continue;
+    const fromSemi = semiImports(src);
     for (const item of SEMI_COMPONENT_MAP) {
       if (item.pattern.test(stem)) {
+        if ((item.semi.match(/[A-Za-z_]+/g) || []).some((n) => fromSemi.has(n))) break;
         const lines = src.split(/\r?\n/).length;
         duplicateComponents.push({
           file: rel,
@@ -582,6 +606,7 @@ export function auditSingleApp(cwd) {
   // Class-token findings: what the codemod rewrites is "auto", what it cannot map is "manual".
   const autoAt = new Set();
   for (const { rel, src, css } of sources) {
+    if (isSkipped(lintCfg, "no-literal-palette", rel)) continue; // illustration / data colours: the codemod leaves them
     for (const c of migrateSource(src, { css, mode }).changes) {
       issues.push({ phase: "tokens", kind: "auto", file: rel, line: c.line, from: c.from, to: c.to });
       autoAt.add(`${rel}:${c.line}:${c.from}`);
@@ -607,6 +632,7 @@ export function auditSingleApp(cwd) {
     cwd,
     issues,
     kept,
+    content: skipReasons(lintCfg),
     legacyMode: mode,
     theme,
     inventory,
@@ -801,8 +827,17 @@ export function formatSummary(r, reportPath = REPORT_FILE) {
   }
   const kept = apps.flatMap((a) => a.kept);
   if (kept.length) lines.push(``, `Giữ nguyên theo \`keep\` trong semi-lint.json: ${countBy(kept, "check").map(([c, n]) => `${CHECK_NAMES[c] || c} ×${n}`).join(", ")}.`);
+  lines.push(...contentLines(r));
   lines.push(...skippedLines(r));
   return lines.join("\n") + "\n";
+}
+
+/** One line per file `skip` names with a reason (illustration / data colours), so it stays visible, not baselined. */
+function contentLines(r) {
+  const list = appsOf(r).flatMap((a) => (a.content || []).map((c) => ({ ...c, app: nameOf(r, a) })));
+  if (!list.length) return [];
+  const multi = appsOf(r).length > 1;
+  return ["", ...list.map((c) => `Minh hoạ / màu dữ liệu: \`${multi ? `${c.app}/` : ""}${c.path}\` (\`${c.rule}\`): ${c.reason}`)];
 }
 
 /** One line per app folder the audit left out (git-ignored, nested repository); --include <dir> checks it. */

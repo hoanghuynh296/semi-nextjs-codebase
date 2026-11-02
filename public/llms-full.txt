@@ -1,4 +1,4 @@
-# Semi Design System (@semi/ui v0.19.1)
+# Semi Design System (@semi/ui v0.20.0)
 
 > The shared UI of every Semi app: semantic tokens that work in light and dark mode, React components (Next.js, Tailwind CSS 4) and the rules agents follow. Every component has a page with live examples and a markdown twin for agents.
 
@@ -8,7 +8,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 ## Machine-readable
 
-- [components.json](./components.json): all 121 components, hooks and constants with props, summaries and their doc page
+- [components.json](./components.json): all 122 components, hooks and constants with props, summaries and their doc page
 - [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
@@ -111,6 +111,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Empty state](./components/empty-state/) ([markdown](./docs/components/empty-state.md)): What an empty list or page shows: an icon, one short title, a description and the action that fills it. Components: EmptyState.
 - [Progress](./components/progress/) ([markdown](./docs/components/progress.md)): A determinate bar with value, or an indeterminate one when the end is unknown; tones for success and danger. Components: Progress.
 - [Skeleton](./components/skeleton/) ([markdown](./docs/components/skeleton.md)): Shimmer placeholders while content loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton; Loading announces the region. Never “Đang tải…” text. Components: Skeleton, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton, Loading.
+- [Task host](./components/task-host/) ([markdown](./docs/components/task-host.md)): startTask() shows one blocking overlay for a job the user must wait for: label, current step, progress, elapsed time and an optional Cancel. Mount TaskHost once in the root layout, next to ToastHost and ConfirmHost. Components: TaskHost.
 
 ### AI
 
@@ -162,14 +163,14 @@ Phones (`< md`) hide the top logo header and use `MobileTabBar` at the bottom (n
 |---|---|---|---|---|
 | `--color-canvas` | `bg-canvas` | `#0c0d0e` | `#f1f5f9` (Slate-100) | Outermost viewport frame |
 | `--color-app` | `bg-app` | `#121316` | `#ffffff` | Main workspace & content canvas |
-| `--color-panel` | `bg-panel` | `#18191c` | `#ffffff` | Bento Cards, Sidebar, Modals, Menus |
-| `--color-field` | `bg-field` | `#1e1f23` | `#f1f5f9` (Slate-100) | Form inputs (`FIELD_INPUT`), table headers |
+| `--color-panel` | `bg-panel` | `#202226` | `#ffffff` | Bento Cards, Sidebar, Modals, Menus |
+| `--color-field` | `bg-field` | `#272a2f` | `#f1f5f9` (Slate-100) | Form inputs (`FIELD_INPUT`), table headers |
 | `--color-raised` | `bg-raised` | `#26282e` | `#e2e8f0` (Slate-200) | Hover surface, subtle elevation, skeleton shimmer |
 | `--color-text-contrast` | `text-contrast` | `#ffffff` | `#0f172a` (Slate-900) | Headings, active state, high-contrast text |
 | `--color-text-body` | `text-body` | `#d1d5db` (Gray-300) | `#334155` (Slate-700) | Primary UI labels, body text |
-| `--color-text-muted` | `text-muted` | `#8b919a` | `#5b6779` | Captions, placeholders, inactive hints |
-| `--color-line` | `border-line` | `rgba(255,255,255,0.08)` | `rgba(0,0,0,0.08)` (Slate-200) | Borders on cards, panels, inputs, dividers |
-| `--color-line-hover` | `border-line-hover` | `rgba(255,255,255,0.16)` | `rgba(0,0,0,0.16)` (Slate-300) | Hover border state |
+| `--color-text-muted` | `text-muted` | `#9ba1aa` | `#5b6779` | Captions, placeholders, inactive hints |
+| `--color-line` | `border-line` | `rgba(255,255,255,0.12)` | `rgba(0,0,0,0.08)` (Slate-200) | Borders on cards, panels, inputs, dividers |
+| `--color-line-hover` | `border-line-hover` | `rgba(255,255,255,0.2)` | `rgba(0,0,0,0.16)` (Slate-300) | Hover border state |
 | `--color-divider` | `border-divider` | `rgba(255,255,255,0.05)` | `rgba(0,0,0,0.05)` (Slate-100) | Subtle row & item separators |
 
 *Accent & status (AA in both themes):* solid action `bg-accent hover:bg-accent-hover text-on-accent` · primary text/icon `text-accent-fg` · focus `ring-focus` / focused field `border-focus` · selected `bg-accent-subtle` (hover `bg-accent-subtle-hover`) + `border-accent-line` · status text `text-danger-fg` / `text-success-fg` / `text-warning-fg` / `text-info-fg` · tonal text `text-tone-<hue>`. Never `text-*-400` or `text-*-700 dark:text-*-300` in shared UI.
@@ -236,6 +237,7 @@ type scale are the product's (`data-density`, `data-type-scale` on `<html>`, `se
 - **No literal palette colors (`no-literal-palette`):** Never use direct physical classes like `bg-white`, `text-slate-900`, `border-slate-200`, `divide-slate-100`, `bg-slate-50`, `bg-gray-800/900`. Always use Semantic Tokens (`bg-panel`, `bg-field`, `text-contrast`, `text-body`, `text-muted`, `border-line`, `divide-divider`).
 - **No fixed chromatic text (`no-fixed-tone-text`):** `text-emerald-400`, `text-rose-700 dark:text-rose-300`, `fill-sky-500` → `text-accent-fg`, `text-*-fg`, `text-tone-<hue>`.
 - **No brand scale for states (`accent-state-token`):** `ring-primary-500/50`, `bg-primary-500/15`, `border-primary-500/30` → `ring-focus`, `bg-accent-subtle`, `border-accent-line` (themed, checked in both themes).
+- **No brand-scale fills (`primary-fill`):** `bg-primary-500 text-white`, `border-primary-500` → `bg-accent hover:bg-accent-hover text-on-accent`, `border-accent-line` / `border-focus`. The brand colour is one step of `primary-*`, so `primary-500` turns pale with a brand kit; the scale is for charts and illustrations (`skip` those files).
 - **No arbitrary colours / sizes:** `bg-[#…]`, `text-[rgb(…)]` (`hex-colour-class`), `"#fff"` in style props or configs (`literal-colour-value`), `text-[13px]` (`arbitrary-text-size`).
 - **No solid pastel surfaces (`no-solid-pastel-surfaces`):** Never use solid pastels (`bg-*-50`, `border-*-200`) for cards, rows, or containers; in dark mode they turn into glaring light rectangles. Use the themed status surfaces (`bg-warning-bg border-warning-border text-warning-fg`, also danger / success / info) or standard `bg-panel`.
 - **Universal Tonal Theme-Matching:** Chromatic accents across ANY component (cards, alert banners, callouts, table rows, buttons, badges, chips) adapt seamlessly to both dark & light themes using alpha transparency: static fill `bg-<color>-500/10`, hover fill `hover:bg-<color>-500/15`, active fill `active:bg-<color>-500/20`, border `border-<color>-500/20`, hover border `hover:border-<color>-500/30`, and text `text-tone-<color>` (or `TONAL_CONTAINER` / `TONAL_HOVER` / `<Badge tone="...">`).
@@ -244,12 +246,13 @@ type scale are the product's (`data-density`, `data-type-scale` on `<html>`, `se
 - **Typography:** `font-bold`, `text-[9|10px]`, `text-xs/sm`, uppercase labels, ALL CAPS buttons.
 - **Radii (`radius-token`):** `rounded`, `rounded-sm/md/lg/xl/2xl`, `rounded-[Npx]` (they ignore the app's style); per-style classes or `[data-style=…]` selectors in an app.
 - **Navigation & Layout:** fixed `border-r` sidebars or `-translate-x-full` hamburger drawers (use `AppShell` + `MobileTabBar`) · local `ui.tsx` wrapper barrels (`PageHeader`, `Select`, `Input`, `Button`, `Modal`): use `Button`, `Field` + `Input`, `CustomSelect`, `Modal`, `EmptyState` from `@semi/ui`.
-- **Icons & Controls:** emoji / ✕ ✓ glyphs, stroke 2+, inline `<path>` · native `<select>` / date / number inputs, `window.confirm` · "Đang tải…" text · Home button in app headers, page subtitles, text buttons on the page title row.
+- **Icons & Controls:** emoji / ✕ ✓ glyphs, stroke 2+, inline `<path>` · native `<select>` / date / number inputs, `window.confirm` · "Đang tải…" text (a progress step label or a `role="status"` line is fine) · Home button in app headers, page subtitles, text buttons on the page title row.
+- **Content colours:** illustrations and data palettes go under `skip` with a reason per file (`"skip": { "literal-colour-value": { "lib/scenePalette.ts": "data colours: 3D scene" } }`; `literal-colour-value`, `inline-svg-path`, `no-literal-palette` only), not in the baseline. `font-mono` only on code (`<code>`, `<pre>`, `CodeBlock`, `Terminal`, code editors); `max-w-4xl…6xl` only on dialogs and drawers.
 
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (121)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (122)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
@@ -307,6 +310,7 @@ type scale are the product's (`data-density`, `data-type-scale` on `<html>`, `se
 - `SubpageToolbar`: `SubpageToolbar`
 - `Table`: `Table`, `THead`, `TBody`, `TR`, `TH`, `TD`
 - `Tabs`: `Tabs`
+- `TaskHost`: `TaskHost`
 - `Terminal`: `Terminal`
 - `ThemeProvider`: `ThemeProvider`, `ThemeToggle`, `ThemeSwitcher`
 - `ThemeScript`: `ThemeScript`
@@ -315,7 +319,7 @@ type scale are the product's (`data-density`, `data-type-scale` on `<html>`, `se
 - `confirmDialog`: `ConfirmHost`
 - `locale`: `SemiLocaleProvider`
 
-**Hooks:** `useHotkey`, `useField`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useSemiLocale` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `pageWindow`, `themeScript`, `toast`, `dismissToast`, `confirmDialog`, `cn`
+**Hooks:** `useHotkey`, `useField`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useSemiLocale` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `pageWindow`, `startTask`, `themeScript`, `toast`, `dismissToast`, `confirmDialog`, `cn`
 <!-- generated:components:end -->
 
 
@@ -421,14 +425,14 @@ Semi architecture separates tokens into two tiers:
 |---|---|---|---|---|
 | `--color-canvas` | `bg-canvas` | Nền ứng dụng ngoài cùng (outer bento shell) | `#0c0d0e` | `#f1f5f9` (Slate-100) |
 | `--color-app` | `bg-app` | Khung bề mặt màn hình chính (content panel) | `#121316` | `#ffffff` |
-| `--color-panel` | `bg-panel` | Thẻ Bento Card, Sidebar, Modal shell | `#18191c` | `#ffffff` |
-| `--color-field` | `bg-field` | Nền ô nhập liệu, header bảng | `#1e1f23` | `#f1f5f9` (Slate-100) |
-| `--color-raised` | `bg-raised` | Hover / track fills trên nền field hoặc panel | `#282a2f` | `#e2e8f0` (Slate-200) |
+| `--color-panel` | `bg-panel` | Thẻ Bento Card, Sidebar, Modal shell | `#202226` | `#ffffff` |
+| `--color-field` | `bg-field` | Nền ô nhập liệu, header bảng | `#272a2f` | `#f1f5f9` (Slate-100) |
+| `--color-raised` | `bg-raised` | Hover / track fills trên nền field hoặc panel | `#31343a` | `#e2e8f0` (Slate-200) |
 | `--color-text-contrast` | `text-contrast` | Tiêu đề, chữ độ tương phản cao | `#ffffff` | `#0f172a` (Slate-900) |
 | `--color-text-body` | `text-body` | Nội dung văn bản chính | `#d1d5db` (Gray-300) | `#334155` (Slate-700) |
-| `--color-text-muted` | `text-muted` | Nhãn phụ, placeholder, gợi ý | `#8b919a` | `#5b6779` |
-| `--color-line` | `border-line` | Đường viền card, bảng, khung | `rgba(255, 255, 255, 0.08)` | `rgba(0, 0, 0, 0.08)` (Slate-200) |
-| `--color-line-hover` | `border-line-hover` | Đường viền khi hover | `rgba(255, 255, 255, 0.16)` | `rgba(0, 0, 0, 0.16)` |
+| `--color-text-muted` | `text-muted` | Nhãn phụ, placeholder, gợi ý | `#9ba1aa` | `#5b6779` |
+| `--color-line` | `border-line` | Đường viền card, bảng, khung | `rgba(255, 255, 255, 0.12)` | `rgba(0, 0, 0, 0.08)` (Slate-200) |
+| `--color-line-hover` | `border-line-hover` | Đường viền khi hover | `rgba(255, 255, 255, 0.2)` | `rgba(0, 0, 0, 0.16)` |
 | `--color-divider` | `border-divider` | Đường phân cách nhẹ giữa các hàng | `rgba(255, 255, 255, 0.05)` | `rgba(0, 0, 0, 0.05)` (Slate-100) |
 | `--color-accent` | `bg-accent` | Nền nút chính / mark "on" (BTN_PRIMARY, headerPrimary) | `primary-500` | `primary-700` |
 | `--color-accent-hover` | `hover:bg-accent-hover` | Hover của nền accent | `primary-400` | `primary-800` |
@@ -443,7 +447,10 @@ Semi architecture separates tokens into two tiers:
 
 Mọi cặp chữ / nền ở trên đạt WCAG AA (≥ 4.5:1) ở cả hai theme. Không viết `text-*-400` hay `text-*-700 dark:text-*-300` trong component: dùng `text-accent-fg`, `text-*-fg` hoặc `text-tone-*`.
 Trạng thái (focus, chọn, hover) không dùng thang `primary-*` với alpha (`ring-primary-500/50`, `bg-primary-500/15`): thang đó
-không đổi theo theme nên biến mất với brand sáng trên nền sáng (`accent-state-token`). Brand: dùng brand kit
+không đổi theo theme nên biến mất với brand sáng trên nền sáng (`accent-state-token`). Nền và viền đặc cũng vậy
+(`bg-primary-500`, `border-primary-500`): màu thương hiệu chỉ nằm ở một sắc độ của thang (vàng ở `200`, navy ở `900`),
+nên `primary-500` có thể nhạt hay lệch hẳn; nền nút / mark "on" là `bg-accent` + `text-on-accent` (`primary-fill`).
+Thang `primary-*` chỉ dùng cho biểu đồ và hình minh hoạ. Brand: dùng brand kit
 (`docs/BRANDS.md`); bộ sinh màu đặt `accent`, `on-accent`, `accent-fg` cho từng theme, các token trạng thái đi theo `accent-fg`.
 
 **Cách sinh CSS:** giá trị theo theme nằm ở biến nguồn `--semi-*` (đặt trong `:root/[data-theme=dark]` và `[data-theme=light]`); utility đọc qua `@theme inline` (`bg-panel` → `var(--semi-panel)`), còn `--color-*` được khai báo lại ở mỗi theme scope cho CSS của app (`var(--color-panel)`).
@@ -569,7 +576,7 @@ Instead, the Semi Design System **adapts all chromatic components** to **Two-Tie
 
 | Component State | Dual-Theme Token Formula | Visual Behavior (Light & Dark) |
 |---|---|---|
-| **Static Surface** | `bg-<color>-500/10` | 10% soft tint on light; deep rich glow on `#18191c` dark panel |
+| **Static Surface** | `bg-<color>-500/10` | 10% soft tint on light; deep rich glow on `#202226` dark panel |
 | **Static Border** | `border-<color>-500/20` | 20% subtle alpha outline harmonizing with border-line |
 | **Interactive Hover Surface** | `hover:bg-<color>-500/15` | 15% reactive tint on hover |
 | **Interactive Hover Border** | `hover:border-<color>-500/30` | 30% crisp boundary on hover |
@@ -727,7 +734,7 @@ tiles use `w-11 h-11 rounded-card` with their area's `TILE_TONES`.
 
 `BTN_PRIMARY` / `BTN_SECONDARY` / `BTN_DANGER` from `@semi/ui/styles` (`rounded-control`, `h-control`,
 `text-label font-medium`, flat). Icon-only: add `BTN_ICON`, or `ICON_BTN` (`w-7 h-7 rounded-control`) inside cards. Big
-state toggles (power) are round: `w-20 h-20 sm:w-24 sm:h-24 rounded-full`, flat `bg-primary-500 text-white` when on,
+state toggles (power) are round: `w-20 h-20 sm:w-24 sm:h-24 rounded-full`, flat `bg-accent text-on-accent` when on,
 `bg-white/[0.05]` when off. A running action shows a spinner inside its own button only.
 
 ## 10. Pills, chips, badges
@@ -740,7 +747,7 @@ state toggles (power) are round: `w-20 h-20 sm:w-24 sm:h-24 rounded-full`, flat 
 
 ## 11. Status dot
 
-Flat dot next to state text, no glow: online `bg-emerald-400`, running `bg-primary-400 animate-pulse`,
+Flat dot next to state text, no glow: online `bg-emerald-400`, running `bg-accent animate-pulse`,
 busy/paused/connecting `bg-amber-400`, error `bg-rose-500`, offline `bg-gray-500`. Use `STATUS_DOT`.
 Size `w-2 h-2` (`w-1.5 h-1.5` inline in a caption).
 
@@ -748,7 +755,7 @@ Size `w-2 h-2` (`w-1.5 h-1.5` inline in a caption).
 
 Nested facts (readings, KPIs, sensor values) sit in `TILE` (`rounded-control bg-white/[0.04] border border-white/[0.06]`)
 with an icon above or before a `tabular-nums` value. Progress is a ring or a `h-1.5 rounded-full` bar in
-`primary-500` on `bg-white/[0.08]`.
+`bg-accent` on `bg-raised` (`Progress`).
 
 ## 13. Empty state
 
@@ -763,7 +770,11 @@ real grid's classes), `SkeletonRows` (lists, dialogs, tables), `PageSkeleton` (S
 `role="status"` / `aria-busy`; its `label` is for screen readers only). The sweep is the `.shimmer` class in
 `base.css` (stops under `prefers-reduced-motion`). Keep "not loaded yet" apart from "empty" (e.g. `undefined` =
 loading, `null` = failed, or a `loaded` flag) so an empty state never flashes before data. Long operations the user
-started (upload, export) show a progress bar with a short label and percentage.
+started (upload, export) show a progress bar with a short label and percentage. When the user cannot do anything
+useful until the job ends (upload before printing, import, firmware update, payment step), use the blocking overlay:
+`const task = startTask({ label, step, value, timer, onCancel })`, `task.update({ value })`, `task.done()` /
+`task.fail(title)` (closes and shows a danger toast), with `<TaskHost />` mounted once in the root layout beside
+`<ToastHost />` / `<ConfirmHost />`. One task at a time; Cancel and Escape only when `onCancel` is set.
 One exception: a list a form field fetches by itself in the background shows one small `role="status"` line under that
 field while it loads: a `w-3 h-3` spinner + "Đang tải …" in `text-label text-gray-500` (the text sits in the
 `role="status"` element, which the lint allows), gone when done; a failed fetch stays silent.
@@ -848,6 +859,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `PageActions.tsx` | `PageActions` (a tab's header buttons), `PageActionsSlot` + `PageActionsProvider` |
 | `Skeleton.tsx` | `Skeleton`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton`, `Loading` (§13b) |
 | `confirmDialog.tsx` | `confirmDialog()`, `ConfirmHost`, `ConfirmOptions` (§14) |
+| `TaskHost.tsx` | `startTask()`, `TaskHost`, `TaskOptions`, `TaskHandle` (blocking task overlay, §13b) |
 | `ThemeProvider.tsx` | `ThemeProvider`, `useTheme`, `ThemeToggle` (§2) |
 | `Markdown.tsx` | `Markdown` (AI answers) |
 | `Chat.tsx` | `AIChat`, `ChatPanel`, `ChatView`, `ChatList`, `ChatComposer`, `UserMessage`, `AssistantMessage`, `ChatAnswer`, `ChatError`, `ChatThinking`, `ChatIntro`, `ChatSuggestion(s)`, `ChatAvatar`, `ChatCopyButton`, `ChatModelPicker`, `CHAT_ROW`, `CHAT_CHIP`, `CHAT_PICK_CHIP`, `ChatItem` (§14b) |
@@ -881,7 +893,10 @@ with `aria-describedby`, sets `aria-invalid` and announces the error (`role="ale
 Input surface: `FIELD_INPUT` (`bg-field border border-line hover:border-line-hover rounded-control px-3 h-field text-ui …
 focus:border-focus`); invalid adds `border-danger-border`. Never `focus:outline-none` without a visible focus
 border. Choices: `Checkbox` (with `indeterminate`), `Switch` (settings that apply at once), `RadioGroup` (2–5 exclusive
-options; more → `CustomSelect`).
+options; more → `CustomSelect`). A `Switch` or `Checkbox` without a visible `label` (on a card whose title names it, a
+table row) gets `aria-labelledby` (the title's id) or `aria-label`; `label` wins, and in development an unnamed one logs
+a warning. On touch screens (`any-pointer: coarse`) both get a 44 × 44 px hit area from a pseudo-element, so the
+visible size (`size="sm" | "md"`) and the layout stay the same.
 
 ## 17. Primitives (`@semi/ui`)
 
@@ -891,6 +906,7 @@ options; more → `CustomSelect`).
 | Overflow actions of a row / card | `Menu` (icon-only "more" trigger; `danger` item last) |
 | Hint for an icon-only control | `Tooltip` (never essential text: touch screens do not show it) |
 | Feedback after an action | `toast({ title, tone, action })` + `<ToastHost />` in the layout |
+| A job the user must wait for | `startTask({ label, onCancel, timer })` + `<TaskHost />` in the layout |
 | Persistent message in a page | `Alert` (tone, title, action, `onDismiss`) |
 | Secondary task beside the page | `Drawer` (right / left / bottom / top sheet) |
 | Sections of one record | `Tabs` (underline; `segmented` inside a toolbar); 2–4 sibling pages → `PageTabsTitle` |
@@ -977,19 +993,21 @@ and never override the variables (`brand-override`).
 - **Physical / literal colors (`no-literal-palette`):** Never use neutral / white / black colour classes on any prefix or variant (`bg-white`, `text-slate-900`, `border-b-gray-200`, `divide-zinc-100`, `ring-slate-300`, `from-white`, `dark:bg-slate-800`). Always use Semantic Tokens (`bg-panel`, `bg-field`, `text-contrast`, `text-body`, `text-muted`, `border-line`, `divide-divider`).
 - **Fixed chromatic text (`no-fixed-tone-text`):** `text-emerald-400`, `text-rose-700 dark:text-rose-300`, `fill-amber-500` cannot pass contrast in both themes: use `text-accent-fg`, `text-*-fg` or `text-tone-<hue>`.
 - **Brand scale as a state colour (`accent-state-token`):** `ring-primary-500/50`, `bg-primary-500/15`, `border-primary-500/30` are not themed and vanish for light brands on light surfaces (a yellow ring is ≈ 1.3:1 on white): use `ring-focus`, `border-focus`, `bg-accent-subtle` / `bg-accent-subtle-hover`, `border-accent-line`. `/semi-check` rewrites them.
+- **Brand scale as a fill or border (`primary-fill`):** `bg-primary-500`, `hover:bg-primary-600`, `border-primary-500`. The brand colour sits on one step of the scale (yellow on `200`, navy on `900`), so a `primary-500` fill turns pale or off-brand with a brand kit. Main actions and "on" marks are `bg-accent hover:bg-accent-hover text-on-accent` (`BTN_PRIMARY`), selected borders `border-accent-line`, focused ones `border-focus`. `primary-*` is the scale for charts and illustrations: list those files under `skip`. The `/semi-check` codemod rewrites `bg-primary-400…600` to `bg-accent` when the same class list has `text-white` / `text-on-accent`, and reports the rest.
 - **Solid pastel surfaces (`no-solid-pastel-surfaces`), arbitrary colours (`hex-colour-class`), literal colours in code (`literal-colour-value`), off-scale sizes (`arbitrary-text-size`).**
 - The colour / size rules read class tokens from every string literal (className, `cn()`, constants, template parts, `@apply`), not lines, so any spelling of a colour is caught.
+- **Illustrations and data colours** (a device drawing, a 3D scene palette, other companies' logos) are content, not UI chrome: name each file under `skip` in `semi-lint.json` with a reason, for `literal-colour-value`, `inline-svg-path` or `no-literal-palette` only: `"skip": { "literal-colour-value": { "lib/scenePalette.ts": "data colours: 3D scene" } }`. The `/semi-check` audit lists each one ("Minh hoạ / màu dữ liệu") and its codemod leaves them; never a whole folder, never the baseline.
 - **Overriding Card component (`card-class-override`):** Never pass any `bg-*` or `shadow-*` (with or without a variant such as `hover:`) to `<Card />`; use `TONAL_CONTAINER` on a plain element for a tinted card.
 - Gradients, glow blobs, coloured glow shadows (`shadow-[0_0_…]`), "glassmorphism" panels.
 - Solid greys for surfaces (`bg-gray-800/900`), `border-gray-700`, hard-coded hex colour classes (`bg-[#...]`, `text-[#...]`).
 - `font-bold` / `extrabold` / `black`; `text-[9px]` / `text-[10px]`; `text-xs` / `text-sm`; `uppercase` labels; ALL-CAPS button text.
-- Raw or arbitrary radii (`rounded-lg`, `rounded-[10px]`) instead of the style tokens; `font-mono` for numbers; coloured icon tiles in front of every card title; one decorative icon colour per card (`decorative-icon-tones`, §19).
+- Raw or arbitrary radii (`rounded-lg`, `rounded-[10px]`) instead of the style tokens; `font-mono` for numbers (fine on `<code>`, `<pre>`, `CodeBlock`, `Terminal` and `textarea` / `contentEditable` code editors); coloured icon tiles in front of every card title; one decorative icon colour per card (`decorative-icon-tones`, §19).
 - Emoji or unicode pictograms as icons; filled glyphs mixed with stroke icons; stroke 2+; new inline `<svg>` paths.
 - Native `<select>`, `type="date"`, `type="number"`, `window.confirm` / `alert`.
-- "Đang tải…" text or a page spinner instead of a skeleton.
+- "Đang tải…" text or a page spinner instead of a skeleton (`loading-text`). A step label of a progress bar (`Progress label`, a call with a `fraction` / `value`), text in a `role="status"` / `role="progressbar"` element and a `TaskHost` label are fine.
 - A Home button in an app header; subtitles under page titles.
 - Coloured nav icons or count badges in the menu; chips or tags with different background colours.
-- Narrow `max-w-5xl` page containers that waste horizontal space.
+- Narrow `max-w-5xl` page containers that waste horizontal space (`narrow-container`; a dialog or drawer with `MODAL_PANEL`, `Modal`, `Drawer` or `role="dialog"` keeps its max width).
 - Copies of `@semi/ui/styles` class strings (app chrome) instead of the constants; `window.open` / bare external links.
 
 ## App extensions
@@ -1155,6 +1173,7 @@ Khi cần hiển thị biểu tượng cho một hành động hoặc trạng th
 | **Tải file về máy / Xuất file** | `download` | `<Icon name="download" />` | Không dùng cho nút Lưu trên cloud |
 | **Tải file lên / Nhập file** | `upload` | `<Icon name="upload" />` | Dùng trong dropzone upload |
 | **Hoàn tác bước vừa làm** | `undo` | `<Icon name="undo" />` | Không dùng thay cho nút Back chuyển trang |
+| **Làm lại bước vừa hoàn tác** | `redo` | `<Icon name="redo" />` | Đi cặp với `undo`; không dùng cho tải lại (`refresh`) hay lặp media (`repeat`) |
 | **Khôi phục mặc định ban đầu** | `reset` | `<Icon name="reset" />` | Dùng trong form cấu hình / filter reset |
 | **Ghim mục lên đầu danh sách** | `pin` | `<Icon name="pin" />` | Dùng cho ghim tab/dự án/mục ưu tiên |
 | **Gửi lệnh / Gửi tin nhắn** | `send` | `<Icon name="send" />` | Dùng cho chat AI / G-code terminal |
@@ -1337,6 +1356,9 @@ Khi cần hiển thị biểu tượng cho một hành động hoặc trạng th
 | **Hợp nhất đối tượng (Merge)** | `merge` | `<Icon name="merge" />` | Hợp nhất các khối, gộp nhánh code hoặc liên kết dữ liệu |
 | **Xáo trộn ngẫu nhiên (Shuffle)** | `shuffle` | `<Icon name="shuffle" />` | Đổi thứ tự ngẫu nhiên, xáo trộn danh sách |
 | **Co giãn / Đổi kích thước (Scale)**| `resize` | `<Icon name="resize" />` | Co giãn kích thước đối tượng, điều chỉnh tỉ lệ khung |
+| **Tẩy (Eraser)** | `eraser` | `<Icon name="eraser" />` | Tẩy nét vẽ, vùng tô màu, mask; xoá bản ghi dùng `trash` |
+| **Đặt lại góc nhìn (Reset view)** | `viewReset` | `<Icon name="viewReset" />` | Camera / viewport về góc isometric mặc định; zoom vừa vùng chọn dùng `focus` |
+| **Lật ngang / Đối xứng (Flip)** | `flipHorizontal` | `<Icon name="flipHorizontal" />` | Lật ảnh / mô hình theo trục dọc, đổi bên trái ↔ phải; xoay theo góc dùng `rotateCw` |
 
 ---
 
@@ -1466,6 +1488,10 @@ Khi lập trình, nếu viết các từ khoá sau thì `semi-lint` hoặc `tsc`
 | `loop` | `repeat` | Lặp lại phát video dùng `repeat` |
 | `fast_forward`, `speed_up` | `fastForward` | Tua nhanh tốc độ dùng `fastForward` |
 | `crop_image` | `crop` | Cắt xén hình ảnh dùng `crop` |
+| `repeat_action` | `redo` | Làm lại bước vừa hoàn tác dùng `redo` |
+| `erase`, `clear_paint` | `eraser` | Tẩy nét vẽ / vùng tô dùng `eraser` |
+| `view_reset`, `iso`, `home_view` | `viewReset` | Đặt lại góc nhìn dùng `viewReset` |
+| `flip`, `mirror`, `swap_side`, `flip_side`, `flipSide` | `flipHorizontal` | Lật / đối xứng dùng `flipHorizontal` |
 
 ---
 
@@ -1741,6 +1767,9 @@ tắc bố cục đi kèm (tránh giao diện "AI" chung chung): `DESIGN_SYSTEM.
 - **Thang `primary-50 … 900`:** mỗi sắc độ có độ sáng cố định (OKLCH, giống nhau cho mọi thương hiệu), cùng tông với màu
   chính. Màu chính nằm nguyên vẹn ở sắc độ gần nó nhất (`brandStep`: navy đậm ở `900`, vàng ở `200`, xanh lá Semi ở `500`);
   `--color-primary` luôn là đúng mã đó. Vì vậy màu rất đậm hay rất nhạt không còn làm nửa thang trùng nhau.
+  BRAND.md ghi sắc độ đó ("nằm ở `primary-…`"). Giao diện không bao giờ tô bằng thang (`bg-primary-500`): nút chính và mark
+  "on" là `bg-accent` + `text-on-accent`, chữ `text-accent-fg`, viền chọn `border-accent-line`; thang chỉ dành cho biểu
+  đồ và hình minh hoạ (`semi-lint`: `primary-fill`).
 - **Nút chính (`bg-accent` + `text-on-accent`), mỗi theme:** trong mọi cặp sắc độ × chữ (trắng hoặc tối) đạt 4.5:1, chọn
   sắc độ **gần màu thương hiệu nhất**. Nếu sắc độ đó gần như trùng với nền trang (< 3:1, vd. navy trên nền tối), lấy sắc
   độ gần nhất có tách khỏi nền, miễn là không lệch quá xa; không có thì giữ màu thương hiệu và báo "lưu ý".
@@ -1848,14 +1877,14 @@ All web UI here follows the **Semi Design System** (`@semi/ui`, repo `https://gi
 1. **Ask Semi before writing UI.** Find the component for each need with the `semi` MCP tools (`semi_search` → `semi_docs` → `semi_example`; `semi_block` for whole pages; `semi_props` for props) or the terminal (`npx semi search "bảng có sắp xếp"`, `npx semi docs DataTable`, `npx semi example data-table`, `npx semi add dashboard`). They answer from the installed `@semi/ui`. Read *When to use*, *Use something else when* and *Accessibility*, then start from an example.
 2. **Compose, never re-create.** Import from `@semi/ui` and `@semi/ui/styles` directly. No local wrappers (`components/ui.tsx`), no raw `<select>`, `<table>`, `<dialog>`, `type="date"`, `type="number"`, `window.confirm` / `alert`, no inline `<svg>` or glyph icons (`<Icon name>`, mapping in `docs/ICONS.md`). Every AI conversation is `AIChat`; agent work uses `Reasoning`, `ToolCall`, `TaskList`, `Terminal`, `Sources`; an outward-facing, paid or irreversible agent action waits for `ActionConfirmation`. Pages sit in `AppShell` (or `AppHeader` for a one-screen tool) with `PageTitle`; dialogs are `Modal` / `Drawer` / `confirmDialog`; loading is `Skeleton`, never "Đang tải…" text.
 3. **Tokens only** (dual theme, any brand, any style):
-   - Surfaces and text: `bg-canvas|app|panel|field|raised`, `text-contrast|body|muted`, `border-line|divider`; status `bg-*-bg border-*-border text-*-fg` (danger, success, warning, info). Accent: `bg-accent text-on-accent` (or `BTN_PRIMARY`), `text-accent-fg`, `bg-accent-subtle`, `border-accent-line`, `ring-focus`. Never physical colours (`bg-white`, `text-slate-900`, `text-amber-600 dark:text-amber-400`), arbitrary colours (`bg-[#…]`), `primary-N/alpha`, gradients or glow shadows.
+   - Surfaces and text: `bg-canvas|app|panel|field|raised`, `text-contrast|body|muted`, `border-line|divider`; status `bg-*-bg border-*-border text-*-fg` (danger, success, warning, info). Accent: `bg-accent text-on-accent` (or `BTN_PRIMARY`), `text-accent-fg`, `bg-accent-subtle`, `border-accent-line`, `ring-focus`. Never physical colours (`bg-white`, `text-slate-900`, `text-amber-600 dark:text-amber-400`), arbitrary colours (`bg-[#…]`), `primary-N/alpha` or `bg-primary-N` fills (`primary-fill`), gradients or glow shadows.
    - Type scale only: `text-caption|label|ui|ui-lg|title|title-lg`, `text-kpi`, `text-heading`, `text-display`; `font-medium` / `font-semibold`, titles and big numbers `font-title` / `font-figure`; `tabular-nums` for numbers; sentence case.
    - Shape and size come from the app's style (`"style"` in `semi-lint.json`, `data-style` on `<html>`): `rounded-chip|control|card|panel|full`, `shadow-card`, `h-control`, `h-field`. Never `rounded-lg`, `rounded-[Npx]`, `h-[34px]` or `[data-style]` selectors. Density and type scale are this product's (`data-density`, `data-type-scale`): never tune paddings or text sizes by hand for that.
    - Layers: `z-sticky` < `z-drawer` < `z-modal` < `z-dialog` < `z-popover` < `z-toast` < `z-tooltip`; never `z-[9999]`.
 4. **Not the generic AI screen** (`DESIGN_SYSTEM.md` §19): one main block per screen (`KpiCard featured`, not four equal cards); icons neutral unless they mean a status; proof (a real number, a quote, a product shot) instead of three icon feature cards; icons only where they help scanning; sample data and empty states from this product, never "Lorem", "John Doe" or another domain.
 5. **Brand** (when `semi-lint.json` has `"brand"`): ask `semi_brand` (or `npx semi brand voice|color|logo|brief`) before writing UI text or placing colour. Write in the brand's voice, use colour as its colour-use rule says, import the logo from the kit, use only its allowed styles; never define colours, fonts or Semi tokens in the app (`brand-override`). Brand changes happen in the brand repo with `/semi-brand`, then `/semi-sync` here.
 6. **Accessibility:** icon-only controls have `aria-label`; custom controls keep `FOCUS_RING`; every text / background pair reaches 4.5:1 in both themes.
-7. **Gaps go upstream.** When `@semi/ui` cannot express a need, run `/semi-sync`, re-check the docs, then `/semi-propose`; meanwhile a minimal compliant workaround marked `// TODO(semi#<issue>)`, baselined, never a broad `skip`. Shared rules change in the Semi repo, never only in this file; app-specific patterns go in `docs/UI_EXTENSIONS.md`.
+7. **Gaps go upstream.** When `@semi/ui` cannot express a need, run `/semi-sync`, re-check the docs, then `/semi-propose`; meanwhile a minimal compliant workaround marked `// TODO(semi#<issue>)`, baselined, never a broad `skip`. Illustrations and data colours (not UI chrome) are the one per-file `skip`, with a reason: `"skip": { "literal-colour-value": { "lib/scenePalette.ts": "data colours: 3D scene" } }` (also `inline-svg-path`, `no-literal-palette`). Shared rules change in the Semi repo, never only in this file; app-specific patterns go in `docs/UI_EXTENSIONS.md`.
 8. **Before finishing:** `npx semi-lint` clean, `npx tsc --noEmit`, and the page checked in both themes and at phone width. Whole-app check: `/semi-check`; newer Semi or brand kit: `/semi-sync`.
 <!-- semi-design-system:end -->
 
@@ -2576,6 +2605,34 @@ export default function CheckboxStates() {
 }
 ```
 
+### Row selection without a visible label
+
+aria-label names each box ("Chọn đơn #1024").
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Checkbox } from "@semi/ui";
+
+const ORDERS = ["1024", "1025", "1026"];
+
+export default function CheckboxRowSelect() {
+  const [picked, setPicked] = useState<string[]>(["1025"]);
+  const toggle = (o: string, on: boolean) => setPicked(on ? [...picked, o] : picked.filter((x) => x !== o));
+  return (
+    <ul className="divide-y divide-divider border border-line rounded-card">
+      {ORDERS.map((o) => (
+        <li key={o} className="flex items-center gap-3 px-3 py-2.5">
+          <Checkbox checked={picked.includes(o)} onChange={(on) => toggle(o, on)} aria-label={`Chọn đơn #${o}`} />
+          <span className="text-ui text-body tabular-nums">Đơn #{o}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
 ## API
 
 ### Checkbox
@@ -2584,16 +2641,20 @@ export default function CheckboxStates() {
 |---|---|---|---|
 | `checked` * | `boolean` |  |  |
 | `onChange` * | `(checked: boolean) => void` |  |  |
-| `label` | `React.ReactNode` |  |  |
+| `label` | `React.ReactNode` |  | Visible label; it names the checkbox and is part of the hit area. |
 | `description` | `React.ReactNode` |  |  |
 | `indeterminate` | `boolean` | `false` | Mixed state ("some selected") for a select-all box. |
 | `disabled` | `boolean` | `false` |  |
 | `id` | `string` |  |  |
 | `className` | `string` |  |  |
+| `aria-label` | `string` |  | Name for screen readers when there is no visible `label` (a row's select box: "Chọn đơn #1024"). `label` wins. |
+| `aria-labelledby` | `string` |  | Id of the element that names the checkbox when its text is elsewhere (a table cell, a card title). `label` wins. |
 
 ## Accessibility
 
 - A real <input type="checkbox">: Space toggles, label clicks toggle, description is linked.
+- Without a visible label (row selection) give aria-label or aria-labelledby (label wins); in development a checkbox with no name logs a warning.
+- On touch screens (any coarse pointer) the hit area is 44 × 44 px around the box; the visible size and layout do not change.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/checkbox/ and the types in src/ -->
 
@@ -3429,6 +3490,7 @@ An on / off toggle for settings that apply immediately.
 ## When to use
 
 - Settings that take effect at once (notifications, dark sync, auto-print).
+- A switch on a card whose title names it: pass aria-labelledby (the title's id) or aria-label instead of a visible label.
 
 ## Use something else when
 
@@ -3464,6 +3526,42 @@ export default function SwitchBasic() {
 }
 ```
 
+### Named by a card title
+
+No visible label: aria-labelledby points at the card title.
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Badge, Card, Switch } from "@semi/ui";
+
+const RULES = [
+  { id: "maint", name: "Nhắc bảo trì", detail: "Mỗi 200 giờ in" },
+  { id: "night", name: "Tắt máy ban đêm", detail: "23:00, khi không có job" },
+];
+
+export default function SwitchCardHeader() {
+  const [on, setOn] = useState<Record<string, boolean>>({ maint: true, night: false });
+  return (
+    <div className="grid gap-3 @lg:grid-cols-2">
+      {RULES.map((r) => (
+        <Card key={r.id} className="p-4 space-y-2">
+          <div className="flex items-center justify-between gap-3">
+            <span id={`rule-${r.id}`} className="text-ui font-semibold text-contrast">
+              {r.name}
+            </span>
+            <Switch checked={on[r.id]} onChange={(v) => setOn({ ...on, [r.id]: v })} aria-labelledby={`rule-${r.id}`} />
+          </div>
+          <p className="text-label text-muted">{r.detail}</p>
+          <Badge tone={on[r.id] ? "emerald" : "gray"}>{on[r.id] ? "Đang bật" : "Đang tắt"}</Badge>
+        </Card>
+      ))}
+    </div>
+  );
+}
+```
+
 ## API
 
 ### Switch
@@ -3472,16 +3570,20 @@ export default function SwitchBasic() {
 |---|---|---|---|
 | `checked` * | `boolean` |  |  |
 | `onChange` * | `(checked: boolean) => void` |  |  |
-| `label` | `React.ReactNode` |  |  |
+| `label` | `React.ReactNode` |  | Visible label; it names the switch. |
 | `description` | `React.ReactNode` |  |  |
 | `disabled` | `boolean` | `false` |  |
-| `size` | `'sm' \| 'md'` | `"md"` |  |
+| `size` | `'sm' \| 'md'` | `"md"` | Visible size only: on touch screens both sizes get a 44 × 44 px hit area. |
 | `id` | `string` |  |  |
 | `className` | `string` |  |  |
+| `aria-label` | `string` |  | Name for screen readers when the switch has no visible `label` ("Bật automation Nhắc bảo trì"). `label` wins. |
+| `aria-labelledby` | `string` |  | Id of the element that names the switch when its text is elsewhere (a card header). `label` wins. |
 
 ## Accessibility
 
 - role="switch" with aria-checked; Space toggles; label and description are linked.
+- Without a visible label give aria-label or aria-labelledby (label wins); in development a switch with no name logs a warning.
+- On touch screens (any coarse pointer) the hit area is 44 × 44 px around the track; the visible size and layout do not change.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/switch/ and the types in src/ -->
 
@@ -7205,6 +7307,7 @@ Determinate or indeterminate progress bar (uploads, quotas, print progress).
 | `showValue` | `boolean` | `false` |  |
 | `size` | `'sm' \| 'md'` | `"md"` |  |
 | `className` | `string` |  |  |
+| `aria-label` | `string` |  | Accessible name when there is no string `label` (the bar's text is elsewhere). |
 
 ## Accessibility
 
@@ -7349,6 +7452,121 @@ Wrapper that tells assistive tech the region is loading. `relative` keeps the ab
 - Loading (and the Skeleton* groups with label) set role="status" + aria-busy so screen readers hear one message.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/skeleton/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/task-host.md -->
+
+# Task host
+
+startTask() shows one blocking overlay for a job the user must wait for: label, current step, progress, elapsed time and an optional Cancel. Mount TaskHost once in the root layout, next to ToastHost and ConfirmHost.
+
+## When to use
+
+- The user started a job and cannot do anything useful until it finishes: an upload before printing, an import, a firmware update, a payment step, an AI job that the next screen needs.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Work the user can keep going during (a background sync, an export) | Progress inline, or toast() when it ends |
+| A page or section waiting for its data | Skeleton |
+| A button running its own short action | Button loading |
+
+## Import
+
+```tsx
+import { TaskHost, startTask } from "@semi/ui";
+```
+
+## Examples
+
+### Steps, progress, timer and Cancel
+
+```tsx
+"use client";
+
+import { Button, startTask, toast } from "@semi/ui";
+
+const STEPS = ["Kiểm tra file", "Gửi file lên máy in", "Cắt lớp"];
+
+export default function TaskHostUpload() {
+  const run = () => {
+    let stopped = false;
+    const task = startTask({
+      label: "Tải file lên máy in",
+      step: STEPS[0],
+      value: 0,
+      timer: true,
+      onCancel: () => {
+        stopped = true;
+        toast({ title: "Đã huỷ tải lên" });
+      },
+    });
+    let value = 0;
+    const tick = setInterval(() => {
+      if (stopped) return clearInterval(tick);
+      value += 10;
+      task.update({ value, step: STEPS[Math.min(STEPS.length - 1, Math.floor(value / 34))] });
+      if (value >= 100) {
+        clearInterval(tick);
+        task.done();
+        toast({ title: "Đã gửi file tới máy in", tone: "success" });
+      }
+    }, 400);
+  };
+  return (
+    <Button variant="primary" onClick={run}>
+      Tải lên và in
+    </Button>
+  );
+}
+```
+
+### No Cancel, ends with fail()
+
+fail() closes the overlay and shows a danger toast.
+
+```tsx
+"use client";
+
+import { Button, startTask } from "@semi/ui";
+
+export default function TaskHostFail() {
+  const run = () => {
+    // No onCancel: a firmware update cannot stop halfway, so there is no Cancel button and Escape does nothing.
+    const task = startTask({ label: "Cập nhật firmware", step: "Đang ghi bộ nhớ máy in" });
+    setTimeout(() => task.fail("Cập nhật firmware thất bại", "Máy in mất kết nối. Thử lại khi máy online."), 2500);
+  };
+  return (
+    <Button onClick={run}>
+      Cập nhật firmware (lỗi)
+    </Button>
+  );
+}
+```
+
+## API
+
+### TaskHost
+
+Mounted once in the root layout; renders the task started by `startTask()`.
+
+No props of its own.
+
+## Accessibility
+
+- An alertdialog named by the label, aria-busy while it runs; label and step sit in a polite live region, the elapsed time is not announced.
+- Focus stays inside (on Cancel when there is one); Escape and Cancel only exist when onCancel is set.
+
+## Notes
+
+- <TaskHost /> goes once in the root layout (see Theme › Root layout); startTask() works from any event handler.
+- One task at a time: startTask() while one runs replaces it, and the old handle does nothing. update({ value }) takes 0–100; leave value out for an indeterminate bar.
+- Cancel and Escape close the overlay first, then call onCancel: stop the job there.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/task-host/ and the types in src/ -->
 
 
 ---
@@ -9005,7 +9223,7 @@ export default function ThemeScope() {
 ### Root layout
 
 ```tsx
-import { ConfirmHost, ThemeProvider, ThemeScript, ToastHost } from "@semi/ui";
+import { ConfirmHost, TaskHost, ThemeProvider, ThemeScript, ToastHost } from "@semi/ui";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -9018,6 +9236,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
           <ToastHost />
           <ConfirmHost />
+          <TaskHost />
         </ThemeProvider>
       </body>
     </html>

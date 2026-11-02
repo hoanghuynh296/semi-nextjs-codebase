@@ -33,8 +33,12 @@ const TONE = {
 };
 const SIZES = { 11: "caption", 12: "label", 13: "ui", 14: "ui-lg", 15: "title", 16: "title-lg", 18: "kpi", 20: "heading-sm", 22: "heading", 24: "heading-lg", 26: "display" };
 
-/** Map one utility (no variants). Returns a string, "" (drop it), or null (leave it, report as unresolved). */
-export function mapUtility(utility, variants = [], mode = "light") {
+/**
+ * Map one utility (no variants). Returns a string, "" (drop it), or null (leave it, report as unresolved).
+ * `onAccent`: the class list is a solid brand fill with white text (bg-primary-500 text-white), so it is a main action
+ * or an "on" mark: the fill becomes bg-accent / hover:bg-accent-hover and the text text-on-accent.
+ */
+export function mapUtility(utility, variants = [], mode = "light", { onAccent = false } = {}) {
   const size = utility.match(/^text-\[(\d+)px\]$/);
   if (size) return SIZES[size[1]] ? `text-${SIZES[size[1]]}` : null;
   const control = utility.match(/^(h|w|size|min-h|min-w)-\[34px\]$/);
@@ -48,6 +52,7 @@ export function mapUtility(utility, variants = [], mode = "light") {
   if (!c) return undefined; // not a colour: untouched
   if (c.kind === "arbitrary") return null;
   if (c.kind === "white-black" && c.alpha) return undefined; // overlays (bg-black/50, bg-white/10) are allowed
+  if (onAccent && c.prefix === "text" && c.family === "white" && !c.alpha) return "text-on-accent";
 
   const family = FAMILY(c.prefix);
   if (c.kind === "white-black" || c.kind === "neutral") {
@@ -65,7 +70,8 @@ export function mapUtility(utility, variants = [], mode = "light") {
     if (family === "border" && focus) return `${c.prefix}-focus`;
     if (family === "border") return c.alpha && Number(c.alpha) <= 60 ? `${c.prefix}-accent-line` : `${c.prefix}-accent-fg`;
     if (c.prefix === "bg" && c.alpha) return Number(c.alpha) <= 15 ? "bg-accent-subtle" : "bg-accent-subtle-hover";
-    return undefined; // bg-primary-500 etc. are brand fills, kept
+    if (c.prefix === "bg" && onAccent) return variants.some((v) => /^(?:hover|active|group-hover)/.test(v)) ? "bg-accent-hover" : c.shade >= 400 && c.shade <= 600 ? "bg-accent" : null;
+    return null; // a solid brand fill without white text on it: a person decides (bg-accent, a chart colour, …)
   }
   const tone = TONE[c.family];
   if (family === "text" || family === "icon") return tone ? `${c.prefix}-tone-${tone}` : null;
@@ -77,7 +83,7 @@ export function mapUtility(utility, variants = [], mode = "light") {
   return null;
 }
 
-const SEMANTIC = /^(.*)-(canvas|app|panel|field|raised|contrast|body|muted|line|line-hover|divider|accent-fg|on-accent|(?:danger|success|warning|info)-fg|tone-[a-z]+)$/;
+const SEMANTIC = /^(.*)-(canvas|app|panel|field|raised|contrast|body|muted|line|line-hover|divider|accent|accent-hover|accent-fg|on-accent|(?:danger|success|warning|info)-fg|tone-[a-z]+)$/;
 const keyOf = (prefix, variants) => `${FAMILY(prefix) === "border" ? prefix : FAMILY(prefix) ?? prefix}|${variants.filter((v) => v !== "dark" && v !== "light").join(":")}`;
 
 /** Rewrite one class string. Returns { value, changes: [{ from, to }], unresolved: [token] }. */
@@ -90,10 +96,12 @@ export function migrateClassString(value, mode = "light") {
   const unresolved = [];
   const semanticKeys = new Set(); // property|variants already set by a semantic token in this string
   const parsed = pieces.map((p) => ({ ...p, ...splitToken(p.t) }));
+  const base = parsed.filter((p) => !p.variants.length).map((p) => p.utility);
+  const ctx = { onAccent: base.some((u) => /^bg-primary-[456]00$/.test(u)) && base.some((u) => u === "text-white" || u === "text-on-accent") };
 
   for (const p of parsed) {
     if (p.variants.includes("dark") || p.variants.includes("light")) continue;
-    const mapped = mapUtility(p.utility, p.variants, mode);
+    const mapped = mapUtility(p.utility, p.variants, mode, ctx);
     const utility = mapped === undefined ? p.utility : mapped; // already-semantic bases count too
     const m = utility && utility.match(SEMANTIC);
     if (m) semanticKeys.add(keyOf(m[1], p.variants));
@@ -102,7 +110,7 @@ export function migrateClassString(value, mode = "light") {
   for (const p of parsed) {
     p.next = p.t;
     const themed = p.variants.includes("dark") || p.variants.includes("light");
-    const mapped = mapUtility(p.utility, p.variants, mode);
+    const mapped = mapUtility(p.utility, p.variants, mode, ctx);
     if (themed) {
       const c = parseColour(p.utility);
       if (c && semanticKeys.has(keyOf(c.prefix, p.variants))) {

@@ -54,7 +54,7 @@ The check part changes **no source file**. Its only output is `semi-check.md` at
    **Làm tay** list at the end, and a failed install stops it with exit 1 (npm's error is printed above; fix the
    app's peer conflict, never add `--legacy-peer-deps` on your own, and run foundation again). Then do the `Làm tay` items:
    - **providers:** edit the root layout exactly as the script prints (`ThemeScript` / `ThemeProvider` with the
-     `defaultTheme` it detected from the page background, so the app keeps its theme; `ToastHost`, `ConfirmHost`);
+     `defaultTheme` it detected from the page background, so the app keeps its theme; `ToastHost`, `ConfirmHost`, `TaskHost`);
      keep everything else.
    - **tailwind-v4:** run `npx @tailwindcss/upgrade` in the app (the official tool), check the pages, run foundation again.
 
@@ -72,7 +72,9 @@ The check part changes **no source file**. Its only output is `semi-check.md` at
    left for you (knobs, swatches, logo tiles are white on purpose).
 7. **Phase 3 — Hand fixes** (`L…`), file by file, using the rule texts in the `Luật` section and
    `node_modules/@semi/ui/docs/QUICK_REF.md`. Pick an `@semi/ui` component or a semantic token; never re-add a physical
-   colour, a local wrapper, a `skip` for a whole folder or a higher baseline.
+   colour, a local wrapper, a `skip` for a whole folder or a higher baseline. An illustration or a data palette (device
+   drawing, 3D scene colours, a partner's logo) is content: name that file under `skip` with a reason
+   (`"skip": { "literal-colour-value": { "<file>": "illustration: …" } }`), and the audit lists it.
 8. **Phase 4 — Structure**, per the decisions: `AppShell` + `MobileTabBar` (or `AppHeader` for a tool app),
    `PageTitle` + `SubpageToolbar`, `Table` / Bento `Card` grids, `KpiCard`, `Modal`, `Field` + `Input`, …
    (`node_modules/@semi/ui/components.json` lists every export with props). A need `@semi/ui` cannot express →

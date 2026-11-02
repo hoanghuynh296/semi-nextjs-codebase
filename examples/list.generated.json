@@ -603,6 +603,15 @@
     ]
   },
   {
+    "id": "task-host",
+    "title": "Task host",
+    "group": "Feedback",
+    "description": "startTask() shows one blocking overlay for a job the user must wait for: label, current step, progress, elapsed time and an optional Cancel. Mount TaskHost once in the root layout, next to ToastHost and ConfirmHost.",
+    "components": [
+      "TaskHost"
+    ]
+  },
+  {
     "id": "action-confirmation",
     "title": "Action confirmation",
     "group": "AI",

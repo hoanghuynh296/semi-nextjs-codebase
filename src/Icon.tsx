@@ -185,6 +185,11 @@ export const ICONS = {
   fastForward: "M12 6a2 2 0 0 1 3.414-1.414l6 6a2 2 0 0 1 0 2.828l-6 6A2 2 0 0 1 12 18z M2 6a2 2 0 0 1 3.414-1.414l6 6a2 2 0 0 1 0 2.828l-6 6A2 2 0 0 1 2 18z",
   rewind: "M12 6a2 2 0 0 0-3.414-1.414l-6 6a2 2 0 0 0 0 2.828l6 6A2 2 0 0 0 12 18z M22 6a2 2 0 0 0-3.414-1.414l-6 6a2 2 0 0 0 0 2.828l6 6A2 2 0 0 0 22 18z",
   crop: "M6 2v14a2 2 0 0 0 2 2h14 M18 22V8a2 2 0 0 0-2-2H2",
+  // Editors and 3D / canvas tools (#18)
+  redo: "M15 14l5-5-5-5M20 9H9.5a5.5 5.5 0 000 11H13",
+  eraser: "M7 21l-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21 M22 21H7 M5 11l9 9",
+  viewReset: "M3 7V5a2 2 0 0 1 2-2h2 M17 3h2a2 2 0 0 1 2 2v2 M21 17v2a2 2 0 0 1-2 2h-2 M7 21H5a2 2 0 0 1-2-2v-2 M12 7l4.3 2.5v5L12 17l-4.3-2.5v-5z M7.7 9.5L12 12l4.3-2.5 M12 12v5",
+  flipHorizontal: "M12 3v18 M9 12H3 M6 9l-3 3 3 3 M15 12h6 M18 9l3 3-3 3",
 } as const;
 
 export type IconName = keyof typeof ICONS;

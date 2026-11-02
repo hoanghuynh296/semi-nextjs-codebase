@@ -52,6 +52,7 @@ Determinate or indeterminate progress bar (uploads, quotas, print progress).
 | `showValue` | `boolean` | `false` |  |
 | `size` | `'sm' \| 'md'` | `"md"` |  |
 | `className` | `string` |  |  |
+| `aria-label` | `string` |  | Accessible name when there is no string `label` (the bar's text is elsewhere). |
 
 ## Accessibility
 

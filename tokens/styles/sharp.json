@@ -61,15 +61,15 @@
       "light": "#fbfbf9"
     },
     "color-panel": {
-      "dark": "#181818",
+      "dark": "#222222",
       "light": "#ffffff"
     },
     "color-field": {
-      "dark": "#202020",
+      "dark": "#2b2b2b",
       "light": "#f0f0ec"
     },
     "color-raised": {
-      "dark": "#2a2a2a",
+      "dark": "#353535",
       "light": "#e2e2dd"
     },
     "color-text-contrast": {
@@ -81,7 +81,7 @@
       "light": "#333331"
     },
     "color-text-muted": {
-      "dark": "#9a9a96",
+      "dark": "#a4a4a0",
       "light": "#5c5c58"
     },
     "color-line": {

@@ -19,21 +19,21 @@ export const FOUNDATIONS = {
       "key": "color-panel",
       "cls": "bg-panel",
       "note": "Thẻ Card, sidebar, thanh công cụ",
-      "dark": "#18191c",
+      "dark": "#202226",
       "light": "#ffffff"
     },
     {
       "key": "color-field",
       "cls": "bg-field",
       "note": "Ô nhập, nền của control và popup",
-      "dark": "#1e1f23",
+      "dark": "#272a2f",
       "light": "#f1f5f9"
     },
     {
       "key": "color-raised",
       "cls": "bg-raised",
       "note": "Hover, track, dòng được chọn",
-      "dark": "#282a2f",
+      "dark": "#31343a",
       "light": "#e2e8f0"
     }
   ],
@@ -56,14 +56,14 @@ export const FOUNDATIONS = {
       "key": "color-text-muted",
       "cls": "text-muted",
       "note": "Nhãn phụ, placeholder, gợi ý",
-      "dark": "#8b919a",
+      "dark": "#9ba1aa",
       "light": "#5b6779"
     },
     {
       "key": "color-line",
       "cls": "border-line",
       "note": "Viền control và card",
-      "dark": "rgba(255, 255, 255, 0.08)",
+      "dark": "rgba(255, 255, 255, 0.12)",
       "light": "rgba(0, 0, 0, 0.08)"
     },
     {
