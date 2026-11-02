@@ -4,7 +4,7 @@
 // light and dark, with texts from the brand's voice. Copied into a brand kit's .preview/ by semi-brand.
 import { Badge, Button, Icon, KpiCard } from "@semi/ui";
 import brand from "../../brand.json";
-import { BothThemes, first, guide as g, Section, Wordmark } from "../../parts";
+import { BothThemes, first, guide as g, SAMPLE, Section, Wordmark } from "../../parts";
 
 const ex = g?.voice.examples ?? {};
 const you = g?.voice.address ?? "bạn";
@@ -16,15 +16,15 @@ const New = () =>
 function Dashboard({ theme }) {
   const nav = [
     ["home", "Tổng quan"],
-    ["receipt", "Đơn hàng"],
+    ["receipt", SAMPLE.list],
     ["users", "Khách hàng"],
     ["chart", "Báo cáo"],
     ["settings", "Cài đặt"],
   ];
   const rows = [
-    ["#1042", "Nguyễn An", "1.250.000 ₫", "Đã giao", "green"],
-    ["#1041", "Trần Bình", "480.000 ₫", "Đang giao", "amber"],
-    ["#1040", "Lê Chi", "2.100.000 ₫", "Đã giao", "green"],
+    ["#1042", SAMPLE.items[0], "1.250.000 ₫", "Đã giao", "green"],
+    ["#1041", SAMPLE.items[1], "480.000 ₫", "Đang giao", "amber"],
+    ["#1040", SAMPLE.items[2] ?? SAMPLE.items[0], "2.100.000 ₫", "Đã giao", "green"],
   ];
   return (
     <div className="flex min-h-[340px]">
@@ -41,15 +41,15 @@ function Dashboard({ theme }) {
       </aside>
       <div className="flex-1 min-w-0 p-4 space-y-4">
         <div className="flex items-center gap-3">
-          <h3 className="font-display text-heading-sm font-semibold text-contrast">Đơn hàng</h3>
+          <h3 className="font-display text-heading-sm font-semibold text-contrast">{SAMPLE.list}</h3>
           <div className="ml-auto">
             <Button variant="primary" icon="plus">
               Tạo đơn
             </Button>
           </div>
         </div>
-        <div className="grid grid-cols-2 @lg:grid-cols-4 gap-2">
-          <KpiCard featured label="Doanh thu hôm nay" value="12,4 tr" sub="+18% so với hôm qua" />
+        <div className="grid grid-cols-2 @lg:grid-cols-4 gap-2 items-start">
+          <KpiCard featured label={SAMPLE.metric.label} value={SAMPLE.metric.value} sub={SAMPLE.metric.sub} />
           <KpiCard label="Đơn" value="128" />
           <div className="hidden @lg:block">
             <KpiCard label="Khách mới" value="36" />
@@ -57,14 +57,20 @@ function Dashboard({ theme }) {
         </div>
         <div className="rounded-card border border-line bg-panel divide-y divide-divider text-ui">
           {rows.map(([id, name, sum, status, tone], i) => (
-            <div key={id} className={`flex items-center gap-3 px-3 py-2 ${i === 0 ? "bg-accent-subtle border-l-2 border-l-accent-fg" : ""}`}>
-              <span className="tabular-nums text-muted w-12">{id}</span>
-              <span className="text-contrast font-medium truncate">{name}</span>
-              {i === 0 && <New />}
-              <span className="ml-auto tabular-nums text-body">{sum}</span>
-              <Badge tone={tone} dot>
-                {status}
-              </Badge>
+            <div key={id} className={`flex items-center gap-2 @md:gap-3 px-3 py-2 ${i === 0 ? "bg-accent-subtle border-l-2 border-l-accent-fg" : ""}`}>
+              <span className="hidden @md:inline tabular-nums text-muted w-12 shrink-0">{id}</span>
+              <span className="min-w-0 flex-1 text-contrast font-medium truncate">{name}</span>
+              {i === 0 && (
+                <span className="hidden @md:inline-flex shrink-0">
+                  <New />
+                </span>
+              )}
+              <span className="shrink-0 tabular-nums text-body whitespace-nowrap">{sum}</span>
+              <span className="shrink-0">
+                <Badge tone={tone} dot>
+                  {status}
+                </Badge>
+              </span>
             </div>
           ))}
         </div>
@@ -98,7 +104,7 @@ function Phone({ theme }) {
             <div className={`text-label ${expressive ? "" : "text-body"}`}>Giảm 20% cho đơn đầu tiên.</div>
           </div>
           {[
-            ["package", "Đơn #1042", "Đang giao"],
+            ["package", SAMPLE.own ? SAMPLE.items[0] : "Đơn #1042", "Đang giao"],
             ["gift", "Quà tặng", "Còn 2 ngày"],
           ].map(([icon, t, s]) => (
             <div key={t} className="flex items-center gap-3 rounded-card border border-line bg-panel p-3">
@@ -147,12 +153,12 @@ function Landing({ theme }) {
           <p className={`text-ui-lg leading-relaxed max-w-md ${expressive ? "" : "text-body"}`}>{b.product ?? "Một sản phẩm gọn gàng, dễ dùng cho mọi người."}</p>
           {expressive ? <Button>{first(ex.button, "Bắt đầu")}</Button> : <Button variant="primary">{first(ex.button, "Bắt đầu")}</Button>}
         </div>
-        <div className={`rounded-panel min-h-56 flex items-end p-4 ${expressive ? "bg-accent-hover" : "bg-accent-subtle"}`}>
-          <div className="rounded-card bg-panel border-card p-4 shadow-card space-y-1">
-            <div className="text-label text-muted">Điểm đánh giá trung bình</div>
-            <div className="font-figure font-title text-display text-contrast tabular-nums leading-none">4,8 / 5</div>
-            <div className="text-label text-body">Ví dụ: một con số thật thay cho ba thẻ tính năng</div>
+        {/* Proof, not three feature cards: one real figure, large, on the brand tint. */}
+        <div className={`rounded-panel min-h-56 flex flex-col justify-center gap-2 p-6 ${expressive ? "bg-accent-hover" : "bg-accent-subtle"}`}>
+          <div className={`font-figure font-title tabular-nums leading-none ${expressive ? "" : "text-contrast"}`} style={{ fontSize: "clamp(40px, 7vw, 72px)" }}>
+            {SAMPLE.proof.value}
           </div>
+          <div className={`text-ui-lg ${expressive ? "" : "text-body"}`}>{SAMPLE.proof.label}</div>
         </div>
       </div>
       <figure className="px-5 py-8 border-t border-line grid gap-2 @2xl:grid-cols-[1fr_3fr] @2xl:items-baseline">

@@ -4,15 +4,40 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.19.0] - 2026-11-02
+
+### Added
+- **`brief.sample` in `brand.json`:** the product's main list, 2–5 real items, its main figure and a proof figure. The brand book's sample screens, the agent rules (`AGENTS.brand.md` "Sample content", `semi_brand brief`) and every new app's first screen use it instead of generic shop data; the build warns when a brief has no sample. `/semi-brand` drafts it from the brief.
+- **`/semi-new-app --kind tool|app|store|landing`** (the "what kind of product" question): it now sets the first screen too, not only density. Tool / app: `AppShell` with the brand's logo, the main figure (`KpiCard featured`) and the sample items. Store / landing: a top bar, a hero with the tagline, the proof figure and the sample items. **`--theme light|dark|system`**: the default theme is the product's (tool / app follow the system, store / landing start light); it was always dark. Metadata comes from the brief.
+- **`CLAUDE.md` with `@AGENTS.md`** in every app `/semi-new-app`, `/semi-check` (foundation) and `/semi-sync` touch: Claude Code reads `CLAUDE.md`, so the Semi and brand rules in `AGENTS.md` did not reach it. `/semi-check` reports a missing link (`agent-rules`, phase 1).
+- **The brand book is checked in the browser:** `npm run build:brand-book` builds the sample kit `tests/fixtures/brand.json` from this checkout and `npm run test:ui` checks it (contrast AA in every allowed style and both themes, axe, nothing spilling at 320 / 375 / 768 / 1280px, the sample in the screens). CI runs it.
+- `/semi-brand` looks at the brand book (375 and 1280px, both themes) before handing it over.
+
 ### Changed
-- **The brand book is one dashboard:** the *Thương hiệu* and *Ứng dụng* pages moved from their own top-bar frame into the Semi docs shell the UI kit and component pages use (menu on the left, tab bar on phones with Thương hiệu, Ứng dụng, Kit, UI). Same URLs and content; theme and style switch at the foot of the menu. Kits get it with `/semi-brand update` (the preview template ships in `@semi/ui`).
+- **The brand book is one dashboard:** the *Thương hiệu* and *Ứng dụng* pages moved from their own top-bar frame into the Semi docs shell the UI kit and component pages use (menu on the left, tab bar on phones with Thương hiệu, Ứng dụng, Kit, UI). Same URLs and content; theme and style switch at the foot of the menu. Kits get it with `/semi-brand update`.
+- **The Semi rules block in an app's `AGENTS.md` is 4 KB instead of 15 KB:** the hard rules and how to ask the MCP tools; component lists and constants are left to `semi_search` / `semi_docs`, which answer from the installed version. `/semi-sync` refreshes it.
+- Callouts and status surfaces in the docs and rules use the themed tokens (`bg-warning-bg border-warning-border text-warning-fg`), not `bg-amber-500/10` with a `text-amber-600 dark:text-amber-400` pair.
+- The colour warning prints the real ratio ("màu gốc chỉ 2.94:1 với nền trang, cần 3:1") instead of "gần như trùng với nền trang".
+
+### Fixed
+- Brand book, Ứng dụng › Dashboard at 320px: the order rows no longer spill out of the card (code hidden, amount on one line, badge inside); KPI cards keep their own height.
+- Brand book, Ứng dụng › landing page: the proof is a real figure on the brand tint, without the internal "Ví dụ: …" caption.
+- Brand book, colours: the grid has as many columns as swatches; "Đổi màu" shows a recoloured name when the brand has no logo yet.
+- `DonutChart`: arc coordinates are rounded, so the server and the browser render the same path (React reported a hydration mismatch on every page with a donut).
+- `plugin/hooks.json` is kept identical to `plugin/hooks/hooks.json` by `npm run sync:vendor`.
+
+### Removed
+- The command aliases `/semi-init`, `/semi-audit`, `/semi-fix` and `/semi-update` (renamed in 0.16.0): use `/semi-new-app`, `/semi-check` and `/semi-sync`.
+
+### Migration
+- Nothing to run in apps. `/semi-sync` writes the shorter rules block and `CLAUDE.md`. Brand kits: `/semi-brand update`, then add `brief.sample` to `brand.json` (the build reminds you).
 
 ## [0.18.0] - 2026-11-02
 
 First tagged release of the 0.17.0 work (0.17.0 was never tagged; the version files said 0.17.0 under the v0.18.0 tag, so the plugin kept showing 0.17.0).
 
 ### Added
-- **Product density and type scale** (a product's choice, not the brand's: one brand has a dense dashboard and a roomy store): `data-density="compact|airy"` and `data-type-scale="contrast"` on `<html>` (or any wrapper), mirrored as `"density"` / `"typeScale"` in `semi-lint.json`. Density scales Tailwind's spacing unit, so every padding and gap follows; the contrast scale enlarges KPI figures and headings. `/semi-new-app` asks the kind of product and sets them (`--density`, `--type-scale`); `style.mjs` changes them later. The brand book's Ứng dụng tab shows each sample screen with its usual pick, and its top bar switches them.
+- **Product density and type scale** (a product's choice, not the brand's: one brand has a dense dashboard and a roomy store): `data-density="compact|airy"` and `data-type-scale="contrast"` on `<html>` (or any wrapper), mirrored as `"density"` / `"typeScale"` in `semi-lint.json`. Density scales Tailwind's spacing unit, so every padding and gap follows; the contrast scale enlarges KPI figures and headings. `/semi-new-app` asks the kind of product and sets them (`--density`, `--type-scale`); `style.mjs` changes them later. The brand book's Ứng dụng tab shows each sample screen with its usual pick.
 - **Style tokens read by every component:** `--spacing` (Tailwind's spacing unit, so the product's density scales every padding and gap), `font-title` (title and figure weight) and `font-figure` (the font of big numbers). Sharp now has bold titles and figures in its display font; Flat and Soft look as before.
 - **`KpiCard featured`:** the screen's main number, larger and two columns wide.
 - **Composition rules against the generic AI screen** (`DESIGN_SYSTEM.md` §19, QUICK_REF, the plugin rules, `semi-ui` and AGENTS.brand.md): one main block per screen, neutral icons, proof instead of three feature cards, icons only where they help, sample text from the brief, varied rhythm. `/semi-check` reviews key screens against them (phase 4b).

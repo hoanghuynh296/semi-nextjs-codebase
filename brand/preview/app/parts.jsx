@@ -13,6 +13,19 @@ export const THEMES = ["light", "dark"];
 export const first = (x, fallback) => (Array.isArray(x) ? x[0] : x) || fallback;
 export const guide = brand.guide;
 
+/**
+ * Sample content of the screens, from the brief (brand.json brief.sample) so they show this product, not a generic
+ * shop (DESIGN_SYSTEM.md §19). The defaults only stand in until the kit has a sample.
+ */
+const s = guide?.brief?.sample ?? {};
+export const SAMPLE = {
+  own: Boolean(guide?.brief?.sample),
+  list: s.list ?? "Đơn hàng",
+  items: s.items?.length ? s.items : ["Nguyễn An", "Trần Bình", "Lê Chi"],
+  metric: s.metric ?? { label: "Doanh thu hôm nay", value: "12,4 tr", sub: "+18% so với hôm qua" },
+  proof: s.proof ?? s.metric ?? { label: "Điểm đánh giá trung bình", value: "4,8 / 5" },
+};
+
 /** The logo file for a theme (the dark version on dark backgrounds when there is one), or null. */
 export function logoSrc(theme, kind = "full") {
   const l = guide?.logo;
@@ -80,7 +93,7 @@ export function StyleSwitch() {
   );
 }
 
-/** Two copies of a screen, light and dark: side by side on wide screens, stacked for wide screens (dashboard, landing). */
+/** Two copies of a screen, light and dark: side by side, or stacked for wide screens (dashboard, landing). */
 export function BothThemes({ children, wide = false }) {
   return (
     <div className={`grid gap-4 ${wide ? "" : "@2xl:grid-cols-2"}`}>
@@ -105,15 +118,15 @@ export function MiniScreen({ theme }) {
         <Wordmark theme={theme} />
       </div>
       <div className="grid grid-cols-2 gap-2">
-        <KpiCard featured label="Doanh thu hôm nay" value="12,4 tr" sub="+18% so với hôm qua" />
+        <KpiCard featured label={SAMPLE.metric.label} value={SAMPLE.metric.value} sub={SAMPLE.metric.sub} />
       </div>
       <div className="rounded-card border border-line bg-panel divide-y divide-divider">
         <div className="flex items-center gap-2 px-3 py-2 bg-accent-subtle border-l-2 border-l-accent-fg">
-          <span className="text-ui text-contrast font-medium">Mục đang chọn</span>
+          <span className="text-ui text-contrast font-medium truncate">{SAMPLE.own ? SAMPLE.items[0] : "Mục đang chọn"}</span>
           {brand.secondary && <span className="ml-auto inline-flex items-center px-2 h-5 rounded-chip text-caption font-medium bg-secondary-solid text-on-secondary">Mới</span>}
         </div>
         <div className="flex items-center gap-2 px-3 py-2">
-          <span className="text-ui text-body">Mục thường</span>
+          <span className="text-ui text-body truncate">{SAMPLE.own ? SAMPLE.items[1] : "Mục thường"}</span>
           <a href="#" className="ml-auto text-label text-accent-fg font-medium">Xem</a>
         </div>
       </div>

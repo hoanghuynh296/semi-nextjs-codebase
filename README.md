@@ -18,7 +18,7 @@
 
 Không cần lệnh để **dựng màn hình**: nhờ agent làm giao diện, skill `semi-ui` tự chạy (tìm component, viết chữ theo
 giọng văn của brand, chạy lint). Muốn **đổi style** (Flat, Soft, Sharp) trong các style brand cho phép: nói với agent.
-Tên cũ `/semi-init`, `/semi-audit`, `/semi-fix`, `/semi-update` vẫn chạy thêm một bản và chỉ sang lệnh mới.
+Tên cũ `/semi-init`, `/semi-audit`, `/semi-fix`, `/semi-update` đã bỏ từ 0.19.0.
 
 Cho người bảo trì Semi: `/semi-propose` (gửi đề xuất từ dự án con lên repo lõi), `/semi-triage` (đánh giá issue,
 chỉ dùng trong repo này).

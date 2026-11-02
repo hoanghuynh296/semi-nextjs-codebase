@@ -1,4 +1,4 @@
-# Semi Design System (@semi/ui v0.18.0)
+# Semi Design System (@semi/ui v0.19.0)
 
 > The shared UI of every Semi app: semantic tokens that work in light and dark mode, React components (Next.js, Tailwind CSS 4) and the rules agents follow. Every component has a page with live examples and a markdown twin for agents.
 

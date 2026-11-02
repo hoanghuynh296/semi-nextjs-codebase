@@ -1,6 +1,6 @@
 {
   "name": "semi-design",
-  "version": "0.18.0",
+  "version": "0.19.0",
   "description": "Semi brand builder for Next.js 16 + React 19 + Tailwind 4: /semi-brand (brand kit and brand book), /semi-new-app (a product of the brand), /semi-check (check and fix an app), /semi-sync (new brand kit or Semi release); plus UI rules, lint hook and the docs MCP server (semi_search, semi_docs, semi_example, semi_block, semi_brand). Maintainers: /semi-propose, /semi-triage.",
   "repository": "https://github.com/hoanghuynh296/semi-nextjs-codebase"
 }

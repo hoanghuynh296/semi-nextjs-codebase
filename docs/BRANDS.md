@@ -119,9 +119,10 @@ mỗi lần push lên main nó build lại. Từ đây 3D Noobs có bộ nhận 
 /semi-new-app --brand github:3dnoobs/brand
 ```
 
-Agent chỉ hỏi tên app ("3D Noobs Manager") và style (trong danh sách brand cho phép: app quản lý chọn Flat). Không hỏi
-màu, font: đã có trong brand.
-👉 *Bạn làm:* trả lời 2 câu.
+Agent hỏi tên app ("3D Noobs Manager"), style (trong danh sách brand cho phép: app quản lý chọn Flat), loại sản phẩm
+(công cụ dùng cả ngày · ứng dụng thường · web bán hàng · trang giới thiệu: quyết định màn đầu, mật độ, cỡ chữ và theme
+mặc định), cùng phiên bản Next.js và kiểu export (thường để mặc định). Không hỏi màu, font: đã có trong brand.
+👉 *Bạn làm:* trả lời vài câu.
 
 **Bước 6. Agent dựng app**
 
@@ -138,12 +139,15 @@ Next.js + `@semi/ui` + `@3dnoobs/brand`, rồi nối sẵn:
 ```
 
 ```tsx
-// app/layout.tsx: font của brand + style đã chọn
-<html data-style="flat" className={`dark ${geist.variable} ${montserratAlternates.variable}`}>
+// app/layout.tsx: font của brand, style và mật độ đã chọn, theme mặc định theo loại sản phẩm
+<html data-style="flat" data-density="compact" className={`dark ${beVietnamPro.variable} ${montserratAlternates.variable}`}>
+  <ThemeScript defaultTheme="system" />
 ```
 
-Cùng với `semi-lint.json` (`"brand": "@3dnoobs/brand"`, `"style": "flat"`), luật của brand trong `AGENTS.md`, trang mẫu
-(AppShell, KpiCard…), rồi kiểm tra `semi-lint` + `tsc` + build.
+Cùng với `semi-lint.json` (`"brand": "@3dnoobs/brand"`, `"style": "flat"`), luật Semi và luật của brand trong
+`AGENTS.md`, `CLAUDE.md` trỏ tới nó (`@AGENTS.md`, để Claude Code đọc), màn đầu theo loại sản phẩm (app quản lý:
+AppShell có logo của brand, con số chính và các mục mẫu từ `brief.sample`; web bán hàng: thanh trên, hero, bằng chứng),
+rồi kiểm tra `semi-lint` + `tsc` + build.
 👉 *Bạn làm:* không gì cả, đợi báo xong.
 
 **Bước 7. Phát triển như bình thường**
@@ -202,7 +206,15 @@ Brand kit ghi nó chạy với `@semi/ui` nào (`"semi": "^0.16"` trong `brand.j
   "neutral": "tinted",
   "styles": { "default": "flat", "allowed": ["flat", "soft"] },
   "fonts": { "sans": "Geist", "display": "Montserrat Alternates" },
-  "brief": { "product": "Phần mềm quản lý máy in 3D", "audience": "Maker 18–35 tuổi, dùng cả ngày trên máy tính", "personality": ["chính xác", "thân thiện", "kỹ thuật"], "tagline": "In 3D chính xác ngay lần đầu" },
+  "brief": {
+    "product": "Phần mềm quản lý máy in 3D", "audience": "Maker 18–35 tuổi, dùng cả ngày trên máy tính",
+    "personality": ["chính xác", "thân thiện", "kỹ thuật"], "tagline": "In 3D chính xác ngay lần đầu",
+    "sample": {
+      "list": "Bản in", "items": ["Móc khoá logo PLA đen", "Giá đỡ điện thoại gập được", "Chậu cây mini xoắn ốc"],
+      "metric": { "label": "Bản in đang chạy", "value": "12", "sub": "3 máy rảnh" },
+      "proof": { "label": "bản in đã giao cho người mới", "value": "12.000+" }
+    }
+  },
   "logo": { "full": "assets/logo.svg", "fullDark": "assets/logo-dark.svg", "mark": "assets/mark.svg" },
   "voice": {
     "tone": "friendly", "address": "bạn", "we": "3D Noobs", "emoji": false,
@@ -224,7 +236,7 @@ Brand kit ghi nó chạy với `@semi/ui` nào (`"semi": "^0.16"` trong `brand.j
 | `styles.default`, `styles.allowed` | `flat` · `soft` · `sharp` | Ít nhất một; `default` phải nằm trong `allowed` |
 | `fonts.sans`, `fonts.display` | Tên Google Font | `next/font/google` phải có font đó |
 | `semi` | Dải phiên bản `@semi/ui` | `/semi-brand update` cập nhật |
-| `brief` | `product`, `audience`, `personality` (1–5 tính từ), `tagline` (một câu, ≤ 90 ký tự) | Tuỳ chọn; vào BRAND.md và luật cho agent ("chọn chữ, hình ảnh cho họ") |
+| `brief` | `product`, `audience`, `personality` (1–5 tính từ), `tagline` (một câu, ≤ 90 ký tự); `sample`: `list` (tên danh sách chính), `items` (2–5 mục thật), `metric` (`{ label, value, sub? }`, con số người dùng mở app để xem), `proof` (`{ label, value }`, bằng chứng cho trang giới thiệu) | Tuỳ chọn; vào BRAND.md và luật cho agent ("chọn chữ, hình ảnh cho họ"). Thiếu `sample` thì build nhắc: màn mẫu của brand book và trang đầu của app mới dùng chữ của sản phẩm thay cho dữ liệu cửa hàng chung chung |
 | `logo` | `full` (bắt buộc khi có logo), `fullDark`, `mark`: đường dẫn trong repo kit (.svg nên dùng, .png, .webp); `clearspace` (× chiều cao, mặc định 0.5), `minWidth` (px, mặc định 80) | Build copy vào `dist/logo/full.svg` … để sản phẩm import; thiếu file là lỗi |
 | `voice` | `tone`: `friendly` · `neutral` · `formal`; `address` (gọi người dùng), `we` (tự xưng), `emoji`, `do`, `dont`, `examples` (`button`, `success`, `error`, `empty`, `confirm`) | Tuỳ chọn, mặc định trung tính, gọi "bạn". Luật viết chung của Semi (nút, lỗi, trạng thái trống) luôn kèm theo |
 | `color` | `accent`: `restrained` · `balanced` · `expressive`; `secondaryRole`: `highlight` · `badge` · `illustration` | Mặc định tiết chế, màu phụ là điểm nhấn. Mức dùng màu quyết định tỉ lệ màu trên một màn hình (tiết chế 80 / 15 / 5 %, cân bằng 70 / 20 / 10, phóng khoáng 55 / 25 / 20: trung tính / bề mặt / màu chính; màu phụ lấy khoảng 30 % phần màu chính) |

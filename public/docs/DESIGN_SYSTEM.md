@@ -218,15 +218,16 @@ Instead, follow the canonical Semi patterns:
    </div>
    ```
 2. **Callout / Alert Banners:**
-   When an inline banner or callout needs a chromatic tint (info, warning, success), use 10% alpha container fill with 20% alpha border:
+   When an inline banner or callout needs a chromatic tint (info, warning, success, danger), use `<Alert tone>` or the
+   themed status surface tokens, which are tinted fills and borders tuned for AA text in both themes:
    ```tsx
-   {/* Amber warning callout */}
-   <div className="flex items-center gap-2 px-3 py-2.5 rounded-control bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-label">
+   {/* Warning callout */}
+   <div className="flex items-center gap-2 px-3 py-2.5 rounded-control bg-warning-bg text-warning-fg border border-warning-border text-label">
      <Icon name="alertTriangle" className="w-4 h-4 shrink-0" />
      <span>{warningMessage}</span>
    </div>
    ```
-   *Why alpha transparency works:* 10% opacity blends gracefully onto `#18191c` (`bg-panel`) in dark mode and onto `#ffffff` in light mode, maintaining ideal contrast and eliminating the need for complex mode-specific overrides.
+   *Why tokens:* the tint blends onto the panel in both themes, and `text-*-fg` is the shade that reaches 4.5:1 on it in each theme; a fixed `text-amber-600 dark:text-amber-400` pair cannot be checked and breaks under a brand or style.
 
 ## 3c. Universal Theme-Matching Tonal Architecture (All Components)
 
@@ -276,7 +277,7 @@ Instead, the Semi Design System **adapts all chromatic components** to **Two-Tie
 </div>
 
 // After:
-<div className="rounded-control border border-amber-500/20 bg-amber-500/10 p-3 text-amber-700 dark:text-amber-300">
+<div className="rounded-control border border-warning-border bg-warning-bg p-3 text-warning-fg">
   <span className="text-ui font-medium">Your license expires soon.</span>
 </div>
 ```

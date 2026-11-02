@@ -254,6 +254,18 @@ function agentsMd({ tokens: t }, styles) {
     ...v.dont.map((r) => `- Don't: ${r}`),
     ...Object.entries(v.examples).map(([k, x]) => `- Example (${k}): ${(Array.isArray(x) ? x : [x]).map((y) => `“${y}”`).join(" · ")}`),
     ...(g.brief?.audience || g.brief?.personality?.length ? ["", `**Who it is for** — ${[g.brief.audience, g.brief.personality?.length ? `personality: ${g.brief.personality.join(", ")}` : null].filter(Boolean).join("; ")}. Choose words and imagery for them.`] : []),
+    ...(g.brief?.sample
+      ? [
+          "",
+          `**Sample content** — placeholders, seed data and empty states use this product's own things: ${[
+            g.brief.sample.list ? `main list “${g.brief.sample.list}”` : null,
+            g.brief.sample.items?.length ? `items ${g.brief.sample.items.map((x) => `“${x}”`).join(", ")}` : null,
+            g.brief.sample.metric ? `main figure “${g.brief.sample.metric.label}” (${g.brief.sample.metric.value})` : null,
+          ]
+            .filter(Boolean)
+            .join("; ")}. Never "Lorem", "John Doe" or another domain.`,
+        ]
+      : []),
     ...(g.imagery ? ["", `**Imagery** — ${g.imagery}`] : []),
     "",
     "**Density and type scale** are this product's own choice (`data-density`, `data-type-scale` on `<html>`, mirrored in `semi-lint.json`), not the brand's. Big numbers: `<KpiCard featured>`.",

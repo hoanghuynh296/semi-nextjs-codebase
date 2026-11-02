@@ -38,7 +38,7 @@ jobs:
         run: npm run check
 
       - name: Browser checks (contrast AA both themes, axe, theme, keyboard)
-        run: npx next build && npm run test:ui
+        run: npx next build && npm run build:brand-book && npm run test:ui
 
       - name: Build Next.js Static Storybook
         env:

@@ -139,6 +139,17 @@ function validateGuide(brand, errors, warnings) {
       for (const k of ["audience", "product"]) if (b[k] !== undefined && !str(b[k])) fail(errors, `brief.${k}: phải là chữ`);
       if (b.tagline !== undefined && (!str(b.tagline) || b.tagline.length > 90)) fail(errors, "brief.tagline: một câu ngắn, tối đa 90 ký tự");
       if (b.personality !== undefined && (!strList(b.personality) || b.personality.length > 5)) fail(errors, "brief.personality: 1–5 tính từ, vd. [\"thân thiện\", \"chính xác\"]");
+      const s = b.sample;
+      const figure = (f) => f !== undefined && (typeof f !== "object" || f === null || !str(f.label) || !str(f.value));
+      if (s !== undefined) {
+        if (typeof s !== "object" || s === null) fail(errors, "brief.sample: phải là object { list, items, metric, proof }");
+        else {
+          if (s.list !== undefined && !str(s.list)) fail(errors, "brief.sample.list: tên danh sách chính của sản phẩm, vd. \"Bản in\"");
+          if (s.items !== undefined && (!strList(s.items) || s.items.length < 2 || s.items.length > 5)) fail(errors, "brief.sample.items: 2–5 tên mục thật của sản phẩm, vd. [\"Móc khoá PLA\", \"Giá đỡ điện thoại\"]");
+          if (figure(s.metric)) fail(errors, "brief.sample.metric: { label, value }, con số người dùng mở app để xem, vd. { \"label\": \"Bản in hôm nay\", \"value\": \"128\" }");
+          if (figure(s.proof)) fail(errors, "brief.sample.proof: { label, value }, bằng chứng cho trang giới thiệu, vd. { \"label\": \"Bản in đã giao\", \"value\": \"12.000+\" }");
+        }
+      } else warnings.push("Chưa có brief.sample: màn mẫu trong brand book và trang đầu của app mới dùng chữ chung chung. Thêm tên danh sách, vài mục thật và con số chính của sản phẩm");
     }
   }
   const l = brand.logo;
@@ -405,7 +416,7 @@ export function generateBrand(brand, { tokens, styles, version = "" }) {
       warnings.push(
         `Theme ${t}: nút chính dùng primary-${fill.shade} (${primary[fill.shade]}) thay vì đúng màu thương hiệu ${brand.primary} (ΔE ${fill.de.toFixed(2)}), ` +
           ([DARK_TEXT, WHITE].some((on) => contrast(brand.primary, on) >= AA)
-            ? "để nút tách khỏi nền (màu gốc gần như trùng với nền trang)"
+            ? `để nút tách khỏi nền (màu gốc chỉ ${minContrast(brand.primary, surfaces).toFixed(2)}:1 với nền trang, cần 3:1)`
             : "vì cả chữ trắng lẫn chữ tối trên màu gốc đều chưa đạt 4.5:1"),
       );
     if (fill.page < NON_TEXT)

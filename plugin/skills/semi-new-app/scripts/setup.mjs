@@ -399,18 +399,33 @@ export function wireAgentsMd(rootDir, version) {
   );
 
   const agentsPath = join(rootDir, "AGENTS.md");
-  if (!existsSync(agentsPath)) {
-    writeFileSync(agentsPath, stampedBlock);
-    return agentsPath;
+  if (!existsSync(agentsPath)) writeFileSync(agentsPath, stampedBlock);
+  else {
+    let content = readFileSync(agentsPath, "utf8");
+    if (content.includes("<!-- semi-design-system:start -->")) {
+      content = content.replace(/<!-- semi-design-system:start -->[\s\S]*?<!-- semi-design-system:end -->/, stampedBlock.trim());
+    } else {
+      content = `${content.trimEnd()}\n\n${stampedBlock}`;
+    }
+    writeFileSync(agentsPath, content);
   }
-  let content = readFileSync(agentsPath, "utf8");
-  if (content.includes("<!-- semi-design-system:start -->")) {
-    content = content.replace(/<!-- semi-design-system:start -->[\s\S]*?<!-- semi-design-system:end -->/, stampedBlock.trim());
-  } else {
-    content = `${content.trimEnd()}\n\n${stampedBlock}`;
-  }
-  writeFileSync(agentsPath, content);
+  wireClaudeMd(rootDir);
   return agentsPath;
+}
+
+/**
+ * Claude Code reads CLAUDE.md, not AGENTS.md: point it at AGENTS.md (`@AGENTS.md` imports the file), so the Semi and
+ * brand rules reach every agent. An existing CLAUDE.md keeps its text and gets the import line once.
+ */
+export function wireClaudeMd(rootDir) {
+  const claudePath = join(rootDir, "CLAUDE.md");
+  if (!existsSync(claudePath)) {
+    writeFileSync(claudePath, "@AGENTS.md\n");
+    return claudePath;
+  }
+  const content = readFileSync(claudePath, "utf8");
+  if (!/^@AGENTS\.md\s*$/m.test(content)) writeFileSync(claudePath, `@AGENTS.md\n\n${content}`);
+  return claudePath;
 }
 
 

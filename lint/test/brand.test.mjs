@@ -244,3 +244,19 @@ test("product look: density and type scale live in the tokens, per element, and 
   rmSync(dir, { recursive: true });
 });
 
+
+test("brief.sample: validated, warned about when missing, and written into the agent rules", () => {
+  const sample = { list: "Bản in", items: ["Móc khoá PLA", "Giá đỡ điện thoại"], metric: { label: "Bản in đang chạy", value: "12" }, proof: { label: "bản in đã giao", value: "12.000+" } };
+  const ok = validateBrand(brand({ brief: { product: "In 3D", sample } }), { styles });
+  assert.deepEqual(ok.errors, []);
+  assert.doesNotMatch(ok.warnings.join("\n"), /brief\.sample/);
+  assert.match(validateBrand(brand({ brief: { product: "In 3D" } }), { styles }).warnings.join("\n"), /Chưa có brief\.sample/);
+  const bad = validateBrand(brand({ brief: { sample: { items: ["một"], metric: { label: "x" } } } }), { styles });
+  assert.match(bad.errors.join("\n"), /brief\.sample\.items[\s\S]*brief\.sample\.metric/);
+  const dir = mkdtempSync(join(tmpdir(), "semi-brand-sample-"));
+  writeFileSync(join(dir, "brand.json"), JSON.stringify(brand({ brief: { product: "In 3D", sample } })));
+  execFileSync("node", [CLI, "build"], { cwd: dir });
+  assert.match(readFileSync(join(dir, "AGENTS.brand.md"), "utf8"), /\*\*Sample content\*\*[^\n]*“Bản in”[^\n]*“Móc khoá PLA”[^\n]*“Bản in đang chạy” \(12\)/);
+  assert.equal(JSON.parse(readFileSync(join(dir, "dist/brand.json"), "utf8")).guide.brief.sample.proof.value, "12.000+");
+  rmSync(dir, { recursive: true });
+});
