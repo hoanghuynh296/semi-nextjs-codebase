@@ -1,4 +1,4 @@
-# Semi Design System (@semi/ui v0.20.0)
+# Semi Design System (@semi/ui v0.21.0)
 
 > The shared UI of every Semi app: semantic tokens that work in light and dark mode, React components (Next.js, Tailwind CSS 4) and the rules agents follow. Every component has a page with live examples and a markdown twin for agents.
 
@@ -1395,6 +1395,34 @@ Khi cần hiển thị biểu tượng cho một hành động hoặc trạng th
 
 ---
 
+### 2.11. Thương hiệu & Sàn Thương mại điện tử Việt Nam (Vietnam Brands & E-Commerce)
+
+| Thương hiệu / Nền tảng | Icon chuẩn (`IconName`) | Code mẫu | Hướng dẫn sử dụng |
+|---|---|---|---|
+| **Shopee / Shopee Mall** | `shopee` | `<Icon name="shopee" />` | Nút mua hàng trên Shopee, liên kết gian hàng Shopee Mall, kênh bán |
+| **Lazada / LazMall** | `lazada` | `<Icon name="lazada" />` | Nút mua hàng trên Lazada, gian hàng LazMall chính hãng |
+| **Tiki / TikiNOW** | `tiki` | `<Icon name="tiki" />` | Nút phân phối trên sàn Tiki, gian hàng Tiki Trading |
+| **Sendo / SenMall** | `sendo` | `<Icon name="sendo" />` | Gian hàng SenMall, kênh bán lẻ Sendo / Sendo Farm |
+| **TikTok Shop / TikTok** | `tiktok` | `<Icon name="tiktok" />` | Kênh video TikTok, giỏ hàng TikTok Shop, nút theo dõi video |
+| **Chợ Tốt / Rao vặt TMĐT** | `chotot` | `<Icon name="chotot" />` | Sàn rao vặt Chợ Tốt, danh mục thanh lý đồ cũ, Chợ Tốt Xe/Nhà |
+| **Ví điện tử MoMo** | `momo` | `<Icon name="momo" />` | Phương thức thanh toán ví MoMo, quét mã MoMo QR |
+| **Ví điện tử ZaloPay** | `zalopay` | `<Icon name="zalopay" />` | Phương thức thanh toán ZaloPay, ZaloPay QR |
+| **Cổng thanh toán VNPAY** | `vnpay` | `<Icon name="vnpay" />` | Quét mã VNPAY-QR qua app ngân hàng, thanh toán VNPAY |
+| **Viettel Money / ViettelPay** | `viettelMoney` | `<Icon name="viettelMoney" />` | Thanh toán qua Viettel Money, nạp ví viễn thông |
+| **Giao Hàng Tiết Kiệm (GHTK)** | `ghtk` | `<Icon name="ghtk" />` | Đơn vị vận chuyển GHTK, tra cứu mã vận đơn GHTK |
+| **Giao Hàng Nhanh (GHN)** | `ghn` | `<Icon name="ghn" />` | Tuỳ chọn hãng vận chuyển GHN Express |
+| **Viettel Post (Bưu chính)** | `viettelPost` | `<Icon name="viettelPost" />` | Chuyển phát bưu chính Viettel Post, tra cứu bưu gửi |
+| **Vietnam Post / Bưu điện VN** | `vnpost` | `<Icon name="vnpost" />` | Bưu điện Việt Nam, dịch vụ chuyển phát EMS / VNPost |
+| **Grab / GrabExpress / Food** | `grab` | `<Icon name="grab" />` | Giao hàng hoả tốc GrabExpress, đặt món GrabFood |
+| **Be Group / beDelivery** | `be` | `<Icon name="be" />` | Giao vận beDelivery, đặt xe & giao đồ ăn beFood |
+| **Zalo / Zalo OA** | `zalo` | `<Icon name="zalo" />` | Nút tư vấn qua Zalo OA, chat Zalo, liên hệ nhanh |
+| **Tập đoàn FPT** | `fpt` | `<Icon name="fpt" />` | Đối tác công nghệ FPT, FPT Telecom, FPT Shop |
+| **Tập đoàn Viettel** | `viettel` | `<Icon name="viettel" />` | Dịch vụ viễn thông Viettel, đối tác Viettel Telecom |
+| **VinFast / Vingroup** | `vinfast` | `<Icon name="vinfast" />` | Dịch vụ xe điện VinFast, trạm sạc, hệ sinh thái Vingroup |
+| **Thế Giới Di Động (MWG)** | `tgdd` | `<Icon name="tgdd" />` | Chuỗi bán lẻ công nghệ Thế Giới Di Động / Điện Máy Xanh |
+
+---
+
 ## 3. Quy tắc tránh nhầm lẫn từ khoá (Aliases & Anti-patterns)
 
 Khi lập trình, nếu viết các từ khoá sau thì `semi-lint` hoặc `tsc` sẽ báo lỗi:
@@ -1492,6 +1520,27 @@ Khi lập trình, nếu viết các từ khoá sau thì `semi-lint` hoặc `tsc`
 | `erase`, `clear_paint` | `eraser` | Tẩy nét vẽ / vùng tô dùng `eraser` |
 | `view_reset`, `iso`, `home_view` | `viewReset` | Đặt lại góc nhìn dùng `viewReset` |
 | `flip`, `mirror`, `swap_side`, `flip_side`, `flipSide` | `flipHorizontal` | Lật / đối xứng dùng `flipHorizontal` |
+| `shopee_mall`, `shopee_vn`, `shopeepay` | `shopee` | Sàn Shopee dùng `shopee` |
+| `lazada_vn`, `lazmall`, `laz` | `lazada` | Sàn Lazada dùng `lazada` |
+| `tikivn`, `tikinow` | `tiki` | Sàn Tiki dùng `tiki` |
+| `sendo_vn`, `senmall`, `sen_do` | `sendo` | Sàn Sendo dùng `sendo` |
+| `tiktok_shop`, `douyin` | `tiktok` | Kênh TikTok / TikTok Shop dùng `tiktok` |
+| `cho_tot`, `chotot_vn` | `chotot` | Sàn Chợ Tốt dùng `chotot` |
+| `momo_pay`, `momo_wallet`, `vi_momo`| `momo` | Ví MoMo dùng `momo` |
+| `zalo_pay`, `zalopay_wallet` | `zalopay` | Ví ZaloPay dùng `zalopay` |
+| `vnpay_qr`, `vnpayqr`, `vn_pay` | `vnpay` | Cổng VNPAY / VietQR dùng `vnpay` |
+| `viettel_money`, `viettelpay` | `viettelMoney` | Ví Viettel Money dùng `viettelMoney` |
+| `giao_hang_tiet_kiem`, `giaohangtietkiem` | `ghtk` | Đơn vị GHTK dùng `ghtk` |
+| `giao_hang_nhanh`, `giaohangnhanh`, `ghn_express` | `ghn` | Đơn vị GHN dùng `ghn` |
+| `viettel_post`, `vtpost` | `viettelPost` | Bưu chính Viettel Post dùng `viettelPost` |
+| `vietnam_post`, `buudien`, `buu_dien` | `vnpost` | Bưu điện Việt Nam dùng `vnpost` |
+| `grab_food`, `grab_express`, `grab_mart` | `grab` | Dịch vụ Grab dùng `grab` |
+| `be_group`, `be_delivery`, `befood` | `be` | Dịch vụ Be Group dùng `be` |
+| `zalo_app`, `zalo_chat`, `zalo_oa` | `zalo` | Ứng dụng Zalo dùng `zalo` |
+| `fpt_telecom`, `fpt_shop`, `fpt_software` | `fpt` | Tập đoàn FPT dùng `fpt` |
+| `viettel_telecom` | `viettel` | Tập đoàn Viettel dùng `viettel` |
+| `vin_fast`, `vingroup` | `vinfast` | Thương hiệu VinFast dùng `vinfast` |
+| `thegioididong`, `dienmayxanh`, `bachhoaxanh`, `mwg` | `tgdd` | Thế Giới Di Động dùng `tgdd` |
 
 ---
 

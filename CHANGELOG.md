@@ -4,6 +4,23 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.21.0] - 2026-11-05
+
+### Added
+- **Vietnam E-Commerce Platforms & Major Brands Icon Pack (`@semi/ui`)**: Added 21 new Lucide-standard 24×24 stroke icons expanding the system to 195 icons total:
+  - **Sàn Thương mại điện tử (E-Commerce Marketplaces):** `shopee` (Shopee / Shopee Mall / ShopeePay), `lazada` (Lazada / LazMall), `tiki` (Tiki / TikiNOW / Tiki Trading), `sendo` (Sendo / SenMall / Sendo Farm), `tiktok` (TikTok Shop / TikTok), `chotot` (Chợ Tốt / Sàn rao vặt TMĐT).
+  - **Ví điện tử & Cổng thanh toán (Fintech & Payments):** `momo` (Ví điện tử MoMo), `zalopay` (Ví điện tử ZaloPay), `vnpay` (Cổng thanh toán & VNPAY-QR quốc dân), `viettelMoney` (Viettel Money / ViettelPay).
+  - **Giao vận & Logistics (Delivery & Couriers):** `ghtk` (Giao Hàng Tiết Kiệm), `ghn` (Giao Hàng Nhanh - GHN Express), `viettelPost` (Bưu chính Viettel Post), `vnpost` (Bưu điện Việt Nam / Vietnam Post), `grab` (Grab / GrabExpress / GrabFood / GrabMart), `be` (Be Group / beDelivery / beFood).
+  - **Tập đoàn & Thương hiệu lớn (Major Brands & Tech):** `zalo` (Ứng dụng Zalo / Zalo OA), `fpt` (Tập đoàn công nghệ FPT), `viettel` (Tập đoàn Viễn thông Viettel), `vinfast` (VinFast xe điện & Tập đoàn Vingroup), `tgdd` (Chuỗi bán lẻ Thế Giới Di Động / MWG / Điện Máy Xanh).
+- **Brand Domain & Registry (`brand`):**
+  - Added `"brand"` domain to `IconDomain` and `"brand"` category to `IconMeta`.
+  - Registered full semantic metadata, usage guidelines, and search keywords for all 21 icons in `src/iconCatalog.ts`.
+  - Added `"Brands & TMĐT VN"` filter tab in `app/foundations/page.tsx` for easy visual discovery.
+- **Aliases & `semi-lint` Enforcement:**
+  - Added 40+ canonical aliases to `ICON_ALIASES` (`shopee_mall`, `momo_pay`, `vnpay_qr`, `vtpost`, `tikivn`, `lazmall`, `giao_hang_tiet_kiem`, `thegioididong`, `dienmayxanh`, etc.).
+  - Added `icon-alias` HARD check in `semi-lint` preventing direct use of platform aliases.
+  - Added unit test in `lint/test/semi-lint.test.mjs`.
+
 ## [0.20.0] - 2026-11-02
 
 Ecosystem proposals from the 3D Noobs Studio adoption (#10, #15–#19).

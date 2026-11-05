@@ -89,3 +89,13 @@ test("#16 skip with a reason: content rules only, a reason is required, the audi
   assert.deepEqual(r.hits.filter((h) => h.rule === "literal-colour-value").map((h) => h.file), ["lib/ui.ts"]);
   rmSync(dir, { recursive: true });
 });
+
+test("icon-alias flags brand aliases and suggests canonical names", async () => {
+  const { scan } = await import("../semi-lint.mjs");
+  const dir = mkdtempSync(join(tmpdir(), "semi-lint-"));
+  const file = join(dir, "page.tsx");
+  writeFileSync(file, '<Icon name="shopee_mall" />\n<Icon name="momo_pay" />\n<Icon name="vtpost" />\n');
+  const r = scan([file], {}, dir);
+  assert.deepEqual(r.hard.filter((h) => h.rule === "icon-alias").map((h) => h.line), [1, 2, 3]);
+  rmSync(dir, { recursive: true });
+});

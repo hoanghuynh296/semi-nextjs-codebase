@@ -17,6 +17,7 @@ const DOMAIN_OPTIONS: { id: string; label: string; count?: number }[] = [
   { id: "analytics", label: "Analytics & Metrics" },
   { id: "hardware_3d", label: "3D & Hardware" },
   { id: "media", label: "Media & Files" },
+  { id: "brand", label: "Brands & TMĐT VN" },
 ];
 
 const TONES: { id: TileTone; label: string }[] = [
