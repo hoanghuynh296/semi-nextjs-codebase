@@ -216,6 +216,123 @@ export const ICONS = {
 
 export type IconName = keyof typeof ICONS;
 
+/**
+ * Multi-path or custom styled SVGs for Vietnam Brands & Platforms.
+ * Uses Semi semantic tone classes (text-tone-*, text-contrast) to preserve characteristic brand colors
+ * while respecting flat dark-first surfaces and dual-theme calibration.
+ */
+export const BRAND_PATHS: Partial<Record<IconName, React.ReactNode>> = {
+  shopee: (
+    <>
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-orange" d="M9 6a3 3 0 0 1 6 0 M4 6h16l-1.5 13.5a2 2 0 0 1-2 1.5h-9a2 2 0 0 1-2-1.5L4 6z" />
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-contrast" d="M14 10.2a1.8 1.8 0 0 0-1.8-1.2h-.4a1.8 1.8 0 0 0 0 3.5h.4a1.8 1.8 0 0 1 0 3.5h-.4a1.8 1.8 0 0 1-1.8-1.2" />
+    </>
+  ),
+  lazada: (
+    <>
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-indigo" d="M12 21C6 16.5 3 12.5 3 8.5A4.5 4.5 0 0 1 12 6.5A4.5 4.5 0 0 1 21 8.5c0 4-3 8-9 12.5z" />
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-rose" d="M12 6.5V12l4.5 3.5 M12 12l-4.5 3.5" />
+    </>
+  ),
+  tiki: (
+    <>
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-sky" d="M22 14c0 4.4-3.6 7-8 7H9c-3 0-6-2.5-6-5.5 0-3 3-5.5 7-5.5h8c2.2 0 4 1.8 4 4z M12 15.5c1 1.5 2 2 3.5 1.5 M17 12.5h.01 M19 14.5a2 2 0 0 1-2 1.5 M3 15.5l-2-2.5c1-1.5 2-1 3 0" />
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-blue" d="M11 3v2 M9 4a2 2 0 0 1 2 2 M13 4a2 2 0 0 0-2 2" />
+    </>
+  ),
+  sendo: (
+    <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-rose" d="M12 3c-2.5 4-2.5 8 0 12 2.5-4 2.5-8 0-12z M10 7C6 9 5 13 8 16c2 1.5 3.5 1.8 4 1.8 M14 7c4 2 5 6 2 9-2 1.5-3.5 1.8-4 1.8 M4 21c3-1 5.5-1 8-1s5 0 8 1" />
+  ),
+  tiktok: (
+    <>
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-cyan" d="M10 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-rose opacity-80" d="M8 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+    </>
+  ),
+  chotot: (
+    <>
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-amber" d="M3 4h2.5l2 9.5a1.5 1.5 0 0 0 1.5 1.2h9a1.5 1.5 0 0 0 1.5-1.2L21 6H6 M9 20a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z M17 20a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-emerald" d="M11 9.5l1.5 1.5 3-3" />
+    </>
+  ),
+  momo: (
+    <>
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-pink" d="M6 3h12a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3z" />
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-contrast" d="M5 16V9l3.5 4L12 9v7 M12 16V9l3.5 4L19 9v7" />
+    </>
+  ),
+  zalopay: (
+    <>
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-teal" d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" />
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-emerald" d="M8 8.5h8l-8 7h8 M15 12h2 M17 9.5a3.5 3.5 0 0 1 0 5" />
+    </>
+  ),
+  vnpay: (
+    <>
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-blue" d="M3 9V5a2 2 0 0 1 2-2h4 M15 3h4a2 2 0 0 1 2 2v4 M21 15v4a2 2 0 0 1-2 2h-4 M9 21H5a2 2 0 0 1-2-2v-4 M12 7.5h.01" />
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-rose" d="M7.5 9.5l4.5 7 4.5-7" />
+    </>
+  ),
+  viettelMoney: (
+    <>
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-rose" d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z" />
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-contrast" d="M12 12c-1.8-2.2-3.5-3-5.2-3A2.8 2.8 0 0 0 4 12a2.8 2.8 0 0 0 2.8 3c1.7 0 3.4-.8 5.2-3 1.8 2.2 3.5 3 5.2 3a2.8 2.8 0 0 0 2.8-3A2.8 2.8 0 0 0 17.2 9c-1.7 0-3.4.8-5.2 3z" />
+    </>
+  ),
+  ghtk: (
+    <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-emerald" d="M9 6h11l-2.5 10H6.5L9 6z M9 6l4.5 5 4.5-5 M3 8h3 M2 11h4 M4 14h3 M8.5 20a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z M16.5 20a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
+  ),
+  ghn: (
+    <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-orange" d="M15 5a2 2 0 1 0 0-4 2 2 0 0 0 0 4z M8 13l4-2 3 3 4-1 M18 10h4v4h-4z M7 19l5-6-2-4 M10 19l-3 3" />
+  ),
+  viettelPost: (
+    <>
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-blue" d="M2 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6z M2 6l8 6 8-6" />
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-rose" d="M18 8l4-2 M18 12l4-1 M18 16l3 0" />
+    </>
+  ),
+  vnpost: (
+    <>
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-blue" d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z M3 8l9 6 9-6" />
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-amber" d="M15 14a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z M15 11.5h3" />
+    </>
+  ),
+  grab: (
+    <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-emerald" d="M7 6h10a6 6 0 0 1 0 12H7A6 6 0 0 1 7 6z M7 10h10a2 2 0 0 1 0 4H7A2 2 0 0 1 7 10z" />
+  ),
+  be: (
+    <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-amber" d="M4 4v16 M4 14a4 4 0 0 1 4-4h1a4 4 0 0 1 0 8H4 M14 14h6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h3" />
+  ),
+  zalo: (
+    <>
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-blue" d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8.5z" />
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-contrast" d="M9.5 9h5l-5 6h5" />
+    </>
+  ),
+  fpt: (
+    <>
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-orange" d="M5 19C5 11 8 5 13 3" />
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-blue" d="M9 20C9 13 12 8 17 5" />
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-emerald" d="M13 21C13 15 16 11 21 8" />
+    </>
+  ),
+  viettel: (
+    <>
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-rose" d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z" />
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-contrast" d="M7.5 9a3.5 3.5 0 0 1 3.5 3.5V15H7.5 M13 9a3.5 3.5 0 0 1 3.5 3.5V15H13" />
+    </>
+  ),
+  vinfast: (
+    <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-sky" d="M2 5c3.5 1.5 7 6 10 14 3-8 6.5-12.5 10-14 M5.5 6.5c2.5 1.5 4.5 4.5 6.5 10 2-5.5 4-8.5 6.5-10" />
+  ),
+  tgdd: (
+    <>
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-amber" d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z" />
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-contrast" d="M13.5 7a1.2 1.2 0 1 0 0-2.4 1.2 1.2 0 0 0 0 2.4z M9.5 9.5l3.5 1.5 3-1.5 M12 11v3.5 M12 14.5l-2.5 3 M12 14.5l3 2.5" />
+    </>
+  ),
+};
+
 export function Icon({
   name,
   className = "w-4 h-4",
@@ -227,6 +344,9 @@ export function Icon({
   strokeWidth?: number;
   title?: string;
 }) {
+  const isMonochrome = /\btext-(?!tone-)/.test(className);
+  const brandContent = !isMonochrome ? BRAND_PATHS[name] : null;
+
   return (
     <svg
       className={`shrink-0 ${className}`}
@@ -238,7 +358,7 @@ export function Icon({
       role={title ? "img" : undefined}
     >
       {title && <title>{title}</title>}
-      <path strokeLinecap="round" strokeLinejoin="round" d={ICONS[name]} />
+      {brandContent || <path strokeLinecap="round" strokeLinejoin="round" d={ICONS[name]} />}
     </svg>
   );
 }
@@ -249,29 +369,73 @@ export function Icon({
  */
 export const TILE_TONES = {
   green: "bg-accent-subtle text-accent-fg", // main areas, "on" states
-  pink: "bg-pink-500/15 text-tone-pink", // filament, colours, sensors
-  sky: "bg-sky-500/15 text-tone-sky", // camera, print hours
-  amber: "bg-amber-500/15 text-tone-amber", // peripherals, lights
+  emerald: "bg-emerald-500/15 text-tone-emerald", // Grab, GHTK, success
+  orange: "bg-orange-500/15 text-tone-orange", // Shopee, GHN, FPT
+  rose: "bg-rose-500/15 text-tone-rose", // Sendo, Viettel, Viettel Money
+  pink: "bg-pink-500/15 text-tone-pink", // MoMo, filament, colours
+  sky: "bg-sky-500/15 text-tone-sky", // Tiki, camera, hours
+  blue: "bg-blue-500/15 text-tone-blue", // Zalo, VNPay
+  indigo: "bg-indigo-500/15 text-tone-indigo", // Lazada, automation
   violet: "bg-indigo-500/15 text-tone-indigo", // automation
-  gray: "bg-raised text-muted", // advanced / unknown
+  purple: "bg-purple-500/15 text-tone-purple", // creative, media
+  cyan: "bg-cyan-500/15 text-tone-cyan", // TikTok, tech
+  teal: "bg-teal-500/15 text-tone-teal", // ZaloPay, fintech
+  amber: "bg-amber-500/15 text-tone-amber", // Chợ Tốt, Be, TGDD, lights
+  gray: "bg-raised text-muted", // neutral / unknown
 } as const;
 
 /** Icon colour of each tone when it stands alone (inactive nav item). */
 export const TONE_TEXT = {
   green: "text-accent-fg",
+  emerald: "text-tone-emerald",
+  orange: "text-tone-orange",
+  rose: "text-tone-rose",
   pink: "text-tone-pink",
   sky: "text-tone-sky",
-  amber: "text-tone-amber",
+  blue: "text-tone-blue",
+  indigo: "text-tone-indigo",
   violet: "text-tone-indigo",
+  purple: "text-tone-purple",
+  cyan: "text-tone-cyan",
+  teal: "text-tone-teal",
+  amber: "text-tone-amber",
   gray: "text-muted",
 } as const;
 
 export type TileTone = keyof typeof TILE_TONES;
 
+/**
+ * Tailored Semantic Tone for each Vietnamese Brand & Platform in Semi style.
+ * Matches brand identity while maintaining calibrated dark/light contrast and flat aesthetic.
+ */
+export const BRAND_TONES: Partial<Record<IconName, TileTone>> = {
+  shopee: "orange",
+  lazada: "indigo",
+  tiki: "sky",
+  sendo: "rose",
+  tiktok: "cyan",
+  chotot: "amber",
+  momo: "pink",
+  zalopay: "teal",
+  vnpay: "blue",
+  viettelMoney: "rose",
+  ghtk: "emerald",
+  ghn: "orange",
+  viettelPost: "rose",
+  vnpost: "amber",
+  grab: "emerald",
+  be: "amber",
+  zalo: "blue",
+  fpt: "orange",
+  viettel: "rose",
+  vinfast: "sky",
+  tgdd: "amber",
+};
+
 /** Rounded square with an icon: the leading visual of cards, list rows and dialogs. */
 export function IconTile({
   name,
-  tone = "green",
+  tone,
   size = "md",
   className = "",
 }: {
@@ -280,10 +444,11 @@ export function IconTile({
   size?: "sm" | "md" | "lg";
   className?: string;
 }) {
+  const resolvedTone = tone ?? (BRAND_TONES[name] || "green");
   const box = size === "sm" ? "w-8 h-8 rounded-control" : size === "lg" ? "w-12 h-12 rounded-card" : "w-10 h-10 rounded-control";
   const ico = size === "sm" ? "w-4 h-4" : size === "lg" ? "w-6 h-6" : "w-5 h-5";
   return (
-    <span className={`${box} ${TILE_TONES[tone]} flex items-center justify-center shrink-0 ${className}`}>
+    <span className={`${box} ${TILE_TONES[resolvedTone]} flex items-center justify-center shrink-0 ${className}`}>
       <Icon name={name} className={ico} />
     </span>
   );

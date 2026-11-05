@@ -56,7 +56,7 @@ Rounded square with an icon: the leading visual of cards, list rows and dialogs.
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `name` * | `IconName` |  |  |
-| `tone` | `'violet' \| 'sky' \| 'green' \| 'amber' \| 'pink' \| 'gray'` | `"green"` |  |
+| `tone` | `TileTone` |  |  |
 | `size` | `'sm' \| 'md' \| 'lg'` | `"md"` |  |
 | `className` | `string` | `""` |  |
 

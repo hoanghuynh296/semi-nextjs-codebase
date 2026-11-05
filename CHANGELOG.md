@@ -4,6 +4,17 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.21.1] - 2026-11-05
+
+### Added
+- **Semi Calibrated Brand Color Styling & Monochrome Override (`Icon`, `IconTile`)**:
+  - Added `BRAND_PATHS` and `BRAND_TONES` in `src/Icon.tsx` for all 21 Vietnamese brand/platform icons, rendering signature multi-path / dual-color stroke paths with Semi calibrated tone tokens (`text-tone-orange`, `text-tone-pink`, `text-tone-sky`, `text-tone-amber`, `text-tone-indigo`, `text-tone-cyan`, `text-tone-teal`, `text-tone-emerald`, `text-tone-blue`, `text-tone-rose`, and `text-contrast`).
+  - Seamlessly respects dark and light themes without garish neon hex colors or glow shadows, fully meeting WCAG AA contrast standards.
+  - Automatic monochrome override: passing explicit `text-*` classes (e.g. `<Icon name="shopee" className="text-muted" />`) renders single-path monochrome SVG.
+  - Automatic tone resolution in `<IconTile name="shopee" />` without needing manual `tone="orange"` prop.
+  - Expanded `TILE_TONES`, `TONE_TEXT`, and `TONE_DOT` across all 12 Semi tone families.
+  - Updated Foundations Storybook showcase to render brand-calibrated tones in the icon catalogue grid and inspector.
+
 ## [0.21.0] - 2026-11-05
 
 ### Added

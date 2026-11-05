@@ -26,10 +26,18 @@ export const TAG = "inline-flex items-center gap-1.5 h-6 px-2 rounded-full bg-fi
 /** Solid dot in a tone (material / category chips and tags). */
 export const TONE_DOT: Record<TileTone, string> = {
   green: "bg-accent",
+  emerald: "bg-emerald-400",
+  orange: "bg-orange-400",
+  rose: "bg-rose-400",
   pink: "bg-pink-400",
   sky: "bg-sky-400",
-  amber: "bg-amber-400",
+  blue: "bg-blue-400",
+  indigo: "bg-indigo-400",
   violet: "bg-indigo-400",
+  purple: "bg-purple-400",
+  cyan: "bg-cyan-400",
+  teal: "bg-teal-400",
+  amber: "bg-amber-400",
   gray: "bg-muted",
 };
 

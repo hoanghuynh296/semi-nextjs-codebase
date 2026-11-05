@@ -48,7 +48,7 @@ export default function KpiCardRow() {
 | `tone` | `'danger' \| 'good'` |  | Colour of the figure when it is good or bad news. Leave unset for a neutral figure. |
 | `hint` | `string` |  | Becomes the card's title (tooltip). |
 | `icon` | `IconName` |  | Optional icon before the label. Most KPI rows read better without one. |
-| `iconTone` | `'violet' \| 'sky' \| 'green' \| 'amber' \| 'pink' \| 'gray'` |  | Colour of the icon. Unset = neutral (text-muted). Give a colour only when it means something (a status), never one decorative colour per card. |
+| `iconTone` | `TileTone` |  | Colour of the icon. Unset = neutral (text-muted). Give a colour only when it means something (a status), never one decorative colour per card. |
 | `featured` | `boolean` | `false` | The screen's main number: larger figure, spans two columns of the grid it sits in. Use one per row at most. |
 | `loading` | `boolean` | `false` | Show a shimmer skeleton in place of the value while loading. |
 | `className` | `string` | `""` |  |

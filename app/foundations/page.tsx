@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { Icon, IconTile, type IconName, type TileTone, TILE_TONES } from "../../src/Icon";
+import { Icon, IconTile, type IconName, type TileTone, TILE_TONES, BRAND_TONES } from "../../src/Icon";
 import { ICON_CATALOG, type IconDomain, suggestIcon } from "../../src/iconCatalog";
 import { PageTitle } from "../../src/PageTitle";
 import { TAG, TONE_DOT } from "../../src/Chip";
@@ -304,7 +304,11 @@ export default function FoundationsPage() {
                 >
                   {/* Icon Tile Preview */}
                   <div className="relative">
-                    <IconTile name={name as IconName} tone={activeTone} size="md" />
+                    <IconTile
+                      name={name as IconName}
+                      tone={meta.domain === "brand" ? (BRAND_TONES[name as IconName] || activeTone) : activeTone}
+                      size="md"
+                    />
                     {isCopied && (
                       <span className="absolute inset-0 rounded-control bg-emerald-500/90 text-contrast flex items-center justify-center animate-in fade-in">
                         <Icon name="check" className="w-4 h-4" />
@@ -358,7 +362,11 @@ export default function FoundationsPage() {
               <div className="space-y-4">
                 {/* Large Preview */}
                 <div className="flex items-center gap-3 p-3 rounded-control bg-panel/[0.03] border border-line/60">
-                  <IconTile name={selectedMeta.name} tone={activeTone} size="lg" />
+                  <IconTile
+                    name={selectedMeta.name}
+                    tone={selectedMeta.domain === "brand" ? (BRAND_TONES[selectedMeta.name] || activeTone) : activeTone}
+                    size="lg"
+                  />
                   <div className="min-w-0 flex-1">
                     <div className="text-ui-lg font-semibold text-contrast truncate">
                       {selectedMeta.name}

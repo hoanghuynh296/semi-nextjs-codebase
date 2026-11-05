@@ -281,6 +281,11 @@ Khi cần hiển thị biểu tượng cho một hành động hoặc trạng th
 | **VinFast / Vingroup** | `vinfast` | `<Icon name="vinfast" />` | Dịch vụ xe điện VinFast, trạm sạc, hệ sinh thái Vingroup |
 | **Thế Giới Di Động (MWG)** | `tgdd` | `<Icon name="tgdd" />` | Chuỗi bán lẻ công nghệ Thế Giới Di Động / Điện Máy Xanh |
 
+> [!TIP] **Cơ chế màu sắc đặc trưng của Brand Icons (Semi Calibrated Brand Styling)**:
+> - **Giữ màu sắc nhận diện thương hiệu nhưng chuẩn hoá theo Semi Design System**: Các icon Brand & TMĐT VN mặc định hiển thị theo màu sắc nhận diện đặc trưng (Shopee cam `text-tone-orange`, Tiki xanh dương nhạt `text-tone-sky`, MoMo hồng `text-tone-pink`, GHTK/Grab xanh lá `text-tone-emerald`, Lazada xanh tím `text-tone-indigo` & hồng đỏ `text-tone-rose`, v.v.) thông qua hệ thống token `text-tone-*` và `text-contrast`. Hệ màu này tự động tương thích và đạt chuẩn tương phản WCAG AA trên cả hai giao diện Dark và Light mà không gây chói mắt.
+> - **Tự động áp dụng màu nền trong `IconTile`**: Khi dùng `<IconTile name="shopee" />`, component sẽ tự động lấy tone màu thương hiệu tương ứng (`BRAND_TONES`) mà lập trình viên không cần truyền thuộc tính `tone` thủ công.
+> - **Chế độ đơn sắc (Monochrome Override)**: Khi cần đặt icon brand trong danh sách menu phụ hoặc trạng thái vô hiệu hoá/trung tính, chỉ cần truyền class màu chữ cụ thể (ví dụ `<Icon name="shopee" className="w-4 h-4 text-muted" />` hoặc `text-contrast`). Icon sẽ tự động chuyển sang chế độ đơn sắc đồng bộ với text của bạn.
+
 ---
 
 ## 3. Quy tắc tránh nhầm lẫn từ khoá (Aliases & Anti-patterns)
