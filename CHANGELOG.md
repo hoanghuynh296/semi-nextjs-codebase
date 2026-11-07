@@ -4,6 +4,14 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.21.2] - 2026-11-07
+
+### Added
+- **Sidebar menu item icons in desktop mode (`AppShell`)**:
+  - Sidebar navigation items now render their configured `icon` alongside the label in desktop expanded mode (`lg:w-52`), with clean `gap-2.5` alignment and consistent theme coloring.
+  - In collapsed rail mode (`w-14` / `md`), the icon is rendered centered in the tab button (with fallback to short label initials if an item does not specify an icon).
+  - Shimmer loading state in `AppShell` now includes the icon placeholder shape matching the rendered items.
+
 ## [0.21.1] - 2026-11-05
 
 ### Added

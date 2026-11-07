@@ -17,7 +17,7 @@ export interface ShellNavItem {
   id: string;
   label: string;
   shortLabel?: string;
-  icon: IconName;
+  icon?: IconName;
   href?: string;
   external?: boolean;
   right?: React.ReactNode;
@@ -115,7 +115,7 @@ export function AppShell({
     collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2.5 lg:px-2.5"
   }`;
   const navLabelClass = `${collapsed ? "hidden" : "hidden lg:block"} flex-1 min-w-0 truncate text-left`;
-  // the narrow rail (collapsed, or below lg) shows a short name in place of the label, since menu items have no icon
+  // the narrow rail (collapsed, or below lg) shows a short name in place of the label when an item has no icon
   const navShortClass = `${collapsed ? "block" : "block lg:hidden"} text-caption font-semibold leading-none truncate max-w-full`;
 
   // Phone bottom tabs: up to 5 primary tabs; if there are more items in the app, add a "Menu" sheet toggle
@@ -126,7 +126,7 @@ export function AppShell({
 
   const mobileTabs: MobileTabItem[] = pinnedItems.map((i) => ({
     id: i.id,
-    icon: i.icon,
+    icon: i.icon ?? "box",
     title: i.label,
     shortTitle: i.shortLabel,
     href: i.href,
@@ -139,9 +139,13 @@ export function AppShell({
       : "text-muted hover:text-contrast hover:bg-field";
     const inner = (
       <>
-        <span className={navShortClass} aria-hidden>
-          {item.shortLabel ?? abbreviate(item.label)}
-        </span>
+        {item.icon ? (
+          <Icon name={item.icon} className="w-4 h-4 shrink-0" />
+        ) : (
+          <span className={navShortClass} aria-hidden>
+            {item.shortLabel ?? abbreviate(item.label)}
+          </span>
+        )}
         <span className={navLabelClass}>{item.label}</span>
       </>
     );
@@ -330,6 +334,7 @@ export function AppShell({
                           }`}
                           aria-hidden
                         >
+                          <div className="w-4 h-4 rounded-chip shimmer shrink-0" />
                           <div
                             className={`${collapsed ? "hidden" : "hidden lg:block"} h-3 rounded-chip shimmer`}
                             style={{ width: `${55 + ((i * 19) % 35)}%` }}
@@ -396,7 +401,7 @@ export function AppShell({
                         onClick={() => setMoreOpen(false)}
                         className={cls}
                       >
-                        <Icon name={item.icon} className="w-4 h-4 text-muted shrink-0" />
+                        {item.icon && <Icon name={item.icon} className="w-4 h-4 text-muted shrink-0" />}
                         <span className="truncate">{item.label}</span>
                       </Link>
                     );
@@ -411,7 +416,7 @@ export function AppShell({
                       }}
                       className={cls}
                     >
-                      <Icon name={item.icon} className="w-4 h-4 text-muted shrink-0" />
+                      {item.icon && <Icon name={item.icon} className="w-4 h-4 text-muted shrink-0" />}
                       <span className="truncate">{item.label}</span>
                     </button>
                   );

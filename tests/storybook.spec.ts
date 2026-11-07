@@ -620,10 +620,10 @@ test("Agent parts: tool call opens, approval replaces its buttons, file tree mov
   await expect(page.getByRole("meter").first()).toHaveAttribute("aria-valuetext", /12\.4K \/ 200K token \(6%\)/);
 });
 
-test("side menu: items have no icon, and keeps its scroll position when a page is opened", async ({ page }) => {
+test("side menu: items have icon in desktop mode, and keeps its scroll position when a page is opened", async ({ page }) => {
   await open(page, "/components/", "dark");
   const menu = page.locator("aside .overflow-y-auto").first();
-  await expect(page.locator("aside nav svg")).toHaveCount(0);
+  await expect(page.locator("aside nav svg").first()).toBeVisible();
   const link = page.locator("aside").getByRole("link", { name: "Menubar" });
   await menu.evaluate((el) => (el.scrollTop = el.scrollHeight));
   await link.scrollIntoViewIfNeeded(); // a real person clicks what is already in view: Playwright would scroll it itself
