@@ -1,4 +1,4 @@
-# Semi Design System (@semi/ui v0.21.2)
+# Semi Design System (@semi/ui v0.22.0)
 
 > The shared UI of every Semi app: semantic tokens that work in light and dark mode, React components (Next.js, Tailwind CSS 4) and the rules agents follow. Every component has a page with live examples and a markdown twin for agents.
 
@@ -71,7 +71,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 ### Navigation & layout
 
 - [App header](./components/app-header/) ([markdown](./docs/components/app-header.md)): The top bar of a stand-alone tool app: logo + title go home, the module name, and one primary action on the right. No Home button. Components: AppHeader.
-- [App shell](./components/app-shell/) ([markdown](./docs/components/app-shell.md)): The frame of a multi-page app: a floating bento sidebar (w-52, collapses to a w-14 icon rail) on bg-canvas, the content panel beside it, and MobileTabBar at the bottom on phones. This docs site is an AppShell. Components: AppShell, MobileTabBar.
+- [App shell](./components/app-shell/) ([markdown](./docs/components/app-shell.md)): The frame of a multi-page app: a floating bento sidebar (w-52, collapses to a w-14 icon rail) on bg-canvas, the content panel beside it, and MobileTabBar at the bottom on phones. Items can carry sub-items that open only while their parent is chosen. This docs site is an AppShell. Components: AppShell, MobileTabBar.
 - [Breadcrumb](./components/breadcrumb/) ([markdown](./docs/components/breadcrumb.md)): Where the page sits: a trail of links ending with the current page. Long trails collapse their middle into a “…” menu. Components: Breadcrumb.
 - [Menubar](./components/menubar/) ([markdown](./docs/components/menubar.md)): The menu bar of a desktop-style tool (Tệp · Sửa · Xem): menus that open from a bar and behave like Menu. Components: Menubar.
 - [Navigation menu](./components/navigation-menu/) ([markdown](./docs/components/navigation-menu.md)): Top navigation of a website or landing page: links, and items that open a panel of links with descriptions. Below md it becomes one menu button with a sheet. Components: NavigationMenu.
@@ -210,7 +210,7 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
 **Use the shared blocks (`@semi/ui` and `@semi/ui/styles`) — never create a local `ui.tsx` wrapper barrel:**
 - **Layout & Structure (`@semi/ui`):**
   - `ThemeProvider`, `useTheme`, `ThemeToggle`: Zero-runtime-overhead dual-theme management via `data-theme` attribute and CSS variables.
-  - `AppShell` (+ `MobileTabBar`, `TAB_BAR_PAD`): 2-panel floating Bento frame on `bg-canvas`, collapsible `w-52`/`w-14` sidebar with grouped `sections`, and mobile bottom tab bar.
+  - `AppShell` (+ `MobileTabBar`, `TAB_BAR_PAD`): 2-panel floating Bento frame on `bg-canvas`, collapsible `w-52`/`w-14` sidebar with grouped `sections`, and mobile bottom tab bar. Items may carry `children` (one level, text only): closed by default, open only while the parent or a child is active; hidden in the rail / below `lg` / phones, so pages check `useAppShell().submenuVisible` and offer their own picker.
   - `PageTitle`, `PageTabsTitle`: text-only display heading or underline tab heading (`h-[2.5px] bg-primary`).
   - `SubpageToolbar`: sticky toolbar (`STICKY_TOOLBAR`) with `left` filters and `right` icon-only `BTN_PRIMARY BTN_ICON` + `SearchInput` + `RefreshButton`.
   - `KpiCard`: metric card with a `tabular-nums` value in the style's figure font (`font-figure`), optional neutral icon (`iconTone` only for a status), `featured` for the screen's main number, shimmer `loading` state.
@@ -319,7 +319,7 @@ type scale are the product's (`data-density`, `data-type-scale` on `<html>`, `se
 - `confirmDialog`: `ConfirmHost`
 - `locale`: `SemiLocaleProvider`
 
-**Hooks:** `useHotkey`, `useField`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useSemiLocale` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `pageWindow`, `startTask`, `themeScript`, `toast`, `dismissToast`, `confirmDialog`, `cn`
+**Hooks:** `useAppShell`, `useHotkey`, `useField`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useSemiLocale` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `pageWindow`, `startTask`, `themeScript`, `toast`, `dismissToast`, `confirmDialog`, `cn`
 <!-- generated:components:end -->
 
 
@@ -660,6 +660,13 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   left **Panel Menu** (`w-52`, or `w-14` collapsed, toggled via the `sidebar` icon button) and a right **Panel
   Content** (`bg-app`) holding a full-width content container (`max-w-[1440px] px-4 sm:px-6`). Phones (`< md`) use a
   bottom tab bar with the same tabs (icons `w-5 h-5`).
+- **Sub-menus:** a nav item may carry one level of sub-items (`children`: mailbox folders, saved views). They are
+  **closed by default** and open under their parent only while the parent or one of its sub-items is active; choosing
+  another item closes them (no manual toggle, no state to remember). Sub-items are text only, indented on a thin
+  `border-divider` guide, `h-7`: no icon, no colour dot, no count (the menu stays neutral; counts and colours live in the
+  page). The parent shows a chevron and keeps `text-contrast` while a sub-item holds the active fill. The `w-14` rail,
+  widths below `lg` and phones never show sub-items: pages read `useAppShell().submenuVisible` and offer the same choice
+  in their toolbar (a `CustomSelect`) when it is false.
 - Each sub-page opens with a large display title (text only), followed by the toolbar row: pill filter tabs
   (`CHIP_BASE` + `chipClass(active)`) on the left, icon-only primary CTA + secondary controls on the right. The row
   carries `STICKY_TOOLBAR` so the filters stay on top of the scrolling content (below the safe area on phones).
@@ -851,7 +858,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 
 | Import | Exports |
 |---|---|
-| `@semi/ui` → `AppShell.tsx`, `MobileTabBar.tsx` | `AppShell` (floating Bento 2-panel frame, collapsible `w-52`/`w-14` menu), `MobileTabBar`, `TAB_BAR_PAD` (§4) |
+| `@semi/ui` → `AppShell.tsx`, `MobileTabBar.tsx` | `AppShell` (floating Bento 2-panel frame, collapsible `w-52`/`w-14` menu, one level of sub-items), `useAppShell` (is the sidebar showing sub-items), `MobileTabBar`, `TAB_BAR_PAD` (§4) |
 | `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle`, `PageTabsTitle` (underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh) (§4a) |
 | `KpiCard.tsx`, `Modal.tsx` | `KpiCard` (metric card in the brand's figure font, neutral icon, `featured` for the screen's main number, shimmer), `Modal` (shared portal dialog with `MODAL_HEAD` + `MODAL_FOOT`) (§13, §14) |
 | `Icon.tsx` | `Icon`, `ICONS`, `IconName`, `IconTile`, `TILE_TONES`, `TONE_TEXT`, `TileTone` |
@@ -1929,7 +1936,7 @@ with `data-style` re-styles only its subtree (used by Storybook previews), not s
 All web UI here follows the **Semi Design System** (`@semi/ui`, repo `https://github.com/hoanghuynh296/semi-nextjs-codebase`). `npx semi-lint` enforces most of this; the full rules are `node_modules/@semi/ui/docs/QUICK_REF.md` (details in `docs/DESIGN_SYSTEM.md`).
 
 1. **Ask Semi before writing UI.** Find the component for each need with the `semi` MCP tools (`semi_search` → `semi_docs` → `semi_example`; `semi_block` for whole pages; `semi_props` for props) or the terminal (`npx semi search "bảng có sắp xếp"`, `npx semi docs DataTable`, `npx semi example data-table`, `npx semi add dashboard`). They answer from the installed `@semi/ui`. Read *When to use*, *Use something else when* and *Accessibility*, then start from an example.
-2. **Compose, never re-create.** Import from `@semi/ui` and `@semi/ui/styles` directly. No local wrappers (`components/ui.tsx`), no raw `<select>`, `<table>`, `<dialog>`, `type="date"`, `type="number"`, `window.confirm` / `alert`, no inline `<svg>` or glyph icons (`<Icon name>`, mapping in `docs/ICONS.md`). Every AI conversation is `AIChat`; agent work uses `Reasoning`, `ToolCall`, `TaskList`, `Terminal`, `Sources`; an outward-facing, paid or irreversible agent action waits for `ActionConfirmation`. Pages sit in `AppShell` (or `AppHeader` for a one-screen tool) with `PageTitle`; dialogs are `Modal` / `Drawer` / `confirmDialog`; loading is `Skeleton`, never "Đang tải…" text.
+2. **Compose, never re-create.** Import from `@semi/ui` and `@semi/ui/styles` directly. No local wrappers (`components/ui.tsx`), no raw `<select>`, `<table>`, `<dialog>`, `type="date"`, `type="number"`, `window.confirm` / `alert`, no inline `<svg>` or glyph icons (`<Icon name>`, mapping in `docs/ICONS.md`). Every AI conversation is `AIChat`; agent work uses `Reasoning`, `ToolCall`, `TaskList`, `Terminal`, `Sources`; an outward-facing, paid or irreversible agent action waits for `ActionConfirmation`. Pages sit in `AppShell` (or `AppHeader` for a one-screen tool) with `PageTitle`; sub-views of one area go in nav `children` (closed until the parent is chosen, text only; check `useAppShell().submenuVisible` and add a page picker when false); dialogs are `Modal` / `Drawer` / `confirmDialog`; loading is `Skeleton`, never "Đang tải…" text.
 3. **Tokens only** (dual theme, any brand, any style):
    - Surfaces and text: `bg-canvas|app|panel|field|raised`, `text-contrast|body|muted`, `border-line|divider`; status `bg-*-bg border-*-border text-*-fg` (danger, success, warning, info). Accent: `bg-accent text-on-accent` (or `BTN_PRIMARY`), `text-accent-fg`, `bg-accent-subtle`, `border-accent-line`, `ring-focus`. Never physical colours (`bg-white`, `text-slate-900`, `text-amber-600 dark:text-amber-400`), arbitrary colours (`bg-[#…]`), `primary-N/alpha` or `bg-primary-N` fills (`primary-fill`), gradients or glow shadows.
    - Type scale only: `text-caption|label|ui|ui-lg|title|title-lg`, `text-kpi`, `text-heading`, `text-display`; `font-medium` / `font-semibold`, titles and big numbers `font-title` / `font-figure`; `tabular-nums` for numbers; sentence case.
@@ -4588,17 +4595,20 @@ export default function AppHeaderTool() {
 
 # App shell
 
-The frame of a multi-page app: a floating bento sidebar (w-52, collapses to a w-14 icon rail) on bg-canvas, the content panel beside it, and MobileTabBar at the bottom on phones. This docs site is an AppShell.
+The frame of a multi-page app: a floating bento sidebar (w-52, collapses to a w-14 icon rail) on bg-canvas, the content panel beside it, and MobileTabBar at the bottom on phones. Items can carry sub-items that open only while their parent is chosen. This docs site is an AppShell.
 
 ## When to use
 
 - Every app with several pages (dashboards, admin, store back office).
+- An area with its own sub-views that people switch between often (mailbox folders, saved views): sub-items under one nav item.
 
 ## Use something else when
 
 | Need | Use |
 |---|---|
 | A single-screen tool or editor (3D, canvas) | AppHeader |
+| 2–4 sibling views of one page that do not need a place in the menu | PageTabsTitle |
+| Filters of a list (status, owner) | Pills or CustomSelect in SubpageToolbar |
 
 ## Import
 
@@ -4641,6 +4651,67 @@ export default function Shell({ children }: { children: React.ReactNode }) {
 }
 ```
 
+### Sub-items
+
+A mailbox with folders as sub-items, and the page's own folder picker when the sidebar cannot show them.
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { AppShell, CustomSelect, PageTitle, useAppShell, type ShellNavSection } from "@semi/ui";
+
+const FOLDERS = [
+  { id: "mail:inbox", label: "Hộp thư đến" },
+  { id: "mail:starred", label: "Gắn sao" },
+  { id: "mail:sent", label: "Đã gửi" },
+  { id: "mail:failed", label: "Thất bại" },
+];
+
+const SECTIONS: ShellNavSection[] = [
+  {
+    label: "Làm việc",
+    hideLabel: true,
+    items: [
+      // Choosing "Hộp thư" opens its sub-items; choosing another item closes them.
+      { id: "mail", label: "Hộp thư", icon: "send", children: FOLDERS },
+      { id: "customers", label: "Khách hàng", icon: "users" },
+    ],
+  },
+  { label: "Hệ thống", hideLabel: true, items: [{ id: "settings", label: "Cấu hình", icon: "settings" }] },
+];
+
+function MailPage({ folder, onFolder }: { folder: string; onFolder: (id: string) => void }) {
+  // In the rail and on phones the sidebar hides sub-items: the page offers the same choice itself.
+  const { submenuVisible } = useAppShell();
+  return (
+    <div className="space-y-4">
+      <PageTitle title="Hộp thư" />
+      {!submenuVisible && (
+        <CustomSelect
+          aria-label="Thư mục"
+          value={folder}
+          onChange={onFolder}
+          options={FOLDERS.map((f) => ({ value: f.id, label: f.label }))}
+        />
+      )}
+      <p className="text-ui text-body">{FOLDERS.find((f) => f.id === folder)?.label}</p>
+    </div>
+  );
+}
+
+export default function AppShellSubmenu() {
+  const [active, setActive] = useState("customers");
+  // The parent alone opens its first sub-item.
+  const select = (id: string) => setActive(id === "mail" ? "mail:inbox" : id);
+  return (
+    <AppShell productName="Sales Hub" logoIcon="chart" sections={SECTIONS} activeId={active} onSelect={select}>
+      {active.startsWith("mail") ? <MailPage folder={active} onFolder={setActive} /> : <PageTitle title="Khách hàng" />}
+    </AppShell>
+  );
+}
+```
+
 ## API
 
 ### AppShell
@@ -4674,12 +4745,17 @@ export default function Shell({ children }: { children: React.ReactNode }) {
 ## Accessibility
 
 - The sidebar is a nav landmark; the active item has aria-current; the collapse state is remembered per app (storageKey).
+- An item with sub-items has aria-expanded; its sub-items are a list named after it, the active one with aria-current.
 
 ## Notes
 
 - Render it once in the root layout (or a route group layout); pages render only their content.
 - Use next/link hrefs for items; onSelect is for in-page sections.
 - MobileTabBar is used by AppShell; render it yourself only in a custom shell.
+- Sub-items (children) are closed by default: they open under their parent while the parent or one of them is the activeId, and close when another item is chosen. One level only.
+- Sub-items are text only: no icon, colour dot or count (the menu stays neutral, §4). Put counts and colours in the page.
+- The rail (w-14), widths below lg and phones never show sub-items: read useAppShell().submenuVisible and give the page its own picker (a CustomSelect in the toolbar) when it is false.
+- Choosing the parent alone usually opens its first sub-item: map it in onSelect.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/app-shell/ and the types in src/ -->
 

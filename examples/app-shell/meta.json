@@ -1,27 +1,41 @@
 {
   "title": "App shell",
   "group": "Navigation & layout",
-  "description": "The frame of a multi-page app: a floating bento sidebar (w-52, collapses to a w-14 icon rail) on bg-canvas, the content panel beside it, and MobileTabBar at the bottom on phones. This docs site is an AppShell.",
+  "description": "The frame of a multi-page app: a floating bento sidebar (w-52, collapses to a w-14 icon rail) on bg-canvas, the content panel beside it, and MobileTabBar at the bottom on phones. Items can carry sub-items that open only while their parent is chosen. This docs site is an AppShell.",
   "components": [
     "AppShell",
     "MobileTabBar"
   ],
   "when": [
-    "Every app with several pages (dashboards, admin, store back office)."
+    "Every app with several pages (dashboards, admin, store back office).",
+    "An area with its own sub-views that people switch between often (mailbox folders, saved views): sub-items under one nav item."
   ],
   "instead": [
     {
       "need": "A single-screen tool or editor (3D, canvas)",
       "use": "AppHeader"
+    },
+    {
+      "need": "2–4 sibling views of one page that do not need a place in the menu",
+      "use": "PageTabsTitle"
+    },
+    {
+      "need": "Filters of a list (status, owner)",
+      "use": "Pills or CustomSelect in SubpageToolbar"
     }
   ],
   "a11y": [
-    "The sidebar is a nav landmark; the active item has aria-current; the collapse state is remembered per app (storageKey)."
+    "The sidebar is a nav landmark; the active item has aria-current; the collapse state is remembered per app (storageKey).",
+    "An item with sub-items has aria-expanded; its sub-items are a list named after it, the active one with aria-current."
   ],
   "notes": [
     "Render it once in the root layout (or a route group layout); pages render only their content.",
     "Use next/link hrefs for items; onSelect is for in-page sections.",
-    "MobileTabBar is used by AppShell; render it yourself only in a custom shell."
+    "MobileTabBar is used by AppShell; render it yourself only in a custom shell.",
+    "Sub-items (children) are closed by default: they open under their parent while the parent or one of them is the activeId, and close when another item is chosen. One level only.",
+    "Sub-items are text only: no icon, colour dot or count (the menu stays neutral, §4). Put counts and colours in the page.",
+    "The rail (w-14), widths below lg and phones never show sub-items: read useAppShell().submenuVisible and give the page its own picker (a CustomSelect in the toolbar) when it is false.",
+    "Choosing the parent alone usually opens its first sub-item: map it in onSelect."
   ],
   "examples": [
     {
@@ -29,6 +43,12 @@
       "title": "Root layout",
       "preview": "none",
       "description": "AppShell fills the viewport, so it is shown as code: this very page is the live example."
+    },
+    {
+      "file": "submenu",
+      "title": "Sub-items",
+      "preview": "none",
+      "description": "A mailbox with folders as sub-items, and the page's own folder picker when the sidebar cannot show them."
     }
   ]
 }

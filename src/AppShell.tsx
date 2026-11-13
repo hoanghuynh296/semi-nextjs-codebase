@@ -5,13 +5,21 @@
 // - Collapsible rounded-panel bg-panel left menu (w-52 <-> w-14 icon rail, persisted in localStorage)
 // - Rounded-2xl bg-app right content panel with max-w-[1440px] container
 // - Mobile (< md): hides the top logo header and renders MobileTabBar at the bottom (plus a bottom sheet if >5 routes)
-import React, { useEffect, useState } from "react";
+// - Sub-items (`children`) open under their parent only while the parent or one of them is active
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { useSemiLocale } from "./locale";
 import Link from "next/link";
 import { Icon, type IconName } from "./Icon";
 import { MobileTabBar, TAB_BAR_PAD, type MobileTabItem } from "./MobileTabBar";
 import { PageActionsProvider, PageActionsSlot } from "./PageActions";
 import { SHELL_ASIDE, SHELL_CONTAINER, SHELL_MAIN, SHELL_OUTER } from "../styles/surfaces";
+
+/** A sub-item under a nav item (a mailbox folder, a saved view). Text only: no icon, colour or count (§4). */
+export interface ShellNavChild {
+  id: string;
+  label: string;
+  href?: string;
+}
 
 export interface ShellNavItem {
   id: string;
@@ -21,7 +29,27 @@ export interface ShellNavItem {
   href?: string;
   external?: boolean;
   right?: React.ReactNode;
+  /**
+   * Sub-items. Closed by default; they open under the item while the item or one of them is the `activeId`, and
+   * close again when another item is chosen. Never shown in the `w-14` rail or on phones: read `useAppShell()` and
+   * give the page its own way to reach them there.
+   */
+  children?: ShellNavChild[];
 }
+
+interface AppShellState {
+  /** True when the sidebar shows sub-items (expanded sidebar, `lg` and up). False in the rail, below `lg` and on phones. */
+  submenuVisible: boolean;
+}
+
+const AppShellContext = createContext<AppShellState>({ submenuVisible: false });
+
+/** Inside `AppShell`: whether the sidebar is showing sub-items, so a page can offer its own navigation when not. */
+export function useAppShell(): AppShellState {
+  return useContext(AppShellContext);
+}
+
+const LG_QUERY = "(min-width: 1024px)";
 
 export interface ShellNavSection {
   label?: string;
@@ -85,6 +113,15 @@ export function AppShell({
   const t = useSemiLocale();
   const [collapsed, setCollapsed] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [wide, setWide] = useState(false);
+
+  useEffect(() => {
+    const mql = window.matchMedia(LG_QUERY);
+    const update = () => setWide(mql.matches);
+    update();
+    mql.addEventListener("change", update);
+    return () => mql.removeEventListener("change", update);
+  }, []);
 
   useEffect(() => {
     try {
@@ -110,6 +147,9 @@ export function AppShell({
 
   const allItems = sections.flatMap((s) => s.items);
   const firstItem = allItems[0];
+  // The top-level item that owns the active id (itself, or the parent of an active sub-item).
+  const activeTopId = allItems.find((i) => i.id === activeId || i.children?.some((c) => c.id === activeId))?.id ?? activeId;
+  const submenuVisible = !collapsed && wide;
 
   const navItemClass = `w-full h-8 flex items-center rounded-control text-label font-medium transition whitespace-nowrap cursor-pointer ${
     collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2.5 lg:px-2.5"
@@ -133,10 +173,16 @@ export function AppShell({
   }));
 
   const renderNavEntry = (item: ShellNavItem) => {
-    const active = activeId === item.id;
+    const hasChildren = Boolean(item.children?.length);
+    const open = hasChildren && activeTopId === item.id;
+    // A parent whose sub-item is active reads as current but keeps the fill for the sub-item (rail: the parent is all there is).
+    const active = activeId === item.id || (open && !submenuVisible);
     const stateClass = active
       ? "bg-raised text-contrast"
-      : "text-muted hover:text-contrast hover:bg-field";
+      : open
+        ? "text-contrast hover:bg-field"
+        : "text-muted hover:text-contrast hover:bg-field";
+    const expanded = hasChildren ? { "aria-expanded": open && submenuVisible } : {};
     const inner = (
       <>
         {item.icon ? (
@@ -147,6 +193,12 @@ export function AppShell({
           </span>
         )}
         <span className={navLabelClass}>{item.label}</span>
+        {hasChildren && !item.right && (
+          <Icon
+            name={open ? "chevronDown" : "chevron"}
+            className={`${collapsed ? "hidden" : "hidden lg:block"} w-3.5 h-3.5 shrink-0 text-muted`}
+          />
+        )}
       </>
     );
 
@@ -158,6 +210,7 @@ export function AppShell({
           target={item.external ? "_blank" : undefined}
           rel={item.external ? "noopener noreferrer" : undefined}
           aria-current={active ? "page" : undefined}
+          {...expanded}
           title={item.label}
           className={`${navItemClass} ${stateClass} group ${item.right && !collapsed ? "lg:!pr-1.5" : ""}`}
         >
@@ -180,6 +233,7 @@ export function AppShell({
             type="button"
             onClick={() => onSelect?.(item.id)}
             aria-current={active ? "page" : undefined}
+            {...expanded}
             className="flex-1 min-w-0 h-full flex items-center justify-center lg:justify-start lg:gap-2.5 text-left cursor-pointer overflow-hidden focus:outline-none"
           >
             {inner}
@@ -197,11 +251,45 @@ export function AppShell({
         type="button"
         onClick={() => onSelect?.(item.id)}
         aria-current={active ? "page" : undefined}
+        {...expanded}
         title={item.label}
         className={`${navItemClass} ${stateClass}`}
       >
         {inner}
       </button>
+    );
+  };
+
+  const renderChildren = (item: ShellNavItem) => {
+    if (!item.children?.length || activeTopId !== item.id || !submenuVisible) return null;
+    return (
+      <ul aria-label={item.label} className="flex flex-col gap-0.5 ml-4 pl-2 border-l border-divider">
+        {item.children.map((child) => {
+          const active = activeId === child.id;
+          const cls = `w-full h-7 flex items-center px-2.5 rounded-control text-label transition whitespace-nowrap cursor-pointer ${
+            active ? "bg-raised text-contrast font-medium" : "text-muted hover:text-contrast hover:bg-field"
+          }`;
+          return (
+            <li key={child.id}>
+              {child.href && !onSelect ? (
+                <Link href={child.href} aria-current={active ? "page" : undefined} title={child.label} className={cls}>
+                  <span className="truncate">{child.label}</span>
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => onSelect?.(child.id)}
+                  aria-current={active ? "page" : undefined}
+                  title={child.label}
+                  className={cls}
+                >
+                  <span className="truncate">{child.label}</span>
+                </button>
+              )}
+            </li>
+          );
+        })}
+      </ul>
     );
   };
 
@@ -219,226 +307,233 @@ export function AppShell({
   );
 
   return (
-    <PageActionsProvider>
-      <div className={SHELL_OUTER}>
-        {/* Left floating Bento sidebar (md+; phones use MobileTabBar at bottom) */}
-        <aside className={`${SHELL_ASIDE} ${collapsed ? "w-14" : "w-14 lg:w-52"}`}>
-          {/* Sticky top header: Brand + optional primary CTA */}
-          <div className="shrink-0 p-2 pb-0 flex flex-col gap-2.5">
-            {/* Brand + collapse toggle */}
-            <div
-              className={`h-8 flex items-center gap-2 shrink-0 ${
-                collapsed ? "justify-center" : "justify-center lg:justify-between lg:pl-1.5"
-              }`}
-            >
-              {firstItem?.href && !onSelect ? (
-                <Link
-                  href={firstItem.href}
-                  className={`min-w-0 items-center gap-2 text-left ${collapsed ? "hidden" : "flex"}`}
-                  aria-label={productName}
-                >
-                  {brandNode}
-                </Link>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => firstItem && onSelect?.(firstItem.id)}
-                  className={`min-w-0 items-center gap-2 text-left cursor-pointer ${collapsed ? "hidden" : "flex"}`}
-                  aria-label={productName}
-                >
-                  {brandNode}
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={toggleCollapsed}
-                aria-label={collapsed ? "Mở rộng menu" : "Thu gọn menu"}
-                title={collapsed ? "Mở rộng menu" : "Thu gọn menu"}
-                className={`${
-                  collapsed ? "flex" : "hidden lg:flex"
-                } w-7 h-7 rounded-control items-center justify-center text-muted hover:text-contrast hover:bg-raised transition shrink-0 cursor-pointer`}
+    <AppShellContext.Provider value={{ submenuVisible }}>
+      <PageActionsProvider>
+        <div className={SHELL_OUTER}>
+          {/* Left floating Bento sidebar (md+; phones use MobileTabBar at bottom) */}
+          <aside className={`${SHELL_ASIDE} ${collapsed ? "w-14" : "w-14 lg:w-52"}`}>
+            {/* Sticky top header: Brand + optional primary CTA */}
+            <div className="shrink-0 p-2 pb-0 flex flex-col gap-2.5">
+              {/* Brand + collapse toggle */}
+              <div
+                className={`h-8 flex items-center gap-2 shrink-0 ${
+                  collapsed ? "justify-center" : "justify-center lg:justify-between lg:pl-1.5"
+                }`}
               >
-                <Icon name="sidebar" className="w-3.5 h-3.5" />
-              </button>
-            </div>
-
-            {/* Optional primary CTA (e.g. Slicer / Trợ lý AI) */}
-            {primaryCta &&
-              (primaryCta.href ? (
-                <Link
-                  href={primaryCta.href}
-                  target={primaryCta.external ? "_blank" : undefined}
-                  rel={primaryCta.external ? "noopener noreferrer" : undefined}
-                  title={primaryCta.label}
-                  className={`shrink-0 w-full h-9 rounded-control bg-accent-subtle hover:bg-accent-subtle-hover border border-accent-line hover:border-accent-line text-contrast flex items-center text-label font-semibold transition active:scale-[0.99] ${
-                    collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2 lg:px-2.5"
-                  }`}
-                >
-                  <span className="w-5 h-5 rounded-chip bg-accent text-on-accent flex items-center justify-center shrink-0">
-                    <Icon name={primaryCta.icon} className="w-3.5 h-3.5" />
-                  </span>
-                  <span className={navLabelClass}>{primaryCta.label}</span>
-                </Link>
-              ) : (
+                {firstItem?.href && !onSelect ? (
+                  <Link
+                    href={firstItem.href}
+                    className={`min-w-0 items-center gap-2 text-left ${collapsed ? "hidden" : "flex"}`}
+                    aria-label={productName}
+                  >
+                    {brandNode}
+                  </Link>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => firstItem && onSelect?.(firstItem.id)}
+                    className={`min-w-0 items-center gap-2 text-left cursor-pointer ${collapsed ? "hidden" : "flex"}`}
+                    aria-label={productName}
+                  >
+                    {brandNode}
+                  </button>
+                )}
                 <button
                   type="button"
-                  onClick={primaryCta.onClick}
-                  title={primaryCta.label}
-                  className={`shrink-0 w-full h-9 rounded-control bg-accent-subtle hover:bg-accent-subtle-hover border border-accent-line hover:border-accent-line text-contrast flex items-center text-label font-semibold transition active:scale-[0.99] cursor-pointer ${
-                    collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2 lg:px-2.5"
-                  }`}
+                  onClick={toggleCollapsed}
+                  aria-label={collapsed ? "Mở rộng menu" : "Thu gọn menu"}
+                  title={collapsed ? "Mở rộng menu" : "Thu gọn menu"}
+                  className={`${
+                    collapsed ? "flex" : "hidden lg:flex"
+                  } w-7 h-7 rounded-control items-center justify-center text-muted hover:text-contrast hover:bg-raised transition shrink-0 cursor-pointer`}
                 >
-                  <span className="w-5 h-5 rounded-chip bg-accent text-on-accent flex items-center justify-center shrink-0">
-                    <Icon name={primaryCta.icon} className="w-3.5 h-3.5" />
-                  </span>
-                  <span className={navLabelClass}>{primaryCta.label}</span>
-                </button>
-              ))}
-          </div>
-
-          {/* Scrollable navigation sections */}
-          <div className="flex-1 min-h-0 flex flex-col overflow-y-auto overflow-x-hidden p-2 pt-1.5 gap-1">
-            {sections.map((section, idx) => {
-              if (!section.loading && (!section.items || section.items.length === 0)) {
-                return null;
-              }
-              return (
-                <React.Fragment key={section.label ?? idx}>
-                  {idx > 0 && <div className="my-1 mx-1.5 border-t border-divider" />}
-                  {section.label && !section.hideLabel && (
-                    <div
-                      className={`${
-                        collapsed ? "hidden" : "hidden lg:flex"
-                      } group shrink-0 items-center justify-between gap-1.5 px-2.5 py-0.5 text-caption font-medium text-muted select-none`}
-                    >
-                      <div className="flex items-center gap-1.5 min-w-0 truncate">
-                        {section.icon && (
-                          <Icon name={section.icon} className="w-3.5 h-3.5 text-muted shrink-0" />
-                        )}
-                        <span className="truncate leading-normal">{section.label}</span>
-                      </div>
-                      {section.right && (
-                        <div className="flex items-center shrink-0 ml-auto">
-                          {section.right}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  <nav aria-label={section.label ?? `Menu ${idx + 1}`} className="flex flex-col gap-0.5">
-                    {section.loading ? (
-                      Array.from({ length: section.loadingCount ?? 5 }, (_, i) => (
-                        <div
-                          key={i}
-                          className={`w-full h-8 flex items-center rounded-control ${
-                            collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2.5 lg:px-2.5"
-                          }`}
-                          aria-hidden
-                        >
-                          <div className="w-4 h-4 rounded-chip shimmer shrink-0" />
-                          <div
-                            className={`${collapsed ? "hidden" : "hidden lg:block"} h-3 rounded-chip shimmer`}
-                            style={{ width: `${55 + ((i * 19) % 35)}%` }}
-                          />
-                        </div>
-                      ))
-                    ) : (
-                      section.items.map(renderNavEntry)
-                    )}
-                  </nav>
-                </React.Fragment>
-              );
-            })}
-          </div>
-
-          {/* Sidebar footer */}
-          {footer && (
-            <div className="shrink-0 p-2 border-t border-divider">
-              {typeof footer === "function" ? footer({ collapsed }) : footer}
-            </div>
-          )}
-        </aside>
-
-        {/* Right floating Bento content panel */}
-        <main className={`${SHELL_MAIN} ${TAB_BAR_PAD}`}>
-          <div className={`${SHELL_CONTAINER} ${containerClassName}`}>
-            <PageActionsSlot className="empty:hidden ml-auto mb-2 sticky top-0 max-md:top-[env(safe-area-inset-top)] z-sticky" />
-            {children}
-          </div>
-        </main>
-
-        {/* Mobile bottom sheet when the app has more routes than fit on MobileTabBar */}
-        {hasMoreSheet && moreOpen && (
-          <div
-            className="md:hidden fixed inset-0 z-sticky bg-overlay backdrop-blur-sm flex flex-col justify-end pb-16"
-            onClick={() => setMoreOpen(false)}
-          >
-            <div
-              className="bg-panel border-t border-line rounded-t-panel p-4 max-h-[75dvh] overflow-y-auto space-y-3"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-center justify-between px-1">
-                <span className="font-display text-title font-semibold text-contrast">{productName}</span>
-                <button
-                  type="button"
-                  onClick={() => setMoreOpen(false)}
-                  aria-label={t.close}
-                  className="w-8 h-8 rounded-full bg-field hover:bg-raised flex items-center justify-center text-muted hover:text-contrast transition border border-line"
-                >
-                  <Icon name="close" className="w-4 h-4" />
+                  <Icon name="sidebar" className="w-3.5 h-3.5" />
                 </button>
               </div>
-              <div className="grid grid-cols-2 gap-1.5">
-                {allItems.map((item) => {
-                  const active = activeId === item.id;
-                  const cls = `flex items-center gap-2.5 h-10 px-3 rounded-card text-label font-medium transition ${
-                    active ? "bg-raised text-contrast" : "bg-field text-body hover:bg-raised hover:text-contrast"
-                  }`;
-                  if (item.href && !onSelect) {
+
+              {/* Optional primary CTA (e.g. Slicer / Trợ lý AI) */}
+              {primaryCta &&
+                (primaryCta.href ? (
+                  <Link
+                    href={primaryCta.href}
+                    target={primaryCta.external ? "_blank" : undefined}
+                    rel={primaryCta.external ? "noopener noreferrer" : undefined}
+                    title={primaryCta.label}
+                    className={`shrink-0 w-full h-9 rounded-control bg-accent-subtle hover:bg-accent-subtle-hover border border-accent-line hover:border-accent-line text-contrast flex items-center text-label font-semibold transition active:scale-[0.99] ${
+                      collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2 lg:px-2.5"
+                    }`}
+                  >
+                    <span className="w-5 h-5 rounded-chip bg-accent text-on-accent flex items-center justify-center shrink-0">
+                      <Icon name={primaryCta.icon} className="w-3.5 h-3.5" />
+                    </span>
+                    <span className={navLabelClass}>{primaryCta.label}</span>
+                  </Link>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={primaryCta.onClick}
+                    title={primaryCta.label}
+                    className={`shrink-0 w-full h-9 rounded-control bg-accent-subtle hover:bg-accent-subtle-hover border border-accent-line hover:border-accent-line text-contrast flex items-center text-label font-semibold transition active:scale-[0.99] cursor-pointer ${
+                      collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2 lg:px-2.5"
+                    }`}
+                  >
+                    <span className="w-5 h-5 rounded-chip bg-accent text-on-accent flex items-center justify-center shrink-0">
+                      <Icon name={primaryCta.icon} className="w-3.5 h-3.5" />
+                    </span>
+                    <span className={navLabelClass}>{primaryCta.label}</span>
+                  </button>
+                ))}
+            </div>
+
+            {/* Scrollable navigation sections */}
+            <div className="flex-1 min-h-0 flex flex-col overflow-y-auto overflow-x-hidden p-2 pt-1.5 gap-1">
+              {sections.map((section, idx) => {
+                if (!section.loading && (!section.items || section.items.length === 0)) {
+                  return null;
+                }
+                return (
+                  <React.Fragment key={section.label ?? idx}>
+                    {idx > 0 && <div className="my-1 mx-1.5 border-t border-divider" />}
+                    {section.label && !section.hideLabel && (
+                      <div
+                        className={`${
+                          collapsed ? "hidden" : "hidden lg:flex"
+                        } group shrink-0 items-center justify-between gap-1.5 px-2.5 py-0.5 text-caption font-medium text-muted select-none`}
+                      >
+                        <div className="flex items-center gap-1.5 min-w-0 truncate">
+                          {section.icon && (
+                            <Icon name={section.icon} className="w-3.5 h-3.5 text-muted shrink-0" />
+                          )}
+                          <span className="truncate leading-normal">{section.label}</span>
+                        </div>
+                        {section.right && (
+                          <div className="flex items-center shrink-0 ml-auto">
+                            {section.right}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    <nav aria-label={section.label ?? `Menu ${idx + 1}`} className="flex flex-col gap-0.5">
+                      {section.loading ? (
+                        Array.from({ length: section.loadingCount ?? 5 }, (_, i) => (
+                          <div
+                            key={i}
+                            className={`w-full h-8 flex items-center rounded-control ${
+                              collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2.5 lg:px-2.5"
+                            }`}
+                            aria-hidden
+                          >
+                            <div className="w-4 h-4 rounded-chip shimmer shrink-0" />
+                            <div
+                              className={`${collapsed ? "hidden" : "hidden lg:block"} h-3 rounded-chip shimmer`}
+                              style={{ width: `${55 + ((i * 19) % 35)}%` }}
+                            />
+                          </div>
+                        ))
+                      ) : (
+                        section.items.map((item) => (
+                          <React.Fragment key={item.id}>
+                            {renderNavEntry(item)}
+                            {renderChildren(item)}
+                          </React.Fragment>
+                        ))
+                      )}
+                    </nav>
+                  </React.Fragment>
+                );
+              })}
+            </div>
+
+            {/* Sidebar footer */}
+            {footer && (
+              <div className="shrink-0 p-2 border-t border-divider">
+                {typeof footer === "function" ? footer({ collapsed }) : footer}
+              </div>
+            )}
+          </aside>
+
+          {/* Right floating Bento content panel */}
+          <main className={`${SHELL_MAIN} ${TAB_BAR_PAD}`}>
+            <div className={`${SHELL_CONTAINER} ${containerClassName}`}>
+              <PageActionsSlot className="empty:hidden ml-auto mb-2 sticky top-0 max-md:top-[env(safe-area-inset-top)] z-sticky" />
+              {children}
+            </div>
+          </main>
+
+          {/* Mobile bottom sheet when the app has more routes than fit on MobileTabBar */}
+          {hasMoreSheet && moreOpen && (
+            <div
+              className="md:hidden fixed inset-0 z-sticky bg-overlay backdrop-blur-sm flex flex-col justify-end pb-16"
+              onClick={() => setMoreOpen(false)}
+            >
+              <div
+                className="bg-panel border-t border-line rounded-t-panel p-4 max-h-[75dvh] overflow-y-auto space-y-3"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex items-center justify-between px-1">
+                  <span className="font-display text-title font-semibold text-contrast">{productName}</span>
+                  <button
+                    type="button"
+                    onClick={() => setMoreOpen(false)}
+                    aria-label={t.close}
+                    className="w-8 h-8 rounded-full bg-field hover:bg-raised flex items-center justify-center text-muted hover:text-contrast transition border border-line"
+                  >
+                    <Icon name="close" className="w-4 h-4" />
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {allItems.map((item) => {
+                    const active = activeTopId === item.id;
+                    const cls = `flex items-center gap-2.5 h-10 px-3 rounded-card text-label font-medium transition ${
+                      active ? "bg-raised text-contrast" : "bg-field text-body hover:bg-raised hover:text-contrast"
+                    }`;
+                    if (item.href && !onSelect) {
+                      return (
+                        <Link
+                          key={item.id}
+                          href={item.href}
+                          onClick={() => setMoreOpen(false)}
+                          className={cls}
+                        >
+                          {item.icon && <Icon name={item.icon} className="w-4 h-4 text-muted shrink-0" />}
+                          <span className="truncate">{item.label}</span>
+                        </Link>
+                      );
+                    }
                     return (
-                      <Link
+                      <button
                         key={item.id}
-                        href={item.href}
-                        onClick={() => setMoreOpen(false)}
+                        type="button"
+                        onClick={() => {
+                          onSelect?.(item.id);
+                          setMoreOpen(false);
+                        }}
                         className={cls}
                       >
                         {item.icon && <Icon name={item.icon} className="w-4 h-4 text-muted shrink-0" />}
                         <span className="truncate">{item.label}</span>
-                      </Link>
+                      </button>
                     );
-                  }
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => {
-                        onSelect?.(item.id);
-                        setMoreOpen(false);
-                      }}
-                      className={cls}
-                    >
-                      {item.icon && <Icon name={item.icon} className="w-4 h-4 text-muted shrink-0" />}
-                      <span className="truncate">{item.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-              {footer && (
-                <div className="pt-2 border-t border-divider">
-                  {typeof footer === "function" ? footer({ collapsed: false }) : footer}
+                  })}
                 </div>
-              )}
+                {footer && (
+                  <div className="pt-2 border-t border-divider">
+                    {typeof footer === "function" ? footer({ collapsed: false }) : footer}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        <MobileTabBar
-          tabs={mobileTabs}
-          active={activeId}
-          onSelect={onSelect}
-          moreOpen={moreOpen}
-          onToggleMore={hasMoreSheet ? () => setMoreOpen((v) => !v) : undefined}
-        />
-      </div>
-    </PageActionsProvider>
+          <MobileTabBar
+            tabs={mobileTabs}
+            active={activeTopId}
+            onSelect={onSelect}
+            moreOpen={moreOpen}
+            onToggleMore={hasMoreSheet ? () => setMoreOpen((v) => !v) : undefined}
+          />
+        </div>
+      </PageActionsProvider>
+    </AppShellContext.Provider>
   );
 }

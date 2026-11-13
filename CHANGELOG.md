@@ -4,6 +4,12 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.22.0] - 2026-11-14
+
+### Added
+- **Sidebar sub-menus (`AppShell`)**: `ShellNavItem.children` (`ShellNavChild`: `id`, `label`, `href`), one level. Closed by default; the sub-items open under their parent while the parent or one of them is `activeId`, and close when another item is chosen. Text only (no icon, dot or count), indented on a `border-divider` guide; the parent shows a chevron, `aria-expanded`, and stays `text-contrast` while a sub-item is active. `MobileTabBar` and the phone menu sheet highlight the parent of an active sub-item.
+- **`useAppShell()`**: `{ submenuVisible }`, false in the `w-14` rail, below `lg` and on phones, where sub-items are not shown; pages use it to show their own picker. Doc example `examples/app-shell/submenu.tsx`.
+
 ## [0.21.2] - 2026-11-07
 
 ### Added

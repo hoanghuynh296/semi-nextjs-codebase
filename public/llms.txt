@@ -1,4 +1,4 @@
-# Semi Design System (@semi/ui v0.21.2)
+# Semi Design System (@semi/ui v0.22.0)
 
 > The shared UI of every Semi app: semantic tokens that work in light and dark mode, React components (Next.js, Tailwind CSS 4) and the rules agents follow. Every component has a page with live examples and a markdown twin for agents.
 
@@ -71,7 +71,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 ### Navigation & layout
 
 - [App header](./components/app-header/) ([markdown](./docs/components/app-header.md)): The top bar of a stand-alone tool app: logo + title go home, the module name, and one primary action on the right. No Home button. Components: AppHeader.
-- [App shell](./components/app-shell/) ([markdown](./docs/components/app-shell.md)): The frame of a multi-page app: a floating bento sidebar (w-52, collapses to a w-14 icon rail) on bg-canvas, the content panel beside it, and MobileTabBar at the bottom on phones. This docs site is an AppShell. Components: AppShell, MobileTabBar.
+- [App shell](./components/app-shell/) ([markdown](./docs/components/app-shell.md)): The frame of a multi-page app: a floating bento sidebar (w-52, collapses to a w-14 icon rail) on bg-canvas, the content panel beside it, and MobileTabBar at the bottom on phones. Items can carry sub-items that open only while their parent is chosen. This docs site is an AppShell. Components: AppShell, MobileTabBar.
 - [Breadcrumb](./components/breadcrumb/) ([markdown](./docs/components/breadcrumb.md)): Where the page sits: a trail of links ending with the current page. Long trails collapse their middle into a “…” menu. Components: Breadcrumb.
 - [Menubar](./components/menubar/) ([markdown](./docs/components/menubar.md)): The menu bar of a desktop-style tool (Tệp · Sửa · Xem): menus that open from a bar and behave like Menu. Components: Menubar.
 - [Navigation menu](./components/navigation-menu/) ([markdown](./docs/components/navigation-menu.md)): Top navigation of a website or landing page: links, and items that open a panel of links with descriptions. Below md it becomes one menu button with a sheet. Components: NavigationMenu.

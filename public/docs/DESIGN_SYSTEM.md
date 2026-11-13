@@ -331,6 +331,13 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   left **Panel Menu** (`w-52`, or `w-14` collapsed, toggled via the `sidebar` icon button) and a right **Panel
   Content** (`bg-app`) holding a full-width content container (`max-w-[1440px] px-4 sm:px-6`). Phones (`< md`) use a
   bottom tab bar with the same tabs (icons `w-5 h-5`).
+- **Sub-menus:** a nav item may carry one level of sub-items (`children`: mailbox folders, saved views). They are
+  **closed by default** and open under their parent only while the parent or one of its sub-items is active; choosing
+  another item closes them (no manual toggle, no state to remember). Sub-items are text only, indented on a thin
+  `border-divider` guide, `h-7`: no icon, no colour dot, no count (the menu stays neutral; counts and colours live in the
+  page). The parent shows a chevron and keeps `text-contrast` while a sub-item holds the active fill. The `w-14` rail,
+  widths below `lg` and phones never show sub-items: pages read `useAppShell().submenuVisible` and offer the same choice
+  in their toolbar (a `CustomSelect`) when it is false.
 - Each sub-page opens with a large display title (text only), followed by the toolbar row: pill filter tabs
   (`CHIP_BASE` + `chipClass(active)`) on the left, icon-only primary CTA + secondary controls on the right. The row
   carries `STICKY_TOOLBAR` so the filters stay on top of the scrolling content (below the safe area on phones).
@@ -522,7 +529,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 
 | Import | Exports |
 |---|---|
-| `@semi/ui` → `AppShell.tsx`, `MobileTabBar.tsx` | `AppShell` (floating Bento 2-panel frame, collapsible `w-52`/`w-14` menu), `MobileTabBar`, `TAB_BAR_PAD` (§4) |
+| `@semi/ui` → `AppShell.tsx`, `MobileTabBar.tsx` | `AppShell` (floating Bento 2-panel frame, collapsible `w-52`/`w-14` menu, one level of sub-items), `useAppShell` (is the sidebar showing sub-items), `MobileTabBar`, `TAB_BAR_PAD` (§4) |
 | `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle`, `PageTabsTitle` (underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh) (§4a) |
 | `KpiCard.tsx`, `Modal.tsx` | `KpiCard` (metric card in the brand's figure font, neutral icon, `featured` for the screen's main number, shimmer), `Modal` (shared portal dialog with `MODAL_HEAD` + `MODAL_FOOT`) (§13, §14) |
 | `Icon.tsx` | `Icon`, `ICONS`, `IconName`, `IconTile`, `TILE_TONES`, `TONE_TEXT`, `TileTone` |
