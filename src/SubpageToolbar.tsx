@@ -1,6 +1,7 @@
 "use client";
 
 // Unified sticky sub-page toolbar row (docs/DESIGN_SYSTEM.md §4a):
+// - Optional title: the page title shares the row with filters and actions (instead of a PageTitle above)
 // - Left slot: filter pills / chips / CustomSelect dropdowns
 // - Right slot: icon-only primary CTA (BTN_PRIMARY BTN_ICON) + SearchInput + RefreshButton (+ optional extra controls)
 import React from "react";
@@ -10,8 +11,10 @@ import { SearchInput } from "./SearchInput";
 import { RefreshButton } from "./RefreshButton";
 import { BTN_ICON, BTN_PRIMARY } from "../styles/buttons";
 import { STICKY_TOOLBAR } from "../styles/surfaces";
+import { PAGE_TITLE_TEXT } from "./pageTitleText";
 
 export function SubpageToolbar({
+  title,
   left,
   right,
   onPrimaryAction,
@@ -23,6 +26,12 @@ export function SubpageToolbar({
   onRefresh,
   className = "",
 }: {
+  /**
+   * The page title, on the same row as the filters and actions (the page then has no PageTitle). A string becomes
+   * the page's h1 in PageTitle type; pass a PageTabsTitle for sibling views. Leave it out to keep the title on its own
+   * row above (PageTitle + SubpageToolbar). On narrow screens the filters and actions wrap below the title.
+   */
+  title?: React.ReactNode;
   /** Filter controls on the left (Pills, Chip, CustomSelect). */
   left?: React.ReactNode;
   /** Optional extra controls on the right (placed before the primary icon button). */
@@ -47,8 +56,19 @@ export function SubpageToolbar({
   const primaryActionLabel = primaryActionLabelProp ?? t.add;
   const searchPlaceholder = searchPlaceholderProp ?? t.search;
   return (
-    <div className={`${STICKY_TOOLBAR} flex flex-wrap items-center justify-between gap-2.5 min-w-0 mb-5 ${className}`}>
-      <div className="flex items-center gap-2 flex-wrap min-w-0">{left}</div>
+    <div
+      className={`${STICKY_TOOLBAR} flex flex-wrap items-center justify-between gap-2.5 min-w-0 ${
+        title ? "gap-x-4 mb-5 sm:mb-6" : "mb-5"
+      } ${className}`}
+    >
+      {title &&
+        (typeof title === "string" ? (
+          <h1 className={`min-w-0 max-w-full shrink ${PAGE_TITLE_TEXT}`}>{title}</h1>
+        ) : (
+          // A PageTabsTitle keeps its own bottom margin on a row of its own; on the toolbar row the row spaces it.
+          <div className="min-w-0 max-w-full shrink *:!mb-0">{title}</div>
+        ))}
+      {(left || !title) && <div className="flex items-center gap-2 flex-wrap min-w-0">{left}</div>}
       <div className="flex flex-wrap items-center gap-2 ml-auto shrink-0 max-sm:w-full max-sm:justify-end">
         {right}
         {onPrimaryAction && (

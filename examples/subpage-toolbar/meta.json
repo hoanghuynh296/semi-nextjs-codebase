@@ -1,18 +1,23 @@
 {
   "title": "Subpage toolbar",
   "group": "Navigation & layout",
-  "description": "The sticky row under a page title: filters on the left; search, refresh and the icon-only primary action on the right. RefreshButton spins while its promise runs.",
+  "description": "The sticky row with a page's filters on the left and search, refresh and the icon-only primary action on the right: under the page title, or with the title on the same row (title). RefreshButton spins while its promise runs.",
   "components": [
     "SubpageToolbar",
     "RefreshButton"
   ],
   "when": [
-    "Every list or grid page."
+    "Every list or grid page.",
+    "A page whose filters and actions fit beside its title (one or two filters, a few actions): pass title and drop the PageTitle, so the content starts higher."
   ],
   "instead": [
     {
       "need": "Actions of a tool app",
       "use": "AppHeader"
+    },
+    {
+      "need": "Many filters, or filters that need the full width",
+      "use": "PageTitle above, SubpageToolbar on its own row (no title)"
     }
   ],
   "a11y": [
@@ -24,8 +29,17 @@
       "title": "List page"
     },
     {
+      "file": "title-row",
+      "title": "Title on the toolbar row"
+    },
+    {
       "file": "refresh",
       "title": "RefreshButton"
     }
+  ],
+  "notes": [
+    "Two layouts, both valid: PageTitle + SubpageToolbar (title on its own row), or SubpageToolbar with title (one row). Pick one per page, never both.",
+    "With title, a string becomes the page h1 in PageTitle type; a PageTabsTitle works too. Narrow screens wrap the filters and actions below the title.",
+    "Text buttons belong in right (secondary actions); the title itself stays text only and the primary action stays icon-only."
   ]
 }

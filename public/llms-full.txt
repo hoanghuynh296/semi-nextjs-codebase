@@ -1,4 +1,4 @@
-# Semi Design System (@semi/ui v0.22.0)
+# Semi Design System (@semi/ui v0.23.0)
 
 > The shared UI of every Semi app: semantic tokens that work in light and dark mode, React components (Next.js, Tailwind CSS 4) and the rules agents follow. Every component has a page with live examples and a markdown twin for agents.
 
@@ -81,7 +81,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Resizable panels](./components/resizable/) ([markdown](./docs/components/resizable.md)): Panels side by side or stacked with handles to resize them (an editor beside a preview, a list beside details). Sizes are percentages and can be remembered. Components: ResizablePanels.
 - [Scroll area](./components/scroll-area/) ([markdown](./docs/components/scroll-area.md)): A fixed-size scrolling region (a long list in a card, a log). Semi hides scrollbars, so it marks the edges that have more content, can show a thin scrollbar, and is reachable by keyboard. Components: ScrollArea.
 - [Side panel](./components/side-panel/) ([markdown](./docs/components/side-panel.md)): A 320px tool panel beside a canvas that collapses to a 48px rail; SidePanelToggle is its collapse button. Components: SidePanel, SidePanelToggle.
-- [Subpage toolbar](./components/subpage-toolbar/) ([markdown](./docs/components/subpage-toolbar.md)): The sticky row under a page title: filters on the left; search, refresh and the icon-only primary action on the right. RefreshButton spins while its promise runs. Components: SubpageToolbar, RefreshButton.
+- [Subpage toolbar](./components/subpage-toolbar/) ([markdown](./docs/components/subpage-toolbar.md)): The sticky row with a page's filters on the left and search, refresh and the icon-only primary action on the right: under the page title, or with the title on the same row (title). RefreshButton spins while its promise runs. Components: SubpageToolbar, RefreshButton.
 - [Tabs](./components/tabs/) ([markdown](./docs/components/tabs.md)): Switch between panels of content inside a page or card: underline (default) or segmented, with icons and counts. Components: Tabs.
 
 ### Data display
@@ -154,7 +154,7 @@ or per-project `AGENTS.md`.
 
 Style: restrained dark & light dual-theme (`data-theme="dark|light"`) + bento cards, flat (no gradients, no glow), minimal text, collapsible neutral
 left panel menu (`w-52` / `w-14`) floating on `bg-canvas` (`md:p-2 md:gap-2`), full-width right content panel (`md:rounded-panel bg-app`),
-`font-display` page titles (`PageTitle` / `PageTabsTitle`, text only, no subtitle, no text buttons on the title row),
+`font-display` page titles (`PageTitle` / `PageTabsTitle`, text only, no subtitle; either on their own row above the toolbar, or on the toolbar row via `SubpageToolbar title`),
 sticky sub-page toolbar row (`SubpageToolbar`: filters left, icon-only primary CTA + `SearchInput` + `RefreshButton` right).
 Phones (`< md`) hide the top logo header and use `MobileTabBar` at the bottom (never a hamburger slide-over drawer).
 
@@ -212,7 +212,7 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
   - `ThemeProvider`, `useTheme`, `ThemeToggle`: Zero-runtime-overhead dual-theme management via `data-theme` attribute and CSS variables.
   - `AppShell` (+ `MobileTabBar`, `TAB_BAR_PAD`): 2-panel floating Bento frame on `bg-canvas`, collapsible `w-52`/`w-14` sidebar with grouped `sections`, and mobile bottom tab bar. Items may carry `children` (one level, text only): closed by default, open only while the parent or a child is active; hidden in the rail / below `lg` / phones, so pages check `useAppShell().submenuVisible` and offer their own picker.
   - `PageTitle`, `PageTabsTitle`: text-only display heading or underline tab heading (`h-[2.5px] bg-primary`).
-  - `SubpageToolbar`: sticky toolbar (`STICKY_TOOLBAR`) with `left` filters and `right` icon-only `BTN_PRIMARY BTN_ICON` + `SearchInput` + `RefreshButton`.
+  - `SubpageToolbar`: sticky toolbar (`STICKY_TOOLBAR`) with `left` filters and `right` icon-only `BTN_PRIMARY BTN_ICON` + `SearchInput` + `RefreshButton`; `title` puts the page title on the same row (then no `PageTitle`).
   - `KpiCard`: metric card with a `tabular-nums` value in the style's figure font (`font-figure`), optional neutral icon (`iconTone` only for a status), `featured` for the screen's main number, shimmer `loading` state.
   - `Modal`: portal dialog with `MODAL_BACKDROP`, `MODAL_PANEL`, `MODAL_HEAD`, `MODAL_CLOSE`, and `footer` (`MODAL_FOOT`).
 - **Controls (`@semi/ui`):**
@@ -667,7 +667,12 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   page). The parent shows a chevron and keeps `text-contrast` while a sub-item holds the active fill. The `w-14` rail,
   widths below `lg` and phones never show sub-items: pages read `useAppShell().submenuVisible` and offer the same choice
   in their toolbar (a `CustomSelect`) when it is false.
-- Each sub-page opens with a large display title (text only), followed by the toolbar row: pill filter tabs
+- **Title and toolbar: two layouts, pick one per page.** (a) Title on its own row, toolbar below (`PageTitle` +
+  `SubpageToolbar`), for pages with many filters. (b) Title on the toolbar row (`SubpageToolbar title="…"`, no
+  `PageTitle`), for pages whose few filters and actions fit beside the title: the content starts higher. In (b) the
+  title is still the page `h1` in display type and text only; filters follow it, actions sit at the right end; narrow
+  screens wrap filters and actions below the title. Text buttons stay in the toolbar's `right` slot in both layouts.
+- Each sub-page opens with a large display title (text only), followed by the toolbar row (or sharing it, above): pill filter tabs
   (`CHIP_BASE` + `chipClass(active)`) on the left, icon-only primary CTA + secondary controls on the right. The row
   carries `STICKY_TOOLBAR` so the filters stay on top of the scrolling content (below the safe area on phones).
   "Thêm …" and "Làm mới" buttons are icon-only (`BTN_PRIMARY`/`BTN_SECONDARY` + `BTN_ICON`, `RefreshButton`) with
@@ -1936,7 +1941,7 @@ with `data-style` re-styles only its subtree (used by Storybook previews), not s
 All web UI here follows the **Semi Design System** (`@semi/ui`, repo `https://github.com/hoanghuynh296/semi-nextjs-codebase`). `npx semi-lint` enforces most of this; the full rules are `node_modules/@semi/ui/docs/QUICK_REF.md` (details in `docs/DESIGN_SYSTEM.md`).
 
 1. **Ask Semi before writing UI.** Find the component for each need with the `semi` MCP tools (`semi_search` → `semi_docs` → `semi_example`; `semi_block` for whole pages; `semi_props` for props) or the terminal (`npx semi search "bảng có sắp xếp"`, `npx semi docs DataTable`, `npx semi example data-table`, `npx semi add dashboard`). They answer from the installed `@semi/ui`. Read *When to use*, *Use something else when* and *Accessibility*, then start from an example.
-2. **Compose, never re-create.** Import from `@semi/ui` and `@semi/ui/styles` directly. No local wrappers (`components/ui.tsx`), no raw `<select>`, `<table>`, `<dialog>`, `type="date"`, `type="number"`, `window.confirm` / `alert`, no inline `<svg>` or glyph icons (`<Icon name>`, mapping in `docs/ICONS.md`). Every AI conversation is `AIChat`; agent work uses `Reasoning`, `ToolCall`, `TaskList`, `Terminal`, `Sources`; an outward-facing, paid or irreversible agent action waits for `ActionConfirmation`. Pages sit in `AppShell` (or `AppHeader` for a one-screen tool) with `PageTitle`; sub-views of one area go in nav `children` (closed until the parent is chosen, text only; check `useAppShell().submenuVisible` and add a page picker when false); dialogs are `Modal` / `Drawer` / `confirmDialog`; loading is `Skeleton`, never "Đang tải…" text.
+2. **Compose, never re-create.** Import from `@semi/ui` and `@semi/ui/styles` directly. No local wrappers (`components/ui.tsx`), no raw `<select>`, `<table>`, `<dialog>`, `type="date"`, `type="number"`, `window.confirm` / `alert`, no inline `<svg>` or glyph icons (`<Icon name>`, mapping in `docs/ICONS.md`). Every AI conversation is `AIChat`; agent work uses `Reasoning`, `ToolCall`, `TaskList`, `Terminal`, `Sources`; an outward-facing, paid or irreversible agent action waits for `ActionConfirmation`. Pages sit in `AppShell` (or `AppHeader` for a one-screen tool) with `PageTitle` (or the title on the toolbar row: `SubpageToolbar title`); sub-views of one area go in nav `children` (closed until the parent is chosen, text only; check `useAppShell().submenuVisible` and add a page picker when false); dialogs are `Modal` / `Drawer` / `confirmDialog`; loading is `Skeleton`, never "Đang tải…" text.
 3. **Tokens only** (dual theme, any brand, any style):
    - Surfaces and text: `bg-canvas|app|panel|field|raised`, `text-contrast|body|muted`, `border-line|divider`; status `bg-*-bg border-*-border text-*-fg` (danger, success, warning, info). Accent: `bg-accent text-on-accent` (or `BTN_PRIMARY`), `text-accent-fg`, `bg-accent-subtle`, `border-accent-line`, `ring-focus`. Never physical colours (`bg-white`, `text-slate-900`, `text-amber-600 dark:text-amber-400`), arbitrary colours (`bg-[#…]`), `primary-N/alpha` or `bg-primary-N` fills (`primary-fill`), gradients or glow shadows.
    - Type scale only: `text-caption|label|ui|ui-lg|title|title-lg`, `text-kpi`, `text-heading`, `text-display`; `font-medium` / `font-semibold`, titles and big numbers `font-title` / `font-figure`; `tabular-nums` for numbers; sentence case.
@@ -5477,17 +5482,19 @@ The collapse toggle placed at the top of the panel content (next to the first la
 
 # Subpage toolbar
 
-The sticky row under a page title: filters on the left; search, refresh and the icon-only primary action on the right. RefreshButton spins while its promise runs.
+The sticky row with a page's filters on the left and search, refresh and the icon-only primary action on the right: under the page title, or with the title on the same row (title). RefreshButton spins while its promise runs.
 
 ## When to use
 
 - Every list or grid page.
+- A page whose filters and actions fit beside its title (one or two filters, a few actions): pass title and drop the PageTitle, so the content starts higher.
 
 ## Use something else when
 
 | Need | Use |
 |---|---|
 | Actions of a tool app | AppHeader |
+| Many filters, or filters that need the full width | PageTitle above, SubpageToolbar on its own row (no title) |
 
 ## Import
 
@@ -5532,6 +5539,48 @@ export default function SubpageToolbarListPage() {
 }
 ```
 
+### Title on the toolbar row
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Button, CustomSelect, SubpageToolbar, toast } from "@semi/ui";
+
+export default function SubpageToolbarTitleRow() {
+  const [status, setStatus] = useState("all");
+  const [q, setQ] = useState("");
+  return (
+    // The title shares the row with the filter and actions; the page has no PageTitle above.
+    <SubpageToolbar
+      title="Khách hàng"
+      left={
+        <CustomSelect
+          aria-label="Lọc theo trạng thái"
+          value={status}
+          onChange={setStatus}
+          options={[
+            { value: "all", label: "Mọi trạng thái" },
+            { value: "new", label: "Mới" },
+            { value: "replied", label: "Đã trả lời" },
+          ]}
+        />
+      }
+      right={
+        <Button icon="upload" onClick={() => toast({ title: "Nhập file" })}>
+          Nhập file
+        </Button>
+      }
+      searchValue={q}
+      onSearchChange={setQ}
+      searchPlaceholder="Tìm khách…"
+      onPrimaryAction={() => toast({ title: "Thêm khách" })}
+      primaryActionLabel="Thêm khách"
+    />
+  );
+}
+```
+
 ### RefreshButton
 
 ```tsx
@@ -5548,6 +5597,7 @@ export default function RefreshButtonBasic() {
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
+| `title` | `React.ReactNode` |  | The page title, on the same row as the filters and actions (the page then has no PageTitle). A string becomes the page's h1 in PageTitle type; pass a PageTabsTitle for sibling views. Leave it out to keep the title on its own row above (PageTitle + SubpageToolbar). On narrow screens the filters and actions wrap below the title. |
 | `left` | `React.ReactNode` |  | Filter controls on the left (Pills, Chip, CustomSelect). |
 | `right` | `React.ReactNode` |  | Optional extra controls on the right (placed before the primary icon button). |
 | `onPrimaryAction` | `() => void` |  | Click handler for the icon-only primary CTA button (e.g. "Thêm"). |
@@ -5570,6 +5620,12 @@ export default function RefreshButtonBasic() {
 ## Accessibility
 
 - The primary action is icon-only, so primaryActionLabel is required (aria-label + title).
+
+## Notes
+
+- Two layouts, both valid: PageTitle + SubpageToolbar (title on its own row), or SubpageToolbar with title (one row). Pick one per page, never both.
+- With title, a string becomes the page h1 in PageTitle type; a PageTabsTitle works too. Narrow screens wrap the filters and actions below the title.
+- Text buttons belong in right (secondary actions); the title itself stays text only and the primary action stays icon-only.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/subpage-toolbar/ and the types in src/ -->
 

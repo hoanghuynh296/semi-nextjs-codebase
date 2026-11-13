@@ -1,8 +1,10 @@
 "use client";
 
 // Page title and underline display-tab heading of the Semi Design System (docs/DESIGN_SYSTEM.md §1, §4a).
-// Titles are text-only (no subtitles, no text action buttons on the title row — actions belong in SubpageToolbar).
+// Titles are text-only (no subtitles). Actions and filters go in SubpageToolbar: on the row below (PageTitle +
+// SubpageToolbar), or on the title's own row (SubpageToolbar `title`).
 import React from "react";
+import { PAGE_TITLE_TEXT } from "./pageTitleText";
 import { useSemiLocale } from "./locale";
 
 export function PageTitle({
@@ -14,7 +16,7 @@ export function PageTitle({
 }) {
   return (
     <div className={`mb-6 sm:mb-7 min-w-0 ${className}`}>
-      <h1 className="pb-2 font-display text-heading sm:text-display leading-[1.15] font-title text-contrast tracking-tight truncate">
+      <h1 className={`pb-2 ${PAGE_TITLE_TEXT}`}>
         {title}
       </h1>
     </div>

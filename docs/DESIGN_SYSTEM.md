@@ -338,7 +338,12 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   page). The parent shows a chevron and keeps `text-contrast` while a sub-item holds the active fill. The `w-14` rail,
   widths below `lg` and phones never show sub-items: pages read `useAppShell().submenuVisible` and offer the same choice
   in their toolbar (a `CustomSelect`) when it is false.
-- Each sub-page opens with a large display title (text only), followed by the toolbar row: pill filter tabs
+- **Title and toolbar: two layouts, pick one per page.** (a) Title on its own row, toolbar below (`PageTitle` +
+  `SubpageToolbar`), for pages with many filters. (b) Title on the toolbar row (`SubpageToolbar title="…"`, no
+  `PageTitle`), for pages whose few filters and actions fit beside the title: the content starts higher. In (b) the
+  title is still the page `h1` in display type and text only; filters follow it, actions sit at the right end; narrow
+  screens wrap filters and actions below the title. Text buttons stay in the toolbar's `right` slot in both layouts.
+- Each sub-page opens with a large display title (text only), followed by the toolbar row (or sharing it, above): pill filter tabs
   (`CHIP_BASE` + `chipClass(active)`) on the left, icon-only primary CTA + secondary controls on the right. The row
   carries `STICKY_TOOLBAR` so the filters stay on top of the scrolling content (below the safe area on phones).
   "Thêm …" and "Làm mới" buttons are icon-only (`BTN_PRIMARY`/`BTN_SECONDARY` + `BTN_ICON`, `RefreshButton`) with

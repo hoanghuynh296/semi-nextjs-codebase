@@ -374,7 +374,7 @@
     "id": "subpage-toolbar",
     "title": "Subpage toolbar",
     "group": "Navigation & layout",
-    "description": "The sticky row under a page title: filters on the left; search, refresh and the icon-only primary action on the right. RefreshButton spins while its promise runs.",
+    "description": "The sticky row with a page's filters on the left and search, refresh and the icon-only primary action on the right: under the page title, or with the title on the same row (title). RefreshButton spins while its promise runs.",
     "components": [
       "SubpageToolbar",
       "RefreshButton"

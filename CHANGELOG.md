@@ -4,6 +4,11 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.23.0] - 2026-11-14
+
+### Added
+- **Title on the toolbar row (`SubpageToolbar` `title`)**: the page title (a string becomes the `h1` in `PageTitle` type; a `PageTabsTitle` works too) shares the sticky row with the filters and actions, and the page drops its `PageTitle`. Narrow screens wrap filters and actions below the title. The two-row layout (`PageTitle` + `SubpageToolbar`) is unchanged and stays the default. Doc example `examples/subpage-toolbar/title-row.tsx`.
+
 ## [0.22.0] - 2026-11-14
 
 ### Added
