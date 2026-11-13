@@ -4,10 +4,10 @@ import { useState } from "react";
 import { AppShell, CustomSelect, PageTitle, useAppShell, type ShellNavSection } from "@semi/ui";
 
 const FOLDERS = [
-  { id: "mail:inbox", label: "Hộp thư đến" },
-  { id: "mail:starred", label: "Gắn sao" },
-  { id: "mail:sent", label: "Đã gửi" },
-  { id: "mail:failed", label: "Thất bại" },
+  { id: "mail:inbox", label: "Hộp thư đến", icon: "inbox" as const },
+  { id: "mail:starred", label: "Gắn sao", icon: "star" as const },
+  { id: "mail:sent", label: "Đã gửi", icon: "send" as const },
+  { id: "mail:failed", label: "Thất bại", icon: "alert" as const },
 ];
 
 const SECTIONS: ShellNavSection[] = [
@@ -16,7 +16,7 @@ const SECTIONS: ShellNavSection[] = [
     hideLabel: true,
     items: [
       // Choosing "Hộp thư" opens its sub-items; choosing another item closes them.
-      { id: "mail", label: "Hộp thư", icon: "send", children: FOLDERS },
+      { id: "mail", label: "Hộp thư", icon: "mail", children: FOLDERS },
       { id: "customers", label: "Khách hàng", icon: "users" },
     ],
   },

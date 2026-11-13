@@ -14,11 +14,13 @@ import { MobileTabBar, TAB_BAR_PAD, type MobileTabItem } from "./MobileTabBar";
 import { PageActionsProvider, PageActionsSlot } from "./PageActions";
 import { SHELL_ASIDE, SHELL_CONTAINER, SHELL_MAIN, SHELL_OUTER } from "../styles/surfaces";
 
-/** A sub-item under a nav item (a mailbox folder, a saved view). Text only: no icon, colour or count (§4). */
+/** A sub-item under a nav item (a mailbox folder, a saved view). Neutral like the menu: no colour, no count (§4). */
 export interface ShellNavChild {
   id: string;
   label: string;
   href?: string;
+  /** Optional grey icon before the label (`w-3.5 h-3.5`); give all sub-items of a parent one, or none. */
+  icon?: IconName;
 }
 
 export interface ShellNavItem {
@@ -266,13 +268,14 @@ export function AppShell({
       <ul aria-label={item.label} className="flex flex-col gap-0.5 ml-4 pl-2 border-l border-divider">
         {item.children.map((child) => {
           const active = activeId === child.id;
-          const cls = `w-full h-7 flex items-center px-2.5 rounded-control text-label transition whitespace-nowrap cursor-pointer ${
+          const cls = `w-full h-7 flex items-center gap-2 px-2.5 rounded-control text-label transition whitespace-nowrap cursor-pointer ${
             active ? "bg-raised text-contrast font-medium" : "text-muted hover:text-contrast hover:bg-field"
           }`;
           return (
             <li key={child.id}>
               {child.href && !onSelect ? (
                 <Link href={child.href} aria-current={active ? "page" : undefined} title={child.label} className={cls}>
+                  {child.icon && <Icon name={child.icon} className="w-3.5 h-3.5 shrink-0" />}
                   <span className="truncate">{child.label}</span>
                 </Link>
               ) : (
@@ -283,6 +286,7 @@ export function AppShell({
                   title={child.label}
                   className={cls}
                 >
+                  {child.icon && <Icon name={child.icon} className="w-3.5 h-3.5 shrink-0" />}
                   <span className="truncate">{child.label}</span>
                 </button>
               )}

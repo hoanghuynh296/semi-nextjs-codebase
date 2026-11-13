@@ -67,10 +67,10 @@ import { useState } from "react";
 import { AppShell, CustomSelect, PageTitle, useAppShell, type ShellNavSection } from "@semi/ui";
 
 const FOLDERS = [
-  { id: "mail:inbox", label: "Hộp thư đến" },
-  { id: "mail:starred", label: "Gắn sao" },
-  { id: "mail:sent", label: "Đã gửi" },
-  { id: "mail:failed", label: "Thất bại" },
+  { id: "mail:inbox", label: "Hộp thư đến", icon: "inbox" as const },
+  { id: "mail:starred", label: "Gắn sao", icon: "star" as const },
+  { id: "mail:sent", label: "Đã gửi", icon: "send" as const },
+  { id: "mail:failed", label: "Thất bại", icon: "alert" as const },
 ];
 
 const SECTIONS: ShellNavSection[] = [
@@ -79,7 +79,7 @@ const SECTIONS: ShellNavSection[] = [
     hideLabel: true,
     items: [
       // Choosing "Hộp thư" opens its sub-items; choosing another item closes them.
-      { id: "mail", label: "Hộp thư", icon: "send", children: FOLDERS },
+      { id: "mail", label: "Hộp thư", icon: "mail", children: FOLDERS },
       { id: "customers", label: "Khách hàng", icon: "users" },
     ],
   },
@@ -158,7 +158,7 @@ export default function AppShellSubmenu() {
 - Use next/link hrefs for items; onSelect is for in-page sections.
 - MobileTabBar is used by AppShell; render it yourself only in a custom shell.
 - Sub-items (children) are closed by default: they open under their parent while the parent or one of them is the activeId, and close when another item is chosen. One level only.
-- Sub-items are text only: no icon, colour dot or count (the menu stays neutral, §4). Put counts and colours in the page.
+- Sub-items take an optional grey icon (give every sub-item of a parent one, or none); no colour dot or count (the menu stays neutral, §4). Put counts and colours in the page.
 - The rail (w-14), widths below lg and phones never show sub-items: read useAppShell().submenuVisible and give the page its own picker (a CustomSelect in the toolbar) when it is false.
 - Choosing the parent alone usually opens its first sub-item: map it in onSelect.
 

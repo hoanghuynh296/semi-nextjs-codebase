@@ -33,7 +33,7 @@
     "Use next/link hrefs for items; onSelect is for in-page sections.",
     "MobileTabBar is used by AppShell; render it yourself only in a custom shell.",
     "Sub-items (children) are closed by default: they open under their parent while the parent or one of them is the activeId, and close when another item is chosen. One level only.",
-    "Sub-items are text only: no icon, colour dot or count (the menu stays neutral, §4). Put counts and colours in the page.",
+    "Sub-items take an optional grey icon (give every sub-item of a parent one, or none); no colour dot or count (the menu stays neutral, §4). Put counts and colours in the page.",
     "The rail (w-14), widths below lg and phones never show sub-items: read useAppShell().submenuVisible and give the page its own picker (a CustomSelect in the toolbar) when it is false.",
     "Choosing the parent alone usually opens its first sub-item: map it in onSelect."
   ],

@@ -99,3 +99,16 @@ test("icon-alias flags brand aliases and suggests canonical names", async () => 
   assert.deepEqual(r.hard.filter((h) => h.rule === "icon-alias").map((h) => h.line), [1, 2, 3]);
   rmSync(dir, { recursive: true });
 });
+
+test("icon-alias: mail and inbox are real icons; email, envelope and incoming are aliases", async () => {
+  const { scan } = await import("../semi-lint.mjs");
+  const dir = mkdtempSync(join(tmpdir(), "semi-lint-"));
+  const file = join(dir, "page.tsx");
+  writeFileSync(
+    file,
+    '<Icon name="mail" />\n<Icon name="inbox" />\n<Icon name="email" />\n<Icon name="envelope" />\n<Icon name="incoming" />\n',
+  );
+  const r = scan([file], {}, dir);
+  assert.deepEqual(r.hard.filter((h) => h.rule === "icon-alias").map((h) => h.line), [3, 4, 5]);
+  rmSync(dir, { recursive: true });
+});

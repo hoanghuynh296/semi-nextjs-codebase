@@ -36,7 +36,9 @@ Khi cần hiển thị biểu tượng cho một hành động hoặc trạng th
 | **Làm lại bước vừa hoàn tác** | `redo` | `<Icon name="redo" />` | Đi cặp với `undo`; không dùng cho tải lại (`refresh`) hay lặp media (`repeat`) |
 | **Khôi phục mặc định ban đầu** | `reset` | `<Icon name="reset" />` | Dùng trong form cấu hình / filter reset |
 | **Ghim mục lên đầu danh sách** | `pin` | `<Icon name="pin" />` | Dùng cho ghim tab/dự án/mục ưu tiên |
-| **Gửi lệnh / Gửi tin nhắn** | `send` | `<Icon name="send" />` | Dùng cho chat AI / G-code terminal |
+| **Gửi lệnh / Gửi tin nhắn** | `send` | `<Icon name="send" />` | Dùng cho chat AI / G-code terminal, thư mục Đã gửi |
+| **Thư / Hộp thư** | `mail` | `<Icon name="mail" />` | Mục menu Hộp thư / Email, tài khoản email |
+| **Hộp thư đến** | `inbox` | `<Icon name="inbox" />` | Thư mục Hộp thư đến, danh sách yêu cầu mới |
 | **Bắt đầu / Khởi chạy tác vụ** | `play` | `<Icon name="play" />` | Nút Bắt đầu in / Chạy script / Video stream |
 | **Tạm dừng in / Tác vụ** | `pause` | `<Icon name="pause" />` | Không dùng cho nút dừng hẳn (dùng `stop`) |
 | **Dừng hẳn / Huỷ in khẩn cấp** | `stop` | `<Icon name="stop" />` | Nút Huỷ lệnh in khẩn cấp (kết hợp BTN_DANGER) |
@@ -315,7 +317,9 @@ Khi lập trình, nếu viết các từ khoá sau thì `semi-lint` hoặc `tsc`
 | `ai`, `magic`, `smart` | `sparkles` | Tính năng AI dùng `sparkles` |
 | `tooltip`, `help` | `info` | Giải thích dùng `info` |
 | `confirm`, `accept`, `ok` | `check` | Xác nhận hoàn tất dùng `check` |
-| `mail`, `email`, `message` | `send` | Gửi tin nhắn / thư từ dùng `send` |
+| `email`, `envelope` | `mail` | Khu vực / mục email dùng `mail` |
+| `incoming` | `inbox` | Hộp thư đến dùng `inbox` |
+| `message` | `send` | Gửi tin nhắn dùng `send` |
 | `link`, `open_link` | `external` | Liên kết ngoài dùng `external` |
 | `shutdown`, `turn_off`, `power_off` | `power` | Nguồn thiết bị dùng `power` |
 | `scale` | `resize` | Thu phóng, đổi kích thước đối tượng dùng `resize` |

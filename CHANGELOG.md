@@ -4,6 +4,15 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.24.0] - 2026-11-14
+
+### Added
+- **Icons on sidebar sub-items**: `ShellNavChild.icon` (optional, grey `w-3.5 h-3.5`, same for all sub-items of a parent). The sub-menu example uses them.
+- **Icons `mail` and `inbox`** (197 icons): the email area / mailbox menu item, and the inbox folder; catalog entries, `docs/ICONS.md` rows.
+
+### Changed
+- **`icon-alias`**: `mail` is a real icon now, no longer an alias of `send`. `email` and `envelope` point to `mail`, `incoming` to `inbox`; `message` still points to `send`. Code that used `<Icon name="send" />` for an email *area* may switch to `mail`; nothing breaks.
+
 ## [0.23.0] - 2026-11-14
 
 ### Added

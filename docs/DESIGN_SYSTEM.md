@@ -333,9 +333,9 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   bottom tab bar with the same tabs (icons `w-5 h-5`).
 - **Sub-menus:** a nav item may carry one level of sub-items (`children`: mailbox folders, saved views). They are
   **closed by default** and open under their parent only while the parent or one of its sub-items is active; choosing
-  another item closes them (no manual toggle, no state to remember). Sub-items are text only, indented on a thin
-  `border-divider` guide, `h-7`: no icon, no colour dot, no count (the menu stays neutral; counts and colours live in the
-  page). The parent shows a chevron and keeps `text-contrast` while a sub-item holds the active fill. The `w-14` rail,
+  another item closes them (no manual toggle, no state to remember). Sub-items are indented on a thin
+  `border-divider` guide, `h-7`, with an optional grey `w-3.5` icon (all sub-items of a parent get one, or none): no
+  colour dot, no count (the menu stays neutral; counts and colours live in the page). The parent shows a chevron and keeps `text-contrast` while a sub-item holds the active fill. The `w-14` rail,
   widths below `lg` and phones never show sub-items: pages read `useAppShell().submenuVisible` and offer the same choice
   in their toolbar (a `CustomSelect`) when it is false.
 - **Title and toolbar: two layouts, pick one per page.** (a) Title on its own row, toolbar below (`PageTitle` +
