@@ -93,7 +93,10 @@ export function AppShell({
   sections: ShellNavSection[];
   /** Currently active item id (or route path). */
   activeId: string;
-  /** Callback when a tab is clicked (optional if items use `href` routing). */
+  /**
+   * Called with the item id when an item is clicked. Items with `href` stay `next/link` links either way, so use it to
+   * react to a click (close a sheet, track), not to route: give page items an `href` (`shell-nav-href`).
+   */
   onSelect?: (id: string) => void;
   /** Optional highlighted CTA button at the top of the sidebar (e.g. Slicer launcher). */
   primaryCta?: {
@@ -204,11 +207,12 @@ export function AppShell({
       </>
     );
 
-    if (item.href && !onSelect) {
+    if (item.href) {
       return (
         <Link
           key={item.id}
           href={item.href}
+          onClick={() => onSelect?.(item.id)}
           target={item.external ? "_blank" : undefined}
           rel={item.external ? "noopener noreferrer" : undefined}
           aria-current={active ? "page" : undefined}
@@ -273,8 +277,8 @@ export function AppShell({
           }`;
           return (
             <li key={child.id}>
-              {child.href && !onSelect ? (
-                <Link href={child.href} aria-current={active ? "page" : undefined} title={child.label} className={cls}>
+              {child.href ? (
+                <Link href={child.href} onClick={() => onSelect?.(child.id)} aria-current={active ? "page" : undefined} title={child.label} className={cls}>
                   {child.icon && <Icon name={child.icon} className="w-3.5 h-3.5 shrink-0" />}
                   <span className="truncate">{child.label}</span>
                 </Link>
@@ -324,9 +328,10 @@ export function AppShell({
                   collapsed ? "justify-center" : "justify-center lg:justify-between lg:pl-1.5"
                 }`}
               >
-                {firstItem?.href && !onSelect ? (
+                {firstItem?.href ? (
                   <Link
                     href={firstItem.href}
+                    onClick={() => onSelect?.(firstItem.id)}
                     className={`min-w-0 items-center gap-2 text-left ${collapsed ? "hidden" : "flex"}`}
                     aria-label={productName}
                   >
@@ -491,12 +496,15 @@ export function AppShell({
                     const cls = `flex items-center gap-2.5 h-10 px-3 rounded-card text-label font-medium transition ${
                       active ? "bg-raised text-contrast" : "bg-field text-body hover:bg-raised hover:text-contrast"
                     }`;
-                    if (item.href && !onSelect) {
+                    if (item.href) {
                       return (
                         <Link
                           key={item.id}
                           href={item.href}
-                          onClick={() => setMoreOpen(false)}
+                          onClick={() => {
+                            onSelect?.(item.id);
+                            setMoreOpen(false);
+                          }}
                           className={cls}
                         >
                           {item.icon && <Icon name={item.icon} className="w-4 h-4 text-muted shrink-0" />}

@@ -112,3 +112,53 @@ test("icon-alias: mail and inbox are real icons; email, envelope and incoming ar
   assert.deepEqual(r.hard.filter((h) => h.rule === "icon-alias").map((h) => h.line), [3, 4, 5]);
   rmSync(dir, { recursive: true });
 });
+
+/** Writes { path: code } into a temp app and returns [rule, file, line] hits of the shell rules. */
+const shellLint = (files, only) => {
+  const dir = mkdtempSync(join(tmpdir(), "semi-lint-"));
+  for (const [p, code] of Object.entries(files)) {
+    mkdirSync(join(dir, p, ".."), { recursive: true });
+    writeFileSync(join(dir, p), code);
+  }
+  const paths = (only || Object.keys(files)).map((p) => join(dir, p));
+  const rules = ["app-shell-in-page", "shell-gate", "shell-nav-href", "boot-loader-place"];
+  const r = scan(paths, {}, dir).hits.filter((h) => rules.includes(h.rule)).map((h) => [h.rule, h.file, h.line]);
+  rmSync(dir, { recursive: true });
+  return r;
+};
+
+const SHELL = 'import { AppShell } from "@semi/ui";\nexport function Shell({ children }) {\n  return <AppShell sections={S} activeId="a">{children}</AppShell>;\n}\n';
+
+test("#23 app-shell-in-page: AppShell in a layout is fine; in a page, or a component a page imports, is not", () => {
+  assert.deepEqual(shellLint({ "app/layout.tsx": SHELL, "app/page.tsx": "export default function P() { return <p>x</p>; }\n" }), []);
+  assert.deepEqual(shellLint({ "app/page.tsx": SHELL }), [["app-shell-in-page", "app/page.tsx", 3]]);
+  const viaImport = { "app/components/Shell.tsx": SHELL, "app/orders/page.tsx": 'import { Shell } from "../components/Shell";\nexport default () => <Shell>x</Shell>;\n' };
+  assert.deepEqual(shellLint(viaImport), [["app-shell-in-page", "app/orders/page.tsx", 1]]);
+  // --files mode: only the page is linted, the imported file is still read from disk.
+  assert.deepEqual(shellLint(viaImport, ["app/orders/page.tsx"]), [["app-shell-in-page", "app/orders/page.tsx", 1]]);
+  const alias = { "src/components/Shell.tsx": SHELL, "app/page.tsx": 'import { Shell } from "@/components/Shell";\nexport default () => <Shell>x</Shell>;\n' };
+  assert.deepEqual(shellLint(alias), [["app-shell-in-page", "app/page.tsx", 1]]);
+});
+
+test("#23 shell-gate: an early full-page skeleton before AppShell is flagged, BootLoader is not", () => {
+  const gate = (el) => `export function Shell({ children }) {\n  if (!ready) return ${el};\n  return <AppShell sections={S}>{children}</AppShell>;\n}\n`;
+  assert.deepEqual(shellLint({ "app/layout.tsx": gate("<PageSkeleton />") }), [["shell-gate", "app/layout.tsx", 2]]);
+  assert.deepEqual(shellLint({ "app/layout.tsx": gate("(\n    <SkeletonGrid />\n  )") }), [["shell-gate", "app/layout.tsx", 2]]);
+  assert.deepEqual(shellLint({ "app/layout.tsx": gate("<BootLoader />") }), []);
+  // A skeleton in a file without AppShell (a loading.tsx) is the right place.
+  assert.deepEqual(shellLint({ "app/loading.tsx": "export default function L() { return <PageSkeleton />; }\n" }), []);
+});
+
+test("#23 shell-nav-href: AppShell onSelect that routes is flagged, href items and in-page onSelect are not", () => {
+  assert.deepEqual(shellLint({ "app/layout.tsx": "<AppShell sections={S} onSelect={(id) => router.push(hrefOf(id))}>{c}</AppShell>\n" }), [["shell-nav-href", "app/layout.tsx", 1]]);
+  assert.deepEqual(shellLint({ "app/layout.tsx": "const go = (id) => {\n  router.replace(`/${id}`);\n};\n<AppShell sections={S} onSelect={go}>{c}</AppShell>\n" }), [["shell-nav-href", "app/layout.tsx", 4]]);
+  assert.deepEqual(shellLint({ "app/layout.tsx": "<AppShell sections={S} onSelect={(id) => setFolder(id)}>{c}</AppShell>\n" }), []);
+  assert.deepEqual(shellLint({ "app/layout.tsx": "<AppShell sections={S} activeId={a}>{c}</AppShell>\n" }), []);
+});
+
+test("#24 boot-loader-place: BootLoader in a layout gate is fine; in a page, a loading.tsx or AppShell content is not", () => {
+  assert.deepEqual(shellLint({ "app/(app)/layout.tsx": "if (!session) return <BootLoader />;\nreturn <AppShell sections={S}>{children}</AppShell>;\n" }), []);
+  assert.deepEqual(shellLint({ "app/page.tsx": "export default () => <BootLoader />;\n" }), [["boot-loader-place", "app/page.tsx", 1]]);
+  assert.deepEqual(shellLint({ "app/loading.tsx": "export default () => <BootLoader />;\n" }), [["boot-loader-place", "app/loading.tsx", 1]]);
+  assert.deepEqual(shellLint({ "app/layout.tsx": "<AppShell sections={S} footer={() => <X />}>\n  {ready ? children : <BootLoader />}\n</AppShell>\n" }), [["boot-loader-place", "app/layout.tsx", 2]]);
+});

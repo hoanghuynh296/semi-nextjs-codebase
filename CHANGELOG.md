@@ -4,6 +4,23 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.25.0] - 2026-11-16
+
+### Added
+- **`BootLoader`** (`Skeleton.tsx`, #24): the boot / session gate before the app knows its layout, once in the root or route-group layout. A full-viewport `bg-app` with a centred `Spinner` (`text-muted`), no visible text (`label` for screen readers, locale `booting`), shown after `delay` (300 ms) and stopped under reduced motion. It is the only centred spinner (§13b). Prefer a server-side session check, which needs no gate.
+- **Shell lint rules** (#23, #24), ratchet (existing hits go into the baseline with `--update-baseline`):
+  - `app-shell-in-page`: a `page.tsx` that renders `AppShell` or imports a module that does (relative and `@/` imports).
+  - `shell-gate`: an early `return <PageSkeleton | Skeleton… | Loading` in a file that renders `AppShell`.
+  - `shell-nav-href`: `AppShell onSelect` whose handler calls `router.push` / `router.replace`.
+  - `boot-loader-place`: `BootLoader` in a page, a `loading.tsx` or inside `<AppShell>` content.
+- App shell doc examples `boot-gate` (session gate in the layout) and `loading` (route `loading.tsx` inside the shell).
+
+### Changed
+- **`AppShell` / `MobileTabBar`**: items (and sub-items, the logo link and the phone menu sheet) with `href` render `next/link` even when `onSelect` is set; `onSelect` then fires as a click notification. Before, any `onSelect` turned every item into a button. Apps that `router.push` the same href in `onSelect` keep working (a no-op second navigation); remove that call and let the link route.
+
+### Migration
+- No code migration. Run `npx semi-lint`: if the new rules report hits, either fix them (move `AppShell` into `app/(app)/layout.tsx`, add a `loading.tsx`, use `BootLoader` for the session gate, put `href` on page items) or run `npx semi-lint --update-baseline` to record them as debt.
+
 ## [0.24.0] - 2026-11-14
 
 ### Added

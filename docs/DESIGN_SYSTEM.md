@@ -331,6 +331,11 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   left **Panel Menu** (`w-52`, or `w-14` collapsed, toggled via the `sidebar` icon button) and a right **Panel
   Content** (`bg-app`) holding a full-width content container (`max-w-[1440px] px-4 sm:px-6`). Phones (`< md`) use a
   bottom tab bar with the same tabs (icons `w-5 h-5`).
+- **Shell lifecycle:** `AppShell` renders once in the root or a route-group `layout.tsx`, so it stays mounted while
+  people navigate; a page renders only its content, never `AppShell` or a component that renders it
+  (`app-shell-in-page`). Page items carry `href` and stay `next/link` links even when `onSelect` is set (`onSelect`
+  then only reports the click); never route with `onSelect` + `router.push` (`shell-nav-href`). The session check runs
+  once, in the layout (best on the server), never per page; loading is §13b.
 - **Sub-menus:** a nav item may carry one level of sub-items (`children`: mailbox folders, saved views). They are
   **closed by default** and open under their parent only while the parent or one of its sub-items is active; choosing
   another item closes them (no manual toggle, no state to remember). Sub-items are indented on a thin
@@ -458,7 +463,15 @@ useful until the job ends (upload before printing, import, firmware update, paym
 `const task = startTask({ label, step, value, timer, onCancel })`, `task.update({ value })`, `task.done()` /
 `task.fail(title)` (closes and shows a danger toast), with `<TaskHost />` mounted once in the root layout beside
 `<ToastHost />` / `<ConfirmHost />`. One task at a time; Cancel and Escape only when `onCancel` is set.
-One exception: a list a form field fetches by itself in the background shows one small `role="status"` line under that
+**Before the shell exists (boot):** while the app does not yet know its layout (session, auth, brand / theme boot)
+there is no shape to show, so a page skeleton would draw a page that may never appear (a redirect to login flashes
+it). Prefer a server-side check (a Next.js proxy redirect or an async server layout), which needs no gate. A client-only
+app renders `<BootLoader />` once in the root or route-group layout: the one centred spinner (`bg-app`, `Spinner` in
+`text-muted`, no visible text, after a 300 ms `delay`, still under reduced motion). Inside the shell, loading is
+skeletons: a route `loading.tsx` beside the layout shows `PageSkeleton` in the content area only. Never gate
+`AppShell` behind a skeleton (`shell-gate`), never `BootLoader` in a page, a `loading.tsx` or shell content
+(`boot-loader-place`).
+Another exception: a list a form field fetches by itself in the background shows one small `role="status"` line under that
 field while it loads: a `w-3 h-3` spinner + "Đang tải …" in `text-label text-gray-500` (the text sits in the
 `role="status"` element, which the lint allows), gone when done; a failed fetch stays silent.
 
@@ -540,7 +553,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `Icon.tsx` | `Icon`, `ICONS`, `IconName`, `IconTile`, `TILE_TONES`, `TONE_TEXT`, `TileTone` |
 | `AppHeader.tsx` | `AppHeader` (stand-alone app top bar, §4b) |
 | `PageActions.tsx` | `PageActions` (a tab's header buttons), `PageActionsSlot` + `PageActionsProvider` |
-| `Skeleton.tsx` | `Skeleton`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton`, `Loading` (§13b) |
+| `Skeleton.tsx` | `Skeleton`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton`, `Loading`, `BootLoader` (boot / session gate only) (§13b) |
 | `confirmDialog.tsx` | `confirmDialog()`, `ConfirmHost`, `ConfirmOptions` (§14) |
 | `TaskHost.tsx` | `startTask()`, `TaskHost`, `TaskOptions`, `TaskHandle` (blocking task overlay, §13b) |
 | `ThemeProvider.tsx` | `ThemeProvider`, `useTheme`, `ThemeToggle` (§2) |
@@ -687,6 +700,7 @@ and never override the variables (`brand-override`).
 - Raw or arbitrary radii (`rounded-lg`, `rounded-[10px]`) instead of the style tokens; `font-mono` for numbers (fine on `<code>`, `<pre>`, `CodeBlock`, `Terminal` and `textarea` / `contentEditable` code editors); coloured icon tiles in front of every card title; one decorative icon colour per card (`decorative-icon-tones`, §19).
 - Emoji or unicode pictograms as icons; filled glyphs mixed with stroke icons; stroke 2+; new inline `<svg>` paths.
 - Native `<select>`, `type="date"`, `type="number"`, `window.confirm` / `alert`.
+- `AppShell` in a page or in a component a page imports (`app-shell-in-page`); a shell gated behind a page skeleton (`shell-gate`); sidebar routing through `onSelect` + `router.push` instead of item `href` (`shell-nav-href`); `BootLoader` in a page, a `loading.tsx` or shell content (`boot-loader-place`).
 - "Đang tải…" text or a page spinner instead of a skeleton (`loading-text`). A step label of a progress bar (`Progress label`, a call with a `fraction` / `value`), text in a `role="status"` / `role="progressbar"` element and a `TaskHost` label are fine.
 - A Home button in an app header; subtitles under page titles.
 - Coloured nav icons or count badges in the menu; chips or tags with different background colours.

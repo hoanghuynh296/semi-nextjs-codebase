@@ -1,4 +1,4 @@
-# Semi Design System (@semi/ui v0.24.0)
+# Semi Design System (@semi/ui v0.25.0)
 
 > The shared UI of every Semi app: semantic tokens that work in light and dark mode, React components (Next.js, Tailwind CSS 4) and the rules agents follow. Every component has a page with live examples and a markdown twin for agents.
 
@@ -8,7 +8,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 ## Machine-readable
 
-- [components.json](./components.json): all 122 components, hooks and constants with props, summaries and their doc page
+- [components.json](./components.json): all 123 components, hooks and constants with props, summaries and their doc page
 - [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
@@ -110,7 +110,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Alert](./components/alert/) ([markdown](./docs/components/alert.md)): A message that stays on the page: info, success, warning, danger, with a title, an action and an optional dismiss. Components: Alert.
 - [Empty state](./components/empty-state/) ([markdown](./docs/components/empty-state.md)): What an empty list or page shows: an icon, one short title, a description and the action that fills it. Components: EmptyState.
 - [Progress](./components/progress/) ([markdown](./docs/components/progress.md)): A determinate bar with value, or an indeterminate one when the end is unknown; tones for success and danger. Components: Progress.
-- [Skeleton](./components/skeleton/) ([markdown](./docs/components/skeleton.md)): Shimmer placeholders while content loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton; Loading announces the region. Never “Đang tải…” text. Components: Skeleton, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton, Loading.
+- [Skeleton](./components/skeleton/) ([markdown](./docs/components/skeleton.md)): Shimmer placeholders while content loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton; Loading announces the region. Never “Đang tải…” text. BootLoader is the one centred spinner, for the boot / session gate before the shell exists. Components: Skeleton, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton, Loading, BootLoader.
 - [Task host](./components/task-host/) ([markdown](./docs/components/task-host.md)): startTask() shows one blocking overlay for a job the user must wait for: label, current step, progress, elapsed time and an optional Cancel. Mount TaskHost once in the root layout, next to ToastHost and ConfirmHost. Components: TaskHost.
 
 ### AI
@@ -219,7 +219,8 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
   - `Icon` (stroke 1.75, `w-4 h-4`), `IconTile` (`size="sm|md|lg"`). Follow semantic icon mapping in `docs/ICONS.md` (e.g. `trash` for delete, `close` for dialog dismiss, `refresh` for sync, `sliders` for parameters, `user` for profiles, `filter` for lists, `sun`/`moon` for theme). New icons go into `ICONS` in `@semi/ui` (never inline `<svg><path>`; no ✕ ✓ ✗ glyphs).
   - `Pills`, `Chip` (+ `tone`), `Badge` (`tone="purple|blue|emerald|amber|rose|sky|..."`), `SearchInput`, `CustomSelect` (toolbar default vs `variant="field"` in forms), `CustomCombobox`, `DatePicker`, `Pagination`, `NumberInput` (+ `NumPadPopup`). Never native `<select>`, `type="date"`, `type="number"`.
   - `AppHeader` (stand-alone tool/3D app top bar), `PageActions`, `SidePanel`, `RefreshButton`, `ExternalLink`, `Markdown`.
-  - Loading: `Skeleton` / `SkeletonCard` / `SkeletonGrid` / `SkeletonRows` / `PageSkeleton`; no "Đang tải…" text or page spinners.
+  - Loading: `Skeleton` / `SkeletonCard` / `SkeletonGrid` / `SkeletonRows` / `PageSkeleton`; no "Đang tải…" text or page spinners. Only exception: `BootLoader` (below).
+  - Shell and loading: `AppShell` once in `app/(app)/layout.tsx` (never in a page, `app-shell-in-page`); items routed by `href` (`shell-nav-href`); the session check once in that layout, best on the server; before the layout is known `if (!session) return <BootLoader />` (centred spinner, layouts only, `boot-loader-place`); content loading is a `loading.tsx` beside the layout with `PageSkeleton`, never a skeleton around the shell (`shell-gate`).
   - Confirmations: `confirmDialog({ title, message, confirmLabel, tone, icon })` + `<ConfirmHost />`, never `window.confirm`.
   - AI chat (§14b): `<AIChat messages busy onSend onStop onRetry onNewChat empty toolbar />` (or `ChatPanel` > `ChatView` > `ChatList` + `ChatComposer` with `UserMessage` / `AssistantMessage` / `ChatError` / `ChatThinking` / `ChatIntro` / `ChatSuggestion`). UI only: the app keeps messages and streaming; the provider → model → effort chips are `toolbar={<ChatModelPicker providers models efforts … />}`. Never a local composer or bubbles.
 - **Style Constants (`@semi/ui/styles`):**
@@ -244,6 +245,7 @@ type scale are the product's (`data-density`, `data-type-scale` on `<html>`, `se
 - **No Card class override (`card-class-override`):** `<Card>` (`interactive`, `active`) owns its surface: no `bg-*` / `shadow-*` in its className.
 - **Surfaces & Shadows:** Gradients, glow, `shadow-[0_0_…]`, `shadow-sm/md/lg` are banned. Cards are separated by borders (`border-line`); their only resting shadow is `shadow-card`, which the style sets (none in Flat, soft in Soft, hard offset in Sharp).
 - **Typography:** `font-bold`, `text-[9|10px]`, `text-xs/sm`, uppercase labels, ALL CAPS buttons.
+- **Shell structure (`app-shell-in-page`, `shell-gate`, `shell-nav-href`, `boot-loader-place`):** AppShell only from a layout; no `if (!ready) return <PageSkeleton />` before it; `href` on page items, not `onSelect` + `router.push`; `BootLoader` only as the layout's boot gate.
 - **Radii (`radius-token`):** `rounded`, `rounded-sm/md/lg/xl/2xl`, `rounded-[Npx]` (they ignore the app's style); per-style classes or `[data-style=…]` selectors in an app.
 - **Navigation & Layout:** fixed `border-r` sidebars or `-translate-x-full` hamburger drawers (use `AppShell` + `MobileTabBar`) · local `ui.tsx` wrapper barrels (`PageHeader`, `Select`, `Input`, `Button`, `Modal`): use `Button`, `Field` + `Input`, `CustomSelect`, `Modal`, `EmptyState` from `@semi/ui`.
 - **Icons & Controls:** emoji / ✕ ✓ glyphs, stroke 2+, inline `<path>` · native `<select>` / date / number inputs, `window.confirm` · "Đang tải…" text (a progress step label or a `role="status"` line is fine) · Home button in app headers, page subtitles, text buttons on the page title row.
@@ -252,7 +254,7 @@ type scale are the product's (`data-density`, `data-type-scale` on `<html>`, `se
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (122)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (123)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
@@ -305,7 +307,7 @@ type scale are the product's (`data-density`, `data-type-scale` on `<html>`, `se
 - `SearchInput`: `SearchInput`
 - `Separator`: `Separator`
 - `SidePanel`: `SidePanelToggle`, `SidePanel`
-- `Skeleton`: `Skeleton`, `Loading`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton`
+- `Skeleton`: `Skeleton`, `Loading`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton`, `BootLoader`
 - `Slider`: `Slider`
 - `SubpageToolbar`: `SubpageToolbar`
 - `Table`: `Table`, `THead`, `TBody`, `TR`, `TH`, `TD`
@@ -660,6 +662,11 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   left **Panel Menu** (`w-52`, or `w-14` collapsed, toggled via the `sidebar` icon button) and a right **Panel
   Content** (`bg-app`) holding a full-width content container (`max-w-[1440px] px-4 sm:px-6`). Phones (`< md`) use a
   bottom tab bar with the same tabs (icons `w-5 h-5`).
+- **Shell lifecycle:** `AppShell` renders once in the root or a route-group `layout.tsx`, so it stays mounted while
+  people navigate; a page renders only its content, never `AppShell` or a component that renders it
+  (`app-shell-in-page`). Page items carry `href` and stay `next/link` links even when `onSelect` is set (`onSelect`
+  then only reports the click); never route with `onSelect` + `router.push` (`shell-nav-href`). The session check runs
+  once, in the layout (best on the server), never per page; loading is §13b.
 - **Sub-menus:** a nav item may carry one level of sub-items (`children`: mailbox folders, saved views). They are
   **closed by default** and open under their parent only while the parent or one of its sub-items is active; choosing
   another item closes them (no manual toggle, no state to remember). Sub-items are indented on a thin
@@ -787,7 +794,15 @@ useful until the job ends (upload before printing, import, firmware update, paym
 `const task = startTask({ label, step, value, timer, onCancel })`, `task.update({ value })`, `task.done()` /
 `task.fail(title)` (closes and shows a danger toast), with `<TaskHost />` mounted once in the root layout beside
 `<ToastHost />` / `<ConfirmHost />`. One task at a time; Cancel and Escape only when `onCancel` is set.
-One exception: a list a form field fetches by itself in the background shows one small `role="status"` line under that
+**Before the shell exists (boot):** while the app does not yet know its layout (session, auth, brand / theme boot)
+there is no shape to show, so a page skeleton would draw a page that may never appear (a redirect to login flashes
+it). Prefer a server-side check (a Next.js proxy redirect or an async server layout), which needs no gate. A client-only
+app renders `<BootLoader />` once in the root or route-group layout: the one centred spinner (`bg-app`, `Spinner` in
+`text-muted`, no visible text, after a 300 ms `delay`, still under reduced motion). Inside the shell, loading is
+skeletons: a route `loading.tsx` beside the layout shows `PageSkeleton` in the content area only. Never gate
+`AppShell` behind a skeleton (`shell-gate`), never `BootLoader` in a page, a `loading.tsx` or shell content
+(`boot-loader-place`).
+Another exception: a list a form field fetches by itself in the background shows one small `role="status"` line under that
 field while it loads: a `w-3 h-3` spinner + "Đang tải …" in `text-label text-gray-500` (the text sits in the
 `role="status"` element, which the lint allows), gone when done; a failed fetch stays silent.
 
@@ -869,7 +884,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `Icon.tsx` | `Icon`, `ICONS`, `IconName`, `IconTile`, `TILE_TONES`, `TONE_TEXT`, `TileTone` |
 | `AppHeader.tsx` | `AppHeader` (stand-alone app top bar, §4b) |
 | `PageActions.tsx` | `PageActions` (a tab's header buttons), `PageActionsSlot` + `PageActionsProvider` |
-| `Skeleton.tsx` | `Skeleton`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton`, `Loading` (§13b) |
+| `Skeleton.tsx` | `Skeleton`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton`, `Loading`, `BootLoader` (boot / session gate only) (§13b) |
 | `confirmDialog.tsx` | `confirmDialog()`, `ConfirmHost`, `ConfirmOptions` (§14) |
 | `TaskHost.tsx` | `startTask()`, `TaskHost`, `TaskOptions`, `TaskHandle` (blocking task overlay, §13b) |
 | `ThemeProvider.tsx` | `ThemeProvider`, `useTheme`, `ThemeToggle` (§2) |
@@ -1016,6 +1031,7 @@ and never override the variables (`brand-override`).
 - Raw or arbitrary radii (`rounded-lg`, `rounded-[10px]`) instead of the style tokens; `font-mono` for numbers (fine on `<code>`, `<pre>`, `CodeBlock`, `Terminal` and `textarea` / `contentEditable` code editors); coloured icon tiles in front of every card title; one decorative icon colour per card (`decorative-icon-tones`, §19).
 - Emoji or unicode pictograms as icons; filled glyphs mixed with stroke icons; stroke 2+; new inline `<svg>` paths.
 - Native `<select>`, `type="date"`, `type="number"`, `window.confirm` / `alert`.
+- `AppShell` in a page or in a component a page imports (`app-shell-in-page`); a shell gated behind a page skeleton (`shell-gate`); sidebar routing through `onSelect` + `router.push` instead of item `href` (`shell-nav-href`); `BootLoader` in a page, a `loading.tsx` or shell content (`boot-loader-place`).
 - "Đang tải…" text or a page spinner instead of a skeleton (`loading-text`). A step label of a progress bar (`Progress label`, a call with a `fraction` / `value`), text in a `role="status"` / `role="progressbar"` element and a `TaskHost` label are fine.
 - A Home button in an app header; subtitles under page titles.
 - Coloured nav icons or count badges in the menu; chips or tags with different background colours.
@@ -1945,7 +1961,7 @@ with `data-style` re-styles only its subtree (used by Storybook previews), not s
 All web UI here follows the **Semi Design System** (`@semi/ui`, repo `https://github.com/hoanghuynh296/semi-nextjs-codebase`). `npx semi-lint` enforces most of this; the full rules are `node_modules/@semi/ui/docs/QUICK_REF.md` (details in `docs/DESIGN_SYSTEM.md`).
 
 1. **Ask Semi before writing UI.** Find the component for each need with the `semi` MCP tools (`semi_search` → `semi_docs` → `semi_example`; `semi_block` for whole pages; `semi_props` for props) or the terminal (`npx semi search "bảng có sắp xếp"`, `npx semi docs DataTable`, `npx semi example data-table`, `npx semi add dashboard`). They answer from the installed `@semi/ui`. Read *When to use*, *Use something else when* and *Accessibility*, then start from an example.
-2. **Compose, never re-create.** Import from `@semi/ui` and `@semi/ui/styles` directly. No local wrappers (`components/ui.tsx`), no raw `<select>`, `<table>`, `<dialog>`, `type="date"`, `type="number"`, `window.confirm` / `alert`, no inline `<svg>` or glyph icons (`<Icon name>`, mapping in `docs/ICONS.md`). Every AI conversation is `AIChat`; agent work uses `Reasoning`, `ToolCall`, `TaskList`, `Terminal`, `Sources`; an outward-facing, paid or irreversible agent action waits for `ActionConfirmation`. Pages sit in `AppShell` (or `AppHeader` for a one-screen tool) with `PageTitle` (or the title on the toolbar row: `SubpageToolbar title`); sub-views of one area go in nav `children` (closed until the parent is chosen, optional grey icon, no colour or count; check `useAppShell().submenuVisible` and add a page picker when false); dialogs are `Modal` / `Drawer` / `confirmDialog`; loading is `Skeleton`, never "Đang tải…" text.
+2. **Compose, never re-create.** Import from `@semi/ui` and `@semi/ui/styles` directly. No local wrappers (`components/ui.tsx`), no raw `<select>`, `<table>`, `<dialog>`, `type="date"`, `type="number"`, `window.confirm` / `alert`, no inline `<svg>` or glyph icons (`<Icon name>`, mapping in `docs/ICONS.md`). Every AI conversation is `AIChat`; agent work uses `Reasoning`, `ToolCall`, `TaskList`, `Terminal`, `Sources`; an outward-facing, paid or irreversible agent action waits for `ActionConfirmation`. Pages sit in `AppShell` (or `AppHeader` for a one-screen tool) with `PageTitle` (or the title on the toolbar row: `SubpageToolbar title`); sub-views of one area go in nav `children` (closed until the parent is chosen, optional grey icon, no colour or count; check `useAppShell().submenuVisible` and add a page picker when false); dialogs are `Modal` / `Drawer` / `confirmDialog`; loading is `Skeleton`, never "Đang tải…" text. `AppShell` renders once in a `layout.tsx` (never from a page), its items route by `href` (not `onSelect` + `router.push`), the session check runs once in that layout (best on the server) with `BootLoader` as the only centred spinner, and content loading is a `loading.tsx` with `PageSkeleton` inside the shell, never a skeleton gate around it.
 3. **Tokens only** (dual theme, any brand, any style):
    - Surfaces and text: `bg-canvas|app|panel|field|raised`, `text-contrast|body|muted`, `border-line|divider`; status `bg-*-bg border-*-border text-*-fg` (danger, success, warning, info). Accent: `bg-accent text-on-accent` (or `BTN_PRIMARY`), `text-accent-fg`, `bg-accent-subtle`, `border-accent-line`, `ring-focus`. Never physical colours (`bg-white`, `text-slate-900`, `text-amber-600 dark:text-amber-400`), arbitrary colours (`bg-[#…]`), `primary-N/alpha` or `bg-primary-N` fills (`primary-fill`), gradients or glow shadows.
    - Type scale only: `text-caption|label|ui|ui-lg|title|title-lg`, `text-kpi`, `text-heading`, `text-display`; `font-medium` / `font-semibold`, titles and big numbers `font-title` / `font-figure`; `tabular-nums` for numbers; sentence case.
@@ -4660,6 +4676,64 @@ export default function Shell({ children }: { children: React.ReactNode }) {
 }
 ```
 
+### Session gate in the layout
+
+A client-only app checks the session once in the route-group layout and shows BootLoader until it knows whether to render the shell or go to login.
+
+```tsx
+"use client";
+
+// app/(app)/layout.tsx of a client-only app: the session check runs once here, never per page.
+// With a server session (proxy / async server layout) drop the gate: render AppShell straight away.
+import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { AppShell, BootLoader, type ShellNavSection } from "@semi/ui";
+
+const SECTIONS: ShellNavSection[] = [
+  {
+    label: "Dữ liệu",
+    items: [
+      { id: "search", label: "Tìm kiếm", icon: "search", href: "/search" },
+      { id: "companies", label: "Doanh nghiệp", icon: "store", href: "/companies" },
+      { id: "import", label: "Nhập file", icon: "upload", href: "/import" },
+    ],
+  },
+];
+
+export default function AppLayout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const path = usePathname();
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    fetch("/api/session")
+      .then((r) => (r.ok ? setReady(true) : router.replace("/login")))
+      .catch(() => router.replace("/login"));
+  }, [router]);
+
+  // Before the layout is known: a centred spinner, not a page skeleton that may never appear.
+  if (!ready) return <BootLoader />;
+  const active = SECTIONS[0].items.find((i) => path.startsWith(i.href ?? ""))?.id ?? "search";
+  return (
+    <AppShell productName="Data Hub" logoIcon="database" sections={SECTIONS} activeId={active}>
+      {children}
+    </AppShell>
+  );
+}
+```
+
+### Content loading
+
+A route loading.tsx beside the layout: the shell stays mounted and only the content area shimmers.
+
+```tsx
+// app/(app)/loading.tsx: Next.js shows it inside the layout, so the shell stays and only the content shimmers.
+import { PageSkeleton } from "@semi/ui";
+
+export default function Loading() {
+  return <PageSkeleton />;
+}
+```
+
 ### Sub-items
 
 A mailbox with folders as sub-items, and the page's own folder picker when the sidebar cannot show them.
@@ -4732,7 +4806,7 @@ export default function AppShellSubmenu() {
 | `logo` | `React.ReactNode` |  | Optional custom logo element replacing the default brand tile. |
 | `sections` * | `ShellNavSection[]` |  | Navigation groups separated by thin dividers in the left panel. |
 | `activeId` * | `string` |  | Currently active item id (or route path). |
-| `onSelect` | `(id: string) => void` |  | Callback when a tab is clicked (optional if items use `href` routing). |
+| `onSelect` | `(id: string) => void` |  | Called with the item id when an item is clicked. Items with `href` stay `next/link` links either way, so use it to react to a click (close a sheet, track), not to route: give page items an `href` (`shell-nav-href`). |
 | `primaryCta` | `{ label: string; icon: IconName; href?: string; external?: boolean; onClick?: () => void; }` |  | Optional highlighted CTA button at the top of the sidebar (e.g. Slicer launcher). |
 | `footer` | `React.ReactNode \| ((state: { collapsed: boolean }) => React.ReactNode)` |  | Footer content at the bottom of the sidebar. Receives `{ collapsed }` so it can hide text in rail mode. |
 | `mobileTabIds` | `string[]` |  | Up to 5 item ids to pin on the phone bottom tab bar (defaults to the first 5 items). |
@@ -4759,7 +4833,8 @@ export default function AppShellSubmenu() {
 ## Notes
 
 - Render it once in the root layout (or a route group layout); pages render only their content.
-- Use next/link hrefs for items; onSelect is for in-page sections.
+- Page items take an href: they stay next/link links even when onSelect is set (onSelect then only reports the click). Never route with onSelect + router.push (shell-nav-href).
+- Never gate the shell behind a page skeleton (shell-gate): a route loading.tsx next to the layout shimmers the content only, and the boot / session check before the layout is known renders BootLoader once in the layout. A page never renders AppShell or imports a component that does (app-shell-in-page).
 - MobileTabBar is used by AppShell; render it yourself only in a custom shell.
 - Sub-items (children) are closed by default: they open under their parent while the parent or one of them is the activeId, and close when another item is chosen. One level only.
 - Sub-items take an optional grey icon (give every sub-item of a parent one, or none); no colour dot or count (the menu stays neutral, §4). Put counts and colours in the page.
@@ -7512,11 +7587,12 @@ Determinate or indeterminate progress bar (uploads, quotas, print progress).
 
 # Skeleton
 
-Shimmer placeholders while content loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton; Loading announces the region. Never “Đang tải…” text.
+Shimmer placeholders while content loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton; Loading announces the region. Never “Đang tải…” text. BootLoader is the one centred spinner, for the boot / session gate before the shell exists.
 
 ## When to use
 
 - Any content that is loading: show its shape.
+- BootLoader: before the app knows its layout (session, auth, boot), once in the root or route-group layout.
 
 ## Use something else when
 
@@ -7524,11 +7600,12 @@ Shimmer placeholders while content loads: Skeleton blocks, SkeletonCard, Skeleto
 |---|---|
 | An action in progress | Button loading or Spinner |
 | A known amount of work | Progress |
+| Loading inside the shell (a page, a tab, a list) | Skeleton* or a route loading.tsx with PageSkeleton, never BootLoader |
 
 ## Import
 
 ```tsx
-import { Skeleton, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton, Loading } from "@semi/ui";
+import { Skeleton, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton, Loading, BootLoader } from "@semi/ui";
 ```
 
 ## Examples
@@ -7637,9 +7714,26 @@ Wrapper that tells assistive tech the region is loading. `relative` keeps the ab
 | `className` | `string` | `""` |  |
 | `label` | `string` |  |  |
 
+### BootLoader
+
+Boot / session gate before the app knows its layout (login or shell), the one place a centred spinner is allowed
+(§13b). Render it once in the root or route-group layout, never inside AppShell content (`boot-loader-place`).
+Prefer a server-side session check (proxy / async layout), which needs no gate at all.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `label` | `string` |  | Screen-reader text (never shown). Defaults to the locale's "opening the app". |
+| `delay` | `number` | `300` | Milliseconds before the spinner appears, so a fast check shows only the background. |
+| `className` | `string` | `""` |  |
+
 ## Accessibility
 
 - Loading (and the Skeleton* groups with label) set role="status" + aria-busy so screen readers hear one message.
+- BootLoader is a role="status" region whose label (default: the locale's booting string) is for screen readers only.
+
+## Notes
+
+- BootLoader waits `delay` (300 ms) before the spinner shows, so a fast check flashes nothing; the spin stops under prefers-reduced-motion. Prefer a server-side session check, which needs no gate (see the App shell doc, "Session gate in the layout").
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/skeleton/ and the types in src/ -->
 

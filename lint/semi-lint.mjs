@@ -31,7 +31,7 @@
 //   }
 // A rule that the Semi docs add and that can be grepped belongs here too (change it in the semi repo, not per app).
 import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
-import { join, relative, resolve, sep } from "node:path";
+import { dirname, join, relative, resolve, sep } from "node:path";
 import { analyse } from "./classes.mjs";
 
 /** [id, regex, message] */
@@ -140,6 +140,27 @@ export const RATCHET = [
     null,
     "One decorative colour per card (iconTone green, sky, violet… in one file) is the generic AI look (§19): keep KPI and card icons neutral and give a colour only when it means a status.",
   ],
+  // Shell structure (issues #23, #24): file-level checks, see shellHits().
+  [
+    "app-shell-in-page",
+    null,
+    "AppShell renders once in a layout.tsx (root or route group), never from a page.tsx or a component a page imports: a per-page shell remounts the sidebar on every click (see examples/app-shell/layout.tsx).",
+  ],
+  [
+    "shell-gate",
+    null,
+    "Do not gate AppShell behind a full-page skeleton: content loading belongs inside the shell (a route loading.tsx or Suspense), and the boot / session check before the layout is known uses BootLoader once in the layout (§13b).",
+  ],
+  [
+    "shell-nav-href",
+    null,
+    "Sidebar items that route between pages use href (next/link), not onSelect + router.push / router.replace: links prefetch, open in a new tab and keep the shell mounted.",
+  ],
+  [
+    "boot-loader-place",
+    null,
+    "BootLoader is only for the boot / session gate in a layout, before the shell exists. Inside the shell (a page, a loading.tsx, AppShell content) show the content's shape with skeletons (§13b).",
+  ],
 ];
 /** Rules whose `skip` may name files with a reason ({ path: reason }): illustration and data colours, not UI chrome. */
 export const CONTENT_RULES = ["literal-colour-value", "inline-svg-path", "no-literal-palette"];
@@ -240,6 +261,63 @@ export function filesToScan(cfg, cwd, only) {
 
 const isComment = (line) => /^\s*(\/\/|\*|\/\*)/.test(line);
 
+// ---- Shell structure (issues #23, #24) ----
+const RENDERS_SHELL = /<AppShell\b/;
+const routeFile = (p, kind) => new RegExp(`(?:^|[\\\\/])${kind}\\.(?:tsx|jsx|ts|js)$`).test(p);
+const lineAt = (src, index) => src.slice(0, index).split("\n").length;
+const IMPORT_RX = /^\s*import\s[^;]*?\bfrom\s*["']([^"']+)["']/gm;
+const EXTS = [".tsx", ".ts", ".jsx", ".js"];
+
+/** The local file an import specifier points at (relative or the "@/" alias at the app root or src/), or null. */
+function resolveImport(spec, from, cwd) {
+  const bases = spec.startsWith(".") ? [resolve(dirname(from), spec)] : spec.startsWith("@/") ? [resolve(cwd, spec.slice(2)), resolve(cwd, "src", spec.slice(2))] : [];
+  for (const b of bases) {
+    for (const c of [b, ...EXTS.map((e) => b + e), ...EXTS.map((e) => join(b, "index" + e))]) {
+      if (existsSync(c) && statSync(c).isFile()) return c;
+    }
+  }
+  return null;
+}
+
+/** Ratchet hits [rule, line] of the shell-structure rules for one source file. */
+export function shellHits(p, src, cwd) {
+  const out = [];
+  const shell = RENDERS_SHELL.test(src);
+  // app-shell-in-page: a page renders AppShell itself, or imports a (non-layout) module that does.
+  if (routeFile(p, "page")) {
+    if (shell) out.push(["app-shell-in-page", lineAt(src, src.search(RENDERS_SHELL))]);
+    else {
+      for (const m of src.matchAll(IMPORT_RX)) {
+        const target = resolveImport(m[1], p, cwd);
+        if (target && !routeFile(target, "layout") && RENDERS_SHELL.test(readFileSync(target, "utf8"))) out.push(["app-shell-in-page", lineAt(src, m.index + m[0].search(/\S/))]);
+      }
+    }
+  }
+  if (shell) {
+    // shell-gate: an early return of a page-sized placeholder in the file that renders AppShell.
+    for (const m of src.matchAll(/\breturn\s*\(?\s*<(PageSkeleton|Skeleton\w*|Loading)\b/g)) out.push(["shell-gate", lineAt(src, m.index)]);
+    // shell-nav-href: AppShell onSelect that routes (inline arrow, or a named handler in the same file).
+    for (const m of src.matchAll(/<AppShell\b[^>]*?\bonSelect=\{/g)) {
+      const at = m.index + m[0].length;
+      const body = src.slice(at, at + 400);
+      const named = /^\s*(\w+)\s*\}/.exec(body);
+      const routes = named
+        ? new RegExp(`(?:function\\s+${named[1]}\\b|\\b${named[1]}\\s*=)[\\s\\S]{0,400}?\\brouter\\.(?:push|replace)\\(`).test(src)
+        : /^[^}]*\brouter\.(?:push|replace)\(/.test(body);
+      if (routes) out.push(["shell-nav-href", lineAt(src, src.indexOf("onSelect=", m.index))]);
+    }
+  }
+  // boot-loader-place: BootLoader in a page / loading file, or inside <AppShell>…</AppShell>.
+  const inRoute = routeFile(p, "page") || routeFile(p, "loading");
+  for (const m of src.matchAll(/<BootLoader\b/g)) {
+    const before = src.slice(0, m.index);
+    const open = before.lastIndexOf("<AppShell");
+    const insideShell = open >= 0 && !before.slice(open).includes("</AppShell>") && src.indexOf("</AppShell>", m.index) >= 0;
+    if (inRoute || insideShell) out.push(["boot-loader-place", lineAt(src, m.index)]);
+  }
+  return out;
+}
+
 export function scan(paths, cfg, cwd) {
   const disabled = new Set(cfg.disable || []);
   const skip = cfg.skip || {};
@@ -269,6 +347,7 @@ export function scan(paths, cfg, cwd) {
       const tones = [...src.matchAll(/\biconTone=["'{]+(\w+)/g)];
       if (new Set(tones.map((m) => m[1])).size >= DECORATIVE_TONES) add("decorative-icon-tones", name, src.slice(0, tones[0].index).split("\n").length);
     }
+    for (const [id, line] of shellHits(p, src, cwd)) if (!skipped(id, name)) add(id, name, line);
     const rows = src.split(/\r?\n/);
     rows.forEach((raw, i) => {
       if (!raw.trim() || isComment(raw)) return;

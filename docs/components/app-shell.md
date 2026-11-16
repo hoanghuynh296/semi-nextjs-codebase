@@ -56,6 +56,64 @@ export default function Shell({ children }: { children: React.ReactNode }) {
 }
 ```
 
+### Session gate in the layout
+
+A client-only app checks the session once in the route-group layout and shows BootLoader until it knows whether to render the shell or go to login.
+
+```tsx
+"use client";
+
+// app/(app)/layout.tsx of a client-only app: the session check runs once here, never per page.
+// With a server session (proxy / async server layout) drop the gate: render AppShell straight away.
+import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { AppShell, BootLoader, type ShellNavSection } from "@semi/ui";
+
+const SECTIONS: ShellNavSection[] = [
+  {
+    label: "Dữ liệu",
+    items: [
+      { id: "search", label: "Tìm kiếm", icon: "search", href: "/search" },
+      { id: "companies", label: "Doanh nghiệp", icon: "store", href: "/companies" },
+      { id: "import", label: "Nhập file", icon: "upload", href: "/import" },
+    ],
+  },
+];
+
+export default function AppLayout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const path = usePathname();
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    fetch("/api/session")
+      .then((r) => (r.ok ? setReady(true) : router.replace("/login")))
+      .catch(() => router.replace("/login"));
+  }, [router]);
+
+  // Before the layout is known: a centred spinner, not a page skeleton that may never appear.
+  if (!ready) return <BootLoader />;
+  const active = SECTIONS[0].items.find((i) => path.startsWith(i.href ?? ""))?.id ?? "search";
+  return (
+    <AppShell productName="Data Hub" logoIcon="database" sections={SECTIONS} activeId={active}>
+      {children}
+    </AppShell>
+  );
+}
+```
+
+### Content loading
+
+A route loading.tsx beside the layout: the shell stays mounted and only the content area shimmers.
+
+```tsx
+// app/(app)/loading.tsx: Next.js shows it inside the layout, so the shell stays and only the content shimmers.
+import { PageSkeleton } from "@semi/ui";
+
+export default function Loading() {
+  return <PageSkeleton />;
+}
+```
+
 ### Sub-items
 
 A mailbox with folders as sub-items, and the page's own folder picker when the sidebar cannot show them.
@@ -128,7 +186,7 @@ export default function AppShellSubmenu() {
 | `logo` | `React.ReactNode` |  | Optional custom logo element replacing the default brand tile. |
 | `sections` * | `ShellNavSection[]` |  | Navigation groups separated by thin dividers in the left panel. |
 | `activeId` * | `string` |  | Currently active item id (or route path). |
-| `onSelect` | `(id: string) => void` |  | Callback when a tab is clicked (optional if items use `href` routing). |
+| `onSelect` | `(id: string) => void` |  | Called with the item id when an item is clicked. Items with `href` stay `next/link` links either way, so use it to react to a click (close a sheet, track), not to route: give page items an `href` (`shell-nav-href`). |
 | `primaryCta` | `{ label: string; icon: IconName; href?: string; external?: boolean; onClick?: () => void; }` |  | Optional highlighted CTA button at the top of the sidebar (e.g. Slicer launcher). |
 | `footer` | `React.ReactNode \| ((state: { collapsed: boolean }) => React.ReactNode)` |  | Footer content at the bottom of the sidebar. Receives `{ collapsed }` so it can hide text in rail mode. |
 | `mobileTabIds` | `string[]` |  | Up to 5 item ids to pin on the phone bottom tab bar (defaults to the first 5 items). |
@@ -155,7 +213,8 @@ export default function AppShellSubmenu() {
 ## Notes
 
 - Render it once in the root layout (or a route group layout); pages render only their content.
-- Use next/link hrefs for items; onSelect is for in-page sections.
+- Page items take an href: they stay next/link links even when onSelect is set (onSelect then only reports the click). Never route with onSelect + router.push (shell-nav-href).
+- Never gate the shell behind a page skeleton (shell-gate): a route loading.tsx next to the layout shimmers the content only, and the boot / session check before the layout is known renders BootLoader once in the layout. A page never renders AppShell or imports a component that does (app-shell-in-page).
 - MobileTabBar is used by AppShell; render it yourself only in a custom shell.
 - Sub-items (children) are closed by default: they open under their parent while the parent or one of them is the activeId, and close when another item is chosen. One level only.
 - Sub-items take an optional grey icon (give every sub-item of a parent one, or none); no colour dot or count (the menu stays neutral, §4). Put counts and colours in the page.

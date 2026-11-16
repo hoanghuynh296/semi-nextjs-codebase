@@ -3,6 +3,7 @@
 // Shimmer placeholders shown while a page or a list loads (docs/DESIGN_SYSTEM.md §13b). The `.shimmer` class lives in base.css.
 import React from "react";
 import { useSemiLocale } from "./locale";
+import { Spinner } from "./Button";
 import { CARD } from "../styles/surfaces";
 
 /** One shimmering block; size and radius come from className (default rounded-control). */
@@ -87,5 +88,35 @@ export function PageSkeleton() {
       </div>
       <SkeletonGrid count={6} />
     </div>
+  );
+}
+
+/**
+ * Boot / session gate before the app knows its layout (login or shell), the one place a centred spinner is allowed
+ * (§13b). Render it once in the root or route-group layout, never inside AppShell content (`boot-loader-place`).
+ * Prefer a server-side session check (proxy / async layout), which needs no gate at all.
+ */
+export function BootLoader({
+  label,
+  delay = 300,
+  className = "",
+}: {
+  /** Screen-reader text (never shown). Defaults to the locale's "opening the app". */
+  label?: string;
+  /** Milliseconds before the spinner appears, so a fast check shows only the background. */
+  delay?: number;
+  className?: string;
+}) {
+  const t = useSemiLocale();
+  const [shown, setShown] = React.useState(delay <= 0);
+  React.useEffect(() => {
+    if (delay <= 0) return;
+    const id = setTimeout(() => setShown(true), delay);
+    return () => clearTimeout(id);
+  }, [delay]);
+  return (
+    <Loading label={label ?? t.booting} className={`min-h-dvh w-full grid place-items-center bg-app ${className}`}>
+      {shown && <Spinner className="w-6 h-6 text-muted motion-reduce:animate-none" />}
+    </Loading>
   );
 }

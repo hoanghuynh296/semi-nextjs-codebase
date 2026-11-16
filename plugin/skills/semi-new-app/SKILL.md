@@ -46,7 +46,8 @@ The user should **never** have to run `npm install` or config commands: you run 
    `github:hoanghuynh296/semi-nextjs-codebase`, sets `transpilePackages`, wires `tokens.css` + `base.css` + `@source`
    into `app/globals.css`, writes `app/layout.tsx` (the brand's or the style's fonts, `ThemeScript` / `ThemeProvider`
    with the default theme, `ToastHost`, `ConfirmHost`, `TaskHost`, metadata from the brief) and a starter page for the kind
-   (tool / app: `AppShell` with the brand's logo, its main figure as `KpiCard featured` and its sample items; store /
+   (tool / app: `AppShell` in the route-group layout `app/(app)/layout.tsx` with the brand's logo and `href` items, a
+   `loading.tsx` beside it, and `app/(app)/page.tsx` with its main figure as `KpiCard featured` and its sample items; store /
    landing: a top bar, a hero with the tagline, product line and button text, the proof figure and the sample items),
    `semi-lint.json` (with `"style"`, and `"density"` / `"typeScale"` when not the default), `data-style` (and
    `data-density`, `data-type-scale`) on `<html>`, `AGENTS.md` (Semi rules) and `CLAUDE.md` (`@AGENTS.md`, so Claude

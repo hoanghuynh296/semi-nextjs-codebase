@@ -59,11 +59,12 @@ export function MobileTabBar({
         {tabs.map((t) => {
           const on = !moreOpen && active === t.id;
           const label = t.shortTitle ?? t.title;
-          if (t.href && !onSelect) {
+          if (t.href) {
             return (
               <Link
                 key={t.id}
                 href={t.href}
+                onClick={() => onSelect?.(t.id)}
                 aria-current={on ? "page" : undefined}
                 className={itemClass(on)}
               >

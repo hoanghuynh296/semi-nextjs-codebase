@@ -30,7 +30,8 @@
   ],
   "notes": [
     "Render it once in the root layout (or a route group layout); pages render only their content.",
-    "Use next/link hrefs for items; onSelect is for in-page sections.",
+    "Page items take an href: they stay next/link links even when onSelect is set (onSelect then only reports the click). Never route with onSelect + router.push (shell-nav-href).",
+    "Never gate the shell behind a page skeleton (shell-gate): a route loading.tsx next to the layout shimmers the content only, and the boot / session check before the layout is known renders BootLoader once in the layout. A page never renders AppShell or imports a component that does (app-shell-in-page).",
     "MobileTabBar is used by AppShell; render it yourself only in a custom shell.",
     "Sub-items (children) are closed by default: they open under their parent while the parent or one of them is the activeId, and close when another item is chosen. One level only.",
     "Sub-items take an optional grey icon (give every sub-item of a parent one, or none); no colour dot or count (the menu stays neutral, §4). Put counts and colours in the page.",
@@ -43,6 +44,18 @@
       "title": "Root layout",
       "preview": "none",
       "description": "AppShell fills the viewport, so it is shown as code: this very page is the live example."
+    },
+    {
+      "file": "boot-gate",
+      "title": "Session gate in the layout",
+      "preview": "none",
+      "description": "A client-only app checks the session once in the route-group layout and shows BootLoader until it knows whether to render the shell or go to login."
+    },
+    {
+      "file": "loading",
+      "title": "Content loading",
+      "preview": "none",
+      "description": "A route loading.tsx beside the layout: the shell stays mounted and only the content area shimmers."
     },
     {
       "file": "submenu",

@@ -95,7 +95,7 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Alert](alert.md) | `Alert` | State the user must see while working (firmware update, low material, failed print). |
 | [Empty state](empty-state.md) | `EmptyState` | No items yet, no search results, a feature not set up. |
 | [Progress](progress.md) | `Progress` | Print progress, upload, storage used. |
-| [Skeleton](skeleton.md) | `Skeleton`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton`, `Loading` | Any content that is loading: show its shape. |
+| [Skeleton](skeleton.md) | `Skeleton`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton`, `Loading`, `BootLoader` | Any content that is loading: show its shape. |
 | [Task host](task-host.md) | `TaskHost` | The user started a job and cannot do anything useful until it finishes: an upload before printing, an import, a firmware update, a payment step, an AI job that the next screen needs. |
 
 ## AI

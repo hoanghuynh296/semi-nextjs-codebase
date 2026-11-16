@@ -1,17 +1,19 @@
 {
   "title": "Skeleton",
   "group": "Feedback",
-  "description": "Shimmer placeholders while content loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton; Loading announces the region. Never “Đang tải…” text.",
+  "description": "Shimmer placeholders while content loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton; Loading announces the region. Never “Đang tải…” text. BootLoader is the one centred spinner, for the boot / session gate before the shell exists.",
   "components": [
     "Skeleton",
     "SkeletonCard",
     "SkeletonGrid",
     "SkeletonRows",
     "PageSkeleton",
-    "Loading"
+    "Loading",
+    "BootLoader"
   ],
   "when": [
-    "Any content that is loading: show its shape."
+    "Any content that is loading: show its shape.",
+    "BootLoader: before the app knows its layout (session, auth, boot), once in the root or route-group layout."
   ],
   "instead": [
     {
@@ -21,10 +23,15 @@
     {
       "need": "A known amount of work",
       "use": "Progress"
+    },
+    {
+      "need": "Loading inside the shell (a page, a tab, a list)",
+      "use": "Skeleton* or a route loading.tsx with PageSkeleton, never BootLoader"
     }
   ],
   "a11y": [
-    "Loading (and the Skeleton* groups with label) set role=\"status\" + aria-busy so screen readers hear one message."
+    "Loading (and the Skeleton* groups with label) set role=\"status\" + aria-busy so screen readers hear one message.",
+    "BootLoader is a role=\"status\" region whose label (default: the locale's booting string) is for screen readers only."
   ],
   "examples": [
     {
@@ -35,5 +42,8 @@
       "file": "page",
       "title": "Page and grid"
     }
+  ],
+  "notes": [
+    "BootLoader waits `delay` (300 ms) before the spinner shows, so a fast check flashes nothing; the spin stops under prefers-reduced-motion. Prefer a server-side session check, which needs no gate (see the App shell doc, \"Session gate in the layout\")."
   ]
 }

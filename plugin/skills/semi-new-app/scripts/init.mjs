@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // /semi-new-app: scaffolds a NEW Semi app (Next.js + Tailwind 4 + @semi/ui + starter pages). An existing app is not
 // touched: it adopts Semi with /semi-check (the foundation step there installs @semi/ui).
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { discoverFrontendApps } from "../../semi-check/scripts/audit.mjs";
@@ -153,36 +153,94 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </div>
       </section>
       <EmptyState title=${J(copy.list)} description={${J(copy.empty)}} />`;
-    page = `"use client";
+    // The shell lives in the route-group layout (stays mounted while people navigate); pages render only content
+    // (DESIGN_SYSTEM.md "Shell lifecycle", semi-lint app-shell-in-page / shell-nav-href). Loading inside the shell is
+    // loading.tsx; a session check, when the product gets one, goes in this layout (BootLoader, §13b).
+    const group = join(webDir, "app", "(app)");
+    rmSync(join(webDir, "app", "page.tsx"), { force: true }); // create-next-app's page would also claim "/"
+    mkdirSync(join(group, "list"), { recursive: true });
+    mkdirSync(join(group, "settings"), { recursive: true });
+    writeFileSync(
+      join(group, "layout.tsx"),
+      `"use client";
 
-import React, { useState } from "react";
-${logoImport}import { AppShell, Button, Card, EmptyState, KpiCard, PageTitle, ThemeToggle, type ShellNavSection } from "@semi/ui";
+import { usePathname } from "next/navigation";
+${logoImport}import { AppShell, ThemeToggle, type ShellNavSection } from "@semi/ui";
 
-${header}
 const SECTIONS: ShellNavSection[] = [
-  { label: "Ứng dụng", items: [{ id: "home", label: "Tổng quan", shortLabel: "Trang chủ", icon: "grid" }, { id: "list", label: ${J(copy.list)}, icon: "box" }] },
-  { label: "Hệ thống", items: [{ id: "settings", label: "Cài đặt", icon: "settings" }] },
+  { label: "Ứng dụng", items: [{ id: "home", label: "Tổng quan", shortLabel: "Trang chủ", icon: "grid", href: "/" }, { id: "list", label: ${J(copy.list)}, icon: "box", href: "/list" }] },
+  { label: "Hệ thống", items: [{ id: "settings", label: "Cài đặt", icon: "settings", href: "/settings" }] },
 ];
 
-export default function HomePage() {
-  const [activeNav, setActiveNav] = useState("home");
+export default function AppLayout({ children }: { children: React.ReactNode }) {
+  const path = usePathname();
+  const active = SECTIONS.flatMap((s) => s.items).find((i) => i.href !== "/" && path.startsWith(i.href ?? ""))?.id ?? "home";
   return (
     <AppShell
       productName={${J(appName)}}
       ${logoEl ? `logo={${logoEl}}` : `logoIcon="layers"`}
       sections={SECTIONS}
-      activeId={activeNav}
-      onSelect={setActiveNav}
+      activeId={active}
       footer={() => <ThemeToggle />}
     >
+      {children}
+    </AppShell>
+  );
+}
+`,
+    );
+    writeFileSync(
+      join(group, "loading.tsx"),
+      `import { PageSkeleton } from "@semi/ui";
+
+// Shown inside the shell while a page loads: the menu stays, only the content shimmers (§13b).
+export default function Loading() {
+  return <PageSkeleton />;
+}
+`,
+    );
+    writeFileSync(
+      join(group, "list", "page.tsx"),
+      `import { EmptyState, PageTitle } from "@semi/ui";
+
+export default function ListPage() {
+  return (
+    <>
+      <PageTitle title={${J(copy.list)}} />
+      <EmptyState title=${J(copy.list)} description={${J(copy.empty)}} />
+    </>
+  );
+}
+`,
+    );
+    writeFileSync(
+      join(group, "settings", "page.tsx"),
+      `import { PageTitle } from "@semi/ui";
+
+export default function SettingsPage() {
+  return <PageTitle title="Cài đặt" />;
+}
+`,
+    );
+    const used = ["Button", "Card", "EmptyState", "KpiCard"].filter((n) => main.includes(`<${n}`));
+    writeFileSync(
+      join(group, "page.tsx"),
+      `import { ${[...used, "PageTitle"].join(", ")} } from "@semi/ui";
+
+${header}
+export default function HomePage() {
+  return (
+    <>
       <PageTitle title={${J(appName)}} />
       <div className="@container space-y-5">
 ${main}
       </div>
-    </AppShell>
+    </>
   );
 }
-`;
+`,
+    );
+    return;
   } else {
     const items = copy.items.length
       ? `

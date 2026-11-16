@@ -592,14 +592,15 @@
     "id": "skeleton",
     "title": "Skeleton",
     "group": "Feedback",
-    "description": "Shimmer placeholders while content loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton; Loading announces the region. Never “Đang tải…” text.",
+    "description": "Shimmer placeholders while content loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton; Loading announces the region. Never “Đang tải…” text. BootLoader is the one centred spinner, for the boot / session gate before the shell exists.",
     "components": [
       "Skeleton",
       "SkeletonCard",
       "SkeletonGrid",
       "SkeletonRows",
       "PageSkeleton",
-      "Loading"
+      "Loading",
+      "BootLoader"
     ]
   },
   {
