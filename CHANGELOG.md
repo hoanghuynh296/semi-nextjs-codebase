@@ -4,12 +4,18 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.27.0] - 2026-11-18
+
 ### Added
 - **`QRCode`** (#37): a scannable QR code as one SVG (`value`, `size` default 200 / min 120, `errorCorrection` default `"M"`, required `label` as the accessible name, `caption` with tabular numbers, `copyValue` = copy button (`true` copies `value`, a string copies that), `onError`, and a `print` variant without frame or button: pure black on white with `shape-rendering="crispEdges"`). A value too long for the level does not throw: the box shows a message (locale `qrFailed`) and `onError` gets the error. Modules are always black on white with a 4-module quiet zone in both themes, a documented exception inside the component (scanners need dark-on-light; `src/QRCode.tsx` is skipped for `inline-svg-path` (the modules are one `<path>`) and `no-literal-palette` (print variant `bg-white text-black`) in `semi-lint.json`, each with its reason, semi-lint stays clean). No `logo` prop in v1 (a centre mark covers modules and forces level H). Copy says "copied" only when the browser accepted it (no clipboard API on plain http). Doc `examples/qr-code/` (VietQR payment, receipt, the four levels, UTF-8 text, too long). `test:ui` (`tests/qr-code.spec.ts`) decodes the rendered SVG back to a VietQR EMVCo payload at every level with `jsqr`, in both themes, print, too long and copy.
   - **Encoder: `uqr` 0.1.3**, pinned exact, the package's only runtime dependency. Chosen over `qrcode-generator`: MIT, zero dependencies, ESM with types, no network or DOM, tree-shakable, byte / alphanumeric / numeric modes picked automatically, all four EC levels, and it returns the module matrix so the component draws its own SVG (one path of horizontal runs). Supply-chain check of 0.1.3 (published 2026-04, 2.5 years after 0.1.2): same publisher (antfu, maintainer of the unjs repo) as earlier versions, no install scripts, the shipped `dist` has no imports, network or `eval`, and 0.1.2 → 0.1.3 is JSDoc / types / SVG renderer changes in the tagged `unjs/uqr` source (the build was not re-run to compare bytes). Test decoder `jsqr` (dev dependency only).
 
 ### Fixed
 - **`/semi-sync` never downgrades `@semi/ui`; a brand `semi` range allows later 0.x minors** (#32): a brand kit declaring `^0.24.0` (a caret pins the minor in 0.x) made `/semi-sync` move an app on 0.26.0 back to 0.24.x. `update.mjs` now keeps the installed version when the brand's range resolves below it, and warns with the brand range and the fix (`/semi-brand update`, release, `/semi-sync` again). `semi-brand` create / update write `">=X.Y.0 <1.0.0"` ("this minor or later, below the next major"); `satisfies` / `resolveTargetSpec` accept `>=X.Y[.Z] <A.B[.C]` next to `^`, `~` and exact versions, and `brand.json` validation accepts it. A new major is still capped. Existing `^0.x` kits keep working (they just cap, and never downgrade). `docs/BRANDS.md` describes the form. Migration note: a brand repo should run `/semi-brand update` once to switch to the new range.
+
+### Migration
+- No code migration. Brand kits may now declare the `semi` range as `">=X.Y.0 <1.0.0"` (any later 0.x minor), and `semi-brand` writes that form. Existing `^0.x` ranges keep working (they cap, and never downgrade); run `/semi-brand update` once in a brand repo to switch to the new range.
+- New dependency: `uqr` (0.1.3, exact) comes with `@semi/ui` for `QRCode`; no action needed.
 
 ## [0.26.1] - 2026-11-18
 
