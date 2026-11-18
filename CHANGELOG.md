@@ -4,6 +4,8 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.26.1] - 2026-11-18
+
 ### Fixed
 - **`FileDrop` names its hidden file input** (#33): the input had no accessible name, so `getByLabel(<field label>)` in a test reached only the button and `setInputFiles` failed (apps patched `aria-label` onto the input from outside). The input is now named like the button (`aria-labelledby` the button, which carries the `Field` label or the title), and FileDrop takes an `aria-label` prop that names both and wins. No behaviour change for keyboard or screen readers: the input stays hidden, the button the only control. `Field` now gives its label element an id (`labelId` in `useField()`). Doc `examples/file-drop/` shows the test locator (`getByLabel(label).and(locator('input[type=file]'))`).
 - **`/semi-sync` in pnpm / yarn workspaces** (#31): `detectPkgManager` only looked for a lockfile in the app folder, so an app in a workspace (lockfile at the root, `workspace:*` dependencies) got `npm install`, which failed with `EUNSUPPORTEDPROTOCOL` and changed nothing. It now walks up to the workspace root (stops at the git root); `packageManager` in a `package.json` wins, then `pnpm-lock.yaml` / `pnpm-workspace.yaml` / `yarn.lock` / `package-lock.json`. Installs run in the app folder with the manager's own syntax (`pnpm add`, `yarn add`, `npm install --install-links`). When an install fails, `update.mjs` names the command and where to run it by hand, leaves `package.json` as it was and still writes the AGENTS.md rules block; changelog, migrations and `tsc` wait for the next run.
