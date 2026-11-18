@@ -9,10 +9,32 @@ export const PLUGIN_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../
 const REPO_URL = "https://github.com/hoanghuynh296/semi-nextjs-codebase.git";
 const GITHUB_SPEC_BASE = "github:hoanghuynh296/semi-nextjs-codebase";
 
+/**
+ * The package manager of the app in `cwd`: walks up to the workspace root (stops at the git root or the filesystem
+ * root). In each folder `packageManager` of its package.json wins, then a lockfile / pnpm-workspace.yaml. A pnpm or yarn
+ * workspace keeps its lockfile at the root, not in the app folder. Falls back to npm.
+ */
 export function detectPkgManager(cwd) {
-  if (existsSync(join(cwd, "pnpm-lock.yaml"))) return "pnpm";
-  if (existsSync(join(cwd, "yarn.lock"))) return "yarn";
-  return "npm";
+  let dir = resolve(cwd);
+  for (;;) {
+    try {
+      const declared = String(JSON.parse(readFileSync(join(dir, "package.json"), "utf8")).packageManager ?? "").match(/^(npm|pnpm|yarn)@/)?.[1];
+      if (declared) return declared;
+    } catch {}
+    if (existsSync(join(dir, "pnpm-lock.yaml")) || existsSync(join(dir, "pnpm-workspace.yaml"))) return "pnpm";
+    if (existsSync(join(dir, "yarn.lock"))) return "yarn";
+    if (existsSync(join(dir, "package-lock.json"))) return "npm";
+    const parent = dirname(dir);
+    if (parent === dir || existsSync(join(dir, ".git"))) return "npm";
+    dir = parent;
+  }
+}
+
+/** The install command (own syntax of each manager) for one package: { pm, args, cmd }. Run it in the app folder. */
+export function addPackageCommand(appDir, spec, { dev = false } = {}) {
+  const pm = detectPkgManager(appDir);
+  const args = pm === "npm" ? ["install", "--install-links", ...(dev ? ["-D"] : []), spec] : ["add", ...(dev ? ["-D"] : []), spec];
+  return { pm, args, cmd: `${pm} ${args.join(" ")}` };
 }
 
 /** "1.2.3" vs "1.10.0" → -1 / 0 / 1 (a leading "v" is ignored). */
@@ -411,12 +433,11 @@ export function installPackage(appDir, spec) {
   }
   const pkgPath = join(appDir, "package.json");
   const before = JSON.parse(readFileSync(pkgPath, "utf8"));
-  const pm = detectPkgManager(appDir);
-  const args = pm === "npm" ? ["install", "--install-links", resolved] : ["add", resolved];
+  const { pm, args, cmd } = addPackageCommand(appDir, resolved);
   const res = spawnSync(pm, args, { cwd: appDir, stdio: "inherit" });
   if (res.status !== 0) {
-    console.error(installFailHint(pm));
-    return { ok: false, spec: resolved };
+    console.error(installFailHint(cmd, appDir));
+    return { ok: false, spec: resolved, cmd };
   }
   const after = JSON.parse(readFileSync(pkgPath, "utf8"));
   const deps = { ...after.dependencies };
@@ -508,8 +529,8 @@ export function installedSemiVersion(appDir) {
 }
 
 /** What to do after a failed install (npm's own error lines are printed above it). */
-export const installFailHint = (pm) =>
-  `${pm} install lỗi (xem dòng lỗi đầu tiên ở trên; ERESOLVE là xung đột peer dependency có sẵn trong app). Sửa xung đột trong package.json rồi chạy lại; không tự thêm --legacy-peer-deps.`;
+export const installFailHint = (cmd, appDir) =>
+  `Lệnh lỗi: \`${cmd}\` (chạy trong ${appDir}; xem dòng lỗi đầu tiên ở trên, ERESOLVE là xung đột peer dependency có sẵn trong app). Sửa lỗi rồi tự chạy lại đúng lệnh đó; không tự thêm --legacy-peer-deps.`;
 
 /** Point package.json at spec (adds the semi:lint script) and install. Never touches next / tailwindcss. */
 export function installSemiUi(appDir, spec) {
@@ -520,16 +541,15 @@ export function installSemiUi(appDir, spec) {
   (pkg.scripts ||= {})["semi:lint"] = "semi-lint";
   const before = readFileSync(pkgPath, "utf8");
   writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
-  const pm = detectPkgManager(appDir);
   // Name the package: a bare `npm install` keeps the commit package-lock.json already has for a git dependency, so an
-  // upgrade to a new tag would silently stay on the old one.
+  // upgrade to a new tag would silently stay on the old one. Run in the app folder so a workspace lockfile is updated.
   const dev = Boolean(pkg.devDependencies?.["@semi/ui"]);
-  const args = pm === "npm" ? ["install", "--install-links", ...(dev ? ["-D"] : []), `@semi/ui@${spec}`] : ["add", ...(dev ? ["-D"] : []), `@semi/ui@${spec}`];
+  const { pm, args, cmd } = addPackageCommand(appDir, `@semi/ui@${spec}`, { dev });
   const res = spawnSync(pm, args, { cwd: appDir, stdio: "inherit" });
   if (res.status !== 0) {
     // Put package.json back: with @semi/ui listed but not installed, the next run would think the step is done.
     writeFileSync(pkgPath, before);
-    console.error(installFailHint(pm));
+    console.error(installFailHint(cmd, appDir));
     return false;
   }
   // Say it plainly when the installed version is not the one asked for (a stale lock or cache).
