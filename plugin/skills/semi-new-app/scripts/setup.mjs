@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 
 export const PLUGIN_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const REPO_URL = "https://github.com/hoanghuynh296/semi-nextjs-codebase.git";
-const GITHUB_SPEC_BASE = "github:hoanghuynh296/semi-nextjs-codebase";
+export const GITHUB_SPEC_BASE = "github:hoanghuynh296/semi-nextjs-codebase";
 
 /**
  * The package manager of the app in `cwd`: walks up to the workspace root (stops at the git root or the filesystem
@@ -45,10 +45,23 @@ export function cmpSemver(a, b) {
   return 0;
 }
 
-/** Does version satisfy "^1.2.0" / "~1.2.0" / "1.2.0" (caret on 0.x pins the minor, as npm does)? */
+/**
+ * Does version satisfy a brand's "semi" range? Forms: "^1.2.0" / "~1.2.0" / "1.2.0" (caret on 0.x pins the minor, as npm
+ * does) and comparator ranges ">=0.24.0 <1.0.0" (space-separated >=, >, <=, <, =). The comparator form is what
+ * `semi-brand` writes: "this minor or later, below the next major". Anything else matches every version.
+ */
 export function satisfies(version, range) {
   if (!range) return true;
-  const m = String(range).trim().match(/^([\^~]?)(\d+)\.(\d+)(?:\.(\d+))?$/);
+  const text = String(range).trim();
+  const cmp = text.split(/\s+/);
+  if (cmp.every((c) => /^(>=|<=|>|<|=)\d+\.\d+(\.\d+)?$/.test(c))) {
+    return cmp.every((c) => {
+      const [, op, v] = c.match(/^(>=|<=|>|<|=)(.+)$/);
+      const d = cmpSemver(version, v);
+      return op === ">=" ? d >= 0 : op === ">" ? d > 0 : op === "<=" ? d <= 0 : op === "<" ? d < 0 : d === 0;
+    });
+  }
+  const m = text.match(/^([\^~]?)(\d+)\.(\d+)(?:\.(\d+))?$/);
   if (!m) return true;
   const [maj, min, pat] = [+m[2], +m[3], +(m[4] || 0)];
   const v = String(version).replace(/^v/, "").split(".").map(Number);
@@ -56,6 +69,12 @@ export function satisfies(version, range) {
   if (m[1] === "^") return maj > 0 ? v[0] === maj : min > 0 ? v[0] === 0 && v[1] === min : v[0] === 0 && v[1] === 0 && v[2] === pat;
   if (m[1] === "~") return v[0] === maj && v[1] === min;
   return cmpSemver(version, `${maj}.${min}.${pat}`) === 0;
+}
+
+/** The range `semi-brand` writes for a @semi/ui version: this minor or later, below the next major (">=0.26.0 <1.0.0"). */
+export function brandSemiRange(version) {
+  const [maj, min] = String(version).replace(/^v/, "").split(".").map(Number);
+  return `>=${maj}.${min}.0 <${maj + 1}.0.0`;
 }
 
 /** Release tags (vX.Y.Z) of a git repo, oldest first; null when the repo cannot be reached. */
@@ -84,7 +103,8 @@ export function resolveTargetSpec({ range } = {}) {
   if (process.env.SEMI_UI_SOURCE) {
     return { spec: process.env.SEMI_UI_SOURCE, version: "0.1.0" };
   }
-  const tags = gitTags(REPO_URL);
+  // SEMI_UI_TAGS="v0.24.0,v0.26.0,v1.0.0" replaces the remote tag list (tests).
+  const tags = process.env.SEMI_UI_TAGS ? process.env.SEMI_UI_TAGS.split(",").map((t) => t.trim()).filter(Boolean).sort(cmpSemver) : gitTags(REPO_URL);
   if (!tags) {
     console.error(
       "ERROR: Cannot access private repository https://github.com/hoanghuynh296/semi-nextjs-codebase.\n" +
