@@ -8,7 +8,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 ## Machine-readable
 
-- [components.json](./components.json): all 124 components, hooks and constants with props, summaries and their doc page
+- [components.json](./components.json): all 125 components, hooks and constants with props, summaries and their doc page
 - [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
@@ -102,6 +102,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Kbd](./components/kbd/) ([markdown](./docs/components/kbd.md)): A key or a shortcut (⌘ K, Ctrl Enter) as key caps, for menus, tooltips, the command palette and help text. Components: Kbd.
 - [KPI card](./components/kpi-card/) ([markdown](./docs/components/kpi-card.md)): A metric card: label, a large tabular figure in the style's figure font, a sub line coloured good / danger. One featured card leads the row; icons are optional and neutral. Components: KpiCard.
 - [Markdown](./components/markdown/) ([markdown](./docs/components/markdown.md)): Renders AI or user text safely: paragraphs, lists, bold, inline code and links (as ExternalLink). No HTML. Components: Markdown.
+- [QR code](./components/qr-code/) ([markdown](./docs/components/qr-code.md)): A scannable QR code as one SVG: VietQR / EMVCo payment payloads, receipts (print variant), links. Fixed black modules on white with a 4-module quiet zone in both themes, four error-correction levels, optional caption and copy button. Components: QRCode.
 - [Separator](./components/separator/) ([markdown](./docs/components/separator.md)): A thin divider between groups of content: horizontal, vertical, or with a short label in the middle (“hoặc”). Components: Separator.
 - [Table](./components/table/) ([markdown](./docs/components/table.md)): A dense table for rows compared column by column. Cells stay on one line (the table scrolls sideways on phones); TD wrap for a long-text column, numeric for figures. Components: Table, THead, TBody, TR, TH, TD.
 - [Typography](./components/typography/) ([markdown](./docs/components/typography.md)): The type scale (text-caption 11 … text-display 26, font-display for titles) and Prose, which styles long-form text — headings, paragraphs, lists, links, quotes, inline code — from that scale. Components: Prose.

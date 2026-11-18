@@ -1,0 +1,135 @@
+# QR code
+
+A scannable QR code as one SVG: VietQR / EMVCo payment payloads, receipts (print variant), links. Fixed black modules on white with a 4-module quiet zone in both themes, four error-correction levels, optional caption and copy button.
+
+## When to use
+
+- Show a payment QR (VietQR) in a payment dialog, or print one on a receipt.
+- Share a short link or a code a phone must scan.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A value to copy, no scanning | CodeBlock |
+| A logo in the centre of the code | Not supported: a centre mark covers modules. Put the logo beside the code |
+
+## Import
+
+```tsx
+import { QRCode } from "@semi/ui";
+```
+
+## Examples
+
+### VietQR payment
+
+```tsx
+import { QRCode } from "@semi/ui";
+
+// A VietQR (EMVCo) payload from the payment provider: transfer 185.000 ₫ to account 0123456789, note DH1042.
+const VIETQR = "00020101021238540010A00000072701240006970422011001234567890208QRIBFTTA530370454061850005802VN62100806DH1042630444F9";
+
+export default function QRCodePayment() {
+  return (
+    <QRCode
+      value={VIETQR}
+      label="Mã VietQR thanh toán đơn DH1042"
+      caption="185.000 ₫ · DH1042"
+      copyValue="0123456789"
+      onError={(e) => console.error(e)}
+    />
+  );
+}
+```
+
+### Receipt (print)
+
+```tsx
+import { QRCode } from "@semi/ui";
+
+// On a receipt: no frame, no button, pure black on white in either theme (the printer decides, not the theme).
+const VIETQR = "00020101021238540010A00000072701240006970422011001234567890208QRIBFTTA53037045407125000005802VN62200816HD0007 Cafe Semi6304DEE9";
+
+export default function QRCodeReceipt() {
+  return (
+    <QRCode print value={VIETQR} size={160} errorCorrection="Q" label="Mã VietQR thanh toán hoá đơn HD0007" caption="HD0007 · 1.250.000 ₫" />
+  );
+}
+```
+
+### Error correction levels
+
+```tsx
+import { QRCode, type QRCodeErrorCorrection } from "@semi/ui";
+
+const VIETQR = "00020101021238540010A00000072701240006970422011001234567890208QRIBFTTA530370454061850005802VN62100806DH1042630444F9";
+const LEVELS: QRCodeErrorCorrection[] = ["L", "M", "Q", "H"];
+
+export default function QRCodeLevels() {
+  return (
+    <div className="flex flex-wrap gap-4">
+      {LEVELS.map((level) => (
+        <QRCode key={level} value={VIETQR} errorCorrection={level} size={140} label={`Mã VietQR, mức sửa lỗi ${level}`} caption={`Mức ${level}`} />
+      ))}
+    </div>
+  );
+}
+```
+
+### Link or text (UTF-8), small size clamped
+
+```tsx
+import { QRCode } from "@semi/ui";
+
+// Any UTF-8 text works (a link with Vietnamese letters). `size` below 120 is clamped to 120 so the code stays scannable.
+export default function QRCodeText() {
+  return <QRCode value="https://semi.vn/hoa-don/HD0007?khach=Nguyễn Văn Á" size={100} label="Mã QR mở hoá đơn HD0007" caption="Quét để xem hoá đơn" />;
+}
+```
+
+### Value too long
+
+```tsx
+import { useState } from "react";
+import { QRCode } from "@semi/ui";
+
+export default function QRCodeTooLong() {
+  const [error, setError] = useState("");
+  return (
+    <div className="space-y-2">
+      <QRCode value={"A".repeat(4000)} size={140} label="Mã QR" onError={(e) => setError(e.message)} />
+      {error && <p className="text-label text-muted">onError: {error}</p>}
+    </div>
+  );
+}
+```
+
+## API
+
+### QRCode
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `value` * | `string` |  | The text to encode (a VietQR / EMVCo payload, a URL). UTF-8. |
+| `size` | `number` | `200` | Edge in px including the quiet zone. Default 200, minimum 120 (smaller is clamped). |
+| `errorCorrection` | `'L' \| 'M' \| 'Q' \| 'H'` | `"M"` | Error correction: L 7%, M 15% (default), Q 25%, H 30% of the code can be damaged. Higher levels hold less. |
+| `label` * | `string` |  | Accessible name of the image ("Mã VietQR thanh toán đơn #1042"). Required: a QR code has no text of its own. |
+| `caption` | `React.ReactNode` |  | Text under the code (amount, order number, the encoded string). Tabular numbers. |
+| `copyValue` | `string \| boolean` |  | Adds a copy button. `true` copies `value`; a string copies that text instead (an account number, a link). |
+| `onError` | `(error: Error) => void` |  | Called with the error when `value` cannot be encoded (too long for the error correction level). Nothing is thrown. |
+| `print` | `boolean` |  | For receipts and print: no frame, no copy button, pure black on white (caption included), crisp edges. |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- The SVG is role="img" named by `label` (required): a QR code has no text of its own, so say what it pays or opens. Put the readable data (amount, order number) in `caption`.
+- Modules are always black on white, in the dark theme too: scanners need dark-on-light and the quiet zone. Do not recolour them.
+- A value too long for the level shows a short message (role="alert") and calls `onError`; nothing throws.
+
+## Notes
+
+- Encoded with the `uqr` package (MIT, no dependencies, no network). The payload is not validated: pass what the payment provider gave you, unchanged.
+- Level M (default) suits screens; Q or H for printed codes that may get scuffed. Higher levels hold less data.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/qr-code/ and the types in src/ -->

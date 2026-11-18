@@ -44,6 +44,7 @@ export * from "./Agent";
 export * from "./Terminal";
 export * from "./Separator";
 export * from "./Kbd";
+export * from "./QRCode";
 export * from "./Breadcrumb";
 export * from "./ButtonGroup";
 export * from "./InputGroup";

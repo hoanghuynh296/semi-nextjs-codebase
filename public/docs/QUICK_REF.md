@@ -108,7 +108,7 @@ type scale are the product's (`data-density`, `data-type-scale` on `<html>`, `se
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (124)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (125)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
@@ -156,6 +156,7 @@ type scale are the product's (`data-density`, `data-type-scale` on `<html>`, `se
 - `Pills`: `Pills`
 - `Popover`: `Popover`, `HoverCard`
 - `Prose`: `Prose`
+- `QRCode`: `QRCode`
 - `RefreshButton`: `RefreshButton`
 - `Resizable`: `ResizablePanels`
 - `ScrollArea`: `ScrollArea`
