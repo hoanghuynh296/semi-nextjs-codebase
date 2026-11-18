@@ -4,6 +4,8 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.26.0] - 2026-11-18
+
 ### Added
 - **`FileDrop`** (#22): file picker + dropzone with a row per file (name, size, `Progress` while uploading, done check, error + Retry, Remove). Controlled `items`; accepted files go to `onAdd`, files failing `accept` / `maxSize` to `onReject` (the app decides how to show them). Works inside `Field` (id, `aria-describedby`, invalid), built-in strings from `SemiLocaleProvider` (`fileDropTitle`, `fileUploading`, `fileDone`, `fileFailed`, `fileRetry`, `fileRemove`, `filesAdded`, `filesRejected`, `fileUploadFailed`; vi + en), polite live region for added / rejected / failed files. `onReject` reasons: `type`, `size`, `directory` (dropped folder), `duplicate` (same name + size as an item or earlier in the batch), `multiple` (extra files while `multiple` is off). Drag handlers sit on a wrapper, so a drop on a disabled FileDrop is cancelled instead of opening the file. Also exports `matchesAccept`, `formatFileSize`, `classifyFiles`. No new tokens. Doc `examples/file-drop/`.
 
