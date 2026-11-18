@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Field, FileDrop, type FileDropItem, type FileRejection } from "@semi/ui";
 
+// Testing an upload (Playwright): the hidden input has the button's name, so
+//   await page.getByLabel("Tệp nhập").and(page.locator('input[type="file"]')).setInputFiles("bang-gia.csv");
+// (plain getByLabel("Tệp nhập") matches the button too). Or wait for the `filechooser` event after clicking the button.
 export default function FileDropBasic() {
   const [items, setItems] = useState<FileDropItem[]>([
     { id: "seed", name: "bang-gia-2026.xlsx", size: 48_200, status: "done" },

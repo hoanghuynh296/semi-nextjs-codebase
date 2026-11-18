@@ -137,3 +137,14 @@ test("items already failed on mount are not announced", async ({ page }) => {
   await expect(states(page).getByText("Mất kết nối, thử lại.")).toBeVisible();
   await expect(states(page).locator('[role="status"]').first()).toHaveText("");
 });
+
+test("the hidden input carries the button's name: getByLabel(field label) reaches it, and it stays out of the tab order", async ({ page }) => {
+  await open(page);
+  const ex = basic(page);
+  const input = ex.getByLabel("Tệp nhập").and(ex.locator('input[type="file"]'));
+  await input.setInputFiles(csv("by-label.csv"));
+  await expect(ex.getByRole("list").getByText("by-label.csv", { exact: true })).toHaveCount(1);
+  // The button is still the only control: the input is hidden, so it is neither focusable nor in the accessibility tree.
+  await expect(ex.getByRole("button", { name: "Tệp nhập" })).toHaveCount(1);
+  expect(await ex.locator('input[type="file"]').evaluate((el) => getComputedStyle(el).display)).toBe("none");
+});
