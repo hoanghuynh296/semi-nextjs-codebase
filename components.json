@@ -1319,6 +1319,7 @@
         "id",
         "invalid",
         "aria-describedby",
+        "aria-label",
         "className"
       ],
       "doc": "docs/components/file-drop.md"

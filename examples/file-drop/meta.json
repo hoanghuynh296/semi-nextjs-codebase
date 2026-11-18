@@ -27,6 +27,7 @@
   "a11y": [
     "The drop area is a real button: Enter / Space open the file picker, with a visible focus ring.",
     "Inside a Field it takes the id, aria-describedby and invalid state; its label names the button.",
+    "The hidden file input is named like the button (aria-labelledby, or the aria-label prop), so tests can find it by label: getByLabel(label).and(locator('input[type=file]')).setInputFiles(file). It is hidden, so keyboard and screen readers only meet the button.",
     "Added, rejected and failed files are announced in a polite live region; each progress bar and remove button names its file."
   ],
   "examples": [

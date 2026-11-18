@@ -52,6 +52,9 @@ export interface FileDropProps {
   id?: string;
   invalid?: boolean;
   "aria-describedby"?: string;
+  /** Names the drop button and the hidden file input (wins over the Field label / title). Without it the input is named
+   * by the button (`aria-labelledby`), so `getByLabel(label)` in a test reaches the input too. */
+  "aria-label"?: string;
   className?: string;
 }
 
@@ -70,6 +73,7 @@ export function FileDrop({
   id,
   invalid,
   "aria-describedby": describedBy,
+  "aria-label": ariaLabel,
   className,
 }: FileDropProps) {
   const t = useSemiLocale();
@@ -167,6 +171,7 @@ export function FileDrop({
         disabled={disabled}
         aria-describedby={described}
         aria-invalid={isInvalid || undefined}
+        aria-label={ariaLabel}
         onClick={() => inputRef.current?.click()}
         className={cn(
           "w-full flex flex-col items-center justify-center gap-1 rounded-card border border-dashed px-4 py-6 text-center transition-colors",
@@ -184,6 +189,10 @@ export function FileDrop({
         ref={inputRef}
         type="file"
         hidden
+        // Hidden, so not in the accessibility tree and not focusable: the button stays the only control. The name is
+        // for tests and tools (getByLabel(...).setInputFiles) and matches the button's.
+        aria-label={ariaLabel}
+        aria-labelledby={ariaLabel ? undefined : (field?.labelId ?? buttonId)}
         accept={accept?.join(",")}
         multiple={multiple}
         disabled={disabled}

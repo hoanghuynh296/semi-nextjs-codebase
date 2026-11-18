@@ -14,6 +14,8 @@ import { cn } from "../styles/utils";
 
 export interface FieldState {
   id: string;
+  /** Id of the label element, for controls that name something else with it (aria-labelledby). */
+  labelId: string;
   describedBy?: string;
   invalid: boolean;
   required: boolean;
@@ -48,11 +50,12 @@ export function Field({
   const id = idProp ?? `field-${auto}`;
   const hintId = hint && !error ? `${id}-hint` : undefined;
   const errorId = error ? `${id}-error` : undefined;
-  const state: FieldState = { id, describedBy: errorId ?? hintId, invalid: !!error, required };
+  const labelId = `${id}-label`;
+  const state: FieldState = { id, labelId, describedBy: errorId ?? hintId, invalid: !!error, required };
   return (
     <FieldContext.Provider value={state}>
       <div className={cn("min-w-0", className)}>
-        <label htmlFor={id} className={FIELD_LABEL}>
+        <label id={labelId} htmlFor={id} className={FIELD_LABEL}>
           {label}
           {required && (
             <span className="text-danger-fg" aria-hidden>
