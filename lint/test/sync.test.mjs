@@ -5,7 +5,7 @@ import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSy
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
-import { addPackageCommand, detectPkgManager } from "../../plugin/skills/semi-new-app/scripts/setup.mjs";
+import { addPackageCommand, brandSemiRange, detectPkgManager, resolveTargetSpec, satisfies } from "../../plugin/skills/semi-new-app/scripts/setup.mjs";
 
 const UPDATE = new URL("../../plugin/skills/semi-sync/scripts/update.mjs", import.meta.url).pathname;
 const tmp = () => realpathSync(mkdtempSync(join(tmpdir(), "semi-sync-")));
@@ -123,6 +123,77 @@ test("update.mjs in a plain npm app still uses npm install --install-links", { s
     const r = runUpdate(root, pm);
     assert.equal(r.status, 0, r.stdout + r.stderr);
     assert.equal(readFileSync(pm.log, "utf8").trim(), `${root} install --install-links @semi/ui@github:o/r#v0.2.0`);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+// --- brand "semi" range (#32): never downgrade; ">=X.Y.0 <1.0.0" allows later 0.x minors -----------------------------
+
+const TAGS = "v0.24.0,v0.24.1,v0.26.0,v0.26.1,v1.0.0";
+
+/** An npm app on installed @semi/ui `installed` whose brand kit declares `semi`; the remote has TAGS. */
+function brandApp(installed, semi) {
+  const root = tmp();
+  write(join(root, "package-lock.json"), "{}\n");
+  write(join(root, "package.json"), json({ name: "app", dependencies: { next: "15.0.0", react: "19.0.0", "@semi/ui": `github:hoanghuynh296/semi-nextjs-codebase#v${installed}` } }));
+  write(join(root, "semi-lint.json"), json({ brand: "@acme/brand" }));
+  write(join(root, "node_modules/@semi/ui/package.json"), json({ name: "@semi/ui", version: installed }));
+  write(join(root, "node_modules/@acme/brand/dist/brand.json"), json({ name: "Acme", package: "@acme/brand", semi }));
+  write(join(root, "node_modules/@acme/brand/package.json"), json({ name: "@acme/brand", version: "1.0.0" }));
+  return root;
+}
+
+function runBrandUpdate(root, pm) {
+  const env = { ...process.env, PATH: `${pm.bin}:${process.env.PATH}`, SEMI_UI_TAGS: TAGS };
+  delete env.SEMI_UI_SOURCE;
+  return spawnSync(process.execPath, [UPDATE, "--cwd", root], { encoding: "utf8", env });
+}
+
+test("satisfies / brandSemiRange: comparator ranges, caret unchanged", () => {
+  assert.equal(brandSemiRange("0.26.1"), ">=0.26.0 <1.0.0");
+  assert.ok(satisfies("0.26.1", ">=0.24.0 <1.0.0"));
+  assert.ok(!satisfies("0.23.9", ">=0.24.0 <1.0.0"));
+  assert.ok(!satisfies("1.0.0", ">=0.24.0 <1.0.0"));
+  assert.ok(satisfies("0.24.5", "^0.24.0"));
+  assert.ok(!satisfies("0.26.0", "^0.24.0"));
+});
+
+test("resolveTargetSpec: >=0.24.0 <1.0.0 gets the latest 0.x, a new major stays capped", () => {
+  process.env.SEMI_UI_TAGS = TAGS;
+  try {
+    const r = resolveTargetSpec({ range: ">=0.24.0 <1.0.0" });
+    assert.equal(r.version, "0.26.1");
+    assert.equal(r.newest, "1.0.0");
+    assert.equal(r.limited, true);
+    assert.equal(resolveTargetSpec({ range: "^0.24.0" }).version, "0.24.1");
+    assert.equal(resolveTargetSpec().version, "1.0.0");
+  } finally {
+    delete process.env.SEMI_UI_TAGS;
+  }
+});
+
+test("update.mjs: installed 0.26.0 + brand ^0.24.0 stays 0.26.0 and warns", { skip: process.platform === "win32" }, () => {
+  const root = brandApp("0.26.0", "^0.24.0");
+  try {
+    const pm = fakePm(root, "npm", 0);
+    const r = runBrandUpdate(root, pm);
+    assert.match(r.stdout, /KHÔNG hạ cấp, giữ 0\.26\.0/);
+    assert.match(r.stdout, /\^0\.24\.0/);
+    assert.match(r.stdout, /\/semi-brand update/);
+    assert.ok(!existsSync(pm.log), "no install ran");
+    assert.match(readFileSync(join(root, "package.json"), "utf8"), /#v0\.26\.0/);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("update.mjs: brand >=0.24.0 <1.0.0 moves to the latest 0.x, never to 1.0.0", { skip: process.platform === "win32" }, () => {
+  const root = brandApp("0.24.0", ">=0.24.0 <1.0.0");
+  try {
+    const pm = fakePm(root, "npm", 0);
+    runBrandUpdate(root, pm);
+    assert.match(readFileSync(pm.log, "utf8"), /@semi\/ui@github:hoanghuynh296\/semi-nextjs-codebase#v0\.26\.1/);
   } finally {
     rmSync(root, { recursive: true, force: true });
   }

@@ -89,7 +89,7 @@ export function validateBrand(brand, { styles }) {
     else if (!FONTS[family] && !(typeof f === "object" && f.weight))
       warnings.push(`fonts.${role}: "${family}" không nằm trong danh sách đã kiểm tra; nếu font không có bản variable, thêm "weight": ["400", "600"]`);
   }
-  if (brand.semi && !/^[\^~]?\d+\.\d+(\.\d+)?$/.test(brand.semi)) fail(errors, `semi: "${brand.semi}" phải là dải phiên bản như ^0.6.0`);
+  if (brand.semi && !/^([\^~]?\d+\.\d+(\.\d+)?|>=\d+\.\d+(\.\d+)? <\d+\.\d+(\.\d+)?)$/.test(brand.semi)) fail(errors, `semi: "${brand.semi}" phải là dải phiên bản như ">=0.26.0 <1.0.0" (từ minor này đến trước major kế tiếp) hoặc ^0.6.0`);
   validateGuide(brand, errors, warnings);
   return { errors, warnings };
 }

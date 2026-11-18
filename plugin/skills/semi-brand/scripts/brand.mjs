@@ -20,7 +20,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
-import { cmpSemver, detectPkgManager, resolveTargetSpec, runLocal } from "../../semi-new-app/scripts/setup.mjs";
+import { brandSemiRange, cmpSemver, detectPkgManager, resolveTargetSpec, runLocal } from "../../semi-new-app/scripts/setup.mjs";
 
 const argv = process.argv.slice(2);
 const cmd = argv[0];
@@ -280,7 +280,7 @@ if (cmd === "create") {
     styles: { default: style, allowed: (opts.allow || style).split(",").map((s) => s.trim()) },
     fonts: { sans: opts.sans || "Geist", display: opts.display || "Montserrat Alternates" },
     ...(opts.guide ? JSON.parse(opts.guide) : {}),
-    semi: `^${target.version}`,
+    semi: brandSemiRange(target.version),
   };
   writeJson(brandPath, brand);
   writeJson(pkgPath, {
@@ -305,7 +305,7 @@ if (cmd === "create") {
   writeFileSync(join(cwd, "README.md"), README(brand));
   console.log(`Cài @semi/ui (${target.spec}) cho brand kit…`);
   if (!installSemi(target.spec)) process.exit(1);
-  brand.semi = `^${semiVersion() || target.version}`; // the version really installed
+  brand.semi = brandSemiRange(semiVersion() || target.version); // the version really installed
   writeJson(brandPath, brand);
   const r = kitBin("build");
   console.log(`\nBrand kit ${opts.name} đã tạo ở ${cwd}.`);
@@ -377,7 +377,7 @@ if (cmd === "update") {
     process.exit(1);
   }
   const brand = readJson(brandPath);
-  brand.semi = `^${semiVersion() || target.version}`;
+  brand.semi = brandSemiRange(semiVersion() || target.version);
   writeJson(brandPath, brand);
   const r = kitBin("build");
   if (r.status !== 0) process.exit(r.status);
