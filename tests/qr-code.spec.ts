@@ -6,6 +6,7 @@ import jsQR from "jsqr";
 const VIETQR = "00020101021238540010A00000072701240006970422011001234567890208QRIBFTTA530370454061850005802VN62100806DH1042630444F9";
 const RECEIPT = "00020101021238540010A00000072701240006970422011001234567890208QRIBFTTA53037045407125000005802VN62200816HD0007 Cafe Semi6304DEE9";
 test.describe.configure({ timeout: 90_000 });
+test.use({ deviceScaleFactor: 4 });
 const ex = (page: Page, id: string) => page.locator(`[data-example="qr-code/${id}"]`);
 
 async function open(page: Page, theme: "dark" | "light") {
@@ -15,24 +16,21 @@ async function open(page: Page, theme: "dark" | "light") {
   await page.addStyleTag({ content: "*,*::before,*::after{transition:none!important;animation:none!important}" });
 }
 
-/** Rasterise the SVG on a canvas (as a scanner camera would see it: whatever the page paints) and decode it. */
-async function decode(svg: Locator) {
-  const raw = await svg.evaluate(async (el) => {
-    const xml = new XMLSerializer().serializeToString(el);
+/** Decode the real rendered pixels (a screenshot of the element: theme CSS, frame, clamping all included). */
+async function decode(page: Page, svg: Locator) {
+  const png = (await svg.screenshot()).toString("base64");
+  const raw = await page.evaluate(async (b64) => {
     const img = new Image();
-    img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(xml);
+    img.src = "data:image/png;base64," + b64;
     await img.decode();
-    const n = 410; // 10 px per module for the 41-module (version 4) VietQR payload
     const c = document.createElement("canvas");
-    c.width = c.height = n;
+    c.width = img.width;
+    c.height = img.height;
     const ctx = c.getContext("2d")!;
-    ctx.fillStyle = "rgb(128,128,128)"; // transparent areas must not read as white
-    ctx.fillRect(0, 0, n, n);
-    ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(img, 0, 0, n, n);
-    return { n, data: Array.from(ctx.getImageData(0, 0, n, n).data) };
-  });
-  return jsQR(Uint8ClampedArray.from(raw.data), raw.n, raw.n)?.data;
+    ctx.drawImage(img, 0, 0);
+    return { w: c.width, h: c.height, data: Array.from(ctx.getImageData(0, 0, c.width, c.height).data) };
+  }, png);
+  return jsQR(Uint8ClampedArray.from(raw.data), raw.w, raw.h)?.data;
 }
 
 for (const theme of ["dark", "light"] as const) {
@@ -43,9 +41,9 @@ for (const theme of ["dark", "light"] as const) {
     await expect(svgs).toHaveCount(4);
     for (const [i, level] of ["L", "M", "Q", "H"].entries()) {
       await expect(svgs.nth(i)).toHaveAttribute("data-ecc", level);
-      expect(await decode(svgs.nth(i)), `level ${level}`).toBe(VIETQR);
+      expect(await decode(page, svgs.nth(i)), `level ${level}`).toBe(VIETQR);
     }
-    expect(await decode(ex(page, "payment").locator("svg[data-qr-code]"))).toBe(VIETQR);
+    expect(await decode(page, ex(page, "payment").locator("svg[data-qr-code]"))).toBe(VIETQR);
   });
 }
 
@@ -68,7 +66,7 @@ test("print variant: no frame, no copy button, crisp edges, still decodes", asyn
   await expect(svg).toHaveAttribute("shape-rendering", "crispEdges");
   expect(await svg.evaluate((el) => getComputedStyle(el).borderTopWidth)).toBe("0px");
   await expect(ex(page, "receipt").locator("figure button")).toHaveCount(0);
-  expect(await decode(svg)).toBe(RECEIPT);
+  expect(await decode(page, svg)).toBe(RECEIPT);
 });
 
 test("a value too long for the level does not throw: message and onError", async ({ page }) => {
@@ -76,7 +74,8 @@ test("a value too long for the level does not throw: message and onError", async
   page.on("pageerror", (e) => errors.push(e.message));
   await open(page, "light");
   const box = ex(page, "too-long");
-  await expect(box.getByRole("alert")).toHaveText("Không tạo được mã QR");
+  await expect(box.getByRole("alert")).toContainText("Mã QR");
+  await expect(box.getByRole("alert")).toContainText("Không tạo được mã QR");
   await expect(box.locator("svg[data-qr-code]")).toHaveCount(0);
   await expect(box.getByText(/^onError: .+/)).toBeVisible();
   expect(errors).toEqual([]);
@@ -88,4 +87,42 @@ test("the copy button copies copyValue and says so", async ({ page }) => {
   await box.getByRole("button", { name: "Sao chép" }).click();
   await expect(box.getByRole("button", { name: "Đã sao chép" })).toBeVisible();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe("0123456789");
+});
+
+test("copy without a clipboard API (plain http) or with a denied one never says copied", async ({ page }) => {
+  await page.addInitScript(() => Object.defineProperty(navigator, "clipboard", { value: undefined, configurable: true }));
+  await open(page, "light");
+  const box = ex(page, "payment");
+  await box.getByRole("button", { name: "Sao chép" }).click();
+  await page.waitForTimeout(300);
+  await expect(box.getByRole("button", { name: "Sao chép" })).toBeVisible();
+  await expect(box.getByRole("button", { name: "Đã sao chép" })).toHaveCount(0);
+});
+
+test("a denied clipboard write stays 'Sao chép' without an unhandled rejection", async ({ page }) => {
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.addInitScript(() => Object.defineProperty(navigator, "clipboard", { value: { writeText: () => Promise.reject(new Error("denied")) }, configurable: true }));
+  await open(page, "light");
+  const box = ex(page, "payment");
+  await box.getByRole("button", { name: "Sao chép" }).click();
+  await page.waitForTimeout(300);
+  await expect(box.getByRole("button", { name: "Đã sao chép" })).toHaveCount(0);
+  expect(errors).toEqual([]);
+});
+
+test("a UTF-8 (Vietnamese) value decodes back, and a size under 120 is clamped to 120", async ({ page }) => {
+  await open(page, "light");
+  const svg = ex(page, "text").locator("svg[data-qr-code]");
+  await expect(svg).toHaveAttribute("width", "120");
+  await expect(svg).toHaveAttribute("height", "120");
+  expect((await svg.boundingBox())!.width).toBeCloseTo(120, 0);
+  expect(await decode(page, svg)).toBe("https://semi.vn/hoa-don/HD0007?khach=Nguyễn Văn Á");
+});
+
+test("the caption is not the image's name: no figure, the image keeps its label", async ({ page }) => {
+  await open(page, "light");
+  const box = ex(page, "payment");
+  await expect(box.locator("figure")).toHaveCount(0);
+  await expect(box.getByRole("img", { name: "Mã VietQR thanh toán đơn DH1042" })).toBeVisible();
 });

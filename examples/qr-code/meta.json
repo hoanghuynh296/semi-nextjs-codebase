@@ -42,6 +42,10 @@
       "title": "Error correction levels"
     },
     {
+      "file": "text",
+      "title": "Link or text (UTF-8), small size clamped"
+    },
+    {
       "file": "too-long",
       "title": "Value too long"
     }

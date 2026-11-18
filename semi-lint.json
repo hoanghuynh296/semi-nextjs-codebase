@@ -8,14 +8,14 @@
   ],
   "baseline": "semi-lint-baseline.json",
   "skip": {
-    "no-literal-palette": [
-      "src/QRCode.tsx"
-    ],
-    "inline-svg-path": [
-      "src/Chart.tsx",
-      "src/Icon.tsx",
-      "src/QRCode.tsx"
-    ],
+    "no-literal-palette": {
+      "src/QRCode.tsx": "machine-read symbol: print variant is black on white in both themes (scanners need dark-on-light)"
+    },
+    "inline-svg-path": {
+      "src/Chart.tsx": "illustration: chart marks",
+      "src/Icon.tsx": "illustration: the icon catalogue",
+      "src/QRCode.tsx": "data: the QR modules are one machine-read path"
+    },
     "app-chrome-copy": [
       "styles/appChrome.ts"
     ],

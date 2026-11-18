@@ -85,14 +85,22 @@ export function QRCode({
     if (error) onErrorRef.current?.(error);
   }, [error]);
 
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  useEffect(() => () => clearTimeout(timer.current), []);
+  // Says "copied" only when the browser accepted it: there is no clipboard API on plain http (POS / LAN) or when denied.
   const copy = () => {
-    void navigator.clipboard?.writeText(typeof copyValue === "string" ? copyValue : value);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
+    navigator.clipboard?.writeText(typeof copyValue === "string" ? copyValue : value).then(
+      () => {
+        setCopied(true);
+        clearTimeout(timer.current);
+        timer.current = setTimeout(() => setCopied(false), 1500);
+      },
+      () => undefined,
+    );
   };
 
   return (
-    <figure className={cn("inline-flex max-w-full flex-col items-center gap-2 m-0", print && "bg-white text-black", className)}>
+    <div className={cn("inline-flex max-w-full flex-col items-center gap-2", print && "bg-white text-black", className)}>
       {"path" in result ? (
         <svg
           role="img"
@@ -110,17 +118,20 @@ export function QRCode({
         </svg>
       ) : (
         <div role="alert" style={{ width: edge, height: edge }} className="flex max-w-full items-center justify-center rounded-card border border-dashed border-line p-4 text-center text-label text-muted">
-          {t.qrFailed}
+          <span>
+            <span className="block font-medium text-body">{label}</span>
+            {t.qrFailed}
+          </span>
         </div>
       )}
       {(caption != null || (copyValue && !print && !error)) && (
-        <figcaption className={cn("flex items-center gap-1 text-label tabular-nums", !print && "text-body")}>
+        <div className={cn("flex items-center gap-1 text-label tabular-nums", !print && "text-body")}>
           {caption != null && <span>{caption}</span>}
           {copyValue && !print && !error && (
             <Button size="sm" variant="ghost" iconOnly icon={copied ? "check" : "copy"} aria-label={copied ? t.copied : t.copy} title={copied ? t.copied : t.copy} onClick={copy} />
           )}
-        </figcaption>
+        </div>
       )}
-    </figure>
+    </div>
   );
 }
