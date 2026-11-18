@@ -96,6 +96,15 @@ export const vi = {
   contextUsage: "Ngữ cảnh đã dùng",
   contextDetail: (used: string, total: string, pct: number) => `${used} / ${total} token (${pct}%)`,
   elapsed: (time: string) => `Đã chạy ${time}`,
+  fileDropTitle: "Kéo thả tệp vào đây hoặc bấm để chọn",
+  fileUploading: "Đang tải lên",
+  fileDone: "Đã tải lên",
+  fileFailed: "Tải lên thất bại",
+  fileRetry: "Thử lại",
+  fileRemove: (name: string) => `Xoá ${name}`,
+  filesAdded: (n: number) => `Đã thêm ${n} tệp`,
+  filesRejected: (n: number) => `${n} tệp bị từ chối`,
+  fileUploadFailed: (name: string) => `Tải lên thất bại: ${name}`,
 };
 
 export type SemiStrings = typeof vi;
@@ -192,6 +201,15 @@ export const en: SemiStrings = {
   contextUsage: "Context used",
   contextDetail: (used, total, pct) => `${used} / ${total} tokens (${pct}%)`,
   elapsed: (time) => `Elapsed ${time}`,
+  fileDropTitle: "Drop files here or click to choose",
+  fileUploading: "Uploading",
+  fileDone: "Uploaded",
+  fileFailed: "Upload failed",
+  fileRetry: "Retry",
+  fileRemove: (name) => `Remove ${name}`,
+  filesAdded: (n) => `${n} ${n === 1 ? "file" : "files"} added`,
+  filesRejected: (n) => `${n} ${n === 1 ? "file" : "files"} rejected`,
+  fileUploadFailed: (name) => `Upload failed: ${name}`,
 };
 
 const LocaleContext = createContext<SemiStrings>(vi);

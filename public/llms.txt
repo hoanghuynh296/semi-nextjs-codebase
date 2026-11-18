@@ -8,7 +8,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 ## Machine-readable
 
-- [components.json](./components.json): all 123 components, hooks and constants with props, summaries and their doc page
+- [components.json](./components.json): all 124 components, hooks and constants with props, summaries and their doc page
 - [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
@@ -46,6 +46,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Combobox](./components/combobox/) ([markdown](./docs/components/combobox.md)): CustomCombobox: type to filter a long list, then pick one value. Components: CustomCombobox.
 - [Date picker](./components/date-picker/) ([markdown](./docs/components/date-picker.md)): A date field with a Calendar popover (YYYY-MM-DD, min / max). Never type="date". Components: DatePicker.
 - [Field, Input, Textarea](./components/field/) ([markdown](./docs/components/field.md)): Field gives any control a label, a hint and an error, wired for screen readers. Input and Textarea are the standard text controls (bg-field, h-field). Components: Field, Input, Textarea.
+- [FileDrop](./components/file-drop/) ([markdown](./docs/components/file-drop.md)): A file picker and dropzone with one row per file: size, upload progress, done, and remove / retry on failure. Controlled: the app owns the list and does the upload. Components: FileDrop.
 - [Input group](./components/input-group/) ([markdown](./docs/components/input-group.md)): An input with fixed parts around it: a prefix (https://), a unit (kg, ₫), an icon or a small button (copy, show password). Components: InputGroup.
 - [Input OTP](./components/input-otp/) ([markdown](./docs/components/input-otp.md)): One-time code entry (OTP, PIN, 2FA): boxes on screen, one real input underneath, so paste, SMS autofill, screen readers and the number keypad work like a normal field. Components: InputOTP.
 - [Number input](./components/number-input/) ([markdown](./docs/components/number-input.md)): NumberInput: numbers with a touch keypad (NumPadPopup) on phones and tablets, plain typing elsewhere. Never type="number". Components: NumberInput, NumPadPopup.

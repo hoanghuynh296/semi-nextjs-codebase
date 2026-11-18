@@ -1,0 +1,49 @@
+{
+  "title": "FileDrop",
+  "group": "Forms",
+  "description": "A file picker and dropzone with one row per file: size, upload progress, done, and remove / retry on failure. Controlled: the app owns the list and does the upload.",
+  "components": [
+    "FileDrop"
+  ],
+  "when": [
+    "Choosing or dropping one or more files: CSV import, product photos, invoices, firmware, model files.",
+    "Showing the progress of each upload and letting the user retry or remove a file.",
+    "Duplicates (same name and size as an item or earlier in the batch) and dropped folders are rejected too: onReject reasons are type, size, directory, duplicate, multiple."
+  ],
+  "instead": [
+    {
+      "need": "A single progress bar not tied to files",
+      "use": "Progress"
+    },
+    {
+      "need": "A long blocking job after the files are sent",
+      "use": "startTask + TaskHost"
+    },
+    {
+      "need": "An avatar or logo picker",
+      "use": "A Button that opens the picker, with the preview next to it"
+    }
+  ],
+  "a11y": [
+    "The drop area is a real button: Enter / Space open the file picker, with a visible focus ring.",
+    "Inside a Field it takes the id, aria-describedby and invalid state; its label names the button.",
+    "Added, rejected and failed files are announced in a polite live region; each progress bar and remove button names its file."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "Import with validation",
+      "description": "accept and maxSize filter files; rejected ones go to onReject, which here feeds the Field error."
+    },
+    {
+      "file": "states",
+      "title": "Row states",
+      "description": "Done, uploading (determinate and indeterminate), error with Retry, and a disabled drop area."
+    },
+    {
+      "file": "single",
+      "title": "One file",
+      "description": "Without multiple, only the first valid file is added; the rest go to onReject with reason \"multiple\"."
+    }
+  ]
+}

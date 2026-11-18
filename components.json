@@ -1299,6 +1299,31 @@
       "doc": "docs/components/field.md"
     },
     {
+      "name": "FileDrop",
+      "kind": "component",
+      "module": "src/FileDrop.tsx",
+      "client": true,
+      "summary": "File picker + dropzone with a row per file (docs/components/file-drop.md).",
+      "props": [
+        "items",
+        "onAdd",
+        "onReject",
+        "onRemove",
+        "onRetry",
+        "accept",
+        "maxSize",
+        "multiple",
+        "disabled",
+        "title",
+        "hint",
+        "id",
+        "invalid",
+        "aria-describedby",
+        "className"
+      ],
+      "doc": "docs/components/file-drop.md"
+    },
+    {
       "name": "Icon",
       "kind": "component",
       "module": "src/Icon.tsx",
