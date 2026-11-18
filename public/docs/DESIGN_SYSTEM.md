@@ -458,7 +458,7 @@ real grid's classes), `SkeletonRows` (lists, dialogs, tables), `PageSkeleton` (S
 `role="status"` / `aria-busy`; its `label` is for screen readers only). The sweep is the `.shimmer` class in
 `base.css` (stops under `prefers-reduced-motion`). Keep "not loaded yet" apart from "empty" (e.g. `undefined` =
 loading, `null` = failed, or a `loaded` flag) so an empty state never flashes before data. Long operations the user
-started (upload, export) show a progress bar with a short label and percentage. When the user cannot do anything
+started (upload, export) show a progress bar with a short label and percentage; files the user picks or drops use `FileDrop` (one `Progress` row per file). When the user cannot do anything
 useful until the job ends (upload before printing, import, firmware update, payment step), use the blocking overlay:
 `const task = startTask({ label, step, value, timer, onCancel })`, `task.update({ value })`, `task.done()` /
 `task.fail(title)` (closes and shows a danger toast), with `<TaskHost />` mounted once in the root layout beside
@@ -554,6 +554,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `AppHeader.tsx` | `AppHeader` (stand-alone app top bar, §4b) |
 | `PageActions.tsx` | `PageActions` (a tab's header buttons), `PageActionsSlot` + `PageActionsProvider` |
 | `Skeleton.tsx` | `Skeleton`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton`, `Loading`, `BootLoader` (boot / session gate only) (§13b) |
+| `FileDrop.tsx` | `FileDrop`, `FileDropItem`, `FileRejection`, `matchesAccept`, `formatFileSize` (§13b uploads: `FileDrop` + `Progress`) |
 | `confirmDialog.tsx` | `confirmDialog()`, `ConfirmHost`, `ConfirmOptions` (§14) |
 | `TaskHost.tsx` | `startTask()`, `TaskHost`, `TaskOptions`, `TaskHandle` (blocking task overlay, §13b) |
 | `ThemeProvider.tsx` | `ThemeProvider`, `useTheme`, `ThemeToggle` (§2) |
@@ -608,6 +609,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Sections of one record | `Tabs` (underline; `segmented` inside a toolbar); 2–4 sibling pages → `PageTabsTitle` |
 | Compared rows | `Table` + `THead` / `TBody` / `TR` / `TH` / `TD numeric`; cells stay on one line and the table scrolls sideways on phones (`TD wrap` for a long-text column); entity overviews stay Bento `Card`s |
 | Progress / quota | `Progress` (determinate or indeterminate) |
+| Choose or drop files, per-file upload progress | `FileDrop` (controlled `items`; `onAdd` accepted files, `onReject`, `onRemove`, `onRetry`; `accept`, `maxSize`; inside `Field`). Never a native `<input type="file">` |
 | People | `Avatar` (photo or initials on a stable tone) |
 | Nothing to show yet | `EmptyState` (icon, one line, action) |
 | Related buttons as one control | `ButtonGroup` (‹ Hôm nay ›, Lưu + `Menu`) |

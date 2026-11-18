@@ -4,6 +4,9 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+### Added
+- **`FileDrop`** (#22): file picker + dropzone with a row per file (name, size, `Progress` while uploading, done check, error + Retry, Remove). Controlled `items`; accepted files go to `onAdd`, files failing `accept` / `maxSize` to `onReject` (the app decides how to show them). Works inside `Field` (id, `aria-describedby`, invalid), built-in strings from `SemiLocaleProvider` (`fileDropTitle`, `fileUploading`, `fileDone`, `fileFailed`, `fileRetry`, `fileRemove`, `filesAdded`, `filesRejected`, `fileUploadFailed`; vi + en), polite live region for added / rejected / failed files. Also exports `matchesAccept` and `formatFileSize`. No new tokens. Doc `examples/file-drop/`.
+
 ### Fixed
 - **CI** (#28): `.github/workflows/check.yml` was invalid YAML since 0.19.0 (an unquoted `: ` in a step name), so the `Check` workflow failed at 0 s and PRs got no checks. The name is quoted, and `npm run check:workflows` (`scripts/check-workflows.mjs`, part of `npm run check`) now parses every workflow file.
 

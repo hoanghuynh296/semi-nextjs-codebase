@@ -103,6 +103,15 @@
     ]
   },
   {
+    "id": "file-drop",
+    "title": "FileDrop",
+    "group": "Forms",
+    "description": "A file picker and dropzone with one row per file: size, upload progress, done, and remove / retry on failure. Controlled: the app owns the list and does the upload.",
+    "components": [
+      "FileDrop"
+    ]
+  },
+  {
     "id": "input-group",
     "title": "Input group",
     "group": "Forms",

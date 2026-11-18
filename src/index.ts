@@ -36,6 +36,7 @@ export * from "./Overlay";
 export * from "./Toast";
 export * from "./TaskHost";
 export * from "./Feedback";
+export * from "./FileDrop";
 export * from "./Table";
 export * from "./Drawer";
 export * from "./Chat";

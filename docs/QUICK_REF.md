@@ -108,7 +108,7 @@ type scale are the product's (`data-density`, `data-type-scale` on `<html>`, `se
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (123)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (124)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
@@ -136,6 +136,7 @@ type scale are the product's (`data-density`, `data-type-scale` on `<html>`, `se
 - `ExternalLink`: `ExternalLink`
 - `Feedback`: `Alert`, `Progress`, `Avatar`, `EmptyState`
 - `Field`: `Field`, `Input`, `Textarea`
+- `FileDrop`: `FileDrop`
 - `Icon`: `Icon`, `IconTile`
 - `InputGroup`: `InputGroup`
 - `InputOTP`: `InputOTP`
@@ -175,5 +176,5 @@ type scale are the product's (`data-density`, `data-type-scale` on `<html>`, `se
 - `confirmDialog`: `ConfirmHost`
 - `locale`: `SemiLocaleProvider`
 
-**Hooks:** `useAppShell`, `useHotkey`, `useField`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useSemiLocale` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `pageWindow`, `startTask`, `themeScript`, `toast`, `dismissToast`, `confirmDialog`, `cn`
+**Hooks:** `useAppShell`, `useHotkey`, `useField`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useSemiLocale` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `matchesAccept`, `formatFileSize`, `pageWindow`, `startTask`, `themeScript`, `toast`, `dismissToast`, `confirmDialog`, `cn`
 <!-- generated:components:end -->

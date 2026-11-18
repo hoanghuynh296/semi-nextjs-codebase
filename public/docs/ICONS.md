@@ -31,7 +31,7 @@ Khi cần hiển thị biểu tượng cho một hành động hoặc trạng th
 | **Lọc chuyên sâu (bộ lọc)** | `filter` | `<Icon name="filter" />` | Không nhầm với ô tìm kiếm từ khoá |
 | **Tải lại / Đồng bộ dữ liệu** | `refresh` | `<RefreshButton />` hoặc `<Icon name="refresh" />` | Không dùng `undo` hay `reset` |
 | **Tải file về máy / Xuất file** | `download` | `<Icon name="download" />` | Không dùng cho nút Lưu trên cloud |
-| **Tải file lên / Nhập file** | `upload` | `<Icon name="upload" />` | Dùng trong dropzone upload |
+| **Tải file lên / Nhập file** | `upload` | `<Icon name="upload" />` | Dùng trong dropzone upload (`FileDrop`, xem `docs/components/file-drop.md`) |
 | **Hoàn tác bước vừa làm** | `undo` | `<Icon name="undo" />` | Không dùng thay cho nút Back chuyển trang |
 | **Làm lại bước vừa hoàn tác** | `redo` | `<Icon name="redo" />` | Đi cặp với `undo`; không dùng cho tải lại (`refresh`) hay lặp media (`repeat`) |
 | **Khôi phục mặc định ban đầu** | `reset` | `<Icon name="reset" />` | Dùng trong form cấu hình / filter reset |
