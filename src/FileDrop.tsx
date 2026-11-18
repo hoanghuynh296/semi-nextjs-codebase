@@ -14,7 +14,6 @@ import { useSemiLocale } from "./locale";
 import { cn, FOCUS_RING } from "../styles/utils";
 import { classifyFiles, formatFileSize, type FileRejection } from "./fileDropUtils";
 
-export { matchesAccept, formatFileSize, classifyFiles } from "./fileDropUtils";
 export type { FileRejection, FileRejectReason } from "./fileDropUtils";
 
 export interface FileDropItem {
@@ -84,7 +83,12 @@ export function FileDrop({
   const isInvalid = invalid ?? field?.invalid ?? false;
   const described = describedBy ?? field?.describedBy;
 
-  const announce = (text: string) => setLive((cur) => ({ text, n: cur.n + 1 }));
+  // The latest add / reject message and when it was made: a failed-upload message of the same moment is merged in.
+  const pending = useRef({ text: "", at: 0 });
+  const announce = (text: string) => {
+    pending.current = { text, at: Date.now() };
+    setLive((cur) => ({ text, n: cur.n + 1 }));
+  };
 
   const handle = (list: FileList | File[] | null, directories?: ReadonlySet<File>) => {
     if (!list || disabled) return;
@@ -101,13 +105,19 @@ export function FileDrop({
     if (parts.length) announce(parts.join(". "));
   };
 
-  // Announce newly failed uploads (an effect, so render stays pure).
-  const knownFailed = useRef<Set<string>>(new Set());
+  // Announce newly failed uploads (an effect, so render stays pure). Items already failed on mount are not news.
+  const knownFailed = useRef<Set<string> | null>(null);
+  if (knownFailed.current === null) knownFailed.current = new Set(items.filter((i) => i.status === "error").map((i) => i.id));
   useEffect(() => {
+    const known = knownFailed.current!;
     const now = items.filter((i) => i.status === "error");
-    const fresh = now.filter((i) => !knownFailed.current.has(i.id));
+    const fresh = now.filter((i) => !known.has(i.id));
     knownFailed.current = new Set(now.map((i) => i.id));
-    if (fresh.length) setLive((cur) => ({ text: fresh.map((i) => t.fileUploadFailed(i.name)).join(". "), n: cur.n + 1 }));
+    if (!fresh.length) return;
+    const recent = Date.now() - pending.current.at < 1000 ? pending.current.text : "";
+    pending.current = { text: "", at: 0 };
+    const text = [recent, ...fresh.map((i) => t.fileUploadFailed(i.name))].filter(Boolean).join(". ");
+    setLive((cur) => ({ text, n: cur.n + 1 }));
   }, [items, t]);
 
   const hasFiles = (e: React.DragEvent) => Array.from(e.dataTransfer?.types ?? []).includes("Files");
@@ -141,9 +151,13 @@ export function FileDrop({
         if (disabled) return;
         const dirs = new Set<File>();
         const files = Array.from(e.dataTransfer.files);
-        Array.from(e.dataTransfer.items ?? []).forEach((it, i) => {
-          if (it.kind === "file" && it.webkitGetAsEntry?.()?.isDirectory && files[i]) dirs.add(files[i]);
-        });
+        // dataTransfer.items also holds kind "string" entries: only file entries line up with dataTransfer.files.
+        let fileIndex = 0;
+        for (const it of Array.from(e.dataTransfer.items ?? [])) {
+          if (it.kind !== "file") continue;
+          if (it.webkitGetAsEntry?.()?.isDirectory && files[fileIndex]) dirs.add(files[fileIndex]);
+          fileIndex++;
+        }
         handle(files, dirs);
       }}
     >

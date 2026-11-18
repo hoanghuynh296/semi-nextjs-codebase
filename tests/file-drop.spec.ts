@@ -13,20 +13,21 @@ async function open(page: Page) {
 const csv = (name: string, size = 10) => ({ name, mimeType: "text/csv", buffer: Buffer.alloc(size, "a") });
 
 /** Dispatch a drop of `files` (name, size) on `target`; names in `folders` report as directories. */
-async function drop(target: Locator, files: Array<{ name: string; size: number }>, folders: string[] = []) {
+async function drop(target: Locator, files: Array<{ name: string; size: number }>, folders: string[] = [], stringFirst = false) {
   return target.evaluate(
-    (el, { files, folders }) => {
+    (el, { files, folders, stringFirst }) => {
       const dt = new DataTransfer();
+      if (stringFirst) dt.items.add("a dragged link", "text/plain");
       for (const f of files) dt.items.add(new File([new Uint8Array(f.size)], f.name, { type: f.name.endsWith(".pdf") ? "application/pdf" : "" }));
       DataTransferItem.prototype.webkitGetAsEntry = function (this: DataTransferItem) {
-        const name = this.getAsFile()?.name ?? "";
+        const name = this.kind === "file" ? (this.getAsFile()?.name ?? "") : "";
         return { isDirectory: folders.includes(name) } as FileSystemEntry;
       };
       const ev = new DragEvent("drop", { dataTransfer: dt, bubbles: true, cancelable: true });
       el.dispatchEvent(ev);
       return ev.defaultPrevented;
     },
-    { files, folders },
+    { files, folders, stringFirst },
   );
 }
 
@@ -104,4 +105,35 @@ test("live region re-announces an identical message", async ({ page }) => {
   expect(first?.trim()).toBe("1 tệp bị từ chối");
   expect(second?.trim()).toBe("1 tệp bị từ chối");
   expect(second).not.toBe(first);
+});
+
+test("a drop mixing a string item and files flags the right folder", async ({ page }) => {
+  await open(page);
+  const ex = basic(page);
+  await drop(ex.getByRole("button", { name: "Tệp nhập" }), [{ name: "dir", size: 0 }, { name: "y.csv", size: 5 }], ["dir"], true);
+  await expect(ex.getByRole("alert")).toContainText("dir: là thư mục");
+  await expect(ex.getByRole("list").getByText("y.csv", { exact: true })).toHaveCount(1);
+});
+
+test("a non-file drag leaves the highlight off, a file drag turns it on", async ({ page }) => {
+  await open(page);
+  const ex = basic(page);
+  const area = ex.getByRole("button", { name: "Tệp nhập" });
+  const fire = (files: boolean) =>
+    area.evaluate((el, files) => {
+      const dt = new DataTransfer();
+      if (files) dt.items.add(new File(["x"], "z.csv"));
+      else dt.setData("text/plain", "hello");
+      el.dispatchEvent(new DragEvent("dragenter", { dataTransfer: dt, bubbles: true, cancelable: true }));
+    }, files);
+  await fire(false);
+  await expect(area).not.toHaveClass(/bg-accent-subtle/);
+  await fire(true);
+  await expect(area).toHaveClass(/bg-accent-subtle/);
+});
+
+test("items already failed on mount are not announced", async ({ page }) => {
+  await open(page);
+  await expect(states(page).getByText("Mất kết nối, thử lại.")).toBeVisible();
+  await expect(states(page).locator('[role="status"]').first()).toHaveText("");
 });
