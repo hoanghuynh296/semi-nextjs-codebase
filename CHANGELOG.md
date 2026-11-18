@@ -4,6 +4,10 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+### Added
+- **`QRCode`** (#37): a scannable QR code as one SVG (`value`, `size` default 200 / min 120, `errorCorrection` default `"M"`, required `label` as the accessible name, `caption` with tabular numbers, `copyValue` = copy button (`true` copies `value`, a string copies that), `onError`, and a `print` variant without frame or button: pure black on white with `shape-rendering="crispEdges"`). A value too long for the level does not throw: the box shows a message (locale `qrFailed`) and `onError` gets the error. Modules are always black on white with a 4-module quiet zone in both themes, a documented exception inside the component (scanners need dark-on-light; `src/QRCode.tsx` is in the `inline-svg-path` skip list of `semi-lint.json`, semi-lint stays clean). No `logo` prop in v1 (a centre mark covers modules and forces level H). Doc `examples/qr-code/` (VietQR payment, receipt, the four levels, too long). `test:ui` (`tests/qr-code.spec.ts`) decodes the rendered SVG back to a VietQR EMVCo payload at every level with `jsqr`, in both themes, print, too long and copy.
+  - **Encoder: `uqr` 0.1.3**, pinned exact, the package's only runtime dependency. Chosen over `qrcode-generator`: MIT, zero dependencies, ESM with types, no network or DOM, tree-shakable, byte / alphanumeric / numeric modes picked automatically, all four EC levels, and it returns the module matrix so the component draws its own SVG (one path of horizontal runs). Test decoder `jsqr` (dev dependency only).
+
 ## [0.26.1] - 2026-11-18
 
 ### Fixed

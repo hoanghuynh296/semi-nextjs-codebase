@@ -1736,6 +1736,25 @@
       "doc": "docs/components/typography.md"
     },
     {
+      "name": "QRCode",
+      "kind": "component",
+      "module": "src/QRCode.tsx",
+      "client": true,
+      "summary": "A scannable QR code for a payment (VietQR, EMVCo), a receipt or a link.",
+      "props": [
+        "value",
+        "size",
+        "errorCorrection",
+        "label",
+        "caption",
+        "copyValue",
+        "onError",
+        "print",
+        "className"
+      ],
+      "doc": "docs/components/qr-code.md"
+    },
+    {
       "name": "RefreshButton",
       "kind": "component",
       "module": "src/RefreshButton.tsx",

@@ -85,6 +85,7 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Kbd](kbd.md) | `Kbd` | Show the shortcut of an action next to it. |
 | [KPI card](kpi-card.md) | `KpiCard` | The metric row at the top of a dashboard (2–4 per row), with the screen's main number as the featured card. |
 | [Markdown](markdown.md) | `Markdown` | Answers of an AI assistant, release notes, short rich text. |
+| [QR code](qr-code.md) | `QRCode` | Show a payment QR (VietQR) in a payment dialog, or print one on a receipt. |
 | [Separator](separator.md) | `Separator` | Split groups inside a card or menu; “hoặc” between two ways to sign in. |
 | [Table](table.md) | `Table`, `THead`, `TBody`, `TR`, `TH`, `TD` | Orders, invoices, logs: rows compared by column. |
 | [Typography](typography.md) | `Prose` | Help articles, release notes, policies, long AI answers (wrap Markdown in Prose). |

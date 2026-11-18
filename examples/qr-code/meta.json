@@ -1,0 +1,49 @@
+{
+  "title": "QR code",
+  "group": "Data display",
+  "description": "A scannable QR code as one SVG: VietQR / EMVCo payment payloads, receipts (print variant), links. Fixed black modules on white with a 4-module quiet zone in both themes, four error-correction levels, optional caption and copy button.",
+  "components": [
+    "QRCode"
+  ],
+  "when": [
+    "Show a payment QR (VietQR) in a payment dialog, or print one on a receipt.",
+    "Share a short link or a code a phone must scan."
+  ],
+  "instead": [
+    {
+      "need": "A value to copy, no scanning",
+      "use": "CodeBlock"
+    },
+    {
+      "need": "A logo in the centre of the code",
+      "use": "Not supported: a centre mark covers modules. Put the logo beside the code"
+    }
+  ],
+  "a11y": [
+    "The SVG is role=\"img\" named by `label` (required): a QR code has no text of its own, so say what it pays or opens. Put the readable data (amount, order number) in `caption`.",
+    "Modules are always black on white, in the dark theme too: scanners need dark-on-light and the quiet zone. Do not recolour them.",
+    "A value too long for the level shows a short message (role=\"alert\") and calls `onError`; nothing throws."
+  ],
+  "notes": [
+    "Encoded with the `uqr` package (MIT, no dependencies, no network). The payload is not validated: pass what the payment provider gave you, unchanged.",
+    "Level M (default) suits screens; Q or H for printed codes that may get scuffed. Higher levels hold less data."
+  ],
+  "examples": [
+    {
+      "file": "payment",
+      "title": "VietQR payment"
+    },
+    {
+      "file": "receipt",
+      "title": "Receipt (print)"
+    },
+    {
+      "file": "levels",
+      "title": "Error correction levels"
+    },
+    {
+      "file": "too-long",
+      "title": "Value too long"
+    }
+  ]
+}

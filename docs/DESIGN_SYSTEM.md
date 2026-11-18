@@ -633,6 +633,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Website top navigation | `NavigationMenu` (links + panels of described links; a sheet below md) |
 | Commands of a desktop-style tool | `Menubar` (Tệp · Sửa · Xem; items like `Menu`) |
 | Code to read or copy | `CodeBlock` (`title`, copy button) |
+| A code a phone scans (VietQR, link) | `QRCode` (`value`, `label`, `errorCorrection`, `caption`, `copyValue`, `print` for receipts). Modules are always black on white with a 4-module quiet zone, in both themes: a documented exception, never recolour |
 | Long-form text (articles, Markdown) | `Prose` |
 | List rows | `Item` (icon / media, title, description, meta, actions, `href`) in an `ItemGroup` |
 

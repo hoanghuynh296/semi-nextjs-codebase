@@ -8,9 +8,13 @@
   ],
   "baseline": "semi-lint-baseline.json",
   "skip": {
+    "no-literal-palette": [
+      "src/QRCode.tsx"
+    ],
     "inline-svg-path": [
       "src/Chart.tsx",
-      "src/Icon.tsx"
+      "src/Icon.tsx",
+      "src/QRCode.tsx"
     ],
     "app-chrome-copy": [
       "styles/appChrome.ts"

@@ -539,6 +539,15 @@
     ]
   },
   {
+    "id": "qr-code",
+    "title": "QR code",
+    "group": "Data display",
+    "description": "A scannable QR code as one SVG: VietQR / EMVCo payment payloads, receipts (print variant), links. Fixed black modules on white with a 4-module quiet zone in both themes, four error-correction levels, optional caption and copy button.",
+    "components": [
+      "QRCode"
+    ]
+  },
+  {
     "id": "separator",
     "title": "Separator",
     "group": "Data display",
