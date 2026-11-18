@@ -108,6 +108,6 @@ people see change, minor for new options such as an allowed style, patch otherwi
 node "<path-to-this-skill>/scripts/brand.mjs" update --cwd "<kit-dir>"
 ```
 
-Installs the newest `@semi/ui`, sets `"semi"` in `brand.json` to it, adds what an older kit lacks (preview site deps
+Installs the newest `@semi/ui`, sets `"semi"` in `brand.json` to `>=X.Y.0 <1.0.0` for it (later 0.x minors stay allowed), adds what an older kit lacks (preview site deps
 and scripts, `.gitignore`, the Pages workflow), rebuilds, and prints the change level. Bump by that
 level, commit, tag, push; then products get it with `/semi-sync`. It never changes the brand's choices.

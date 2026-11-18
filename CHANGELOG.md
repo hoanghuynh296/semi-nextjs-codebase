@@ -4,6 +4,9 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+### Fixed
+- **`/semi-sync` never downgrades `@semi/ui`; a brand `semi` range allows later 0.x minors** (#32): a brand kit declaring `^0.24.0` (a caret pins the minor in 0.x) made `/semi-sync` move an app on 0.26.0 back to 0.24.x. `update.mjs` now keeps the installed version when the brand's range resolves below it, and warns with the brand range and the fix (`/semi-brand update`, release, `/semi-sync` again). `semi-brand` create / update write `">=X.Y.0 <1.0.0"` ("this minor or later, below the next major"); `satisfies` / `resolveTargetSpec` accept `>=X.Y[.Z] <A.B[.C]` next to `^`, `~` and exact versions, and `brand.json` validation accepts it. A new major is still capped. Existing `^0.x` kits keep working (they just cap, and never downgrade). `docs/BRANDS.md` describes the form. Migration note: a brand repo should run `/semi-brand update` once to switch to the new range.
+
 ## [0.26.1] - 2026-11-18
 
 ### Fixed

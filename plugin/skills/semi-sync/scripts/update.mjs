@@ -9,6 +9,7 @@ import {
   addPackageCommand,
   appFonts,
   cmpSemver,
+  GITHUB_SPEC_BASE,
   gitTags,
   installPackage,
   installSemiUi,
@@ -85,12 +86,17 @@ for (const appDir of apps) {
   }
   const kit = readBrand(appDir)?.kit ?? null;
   const target = resolveTargetSpec({ range: kit?.semi });
-  const spec = target.spec;
-  if (target.limited) console.log(`${name}: brand ${kit.name} chỉ hỗ trợ @semi/ui ${kit.semi}: giữ ${target.version} (mới nhất là ${target.newest}). Chạy /semi-brand update trong repo brand, phát hành, rồi /semi-sync lại.`);
-
   const from = installedSemiVersion(appDir);
-  console.log(`\n=== ${name}: @semi/ui ${from || "?"} → ${spec} ===`);
-  let installed = installSemiUi(appDir, spec);
+  // Never move @semi/ui backwards: a brand range older than the installed version keeps the installed one.
+  const downgrade = Boolean(from && cmpSemver(target.version, from) < 0);
+  const spec = downgrade ? `${GITHUB_SPEC_BASE}#v${from}` : target.spec;
+  if (downgrade)
+    console.log(`${name}: brand ${kit.name} khai báo @semi/ui ${kit.semi}, thấp hơn bản đang cài ${from}: KHÔNG hạ cấp, giữ ${from} (mới nhất là ${target.newest}). Sửa: chạy /semi-brand update trong repo brand (ghi dải ">=X.Y.0 <1.0.0"), phát hành, rồi /semi-sync lại.`);
+  else if (target.limited) console.log(`${name}: brand ${kit.name} chỉ hỗ trợ @semi/ui ${kit.semi}: giữ ${target.version} (mới nhất là ${target.newest}). Chạy /semi-brand update trong repo brand, phát hành, rồi /semi-sync lại.`);
+
+  console.log(`\n=== ${name}: @semi/ui ${from || "?"} → ${downgrade ? from : spec} ===`);
+  // On a downgrade guard the installed copy is kept as it is (reinstalled only when it is missing from node_modules).
+  let installed = downgrade && existsSync(join(appDir, "node_modules", "@semi", "ui", "package.json")) ? true : installSemiUi(appDir, spec);
   if (!installed) {
     exitCode = 1;
     const appPkg = JSON.parse(readFileSync(join(appDir, "package.json"), "utf8"));

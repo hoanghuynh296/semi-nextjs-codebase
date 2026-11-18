@@ -1792,8 +1792,14 @@ Luôn đi **từ trên xuống**: Semi → brand kit → sản phẩm.
 | minor | Thêm lựa chọn (style được phép, màu phụ, token mới) | Tự cập nhật |
 | major | Màu / font thương hiệu đổi, thấy rõ | Hỏi trước (`--accept-major`) |
 
-Brand kit ghi nó chạy với `@semi/ui` nào (`"semi": "^0.16"` trong `brand.json`). Nếu Semi mới nhất nằm ngoài dải đó,
-`/semi-sync` giữ Semi ở bản tương thích mới nhất và nhắc chạy `/semi-brand update` trong repo brand.
+Brand kit ghi nó chạy với `@semi/ui` nào (`"semi"` trong `brand.json`). `semi-brand` (create / update) ghi dải
+`">=X.Y.0 <1.0.0"` (ví dụ `">=0.26.0 <1.0.0"`): "từ minor này trở lên, trước major kế tiếp". Semi chỉ đổi API ở bản
+major, nên minor mới của 0.x an toàn cho brand và brand không cần phát hành lại cho mỗi minor. Dải chấp nhận:
+`>=X.Y[.Z] <A.B[.C]` (cách nhau bởi dấu cách), `^X.Y.Z`, `~X.Y.Z`, `X.Y.Z`. Lưu ý `^0.24.0` (kiểu cũ) ghim đúng minor 0.24.
+
+`/semi-sync` giữ Semi trong dải của brand (bản major mới vẫn bị chặn đến khi brand cập nhật dải) và **không bao giờ hạ cấp**:
+nếu dải của brand thấp hơn bản `@semi/ui` đang cài (brand cũ ghi `^0.24.0`, app đã ở 0.26.0), nó giữ bản đang cài và cảnh báo
+dải của brand cùng cách sửa: chạy `/semi-brand update` trong repo brand, phát hành, rồi `/semi-sync` lại.
 
 ---
 
@@ -1825,7 +1831,7 @@ Brand kit ghi nó chạy với `@semi/ui` nào (`"semi": "^0.16"` trong `brand.j
   },
   "color": { "accent": "restrained" },
   "imagery": "Ảnh bản in thật trên nền tối, chụp gần; không ảnh stock.",
-  "semi": "^0.18"
+  "semi": ">=0.18.0 <1.0.0"
 }
 ```
 
