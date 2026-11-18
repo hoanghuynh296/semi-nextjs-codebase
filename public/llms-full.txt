@@ -323,7 +323,7 @@ type scale are the product's (`data-density`, `data-type-scale` on `<html>`, `se
 - `confirmDialog`: `ConfirmHost`
 - `locale`: `SemiLocaleProvider`
 
-**Hooks:** `useAppShell`, `useHotkey`, `useField`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useSemiLocale` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `matchesAccept`, `formatFileSize`, `pageWindow`, `startTask`, `themeScript`, `toast`, `dismissToast`, `confirmDialog`, `cn`
+**Hooks:** `useAppShell`, `useHotkey`, `useField`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useSemiLocale` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `pageWindow`, `startTask`, `themeScript`, `toast`, `dismissToast`, `confirmDialog`, `cn`
 <!-- generated:components:end -->
 
 
@@ -887,7 +887,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `AppHeader.tsx` | `AppHeader` (stand-alone app top bar, §4b) |
 | `PageActions.tsx` | `PageActions` (a tab's header buttons), `PageActionsSlot` + `PageActionsProvider` |
 | `Skeleton.tsx` | `Skeleton`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton`, `Loading`, `BootLoader` (boot / session gate only) (§13b) |
-| `FileDrop.tsx` | `FileDrop`, `FileDropItem`, `FileRejection`, `matchesAccept`, `formatFileSize` (§13b uploads: `FileDrop` + `Progress`) |
+| `FileDrop.tsx` | `FileDrop`, `FileDropItem`, `FileRejection`, `matchesAccept`, `formatFileSize`, `classifyFiles`, `FileRejectReason` (§13b uploads: `FileDrop` + `Progress`) |
 | `confirmDialog.tsx` | `confirmDialog()`, `ConfirmHost`, `ConfirmOptions` (§14) |
 | `TaskHost.tsx` | `startTask()`, `TaskHost`, `TaskOptions`, `TaskHandle` (blocking task overlay, §13b) |
 | `ThemeProvider.tsx` | `ThemeProvider`, `useTheme`, `ThemeToggle` (§2) |
@@ -942,7 +942,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Sections of one record | `Tabs` (underline; `segmented` inside a toolbar); 2–4 sibling pages → `PageTabsTitle` |
 | Compared rows | `Table` + `THead` / `TBody` / `TR` / `TH` / `TD numeric`; cells stay on one line and the table scrolls sideways on phones (`TD wrap` for a long-text column); entity overviews stay Bento `Card`s |
 | Progress / quota | `Progress` (determinate or indeterminate) |
-| Choose or drop files, per-file upload progress | `FileDrop` (controlled `items`; `onAdd` accepted files, `onReject`, `onRemove`, `onRetry`; `accept`, `maxSize`; inside `Field`). Never a native `<input type="file">` |
+| Choose or drop files, per-file upload progress | `FileDrop` (controlled `items`; `onAdd` accepted files, `onReject` (type, size, directory, duplicate, multiple), `onRemove`, `onRetry`; `accept`, `maxSize`; inside `Field`). Never a native `<input type="file">` |
 | People | `Avatar` (photo or initials on a stable tone) |
 | Nothing to show yet | `EmptyState` (icon, one line, action) |
 | Related buttons as one control | `ButtonGroup` (‹ Hôm nay ›, Lưu + `Menu`) |
@@ -3017,6 +3017,7 @@ A file picker and dropzone with one row per file: size, upload progress, done, a
 
 - Choosing or dropping one or more files: CSV import, product photos, invoices, firmware, model files.
 - Showing the progress of each upload and letting the user retry or remove a file.
+- Duplicates (same name and size as an item or earlier in the batch) and dropped folders are rejected too: onReject reasons are type, size, directory, duplicate, multiple.
 
 ## Use something else when
 
@@ -3061,8 +3062,8 @@ export default function FileDropBasic() {
       }, 400);
     }
   };
-  const reject = (rejections: FileRejection[]) =>
-    setError(rejections.map((r) => `${r.file.name}: ${r.reason === "size" ? "quá 10 MB" : "sai định dạng"}`).join("; "));
+  const WHY = { type: "sai định dạng", size: "quá 10 MB", directory: "là thư mục", duplicate: "đã có", multiple: "thừa" } as const;
+  const reject = (rejections: FileRejection[]) => setError(rejections.map((r) => `${r.file.name}: ${WHY[r.reason]}`).join("; "));
 
   return (
     <Field label="Tệp nhập" error={error}>
@@ -3086,9 +3087,10 @@ export default function FileDropBasic() {
 Done, uploading (determinate and indeterminate), error with Retry, and a disabled drop area.
 
 ```tsx
+import { useState } from "react";
 import { FileDrop, type FileDropItem } from "@semi/ui";
 
-const items: FileDropItem[] = [
+const initial: FileDropItem[] = [
   { id: "1", name: "anh-san-pham-01.jpg", size: 2_400_000, status: "done" },
   { id: "2", name: "anh-san-pham-02.jpg", size: 3_100_000, status: "uploading", progress: 45 },
   { id: "3", name: "hoa-don-thang-10.pdf", size: 880_000, status: "uploading" },
@@ -3096,11 +3098,53 @@ const items: FileDropItem[] = [
 ];
 
 export default function FileDropStates() {
+  const [items, setItems] = useState(initial);
+  const retry = (id: string) => {
+    setItems((cur) => cur.map((i) => (i.id === id ? { ...i, status: "uploading", error: undefined } : i)));
+    setTimeout(() => setItems((cur) => cur.map((i) => (i.id === id ? { ...i, status: "done" } : i))), 800);
+  };
   return (
     <div className="grid gap-4 @2xl:grid-cols-2">
-      <FileDrop multiple accept={["image/*", ".pdf"]} hint="Ảnh hoặc PDF" items={items} onAdd={() => {}} onRemove={() => {}} onRetry={() => {}} />
+      <FileDrop
+        multiple
+        accept={["image/*", ".pdf"]}
+        hint="Ảnh hoặc PDF"
+        items={items}
+        onAdd={() => {}}
+        onRemove={(id) => setItems((cur) => cur.filter((i) => i.id !== id))}
+        onRetry={retry}
+      />
       <FileDrop disabled hint="Đang khoá" items={[]} onAdd={() => {}} />
     </div>
+  );
+}
+```
+
+### One file
+
+Without multiple, only the first valid file is added; the rest go to onReject with reason "multiple".
+
+```tsx
+import { useState } from "react";
+import { Field, FileDrop, type FileDropItem } from "@semi/ui";
+
+export default function FileDropSingle() {
+  const [items, setItems] = useState<FileDropItem[]>([]);
+  const [error, setError] = useState<string>();
+  return (
+    <Field label="Hợp đồng (PDF)" error={error}>
+      <FileDrop
+        accept={["application/pdf", ".pdf"]}
+        hint="Một tệp PDF"
+        items={items}
+        onAdd={(files) => {
+          setError(undefined);
+          setItems(files.map((f) => ({ id: f.name, name: f.name, size: f.size, status: "done" })));
+        }}
+        onReject={(r) => setError(r.map((x) => x.file.name).join(", ") + " không được thêm")}
+        onRemove={() => setItems([])}
+      />
+    </Field>
   );
 }
 ```
@@ -3112,8 +3156,8 @@ export default function FileDropStates() {
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `items` * | `FileDropItem[]` |  |  |
-| `onAdd` * | `(files: File[]) => void` |  | Only the files that passed `accept` and `maxSize` (the first one when `multiple` is off). |
-| `onReject` | `(rejections: FileRejection[]) => void` |  | Files that failed `accept` / `maxSize`; the app decides whether to show them (e.g. as a Field error). |
+| `onAdd` * | `(files: File[]) => void` |  | Only the files that passed every check (see `onReject`); a batch never repeats a name + size. |
+| `onReject` | `(rejections: FileRejection[]) => void` |  | Everything not added, with its reason: "type" / "size" (`accept`, `maxSize`), "directory" (a dropped folder), "duplicate" (same name + size as an item or an earlier file of the batch), "multiple" (extra files while `multiple` is off). The app decides whether to show them (e.g. as a Field error). |
 | `onRemove` | `(id: string) => void` |  |  |
 | `onRetry` | `(id: string) => void` |  |  |
 | `accept` | `string[]` |  | MIME types, wildcards ("image/*") or extensions (".csv"). Omit to accept everything. |

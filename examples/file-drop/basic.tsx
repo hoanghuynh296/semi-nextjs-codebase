@@ -20,8 +20,8 @@ export default function FileDropBasic() {
       }, 400);
     }
   };
-  const reject = (rejections: FileRejection[]) =>
-    setError(rejections.map((r) => `${r.file.name}: ${r.reason === "size" ? "quá 10 MB" : "sai định dạng"}`).join("; "));
+  const WHY = { type: "sai định dạng", size: "quá 10 MB", directory: "là thư mục", duplicate: "đã có", multiple: "thừa" } as const;
+  const reject = (rejections: FileRejection[]) => setError(rejections.map((r) => `${r.file.name}: ${WHY[r.reason]}`).join("; "));
 
   return (
     <Field label="Tệp nhập" error={error}>

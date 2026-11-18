@@ -6,6 +6,7 @@ A file picker and dropzone with one row per file: size, upload progress, done, a
 
 - Choosing or dropping one or more files: CSV import, product photos, invoices, firmware, model files.
 - Showing the progress of each upload and letting the user retry or remove a file.
+- Duplicates (same name and size as an item or earlier in the batch) and dropped folders are rejected too: onReject reasons are type, size, directory, duplicate, multiple.
 
 ## Use something else when
 
@@ -50,8 +51,8 @@ export default function FileDropBasic() {
       }, 400);
     }
   };
-  const reject = (rejections: FileRejection[]) =>
-    setError(rejections.map((r) => `${r.file.name}: ${r.reason === "size" ? "quá 10 MB" : "sai định dạng"}`).join("; "));
+  const WHY = { type: "sai định dạng", size: "quá 10 MB", directory: "là thư mục", duplicate: "đã có", multiple: "thừa" } as const;
+  const reject = (rejections: FileRejection[]) => setError(rejections.map((r) => `${r.file.name}: ${WHY[r.reason]}`).join("; "));
 
   return (
     <Field label="Tệp nhập" error={error}>
@@ -75,9 +76,10 @@ export default function FileDropBasic() {
 Done, uploading (determinate and indeterminate), error with Retry, and a disabled drop area.
 
 ```tsx
+import { useState } from "react";
 import { FileDrop, type FileDropItem } from "@semi/ui";
 
-const items: FileDropItem[] = [
+const initial: FileDropItem[] = [
   { id: "1", name: "anh-san-pham-01.jpg", size: 2_400_000, status: "done" },
   { id: "2", name: "anh-san-pham-02.jpg", size: 3_100_000, status: "uploading", progress: 45 },
   { id: "3", name: "hoa-don-thang-10.pdf", size: 880_000, status: "uploading" },
@@ -85,11 +87,53 @@ const items: FileDropItem[] = [
 ];
 
 export default function FileDropStates() {
+  const [items, setItems] = useState(initial);
+  const retry = (id: string) => {
+    setItems((cur) => cur.map((i) => (i.id === id ? { ...i, status: "uploading", error: undefined } : i)));
+    setTimeout(() => setItems((cur) => cur.map((i) => (i.id === id ? { ...i, status: "done" } : i))), 800);
+  };
   return (
     <div className="grid gap-4 @2xl:grid-cols-2">
-      <FileDrop multiple accept={["image/*", ".pdf"]} hint="Ảnh hoặc PDF" items={items} onAdd={() => {}} onRemove={() => {}} onRetry={() => {}} />
+      <FileDrop
+        multiple
+        accept={["image/*", ".pdf"]}
+        hint="Ảnh hoặc PDF"
+        items={items}
+        onAdd={() => {}}
+        onRemove={(id) => setItems((cur) => cur.filter((i) => i.id !== id))}
+        onRetry={retry}
+      />
       <FileDrop disabled hint="Đang khoá" items={[]} onAdd={() => {}} />
     </div>
+  );
+}
+```
+
+### One file
+
+Without multiple, only the first valid file is added; the rest go to onReject with reason "multiple".
+
+```tsx
+import { useState } from "react";
+import { Field, FileDrop, type FileDropItem } from "@semi/ui";
+
+export default function FileDropSingle() {
+  const [items, setItems] = useState<FileDropItem[]>([]);
+  const [error, setError] = useState<string>();
+  return (
+    <Field label="Hợp đồng (PDF)" error={error}>
+      <FileDrop
+        accept={["application/pdf", ".pdf"]}
+        hint="Một tệp PDF"
+        items={items}
+        onAdd={(files) => {
+          setError(undefined);
+          setItems(files.map((f) => ({ id: f.name, name: f.name, size: f.size, status: "done" })));
+        }}
+        onReject={(r) => setError(r.map((x) => x.file.name).join(", ") + " không được thêm")}
+        onRemove={() => setItems([])}
+      />
+    </Field>
   );
 }
 ```
@@ -101,8 +145,8 @@ export default function FileDropStates() {
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `items` * | `FileDropItem[]` |  |  |
-| `onAdd` * | `(files: File[]) => void` |  | Only the files that passed `accept` and `maxSize` (the first one when `multiple` is off). |
-| `onReject` | `(rejections: FileRejection[]) => void` |  | Files that failed `accept` / `maxSize`; the app decides whether to show them (e.g. as a Field error). |
+| `onAdd` * | `(files: File[]) => void` |  | Only the files that passed every check (see `onReject`); a batch never repeats a name + size. |
+| `onReject` | `(rejections: FileRejection[]) => void` |  | Everything not added, with its reason: "type" / "size" (`accept`, `maxSize`), "directory" (a dropped folder), "duplicate" (same name + size as an item or an earlier file of the batch), "multiple" (extra files while `multiple` is off). The app decides whether to show them (e.g. as a Field error). |
 | `onRemove` | `(id: string) => void` |  |  |
 | `onRetry` | `(id: string) => void` |  |  |
 | `accept` | `string[]` |  | MIME types, wildcards ("image/*") or extensions (".csv"). Omit to accept everything. |

@@ -2290,20 +2290,6 @@
       "summary": "Items whose label, group or keywords contain every word of the query; label prefix matches first."
     },
     {
-      "name": "matchesAccept",
-      "kind": "function",
-      "module": "src/FileDrop.tsx",
-      "client": true,
-      "summary": "Whether `file` matches one `accept` entry (MIME, \"type/*\" or \".ext\")."
-    },
-    {
-      "name": "formatFileSize",
-      "kind": "function",
-      "module": "src/FileDrop.tsx",
-      "client": true,
-      "summary": "Human size: 1.2 MB."
-    },
-    {
       "name": "pageWindow",
       "kind": "function",
       "module": "src/Pagination.tsx",

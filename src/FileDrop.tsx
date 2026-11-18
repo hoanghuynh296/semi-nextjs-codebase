@@ -5,13 +5,17 @@
 //   <Field label="Tệp nhập" error={err}>
 //     <FileDrop accept={[".csv"]} maxSize={10_000_000} items={items} onAdd={upload} onReject={showRejected} />
 //   </Field>
-import React, { useId, useRef, useState } from "react";
+import React, { useEffect, useId, useRef, useState } from "react";
 import { Button } from "./Button";
 import { useField } from "./Field";
 import { Progress } from "./Feedback";
 import { Icon } from "./Icon";
 import { useSemiLocale } from "./locale";
 import { cn, FOCUS_RING } from "../styles/utils";
+import { classifyFiles, formatFileSize, type FileRejection } from "./fileDropUtils";
+
+export { matchesAccept, formatFileSize, classifyFiles } from "./fileDropUtils";
+export type { FileRejection, FileRejectReason } from "./fileDropUtils";
 
 export interface FileDropItem {
   id: string;
@@ -25,16 +29,13 @@ export interface FileDropItem {
   error?: string;
 }
 
-export interface FileRejection {
-  file: File;
-  reason: "type" | "size";
-}
-
 export interface FileDropProps {
   items: FileDropItem[];
-  /** Only the files that passed `accept` and `maxSize` (the first one when `multiple` is off). */
+  /** Only the files that passed every check (see `onReject`); a batch never repeats a name + size. */
   onAdd: (files: File[]) => void;
-  /** Files that failed `accept` / `maxSize`; the app decides whether to show them (e.g. as a Field error). */
+  /** Everything not added, with its reason: "type" / "size" (`accept`, `maxSize`), "directory" (a dropped folder),
+   * "duplicate" (same name + size as an item or an earlier file of the batch), "multiple" (extra files while
+   * `multiple` is off). The app decides whether to show them (e.g. as a Field error). */
   onReject?: (rejections: FileRejection[]) => void;
   onRemove?: (id: string) => void;
   onRetry?: (id: string) => void;
@@ -53,32 +54,6 @@ export interface FileDropProps {
   invalid?: boolean;
   "aria-describedby"?: string;
   className?: string;
-}
-
-/** Whether `file` matches one `accept` entry (MIME, "type/*" or ".ext"). */
-export function matchesAccept(file: Pick<File, "name" | "type">, accept?: string[]): boolean {
-  if (!accept || accept.length === 0) return true;
-  const name = file.name.toLowerCase();
-  const type = file.type.toLowerCase();
-  return accept.some((raw) => {
-    const a = raw.trim().toLowerCase();
-    if (a.startsWith(".")) return name.endsWith(a);
-    if (a.endsWith("/*")) return type.startsWith(a.slice(0, -1));
-    return type === a;
-  });
-}
-
-/** Human size: 1.2 MB. */
-export function formatFileSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  const units = ["KB", "MB", "GB", "TB"];
-  let v = bytes / 1024;
-  let i = 0;
-  while (v >= 1024 && i < units.length - 1) {
-    v /= 1024;
-    i++;
-  }
-  return `${v < 10 ? v.toFixed(1) : Math.round(v)} ${units[i]}`;
 }
 
 export function FileDrop({
@@ -104,22 +79,16 @@ export function FileDrop({
   const inputRef = useRef<HTMLInputElement>(null);
   const depth = useRef(0);
   const [over, setOver] = useState(false);
-  const [live, setLive] = useState("");
+  const [live, setLive] = useState({ text: "", n: 0 });
   const buttonId = id ?? field?.id ?? `filedrop-${auto}`;
   const isInvalid = invalid ?? field?.invalid ?? false;
   const described = describedBy ?? field?.describedBy;
 
-  const handle = (list: FileList | File[] | null) => {
+  const announce = (text: string) => setLive((cur) => ({ text, n: cur.n + 1 }));
+
+  const handle = (list: FileList | File[] | null, directories?: ReadonlySet<File>) => {
     if (!list || disabled) return;
-    const files = Array.from(list);
-    const ok: File[] = [];
-    const rejected: FileRejection[] = [];
-    for (const file of files) {
-      if (!matchesAccept(file, accept)) rejected.push({ file, reason: "type" });
-      else if (maxSize !== undefined && file.size > maxSize) rejected.push({ file, reason: "size" });
-      else ok.push(file);
-    }
-    const accepted = multiple ? ok : ok.slice(0, 1);
+    const { accepted, rejected } = classifyFiles(Array.from(list), { accept, maxSize, multiple, existing: items, directories });
     const parts: string[] = [];
     if (accepted.length) {
       onAdd(accepted);
@@ -129,23 +98,55 @@ export function FileDrop({
       onReject?.(rejected);
       parts.push(t.filesRejected(rejected.length));
     }
-    if (parts.length) setLive(parts.join(". "));
+    if (parts.length) announce(parts.join(". "));
   };
 
-  const failed = items.filter((i) => i.status === "error");
-  const failedKey = failed.map((i) => i.id).join(",");
-  const lastFailed = useRef("");
-  if (failedKey !== lastFailed.current) {
-    const fresh = failed.filter((i) => !lastFailed.current.split(",").includes(i.id));
-    lastFailed.current = failedKey;
-    if (fresh.length) {
-      const msg = fresh.map((i) => t.fileUploadFailed(i.name)).join(". ");
-      if (msg !== live) queueMicrotask(() => setLive(msg));
-    }
-  }
+  // Announce newly failed uploads (an effect, so render stays pure).
+  const knownFailed = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    const now = items.filter((i) => i.status === "error");
+    const fresh = now.filter((i) => !knownFailed.current.has(i.id));
+    knownFailed.current = new Set(now.map((i) => i.id));
+    if (fresh.length) setLive((cur) => ({ text: fresh.map((i) => t.fileUploadFailed(i.name)).join(". "), n: cur.n + 1 }));
+  }, [items, t]);
+
+  const hasFiles = (e: React.DragEvent) => Array.from(e.dataTransfer?.types ?? []).includes("Files");
 
   return (
-    <div className={cn("min-w-0", className)}>
+    // Drag handlers sit on the wrapper: a disabled <button> gets no drag events, and a drop nobody cancels would make
+    // the browser open the file.
+    <div
+      className={cn("min-w-0", className)}
+      onDragEnter={(e) => {
+        if (!hasFiles(e)) return;
+        e.preventDefault();
+        depth.current++;
+        if (!disabled) setOver(true);
+      }}
+      onDragOver={(e) => {
+        if (!hasFiles(e)) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = disabled ? "none" : "copy";
+      }}
+      onDragLeave={(e) => {
+        if (!hasFiles(e)) return;
+        depth.current = Math.max(0, depth.current - 1);
+        if (depth.current === 0) setOver(false);
+      }}
+      onDrop={(e) => {
+        if (!hasFiles(e)) return;
+        e.preventDefault();
+        depth.current = 0;
+        setOver(false);
+        if (disabled) return;
+        const dirs = new Set<File>();
+        const files = Array.from(e.dataTransfer.files);
+        Array.from(e.dataTransfer.items ?? []).forEach((it, i) => {
+          if (it.kind === "file" && it.webkitGetAsEntry?.()?.isDirectory && files[i]) dirs.add(files[i]);
+        });
+        handle(files, dirs);
+      }}
+    >
       <button
         type="button"
         id={buttonId}
@@ -153,22 +154,6 @@ export function FileDrop({
         aria-describedby={described}
         aria-invalid={isInvalid || undefined}
         onClick={() => inputRef.current?.click()}
-        onDragEnter={(e) => {
-          e.preventDefault();
-          depth.current++;
-          if (!disabled) setOver(true);
-        }}
-        onDragOver={(e) => e.preventDefault()}
-        onDragLeave={() => {
-          depth.current = Math.max(0, depth.current - 1);
-          if (depth.current === 0) setOver(false);
-        }}
-        onDrop={(e) => {
-          e.preventDefault();
-          depth.current = 0;
-          setOver(false);
-          handle(e.dataTransfer.files);
-        }}
         className={cn(
           "w-full flex flex-col items-center justify-center gap-1 rounded-card border border-dashed px-4 py-6 text-center transition-colors",
           FOCUS_RING,
@@ -184,9 +169,7 @@ export function FileDrop({
       <input
         ref={inputRef}
         type="file"
-        tabIndex={-1}
-        aria-hidden
-        className="sr-only"
+        hidden
         accept={accept?.join(",")}
         multiple={multiple}
         disabled={disabled}
@@ -196,7 +179,8 @@ export function FileDrop({
         }}
       />
       <div role="status" aria-live="polite" className="sr-only">
-        {live}
+        {live.text}
+        {live.n % 2 === 0 ? "" : "\u00a0"}
       </div>
       {items.length > 0 && (
         <ul className="mt-2 flex flex-col gap-1.5">

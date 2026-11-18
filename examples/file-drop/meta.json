@@ -7,7 +7,8 @@
   ],
   "when": [
     "Choosing or dropping one or more files: CSV import, product photos, invoices, firmware, model files.",
-    "Showing the progress of each upload and letting the user retry or remove a file."
+    "Showing the progress of each upload and letting the user retry or remove a file.",
+    "Duplicates (same name and size as an item or earlier in the batch) and dropped folders are rejected too: onReject reasons are type, size, directory, duplicate, multiple."
   ],
   "instead": [
     {
@@ -38,6 +39,11 @@
       "file": "states",
       "title": "Row states",
       "description": "Done, uploading (determinate and indeterminate), error with Retry, and a disabled drop area."
+    },
+    {
+      "file": "single",
+      "title": "One file",
+      "description": "Without multiple, only the first valid file is added; the rest go to onReject with reason \"multiple\"."
     }
   ]
 }
