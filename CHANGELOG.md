@@ -4,6 +4,9 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+### Fixed
+- **`/semi-sync` in pnpm / yarn workspaces** (#31): `detectPkgManager` only looked for a lockfile in the app folder, so an app in a workspace (lockfile at the root, `workspace:*` dependencies) got `npm install`, which failed with `EUNSUPPORTEDPROTOCOL` and changed nothing. It now walks up to the workspace root (stops at the git root); `packageManager` in a `package.json` wins, then `pnpm-lock.yaml` / `pnpm-workspace.yaml` / `yarn.lock` / `package-lock.json`. Installs run in the app folder with the manager's own syntax (`pnpm add`, `yarn add`, `npm install --install-links`). When an install fails, `update.mjs` names the command and where to run it by hand, leaves `package.json` as it was and still writes the AGENTS.md rules block; changelog, migrations and `tsc` wait for the next run.
+
 ## [0.26.0] - 2026-11-18
 
 ### Added

@@ -6,6 +6,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 import { discoverFrontendApps } from "../../semi-check/scripts/audit.mjs";
 import {
+  addPackageCommand,
   appFonts,
   cmpSemver,
   gitTags,
@@ -75,7 +76,11 @@ for (const appDir of apps) {
     } else if (depSpec) {
       const next = gh && latest ? `${gh.base}#v${latest}` : depSpec; // file: kits are simply reinstalled
       console.log(`${name}: brand ${brand.pkg} ${current || "?"} → ${latest || "bản mới nhất ở " + depSpec}`);
-      if (!installPackage(appDir, next).ok) exitCode = 1;
+      const inst = installPackage(appDir, next);
+      if (!inst.ok) {
+        exitCode = 1;
+        console.log(`${name}: không cài được brand ${brand.pkg}. Tự chạy trong ${appDir}: ${inst.cmd ?? addPackageCommand(appDir, next).cmd}`);
+      }
     }
   }
   const kit = readBrand(appDir)?.kit ?? null;
@@ -85,15 +90,24 @@ for (const appDir of apps) {
 
   const from = installedSemiVersion(appDir);
   console.log(`\n=== ${name}: @semi/ui ${from || "?"} → ${spec} ===`);
-  if (!installSemiUi(appDir, spec)) {
+  let installed = installSemiUi(appDir, spec);
+  if (!installed) {
     exitCode = 1;
-    continue;
+    const appPkg = JSON.parse(readFileSync(join(appDir, "package.json"), "utf8"));
+    const manual = addPackageCommand(appDir, `@semi/ui@${spec}`, { dev: Boolean(appPkg.devDependencies?.["@semi/ui"]) }).cmd;
+    console.log(
+      `${name}: cài @semi/ui lỗi nên package.json giữ nguyên. Tự chạy trong ${appDir}: ${manual}\n` +
+        `Rồi chạy lại /semi-sync để có CHANGELOG, migration và tsc. Các bước không cần bản cài vẫn chạy bên dưới.`,
+    );
   }
-  const to = installedSemiVersion(appDir);
+  const to = installed ? installedSemiVersion(appDir) : target.version;
 
   // Rules block in the app's AGENTS.md (and the workspace's, when the block lives there).
   const targets = [appDir, cwd].filter((d, i, a) => a.indexOf(d) === i && existsSync(join(d, "AGENTS.md")));
   for (const d of targets.length ? targets : [cwd]) wireAgentsMd(d, to);
+
+  // Everything below needs the new @semi/ui on disk.
+  if (!installed) continue;
 
   const changelogPath = join(appDir, "node_modules", "@semi", "ui", "CHANGELOG.md");
   if (!printedChangelog && existsSync(changelogPath)) {
