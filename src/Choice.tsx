@@ -144,6 +144,7 @@ export function Switch({
         TOUCH_TARGET,
         checked ? "bg-accent border-transparent" : "bg-raised border-line",
         FOCUS_RING,
+        !label && !description && className,
       )}
     >
       <span className={cn("block rounded-full transition-transform", knob, checked ? `bg-on-accent ${shift}` : "bg-muted translate-x-0")} />

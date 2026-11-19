@@ -9,7 +9,8 @@
     "Schedule a job, filter by day, set a due date."
   ],
   "a11y": [
-    "The button's name includes the chosen date; the popover is a dialog with the Calendar grid (arrows, PageUp / PageDown, Enter); Escape closes and returns focus to the button."
+    "The button's name includes the chosen date; the popover is a dialog with the Calendar grid (arrows, PageUp / PageDown, Enter); Escape closes and returns focus to the button.",
+    "Inside a Field it takes the field's id, is named by the label followed by the date, and links hint / error; the calendar opens in a portal (never clipped) and closes when focus leaves it."
   ],
   "examples": [
     {

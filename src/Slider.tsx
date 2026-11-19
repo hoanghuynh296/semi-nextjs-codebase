@@ -2,6 +2,7 @@
 
 // Pick a number in a range by dragging (volume, opacity, speed). One thumb, or two with `range` for a min–max pair.
 import React, { useId, useRef } from "react";
+import { useSemiLocale } from "./locale";
 import { cn } from "../styles/utils";
 
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
@@ -36,6 +37,7 @@ export type SliderProps = SliderBase &
  */
 export function Slider(props: SliderProps) {
   const { min = 0, max = 100, step = 1, label, showValue = false, format = (v: number) => String(v), disabled = false, className } = props;
+  const t = useSemiLocale();
   const id = useId();
   const trackRef = useRef<HTMLDivElement>(null);
   const range = props.range === true;
@@ -51,22 +53,47 @@ export function Slider(props: SliderProps) {
     const r = trackRef.current!.getBoundingClientRect();
     return min + clamp((clientX - r.left) / r.width, 0, 1) * (max - min);
   };
-  const nearest = (v: number) => (range && Math.abs(v - values[1]) < Math.abs(v - values[0]) ? 1 : 0);
+  /** The thumb a press moves: the nearer one; when both sit on one value, the side the pointer is on (or, pressed
+   * right on them, the way the drag goes), so two equal thumbs can always be pulled apart. */
+  const nearest = (v: number): number | null => {
+    if (!range) return 0;
+    if (values[0] === values[1]) {
+      const half = step / 2;
+      return v > values[1] + half ? 1 : v < values[0] - half ? 0 : null;
+    }
+    return Math.abs(v - values[1]) < Math.abs(v - values[0]) ? 1 : 0;
+  };
+  const focusThumb = (i: number) => trackRef.current?.querySelectorAll<HTMLElement>("[role=slider]")[i]?.focus();
   const onPointerDown = (e: React.PointerEvent) => {
     if (disabled) return;
-    const v = fromPointer(e.clientX);
-    const i = nearest(v);
-    setAt(i, v);
+    const startX = e.clientX;
+    const v = fromPointer(startX);
+    let i = nearest(v);
+    if (i !== null) {
+      setAt(i, v);
+      focusThumb(i);
+    }
     const el = trackRef.current!;
     el.setPointerCapture(e.pointerId);
-    const move = (ev: PointerEvent) => setAt(i, fromPointer(ev.clientX));
-    const up = () => {
+    const move = (ev: PointerEvent) => {
+      if (i === null) {
+        if (ev.clientX === startX) return;
+        i = ev.clientX > startX ? 1 : 0;
+        focusThumb(i);
+      }
+      setAt(i, fromPointer(ev.clientX));
+    };
+    // up, a cancelled touch (scroll, system gesture) or a lost capture all end the drag
+    const end = () => {
       el.removeEventListener("pointermove", move);
-      el.removeEventListener("pointerup", up);
+      el.removeEventListener("pointerup", end);
+      el.removeEventListener("pointercancel", end);
+      el.removeEventListener("lostpointercapture", end);
     };
     el.addEventListener("pointermove", move);
-    el.addEventListener("pointerup", up);
-    (el.querySelectorAll<HTMLElement>("[role=slider]")[i] as HTMLElement | undefined)?.focus();
+    el.addEventListener("pointerup", end);
+    el.addEventListener("pointercancel", end);
+    el.addEventListener("lostpointercapture", end);
   };
   const onKey = (e: React.KeyboardEvent, i: number) => {
     const v = values[i];
@@ -102,7 +129,7 @@ export function Slider(props: SliderProps) {
             key={i}
             role="slider"
             tabIndex={disabled ? -1 : 0}
-            aria-labelledby={`${id}-label`}
+            aria-labelledby={range ? `${id}-label ${id}-thumb-${i}` : `${id}-label`}
             aria-valuemin={range && i === 1 ? values[0] : min}
             aria-valuemax={range && i === 0 ? values[1] : max}
             aria-valuenow={v}
@@ -111,7 +138,13 @@ export function Slider(props: SliderProps) {
             onKeyDown={(e) => !disabled && onKey(e, i)}
             style={{ left: `${pct(v)}%` }}
             className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-panel border-2 border-accent shadow-float outline-none focus-visible:ring-4 focus-visible:ring-focus"
-          />
+          >
+            {range && (
+              <span id={`${id}-thumb-${i}`} className="sr-only">
+                {i === 0 ? t.rangeLow : t.rangeHigh}
+              </span>
+            )}
+          </div>
         ))}
       </div>
     </div>

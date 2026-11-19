@@ -2,6 +2,7 @@
 
 // Dialog behaviour shared by Modal, ConfirmHost, NumPadPopup and Drawer: focus moves in, Tab stays in, focus returns
 // to the opener on close, the page behind does not scroll, Escape closes.
+import type React from "react";
 import { useEffect, useId, useRef, type RefObject } from "react";
 
 const FOCUSABLE =
@@ -9,20 +10,44 @@ const FOCUSABLE =
 
 let locks = 0;
 const traps: object[] = []; // open dialogs, top last: only the top one handles Tab / Escape
-let saved = "";
+let saved = { overflow: "", paddingRight: "" };
 
-/** Lock page scroll while `active` (nested dialogs share one lock). */
+/** Lock page scroll while `active` (nested dialogs share one lock). The scrollbar's width is added as padding, so the
+ * page behind does not shift sideways when its scrollbar disappears. */
 export function useScrollLock(active: boolean) {
   useEffect(() => {
     if (!active) return;
     if (locks++ === 0) {
-      saved = document.body.style.overflow;
-      document.body.style.overflow = "hidden";
+      const body = document.body;
+      saved = { overflow: body.style.overflow, paddingRight: body.style.paddingRight };
+      const gap = window.innerWidth - document.documentElement.clientWidth;
+      if (gap > 0) body.style.paddingRight = `${(parseFloat(getComputedStyle(body).paddingRight) || 0) + gap}px`;
+      body.style.overflow = "hidden";
     }
     return () => {
-      if (--locks === 0) document.body.style.overflow = saved;
+      if (--locks === 0) {
+        document.body.style.overflow = saved.overflow;
+        document.body.style.paddingRight = saved.paddingRight;
+      }
     };
   }, [active]);
+}
+
+/**
+ * Props for a backdrop that wraps its panel: it closes on a click that both starts and ends on the backdrop, so
+ * selecting text or dragging from inside the panel and releasing outside does not close the dialog.
+ */
+export function useBackdropClose(onClose?: () => void) {
+  const down = useRef(false);
+  return {
+    onPointerDown: (e: React.PointerEvent) => {
+      down.current = e.target === e.currentTarget;
+    },
+    onClick: (e: React.MouseEvent) => {
+      if (onClose && down.current && e.target === e.currentTarget) onClose();
+      down.current = false;
+    },
+  };
 }
 
 /** Marks a floating layer (Popover, Menu, select list…) that is rendered in a portal on `body`: focus inside it

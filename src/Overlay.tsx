@@ -37,10 +37,14 @@ export function Tooltip({ content, children, side = "top" }: { content: React.Re
   }, [open]);
 
   if (!isValidElement(children)) return children;
-  const show = () => {
-    timer.current = setTimeout(() => setOpen(true), 350);
+  const later = (next: boolean, ms: number) => {
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => setOpen(next), ms);
   };
-  const hide = () => {
+  const show = () => later(true, 350);
+  // a short grace period, so the pointer can move from the trigger onto the tooltip (WCAG 1.4.13 hoverable)
+  const hide = () => later(false, 120);
+  const hideNow = () => {
     if (timer.current) clearTimeout(timer.current);
     setOpen(false);
   };
@@ -52,8 +56,11 @@ export function Tooltip({ content, children, side = "top" }: { content: React.Re
     "aria-describedby": open ? id : undefined,
     onPointerEnter: show,
     onPointerLeave: hide,
-    onFocus: () => setOpen(true),
-    onBlur: hide,
+    onFocus: () => {
+      if (timer.current) clearTimeout(timer.current);
+      setOpen(true);
+    },
+    onBlur: hideNow,
   });
 
   return (
@@ -63,10 +70,13 @@ export function Tooltip({ content, children, side = "top" }: { content: React.Re
         pos &&
         createPortal(
           <div
+            {...FLOATING_LAYER}
             id={id}
             role="tooltip"
+            onPointerEnter={() => timer.current && clearTimeout(timer.current)}
+            onPointerLeave={hide}
             style={{ left: pos.left, top: pos.top, bottom: pos.bottom }}
-            className="fixed z-tooltip max-w-[260px] px-2 py-1 rounded-control bg-raised border border-line text-label text-contrast shadow-overlay pointer-events-none"
+            className="fixed z-tooltip max-w-[260px] px-2 py-1 rounded-control bg-raised border border-line text-label text-contrast shadow-overlay"
           >
             {content}
           </div>,
@@ -293,6 +303,10 @@ export function ContextMenu({
     <div
       ref={areaRef}
       tabIndex={0}
+      // a named stop in the tab order that says how to open its menu
+      role="group"
+      aria-label={label}
+      aria-keyshortcuts="Shift+F10"
       onContextMenu={(e) => {
         e.preventDefault();
         openAt(e.clientX, e.clientY);
@@ -337,11 +351,12 @@ export function Menubar({ menus, label, className }: { menus: MenubarMenu[]; /**
   const menuRef = useRef<HTMLDivElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
   const id = useId();
+  const openRef = useRef(open);
+  openRef.current = open;
   const close = useCallback((refocus = true) => {
-    setOpen((o) => {
-      if (refocus && o !== null) btnRefs.current[o]?.focus();
-      return null;
-    });
+    const o = openRef.current;
+    setOpen(null);
+    if (refocus && o !== null) btnRefs.current[o]?.focus();
   }, []);
   const refs = useMemo(() => [menuRef, barRef], []);
   useOutsideClose(open !== null, refs, () => close(false));

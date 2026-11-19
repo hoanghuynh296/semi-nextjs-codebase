@@ -1,7 +1,8 @@
 "use client";
 
 // Transient feedback after an action ("Đã lưu", "Không kết nối được"). Render <ToastHost /> once in the root layout,
-// then call toast({ title, tone }) anywhere. Polite live region (danger is assertive); auto-dismiss pauses on hover.
+// then call toast({ title, tone }) anywhere. Two sibling live regions announce them (danger assertive, the rest polite;
+// never nested); auto-dismiss pauses on hover and on keyboard focus.
 import React, { useEffect, useRef, useSyncExternalStore } from "react";
 import { Icon, type IconName } from "./Icon";
 import { useSemiLocale } from "./locale";
@@ -79,7 +80,6 @@ function ToastCard({ item }: { item: ToastItem }) {
   const s = STATUS_ICON[tone];
   return (
     <div
-      role={tone === "danger" ? "alert" : "status"}
       onPointerEnter={() => set("pointer", true)}
       onPointerLeave={() => set("pointer", false)}
       onFocus={() => set("focus", true)}
@@ -123,15 +123,25 @@ const EMPTY: ToastItem[] = [];
 
 /** Toast stack: top on phones (clear of the tab bar), bottom-right from sm. */
 export function ToastHost() {
+  const t = useSemiLocale();
   const list = useSyncExternalStore(subscribe, () => items, () => EMPTY);
+  // two sibling live regions, never nested: danger toasts are assertive, the rest polite; cards carry no live role
+  const col = "flex flex-col gap-2 items-stretch sm:items-end empty:hidden";
   return (
-    <div
-      aria-live="polite"
+    <section
+      aria-label={t.notifications}
       className="fixed z-toast inset-x-0 top-0 sm:top-auto sm:bottom-0 sm:left-auto p-3 sm:p-4 pt-[max(0.75rem,env(safe-area-inset-top))] flex flex-col gap-2 items-stretch sm:items-end pointer-events-none"
     >
-      {list.map((item) => (
-        <ToastCard key={item.id} item={item} />
-      ))}
-    </div>
+      <div aria-live="assertive" className={col}>
+        {list.filter((it) => it.tone === "danger").map((item) => (
+          <ToastCard key={item.id} item={item} />
+        ))}
+      </div>
+      <div aria-live="polite" className={col}>
+        {list.filter((it) => it.tone !== "danger").map((item) => (
+          <ToastCard key={item.id} item={item} />
+        ))}
+      </div>
+    </section>
   );
 }

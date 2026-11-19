@@ -19,7 +19,8 @@
     }
   ],
   "a11y": [
-    "aria-roledescription=\"carousel\" with a label; slides are labelled groups (“2 / 5”); the track is focusable and ←/→ move; no auto-play."
+    "aria-roledescription=\"carousel\" with a label; slides are labelled groups (“2 / 5”); the track is focusable and ←/→ move; no auto-play.",
+    "Slides off screen are inert; arrow keys move slides when the track has focus, never while typing in a slide."
   ],
   "examples": [
     {

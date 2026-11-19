@@ -60,6 +60,10 @@ export function NavigationMenu({
       ref={navRef}
       aria-label={label}
       className={cn("relative", className)}
+      // focus that leaves the nav (Tab past the last link) closes the open panel
+      onBlur={(e) => {
+        if (open !== null && !navRef.current?.contains(e.relatedTarget as Node | null)) setOpen(null);
+      }}
       onKeyDown={(e) => {
         if (e.key === "Escape" && open !== null) {
           e.preventDefault();
@@ -116,7 +120,7 @@ export function NavigationMenu({
           </li>
         ))}
       </ul>
-      <button type="button" aria-label={label} onClick={() => setSheet(true)} className={cn("md:hidden inline-flex items-center justify-center w-control h-control rounded-control border border-line text-body", FOCUS_RING)}>
+      <button type="button" aria-label={label} aria-haspopup="dialog" aria-expanded={sheet} onClick={() => setSheet(true)} className={cn("md:hidden inline-flex items-center justify-center w-control h-control rounded-control border border-line text-body", FOCUS_RING)}>
         <Icon name="menu" className="w-4 h-4" />
       </button>
       <Drawer open={sheet} onClose={() => setSheet(false)} title={label} side="top">

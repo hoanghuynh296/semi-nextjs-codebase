@@ -23,7 +23,8 @@
     }
   ],
   "a11y": [
-    "A live region (polite, assertive for danger); toasts with an action stay until dismissed or wait longer."
+    "A live region (polite, assertive for danger); toasts with an action stay until dismissed or wait longer.",
+    "The stack is a region named by the locale's notifications string with two sibling live regions (danger assertive, the rest polite), never nested. Auto-dismiss pauses on hover and on keyboard focus."
   ],
   "examples": [
     {

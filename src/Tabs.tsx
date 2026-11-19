@@ -41,12 +41,16 @@ export function Tabs<T extends string>({
   const enabled = items.filter((i) => !i.disabled);
   const active = items.find((i) => i.key === value);
 
+  // the tab in the tab order: the selected one, or the first enabled tab when the value matches none (or a disabled one)
+  const focusKey = active && !active.disabled ? active.key : enabled[0]?.key;
+  // ids and lookups use the position, so a key with spaces or quotes is fine
+  const idx = (key: T) => items.findIndex((i) => i.key === key);
   const move = (dir: 1 | -1 | "first" | "last") => {
-    const idx = enabled.findIndex((i) => i.key === value);
-    const next = dir === "first" ? enabled[0] : dir === "last" ? enabled[enabled.length - 1] : enabled[(idx + dir + enabled.length) % enabled.length];
+    const at = enabled.findIndex((i) => i.key === (focusKey ?? value));
+    const next = dir === "first" ? enabled[0] : dir === "last" ? enabled[enabled.length - 1] : enabled[(at + dir + enabled.length) % enabled.length];
     if (!next) return;
     onChange(next.key);
-    listRef.current?.querySelector<HTMLElement>(`[data-key="${next.key}"]`)?.focus();
+    listRef.current?.querySelector<HTMLElement>(`[data-idx="${idx(next.key)}"]`)?.focus();
   };
 
   const onKeyDown = (e: React.KeyboardEvent) => {
@@ -70,18 +74,18 @@ export function Tabs<T extends string>({
           seg ? "inline-flex gap-0.5 bg-field p-0.5 h-control rounded-control border border-line" : "gap-5 border-b border-divider",
         )}
       >
-        {items.map((it) => {
+        {items.map((it, n) => {
           const on = it.key === value;
           return (
             <button
               key={it.key}
-              data-key={it.key}
-              id={`${base}-tab-${it.key}`}
+              data-idx={n}
+              id={`${base}-tab-${n}`}
               type="button"
               role="tab"
               aria-selected={on}
-              aria-controls={on && it.content !== undefined ? `${base}-panel-${it.key}` : undefined}
-              tabIndex={on ? 0 : -1}
+              aria-controls={on && it.content !== undefined ? `${base}-panel-${n}` : undefined}
+              tabIndex={it.key === focusKey ? 0 : -1}
               disabled={it.disabled}
               onClick={() => onChange(it.key)}
               className={cn(
@@ -102,8 +106,8 @@ export function Tabs<T extends string>({
       {active?.content !== undefined && (
         <div
           role="tabpanel"
-          id={`${base}-panel-${active.key}`}
-          aria-labelledby={`${base}-tab-${active.key}`}
+          id={`${base}-panel-${idx(active.key)}`}
+          aria-labelledby={`${base}-tab-${idx(active.key)}`}
           tabIndex={0}
           className={cn("outline-none", panelClassName)}
         >

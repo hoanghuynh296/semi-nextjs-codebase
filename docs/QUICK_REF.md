@@ -177,5 +177,5 @@ type scale are the product's (`data-density`, `data-type-scale` on `<html>`, `se
 - `confirmDialog`: `ConfirmHost`
 - `locale`: `SemiLocaleProvider`
 
-**Hooks:** `useAppShell`, `useHotkey`, `useField`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useSemiLocale` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `pageWindow`, `startTask`, `themeScript`, `toast`, `dismissToast`, `confirmDialog`, `composeRefs`, `cloneTrigger`, `cn`
+**Hooks:** `useAppShell`, `useHotkey`, `useField`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useSemiLocale` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `pageWindow`, `startTask`, `themeScript`, `toast`, `dismissToast`, `confirmDialog`, `composeRefs`, `cloneTrigger`, `cn`
 <!-- generated:components:end -->
