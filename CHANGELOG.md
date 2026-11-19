@@ -4,6 +4,25 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.28.0] - 2026-11-20
+
+Roomier, readable defaults: agents kept building cramped panels (cards with `p-2`, sentences in 12px, text against the edges). The causes were in Semi itself: a 13px body size with most examples in 12px, sizes without a line height, padding left to the call site with no rule, and spacing as bare numbers. This release fixes those and the high-severity accessibility issues of the audit.
+
+### Changed
+- **Body text is 14px** (`text-ui` 13 → 14px, `text-ui-lg` 14 → 15px) at regular and airy density; `data-density="compact"` keeps 13 / 14px. `text-label` (12px) is now documented for short marks only (field labels, buttons, times, counts); running text, table cells and list rows are `text-ui` (`docs/DESIGN_SYSTEM.md` §1, `plugin/rules/AGENTS.md`).
+- **Every type size carries its line height** (`--text-*--line-height`: 1.5 for 11–16px, 1.25 for 18px and up), so `text-ui` no longer inherits a `leading-tight` from a title around it; `leading-*` still overrides.
+- **`<Card>` pads itself**: new `padding` prop, `"card"` (`p-card`, default) · `"panel"` (`p-card sm:p-panel`) · `"none"`. A padding class in `className` (`p-*`, `px-*`, `py-*`) replaces it, so existing `<Card className="p-4">` keeps its padding.
+- `HERO` is `p-card sm:p-panel`, `KpiCard` uses `p-card` (featured `sm:p-panel`), `PageSkeleton` cards `p-card gap-stack`; examples use the Card default.
+- `lint/codemod.mjs` maps `text-[14px]` to `text-ui` (was `text-ui-lg`).
+
+### Added
+- **Semantic spacing tokens** (`tokens.json` "space", multiples of the density unit): `p-card` 16px · `p-panel` 24px · `gap-stack` 12px · `gap-group` 16px · `gap-section` 24px at regular density (90% compact, 115% airy, also on a `data-density` wrapper). Any spacing utility works (`px-card`, `space-y-stack`).
+- **`card-padding`** lint rule (ratchet): a `<Card>`, `CARD` or `CARD_HOVER` with `p-0.5` … `p-2.5`. `p-0` / `padding="none"` (media to the edge) and rows inside a card are not flagged.
+- `examples/modal/layers` (a select and a popover inside a modal); browser tests for Escape / Tab with layers in a Modal and for Calendar `min`.
+
+### Security
+- Dev dependency `next` 16.4.3 → 16.4.6 (GHSA-mfr8-8qww-v76h, GHSA-vc7v-qv4w-wrv8, moderate; `use cache` only, which Semi does not use). `@semi/ui` keeps its `next >=16` peer range.
+
 ### Fixed
 - **Escape and Tab inside dialogs**: the focus trap of `Modal`, `Drawer`, `CommandDialog`, `confirmDialog`, `TaskHost` and `NumPadPopup` caught Escape in the capture phase and stopped it, so Escape in an open `CustomSelect`, `CustomCombobox`, `Popover`, `HoverCard`, `Menu`, `DatePicker`, `Tooltip`, `NavigationMenu` or `SearchInput` inside a dialog closed the whole dialog (and `CommandDialog` could not clear its query). The trap now listens in the bubble phase and skips a key a layer already handled (`preventDefault()` / `stopPropagation()`): the first Escape closes the layer, the next the dialog. Tab inside a layer portaled to `body` (Popover, Menu, select list) was pulled back into the dialog; the trap now leaves such layers alone (they carry `data-semi-floating`) and sends focus that leaves the dialog anywhere else back to the last focused element in it. Tab is still trapped in the capture phase, so a widget that stops its own key events cannot let focus out. `ChatPanel` handles Escape on its own panel in both placements (over a modal its portal wrapper stops key events from reaching the modal).
 - **Triggers keep their own props**: `Popover`, `HoverCard`, `Tooltip` and `Menu` cloned the trigger with their own `ref`, `onClick`, `onFocus`, `onBlur`, `onKeyDown`…, silently dropping the app's. They now compose: the trigger's ref is set too, its handler runs first and `preventDefault()` there skips ours, `aria-describedby` ids are joined.
@@ -13,8 +32,11 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 - **`Toast`**: auto-dismiss also pauses while keyboard focus is inside the toast, not only on hover (WCAG 2.2.1: keyboard users can reach the action).
 - **`Pagination`**: page buttons' accessible name comes from the locale (`pageN`, vi "Trang 3" / en "Page 3") instead of hard-coded Vietnamese.
 
-### Added
-- `examples/modal/layers` (a select and a popover inside a modal) and browser tests for Escape / Tab with layers in a Modal and for Calendar `min`.
+### Migration
+- No code migration. Body text grows 1px (13 → 14px) and text gets a paired line height, so check dense screens (tables, toolbars, sidebars with fixed widths). A dense tool keeps 13px with `data-density="compact"` (also 10% tighter spacing; set it in `semi-lint.json` `"density"` and on `<html>`).
+- `<Card>` without a padding class now has `p-card`: a card with an edge-to-edge image or table needs `padding="none"`.
+- Replace `p-4` / `gap-3` / `gap-4` / `gap-5` on cards and sections with `p-card` / `gap-stack` / `gap-group` / `gap-section` when you touch them; `card-padding` flags only cards tighter than `p-card`.
+
 
 ## [0.27.0] - 2026-11-18
 

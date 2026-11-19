@@ -43,7 +43,7 @@ export const HARD = [
   [
     "tw-text-size",
     /\btext-(xs|sm|base|lg|xl)\b/,
-    "use the type scale: text-caption 11 · text-label 12 · text-ui 13 · text-ui-lg 14 · text-title 15 · text-title-lg 16, KPI figures text-kpi sm:text-heading (KpiCard), titles text-heading sm:text-display (PageTitle)",
+    "use the type scale: text-caption 11 · text-label 12 · text-ui 14 · text-ui-lg 15 (compact 13 · 14) · text-title 15 · text-title-lg 16, KPI figures text-kpi sm:text-heading (KpiCard), titles text-heading sm:text-display (PageTitle)",
   ],
   ["grey-surface", /bg-gray-(800|900)|border-gray-700/, "use the surface tokens (bg-panel, border-line…)"],
   [
@@ -128,7 +128,12 @@ export const RATCHET = [
   ["hex-colour-class", null, "No arbitrary colour values (bg-[#fff], text-[rgb(…)], border-[hsl(…)]): use colour tokens."],
   ["literal-colour-value", null, "No literal CSS colours in code (\"#fff\", \"rgb(…)\" in style props or configs): use var(--color-…) tokens."],
   ["radius-token", null, "Radii are style tokens: rounded-chip (marks, checkboxes, inline code) · rounded-control (buttons, inputs, tiles, rows) · rounded-card · rounded-panel (hero, modal, drawer, sidebar), plus rounded-full / rounded-none. Not rounded / rounded-lg / rounded-xl / rounded-[Npx]: those do not follow the app's style."],
-  ["arbitrary-text-size", null, "Use the type scale instead of text-[Npx]: text-caption 11 · label 12 · ui 13 · ui-lg 14 · title 15 · title-lg 16 · kpi 18 · heading-sm 20 · heading 22 · heading-lg 24 · display 26."],
+  ["arbitrary-text-size", null, "Use the type scale instead of text-[Npx]: text-caption 11 · label 12 · ui 14 · ui-lg 15 · title 15 · title-lg 16 · kpi 18 · heading-sm 20 · heading 22 · heading-lg 24 · display 26."],
+  [
+    "card-padding",
+    /(?:<Card\b[^>]*?\bclassName=[^>]*?|\$\{CARD(?:_HOVER)?\}[^`]*?|\bcn\(\s*CARD(?:_HOVER)?\b[^)]*?)(?<![\w-])p-(?:0\.5|1|1\.5|2|2\.5)(?![\w.])/g,
+    "A card is never tighter than p-card (16px at regular density): text against the edge of a box reads as a bug. <Card> pads itself; on CARD / CARD_HOVER use p-card (sm:p-panel for a roomy one), or padding=\"none\" / p-0 for media that runs to the edge.",
+  ],
   ["all-caps-label", /\>\s*[A-ZĐẮẰẲẴẶÂẤẦẨẪẬÊẾỀỂỄỆÔỐỒỔỖỘƠỚỜỞỠỢƯỨỪỬỮỰ]{4,}(?:[ .·…]+[A-ZĐ0-9…]+)*\s*</g, "button / label text is sentence case"],
   ["inline-svg-path", /<path\b/g, "add the icon to ICONS in @semi/ui (Icon.tsx) instead of inline <path>"],
   ["thick-stroke", /strokeWidth[=:]\s*\{?"?(2|2\.\d+|3)\b/g, "icon stroke is 1.75"],

@@ -19,7 +19,7 @@ export default function DashboardPage() {
         <KpiCard label="Tỉ lệ huỷ" value="1,8%" sub="-0,4 điểm" tone="good" />
       </div>
       <div className="grid gap-3 @4xl:grid-cols-[2fr_1fr]">
-        <Card className="p-4 space-y-3">
+        <Card className="space-y-3">
           <div className="flex items-center justify-between gap-3">
             <h2 className="text-title font-medium text-contrast">Doanh thu theo kênh</h2>
             <Sparkline label="Tổng doanh thu 8 tuần" values={WEEKS.map((w) => w.online + w.store)} />
@@ -36,7 +36,7 @@ export default function DashboardPage() {
             format={(v) => `${v} tr ₫`}
           />
         </Card>
-        <Card className="p-4 space-y-3">
+        <Card className="space-y-3">
           <h2 className="text-title font-medium text-contrast">Đơn theo trạng thái</h2>
           <DonutChart
             label="Đơn theo trạng thái"

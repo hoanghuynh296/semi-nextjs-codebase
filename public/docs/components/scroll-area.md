@@ -29,7 +29,7 @@ const LINES = Array.from({ length: 24 }, (_, i) => `12:${String(i).padStart(2, "
 
 export default function ScrollAreaLog() {
   return (
-    <Card className="p-0 max-w-md">
+    <Card padding="none" className="max-w-md">
       <ScrollArea label="Nhật ký in" className="h-48">
         <ul className="p-3 space-y-1 text-label text-body tabular-nums">
           {LINES.map((l) => (

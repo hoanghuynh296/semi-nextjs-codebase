@@ -41,7 +41,7 @@ blobs, no `shadow-[0_0_…]` (status dots and power buttons too). Active card = 
 KPI figure (`KpiCard`) `font-figure font-title text-kpi sm:text-heading tabular-nums text-contrast` · section `text-ui`–`text-title`
 font-semibold text-contrast` · UI `text-label font-medium text-body` · label `text-label font-medium text-muted` ·
 caption `text-caption`–`text-label` text-muted` · numbers `tabular-nums` (Geist; `font-mono` only for code) · Geist +
-Montserrat Alternates (`font-display`) · weights medium/semibold · type scale only: `text-caption` 11 · `label` 12 · `ui` 13 · `ui-lg` 14 · `title` 15 · `title-lg` 16 · `kpi` 18 · `heading-sm` 20 · `heading` 22 · `heading-lg` 24 · `display` 26 (no `text-xs/sm`, no `text-[13px]`) ·
+Montserrat Alternates (`font-display`) · weights medium/semibold · type scale only: `text-caption` 11 · `label` 12 · `ui` 14 (compact 13) · `ui-lg` 15 (compact 14) · `title` 15 · `title-lg` 16 · `kpi` 18 · `heading-sm` 20 · `heading` 22 · `heading-lg` 24 · `display` 26 (no `text-xs/sm`, no `text-[13px]`) ·
 sentence case, no ALL CAPS.
 
 **Status, layers, elevation:** callouts / badges `bg-{danger,success,warning,info}-bg border-*-border text-*-fg` (`Alert`) ·

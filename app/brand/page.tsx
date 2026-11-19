@@ -178,7 +178,7 @@ export default function BrandPage() {
                   iconTone="green"
                   tone={result.report.every((r) => r.ok || r.soft) ? "good" : "danger"}
                 />
-                <div className={`${CARD} p-4 space-y-2 @xl:col-span-2`}>
+                <div className={`${CARD} p-card space-y-2 @xl:col-span-2`}>
                   <DemoLabel>Nút chính so với màu thương hiệu</DemoLabel>
                   <div className="flex flex-col gap-2 text-label">
                     {(["dark", "light"] as const).map((t) => {

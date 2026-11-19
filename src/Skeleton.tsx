@@ -26,7 +26,7 @@ export function Loading({ children, className = "", label: labelProp }: { childr
 /** Card placeholder: icon tile + two text lines, then an optional body block. */
 export function SkeletonCard({ body = "h-24", className = "" }: { body?: string | null; className?: string }) {
   return (
-    <div className={`${CARD} p-4 flex flex-col gap-3 ${className}`}>
+    <div className={`${CARD} p-card flex flex-col gap-stack ${className}`}>
       <div className="flex items-center gap-3">
         <Skeleton className="w-10 h-10 !rounded-control shrink-0" />
         <div className="flex-1 flex flex-col gap-2 min-w-0">

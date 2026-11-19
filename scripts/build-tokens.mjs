@@ -44,7 +44,7 @@ const TITLES = {
   gray: "Neutral gray (exact hex, zero blue cast)",
   palette: "Tailwind palettes pinned to v3 hex (v4 OKLCH shifts hues)",
   scale: "v3 scale semantics for rounded / shadow / blur / ring; radius scale lg (controls) / xl (cards) / 2xl (panels)",
-  type: "Type scale: text-caption 11 · label 12 · ui 13 · ui-lg 14 · title 15 · title-lg 16 · kpi 18 · heading-sm 20 · heading 22 · heading-lg 24 · display 26",
+  type: "Type scale: text-caption 11 · label 12 · ui 14 · ui-lg 15 · title 15 · title-lg 16 · kpi 18 · heading-sm 20 · heading 22 · heading-lg 24 · display 26 (compact density: ui 13 · ui-lg 14). Each size carries its line height (1.5 body, 1.25 titles); leading-* overrides it",
   motion: "Easing (ease-out-soft for entering, ease-in-soft for leaving)",
   z: "Global layers (utilities z-sticky … z-tooltip); local stacking inside a component keeps z-10 / z-20",
 };
@@ -82,6 +82,7 @@ for (const [group, entries] of Object.entries(tokens)) {
     continue;
   }
   if (group === "product") continue; // emitted after the styles: [data-density], [data-type-scale]
+  if (group === "space") continue; // emitted as @theme inline after the styles: it reads the scoped --semi-spacing
   if (group === "z") zKeys.push(...Object.keys(entries));
   out += `\n  /* ${TITLES[group] ?? group} */\n`;
   for (const [key, raw] of Object.entries(entries)) {
@@ -129,7 +130,14 @@ if (darkVars.length > 0) {
   // it works on <html> and on any wrapper; the type scale overrides the large text sizes.
   const prod = tokens.product;
   out += `/* Product: density (data-density="${Object.keys(prod.density).join("|")}"), read by the style's spacing token */\n`;
-  for (const [id, d] of Object.entries(prod.density)) if (id !== "regular") out += `[data-density="${id}"] { /* ${d.note} */\n  --density-spacing: ${d.spacing};\n  --semi-spacing: ${d.spacing};\n}\n\n`;
+  for (const [id, d] of Object.entries(prod.density))
+    if (id !== "regular")
+      out += `[data-density="${id}"] { /* ${d.note} */\n  --density-spacing: ${d.spacing};\n  --semi-spacing: ${d.spacing};\n${Object.entries(d.sizes ?? {}).map(([k, v]) => `  --${k}: ${v};\n`).join("")}}\n\n`;
+  // Semantic spacing (tokens.json "space"): inline, so p-card resolves --semi-spacing where it is used and follows a
+  // data-density on any wrapper, like p-4 does
+  const space = Object.entries(tokens.space ?? {}).filter(([k]) => !k.startsWith("$"));
+  if (space.length)
+    out += `/* ${tokens.space.$note} */\n@theme inline {\n${space.map(([k, raw]) => `  --${k}: ${typeof raw === "string" ? raw : raw.value};${typeof raw === "string" || !raw.note ? "" : ` /* ${raw.note} */`}`).join("\n")}\n}\n\n`;
   out += `/* Product: type scale (data-type-scale="${Object.keys(prod.typeScale).join("|")}") */\n`;
   for (const [id, t] of Object.entries(prod.typeScale)) if (t.sizes) out += `[data-type-scale="${id}"] { /* ${t.note} */\n${Object.entries(t.sizes).map(([k, v]) => `  --${k}: ${v};`).join("\n")}\n}\n\n`;
   out += zKeys.map((k) => `@utility ${k} {\n  z-index: var(--${k});\n}\n`).join("") + "\n";

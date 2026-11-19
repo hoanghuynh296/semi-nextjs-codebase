@@ -6,7 +6,7 @@ export default function CarouselProducts() {
   return (
     <Carousel label="Sản phẩm nổi bật" perView={3}>
       {ITEMS.map((name, i) => (
-        <Card key={name} className="p-3 space-y-2">
+        <Card key={name} className="space-y-2">
           <AspectRatio ratio={4 / 3} className="rounded-control bg-field">
             <div className="flex h-full items-center justify-center text-display font-semibold text-muted">{i + 1}</div>
           </AspectRatio>

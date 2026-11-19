@@ -140,7 +140,7 @@ export default function FoundationsPage() {
         <h3 className="text-ui-lg font-semibold text-body pt-2">Styles</h3>
         <div className="grid gap-3 md:grid-cols-3">
           {FOUNDATIONS.styles.map((st) => (
-            <div key={st.id} className={`${CARD} p-4 space-y-3`}>
+            <div key={st.id} className={`${CARD} p-card space-y-3`}>
               <div className="flex items-center justify-between gap-2">
                 <span className="text-title font-semibold text-contrast">{st.name}</span>
                 <code className="text-caption text-muted">data-style=&quot;{st.id}&quot;</code>
@@ -178,7 +178,7 @@ export default function FoundationsPage() {
           {FOUNDATIONS.type.map((t) => (
             <div key={t.cls} className="flex flex-wrap items-baseline gap-x-4 gap-y-1 px-3.5 py-2.5">
               <code className="text-label text-muted w-40 shrink-0">{t.cls}</code>
-              <span className="text-caption text-muted tabular-nums w-12 shrink-0">{t.size}</span>
+              <span className="text-caption text-muted tabular-nums w-20 shrink-0">{t.size}</span>
               <span className={`${t.cls} text-contrast font-medium min-w-0`}>Máy in X1 Carbon · 12.450.000 ₫</span>
             </div>
           ))}
