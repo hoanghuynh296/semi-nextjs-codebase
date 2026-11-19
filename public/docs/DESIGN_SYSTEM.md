@@ -581,7 +581,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `SearchInput`, `CustomSelect`, `CustomCombobox`, `DatePicker`, `Pagination` | toolbar and form inputs |
 | `NumberInput` (+ `NumPadPopup`, `useCoarsePointer`) | every number field (app numpad on touch screens) |
 | `SidePanel`, `SidePanelToggle`, `RefreshButton` | tool-app left panel, icon-only reload action |
-| Hooks (`Field.tsx`, `a11y.ts`, `floating.ts`) | `useField` (a custom control reads its `Field`: id, `aria-describedby`, invalid), `useDialog` (focus trap + scroll lock + Escape for a modal-like surface; built on `useFocusTrap` and `useScrollLock`), `useAnchoredPosition` (fixed menu / tooltip next to its trigger, flips above, never clipped), `useCoarsePointer`, `useTheme` |
+| Hooks (`Field.tsx`, `a11y.ts`, `floating.ts`) | `useField` (a custom control reads its `Field`: id, `aria-describedby`, invalid), `useDialog` (focus trap + scroll lock + Escape for a modal-like surface; built on `useFocusTrap` and `useScrollLock`), `useBackdropClose` (a backdrop that wraps its panel closes only on a click that starts and ends on it), `useAnchoredPosition` (fixed menu / tooltip next to its trigger, flips above, never clipped), `useCoarsePointer`, `useTheme` |
 | `@semi/ui/styles` → `surfaces.ts` | `SHELL_*`, `CARD`, `CARD_HOVER`, `CARD_ACTIVE`, `HERO`, `TILE`, `SECTION_*`, `COUNT_PILL`, `EMPTY`, `ICON_BTN` / `ICON_BTN_DANGER`, `STATUS_PILL`, `STATUS_DOT`, `STICKY_TOOLBAR`, `MODAL_*`, `FIELD_LABEL`, `FIELD_INPUT`, `FIELD_TEXTAREA` |
 | `buttons.ts` | `BTN_PRIMARY`, `BTN_SECONDARY`, `BTN_DANGER`, `BTN_ICON`, `MODAL_BTN_*` |
 | `appChrome.ts` | `HEADER_ICON_*`, `headerPrimary`, `HEADER_PILL`, `VIEWPORT_*` |

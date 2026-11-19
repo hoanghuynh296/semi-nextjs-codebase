@@ -6,7 +6,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Icon } from "./Icon";
-import { useDialog } from "./a11y";
+import { useBackdropClose, useDialog } from "./a11y";
 import { useSemiLocale } from "./locale";
 import {
   MODAL_BACKDROP,
@@ -45,6 +45,7 @@ export function Modal({
   const t = useSemiLocale();
   const { titleId } = useDialog(panelRef, open && mounted, onClose);
   const descId = `${titleId}-desc`;
+  const backdrop = useBackdropClose(closeOnBackdrop ? onClose : undefined);
 
   useEffect(() => {
     setMounted(true);
@@ -53,7 +54,7 @@ export function Modal({
   if (!open || !mounted) return null;
 
   return createPortal(
-    <div className={MODAL_BACKDROP} onClick={closeOnBackdrop ? onClose : undefined}>
+    <div className={MODAL_BACKDROP} {...backdrop}>
       <div
         ref={panelRef}
         role="dialog"

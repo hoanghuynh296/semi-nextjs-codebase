@@ -15,7 +15,8 @@
     }
   ],
   "a11y": [
-    "Shown on focus too, linked with aria-describedby; never the only place of essential information."
+    "Shown on focus too, linked with aria-describedby; never the only place of essential information.",
+    "The pointer can move onto the tooltip without it closing; Escape hides it (WCAG 1.4.13)."
   ],
   "examples": [
     {

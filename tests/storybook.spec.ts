@@ -674,3 +674,55 @@ test("side menu: items have icon in desktop mode, and keeps its scroll position 
   await expect(page.locator("aside").getByRole("link", { name: "Menubar" })).toHaveAttribute("aria-current", "page");
   expect(await page.locator("aside .overflow-y-auto").first().evaluate((el) => el.scrollTop)).toBe(before);
 });
+
+test("Medium a11y: modal drag-out, hoverable tooltip, toast announcer, inert slides, equal slider thumbs", async ({ page }) => {
+  // a press that starts in the panel and ends on the backdrop does not close the Modal; a real backdrop click does
+  await open(page, "/components/modal/", "dark");
+  await example(page, "modal/basic").getByRole("button", { name: "Cấu hình in" }).click();
+  const dialog = page.getByRole("dialog");
+  const box = (await dialog.getByRole("textbox").first().boundingBox())!;
+  await page.mouse.move(box.x + 10, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(4, 4, { steps: 5 });
+  await page.mouse.up();
+  await expect(dialog).toBeVisible();
+  await page.mouse.click(4, 4);
+  await expect(dialog).toBeHidden();
+
+  // the pointer can move from the trigger onto the tooltip without it closing (WCAG 1.4.13)
+  await open(page, "/components/tooltip/", "dark");
+  await example(page, "tooltip/icon-button").getByRole("button", { name: "Làm mới" }).hover();
+  const tip = page.getByRole("tooltip");
+  await expect(tip).toBeVisible();
+  const tb = (await tip.boundingBox())!;
+  await page.mouse.move(tb.x + tb.width / 2, tb.y + tb.height / 2, { steps: 3 });
+  await page.waitForTimeout(400);
+  await expect(tip).toBeVisible();
+
+  // a toast sits in a polite live region of the labelled stack; no live region is nested in another
+  await open(page, "/components/toast/", "dark");
+  await page.getByRole("button", { name: "Cảnh báo" }).click();
+  const stack = page.getByRole("region", { name: "Thông báo" });
+  await expect(stack.locator('[aria-live="polite"]')).toContainText("Mất kết nối máy in");
+  expect(await stack.locator("[aria-live] [aria-live], [aria-live] [role=alert], [aria-live] [role=status]").count()).toBe(0);
+
+  // slides off screen are inert (3 per view at desktop width: the 4th and 5th)
+  await open(page, "/components/carousel/", "dark");
+  const slides = example(page, "carousel/products").locator('[aria-roledescription="slide"]');
+  await expect(slides.nth(0)).not.toHaveAttribute("inert", /.*/);
+  await expect(slides.nth(3)).toHaveAttribute("inert", "");
+
+  // two range thumbs on one value can be pulled apart to the right
+  await open(page, "/components/slider/", "dark");
+  const thumbs = example(page, "slider/range").getByRole("slider");
+  await thumbs.nth(0).focus();
+  await page.keyboard.press("End"); // the low thumb stops at the high one: both 600
+  await expect(thumbs.nth(0)).toHaveAttribute("aria-valuenow", "600");
+  const th = (await thumbs.nth(1).boundingBox())!;
+  await page.mouse.move(th.x + th.width / 2, th.y + th.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(th.x + th.width / 2 + 80, th.y + th.height / 2, { steps: 6 });
+  await page.mouse.up();
+  await expect(thumbs.nth(0)).toHaveAttribute("aria-valuenow", "600");
+  expect(Number(await thumbs.nth(1).getAttribute("aria-valuenow"))).toBeGreaterThan(600);
+});

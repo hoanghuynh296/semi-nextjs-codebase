@@ -2,7 +2,11 @@
 
 // Date field with an app-styled calendar popover (the browser's own date popup is white and ignores the theme).
 // Values are local days "YYYY-MM-DD"; display is dd/mm/yyyy. The grid is Calendar (keyboard: arrows, PageUp/Down…).
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { FLOATING_LAYER } from "./a11y";
+import { useField } from "./Field";
+import { useAnchoredPosition } from "./floating";
 import { useSemiLocale } from "./locale";
 import { Icon } from "./Icon";
 import { Calendar, parseDay } from "./Calendar";
@@ -15,6 +19,8 @@ export function DatePicker({
   min,
   max,
   ariaLabel,
+  disabled = false,
+  id,
   className = "",
 }: {
   value: string;
@@ -22,68 +28,96 @@ export function DatePicker({
   /** Earliest / latest selectable day ("YYYY-MM-DD"). */
   min?: string;
   max?: string;
+  /** Name when there is no `Field` label ("Ngày in"); the button reads "<name>: <date>". */
   ariaLabel?: string;
+  disabled?: boolean;
+  id?: string;
   className?: string;
 }) {
   const t = useSemiLocale();
+  const field = useField();
   const [open, setOpen] = useState(false);
   const selected = parseDay(value);
-  const ref = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const popRef = useRef<HTMLDivElement>(null);
+  const valueId = useId();
+  // in a portal with fixed positioning: a scrolling panel or a modal never clips the calendar
+  const pos = useAnchoredPosition(buttonRef, open, { align: "right", minWidth: 0, gap: 6 });
 
   useEffect(() => {
     if (!open) return;
-    const onDown = (e: MouseEvent) => ref.current && !ref.current.contains(e.target as Node) && setOpen(false);
+    const onDown = (e: PointerEvent) => {
+      const el = e.target as Node;
+      if (!popRef.current?.contains(el) && !buttonRef.current?.contains(el)) setOpen(false);
+    };
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
       e.preventDefault(); // captured before a Modal's focus trap: closes the calendar, not the Modal
       setOpen(false);
       buttonRef.current?.focus();
     };
-    document.addEventListener("mousedown", onDown);
+    document.addEventListener("pointerdown", onDown);
     document.addEventListener("keydown", onKey, true);
     return () => {
-      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("pointerdown", onDown);
       document.removeEventListener("keydown", onKey, true);
     };
   }, [open]);
 
   const label = selected ? `${pad(selected.getDate())}/${pad(selected.getMonth() + 1)}/${selected.getFullYear()}` : t.selectDate;
+  const name = ariaLabel ?? (field ? undefined : t.selectDate);
 
   return (
-    <div ref={ref} className={`relative inline-block ${className}`}>
+    <div className={`relative inline-block ${className}`}>
       <button
         ref={buttonRef}
+        id={id ?? field?.id}
         type="button"
-        aria-label={ariaLabel ? `${ariaLabel}: ${label}` : undefined}
+        disabled={disabled}
+        // named "<name>: <date>", or by the Field label followed by the date
+        aria-label={name ? `${name}: ${label}` : undefined}
+        aria-labelledby={!name && field ? `${field.labelId} ${valueId}` : undefined}
+        aria-describedby={field?.describedBy}
+        aria-invalid={field?.invalid || undefined}
         aria-haspopup="dialog"
         aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2 bg-panel border border-line rounded-control text-contrast text-label font-medium tabular-nums px-2.5 h-control hover:border-line-hover focus:outline-none focus:border-line-hover transition"
+        className="flex items-center gap-2 bg-panel border border-line rounded-control text-contrast text-label font-medium tabular-nums px-2.5 h-control hover:border-line-hover focus:outline-none focus:border-line-hover aria-invalid:border-danger-border disabled:opacity-40 disabled:cursor-not-allowed transition"
       >
-        <span>{label}</span>
+        <span id={valueId}>{label}</span>
         <Icon name="calendar" className="w-4 h-4 text-muted" />
       </button>
 
-      {open && (
-        <div
-          role="dialog"
-          aria-label={ariaLabel ?? t.selectDate}
-          className="absolute right-0 mt-1.5 bg-panel/95 backdrop-blur-xl border border-line rounded-card shadow-overlay z-popover p-3"
-        >
-          <Calendar
-            value={value}
-            min={min}
-            max={max}
-            autoFocus
-            onChange={(day) => {
-              onChange(day);
-              setOpen(false);
-              buttonRef.current?.focus();
+      {open &&
+        pos &&
+        createPortal(
+          <div
+            {...FLOATING_LAYER}
+            ref={popRef}
+            role="dialog"
+            aria-label={ariaLabel ?? t.selectDate}
+            // tabbing out of the calendar closes it
+            onBlur={(e) => {
+              const next = e.relatedTarget as Node | null;
+              if (next && !popRef.current?.contains(next) && !buttonRef.current?.contains(next)) setOpen(false);
             }}
-          />
-        </div>
-      )}
+            style={{ left: pos.left, top: pos.top, bottom: pos.bottom }}
+            className="fixed bg-panel/95 backdrop-blur-xl border border-line rounded-card shadow-overlay z-popover p-3"
+          >
+            <Calendar
+              value={value}
+              min={min}
+              max={max}
+              autoFocus
+              onChange={(day) => {
+                onChange(day);
+                setOpen(false);
+                buttonRef.current?.focus();
+              }}
+            />
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }

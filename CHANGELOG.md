@@ -4,6 +4,30 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.28.1] - 2026-11-20
+
+The medium-severity accessibility issues of the audit.
+
+### Fixed
+- **`Slider`**: two range thumbs on the same value can be dragged apart in either direction (the press picks the side the pointer is on, or the way the drag goes); a cancelled touch or a lost pointer capture ends the drag (no leaked listeners); each range thumb has its own name ("Khoảng giá từ" / "Khoảng giá đến", locale `rangeLow` / `rangeHigh`).
+- **`Tabs`**: when `value` matches no enabled tab, the first enabled tab is in the tab order (the tab list was unreachable by keyboard); ids and focus lookups use the position, so keys with spaces or quotes work.
+- **`Switch`**: `className` applies when the switch has no label or description.
+- **`Tooltip`**: the pointer can move onto the tooltip without it closing (WCAG 1.4.13 hoverable; it was `pointer-events-none`).
+- **`ContextMenu`**: the focusable area is a named group (`aria-label` = the menu's label, `aria-keyshortcuts="Shift+F10"`) instead of an unnamed tab stop.
+- **`Menubar`**: closing no longer moves focus inside a state updater (ran twice under StrictMode).
+- **`NavigationMenu`**: the open panel closes when focus leaves the nav; the phone menu button has `aria-expanded` / `aria-haspopup`.
+- **`Carousel`**: dots and the last page follow the one slide shown on phones (all slides reachable); arrow keys move slides only when the track itself has focus (no longer hijacked in a field inside a slide); slides off screen are `inert`.
+- **`Modal`, `NumPadPopup`**: the backdrop closes only on a click that starts and ends on it, not after a drag from inside the panel (new `useBackdropClose` in `a11y.ts`, internal).
+- **Scroll lock** (`useScrollLock`): the scrollbar's width is added as body padding, so the page does not shift when a dialog opens.
+- **`Toast`**: `role="alert"` / `role="status"` cards were nested in a polite live region (read twice or not at all, depending on the screen reader). The stack is now a labelled region ("Thông báo", locale `notifications`) holding two sibling live regions, danger toasts assertive and the rest polite; the cards carry no live role. Danger toasts sit above the others.
+- **`DatePicker`**: the calendar opens in a portal (no longer clipped by a scrolling panel or a modal) and closes when focus leaves it; it reads `Field` (id, label + date as its name, `aria-describedby`, invalid) and takes `disabled` and `id`.
+
+### Added
+- Browser test for the above (modal drag-out, hoverable tooltip, toast announcer, inert slides, equal slider thumbs).
+
+### Migration
+- No code migration. A test that found a toast with `getByRole("alert")` / `getByRole("status")` should find it by text or inside `getByRole("region", { name: "Thông báo" })`.
+
 ## [0.28.0] - 2026-11-20
 
 Roomier, readable defaults: agents kept building cramped panels (cards with `p-2`, sentences in 12px, text against the edges). The causes were in Semi itself: a 13px body size with most examples in 12px, sizes without a line height, padding left to the call site with no rule, and spacing as bare numbers. This release fixes those and the high-severity accessibility issues of the audit.

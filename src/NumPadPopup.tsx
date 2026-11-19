@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { useDialog } from "./a11y";
+import { useBackdropClose, useDialog } from "./a11y";
 import { useSemiLocale } from "./locale";
 import { createPortal } from "react-dom";
 import { Icon } from "./Icon";
@@ -104,6 +104,7 @@ export function NumPadPopup({ label, unit, initial, integer, allowPercent, onCom
   const panelRef = useRef<HTMLDivElement>(null);
   const strings = useSemiLocale();
   const { titleId } = useDialog(panelRef, true, onClose);
+  const backdrop = useBackdropClose(onClose);
 
   const press = (k: string) => {
     setError(false);
@@ -180,7 +181,7 @@ export function NumPadPopup({ label, unit, initial, integer, allowPercent, onCom
   return createPortal(
     <div
       className="fixed inset-0 z-keypad bg-overlay backdrop-blur-lg flex items-end sm:items-center justify-center p-3"
-      onClick={onClose}
+      {...backdrop}
     >
       <div
         ref={panelRef}
