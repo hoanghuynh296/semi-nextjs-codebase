@@ -62,6 +62,7 @@ export function NavigationMenu({
       className={cn("relative", className)}
       onKeyDown={(e) => {
         if (e.key === "Escape" && open !== null) {
+          e.preventDefault();
           btnRefs.current[open]?.focus();
           setOpen(null);
         }

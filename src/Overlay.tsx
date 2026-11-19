@@ -3,10 +3,11 @@
 // Floating layers anchored to a trigger: Tooltip (hint on hover / focus), Menu (action list, WAI-ARIA menu button) and
 // ContextMenu (the same list opened at the pointer).
 // Both render in a portal with fixed positioning, so scrolling panels and modals never clip them.
-import React, { cloneElement, isValidElement, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import React, { isValidElement, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Icon, type IconName } from "./Icon";
-import { useAnchoredPosition, type AnchoredPosition } from "./floating";
+import { cloneTrigger, useAnchoredPosition, type AnchoredPosition } from "./floating";
+import { FLOATING_LAYER } from "./a11y";
 import { useSemiLocale } from "./locale";
 import { BTN_ICON, BTN_SECONDARY } from "../styles/buttons";
 import { cn } from "../styles/utils";
@@ -25,9 +26,14 @@ export function Tooltip({ content, children, side = "top" }: { content: React.Re
   useEffect(() => () => void (timer.current && clearTimeout(timer.current)), []);
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    // capture, before a Modal's focus trap: Escape hides the tooltip only (WCAG 1.4.13 dismissible)
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      e.preventDefault();
+      setOpen(false);
+    };
+    document.addEventListener("keydown", onKey, true);
+    return () => document.removeEventListener("keydown", onKey, true);
   }, [open]);
 
   if (!isValidElement(children)) return children;
@@ -39,11 +45,11 @@ export function Tooltip({ content, children, side = "top" }: { content: React.Re
     setOpen(false);
   };
   const child = children as React.ReactElement<Record<string, unknown>>;
-  const trigger = cloneElement(child, {
+  const trigger = cloneTrigger(child, {
     ref: (el: HTMLElement | null) => {
       ref.current = el;
     },
-    "aria-describedby": open ? id : (child.props["aria-describedby"] as string | undefined),
+    "aria-describedby": open ? id : undefined,
     onPointerEnter: show,
     onPointerLeave: hide,
     onFocus: () => setOpen(true),
@@ -131,6 +137,7 @@ function MenuPanel({
   };
   return createPortal(
     <div
+      {...FLOATING_LAYER}
       ref={panelRef}
       id={id}
       role="menu"
@@ -236,7 +243,7 @@ export function Menu({
   return (
     <>
       {trigger && isValidElement(trigger) ? (
-        cloneElement(trigger as React.ReactElement<Record<string, unknown>>, triggerProps)
+        cloneTrigger(trigger, triggerProps)
       ) : (
         <button type="button" aria-label={label} title={label} className={cn(BTN_SECONDARY, BTN_ICON)} {...triggerProps}>
           <Icon name="more" className="w-4 h-4" />

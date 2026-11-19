@@ -6,6 +6,9 @@ import React, { useEffect, useId, useRef, useState } from "react";
 import { useSemiLocale } from "./locale";
 import { useField } from "./Field";
 import { Icon } from "./Icon";
+import { createPortal } from "react-dom";
+import { FLOATING_LAYER } from "./a11y";
+import { useAnchoredPosition } from "./floating";
 
 interface Option {
   value: string;
@@ -43,7 +46,10 @@ export function CustomCombobox({
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
   const listId = useId();
+  // the list is portaled with fixed positioning, so a scrolling panel or a modal never clips it
+  const pos = useAnchoredPosition(containerRef, open, { minWidth: 0, gap: 6 });
 
   const normalizedOptions: Option[] = options.map((opt) => (typeof opt === "string" ? { value: opt, label: opt } : opt));
   const q = (value || "").toLowerCase();
@@ -53,7 +59,8 @@ export function CustomCombobox({
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) setOpen(false);
+      const el = e.target as Node;
+      if (!containerRef.current?.contains(el) && !listRef.current?.contains(el)) setOpen(false);
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -96,7 +103,7 @@ export function CustomCombobox({
           role="combobox"
           aria-autocomplete="list"
           aria-expanded={open}
-          aria-controls={listId}
+          aria-controls={open ? listId : undefined}
           aria-activedescendant={open && active >= 0 ? optionId(active) : undefined}
           aria-label={ariaLabel}
           aria-describedby={describedBy ?? field?.describedBy}
@@ -110,6 +117,11 @@ export function CustomCombobox({
             setActive(-1);
           }}
           onFocus={() => setOpen(true)}
+          onBlur={(e) => {
+            // tabbing (or clicking) away closes the list; option clicks keep focus (mousedown is prevented)
+            const next = e.relatedTarget as Node | null;
+            if (!next || (!containerRef.current?.contains(next) && !listRef.current?.contains(next))) setOpen(false);
+          }}
           onKeyDown={onKeyDown}
           placeholder={placeholder}
           className="w-full h-field bg-field border border-line hover:border-line-hover rounded-control pl-3 pr-8 text-ui text-contrast placeholder:text-muted focus:border-focus transition outline-none disabled:opacity-40 aria-invalid:border-danger-border"
@@ -126,11 +138,15 @@ export function CustomCombobox({
         </button>
       </div>
 
-      {open && (
+      {open && pos && createPortal(
         <div
+          {...FLOATING_LAYER}
+          ref={listRef}
           id={listId}
           role="listbox"
-          className="absolute left-0 right-0 mt-1.5 max-h-56 overflow-y-auto bg-panel border border-line rounded-control shadow-overlay z-popover p-1 flex flex-col gap-0.5"
+          aria-label={ariaLabel ?? placeholder}
+          style={{ left: pos.left, top: pos.top, bottom: pos.bottom, width: pos.minWidth, maxHeight: Math.min(224, pos.maxHeight) }}
+          className="fixed overflow-y-auto overscroll-contain bg-panel border border-line rounded-control shadow-overlay z-popover p-1 flex flex-col gap-0.5"
         >
           {filteredOptions.length === 0 ? (
             <div role="status" className="px-3 py-2 text-label text-muted">
@@ -162,7 +178,8 @@ export function CustomCombobox({
               );
             })
           )}
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );

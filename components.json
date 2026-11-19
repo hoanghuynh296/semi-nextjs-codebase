@@ -2242,7 +2242,7 @@
       "kind": "hook",
       "module": "src/a11y.ts",
       "client": true,
-      "summary": "Trap keyboard focus inside `ref` while `active`; Escape calls onEscape (captured so it closes only the top dialog). Focus goes to the element with [data-autofocus] or [autofocus], else the first focusable, else the container."
+      "summary": "Trap keyboard focus inside `ref` while `active`; Escape calls onEscape (only the top dialog closes). Focus goes to the element with [data-autofocus] or [autofocus], else the first focusable, else the container. Inner widgets get Escape first: the trap listens in the bubble phase and does nothing when a widget inside already handled the key (`stopPropagation()` in a React handler, or `preventDefault()`), so Escape in an open select, popover or menu inside a Modal closes that layer, not the Modal. Floating layers portaled to `body` (`FLOATING_LAYER`) keep their own Tab handling; focus that lands anywhere else outside the dialog is sent back."
     },
     {
       "name": "useDialog",
@@ -2350,6 +2350,20 @@
       "module": "src/confirmDialog.tsx",
       "client": true,
       "summary": "Resolves true when the user picks the confirm button. A dialog opened while another shows cancels the first."
+    },
+    {
+      "name": "composeRefs",
+      "kind": "function",
+      "module": "src/floating.ts",
+      "client": true,
+      "summary": "One callback ref that sets every ref given (the trigger's own `ref` and ours)."
+    },
+    {
+      "name": "cloneTrigger",
+      "kind": "function",
+      "module": "src/floating.ts",
+      "client": true,
+      "summary": "Clone a trigger element with our props without losing its own: event handlers run theirs first, then ours unless theirs called `preventDefault()`; refs are composed; `aria-describedby` ids are joined. Used by Popover, HoverCard, Tooltip and Menu, whose `trigger` is the app's own Button."
     },
     {
       "name": "headerPrimary",
@@ -2506,6 +2520,13 @@
       "module": "src/Toast.tsx",
       "client": true,
       "summary": "Icon + text colour per status tone (shared by Toast and Alert)."
+    },
+    {
+      "name": "FLOATING_LAYER",
+      "kind": "constant",
+      "module": "src/a11y.ts",
+      "client": true,
+      "summary": "Marks a floating layer (Popover, Menu, select list…) that is rendered in a portal on `body`: focus inside it counts as inside the dialog that opened it, so the focus trap leaves it alone. Spread on the portaled element."
     },
     {
       "name": "vi",

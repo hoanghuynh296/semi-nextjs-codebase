@@ -2,7 +2,8 @@
 
 // Position a fixed layer (menu, tooltip) next to its trigger so it is never clipped by a scrolling panel or a modal.
 // Flips above when there is no room below; stays inside the viewport with an 8px margin.
-import { useCallback, useLayoutEffect, useState, type RefObject } from "react";
+import type React from "react";
+import { cloneElement, useCallback, useLayoutEffect, useState, type RefObject } from "react";
 
 export interface AnchoredPosition {
   left: number;
@@ -46,4 +47,38 @@ export function useAnchoredPosition(
   }, [open, place]);
 
   return pos;
+}
+
+type AnyHandler = (e: { defaultPrevented?: boolean }) => void;
+type AnyRef = ((el: HTMLElement | null) => void | (() => void)) | { current: HTMLElement | null } | null | undefined;
+
+/** One callback ref that sets every ref given (the trigger's own `ref` and ours). */
+export function composeRefs(...refs: AnyRef[]) {
+  return (el: HTMLElement | null) => {
+    for (const r of refs) {
+      if (typeof r === "function") r(el);
+      else if (r) r.current = el;
+    }
+  };
+}
+
+/**
+ * Clone a trigger element with our props without losing its own: event handlers run theirs first, then ours unless
+ * theirs called `preventDefault()`; refs are composed; `aria-describedby` ids are joined. Used by Popover, HoverCard,
+ * Tooltip and Menu, whose `trigger` is the app's own Button.
+ */
+export function cloneTrigger(child: React.ReactElement, ours: Record<string, unknown>) {
+  const theirs = (child.props ?? {}) as Record<string, unknown>;
+  const merged: Record<string, unknown> = { ...ours };
+  for (const [k, v] of Object.entries(ours)) {
+    const t = theirs[k];
+    if (k === "ref") merged.ref = composeRefs(t as AnyRef, v as AnyRef);
+    else if (/^on[A-Z]/.test(k) && typeof t === "function" && typeof v === "function")
+      merged[k] = (e: { defaultPrevented?: boolean }) => {
+        (t as AnyHandler)(e);
+        if (!e?.defaultPrevented) (v as AnyHandler)(e);
+      };
+    else if (k === "aria-describedby") merged[k] = [t, v].filter(Boolean).join(" ") || undefined;
+  }
+  return cloneElement(child as React.ReactElement<Record<string, unknown>>, merged);
 }

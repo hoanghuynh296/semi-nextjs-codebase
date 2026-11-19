@@ -2,7 +2,7 @@
 
 // A month grid to pick one day or a range of days. Values are local days "YYYY-MM-DD"; weeks start on Monday.
 // DatePicker shows it in a popover; place it inline for schedules and report filters.
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Icon } from "./Icon";
 import { useSemiLocale } from "./locale";
 import { FOCUS_RING, cn } from "../styles/utils";
@@ -21,6 +21,13 @@ const addMonths = (d: Date, n: number) => {
   const last = new Date(target.getFullYear(), target.getMonth() + 1, 0).getDate();
   return new Date(target.getFullYear(), target.getMonth(), Math.min(d.getDate(), last));
 };
+
+const noSubscribe = () => () => {};
+/** Today as "YYYY-MM-DD" on the client; null on the server and during hydration, so the markup never depends on the
+ * server's clock or time zone (a server in UTC and a browser in UTC+7 disagree on the day and, near the 1st, the month). */
+function useToday(): string | null {
+  return useSyncExternalStore(noSubscribe, () => isoDay(new Date()), () => null);
+}
 
 export interface DayRange {
   start?: string;
@@ -51,19 +58,42 @@ export function Calendar(props: CalendarProps) {
   const t = useSemiLocale();
   const range = props.mode === "range";
   const selected = range ? parseDay(props.value.start) : parseDay(props.value);
-  const [focus, setFocus] = useState<Date>(() => selected ?? new Date());
+  const selectedKey = selected ? isoDay(selected) : null;
+  const today = useToday();
+  // null until a value or today is known (server render without a value): the grid renders no days then
+  const [focusState, setFocus] = useState<Date | null>(selected);
+  // follow a value changed from outside (a preset, a reset): show its month
+  const [prevSelected, setPrevSelected] = useState(selectedKey);
+  if (selectedKey !== prevSelected) {
+    setPrevSelected(selectedKey);
+    if (selected) setFocus(selected);
+  }
+  const disabled = (key: string) => Boolean((min && key < min) || (max && key > max));
+  /** Keep a day inside min / max, so the focused day is never a disabled button (focus would be lost). */
+  const clamp = (d: Date) => {
+    const key = isoDay(d);
+    if (min && key < min) return parseDay(min) ?? d;
+    if (max && key > max) return parseDay(max) ?? d;
+    return d;
+  };
+  const fallback = parseDay(today) ?? null;
+  const focus = focusState ?? (fallback ? clamp(fallback) : null);
   const [hover, setHover] = useState<string | null>(null);
   const gridRef = useRef<HTMLDivElement>(null);
   const moved = useRef(autoFocus);
-  const today = isoDay(new Date());
-  const view = { y: focus.getFullYear(), m: focus.getMonth() };
+  const view = focus ? { y: focus.getFullYear(), m: focus.getMonth() } : null;
+  // a month is reachable when one of its days is inside min / max
+  const monthOpen = (d: Date) => {
+    const firstKey = isoDay(new Date(d.getFullYear(), d.getMonth(), 1));
+    const lastKey = isoDay(new Date(d.getFullYear(), d.getMonth() + 1, 0));
+    return !(max && firstKey > max) && !(min && lastKey < min);
+  };
 
   useEffect(() => {
     if (!moved.current) return;
     gridRef.current?.querySelector<HTMLElement>('[tabindex="0"]')?.focus();
-  }, [focus]);
+  }, [focus?.getTime()]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const disabled = (key: string) => Boolean((min && key < min) || (max && key > max));
   const pick = (key: string) => {
     if (disabled(key)) return;
     if (props.mode !== "range") return props.onChange(key);
@@ -73,9 +103,11 @@ export function Calendar(props: CalendarProps) {
   };
   const go = (d: Date) => {
     moved.current = true;
-    setFocus(d);
+    setFocus(clamp(d));
   };
+  const page = (n: number) => focus && setFocus(clamp(addMonths(focus, n)));
   const onKey = (e: React.KeyboardEvent) => {
+    if (!focus) return;
     const dow = (focus.getDay() + 6) % 7;
     const to = {
       ArrowLeft: addDays(focus, -1),
@@ -97,10 +129,11 @@ export function Calendar(props: CalendarProps) {
   };
 
   // 6 weeks from the Monday on or before the 1st
-  const first = new Date(view.y, view.m, 1);
-  const start = addDays(first, -((first.getDay() + 6) % 7));
-  const weeks = Array.from({ length: 6 }, (_, w) => Array.from({ length: 7 }, (_, d) => addDays(start, w * 7 + d)));
-  const focusKey = isoDay(focus);
+  const first = view ? new Date(view.y, view.m, 1) : null;
+  const start = first ? addDays(first, -((first.getDay() + 6) % 7)) : null;
+  const weeks = start ? Array.from({ length: 6 }, (_, w) => Array.from({ length: 7 }, (_, d) => addDays(start, w * 7 + d))) : [];
+  const focusKey = focus ? isoDay(focus) : null;
+  const monthLabel = view ? t.monthYear(view.m + 1, view.y) : "";
   const r = range ? props.value : null;
   const rangeEnd = r?.end ?? (r?.start && hover && hover > r.start ? hover : undefined);
   const navBtn = cn("w-8 h-8 rounded-control flex items-center justify-center text-muted hover:text-contrast hover:bg-raised transition", FOCUS_RING);
@@ -108,17 +141,17 @@ export function Calendar(props: CalendarProps) {
   return (
     <div className={cn("w-[264px] flex flex-col gap-2", className)}>
       <div className="flex items-center justify-between">
-        <button type="button" aria-label={t.prevMonth} onClick={() => setFocus(addMonths(focus, -1))} className={navBtn}>
+        <button type="button" aria-label={t.prevMonth} disabled={!focus || !monthOpen(addMonths(focus, -1))} onClick={() => page(-1)} className={cn(navBtn, "disabled:opacity-30 disabled:pointer-events-none")}>
           <Icon name="back" className="w-4 h-4" />
         </button>
         <span className="text-ui font-medium text-contrast tabular-nums" aria-live="polite">
-          {t.monthYear(view.m + 1, view.y)}
+          {monthLabel}
         </span>
-        <button type="button" aria-label={t.nextMonth} onClick={() => setFocus(addMonths(focus, 1))} className={navBtn}>
+        <button type="button" aria-label={t.nextMonth} disabled={!focus || !monthOpen(addMonths(focus, 1))} onClick={() => page(1)} className={cn(navBtn, "disabled:opacity-30 disabled:pointer-events-none")}>
           <Icon name="chevron" className="w-4 h-4" />
         </button>
       </div>
-      <div ref={gridRef} role="grid" aria-label={t.monthYear(view.m + 1, view.y)} onKeyDown={onKey} onPointerLeave={() => setHover(null)}>
+      <div ref={gridRef} role="grid" aria-label={monthLabel || undefined} onKeyDown={onKey} onPointerLeave={() => setHover(null)}>
         <div role="row" className="grid grid-cols-7 text-center text-caption text-muted">
           {t.weekdaysShort.map((w) => (
             <span key={w} role="columnheader" className="h-7 flex items-center justify-center">
@@ -130,7 +163,7 @@ export function Calendar(props: CalendarProps) {
           <div key={wi} role="row" className="grid grid-cols-7 gap-y-0.5">
             {week.map((d) => {
               const key = isoDay(d);
-              const outside = d.getMonth() !== view.m;
+              const outside = d.getMonth() !== view?.m;
               const off = disabled(key);
               const isStart = range ? key === r?.start : key === (props.value as string);
               const isEnd = range && key === rangeEnd;
@@ -173,8 +206,9 @@ export function Calendar(props: CalendarProps) {
         <div className="flex justify-between pt-1">
           <button
             type="button"
-            disabled={disabled(today)}
+            disabled={!today || disabled(today)}
             onClick={() => {
+              if (!today) return;
               go(new Date());
               pick(today);
             }}

@@ -7,6 +7,7 @@ import { useSemiLocale } from "./locale";
 import { useField } from "./Field";
 import { createPortal } from "react-dom";
 import { Icon } from "./Icon";
+import { FLOATING_LAYER } from "./a11y";
 
 export interface CustomSelectOption {
   value: string;
@@ -130,20 +131,47 @@ export function CustomSelect({
     for (let i = from + dir; i >= 0 && i < options.length; i += dir) if (!options[i].disabled) return i;
     return from;
   };
+  // type-ahead: letters typed within 500 ms build a prefix; the next enabled option starting with it becomes active
+  const typed = useRef({ text: "", at: 0 });
+  const typeAhead = (ch: string, from: number) => {
+    const now = Date.now();
+    const text = (now - typed.current.at < 500 ? typed.current.text : "") + ch.toLowerCase();
+    typed.current = { text, at: now };
+    const n = options.length;
+    const start = text.length > 1 ? Math.max(from, 0) : from + 1;
+    for (let k = 0; k < n; k++) {
+      const i = (start + k + n) % n;
+      if (!options[i].disabled && options[i].label.toLowerCase().startsWith(text)) return i;
+    }
+    return -1;
+  };
+  const optionId = (i: number) => `${listId}-o-${i}`;
   const onKey = (e: React.KeyboardEvent) => {
     if (disabled) return;
+    const current = Math.max(0, options.findIndex((o) => o.value === value));
     if (e.key === "ArrowDown" || e.key === "ArrowUp") {
       e.preventDefault();
       if (!open) {
         setOpen(true);
-        setActive(Math.max(0, options.findIndex((o) => o.value === value)));
+        setActive(current);
       } else setActive((a) => step(a, e.key === "ArrowDown" ? 1 : -1));
+    } else if ((e.key === "Home" || e.key === "End") && open) {
+      e.preventDefault();
+      setActive(e.key === "Home" ? step(-1, 1) : step(options.length, -1));
     } else if ((e.key === "Enter" || e.key === " ") && open && active >= 0) {
       e.preventDefault();
       pick(options[active]);
     } else if (e.key === "Escape" && open) {
       e.preventDefault();
       setOpen(false);
+    } else if (e.key === "Tab" && open) {
+      setOpen(false); // focus moves on as usual; the list does not stay open behind it
+    } else if (e.key.length === 1 && e.key !== " " && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      const i = typeAhead(e.key, open ? active : current);
+      if (i < 0) return;
+      e.preventDefault();
+      if (open) setActive(i);
+      else onChange(options[i].value); // closed: like a native select, typing picks
     }
   };
 
@@ -161,6 +189,7 @@ export function CustomSelect({
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={open ? listId : undefined}
+        aria-activedescendant={open && active >= 0 ? optionId(active) : undefined}
         onClick={() => {
           setOpen((v) => !v);
           setActive(options.findIndex((o) => o.value === value));
@@ -181,9 +210,11 @@ export function CustomSelect({
         pos &&
         createPortal(
           <div
+            {...FLOATING_LAYER}
             ref={popRef}
             id={listId}
             role="listbox"
+            aria-label={ariaLabel ?? placeholder}
             style={{ left: pos.left, top: pos.top, bottom: pos.bottom, minWidth: pos.minWidth, maxHeight: pos.maxHeight }}
             className="fixed z-popover max-w-[calc(100vw-16px)] overflow-y-auto overscroll-contain bg-panel border border-line rounded-card shadow-overlay p-1 flex flex-col gap-0.5"
           >
@@ -197,6 +228,8 @@ export function CustomSelect({
                   <button
                     type="button"
                     role="option"
+                    id={optionId(i)}
+                    tabIndex={-1}
                     data-idx={i}
                     aria-selected={isSelected}
                     disabled={opt.disabled}

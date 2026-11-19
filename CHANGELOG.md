@@ -4,6 +4,18 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+### Fixed
+- **Escape and Tab inside dialogs**: the focus trap of `Modal`, `Drawer`, `CommandDialog`, `confirmDialog`, `TaskHost` and `NumPadPopup` caught Escape in the capture phase and stopped it, so Escape in an open `CustomSelect`, `CustomCombobox`, `Popover`, `HoverCard`, `Menu`, `DatePicker`, `Tooltip`, `NavigationMenu` or `SearchInput` inside a dialog closed the whole dialog (and `CommandDialog` could not clear its query). The trap now listens in the bubble phase and skips a key a layer already handled (`preventDefault()` / `stopPropagation()`): the first Escape closes the layer, the next the dialog. Tab inside a layer portaled to `body` (Popover, Menu, select list) was pulled back into the dialog; the trap now leaves such layers alone (they carry `data-semi-floating`) and sends focus that leaves the dialog anywhere else back to the last focused element in it. Tab is still trapped in the capture phase, so a widget that stops its own key events cannot let focus out. `ChatPanel` handles Escape on its own panel in both placements (over a modal its portal wrapper stops key events from reaching the modal).
+- **Triggers keep their own props**: `Popover`, `HoverCard`, `Tooltip` and `Menu` cloned the trigger with their own `ref`, `onClick`, `onFocus`, `onBlur`, `onKeyDown`…, silently dropping the app's. They now compose: the trigger's ref is set too, its handler runs first and `preventDefault()` there skips ours, `aria-describedby` ids are joined.
+- **`Calendar` / `DatePicker` hydration and min / max**: "today" and the initial month came from `new Date()` during render, so a server in another time zone could render a different day or month than the browser (hydration mismatch). Today is now read on the client only (`useSyncExternalStore`); a calendar without a value renders its month after hydration. Arrow keys, PageUp / PageDown and the month buttons could move focus onto a disabled day outside `min` / `max`, losing keyboard focus; the focused day is now kept inside the range and a month button with no selectable day is disabled. A `value` changed from outside now shows its month.
+- **`CustomSelect`**: the highlighted option is exposed with `aria-activedescendant` (options have ids, are out of the tab order), Home / End move to the first / last enabled option, typing jumps to a matching option (and picks it while closed, like a native select), and Tab closes the list.
+- **`CustomCombobox`**: the list closes when focus leaves the input, renders in a portal with fixed positioning (no longer clipped by a scrolling panel or a modal), and `aria-controls` is set only while the list exists.
+- **`Toast`**: auto-dismiss also pauses while keyboard focus is inside the toast, not only on hover (WCAG 2.2.1: keyboard users can reach the action).
+- **`Pagination`**: page buttons' accessible name comes from the locale (`pageN`, vi "Trang 3" / en "Page 3") instead of hard-coded Vietnamese.
+
+### Added
+- `examples/modal/layers` (a select and a popover inside a modal) and browser tests for Escape / Tab with layers in a Modal and for Calendar `min`.
+
 ## [0.27.0] - 2026-11-18
 
 ### Added

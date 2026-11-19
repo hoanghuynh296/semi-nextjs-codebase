@@ -646,6 +646,12 @@ The full inventory with props is generated into `components.json` (`npm run buil
 - Keyboard: every control is reachable and shows `FOCUS_RING` (`focus-visible` only); dialogs (`Modal`, `Drawer`,
   `confirmDialog`, `NumPadPopup`) trap focus, close on Escape and return focus to the opener (`useDialog`); menus,
   tabs and comboboxes follow the WAI-ARIA keyboard patterns.
+- Layers in a dialog: a select list, popover, menu, date picker or tooltip open inside a dialog gets Escape first
+  (one Escape closes the layer, the next the dialog). A custom layer does the same by handling Escape in its own
+  `onKeyDown` with `preventDefault()` (or `stopPropagation()`); the trap ignores a handled key. Layers portaled to
+  `body` keep their own Tab handling; focus that leaves the dialog anywhere else is sent back.
+- Triggers keep their own props: `Popover`, `HoverCard`, `Tooltip` and `Menu` add theirs to the trigger element
+  without replacing its `ref` or handlers (the trigger's handler runs first; `preventDefault()` there skips ours).
 - Names: icon-only controls carry `aria-label` (Button's type requires it); form controls get their label from `Field`.
 - Motion: animations respect `prefers-reduced-motion`.
 - Strings: shared components never hard-code UI text; they read `useSemiLocale()` (Vietnamese default). Apps switch

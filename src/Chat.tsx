@@ -721,16 +721,15 @@ export function ChatPanel({
       role={screen ? "dialog" : "complementary"}
       aria-modal={screen || undefined}
       aria-labelledby={titleId}
-      onKeyDown={
-        screen
-          ? undefined
-          : (e) => {
-              if (e.key === "Escape") {
-                e.stopPropagation();
-                onClose();
-              }
-            }
-      }
+      // Escape closes the chat here in both placements: over a modal the portal wrapper stops key events (so none
+      // reach the modal), which the focus trap's document listener would not see either. A layer inside that handled
+      // Escape first (preventDefault) keeps the chat open.
+      onKeyDown={(e) => {
+        if (e.key !== "Escape" || e.defaultPrevented) return;
+        e.preventDefault();
+        e.stopPropagation();
+        onClose();
+      }}
       style={{ "--semi-chat-w": `${width}px`, ...(keyboardInset ? { bottom: keyboardInset } : {}) } as React.CSSProperties}
       className={cn(
         screen ? "fixed z-dialog max-sm:pt-[env(safe-area-inset-top)]" : "absolute z-drawer sm:z-sticky",
