@@ -43,7 +43,7 @@ export default function HomePage() {
 
       <section className="grid gap-3 @3xl:grid-cols-3">
         {START.map((s) => (
-          <Link key={s.href} href={s.href} className={`${CARD_HOVER} p-4 space-y-2 outline-none focus-visible:ring-2 focus-visible:ring-focus`}>
+          <Link key={s.href} href={s.href} className={`${CARD_HOVER} p-card space-y-2 outline-none focus-visible:ring-2 focus-visible:ring-focus`}>
             <Icon name={s.icon} className="w-5 h-5 text-accent-fg" />
             <div className="text-title font-semibold text-contrast">{s.title}</div>
             <p className="text-label text-muted">{s.text}</p>
@@ -62,7 +62,7 @@ export default function HomePage() {
         <div className={SECTION_HEAD}>
           <h2 className={SECTION_TITLE}>Cho agent</h2>
         </div>
-        <div className={`${CARD} p-4 space-y-3`}>
+        <div className={`${CARD} p-card space-y-3`}>
           <p className="text-ui text-body max-w-3xl">
             Agent đọc file, không cần mở trang: chọn component trong <code className="text-accent-fg">docs/components/README.md</code>, đọc trang của nó, copy một
             ví dụ (import từ <code className="text-accent-fg">@semi/ui</code>), rồi chạy <code className="text-accent-fg">npx semi-lint</code>. Các file này cũng có

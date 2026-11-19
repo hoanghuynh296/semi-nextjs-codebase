@@ -91,47 +91,47 @@ export const FOUNDATIONS = {
   "type": [
     {
       "cls": "text-caption",
-      "size": "11px"
+      "size": "11px / 1.5"
     },
     {
       "cls": "text-label",
-      "size": "12px"
+      "size": "12px / 1.5"
     },
     {
       "cls": "text-ui",
-      "size": "13px"
+      "size": "14px / 1.5"
     },
     {
       "cls": "text-ui-lg",
-      "size": "14px"
+      "size": "15px / 1.5"
     },
     {
       "cls": "text-title",
-      "size": "15px"
+      "size": "15px / 1.5"
     },
     {
       "cls": "text-title-lg",
-      "size": "16px"
+      "size": "16px / 1.5"
     },
     {
       "cls": "text-kpi",
-      "size": "18px"
+      "size": "18px / 1.25"
     },
     {
       "cls": "text-heading-sm",
-      "size": "20px"
+      "size": "20px / 1.25"
     },
     {
       "cls": "text-heading",
-      "size": "22px"
+      "size": "22px / 1.25"
     },
     {
       "cls": "text-heading-lg",
-      "size": "24px"
+      "size": "24px / 1.25"
     },
     {
       "cls": "text-display",
-      "size": "26px"
+      "size": "26px / 1.25"
     }
   ],
   "z": [

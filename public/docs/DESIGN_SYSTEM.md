@@ -71,9 +71,9 @@ Tailwind's `text-xs` / `text-sm` / `text-base`:
 | Token | px | Use |
 |---|---:|---|
 | `text-caption` | 11 | captions, counts, badges (minimum size) |
-| `text-label` | 12 | labels, UI text, buttons, table cells |
-| `text-ui` | 13 | body text, inputs, card titles |
-| `text-ui-lg` | 14 | phone dialog buttons |
+| `text-label` | 12 | field labels, buttons, chips, meta lines (a time, a count beside a title) |
+| `text-ui` | 14 (13 in compact density) | body and UI text: card content, table cells, list rows, inputs, card titles |
+| `text-ui-lg` | 15 (14 in compact) | phone dialog buttons, a lead paragraph |
 | `text-title` | 15 | section / modal titles |
 | `text-title-lg` | 16 | large section titles |
 | `text-kpi` | 18 | KPI figures on phones (`text-kpi sm:text-heading`) |
@@ -82,7 +82,10 @@ Tailwind's `text-xs` / `text-sm` / `text-base`:
 | `text-heading-lg` | 24 | display numbers |
 | `text-display` | 26 | page titles from sm (`text-heading sm:text-display`) |
 
-Minimum `text-caption`. Button and label text is sentence case ("Lưu", "Xem lại"), never ALL CAPS.
+Minimum `text-caption`. Running text (a sentence, a description, a cell) is `text-ui`, never `text-label` or
+`text-caption`: those are for short marks beside it. Every size carries its line height (1.5 for 11–16px, 1.25 for
+18px and up), so text never needs `leading-*`; use `leading-tight` only on a title of more than one line. Button and
+label text is sentence case ("Lưu", "Xem lại"), never ALL CAPS.
 
 ## 2. Dual-Theme & Semantic Tokenization (Two-Tier Tokens)
 
@@ -210,7 +213,7 @@ Instead, follow the canonical Semi patterns:
 1. **Categorized / Feature Cards:**
    Keep the card shell neutral using standard `CARD` / `bg-panel border-line`, and express category color on the icon tile:
    ```tsx
-   <div className="bg-panel rounded-card border border-line p-4">
+   <div className="bg-panel rounded-card border border-line p-card">
      <div className="flex items-center gap-2">
        <span className="p-1.5 rounded-control bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
          <Icon name="plug" className="w-4 h-4" />
@@ -269,7 +272,7 @@ Instead, the Semi Design System **adapts all chromatic components** to **Two-Tie
   <p className="text-ui-lg font-semibold">Pro Subscription</p>
 </div>
 // Or using @semi/ui/styles:
-<div className={cn("rounded-card p-4", TONAL_CONTAINER.purple, TONAL_HOVER.purple)}>...</div>
+<div className={cn("rounded-card p-card", TONAL_CONTAINER.purple, TONAL_HOVER.purple)}>...</div>
 ```
 
 #### 2. Alert Banner / Callout
@@ -325,8 +328,20 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
 - **Control height:** all toolbar buttons, filter chips, pills, search inputs, custom selects and date pickers use
   `h-control` (34px in Flat, set by the style) and `text-label font-medium` so toolbar rows align evenly. Form inputs and
   selects use `h-field` (36px in Flat). Never `h-[34px]`: it would not follow the style.
-- **Spacing scale:** 4 / 8 / 12 / 16 / 20 / 24 px. Card padding `p-4`, gaps inside a card `gap-3`, between cards
-  `gap-3.5`–`gap-4`, between sections `gap-5`.
+- **Spacing (semantic tokens, scaled by density):** pick by role, not by number. They come from `tokens.json` "space"
+  and multiply the density unit, so a compact product gets 90% and an airy one 115% without any change in code:
+
+  | Utility | Regular | Use |
+  |---|---:|---|
+  | `p-card` | 16px | inside a card, popover, list panel, side panel section (`<Card>` sets it by default) |
+  | `sm:p-panel` | 24px | hero, page panel, a roomy card from `sm` (`p-card sm:p-panel`) |
+  | `gap-stack` | 12px | between items inside a card or a form |
+  | `gap-group` | 16px | between cards in a grid or a list of cards |
+  | `gap-section` | 24px | between sections of a page |
+
+  Smaller steps (`gap-1`–`gap-2`, `px-2`, `py-1`) are for the inside of one control or one row (an icon and its
+  label, a chip). A card or panel is never tighter than `p-card` (`card-padding`): a cramped box with text against
+  its edges is the most common layout bug.
 - **Home shell (`md+`):** two inset `rounded-panel` panels inside a `bg-canvas` frame (`md:p-2 md:gap-2`): a collapsible
   left **Panel Menu** (`w-52`, or `w-14` collapsed, toggled via the `sidebar` icon button) and a right **Panel
   Content** (`bg-app`) holding a full-width content container (`max-w-[1440px] px-4 sm:px-6`). Phones (`< md`) use a
@@ -353,7 +368,7 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   carries `STICKY_TOOLBAR` so the filters stay on top of the scrolling content (below the safe area on phones).
   "Thêm …" and "Làm mới" buttons are icon-only (`BTN_PRIMARY`/`BTN_SECONDARY` + `BTN_ICON`, `RefreshButton`) with
   `title` + `aria-label` carrying the label.
-- Grids expand across wide screens (e.g. `sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4`); touch screens
+- Grids expand across wide screens (e.g. `sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-group`); touch screens
   (iPad) stop at 4 columns (`not-any-pointer-coarse:` for 5+). Card grids **beside a sidebar** size columns by
   `@container` (`@xl:grid-cols-…`), never by viewport breakpoints (lint rule `viewport-grid-cols`, enabled per path via
   `"only"` in `semi-lint.json`).
@@ -383,15 +398,16 @@ the right. Props: `title`, `productName` (home bar), `logo` / `logoIcon`, `homeH
 
 ## 5. Card
 
-`<Card>` (`@semi/ui`) wraps the same classes: `<Card className="p-4">`, `<Card interactive>` (CARD_HOVER), `<Card active>`
+`<Card>` (`@semi/ui`) wraps the same classes and pads itself (`padding`: `"card"` = `p-card` by default, `"panel"` =
+`p-card sm:p-panel`, `"none"` for media that runs to the edge; a `p-*` in `className` replaces it): `<Card>`, `<Card interactive>` (CARD_HOVER), `<Card active>`
 (CARD_ACTIVE). It owns its surface: pass padding / layout only, never `bg-*` or `shadow-*`.
 
 ```tsx
 import { CARD, CARD_HOVER, CARD_ACTIVE } from "@semi/ui/styles";
 
-<div className={`${CARD} p-4 flex flex-col gap-3`}>…</div>          // static
-<button className={`${CARD_HOVER} p-4 text-left`}>…</button>         // opens something
-<div className={`${CARD} ${CARD_ACTIVE} p-4`}>…</div>                // active / "on" / running: primary border, no glow
+<div className={`${CARD} p-card flex flex-col gap-stack`}>…</div>          // static
+<button className={`${CARD_HOVER} p-card text-left`}>…</button>         // opens something
+<div className={`${CARD} ${CARD_ACTIVE} p-card`}>…</div>                // active / "on" / running: primary border, no glow
 ```
 
 Card header row: `IconTile` (or the item's image) · name (`text-ui-lg font-semibold`) + caption · icon actions
@@ -399,7 +415,7 @@ Card header row: `IconTile` (or the item's image) · name (`text-ui-lg font-semi
 
 ## 6. Hero card
 
-`HERO` (`rounded-panel p-4 sm:p-6`): a plain panel for the top block of a page. No glow blob.
+`HERO` (`rounded-panel p-card sm:p-panel`): a plain panel for the top block of a page. No glow blob.
 
 ## 7. Icon tile
 
@@ -646,6 +662,12 @@ The full inventory with props is generated into `components.json` (`npm run buil
 - Keyboard: every control is reachable and shows `FOCUS_RING` (`focus-visible` only); dialogs (`Modal`, `Drawer`,
   `confirmDialog`, `NumPadPopup`) trap focus, close on Escape and return focus to the opener (`useDialog`); menus,
   tabs and comboboxes follow the WAI-ARIA keyboard patterns.
+- Layers in a dialog: a select list, popover, menu, date picker or tooltip open inside a dialog gets Escape first
+  (one Escape closes the layer, the next the dialog). A custom layer does the same by handling Escape in its own
+  `onKeyDown` with `preventDefault()` (or `stopPropagation()`); the trap ignores a handled key. Layers portaled to
+  `body` keep their own Tab handling; focus that leaves the dialog anywhere else is sent back.
+- Triggers keep their own props: `Popover`, `HoverCard`, `Tooltip` and `Menu` add theirs to the trigger element
+  without replacing its `ref` or handlers (the trigger's handler runs first; `preventDefault()` there skips ours).
 - Names: icon-only controls carry `aria-label` (Button's type requires it); form controls get their label from `Field`.
 - Motion: animations respect `prefers-reduced-motion`.
 - Strings: shared components never hard-code UI text; they read `useSemiLocale()` (Vietnamese default). Apps switch

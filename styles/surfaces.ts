@@ -1,13 +1,13 @@
 // Shared surface classes (docs/DESIGN_SYSTEM.md §5, §13, §15). Use these instead of re-typing them.
 
-/** Content card: panel fill, the style's card border, radius and resting shadow (Flat: thin line, no shadow). Add padding (p-4) at the call site. */
+/** Content card: panel fill, the style's card border, radius and resting shadow (Flat: thin line, no shadow). Add padding at the call site: p-card (sm:p-panel for a roomy one), never tighter (semi-lint card-padding). */
 export const CARD = "bg-panel border-card rounded-card shadow-card min-w-0";
 
 /** Clickable card (opens a detail view). */
 export const CARD_HOVER = `${CARD} hover:border-line-hover active:scale-[0.99] transition`;
 
 /** Plain hero panel at the top of a page. No glow (docs/DESIGN_SYSTEM.md, "Flat, no glow, no gradients"). */
-export const HERO = "relative overflow-hidden rounded-panel border-card bg-panel shadow-card p-4 sm:p-6";
+export const HERO = "relative overflow-hidden rounded-panel border-card bg-panel shadow-card p-card sm:p-panel";
 
 /** Add to CARD for an active / "on" / printing card: primary border, no glow. */
 export const CARD_ACTIVE = "!border-accent-line";

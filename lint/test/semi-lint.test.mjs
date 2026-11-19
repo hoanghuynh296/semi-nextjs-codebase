@@ -162,3 +162,12 @@ test("#24 boot-loader-place: BootLoader in a layout gate is fine; in a page, a l
   assert.deepEqual(shellLint({ "app/loading.tsx": "export default () => <BootLoader />;\n" }), [["boot-loader-place", "app/loading.tsx", 1]]);
   assert.deepEqual(shellLint({ "app/layout.tsx": "<AppShell sections={S} footer={() => <X />}>\n  {ready ? children : <BootLoader />}\n</AppShell>\n" }), [["boot-loader-place", "app/layout.tsx", 2]]);
 });
+
+test("card-padding: a card tighter than p-card is flagged; p-card, the Card default, p-0 and rows inside are not", () => {
+  assert.deepEqual(ratchet('<Card className="p-2 space-y-1">x</Card>', "card-padding"), [1]);
+  assert.deepEqual(ratchet('<div className={`${CARD} p-1.5 flex`}>x</div>', "card-padding"), [1]);
+  assert.deepEqual(ratchet('<div className={cn(CARD_HOVER, "p-2 text-left")}>x</div>', "card-padding"), [1]);
+  assert.deepEqual(ratchet('<Card className="space-y-2">x</Card>\n<Card padding="none">x</Card>\n<div className={`${CARD} p-card sm:p-panel`}>x</div>', "card-padding"), []);
+  assert.deepEqual(ratchet('<div className={`${CARD} p-0 overflow-hidden`}>x</div>\n<div className={`${CARD} p-card`}><div className="px-2 py-1 gap-2">row</div></div>', "card-padding"), []);
+  assert.deepEqual(ratchet('<Card className="p-20">x</Card>', "card-padding"), []);
+});

@@ -55,6 +55,7 @@ export function SearchInput({
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Escape") {
+      e.preventDefault(); // clears / collapses the search, not a Modal around it
       if (value) {
         onChange("");
       } else {

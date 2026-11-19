@@ -2,9 +2,10 @@
 
 // Floating panels anchored to a trigger. Popover: interactive content opened by a click (filters, a quick form, a
 // colour pick). HoverCard: a preview shown while pointing at or focusing a link (a user, a product).
-import React, { cloneElement, isValidElement, useCallback, useEffect, useId, useRef, useState } from "react";
+import React, { isValidElement, useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { useAnchoredPosition } from "./floating";
+import { cloneTrigger, useAnchoredPosition } from "./floating";
+import { FLOATING_LAYER } from "./a11y";
 import { cn } from "../styles/utils";
 
 const PANEL = "fixed z-popover overflow-y-auto overscroll-contain bg-panel border border-line rounded-card shadow-overlay";
@@ -76,11 +77,12 @@ export function Popover({
   };
   return (
     <>
-      {isValidElement(trigger) && cloneElement(trigger as React.ReactElement<Record<string, unknown>>, triggerProps)}
+      {isValidElement(trigger) && cloneTrigger(trigger, triggerProps)}
       {open &&
         pos &&
         createPortal(
           <div
+            {...FLOATING_LAYER}
             ref={panelRef}
             id={id}
             role="dialog"
@@ -151,15 +153,20 @@ export function HoverCard({
     onPointerLeave: hide,
     onFocus: show,
     onBlur: hide,
-    onKeyDown: (e: React.KeyboardEvent) => e.key === "Escape" && setOpen(false),
+    onKeyDown: (e: React.KeyboardEvent) => {
+      if (e.key !== "Escape" || !open) return;
+      e.preventDefault(); // closes the card, not a Modal around it
+      setOpen(false);
+    },
   };
   return (
     <>
-      {isValidElement(trigger) && cloneElement(trigger as React.ReactElement<Record<string, unknown>>, triggerProps)}
+      {isValidElement(trigger) && cloneTrigger(trigger, triggerProps)}
       {open &&
         pos &&
         createPortal(
           <div
+            {...FLOATING_LAYER}
             id={id}
             role="tooltip"
             onPointerEnter={() => later(true, 0)}

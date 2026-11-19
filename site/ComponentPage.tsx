@@ -63,7 +63,7 @@ export function ComponentPage({ id, markdownHref }: { id: string; markdownHref?:
       {(doc.when.length > 0 || doc.instead.length > 0) && (
         <section className="grid gap-3 @3xl:grid-cols-2">
           {doc.when.length > 0 && (
-            <div className={`${CARD} p-4 space-y-2`}>
+            <div className={`${CARD} p-card space-y-2`}>
               <Heading>Khi nào dùng</Heading>
               <ul className="space-y-1.5 text-ui text-body list-disc pl-5">
                 {doc.when.map((w) => (
@@ -73,7 +73,7 @@ export function ComponentPage({ id, markdownHref }: { id: string; markdownHref?:
             </div>
           )}
           {doc.instead.length > 0 && (
-            <div className={`${CARD} p-4 space-y-2`}>
+            <div className={`${CARD} p-card space-y-2`}>
               <Heading>Dùng cái khác khi</Heading>
               <ul className="space-y-1.5 text-ui">
                 {doc.instead.map((i) => (

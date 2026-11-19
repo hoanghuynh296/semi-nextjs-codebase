@@ -57,11 +57,19 @@ function ToastCard({ item }: { item: ToastItem }) {
   const tone = item.tone ?? "info";
   const ms = item.duration ?? (tone === "danger" ? 6000 : 4000);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // paused while pointed at or while keyboard focus is inside (WCAG 2.2.1: time to reach the action and read)
+  const hold = useRef({ pointer: false, focus: false });
   const start = () => {
-    if (ms > 0) timer.current = setTimeout(() => dismissToast(item.id), ms);
+    if (timer.current) clearTimeout(timer.current);
+    if (ms > 0 && !hold.current.pointer && !hold.current.focus) timer.current = setTimeout(() => dismissToast(item.id), ms);
   };
   const stop = () => {
     if (timer.current) clearTimeout(timer.current);
+  };
+  const set = (k: "pointer" | "focus", on: boolean) => {
+    hold.current[k] = on;
+    if (on) stop();
+    else start();
   };
   useEffect(() => {
     start();
@@ -72,8 +80,12 @@ function ToastCard({ item }: { item: ToastItem }) {
   return (
     <div
       role={tone === "danger" ? "alert" : "status"}
-      onPointerEnter={stop}
-      onPointerLeave={start}
+      onPointerEnter={() => set("pointer", true)}
+      onPointerLeave={() => set("pointer", false)}
+      onFocus={() => set("focus", true)}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) set("focus", false);
+      }}
       className="pointer-events-auto w-full sm:w-[360px] bg-panel border border-line rounded-card shadow-overlay p-3 flex items-start gap-2.5"
     >
       <span className={cn("mt-px w-6 h-6 rounded-control border flex items-center justify-center shrink-0", s.surface, s.fg)}>

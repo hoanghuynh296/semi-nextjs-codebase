@@ -13,7 +13,7 @@ export default function SwitchCardHeader() {
   return (
     <div className="grid gap-3 @lg:grid-cols-2">
       {RULES.map((r) => (
-        <Card key={r.id} className="p-4 space-y-2">
+        <Card key={r.id} className="space-y-2">
           <div className="flex items-center justify-between gap-3">
             <span id={`rule-${r.id}`} className="text-ui font-semibold text-contrast">
               {r.name}

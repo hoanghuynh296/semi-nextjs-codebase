@@ -28,6 +28,7 @@
     "A clickable card is a link or button inside the card, not a div with onClick."
   ],
   "notes": [
+    "It pads itself: padding=\"card\" (p-card, default), \"panel\" (p-card sm:p-panel) or \"none\" for an image or table to the edge. Never tighter than p-card (card-padding); a p-* in className replaces the default.",
     "Pass padding and layout only: no bg-* or shadow-* on <Card> (card-class-override)."
   ],
   "examples": [

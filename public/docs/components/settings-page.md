@@ -25,7 +25,7 @@ export default function SettingsPage() {
   return (
     <div className="space-y-4">
       <PageTitle title="Cài đặt" />
-      <Card className="p-4 space-y-4">
+      <Card className="space-y-4">
         <h2 className="text-title font-medium text-contrast">Không gian làm việc</h2>
         <div className="grid gap-4 @2xl:grid-cols-2">
           <Field label="Tên" required error={error}>
@@ -54,7 +54,7 @@ export default function SettingsPage() {
         <Item icon="fileText" title="Báo cáo tuần" description="Thứ Hai, 8:00" actions={<Switch checked={digest} onChange={setDigest} label={<span className="sr-only">Báo cáo tuần</span>} />} />
         <Item icon="key" title="Khoá API" description="Cho tích hợp và agent" href="#api-keys" />
       </ItemGroup>
-      <Card className="p-4 flex flex-wrap items-center justify-between gap-3">
+      <Card className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-title font-medium text-contrast">Xoá không gian làm việc</h2>
           <p className="text-label text-muted">Xoá mọi máy in, đơn và lịch sử. Không thể khôi phục.</p>

@@ -55,7 +55,7 @@ export function Pagination({
           <button
             key={p}
             type="button"
-            aria-label={`Trang ${p}`}
+            aria-label={t.pageN(p)}
             aria-current={p === page ? "page" : undefined}
             onClick={() => go(p)}
             className={`${BTN} ${p === page ? "bg-accent-subtle text-accent-fg font-semibold" : "text-muted hover:text-contrast hover:bg-raised"}`}

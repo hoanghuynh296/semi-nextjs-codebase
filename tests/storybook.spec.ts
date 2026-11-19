@@ -220,6 +220,41 @@ test("Modal traps focus, closes on Escape and returns focus to the opener", asyn
   await expect(opener).toBeFocused();
 });
 
+test("Escape closes the layer inside a Modal first; Tab in a portaled Popover does not jump back into the Modal", async ({ page }) => {
+  await open(page, "/components/modal/", "dark");
+  await example(page, "modal/layers").getByRole("button", { name: "Chọn vật liệu" }).click();
+  const dialog = page.getByRole("dialog", { name: "Vật liệu in" });
+  await expect(dialog).toBeVisible();
+  // the select: Escape closes the list only
+  const select = dialog.getByRole("button", { name: "Vật liệu" });
+  await select.focus();
+  await page.keyboard.press("ArrowDown");
+  const list = page.getByRole("listbox");
+  await expect(list).toBeVisible();
+  await expect(select).toHaveAttribute("aria-activedescendant", /.+/);
+  await page.keyboard.press("End");
+  await page.keyboard.press("Enter");
+  await expect(select).toHaveText(/ABS/);
+  await page.keyboard.press("ArrowDown");
+  await expect(list).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(list).toBeHidden();
+  await expect(dialog).toBeVisible();
+  // the popover: Tab moves inside it, Escape closes it and returns to its trigger, the Modal stays
+  const trigger = dialog.getByRole("button", { name: "Nhiệt độ gợi ý" });
+  await trigger.click();
+  const pop = page.getByRole("dialog", { name: "Nhiệt độ gợi ý" });
+  await expect(pop).toBeVisible();
+  await expect(pop.getByRole("button", { name: "Áp dụng" })).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(pop).toBeHidden();
+  await expect(trigger).toBeFocused();
+  await expect(dialog).toBeVisible();
+  // a second Escape closes the Modal
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+});
+
 test("Menu opens from the keyboard and Escape returns focus", async ({ page }) => {
   await open(page, "/components/menu/", "dark");
   const trigger = example(page, "menu/row-actions").getByRole("button", { name: "Thao tác máy in" });
@@ -498,6 +533,11 @@ test("Slider and Calendar work from the keyboard; DatePicker returns focus", asy
   await expect(cal.getByRole("button", { name: "13/12/2026" })).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(cal.getByRole("gridcell", { selected: true })).toContainText("13");
+  // keys never land on a day before min (2026-11-01): focus stays on an enabled day, the previous month is off
+  await page.keyboard.press("PageUp");
+  await page.keyboard.press("PageUp");
+  await expect(cal.getByRole("button", { name: "1/11/2026", exact: true })).toBeFocused();
+  await expect(cal.getByRole("button", { name: "Tháng trước" })).toBeDisabled();
   await open(page, "/components/date-picker/", "dark");
   const trigger = page.getByRole("button", { name: /^Ngày in:/ });
   await trigger.click();

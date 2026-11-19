@@ -23,12 +23,17 @@
     }
   ],
   "a11y": [
-    "role=\"dialog\" + aria-modal, labelled by the title; Escape and the close button close it; focus trap and focus return built in; page scroll is locked."
+    "role=\"dialog\" + aria-modal, labelled by the title; Escape and the close button close it; focus trap and focus return built in; page scroll is locked.",
+    "Layers inside it (CustomSelect, Popover, Menu, DatePicker, Tooltip) handle Escape first: Escape closes the open layer, a second Escape closes the Modal. Tab in a portaled layer stays with that layer; focus that leaves the Modal comes back."
   ],
   "examples": [
     {
       "file": "basic",
       "title": "Form in a modal"
+    },
+    {
+      "file": "layers",
+      "title": "A select and a popover inside a modal"
     }
   ]
 }

@@ -29,7 +29,13 @@ export function foundationsSource(root) {
   const data = {
     surfaces: SURFACES.map(([key, cls, note]) => ({ key, cls, note, dark: pick(key).dark, light: pick(key).light })),
     text: TEXT.map(([key, cls, note]) => ({ key, cls, note, dark: pick(key).dark, light: pick(key).light })),
-    type: Object.entries(tokens.type).map(([cls, size]) => ({ cls, size })),
+    // sizes only (the --line-height keys pair with them); the size shows with its line height
+    type: Object.entries(tokens.type)
+      .filter(([cls]) => !cls.includes("--"))
+      .map(([cls, size]) => {
+        const lh = tokens.type[`${cls}--line-height`];
+        return { cls, size: lh ? `${size} / ${typeof lh === "string" ? lh : lh.value}` : size };
+      }),
     z: Object.entries(tokens.z).map(([cls, value]) => ({ cls, value })),
     motion: Object.entries(tokens.motion).map(([name, value]) => ({ name, value })),
     styles: styles.styles.map((s) => ({
