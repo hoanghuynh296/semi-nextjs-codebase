@@ -4,13 +4,24 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
-The major issues of the WCAG 2.2 AA audit.
+## [0.29.0] - 2026-11-20
+
+The WCAG 2.2 AA audit (major and minor issues), and brand kits that check more and update themselves.
+
+### Brand kits (`semi-brand`, `/semi-brand`)
+- **More checks in the report**: input edges (`control-line`) ≥ 3:1 in every allowed style and theme (the generator darkens `text-muted` a little when the brand's tinted neutrals would miss it), and Semi's status text (`danger-fg`, `success-fg`, `warning-fg`, `info-fg`) ≥ 4.5:1 on the brand's surfaces. A primary close to the error / success colour now says by how much (hue difference and ΔE).
+- **`color.buttonText`** (`auto` · `white` · `dark`, `set buttonText=white`): force the text colour on the main button; the generator then takes the nearest shade that reads with it (an orange brand gets white text on a deeper orange instead of dark text).
+- **No logo** is a warning, and `package.json` exports `./dist/logo/*` only when the kit has a logo (`/semi-brand update` removes a dangling export).
+- **`semi-brand check` ignores the `@semi/ui` version stamp**: a newer Semi that generates the same colours no longer makes the kit stale.
+- **Kit workflows** (added by `/semi-brand update`): `brand-pages.yml` also checks every pull request (Pages only from main); new `semi-update.yml` rebuilds the kit with the newest @semi/ui every Monday and opens a pull request only when the generated kit changes. It needs "Allow GitHub Actions to create and approve pull requests" in the kit repo's settings.
+- `/semi-brand update` says that its changes come from Semi, for a CHANGELOG "Từ Semi" section apart from the brand's own changes.
 
 ### Added
 - **Token `control-line`** (`border-control-line`, `hover:border-control-line-hover`): the edge of an input you type in or tick, ≥ 3:1 on every surface in every style (WCAG 1.4.11). `border-line` stays for cards, tables and frames.
 - **`SEGMENT_ON`** (`@semi/ui/styles`): the chosen segment of a segmented control, the tonal fill plus an inset `control-line` ring.
 
 ### Fixed
+- **`warning-fg` in the light theme** is `amber-800` (amber-700 was 4.35:1 on Soft and 4.40:1 on Sharp fields).
 - **Inputs, select field, combobox, `InputGroup`, `InputOTP`, chat composer, `SearchInput`, `Checkbox`, `RadioGroup`**: their edge was 1.2–1.9:1 against the page (the 8–20% `line` tokens); it now uses `control-line`.
 - **Invalid `Input`, `Textarea`, select field, combobox, `InputOTP`, `DatePicker`**: the error edge was the faint `danger-border` (about 1.5:1); it is `border-danger-fg` now. An invalid select field shows it too (it had none).
 - **Focus in forced colours** (Windows high contrast): ring focus (box-shadow) vanished and nothing replaced it; `base.css` now draws a system-colour outline on `:focus-visible`, in any app that imports it.

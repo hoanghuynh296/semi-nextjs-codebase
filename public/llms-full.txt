@@ -1,4 +1,4 @@
-# Semi Design System (@semi/ui v0.28.1)
+# Semi Design System (@semi/ui v0.29.0)
 
 > The shared UI of every Semi app: semantic tokens that work in light and dark mode, React components (Next.js, Tailwind CSS 4) and the rules agents follow. Every component has a page with live examples and a markdown twin for agents.
 
@@ -455,7 +455,7 @@ Semi architecture separates tokens into two tiers:
 | `--color-accent-subtle` | `bg-accent-subtle` | Nền nhạt của mục đang chọn (option, trang hiện tại, pill active, IconTile) | `accent-fg` 14% | `accent-fg` 11% |
 | `--color-accent-subtle-hover` | `hover:bg-accent-subtle-hover` | Hover của nền nhạt accent | `accent-fg` 22% | `accent-fg` 18% |
 | `--color-accent-line` | `border-accent-line` | Viền của mục đang chọn (card được chọn, ngày hôm nay) | `accent-fg` 40% | `accent-fg` 40% |
-| `--color-danger-fg` · `success-fg` · `warning-fg` · `info-fg` | `text-danger-fg` … | Chữ trạng thái trên surface | `rose/emerald/amber/sky-400` | `-700` |
+| `--color-danger-fg` · `success-fg` · `warning-fg` · `info-fg` | `text-danger-fg` … | Chữ trạng thái trên surface | `rose/emerald/amber/sky-400` | `-700` (`warning`: `amber-800`, ≥ 4.5:1 cả trên ô nhập Soft / Sharp) |
 | `--color-tone-<hue>` | `text-tone-<hue>` | Chữ tonal 12 hue (purple, violet, indigo, blue, sky, cyan, teal, emerald, amber, orange, rose, pink) | `<hue>-300` | `<hue>-700` |
 
 Mọi cặp chữ / nền ở trên đạt WCAG AA (≥ 4.5:1) ở cả hai theme. Không viết `text-*-400` hay `text-*-700 dark:text-*-300` trong component: dùng `text-accent-fg`, `text-*-fg` hoặc `text-tone-*`.
@@ -1735,7 +1735,8 @@ dist/logo/          sinh ra: logo để sản phẩm import (@3dnoobs/brand/dist
 BRAND.md            sinh ra: guideline thương hiệu (brief, logo, cách dùng màu, giọng văn, hình ảnh, màu, đọc rõ)
 AGENTS.brand.md     sinh ra: luật cho agent ở mọi sản phẩm (màu, style, logo, giọng văn, câu mẫu)
 package.json        "@3dnoobs/brand", phụ thuộc "@semi/ui" (+ Next.js cho trang preview)
-.github/workflows/brand-pages.yml   build trang preview và đăng lên GitHub Pages mỗi lần push
+.github/workflows/brand-pages.yml   kiểm tra mỗi pull request; build trang preview và đăng lên GitHub Pages mỗi lần push lên main
+.github/workflows/semi-update.yml   mỗi thứ Hai build lại kit với @semi/ui mới nhất; mở pull request khi màu, guideline hay luật đổi
 .preview/           trang preview sinh ra khi chạy (không commit)
 ```
 
@@ -1800,7 +1801,7 @@ hay `--semi-…` trong CSS của app, `semi-lint` chặn (`brand-override`): mà
 | Làm thêm app **Store** | `/semi-new-app --brand github:3dnoobs/brand`, chọn Soft | Thư mục mới |
 | 3D Noobs **đổi màu chính** | `/semi-brand` → "đổi primary sang `#00C853`" → xem trước → tag mới | Repo brand |
 | … rồi đưa vào các app | `/semi-sync` (đổi màu thấy rõ: agent hỏi trước) | Từng app |
-| **Semi** ra bản mới | `/semi-brand update` (sinh lại kit) | Repo brand |
+| **Semi** ra bản mới | Workflow `semi-update.yml` mở pull request nếu kit đổi (chỉ đổi số phiên bản thì không); duyệt rồi `/semi-brand update` để phát hành. Không có PR nghĩa là kit vẫn đúng, không cần phát hành | Repo brand |
 | … rồi đưa vào các app | `/semi-sync` | Từng app |
 | App đổi sang style khác **đã được cho phép** | Nói với agent ("đổi sang Soft") | Repo app |
 | Style **chưa được cho phép** | `/semi-brand` (thêm vào danh sách) → `/semi-sync` → nói với agent | Repo brand → app |
@@ -1883,7 +1884,7 @@ dải của brand cùng cách sửa: chạy `/semi-brand update` trong repo bran
 | `brief` | `product`, `audience`, `personality` (1–5 tính từ), `tagline` (một câu, ≤ 90 ký tự); `sample`: `list` (tên danh sách chính), `items` (2–5 mục thật), `metric` (`{ label, value, sub? }`, con số người dùng mở app để xem), `proof` (`{ label, value }`, bằng chứng cho trang giới thiệu) | Tuỳ chọn; vào BRAND.md và luật cho agent ("chọn chữ, hình ảnh cho họ"). Thiếu `sample` thì build nhắc: màn mẫu của brand book và trang đầu của app mới dùng chữ của sản phẩm thay cho dữ liệu cửa hàng chung chung |
 | `logo` | `full` (bắt buộc khi có logo), `fullDark`, `mark`: đường dẫn trong repo kit (.svg nên dùng, .png, .webp); `clearspace` (× chiều cao, mặc định 0.5), `minWidth` (px, mặc định 80) | Build copy vào `dist/logo/full.svg` … để sản phẩm import; thiếu file là lỗi |
 | `voice` | `tone`: `friendly` · `neutral` · `formal`; `address` (gọi người dùng), `we` (tự xưng), `emoji`, `do`, `dont`, `examples` (`button`, `success`, `error`, `empty`, `confirm`) | Tuỳ chọn, mặc định trung tính, gọi "bạn". Luật viết chung của Semi (nút, lỗi, trạng thái trống) luôn kèm theo |
-| `color` | `accent`: `restrained` · `balanced` · `expressive`; `secondaryRole`: `highlight` · `badge` · `illustration` | Mặc định tiết chế, màu phụ là điểm nhấn. Mức dùng màu quyết định tỉ lệ màu trên một màn hình (tiết chế 80 / 15 / 5 %, cân bằng 70 / 20 / 10, phóng khoáng 55 / 25 / 20: trung tính / bề mặt / màu chính; màu phụ lấy khoảng 30 % phần màu chính) |
+| `color` | `accent`: `restrained` · `balanced` · `expressive`; `secondaryRole`: `highlight` · `badge` · `illustration`; `buttonText`: `auto` · `white` · `dark` | Mặc định tiết chế, màu phụ là điểm nhấn. `buttonText` chọn chữ trên nút chính: `auto` lấy sắc độ đọc được gần màu thương hiệu nhất (màu cam, vàng thường ra chữ tối), `white` / `dark` ép màu chữ và lấy sắc độ đậm / nhạt hơn cho đủ 4.5:1. Mức dùng màu quyết định tỉ lệ màu trên một màn hình (tiết chế 80 / 15 / 5 %, cân bằng 70 / 20 / 10, phóng khoáng 55 / 25 / 20: trung tính / bề mặt / màu chính; màu phụ lấy khoảng 30 % phần màu chính) |
 | `imagery` | Một đoạn mô tả ảnh / minh hoạ | Tuỳ chọn |
 
 ### Mật độ và cỡ chữ
@@ -1910,11 +1911,15 @@ tắc bố cục đi kèm (tránh giao diện "AI" chung chung): `DESIGN_SYSTEM.
 - **Màu phụ:** `secondary-*`, chữ `text-secondary-fg`, và nền đặc `bg-secondary-solid` + `text-on-secondary` (badge, điểm
   nhấn), chọn theo cùng cách.
 - **Báo cáo** (`dist/brand.json` → `report`, BRAND.md, trang preview): chữ ≥ 4.5:1, viền focus ≥ 3:1, hover vẫn đọc được;
-  "nút tách khỏi nền" ≥ 3:1 là mục *lưu ý* (không chặn build). `fidelity` cho biết nút mỗi theme ở sắc độ nào và lệch màu
+  viền ô nhập (`control-line`, pha từ `text-muted`) ≥ 3:1 ở mọi style (bộ sinh tự đậm `text-muted` thêm cho đủ); chữ
+  trạng thái của Semi (`danger-fg`, `success-fg`, `warning-fg`, `info-fg`) ≥ 4.5:1 trên nền đã phủ màu thương hiệu;
+  "nút tách khỏi nền" ≥ 3:1 là mục *lưu ý* (không chặn build). Màu chính gần màu lỗi / thành công thì có cảnh báo kèm độ
+  lệch sắc và ΔE. Kit chưa có logo cũng có cảnh báo. `fidelity` cho biết nút mỗi theme ở sắc độ nào và lệch màu
   thương hiệu bao nhiêu (ΔE OKLab, 0 = đúng màu); lệch trên 0.08 có cảnh báo kèm lý do.
 
 Chi tiết kỹ thuật: bộ sinh màu nằm ở `@semi/ui/brand` (`generateBrand`), lệnh trong kit là `semi-brand build | check`
-(bin của `@semi/ui`). Style có sẵn: [STYLES.md](STYLES.md).
+(bin của `@semi/ui`). `check` bỏ qua dòng ghi phiên bản `@semi/ui` trong file sinh ra: bản Semi mới sinh cùng màu thì
+kit không cần build lại hay phát hành. Style có sẵn: [STYLES.md](STYLES.md).
 
 
 ---

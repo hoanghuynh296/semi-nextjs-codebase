@@ -55,6 +55,23 @@ export const FONTS = {
   "Be Vietnam Pro": { weight: ["400", "500", "600", "700"] },
 };
 const STATUS_HUES = { success: 155, danger: 15 };
+/** Semi's status text tokens: fixed per theme (never the brand's), checked against the brand's tinted surfaces. */
+const STATUS_FG = { danger: "lỗi", success: "thành công", warning: "cảnh báo", info: "thông tin" };
+/** Text colour on the main button: "auto" picks the readable shade closest to the brand; "white" / "dark" force it. */
+const BUTTON_TEXT = ["auto", "white", "dark"];
+
+/** A token value as hex: "var(--color-rose-400)" is looked up in any tokens.json group. */
+function resolveToken(value, tokens) {
+  const m = /^var\(--([\w-]+)\)$/.exec(String(value ?? "").trim());
+  if (!m) return value;
+  for (const g of Object.values(tokens)) if (g && typeof g === "object" && m[1] in g) return resolveToken(typeof g[m[1]] === "string" ? g[m[1]] : g[m[1]].value, tokens);
+  return value;
+}
+/** Opacity of text-muted in Semi's control-line token per theme ("color-mix(… text-muted 80%, transparent)"), or null. */
+function controlLineAlpha(tokens, theme) {
+  const m = /(\d+(?:\.\d+)?)%/.exec(tokens.semantic?.["color-control-line"]?.[theme] ?? "");
+  return m ? +m[1] / 100 : null;
+}
 
 const fail = (errors, msg) => errors.push(msg);
 
@@ -153,6 +170,7 @@ function validateGuide(brand, errors, warnings) {
     }
   }
   const l = brand.logo;
+  if (l === undefined) warnings.push("Chưa có logo: brand book và app mới chỉ hiện tên bằng chữ. Đưa logo vào assets/logo.svg rồi chạy set logo=assets/logo.svg");
   if (l !== undefined) {
     if (typeof l !== "object" || l === null) fail(errors, "logo: phải là object { full, fullDark?, mark?, clearspace?, minWidth? }");
     else {
@@ -184,6 +202,7 @@ function validateGuide(brand, errors, warnings) {
       if (c.accent !== undefined && !ACCENT_USE[c.accent]) fail(errors, `color.accent: "${c.accent}" phải là ${Object.keys(ACCENT_USE).join(", ")}`);
       if (c.secondaryRole !== undefined && !SECONDARY_ROLE[c.secondaryRole]) fail(errors, `color.secondaryRole: "${c.secondaryRole}" phải là ${Object.keys(SECONDARY_ROLE).join(", ")}`);
       if (c.secondaryRole && !brand.secondary) warnings.push("color.secondaryRole chỉ dùng khi có màu phụ");
+      if (c.buttonText !== undefined && !BUTTON_TEXT.includes(c.buttonText)) fail(errors, `color.buttonText: "${c.buttonText}" phải là ${BUTTON_TEXT.join(", ")}`);
     }
   }
   if (brand.imagery !== undefined && !str(brand.imagery)) fail(errors, "imagery: một đoạn mô tả ảnh / minh hoạ");
@@ -236,6 +255,7 @@ export function resolveGuide(brand) {
       accentRule: ACCENT_USE[accent].rule,
       mix: colorMix(accent, Boolean(brand.secondary)),
       secondaryRole,
+      buttonText: c.buttonText ?? "auto",
       secondaryRule: secondaryRole ? SECONDARY_ROLE[secondaryRole] : null,
     },
     imagery: brand.imagery ?? null,
@@ -279,11 +299,15 @@ const minContrast = (color, backgrounds) => Math.min(...backgrounds.map((bg) => 
  * of the brand that stands out is taken instead; if none does, the brand colour stays and the report says so. Ties go
  * to the theme's usual text (dark text in the dark theme, white in the light theme).
  */
-function pickFill(sc, brandHex, theme, surfaces) {
+function pickFill(sc, brandHex, theme, surfaces, text = "auto") {
   const usual = theme === "dark" ? DARK_TEXT : WHITE;
   const cands = [];
+  // color.buttonText forces the text colour (e.g. white on an orange brand: a deeper shade); a theme where no shade
+  // reads with it falls back to both.
+  const forced = text === "white" ? [WHITE] : text === "dark" ? [DARK_TEXT] : null;
+  const ons = forced && SHADES.some((s) => contrast(sc[s], forced[0]) >= AA) ? forced : [DARK_TEXT, WHITE];
   for (const shade of SHADES)
-    for (const on of [DARK_TEXT, WHITE]) {
+    for (const on of ons) {
       const ratio = contrast(sc[shade], on);
       if (ratio >= AA) cands.push({ shade, on, ratio, de: deltaE(sc[shade], brandHex), page: minContrast(sc[shade], surfaces) });
     }
@@ -345,12 +369,21 @@ function baseNeutrals(style, tokens) {
   return out;
 }
 
-/** Nudge muted / body text until it reads at AA on every surface (tinting can cost a little contrast). */
-function fixText(n, theme) {
+/** The control-line edge (text-muted at the token's opacity) against the surfaces an input sits on, worst case. */
+function controlEdge(n, alpha) {
+  return Math.min(...SURFACES.slice(0, 4).map((k) => contrast(blend(n["color-text-muted"], n[k], alpha), n[k])));
+}
+
+/**
+ * Nudge muted / body text until it reads at AA on every surface (tinting can cost a little contrast), and muted on
+ * until the input edge mixed from it (control-line) reaches 3:1.
+ */
+function fixText(n, theme, alpha) {
   const surfaces = SURFACES.map((k) => n[k]);
   for (const k of ["color-text-muted", "color-text-body"]) {
     let { l, c, h } = hexToOklch(n[k]);
-    for (let i = 0; i < 40 && surfaces.some((bg) => contrast(n[k], bg) < AA + 0.1); i++) {
+    const weak = () => surfaces.some((bg) => contrast(n[k], bg) < AA + 0.1) || (k === "color-text-muted" && alpha && controlEdge(n, alpha) < NON_TEXT + 0.05);
+    for (let i = 0; i < 40 && weak(); i++) {
       l += theme === "dark" ? 0.01 : -0.01;
       n[k] = oklchToHex({ l, c, h });
     }
@@ -382,7 +415,7 @@ export function generateBrand(brand, { tokens, styles, version = "" }) {
           n[k] = tint(n[k], hue, c);
         }
       }
-      neutrals[st.id][theme] = fixText(n, theme);
+      neutrals[st.id][theme] = fixText(n, theme, controlLineAlpha(tokens, theme));
     }
   }
 
@@ -394,7 +427,7 @@ export function generateBrand(brand, { tokens, styles, version = "" }) {
   for (const theme of THEMES) {
     const surfaces = allowed.flatMap((st) => SURFACES.map((k) => neutrals[st.id][theme][k]));
     const pages = allowed.flatMap((st) => PAGES.map((k) => neutrals[st.id][theme][k]));
-    const fill = pickFill(primary, brand.primary, theme, pages);
+    const fill = pickFill(primary, brand.primary, theme, pages, brand.color?.buttonText);
     const hover = pickHover(primary, fill);
     const fg = pickText(primary, brand.primary, theme, surfaces, pages);
     themes[theme] = {
@@ -430,16 +463,32 @@ export function generateBrand(brand, { tokens, styles, version = "" }) {
       report.push({ check: `chữ màu phụ (${t})`, pair: `secondary-${sfg.shade} / nền + nền chọn`, ratio: sfg.ratio, min: AA });
       report.push({ check: `nền màu phụ (${t})`, pair: `chữ ${sfill.on} / secondary-${sfill.shade}`, ratio: contrast(sfill.on, secondary[sfill.shade]), min: AA });
     }
+    const alpha = controlLineAlpha(tokens, theme);
     for (const st of allowed) {
       const n = neutrals[st.id][theme];
       const worst = Math.min(...SURFACES.slice(0, 4).map((k) => contrast(n["color-text-muted"], n[k])));
       report.push({ check: `chữ mờ ${st.name} (${t})`, pair: `text-muted / nền`, ratio: worst, min: AA });
+      // Edge of inputs, checkboxes, radios and of the chosen segment (SEGMENT_ON): WCAG 1.4.11.
+      if (alpha) report.push({ check: `viền ô nhập ${st.name} (${t})`, pair: `control-line / nền`, ratio: controlEdge(n, alpha), min: NON_TEXT });
+    }
+    // Semi's status text stays the same for every brand; the brand's tinted surfaces must still carry it (the surfaces
+    // text sits on: canvas, app, panel, field, like text-muted; raised is a hover / track fill).
+    const textSurfaces = allowed.flatMap((st) => SURFACES.slice(0, 4).map((k) => neutrals[st.id][theme][k]));
+    for (const [status, label] of Object.entries(STATUS_FG)) {
+      const fgHex = resolveToken(tokens.semantic?.[`color-${status}-fg`]?.[theme], tokens);
+      if (!isHex(fgHex)) continue;
+      report.push({ check: `chữ trạng thái ${label} (${t})`, pair: `${status}-fg / nền`, ratio: minContrast(fgHex, textSurfaces), min: AA });
     }
   }
   for (const r of report) r.ok = r.ratio >= r.min;
-  for (const [status, h] of Object.entries(STATUS_HUES))
-    if (hueDistance(hue, h) < 25)
-      warnings.push(`Màu chính gần màu ${status === "success" ? "thành công (xanh lá)" : "lỗi (đỏ)"} của Semi: trạng thái luôn kèm icon hoặc chữ, đừng chỉ dựa vào màu`);
+  for (const [status, h] of Object.entries(STATUS_HUES)) {
+    const fgHex = resolveToken(tokens.semantic?.[`color-${status}-fg`]?.light, tokens);
+    const de = isHex(fgHex) ? deltaE(brand.primary, fgHex) : null;
+    if (hueDistance(hue, h) < 25 || (de !== null && de < 0.1))
+      warnings.push(
+        `Màu chính gần màu ${status === "success" ? "thành công (xanh lá)" : "lỗi (đỏ)"} của Semi (lệch sắc ${Math.round(hueDistance(hue, h))}°${de !== null ? `, ΔE ${de.toFixed(2)} so với ${fgHex}` : ""}): trạng thái luôn kèm icon hoặc chữ, đừng chỉ dựa vào màu`,
+      );
+  }
   if (report.some((r) => !r.ok && !r.soft)) warnings.push("Có cặp màu chưa đạt AA: xem bảng contrast");
 
   const fonts = resolveFonts(brand, styles);

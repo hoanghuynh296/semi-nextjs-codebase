@@ -119,7 +119,7 @@ Semi architecture separates tokens into two tiers:
 | `--color-accent-subtle` | `bg-accent-subtle` | Nền nhạt của mục đang chọn (option, trang hiện tại, pill active, IconTile) | `accent-fg` 14% | `accent-fg` 11% |
 | `--color-accent-subtle-hover` | `hover:bg-accent-subtle-hover` | Hover của nền nhạt accent | `accent-fg` 22% | `accent-fg` 18% |
 | `--color-accent-line` | `border-accent-line` | Viền của mục đang chọn (card được chọn, ngày hôm nay) | `accent-fg` 40% | `accent-fg` 40% |
-| `--color-danger-fg` · `success-fg` · `warning-fg` · `info-fg` | `text-danger-fg` … | Chữ trạng thái trên surface | `rose/emerald/amber/sky-400` | `-700` |
+| `--color-danger-fg` · `success-fg` · `warning-fg` · `info-fg` | `text-danger-fg` … | Chữ trạng thái trên surface | `rose/emerald/amber/sky-400` | `-700` (`warning`: `amber-800`, ≥ 4.5:1 cả trên ô nhập Soft / Sharp) |
 | `--color-tone-<hue>` | `text-tone-<hue>` | Chữ tonal 12 hue (purple, violet, indigo, blue, sky, cyan, teal, emerald, amber, orange, rose, pink) | `<hue>-300` | `<hue>-700` |
 
 Mọi cặp chữ / nền ở trên đạt WCAG AA (≥ 4.5:1) ở cả hai theme. Không viết `text-*-400` hay `text-*-700 dark:text-*-300` trong component: dùng `text-accent-fg`, `text-*-fg` hoặc `text-tone-*`.
