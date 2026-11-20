@@ -4,6 +4,11 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.29.1] - 2026-11-20
+
+### Fixed
+- **Kit workflow `brand-pages.yml`**: pull-request checks had the same concurrency group as the Pages deploy, so a pull request and a push to main cancelled each other. Pull requests now get their own group (`/semi-brand update` rewrites the workflow).
+
 ## [0.29.0] - 2026-11-20
 
 The WCAG 2.2 AA audit (major and minor issues), and brand kits that check more and update themselves.
