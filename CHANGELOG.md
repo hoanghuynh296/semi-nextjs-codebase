@@ -4,6 +4,11 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.29.2] - 2026-11-20
+
+### Fixed
+- **`/semi-brand update` / `create` and the kit's `semi-update.yml`** write a fresh `package-lock.json` when they install @semi/ui. Installing on top of the old lock (on macOS) dropped the bundled deps of Tailwind's wasm32 binding (`@emnapi/*`), so `npm ci` failed in the kit's CI on Linux (seen on hoanghuynh296/semi-brand after 2.2.0).
+
 ## [0.29.1] - 2026-11-20
 
 ### Fixed
