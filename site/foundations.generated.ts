@@ -70,8 +70,8 @@ export const FOUNDATIONS = {
       "key": "color-control-line",
       "cls": "border-control-line",
       "note": "Viền ô nhập, checkbox, radio (≥ 3:1)",
-      "dark": "color-mix(in oklab, var(--semi-text-muted) 65%, transparent)",
-      "light": "color-mix(in oklab, var(--semi-text-muted) 80%, transparent)"
+      "dark": "text-muted 65%",
+      "light": "text-muted 80%"
     },
     {
       "key": "color-divider",
@@ -84,15 +84,15 @@ export const FOUNDATIONS = {
       "key": "color-accent",
       "cls": "bg-accent",
       "note": "Nền nút chính, dấu đang chọn",
-      "dark": "var(--color-primary-500)",
-      "light": "var(--color-primary-700)"
+      "dark": "primary-500",
+      "light": "primary-700"
     },
     {
       "key": "color-accent-fg",
       "cls": "text-accent-fg",
       "note": "Chữ và icon nhấn trên nền tối/sáng",
-      "dark": "var(--color-primary-400)",
-      "light": "var(--color-primary-700)"
+      "dark": "primary-400",
+      "light": "primary-700"
     }
   ],
   "type": [

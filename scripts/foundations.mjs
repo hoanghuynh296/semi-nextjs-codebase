@@ -26,7 +26,13 @@ const TEXT = [
 export function foundationsSource(root) {
   const tokens = JSON.parse(readFileSync(join(root, "tokens/tokens.json"), "utf8"));
   const styles = JSON.parse(readFileSync(join(root, "tokens/styles.json"), "utf8"));
-  const pick = (k) => tokens.semantic[k];
+  // Readable values: "color-mix(in oklab, var(--semi-text-muted) 65%, transparent)" → "text-muted 65%",
+  // "var(--color-primary-500)" → "primary-500".
+  const short = (v) =>
+    String(v)
+      .replace(/color-mix\(in oklab, var\(--(?:semi|color)-([\w-]+)\) (\d+%), transparent\)/g, "$1 $2")
+      .replace(/var\(--(?:semi|color)-([\w-]+)\)/g, "$1");
+  const pick = (k) => ({ dark: short(tokens.semantic[k].dark), light: short(tokens.semantic[k].light) });
   const data = {
     surfaces: SURFACES.map(([key, cls, note]) => ({ key, cls, note, dark: pick(key).dark, light: pick(key).light })),
     text: TEXT.map(([key, cls, note]) => ({ key, cls, note, dark: pick(key).dark, light: pick(key).light })),
