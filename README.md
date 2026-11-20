@@ -218,7 +218,9 @@ import { ConfirmHost, ThemeProvider, ThemeScript, ToastHost } from "@semi/ui";
 
 ## 4. Quy trình phát hành phiên bản mới (Maintainers)
 
-1. Sửa token tại `tokens/tokens.json` → chạy `npm run build:tokens` để cập nhật `tokens/tokens.css`.
+1. Sửa token tại `tokens/tokens.json` → chạy `npm run build:tokens` để cập nhật `tokens/tokens.css`. Muốn thử trước
+   (cỡ chữ, font, bo góc, density, tham số bộ sinh màu): trang **Design Lab** của docs, rồi `npm run lab:apply` ghi patch
+   vào đúng file nguồn ([docs/LAB.md](docs/LAB.md)).
 2. Nếu thêm/sửa quy tắc UI: cập nhật đồng thời `docs/DESIGN_SYSTEM.md`, `docs/QUICK_REF.md`, `docs/DECISIONS.md` và `lint/semi-lint.mjs`.
 3. Chạy kiểm tra:
    ```bash

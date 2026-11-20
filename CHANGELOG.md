@@ -4,6 +4,26 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.31.0] - 2026-11-20
+
+Design Lab: try core values of Semi on the whole docs site and on sample brands before an agent writes them.
+
+### Added
+- **Design Lab** (`/lab/` on the docs site, [docs/LAB.md](docs/LAB.md)): edit the type scale (size and line height of every `text-*`), the sizes of each density and type scale, each style's fonts, title weight, figure font, radii, control heights, card shadow and border (and any other style token), and the brand generator's parameters. A draft applies on every docs page at once (a badge pauses it to compare with the original), the brand being previewed follows its generator parameters, and a link (`#lab=…`) shares it. Tabs: Chữ, Hình khối, Màu (one sample brand before / after), So sánh brand, Thay đổi (the diff per source file, and "Copy lệnh cho agent").
+- **`npm run lab:apply -- <patch.json> [--dry]`** writes a Lab patch into `tokens/tokens.json`, `tokens/styles/<id>.json` (a font change updates the style's `fonts`) and `brand/params.mjs`, then runs `build:tokens` and `sync:vendor`, and lists the docs left to update. It refuses an invalid patch, and a generator change that makes a sample brand lose an AA pair.
+- **`brand/params.mjs`**: the numbers of the brand generator (lightness ladder, chroma curve, fill reach, neutral tints per style, status gap and turn), with a note each. `generateBrand(brand, { …, params })` takes overrides; `@semi/ui/brand` also exports `PARAMS` and `mergeParams`. Defaults generate byte-identical kits.
+- **`semi-brand compare [--params <file>]`** and `brand/samples.mjs`: eight sample brands that are hard in different ways (yellow, light cyan, navy, red next to the error colour, orange, greyish violet, blue, the test kit's green), generated with the current and with new parameters; exit 1 when one loses an AA pair.
+
+### Changed
+- `scripts/build-tokens.mjs` shares px → rem, the style selectors and the utility-only keys with the Lab (`scripts/token-css.mjs`); `tokens.css` is unchanged.
+- The accent-subtle alpha the generator checks text against is read from `tokens.json` (`color-accent-subtle`) instead of a copy in `generate.mjs`.
+
+### Fixed
+- Docs site: the brand preview badge's "Sửa" link went to `./brand` relative to the current page (a 404 from a component page); it links to `/brand/`.
+
+### Migration
+- None. Brand kits build the same colours.
+
 ## [0.30.0] - 2026-11-20
 
 Rules an agent cannot slip past, tokens named by role, and status colours that never blend with the brand.

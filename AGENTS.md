@@ -28,6 +28,8 @@ This repository (`hoanghuynh296/semi-nextjs-codebase`) is the **single source of
 | A breaking change (renamed / removed component, prop, constant, token) | A release migration `migrations/<version>-<id>.mjs` (`migrations/README.md`) + its test in `lint/test/migrations.test.mjs`, and a CHANGELOG "Migration" note for what it cannot do |
 | Tokens or lint | `npm run build:tokens` / `npm run sync:vendor` |
 | The brand generator / kit format / kit preview site (`brand/`, `brand/preview`) | `lint/test/brand.test.mjs`, `docs/BRANDS.md` (the user guide: keep its steps true), the Brand preview page if inputs change, a real `semi-brand site` run on a sample kit when the preview template changes, `CHANGELOG.md` (kit format changes need `/semi-brand update` notes) |
+| A Design Lab patch (`npm run lab:apply`, `docs/LAB.md`) | What the script prints: `docs/STYLES.md` for style values, the type scale in `docs/DESIGN_SYSTEM.md` / `docs/QUICK_REF.md` / `TITLES.type` in `scripts/build-tokens.mjs`, `CHANGELOG.md` (+ a `/semi-brand update` note when `brand/params.mjs` changed), `docs/DECISIONS.md` (why) |
+| The Lab itself (`scripts/lab.mjs`, `scripts/lab-apply.mjs`, `app/lab/`, `brand/params.mjs` keys, `brand/samples.mjs`) | `lint/test/lab.test.mjs`, the Lab tests in `tests/storybook.spec.ts`, `docs/LAB.md` |
 | A style (new, or a value of one) | `tokens/styles/<id>.json` → `npm run build:tokens` + `npm run sync:vendor`, its column in `docs/STYLES.md`, Storybook check in both themes, `CHANGELOG.md` (renamed / removed style: a release migration) |
 
 Then run `npm run build:manifest` (regenerates the agent files) and `npm run check`. `check:manifest` fails when:
