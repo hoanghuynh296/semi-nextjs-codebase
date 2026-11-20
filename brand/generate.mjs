@@ -1,13 +1,14 @@
 // Brand generator: a few choices (brand.json) → every colour a Semi product needs, checked for WCAG AA.
 //
 //   validateBrand(brand, { styles })              → { errors, warnings }
-//   generateBrand(brand, { tokens, styles, version }) → { tokens, css, fonts, report }
+//   generateBrand(brand, { tokens, styles, version, params }) → { tokens, css, fonts, report }
 //
 // What the brand chooses (docs/BRANDS.md): primary, optional secondary, neutral ("tinted" from the primary or a style
 // "preset"), the styles it allows, fonts. What is derived: the 50…900 scales (fixed OKLCH lightness per shade, the
 // brand colour itself on the nearest shade), the accent / on-accent / accent-fg shades of each theme (the readable shade
 // closest to the brand colour), the neutrals of every allowed style. No dependencies; the docs site's brand preview
-// runs the same code in the browser.
+// runs the same code in the browser. The numbers of the derivation live in ./params.mjs (tried in the Design Lab).
+import { PARAMS, mergeParams } from "./params.mjs";
 import { blend, contrast, deltaE, hexToOklch, hueDistance, isHex, oklchToHex, parseColor, rgbToOklch } from "./color.mjs";
 
 export const SHADES = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900];
@@ -22,24 +23,11 @@ const THEMES = ["dark", "light"];
 const AA = 4.5;
 /** WCAG 1.4.11: focus rings, selected borders and control fills must reach 3:1 against the surface. */
 const NON_TEXT = 3;
-/**
- * OKLCH lightness of every shade, the same for every brand (close to Tailwind v4 / Radix steps), so primary-200 means
- * the same thing in every brand and very dark or very light brand colours no longer squash half the scale together.
- */
-export const LADDER = { 50: 0.975, 100: 0.945, 200: 0.89, 300: 0.815, 400: 0.725, 500: 0.635, 600: 0.55, 700: 0.47, 800: 0.39, 900: 0.31 };
-/** How far (OKLab ΔE) the button may move from the brand colour to stand out from the page (3:1) instead of blending in. */
-const FILL_REACH = 0.2;
-/** Alpha of the accent-subtle tint per theme (tokens.json): accent-fg text on it (selected option, active page) must read. */
-const SUBTLE = { dark: 0.14, light: 0.11 };
+/** OKLCH lightness of every shade (params.mjs "ladder"), the same for every brand. */
+export const LADDER = PARAMS.ladder;
+export { PARAMS, mergeParams };
 /** Surfaces a solid button sits on (page, app frame, panel); fields and raised layers are not its background. */
 const PAGES = ["color-canvas", "color-app", "color-panel"];
-/**
- * How much of the primary's hue each style's tinted neutrals take (OKLCH chroma). Surfaces (canvas, app, panel, field,
- * raised) take very little: large areas tinted at 0.01 read as a colour cast, while popular systems keep backgrounds
- * near 0–0.003 (Tailwind slate-50 ≈ 0.003, Radix slate-1 ≈ 0.002, shadcn Neutral 0). Text and lines carry more.
- */
-const TINT = { flat: 0.01, soft: 0.016, sharp: 0.005 };
-const SURFACE_TINT = { flat: 0.003, soft: 0.004, sharp: 0.002 };
 /** Fonts known to work with next/font/google; weight is only needed for fonts without a variable version. */
 export const FONTS = {
   Geist: {},
@@ -56,19 +44,16 @@ export const FONTS = {
 };
 /** Semi's status text tokens: fixed per theme (never the brand's), checked against the brand's tinted surfaces. */
 const STATUS_FG = { danger: "lỗi", success: "thành công", warning: "cảnh báo", info: "thông tin" };
-/** The palette family of each status and how far its hue may turn and still read as that status (OKLCH degrees). */
+/** The palette family of each status (how far it may turn: params.mjs "statusTurn" / "statusGap"). */
 const STATUS_FAMILY = { danger: "rose", success: "emerald", warning: "amber", info: "sky" };
-const STATUS_TURN = { danger: 12, success: 20, warning: 12, info: 20 };
-/** A status closer than this to the primary's hue is turned away from it (within STATUS_TURN). */
-const STATUS_GAP = 30;
 const STATUS_PARTS = ["fg", "bg", "border", "solid"];
 
 /**
  * Status colours that would blend with the brand (a red primary next to the error red): the status's palette family
- * turns its hue away from the primary, up to STATUS_TURN, keeping lightness and chroma (so contrast stays). Returns
+ * turns its hue away from the primary, up to params.statusTurn, keeping lightness and chroma (so contrast stays). Returns
  * { [status]: { turn, from, to, dark: { "color-danger-fg": … }, light: { … } } } for the turned statuses only.
  */
-function separateStatus(tokens, primaryHex) {
+function separateStatus(tokens, primaryHex, p = PARAMS) {
   const { h: hue, c } = hexToOklch(primaryHex);
   const out = {};
   if (c < 0.06) return out; // a near-neutral primary does not read as any status
@@ -77,10 +62,10 @@ function separateStatus(tokens, primaryHex) {
     if (!isHex(base)) continue;
     const sh = hexToOklch(base).h;
     const gap = hueDistance(hue, sh);
-    if (gap >= STATUS_GAP) continue;
+    if (gap >= p.statusGap) continue;
     // turn away from the primary: the sign that grows the distance
     const away = ((sh - hue + 540) % 360) - 180 >= 0 ? 1 : -1;
-    const turn = away * Math.min(STATUS_GAP - gap, STATUS_TURN[status]);
+    const turn = away * Math.min(p.statusGap - gap, p.statusTurn[status]);
     const shift = (hex) => {
       const o = hexToOklch(hex);
       return oklchToHex({ l: o.l, c: o.c, h: (o.h + turn + 360) % 360 });
@@ -110,6 +95,11 @@ function resolveToken(value, tokens) {
   if (!m) return value;
   for (const g of Object.values(tokens)) if (g && typeof g === "object" && m[1] in g) return resolveToken(typeof g[m[1]] === "string" ? g[m[1]] : g[m[1]].value, tokens);
   return value;
+}
+/** Alpha of the accent-subtle tint per theme ("color-mix(… accent-fg 14%, transparent)"): accent-fg text on it must read. */
+function subtleAlpha(tokens, theme) {
+  const m = /(\d+(?:\.\d+)?)%/.exec(tokens.semantic?.["color-accent-subtle"]?.[theme] ?? "");
+  return m ? +m[1] / 100 : theme === "dark" ? 0.14 : 0.11;
 }
 /** Opacity of text-muted in Semi's control-line token per theme ("color-mix(… text-muted 80%, transparent)"), or null. */
 function controlLineAlpha(tokens, theme) {
@@ -307,9 +297,10 @@ export function resolveGuide(brand) {
 }
 
 /** The shade a brand colour sits on: the one whose ladder lightness is closest to it. */
-export function brandStep(hex) {
+export function brandStep(hex, p = PARAMS) {
   const { l } = hexToOklch(hex);
-  return SHADES.reduce((best, s) => (Math.abs(LADDER[s] - l) < Math.abs(LADDER[best] - l) ? s : best), 500);
+  const ladder = p.ladder;
+  return SHADES.reduce((best, s) => (Math.abs(ladder[s] - l) < Math.abs(ladder[best] - l) ? s : best), 500);
 }
 
 /**
@@ -317,17 +308,18 @@ export function brandStep(hex) {
  * its nearest shade (brandStep), unchanged. Chroma fades towards white and eases off towards black, and is lowered
  * further only where sRGB cannot show it.
  */
-export function scale(hex) {
+export function scale(hex, p = PARAMS) {
   const { l, c, h } = hexToOklch(hex);
-  const step = brandStep(hex);
+  const step = brandStep(hex, p);
+  const { lighter, darker, white } = p.chroma;
   const out = {};
   for (const s of SHADES) {
     if (s === step) {
       out[s] = hex.toLowerCase().length === 4 ? oklchToHex({ l, c, h }) : hex.toLowerCase();
       continue;
     }
-    const L = LADDER[s];
-    const chroma = L > l ? c * (1 - (L - l) / (0.99 - l)) ** 1.1 : c * (1 - 0.35 * Math.min(1, (l - L) / Math.max(0.05, l - 0.2)));
+    const L = p.ladder[s];
+    const chroma = L > l ? c * Math.max(0, 1 - (L - l) / (white - l)) ** lighter : c * (1 - darker * Math.min(1, (l - L) / Math.max(0.05, l - 0.2)));
     out[s] = oklchToHex({ l: L, c: chroma, h });
   }
   return out;
@@ -339,11 +331,11 @@ const minContrast = (color, backgrounds) => Math.min(...backgrounds.map((bg) => 
 
 /**
  * The solid fill of a theme (buttons, checked controls): of every shade × text colour that reads at AA, the one closest
- * to the brand colour. When that one blends into the page (< 3:1, e.g. navy on a dark page), a shade within FILL_REACH
+ * to the brand colour. When that one blends into the page (< 3:1, e.g. navy on a dark page), a shade within `reach`
  * of the brand that stands out is taken instead; if none does, the brand colour stays and the report says so. Ties go
  * to the theme's usual text (dark text in the dark theme, white in the light theme).
  */
-function pickFill(sc, brandHex, theme, surfaces, text = "auto") {
+function pickFill(sc, brandHex, theme, surfaces, text = "auto", reach = PARAMS.fillReach) {
   const usual = theme === "dark" ? DARK_TEXT : WHITE;
   const cands = [];
   // color.buttonText forces the text colour (e.g. white on an orange brand: a deeper shade); a theme where no shade
@@ -360,7 +352,7 @@ function pickFill(sc, brandHex, theme, surfaces, text = "auto") {
   cands.sort(order);
   const best = cands[0];
   if (best.page >= NON_TEXT) return best;
-  return cands.find((c) => c.page >= NON_TEXT && c.de <= best.de + FILL_REACH) ?? best;
+  return cands.find((c) => c.page >= NON_TEXT && c.de <= best.de + reach) ?? best;
 }
 
 /** Hover of a fill: the next shade away from its text colour (lighter under dark text), or the other way when that one no longer reads. */
@@ -375,8 +367,8 @@ function pickHover(sc, fill) {
  * Coloured text (accent-fg): the shade closest to the brand colour that reads at AA on every surface and on the
  * accent-subtle tint of itself (selected rows, active pills). The focus ring and selected borders use it too.
  */
-function pickText(sc, brandHex, theme, surfaces, pages) {
-  const reads = (s) => minContrast(sc[s], [...surfaces, ...pages.map((bg) => blend(sc[s], bg, SUBTLE[theme]))]);
+function pickText(sc, brandHex, theme, surfaces, pages, subtle) {
+  const reads = (s) => minContrast(sc[s], [...surfaces, ...pages.map((bg) => blend(sc[s], bg, subtle))]);
   const ok = SHADES.filter((s) => reads(s) >= AA).sort((a, b) => deltaE(sc[a], brandHex) - deltaE(sc[b], brandHex));
   const shade = ok[0] ?? (theme === "dark" ? 50 : 900);
   return { shade, ratio: reads(shade) };
@@ -436,14 +428,15 @@ function fixText(n, theme, alpha) {
 }
 
 /** Every token of a brand, its CSS and a contrast report. Throws when validateBrand finds errors. */
-export function generateBrand(brand, { tokens, styles, version = "" }) {
+export function generateBrand(brand, { tokens, styles, version = "", params }) {
+  const p = mergeParams(params);
   const { errors, warnings } = validateBrand(brand, { styles });
   if (errors.length) throw Object.assign(new Error(`brand.json không hợp lệ:\n- ${errors.join("\n- ")}`), { errors });
   const allowed = brand.styles.allowed.map((id) => styles.styles.find((s) => s.id === id));
-  const primary = scale(brand.primary);
-  const secondary = brand.secondary ? scale(brand.secondary) : null;
+  const primary = scale(brand.primary, p);
+  const secondary = brand.secondary ? scale(brand.secondary, p) : null;
   const { h: hue } = hexToOklch(brand.primary);
-  const status = separateStatus(tokens, brand.primary);
+  const status = separateStatus(tokens, brand.primary, p);
 
   // Neutrals of every allowed style, both themes.
   const neutrals = {};
@@ -453,8 +446,8 @@ export function generateBrand(brand, { tokens, styles, version = "" }) {
     for (const theme of THEMES) {
       const n = { ...base[theme] };
       if (brand.neutral === "tinted") {
-        const ch = TINT[st.id] ?? 0.01;
-        const surf = SURFACE_TINT[st.id] ?? 0.003;
+        const ch = p.tint[st.id] ?? 0.01;
+        const surf = p.surfaceTint[st.id] ?? 0.003;
         for (const k of NEUTRAL_KEYS) {
           const c = SURFACES.includes(k) ? surf : k.startsWith("color-text") ? ch * 0.6 : k.startsWith("color-line") || k === "color-divider" ? ch * 2 : ch;
           n[k] = tint(n[k], hue, c);
@@ -472,9 +465,10 @@ export function generateBrand(brand, { tokens, styles, version = "" }) {
   for (const theme of THEMES) {
     const surfaces = allowed.flatMap((st) => SURFACES.map((k) => neutrals[st.id][theme][k]));
     const pages = allowed.flatMap((st) => PAGES.map((k) => neutrals[st.id][theme][k]));
-    const fill = pickFill(primary, brand.primary, theme, pages, brand.color?.buttonText);
+    const subtle = subtleAlpha(tokens, theme);
+    const fill = pickFill(primary, brand.primary, theme, pages, brand.color?.buttonText, p.fillReach);
     const hover = pickHover(primary, fill);
-    const fg = pickText(primary, brand.primary, theme, surfaces, pages);
+    const fg = pickText(primary, brand.primary, theme, surfaces, pages, subtle);
     themes[theme] = {
       "color-accent": primary[fill.shade],
       "color-accent-hover": primary[hover],
@@ -500,8 +494,8 @@ export function generateBrand(brand, { tokens, styles, version = "" }) {
     if (fill.page < NON_TEXT)
       warnings.push(`Theme ${t}: nút màu thương hiệu chỉ tách khỏi nền ${fill.page.toFixed(2)}:1 (< 3:1). Nút vẫn đọc được nhờ chữ, nhưng công tắc, thanh trượt và ô chọn khó thấy hơn`);
     if (secondary) {
-      const sfg = pickText(secondary, brand.secondary, theme, surfaces, pages);
-      const sfill = pickFill(secondary, brand.secondary, theme, pages);
+      const sfg = pickText(secondary, brand.secondary, theme, surfaces, pages, subtle);
+      const sfill = pickFill(secondary, brand.secondary, theme, pages, "auto", p.fillReach);
       themes[theme]["color-secondary-fg"] = secondary[sfg.shade];
       themes[theme]["color-secondary-solid"] = secondary[sfill.shade];
       themes[theme]["color-on-secondary"] = sfill.on;
@@ -531,7 +525,7 @@ export function generateBrand(brand, { tokens, styles, version = "" }) {
     const left = hueDistance(hue, hexToOklch(e.to).h);
     warnings.push(
       `Màu ${name} được xoay ${Math.abs(e.turn)}° (${e.from} → ${e.to}) để không lẫn với màu chính` +
-        (left < STATUS_GAP - 0.5 ? ` nhưng vẫn chỉ cách ${Math.round(left)}° (giới hạn để giữ nghĩa): trạng thái luôn kèm icon hoặc chữ` : ""),
+        (left < p.statusGap - 0.5 ? ` nhưng vẫn chỉ cách ${Math.round(left)}° (giới hạn để giữ nghĩa): trạng thái luôn kèm icon hoặc chữ` : ""),
     );
   }
   if (report.some((r) => !r.ok && !r.soft)) warnings.push("Có cặp màu chưa đạt AA: xem bảng contrast");
@@ -544,8 +538,8 @@ export function generateBrand(brand, { tokens, styles, version = "" }) {
     styles: brand.styles,
     neutral: brand.neutral,
     primary,
-    brandStep: brandStep(brand.primary),
-    ...(secondary ? { secondary, secondaryStep: brandStep(brand.secondary) } : {}),
+    brandStep: brandStep(brand.primary, p),
+    ...(secondary ? { secondary, secondaryStep: brandStep(brand.secondary, p) } : {}),
     themes,
     ...(Object.keys(status).length ? { status } : {}),
     fidelity,

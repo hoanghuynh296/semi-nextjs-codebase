@@ -5,7 +5,7 @@
 import React, { Children, useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Icon } from "./Icon";
 import { useSemiLocale } from "./locale";
-import { FOCUS_RING, cn } from "../styles/utils";
+import { FOCUS_RING, HIT_AREA, cn } from "../styles/utils";
 
 const SM = "(min-width: 640px)";
 const subscribeSm = (cb: () => void) => {
@@ -102,7 +102,7 @@ export function Carousel({
                 aria-label={t.goToSlide(i + 1)}
                 aria-current={i === index || undefined}
                 onClick={() => go(i)}
-                className={cn("h-1.5 rounded-full transition-all", i === index ? "w-5 bg-accent" : "w-1.5 bg-line-hover hover:bg-muted", FOCUS_RING)}
+                className={cn("relative h-1.5 rounded-full transition-all", i === index ? "w-5 bg-accent" : "w-1.5 bg-line-hover hover:bg-muted", HIT_AREA, FOCUS_RING)}
               />
             ))}
           </div>

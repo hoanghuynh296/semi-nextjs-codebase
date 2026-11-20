@@ -2,10 +2,12 @@
 
 import { Button } from "../src/Button";
 import React from "react";
+import Link from "next/link";
 import tokens from "../tokens/tokens.json";
 import styleList from "../tokens/styles.json";
 import { brandCss, generateBrand } from "../brand/generate.mjs";
 import { Icon } from "../src/Icon";
+import { labParams, onLabChange } from "./LabPreview";
 
 // Storybook only: previews a brand (docs/BRANDS.md) on every page. The brand comes from the link semi-brand preview
 // prints (#brand=<base64url brand.json>) or from the Brand preview page, and stays in localStorage until turned off.
@@ -41,10 +43,10 @@ export type BrandResult = {
   warnings: string[];
 };
 
-/** generateBrand with the Storybook's own tokens; errors come back as { error }. */
-export function buildBrand(brand: Brand): BrandResult | { error: string } {
+/** generateBrand with the Storybook's own tokens (and the Design Lab's generator params, when a draft is on); errors come back as { error }. */
+export function buildBrand(brand: Brand, params: Record<string, unknown> | undefined = labParams()): BrandResult | { error: string } {
   try {
-    return generateBrand(brand, { tokens, styles: styleList }) as unknown as BrandResult;
+    return generateBrand(brand, { tokens, styles: styleList, params }) as unknown as BrandResult;
   } catch (e) {
     return { error: (e as Error).message };
   }
@@ -107,18 +109,22 @@ export function BrandPreviewHost() {
     const sync = () => setName(apply(read()));
     sync();
     window.addEventListener(BRAND_EVENT, sync);
-    return () => window.removeEventListener(BRAND_EVENT, sync);
+    const offLab = onLabChange(sync); // new generator params re-colour the previewed brand
+    return () => {
+      window.removeEventListener(BRAND_EVENT, sync);
+      offLab();
+    };
   }, []);
   if (!name) return null;
   return (
-    <div className="fixed bottom-20 md:bottom-4 right-4 z-toast flex items-center gap-2 pl-3 pr-1 h-control rounded-full bg-panel border border-line shadow-overlay text-label text-body">
+    <div className="flex items-center gap-2 pl-3 pr-1 h-control rounded-full bg-panel border border-line shadow-overlay text-label text-body">
       <Icon name="palette" className="w-3.5 h-3.5 text-accent-fg" />
       <span>
         Brand <strong className="font-semibold text-contrast">{name}</strong>
       </span>
-      <a href="./brand" className="text-accent-fg hover:text-contrast font-medium">
+      <Link href="/brand/" className="text-accent-fg hover:text-contrast font-medium">
         Sửa
-      </a>
+      </Link>
       <Button variant="ghost" size="sm" iconOnly icon="close" onClick={() => setPreviewBrand(null)} aria-label="Tắt xem trước brand" title="Tắt xem trước brand" />
     </div>
   );

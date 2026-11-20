@@ -32,8 +32,7 @@ Phones (`< md`) hide the top logo header and use `MobileTabBar` at the bottom (n
 
 *Theme:* `<html suppressHydrationWarning>` + `<ThemeScript />` in `<head>` (no flash) + `<ThemeProvider defaultTheme="dark">` (same options); `<ThemeSwitcher />` (Sáng · Tối · Hệ thống, settings / sidebar footer) or `<ThemeToggle />` (one-tap dark/light), or `const { theme, resolvedTheme, mounted, setTheme } = useTheme()`. `data-theme="system"` follows the OS.
 
-**Colour:** primary `#00AE42` (`primary-*`; a product gets its own from its brand kit, never in its own CSS) = actions, focus, "on". `emerald-*` = status/success only.
-amber = busy/warning · rose = error/danger. Nav menu: grey 16px icons, no count badges, active = `bg-white/[0.10] text-contrast`.
+**Colour:** accent (Semi default `#00AE42`; a product gets its own from its brand kit, never in its own CSS) = actions, focus, "on", through `bg-accent` / `text-accent-fg` tokens. Status tokens carry meaning only: success = online/done · warning = busy/paused · danger = error/destructive · info = news/cost. Category tints: `<Badge tone>`, `TONAL_SURFACE`, `text-tone-<hue>` (§3c). Nav menu: grey 16px icons, no count badges, active = `bg-raised text-contrast`.
 Chips (`Chip`, `chipClass(active)`): `rounded-full h-control px-3.5`, ghost when off, active uses semantic high-contrast background; colour only on a
 leading dot or icon (`TONE_DOT`, `chipIconClass(tone)`). Card tiles keep their area tint. Flat: no gradients, no glow
 blobs, no `shadow-[0_0_…]` (status dots and power buttons too). Active card = `CARD_ACTIVE` (primary border).
@@ -50,8 +49,10 @@ dots / bars `bg-*-solid` · backdrop `bg-overlay` · floating layers `shadow-ove
 layers `z-sticky` < `z-drawer` < `z-modal` < `z-dialog` < `z-sheet` < `z-popover` < `z-toast` < `z-tooltip` (no `z-[9999]`).
 
 **A11y & strings:** icon-only controls need `aria-label` · forms use `Field` (label / hint / error wired) · dialogs are
-`Modal` / `Drawer` / `confirmDialog` (focus trap, Escape, focus return) · keep `FOCUS_RING` on custom controls · UI text
-in shared components comes from `useSemiLocale()` (`<SemiLocaleProvider locale={en}>`).
+`Modal` / `Drawer` / `confirmDialog` (focus trap, Escape, focus return) · keep `FOCUS_RING` on custom controls · a
+control drawn under 24px gets `HIT_AREA` · UI text in shared components comes from `useSemiLocale()`
+(`<SemiLocaleProvider locale={en}>`). Checked on the rendered page in both themes by `npx semi a11y <url>` (§18):
+`contrast`, `edge`, `name`, `focus-ring`, `target-size`, `img-alt`, `lang`, `zoom-lock`, + axe-core when installed.
 
 **Style (docs/STYLES.md):** the app's style sets the neutral colours behind `bg-*` / `text-*` / `border-line`, the fonts
 (`font-sans`, `font-display`), control sizes `h-control` (toolbar buttons, pills, chips, search) / `h-field` (inputs,
@@ -88,6 +89,13 @@ neutral, colour only for a status (`decorative-icon-tones`) · no three feature 
 (a real number, a quote, a product shot) · icons only where they help scanning · sample text from the brand brief ·
 plain sections and white space next to cards. Title weight and figure font come from the style; density and
 type scale are the product's (`data-density`, `data-type-scale` on `<html>`, `semi-lint.json`).
+
+**Density budgets (§4c, measured on the rendered page: `npx semi density <url>`, `test:ui`):** text ≥ 12px from a
+box's sides, ≥ 8px from top / bottom (`tight-box`) · list rows ≥ `h-control` when clickable, 6px around their text
+(`tight-row`: `Item`, `Menu`, `DataTable`) · ≤ 3 frames deep (`box-nesting`) · ≤ 4 text sizes (`type-mix`) and ≤ 3
+colours (`colour-noise`) per box · 1 filled accent button per view (`primary-actions`) · ≥ 8px between boxes
+(`cramped-boxes`) · one line between two things (`double-line`). Lengths scale with density. `data-density-view` on a
+frame that stands for a whole screen (preview, sample app); `data-density-skip="<reason>"` only on a specimen.
 
 ## Anti-patterns & Token Rules (enforced by `npx semi-lint`)
 

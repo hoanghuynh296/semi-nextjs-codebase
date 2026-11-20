@@ -283,6 +283,11 @@ tắc bố cục đi kèm (tránh giao diện "AI" chung chung): `DESIGN_SYSTEM.
   trong BRAND.md ghi xoay bao nhiêu độ. Đổi theo bản Semi mới thì `/semi-brand update` báo mức minor. `fidelity` cho biết nút mỗi theme ở sắc độ nào và lệch màu
   thương hiệu bao nhiêu (ΔE OKLab, 0 = đúng màu); lệch trên 0.08 có cảnh báo kèm lý do.
 
+Các con số của cách sinh (độ sáng từng sắc độ, nút được lệch bao xa, độ phủ màu của màu trung tính, giới hạn xoay màu
+trạng thái) nằm ở `brand/params.mjs`, giống nhau cho mọi thương hiệu. Người bảo trì Semi thử chúng trên trang **Design
+Lab** của docs, kèm so sánh trên các brand mẫu, trước khi đổi ([LAB.md](LAB.md)); đổi chúng là thay đổi core: mọi kit
+đổi màu khi build lại.
+
 Chi tiết kỹ thuật: bộ sinh màu nằm ở `@semi/ui/brand` (`generateBrand`), lệnh trong kit là `semi-brand build | check`
 (bin của `@semi/ui`). `check` bỏ qua dòng ghi phiên bản `@semi/ui` trong file sinh ra: bản Semi mới sinh cùng màu thì
 kit không cần build lại hay phát hành. Style có sẵn: [STYLES.md](STYLES.md).

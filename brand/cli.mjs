@@ -6,6 +6,9 @@
 //   semi-brand site      build, then export the preview site as static files to .preview/out (GitHub Pages;
 //                        SEMI_BRAND_BASE_PATH=/<repo> sets the path it is served under)
 //   semi-brand storybook print the Semi Storybook "Brand preview" link for this brand.json (before a kit exists)
+//   semi-brand compare   the sample brands (brand/samples.mjs) with the current generator parameters and with
+//                        --params <file> (a Design Lab patch or a params object): exit 1 when a sample loses a pair.
+//                        Runs anywhere (no brand.json needed); used before a core change of brand/params.mjs ships.
 // The preview site template ships in @semi/ui (brand/preview) and is copied into .preview/ (gitignored) on each run,
 // so a newer @semi/ui brings a newer preview.
 import { copyFileSync, cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -13,6 +16,7 @@ import { spawnSync } from "node:child_process";
 import { extname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { generateBrand, SHADES } from "./generate.mjs";
+import { compareSamples, comparisonOk, formatComparison } from "./compare.mjs";
 
 const PREVIEW_URL = "https://hoanghuynh296.github.io/semi-nextjs-codebase/brand/"; // the docs site reads #brand= on every page
 const pkgRoot = fileURLToPath(new URL("..", import.meta.url));
@@ -283,8 +287,25 @@ function agentsMd({ tokens: t }, styles) {
 function main(argv) {
   const cmd = argv[0];
   const cwd = process.cwd();
+  if (cmd === "compare") {
+    const i = argv.indexOf("--params");
+    let after;
+    if (i > 0) {
+      if (!argv[i + 1] || !existsSync(argv[i + 1])) {
+        console.error("semi-brand compare: --params cần một file JSON (patch của Design Lab hoặc object params)");
+        return 2;
+      }
+      const raw = readJson(argv[i + 1]);
+      after = raw.$semiLab ? raw.params ?? {} : raw;
+    }
+    const rows = compareSamples({ tokens: readJson(join(pkgRoot, "tokens/tokens.json")), styles: readJson(join(pkgRoot, "tokens/styles.json")) }, { after });
+    console.log(formatComparison(rows));
+    const ok = comparisonOk(rows);
+    console.log(ok ? "semi-brand compare: không brand mẫu nào mất cặp màu đạt AA" : "semi-brand compare: có brand mẫu mất cặp màu đạt AA (dòng ✗)");
+    return ok ? 0 : 1;
+  }
   if (!["build", "check", "preview", "site", "storybook"].includes(cmd)) {
-    console.log("usage: semi-brand build | check | preview [--port N] | site | storybook   (in a brand kit repo with brand.json)");
+    console.log("usage: semi-brand build | check | preview [--port N] | site | storybook   (in a brand kit repo with brand.json)\n       semi-brand compare [--params <file>]   (sample brands, current vs new generator parameters)");
     return cmd ? 2 : 0;
   }
   if (!existsSync(join(cwd, "brand.json"))) {

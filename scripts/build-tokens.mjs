@@ -8,9 +8,8 @@ import { readFileSync, readdirSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-// Font sizes are written in px in tokens.json (easy to read) and emitted in rem, so text follows the browser's default
-// font size setting (WCAG 1.4.4): 14px → 0.875rem at the default 16px. Line heights are unitless and stay.
-const toRem = (key, v) => (/^text-[a-z-]+$/.test(key) && /^\d+(\.\d+)?px$/.test(v) ? `${+(parseFloat(v) / 16).toFixed(4)}rem` : v);
+// px → rem for font sizes, the style selectors and the utility-only keys are shared with the Design Lab (scripts/lab.mjs).
+import { styleSelectors, toRem, UTILITY_KEYS } from "./token-css.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const src = join(root, "tokens", "tokens.json");
@@ -28,8 +27,6 @@ const styles = readdirSync(stylesDir)
 const defaults = styles.filter((s) => s.default);
 if (defaults.length !== 1) throw new Error(`tokens/styles: exactly one style needs "default": true (found ${defaults.length})`);
 const styleKeys = Object.keys(defaults[0].tokens);
-/** Style tokens that are a utility of their own instead of a Tailwind theme variable: key → [utility, CSS property]. */
-const UTILITY_KEYS = { "card-border": ["border-card", "border"] };
 for (const s of styles) {
   const keys = Object.keys(s.tokens);
   const missing = styleKeys.filter((k) => !keys.includes(k));
@@ -113,7 +110,7 @@ if (darkVars.length > 0) {
   out += `@theme inline {\n${themeKeys.map((k) => `  --${k}: var(--semi-${k});${note(def.tokens[k])}`).join("\n")}\n}\n\n`;
   out += Object.entries(UTILITY_KEYS).map(([k, [name, prop]]) => `/* ${def.tokens[k].note ?? k} */\n@utility ${name} {\n  ${prop}: var(--semi-${k});\n}\n\n`).join("");
   for (const s of styles) {
-    const sel = [...(s.default ? [":root", "[data-theme]"] : []), `[data-style="${s.id}"]`, `[data-style="${s.id}"] [data-theme]`];
+    const sel = styleSelectors(s.id, s.default);
     out += `/* Style: ${s.name}. ${s.description} */\n${sel.join(",\n")} {\n`;
     out += styleKeys.map((k) => `  --semi-${k}: ${s.tokens[k].value};`).join("\n") + "\n";
     out += themeKeys.map((k) => `  --${k}: var(--semi-${k});`).join("\n") + "\n}\n\n";

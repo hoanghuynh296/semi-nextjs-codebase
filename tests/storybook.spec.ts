@@ -4,11 +4,13 @@
 import { expect, test, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import styleList from "../tokens/styles.json" with { type: "json" };
+import tokens from "../tokens/tokens.json" with { type: "json" };
 import docs from "../examples/list.generated.json" with { type: "json" };
-import { lowContrast } from "./contrast";
+import { a11yHits, lowContrast } from "./contrast";
+import { densityAudit } from "../lint/density.mjs";
 
 const DOC_PAGES = docs.map((d) => `/components/${d.id}/`);
-const PAGES = ["/", "/components/", "/foundations/", "/brand/", ...DOC_PAGES];
+const PAGES = ["/", "/components/", "/foundations/", "/brand/", "/lab/", ...DOC_PAGES];
 /** Pages checked in every style: the gallery shows one example of every doc. */
 const LOOK_PAGES = ["/", "/components/", "/components/table/", "/components/field/"];
 const THEMES = ["dark", "light"] as const;
@@ -35,10 +37,10 @@ async function open(page: Page, path: string, theme: "dark" | "light" | "system"
 
 for (const path of PAGES) {
   for (const theme of THEMES) {
-    test(`contrast AA · ${theme} · ${path}`, async ({ page }) => {
+    test(`a11y audit (contrast AA, edges, names, focus, targets) · ${theme} · ${path}`, async ({ page }) => {
       await open(page, path, theme);
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
-      expect(await lowContrast(page)).toEqual([]);
+      expect(await a11yHits(page)).toEqual([]);
     });
 
     test(`axe · ${theme} · ${path}`, async ({ page }) => {
@@ -53,7 +55,14 @@ for (const path of PAGES) {
     const page = await browser.newPage({ viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true });
     await open(page, path, "light");
     expect(await phoneOverflow(page)).toEqual([]);
+    expect(await page.evaluate(densityAudit, { scope: "main" })).toEqual([]);
+    expect(await a11yHits(page)).toEqual([]);
     await page.close();
+  });
+
+  test(`density budgets (§4c) · ${path}`, async ({ page }) => {
+    await open(page, path, "dark");
+    expect(await page.evaluate(densityAudit, { scope: "main" })).toEqual([]);
   });
 
   test(`page never scrolls outside the shell · ${path}`, async ({ page }) => {
@@ -65,15 +74,16 @@ for (const path of PAGES) {
 for (const path of LOOK_PAGES) {
   for (const theme of THEMES)
     for (const look of LOOKS)
-      test(`contrast AA · ${look.name} · ${theme} · ${path}`, async ({ page }) => {
+      test(`a11y audit · ${look.name} · ${theme} · ${path}`, async ({ page }) => {
         await open(page, path, theme, look.style);
-        expect(await lowContrast(page)).toEqual([]);
+        expect(await a11yHits(page)).toEqual([]);
       });
   for (const style of STYLES)
     test(`fits a phone screen · ${style} · ${path}`, async ({ browser }) => {
       const page = await browser.newPage({ viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true });
       await open(page, path, "light", style);
       expect(await phoneOverflow(page)).toEqual([]);
+      expect(await page.evaluate(densityAudit, { scope: "main" })).toEqual([]);
       await page.close();
     });
 }
@@ -190,6 +200,86 @@ test("brand preview: a #brand= link recolours every page, passes contrast in bot
   await expect.poll(accent).toBe("#2563eb");
   await page.getByRole("button", { name: "Tắt xem trước brand" }).click();
   await expect.poll(accent).toBe("#00ae42"); // Semi's own green again (dark theme)
+});
+
+// ─── Design Lab (docs/LAB.md) ───────────────────────────────────────────────────────────────────────────────────
+
+/** Computed `prop` of a fresh element with `cls` inside a wrapper with `attrs` (data-style, data-density …). */
+const probe = (page: Page, attrs: Record<string, string>, cls: string, prop: string) =>
+  page.evaluate(
+    ([a, c, p]) => {
+      const w = document.createElement("div");
+      for (const [k, v] of Object.entries(a as Record<string, string>)) w.setAttribute(k, v);
+      const el = document.createElement("div");
+      el.className = c as string;
+      w.appendChild(el);
+      document.body.appendChild(w);
+      const v = getComputedStyle(el).getPropertyValue(p as string);
+      w.remove();
+      return v;
+    },
+    [attrs, cls, prop] as const,
+  );
+const labHash = (d: object) => Buffer.from(JSON.stringify({ $semiLab: 1, type: {}, density: {}, typeScale: {}, styles: {}, params: {}, ...d })).toString("base64url");
+const px = (v: string) => `${parseFloat(v) * (v.endsWith("rem") ? 16 : 1)}px`;
+
+test("Design Lab: every value it edits reaches the utility apps use (no value is frozen at build time)", async ({ page }) => {
+  // Each type size and each style token with a utility gets a distinct value; the real utility must follow it.
+  const sizes = Object.keys(tokens.type).filter((k) => !k.includes("--") && !(tokens.type as Record<string, { deprecated?: boolean }>)[k]?.deprecated);
+  const type = Object.fromEntries(sizes.map((k, i) => [k, `${30 + i}px`]));
+  const shape: [string, string, string, string][] = [
+    ["radius-chip", "0.5625rem", "rounded-chip", "border-top-left-radius"],
+    ["radius-control", "0.6875rem", "rounded-control", "border-top-left-radius"],
+    ["radius-card", "1.3125rem", "rounded-card", "border-top-left-radius"],
+    ["radius-panel", "1.8125rem", "rounded-panel", "border-top-left-radius"],
+    ["spacing-control", "47px", "h-control", "height"],
+    ["spacing-field", "53px", "h-field", "height"],
+    ["spacing", "0.3125rem", "p-4", "padding-top"],
+  ];
+  const styles = Object.fromEntries(STYLES.map((id) => [id, { ...Object.fromEntries(shape.map(([k, v]) => [k, v])), "card-border": "3px solid red", "font-weight-title": "800" }]));
+  await open(page, `/components/#lab=${labHash({ type, styles })}`, "dark", "soft");
+  await expect(page.getByText("Design Lab", { exact: true })).toBeVisible();
+  for (const [k, v] of Object.entries(type)) await expect.poll(() => probe(page, {}, k, "font-size"), { message: k }).toBe(v);
+  for (const style of STYLES) {
+    for (const [k, v, cls, prop] of shape) expect(await probe(page, { "data-style": style }, cls, prop), `${style} ${k}`).toBe(k === "spacing" ? px(`${parseFloat(v) * 4}rem`) : px(v));
+    expect(await probe(page, { "data-style": style }, "border-card", "border-top-width"), `${style} card-border`).toBe("3px");
+    expect(await probe(page, { "data-style": style }, "font-title", "font-weight"), `${style} font-weight-title`).toBe("800");
+  }
+});
+
+test("Design Lab: a draft follows every page, keeps each style and density its own values, pauses, and its tabs pass AA", async ({ page }) => {
+  const soft = styleList.styles.find((s) => s.id === "soft")!.tokens["radius-card"];
+  const draft = { type: { "text-ui": "17px" }, density: { compact: { spacing: "0.3rem" } }, styles: { flat: { "radius-card": "1.5rem" } } };
+  await open(page, `/components/button/#lab=${labHash(draft)}`, "dark", "flat");
+  await expect.poll(() => probe(page, {}, "text-ui", "font-size")).toBe("17px");
+  expect(await probe(page, {}, "rounded-card", "border-top-left-radius")).toBe("24px");
+  expect(await probe(page, { "data-style": "soft" }, "rounded-card", "border-top-left-radius")).toBe(px(soft)); // a flat change stays in flat
+  expect(await probe(page, { "data-density": "compact" }, "text-ui", "font-size")).toBe("13px"); // compact keeps its own size
+  expect(await probe(page, { "data-density": "compact" }, "p-4", "padding-top")).toBe("19.2px");
+  await page.goto("/components/"); // stored: stays on across pages
+  await expect.poll(() => probe(page, {}, "text-ui", "font-size")).toBe("17px");
+  await page.getByRole("button", { name: "Tạm tắt bản nháp Lab (xem bản gốc)" }).click();
+  await expect.poll(() => probe(page, {}, "text-ui", "font-size")).toBe("14px");
+  await page.getByRole("button", { name: "Bật lại bản nháp Lab" }).click();
+  await expect.poll(() => probe(page, {}, "text-ui", "font-size")).toBe("17px");
+
+  // Every tab of the Lab, both themes: the sample specimens of the compare tab included.
+  await page.goto(`/lab/#lab=${labHash({ ...draft, params: { ladder: { 500: 0.6 } } })}`);
+  await page.addStyleTag({ content: "*,*::before,*::after{transition:none!important;animation:none!important}" });
+  for (const theme of THEMES) {
+    await page.getByRole("radio", { name: theme === "dark" ? "Tối" : "Sáng" }).first().click();
+    for (const tab of ["Chữ", "Hình khối", "Màu", "So sánh brand", "Thay đổi"]) {
+      await page.getByRole("tab", { name: new RegExp(`^${tab}`) }).click();
+      expect(await lowContrast(page), `${theme} · ${tab}`).toEqual([]);
+      const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
+      expect(violations.filter((v) => v.impact === "serious" || v.impact === "critical").map((v) => `${tab}: ${v.id}`)).toEqual([]);
+    }
+  }
+  await expect(page.getByRole("cell", { name: "ladder.500" })).toBeVisible();
+  await page.getByRole("button", { name: "Bỏ bản nháp" }).click();
+  await page.getByRole("alertdialog").getByRole("button", { name: "Bỏ bản nháp" }).click();
+  await expect(page.getByText("Bản nháp đang trống")).toBeVisible();
+  expect(await probe(page, {}, "text-ui", "font-size")).toBe("14px");
 });
 
 test("system theme follows prefers-color-scheme", async ({ browser }) => {

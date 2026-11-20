@@ -62,7 +62,7 @@ export default function ButtonIcons() {
       <Button variant="danger" icon="trash">
         Xoá
       </Button>
-      <Button variant="primary" iconOnly icon="plus" aria-label="Thêm mới" title="Thêm mới" />
+      <Button iconOnly icon="settings" aria-label="Cài đặt" title="Cài đặt" />
       <Button iconOnly icon="download" aria-label="Tải xuống" title="Tải xuống" />
     </div>
   );

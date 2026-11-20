@@ -11,7 +11,7 @@ import { Skeleton } from "./Skeleton";
 import { Table, TBody, TD, TH, THead, TR } from "./Table";
 import { normalizeSearch } from "./Command";
 import { useSemiLocale } from "./locale";
-import { FOCUS_RING, cn } from "../styles/utils";
+import { FOCUS_RING, HIT_AREA, cn } from "../styles/utils";
 
 export interface DataTableColumn<T> {
   key: string;
@@ -161,7 +161,7 @@ export function DataTable<T>({
                       <button
                         type="button"
                         onClick={() => toggleSort(c.key)}
-                        className={cn("inline-flex items-center gap-1 rounded-chip hover:text-contrast", active && "text-contrast", c.numeric && "flex-row-reverse", FOCUS_RING)}
+                        className={cn("relative inline-flex items-center gap-1 rounded-chip hover:text-contrast", active && "text-contrast", c.numeric && "flex-row-reverse", HIT_AREA, FOCUS_RING)}
                       >
                         {c.header}
                         <Icon name={active && sort!.dir === "desc" ? "chevronDown" : "chevronUp"} className={cn("w-3.5 h-3.5", active ? "opacity-100" : "opacity-40")} />

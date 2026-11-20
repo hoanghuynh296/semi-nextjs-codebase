@@ -2,7 +2,55 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
-## [Unreleased]
+## [0.32.0] - 2026-11-21
+
+Density budgets, accessibility checks and a screen review: a cluttered, cramped or inaccessible screen is now measured on the app's rendered page, and what no tool can measure (missing states, conventions, voice) is a checklist per screen.
+
+### Added
+- **Density & hierarchy budgets** (`DESIGN_SYSTEM.md` §4c, `QUICK_REF.md`): text inset in a box (`tight-box`), list row height and padding (`tight-row`), frames inside frames (`box-nesting`, at most three), text sizes per box (`type-mix`, at most four), colours per box (`colour-noise`, at most three), one filled accent button per view (`primary-actions`), space between boxes (`cramped-boxes`) and double lines (`double-line`). Every length is in density units, so compact and airy products keep their own scale.
+- **`lint/density.mjs`**: measures the budgets in the browser (what semi-lint, reading code a line at a time, cannot see). `npx semi density <url…>` runs it with the app's Playwright at 1280px and 375px (`--width`, `--theme`, `--scope`, `--json`); `npx semi density --snippet` prints the expression to evaluate with a browser tool when the app has no Playwright.
+- `data-density-view` (a frame that stands for a whole screen: a preview, a sample app) and `data-density-skip="<reason>"` (a specimen that breaks a budget on purpose).
+- **`/semi-check` phase 5 — Mật độ**: measures the app's key pages with the vendored `density.mjs` (or the browser tool) and fixes the hits with the user's yes. `/semi-ui` measures a page before finishing; the consumer rules (`AGENTS.md` block) carry the budgets.
+- `test:ui`: the budgets on every docs page (1280px dark, 375px light, every style at phone width) and every brand book page from 320px to 1280px; `tests/density.spec.ts` checks each rule against a bad and a good case.
+- **`lint/a11y.mjs`** and **`npx semi a11y <url…>`** (`DESIGN_SYSTEM.md` §18): checks an app's rendered pages in dark and light at 1280px and 375px for text contrast (translucent tints blended in), field edges at 3:1, control names (a placeholder is not one), a visible focus indicator, 24px targets, image alt, `lang` and a viewport that allows zoom; adds axe-core's serious WCAG 2.2 AA findings when the app has `axe-core`. `--snippet` for a browser tool; `data-a11y-skip="<reason>"` for a specimen.
+- **`/semi-check` phase 6 — Tiếp cận (a11y)** runs it on the app's key pages; `/semi-ui` runs it before finishing; the consumer rules carry the checks.
+- **Screen review** (`DESIGN_SYSTEM.md` §19b): the questions per key screen for visual hierarchy, typography, spacing, colour, consistency, accessibility, usability and platform conventions, states and micro-interactions, and brand, each next to the tool that already measures part of it. The states come first: loading, empty and "no result", error with retry, partial, no permission, too much data. `/semi-check` walks the key screens through it (phase 4b), `/semi-ui` builds every state, and the consumer rules carry it.
+- **`HIT_AREA`** (`@semi/ui/styles`): grows a control drawn smaller than 24px to a 24 × 24 px click area (44 × 44 px on touch) with a pseudo-element, keeping its visible size and the layout.
+
+### Changed
+- Core principles no longer push towards clutter: "Icons over words" (an icon on every card and section) becomes icons where they help scanning, and "Cards, not lines" becomes space first, then frames (§19 already asked for both).
+- §4 spacing: `px-2` / `py-1` are for the inside of a control, never a row's or a box's padding; a list row is at least a control tall.
+- `Table`: cells get `py-2` (`TABLE_CELL`), so a wrapped cell (`wrap`) no longer touches the row lines; one-line rows keep their 44px height.
+- `FileDrop`: the file list keeps 8px between files (was 6px).
+- WCAG 2.5.8 target size: `Carousel` dots, `Slider` thumbs, `DataTable` sort headers and `Calendar`'s "Hôm nay" get `HIT_AREA`; `Checkbox` and `Switch` now get a 24px area on a mouse too (was 44px on touch only). Nothing changes size on screen.
+- `DESIGN_SYSTEM.md` §3, §3c and §7–§14, `QUICK_REF.md`: examples and descriptions now use the themed tokens the code uses (`text-tone-*`, `TONAL_SURFACE`, status `*-bg` / `*-fg` / `*-solid`, `bg-raised`, `SEGMENT_ON`, `bg-overlay`) instead of `text-*-700 dark:text-*-300` pairs, `-300` / `-400` shades, `text-gray-*` and `bg-white/[…]`, which the lint rules forbid; agents copying them learned the wrong pattern.
+- `Toggle` (single) is `h-control` tall again: its shared item class also carried `h-full`, which won over `h-control` and drew it 20px tall. Only `ToggleGroup` items fill their group's height.
+- `test:ui`: the a11y audit replaces the contrast-only check on every docs page (both themes, every style, phone width) and brand book page; `tests/a11y.spec.ts` checks each rule against a bad and a good case.
+- Examples: `button/icons` shows one filled button (the icon-only one is secondary); `app-header/tool` shows a canvas under the header (the frame's edge doubled the header's line).
+- Brand book (`semi-brand site`): the landing sample's header button is secondary (one filled button per screen), the dashboard sample's list rows are `px-4 py-2.5` and its KPI cards `gap-stack`; the sample screens are marked `data-density-view`.
+
+### Migration
+- None. Existing apps see the budgets and the a11y checks when they run `/semi-check`, `npx semi density` or `npx semi a11y`; nothing in `semi-lint` changed.
+
+## [0.31.0] - 2026-11-20
+
+Design Lab: try core values of Semi on the whole docs site and on sample brands before an agent writes them.
+
+### Added
+- **Design Lab** (`/lab/` on the docs site, [docs/LAB.md](docs/LAB.md)): edit the type scale (size and line height of every `text-*`), the sizes of each density and type scale, each style's fonts, title weight, figure font, radii, control heights, card shadow and border (and any other style token), and the brand generator's parameters. A draft applies on every docs page at once (a badge pauses it to compare with the original), the brand being previewed follows its generator parameters, and a link (`#lab=…`) shares it. Tabs: Chữ, Hình khối, Màu (one sample brand before / after), So sánh brand, Thay đổi (the diff per source file, and "Copy lệnh cho agent").
+- **`npm run lab:apply -- <patch.json> [--dry]`** writes a Lab patch into `tokens/tokens.json`, `tokens/styles/<id>.json` (a font change updates the style's `fonts`) and `brand/params.mjs`, then runs `build:tokens` and `sync:vendor`, and lists the docs left to update. It refuses an invalid patch, and a generator change that makes a sample brand lose an AA pair.
+- **`brand/params.mjs`**: the numbers of the brand generator (lightness ladder, chroma curve, fill reach, neutral tints per style, status gap and turn), with a note each. `generateBrand(brand, { …, params })` takes overrides; `@semi/ui/brand` also exports `PARAMS` and `mergeParams`. Defaults generate byte-identical kits.
+- **`semi-brand compare [--params <file>]`** and `brand/samples.mjs`: eight sample brands that are hard in different ways (yellow, light cyan, navy, red next to the error colour, orange, greyish violet, blue, the test kit's green), generated with the current and with new parameters; exit 1 when one loses an AA pair.
+
+### Changed
+- `scripts/build-tokens.mjs` shares px → rem, the style selectors and the utility-only keys with the Lab (`scripts/token-css.mjs`); `tokens.css` is unchanged.
+- The accent-subtle alpha the generator checks text against is read from `tokens.json` (`color-accent-subtle`) instead of a copy in `generate.mjs`.
+
+### Fixed
+- Docs site: the brand preview badge's "Sửa" link went to `./brand` relative to the current page (a 404 from a component page); it links to `/brand/`.
+
+### Migration
+- None. Brand kits build the same colours.
 
 ## [0.30.0] - 2026-11-20
 

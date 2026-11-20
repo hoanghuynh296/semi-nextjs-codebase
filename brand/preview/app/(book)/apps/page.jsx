@@ -48,7 +48,7 @@ function Dashboard({ theme }) {
             </Button>
           </div>
         </div>
-        <div className="grid grid-cols-2 @lg:grid-cols-4 gap-2 items-start">
+        <div className="grid grid-cols-2 @lg:grid-cols-4 gap-stack items-start">
           <KpiCard featured label={SAMPLE.metric.label} value={SAMPLE.metric.value} sub={SAMPLE.metric.sub} />
           <KpiCard label="Đơn" value="128" />
           <div className="hidden @lg:block">
@@ -57,7 +57,7 @@ function Dashboard({ theme }) {
         </div>
         <div className="rounded-card border border-line bg-panel divide-y divide-divider text-ui">
           {rows.map(([id, name, sum, status, tone], i) => (
-            <div key={id} className={`flex items-center gap-2 @md:gap-3 px-3 py-2 ${i === 0 ? "bg-accent-subtle border-l-2 border-l-accent-fg" : ""}`}>
+            <div key={id} className={`flex items-center gap-2 @md:gap-3 px-4 py-2.5 ${i === 0 ? "bg-accent-subtle border-l-2 border-l-accent-fg" : ""}`}>
               <span className="hidden @md:inline tabular-nums text-muted w-12 shrink-0">{id}</span>
               <span className="min-w-0 flex-1 text-contrast font-medium truncate">{name}</span>
               {i === 0 && (
@@ -142,7 +142,7 @@ function Landing({ theme }) {
         <span className="hidden @lg:inline text-ui text-body ml-auto">Sản phẩm</span>
         <span className="hidden @lg:inline text-ui text-body">Bảng giá</span>
         <span className="ml-auto @lg:ml-0">
-          <Button variant="primary">{first(ex.button, "Dùng thử")}</Button>
+          <Button>{first(ex.button, "Dùng thử")}</Button>
         </span>
       </div>
       <div className={`px-5 py-10 grid gap-8 @2xl:grid-cols-2 @2xl:items-center ${expressive ? "bg-accent text-on-accent" : ""}`}>

@@ -206,7 +206,7 @@ export function FileDrop({
         {live.n % 2 === 0 ? "" : "\u00a0"}
       </div>
       {items.length > 0 && (
-        <ul className="mt-2 flex flex-col gap-1.5">
+        <ul className="mt-2 flex flex-col gap-2">
           {items.map((item) => (
             <li key={item.id} className="flex items-center gap-2 rounded-control border border-line bg-field px-3 py-2 min-w-0">
               <Icon name="file" className={cn("w-4 h-4 shrink-0", item.status === "error" ? "text-danger-fg" : "text-muted")} />

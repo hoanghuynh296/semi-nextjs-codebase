@@ -4,14 +4,10 @@
 // of the hit area, keyboard focus shows a ring, colours come from tokens (accent when on, field / line when off).
 import React, { useEffect, useId, useRef } from "react";
 import { Icon } from "./Icon";
-import { cn, FOCUS_RING } from "../styles/utils";
+import { cn, FOCUS_RING, HIT_AREA } from "../styles/utils";
 
 const LABEL = "text-ui text-body";
 const DESC = "text-label text-muted";
-// On a touch screen (any coarse pointer) the control's hit area grows to 44 × 44 px around it; the visible size and the
-// layout stay. A pseudo-element of the clickable element, so no JS (same detection as useCoarsePointer).
-const TOUCH_TARGET =
-  "any-pointer-coarse:before:absolute any-pointer-coarse:before:top-1/2 any-pointer-coarse:before:left-1/2 any-pointer-coarse:before:size-[44px] any-pointer-coarse:before:-translate-1/2";
 
 /** Dev-only console warning for a control screen readers cannot name (no label, aria-label or aria-labelledby). */
 function useNameWarning(component: string, named: boolean) {
@@ -58,7 +54,7 @@ export function Checkbox({
   const on = checked || indeterminate;
   return (
     <label htmlFor={id} className={cn("inline-flex items-start gap-2.5 cursor-pointer select-none", disabled && "opacity-40 cursor-not-allowed", className)}>
-      <span className={cn("relative mt-0.5 w-4 h-4 shrink-0", TOUCH_TARGET)}>
+      <span className={cn("relative mt-0.5 w-4 h-4 shrink-0", HIT_AREA)}>
         <input
           ref={ref}
           id={id}
@@ -70,7 +66,7 @@ export function Checkbox({
           aria-describedby={description ? `${id}-desc` : undefined}
           onChange={(e) => onChange(e.target.checked)}
           className={cn(
-            "peer appearance-none w-4 h-4 rounded-chip border transition cursor-pointer disabled:cursor-not-allowed",
+            "peer relative appearance-none w-4 h-4 rounded-chip border transition cursor-pointer disabled:cursor-not-allowed",
             on ? "bg-accent border-transparent" : "bg-field border-control-line hover:border-control-line-hover",
             FOCUS_RING,
           )}
@@ -141,7 +137,7 @@ export function Switch({
       className={cn(
         "relative shrink-0 rounded-full border transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed p-px",
         track,
-        TOUCH_TARGET,
+        HIT_AREA,
         checked ? "bg-accent border-transparent" : "bg-raised border-line",
         FOCUS_RING,
         !label && !description && className,
