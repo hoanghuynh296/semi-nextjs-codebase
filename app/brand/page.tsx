@@ -75,7 +75,7 @@ export default function BrandPage() {
     <>
       <div className="space-y-3 pb-2 border-b border-line/60">
         <PageTitle title="Brand preview" />
-        <p className="text-ui text-muted max-w-3xl leading-relaxed">
+        <p className="text-ui text-muted max-w-3xl">
           Xem một thương hiệu trên toàn bộ Semi trước khi tạo brand kit. Chỉ chọn vài thứ (màu chính, màu phụ, màu trung tính, style, font); thang màu, màu
           nút cho nền sáng / tối và màu trung tính của từng style do Semi tự sinh và kiểm tra đọc rõ. Bật xem trước để mọi trang của docs đổi theo. Ưng ý thì copy lệnh cho agent và dán vào
           /semi-brand trong repo brand trống. Hướng dẫn: docs/BRANDS.md.

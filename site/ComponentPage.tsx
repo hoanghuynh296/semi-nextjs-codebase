@@ -40,7 +40,7 @@ export function ComponentPage({ id, markdownHref }: { id: string; markdownHref?:
           <span className="text-body">{doc.title}</span>
         </div>
         <PageTitle title={doc.title} />
-        <p className="text-ui-lg text-body max-w-3xl leading-relaxed">{doc.description}</p>
+        <p className="text-ui-lg text-body max-w-3xl">{doc.description}</p>
         <div className="flex flex-wrap items-center gap-2">
           <Button size="sm" icon={copied ? "check" : "copy"} onClick={copyPage}>
             {copied ? "Đã copy" : "Copy page"}

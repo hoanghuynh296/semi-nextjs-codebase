@@ -62,9 +62,16 @@ export const FOUNDATIONS = {
     {
       "key": "color-line",
       "cls": "border-line",
-      "note": "Viền control và card",
+      "note": "Viền card, bảng, khung",
       "dark": "rgba(255, 255, 255, 0.12)",
       "light": "rgba(0, 0, 0, 0.08)"
+    },
+    {
+      "key": "color-control-line",
+      "cls": "border-control-line",
+      "note": "Viền ô nhập, checkbox, radio (≥ 3:1)",
+      "dark": "color-mix(in oklab, var(--semi-text-muted) 65%, transparent)",
+      "light": "color-mix(in oklab, var(--semi-text-muted) 80%, transparent)"
     },
     {
       "key": "color-divider",

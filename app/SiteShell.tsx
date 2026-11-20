@@ -6,6 +6,7 @@ import { ICONS } from "../src/Icon";
 import { ThemeSwitcher, ThemeToggle } from "../src/ThemeProvider";
 import { DocsShell } from "../site/DocsShell";
 import pkg from "../package.json";
+import { Badge } from "../src/Badge";
 import { StyleSwitcher } from "./StyleSwitcher";
 import { BrandPreviewHost } from "./BrandPreview";
 
@@ -49,10 +50,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
                 @semi/ui v{pkg.version}
                 {UNRELEASED && " · main"}
               </span>
-              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 text-success-fg font-medium tabular-nums">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                {ICON_COUNT} icons
-              </span>
+              <Badge size="sm">{ICON_COUNT} icon</Badge>
             </div>
           </div>
         )
