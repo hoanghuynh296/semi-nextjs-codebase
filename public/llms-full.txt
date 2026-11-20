@@ -1,4 +1,4 @@
-# Semi Design System (@semi/ui v0.28.1)
+# Semi Design System (@semi/ui v0.29.0)
 
 > The shared UI of every Semi app: semantic tokens that work in light and dark mode, React components (Next.js, Tailwind CSS 4) and the rules agents follow. Every component has a page with live examples and a markdown twin for agents.
 
@@ -171,8 +171,9 @@ Phones (`< md`) hide the top logo header and use `MobileTabBar` at the bottom (n
 | `--color-text-contrast` | `text-contrast` | `#ffffff` | `#0f172a` (Slate-900) | Headings, active state, high-contrast text |
 | `--color-text-body` | `text-body` | `#d1d5db` (Gray-300) | `#334155` (Slate-700) | Primary UI labels, body text |
 | `--color-text-muted` | `text-muted` | `#9ba1aa` | `#5b6779` | Captions, placeholders, inactive hints |
-| `--color-line` | `border-line` | `rgba(255,255,255,0.12)` | `rgba(0,0,0,0.08)` (Slate-200) | Borders on cards, panels, inputs, dividers |
+| `--color-line` | `border-line` | `rgba(255,255,255,0.12)` | `rgba(0,0,0,0.08)` (Slate-200) | Borders on cards, panels, dividers (inputs: `control-line`) |
 | `--color-line-hover` | `border-line-hover` | `rgba(255,255,255,0.2)` | `rgba(0,0,0,0.16)` (Slate-300) | Hover border state |
+| `--color-control-line` | `border-control-line` | `text-muted` 65% | `text-muted` 80% | Edge of inputs, checkboxes, radios (≥ 3:1); hover `border-control-line-hover` |
 | `--color-divider` | `border-divider` | `rgba(255,255,255,0.05)` | `rgba(0,0,0,0.05)` (Slate-100) | Subtle row & item separators |
 
 *Accent & status (AA in both themes):* solid action `bg-accent hover:bg-accent-hover text-on-accent` · primary text/icon `text-accent-fg` · focus `ring-focus` / focused field `border-focus` · selected `bg-accent-subtle` (hover `bg-accent-subtle-hover`) + `border-accent-line` · status text `text-danger-fg` / `text-success-fg` / `text-warning-fg` / `text-info-fg` · tonal text `text-tone-<hue>`. Never `text-*-400` or `text-*-700 dark:text-*-300` in shared UI.
@@ -420,7 +421,8 @@ Tailwind's `text-xs` / `text-sm` / `text-base`:
 Minimum `text-caption`. Running text (a sentence, a description, a cell) is `text-ui`, never `text-label` or
 `text-caption`: those are for short marks beside it. Every size carries its line height (1.5 for 11–16px, 1.25 for
 18px and up), so text never needs `leading-*`; use `leading-tight` only on a title of more than one line. Button and
-label text is sentence case ("Lưu", "Xem lại"), never ALL CAPS.
+label text is sentence case ("Lưu", "Xem lại"), never ALL CAPS. Sizes are written in px here and in `tokens.json`
+but `tokens.css` emits them in rem (14px = 0.875rem), so text grows with the browser's default font size (WCAG 1.4.4).
 
 ## 2. Dual-Theme & Semantic Tokenization (Two-Tier Tokens)
 
@@ -442,6 +444,8 @@ Semi architecture separates tokens into two tiers:
 | `--color-text-muted` | `text-muted` | Nhãn phụ, placeholder, gợi ý | `#9ba1aa` | `#5b6779` |
 | `--color-line` | `border-line` | Đường viền card, bảng, khung | `rgba(255, 255, 255, 0.12)` | `rgba(0, 0, 0, 0.08)` (Slate-200) |
 | `--color-line-hover` | `border-line-hover` | Đường viền khi hover | `rgba(255, 255, 255, 0.2)` | `rgba(0, 0, 0, 0.16)` |
+| `--color-control-line` | `border-control-line` | Viền ô nhập liệu, select field, checkbox, radio (≥ 3:1 trên mọi surface, WCAG 1.4.11). Card, bảng vẫn dùng `line` | `text-muted` 65% | `text-muted` 80% |
+| `--color-control-line-hover` | `hover:border-control-line-hover` | Hover của `control-line` | = `text-muted` | = `text-muted` |
 | `--color-divider` | `border-divider` | Đường phân cách nhẹ giữa các hàng | `rgba(255, 255, 255, 0.05)` | `rgba(0, 0, 0, 0.05)` (Slate-100) |
 | `--color-accent` | `bg-accent` | Nền nút chính / mark "on" (BTN_PRIMARY, headerPrimary) | `primary-500` | `primary-700` |
 | `--color-accent-hover` | `hover:bg-accent-hover` | Hover của nền accent | `primary-400` | `primary-800` |
@@ -451,7 +455,7 @@ Semi architecture separates tokens into two tiers:
 | `--color-accent-subtle` | `bg-accent-subtle` | Nền nhạt của mục đang chọn (option, trang hiện tại, pill active, IconTile) | `accent-fg` 14% | `accent-fg` 11% |
 | `--color-accent-subtle-hover` | `hover:bg-accent-subtle-hover` | Hover của nền nhạt accent | `accent-fg` 22% | `accent-fg` 18% |
 | `--color-accent-line` | `border-accent-line` | Viền của mục đang chọn (card được chọn, ngày hôm nay) | `accent-fg` 40% | `accent-fg` 40% |
-| `--color-danger-fg` · `success-fg` · `warning-fg` · `info-fg` | `text-danger-fg` … | Chữ trạng thái trên surface | `rose/emerald/amber/sky-400` | `-700` |
+| `--color-danger-fg` · `success-fg` · `warning-fg` · `info-fg` | `text-danger-fg` … | Chữ trạng thái trên surface | `rose/emerald/amber/sky-400` | `-700` (`warning`: `amber-800`, ≥ 4.5:1 cả trên ô nhập Soft / Sharp) |
 | `--color-tone-<hue>` | `text-tone-<hue>` | Chữ tonal 12 hue (purple, violet, indigo, blue, sky, cyan, teal, emerald, amber, orange, rose, pink) | `<hue>-300` | `<hue>-700` |
 
 Mọi cặp chữ / nền ở trên đạt WCAG AA (≥ 4.5:1) ở cả hai theme. Không viết `text-*-400` hay `text-*-700 dark:text-*-300` trong component: dùng `text-accent-fg`, `text-*-fg` hoặc `text-tone-*`.
@@ -938,8 +942,8 @@ with `aria-describedby`, sets `aria-invalid` and announces the error (`role="ale
 </Field>
 ```
 
-Input surface: `FIELD_INPUT` (`bg-field border border-line hover:border-line-hover rounded-control px-3 h-field text-ui …
-focus:border-focus`); invalid adds `border-danger-border`. Never `focus:outline-none` without a visible focus
+Input surface: `FIELD_INPUT` (`bg-field border border-control-line hover:border-control-line-hover rounded-control px-3 h-field
+text-ui … focus:border-focus`); invalid adds `border-danger-fg` (`danger-border` is too faint for an input's edge). Never `focus:outline-none` without a visible focus
 border. Choices: `Checkbox` (with `indeterminate`), `Switch` (settings that apply at once), `RadioGroup` (2–5 exclusive
 options; more → `CustomSelect`). A `Switch` or `Checkbox` without a visible `label` (on a card whose title names it, a
 table row) gets `aria-labelledby` (the title's id) or `aria-label`; `label` wins, and in development an unnamed one logs
@@ -953,7 +957,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Any action | `Button` (`variant` primary / secondary / danger / ghost, `size` md / sm / modal, `icon`, `iconOnly` + `aria-label`, `loading`); `Spinner` only inside a button or field running its own action, never for a page) |
 | Overflow actions of a row / card | `Menu` (icon-only "more" trigger; `danger` item last) |
 | Hint for an icon-only control | `Tooltip` (never essential text: touch screens do not show it) |
-| Feedback after an action | `toast({ title, tone, action })` + `<ToastHost />` in the layout |
+| Feedback after an action | `toast({ title, tone, action })` + `<ToastHost />` in the layout (`label` when a page section is also called "Thông báo") |
 | A job the user must wait for | `startTask({ label, onCancel, timer })` + `<TaskHost />` in the layout |
 | Persistent message in a page | `Alert` (tone, title, action, `onDismiss`) |
 | Secondary task beside the page | `Drawer` (right / left / bottom / top sheet) |
@@ -993,7 +997,7 @@ The full inventory with props is generated into `components.json` (`npm run buil
 ## 18. Accessibility & UI strings
 
 - Contrast: every text / background pair ≥ 4.5:1 (3:1 for ≥ 24px) in **both** themes; `npm run test:ui` checks every
-  Storybook page in light and dark, plus axe (WCAG 2.1 AA).
+  Storybook page in light and dark, plus axe (WCAG 2.2 AA), control boundaries ≥ 3:1 and focus in forced colours.
 - Keyboard: every control is reachable and shows `FOCUS_RING` (`focus-visible` only); dialogs (`Modal`, `Drawer`,
   `confirmDialog`, `NumPadPopup`) trap focus, close on Escape and return focus to the opener (`useDialog`); menus,
   tabs and comboboxes follow the WAI-ARIA keyboard patterns.
@@ -1003,6 +1007,13 @@ The full inventory with props is generated into `components.json` (`npm run buil
   `body` keep their own Tab handling; focus that leaves the dialog anywhere else is sent back.
 - Triggers keep their own props: `Popover`, `HoverCard`, `Tooltip` and `Menu` add theirs to the trigger element
   without replacing its `ref` or handlers (the trigger's handler runs first; `preventDefault()` there skips ours).
+- Boundaries and states (WCAG 1.4.11): an input you type in or tick (text field, select field, combobox, OTP slot,
+  composer, checkbox, radio) draws its edge in `border-control-line` (≥ 3:1); `border-line` is for cards, tables and
+  frames, which need no edge. The chosen segment of a segmented control (`Pills`, `Toggle`, pill `Tabs`, theme / style
+  switcher) uses `SEGMENT_ON`: the tonal fill alone is too faint, its inset ring is what tells which one is on.
+- Focus on an input you type in: `border-focus` plus a 1px `ring-focus` (2px in all), like `FOCUS_RING` elsewhere.
+- Forced colours (Windows high contrast) drop box-shadow, so `base.css` draws a system-colour outline on
+  `:focus-visible`; keep `base.css` imported, and never rely on a shadow alone to show focus.
 - Names: icon-only controls carry `aria-label` (Button's type requires it); form controls get their label from `Field`.
 - Motion: animations respect `prefers-reduced-motion`.
 - Strings: shared components never hard-code UI text; they read `useSemiLocale()` (Vietnamese default). Apps switch
@@ -1724,7 +1735,8 @@ dist/logo/          sinh ra: logo để sản phẩm import (@3dnoobs/brand/dist
 BRAND.md            sinh ra: guideline thương hiệu (brief, logo, cách dùng màu, giọng văn, hình ảnh, màu, đọc rõ)
 AGENTS.brand.md     sinh ra: luật cho agent ở mọi sản phẩm (màu, style, logo, giọng văn, câu mẫu)
 package.json        "@3dnoobs/brand", phụ thuộc "@semi/ui" (+ Next.js cho trang preview)
-.github/workflows/brand-pages.yml   build trang preview và đăng lên GitHub Pages mỗi lần push
+.github/workflows/brand-pages.yml   kiểm tra mỗi pull request; build trang preview và đăng lên GitHub Pages mỗi lần push lên main
+.github/workflows/semi-update.yml   mỗi thứ Hai build lại kit với @semi/ui mới nhất; mở pull request khi màu, guideline hay luật đổi
 .preview/           trang preview sinh ra khi chạy (không commit)
 ```
 
@@ -1789,7 +1801,7 @@ hay `--semi-…` trong CSS của app, `semi-lint` chặn (`brand-override`): mà
 | Làm thêm app **Store** | `/semi-new-app --brand github:3dnoobs/brand`, chọn Soft | Thư mục mới |
 | 3D Noobs **đổi màu chính** | `/semi-brand` → "đổi primary sang `#00C853`" → xem trước → tag mới | Repo brand |
 | … rồi đưa vào các app | `/semi-sync` (đổi màu thấy rõ: agent hỏi trước) | Từng app |
-| **Semi** ra bản mới | `/semi-brand update` (sinh lại kit) | Repo brand |
+| **Semi** ra bản mới | Workflow `semi-update.yml` mở pull request nếu kit đổi (chỉ đổi số phiên bản thì không); duyệt rồi `/semi-brand update` để phát hành. Không có PR nghĩa là kit vẫn đúng, không cần phát hành | Repo brand |
 | … rồi đưa vào các app | `/semi-sync` | Từng app |
 | App đổi sang style khác **đã được cho phép** | Nói với agent ("đổi sang Soft") | Repo app |
 | Style **chưa được cho phép** | `/semi-brand` (thêm vào danh sách) → `/semi-sync` → nói với agent | Repo brand → app |
@@ -1872,7 +1884,7 @@ dải của brand cùng cách sửa: chạy `/semi-brand update` trong repo bran
 | `brief` | `product`, `audience`, `personality` (1–5 tính từ), `tagline` (một câu, ≤ 90 ký tự); `sample`: `list` (tên danh sách chính), `items` (2–5 mục thật), `metric` (`{ label, value, sub? }`, con số người dùng mở app để xem), `proof` (`{ label, value }`, bằng chứng cho trang giới thiệu) | Tuỳ chọn; vào BRAND.md và luật cho agent ("chọn chữ, hình ảnh cho họ"). Thiếu `sample` thì build nhắc: màn mẫu của brand book và trang đầu của app mới dùng chữ của sản phẩm thay cho dữ liệu cửa hàng chung chung |
 | `logo` | `full` (bắt buộc khi có logo), `fullDark`, `mark`: đường dẫn trong repo kit (.svg nên dùng, .png, .webp); `clearspace` (× chiều cao, mặc định 0.5), `minWidth` (px, mặc định 80) | Build copy vào `dist/logo/full.svg` … để sản phẩm import; thiếu file là lỗi |
 | `voice` | `tone`: `friendly` · `neutral` · `formal`; `address` (gọi người dùng), `we` (tự xưng), `emoji`, `do`, `dont`, `examples` (`button`, `success`, `error`, `empty`, `confirm`) | Tuỳ chọn, mặc định trung tính, gọi "bạn". Luật viết chung của Semi (nút, lỗi, trạng thái trống) luôn kèm theo |
-| `color` | `accent`: `restrained` · `balanced` · `expressive`; `secondaryRole`: `highlight` · `badge` · `illustration` | Mặc định tiết chế, màu phụ là điểm nhấn. Mức dùng màu quyết định tỉ lệ màu trên một màn hình (tiết chế 80 / 15 / 5 %, cân bằng 70 / 20 / 10, phóng khoáng 55 / 25 / 20: trung tính / bề mặt / màu chính; màu phụ lấy khoảng 30 % phần màu chính) |
+| `color` | `accent`: `restrained` · `balanced` · `expressive`; `secondaryRole`: `highlight` · `badge` · `illustration`; `buttonText`: `auto` · `white` · `dark` | Mặc định tiết chế, màu phụ là điểm nhấn. `buttonText` chọn chữ trên nút chính: `auto` lấy sắc độ đọc được gần màu thương hiệu nhất (màu cam, vàng thường ra chữ tối), `white` / `dark` ép màu chữ và lấy sắc độ đậm / nhạt hơn cho đủ 4.5:1. Mức dùng màu quyết định tỉ lệ màu trên một màn hình (tiết chế 80 / 15 / 5 %, cân bằng 70 / 20 / 10, phóng khoáng 55 / 25 / 20: trung tính / bề mặt / màu chính; màu phụ lấy khoảng 30 % phần màu chính) |
 | `imagery` | Một đoạn mô tả ảnh / minh hoạ | Tuỳ chọn |
 
 ### Mật độ và cỡ chữ
@@ -1899,11 +1911,15 @@ tắc bố cục đi kèm (tránh giao diện "AI" chung chung): `DESIGN_SYSTEM.
 - **Màu phụ:** `secondary-*`, chữ `text-secondary-fg`, và nền đặc `bg-secondary-solid` + `text-on-secondary` (badge, điểm
   nhấn), chọn theo cùng cách.
 - **Báo cáo** (`dist/brand.json` → `report`, BRAND.md, trang preview): chữ ≥ 4.5:1, viền focus ≥ 3:1, hover vẫn đọc được;
-  "nút tách khỏi nền" ≥ 3:1 là mục *lưu ý* (không chặn build). `fidelity` cho biết nút mỗi theme ở sắc độ nào và lệch màu
+  viền ô nhập (`control-line`, pha từ `text-muted`) ≥ 3:1 ở mọi style (bộ sinh tự đậm `text-muted` thêm cho đủ); chữ
+  trạng thái của Semi (`danger-fg`, `success-fg`, `warning-fg`, `info-fg`) ≥ 4.5:1 trên nền đã phủ màu thương hiệu;
+  "nút tách khỏi nền" ≥ 3:1 là mục *lưu ý* (không chặn build). Màu chính gần màu lỗi / thành công thì có cảnh báo kèm độ
+  lệch sắc và ΔE. Kit chưa có logo cũng có cảnh báo. `fidelity` cho biết nút mỗi theme ở sắc độ nào và lệch màu
   thương hiệu bao nhiêu (ΔE OKLab, 0 = đúng màu); lệch trên 0.08 có cảnh báo kèm lý do.
 
 Chi tiết kỹ thuật: bộ sinh màu nằm ở `@semi/ui/brand` (`generateBrand`), lệnh trong kit là `semi-brand build | check`
-(bin của `@semi/ui`). Style có sẵn: [STYLES.md](STYLES.md).
+(bin của `@semi/ui`). `check` bỏ qua dòng ghi phiên bản `@semi/ui` trong file sinh ra: bản Semi mới sinh cùng màu thì
+kit không cần build lại hay phát hành. Style có sẵn: [STYLES.md](STYLES.md).
 
 
 ---
@@ -1998,7 +2014,7 @@ All web UI here follows the **Semi Design System** (`@semi/ui`, repo `https://gi
 1. **Ask Semi before writing UI.** Find the component for each need with the `semi` MCP tools (`semi_search` → `semi_docs` → `semi_example`; `semi_block` for whole pages; `semi_props` for props) or the terminal (`npx semi search "bảng có sắp xếp"`, `npx semi docs DataTable`, `npx semi example data-table`, `npx semi add dashboard`). They answer from the installed `@semi/ui`. Read *When to use*, *Use something else when* and *Accessibility*, then start from an example.
 2. **Compose, never re-create.** Import from `@semi/ui` and `@semi/ui/styles` directly. No local wrappers (`components/ui.tsx`), no raw `<select>`, `<table>`, `<dialog>`, `type="date"`, `type="number"`, `window.confirm` / `alert`, no inline `<svg>` or glyph icons (`<Icon name>`, mapping in `docs/ICONS.md`). Every AI conversation is `AIChat`; agent work uses `Reasoning`, `ToolCall`, `TaskList`, `Terminal`, `Sources`; an outward-facing, paid or irreversible agent action waits for `ActionConfirmation`. Pages sit in `AppShell` (or `AppHeader` for a one-screen tool) with `PageTitle` (or the title on the toolbar row: `SubpageToolbar title`); sub-views of one area go in nav `children` (closed until the parent is chosen, optional grey icon, no colour or count; check `useAppShell().submenuVisible` and add a page picker when false); dialogs are `Modal` / `Drawer` / `confirmDialog`; loading is `Skeleton`, never "Đang tải…" text. `AppShell` renders once in a `layout.tsx` (never from a page), its items route by `href` (not `onSelect` + `router.push`), the session check runs once in that layout (best on the server) with `BootLoader` as the only centred spinner, and content loading is a `loading.tsx` with `PageSkeleton` inside the shell, never a skeleton gate around it.
 3. **Tokens only** (dual theme, any brand, any style):
-   - Surfaces and text: `bg-canvas|app|panel|field|raised`, `text-contrast|body|muted`, `border-line|divider`; status `bg-*-bg border-*-border text-*-fg` (danger, success, warning, info). Accent: `bg-accent text-on-accent` (or `BTN_PRIMARY`), `text-accent-fg`, `bg-accent-subtle`, `border-accent-line`, `ring-focus`. Never physical colours (`bg-white`, `text-slate-900`, `text-amber-600 dark:text-amber-400`), arbitrary colours (`bg-[#…]`), `primary-N/alpha` or `bg-primary-N` fills (`primary-fill`), gradients or glow shadows.
+   - Surfaces and text: `bg-canvas|app|panel|field|raised`, `text-contrast|body|muted`, `border-line|divider` (an input's own edge: `border-control-line`, ≥ 3:1); status `bg-*-bg border-*-border text-*-fg` (danger, success, warning, info). Accent: `bg-accent text-on-accent` (or `BTN_PRIMARY`), `text-accent-fg`, `bg-accent-subtle`, `border-accent-line`, `ring-focus`. Never physical colours (`bg-white`, `text-slate-900`, `text-amber-600 dark:text-amber-400`), arbitrary colours (`bg-[#…]`), `primary-N/alpha` or `bg-primary-N` fills (`primary-fill`), gradients or glow shadows.
    - Type scale only: `text-caption|label|ui|ui-lg|title|title-lg`, `text-kpi`, `text-heading`, `text-display`; `font-medium` / `font-semibold`, titles and big numbers `font-title` / `font-figure`; `tabular-nums` for numbers; sentence case. Running text (sentences, descriptions, table cells, list rows) is `text-ui`; `text-label` / `text-caption` only for short marks beside it (a field label, a button, a time, a count). Each size sets its own line height: no `leading-*` on body text.
    - Spacing by role (scaled by density): `p-card` inside every card, popover and panel section (`<Card>` sets it; `p-card sm:p-panel` for a roomy one), `gap-stack` between items in a card or form, `gap-group` between cards, `gap-section` between page sections. `gap-1`–`gap-2`, `px-2`, `py-1` only inside one control or row. A card is never tighter than `p-card` (`card-padding`).
    - Shape and size come from the app's style (`"style"` in `semi-lint.json`, `data-style` on `<html>`): `rounded-chip|control|card|panel|full`, `shadow-card`, `h-control`, `h-field`. Never `rounded-lg`, `rounded-[Npx]`, `h-[34px]` or `[data-style]` selectors. Density and type scale are this product's (`data-density`, `data-type-scale`): never tune paddings or text sizes by hand for that.
@@ -2454,6 +2470,7 @@ export default function PillsBasic() {
 ## Accessibility
 
 - Each option is a button with aria-pressed; Tab moves between options. For an icon set or a radio-group keyboard model use ToggleGroup.
+- The chosen option has an inset ring (SEGMENT_ON) as well as the fill, so it stands out at ≥ 3:1.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/pills/ and the types in src/ -->
 
@@ -3679,12 +3696,13 @@ export default function SelectToolbar() {
 | `disabled` | `boolean` | `false` |  |
 | `buttonClassName` | `string` | `""` | Extra classes on the button (e.g. a "modified value" colour). |
 | `id` | `string` |  |  |
-| `aria-label` | `string` |  |  |
+| `aria-label` | `string` |  | What the select chooses (e.g. "Sắp xếp") when no visible label names it. The button is announced as this name followed by the value it shows, so speech users can say what they see. |
 | `title` | `string` |  |  |
 
 ## Accessibility
 
 - A listbox button: Enter / Space / arrows open it, type-ahead jumps, Escape closes and returns focus.
+- Without a visible label (toolbar, inline) pass aria-label naming what it chooses; the button is announced as that label followed by the value it shows, so speech users can say what they see.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/select/ and the types in src/ -->
 
@@ -4731,9 +4749,9 @@ export default function ToastTones() {
 
 ### ToastHost
 
-Toast stack: top on phones (clear of the tab bar), bottom-right from sm.
-
-No props of its own.
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `label` | `string` |  | Name of the notification region (default: locale `notifications`, "Thông báo"). Change it when a page section has the same name, e.g. a "Thông báo" settings group, so the two landmarks can be told apart. |
 
 ## Accessibility
 
@@ -5170,6 +5188,7 @@ export default function BreadcrumbCollapsed() {
   return (
     <Breadcrumb
       maxItems={3}
+      aria-label="Đường dẫn máy in" // a second trail on the same page needs its own name
       items={[
         { label: "Xưởng", href: "/" },
         { label: "Khu A", href: "/a" },
@@ -5191,6 +5210,7 @@ export default function BreadcrumbCollapsed() {
 | `items` * | `BreadcrumbItem[]` |  |  |
 | `maxItems` | `number` | `4` | More items than this collapse the middle ones into a "…" menu (first + last two stay). |
 | `className` | `string` |  |  |
+| `aria-label` | `string` |  | Name of the trail (default: locale `breadcrumb`, "Đường dẫn"). Only needed when a page has two trails, so their landmarks differ. |
 
 ## Accessibility
 

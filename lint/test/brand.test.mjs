@@ -229,7 +229,7 @@ test("brand.json: density, type scale, typography and motif are not brand choice
 test("product look: density and type scale live in the tokens, per element, and the app wires them on <html>", async () => {
   const css = readFileSync(new URL("../../tokens/tokens.css", import.meta.url), "utf8");
   assert.match(css, /\[data-density="compact"\] \{[^}]*--semi-spacing: 0\.225rem/);
-  assert.match(css, /\[data-type-scale="contrast"\] \{[^}]*--text-display: 34px/);
+  assert.match(css, /\[data-type-scale="contrast"\] \{[^}]*--text-display: 2.125rem/); // 34px, emitted in rem
   const { wireProductLook } = await import("../../plugin/skills/semi-new-app/scripts/setup.mjs");
   const dir = mkdtempSync(join(tmpdir(), "semi-look-"));
   mkdirSync(join(dir, "app"));
@@ -258,5 +258,46 @@ test("brief.sample: validated, warned about when missing, and written into the a
   execFileSync("node", [CLI, "build"], { cwd: dir });
   assert.match(readFileSync(join(dir, "AGENTS.brand.md"), "utf8"), /\*\*Sample content\*\*[^\n]*“Bản in”[^\n]*“Móc khoá PLA”[^\n]*“Bản in đang chạy” \(12\)/);
   assert.equal(JSON.parse(readFileSync(join(dir, "dist/brand.json"), "utf8")).guide.brief.sample.proof.value, "12.000+");
+  rmSync(dir, { recursive: true });
+});
+
+test("report: input edges (control-line) reach 3:1 in every style; Semi's status text is checked on the brand surfaces", () => {
+  for (const primary of ["#00AE42", "#2563EB", "#DD592A", "#FACC15", "#7C3AED", "#0F766E", "#E11D48", "#1E3A8A"])
+    for (const neutral of ["tinted", "preset"]) {
+      const { report } = generateBrand(brand({ primary, neutral }), { tokens, styles });
+      const edges = report.filter((r) => r.check.startsWith("viền ô nhập"));
+      const status = report.filter((r) => r.check.startsWith("chữ trạng thái"));
+      assert.equal(edges.length, 6, "3 styles × 2 themes");
+      assert.equal(status.length, 8, "4 statuses × 2 themes");
+      for (const r of [...edges, ...status]) assert.ok(r.ok, `${primary} ${neutral} ${r.check} ${r.ratio.toFixed(2)}`);
+    }
+});
+
+test("color.buttonText: white forces white text on a deeper shade; invalid values are errors; no logo warns", () => {
+  const auto = generateBrand(brand({ primary: "#DD592A" }), { tokens, styles });
+  assert.equal(auto.tokens.themes.light["color-on-accent"], "#0c0d0e");
+  const white = generateBrand(brand({ primary: "#DD592A", color: { buttonText: "white" } }), { tokens, styles });
+  for (const th of ["dark", "light"]) {
+    assert.equal(white.tokens.themes[th]["color-on-accent"], "#ffffff");
+    assert.ok(contrast("#ffffff", white.tokens.themes[th]["color-accent"]) >= 4.5);
+  }
+  assert.equal(white.tokens.guide.color.buttonText, "white");
+  assert.match(validateBrand(brand({ color: { buttonText: "black" } }), { styles }).errors.join("\n"), /buttonText/);
+  assert.match(auto.warnings.join("\n"), /Chưa có logo/);
+  assert.match(auto.warnings.join("\n"), /lỗi \(đỏ\).*ΔE/);
+});
+
+test("semi-brand check ignores the @semi/ui version stamp, not a real change", () => {
+  const dir = mkdtempSync(join(tmpdir(), "semi-brand-stamp-"));
+  writeFileSync(join(dir, "brand.json"), JSON.stringify(brand(), null, 2));
+  execFileSync("node", [CLI, "build"], { cwd: dir });
+  for (const f of ["dist/brand.css", "dist/brand.json"]) {
+    const p = join(dir, f);
+    writeFileSync(p, readFileSync(p, "utf8").replace(/@semi\/ui \d+\.\d+\.\d+/, "@semi/ui 0.1.0").replace(/"semiVersion": "[^"]*"/, '"semiVersion": "0.1.0"'));
+  }
+  execFileSync("node", [CLI, "check"], { cwd: dir, stdio: "pipe" });
+  const css = join(dir, "dist/brand.css");
+  writeFileSync(css, readFileSync(css, "utf8").replace("--color-primary-500:", "--color-primary-500: #000; --x:"));
+  assert.throws(() => execFileSync("node", [CLI, "check"], { cwd: dir, stdio: "pipe" }));
   rmSync(dir, { recursive: true });
 });

@@ -50,6 +50,7 @@ export default function BreadcrumbCollapsed() {
   return (
     <Breadcrumb
       maxItems={3}
+      aria-label="Đường dẫn máy in" // a second trail on the same page needs its own name
       items={[
         { label: "Xưởng", href: "/" },
         { label: "Khu A", href: "/a" },
@@ -71,6 +72,7 @@ export default function BreadcrumbCollapsed() {
 | `items` * | `BreadcrumbItem[]` |  |  |
 | `maxItems` | `number` | `4` | More items than this collapse the middle ones into a "…" menu (first + last two stay). |
 | `className` | `string` |  |  |
+| `aria-label` | `string` |  | Name of the trail (default: locale `breadcrumb`, "Đường dẫn"). Only needed when a page has two trails, so their landmarks differ. |
 
 ## Accessibility
 

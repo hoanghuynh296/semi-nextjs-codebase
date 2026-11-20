@@ -82,7 +82,8 @@ and `/semi-sync`.
    node "<path-to-this-skill>/scripts/brand.mjs" set --cwd "<dir>" primary=#008f36 neutral=preset
    ```
    Keys: `primary`, `secondary` (`none` to remove), `name`, `neutral`, `allow`, `style`, `sans`, `display`;
-   guideline: `tone`, `address`, `we`, `emoji`, `accent`, `secondaryRole`, `product`, `audience`,
+   guideline: `tone`, `address`, `we`, `emoji`, `accent`, `secondaryRole`, `buttonText` (`auto` · `white` · `dark`: text on
+   the main button; `white` takes a deeper shade, e.g. for an orange brand that would get dark text), `product`, `audience`,
    `personality` (comma list), `tagline`, `logo`, `logoDark`, `mark` (paths in the kit), `imagery`. Lists (`voice.do`,
    `voice.dont`) and `voice.examples` are edited in `brand.json` directly, then `brand.mjs build`. It rebuilds and says the change level.
 6. **Release** when the user approves: `npm run check`, `node brand.mjs bump --cwd "<dir>" 1.0.0`, commit, push to the
@@ -109,5 +110,10 @@ node "<path-to-this-skill>/scripts/brand.mjs" update --cwd "<kit-dir>"
 ```
 
 Installs the newest `@semi/ui`, sets `"semi"` in `brand.json` to `>=X.Y.0 <1.0.0` for it (later 0.x minors stay allowed), adds what an older kit lacks (preview site deps
-and scripts, `.gitignore`, the Pages workflow), rebuilds, and prints the change level. Bump by that
-level, commit, tag, push; then products get it with `/semi-sync`. It never changes the brand's choices.
+and scripts, `.gitignore`, the Pages workflow with its pull-request check, the weekly `semi-update.yml` workflow), rebuilds,
+and prints the change level. Bump by that level, commit, tag, push; then products get it with `/semi-sync`. It never
+changes the brand's choices, so every change it brings comes from Semi: write it in CHANGELOG under **"Từ Semi"**,
+apart from **"Thương hiệu"** changes made with `set`, so people in the products know why their screens moved. The
+`semi-update.yml` workflow needs Settings → Actions → General → "Allow GitHub Actions to create and approve pull
+requests" turned on once (ask the user; it is a repository setting). When it opens a pull request, review it with the
+user, merge, then run `update` + bump + tag as above.

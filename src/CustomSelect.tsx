@@ -40,16 +40,18 @@ interface CustomSelectProps {
   /** Extra classes on the button (e.g. a "modified value" colour). */
   buttonClassName?: string;
   id?: string;
+  /** What the select chooses (e.g. "Sắp xếp") when no visible label names it. The button is announced as this name
+   *  followed by the value it shows, so speech users can say what they see. */
   "aria-label"?: string;
   title?: string;
 }
 
 const TRIGGER: Record<NonNullable<CustomSelectProps["variant"]>, string> = {
   toolbar:
-    "h-control px-3 bg-panel border border-line rounded-control text-label font-medium text-body hover:border-line-hover",
+    "h-control px-3 bg-panel border border-line rounded-control text-label font-medium text-body hover:border-line-hover focus-visible:ring-2 focus-visible:ring-focus",
   field:
-    "w-full h-field px-3 bg-field border border-line rounded-control text-ui text-contrast hover:border-line-hover focus-visible:border-focus",
-  inline: "w-full h-7 px-0 bg-transparent text-label font-medium text-body hover:text-contrast",
+    "w-full h-field px-3 bg-field border border-control-line rounded-control text-ui text-contrast hover:border-control-line-hover focus-visible:border-focus focus-visible:ring-1 focus-visible:ring-focus aria-invalid:border-danger-fg",
+  inline: "w-full h-7 px-0 bg-transparent text-label font-medium text-body hover:text-contrast rounded-chip focus-visible:ring-2 focus-visible:ring-focus",
   bare: "",
 };
 
@@ -80,6 +82,11 @@ export function CustomSelect({
   const listId = useId();
   const selected = options.find((o) => o.value === value);
   const block = variant === "field" || variant === "inline";
+  // The button shows the chosen value; an aria-label alone would replace it, so speech users saying what they see
+  // could not reach it (WCAG 2.5.3). The name is the label followed by the visible value instead.
+  const showsText = !(iconOnly && selected?.icon);
+  const shown = selected ? selected.label : placeholder;
+  const name = ariaLabel && showsText && !ariaLabel.includes(shown) ? `${ariaLabel}: ${shown}` : ariaLabel;
 
   const place = useCallback(() => {
     const r = btnRef.current?.getBoundingClientRect();
@@ -185,7 +192,7 @@ export function CustomSelect({
         aria-invalid={field?.invalid || undefined}
         disabled={disabled}
         title={iconOnly && selected ? selected.label : title ?? selected?.title}
-        aria-label={ariaLabel}
+        aria-label={name}
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={open ? listId : undefined}
@@ -199,9 +206,7 @@ export function CustomSelect({
       >
         <span className={`flex items-center gap-1.5 min-w-0 ${block ? "flex-1" : variant === "bare" ? "" : "max-w-[130px] sm:max-w-[180px]"}`}>
           {selected?.icon}
-          {!(iconOnly && selected?.icon) && (
-            <span className={`truncate ${selected ? "" : "text-muted"}`}>{selected ? selected.label : placeholder}</span>
-          )}
+          {showsText && <span className={`truncate ${selected ? "" : "text-muted"}`}>{shown}</span>}
         </span>
         <Icon name="chevronDown" className={`${variant === "bare" ? "hidden" : ""} w-3.5 h-3.5 text-muted transition-transform duration-150 shrink-0 ${open ? "rotate-180" : ""}`} />
       </button>

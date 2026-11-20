@@ -33,7 +33,7 @@ function ColorField({ label, value, onChange, hint }: { label: string; value: st
           aria-label={`${label}: bảng màu`}
           value={HEX.test(value) ? value : SAMPLE.primary}
           onChange={(e) => onChange(e.target.value)}
-          className="h-field w-12 shrink-0 cursor-pointer rounded-control border border-line bg-field p-1"
+          className="h-field w-12 shrink-0 cursor-pointer rounded-control border border-control-line bg-field p-1"
         />
         <Input value={value} onChange={(e) => onChange(e.target.value)} spellCheck={false} className="tabular-nums" />
       </div>

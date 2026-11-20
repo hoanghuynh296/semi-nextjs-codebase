@@ -231,7 +231,7 @@ export default function FoundationsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Tìm kiếm icon (tên, alias, intent: 'checkout', 'database', 'xoá', 'giao hàng')..."
-                className="w-full h-10 pl-10 pr-4 rounded-control bg-panel/[0.05] border border-line focus:border-focus focus:outline-none text-ui text-contrast placeholder:text-muted font-medium"
+                className="w-full h-10 pl-10 pr-4 rounded-control bg-panel/[0.05] border border-control-line focus:border-focus focus:outline-none text-ui text-contrast placeholder:text-muted font-medium"
               />
               <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted pointer-events-none">
                 <Icon name="search" className="w-4 h-4" />

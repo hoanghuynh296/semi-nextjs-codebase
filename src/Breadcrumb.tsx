@@ -21,11 +21,15 @@ export function Breadcrumb({
   items,
   maxItems = 4,
   className,
+  "aria-label": ariaLabel,
 }: {
   items: BreadcrumbItem[];
   /** More items than this collapse the middle ones into a "…" menu (first + last two stay). */
   maxItems?: number;
   className?: string;
+  /** Name of the trail (default: locale `breadcrumb`, "Đường dẫn"). Only needed when a page has two trails, so their
+   *  landmarks differ. */
+  "aria-label"?: string;
 }) {
   const t = useSemiLocale();
   const router = useRouter();
@@ -33,7 +37,7 @@ export function Breadcrumb({
   const hidden = collapse ? items.slice(1, items.length - 2) : [];
   const shown: (BreadcrumbItem | "more")[] = collapse ? [items[0], "more", ...items.slice(-2)] : items;
   return (
-    <nav aria-label={t.breadcrumb} className={className}>
+    <nav aria-label={ariaLabel ?? t.breadcrumb} className={className}>
       <ol className="flex flex-wrap items-center gap-1 text-label">
         {shown.map((it, i) => {
           const last = i === shown.length - 1;

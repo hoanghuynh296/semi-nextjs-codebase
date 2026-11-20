@@ -4,11 +4,11 @@
 // several at a time (list / grid view, text styles).
 import React, { useRef } from "react";
 import { Icon, type IconName } from "./Icon";
-import { FOCUS_RING, cn } from "../styles/utils";
+import { FOCUS_RING, SEGMENT_ON, cn } from "../styles/utils";
 
 const ITEM =
   "inline-flex items-center justify-center gap-1.5 h-full min-w-control px-2.5 rounded-control text-label font-medium transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed";
-const STATE = (on: boolean) => (on ? "bg-raised text-contrast" : "text-muted hover:text-contrast hover:bg-field");
+const STATE = (on: boolean) => (on ? SEGMENT_ON : "text-muted hover:text-contrast hover:bg-field");
 
 /** One button that stays pressed (aria-pressed). Icon-only needs an aria-label. */
 export function Toggle({

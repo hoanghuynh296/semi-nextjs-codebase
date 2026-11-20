@@ -45,9 +45,9 @@ export default function ToastTones() {
 
 ### ToastHost
 
-Toast stack: top on phones (clear of the tab bar), bottom-right from sm.
-
-No props of its own.
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `label` | `string` |  | Name of the notification region (default: locale `notifications`, "Thông báo"). Change it when a page section has the same name, e.g. a "Thông báo" settings group, so the two landmarks can be told apart. |
 
 ## Accessibility
 

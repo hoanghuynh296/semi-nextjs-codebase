@@ -72,7 +72,7 @@ export function InputOTP({
             <span
               className={cn(
                 "flex items-center justify-center w-10 h-12 rounded-control border bg-field text-title-lg font-semibold text-contrast tabular-nums transition",
-                invalid ? "border-danger-border" : focused && i === caret ? "border-accent-line bg-raised" : "border-line",
+                invalid ? "border-danger-fg" : focused && i === caret ? "border-accent-line bg-raised" : "border-control-line",
                 disabled && "opacity-40",
               )}
             >

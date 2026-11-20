@@ -43,7 +43,7 @@ for (const path of PAGES) {
 
     test(`axe · ${theme} · ${path}`, async ({ page }) => {
       await open(page, path, theme);
-      const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
+      const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
       const serious = violations.filter((v) => v.impact === "serious" || v.impact === "critical");
       expect(serious.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).slice(0, 3).join(" | ")}`)).toEqual([]);
     });
@@ -702,7 +702,7 @@ test("Medium a11y: modal drag-out, hoverable tooltip, toast announcer, inert sli
   // a toast sits in a polite live region of the labelled stack; no live region is nested in another
   await open(page, "/components/toast/", "dark");
   await page.getByRole("button", { name: "Cảnh báo" }).click();
-  const stack = page.getByRole("region", { name: "Thông báo" });
+  const stack = page.getByRole("region", { name: "Thông báo nổi" }); // the docs layout names it (ToastHost label)
   await expect(stack.locator('[aria-live="polite"]')).toContainText("Mất kết nối máy in");
   expect(await stack.locator("[aria-live] [aria-live], [aria-live] [role=alert], [aria-live] [role=status]").count()).toBe(0);
 
@@ -725,4 +725,130 @@ test("Medium a11y: modal drag-out, hoverable tooltip, toast announcer, inert sli
   await page.mouse.up();
   await expect(thumbs.nth(0)).toHaveAttribute("aria-valuenow", "600");
   expect(Number(await thumbs.nth(1).getAttribute("aria-valuenow"))).toBeGreaterThan(600);
+});
+
+// WCAG 2.2 AA audit (0.28.2): control edges, chosen segments, focus in forced colours, label in name.
+/** Inputs whose edge (border or fill) is below 3:1 against what is around them (WCAG 1.4.11). */
+function weakEdges(page: Page) {
+  return page.evaluate(() => {
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = 1;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true })!;
+    const rgba = (c: string) => {
+      ctx.clearRect(0, 0, 1, 1);
+      ctx.fillStyle = c;
+      ctx.fillRect(0, 0, 1, 1);
+      const d = ctx.getImageData(0, 0, 1, 1).data;
+      return [d[0], d[1], d[2], d[3] / 255];
+    };
+    const blend = (t: number[], b: number[]) => [0, 1, 2].map((i) => t[i] * t[3] + b[i] * (1 - t[3])).concat(1);
+    const lum = (c: number[]) => {
+      const a = c.slice(0, 3).map((v) => ((v /= 255) <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+      return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+    };
+    const ratio = (a: number[], b: number[]) => {
+      const [x, y] = [lum(a), lum(b)].sort((p, q) => p - q);
+      return (y + 0.05) / (x + 0.05);
+    };
+    const bgOf = (el: Element | null) => {
+      const stack: number[][] = [];
+      for (let e = el; e; e = e.parentElement) {
+        const c = rgba(getComputedStyle(e).backgroundColor);
+        if (c[3] > 0) {
+          stack.push(c);
+          if (c[3] >= 1) break;
+        }
+      }
+      let base = rgba(getComputedStyle(document.documentElement).backgroundColor);
+      if (base[3] < 1) base = [255, 255, 255, 1];
+      for (let i = stack.length - 1; i >= 0; i--) base = blend(stack[i], base);
+      return base;
+    };
+    const fails: string[] = [];
+    const sel = 'main input[type=text]:not([data-bare]),main input[type=email],main input[type=password],main input[type=number],main textarea,main input[type=checkbox],main input[type=radio]';
+    for (const el of document.querySelectorAll<HTMLInputElement>(sel)) {
+      const r = el.getBoundingClientRect();
+      if (!r.width || el.disabled || el.closest("[aria-disabled=true]") || el.checked) continue;
+      // a borderless input inside a framed group (InputGroup, composer, OTP) is edged by the frame
+      let box: Element = el;
+      for (let e: Element | null = el; e && e !== document.body; e = e.parentElement)
+        if (parseFloat(getComputedStyle(e).borderTopWidth) > 0) {
+          box = e;
+          break;
+        }
+      const st = getComputedStyle(box);
+      const outer = bgOf(box.parentElement);
+      const own = rgba(st.backgroundColor);
+      const fill = own[3] > 0 ? blend(own, outer) : outer;
+      const bc = rgba(st.borderTopColor);
+      const k = Math.max(ratio(fill, outer), parseFloat(st.borderTopWidth) > 0 && bc[3] > 0 ? ratio(blend(bc, outer), outer) : 0);
+      if (k < 3) fails.push(`${k.toFixed(2)} ${el.type} ${el.closest("[data-example]")?.getAttribute("data-example") ?? ""}`);
+    }
+    return fails;
+  });
+}
+
+for (const style of STYLES)
+  for (const theme of THEMES)
+    test(`input edges ≥ 3:1 · ${style} · ${theme}`, async ({ page }) => {
+      await open(page, "/components/", theme, style);
+      expect(await weakEdges(page)).toEqual([]);
+      await open(page, "/components/field/", theme, style); // includes an invalid input
+      expect(await weakEdges(page)).toEqual([]);
+    });
+
+test("the chosen segment has a ring, not only a faint fill", async ({ page }) => {
+  await open(page, "/components/tabs/", "light");
+  const on = page.getByRole("tab", { name: "Tuần" });
+  expect(await on.evaluate((e) => getComputedStyle(e).boxShadow)).toMatch(/inset/);
+});
+
+test("DatePicker, toolbar select and tab panel show keyboard focus", async ({ page }) => {
+  const ring = async (loc: ReturnType<Page["locator"]>) => {
+    await loc.focus();
+    await page.keyboard.press("Shift+Tab");
+    await page.keyboard.press("Tab");
+    await expect(loc).toBeFocused();
+    return loc.evaluate((e) => getComputedStyle(e).boxShadow.split(/,(?![^(]*\))/).some((s) => !/rgba\(0, 0, 0, 0\)|^none$/.test(s.trim())));
+  };
+  await open(page, "/components/date-picker/", "light");
+  expect(await ring(example(page, "date-picker/basic").getByRole("button", { name: /Ngày in/ }))).toBe(true);
+  await open(page, "/components/select/", "light");
+  expect(await ring(example(page, "select/toolbar").getByRole("button", { name: /^Sắp xếp/ }))).toBe(true);
+  await open(page, "/components/tabs/", "light");
+  expect(await ring(example(page, "tabs/underline").getByRole("tabpanel"))).toBe(true);
+});
+
+test("focus stays visible in forced colours (Windows high contrast)", async ({ browser }) => {
+  const ctx = await browser.newContext({ forcedColors: "active" });
+  const page = await ctx.newPage();
+  await page.goto("/components/button/");
+  const btn = page.locator("main [data-example] button").first();
+  await btn.focus();
+  await page.keyboard.press("Shift+Tab");
+  await page.keyboard.press("Tab");
+  expect(await page.evaluate(() => getComputedStyle(document.activeElement!).outlineStyle)).not.toBe("none");
+  await ctx.close();
+});
+
+test("a select named by aria-label is announced with the value it shows", async ({ page }) => {
+  await open(page, "/components/select/", "light");
+  await expect(example(page, "select/toolbar").getByRole("button", { name: "Sắp xếp: Mới nhất", exact: true })).toBeVisible();
+});
+
+test("text follows the browser's default font size (sizes in rem)", async ({ page }) => {
+  await open(page, "/components/field/", "light");
+  const size = () => page.locator("main input").first().evaluate((e) => parseFloat(getComputedStyle(e).fontSize));
+  const base = await size();
+  await page.addStyleTag({ content: "html{font-size:32px!important}" });
+  expect(await size()).toBeCloseTo(base * 2, 0);
+});
+
+test("focused input shows a 2px indicator; Terminal output is a named region", async ({ page }) => {
+  await open(page, "/components/field/", "light");
+  const input = example(page, "field/basic").locator("input").first();
+  await input.focus();
+  expect(await input.evaluate((e) => getComputedStyle(e).boxShadow)).toMatch(/0px 0px 0px 1px/);
+  await open(page, "/components/terminal/", "light");
+  await expect(page.getByRole("region", { name: "npm run build" })).toBeVisible();
 });

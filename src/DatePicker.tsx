@@ -82,7 +82,7 @@ export function DatePicker({
         aria-haspopup="dialog"
         aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2 bg-panel border border-line rounded-control text-contrast text-label font-medium tabular-nums px-2.5 h-control hover:border-line-hover focus:outline-none focus:border-line-hover aria-invalid:border-danger-border disabled:opacity-40 disabled:cursor-not-allowed transition"
+        className="flex items-center gap-2 bg-panel border border-line rounded-control text-contrast text-label font-medium tabular-nums px-2.5 h-control hover:border-line-hover outline-none focus-visible:ring-2 focus-visible:ring-focus aria-invalid:border-danger-fg disabled:opacity-40 disabled:cursor-not-allowed transition"
       >
         <span id={valueId}>{label}</span>
         <Icon name="calendar" className="w-4 h-4 text-muted" />

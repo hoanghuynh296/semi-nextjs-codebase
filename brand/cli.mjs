@@ -305,7 +305,10 @@ function main(argv) {
   }
   const { files, assets, result } = built;
   if (cmd === "check") {
-    const stale = Object.entries(files).filter(([p, c]) => !existsSync(join(cwd, p)) || readFileSync(join(cwd, p), "utf8") !== c).map(([p]) => p);
+    // The @semi/ui version stamp alone does not make a file stale: a newer @semi/ui that generates the same colours
+    // needs no rebuild (and no kit release).
+    const unstamped = (s) => s.replace(/ · @semi\/ui \d+\.\d+\.\d+[\w.-]*/, "").replace(/"semiVersion": "[^"]*",?\n\s*/, "");
+    const stale = Object.entries(files).filter(([p, c]) => !existsSync(join(cwd, p)) || unstamped(readFileSync(join(cwd, p), "utf8")) !== unstamped(c)).map(([p]) => p);
     for (const [p, from] of Object.entries(assets)) if (!existsSync(join(cwd, p)) || !readFileSync(join(cwd, p)).equals(readFileSync(from))) stale.push(p);
     if (stale.length) console.error(`semi-brand: chưa sinh lại (chạy semi-brand build): ${stale.join(", ")}`);
     const failing = result.report.filter((r) => !r.ok && !r.soft);

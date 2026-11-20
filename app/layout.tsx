@@ -39,7 +39,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-canvas text-body antialiased selection:bg-accent-subtle-hover selection:text-accent-fg">
         <ThemeProvider defaultTheme="dark">
-          <ToastHost />
+          <ToastHost label="Thông báo nổi" />
           <ConfirmHost />
           <TaskHost />
           {/* One shell for every page: the menu keeps its scroll and state when the page changes */}

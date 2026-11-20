@@ -92,7 +92,7 @@ export function SearchInput({
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         aria-label={label || placeholder}
-        className="w-full bg-panel border border-line hover:border-line-hover rounded-control pl-8 pr-7 h-control text-label text-contrast placeholder:text-muted outline-none focus:border-line-hover transition"
+        className="w-full bg-panel border border-control-line hover:border-control-line-hover rounded-control pl-8 pr-7 h-control text-label text-contrast placeholder:text-muted outline-none focus:border-focus focus:ring-1 focus:ring-focus transition"
       />
       <button
         type="button"

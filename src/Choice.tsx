@@ -71,7 +71,7 @@ export function Checkbox({
           onChange={(e) => onChange(e.target.checked)}
           className={cn(
             "peer appearance-none w-4 h-4 rounded-chip border transition cursor-pointer disabled:cursor-not-allowed",
-            on ? "bg-accent border-transparent" : "bg-field border-line-hover",
+            on ? "bg-accent border-transparent" : "bg-field border-control-line hover:border-control-line-hover",
             FOCUS_RING,
           )}
         />
@@ -220,7 +220,7 @@ export function RadioGroup<T extends string>({
                 onChange={() => onChange(o.value)}
                 className={cn(
                   "appearance-none mt-0.5 w-4 h-4 shrink-0 rounded-full bg-field transition cursor-pointer disabled:cursor-not-allowed",
-                  on ? "border-[5px] border-accent" : "border border-line-hover",
+                  on ? "border-[5px] border-accent" : "border border-control-line",
                   FOCUS_RING,
                 )}
               />

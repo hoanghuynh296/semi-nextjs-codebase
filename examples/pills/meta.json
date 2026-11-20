@@ -28,7 +28,8 @@
     }
   ],
   "a11y": [
-    "Each option is a button with aria-pressed; Tab moves between options. For an icon set or a radio-group keyboard model use ToggleGroup."
+    "Each option is a button with aria-pressed; Tab moves between options. For an icon set or a radio-group keyboard model use ToggleGroup.",
+    "The chosen option has an inset ring (SEGMENT_ON) as well as the fill, so it stands out at ≥ 3:1."
   ],
   "examples": [
     {
