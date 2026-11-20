@@ -255,6 +255,8 @@
   --color-muted: var(--semi-text-muted); /* Nhãn phụ, placeholder, gợi ý */
   --color-line: var(--semi-line); /* Đường viền card, bảng, khung */
   --color-line-hover: var(--semi-line-hover); /* Đường viền khi hover */
+  --color-control-line: var(--semi-control-line); /* Boundary of an input you type in or tick (text field, select field, checkbox, radio): ≥ 3:1 on every surface (WCAG 1.4.11). Cards and tables keep line */
+  --color-control-line-hover: var(--semi-control-line-hover); /* Hover of control-line */
   --color-divider: var(--semi-divider); /* Đường phân cách nhẹ giữa các hàng */
   --color-accent: var(--semi-accent); /* Solid primary fill (BTN_PRIMARY, active marks). Pair with on-accent */
   --color-accent-hover: var(--semi-accent-hover); /* Hover of the solid primary fill */
@@ -321,6 +323,8 @@
   --semi-text-muted: #9ba1aa;
   --semi-line: rgba(255, 255, 255, 0.12);
   --semi-line-hover: rgba(255, 255, 255, 0.2);
+  --semi-control-line: color-mix(in oklab, var(--semi-text-muted) 65%, transparent);
+  --semi-control-line-hover: var(--semi-text-muted);
   --semi-divider: rgba(255, 255, 255, 0.05);
   --semi-accent: var(--color-primary-500);
   --semi-accent-hover: var(--color-primary-400);
@@ -386,6 +390,8 @@
   --semi-text-muted: #5b6779;
   --semi-line: rgba(0, 0, 0, 0.08);
   --semi-line-hover: rgba(0, 0, 0, 0.16);
+  --semi-control-line: color-mix(in oklab, var(--semi-text-muted) 80%, transparent);
+  --semi-control-line-hover: var(--semi-text-muted);
   --semi-divider: rgba(0, 0, 0, 0.05);
   --semi-accent: var(--color-primary-700);
   --semi-accent-hover: var(--color-primary-800);
@@ -451,6 +457,8 @@
     --semi-text-muted: #5b6779;
     --semi-line: rgba(0, 0, 0, 0.08);
     --semi-line-hover: rgba(0, 0, 0, 0.16);
+    --semi-control-line: color-mix(in oklab, var(--semi-text-muted) 80%, transparent);
+    --semi-control-line-hover: var(--semi-text-muted);
     --semi-divider: rgba(0, 0, 0, 0.05);
     --semi-accent: var(--color-primary-700);
     --semi-accent-hover: var(--color-primary-800);
@@ -522,6 +530,8 @@
   --color-muted: var(--semi-text-muted);
   --color-line: var(--semi-line);
   --color-line-hover: var(--semi-line-hover);
+  --color-control-line: var(--semi-control-line);
+  --color-control-line-hover: var(--semi-control-line-hover);
   --color-divider: var(--semi-divider);
   --color-accent: var(--semi-accent);
   --color-accent-hover: var(--semi-accent-hover);

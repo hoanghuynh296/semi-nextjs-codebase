@@ -4,7 +4,7 @@
 // sibling pages use PageTabsTitle; for a filter with no panels use Pills.
 import React, { useId, useRef } from "react";
 import { Icon, type IconName } from "./Icon";
-import { cn, FOCUS_RING } from "../styles/utils";
+import { cn, FOCUS_RING, SEGMENT_ON } from "../styles/utils";
 
 export interface TabItem<T extends string> {
   key: T;
@@ -92,7 +92,7 @@ export function Tabs<T extends string>({
                 "inline-flex items-center gap-1.5 whitespace-nowrap text-label font-medium transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0",
                 FOCUS_RING,
                 seg
-                  ? cn("h-full px-2.5 rounded-control", on ? "bg-raised text-contrast" : "text-muted hover:text-contrast")
+                  ? cn("h-full px-2.5 rounded-control", on ? SEGMENT_ON : "text-muted hover:text-contrast")
                   : cn("h-9 -mb-px border-b-2", on ? "border-accent text-contrast" : "border-transparent text-muted hover:text-contrast"),
               )}
             >
@@ -109,7 +109,7 @@ export function Tabs<T extends string>({
           id={`${base}-panel-${idx(active.key)}`}
           aria-labelledby={`${base}-tab-${idx(active.key)}`}
           tabIndex={0}
-          className={cn("outline-none", panelClassName)}
+          className={cn("rounded-control", FOCUS_RING, panelClassName)}
         >
           {active.content}
         </div>

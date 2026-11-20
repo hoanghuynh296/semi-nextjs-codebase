@@ -147,11 +147,11 @@ export const FIELD_LABEL = "block text-label font-medium text-muted mb-1";
 
 /** Form text input: semantic field surface with crisp border-line. */
 export const FIELD_INPUT =
-  "w-full h-field bg-field border border-line hover:border-line-hover rounded-control px-3 text-ui text-contrast placeholder:text-muted focus:outline-none focus:border-focus focus:bg-raised transition-colors disabled:opacity-40";
+  "w-full h-field bg-field border border-control-line hover:border-control-line-hover rounded-control px-3 text-ui text-contrast placeholder:text-muted focus:outline-none focus:border-focus focus:bg-raised transition-colors disabled:opacity-40";
 
 /** Form textarea: matches FIELD_INPUT contrast and focus border. */
 export const FIELD_TEXTAREA =
-  "w-full bg-field border border-line hover:border-line-hover rounded-control px-3 py-2 text-ui text-contrast placeholder:text-muted focus:outline-none focus:border-focus focus:bg-raised transition-colors disabled:opacity-40";
+  "w-full bg-field border border-control-line hover:border-control-line-hover rounded-control px-3 py-2 text-ui text-contrast placeholder:text-muted focus:outline-none focus:border-focus focus:bg-raised transition-colors disabled:opacity-40";
 
 /** 2-panel floating Bento shell classes (used by AppShell). */
 export const SHELL_OUTER =

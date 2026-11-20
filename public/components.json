@@ -22,6 +22,8 @@
       "muted",
       "line",
       "line-hover",
+      "control-line",
+      "control-line-hover",
       "divider",
       "accent",
       "accent-hover",
@@ -2940,6 +2942,13 @@
       "module": "styles/utils.ts",
       "client": false,
       "summary": "Keyboard focus ring for custom controls (buttons, tabs, options). Visible on keyboard focus only."
+    },
+    {
+      "name": "SEGMENT_ON",
+      "kind": "constant",
+      "module": "styles/utils.ts",
+      "client": false,
+      "summary": "The chosen segment of a segmented control (Pills, Toggle, pill Tabs, theme / style switcher). The tonal fill alone is too faint to tell which one is on, so an inset control-line ring marks it at ≥ 3:1 (WCAG 1.4.11)."
     },
     {
       "name": "OVERLAY",

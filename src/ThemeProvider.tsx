@@ -3,6 +3,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useSemiLocale } from "./locale";
 import { Icon } from "./Icon";
+import { SEGMENT_ON } from "../styles/utils";
 import type { Theme, ThemeOptions } from "./ThemeScript";
 
 export type ResolvedTheme = "dark" | "light";
@@ -181,7 +182,7 @@ export function ThemeSwitcher({
             title={labels[key]}
             onClick={() => setTheme(key)}
             className={`${fullWidth ? "flex-1" : ""} ${showLabels ? "px-2.5" : "w-8"} h-full rounded-control inline-flex items-center justify-center gap-1.5 text-label font-medium whitespace-nowrap transition cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-focus ${
-              on ? "bg-raised text-contrast" : "text-muted hover:text-contrast"
+              on ? SEGMENT_ON : "text-muted hover:text-contrast"
             }`}
           >
             <Icon name={icon} className="w-3.5 h-3.5 shrink-0" />

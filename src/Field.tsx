@@ -82,7 +82,7 @@ export function Field({
   );
 }
 
-const INVALID = "aria-invalid:border-danger-border aria-invalid:focus:border-danger-border";
+const INVALID = "aria-invalid:border-danger-fg aria-invalid:focus:border-danger-fg";
 
 type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   ref?: React.Ref<HTMLInputElement>;

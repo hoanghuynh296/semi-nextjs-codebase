@@ -4,6 +4,23 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+The major issues of the WCAG 2.2 AA audit.
+
+### Added
+- **Token `control-line`** (`border-control-line`, `hover:border-control-line-hover`): the edge of an input you type in or tick, ≥ 3:1 on every surface in every style (WCAG 1.4.11). `border-line` stays for cards, tables and frames.
+- **`SEGMENT_ON`** (`@semi/ui/styles`): the chosen segment of a segmented control, the tonal fill plus an inset `control-line` ring.
+
+### Fixed
+- **Inputs, select field, combobox, `InputGroup`, `InputOTP`, chat composer, `SearchInput`, `Checkbox`, `RadioGroup`**: their edge was 1.2–1.9:1 against the page (the 8–20% `line` tokens); it now uses `control-line`.
+- **Invalid `Input`, `Textarea`, select field, combobox, `InputOTP`, `DatePicker`**: the error edge was the faint `danger-border` (about 1.5:1); it is `border-danger-fg` now. An invalid select field shows it too (it had none).
+- **Focus in forced colours** (Windows high contrast): ring focus (box-shadow) vanished and nothing replaced it; `base.css` now draws a system-colour outline on `:focus-visible`, in any app that imports it.
+- **`DatePicker`** trigger, **`CustomSelect`** `toolbar` / `inline` triggers and the **`Tabs`** panel showed no keyboard focus; they show the focus ring.
+- **`CustomSelect`**: with `aria-label`, the button is named by the label followed by the value it shows ("Sắp xếp: Mới nhất"; a label that already holds the value is kept as is), so speech users can say what they see (WCAG 2.5.3; the label used to replace the value).
+- **`Pills`, `Toggle`, pill `Tabs`, theme / style switcher**: the chosen segment was told apart only by a 1.1:1 fill (and a 2.6:1 text colour in dark); it now has an inset ring (`SEGMENT_ON`).
+
+### Migration
+- Tests that find a `CustomSelect` by its exact `aria-label` (`getByRole("button", { name: "Sắp xếp", exact: true })`) now see `: <value>` after the label: match the start or drop `exact`.
+
 ## [0.28.1] - 2026-11-20
 
 The medium-severity accessibility issues of the audit.

@@ -171,8 +171,9 @@ Phones (`< md`) hide the top logo header and use `MobileTabBar` at the bottom (n
 | `--color-text-contrast` | `text-contrast` | `#ffffff` | `#0f172a` (Slate-900) | Headings, active state, high-contrast text |
 | `--color-text-body` | `text-body` | `#d1d5db` (Gray-300) | `#334155` (Slate-700) | Primary UI labels, body text |
 | `--color-text-muted` | `text-muted` | `#9ba1aa` | `#5b6779` | Captions, placeholders, inactive hints |
-| `--color-line` | `border-line` | `rgba(255,255,255,0.12)` | `rgba(0,0,0,0.08)` (Slate-200) | Borders on cards, panels, inputs, dividers |
+| `--color-line` | `border-line` | `rgba(255,255,255,0.12)` | `rgba(0,0,0,0.08)` (Slate-200) | Borders on cards, panels, dividers (inputs: `control-line`) |
 | `--color-line-hover` | `border-line-hover` | `rgba(255,255,255,0.2)` | `rgba(0,0,0,0.16)` (Slate-300) | Hover border state |
+| `--color-control-line` | `border-control-line` | `text-muted` 65% | `text-muted` 80% | Edge of inputs, checkboxes, radios (≥ 3:1); hover `border-control-line-hover` |
 | `--color-divider` | `border-divider` | `rgba(255,255,255,0.05)` | `rgba(0,0,0,0.05)` (Slate-100) | Subtle row & item separators |
 
 *Accent & status (AA in both themes):* solid action `bg-accent hover:bg-accent-hover text-on-accent` · primary text/icon `text-accent-fg` · focus `ring-focus` / focused field `border-focus` · selected `bg-accent-subtle` (hover `bg-accent-subtle-hover`) + `border-accent-line` · status text `text-danger-fg` / `text-success-fg` / `text-warning-fg` / `text-info-fg` · tonal text `text-tone-<hue>`. Never `text-*-400` or `text-*-700 dark:text-*-300` in shared UI.
@@ -442,6 +443,8 @@ Semi architecture separates tokens into two tiers:
 | `--color-text-muted` | `text-muted` | Nhãn phụ, placeholder, gợi ý | `#9ba1aa` | `#5b6779` |
 | `--color-line` | `border-line` | Đường viền card, bảng, khung | `rgba(255, 255, 255, 0.12)` | `rgba(0, 0, 0, 0.08)` (Slate-200) |
 | `--color-line-hover` | `border-line-hover` | Đường viền khi hover | `rgba(255, 255, 255, 0.2)` | `rgba(0, 0, 0, 0.16)` |
+| `--color-control-line` | `border-control-line` | Viền ô nhập liệu, select field, checkbox, radio (≥ 3:1 trên mọi surface, WCAG 1.4.11). Card, bảng vẫn dùng `line` | `text-muted` 65% | `text-muted` 80% |
+| `--color-control-line-hover` | `hover:border-control-line-hover` | Hover của `control-line` | = `text-muted` | = `text-muted` |
 | `--color-divider` | `border-divider` | Đường phân cách nhẹ giữa các hàng | `rgba(255, 255, 255, 0.05)` | `rgba(0, 0, 0, 0.05)` (Slate-100) |
 | `--color-accent` | `bg-accent` | Nền nút chính / mark "on" (BTN_PRIMARY, headerPrimary) | `primary-500` | `primary-700` |
 | `--color-accent-hover` | `hover:bg-accent-hover` | Hover của nền accent | `primary-400` | `primary-800` |
@@ -938,8 +941,8 @@ with `aria-describedby`, sets `aria-invalid` and announces the error (`role="ale
 </Field>
 ```
 
-Input surface: `FIELD_INPUT` (`bg-field border border-line hover:border-line-hover rounded-control px-3 h-field text-ui …
-focus:border-focus`); invalid adds `border-danger-border`. Never `focus:outline-none` without a visible focus
+Input surface: `FIELD_INPUT` (`bg-field border border-control-line hover:border-control-line-hover rounded-control px-3 h-field
+text-ui … focus:border-focus`); invalid adds `border-danger-fg` (`danger-border` is too faint for an input's edge). Never `focus:outline-none` without a visible focus
 border. Choices: `Checkbox` (with `indeterminate`), `Switch` (settings that apply at once), `RadioGroup` (2–5 exclusive
 options; more → `CustomSelect`). A `Switch` or `Checkbox` without a visible `label` (on a card whose title names it, a
 table row) gets `aria-labelledby` (the title's id) or `aria-label`; `label` wins, and in development an unnamed one logs
@@ -993,7 +996,7 @@ The full inventory with props is generated into `components.json` (`npm run buil
 ## 18. Accessibility & UI strings
 
 - Contrast: every text / background pair ≥ 4.5:1 (3:1 for ≥ 24px) in **both** themes; `npm run test:ui` checks every
-  Storybook page in light and dark, plus axe (WCAG 2.1 AA).
+  Storybook page in light and dark, plus axe (WCAG 2.2 AA), control boundaries ≥ 3:1 and focus in forced colours.
 - Keyboard: every control is reachable and shows `FOCUS_RING` (`focus-visible` only); dialogs (`Modal`, `Drawer`,
   `confirmDialog`, `NumPadPopup`) trap focus, close on Escape and return focus to the opener (`useDialog`); menus,
   tabs and comboboxes follow the WAI-ARIA keyboard patterns.
@@ -1003,6 +1006,12 @@ The full inventory with props is generated into `components.json` (`npm run buil
   `body` keep their own Tab handling; focus that leaves the dialog anywhere else is sent back.
 - Triggers keep their own props: `Popover`, `HoverCard`, `Tooltip` and `Menu` add theirs to the trigger element
   without replacing its `ref` or handlers (the trigger's handler runs first; `preventDefault()` there skips ours).
+- Boundaries and states (WCAG 1.4.11): an input you type in or tick (text field, select field, combobox, OTP slot,
+  composer, checkbox, radio) draws its edge in `border-control-line` (≥ 3:1); `border-line` is for cards, tables and
+  frames, which need no edge. The chosen segment of a segmented control (`Pills`, `Toggle`, pill `Tabs`, theme / style
+  switcher) uses `SEGMENT_ON`: the tonal fill alone is too faint, its inset ring is what tells which one is on.
+- Forced colours (Windows high contrast) drop box-shadow, so `base.css` draws a system-colour outline on
+  `:focus-visible`; keep `base.css` imported, and never rely on a shadow alone to show focus.
 - Names: icon-only controls carry `aria-label` (Button's type requires it); form controls get their label from `Field`.
 - Motion: animations respect `prefers-reduced-motion`.
 - Strings: shared components never hard-code UI text; they read `useSemiLocale()` (Vietnamese default). Apps switch
@@ -1998,7 +2007,7 @@ All web UI here follows the **Semi Design System** (`@semi/ui`, repo `https://gi
 1. **Ask Semi before writing UI.** Find the component for each need with the `semi` MCP tools (`semi_search` → `semi_docs` → `semi_example`; `semi_block` for whole pages; `semi_props` for props) or the terminal (`npx semi search "bảng có sắp xếp"`, `npx semi docs DataTable`, `npx semi example data-table`, `npx semi add dashboard`). They answer from the installed `@semi/ui`. Read *When to use*, *Use something else when* and *Accessibility*, then start from an example.
 2. **Compose, never re-create.** Import from `@semi/ui` and `@semi/ui/styles` directly. No local wrappers (`components/ui.tsx`), no raw `<select>`, `<table>`, `<dialog>`, `type="date"`, `type="number"`, `window.confirm` / `alert`, no inline `<svg>` or glyph icons (`<Icon name>`, mapping in `docs/ICONS.md`). Every AI conversation is `AIChat`; agent work uses `Reasoning`, `ToolCall`, `TaskList`, `Terminal`, `Sources`; an outward-facing, paid or irreversible agent action waits for `ActionConfirmation`. Pages sit in `AppShell` (or `AppHeader` for a one-screen tool) with `PageTitle` (or the title on the toolbar row: `SubpageToolbar title`); sub-views of one area go in nav `children` (closed until the parent is chosen, optional grey icon, no colour or count; check `useAppShell().submenuVisible` and add a page picker when false); dialogs are `Modal` / `Drawer` / `confirmDialog`; loading is `Skeleton`, never "Đang tải…" text. `AppShell` renders once in a `layout.tsx` (never from a page), its items route by `href` (not `onSelect` + `router.push`), the session check runs once in that layout (best on the server) with `BootLoader` as the only centred spinner, and content loading is a `loading.tsx` with `PageSkeleton` inside the shell, never a skeleton gate around it.
 3. **Tokens only** (dual theme, any brand, any style):
-   - Surfaces and text: `bg-canvas|app|panel|field|raised`, `text-contrast|body|muted`, `border-line|divider`; status `bg-*-bg border-*-border text-*-fg` (danger, success, warning, info). Accent: `bg-accent text-on-accent` (or `BTN_PRIMARY`), `text-accent-fg`, `bg-accent-subtle`, `border-accent-line`, `ring-focus`. Never physical colours (`bg-white`, `text-slate-900`, `text-amber-600 dark:text-amber-400`), arbitrary colours (`bg-[#…]`), `primary-N/alpha` or `bg-primary-N` fills (`primary-fill`), gradients or glow shadows.
+   - Surfaces and text: `bg-canvas|app|panel|field|raised`, `text-contrast|body|muted`, `border-line|divider` (an input's own edge: `border-control-line`, ≥ 3:1); status `bg-*-bg border-*-border text-*-fg` (danger, success, warning, info). Accent: `bg-accent text-on-accent` (or `BTN_PRIMARY`), `text-accent-fg`, `bg-accent-subtle`, `border-accent-line`, `ring-focus`. Never physical colours (`bg-white`, `text-slate-900`, `text-amber-600 dark:text-amber-400`), arbitrary colours (`bg-[#…]`), `primary-N/alpha` or `bg-primary-N` fills (`primary-fill`), gradients or glow shadows.
    - Type scale only: `text-caption|label|ui|ui-lg|title|title-lg`, `text-kpi`, `text-heading`, `text-display`; `font-medium` / `font-semibold`, titles and big numbers `font-title` / `font-figure`; `tabular-nums` for numbers; sentence case. Running text (sentences, descriptions, table cells, list rows) is `text-ui`; `text-label` / `text-caption` only for short marks beside it (a field label, a button, a time, a count). Each size sets its own line height: no `leading-*` on body text.
    - Spacing by role (scaled by density): `p-card` inside every card, popover and panel section (`<Card>` sets it; `p-card sm:p-panel` for a roomy one), `gap-stack` between items in a card or form, `gap-group` between cards, `gap-section` between page sections. `gap-1`–`gap-2`, `px-2`, `py-1` only inside one control or row. A card is never tighter than `p-card` (`card-padding`).
    - Shape and size come from the app's style (`"style"` in `semi-lint.json`, `data-style` on `<html>`): `rounded-chip|control|card|panel|full`, `shadow-card`, `h-control`, `h-field`. Never `rounded-lg`, `rounded-[Npx]`, `h-[34px]` or `[data-style]` selectors. Density and type scale are this product's (`data-density`, `data-type-scale`): never tune paddings or text sizes by hand for that.
@@ -2454,6 +2463,7 @@ export default function PillsBasic() {
 ## Accessibility
 
 - Each option is a button with aria-pressed; Tab moves between options. For an icon set or a radio-group keyboard model use ToggleGroup.
+- The chosen option has an inset ring (SEGMENT_ON) as well as the fill, so it stands out at ≥ 3:1.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/pills/ and the types in src/ -->
 
@@ -3679,12 +3689,13 @@ export default function SelectToolbar() {
 | `disabled` | `boolean` | `false` |  |
 | `buttonClassName` | `string` | `""` | Extra classes on the button (e.g. a "modified value" colour). |
 | `id` | `string` |  |  |
-| `aria-label` | `string` |  |  |
+| `aria-label` | `string` |  | What the select chooses (e.g. "Sắp xếp") when no visible label names it. The button is announced as this name followed by the value it shows, so speech users can say what they see. |
 | `title` | `string` |  |  |
 
 ## Accessibility
 
 - A listbox button: Enter / Space / arrows open it, type-ahead jumps, Escape closes and returns focus.
+- Without a visible label (toolbar, inline) pass aria-label naming what it chooses; the button is announced as that label followed by the value it shows, so speech users can say what they see.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/select/ and the types in src/ -->
 
