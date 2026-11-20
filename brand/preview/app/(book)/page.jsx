@@ -47,7 +47,7 @@ function Cover() {
             </ul>
           )}
         </div>
-        <div data-theme="light" className="bg-canvas text-body rounded-card shadow-card overflow-hidden max-w-sm w-full justify-self-center">
+        <div data-theme="light" data-density-view className="bg-canvas text-body rounded-card shadow-card overflow-hidden max-w-sm w-full justify-self-center">
           <MiniScreen theme="light" />
         </div>
       </div>
@@ -286,7 +286,7 @@ function Voice() {
               {Array.isArray(ex.button) && ex.button.slice(1, 3).map((b) => <Button key={b}>{b}</Button>)}
             </div>
             <Alert tone="danger">{ex.error ?? "Chưa lưu được. Kiểm tra kết nối rồi thử lại."}</Alert>
-            <EmptyState icon="box" title={ex.empty ?? "Chưa có gì ở đây"} action={<Button variant="primary">{first(ex.button, "Bắt đầu")}</Button>} />
+            <EmptyState icon="box" title={ex.empty ?? "Chưa có gì ở đây"} action={<Button>{first(ex.button, "Bắt đầu")}</Button>} />
           </div>
         )}
       </BothThemes>

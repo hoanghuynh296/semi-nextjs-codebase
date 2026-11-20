@@ -13,6 +13,8 @@ const COPIES = [
   ["lint/semi-lint.mjs", `${VENDOR}/semi-lint.mjs`],
   ["lint/classes.mjs", `${VENDOR}/classes.mjs`],
   ["lint/codemod.mjs", `${VENDOR}/codemod.mjs`],
+  ["lint/density.mjs", `${VENDOR}/density.mjs`],
+  ["lint/a11y.mjs", `${VENDOR}/a11y.mjs`],
   ["tokens/tokens.json", `${VENDOR}/tokens.json`],
   ["tokens/styles.json", `${VENDOR}/styles.json`],
   // Antigravity loads every file in plugin/rules; semi-ui.md must stay identical to AGENTS.md.

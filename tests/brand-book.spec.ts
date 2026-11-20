@@ -4,7 +4,8 @@
 import { expect, test, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import kit from "./fixtures/brand.json" with { type: "json" };
-import { lowContrast } from "./contrast";
+import { a11yHits } from "./contrast";
+import { densityAudit } from "../lint/density.mjs";
 
 const BOOK = "http://127.0.0.1:4320";
 const PAGES = ["/", "/apps/", "/kit/", "/components/"];
@@ -48,9 +49,9 @@ function spills(page: Page) {
 for (const path of PAGES) {
   for (const theme of THEMES) {
     for (const style of kit.styles.allowed)
-      test(`brand book · contrast AA · ${style} · ${theme} · ${path}`, async ({ page }) => {
+      test(`brand book · a11y audit · ${style} · ${theme} · ${path}`, async ({ page }) => {
         await open(page, path, theme, style);
-        expect(await lowContrast(page)).toEqual([]);
+        expect(await a11yHits(page)).toEqual([]);
       });
     test(`brand book · axe · ${theme} · ${path}`, async ({ page }) => {
       await open(page, path, theme);
@@ -64,6 +65,7 @@ for (const path of PAGES) {
       const page = await browser.newPage({ viewport: { width, height: 900 }, isMobile: width < 500, hasTouch: width < 500 });
       await open(page, path, "light");
       expect(await spills(page)).toEqual([]);
+      expect(await page.evaluate(densityAudit, { scope: "main" })).toEqual([]);
       await page.close();
     });
 }

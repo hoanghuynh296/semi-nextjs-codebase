@@ -6,7 +6,8 @@ import AxeBuilder from "@axe-core/playwright";
 import styleList from "../tokens/styles.json" with { type: "json" };
 import tokens from "../tokens/tokens.json" with { type: "json" };
 import docs from "../examples/list.generated.json" with { type: "json" };
-import { lowContrast } from "./contrast";
+import { a11yHits, lowContrast } from "./contrast";
+import { densityAudit } from "../lint/density.mjs";
 
 const DOC_PAGES = docs.map((d) => `/components/${d.id}/`);
 const PAGES = ["/", "/components/", "/foundations/", "/brand/", "/lab/", ...DOC_PAGES];
@@ -36,10 +37,10 @@ async function open(page: Page, path: string, theme: "dark" | "light" | "system"
 
 for (const path of PAGES) {
   for (const theme of THEMES) {
-    test(`contrast AA · ${theme} · ${path}`, async ({ page }) => {
+    test(`a11y audit (contrast AA, edges, names, focus, targets) · ${theme} · ${path}`, async ({ page }) => {
       await open(page, path, theme);
       await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
-      expect(await lowContrast(page)).toEqual([]);
+      expect(await a11yHits(page)).toEqual([]);
     });
 
     test(`axe · ${theme} · ${path}`, async ({ page }) => {
@@ -54,7 +55,14 @@ for (const path of PAGES) {
     const page = await browser.newPage({ viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true });
     await open(page, path, "light");
     expect(await phoneOverflow(page)).toEqual([]);
+    expect(await page.evaluate(densityAudit, { scope: "main" })).toEqual([]);
+    expect(await a11yHits(page)).toEqual([]);
     await page.close();
+  });
+
+  test(`density budgets (§4c) · ${path}`, async ({ page }) => {
+    await open(page, path, "dark");
+    expect(await page.evaluate(densityAudit, { scope: "main" })).toEqual([]);
   });
 
   test(`page never scrolls outside the shell · ${path}`, async ({ page }) => {
@@ -66,15 +74,16 @@ for (const path of PAGES) {
 for (const path of LOOK_PAGES) {
   for (const theme of THEMES)
     for (const look of LOOKS)
-      test(`contrast AA · ${look.name} · ${theme} · ${path}`, async ({ page }) => {
+      test(`a11y audit · ${look.name} · ${theme} · ${path}`, async ({ page }) => {
         await open(page, path, theme, look.style);
-        expect(await lowContrast(page)).toEqual([]);
+        expect(await a11yHits(page)).toEqual([]);
       });
   for (const style of STYLES)
     test(`fits a phone screen · ${style} · ${path}`, async ({ browser }) => {
       const page = await browser.newPage({ viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true });
       await open(page, path, "light", style);
       expect(await phoneOverflow(page)).toEqual([]);
+      expect(await page.evaluate(densityAudit, { scope: "main" })).toEqual([]);
       await page.close();
     });
 }

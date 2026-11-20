@@ -7,7 +7,7 @@ import { Icon, type IconName } from "./Icon";
 import { FOCUS_RING, SEGMENT_ON, cn } from "../styles/utils";
 
 const ITEM =
-  "inline-flex items-center justify-center gap-1.5 h-full min-w-control px-2.5 rounded-control text-label font-medium transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed";
+  "inline-flex items-center justify-center gap-1.5 min-w-control px-2.5 rounded-control text-label font-medium transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed";
 const STATE = (on: boolean) => (on ? SEGMENT_ON : "text-muted hover:text-contrast hover:bg-field");
 
 /** One button that stays pressed (aria-pressed). Icon-only needs an aria-label. */
@@ -109,7 +109,7 @@ export function ToggleGroup<T extends string>({
             tabIndex={single ? (i === (current >= 0 ? current : enabled[0]) ? 0 : -1) : 0}
             onClick={() => pick(o.key)}
             onKeyDown={(e) => onKey(e, i)}
-            className={cn(ITEM, STATE(on), FOCUS_RING)}
+            className={cn(ITEM, "h-full", STATE(on), FOCUS_RING)}
           >
             {o.icon && <Icon name={o.icon} className="w-4 h-4" />}
             {o.label}

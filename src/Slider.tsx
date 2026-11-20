@@ -3,7 +3,7 @@
 // Pick a number in a range by dragging (volume, opacity, speed). One thumb, or two with `range` for a min–max pair.
 import React, { useId, useRef } from "react";
 import { useSemiLocale } from "./locale";
-import { cn } from "../styles/utils";
+import { HIT_AREA, cn } from "../styles/utils";
 
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
 const snap = (v: number, min: number, step: number) => {
@@ -137,7 +137,7 @@ export function Slider(props: SliderProps) {
             aria-disabled={disabled || undefined}
             onKeyDown={(e) => !disabled && onKey(e, i)}
             style={{ left: `${pct(v)}%` }}
-            className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-panel border-2 border-accent shadow-float outline-none focus-visible:ring-4 focus-visible:ring-focus"
+            className={cn("absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-panel border-2 border-accent shadow-float outline-none focus-visible:ring-4 focus-visible:ring-focus", HIT_AREA)}
           >
             {range && (
               <span id={`${id}-thumb-${i}`} className="sr-only">

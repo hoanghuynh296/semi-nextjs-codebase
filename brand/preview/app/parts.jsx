@@ -99,7 +99,7 @@ export function BothThemes({ children, wide = false }) {
     <div className={`grid gap-4 ${wide ? "" : "@2xl:grid-cols-2"}`}>
       {THEMES.map((t) => (
         <figure key={t} className="space-y-1.5 min-w-0">
-          <div data-theme={t} className="bg-canvas text-body rounded-card border border-line overflow-hidden">
+          <div data-theme={t} data-density-view className="bg-canvas text-body rounded-card border border-line overflow-hidden">
             {children(t)}
           </div>
           <figcaption className="text-caption text-muted px-1">{THEME_NAME[t]}</figcaption>

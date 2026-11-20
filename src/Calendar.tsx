@@ -5,7 +5,7 @@
 import React, { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Icon } from "./Icon";
 import { useSemiLocale } from "./locale";
-import { FOCUS_RING, cn } from "../styles/utils";
+import { FOCUS_RING, HIT_AREA, cn } from "../styles/utils";
 
 const pad = (n: number) => String(n).padStart(2, "0");
 /** A Date as a local "YYYY-MM-DD". */
@@ -212,7 +212,7 @@ export function Calendar(props: CalendarProps) {
               go(new Date());
               pick(today);
             }}
-            className={cn("text-label font-medium text-accent-fg hover:text-contrast disabled:opacity-30 disabled:pointer-events-none transition rounded-chip", FOCUS_RING)}
+            className={cn("relative text-label font-medium text-accent-fg hover:text-contrast disabled:opacity-30 disabled:pointer-events-none transition rounded-chip", HIT_AREA, FOCUS_RING)}
           >
             {t.today}
           </button>

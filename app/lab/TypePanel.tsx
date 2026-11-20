@@ -107,7 +107,7 @@ export function TypePanel({ lab }: { lab: ReturnType<typeof useLabEditor> }) {
             </TBody>
           </Table>
           <DemoLabel>Component thật với giá trị này</DemoLabel>
-          <div className="space-y-3">
+          <div className="space-y-3" data-density-view>
             <PageTitle title="Đơn hàng hôm nay" />
             <p className="text-ui text-body max-w-2xl">
               Đoạn văn bản giao diện (text-ui). Mỗi cỡ chữ mang line height riêng: 1.5 cho chữ đọc, 1.25 cho tiêu đề; leading-* vẫn ghi đè được.

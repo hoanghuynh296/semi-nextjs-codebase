@@ -25,7 +25,7 @@ export function ComponentIndex() {
                 const First = d.examples.find((e) => e.preview !== "none")?.Component;
                 return (
                   <div key={d.id} className={`${CARD_HOVER} flex flex-col overflow-hidden`}>
-                    <div className="relative h-40 overflow-hidden border-b border-line p-card flex items-center justify-center" inert>
+                    <div className="relative h-40 overflow-hidden border-b border-line p-card flex items-center justify-center" inert data-density-skip="cropped preview of the first example">
                       <div className="max-w-full">{First ? <First /> : <Icon name="code" className="w-8 h-8 text-muted" />}</div>
                     </div>
                     <Link href={`/components/${d.id}/`} className="p-card space-y-1 outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-b-card">

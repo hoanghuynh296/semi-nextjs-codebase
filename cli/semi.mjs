@@ -7,6 +7,8 @@
 //   semi list [--group AI]            every doc by group
 //   semi blocks / semi add <block>    page-level blocks; add copies one into the app
 //   semi brand [voice|color|logo|brief|tokens]   this app's brand kit (voice, colour use, logo), or its BRAND.md
+//   semi density <url…>               the density budgets (§4c) measured on rendered pages
+//   semi a11y <url…>                  accessibility (§18) checked on rendered pages, in both themes
 //   semi mcp                          the same tools as an MCP server on stdio
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -37,6 +39,8 @@ const HELP = `semi ${core.version()} — Semi Design System docs for agents
   semi blocks                  page-level blocks
   semi add <block> [--out <path>] [--force]   copy a block into this app
   semi brand [topic]           this app's brand: voice | color | logo | brief | tokens (default: BRAND.md)
+  semi density <url…>          density budgets on rendered pages (--width, --theme, --scope; --snippet for a browser tool)
+  semi a11y <url…>             contrast, field edges, names, focus, targets on rendered pages, both themes (+ axe-core if installed)
   semi mcp                     run as an MCP server (stdio)
 
 Add --json for structured output.`;
@@ -97,6 +101,16 @@ switch (cmd) {
     mkdirSync(dirname(target), { recursive: true });
     writeFileSync(target, ex.code);
     out({ block: b.id, file: target }, `Added ${b.title} → ${target}\nReplace the sample data with the app's own; keep the Semi components.`);
+    break;
+  }
+  case "density": {
+    const { runDensity } = await import("../lint/density.mjs");
+    process.exitCode = await runDensity(argv.slice(1));
+    break;
+  }
+  case "a11y": {
+    const { runA11y } = await import("../lint/a11y.mjs");
+    process.exitCode = await runA11y(argv.slice(1));
     break;
   }
   case "mcp":

@@ -1,6 +1,6 @@
 ---
 name: semi-check
-description: Check an existing app against its brand and the Semi Design System (@semi/ui), then fix it after the user agrees - the first adoption of Semi in an app (with or without @semi/ui) and the periodic check after. Audits every frontend app (foundation, brand kit, style, lint rules, colour / size tokens, structure), writes every issue with file:line by phase to semi-check.md, shows a short summary, asks, then fixes phase by phase (foundation, token codemod, hand fixes, structure) and verifies until clean. Triggered by /semi-check.
+description: Check an existing app against its brand and the Semi Design System (@semi/ui), then fix it after the user agrees - the first adoption of Semi in an app (with or without @semi/ui) and the periodic check after. Audits every frontend app (foundation, brand kit, style, lint rules, colour / size tokens, structure, density and accessibility of the rendered screens), writes every issue with file:line by phase to semi-check.md, shows a short summary, asks, then fixes phase by phase (foundation, token codemod, hand fixes, structure) and verifies until clean. Triggered by /semi-check.
 ---
 
 # Check and fix an app (`/semi-check`)
@@ -85,7 +85,43 @@ The check part changes **no source file**. Its only output is `semi-check.md` at
    block a card with the same padding. Show the user what you found per screen (a line each, with a screenshot when a
    browser is available), propose the change (`KpiCard featured`, neutral icons, a real number or a quote as proof,
    text from `semi_brand` brief / voice) and apply only what they accept.
-9. **Verify** after each phase (and each module):
+   Walk the same screens through the **screen review** of `DESIGN_SYSTEM.md` §19b, the questions no tool answers:
+   above all the states (loading, empty and "no result", error with retry, partial, no permission, too much data:
+   open each one by URL, a slow network or a filter that matches nothing), the platform conventions (Escape, Enter,
+   back, a confirmed or undoable destructive action, a form that keeps its input after an error) and the brand's
+   voice. Report a line per screen and missing state, and fix with the user's yes (`Skeleton*`, `EmptyState`,
+   `Alert` with a retry, `confirmDialog`, `toast` with an action).
+9. **Phase 5 — Density** (§4c of `DESIGN_SYSTEM.md`): lint reads code a line at a time and cannot see a screen that
+   is cramped or cluttered, so this phase measures the rendered pages. Start the app's dev server and list its key
+   routes (the shell's nav items, a detail page, a form, a dialog you can open by URL), then:
+   ```bash
+   node "<path-to-this-skill>/scripts/vendor/density.mjs" <url> [<url> …] [--theme dark|light]
+   ```
+   It checks each page at 1280px and 375px and prints every hit with its rule, the measured value, the element's
+   text and class (search the source for them) and the budget. Without Playwright in the app (exit 2), open each page
+   in the browser tool and evaluate the output of `node "<path-to-this-skill>/scripts/vendor/density.mjs" --snippet`
+   (it returns the hits as JSON). Keep the hits in your report, not in `semi-check.md` (`--verify` rewrites that from
+   the static audit). Show the user a line per page (a screenshot when it helps), then fix them with the user's yes: a Semi component over hand-made rows
+   (`Item`, `Menu`, `DataTable`), the spacing roles (`p-card`, `gap-stack`, `gap-group`), a frame removed rather than
+   padded, secondary buttons beside the one primary. `data-density-view` goes only on a frame that stands for a whole
+   screen (a preview), `data-density-skip="<reason>"` only on a specimen; never to silence a hit on an app screen.
+   Measure again until every page is clean, and in both themes when the app has both.
+10. **Phase 6 — Accessibility** (§18 of `DESIGN_SYSTEM.md`): Semi's components pass WCAG 2.2 AA on their own, but a
+   screen made of them can still fail (muted text on a tinted card, an icon button without a name, a field whose edge
+   disappears on a grey panel, a hand-made control with no focus ring or a 16px hit area). On the same routes:
+   ```bash
+   node "<path-to-this-skill>/scripts/vendor/a11y.mjs" <url> [<url> …]
+   ```
+   It checks each page in dark and light at 1280px and 375px: `contrast`, `edge`, `name`, `focus-ring`,
+   `target-size`, `img-alt`, `lang`, `zoom-lock`, plus axe-core's serious WCAG findings (`axe/<id>`) when the app has
+   `axe-core` installed (it says so when not; propose `npm i -D axe-core`). Without Playwright (exit 2), evaluate the
+   output of `--snippet` in the browser tool, once per theme. Keep the hits in the report, show a line per page, and
+   fix them with the user's yes: the themed text tokens (`text-muted`, `text-*-fg`, `text-on-accent`) instead of
+   fixed shades, `border-control-line` on a field, `Field` or `aria-label` for a name, `FOCUS_RING` on a custom
+   control, `HIT_AREA` (from `@semi/ui/styles`) on a control drawn smaller than 24px, or the Semi component that
+   already does all of it. `data-a11y-skip="<reason>"` only on a specimen (a contrast sample), never to silence an
+   app screen. Measure again until every page is clean.
+11. **Verify** after each phase (and each module):
    ```bash
    node "<path-to-this-skill>/scripts/fix.mjs" --cwd "<audited-dir>" --verify
    ```
@@ -94,7 +130,7 @@ The check part changes **no source file**. Its only output is `semi-check.md` at
    the baseline shrinks (it never grows: new hits are fixed, not recorded; only `/semi-sync` records a new rule's
    debt with `--accept-new`). The foundation phase also wires the gate outside Claude Code: `semi-lint` in the `lint`
    script and `.github/workflows/semi.yml` (`semi-lint --ci` + `tsc`). Check changed screens in both themes when a browser is available.
-10. **Report** in a few lines: issues before → after per phase, what was kept (and why), what is left, and whether
+12. **Report** in a few lines: issues before → after per phase (density and accessibility: hits per page before → after), what was kept (and why), what is left, and whether
    `semi-check.md` was deleted. Do not commit unless the user asks.
 
 
@@ -106,7 +142,9 @@ The check part changes **no source file**. Its only output is `semi-check.md` at
 | 2. Token | colour / size / radius classes the codemod maps safely (`rounded-lg` → `rounded-control`, `shadow-sm` → `shadow-card`) | `fix.mjs tokens [--only dir] [--dry-run] [--theme dark\|light]` |
 | 3. Sửa tay (`L…`) | lint hits no codemod can fix safely | edits by hand |
 | 4. Cấu trúc (`D…`) | AppShell / AppHeader frame, local wrappers, list pages without `SubpageToolbar`, tables, components that duplicate `@semi/ui`, other UI libraries | asks: fix, or keep (`semi-lint.json` `keep`) |
-| 4b. Không "AI" | the generic AI screen (`DESIGN_SYSTEM.md` §19; `decorative-icon-tones` is the only part lint finds, in phase 3) | reviewed by eye on the key screens, proposed, applied with the user's yes |
+| 4b. Không "AI" + review | the generic AI screen (`DESIGN_SYSTEM.md` §19; `decorative-icon-tones` is the only part lint finds, in phase 3) and the screen review (§19b: missing loading / empty / error / no-permission states, platform conventions, brand voice) | reviewed by eye on the key screens, proposed, applied with the user's yes |
+| 5. Mật độ | the density budgets of §4c on the rendered pages: text against a box's edge, rows shorter than a control, frames four deep, five text sizes or four colours in a box, two filled buttons in a view, boxes closer than 8px, double lines | `scripts/vendor/density.mjs <url…>` (or `--snippet` in a browser tool), fixed by hand with the user's yes |
+| 6. Tiếp cận (a11y) | WCAG 2.2 AA on the rendered pages, both themes: text contrast, field edges, control names, focus rings, 24px targets, image alt, lang, zoom (+ axe-core when installed) | `scripts/vendor/a11y.mjs <url…>` (or `--snippet` in a browser tool), fixed by hand with the user's yes |
 
 Checks the team chose to keep are listed in `semi-lint.json` (`"keep": { "tables": "reason" }`, or an array of path
 prefixes) and only appear as one "Giữ nguyên" line.

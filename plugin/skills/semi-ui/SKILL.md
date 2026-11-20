@@ -39,7 +39,12 @@ If neither works (`semi_status` answers, or `npx semi` is missing), the app has 
    user came for and make it the biggest (`KpiCard featured` for the main number, not four equal cards); keep KPI and
    card icons neutral (colour only for a status); no row of three icon feature cards with vague promises (use a real
    number, a quote, a product shot); icons only where they help scanning; plain sections and white space next to
-   cards.
+   cards. Keep the density budgets (`DESIGN_SYSTEM.md` §4c): three frames deep at most, four text sizes and three
+   colours per box, one filled button per view, rows a control tall, text 12px from a box's sides.
+   Build every state of the screen, not only the filled one (`DESIGN_SYSTEM.md` §19b): loading (a skeleton of the
+   real shape), empty (the action that fills it) and "no result" for a search or filter, error (what failed, a
+   retry, the loaded data kept), no permission, and too much data (long names, many rows). A destructive action is
+   confirmed (`confirmDialog`) or undoable (`toast` with an action).
 4. **A part:** copy the closest example and adapt it. Examples import from `@semi/ui` only and type-check, so keep
    their props and structure; change data, labels and handlers.
 5. **Compose, do not invent.** No local wrappers (`components/ui.tsx`), no raw `<select>` / `<table>` / `<dialog>`,
@@ -49,7 +54,10 @@ If neither works (`semi_status` answers, or `npx semi` is missing), the app has 
    `TaskList`, `ToolCall`, `Terminal`, `FileTree`, `Sources` + `Citation` and `ContextMeter`. Any outward-facing,
    paid or irreversible agent action waits for `ActionConfirmation`. The *Agent workspace* block shows them together.
 7. **Check:** `npx semi-lint` must be clean (the plugin hook also lints each edited file); `npx tsc --noEmit`; open
-   the page in both themes and at phone width if the app runs. Report what you used and any gap you filed.
+   the page in both themes and at phone width if the app runs, and measure it: `npx semi density <url>` and
+   `npx semi a11y <url>` (Playwright from the app; `a11y` checks contrast, field edges, names, focus rings and target
+   size in both themes), or evaluate the output of their `--snippet` on the page with a browser tool. Fix every hit
+   before finishing. Report what you used and any gap you filed.
 
 ## Change the app's style (Flat, Soft, Sharp)
 
