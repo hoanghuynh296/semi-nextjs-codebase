@@ -7,6 +7,7 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 ## [0.29.4] - 2026-11-20
 
 ### Fixed
+- **`ChatList`**: scrolling up while an answer streams no longer gets pulled back down when a stream update lands before the scroll event (the list now notices it was moved off the bottom). This also made the docs test for it flaky in CI.
 - **`semi-brand storybook`** printed `…/brand.html#brand=…`, a page of the old Storybook that is gone (404); it prints `…/brand/#brand=…` (every docs page reads `#brand=`).
 
 ### Changed (docs site)
