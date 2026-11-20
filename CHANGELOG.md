@@ -4,6 +4,17 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.29.4] - 2026-11-20
+
+### Fixed
+- **`semi-brand storybook`** printed `…/brand.html#brand=…`, a page of the old Storybook that is gone (404); it prints `…/brand/#brand=…` (every docs page reads `#brand=`).
+
+### Changed (docs site)
+- The Pages workflow builds the site **once, with the Pages path**, and runs the browser checks on that build (`serve-static.mjs` serves requests under `NEXT_PUBLIC_BASE_PATH`), so the tested build is the deployed one. One `next build` less per deploy.
+- After deploying, it **smoke-checks the live site**: `components.json` answers with this version, a doc page and its stylesheet load (cache-busted).
+- It also runs on **every release**: a merge to main shows "@semi/ui vX · main" in the menu footer until the tagged release is published and redeployed without the label, so the live docs say whether they match what apps install.
+- README: "Docs deploy" status badge and latest release badge.
+
 ## [0.29.3] - 2026-11-20
 
 ### Fixed

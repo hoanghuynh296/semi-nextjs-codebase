@@ -14,7 +14,7 @@ import { extname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { generateBrand, SHADES } from "./generate.mjs";
 
-const PREVIEW_URL = "https://hoanghuynh296.github.io/semi-nextjs-codebase/brand.html";
+const PREVIEW_URL = "https://hoanghuynh296.github.io/semi-nextjs-codebase/brand/"; // the docs site reads #brand= on every page
 const pkgRoot = fileURLToPath(new URL("..", import.meta.url));
 const readJson = (p) => JSON.parse(readFileSync(p, "utf8"));
 

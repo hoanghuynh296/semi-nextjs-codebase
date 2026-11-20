@@ -9,6 +9,9 @@ import pkg from "../package.json";
 import { StyleSwitcher } from "./StyleSwitcher";
 import { BrandPreviewHost } from "./BrandPreview";
 
+/** Set by the Pages workflow when the site is built from a main commit that is not the tagged release yet. */
+const UNRELEASED = process.env.NEXT_PUBLIC_SEMI_UNRELEASED === "1";
+
 const ICON_COUNT = Object.keys(ICONS).length;
 
 /** Semi's own docs: the shared DocsShell (site/) plus the Semi pages and the style / brand previews. */
@@ -42,7 +45,10 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
             <ThemeSwitcher fullWidth />
             <StyleSwitcher />
             <div className="flex items-center justify-between text-caption text-muted px-1">
-              <span className="tabular-nums">@semi/ui v{pkg.version}</span>
+              <span className="tabular-nums" title={UNRELEASED ? "Build từ main: có thay đổi chưa phát hành" : undefined}>
+                @semi/ui v{pkg.version}
+                {UNRELEASED && " · main"}
+              </span>
               <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 text-success-fg font-medium tabular-nums">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                 {ICON_COUNT} icons
