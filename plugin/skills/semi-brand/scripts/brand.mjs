@@ -67,8 +67,9 @@ permissions:
   pages: write
   id-token: write
 
+# Pull requests get their own group: they must never cancel (or be cancelled by) a Pages deploy from main.
 concurrency:
-  group: pages
+  group: \${{ github.event_name == 'pull_request' && format('check-{0}', github.ref) || 'pages' }}
   cancel-in-progress: true
 
 jobs:
