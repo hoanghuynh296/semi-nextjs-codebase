@@ -245,6 +245,8 @@ export function ChatList({
   const t = useSemiLocale();
   const ref = useRef<HTMLDivElement>(null);
   const stick = useRef(true);
+  /** scrollTop the list last set itself while following the stream (0: none to compare with). */
+  const pinned = useRef(0);
   const [away, setAway] = useState(false);
   const [said, setSaid] = useState("");
   const wasBusy = useRef(busy);
@@ -255,8 +257,20 @@ export function ChatList({
     const el = ref.current;
     if (!el) return;
     const follow = () => {
-      if (emptyRef.current) el.scrollTop = 0;
-      else if (stick.current) el.scrollTop = el.scrollHeight;
+      if (emptyRef.current) {
+        el.scrollTop = 0;
+        return;
+      }
+      // The reader scrolled up since the list last pinned itself, but the scroll event has not run yet (a stream tick
+      // came first): stop following instead of pulling them back down.
+      if (stick.current && pinned.current && el.scrollTop < Math.min(pinned.current, el.scrollHeight - el.clientHeight) - 2) {
+        stick.current = false;
+        setAway(true);
+      }
+      if (stick.current) {
+        el.scrollTop = el.scrollHeight;
+        pinned.current = el.scrollTop;
+      }
     };
     follow();
     const mo = new MutationObserver(follow);
@@ -280,6 +294,7 @@ export function ChatList({
     if (!el) return;
     const bottom = el.scrollHeight - el.scrollTop - el.clientHeight < STICK_SLACK;
     stick.current = bottom;
+    if (bottom) pinned.current = el.scrollTop;
     setAway(!bottom);
   };
 
@@ -287,6 +302,7 @@ export function ChatList({
     const el = ref.current;
     if (!el) return;
     stick.current = true;
+    pinned.current = 0; // the smooth scroll passes lower positions on its way down: not the reader scrolling up
     setAway(false);
     el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
   };

@@ -13,7 +13,7 @@ export default function ComponentsPage() {
     <>
       <div className="space-y-3">
         <PageTitle title="Component" />
-        <p className="text-ui-lg text-body max-w-3xl leading-relaxed">
+        <p className="text-ui-lg text-body max-w-3xl">
           {list.length} trang tài liệu, mỗi trang có ví dụ chạy thật, code copy được, bảng API sinh từ TypeScript và bản markdown cho agent. Đổi theme / style ở chân menu để xem mọi component theo từng diện mạo.
         </p>
       </div>

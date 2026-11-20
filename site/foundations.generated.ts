@@ -62,9 +62,16 @@ export const FOUNDATIONS = {
     {
       "key": "color-line",
       "cls": "border-line",
-      "note": "Viền control và card",
+      "note": "Viền card, bảng, khung",
       "dark": "rgba(255, 255, 255, 0.12)",
       "light": "rgba(0, 0, 0, 0.08)"
+    },
+    {
+      "key": "color-control-line",
+      "cls": "border-control-line",
+      "note": "Viền ô nhập, checkbox, radio (≥ 3:1)",
+      "dark": "text-muted 65%",
+      "light": "text-muted 80%"
     },
     {
       "key": "color-divider",
@@ -77,15 +84,15 @@ export const FOUNDATIONS = {
       "key": "color-accent",
       "cls": "bg-accent",
       "note": "Nền nút chính, dấu đang chọn",
-      "dark": "var(--color-primary-500)",
-      "light": "var(--color-primary-700)"
+      "dark": "primary-500",
+      "light": "primary-700"
     },
     {
       "key": "color-accent-fg",
       "cls": "text-accent-fg",
       "note": "Chữ và icon nhấn trên nền tối/sáng",
-      "dark": "var(--color-primary-400)",
-      "light": "var(--color-primary-700)"
+      "dark": "primary-400",
+      "light": "primary-700"
     }
   ],
   "type": [

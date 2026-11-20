@@ -1,9 +1,13 @@
 name: Deploy Semi Storybook to GitHub Pages
 
+# main: every merge is checked and published (labelled "· main" until it is released).
+# release: the tagged commit is published again without the label, so the live docs match what apps install.
 on:
   push:
     branches:
       - main
+  release:
+    types: [published]
   workflow_dispatch:
 
 permissions:
@@ -14,6 +18,11 @@ permissions:
 concurrency:
   group: "pages"
   cancel-in-progress: false
+
+env:
+  # The site is built once with the GitHub Pages path; the browser checks run on that same build
+  # (scripts/serve-static.mjs serves requests under this prefix), so what is tested is what is deployed.
+  NEXT_PUBLIC_BASE_PATH: /semi-nextjs-codebase
 
 jobs:
   build-and-deploy:
@@ -37,13 +46,22 @@ jobs:
       - name: Run verification checks
         run: npm run check
 
-      - name: Browser checks (contrast AA both themes, axe, theme, keyboard)
-        run: npx next build && npm run build:brand-book && npm run test:ui
+      - name: Release or main
+        run: |
+          v=$(node -p "require('./package.json').version")
+          tagged=$(git ls-remote --tags origin "refs/tags/v$v" "refs/tags/v$v^{}" | cut -f1)
+          if [ "$GITHUB_EVENT_NAME" = "release" ] || echo "$tagged" | grep -qx "$GITHUB_SHA"; then
+            echo "Release v$v"
+          else
+            echo "main: not the v$v release commit, the site says \"· main\""
+            echo "NEXT_PUBLIC_SEMI_UNRELEASED=1" >> "$GITHUB_ENV"
+          fi
 
-      - name: Build Next.js Static Storybook
-        env:
-          NEXT_PUBLIC_BASE_PATH: /semi-nextjs-codebase
-        run: npx next build
+      - name: Build the site (GitHub Pages path) and the sample brand book
+        run: npx next build && npm run build:brand-book
+
+      - name: Browser checks on that build (contrast AA both themes, axe, theme, keyboard)
+        run: npm run test:ui
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -56,3 +74,22 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      # The live site answers with this version, a doc page and its stylesheet. The query string skips the
+      # Pages cache (10 min), so the check sees this deploy and not the previous one.
+      - name: Smoke-check the live site
+        env:
+          URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          v=$(node -p "require('./package.json').version")
+          for i in $(seq 1 10); do
+            live=$(curl -fsS "${URL}components.json?sha=$GITHUB_SHA" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>console.log(JSON.parse(s).version))' || true)
+            [ "$live" = "$v" ] && break
+            echo "live components.json: ${live:-?}, expected $v (try $i)"; sleep 15
+          done
+          [ "$live" = "$v" ] || { echo "::error::live site does not serve v$v"; exit 1; }
+          page=$(curl -fsS "${URL}components/button/?sha=$GITHUB_SHA")
+          css=$(echo "$page" | grep -o '/semi-nextjs-codebase/_next/static/[^"]*\.css' | head -1)
+          [ -n "$css" ] || { echo "::error::doc page has no stylesheet under the Pages path"; exit 1; }
+          curl -fsS -o /dev/null "$(echo "$URL" | sed 's#^\(https://[^/]*\).*#\1#')$css"
+          echo "live site serves v$v, /components/button/ and $css"

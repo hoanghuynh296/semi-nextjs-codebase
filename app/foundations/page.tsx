@@ -1,15 +1,21 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { Icon, IconTile, type IconName, type TileTone, TILE_TONES, BRAND_TONES } from "../../src/Icon";
-import { ICON_CATALOG, type IconDomain, suggestIcon } from "../../src/iconCatalog";
+import { Icon, IconTile, type IconName, type TileTone, BRAND_TONES } from "../../src/Icon";
+import { ICON_CATALOG, suggestIcon } from "../../src/iconCatalog";
 import { PageTitle } from "../../src/PageTitle";
-import { TAG, TONE_DOT } from "../../src/Chip";
-import { Pills } from "../../src/Pills";
-import { CARD, CARD_HOVER } from "../../styles/surfaces";
+import { TAG } from "../../src/Chip";
+import { Badge } from "../../src/Badge";
+import { Alert, EmptyState } from "../../src/Feedback";
+import { Input } from "../../src/Field";
+import { CustomSelect } from "../../src/CustomSelect";
+import { ToggleGroup } from "../../src/Toggle";
+import { toast } from "../../src/Toast";
+import { CARD, SECTION_HEAD, SECTION_TITLE } from "../../styles/surfaces";
+import { FOCUS_RING, cn } from "../../styles/utils";
 import { FOUNDATIONS } from "../../site/foundations.generated";
 
-const DOMAIN_OPTIONS: { id: string; label: string; count?: number }[] = [
+const DOMAIN_OPTIONS: { id: string; label: string }[] = [
   { id: "all", label: "Tất cả" },
   { id: "core", label: "Core & Shell" },
   { id: "ecommerce", label: "E-Commerce" },
@@ -21,19 +27,18 @@ const DOMAIN_OPTIONS: { id: string; label: string; count?: number }[] = [
 ];
 
 const TONES: { id: TileTone; label: string }[] = [
-  { id: "green", label: "Green (Primary)" },
-  { id: "pink", label: "Pink (Filament)" },
-  { id: "sky", label: "Sky (Camera/Hours)" },
-  { id: "amber", label: "Amber (Peripherals)" },
-  { id: "violet", label: "Violet (Automation)" },
-  { id: "gray", label: "Gray (Neutral)" },
+  { id: "green", label: "Xanh lá" },
+  { id: "pink", label: "Hồng" },
+  { id: "sky", label: "Xanh trời" },
+  { id: "amber", label: "Hổ phách" },
+  { id: "violet", label: "Tím" },
+  { id: "gray", label: "Xám" },
 ];
 
 export default function FoundationsPage() {
   const [search, setSearch] = useState("");
   const [selectedDomain, setSelectedDomain] = useState("all");
   const [activeTone, setActiveTone] = useState<TileTone>("green");
-  const [copiedIcon, setCopiedIcon] = useState<string | null>(null);
   const [selectedIconName, setSelectedIconName] = useState<IconName | null>("sparkles");
 
   // Filter icons
@@ -67,9 +72,10 @@ export default function FoundationsPage() {
 
   const handleCopy = (name: string) => {
     const snippet = `<Icon name="${name}" />`;
-    navigator.clipboard.writeText(snippet);
-    setCopiedIcon(name);
-    setTimeout(() => setCopiedIcon(null), 2000);
+    navigator.clipboard?.writeText(snippet).then(
+      () => toast({ title: `Đã copy ${snippet}`, tone: "success" }),
+      () => toast({ title: "Không copy được: trình duyệt chặn clipboard", tone: "danger" }),
+    );
   };
 
   const selectedMeta = selectedIconName ? ICON_CATALOG[selectedIconName] : null;
@@ -77,57 +83,41 @@ export default function FoundationsPage() {
 
   return (
     <>
-      {/* Page Header */}
-      <div className="space-y-3 pb-2 border-b border-line/60">
-        <PageTitle title="Foundations & Icon Catalogue" />
-        <p className="text-ui text-muted max-w-3xl leading-relaxed">
-          Tài liệu tổng quan hệ thống Design Tokens (màu sắc tối, typography, bán kính viền) và công cụ tra cứu{" "}
-          <strong className="text-body">{totalCount} icons chuẩn hóa</strong> của hệ sinh thái Semi. Không inline SVG, không dùng glyph unicode.
+      <div className="space-y-3">
+        <PageTitle title="Foundations & icon" />
+        <p className="text-ui text-muted max-w-3xl">
+          Token bề mặt và chữ cho cả hai theme, thang chữ, ba style và <strong className="text-body">{totalCount} icon</strong> của Semi. Không inline SVG,
+          không dùng glyph unicode.
         </p>
-        <div className="flex flex-wrap items-center gap-2 pt-1">
-          <span className={TAG}>
-            <span className={`w-1.5 h-1.5 rounded-full ${TONE_DOT.green}`} />
-            <span>{totalCount} Icons chuẩn</span>
-          </span>
-          <span className={TAG}>
-            <span className={`w-1.5 h-1.5 rounded-full ${TONE_DOT.sky}`} />
-            <span>Tailwind CSS 4 @theme</span>
-          </span>
-          <span className={TAG}>
-            <span className={`w-1.5 h-1.5 rounded-full ${TONE_DOT.violet}`} />
-            <span>Dark-first Surfaces</span>
-          </span>
-          <span className={TAG}>
-            <span className={`w-1.5 h-1.5 rounded-full ${TONE_DOT.amber}`} />
-            <span>Stroke 1.75 · 24×24</span>
-          </span>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className={TAG}>{totalCount} icon</span>
+          <span className={TAG}>Tailwind 4 @theme</span>
+          <span className={TAG}>Sáng và tối</span>
+          <span className={TAG}>Nét 1.75 · 24×24</span>
         </div>
       </div>
 
-      {/* SECTION 1: Surfaces, text and styles — read from tokens/ (site/foundations.generated.ts) */}
+      {/* Surfaces, text and styles: read from tokens/ (site/foundations.generated.ts) */}
       <section id="surfaces" className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-title font-semibold text-body flex items-center gap-2">
-            <Icon name="layers" className="w-4 h-4 text-accent-fg" />
-            <span>Surfaces & text</span>
-          </h2>
-          <span className="text-caption text-muted font-medium">Giá trị theo từng theme</span>
+        <div className={SECTION_HEAD}>
+          <h2 className={SECTION_TITLE}>Bề mặt và chữ</h2>
+          <span className="text-caption text-muted">Giá trị theo từng theme</span>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {FOUNDATIONS.surfaces.map((t) => (
-            <div key={t.key} className={`p-3.5 rounded-card ${t.cls} border border-line space-y-2`}>
+            <div key={t.key} className={`p-card rounded-card ${t.cls} border border-line space-y-2`}>
               <span className="text-caption font-medium text-muted block">{t.cls}</span>
               <div className="text-caption text-body tabular-nums">Tối {t.dark}</div>
               <div className="text-caption text-body tabular-nums">Sáng {t.light}</div>
-              <p className="text-caption text-muted leading-normal">{t.note}</p>
+              <p className="text-caption text-muted">{t.note}</p>
             </div>
           ))}
         </div>
 
-        <div className="rounded-card bg-panel border border-line divide-y divide-divider">
+        <div className={`${CARD} divide-y divide-divider`}>
           {FOUNDATIONS.text.map((t) => (
-            <div key={t.key} className="grid gap-2 px-3.5 py-2.5 text-label sm:grid-cols-[180px_1fr_auto] sm:items-center">
+            <div key={t.key} className="grid gap-2 px-card py-2.5 text-label sm:grid-cols-[180px_1fr_auto] sm:items-center">
               <code className="text-body">{t.cls}</code>
               <span className="text-muted">{t.note}</span>
               <span className="text-caption text-muted tabular-nums">
@@ -137,7 +127,7 @@ export default function FoundationsPage() {
           ))}
         </div>
 
-        <h3 className="text-ui-lg font-semibold text-body pt-2">Styles</h3>
+        <h3 className="text-ui-lg font-semibold text-contrast pt-2">Style</h3>
         <div className="grid gap-3 md:grid-cols-3">
           {FOUNDATIONS.styles.map((st) => (
             <div key={st.id} className={`${CARD} p-card space-y-3`}>
@@ -145,7 +135,7 @@ export default function FoundationsPage() {
                 <span className="text-title font-semibold text-contrast">{st.name}</span>
                 <code className="text-caption text-muted">data-style=&quot;{st.id}&quot;</code>
               </div>
-              <p className="text-label text-muted leading-relaxed">{st.description}</p>
+              <p className="text-label text-muted">{st.description}</p>
               <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1.5 text-label">
                 <dt className="text-muted">Bo góc</dt>
                 <dd className="text-body tabular-nums">{[st.radius.chip, st.radius.control, st.radius.card, st.radius.panel].join(" · ")}</dd>
@@ -160,23 +150,20 @@ export default function FoundationsPage() {
           ))}
         </div>
         <p className="text-caption text-muted">
-          Bo góc luôn dùng tên token: <code className="text-accent-fg">rounded-chip</code> · <code className="text-accent-fg">rounded-control</code> · <code className="text-accent-fg">rounded-card</code> · <code className="text-accent-fg">rounded-panel</code>. Không dùng rounded-lg hay rounded-[Npx] (semi-lint).
+          Bo góc luôn dùng tên token: <code className="text-body">rounded-chip</code> · <code className="text-body">rounded-control</code> ·{" "}
+          <code className="text-body">rounded-card</code> · <code className="text-body">rounded-panel</code>. Không dùng rounded-lg hay rounded-[Npx] (semi-lint).
         </p>
       </section>
 
-      {/* SECTION 2: Typography Scale */}
       <section id="typography" className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-title font-semibold text-body flex items-center gap-2">
-            <Icon name="code" className="w-4 h-4 text-accent-fg" />
-            <span>Typography scale</span>
-          </h2>
-          <span className="text-caption text-muted">font-medium / font-semibold only</span>
+        <div className={SECTION_HEAD}>
+          <h2 className={SECTION_TITLE}>Thang chữ</h2>
+          <span className="text-caption text-muted">Chỉ font-medium và font-semibold</span>
         </div>
 
-        <div className="rounded-card bg-panel border border-line divide-y divide-divider">
+        <div className={`${CARD} divide-y divide-divider`}>
           {FOUNDATIONS.type.map((t) => (
-            <div key={t.cls} className="flex flex-wrap items-baseline gap-x-4 gap-y-1 px-3.5 py-2.5">
+            <div key={t.cls} className="flex flex-wrap items-baseline gap-x-4 gap-y-1 px-card py-2.5">
               <code className="text-label text-muted w-40 shrink-0">{t.cls}</code>
               <span className="text-caption text-muted tabular-nums w-20 shrink-0">{t.size}</span>
               <span className={`${t.cls} text-contrast font-medium min-w-0`}>Máy in X1 Carbon · 12.450.000 ₫</span>
@@ -184,255 +171,145 @@ export default function FoundationsPage() {
           ))}
         </div>
         <p className="text-caption text-muted">
-          Số đo, tiền, giờ in luôn <code className="text-accent-fg">tabular-nums</code>. Tiêu đề trang dùng <code className="text-accent-fg">PageTitle</code> (font-display).
+          Số đo, tiền, giờ luôn <code className="text-body">tabular-nums</code>. Tiêu đề trang dùng <code className="text-body">PageTitle</code> (font-display).
         </p>
       </section>
 
-      {/* SECTION 3: Interactive Icon Catalogue (Core Feature) */}
-      <section id="icons" className="space-y-4 pt-2">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <h2 className="text-title-lg font-semibold text-contrast flex items-center gap-2">
-              <Icon name="sparkles" className="w-4 h-4 text-accent-fg" />
-              <span>Interactive Icon Explorer</span>
-              <span className="text-label font-normal px-2 py-0.5 rounded-full bg-panel/[0.08] text-body">
-                {filteredIcons.length} / {totalCount} icons
-              </span>
-            </h2>
-            <p className="text-label text-muted pt-0.5">
-              Click bất kỳ icon nào để copy nhanh mã JSX <code className="text-accent-fg">&lt;Icon name=&quot;...&quot; /&gt;</code>
-            </p>
-          </div>
+      <section id="icons" className="space-y-4">
+        <div className={SECTION_HEAD}>
+          <h2 className={SECTION_TITLE}>Tra cứu icon</h2>
+          <Badge size="sm">
+            {filteredIcons.length} / {totalCount}
+          </Badge>
+        </div>
+        <p className="text-label text-muted">
+          Bấm một icon để xem chi tiết và copy <code className="text-body">&lt;Icon name=&quot;…&quot; /&gt;</code>.
+        </p>
 
-          {/* Tone Selector */}
-          <div className="flex items-center gap-1.5 p-1 rounded-control bg-panel border border-line shrink-0">
-            <span className="text-caption text-muted px-2 font-medium">Tone Tile:</span>
-            {TONES.map((t) => (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => setActiveTone(t.id)}
-                title={t.label}
-                className={`w-6 h-6 rounded-chip flex items-center justify-center transition-transform ${TILE_TONES[t.id]} ${activeTone === t.id ? "scale-110 ring-1 ring-white/50" : "opacity-60 hover:opacity-100"}`}
-              >
-                <span className="w-2 h-2 rounded-full bg-current" />
-              </button>
-            ))}
+        <div className={`${CARD} p-card flex flex-col gap-3 @3xl:flex-row @3xl:items-center`}>
+          <div className="flex-1 min-w-0">
+            <Input
+              icon="search"
+              type="search"
+              aria-label="Tìm icon"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Tên, alias hoặc ý định: checkout, database, xoá, giao hàng…"
+            />
           </div>
+          <CustomSelect
+            aria-label="Nhóm icon"
+            value={selectedDomain}
+            onChange={setSelectedDomain}
+            options={DOMAIN_OPTIONS.map((d) => ({ value: d.id, label: d.label }))}
+          />
+          <ToggleGroup
+            label="Màu ô icon"
+            value={[activeTone]}
+            onChange={(v) => v[0] && setActiveTone(v[0])}
+            options={TONES.map((t) => ({ key: t.id, label: t.label }))}
+          />
         </div>
 
-        {/* Toolbar: Search + Domain Filters */}
-        <div className="p-3.5 rounded-card bg-panel border border-line space-y-3">
-          <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
-            {/* Search bar */}
-            <div className="relative flex-1">
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Tìm kiếm icon (tên, alias, intent: 'checkout', 'database', 'xoá', 'giao hàng')..."
-                className="w-full h-10 pl-10 pr-4 rounded-control bg-panel/[0.05] border border-control-line focus:border-focus focus:outline-none text-ui text-contrast placeholder:text-muted font-medium"
-              />
-              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted pointer-events-none">
-                <Icon name="search" className="w-4 h-4" />
-              </span>
-              {search && (
-                <button
-                  type="button"
-                  onClick={() => setSearch("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-body"
-                >
-                  <Icon name="close" className="w-3.5 h-3.5" />
-                </button>
-              )}
-            </div>
-
-            {/* Quick stats pill */}
-            <div className="flex items-center gap-2 shrink-0">
-              {copiedIcon && (
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-control bg-emerald-500/20 border border-emerald-500/30 text-success-fg text-label font-semibold animate-pulse">
-                  <Icon name="check" className="w-3.5 h-3.5" />
-                  <span>Đã copy &lt;Icon name=&quot;{copiedIcon}&quot; /&gt;</span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Domain Pills */}
-          <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-line/60">
-            {DOMAIN_OPTIONS.map((dom) => {
-              const active = selectedDomain === dom.id;
-              return (
-                <button
-                  key={dom.id}
-                  type="button"
-                  onClick={() => setSelectedDomain(dom.id)}
-                  className={`px-3 py-1 rounded-full text-label font-medium transition-colors ${
-                    active
-                      ? "bg-raised text-contrast border border-line"
-                      : "text-muted hover:text-contrast hover:bg-field border border-transparent"
-                  }`}
-                >
-                  {dom.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Layout: Grid Icons + Detail Inspector */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-start">
-          {/* Main Grid */}
           <div className="lg:col-span-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-2.5">
             {filteredIcons.map(([name, meta]) => {
               const isSelected = selectedIconName === name;
-              const isCopied = copiedIcon === name;
-
               return (
-                <div
+                <button
                   key={name}
+                  type="button"
+                  aria-pressed={isSelected}
                   onClick={() => {
                     setSelectedIconName(name as IconName);
                     handleCopy(name);
                   }}
-                  className={`group relative p-3 rounded-card border transition-all cursor-pointer flex flex-col items-center justify-center gap-2 text-center select-none ${
-                    isSelected
-                      ? "bg-panel/[0.08] border-accent-line ring-1 ring-accent-line"
-                      : "bg-panel hover:bg-panel/[0.05] border-line hover:border-line-hover"
-                  }`}
-                  title={`Click để copy <Icon name="${name}" />`}
-                >
-                  {/* Icon Tile Preview */}
-                  <div className="relative">
-                    <IconTile
-                      name={name as IconName}
-                      tone={meta.domain === "brand" ? (BRAND_TONES[name as IconName] || activeTone) : activeTone}
-                      size="md"
-                    />
-                    {isCopied && (
-                      <span className="absolute inset-0 rounded-control bg-emerald-500/90 text-contrast flex items-center justify-center animate-in fade-in">
-                        <Icon name="check" className="w-4 h-4" />
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Icon Name */}
-                  <div className="w-full">
-                    <span className="text-label font-medium text-body group-hover:text-accent-fg transition-colors block truncate">
-                      {name}
-                    </span>
-                    <span className="text-caption text-muted block truncate">
-                      {meta.lucideEquivalent || meta.category}
-                    </span>
-                  </div>
-
-                  {/* Domain Tag */}
-                  {meta.domain && (
-                    <span className="text-caption px-1.5 py-0.5 rounded-chip bg-panel/[0.05] text-muted">
-                      {meta.domain}
-                    </span>
+                  title={`Copy <Icon name="${name}" />`}
+                  className={cn(
+                    "p-3 rounded-card border transition cursor-pointer flex flex-col items-center justify-center gap-2 text-center",
+                    FOCUS_RING,
+                    isSelected ? "bg-accent-subtle border-accent-line" : "bg-panel border-line hover:bg-field hover:border-line-hover",
                   )}
-                </div>
+                >
+                  <IconTile name={name as IconName} tone={meta.domain === "brand" ? (BRAND_TONES[name as IconName] || activeTone) : activeTone} size="md" />
+                  <span className="w-full">
+                    <span className="text-label font-medium text-contrast block truncate">{name}</span>
+                    <span className="text-caption text-muted block truncate">{meta.lucideEquivalent || meta.category}</span>
+                  </span>
+                  {meta.domain && <Badge size="sm">{meta.domain}</Badge>}
+                </button>
               );
             })}
 
             {filteredIcons.length === 0 && (
-              <div className="col-span-full py-12 text-center text-muted space-y-2 bg-panel rounded-card border border-line">
-                <Icon name="search" className="w-6 h-6 mx-auto text-muted" />
-                <p className="text-ui font-medium">Không tìm thấy icon nào với từ khoá &quot;{search}&quot;</p>
-                <p className="text-caption text-muted">Hãy thử gõ từ khoá tiếng Việt như &quot;xoá&quot;, &quot;thanh toán&quot;, &quot;giao hàng&quot;, &quot;máy chủ&quot;...</p>
-              </div>
+              <EmptyState
+                className="col-span-full"
+                icon="search"
+                title={`Không có icon nào khớp “${search}”`}
+                description="Thử từ khoá tiếng Việt như “xoá”, “thanh toán”, “giao hàng”, “máy chủ”."
+              />
             )}
           </div>
 
-          {/* Inspector Panel */}
-          <div className="lg:col-span-1 sticky top-4 p-4 rounded-card bg-panel border border-line space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-line">
-              <span className="text-caption text-muted font-semibold">
-                Icon Semantic Inspector
-              </span>
+          <div className={`${CARD} p-card lg:col-span-1 sticky top-4 space-y-4`}>
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="text-label font-semibold text-contrast">Chi tiết icon</h3>
               {selectedMeta?.domain && (
-                <span className="px-2 py-0.5 rounded-full text-caption font-medium bg-accent-subtle text-accent-fg">
+                <Badge size="sm" tone="green">
                   {selectedMeta.domain}
-                </span>
+                </Badge>
               )}
             </div>
 
             {selectedMeta ? (
               <div className="space-y-4">
-                {/* Large Preview */}
-                <div className="flex items-center gap-3 p-3 rounded-control bg-panel/[0.03] border border-line/60">
-                  <IconTile
-                    name={selectedMeta.name}
-                    tone={selectedMeta.domain === "brand" ? (BRAND_TONES[selectedMeta.name] || activeTone) : activeTone}
-                    size="lg"
-                  />
+                <div className="flex items-center gap-3">
+                  <IconTile name={selectedMeta.name} tone={selectedMeta.domain === "brand" ? (BRAND_TONES[selectedMeta.name] || activeTone) : activeTone} size="lg" />
                   <div className="min-w-0 flex-1">
-                    <div className="text-ui-lg font-semibold text-contrast truncate">
-                      {selectedMeta.name}
-                    </div>
-                    <div className="text-caption text-muted truncate">
-                      Category: {selectedMeta.category}
-                    </div>
+                    <div className="text-ui-lg font-semibold text-contrast truncate">{selectedMeta.name}</div>
+                    <div className="text-caption text-muted truncate">Nhóm: {selectedMeta.category}</div>
                   </div>
                 </div>
 
-                {/* Purpose */}
                 <div className="space-y-1">
-                  <span className="text-caption font-semibold text-body block">Ý định sử dụng (Purpose):</span>
-                  <p className="text-label text-body leading-relaxed bg-panel/[0.02] p-2.5 rounded-control border border-line/50">
-                    {selectedMeta.purpose}
-                  </p>
+                  <span className="text-caption font-medium text-muted block">Dùng để</span>
+                  <p className="text-label text-body">{selectedMeta.purpose}</p>
                 </div>
 
-                {/* Do & Don't */}
-                <div className="space-y-2 text-label">
-                  <div className="p-2.5 rounded-control bg-emerald-500/10 border border-emerald-500/20 text-success-fg space-y-1">
-                    <span className="font-semibold flex items-center gap-1.5 text-caption">
-                      <Icon name="check" className="w-3.5 h-3.5" />
-                      NÊN DÙNG (DO):
-                    </span>
-                    <p className="text-caption text-success-fg leading-normal">{selectedMeta.do}</p>
-                  </div>
-                  <div className="p-2.5 rounded-control bg-red-500/10 border border-red-500/20 text-danger-fg space-y-1">
-                    <span className="font-semibold flex items-center gap-1.5 text-caption">
-                      <Icon name="close" className="w-3.5 h-3.5" />
-                      CẤM DÙNG (DON&apos;T):
-                    </span>
-                    <p className="text-caption text-danger-fg leading-normal">{selectedMeta.dont}</p>
-                  </div>
-                </div>
+                <Alert tone="success" title="Nên dùng">
+                  {selectedMeta.do}
+                </Alert>
+                <Alert tone="danger" title="Không dùng">
+                  {selectedMeta.dont}
+                </Alert>
 
-                {/* Lucide Equivalent */}
                 {selectedMeta.lucideEquivalent && (
-                  <div className="space-y-1 text-caption">
-                    <span className="font-medium text-muted block">Tên chuẩn Lucide:</span>
-                    <code className="px-2 py-1 rounded-chip bg-panel/[0.06] text-tone-sky block text-caption">
-                      {selectedMeta.lucideEquivalent}
-                    </code>
+                  <div className="space-y-1">
+                    <span className="text-caption font-medium text-muted block">Tên trong Lucide</span>
+                    <code className="text-label text-body">{selectedMeta.lucideEquivalent}</code>
                   </div>
                 )}
 
-                {/* Code snippets */}
-                <div className="space-y-1 pt-1">
-                  <span className="text-caption font-semibold text-muted block">Mã nguồn JSX:</span>
-                  <div
+                <div className="space-y-1">
+                  <span className="text-caption font-medium text-muted block">JSX</span>
+                  <button
+                    type="button"
                     onClick={() => handleCopy(selectedMeta.name)}
-                    className="p-2.5 rounded-control bg-canvas border border-line text-caption text-accent-fg hover:border-accent-fg transition-colors cursor-pointer group flex items-center justify-between"
+                    className={cn("w-full p-2.5 rounded-control bg-field border border-line text-label text-body hover:border-line-hover transition flex items-center justify-between gap-2", FOCUS_RING)}
                   >
-                    <span>&lt;Icon name=&quot;{selectedMeta.name}&quot; /&gt;</span>
-                    <Icon name="copy" className="w-3.5 h-3.5 text-muted group-hover:text-accent-fg" />
-                  </div>
+                    <code className="truncate">&lt;Icon name=&quot;{selectedMeta.name}&quot; /&gt;</code>
+                    <Icon name="copy" className="w-3.5 h-3.5 text-muted shrink-0" />
+                    <span className="sr-only">Copy</span>
+                  </button>
                 </div>
 
-                {/* Keywords list */}
                 <div className="space-y-1">
-                  <span className="text-caption font-medium text-muted block">Từ khoá tìm kiếm:</span>
+                  <span className="text-caption font-medium text-muted block">Từ khoá tìm kiếm</span>
                   <div className="flex flex-wrap gap-1">
                     {selectedMeta.keywords.map((kw) => (
-                      <span key={kw} className="text-caption px-1.5 py-0.5 rounded-chip bg-panel/[0.05] text-muted">
+                      <Badge key={kw} size="sm">
                         {kw}
-                      </span>
+                      </Badge>
                     ))}
                   </div>
                 </div>

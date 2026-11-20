@@ -6,7 +6,7 @@ import { AppShell, type ShellNavSection } from "../src/AppShell";
 import type { IconName } from "../src/Icon";
 import { DOCS, GROUPS } from "../examples/registry.generated";
 
-/** Icon of each component group in the menu. */
+/** Icon of each component group in the menu (on the group heading only: its items have none, a repeated icon says nothing). */
 const GROUP_ICON: Record<string, IconName> = {
   Actions: "zap",
   Forms: "edit",
@@ -24,7 +24,7 @@ export function componentSections(): ShellNavSection[] {
   return GROUPS.flatMap((group) => {
     const docs = DOCS.filter((d) => d.group === group);
     return docs.length
-      ? [{ label: group, icon: GROUP_ICON[group], items: docs.map((d) => ({ id: d.id, label: d.title, icon: GROUP_ICON[group] ?? "box", href: `/components/${d.id}/` })) }]
+      ? [{ label: group, icon: GROUP_ICON[group], items: docs.map((d) => ({ id: d.id, label: d.title, href: `/components/${d.id}/` })) }]
       : [];
   });
 }

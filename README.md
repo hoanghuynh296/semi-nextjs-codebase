@@ -1,11 +1,16 @@
 # Semi: brand builder cho sản phẩm Next.js
 
+[![Docs deploy](https://github.com/hoanghuynh296/semi-nextjs-codebase/actions/workflows/deploy-storybook.yml/badge.svg?branch=main)](https://github.com/hoanghuynh296/semi-nextjs-codebase/actions/workflows/deploy-storybook.yml)
+[![Latest release](https://img.shields.io/github/v/release/hoanghuynh296/semi-nextjs-codebase?label=%40semi%2Fui)](https://github.com/hoanghuynh296/semi-nextjs-codebase/releases)
+
 > **Định nghĩa thương hiệu một lần, mọi sản phẩm và mọi agent làm theo.** Semi dựng brand kit (logo, màu, font, giọng
 > văn, style) kèm brand book, rồi dựng sản phẩm Next.js + Tailwind 4 mang sẵn thương hiệu đó, với design system
 > `@semi/ui` làm động cơ bên dưới.
 > Docs: [hoanghuynh296.github.io/semi-nextjs-codebase](https://hoanghuynh296.github.io/semi-nextjs-codebase/) · cho
 > agent: [`llms.txt`](https://hoanghuynh296.github.io/semi-nextjs-codebase/llms.txt) · **bắt đầu từ
 > [docs/BRANDS.md](docs/BRANDS.md)**.
+> Trang docs build lại mỗi lần merge vào main (ghi "· main" ở chân menu khi có thay đổi chưa phát hành) và mỗi lần
+> release (bỏ nhãn đó, khớp đúng bản app cài theo tag). Badge "Docs deploy" đỏ nghĩa là trang đang đứng ở bản trước.
 
 ## 4 lệnh, mỗi lệnh một chỗ
 

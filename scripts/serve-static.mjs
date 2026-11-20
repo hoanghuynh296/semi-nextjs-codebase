@@ -1,16 +1,22 @@
 #!/usr/bin/env node
 // Minimal static file server for the Storybook export (Playwright webServer). No dependencies.
 //   node scripts/serve-static.mjs out 4319
+// With NEXT_PUBLIC_BASE_PATH set (the GitHub Pages build, /semi-nextjs-codebase), requests under it are served from the
+// export root too, so the tests run against the very build that is deployed (its pages, links and assets carry the
+// prefix) while still opening /components/… directly.
 import { createReadStream, existsSync, statSync } from "node:fs";
 import { createServer } from "node:http";
 import { extname, join, normalize, resolve } from "node:path";
 
 const root = resolve(process.argv[2] ?? "out");
 const port = Number(process.argv[3] ?? 4319);
+const base = (process.env.NEXT_PUBLIC_BASE_PATH ?? "").replace(/\/$/, "");
 const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".svg": "image/svg+xml", ".png": "image/png", ".ico": "image/x-icon", ".txt": "text/plain", ".woff2": "font/woff2" };
 
 createServer((req, res) => {
-  const path = normalize(decodeURIComponent((req.url ?? "/").split("?")[0])).replace(/^(\.\.[/\\])+/, "");
+  let url = decodeURIComponent((req.url ?? "/").split("?")[0]);
+  if (base && (url === base || url.startsWith(`${base}/`))) url = url.slice(base.length) || "/";
+  const path = normalize(url).replace(/^(\.\.[/\\])+/, "");
   let file = join(root, path);
   if (existsSync(file) && statSync(file).isDirectory()) file = join(file, "index.html");
   if (!existsSync(file) && existsSync(`${file}.html`)) file = `${file}.html`;
