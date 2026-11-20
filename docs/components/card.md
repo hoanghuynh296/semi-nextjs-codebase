@@ -66,16 +66,21 @@ export default function CardStates() {
 
 ### Card
 
+With `onClick` the card is a button for keyboards and screen readers too: role="button", in the tab order, Enter and
+Space click it, FOCUS_RING shows focus (a plain <div onClick> is mouse-only). `active` is then its pressed state.
+A card that opens another page wraps a next/link around its title instead.
+
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `interactive` | `boolean` | `false` | Clickable card (opens a detail view): hover border + press scale. |
-| `active` | `boolean` | `false` | "On" / selected card: primary border, no glow. |
+| `active` | `boolean` |  | "On" / selected card: primary border, no glow. On a card with onClick it is also its pressed state (aria-pressed). |
 | `padding` | `'card' \| 'panel' \| 'none'` | `"card"` | Inner padding: `"card"` = p-card (16px at regular density, the default), `"panel"` = p-card sm:p-panel (a roomy card, 24px from sm), `"none"` for an image or a table that runs to the edge. A padding class in `className` (p-*, px-*, py-*) replaces it. |
 | `ref` | `React.Ref<HTMLDivElement>` |  |  |
 
 ## Accessibility
 
-- A clickable card is a link or button inside the card, not a div with onClick.
+- With onClick the card is a button for keyboards and screen readers (role="button", tab order, Enter / Space, focus ring); active becomes aria-pressed. Never a div with onClick (semi-lint click-target).
+- A card that opens another page puts a next/link on its title instead of onClick.
 
 ## Notes
 

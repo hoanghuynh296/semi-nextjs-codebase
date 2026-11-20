@@ -12,7 +12,8 @@ import { CustomSelect } from "../../src/CustomSelect";
 import { ToggleGroup } from "../../src/Toggle";
 import { toast } from "../../src/Toast";
 import { CARD, SECTION_HEAD, SECTION_TITLE } from "../../styles/surfaces";
-import { FOCUS_RING, cn } from "../../styles/utils";
+import { Card } from "../../src/Card";
+import { Button } from "../../src/Button";
 import { FOUNDATIONS } from "../../site/foundations.generated";
 
 const DOMAIN_OPTIONS: { id: string; label: string }[] = [
@@ -216,20 +217,15 @@ export default function FoundationsPage() {
             {filteredIcons.map(([name, meta]) => {
               const isSelected = selectedIconName === name;
               return (
-                <button
+                <Card
                   key={name}
-                  type="button"
-                  aria-pressed={isSelected}
+                  active={isSelected}
                   onClick={() => {
                     setSelectedIconName(name as IconName);
                     handleCopy(name);
                   }}
                   title={`Copy <Icon name="${name}" />`}
-                  className={cn(
-                    "p-3 rounded-card border transition cursor-pointer flex flex-col items-center justify-center gap-2 text-center",
-                    FOCUS_RING,
-                    isSelected ? "bg-accent-subtle border-accent-line" : "bg-panel border-line hover:bg-field hover:border-line-hover",
-                  )}
+                  className="flex flex-col items-center justify-center gap-2 text-center"
                 >
                   <IconTile name={name as IconName} tone={meta.domain === "brand" ? (BRAND_TONES[name as IconName] || activeTone) : activeTone} size="md" />
                   <span className="w-full">
@@ -237,7 +233,7 @@ export default function FoundationsPage() {
                     <span className="text-caption text-muted block truncate">{meta.lucideEquivalent || meta.category}</span>
                   </span>
                   {meta.domain && <Badge size="sm">{meta.domain}</Badge>}
-                </button>
+                </Card>
               );
             })}
 
@@ -292,15 +288,9 @@ export default function FoundationsPage() {
 
                 <div className="space-y-1">
                   <span className="text-caption font-medium text-muted block">JSX</span>
-                  <button
-                    type="button"
-                    onClick={() => handleCopy(selectedMeta.name)}
-                    className={cn("w-full p-2.5 rounded-control bg-field border border-line text-label text-body hover:border-line-hover transition flex items-center justify-between gap-2", FOCUS_RING)}
-                  >
+                  <Button icon="copy" fullWidth onClick={() => handleCopy(selectedMeta.name)} aria-label={`Copy <Icon name="${selectedMeta.name}" />`}>
                     <code className="truncate">&lt;Icon name=&quot;{selectedMeta.name}&quot; /&gt;</code>
-                    <Icon name="copy" className="w-3.5 h-3.5 text-muted shrink-0" />
-                    <span className="sr-only">Copy</span>
-                  </button>
+                  </Button>
                 </div>
 
                 <div className="space-y-1">

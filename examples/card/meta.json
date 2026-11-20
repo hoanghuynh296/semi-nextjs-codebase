@@ -25,7 +25,8 @@
     }
   ],
   "a11y": [
-    "A clickable card is a link or button inside the card, not a div with onClick."
+    "With onClick the card is a button for keyboards and screen readers (role=\"button\", tab order, Enter / Space, focus ring); active becomes aria-pressed. Never a div with onClick (semi-lint click-target).",
+    "A card that opens another page puts a next/link on its title instead of onClick."
   ],
   "notes": [
     "It pads itself: padding=\"card\" (p-card, default), \"panel\" (p-card sm:p-panel) or \"none\" for an image or table to the edge. Never tighter than p-card (card-padding); a p-* in className replaces the default.",

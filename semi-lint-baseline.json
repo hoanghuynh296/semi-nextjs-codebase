@@ -1,11 +1,42 @@
 {
+ "accent-state-token": {},
  "all-caps-label": {},
+ "app-shell-in-page": {},
+ "arbitrary-text-size": {},
+ "arbitrary-value": {},
+ "boot-loader-place": {},
+ "card-padding": {},
+ "click-target": {
+  "src/Table.tsx": 1
+ },
+ "css-raw-value": {},
+ "custom-overlay": {},
+ "custom-spinner": {},
+ "decorative-icon-tones": {},
+ "emoji-icon": {},
+ "focus-hidden": {
+  "src/CustomSelect.tsx": 1,
+  "src/Popover.tsx": 1
+ },
  "font-mono": {},
+ "foreign-ui": {},
  "hex-colour-class": {},
+ "inline-style-value": {},
  "inline-svg-path": {},
+ "leading-override": {},
+ "literal-colour-value": {},
  "loading-text": {},
+ "local-primitive": {},
  "narrow-container": {},
+ "no-fixed-tone-text": {},
  "no-literal-palette": {},
  "no-solid-pastel-surfaces": {},
- "thick-stroke": {}
+ "primary-fill": {},
+ "radius-token": {},
+ "raw-control": {},
+ "shell-gate": {},
+ "shell-nav-href": {},
+ "text-case": {},
+ "thick-stroke": {},
+ "tw-shadow": {}
 }

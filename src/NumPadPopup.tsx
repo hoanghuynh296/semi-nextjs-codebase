@@ -169,7 +169,7 @@ export function NumPadPopup({ label, unit, initial, integer, allowPercent, onCom
   };
 
   const keyCls =
-    "h-12 sm:h-14 rounded-control bg-raised text-body text-kpi font-medium active:bg-line transition-colors select-none touch-manipulation cursor-pointer flex items-center justify-center";
+    "h-12 sm:h-14 rounded-control bg-raised text-body text-figure font-medium active:bg-line transition-colors select-none touch-manipulation cursor-pointer flex items-center justify-center";
   const mute = "text-muted";
 
   const renderKey = (k: string, cls = "", children?: React.ReactNode) => (
@@ -180,7 +180,7 @@ export function NumPadPopup({ label, unit, initial, integer, allowPercent, onCom
 
   return createPortal(
     <div
-      className="fixed inset-0 z-keypad bg-overlay backdrop-blur-lg flex items-end sm:items-center justify-center p-3"
+      className="fixed inset-0 z-sheet bg-overlay backdrop-blur-lg flex items-end sm:items-center justify-center p-3"
       {...backdrop}
     >
       <div

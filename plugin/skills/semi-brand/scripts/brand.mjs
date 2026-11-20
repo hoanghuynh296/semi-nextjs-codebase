@@ -227,6 +227,8 @@ function changeLevel(before, after) {
       Object.keys(before.neutrals).every((s) => JSON.stringify(before.neutrals[s]) === JSON.stringify(after.neutrals[s])) && JSON.stringify(before.fonts) === JSON.stringify(after.fonts);
     return onlyAdded ? "minor" : "major";
   }
+  // Status colours turned away from the primary (Semi 0.30.0+): visible but small, the brand's own colours unchanged.
+  if (JSON.stringify(before.status ?? null) !== JSON.stringify(after.status ?? null)) return "minor";
   // Guideline: a new logo is visible in every product (major); voice, colour use, brief and imagery change how agents
   // write and compose, not what is on screen today (minor).
   const g = (t, k) => JSON.stringify(t.guide?.[k] ?? null);

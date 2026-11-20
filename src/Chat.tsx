@@ -797,7 +797,7 @@ export function ChatPanel({
   // event goes on to the modal: React still bubbles portal events to it, and its backdrop closes on any click.
   const stop = (e: React.SyntheticEvent) => e.stopPropagation();
   return createPortal(
-    <div onClick={stop} onMouseDown={stop} onPointerDown={stop} onTouchStart={stop} onKeyDown={stop}>
+    <div role="presentation" onClick={stop} onMouseDown={stop} onPointerDown={stop} onTouchStart={stop} onKeyDown={stop}>
       <div className={cn("fixed inset-0 z-dialog bg-overlay", !shown && "opacity-0 pointer-events-none transition-opacity")} aria-hidden />
       {panel}
     </div>,

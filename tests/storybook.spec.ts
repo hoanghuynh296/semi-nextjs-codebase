@@ -852,3 +852,13 @@ test("focused input shows a 2px indicator; Terminal output is a named region", a
   await open(page, "/components/terminal/", "light");
   await expect(page.getByRole("region", { name: "npm run build" })).toBeVisible();
 });
+
+test("a clickable Card is a keyboard button: Tab reaches it, Enter picks it, aria-pressed follows", async ({ page }) => {
+  await open(page, "/foundations/", "light");
+  const tile = page.getByRole("button", { name: /^trash\b/ }).first();
+  await tile.focus();
+  await expect(tile).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(tile).toHaveAttribute("aria-pressed", "true");
+  expect(await tile.evaluate((e) => getComputedStyle(e).boxShadow)).not.toBe("none");
+});

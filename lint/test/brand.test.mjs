@@ -284,7 +284,7 @@ test("color.buttonText: white forces white text on a deeper shade; invalid value
   assert.equal(white.tokens.guide.color.buttonText, "white");
   assert.match(validateBrand(brand({ color: { buttonText: "black" } }), { styles }).errors.join("\n"), /buttonText/);
   assert.match(auto.warnings.join("\n"), /Chưa có logo/);
-  assert.match(auto.warnings.join("\n"), /lỗi \(đỏ\).*ΔE/);
+  assert.match(auto.warnings.join("\n"), /Màu lỗi được xoay \d+°/);
 });
 
 test("semi-brand check ignores the @semi/ui version stamp, not a real change", () => {
@@ -300,4 +300,17 @@ test("semi-brand check ignores the @semi/ui version stamp, not a real change", (
   writeFileSync(css, readFileSync(css, "utf8").replace("--color-primary-500:", "--color-primary-500: #000; --x:"));
   assert.throws(() => execFileSync("node", [CLI, "check"], { cwd: dir, stdio: "pipe" }));
   rmSync(dir, { recursive: true });
+});
+
+test("status colours close to the primary turn away from it, within a bound that keeps their meaning, at AA", () => {
+  const orange = generateBrand(brand({ primary: "#DD592A" }), { tokens, styles });
+  assert.ok(orange.tokens.status?.danger, "an orange brand turns the error red");
+  assert.ok(Math.abs(orange.tokens.status.danger.turn) <= 12);
+  assert.match(orange.css, /Status, turned away from the primary[\s\S]*--semi-danger-fg: #[0-9a-f]{6};[\s\S]*--semi-danger-bg: color-mix\(in oklab, #[0-9a-f]{6} 12%, transparent\)/);
+  const green = generateBrand(brand({ primary: "#00AE42" }), { tokens, styles });
+  assert.ok(green.tokens.status?.success && Math.abs(green.tokens.status.success.turn) <= 20, "a green brand turns the success green");
+  for (const r of [...orange.report, ...green.report].filter((x) => x.check.startsWith("chữ trạng thái"))) assert.ok(r.ok, `${r.check} ${r.ratio.toFixed(2)}`);
+  const violet = generateBrand(brand({ primary: "#7C3AED" }), { tokens, styles });
+  assert.equal(violet.tokens.status, undefined, "far from every status: nothing turns");
+  assert.doesNotMatch(violet.css, /Status, turned/);
 });

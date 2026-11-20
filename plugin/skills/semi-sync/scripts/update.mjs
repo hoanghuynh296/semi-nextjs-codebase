@@ -147,6 +147,12 @@ for (const appDir of apps) {
   }
 
   // Only checks the upgrade itself (an API the app uses changed and no migration covers it).
+  // A newer Semi may bring new lint rules: what they find in code written before is recorded as debt (the baseline
+  // shrinks from here as it is fixed); any other growth of the baseline is refused by semi-lint and by semi-lint --ci.
+  if (from && to && cmpVersion(to, from) > 0) {
+    const b = runLocal(appDir, "semi-lint", ["--update-baseline", "--accept-new"]);
+    if (!b.skipped) console.log(`${name}: luật lint mới của ${to}: lỗi cũ được ghi vào semi-lint-baseline.json (sửa dần, baseline chỉ giảm)`);
+  }
   if (runLocal(appDir, "tsc", ["--noEmit"]).status !== 0) exitCode = 1;
 }
 

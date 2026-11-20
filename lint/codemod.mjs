@@ -31,7 +31,7 @@ const TONE = {
   emerald: "emerald", green: "emerald", lime: "emerald", amber: "amber", yellow: "amber", orange: "orange",
   rose: "rose", red: "rose", pink: "pink", fuchsia: "pink",
 };
-const SIZES = { 11: "caption", 12: "label", 13: "ui", 14: "ui", 15: "title", 16: "title-lg", 18: "kpi", 20: "heading-sm", 22: "heading", 24: "heading-lg", 26: "display" };
+const SIZES = { 11: "caption", 12: "label", 13: "ui", 14: "ui", 15: "title", 16: "title-lg", 18: "figure", 20: "heading-sm", 22: "heading", 24: "heading-lg", 26: "display" };
 
 /**
  * Map one utility (no variants). Returns a string, "" (drop it), or null (leave it, report as unresolved).

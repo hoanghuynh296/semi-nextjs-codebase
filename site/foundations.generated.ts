@@ -121,7 +121,7 @@ export const FOUNDATIONS = {
       "size": "16px / 1.5"
     },
     {
-      "cls": "text-kpi",
+      "cls": "text-figure",
       "size": "18px / 1.25"
     },
     {
@@ -159,7 +159,7 @@ export const FOUNDATIONS = {
       "value": "60"
     },
     {
-      "cls": "z-keypad",
+      "cls": "z-sheet",
       "value": "70"
     },
     {

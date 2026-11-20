@@ -39,15 +39,15 @@ leading dot or icon (`TONE_DOT`, `chipIconClass(tone)`). Card tiles keep their a
 blobs, no `shadow-[0_0_…]` (status dots and power buttons too). Active card = `CARD_ACTIVE` (primary border).
 
 **Type:** page title (`PageTitle` / `PageTabsTitle`) `font-display text-heading sm:text-display font-title tracking-tight text-contrast` ·
-KPI figure (`KpiCard`) `font-figure font-title text-kpi sm:text-heading tabular-nums text-contrast` · section `text-ui`–`text-title`
+KPI figure (`KpiCard`) `font-figure font-title text-figure sm:text-heading tabular-nums text-contrast` · section `text-ui`–`text-title`
 font-semibold text-contrast` · UI `text-label font-medium text-body` · label `text-label font-medium text-muted` ·
 caption `text-caption`–`text-label` text-muted` · numbers `tabular-nums` (Geist; `font-mono` only for code) · Geist +
-Montserrat Alternates (`font-display`) · weights medium/semibold · type scale only: `text-caption` 11 · `label` 12 · `ui` 14 (compact 13) · `ui-lg` 15 (compact 14) · `title` 15 · `title-lg` 16 · `kpi` 18 · `heading-sm` 20 · `heading` 22 · `heading-lg` 24 · `display` 26 (no `text-xs/sm`, no `text-[13px]`) ·
+Montserrat Alternates (`font-display`) · weights medium/semibold · type scale only: `text-caption` 11 · `label` 12 · `ui` 14 (compact 13) · `ui-lg` 15 (compact 14) · `title` 15 · `title-lg` 16 · `figure` 18 · `heading-sm` 20 · `heading` 22 · `heading-lg` 24 · `display` 26 (no `text-xs/sm`, no `text-[13px]`) ·
 sentence case, no ALL CAPS.
 
 **Status, layers, elevation:** callouts / badges `bg-{danger,success,warning,info}-bg border-*-border text-*-fg` (`Alert`) ·
 dots / bars `bg-*-solid` · backdrop `bg-overlay` · floating layers `shadow-overlay` (canvas controls `shadow-float`) ·
-layers `z-sticky` < `z-drawer` < `z-modal` < `z-dialog` < `z-keypad` < `z-popover` < `z-toast` < `z-tooltip` (no `z-[9999]`).
+layers `z-sticky` < `z-drawer` < `z-modal` < `z-dialog` < `z-sheet` < `z-popover` < `z-toast` < `z-tooltip` (no `z-[9999]`).
 
 **A11y & strings:** icon-only controls need `aria-label` · forms use `Field` (label / hint / error wired) · dialogs are
 `Modal` / `Drawer` / `confirmDialog` (focus trap, Escape, focus return) · keep `FOCUS_RING` on custom controls · UI text
@@ -90,6 +90,10 @@ plain sections and white space next to cards. Title weight and figure font come 
 type scale are the product's (`data-density`, `data-type-scale` on `<html>`, `semi-lint.json`).
 
 ## Anti-patterns & Token Rules (enforced by `npx semi-lint`)
+
+- **Compose, never re-create (0.30.0):** no raw `<button>/<input>/<textarea>/<table>` (`raw-control`), no other UI or icon kit (`foreign-ui`), no own `Card`/`Badge`/`Tooltip`… (`local-primitive`), no hand-made overlay or spinner (`custom-overlay`, `custom-spinner`), no `<div onClick>` (`click-target`: `<Card onClick>` is keyboard-ready) or bare `outline-none` (`focus-hidden`), no emoji icons (`emoji-icon`).
+- **No escape hatches:** `p-[13px]` / `z-[9999]` / `bg-panel/[0.05]` / `bg-[var(--semi-…)]` (`arbitrary-value`), `shadow-sm…2xl` (`tw-shadow`), `uppercase` (`text-case`), `leading-*` but tight/none (`leading-override`), colours or type in `style={{}}` (`inline-style-value`) or in `.css` (`css-raw-value`).
+- **The baseline only shrinks:** `--update-baseline` refuses new hits; `--accept-new` only after a Semi upgrade or with the user's OK; `semi-lint --ci` fails a PR whose baseline, skips or disabled rules grew.
 - **No literal palette colors (`no-literal-palette`):** Never use direct physical classes like `bg-white`, `text-slate-900`, `border-slate-200`, `divide-slate-100`, `bg-slate-50`, `bg-gray-800/900`. Always use Semantic Tokens (`bg-panel`, `bg-field`, `text-contrast`, `text-body`, `text-muted`, `border-line`, `divide-divider`).
 - **No fixed chromatic text (`no-fixed-tone-text`):** `text-emerald-400`, `text-rose-700 dark:text-rose-300`, `fill-sky-500` → `text-accent-fg`, `text-*-fg`, `text-tone-<hue>`.
 - **No brand scale for states (`accent-state-token`):** `ring-primary-500/50`, `bg-primary-500/15`, `border-primary-500/30` → `ring-focus`, `bg-accent-subtle`, `border-accent-line` (themed, checked in both themes).

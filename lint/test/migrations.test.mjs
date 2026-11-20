@@ -92,3 +92,14 @@ test("remove-palette: drops semi-lint.json palette and <html data-palette>, keep
   assert.equal(readFileSync(layout, "utf8"), once, "second run changes nothing");
   rmSync(app, { recursive: true });
 });
+
+test("0.30.0 role-token-names: text-kpi → text-figure, z-keypad → z-sheet, classes and CSS variables, twice-safe", async () => {
+  const { renameRoleTokens } = await import("../../migrations/0.30.0-role-token-names.mjs");
+  const src = `<span className="text-kpi sm:text-heading md:text-kpi" />\n<div className="fixed z-keypad" />\n.x { font-size: var(--text-kpi); line-height: var(--text-kpi--line-height); z-index: var(--z-keypad); }\nconst keep = "text-kpis z-keypadx my-text-kpi";\n`;
+  const out = renameRoleTokens(src);
+  assert.match(out, /className="text-figure sm:text-heading md:text-figure"/);
+  assert.match(out, /z-sheet"/);
+  assert.match(out, /var\(--text-figure\); line-height: var\(--text-figure--line-height\); z-index: var\(--z-sheet\)/);
+  assert.match(out, /"text-kpis z-keypadx my-text-kpi"/, "only whole token names change");
+  assert.equal(renameRoleTokens(out), out);
+});

@@ -33,7 +33,27 @@
     "thick-stroke": [
       "src/Chart.tsx",
       "src/Agent.tsx"
-    ]
+    ],
+    "raw-control": [
+      "src/"
+    ],
+    "local-primitive": [
+      "src/"
+    ],
+    "custom-overlay": [
+      "src/",
+      "styles/"
+    ],
+    "custom-spinner": [
+      "src/"
+    ],
+    "leading-override": [
+      "src/"
+    ],
+    "inline-style-value": {
+      "src/Chart.tsx": "data colours: series colours of the chart",
+      "app/brand/page.tsx": "data colours: the brand's swatches"
+    }
   },
   "ignore": [
     "examples/registry.generated.ts",

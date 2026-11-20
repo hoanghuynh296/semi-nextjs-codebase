@@ -180,14 +180,14 @@ function CartesianFrame({
               {ticks.map((v) => (
                 <g key={v}>
                   <line x1={left} x2={width - 4} y1={y(v)} y2={y(v)} stroke={v === 0 ? "var(--color-line-hover)" : "var(--color-divider)"} strokeWidth={1} />
-                  <text x={left - 8} y={y(v)} dy="0.32em" textAnchor="end" className="fill-[var(--color-text-muted)] text-caption tabular-nums">
+                  <text x={left - 8} y={y(v)} dy="0.32em" textAnchor="end" className="fill-muted text-caption tabular-nums">
                     {compact.format(v)}
                   </text>
                 </g>
               ))}
               {data.map((r, i) =>
                 i % labelEvery === 0 ? (
-                  <text key={i} x={cx(i)} y={height - 6} textAnchor="middle" className="fill-[var(--color-text-muted)] text-caption">
+                  <text key={i} x={cx(i)} y={height - 6} textAnchor="middle" className="fill-muted text-caption">
                     {formatIndex(String(r[index]))}
                   </text>
                 ) : null,

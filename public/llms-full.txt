@@ -1,4 +1,4 @@
-# Semi Design System (@semi/ui v0.29.4)
+# Semi Design System (@semi/ui v0.30.0)
 
 > The shared UI of every Semi app: semantic tokens that work in light and dark mode, React components (Next.js, Tailwind CSS 4) and the rules agents follow. Every component has a page with live examples and a markdown twin for agents.
 
@@ -187,15 +187,15 @@ leading dot or icon (`TONE_DOT`, `chipIconClass(tone)`). Card tiles keep their a
 blobs, no `shadow-[0_0_…]` (status dots and power buttons too). Active card = `CARD_ACTIVE` (primary border).
 
 **Type:** page title (`PageTitle` / `PageTabsTitle`) `font-display text-heading sm:text-display font-title tracking-tight text-contrast` ·
-KPI figure (`KpiCard`) `font-figure font-title text-kpi sm:text-heading tabular-nums text-contrast` · section `text-ui`–`text-title`
+KPI figure (`KpiCard`) `font-figure font-title text-figure sm:text-heading tabular-nums text-contrast` · section `text-ui`–`text-title`
 font-semibold text-contrast` · UI `text-label font-medium text-body` · label `text-label font-medium text-muted` ·
 caption `text-caption`–`text-label` text-muted` · numbers `tabular-nums` (Geist; `font-mono` only for code) · Geist +
-Montserrat Alternates (`font-display`) · weights medium/semibold · type scale only: `text-caption` 11 · `label` 12 · `ui` 14 (compact 13) · `ui-lg` 15 (compact 14) · `title` 15 · `title-lg` 16 · `kpi` 18 · `heading-sm` 20 · `heading` 22 · `heading-lg` 24 · `display` 26 (no `text-xs/sm`, no `text-[13px]`) ·
+Montserrat Alternates (`font-display`) · weights medium/semibold · type scale only: `text-caption` 11 · `label` 12 · `ui` 14 (compact 13) · `ui-lg` 15 (compact 14) · `title` 15 · `title-lg` 16 · `figure` 18 · `heading-sm` 20 · `heading` 22 · `heading-lg` 24 · `display` 26 (no `text-xs/sm`, no `text-[13px]`) ·
 sentence case, no ALL CAPS.
 
 **Status, layers, elevation:** callouts / badges `bg-{danger,success,warning,info}-bg border-*-border text-*-fg` (`Alert`) ·
 dots / bars `bg-*-solid` · backdrop `bg-overlay` · floating layers `shadow-overlay` (canvas controls `shadow-float`) ·
-layers `z-sticky` < `z-drawer` < `z-modal` < `z-dialog` < `z-keypad` < `z-popover` < `z-toast` < `z-tooltip` (no `z-[9999]`).
+layers `z-sticky` < `z-drawer` < `z-modal` < `z-dialog` < `z-sheet` < `z-popover` < `z-toast` < `z-tooltip` (no `z-[9999]`).
 
 **A11y & strings:** icon-only controls need `aria-label` · forms use `Field` (label / hint / error wired) · dialogs are
 `Modal` / `Drawer` / `confirmDialog` (focus trap, Escape, focus return) · keep `FOCUS_RING` on custom controls · UI text
@@ -238,6 +238,10 @@ plain sections and white space next to cards. Title weight and figure font come 
 type scale are the product's (`data-density`, `data-type-scale` on `<html>`, `semi-lint.json`).
 
 ## Anti-patterns & Token Rules (enforced by `npx semi-lint`)
+
+- **Compose, never re-create (0.30.0):** no raw `<button>/<input>/<textarea>/<table>` (`raw-control`), no other UI or icon kit (`foreign-ui`), no own `Card`/`Badge`/`Tooltip`… (`local-primitive`), no hand-made overlay or spinner (`custom-overlay`, `custom-spinner`), no `<div onClick>` (`click-target`: `<Card onClick>` is keyboard-ready) or bare `outline-none` (`focus-hidden`), no emoji icons (`emoji-icon`).
+- **No escape hatches:** `p-[13px]` / `z-[9999]` / `bg-panel/[0.05]` / `bg-[var(--semi-…)]` (`arbitrary-value`), `shadow-sm…2xl` (`tw-shadow`), `uppercase` (`text-case`), `leading-*` but tight/none (`leading-override`), colours or type in `style={{}}` (`inline-style-value`) or in `.css` (`css-raw-value`).
+- **The baseline only shrinks:** `--update-baseline` refuses new hits; `--accept-new` only after a Semi upgrade or with the user's OK; `semi-lint --ci` fails a PR whose baseline, skips or disabled rules grew.
 - **No literal palette colors (`no-literal-palette`):** Never use direct physical classes like `bg-white`, `text-slate-900`, `border-slate-200`, `divide-slate-100`, `bg-slate-50`, `bg-gray-800/900`. Always use Semantic Tokens (`bg-panel`, `bg-field`, `text-contrast`, `text-body`, `text-muted`, `border-line`, `divide-divider`).
 - **No fixed chromatic text (`no-fixed-tone-text`):** `text-emerald-400`, `text-rose-700 dark:text-rose-300`, `fill-sky-500` → `text-accent-fg`, `text-*-fg`, `text-tone-<hue>`.
 - **No brand scale for states (`accent-state-token`):** `ring-primary-500/50`, `bg-primary-500/15`, `border-primary-500/30` → `ring-focus`, `bg-accent-subtle`, `border-accent-line` (themed, checked in both themes).
@@ -412,7 +416,7 @@ Tailwind's `text-xs` / `text-sm` / `text-base`:
 | `text-ui-lg` | 15 (14 in compact) | phone dialog buttons, a lead paragraph |
 | `text-title` | 15 | section / modal titles |
 | `text-title-lg` | 16 | large section titles |
-| `text-kpi` | 18 | KPI figures on phones (`text-kpi sm:text-heading`) |
+| `text-figure` | 18 | Con số nổi bật: giá trị KPI, phím số, tổng tiền (`KpiCard`: `text-figure sm:text-heading`) |
 | `text-heading-sm` | 20 | sub-headings |
 | `text-heading` | 22 | page titles on phones, KPI figures from sm |
 | `text-heading-lg` | 24 | display numbers |
@@ -477,7 +481,7 @@ Thang `primary-*` chỉ dùng cho biểu đồ và hình minh hoạ. Brand: dùn
 | Backdrop of modal / drawer / dialog | `bg-overlay` (themed scrim) — or `OVERLAY` |
 | Floating layer (modal, popover, menu, toast, tooltip) | `shadow-overlay` |
 | Controls floating over a canvas | `shadow-float` |
-| Global stacking | `z-sticky` 30 < `z-drawer` 40 < `z-modal` 50 < `z-dialog` 60 < `z-keypad` 70 < `z-popover` 80 < `z-toast` 90 < `z-tooltip` 95 |
+| Global stacking | `z-sticky` 30 < `z-drawer` 40 < `z-modal` 50 < `z-dialog` 60 < `z-sheet` 70 < `z-popover` 80 < `z-toast` 90 < `z-tooltip` 95 |
 
 Surfaces stay flat: no `shadow-sm/md` on cards; a resting card shadow is `shadow-card` only (already in `CARD`, `HERO`,
 `SHELL_ASIDE`), whose value comes from the style. Local stacking inside one component keeps `z-10` / `z-20`; anything
@@ -739,7 +743,9 @@ the right. Props: `title`, `productName` (home bar), `logo` / `logoIcon`, `homeH
 
 `<Card>` (`@semi/ui`) wraps the same classes and pads itself (`padding`: `"card"` = `p-card` by default, `"panel"` =
 `p-card sm:p-panel`, `"none"` for media that runs to the edge; a `p-*` in `className` replaces it): `<Card>`, `<Card interactive>` (CARD_HOVER), `<Card active>`
-(CARD_ACTIVE). It owns its surface: pass padding / layout only, never `bg-*` or `shadow-*`.
+(CARD_ACTIVE). It owns its surface: pass padding / layout only, never `bg-*` or `shadow-*`. With `onClick` it is a
+button for keyboards and screen readers too (`role="button"`, in the tab order, Enter / Space, `FOCUS_RING`; `active`
+becomes `aria-pressed`): a selectable tile is `<Card onClick active>`, never a `<div onClick>` (`click-target`).
 
 ```tsx
 import { CARD, CARD_HOVER, CARD_ACTIVE } from "@semi/ui/styles";
@@ -1033,7 +1039,7 @@ roomy store: `data-density` / `data-type-scale` on `<html>` (or any wrapper), mi
 | Choice | Set by | Token | Read by |
 |---|---|---|---|
 | Density compact / regular / airy | product | `--spacing` (Tailwind's unit: every `p-*`, `gap-*`, `space-*`) | everything |
-| Type scale even / contrast | product | `--text-kpi` … `--text-display` | `PageTitle`, `KpiCard`, headings |
+| Type scale even / contrast | product | `--text-figure` … `--text-display` | `PageTitle`, `KpiCard`, headings |
 | Title weight | style | `font-title` (`--font-weight-title`) | `PageTitle`, `PageTabsTitle`, `KpiCard` |
 | Font of big numbers | style | `font-figure` | `KpiCard` |
 
@@ -1057,6 +1063,34 @@ and never override the variables (`brand-override`).
 
 ## Anti-patterns (enforced by `semi-lint`)
 
+**Re-creating instead of composing (0.30.0)** — the corpus in `lint/test/invented-ui.test.mjs` lists what each rule
+catches and what it must not:
+- **Raw controls (`raw-control`):** `<button>`, `<input>`, `<textarea>`, `<table>` in app code: use `Button` /
+  `IconButton`, `Input` / `Textarea` / `NumberInput` / `SearchInput` in a `Field`, `Checkbox` / `Switch` /
+  `RadioGroup`, `DataTable`. Allowed: a hidden `type="file"` / `"hidden"` / `"color"` input, and a native element
+  styled by a Semi constant (`HEADER_ICON_BTN`, `headerPrimary()`, `BTN_*`).
+- **Another UI kit (`foreign-ui`):** `lucide-react`, `react-icons`, `@radix-ui/*`, `@mui/*`, `@headlessui/react`,
+  `@heroicons/*`, `@chakra-ui/*`, `antd`, `@mantine/*`, `@tabler/icons-react`, `react-bootstrap`, `@heroui/*`, a
+  shadcn `@/components/ui/*` copy. A missing piece goes to `/semi-propose`.
+- **Own primitives (`local-primitive`):** `export function Card | Badge | Tooltip | Spinner | …` in an app. Product
+  components with their own name (`OrderCard`) compose Semi.
+- **Hand-made layers (`custom-overlay`, `custom-spinner`):** `fixed inset-0 bg-overlay|bg-black` → `Modal`, `Drawer`,
+  `confirmDialog`, `Sheet`; `animate-spin` borders → `Spinner` (a spinning `<Icon>` is fine).
+- **Escape hatches:** `p-[13px]`, `gap-[7px]`, `z-[9999]`, `bg-panel/[0.05]`, `bg-[var(--semi-…)]`
+  (`arbitrary-value`; widths, heights, grid templates, `env()` safe areas and viewport units stay allowed);
+  `shadow-sm…2xl` (`tw-shadow`); `uppercase` (`text-case`); `leading-*` other than `leading-tight` / `leading-none`
+  (`leading-override`); colours, type or radii in `style={{}}` (`inline-style-value`; data colours are a per-file skip)
+  or in a stylesheet (`css-raw-value`).
+- **Keyboard (`click-target`, `focus-hidden`):** `<div onClick>` without a role (a backdrop is `role="presentation"`),
+  `outline-none` with no focus style on the same element (a text field's caret counts).
+- **Emoji as icons (`emoji-icon`):** a brand whose voice allows emoji in copy disables the rule in `semi-lint.json`.
+
+**The baseline only shrinks.** `semi-lint --update-baseline` lowers it to what is left and refuses new hits;
+`--accept-new` records them only after a Semi upgrade (`/semi-sync` runs it) or with the user's OK. `semi-lint --ci`
+(the app's `.github/workflows/semi.yml`, wired by `/semi-new-app` and `/semi-check`) also fails when the baseline, a
+`skip` or a disabled rule grew against the base branch. The edit hook lints `.css` too and flags any edit of
+`semi-lint.json` or the baseline.
+
 - **Physical / literal colors (`no-literal-palette`):** Never use neutral / white / black colour classes on any prefix or variant (`bg-white`, `text-slate-900`, `border-b-gray-200`, `divide-zinc-100`, `ring-slate-300`, `from-white`, `dark:bg-slate-800`). Always use Semantic Tokens (`bg-panel`, `bg-field`, `text-contrast`, `text-body`, `text-muted`, `border-line`, `divide-divider`).
 - **Fixed chromatic text (`no-fixed-tone-text`):** `text-emerald-400`, `text-rose-700 dark:text-rose-300`, `fill-amber-500` cannot pass contrast in both themes: use `text-accent-fg`, `text-*-fg` or `text-tone-<hue>`.
 - **Brand scale as a state colour (`accent-state-token`):** `ring-primary-500/50`, `bg-primary-500/15`, `border-primary-500/30` are not themed and vanish for light brands on light surfaces (a yellow ring is ≈ 1.3:1 on white): use `ring-focus`, `border-focus`, `bg-accent-subtle` / `bg-accent-subtle-hover`, `border-accent-line`. `/semi-check` rewrites them.
@@ -1071,6 +1105,9 @@ and never override the variables (`brand-override`).
 - Raw or arbitrary radii (`rounded-lg`, `rounded-[10px]`) instead of the style tokens; `font-mono` for numbers (fine on `<code>`, `<pre>`, `CodeBlock`, `Terminal` and `textarea` / `contentEditable` code editors); coloured icon tiles in front of every card title; one decorative icon colour per card (`decorative-icon-tones`, §19).
 - Emoji or unicode pictograms as icons; filled glyphs mixed with stroke icons; stroke 2+; new inline `<svg>` paths.
 - Native `<select>`, `type="date"`, `type="number"`, `window.confirm` / `alert`.
+- Tokens are named by role, like the large design systems (Material, Carbon, Primer: a type role, a layer), never by
+  one component: `text-figure` (was `text-kpi`), `z-sheet` (was `z-keypad`). The old names stay as deprecated aliases
+  until 1.0; the 0.30.0 migration rewrites them.
 - `AppShell` in a page or in a component a page imports (`app-shell-in-page`); a shell gated behind a page skeleton (`shell-gate`); sidebar routing through `onSelect` + `router.push` instead of item `href` (`shell-nav-href`); `BootLoader` in a page, a `loading.tsx` or shell content (`boot-loader-place`).
 - "Đang tải…" text or a page spinner instead of a skeleton (`loading-text`). A step label of a progress bar (`Progress label`, a call with a `fraction` / `value`), text in a `role="status"` / `role="progressbar"` element and a `TaskHost` label are fine.
 - A Home button in an app header; subtitles under page titles.
@@ -1913,8 +1950,12 @@ tắc bố cục đi kèm (tránh giao diện "AI" chung chung): `DESIGN_SYSTEM.
 - **Báo cáo** (`dist/brand.json` → `report`, BRAND.md, trang preview): chữ ≥ 4.5:1, viền focus ≥ 3:1, hover vẫn đọc được;
   viền ô nhập (`control-line`, pha từ `text-muted`) ≥ 3:1 ở mọi style (bộ sinh tự đậm `text-muted` thêm cho đủ); chữ
   trạng thái của Semi (`danger-fg`, `success-fg`, `warning-fg`, `info-fg`) ≥ 4.5:1 trên nền đã phủ màu thương hiệu;
-  "nút tách khỏi nền" ≥ 3:1 là mục *lưu ý* (không chặn build). Màu chính gần màu lỗi / thành công thì có cảnh báo kèm độ
-  lệch sắc và ΔE. Kit chưa có logo cũng có cảnh báo. `fidelity` cho biết nút mỗi theme ở sắc độ nào và lệch màu
+  "nút tách khỏi nền" ≥ 3:1 là mục *lưu ý* (không chặn build). Kit chưa có logo có cảnh báo.
+- **Màu trạng thái không lẫn với màu chính:** màu trạng thái vẫn là của Semi (đỏ là lỗi ở mọi thương hiệu). Khi màu chính
+  cách một màu trạng thái dưới 30° sắc độ (cam cạnh đỏ lỗi, xanh lá cạnh xanh thành công), bộ sinh xoay sắc độ của màu
+  trạng thái đó ra xa màu chính, giữ độ sáng và độ đậm (nên contrast không đổi), trong giới hạn vẫn giữ nghĩa: lỗi 12°,
+  cảnh báo 12°, thành công 20°, thông tin 20°. `brand.css` ghi đè `--semi-<trạng thái>-fg | bg | border | solid`; lưu ý
+  trong BRAND.md ghi xoay bao nhiêu độ. Đổi theo bản Semi mới thì `/semi-brand update` báo mức minor. `fidelity` cho biết nút mỗi theme ở sắc độ nào và lệch màu
   thương hiệu bao nhiêu (ΔE OKLab, 0 = đúng màu); lệch trên 0.08 có cảnh báo kèm lý do.
 
 Chi tiết kỹ thuật: bộ sinh màu nằm ở `@semi/ui/brand` (`generateBrand`), lệnh trong kit là `semi-brand build | check`
@@ -2012,18 +2053,18 @@ with `data-style` re-styles only its subtree (used by Storybook previews), not s
 All web UI here follows the **Semi Design System** (`@semi/ui`, repo `https://github.com/hoanghuynh296/semi-nextjs-codebase`). `npx semi-lint` enforces most of this; the full rules are `node_modules/@semi/ui/docs/QUICK_REF.md` (details in `docs/DESIGN_SYSTEM.md`).
 
 1. **Ask Semi before writing UI.** Find the component for each need with the `semi` MCP tools (`semi_search` → `semi_docs` → `semi_example`; `semi_block` for whole pages; `semi_props` for props) or the terminal (`npx semi search "bảng có sắp xếp"`, `npx semi docs DataTable`, `npx semi example data-table`, `npx semi add dashboard`). They answer from the installed `@semi/ui`. Read *When to use*, *Use something else when* and *Accessibility*, then start from an example.
-2. **Compose, never re-create.** Import from `@semi/ui` and `@semi/ui/styles` directly. No local wrappers (`components/ui.tsx`), no raw `<select>`, `<table>`, `<dialog>`, `type="date"`, `type="number"`, `window.confirm` / `alert`, no inline `<svg>` or glyph icons (`<Icon name>`, mapping in `docs/ICONS.md`). Every AI conversation is `AIChat`; agent work uses `Reasoning`, `ToolCall`, `TaskList`, `Terminal`, `Sources`; an outward-facing, paid or irreversible agent action waits for `ActionConfirmation`. Pages sit in `AppShell` (or `AppHeader` for a one-screen tool) with `PageTitle` (or the title on the toolbar row: `SubpageToolbar title`); sub-views of one area go in nav `children` (closed until the parent is chosen, optional grey icon, no colour or count; check `useAppShell().submenuVisible` and add a page picker when false); dialogs are `Modal` / `Drawer` / `confirmDialog`; loading is `Skeleton`, never "Đang tải…" text. `AppShell` renders once in a `layout.tsx` (never from a page), its items route by `href` (not `onSelect` + `router.push`), the session check runs once in that layout (best on the server) with `BootLoader` as the only centred spinner, and content loading is a `loading.tsx` with `PageSkeleton` inside the shell, never a skeleton gate around it.
+2. **Compose, never re-create.** Import from `@semi/ui` and `@semi/ui/styles` directly. No local wrappers (`components/ui.tsx`), no raw `<select>`, `<table>`, `<dialog>`, `type="date"`, `type="number"`, `window.confirm` / `alert`, no inline `<svg>` or glyph icons (`<Icon name>`, mapping in `docs/ICONS.md`). Every AI conversation is `AIChat`; agent work uses `Reasoning`, `ToolCall`, `TaskList`, `Terminal`, `Sources`; an outward-facing, paid or irreversible agent action waits for `ActionConfirmation`. Pages sit in `AppShell` (or `AppHeader` for a one-screen tool) with `PageTitle` (or the title on the toolbar row: `SubpageToolbar title`); sub-views of one area go in nav `children` (closed until the parent is chosen, optional grey icon, no colour or count; check `useAppShell().submenuVisible` and add a page picker when false); dialogs are `Modal` / `Drawer` / `confirmDialog`; loading is `Skeleton`, never "Đang tải…" text. `AppShell` renders once in a `layout.tsx` (never from a page), its items route by `href` (not `onSelect` + `router.push`), the session check runs once in that layout (best on the server) with `BootLoader` as the only centred spinner, and content loading is a `loading.tsx` with `PageSkeleton` inside the shell, never a skeleton gate around it. No other UI or icon library (`lucide-react`, `react-icons`, `@radix-ui`, `@mui`, a shadcn `components/ui` copy: `foreign-ui`), no own `Card` / `Badge` / `Tooltip`… (`local-primitive`), no raw `<button>`, `<input>`, `<textarea>`, `<table>` (`raw-control`), no hand-made overlay or spinner (`custom-overlay`, `custom-spinner`); a clickable card is `<Card onClick>` (keyboard-ready), never `<div onClick>` (`click-target`).
 3. **Tokens only** (dual theme, any brand, any style):
    - Surfaces and text: `bg-canvas|app|panel|field|raised`, `text-contrast|body|muted`, `border-line|divider` (an input's own edge: `border-control-line`, ≥ 3:1); status `bg-*-bg border-*-border text-*-fg` (danger, success, warning, info). Accent: `bg-accent text-on-accent` (or `BTN_PRIMARY`), `text-accent-fg`, `bg-accent-subtle`, `border-accent-line`, `ring-focus`. Never physical colours (`bg-white`, `text-slate-900`, `text-amber-600 dark:text-amber-400`), arbitrary colours (`bg-[#…]`), `primary-N/alpha` or `bg-primary-N` fills (`primary-fill`), gradients or glow shadows.
-   - Type scale only: `text-caption|label|ui|ui-lg|title|title-lg`, `text-kpi`, `text-heading`, `text-display`; `font-medium` / `font-semibold`, titles and big numbers `font-title` / `font-figure`; `tabular-nums` for numbers; sentence case. Running text (sentences, descriptions, table cells, list rows) is `text-ui`; `text-label` / `text-caption` only for short marks beside it (a field label, a button, a time, a count). Each size sets its own line height: no `leading-*` on body text.
-   - Spacing by role (scaled by density): `p-card` inside every card, popover and panel section (`<Card>` sets it; `p-card sm:p-panel` for a roomy one), `gap-stack` between items in a card or form, `gap-group` between cards, `gap-section` between page sections. `gap-1`–`gap-2`, `px-2`, `py-1` only inside one control or row. A card is never tighter than `p-card` (`card-padding`).
+   - Type scale only: `text-caption|label|ui|ui-lg|title|title-lg`, `text-figure`, `text-heading`, `text-display`; `font-medium` / `font-semibold`, titles and big numbers `font-title` / `font-figure`; `tabular-nums` for numbers; sentence case. Running text (sentences, descriptions, table cells, list rows) is `text-ui`; `text-label` / `text-caption` only for short marks beside it (a field label, a button, a time, a count). Each size sets its own line height: no `leading-*` on body text.
+   - Spacing by role (scaled by density): `p-card` inside every card, popover and panel section (`<Card>` sets it; `p-card sm:p-panel` for a roomy one), `gap-stack` between items in a card or form, `gap-group` between cards, `gap-section` between page sections. `gap-1`–`gap-2`, `px-2`, `py-1` only inside one control or row. A card is never tighter than `p-card` (`card-padding`). No arbitrary spacing, z-index or opacity (`p-[13px]`, `z-[9999]`, `bg-panel/[0.05]`: `arbitrary-value`); no `shadow-sm…2xl` (`tw-shadow`), `uppercase` (`text-case`) or `leading-*` other than `leading-tight` (`leading-override`); no colours, sizes or radii in `style={{}}` (`inline-style-value`) or in `.css` (`css-raw-value`).
    - Shape and size come from the app's style (`"style"` in `semi-lint.json`, `data-style` on `<html>`): `rounded-chip|control|card|panel|full`, `shadow-card`, `h-control`, `h-field`. Never `rounded-lg`, `rounded-[Npx]`, `h-[34px]` or `[data-style]` selectors. Density and type scale are this product's (`data-density`, `data-type-scale`): never tune paddings or text sizes by hand for that.
    - Layers: `z-sticky` < `z-drawer` < `z-modal` < `z-dialog` < `z-popover` < `z-toast` < `z-tooltip`; never `z-[9999]`.
 4. **Not the generic AI screen** (`DESIGN_SYSTEM.md` §19): one main block per screen (`KpiCard featured`, not four equal cards); icons neutral unless they mean a status; proof (a real number, a quote, a product shot) instead of three icon feature cards; icons only where they help scanning; sample data and empty states from this product, never "Lorem", "John Doe" or another domain.
 5. **Brand** (when `semi-lint.json` has `"brand"`): ask `semi_brand` (or `npx semi brand voice|color|logo|brief`) before writing UI text or placing colour. Write in the brand's voice, use colour as its colour-use rule says, import the logo from the kit, use only its allowed styles; never define colours, fonts or Semi tokens in the app (`brand-override`). Brand changes happen in the brand repo with `/semi-brand`, then `/semi-sync` here.
-6. **Accessibility:** icon-only controls have `aria-label`; custom controls keep `FOCUS_RING`; every text / background pair reaches 4.5:1 in both themes.
-7. **Gaps go upstream.** When `@semi/ui` cannot express a need, run `/semi-sync`, re-check the docs, then `/semi-propose`; meanwhile a minimal compliant workaround marked `// TODO(semi#<issue>)`, baselined, never a broad `skip`. Illustrations and data colours (not UI chrome) are the one per-file `skip`, with a reason: `"skip": { "literal-colour-value": { "lib/scenePalette.ts": "data colours: 3D scene" } }` (also `inline-svg-path`, `no-literal-palette`). Shared rules change in the Semi repo, never only in this file; app-specific patterns go in `docs/UI_EXTENSIONS.md`.
-8. **Before finishing:** `npx semi-lint` clean, `npx tsc --noEmit`, and the page checked in both themes and at phone width. Whole-app check: `/semi-check`; newer Semi or brand kit: `/semi-sync`.
+6. **Accessibility:** icon-only controls have `aria-label`; anything clickable is a button or a link (`click-target`); custom controls keep `FOCUS_RING`, never a bare `outline-none` (`focus-hidden`); every text / background pair reaches 4.5:1 in both themes.
+7. **Gaps go upstream, lint is never silenced.** When `@semi/ui` cannot express a need, run `/semi-sync`, re-check the docs, then `/semi-propose`; meanwhile a minimal compliant workaround marked `// TODO(semi#<issue>)`. Never add a `skip`, disable a rule or grow `semi-lint-baseline.json` to get past lint: fix the code. The baseline only shrinks (`semi-lint --update-baseline`); `--accept-new` is for `/semi-sync` and needs the user's OK otherwise, and `semi-lint --ci` fails a pull request whose baseline or skips grew. The one per-file `skip`, with the user's OK and a reason, is for illustrations and data colours (not UI chrome): `"skip": { "literal-colour-value": { "lib/scenePalette.ts": "data colours: 3D scene" } }` (also `inline-svg-path`, `no-literal-palette`, `inline-style-value`). Shared rules change in the Semi repo, never only in this file; app-specific patterns go in `docs/UI_EXTENSIONS.md`.
+8. **Before finishing:** `npx semi-lint` clean (it also checks `.css`), `npx tsc --noEmit`, and the page checked in both themes and at phone width. CI runs `semi-lint --ci` and `tsc` (`.github/workflows/semi.yml`). Whole-app check: `/semi-check`; newer Semi or brand kit: `/semi-sync`.
 <!-- semi-design-system:end -->
 
 
@@ -6454,16 +6495,21 @@ export default function CardStates() {
 
 ### Card
 
+With `onClick` the card is a button for keyboards and screen readers too: role="button", in the tab order, Enter and
+Space click it, FOCUS_RING shows focus (a plain <div onClick> is mouse-only). `active` is then its pressed state.
+A card that opens another page wraps a next/link around its title instead.
+
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `interactive` | `boolean` | `false` | Clickable card (opens a detail view): hover border + press scale. |
-| `active` | `boolean` | `false` | "On" / selected card: primary border, no glow. |
+| `active` | `boolean` |  | "On" / selected card: primary border, no glow. On a card with onClick it is also its pressed state (aria-pressed). |
 | `padding` | `'card' \| 'panel' \| 'none'` | `"card"` | Inner padding: `"card"` = p-card (16px at regular density, the default), `"panel"` = p-card sm:p-panel (a roomy card, 24px from sm), `"none"` for an image or a table that runs to the edge. A padding class in `className` (p-*, px-*, py-*) replaces it. |
 | `ref` | `React.Ref<HTMLDivElement>` |  |  |
 
 ## Accessibility
 
-- A clickable card is a link or button inside the card, not a div with onClick.
+- With onClick the card is a button for keyboards and screen readers (role="button", tab order, Enter / Space, focus ring); active becomes aria-pressed. Never a div with onClick (semi-lint click-target).
+- A card that opens another page puts a next/link on its title instead of onClick.
 
 ## Notes
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "../src/Button";
 import React from "react";
 import tokens from "../tokens/tokens.json";
 import styleList from "../tokens/styles.json";
@@ -118,15 +119,7 @@ export function BrandPreviewHost() {
       <a href="./brand" className="text-accent-fg hover:text-contrast font-medium">
         Sửa
       </a>
-      <button
-        type="button"
-        onClick={() => setPreviewBrand(null)}
-        aria-label="Tắt xem trước brand"
-        title="Tắt xem trước brand"
-        className="w-7 h-7 rounded-full inline-flex items-center justify-center text-muted hover:text-contrast hover:bg-raised"
-      >
-        <Icon name="close" className="w-3.5 h-3.5" />
-      </button>
+      <Button variant="ghost" size="sm" iconOnly icon="close" onClick={() => setPreviewBrand(null)} aria-label="Tắt xem trước brand" title="Tắt xem trước brand" />
     </div>
   );
 }
