@@ -4,6 +4,11 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.29.3] - 2026-11-20
+
+### Fixed
+- **Brand kit install** (0.29.2 regression): the fresh `npm install` keeps `--install-links`, so a local @semi/ui (`SEMI_UI_SOURCE`, the docs' sample brand book) is copied instead of symlinked; Turbopack could not resolve the symlink and the brand book build failed.
+
 ## [0.29.2] - 2026-11-20
 
 ### Fixed
