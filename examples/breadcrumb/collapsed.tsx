@@ -4,6 +4,7 @@ export default function BreadcrumbCollapsed() {
   return (
     <Breadcrumb
       maxItems={3}
+      aria-label="Đường dẫn máy in" // a second trail on the same page needs its own name
       items={[
         { label: "Xưởng", href: "/" },
         { label: "Khu A", href: "/a" },

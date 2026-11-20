@@ -34,7 +34,7 @@ const CHAT_LIST = "flex-1 overflow-y-auto overscroll-contain px-4 py-4 flex flex
 /** The bar that holds the composer at the bottom of a chat (clear of the home indicator on phones). */
 const COMPOSER_BAR = "relative p-3 border-t border-divider shrink-0 max-sm:pb-[max(0.75rem,env(safe-area-inset-bottom))]";
 /** The input box around the textarea and its buttons. */
-const COMPOSER_BOX = "flex flex-col gap-1 bg-field border border-control-line rounded-card p-1.5 pl-2 focus-within:border-focus transition min-w-0";
+const COMPOSER_BOX = "flex flex-col gap-1 bg-field border border-control-line rounded-card p-1.5 pl-2 focus-within:border-focus focus-within:ring-1 focus-within:ring-focus transition min-w-0";
 /** The question field: grows with the text up to 45% of the screen, then scrolls inside. */
 const COMPOSER_FIELD =
   "flex-1 min-w-0 block resize-none max-h-[45dvh] overflow-y-auto bg-transparent px-1.5 py-1.5 text-ui text-contrast placeholder:text-muted outline-none disabled:opacity-40";

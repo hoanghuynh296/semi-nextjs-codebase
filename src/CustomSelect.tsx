@@ -50,7 +50,7 @@ const TRIGGER: Record<NonNullable<CustomSelectProps["variant"]>, string> = {
   toolbar:
     "h-control px-3 bg-panel border border-line rounded-control text-label font-medium text-body hover:border-line-hover focus-visible:ring-2 focus-visible:ring-focus",
   field:
-    "w-full h-field px-3 bg-field border border-control-line rounded-control text-ui text-contrast hover:border-control-line-hover focus-visible:border-focus aria-invalid:border-danger-fg",
+    "w-full h-field px-3 bg-field border border-control-line rounded-control text-ui text-contrast hover:border-control-line-hover focus-visible:border-focus focus-visible:ring-1 focus-visible:ring-focus aria-invalid:border-danger-fg",
   inline: "w-full h-7 px-0 bg-transparent text-label font-medium text-body hover:text-contrast rounded-chip focus-visible:ring-2 focus-visible:ring-focus",
   bare: "",
 };

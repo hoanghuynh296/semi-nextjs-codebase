@@ -702,7 +702,7 @@ test("Medium a11y: modal drag-out, hoverable tooltip, toast announcer, inert sli
   // a toast sits in a polite live region of the labelled stack; no live region is nested in another
   await open(page, "/components/toast/", "dark");
   await page.getByRole("button", { name: "Cảnh báo" }).click();
-  const stack = page.getByRole("region", { name: "Thông báo" });
+  const stack = page.getByRole("region", { name: "Thông báo nổi" }); // the docs layout names it (ToastHost label)
   await expect(stack.locator('[aria-live="polite"]')).toContainText("Mất kết nối máy in");
   expect(await stack.locator("[aria-live] [aria-live], [aria-live] [role=alert], [aria-live] [role=status]").count()).toBe(0);
 
@@ -834,4 +834,21 @@ test("focus stays visible in forced colours (Windows high contrast)", async ({ b
 test("a select named by aria-label is announced with the value it shows", async ({ page }) => {
   await open(page, "/components/select/", "light");
   await expect(example(page, "select/toolbar").getByRole("button", { name: "Sắp xếp: Mới nhất", exact: true })).toBeVisible();
+});
+
+test("text follows the browser's default font size (sizes in rem)", async ({ page }) => {
+  await open(page, "/components/field/", "light");
+  const size = () => page.locator("main input").first().evaluate((e) => parseFloat(getComputedStyle(e).fontSize));
+  const base = await size();
+  await page.addStyleTag({ content: "html{font-size:32px!important}" });
+  expect(await size()).toBeCloseTo(base * 2, 0);
+});
+
+test("focused input shows a 2px indicator; Terminal output is a named region", async ({ page }) => {
+  await open(page, "/components/field/", "light");
+  const input = example(page, "field/basic").locator("input").first();
+  await input.focus();
+  expect(await input.evaluate((e) => getComputedStyle(e).boxShadow)).toMatch(/0px 0px 0px 1px/);
+  await open(page, "/components/terminal/", "light");
+  await expect(page.getByRole("region", { name: "npm run build" })).toBeVisible();
 });

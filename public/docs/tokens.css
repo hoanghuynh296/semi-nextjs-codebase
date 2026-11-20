@@ -6,17 +6,17 @@
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
 
   /* Type scale: text-caption 11 · label 12 · ui 14 · ui-lg 15 · title 15 · title-lg 16 · kpi 18 · heading-sm 20 · heading 22 · heading-lg 24 · display 26 (compact density: ui 13 · ui-lg 14). Each size carries its line height (1.5 body, 1.25 titles); leading-* overrides it */
-  --text-caption: 11px;
-  --text-label: 12px;
-  --text-ui: 14px;
-  --text-ui-lg: 15px;
-  --text-title: 15px;
-  --text-title-lg: 16px;
-  --text-kpi: 18px;
-  --text-heading-sm: 20px;
-  --text-heading: 22px;
-  --text-heading-lg: 24px;
-  --text-display: 26px;
+  --text-caption: 0.6875rem;
+  --text-label: 0.75rem;
+  --text-ui: 0.875rem;
+  --text-ui-lg: 0.9375rem;
+  --text-title: 0.9375rem;
+  --text-title-lg: 1rem;
+  --text-kpi: 1.125rem;
+  --text-heading-sm: 1.25rem;
+  --text-heading: 1.375rem;
+  --text-heading-lg: 1.5rem;
+  --text-display: 1.625rem;
   --text-caption--line-height: 1.5; /* Paired line height: text-* sets it, leading-* still overrides */
   --text-label--line-height: 1.5;
   --text-ui--line-height: 1.5;
@@ -805,8 +805,8 @@
 [data-density="compact"] { /* Tools used all day: more on a screen (body text 13px) */
   --density-spacing: 0.225rem;
   --semi-spacing: 0.225rem;
-  --text-ui: 13px;
-  --text-ui-lg: 14px;
+  --text-ui: 0.8125rem;
+  --text-ui-lg: 0.875rem;
 }
 
 [data-density="airy"] { /* Consumer, store, onboarding: one thing per screen, room around it */
@@ -825,11 +825,11 @@
 
 /* Product: type scale (data-type-scale="even|contrast") */
 [data-type-scale="contrast"] { /* Marketing, store, editorial: big titles and figures */
-  --text-kpi: 22px;
-  --text-heading-sm: 22px;
-  --text-heading: 26px;
-  --text-heading-lg: 30px;
-  --text-display: 34px;
+  --text-kpi: 1.375rem;
+  --text-heading-sm: 1.375rem;
+  --text-heading: 1.625rem;
+  --text-heading-lg: 1.875rem;
+  --text-display: 2.125rem;
 }
 
 @utility z-sticky {

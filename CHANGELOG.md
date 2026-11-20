@@ -18,6 +18,18 @@ The major issues of the WCAG 2.2 AA audit.
 - **`CustomSelect`**: with `aria-label`, the button is named by the label followed by the value it shows ("Sắp xếp: Mới nhất"; a label that already holds the value is kept as is), so speech users can say what they see (WCAG 2.5.3; the label used to replace the value).
 - **`Pills`, `Toggle`, pill `Tabs`, theme / style switcher**: the chosen segment was told apart only by a 1.1:1 fill (and a 2.6:1 text colour in dark); it now has an inset ring (`SEGMENT_ON`).
 
+### Changed
+- **Font sizes in rem**: `tokens.css` emits the type scale in rem (14px → 0.875rem; `tokens.json` stays in px), so text follows the browser's default font size (WCAG 1.4.4). At the default 16px nothing moves.
+- **Focused inputs** (`FIELD_INPUT`, `FIELD_TEXTAREA`, select field, combobox, `InputGroup`, composer, `SearchInput`) add a 1px focus ring to the focus border: a 2px indicator like `FOCUS_RING`. `SearchInput` showed only a faint border on focus.
+
+### Added (minor fixes)
+- **`ToastHost` `label`**: names the notification region when a page section has the same name.
+- **`Breadcrumb` `aria-label`**: for a page with two trails.
+
+### Fixed (minor)
+- **`Terminal`**: the output is a named `region` (an `aria-label` on a bare `<pre>` was not announced).
+- **Docs**: example titles are h2, so a preview holding a page h1 no longer breaks the heading order.
+
 ### Migration
 - Tests that find a `CustomSelect` by its exact `aria-label` (`getByRole("button", { name: "Sắp xếp", exact: true })`) now see `: <value>` after the label: match the start or drop `exact`.
 

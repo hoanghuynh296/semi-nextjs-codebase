@@ -66,6 +66,7 @@ export function Terminal({
       <pre
         ref={ref}
         tabIndex={0}
+        role="region" // a named, scrollable output: aria-label on a bare <pre> is not announced
         aria-label={name}
         onScroll={(e) => {
           const el = e.currentTarget;

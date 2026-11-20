@@ -229,7 +229,7 @@ test("brand.json: density, type scale, typography and motif are not brand choice
 test("product look: density and type scale live in the tokens, per element, and the app wires them on <html>", async () => {
   const css = readFileSync(new URL("../../tokens/tokens.css", import.meta.url), "utf8");
   assert.match(css, /\[data-density="compact"\] \{[^}]*--semi-spacing: 0\.225rem/);
-  assert.match(css, /\[data-type-scale="contrast"\] \{[^}]*--text-display: 34px/);
+  assert.match(css, /\[data-type-scale="contrast"\] \{[^}]*--text-display: 2.125rem/); // 34px, emitted in rem
   const { wireProductLook } = await import("../../plugin/skills/semi-new-app/scripts/setup.mjs");
   const dir = mkdtempSync(join(tmpdir(), "semi-look-"));
   mkdirSync(join(dir, "app"));

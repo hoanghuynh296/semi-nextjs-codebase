@@ -15,7 +15,8 @@ export function ExampleBlock({ example, id }: { example: DocExample; id: string 
     <section id={`${id}-${example.file}`} className="space-y-2 scroll-mt-6" data-example={`${id}/${example.file}`}>
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div className="min-w-0 space-y-0.5">
-          <h3 className="text-title font-semibold text-contrast">{example.title}</h3>
+          {/* h2, not h3: a preview may hold a page h1 (PageTitle), and the next example title must not skip a level */}
+          <h2 className="text-title font-semibold text-contrast">{example.title}</h2>
           {example.description && <p className="text-label text-muted max-w-2xl">{example.description}</p>}
         </div>
         {!codeOnly && (

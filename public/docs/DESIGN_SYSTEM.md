@@ -85,7 +85,8 @@ Tailwind's `text-xs` / `text-sm` / `text-base`:
 Minimum `text-caption`. Running text (a sentence, a description, a cell) is `text-ui`, never `text-label` or
 `text-caption`: those are for short marks beside it. Every size carries its line height (1.5 for 11–16px, 1.25 for
 18px and up), so text never needs `leading-*`; use `leading-tight` only on a title of more than one line. Button and
-label text is sentence case ("Lưu", "Xem lại"), never ALL CAPS.
+label text is sentence case ("Lưu", "Xem lại"), never ALL CAPS. Sizes are written in px here and in `tokens.json`
+but `tokens.css` emits them in rem (14px = 0.875rem), so text grows with the browser's default font size (WCAG 1.4.4).
 
 ## 2. Dual-Theme & Semantic Tokenization (Two-Tier Tokens)
 
@@ -620,7 +621,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Any action | `Button` (`variant` primary / secondary / danger / ghost, `size` md / sm / modal, `icon`, `iconOnly` + `aria-label`, `loading`); `Spinner` only inside a button or field running its own action, never for a page) |
 | Overflow actions of a row / card | `Menu` (icon-only "more" trigger; `danger` item last) |
 | Hint for an icon-only control | `Tooltip` (never essential text: touch screens do not show it) |
-| Feedback after an action | `toast({ title, tone, action })` + `<ToastHost />` in the layout |
+| Feedback after an action | `toast({ title, tone, action })` + `<ToastHost />` in the layout (`label` when a page section is also called "Thông báo") |
 | A job the user must wait for | `startTask({ label, onCancel, timer })` + `<TaskHost />` in the layout |
 | Persistent message in a page | `Alert` (tone, title, action, `onDismiss`) |
 | Secondary task beside the page | `Drawer` (right / left / bottom / top sheet) |
@@ -674,6 +675,7 @@ The full inventory with props is generated into `components.json` (`npm run buil
   composer, checkbox, radio) draws its edge in `border-control-line` (≥ 3:1); `border-line` is for cards, tables and
   frames, which need no edge. The chosen segment of a segmented control (`Pills`, `Toggle`, pill `Tabs`, theme / style
   switcher) uses `SEGMENT_ON`: the tonal fill alone is too faint, its inset ring is what tells which one is on.
+- Focus on an input you type in: `border-focus` plus a 1px `ring-focus` (2px in all), like `FOCUS_RING` elsewhere.
 - Forced colours (Windows high contrast) drop box-shadow, so `base.css` draws a system-colour outline on
   `:focus-visible`; keep `base.css` imported, and never rely on a shadow alone to show focus.
 - Names: icon-only controls carry `aria-label` (Button's type requires it); form controls get their label from `Field`.

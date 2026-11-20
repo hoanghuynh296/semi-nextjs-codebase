@@ -550,7 +550,8 @@
       "props": [
         "items",
         "maxItems",
-        "className"
+        "className",
+        "aria-label"
       ],
       "doc": "docs/components/breadcrumb.md"
     },
@@ -2152,8 +2153,10 @@
       "kind": "component",
       "module": "src/Toast.tsx",
       "client": true,
-      "summary": "Toast stack: top on phones (clear of the tab bar), bottom-right from sm.",
-      "props": [],
+      "summary": "Transient feedback after an action (\"Đã lưu\", \"Không kết nối được\").",
+      "props": [
+        "label"
+      ],
       "doc": "docs/components/toast.md"
     },
     {

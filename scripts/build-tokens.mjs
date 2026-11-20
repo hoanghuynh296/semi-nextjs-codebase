@@ -8,6 +8,10 @@ import { readFileSync, readdirSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
+// Font sizes are written in px in tokens.json (easy to read) and emitted in rem, so text follows the browser's default
+// font size setting (WCAG 1.4.4): 14px → 0.875rem at the default 16px. Line heights are unitless and stay.
+const toRem = (key, v) => (/^text-[a-z-]+$/.test(key) && /^\d+(\.\d+)?px$/.test(v) ? `${+(parseFloat(v) / 16).toFixed(4)}rem` : v);
+
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const src = join(root, "tokens", "tokens.json");
 const dst = join(root, "tokens", "tokens.css");
@@ -88,7 +92,7 @@ for (const [group, entries] of Object.entries(tokens)) {
   for (const [key, raw] of Object.entries(entries)) {
     const value = typeof raw === "string" ? raw : raw.value;
     const note = typeof raw === "string" ? "" : raw.note ? ` /* ${raw.note} */` : "";
-    out += `  --${key}: ${value};${note}\n`;
+    out += `  --${key}: ${toRem(key, value)};${note}\n`;
   }
 }
 out += "}\n\n";
@@ -132,14 +136,14 @@ if (darkVars.length > 0) {
   out += `/* Product: density (data-density="${Object.keys(prod.density).join("|")}"), read by the style's spacing token */\n`;
   for (const [id, d] of Object.entries(prod.density))
     if (id !== "regular")
-      out += `[data-density="${id}"] { /* ${d.note} */\n  --density-spacing: ${d.spacing};\n  --semi-spacing: ${d.spacing};\n${Object.entries(d.sizes ?? {}).map(([k, v]) => `  --${k}: ${v};\n`).join("")}}\n\n`;
+      out += `[data-density="${id}"] { /* ${d.note} */\n  --density-spacing: ${d.spacing};\n  --semi-spacing: ${d.spacing};\n${Object.entries(d.sizes ?? {}).map(([k, v]) => `  --${k}: ${toRem(k, v)};\n`).join("")}}\n\n`;
   // Semantic spacing (tokens.json "space"): inline, so p-card resolves --semi-spacing where it is used and follows a
   // data-density on any wrapper, like p-4 does
   const space = Object.entries(tokens.space ?? {}).filter(([k]) => !k.startsWith("$"));
   if (space.length)
     out += `/* ${tokens.space.$note} */\n@theme inline {\n${space.map(([k, raw]) => `  --${k}: ${typeof raw === "string" ? raw : raw.value};${typeof raw === "string" || !raw.note ? "" : ` /* ${raw.note} */`}`).join("\n")}\n}\n\n`;
   out += `/* Product: type scale (data-type-scale="${Object.keys(prod.typeScale).join("|")}") */\n`;
-  for (const [id, t] of Object.entries(prod.typeScale)) if (t.sizes) out += `[data-type-scale="${id}"] { /* ${t.note} */\n${Object.entries(t.sizes).map(([k, v]) => `  --${k}: ${v};`).join("\n")}\n}\n\n`;
+  for (const [id, t] of Object.entries(prod.typeScale)) if (t.sizes) out += `[data-type-scale="${id}"] { /* ${t.note} */\n${Object.entries(t.sizes).map(([k, v]) => `  --${k}: ${toRem(k, v)};`).join("\n")}\n}\n\n`;
   out += zKeys.map((k) => `@utility ${k} {\n  z-index: var(--${k});\n}\n`).join("") + "\n";
   out += `/* Utility fallbacks & direct semantic text/bg/border helpers */\n@layer utilities {\n` +
     `  .text-contrast { color: var(--color-text-contrast); }\n` +

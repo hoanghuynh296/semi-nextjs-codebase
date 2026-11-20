@@ -122,14 +122,20 @@ function ToastCard({ item }: { item: ToastItem }) {
 const EMPTY: ToastItem[] = [];
 
 /** Toast stack: top on phones (clear of the tab bar), bottom-right from sm. */
-export function ToastHost() {
+export interface ToastHostProps {
+  /** Name of the notification region (default: locale `notifications`, "Thông báo"). Change it when a page section has
+   *  the same name, e.g. a "Thông báo" settings group, so the two landmarks can be told apart. */
+  label?: string;
+}
+
+export function ToastHost({ label }: ToastHostProps = {}) {
   const t = useSemiLocale();
   const list = useSyncExternalStore(subscribe, () => items, () => EMPTY);
   // two sibling live regions, never nested: danger toasts are assertive, the rest polite; cards carry no live role
   const col = "flex flex-col gap-2 items-stretch sm:items-end empty:hidden";
   return (
     <section
-      aria-label={t.notifications}
+      aria-label={label ?? t.notifications}
       className="fixed z-toast inset-x-0 top-0 sm:top-auto sm:bottom-0 sm:left-auto p-3 sm:p-4 pt-[max(0.75rem,env(safe-area-inset-top))] flex flex-col gap-2 items-stretch sm:items-end pointer-events-none"
     >
       <div aria-live="assertive" className={col}>
