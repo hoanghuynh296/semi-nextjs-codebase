@@ -47,7 +47,7 @@ export function InputOTP({
   };
   const caret = Math.min(value.length, length - 1);
   return (
-    <div className={cn("relative inline-flex", className)} onClick={() => ref.current?.focus()}>
+    <div role="presentation" className={cn("relative inline-flex", className)} onClick={() => ref.current?.focus()}>
       <input
         ref={ref}
         value={value}

@@ -275,8 +275,12 @@ tắc bố cục đi kèm (tránh giao diện "AI" chung chung): `DESIGN_SYSTEM.
 - **Báo cáo** (`dist/brand.json` → `report`, BRAND.md, trang preview): chữ ≥ 4.5:1, viền focus ≥ 3:1, hover vẫn đọc được;
   viền ô nhập (`control-line`, pha từ `text-muted`) ≥ 3:1 ở mọi style (bộ sinh tự đậm `text-muted` thêm cho đủ); chữ
   trạng thái của Semi (`danger-fg`, `success-fg`, `warning-fg`, `info-fg`) ≥ 4.5:1 trên nền đã phủ màu thương hiệu;
-  "nút tách khỏi nền" ≥ 3:1 là mục *lưu ý* (không chặn build). Màu chính gần màu lỗi / thành công thì có cảnh báo kèm độ
-  lệch sắc và ΔE. Kit chưa có logo cũng có cảnh báo. `fidelity` cho biết nút mỗi theme ở sắc độ nào và lệch màu
+  "nút tách khỏi nền" ≥ 3:1 là mục *lưu ý* (không chặn build). Kit chưa có logo có cảnh báo.
+- **Màu trạng thái không lẫn với màu chính:** màu trạng thái vẫn là của Semi (đỏ là lỗi ở mọi thương hiệu). Khi màu chính
+  cách một màu trạng thái dưới 30° sắc độ (cam cạnh đỏ lỗi, xanh lá cạnh xanh thành công), bộ sinh xoay sắc độ của màu
+  trạng thái đó ra xa màu chính, giữ độ sáng và độ đậm (nên contrast không đổi), trong giới hạn vẫn giữ nghĩa: lỗi 12°,
+  cảnh báo 12°, thành công 20°, thông tin 20°. `brand.css` ghi đè `--semi-<trạng thái>-fg | bg | border | solid`; lưu ý
+  trong BRAND.md ghi xoay bao nhiêu độ. Đổi theo bản Semi mới thì `/semi-brand update` báo mức minor. `fidelity` cho biết nút mỗi theme ở sắc độ nào và lệch màu
   thương hiệu bao nhiêu (ΔE OKLab, 0 = đúng màu); lệch trên 0.08 có cảnh báo kèm lý do.
 
 Chi tiết kỹ thuật: bộ sinh màu nằm ở `@semi/ui/brand` (`generateBrand`), lệnh trong kit là `semi-brand build | check`

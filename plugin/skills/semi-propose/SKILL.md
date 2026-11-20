@@ -97,5 +97,5 @@ node "$SCRIPT" --create --title "[Component Request] DateRangePicker" --file /tm
 
 - While the issue is open, keep the local workaround minimal, compliant where possible, and mark it
   `// TODO(semi#<issue>): replace with @semi/ui <Name>` so `/semi-sync` can find it later.
-- If the workaround needs a lint exception, record it in `semi-lint-baseline.json` (`--update-baseline`), never a broad `skip`.
+- The workaround must pass `semi-lint` as it is: never a new `skip`, a disabled rule or a bigger baseline (the baseline only shrinks, and `semi-lint --ci` fails a pull request that grows it). If no compliant workaround exists, stop and tell the user.
 - Tell the user the issue link and that maintainers will review it with `/semi-triage`.

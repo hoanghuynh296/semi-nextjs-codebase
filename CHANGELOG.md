@@ -4,6 +4,37 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.30.0] - 2026-11-20
+
+Rules an agent cannot slip past, tokens named by role, and status colours that never blend with the brand.
+
+### Added
+- **semi-lint: 15 rules for re-created UI and escape hatches** (ratchet: existing apps keep today's count in the baseline, new code may not add any):
+  - Re-creating instead of composing: `raw-control` (`<button>`, `<input>`, `<textarea>`, `<table>`), `foreign-ui` (lucide-react, react-icons, Radix, MUI, Headless UI, Heroicons, Chakra, antd, Mantine, Tabler, react-bootstrap, HeroUI, shadcn `components/ui` copies), `local-primitive` (an app's own `Card`, `Badge`, `Tooltip`…), `custom-overlay`, `custom-spinner`.
+  - Escape hatches: `arbitrary-value` (`p-[13px]`, `z-[9999]`, `bg-panel/[0.05]`, `bg-[var(--semi-…)]`), `tw-shadow`, `text-case` (`uppercase`), `leading-override`, `inline-style-value` (colours, type, radii in `style={{}}`), `css-raw-value` (colour literals, `border-radius`, `font-size` in `.css`).
+  - Keyboard and icons: `click-target` (`<div onClick>` without a role), `focus-hidden` (`outline-none` with no focus style), `emoji-icon`.
+  - Each rule has allowances found on Semi itself (safe-area `env()`, viewport units, layout widths, popover lists, Semi constants on native header buttons, a text field's caret). `lint/test/invented-ui.test.mjs` checks that every invented-UI snippet of the corpus is caught and that the correct way to write each is not flagged. Against the 34-case red team of the audit, semi-lint now catches 32 (it caught 6); the two left are by decision (`opacity-*` as muted text cannot be told from disabled; a hue tint is allowed for categories, so a status written as one is a message, not a rule).
+- **`semi-lint --ci`**: also fails when `semi-lint-baseline.json`, a `skip` or a disabled rule grew against the base branch (`SEMI_LINT_BASE`, default `origin/main`), except in a change that upgrades @semi/ui.
+- **The gate outside Claude Code**: `/semi-new-app` and `/semi-check` put `semi-lint` in the app's `lint` script and add `.github/workflows/semi.yml` (`semi-lint --ci` + `tsc` on every push and pull request). `/semi-check` reports an app without them (`semi-gate`).
+- **Brand kits: status colours turned away from the primary.** When the primary sits within 30° of a status hue, the generator turns that status (danger / warning up to 12°, success / info up to 20°), keeping lightness and chroma; `brand.css` overrides `--semi-<status>-fg|bg|border|solid` and BRAND.md notes the turn. `/semi-brand update` reports it as a minor change.
+
+### Changed
+- **`semi-lint --update-baseline` only lowers the baseline**: new hits are refused and listed. `--accept-new` records them (after a Semi upgrade: `/semi-sync` runs it; otherwise only with the user's OK). The first baseline (adopting Semi) still records everything.
+- **The edit hook** lints `.css` files too, and flags any edit of `semi-lint.json` or the baseline back to the agent.
+- **Agent rules** (`AGENTS.md` block): no more "baselined workaround"; lint is never silenced, a skip needs the user's OK and a reason.
+- A chromatic focus or state ring (`ring-blue-500`, `outline-sky-400`) is flagged as `accent-state-token` (use `ring-focus`, `border-accent-line`). `card-padding` also covers plain `rounded-card` boxes; `all-caps-label` ignores acronyms (HTTP, JSON…); clearer `narrow-container` and `no-solid-pastel-surfaces` messages.
+
+### Fixed
+- **`<Card onClick>`** was a mouse-only `div`: it is a button for keyboards and screen readers (`role="button"`, tab order, Enter / Space, `FOCUS_RING`; `active` becomes `aria-pressed`).
+- Backdrops and click-forwarding wrappers in `AppShell`, `Chat`, `confirmDialog` and `InputOTP` are `role="presentation"`; chart axis labels use `fill-muted`.
+- Docs site: Foundations icon tiles are `<Card onClick>`, the JSX copy box a `Button`; the style switcher is a `ToggleGroup`; the brand preview close button a `Button`.
+
+### Migration
+- **Token renames** (release migration `0.30.0-role-token-names`, run by `/semi-sync`): `text-kpi` → `text-figure`, `z-keypad` → `z-sheet`, in classes and CSS variables. The old names stay as deprecated aliases until 1.0.
+- **New lint rules**: `/semi-sync` records what they find in existing code as baseline debt (`--update-baseline --accept-new`); fix it over time, the baseline only shrinks. Apps that add a skip or grow the baseline afterwards fail `semi-lint --ci`.
+- **Scripts calling `semi-lint --update-baseline` to accept new hits** now need `--accept-new`.
+- **Brand kits** whose primary is close to a status colour get a slightly turned status colour after `/semi-brand update` (minor).
+
 ## [0.29.4] - 2026-11-20
 
 ### Fixed

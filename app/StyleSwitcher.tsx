@@ -3,6 +3,7 @@
 import React from "react";
 import styleList from "../tokens/styles.json";
 import { STYLE_STORAGE_KEY } from "./styleScript";
+import { ToggleGroup } from "../src/Toggle";
 
 // Storybook only: previews every Semi style (Flat, Soft, Sharp). An app picks its style once, with
 // <html data-style="…"> in its root layout; it is not a per-user setting like the theme.
@@ -26,25 +27,12 @@ export function StyleSwitcher() {
     setStyle(id);
   };
   return (
-    <div role="radiogroup" aria-label="Style" className="flex w-full items-center gap-0.5 bg-field p-0.5 h-control rounded-control border border-line">
-      {styleList.styles.map((o) => {
-        const on = style === o.id;
-        return (
-          <button
-            key={o.id}
-            type="button"
-            role="radio"
-            aria-checked={on}
-            title={o.description}
-            onClick={() => pickStyle(o.id)}
-            className={`flex-1 min-w-0 truncate h-full rounded-control text-label font-medium transition cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-focus ${
-              on ? "bg-raised text-contrast" : "text-muted hover:text-contrast"
-            }`}
-          >
-            {o.name}
-          </button>
-        );
-      })}
-    </div>
+    <ToggleGroup
+      label="Style"
+      className="w-full *:flex-1"
+      value={style ? [style] : []}
+      onChange={(v) => v[0] && pickStyle(v[0])}
+      options={styleList.styles.map((o) => ({ key: o.id, label: o.name }))}
+    />
   );
 }

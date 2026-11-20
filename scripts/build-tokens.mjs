@@ -48,7 +48,7 @@ const TITLES = {
   gray: "Neutral gray (exact hex, zero blue cast)",
   palette: "Tailwind palettes pinned to v3 hex (v4 OKLCH shifts hues)",
   scale: "v3 scale semantics for rounded / shadow / blur / ring; radius scale lg (controls) / xl (cards) / 2xl (panels)",
-  type: "Type scale: text-caption 11 · label 12 · ui 14 · ui-lg 15 · title 15 · title-lg 16 · kpi 18 · heading-sm 20 · heading 22 · heading-lg 24 · display 26 (compact density: ui 13 · ui-lg 14). Each size carries its line height (1.5 body, 1.25 titles); leading-* overrides it",
+  type: "Type scale: text-caption 11 · label 12 · ui 14 · ui-lg 15 · title 15 · title-lg 16 · figure 18 · heading-sm 20 · heading 22 · heading-lg 24 · display 26 (compact density: ui 13 · ui-lg 14). Each size carries its line height (1.5 body, 1.25 titles); leading-* overrides it",
   motion: "Easing (ease-out-soft for entering, ease-in-soft for leaving)",
   z: "Global layers (utilities z-sticky … z-tooltip); local stacking inside a component keeps z-10 / z-20",
 };

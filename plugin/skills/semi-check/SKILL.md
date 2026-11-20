@@ -91,7 +91,9 @@ The check part changes **no source file**. Its only output is `semi-check.md` at
    ```
    It audits again, rewrites `semi-check.md` with what is left (deletes it when nothing is), and runs the app's own
    `semi-lint` and `tsc`; exit 1 while anything is left. Then run the build, and `npx semi-lint --update-baseline` so
-   the baseline shrinks (never let it grow). Check changed screens in both themes when a browser is available.
+   the baseline shrinks (it never grows: new hits are fixed, not recorded; only `/semi-sync` records a new rule's
+   debt with `--accept-new`). The foundation phase also wires the gate outside Claude Code: `semi-lint` in the `lint`
+   script and `.github/workflows/semi.yml` (`semi-lint --ci` + `tsc`). Check changed screens in both themes when a browser is available.
 10. **Report** in a few lines: issues before → after per phase, what was kept (and why), what is left, and whether
    `semi-check.md` was deleted. Do not commit unless the user asks.
 

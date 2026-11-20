@@ -30,6 +30,7 @@
 //     "density": "compact", "typeScale": "contrast" // the product's look (DESIGN_SYSTEM.md §19), = <html data-density / data-type-scale>
 //   }
 // A rule that the Semi docs add and that can be grepped belongs here too (change it in the semi repo, not per app).
+import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { analyse } from "./classes.mjs";
@@ -43,7 +44,7 @@ export const HARD = [
   [
     "tw-text-size",
     /\btext-(xs|sm|base|lg|xl)\b/,
-    "use the type scale: text-caption 11 · text-label 12 · text-ui 14 · text-ui-lg 15 (compact 13 · 14) · text-title 15 · text-title-lg 16, KPI figures text-kpi sm:text-heading (KpiCard), titles text-heading sm:text-display (PageTitle)",
+    "use the type scale: text-caption 11 · text-label 12 · text-ui 14 · text-ui-lg 15 (compact 13 · 14) · text-title 15 · text-title-lg 16, KPI figures text-figure sm:text-heading (KpiCard), titles text-heading sm:text-display (PageTitle)",
   ],
   ["grey-surface", /bg-gray-(800|900)|border-gray-700/, "use the surface tokens (bg-panel, border-line…)"],
   [
@@ -108,7 +109,7 @@ export const RATCHET = [
   [
     "no-solid-pastel-surfaces",
     null,
-    "No solid pastel surfaces (bg-*-50…200, border-*-200, ring-*-100, divide-*-100): they glare in dark mode. Use bg-<hue>-500/10 border-<hue>-500/20 (TONAL_CONTAINER, <Badge tone>) or bg-danger-bg / bg-success-bg …",
+    "No solid pastel surfaces (bg-*-50…200, border-*-200, ring-*-100, divide-*-100): they glare in dark mode. A status (error, success, warning, info) is bg-danger-bg border-danger-border text-danger-fg (and success / warning / info), never a hue tint; a category tint is <Badge tone> or TONAL_CONTAINER. / bg-success-bg …",
   ],
   [
     "no-fixed-tone-text",
@@ -128,18 +129,61 @@ export const RATCHET = [
   ["hex-colour-class", null, "No arbitrary colour values (bg-[#fff], text-[rgb(…)], border-[hsl(…)]): use colour tokens."],
   ["literal-colour-value", null, "No literal CSS colours in code (\"#fff\", \"rgb(…)\" in style props or configs): use var(--color-…) tokens."],
   ["radius-token", null, "Radii are style tokens: rounded-chip (marks, checkboxes, inline code) · rounded-control (buttons, inputs, tiles, rows) · rounded-card · rounded-panel (hero, modal, drawer, sidebar), plus rounded-full / rounded-none. Not rounded / rounded-lg / rounded-xl / rounded-[Npx]: those do not follow the app's style."],
-  ["arbitrary-text-size", null, "Use the type scale instead of text-[Npx]: text-caption 11 · label 12 · ui 14 · ui-lg 15 · title 15 · title-lg 16 · kpi 18 · heading-sm 20 · heading 22 · heading-lg 24 · display 26."],
+  ["arbitrary-text-size", null, "Use the type scale instead of text-[Npx]: text-caption 11 · label 12 · ui 14 · ui-lg 15 · title 15 · title-lg 16 · figure 18 · heading-sm 20 · heading 22 · heading-lg 24 · display 26."],
   [
     "card-padding",
-    /(?:<Card\b[^>]*?\bclassName=[^>]*?|\$\{CARD(?:_HOVER)?\}[^`]*?|\bcn\(\s*CARD(?:_HOVER)?\b[^)]*?)(?<![\w-])p-(?:0\.5|1|1\.5|2|2\.5)(?![\w.])/g,
-    "A card is never tighter than p-card (16px at regular density): text against the edge of a box reads as a bug. <Card> pads itself; on CARD / CARD_HOVER use p-card (sm:p-panel for a roomy one), or padding=\"none\" / p-0 for media that runs to the edge.",
+    /(?:<Card\b[^>]*?\bclassName=[^>]*?|\$\{CARD(?:_HOVER)?\}[^`]*?|\bcn\(\s*CARD(?:_HOVER)?\b[^)]*?|\brounded-card\b[^"'`\n]*?)(?<![\w-])p-(?:0\.5|1|1\.5|2|2\.5)(?![\w.])|(?<![\w-])p-(?:0\.5|1|1\.5|2|2\.5)(?![\w.])(?=[^"'`\n]*\brounded-card\b)/g,
+    "A card is never tighter than p-card (16px at regular density): text against the edge of a box reads as a bug. <Card> pads itself; on CARD / CARD_HOVER or any rounded-card box use p-card (sm:p-panel for a roomy one), or padding=\"none\" / p-0 for media that runs to the edge.",
   ],
   ["all-caps-label", /\>\s*[A-ZĐẮẰẲẴẶÂẤẦẨẪẬÊẾỀỂỄỆÔỐỒỔỖỘƠỚỜỞỠỢƯỨỪỬỮỰ]{4,}(?:[ .·…]+[A-ZĐ0-9…]+)*\s*</g, "button / label text is sentence case"],
   ["inline-svg-path", /<path\b/g, "add the icon to ICONS in @semi/ui (Icon.tsx) instead of inline <path>"],
   ["thick-stroke", /strokeWidth[=:]\s*\{?"?(2|2\.\d+|3)\b/g, "icon stroke is 1.75"],
   ["font-mono", /\bfont-mono\b/g, "numbers use tabular-nums; mono only for code"],
-  ["narrow-container", /max-w-(4xl|5xl|6xl)\b/g, "content uses the full width (dialogs and drawers keep their max width)"],
+  ["narrow-container", /max-w-(4xl|5xl|6xl)\b/g, "page content uses the full width; only a paragraph keeps a reading measure (max-w-3xl) and dialogs / drawers keep their own max width"],
   ["loading-text", /(Đang tải|Loading\.\.\.)/g, "show a skeleton or a progress bar, not loading text (§13b); a step label of a progress bar or a role=\"status\" line is fine"],
+  // Re-created components and escape hatches (0.30.0). Class-token rules (null) live in lint/classes.mjs tokenRule.
+  [
+    "raw-control",
+    /<(?:button|input|textarea|table)\b/g,
+    "Compose @semi/ui instead of re-creating a control: Button / IconButton (BTN_* only on a Link), Input / Textarea / NumberInput / SearchInput in a Field, Checkbox / Switch / RadioGroup, DataTable. A hidden <input type=\"file\"> (FileDrop) is fine.",
+  ],
+  [
+    "foreign-ui",
+    /\bfrom\s+["'](?:lucide-react|react-icons(?:\/[\w-]+)?|@radix-ui\/[\w/-]+|@mui\/[\w/-]+|@headlessui\/react|@heroicons\/[\w/-]+|@chakra-ui\/[\w/-]+|antd(?:\/[\w/-]+)?|@mantine\/[\w/-]+|@tabler\/icons-react|react-bootstrap|@nextui-org\/[\w/-]+|@heroui\/[\w/-]+|@\/components\/ui\/[\w-]+)["']/g,
+    "One UI kit: components from @semi/ui, icons from <Icon name> (docs/ICONS.md). A missing component or icon goes upstream with /semi-propose, not another library or a shadcn components/ui copy.",
+  ],
+  [
+    "local-primitive",
+    /\bexport\s+(?:default\s+)?(?:function|const)\s+(?:Card|Badge|Chip|Tabs|Table|Tooltip|Dialog|Drawer|Spinner|Avatar|Switch|Checkbox|Toggle|Alert|Toast|Dropdown|Popover|Pagination|Breadcrumb|Progress|Skeleton|SearchInput|DatePicker|Combobox|IconButton)\b/g,
+    "Do not define your own copy of a Semi primitive: import it from @semi/ui (a product component with its own name, e.g. OrderCard, composes them).",
+  ],
+  [
+    "inline-style-value",
+    /\bstyle=\{\{[^}]*\b(?:color|background(?:Color)?|border(?:Top|Right|Bottom|Left)?Color|fontSize|fontWeight|lineHeight|boxShadow|borderRadius)\s*:/g,
+    "No colours, type or radii in style={{}}: use token classes (text-*, bg-*, rounded-*). Sizes from data (width: `${p}%`) are fine; data colours (charts) are a per-file skip with a reason.",
+  ],
+  [
+    "click-target",
+    /\bonClick=/g,
+    "Something clickable is a <button> (Button / IconButton) or a link: a <div onClick> cannot be reached or used from a keyboard. A backdrop that only closes is role=\"presentation\".",
+  ],
+  [
+    "focus-hidden",
+    /(?<![\w:-])outline-none\b/g,
+    "outline-none hides the focus indicator: keep FOCUS_RING (or focus-visible:ring-2 focus-visible:ring-focus; a field: focus:border-focus focus:ring-1 focus:ring-focus) on the same element.",
+  ],
+  ["emoji-icon", /[\u{1F300}-\u{1FAFF}\u{1F1E6}-\u{1F1FF}]/gu, "Icons are <Icon name> (docs/ICONS.md), not emoji. A brand whose voice allows emoji in copy disables this rule in semi-lint.json."],
+  [
+    "custom-overlay",
+    /\bfixed\s+inset-0\b(?=[^"'`\n]*\bbg-(?:black|overlay)\b)|\bbg-(?:black|overlay)\b(?=[^"'`\n]*\bfixed\s+inset-0\b)/g,
+    "A full-screen layer with a backdrop is Modal, Drawer, confirmDialog or Sheet from @semi/ui: they trap focus, close on Escape and lock scroll.",
+  ],
+  ["custom-spinner", /\banimate-spin\b/g, "Work in progress is <Spinner> (or Button loading, Skeleton, Progress), not a hand-made spinning border."],
+  ["arbitrary-value", null, "No arbitrary spacing, z-index, tracking or opacity (p-[13px], gap-[7px], z-[9999], bg-panel/[0.05], bg-[var(--semi-…)]): use the spacing roles (p-card, gap-stack…), the z-* layers, the token classes. Widths, heights and grid templates may be arbitrary."],
+  ["tw-shadow", null, "Flat UI: no shadow-sm…2xl. Cards take shadow-card (the style sets it), popovers shadow-overlay, floating controls shadow-float."],
+  ["text-case", null, "Labels and buttons are sentence case: no uppercase class."],
+  ["leading-override", null, "Every text size carries its line height (1.5 body, 1.25 titles): no leading-* except leading-tight on a multi-line title or leading-none in a one-line control."],
+  ["css-raw-value", null, "Stylesheets use tokens too: no colour literals (#fff, rgb(), hsl(), oklch()), border-radius or font-size values in CSS. Use var(--color-…), the radius and text tokens, or utility classes."],
   [
     "decorative-icon-tones",
     null,
@@ -168,13 +212,21 @@ export const RATCHET = [
   ],
 ];
 /** Rules whose `skip` may name files with a reason ({ path: reason }): illustration and data colours, not UI chrome. */
-export const CONTENT_RULES = ["literal-colour-value", "inline-svg-path", "no-literal-palette"];
+export const CONTENT_RULES = ["literal-colour-value", "inline-svg-path", "no-literal-palette", "inline-style-value"];
 
 /** The opening tag a hit sits in (back to its `<`, at most 4 lines up), or the line itself when there is none. */
 function tagAround(lines, i) {
   const text = lines.slice(Math.max(0, i - 4), i + 1).join("\n");
   const at = text.search(/<[A-Za-z][\w.]*[^<]*$/);
   return at < 0 ? lines[i] : text.slice(at);
+}
+/** The whole opening tag a hit sits in: from its `<` (up to 4 lines up) to its closing `>` (up to 8 lines down). */
+function tagAt(lines, i) {
+  const head = tagAround(lines, i);
+  const rest = lines.slice(i + 1, i + 9).join("\n");
+  if (/>/.test(head.slice(1))) return head;
+  const end = rest.search(/\/?>/);
+  return end < 0 ? head + "\n" + rest : head + "\n" + rest.slice(0, end + 2);
 }
 /** True when an element matching `open` (group 1 = its tag) opened in the 6 lines before the hit and is not closed yet. */
 function insideElement(lines, i, open) {
@@ -196,11 +248,50 @@ const ALLOWED_IN = {
     insideElement(lines, i, /<([A-Za-z][\w.]*)\b[^>]*role=["'](?:status|progressbar)["']/g),
   // A dialog or drawer has a max width by design.
   "narrow-container": (lines, i) => /\b(?:MODAL_PANEL|MODAL_[A-Z_]*)\b|<(?:Modal|Drawer)\b|role=["'](?:dialog|alertdialog)["']/.test(lines[i] + "\n" + tagAround(lines, i)),
+  // A hidden native input behind a Semi control (FileDrop's file picker, a form's hidden value).
+  // A hidden or colour input Semi has no control for, or a raw element styled by a Semi class constant (HEADER_ICON_BTN,
+  // headerPrimary(), BTN_* on a native button inside AppHeader): that is composing Semi, not re-creating it.
+  "raw-control": (lines, i) => {
+    const tag = lines[i] + " " + tagAt(lines, i);
+    return /<input\b[^>]*\btype=["'](?:file|hidden|color)["']|<input\b[^>]*\bsr-only\b/.test(tag) || /className=\{[^}]*\b(?:[A-Z][A-Z0-9]*_[A-Z0-9_]+|headerPrimary\()/.test(tag);
+  },
+  // A component (capitalised) owns its semantics; a native element is fine with a role or tabIndex, or as a backdrop.
+  "click-target": (lines, i) => {
+    const NATIVE = /^<(?:div|span|li|td|tr|th|img|section|article|p|header|footer|main|ul|ol|label|svg|i|figure)\b/;
+    const ok = (tag) => !NATIVE.test(tag) || /\brole=|\btabIndex=|\baria-hidden\b/.test(tag);
+    // Each onClick on the line belongs to the tag opened last before it on that line; a line without one continues
+    // a tag opened above.
+    const line = lines[i];
+    for (const m of line.matchAll(/\bonClick=/g)) {
+      const open = line.slice(0, m.index).search(/<[A-Za-z][\w.]*[^<]*$/);
+      const next = line.indexOf("<", m.index);
+      const tag = open < 0 ? tagAt(lines, i) : line.slice(open, next < 0 ? undefined : next);
+      if (!ok(tag)) return false;
+    }
+    return true;
+  },
+  // Focus shown another way on the same element, or not focusable from the keyboard at all (tabIndex -1).
+  "focus-hidden": (lines, i) =>
+    /focus(?:-visible|-within)?:(?!outline-none)|FOCUS_RING|tabIndex=\{?["']?-1|placeholder:|<(?:input|textarea)\b/.test(lines[i] + "\n" + tagAt(lines, i)),
+  // Floating menus and lists (their rows carry the padding) and field frames (focus-within) are not cards.
+  "card-padding": (lines, i) => /shadow-overlay|z-popover|role=["'](?:menu|listbox|tree)["']|focus-within:|<(?:FileTree|Menu|Command)\b/.test(lines[i] + "\n" + tagAround(lines, i)),
+  // The spinning icon of RefreshButton / Spinner itself.
+  "custom-spinner": (lines, i) => /<(?:Icon|Spinner)\b/.test(tagAround(lines, i)) || /\bname=["']?(?:refresh|loader)/.test(lines[i]),
+  // Short acronyms and product codes in caps are not shouting (HTTP, JSON, HTML, HTTPS, VND).
+  "all-caps-label": (lines, i) => {
+    const words = lines[i].match(/[A-ZĐẮẰẲẴẶÂẤẦẨẪẬÊẾỀỂỄỆÔỐỒỔỖỘƠỚỜỞỠỢƯỨỪỬỮỰ]{4,}/g) || [];
+    return words.length > 0 && words.every((w) => ACRONYMS.has(w));
+  },
   // Mono is for code: <code>, <pre>, code editors (textarea, contentEditable), CodeBlock, Terminal.
   "font-mono": (lines, i) =>
     /<(?:code|pre|textarea|CodeBlock|Terminal)\b|contentEditable/.test(tagAround(lines, i)) ||
     insideElement(lines, i, /<(code|pre|CodeBlock|Terminal)\b/g),
 };
+
+const ACRONYMS = new Set(["HTTP", "HTTPS", "JSON", "HTML", "JPEG", "WEBP", "YAML", "TOML", "UUID", "OAUTH", "SAML", "GRPC", "WASM", "NFPA", "ISBN", "IBAN", "SWIFT", "GDPR", "VNPAY", "MOMO", "ZALO", "VIETQR", "NAPAS", "VND", "USDT", "NULL", "TODO"]);
+
+/** Colour literals, radii and font sizes written straight into a stylesheet (css-raw-value). */
+const CSS_RAW = /(?:#[0-9a-fA-F]{3,8}\b|\b(?:rgba?|hsla?|oklch|oklab)\()|\b(?:border-radius|font-size)\s*:\s*\d/;
 
 /** Distinct iconTone values in one file from which the colours read as decoration, not meaning. */
 const DECORATIVE_TONES = 3;
@@ -347,6 +438,12 @@ export function scan(paths, cfg, cwd) {
         if (BRAND_OVERRIDE[1].test(raw)) hard.push({ file: name, line: i + 1, rule: BRAND_OVERRIDE[0], message: BRAND_OVERRIDE[2], text: raw.trim().slice(0, 140) });
       });
     }
+    if (css && !skipped("css-raw-value", name)) {
+      src.split(/\r?\n/).forEach((raw, i) => {
+        if (!raw.trim() || isComment(raw) || /^\s*@import\b/.test(raw)) return;
+        if (CSS_RAW.test(raw.replace(/\/\*.*?\*\//g, ""))) add("css-raw-value", name, i + 1);
+      });
+    }
     if (css) continue;
     if (!skipped("decorative-icon-tones", name)) {
       const tones = [...src.matchAll(/\biconTone=["'{]+(\w+)/g)];
@@ -383,17 +480,67 @@ function sortedCounts(counts) {
   return out;
 }
 
+/**
+ * --ci: what the baseline and the skips added against the base branch (SEMI_LINT_BASE, default origin/main). Both may
+ * only shrink, except in a change that upgrades @semi/ui (new rules land as debt with /semi-sync). [] when git or the
+ * base is not there (a first commit, a shallow clone without the base).
+ */
+export function configGrowth(cwd, cfg, baseline) {
+  const git = (args) => spawnSync("git", args, { cwd, encoding: "utf8" });
+  const ref = process.env.SEMI_LINT_BASE || "origin/main";
+  if (git(["rev-parse", "--verify", "--quiet", ref]).status !== 0) return [];
+  const prefix = git(["rev-parse", "--show-prefix"]).stdout.trim();
+  const atBase = (file) => {
+    const r = git(["show", `${ref}:${prefix}${file}`]);
+    return r.status === 0 ? r.stdout : null;
+  };
+  const semiSpec = (txt) => {
+    try {
+      const p = JSON.parse(txt);
+      return p.dependencies?.["@semi/ui"] ?? p.devDependencies?.["@semi/ui"] ?? null;
+    } catch {
+      return null;
+    }
+  };
+  const pkgNow = existsSync(join(cwd, "package.json")) ? readFileSync(join(cwd, "package.json"), "utf8") : "{}";
+  const pkgBase = atBase("package.json");
+  if (pkgBase && semiSpec(pkgBase) !== semiSpec(pkgNow)) return []; // a Semi upgrade: new rules may add debt
+  const out = [];
+  const baseTxt = atBase(cfg.baseline);
+  if (baseTxt) {
+    const was = JSON.parse(baseTxt);
+    for (const [id, perFile] of Object.entries(baseline))
+      for (const [file, c] of Object.entries(perFile)) if (c > (was[id]?.[file] ?? 0)) out.push(`${cfg.baseline}: ${id} in ${file} grew ${was[id]?.[file] ?? 0} → ${c} (fix the code; the baseline only shrinks)`);
+  }
+  const cfgTxt = atBase("semi-lint.json");
+  if (cfgTxt) {
+    const was = JSON.parse(cfgTxt);
+    const paths = (v) => (!v ? [] : Array.isArray(v) ? v : Object.keys(v));
+    for (const [id, v] of Object.entries(cfg.skip || {}))
+      for (const p of paths(v)) if (!paths(was.skip?.[id]).includes(p)) out.push(`semi-lint.json: new skip ${id} → ${p} (needs the user's OK; put the reason in the pull request)`);
+    for (const id of cfg.disable || []) if (!(was.disable || []).includes(id)) out.push(`semi-lint.json: rule ${id} newly disabled (needs the user's OK)`);
+  }
+  return out;
+}
+
 function main(argv) {
-  const args = { files: null, update: false, json: false };
+  const args = { files: null, update: false, acceptNew: false, ci: false, json: false };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === "--files") {
       args.files = [];
       while (argv[i + 1] && !argv[i + 1].startsWith("--")) args.files.push(argv[++i]);
     } else if (a === "--update-baseline") args.update = true;
+    else if (a === "--accept-new") args.acceptNew = true;
+    else if (a === "--ci") args.ci = true;
     else if (a === "--json") args.json = true;
     else if (a === "-h" || a === "--help") {
-      console.log("usage: semi-lint [--files f1 f2 …] [--update-baseline] [--json]");
+      console.log(
+        "usage: semi-lint [--files f1 f2 …] [--update-baseline [--accept-new]] [--ci] [--json]\n" +
+          "  --update-baseline  lower the baseline to what is left (it never grows)\n" +
+          "  --accept-new       with --update-baseline: also record new hits (after a Semi upgrade, or with the user's OK)\n" +
+          "  --ci               also fail when the baseline or a skip grew against the base branch (SEMI_LINT_BASE, default origin/main)",
+      );
       return 0;
     } else {
       console.error(`semi-lint: unknown argument ${a}`);
@@ -416,12 +563,31 @@ function main(argv) {
       console.error("--update-baseline scans everything; drop --files");
       return 1;
     }
-    writeFileSync(baselinePath, JSON.stringify(sortedCounts(counts), null, 1) + "\n");
-    const n = Object.values(counts).reduce((s, v) => s + Object.values(v).reduce((a, b) => a + b, 0), 0);
+    // The baseline only shrinks: a hit it did not know is fixed, not recorded. A new rule after a Semi upgrade, or debt
+    // the user accepted, needs --accept-new; the first baseline (adopting Semi) records everything.
+    const old = existsSync(baselinePath) ? JSON.parse(readFileSync(baselinePath, "utf8")) : null;
+    let next = counts;
+    let refused = 0;
+    if (old && !args.acceptNew) {
+      next = {};
+      for (const [id, perFile] of Object.entries(counts)) {
+        next[id] = {};
+        for (const [file, c] of Object.entries(perFile)) {
+          const keep = Math.min(c, old[id]?.[file] ?? 0);
+          if (keep) next[id][file] = keep;
+          refused += c - keep;
+        }
+      }
+    }
+    writeFileSync(baselinePath, JSON.stringify(sortedCounts(next), null, 1) + "\n");
+    const n = Object.values(next).reduce((s, v) => s + Object.values(v).reduce((a, b) => a + b, 0), 0);
     if (!args.json) console.log(`baseline written: ${n} ratchet hits`);
+    if (refused && !args.json)
+      console.log(`semi-lint: ${refused} new hit(s) not added to the baseline: fix them (or, after a Semi upgrade or with the user's OK, --update-baseline --accept-new)`);
   }
 
   const base = existsSync(baselinePath) ? JSON.parse(readFileSync(baselinePath, "utf8")) : {};
+  const grownConfig = args.ci ? configGrowth(cwd, cfg, base) : [];
   const msgs = Object.fromEntries(RATCHET.map(([id, , m]) => [id, m]));
   const grown = [];
   for (const [id, perFile] of Object.entries(counts)) {
@@ -434,12 +600,13 @@ function main(argv) {
   const known = Object.values(base).reduce((s, v) => s + Object.values(v).reduce((a, b) => a + b, 0), 0);
 
   if (args.json) {
-    console.log(JSON.stringify({ files: paths.length, hard, grown, ratchet: sortedCounts(counts), ratchetTotal: total, baselineTotal: known }, null, 1));
-    return hard.length || grown.length ? 1 : 0;
+    console.log(JSON.stringify({ files: paths.length, hard, grown, grownConfig, ratchet: sortedCounts(counts), ratchetTotal: total, baselineTotal: known }, null, 1));
+    return hard.length || grown.length || grownConfig.length ? 1 : 0;
   }
+  for (const g of grownConfig) console.log(`semi-lint --ci: ${g}`);
   for (const h of hard) console.log(`${h.file}:${h.line}: [${h.rule}] ${h.message}\n    ${h.text}`);
   for (const g of grown) console.log(`${g.file}: [${g.rule}] ${g.hits} hits (lines ${g.lines.join(", ")}${g.hits > g.lines.length ? ", …" : ""}), baseline ${g.baseline}: ${g.message}`);
-  if (hard.length || grown.length) {
+  if (hard.length || grown.length || grownConfig.length) {
     console.log(
       `\nsemi-lint: ${hard.length} hard violation(s), ${grown.length} file(s) over the ratchet baseline ` +
         "(rules: node_modules/@semi/ui/docs/DESIGN_SYSTEM.md, Anti-patterns)",

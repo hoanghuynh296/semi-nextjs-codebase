@@ -105,8 +105,8 @@ const manifest = {
   import: { components: "@semi/ui", styles: "@semi/ui/styles", css: ["@semi/ui/tokens.css", "@semi/ui/base.css"] },
   tokens: {
     semantic: Object.keys(tokens.semantic).map((k) => k.replace(/^color-/, "").replace(/^text-/, "")),
-    type: Object.keys(tokens.type),
-    z: Object.keys(tokens.z),
+    type: Object.keys(tokens.type).filter((k) => !tokens.type[k]?.deprecated),
+    z: Object.keys(tokens.z).filter((k) => !tokens.z[k]?.deprecated),
     style: Object.keys(styleList.styles[0].tokens),
   },
   styles: { default: styleList.default, apply: '<html data-style="<id>"> + "style" in semi-lint.json (docs/STYLES.md)', list: styleList.styles.map(({ id, name, description }) => ({ id, name, description })) },

@@ -47,7 +47,7 @@ export function KpiCard({
       </div>
       <div
         className={`font-figure font-title leading-tight tracking-tight tabular-nums truncate ${
-          featured ? "text-heading-lg sm:text-display" : "text-kpi sm:text-heading"
+          featured ? "text-heading-lg sm:text-display" : "text-figure sm:text-heading"
         } ${tone === "danger" ? "text-danger-fg" : tone === "good" ? "text-success-fg" : "text-contrast"}`}
       >
         {loading ? <Skeleton className={`${featured ? "h-8 w-36" : "h-6 w-28"} my-0.5`} /> : value}

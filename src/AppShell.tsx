@@ -473,10 +473,12 @@ export function AppShell({
           {hasMoreSheet && moreOpen && (
             <div
               className="md:hidden fixed inset-0 z-sticky bg-overlay backdrop-blur-sm flex flex-col justify-end pb-16"
+              role="presentation"
               onClick={() => setMoreOpen(false)}
             >
               <div
                 className="bg-panel border-t border-line rounded-t-panel p-4 max-h-[75dvh] overflow-y-auto space-y-3"
+                role="presentation"
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="flex items-center justify-between px-1">

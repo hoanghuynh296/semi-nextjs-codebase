@@ -37,6 +37,7 @@ import {
   wireGlobalsCss,
   wireNextConfig,
   wireSemiLintConfig,
+  wireLintGate,
   wireStyle,
 } from "../../semi-new-app/scripts/setup.mjs";
 
@@ -156,6 +157,7 @@ if (mode === "foundation") {
         process.exitCode = 1;
       } else console.log(`${name}: semi-lint-baseline.json`);
     }
+    if (todo.has("semi-gate")) for (const c of wireLintGate(app.cwd)) console.log(`${name}: ${c}`);
     // Brand kit: install it (--brand, or the declared one missing from node_modules) and wire it before the style,
     // which must be one the brand allows.
     if (brandArg || todo.has("brand")) {

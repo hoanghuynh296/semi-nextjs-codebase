@@ -8,6 +8,7 @@ import { discoverFrontendApps } from "../../semi-check/scripts/audit.mjs";
 import {
   detectPkgManager,
   installedSemiVersion,
+  wireLintGate,
   resolveTargetSpec,
   runLocal,
   installPackage,
@@ -370,6 +371,8 @@ if (opts.tailwindVersion && !["keep", "latest"].includes(opts.tailwindVersion)) 
   pkg.devDependencies["@tailwindcss/postcss"] = opts.tailwindVersion;
 }
 writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
+// semi-lint in `lint` and a CI workflow: the rules hold for every agent and every merge, not only in Claude Code.
+for (const c of wireLintGate(webDir)) console.log(`  ${c}`);
 
 const pm = detectPkgManager(webDir);
 console.log(`Installing @semi/ui (${spec}) with ${pm}...`);

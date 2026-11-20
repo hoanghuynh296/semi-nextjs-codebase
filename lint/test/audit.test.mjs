@@ -16,7 +16,9 @@ function app() {
   const root = mkdtempSync(join(tmpdir(), "semi-audit-"));
   const web = join(root, "web");
   mkdirSync(join(web, "app"), { recursive: true });
-  writeFileSync(join(web, "package.json"), JSON.stringify({ dependencies: { next: "16.0.0", react: "19.0.0", "@semi/ui": "x" }, devDependencies: { tailwindcss: "^4.1.0" } }));
+  writeFileSync(join(web, "package.json"), JSON.stringify({ scripts: { lint: "semi-lint && eslint" }, dependencies: { next: "16.0.0", react: "19.0.0", "@semi/ui": "x" }, devDependencies: { tailwindcss: "^4.1.0" } }));
+  mkdirSync(join(root, ".github", "workflows"), { recursive: true });
+  writeFileSync(join(root, ".github", "workflows", "semi.yml"), "name: Semi\n");
   writeFileSync(join(web, "next.config.mjs"), `const nextConfig = { transpilePackages: ["@semi/ui"] };\nexport default nextConfig;\n`);
   writeFileSync(join(web, "app/globals.css"), `@import "tailwindcss";\n@import "@semi/ui/tokens.css";\n`);
   writeFileSync(
@@ -34,7 +36,7 @@ test("an app without Semi starts at the foundation phase", () => {
   const issues = auditProject(root).apps[0].issues;
   assert.deepEqual(
     issues.filter((i) => i.phase === "foundation").map((i) => i.check),
-    ["semi-ui", "transpile", "semi-css", "semi-lint-config", "providers", "style"],
+    ["semi-ui", "transpile", "semi-css", "semi-lint-config", "semi-gate", "providers", "style"],
   );
   assert.equal(issues[0].phase, "foundation");
   rmSync(root, { recursive: true });
@@ -260,5 +262,24 @@ test("#16: a file composing the @semi/ui component it is named like is not a dup
   assert.ok(checks.includes("subpage-toolbar:app/page.tsx"));
   assert.ok(!issues.some((i) => i.file === "components/Drawing.tsx"), "no codemod or lint issue for a content file");
   assert.match(formatSummary(r), /Minh hoạ \/ màu dữ liệu: `components\/Drawing\.tsx` \(`no-literal-palette`\): illustration: device colours/);
+  rmSync(root, { recursive: true });
+});
+
+test("semi-gate: wireLintGate puts semi-lint in lint and writes the CI workflow once; the audit then stays quiet", async () => {
+  const { wireLintGate } = await import("../../plugin/skills/semi-new-app/scripts/setup.mjs");
+  const root = mkdtempSync(join(tmpdir(), "semi-gate-"));
+  mkdirSync(join(root, ".git"));
+  const web = join(root, "web");
+  mkdirSync(join(web, "app"), { recursive: true });
+  writeFileSync(join(web, "package.json"), JSON.stringify({ scripts: { lint: "eslint" } }));
+  const first = wireLintGate(web);
+  assert.ok(first.some((c) => /lint/.test(c)) && first.some((c) => /semi\.yml/.test(c)));
+  const pkg = JSON.parse(readFileSync(join(web, "package.json"), "utf8"));
+  assert.equal(pkg.scripts.lint, "semi-lint && eslint");
+  const wf = readFileSync(join(root, ".github/workflows/semi.yml"), "utf8");
+  assert.match(wf, /working-directory: web/);
+  assert.match(wf, /npx semi-lint --ci/);
+  assert.match(wf, /fetch-depth: 0/);
+  assert.deepEqual(wireLintGate(web), [], "second run changes nothing");
   rmSync(root, { recursive: true });
 });

@@ -550,6 +550,18 @@ export function auditSingleApp(cwd) {
   if (!existsSync(cssPath) || !readFileSync(cssPath, "utf8").includes("@semi/ui/tokens.css"))
     setup("semi-css", cssRel, "chưa import tokens.css + base.css của Semi", "khối semi-design-system trong globals.css (đổi giao diện: so ảnh trước / sau)");
   if (!lintCfg._found) setup("semi-lint-config", "semi-lint.json", "chưa có semi-lint.json", "semi-lint.json + baseline lint");
+  // The gate outside Claude Code: semi-lint in the lint script and a CI workflow (semi-lint --ci + tsc).
+  {
+    let lintScript = "";
+    try {
+      lintScript = JSON.parse(readFileSync(join(cwd, "package.json"), "utf8")).scripts?.lint ?? "";
+    } catch {}
+    let d = cwd;
+    let wf = false;
+    for (let k = 0; k < 4 && !wf; k++, d = dirname(d)) wf = existsSync(join(d, ".github", "workflows", "semi.yml"));
+    if (!/\bsemi-lint\b/.test(lintScript) || !wf)
+      setup("semi-gate", "package.json", `luật Semi chỉ được kiểm khi có plugin Claude Code: thiếu ${[!/\bsemi-lint\b/.test(lintScript) && "semi-lint trong script lint", !wf && "CI .github/workflows/semi.yml"].filter(Boolean).join(", ")}`, "nối semi-lint vào lint + workflow CI (semi-lint --ci, tsc)");
+  }
   // Agent rules: the Semi block in AGENTS.md, and CLAUDE.md importing it (Claude Code reads CLAUDE.md, not AGENTS.md).
   if (hasSemiUi) {
     const near = (f) => [cwd, dirname(cwd), dirname(dirname(cwd))].map((d) => join(d, f)).filter((p) => existsSync(p)).map((p) => readFileSync(p, "utf8"));
@@ -612,13 +624,26 @@ export function auditSingleApp(cwd) {
       autoAt.add(`${rel}:${c.line}:${c.from}`);
     }
   }
-  for (const h of hits) if (!h.token || !autoAt.has(`${h.file}:${h.line}:${h.token}`)) issues.push({ phase: "lint", kind: "manual", rule: h.rule, file: h.file, line: h.line, token: h.token });
+  // An HTML table the team decided to keep ("keep": { "tables": … }, e.g. a report) is not a raw control to fix.
+  const keptTables = Boolean(keep.tables);
+  const isTableLine = (h) => {
+    try {
+      return /<table\b/.test(readFileSync(join(cwd, h.file), "utf8").split("\n")[h.line - 1] ?? "");
+    } catch {
+      return false;
+    }
+  };
+  for (const h of hits) {
+    if (h.token && autoAt.has(`${h.file}:${h.line}:${h.token}`)) continue;
+    if (h.rule === "raw-control" && keptTables && isTableLine(h)) continue;
+    issues.push({ phase: "lint", kind: "manual", rule: h.rule, file: h.file, line: h.line, token: h.token });
+  }
   // CSS files are not linted by semi-lint; their @apply findings still count.
   for (const { rel, src, css } of sources) {
     if (!css) continue;
     for (const f of analyse(src, { css: true })) if (!autoAt.has(`${rel}:${f.line}:${f.token}`)) issues.push({ phase: "lint", kind: "manual", rule: f.rule, file: rel, line: f.line, token: f.token });
   }
-  const STEP = ["semi-ui", "tailwind-v4", "transpile", "semi-css", "semi-lint-config", "providers", "brand", "style", "style-fonts"];
+  const STEP = ["semi-ui", "tailwind-v4", "transpile", "semi-css", "semi-lint-config", "semi-gate", "providers", "brand", "style", "style-fonts"];
   issues.sort(
     (a, b) =>
       PHASES.indexOf(a.phase) - PHASES.indexOf(b.phase) ||
@@ -757,6 +782,7 @@ const SETUP_NAMES = {
   transpile: "transpilePackages",
   "semi-css": "CSS của Semi",
   "semi-lint-config": "semi-lint.json",
+  "semi-gate": "semi-lint trong lint + CI",
   providers: "provider trong layout",
   brand: "brand kit",
   style: "chọn style",

@@ -79,6 +79,8 @@ export function colourRule(utility) {
   // Chromatic hue
   if (TEXTLIKE.has(c.prefix)) return "no-fixed-tone-text";
   if (SURFACE.has(c.prefix) && c.shade <= 200 && !c.alpha) return "no-solid-pastel-surfaces";
+  // A chromatic focus or state ring (ring-blue-500, outline-sky-400): focus is ring-focus, selection border-accent-line.
+  if ((c.prefix === "ring" || c.prefix === "outline") && c.kind === "hue") return "accent-state-token";
   return null;
 }
 
@@ -102,6 +104,26 @@ export function radiusToken(utility) {
   if (!m) return undefined;
   const to = { undefined: "chip", sm: "chip", md: "chip", lg: "control", xl: "card", "2xl": "panel", "3xl": "panel" }[m[2]];
   return to ? `${m[1]}-${to}` : null;
+}
+
+/**
+ * Escape hatches around the tokens, one rule each (ratchet):
+ * - arbitrary-value: p-[13px], gap-[7px], z-[9999], leading-[1.7], bg-panel/[0.05] (arbitrary alpha on a token),
+ *   bg-[var(--semi-panel)]. Widths, heights, grid templates, positions and transforms stay allowed: layouts need them.
+ * - tw-shadow: Tailwind's shadow-sm…2xl / shadow / shadow-inner (Semi: shadow-card, shadow-overlay, shadow-float).
+ * - text-case: uppercase (labels are sentence case).
+ * - leading-override: leading-* other than leading-tight / leading-none (every text size carries its line height).
+ */
+const SPACING_ARBITRARY = /^-?(?:p|px|py|pt|pr|pb|pl|ps|pe|m|mx|my|mt|mr|mb|ml|ms|me|gap|gap-x|gap-y|space-x|space-y|z|tracking|opacity)-\[/;
+const COLOUR_UTILITY = /^(?:bg|text|border(?:-[xytrblse])?|ring|ring-offset|divide|fill|stroke|outline|from|via|to|decoration|placeholder|caret|accent|shadow)-/;
+export function tokenRule(utility) {
+  // A bare number (13px, 0.05, 9999) bypasses the scale; env(safe-area-inset-*), max(), vh and calc() are layout.
+  if (SPACING_ARBITRARY.test(utility) && /-\[-?\d*\.?\d+(?:px|rem|em)?\]$/.test(utility)) return "arbitrary-value";
+  if (COLOUR_UTILITY.test(utility) && (/\/\[[^\]]+\]$/.test(utility) || /-\[(?:var|color-mix)\(/.test(utility))) return "arbitrary-value";
+  if (/^shadow(?:-(?:sm|md|lg|xl|2xl|inner))?$/.test(utility)) return "tw-shadow";
+  if (utility === "uppercase") return "text-case";
+  if (/^leading-/.test(utility) && !/^leading-(?:tight|none)$/.test(utility)) return "leading-override";
+  return null;
 }
 
 const CSS_COLOUR_LITERAL = /^(?:#[0-9a-fA-F]{3}|#[0-9a-fA-F]{4}|#[0-9a-fA-F]{6}|#[0-9a-fA-F]{8}|(?:rgb|rgba|hsl|hsla|oklch)\([^)]*\))$/;
@@ -305,7 +327,7 @@ export function analyse(src, { css = false } = {}) {
     for (const token of tokensOf(value)) {
       if (token.length > 80 || !/^[!\w[\-:&>*.#%/()@,=\]]+$/.test(token)) continue;
       const { utility } = splitToken(token);
-      const rule = colourRule(utility) ?? sizeRule(utility) ?? radiusRule(utility);
+      const rule = colourRule(utility) ?? sizeRule(utility) ?? radiusRule(utility) ?? tokenRule(utility);
       if (rule) findings.push({ rule, line, token });
     }
   }

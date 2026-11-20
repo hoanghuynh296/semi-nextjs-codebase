@@ -54,9 +54,53 @@ export const FONTS = {
   "Montserrat Alternates": { weight: ["600", "700"] },
   "Be Vietnam Pro": { weight: ["400", "500", "600", "700"] },
 };
-const STATUS_HUES = { success: 155, danger: 15 };
 /** Semi's status text tokens: fixed per theme (never the brand's), checked against the brand's tinted surfaces. */
 const STATUS_FG = { danger: "lỗi", success: "thành công", warning: "cảnh báo", info: "thông tin" };
+/** The palette family of each status and how far its hue may turn and still read as that status (OKLCH degrees). */
+const STATUS_FAMILY = { danger: "rose", success: "emerald", warning: "amber", info: "sky" };
+const STATUS_TURN = { danger: 12, success: 20, warning: 12, info: 20 };
+/** A status closer than this to the primary's hue is turned away from it (within STATUS_TURN). */
+const STATUS_GAP = 30;
+const STATUS_PARTS = ["fg", "bg", "border", "solid"];
+
+/**
+ * Status colours that would blend with the brand (a red primary next to the error red): the status's palette family
+ * turns its hue away from the primary, up to STATUS_TURN, keeping lightness and chroma (so contrast stays). Returns
+ * { [status]: { turn, from, to, dark: { "color-danger-fg": … }, light: { … } } } for the turned statuses only.
+ */
+function separateStatus(tokens, primaryHex) {
+  const { h: hue, c } = hexToOklch(primaryHex);
+  const out = {};
+  if (c < 0.06) return out; // a near-neutral primary does not read as any status
+  for (const [status, family] of Object.entries(STATUS_FAMILY)) {
+    const base = resolveToken(`var(--color-${family}-500)`, tokens);
+    if (!isHex(base)) continue;
+    const sh = hexToOklch(base).h;
+    const gap = hueDistance(hue, sh);
+    if (gap >= STATUS_GAP) continue;
+    // turn away from the primary: the sign that grows the distance
+    const away = ((sh - hue + 540) % 360) - 180 >= 0 ? 1 : -1;
+    const turn = away * Math.min(STATUS_GAP - gap, STATUS_TURN[status]);
+    const shift = (hex) => {
+      const o = hexToOklch(hex);
+      return oklchToHex({ l: o.l, c: o.c, h: (o.h + turn + 360) % 360 });
+    };
+    const rewrite = (value) =>
+      String(value).replace(new RegExp(`var\\(--color-${family}-(\\d+)\\)`, "g"), (m, shade) => {
+        const hex = resolveToken(`var(--color-${family}-${shade})`, tokens);
+        return isHex(hex) ? shift(hex) : m;
+      });
+    const entry = { turn: Math.round(turn), from: base, to: shift(base), dark: {}, light: {} };
+    for (const part of STATUS_PARTS) {
+      const t = tokens.semantic?.[`color-${status}-${part}`];
+      if (!t) continue;
+      for (const theme of THEMES) entry[theme][`color-${status}-${part}`] = rewrite(t[theme]);
+    }
+    out[status] = entry;
+  }
+  return out;
+}
+
 /** Text colour on the main button: "auto" picks the readable shade closest to the brand; "white" / "dark" force it. */
 const BUTTON_TEXT = ["auto", "white", "dark"];
 
@@ -399,6 +443,7 @@ export function generateBrand(brand, { tokens, styles, version = "" }) {
   const primary = scale(brand.primary);
   const secondary = brand.secondary ? scale(brand.secondary) : null;
   const { h: hue } = hexToOklch(brand.primary);
+  const status = separateStatus(tokens, brand.primary);
 
   // Neutrals of every allowed style, both themes.
   const neutrals = {};
@@ -474,20 +519,20 @@ export function generateBrand(brand, { tokens, styles, version = "" }) {
     // Semi's status text stays the same for every brand; the brand's tinted surfaces must still carry it (the surfaces
     // text sits on: canvas, app, panel, field, like text-muted; raised is a hover / track fill).
     const textSurfaces = allowed.flatMap((st) => SURFACES.slice(0, 4).map((k) => neutrals[st.id][theme][k]));
-    for (const [status, label] of Object.entries(STATUS_FG)) {
-      const fgHex = resolveToken(tokens.semantic?.[`color-${status}-fg`]?.[theme], tokens);
+    for (const [st, label] of Object.entries(STATUS_FG)) {
+      const fgHex = status[st]?.[theme]?.[`color-${st}-fg`] ?? resolveToken(tokens.semantic?.[`color-${st}-fg`]?.[theme], tokens);
       if (!isHex(fgHex)) continue;
-      report.push({ check: `chữ trạng thái ${label} (${t})`, pair: `${status}-fg / nền`, ratio: minContrast(fgHex, textSurfaces), min: AA });
+      report.push({ check: `chữ trạng thái ${label} (${t})`, pair: `${st}-fg / nền`, ratio: minContrast(fgHex, textSurfaces), min: AA });
     }
   }
   for (const r of report) r.ok = r.ratio >= r.min;
-  for (const [status, h] of Object.entries(STATUS_HUES)) {
-    const fgHex = resolveToken(tokens.semantic?.[`color-${status}-fg`]?.light, tokens);
-    const de = isHex(fgHex) ? deltaE(brand.primary, fgHex) : null;
-    if (hueDistance(hue, h) < 25 || (de !== null && de < 0.1))
-      warnings.push(
-        `Màu chính gần màu ${status === "success" ? "thành công (xanh lá)" : "lỗi (đỏ)"} của Semi (lệch sắc ${Math.round(hueDistance(hue, h))}°${de !== null ? `, ΔE ${de.toFixed(2)} so với ${fgHex}` : ""}): trạng thái luôn kèm icon hoặc chữ, đừng chỉ dựa vào màu`,
-      );
+  for (const [st, e] of Object.entries(status)) {
+    const name = { danger: "lỗi", success: "thành công", warning: "cảnh báo", info: "thông tin" }[st];
+    const left = hueDistance(hue, hexToOklch(e.to).h);
+    warnings.push(
+      `Màu ${name} được xoay ${Math.abs(e.turn)}° (${e.from} → ${e.to}) để không lẫn với màu chính` +
+        (left < STATUS_GAP - 0.5 ? ` nhưng vẫn chỉ cách ${Math.round(left)}° (giới hạn để giữ nghĩa): trạng thái luôn kèm icon hoặc chữ` : ""),
+    );
   }
   if (report.some((r) => !r.ok && !r.soft)) warnings.push("Có cặp màu chưa đạt AA: xem bảng contrast");
 
@@ -502,6 +547,7 @@ export function generateBrand(brand, { tokens, styles, version = "" }) {
     brandStep: brandStep(brand.primary),
     ...(secondary ? { secondary, secondaryStep: brandStep(brand.secondary) } : {}),
     themes,
+    ...(Object.keys(status).length ? { status } : {}),
     fidelity,
     neutrals,
     guide: resolveGuide(brand),
@@ -566,6 +612,12 @@ export function brandCss(t, version, { runtime = false, loadedFonts = [] } = {})
   ];
   const vars = (theme) => Object.entries(t.themes[theme]).map(([k, v]) => [src(k), v]);
   css += `/* Accent */\n${block(scopes("dark", [":root"]), vars("dark"))}\n${block(scopes("light"), vars("light"))}\n`;
+  // Status colours turned away from the primary (separateStatus), same scopes as the accent.
+  if (t.status && Object.keys(t.status).length) {
+    const sv = (theme) => Object.values(t.status).flatMap((e) => Object.entries(e[theme]).map(([k, v]) => [src(k), v]));
+    css += `/* Status, turned away from the primary */\n${block(scopes("dark", [":root"]), sv("dark"))}\n${block(scopes("light"), sv("light"))}\n`;
+    css += `@media (prefers-color-scheme: light) {\n${block([`[data-theme="system"]`], sv("light"), "  ")}}\n\n`;
+  }
   css += `@media (prefers-color-scheme: light) {\n${block([`[data-theme="system"]`], vars("light"), "  ")}}\n\n`;
   // Neutrals per allowed style. The default style (Flat) also applies without data-style.
   for (const [sid, themes] of Object.entries(t.neutrals)) {

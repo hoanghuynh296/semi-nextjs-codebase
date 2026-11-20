@@ -38,12 +38,13 @@ export function foundationsSource(root) {
     text: TEXT.map(([key, cls, note]) => ({ key, cls, note, dark: pick(key).dark, light: pick(key).light })),
     // sizes only (the --line-height keys pair with them); the size shows with its line height
     type: Object.entries(tokens.type)
-      .filter(([cls]) => !cls.includes("--"))
+      .filter(([cls, v]) => !cls.includes("--") && !v?.deprecated)
       .map(([cls, size]) => {
         const lh = tokens.type[`${cls}--line-height`];
-        return { cls, size: lh ? `${size} / ${typeof lh === "string" ? lh : lh.value}` : size };
+        const px = typeof size === "string" ? size : size.value;
+        return { cls, size: lh ? `${px} / ${typeof lh === "string" ? lh : lh.value}` : px };
       }),
-    z: Object.entries(tokens.z).map(([cls, value]) => ({ cls, value })),
+    z: Object.entries(tokens.z).filter(([, v]) => !v?.deprecated).map(([cls, v]) => ({ cls, value: typeof v === "string" ? v : v.value })),
     motion: Object.entries(tokens.motion).map(([name, value]) => ({ name, value })),
     styles: styles.styles.map((s) => ({
       id: s.id,

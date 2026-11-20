@@ -66,6 +66,7 @@ export function ConfirmHost() {
   return (
     <div
       className="fixed inset-0 z-dialog flex items-center justify-center p-4 bg-overlay backdrop-blur-lg"
+      role="presentation"
       onClick={() => resolveConfirm(false)}
     >
       <div
