@@ -209,7 +209,7 @@ function installSemi(spec) {
     // old lock would also keep the commit it has for the git dependency, so a new tag would never be installed.
     rmSync(join(cwd, "package-lock.json"), { force: true });
     rmSync(join(cwd, "node_modules", ".package-lock.json"), { force: true });
-    return spawnSync("npm", ["install", "--no-audit", "--no-fund"], { cwd, stdio: "inherit" }).status === 0;
+    return spawnSync("npm", ["install", "--install-links", "--no-audit", "--no-fund"], { cwd, stdio: "inherit" }).status === 0; // --install-links: a local @semi/ui (SEMI_UI_SOURCE, the docs brand book) is copied, not symlinked
   }
   return spawnSync(pm, ["add", "-D", `@semi/ui@${spec}`], { cwd, stdio: "inherit" }).status === 0;
 }
