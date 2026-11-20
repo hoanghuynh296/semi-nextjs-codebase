@@ -17,7 +17,7 @@
 //   set keys for the guideline: tone=friendly|neutral|formal address=bạn we="3D Noobs" emoji=false
 //        accent=restrained|balanced|expressive secondaryRole=highlight|badge|illustration buttonText=auto|white|dark imagery="…"
 //        product="…" audience="…" personality=nhanh,vui,đáng tin logo=assets/logo.svg logoDark=… mark=…
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { brandSemiRange, cmpSemver, detectPkgManager, resolveTargetSpec, runLocal } from "../../semi-new-app/scripts/setup.mjs";
@@ -140,7 +140,8 @@ jobs:
         run: |
           tag=$(git ls-remote --tags --refs https://github.com/${SEMI_REPO}.git 'v*' | sed 's#.*refs/tags/##' | sort -V | tail -1)
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
-          npm install --install-links -D "@semi/ui@github:${SEMI_REPO}#$tag"
+          npm pkg set "devDependencies.@semi/ui=github:${SEMI_REPO}#$tag"
+          rm -f package-lock.json && npm install --no-audit --no-fund
           npx semi-brand build || true
           if git diff --quiet -I'"semiVersion"' -I'@semi/ui [0-9]' -- dist BRAND.md AGENTS.brand.md; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
@@ -202,10 +203,15 @@ function installSemi(spec) {
   (pkg.devDependencies ||= {})["@semi/ui"] = spec;
   writeJson(pkgPath, pkg);
   const pm = detectPkgManager(cwd);
-  // Name the package: a bare `npm install` keeps the commit package-lock.json already has for a git dependency, so a
-  // new tag in package.json would never be installed.
-  const args = pm === "npm" ? ["install", "--install-links", "-D", `@semi/ui@${spec}`] : ["add", "-D", `@semi/ui@${spec}`];
-  return spawnSync(pm, args, { cwd, stdio: "inherit" }).status === 0;
+  if (pm === "npm") {
+    // A fresh lock file: `npm install -D <pkg>` on top of the old lock (macOS) dropped the bundled deps of Tailwind's
+    // wasm32 binding (@emnapi/*), and `npm ci` on the Linux runner then refused the lock. A bare `npm install` on the
+    // old lock would also keep the commit it has for the git dependency, so a new tag would never be installed.
+    rmSync(join(cwd, "package-lock.json"), { force: true });
+    rmSync(join(cwd, "node_modules", ".package-lock.json"), { force: true });
+    return spawnSync("npm", ["install", "--no-audit", "--no-fund"], { cwd, stdio: "inherit" }).status === 0;
+  }
+  return spawnSync(pm, ["add", "-D", `@semi/ui@${spec}`], { cwd, stdio: "inherit" }).status === 0;
 }
 
 /** Brand tokens of the last build (dist/brand.json), for comparing before / after an update. */
