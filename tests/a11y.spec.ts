@@ -50,6 +50,15 @@ for (const [rule, bad, good] of CASES) {
   });
 }
 
+test("a11y · field-size: under 16px is a hit at phone width only", async ({ page }) => {
+  const field = (px: number) => `<input aria-label="Tên" style="font-size:${px}px;border:1px solid #767676;height:34px">`;
+  await page.setViewportSize({ width: 375, height: 800 });
+  expect(await audit(page, field(14))).toEqual(["field-size"]);
+  expect(await audit(page, field(16))).toEqual([]);
+  await page.setViewportSize({ width: 1280, height: 800 });
+  expect(await audit(page, field(14))).toEqual([]);
+});
+
 test("a11y · lang and zoom-lock come from the document", async ({ page }) => {
   const body = `<p>Xin chào</p>`;
   expect(await audit(page, body, HEAD, "")).toEqual(["lang"]);

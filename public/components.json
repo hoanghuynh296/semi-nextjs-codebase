@@ -2900,6 +2900,13 @@
       "summary": "Form field label above an input/select/textarea."
     },
     {
+      "name": "FIELD_TEXT_PHONE",
+      "kind": "constant",
+      "module": "styles/surfaces.ts",
+      "client": false,
+      "summary": "Text size of a field you type in: 16px below `sm` (iOS Safari zooms the page on focus into a field under 16px and never zooms back), the size of the component from `sm` up. Add it to every text-entry control."
+    },
+    {
       "name": "FIELD_INPUT",
       "kind": "constant",
       "module": "styles/surfaces.ts",

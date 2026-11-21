@@ -2,6 +2,15 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
+## [Unreleased]
+
+### Fixed
+- **iOS zoomed the page in on every focused text field, and stayed zoomed after blur** (#61): field text was 12-14px, and iOS Safari zooms into a focused field under 16px. Below `sm` every text-entry control now renders its text at 16px (`max-sm:text-title-lg`): `FIELD_INPUT`, `FIELD_TEXTAREA` (so Input, Textarea, NumberInput with `FIELD_INPUT`, and InputGroup; a caller passing its own `text-ui` adds `max-sm:text-title-lg`), SearchInput, CustomCombobox, Command, the Chat composer, InputOTP, and a bare `<input>` / `<textarea>` / `<select>` through `base.css`. From `sm` up the sizes are unchanged and control heights stay `h-control` / `h-field`. The viewport is untouched: no `maximum-scale`, no `user-scalable=no`. Checked at 375px in Chromium (computed font size); focus and blur on a real iPhone / the iOS Simulator are UNVERIFIED.
+
+### Added
+- `semi a11y` rule **`field-size`**: at a viewport under 640px a field you type in with text under 16px is a hit, so apps with their own fields are caught. A field of your own adds `max-sm:text-title-lg`.
+- `FIELD_TEXT_PHONE` (`@semi/ui/styles`): the class string for that.
+
 ## [0.32.0] - 2026-11-21
 
 Density budgets, accessibility checks and a screen review: a cluttered, cramped or inaccessible screen is now measured on the app's rendered page, and what no tool can measure (missing states, conventions, voice) is a checklist per screen.
