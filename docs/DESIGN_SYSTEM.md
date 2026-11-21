@@ -88,8 +88,9 @@ Tailwind's `text-xs` / `text-sm` / `text-base`:
 **Fields on a phone:** text you type in is 16px (`text-title-lg`) below `sm`, whatever the field's desktop size. iOS Safari
 zooms the page into a focused field under 16px and never zooms back; the fix is the text size, never `maximum-scale` /
 `user-scalable=no` in the viewport (it blocks pinch zoom, an a11y failure). `FIELD_INPUT`, `FIELD_TEXTAREA` and every
-Semi text-entry control (Input, SearchInput, NumberInput, InputGroup, InputOTP, Textarea, CustomCombobox, Command, the Chat
-composer) already do it; a field of your own adds `max-sm:text-title-lg`. `base.css` does the same for a bare
+Semi text-entry control (Input, SearchInput, NumberInput with `FIELD_INPUT`, InputGroup, InputOTP, Textarea, CustomCombobox,
+Command, the Chat composer) already do it; a field of your own, or a NumberInput whose caller passes its own `text-ui`,
+adds `max-sm:text-title-lg`. `base.css` does the same for a bare
 `<input>` / `<textarea>` / `<select>`; the height stays `h-control` / `h-field`.
 
 Minimum `text-caption`. Running text (a sentence, a description, a cell) is `text-ui`, never `text-label` or
