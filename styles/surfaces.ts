@@ -145,13 +145,17 @@ export const MODAL_FOOT =
 /** Form field label above an input/select/textarea. */
 export const FIELD_LABEL = "block text-label font-medium text-muted mb-1";
 
+/** Text size of a field you type in: 16px below `sm` (iOS Safari zooms the page on focus into a field under 16px and
+ * never zooms back), the size of the component from `sm` up. Add it to every text-entry control. */
+export const FIELD_TEXT_PHONE = "max-sm:text-title-lg";
+
 /** Form text input: semantic field surface with crisp border-line. */
 export const FIELD_INPUT =
-  "w-full h-field bg-field border border-control-line hover:border-control-line-hover rounded-control px-3 text-ui text-contrast placeholder:text-muted focus:outline-none focus:border-focus focus:ring-1 focus:ring-focus focus:bg-raised transition-colors disabled:opacity-40";
+  "w-full h-field bg-field border border-control-line hover:border-control-line-hover rounded-control px-3 text-ui max-sm:text-title-lg text-contrast placeholder:text-muted focus:outline-none focus:border-focus focus:ring-1 focus:ring-focus focus:bg-raised transition-colors disabled:opacity-40";
 
 /** Form textarea: matches FIELD_INPUT contrast and focus border. */
 export const FIELD_TEXTAREA =
-  "w-full bg-field border border-control-line hover:border-control-line-hover rounded-control px-3 py-2 text-ui text-contrast placeholder:text-muted focus:outline-none focus:border-focus focus:ring-1 focus:ring-focus focus:bg-raised transition-colors disabled:opacity-40";
+  "w-full bg-field border border-control-line hover:border-control-line-hover rounded-control px-3 py-2 text-ui max-sm:text-title-lg text-contrast placeholder:text-muted focus:outline-none focus:border-focus focus:ring-1 focus:ring-focus focus:bg-raised transition-colors disabled:opacity-40";
 
 /** 2-panel floating Bento shell classes (used by AppShell). */
 export const SHELL_OUTER =

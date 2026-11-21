@@ -433,6 +433,13 @@ Tailwind's `text-xs` / `text-sm` / `text-base`:
 | `text-heading-lg` | 24 | display numbers |
 | `text-display` | 26 | page titles from sm (`text-heading sm:text-display`) |
 
+**Fields on a phone:** text you type in is 16px (`text-title-lg`) below `sm`, whatever the field's desktop size. iOS Safari
+zooms the page into a focused field under 16px and never zooms back; the fix is the text size, never `maximum-scale` /
+`user-scalable=no` in the viewport (it blocks pinch zoom, an a11y failure). `FIELD_INPUT`, `FIELD_TEXTAREA` and every
+Semi text-entry control (Input, SearchInput, NumberInput, InputGroup, InputOTP, Textarea, CustomCombobox, Command, the Chat
+composer) already do it; a field of your own adds `max-sm:text-title-lg`. `base.css` does the same for a bare
+`<input>` / `<textarea>` / `<select>`; the height stays `h-control` / `h-field`.
+
 Minimum `text-caption`. Running text (a sentence, a description, a cell) is `text-ui`, never `text-label` or
 `text-caption`: those are for short marks beside it. Every size carries its line height (1.5 for 11–16px, 1.25 for
 18px and up), so text never needs `leading-*`; use `leading-tight` only on a title of more than one line. Button and
@@ -1081,6 +1088,7 @@ installed. Without Playwright, `--snippet` prints an expression to evaluate with
 | `target-size` | A control is smaller than 24 × 24 px (its `::before` / `::after` hit area included) and a 24px circle on its centre touches another target or another small target's circle; links in a sentence are exempt |
 | `img-alt` | An `<img>` has no `alt`, or a `role="img"` has no name |
 | `lang` | `<html>` has no `lang` |
+| `field-size` | At a viewport under 640px, an input, textarea or select you type in has text under 16px (iOS Safari zooms the page on focus and never zooms back); read-only and disabled fields are exempt |
 | `zoom-lock` | The viewport meta has `user-scalable=no` or `maximum-scale` below 2 |
 
 `data-a11y-skip="<reason>"` marks a specimen that breaks a rule on purpose (a contrast sample in a brand book); never

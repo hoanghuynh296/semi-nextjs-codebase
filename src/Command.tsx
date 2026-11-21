@@ -143,7 +143,7 @@ export function Command({
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={onKey}
           placeholder={placeholder ?? t.commandPlaceholder}
-          className="flex-1 min-w-0 h-full bg-transparent text-ui text-contrast placeholder:text-muted outline-none"
+          className="flex-1 min-w-0 h-full bg-transparent text-ui max-sm:text-title-lg text-contrast placeholder:text-muted outline-none"
         />
       </div>
       <div ref={listRef} id={`${base}-list`} role="listbox" aria-label={t.commandLabel} className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-1.5">
