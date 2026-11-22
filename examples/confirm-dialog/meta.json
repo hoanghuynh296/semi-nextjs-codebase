@@ -24,7 +24,7 @@
     }
   ],
   "a11y": [
-    "An alertdialog: focus starts on the safe button (Huỷ), Escape cancels."
+    "An alertdialog: focus starts on the safe button (Huỷ) in a danger dialog and on the confirm button otherwise; Escape cancels."
   ],
   "examples": [
     {
@@ -38,6 +38,7 @@
     }
   ],
   "notes": [
-    "<ConfirmHost /> goes once in the root layout (see Theme › Root layout); confirmDialog() works from any event handler."
+    "<ConfirmHost /> goes once in the root layout (see Theme › Root layout); confirmDialog() works from any event handler.",
+    "confirmDelete takes deleteTitle(name), deleteMessage and delete from the locale provider around ConfirmHost (English with locale={en})."
   ]
 }

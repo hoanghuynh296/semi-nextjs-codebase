@@ -624,16 +624,26 @@ the lint rule `local-toast` is a warning until 1.0.
 | Failed | `toast.error("Không lưu được", { description })` (assertive) | an `alert()`; use `Alert` when it must stay on the page |
 | A problem inside a field | `Field error` (§9b) | a toast |
 
-- **The API** (`Toast.tsx`): `toast({ title, description, tone, duration, action, undo, pending })` and the shorthands
+- **The API** (`Toast.tsx`): `toast({ title, description, tone, duration, action, undo, onCommit, pending })` and the shorthands
   `toast.success|error|warning|info(title, options | ms)`, `toast.undo(title, onUndo, options)`, `toast.promise(promise, { loading,
   success, error })` (messages may be functions of the value or the error; it returns the promise), `updateToast(id, patch)`,
   `dismissToast(id)`. `<ToastHost />` is mounted once in the root layout.
 - **Defaults:** 4 s, danger 6 s, a toast with an action or undo 8 s; hover and keyboard focus pause the timer; `pending` has no timer
-  until it settles. The same text on screen (same tone) is **replaced, not stacked**, so success appears once. At most four show.
+  until it settles. A plain toast with the same text, tone and description already on screen is **replaced, not stacked**, so success
+  appears once; a toast with `undo`, `action` or `onCommit` is never merged (each carries its own callback). At most four show.
+- **Time (WCAG 2.2.1):** `<ToastHost durationScale={2} />` multiplies every auto-dismiss time (`0` keeps toasts until dismissed).
+  **Alt+T** moves keyboard focus to the newest toast's action (to Hoàn tác, or its close button); focus inside a toast pauses its timer.
 - **Undo means undone:** `onUndo` reverses what already happened; if it cannot (a sent email), the action is irreversible: confirm first.
-- **`confirmDelete({ name, message?, confirmLabel? })`** is `confirmDialog` with `tone: "danger"` and the default texts `deleteTitle(name)`,
-  `deleteMessage`, `delete` ("Xoá") from the locale table (`undo` "Hoàn tác" too). Another language: pass `title`, `message`, `confirmLabel`,
-  `cancelLabel`. Say what else goes in `message` ("12 bản in cũng bị xoá").
+  `onUndo` must restore on the **server**, not only in local state: it can run after the component that showed the toast is gone.
+  `onCommit` runs once when the undo window closes without an undo (timeout, closed, pushed out by newer toasts, or the route changed):
+  do the real, lasting step there (delete on the server after the grace period). A **route change closes undo toasts** (and commits them),
+  so an undo never fires on a page that is gone.
+- **`toast.promise(p, { loading, success, error, timeout })`:** `timeout` (default 30000 ms, `0` = none) ends a wait that never settles:
+  the toast shows `error` (called with an `Error("timeout")`) and closes on its normal timer; a late result of the promise is ignored by the toast.
+  `updateToast(id, patch)` keeps the id, so a second update and `dismissToast(id)` still work.
+- **`confirmDelete({ name, message?, confirmLabel? })`** is `confirmDialog` with `tone: "danger"`; `ConfirmHost` takes `deleteTitle(name)`,
+  `deleteMessage` and `delete` ("Xoá") from the **provider's locale** (English under `SemiLocaleProvider locale={en}`); a prop wins.
+  Say what else goes in `message` ("12 bản in cũng bị xoá"). In a danger dialog focus starts on **Huỷ**, not on the red button.
 - **Lint (warning, never fails):** `local-toast` flags `sonner` / `react-hot-toast` / `react-toastify`, an import of an app-level
   `toast` / `toastStore` / `useToast` module, and an exported `toast` / `notify` / `showToast` wrapper around Semi's toast: the extras apps
   added (an action, a longer duration, promise, undo) are in Semi's toast now. `npx semi example toast`, `npx semi example confirm-dialog`.

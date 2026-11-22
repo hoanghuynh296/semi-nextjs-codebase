@@ -19,17 +19,23 @@ The states kit (#66, owner decision C-021): every app can show first use, no res
 
 One way to answer an action (D20, F10, owner question 17): undo for what can be reversed, a confirm that names the object for what cannot, success once. Additive; nothing breaks. The new lint rule is a warning.
 
+#### Changed
+- **A toast with an `action` (or `undo`) now waits 8 s** instead of 4 s (WCAG 2.2.1); hover and focus still pause it. Pass `duration` to keep the old time.
+- **A plain toast with the same text, tone and description as one still showing replaces it** instead of stacking (success shows once). Toasts with `action`, `undo` or `onCommit` are never merged.
+
 #### Added
 - **`toast.success|error|warning|info(title, options | ms)`**, **`toast.undo(title, onUndo, options)`** and **`toast.promise(promise, { loading, success, error })`** on the existing `toast`; `toast({ ... })` works as before. The extras the apps had added locally (Studio's `toastStore`: kind helpers, a number as duration, an action that stays longer) are in Semi now; promise toasts and undo had no local version.
 - **`ToastOptions.undo`** (shows the locale's "Hoàn tác", runs it, closes) and **`pending`** (spinner, no timer); **`updateToast(id, patch)`** changes a toast still showing. A toast with an `action` or `undo` waits 8 s (was 4 s), still pausing on hover and focus.
-- **Success shown once**: a toast with the same text and tone already on screen is replaced, not stacked.
-- **`confirmDelete({ name, message?, confirmLabel? })`**: `confirmDialog` for an irreversible action, the title names the object, red Xoá button, Huỷ.
+- **`onCommit`** (the undo window closed without an undo: timeout, closed, pushed out, route change) and **route-change cleanup**: undo toasts close when the route changes. `onUndo` must restore on the server, not only in local state.
+- **`toast.promise` `timeout`** (default 30 s): the toast shows the error and closes. **`updateToast`** keeps the toast's id.
+- **`ToastHost durationScale`** (multiplies every auto-dismiss time) and the **Alt+T** shortcut that focuses the newest toast's action (WCAG 2.2.1).
+- **`confirmDelete({ name, message?, confirmLabel? })`**: `confirmDialog` for an irreversible action, the title names the object, red Xoá button, Huỷ. Its texts come from the provider's locale (`ConfirmHost` resolves them); in a danger dialog focus starts on Huỷ.
 - **Locale keys** (Vietnamese default, English in `en`): `undo` "Hoàn tác", `delete` "Xoá", `deleteTitle(name)`, `deleteMessage`; Huỷ is the existing `cancel`.
 - **Lint warning `local-toast`** (warning tier, like the form rules): a toast library (`sonner`, `react-hot-toast`, `react-toastify`), an import of an app-level `toast` module or an exported `toast` / `notify` wrapper around Semi's toast.
 - Docs: `DESIGN_SYSTEM.md` §14c, the `toast` (new `undo`, `promise`) and `confirm-dialog` (new `delete`) example docs, the `semi-ui` skill and agent rules.
 
 #### Migration
-Optional: replace a local toast wrapper with `toast` from `@semi/ui` (`toast.success("…")` is the same call as `toast({ title, tone: "success" })`), `window.confirm` / a "bạn chắc chứ" dialog for a delete with `confirmDelete({ name })`, and a delete you can reverse with `toast.undo`. `confirmDelete` has Vietnamese texts; an English app passes `title`, `message`, `confirmLabel`.
+Optional: replace a local toast wrapper with `toast` from `@semi/ui` (`toast.success("…")` is the same call as `toast({ title, tone: "success" })`), `window.confirm` / a "bạn chắc chứ" dialog for a delete with `confirmDelete({ name })`, and a delete you can reverse with `toast.undo`. `confirmDelete` follows the locale provider (English with `locale={en}`).
 
 ### Form kit (#67, owner decision C-021)
 

@@ -157,5 +157,12 @@ test("local-toast (#75): a toast library, an app-level toast module or an export
   assert.deepEqual(warn(`import { Button, toast } from "@semi/ui";\ntoast.success("Đã lưu");`), []);
   assert.deepEqual(warn(`import { toast, confirmDelete } from "@semi/ui";`), []);
   assert.deepEqual(warn(`export function notify() {}`), [], "a notify that does not use Semi's toast is not a toast wrapper");
+  // anchored per statement: an unrelated import before it does not drag in a later one
+  assert.deepEqual(warn(`import { a } from "./a"\nimport { toast } from "@semi/ui";`), []);
+  assert.deepEqual(warn(`import { Toaster } from "./Toaster";\nimport { toast } from "@semi/ui";`), []);
+  assert.deepEqual(warn(`import { toast } from "./Toast";`), ["local-toast"], "a local Toast module");
+  assert.deepEqual(warn(`export { toast } from "@semi/ui";`), ["local-toast"], "a re-export is a wrapper module");
+  assert.deepEqual(warn(`export { toast, confirmDelete } from "./feedback";`), ["local-toast"]);
+  assert.deepEqual(warn(`import { toast } from "../../src/Toast";`), [], "the docs app imports the library's own source");
   assert.deepEqual(warn(`// import { toast } from "sonner";\nconst a = 1;`), []);
 });

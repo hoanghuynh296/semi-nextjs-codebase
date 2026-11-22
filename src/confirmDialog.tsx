@@ -4,7 +4,7 @@
 // layout, then `if (await confirmDialog({ title: "Xoá?", tone: "danger" })) …` anywhere. No state library needed.
 import React, { useRef, useSyncExternalStore } from "react";
 import { useDialog } from "./a11y";
-import { useSemiLocale, vi } from "./locale";
+import { useSemiLocale } from "./locale";
 import type { ReactNode } from "react";
 import { MODAL_BTN_DANGER, MODAL_BTN_PRIMARY, MODAL_BTN_SECONDARY } from "../styles/buttons";
 
@@ -22,7 +22,8 @@ export interface ConfirmOptions {
   icon?: ReactNode;
 }
 
-type Current = (ConfirmOptions & { id: number }) | null;
+type Asked = Omit<ConfirmOptions, "title"> & { title?: string; kind?: "delete"; name?: string };
+type Current = (Asked & { id: number }) | null;
 
 let current: Current = null;
 let nextId = 1;
@@ -40,6 +41,10 @@ function resolveConfirm(ok: boolean) {
 
 /** Resolves true when the user picks the confirm button. A dialog opened while another shows cancels the first. */
 export function confirmDialog(opts: ConfirmOptions): Promise<boolean> {
+  return ask(opts);
+}
+
+function ask(opts: Asked): Promise<boolean> {
   return new Promise<boolean>((resolve) => {
     pending?.(false);
     pending = resolve;
@@ -51,26 +56,20 @@ export function confirmDialog(opts: ConfirmOptions): Promise<boolean> {
 export interface ConfirmDeleteOptions {
   /** The object that goes: shown in the title, so the user sees what is lost ("Xoá "Máy in 3"?"). */
   name: string;
-  /** Replaces the default "Thao tác này không thể hoàn tác." (say what else goes: "12 bản in cũng bị xoá"). */
+  /** Replaces the locale's `deleteMessage` ("Thao tác này không thể hoàn tác."); say what else goes: "12 bản in cũng bị xoá". */
   message?: string;
-  /** Default "Xoá". Name the verb when it is not a delete ("Ngắt kết nối"). */
+  /** Default: the locale's `delete` ("Xoá"). Name the verb when it is not a delete ("Ngắt kết nối"). */
   confirmLabel?: string;
-  /** Replaces the whole title when the app is not in Vietnamese. */
+  /** Replaces the locale's title (`deleteTitle(name)`). */
   title?: string;
   cancelLabel?: string;
 }
 
 /** For an irreversible action: a dialog that names the object, with a red button ("Xoá") and Huỷ. A reversible one
- *  is done at once and offers `toast.undo` instead. Text is the Vietnamese default; pass `title`, `message`,
- *  `confirmLabel` and `cancelLabel` (the English ones are `en.deleteTitle` …) for another language. */
+ *  is done at once and offers `toast.undo` instead. The texts come from the locale of the provider that wraps
+ *  `<ConfirmHost />` (`deleteTitle(name)`, `deleteMessage`, `delete`); a prop wins. */
 export function confirmDelete(o: ConfirmDeleteOptions): Promise<boolean> {
-  return confirmDialog({
-    title: o.title ?? vi.deleteTitle(o.name),
-    message: o.message ?? vi.deleteMessage,
-    confirmLabel: o.confirmLabel ?? vi.delete,
-    cancelLabel: o.cancelLabel,
-    tone: "danger",
-  });
+  return ask({ ...o, kind: "delete", tone: "danger" });
 }
 
 function subscribe(l: () => void) {
@@ -87,6 +86,9 @@ export function ConfirmHost() {
 
   if (!c) return null;
   const danger = c.tone === "danger";
+  const title = c.title ?? (c.kind === "delete" ? t.deleteTitle(c.name ?? "") : "");
+  const message = c.message ?? (c.kind === "delete" ? t.deleteMessage : undefined);
+  const confirmText = c.confirmLabel || (c.kind === "delete" ? t.delete : t.ok);
 
   return (
     <div
@@ -105,23 +107,23 @@ export function ConfirmHost() {
         <div className={`px-5 pt-5 pb-4 space-y-2 ${c.icon ? "text-center" : ""}`}>
           {c.icon && <div className="flex justify-center pb-1">{c.icon}</div>}
           <h3 id={titleId} className="text-title font-semibold text-contrast">
-            {c.title}
+            {title}
           </h3>
-          {c.message && <p className="text-ui text-muted leading-relaxed whitespace-pre-line">{c.message}</p>}
+          {message && <p className="text-ui text-muted leading-relaxed whitespace-pre-line">{message}</p>}
         </div>
         <div
           className={`px-5 pb-5 max-sm:pb-[max(1rem,env(safe-area-inset-bottom))] flex items-center gap-2 ${c.icon ? "*:flex-1" : "justify-end max-sm:*:flex-1"}`}
         >
-          <button type="button" onClick={() => resolveConfirm(false)} className={MODAL_BTN_SECONDARY}>
+          <button type="button" data-autofocus={danger ? "" : undefined} onClick={() => resolveConfirm(false)} className={MODAL_BTN_SECONDARY}>
             {c.cancelLabel || t.cancel}
           </button>
           <button
             type="button"
-            data-autofocus
+            data-autofocus={danger ? undefined : ""}
             onClick={() => resolveConfirm(true)}
             className={danger ? MODAL_BTN_DANGER : MODAL_BTN_PRIMARY}
           >
-            {c.confirmLabel || t.ok}
+            {confirmText}
           </button>
         </div>
       </div>

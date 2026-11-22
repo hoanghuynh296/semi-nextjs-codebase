@@ -5,6 +5,7 @@
 // toast.undo("Đã xoá", restore) or toast.promise(save(), { loading, success, error }) anywhere. Two sibling live
 // regions announce them (danger assertive, the rest polite; never nested); auto-dismiss pauses on hover and on keyboard focus.
 import React, { useEffect, useRef, useSyncExternalStore } from "react";
+import { usePathname } from "next/navigation";
 import { Spinner } from "./Button";
 import { Icon, type IconName } from "./Icon";
 import { useSemiLocale } from "./locale";
@@ -22,6 +23,10 @@ export interface ToastOptions {
   /** Reverses what just happened: shows the locale's "Hoàn tác" button (`undo`), runs this, closes the toast. For a
    *  reversible destructive action; an irreversible one asks first with `confirmDelete` / `confirmDialog`. */
   undo?: () => void;
+  /** With `undo`: runs once when the undo window closes without an undo (timeout, dismissed, evicted, the page changed).
+   *  Commit the action here, e.g. delete on the server after the grace period. `undo` must restore on the server too,
+   *  not only in local state: it can run after the component that showed the toast is gone. */
+  onCommit?: () => void;
   /** Work in progress: a spinner in place of the tone icon and no auto-dismiss, until `updateToast` settles it
    *  (`toast.promise` does that). */
   pending?: boolean;
@@ -32,6 +37,8 @@ export type ToastExtras = number | Omit<ToastOptions, "title" | "tone">;
 
 interface ToastItem extends ToastOptions {
   id: number;
+  /** Bumped by `updateToast`: the card remounts (timer restarts, the right live region announces it), the id stays. */
+  rev: number;
 }
 
 let items: ToastItem[] = [];
@@ -39,12 +46,31 @@ let nextId = 1;
 const listeners = new Set<() => void>();
 const emit = () => listeners.forEach((l) => l());
 
+/** Removes toasts and, for an undo toast that closes without being undone, commits it (`onCommit`). */
+function drop(gone: ToastItem[], undone = false) {
+  if (!gone.length) return;
+  const ids = new Set(gone.map((t) => t.id));
+  items = items.filter((t) => !ids.has(t.id));
+  emit();
+  if (!undone) for (const t of gone) if (t.undo) t.onCommit?.();
+}
+
+const actionable = (t: ToastOptions) => !!(t.undo || t.action || t.onCommit);
+
 function show(opts: ToastOptions): number {
   const id = nextId++;
-  // success is shown once: the same text still on screen is replaced (and its timer restarts), never stacked
-  const same = (t: ToastItem) => typeof opts.title === "string" && !opts.pending && !t.pending && t.title === opts.title && (t.tone ?? "info") === (opts.tone ?? "info");
-  items = [...items.filter((t) => !same(t)), { id, ...opts }].slice(-4);
+  // success is shown once: the same plain text (same tone and description) still on screen is replaced, never stacked.
+  // A toast with undo or an action is never merged: each one carries its own callback.
+  const same = (t: ToastItem) =>
+    typeof opts.title === "string" && !opts.pending && !t.pending && !actionable(opts) && !actionable(t) &&
+    t.title === opts.title && (t.tone ?? "info") === (opts.tone ?? "info") && t.description === opts.description;
+  const merged = items.filter(same);
+  const kept = items.filter((t) => !same(t));
+  const next = [...kept, { id, rev: 0, ...opts }];
+  const evicted = next.slice(0, Math.max(0, next.length - 4));
+  items = next.slice(-4);
   emit();
+  for (const t of [...merged, ...evicted]) if (t.undo) t.onCommit?.();
   return id;
 }
 
@@ -53,6 +79,9 @@ const extras = (x?: ToastExtras) => (typeof x === "number" ? { duration: x } : x
 type Kind = (title: React.ReactNode, opts?: ToastExtras) => number;
 
 export interface ToastPromiseMessages<T> {
+  /** Closes the wait after this many ms (default 30000; 0 waits for ever): the toast shows `error` (with an Error
+   *  "timeout") and closes. The promise itself keeps running; its late result is ignored by the toast. */
+  timeout?: number;
   loading: React.ReactNode;
   success: React.ReactNode | ((value: T) => React.ReactNode);
   error: React.ReactNode | ((error: unknown) => React.ReactNode);
@@ -80,11 +109,17 @@ export const toast: ToastApi = Object.assign((opts: ToastOptions) => show(opts),
   undo: (title: React.ReactNode, undo: () => void, o?: ToastExtras) => show({ title, tone: "success", undo, ...extras(o) }),
   promise: <T,>(promise: Promise<T>, m: ToastPromiseMessages<T>): Promise<T> => {
     const id = show({ title: m.loading, tone: "info", pending: true, duration: 0 });
-    const settle = (title: React.ReactNode, tone: StatusTone) => updateToast(id, { title, tone, pending: false, duration: undefined });
-    promise.then(
-      (v) => settle(typeof m.success === "function" ? (m.success as (v: T) => React.ReactNode)(v) : m.success, "success"),
-      (e) => settle(typeof m.error === "function" ? (m.error as (e: unknown) => React.ReactNode)(e) : m.error, "danger"),
-    );
+    let done = false;
+    const settle = (title: React.ReactNode, tone: StatusTone) => {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      updateToast(id, { title, tone, pending: false, duration: undefined });
+    };
+    const fail = (e: unknown) => settle(typeof m.error === "function" ? (m.error as (e: unknown) => React.ReactNode)(e) : m.error, "danger");
+    const limit = m.timeout ?? 30000;
+    const timer = limit > 0 ? setTimeout(() => fail(new Error("timeout")), limit) : undefined;
+    promise.then((v) => settle(typeof m.success === "function" ? (m.success as (v: T) => React.ReactNode)(v) : m.success, "success"), fail);
     return promise;
   },
 });
@@ -92,14 +127,18 @@ export const toast: ToastApi = Object.assign((opts: ToastOptions) => show(opts),
 /** Change a toast that is still showing (title, tone, …); its timer restarts. Does nothing once it is closed. */
 export function updateToast(id: number, patch: Partial<ToastOptions>) {
   if (!items.some((t) => t.id === id)) return;
-  const nid = nextId++; // a new key remounts the card, so the timer restarts and the right live region announces it
-  items = items.map((t) => (t.id === id ? { ...t, ...patch, id: nid } : t));
+  items = items.map((t) => (t.id === id ? { ...t, ...patch, id, rev: t.rev + 1 } : t)); // same id: updates and dismissToast(id) keep working
   emit();
 }
 
+/** Closes a toast. An undo toast closed this way commits (`onCommit`). */
 export function dismissToast(id: number) {
-  items = items.filter((t) => t.id !== id);
-  emit();
+  drop(items.filter((t) => t.id === id));
+}
+
+/** Closes the toasts of a page that is gone: an undo window does not outlive its page (their `onCommit` runs). */
+function dropUndo() {
+  drop(items.filter((t) => t.undo));
 }
 
 const subscribe = (l: () => void) => {
@@ -115,10 +154,11 @@ export const STATUS_ICON: Record<StatusTone, { icon: IconName; fg: string; surfa
   danger: { icon: "alert", fg: "text-danger-fg", surface: "bg-danger-bg border-danger-border" },
 };
 
-function ToastCard({ item }: { item: ToastItem }) {
+function ToastCard({ item, scale }: { item: ToastItem; scale: number }) {
   const t = useSemiLocale();
   const tone = item.tone ?? "info";
-  const ms = item.pending ? 0 : item.duration ?? (item.action || item.undo ? 8000 : tone === "danger" ? 6000 : 4000);
+  const base = item.pending ? 0 : item.duration ?? (item.action || item.undo ? 8000 : tone === "danger" ? 6000 : 4000);
+  const ms = base * scale;
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // paused while pointed at or while keyboard focus is inside (WCAG 2.2.1: time to reach the action and read)
   const hold = useRef({ pointer: false, focus: false });
@@ -163,7 +203,8 @@ function ToastCard({ item }: { item: ToastItem }) {
             data-toast-action
             onClick={() => {
               act.onClick();
-              dismissToast(item.id);
+              if (item.undo) drop([item], true); // undone: nothing to commit
+              else dismissToast(item.id);
             }}
             className={cn("mt-1.5 text-label font-medium text-accent-fg hover:text-contrast transition cursor-pointer rounded-chip", FOCUS_RING)}
           >
@@ -187,29 +228,56 @@ const EMPTY: ToastItem[] = [];
 
 /** Toast stack: top on phones (clear of the tab bar), bottom-right from sm. */
 export interface ToastHostProps {
+  /** Multiplies every auto-dismiss time (WCAG 2.2.1, "time to read"): 2 doubles them, for a product whose users read
+   *  slowly or use a screen magnifier. Default 1; 0 keeps every toast until it is dismissed. */
+  durationScale?: number;
   /** Name of the notification region (default: locale `notifications`, "Thông báo"). Change it when a page section has
    *  the same name, e.g. a "Thông báo" settings group, so the two landmarks can be told apart. */
   label?: string;
 }
 
-export function ToastHost({ label }: ToastHostProps = {}) {
+export function ToastHost({ label, durationScale = 1 }: ToastHostProps = {}) {
   const t = useSemiLocale();
+  const region = useRef<HTMLElement>(null);
+  const path = usePathname();
+  const first = useRef(true);
+  // a route change closes the undo windows (their onCommit runs); the first render is not a change
+  useEffect(() => {
+    if (first.current) first.current = false;
+    else dropUndo();
+  }, [path]);
+  // Alt+T moves keyboard focus to the newest toast (it then stays open: focus pauses the timer), so a keyboard user can reach Hoàn tác in time
+  useEffect(() => {
+    const on = (e: KeyboardEvent) => {
+      if (!(e.altKey && !e.ctrlKey && !e.metaKey && e.code === "KeyT")) return;
+      const target = region.current?.querySelectorAll<HTMLElement>("[data-toast-action],button");
+      const act = region.current?.querySelector<HTMLElement>("[data-toast-action]") ?? (target && target[target.length - 1]);
+      if (act) {
+        e.preventDefault();
+        act.focus();
+      }
+    };
+    window.addEventListener("keydown", on);
+    return () => window.removeEventListener("keydown", on);
+  }, []);
   const list = useSyncExternalStore(subscribe, () => items, () => EMPTY);
   // two sibling live regions, never nested: danger toasts are assertive, the rest polite; cards carry no live role
   const col = "flex flex-col gap-2 items-stretch sm:items-end empty:hidden";
   return (
     <section
+      ref={region}
+      aria-keyshortcuts="Alt+T"
       aria-label={label ?? t.notifications}
       className="fixed z-toast inset-x-0 top-0 sm:top-auto sm:bottom-0 sm:left-auto p-3 sm:p-4 pt-[max(0.75rem,env(safe-area-inset-top))] flex flex-col gap-2 items-stretch sm:items-end pointer-events-none"
     >
       <div aria-live="assertive" className={col}>
         {list.filter((it) => it.tone === "danger").map((item) => (
-          <ToastCard key={item.id} item={item} />
+          <ToastCard key={`${item.id}:${item.rev}`} item={item} scale={durationScale} />
         ))}
       </div>
       <div aria-live="polite" className={col}>
         {list.filter((it) => it.tone !== "danger").map((item) => (
-          <ToastCard key={item.id} item={item} />
+          <ToastCard key={`${item.id}:${item.rev}`} item={item} scale={durationScale} />
         ))}
       </div>
     </section>

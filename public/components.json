@@ -2235,7 +2235,8 @@
       "client": true,
       "summary": "Transient feedback after an action (\"Đã lưu\", \"Không kết nối được\"): the one toast API (docs/DESIGN_SYSTEM.md §14c).",
       "props": [
-        "label"
+        "label",
+        "durationScale"
       ],
       "doc": "docs/components/toast.md"
     },
@@ -2474,7 +2475,7 @@
       "kind": "function",
       "module": "src/Toast.tsx",
       "client": true,
-      "summary": ""
+      "summary": "Closes a toast. An undo toast closed this way commits (`onCommit`)."
     },
     {
       "name": "confirmDialog",
@@ -2488,7 +2489,7 @@
       "kind": "function",
       "module": "src/confirmDialog.tsx",
       "client": true,
-      "summary": "For an irreversible action: a dialog that names the object, with a red button (\"Xoá\") and Huỷ. A reversible one is done at once and offers `toast.undo` instead. Text is the Vietnamese default; pass `title`, `message`, `confirmLabel` and `cancelLabel` (the English ones are `en.deleteTitle` …) for another language."
+      "summary": "For an irreversible action: a dialog that names the object, with a red button (\"Xoá\") and Huỷ. A reversible one is done at once and offers `toast.undo` instead. The texts come from the locale of the provider that wraps `<ConfirmHost />` (`deleteTitle(name)`, `deleteMessage`, `delete`); a prop wins."
     },
     {
       "name": "kindAttrs",
