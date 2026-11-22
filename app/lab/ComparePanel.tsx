@@ -32,11 +32,11 @@ function Specimen({ s, theme, style }: { s: Summary; theme: "dark" | "light"; st
   return (
     <div data-theme={theme} data-style={style} style={specimenVars(s, theme, style)} className="bg-canvas text-body p-3 rounded-card border border-line space-y-2">
       <div className="flex flex-wrap items-center gap-2">
-        <Button size="sm" variant="primary">
-          Lưu
-        </Button>
         <Button size="sm" variant="secondary">
           Huỷ
+        </Button>
+        <Button size="sm" variant="primary">
+          Lưu
         </Button>
         <span className="text-label font-medium text-accent-fg">Xem chi tiết</span>
       </div>

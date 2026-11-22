@@ -145,6 +145,18 @@ export const MODAL_TITLE = "text-title font-semibold text-contrast tracking-tigh
 export const MODAL_FOOT =
   "px-5 py-3 max-sm:pb-[max(1rem,env(safe-area-inset-bottom))] border-t border-divider flex items-center justify-end gap-2 shrink-0 max-sm:*:flex-1";
 
+/** A page form's column (D13): never wider than `max-w-2xl`, fields stacked `gap-stack`, labels above the controls. */
+export const FORM_PAGE = "w-full max-w-2xl flex flex-col gap-stack";
+
+/** The action row of a form (`FormActions`): right-aligned, a destructive action alone on the left. Phones get 44px buttons from the component. */
+export const FORM_ACTIONS = "flex items-center justify-end gap-2 flex-wrap";
+
+/**
+ * `FormActions` on a page: sticks to the bottom of the scrolling page, over the page background, with a line above.
+ * The component adds the safe-area padding and lifts it above the on-screen keyboard (`bottom`).
+ */
+export const FORM_ACTIONS_STICKY = "sticky bottom-0 z-sticky -mx-4 sm:-mx-6 px-4 sm:px-6 pt-3 bg-app border-t border-divider";
+
 /** Form field label above an input/select/textarea. */
 export const FIELD_LABEL = "block text-label font-medium text-muted mb-1";
 

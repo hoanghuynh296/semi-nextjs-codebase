@@ -192,6 +192,8 @@ export default function FoundationsPage() {
             <Input
               icon="search"
               type="search"
+              inputMode="search"
+              enterKeyHint="search"
               aria-label="Tìm icon"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
