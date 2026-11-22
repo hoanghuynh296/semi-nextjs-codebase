@@ -1,16 +1,20 @@
 name: Check
 
+# One run per PR push (agents always open a PR, so a separate push run was a duplicate); a newer push cancels the
+# older run of the same ref. main runs the same checks in deploy-storybook.yml.
 on:
   pull_request:
-  push:
-    branches-ignore:
-      - main # main runs the same checks in deploy-storybook.yml
+  workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: check-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  check:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -37,5 +41,55 @@ jobs:
       - name: Build the sample brand book (tests/fixtures/brand.json)
         run: npm run build:brand-book
 
-      - name: "Browser checks (docs and brand book: contrast AA both themes, axe, phone widths, theme, keyboard)"
-        run: npm run test:ui
+      - name: Upload the builds for the browser shards
+        uses: actions/upload-artifact@v4
+        with:
+          name: builds
+          path: |
+            out
+            out-brand
+            tests/prerender-app/.next
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 1
+
+  ui:
+    name: "ui (shard ${{ matrix.shard }}/4)"
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download the builds
+        uses: actions/download-artifact@v4
+        with:
+          name: builds
+
+      - name: "Browser checks (docs and brand book: contrast AA both themes, axe, phone widths, theme, keyboard), shard ${{ matrix.shard }}/4"
+        run: npm run test:ui -- --shard=${{ matrix.shard }}/4
+
+  # The one required status (branch protection keeps the name `check`): fails when the build or any shard fails or is
+  # cancelled.
+  check:
+    needs: [build, ui]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: All jobs passed
+        run: |
+          echo "build: ${{ needs.build.result }}, ui: ${{ needs.ui.result }}"
+          [ "${{ needs.build.result }}" = success ] && [ "${{ needs.ui.result }}" = success ]
