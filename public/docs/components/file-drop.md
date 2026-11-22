@@ -145,6 +145,8 @@ export default function FileDropSingle() {
 
 ### FileDrop
 
+Picker + drop area with a row per file (forms, import pages). In a narrow workspace panel use `DropZone`.
+
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `items` * | `FileDropItem[]` |  |  |

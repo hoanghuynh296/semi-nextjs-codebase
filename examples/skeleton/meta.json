@@ -1,18 +1,22 @@
 {
   "title": "Skeleton",
   "group": "Feedback",
-  "description": "Shimmer placeholders while content loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton; Loading announces the region. Never “Đang tải…” text. BootLoader is the one centred spinner, for the boot / session gate before the shell exists.",
+  "description": "Shimmer placeholders while content loads, shaped like what loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, SkeletonList (divided list rows), SkeletonTable (table rows), SkeletonDetail (a record's detail panel), PageSkeleton; Loading announces the region. Never “Đang tải…” text or a spinner in a list. BootLoader is the one centred spinner, for the boot / session gate before the shell exists.",
   "components": [
     "Skeleton",
     "SkeletonCard",
     "SkeletonGrid",
     "SkeletonRows",
+    "SkeletonList",
+    "SkeletonTable",
+    "SkeletonDetail",
     "PageSkeleton",
     "Loading",
     "BootLoader"
   ],
   "when": [
     "Any content that is loading: show its shape.",
+    "Lists, tables and detail panels: SkeletonList, SkeletonTable, SkeletonDetail (DataTable shows table-shaped rows by itself while loading).",
     "BootLoader: before the app knows its layout (session, auth, boot), once in the root or route-group layout."
   ],
   "instead": [
@@ -30,7 +34,7 @@
     }
   ],
   "a11y": [
-    "Loading (and the Skeleton* groups with label) set role=\"status\" + aria-busy so screen readers hear one message.",
+    "Loading (and every Skeleton* group) sets role=\"status\" + aria-busy on the container with one screen-reader label; the blocks themselves are aria-hidden.",
     "BootLoader is a role=\"status\" region whose label (default: the locale's booting string) is for screen readers only."
   ],
   "examples": [
@@ -41,6 +45,11 @@
     {
       "file": "page",
       "title": "Page and grid"
+    },
+    {
+      "file": "shaped",
+      "title": "List, table and detail",
+      "description": "Shaped like what loads: avatar rows, a table with a number column, a record with its side panel."
     },
     {
       "file": "list-shape",

@@ -5,7 +5,7 @@
 //   <Field label="Tệp nhập" error={err}>
 //     <FileDrop accept={[".csv"]} maxSize={10_000_000} items={items} onAdd={upload} onReject={showRejected} />
 //   </Field>
-import React, { useEffect, useId, useRef, useState } from "react";
+import React, { createContext, useContext, useEffect, useId, useRef, useState } from "react";
 import { Button } from "./Button";
 import { useField } from "./Field";
 import { Progress } from "./Feedback";
@@ -58,6 +58,29 @@ export interface FileDropProps {
   className?: string;
 }
 
+export type DropZoneProps = Omit<FileDropProps, "items"> & {
+  /** Rows of the files already added; omit when the panel shows them elsewhere (a count in its section label). */
+  items?: FileDropItem[];
+};
+
+/**
+ * Compact FileDrop for a workspace panel (`WorkspaceSection`, L12): a lighter dashed tile on the panel surface (no
+ * field fill), smaller type, the same checks (`accept`, `maxSize`, duplicates), keyboard (Enter / Space opens the
+ * picker) and announcements. `items` is optional.
+ */
+export function DropZone({ items, ...props }: DropZoneProps) {
+  return (
+    <Compact.Provider value>
+      <FileDrop {...props} items={items ?? NO_ITEMS} />
+    </Compact.Provider>
+  );
+}
+
+const NO_ITEMS: FileDropItem[] = [];
+// DropZone's look, without a FileDrop prop for it
+const Compact = createContext(false);
+
+/** Picker + drop area with a row per file (forms, import pages). In a narrow workspace panel use `DropZone`. */
 export function FileDrop({
   items,
   onAdd,
@@ -76,6 +99,7 @@ export function FileDrop({
   "aria-label": ariaLabel,
   className,
 }: FileDropProps) {
+  const compact = useContext(Compact);
   const t = useSemiLocale();
   const field = useField();
   const auto = useId();
@@ -174,16 +198,21 @@ export function FileDrop({
         aria-label={ariaLabel}
         onClick={() => inputRef.current?.click()}
         className={cn(
-          "w-full flex flex-col items-center justify-center gap-1 rounded-card border border-dashed px-4 py-6 text-center transition-colors",
+          "w-full flex flex-col items-center justify-center rounded-card border border-dashed px-4 text-center transition-colors",
+          compact ? "gap-1.5 py-5" : "gap-1 py-6",
           FOCUS_RING,
-          over ? "border-accent-line bg-accent-subtle text-contrast" : "border-line bg-field text-muted hover:border-line-hover",
+          over
+            ? "border-accent-line bg-accent-subtle text-contrast"
+            : compact
+              ? "border-line text-muted hover:border-line-hover hover:bg-tint"
+              : "border-line bg-field text-muted hover:border-line-hover",
           isInvalid && !over && "border-danger-border",
           "disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-line",
         )}
       >
         <Icon name="upload" className="w-5 h-5 shrink-0" />
-        <span className="text-ui text-contrast">{title ?? t.fileDropTitle}</span>
-        {hint && <span className="text-label text-muted">{hint}</span>}
+        <span className={compact ? "text-label font-medium text-contrast" : "text-ui text-contrast"}>{title ?? t.fileDropTitle}</span>
+        {hint && <span className={compact ? "text-caption text-muted" : "text-label text-muted"}>{hint}</span>}
       </button>
       <input
         ref={inputRef}

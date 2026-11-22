@@ -1,10 +1,11 @@
 # Skeleton
 
-Shimmer placeholders while content loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton; Loading announces the region. Never “Đang tải…” text. BootLoader is the one centred spinner, for the boot / session gate before the shell exists.
+Shimmer placeholders while content loads, shaped like what loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, SkeletonList (divided list rows), SkeletonTable (table rows), SkeletonDetail (a record's detail panel), PageSkeleton; Loading announces the region. Never “Đang tải…” text or a spinner in a list. BootLoader is the one centred spinner, for the boot / session gate before the shell exists.
 
 ## When to use
 
 - Any content that is loading: show its shape.
+- Lists, tables and detail panels: SkeletonList, SkeletonTable, SkeletonDetail (DataTable shows table-shaped rows by itself while loading).
 - BootLoader: before the app knows its layout (session, auth, boot), once in the root or route-group layout.
 
 ## Use something else when
@@ -18,7 +19,7 @@ Shimmer placeholders while content loads: Skeleton blocks, SkeletonCard, Skeleto
 ## Import
 
 ```tsx
-import { Skeleton, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton, Loading, BootLoader } from "@semi/ui";
+import { Skeleton, SkeletonCard, SkeletonGrid, SkeletonRows, SkeletonList, SkeletonTable, SkeletonDetail, PageSkeleton, Loading, BootLoader } from "@semi/ui";
 ```
 
 ## Examples
@@ -65,6 +66,27 @@ export default function SkeletonPage() {
           <PageSkeleton />
         </Loading>
       )}
+    </div>
+  );
+}
+```
+
+### List, table and detail
+
+Shaped like what loads: avatar rows, a table with a number column, a record with its side panel.
+
+```tsx
+import { SkeletonDetail, SkeletonList, SkeletonTable } from "@semi/ui";
+
+// Shaped like what loads: list rows, table rows, a record's detail. No spinners in lists (L16).
+export default function SkeletonShaped() {
+  return (
+    <div className="flex flex-col gap-section">
+      <div className="rounded-card bg-card">
+        <SkeletonList rows={4} columns={2} label="Đang tải hộp thư" />
+      </div>
+      <SkeletonTable rows={4} columns={5} numeric={[4]} label="Đang tải đơn hàng" />
+      <SkeletonDetail fields={4} side label="Đang tải nhà cung cấp" />
     </div>
   );
 }
@@ -153,6 +175,44 @@ List row placeholders (dialog lists, tables).
 | `className` | `string` | `"flex flex-col gap-2"` |  |
 | `label` | `string` |  |  |
 
+### SkeletonList
+
+Rows of a divided list (an `ItemGroup`, an inbox, a people list): optional avatar, a title and a meta line, then
+`columns` short values on the right (from `md` after the first). Matches `Item` rows (`px-4 py-3`).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `rows` | `number` | `6` |  |
+| `columns` | `number` | `1` | Short values on the right of each row (a date, a status). |
+| `avatar` | `boolean` | `true` | A round avatar / icon at the start of each row. |
+| `className` | `string` |  |  |
+| `label` | `string` |  |  |
+
+### SkeletonTable
+
+Table-shaped placeholder for a hand-made `Table` (DataTable shows the same shape by itself while `loading`): a
+header row and `rows` rows of `columns` cells, the first column wider, `numeric` columns right-aligned.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `rows` | `number` | `5` |  |
+| `columns` | `number` | `4` |  |
+| `numeric` | `number[]` | `[]` | Indexes of number columns (short, right-aligned). |
+| `className` | `string` |  |  |
+| `label` | `string` |  |  |
+
+### SkeletonDetail
+
+A record's detail panel (a `DetailOverlay`, a side panel, a detail page): title and status, a row of actions, then
+`fields` label / value pairs and a text block. `side` adds the facts column beside it from `lg`.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `fields` | `number` | `6` |  |
+| `side` | `boolean` | `false` | A second column of facts from `lg` (the overlay's side panel). |
+| `className` | `string` |  |  |
+| `label` | `string` |  |  |
+
 ### PageSkeleton
 
 Whole-page placeholder (Suspense fallbacks, route `loading.tsx`): title row + the shape of the content.
@@ -190,7 +250,7 @@ Prefer a server-side session check (proxy / async layout), which needs no gate a
 
 ## Accessibility
 
-- Loading (and the Skeleton* groups with label) set role="status" + aria-busy so screen readers hear one message.
+- Loading (and every Skeleton* group) sets role="status" + aria-busy on the container with one screen-reader label; the blocks themselves are aria-hidden.
 - BootLoader is a role="status" region whose label (default: the locale's booting string) is for screen readers only.
 
 ## Notes

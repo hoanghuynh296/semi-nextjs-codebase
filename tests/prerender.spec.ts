@@ -142,3 +142,68 @@ test("DetailOverlay without the Navigation API (Firefox, Safari < 26): close aft
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect(page).toHaveURL(/\/items\/a$/);
 });
+
+test("WorkspaceLayout and FeatureIntro under Next's App Router: prerendered without the intro, which opens after mount once (#106)", async ({ page, request }) => {
+  // the server HTML has the workspace and no dialog (storage is read after mount only)
+  const html = await (await request.get(`${BASE}/workspace/a`)).text();
+  expect(html.replace(/<!-- -->/g, "")).toContain("Send (3)");
+  expect(html).toContain('data-page-type="workspace"');
+  expect(html).not.toContain("One screen per request");
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(`${BASE}/workspace/a`);
+  const intro = page.getByRole("dialog", { name: "One screen per request" });
+  await expect(intro).toBeVisible();
+  await expect(intro.getByRole("button", { name: "Tiếp" })).toBeFocused();
+  // one intro at a time: the second waits
+  await expect(page.getByRole("dialog")).toHaveCount(1);
+  await page.keyboard.press("Escape");
+  await expect(intro).toBeHidden();
+  const second = page.getByRole("dialog", { name: "Second intro" });
+  await expect(second).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(second).toBeHidden();
+  // seen: not again after a reload
+  await page.reload();
+  await expect(page.getByRole("region", { name: "Bảng điều khiển" }).filter({ visible: true })).toBeVisible();
+  await page.waitForTimeout(300);
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  const spin = page.getByRole("spinbutton", { name: "tons" }).filter({ visible: true });
+  await spin.focus();
+  await page.keyboard.press("ArrowUp");
+  await expect(spin).toHaveAttribute("aria-valuenow", "4");
+  await expect(page.getByRole("button", { name: "Send (4)" }).filter({ visible: true })).toBeVisible();
+});
+
+async function replayTwice(page: import("@playwright/test").Page) {
+  const replayed = page.getByRole("dialog", { name: "Replayed intro" });
+  for (let round = 0; round < 2; round++) {
+    // the first click may land before hydration: retry until the dialog shows
+    await expect(async () => {
+      if (!(await replayed.count())) await page.getByRole("button", { name: "Replay intro" }).filter({ visible: true }).click();
+      await expect(replayed).toBeVisible({ timeout: 1000 });
+    }).toPass({ timeout: 15_000 });
+    await page.keyboard.press("Escape");
+    await expect(replayed).toBeHidden();
+    // it does not come back by itself (a listener left behind by the second effect run would reopen it)
+    await page.waitForTimeout(400);
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+  }
+}
+
+test("FeatureIntro replay (forceOpen) closes for good; an intro without slides takes no slot (#110)", async ({ page }) => {
+  await page.addInitScript(() => ["prerender-workspace", "prerender-second"].forEach((id) => localStorage.setItem(`semi_intro_${id}`, "1")));
+  await page.goto(`${BASE}/workspace/a`);
+  await expect(page.getByRole("region", { name: "Bảng điều khiển" }).filter({ visible: true })).toBeVisible();
+  await replayTwice(page);
+});
+
+// StrictMode runs effects twice only in development: run against `next dev` (SEMI_DEV_URL, as above). Skipped in test:ui.
+test("FeatureIntro under StrictMode in next dev: a replayed intro closes for good (#110)", async ({ page }) => {
+  const dev = process.env.SEMI_DEV_URL;
+  test.skip(!dev, "set SEMI_DEV_URL to a running `next dev tests/prerender-app`");
+  await page.addInitScript(() => ["prerender-workspace", "prerender-second"].forEach((id) => localStorage.setItem(`semi_intro_${id}`, "1")));
+  await page.goto(`${dev}/workspace/a`);
+  await expect(page.getByRole("button", { name: "Replay intro" }).filter({ visible: true })).toBeVisible();
+  await page.waitForLoadState("networkidle");
+  await replayTwice(page);
+});

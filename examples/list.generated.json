@@ -110,6 +110,15 @@
     ]
   },
   {
+    "id": "drop-zone",
+    "title": "Drop zone",
+    "group": "Forms",
+    "description": "The compact FileDrop for a workspace panel: a light dashed tile on the panel surface with a title and a hint, the same checks (accept, maxSize, duplicates), keyboard and announcements; the file rows are optional.",
+    "components": [
+      "DropZone"
+    ]
+  },
+  {
     "id": "field",
     "title": "Field, Input, Textarea",
     "group": "Forms",
@@ -160,6 +169,15 @@
       "useUnsavedGuard",
       "useFormValidation",
       "FormErrorSummary"
+    ]
+  },
+  {
+    "id": "hint-textarea",
+    "title": "Hint textarea",
+    "group": "Forms",
+    "description": "A text area that says what it can do (L15): a hint row under the text (“Gõ @ để nhắc nhà cung cấp · Gõ / để chèn mẫu”) and a suggestion list while the word at the caret starts with a trigger; the chosen item is inserted with a space after it.",
+    "components": [
+      "HintTextarea"
     ]
   },
   {
@@ -237,6 +255,15 @@
     ]
   },
   {
+    "id": "stepper",
+    "title": "Stepper",
+    "group": "Forms",
+    "description": "− value + for a small count (quantities, copies, seats) in a workspace panel or a card: one tap per step, a unit after the value, min and max.",
+    "components": [
+      "Stepper"
+    ]
+  },
+  {
     "id": "switch",
     "title": "Switch",
     "group": "Forms",
@@ -307,6 +334,15 @@
     "description": "A panel that slides in from the right, left, bottom or top (a sheet), with title and footer.",
     "components": [
       "Drawer"
+    ]
+  },
+  {
+    "id": "feature-intro",
+    "title": "Feature intro",
+    "group": "Overlays",
+    "description": "The first visit of a feature (L14): a small dialog with a visual, a title, one line, dots, “Bỏ qua” and “Tiếp” / “Bắt đầu”. Shown once per user per id; “seen” lives in a store (localStorage by default, pass your own to keep it per account). It waits while another dialog is open.",
+    "components": [
+      "FeatureIntro"
     ]
   },
   {
@@ -523,6 +559,17 @@
     ]
   },
   {
+    "id": "workspace-layout",
+    "title": "Workspace layout",
+    "group": "Navigation & layout",
+    "description": "Page type “workspace” (L12): a control panel on the left (segmented tabs, back + tool name, sections with a text-overline label and a counter like “3/8”, drop zones, steppers, a message box) with the main action pinned at its bottom, and the result on the right. Phones stack the panel above the result with the action at the bottom of the screen.",
+    "components": [
+      "WorkspaceLayout",
+      "WorkspaceHeader",
+      "WorkspaceSection"
+    ]
+  },
+  {
     "id": "accordion",
     "title": "Accordion",
     "group": "Data display",
@@ -733,6 +780,15 @@
     ]
   },
   {
+    "id": "guided-empty-state",
+    "title": "Guided empty state",
+    "group": "Feedback",
+    "description": "The EmptyState variant “guided” (L13): the first use of a page that needs a few steps before it is useful. A step carousel (“Bước 1 / 4”, a visual, ‹ ›) or numbered steps, the one primary action, a link to the full guide, and rows of ready starting points by category, each with “Xem tất cả”.",
+    "components": [
+      "GuidedEmptyState"
+    ]
+  },
+  {
     "id": "progress",
     "title": "Progress",
     "group": "Feedback",
@@ -745,12 +801,15 @@
     "id": "skeleton",
     "title": "Skeleton",
     "group": "Feedback",
-    "description": "Shimmer placeholders while content loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton; Loading announces the region. Never “Đang tải…” text. BootLoader is the one centred spinner, for the boot / session gate before the shell exists.",
+    "description": "Shimmer placeholders while content loads, shaped like what loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, SkeletonList (divided list rows), SkeletonTable (table rows), SkeletonDetail (a record's detail panel), PageSkeleton; Loading announces the region. Never “Đang tải…” text or a spinner in a list. BootLoader is the one centred spinner, for the boot / session gate before the shell exists.",
     "components": [
       "Skeleton",
       "SkeletonCard",
       "SkeletonGrid",
       "SkeletonRows",
+      "SkeletonList",
+      "SkeletonTable",
+      "SkeletonDetail",
       "PageSkeleton",
       "Loading",
       "BootLoader"

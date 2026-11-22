@@ -1296,6 +1296,24 @@
       "doc": "docs/components/external-link.md"
     },
     {
+      "name": "FeatureIntro",
+      "kind": "component",
+      "module": "src/FeatureIntro.tsx",
+      "client": true,
+      "summary": "The first visit of a feature (#94 L14, docs/DESIGN_SYSTEM.md §14): a small dialog with a visual, a title, one line, dots, Skip + Next / Get started.",
+      "props": [
+        "id",
+        "slides",
+        "store",
+        "forceOpen",
+        "onDone",
+        "skipLabel",
+        "nextLabel",
+        "doneLabel"
+      ],
+      "doc": "docs/components/feature-intro.md"
+    },
+    {
       "name": "Alert",
       "kind": "component",
       "module": "src/Feedback.tsx",
@@ -1406,11 +1424,22 @@
       "doc": "docs/components/field.md"
     },
     {
+      "name": "DropZone",
+      "kind": "component",
+      "module": "src/FileDrop.tsx",
+      "client": true,
+      "summary": "Compact FileDrop for a workspace panel (`WorkspaceSection`, L12): a lighter dashed tile on the panel surface (no field fill), smaller type, the same checks (`accept`, `maxSize`, duplicates), keyboard (Enter / Space opens the picker) and announcements. `items` is optional.",
+      "props": [
+        "items"
+      ],
+      "doc": "docs/components/drop-zone.md"
+    },
+    {
       "name": "FileDrop",
       "kind": "component",
       "module": "src/FileDrop.tsx",
       "client": true,
-      "summary": "File picker + dropzone with a row per file (docs/components/file-drop.md).",
+      "summary": "Picker + drop area with a row per file (forms, import pages). In a narrow workspace panel use `DropZone`.",
       "props": [
         "items",
         "onAdd",
@@ -1527,6 +1556,43 @@
         "className"
       ],
       "doc": "docs/components/form-actions.md"
+    },
+    {
+      "name": "GuidedEmptyState",
+      "kind": "component",
+      "module": "src/GuidedEmptyState.tsx",
+      "client": true,
+      "summary": "The first-use state of a page that needs a few steps before it is useful (#94 L13, docs/DESIGN_SYSTEM.md §13): the EmptyState variant \"guided\".",
+      "props": [
+        "title",
+        "steps",
+        "layout",
+        "action",
+        "tutorial",
+        "templates",
+        "headingLevel",
+        "className"
+      ],
+      "doc": "docs/components/guided-empty-state.md"
+    },
+    {
+      "name": "HintTextarea",
+      "kind": "component",
+      "module": "src/HintTextarea.tsx",
+      "client": true,
+      "summary": "A text area that says what it can do (#94 L15, docs/DESIGN_SYSTEM.md §9b): a hint row under the text (\"Gõ @ để nhắc nhà cung cấp · Gõ / để chèn mẫu\") and a suggestion list while the word at the caret starts with a trigger.",
+      "props": [
+        "value",
+        "onChange",
+        "triggers",
+        "label",
+        "placeholder",
+        "rows",
+        "disabled",
+        "id",
+        "className"
+      ],
+      "doc": "docs/components/hint-textarea.md"
     },
     {
       "name": "Icon",
@@ -2201,6 +2267,50 @@
       "doc": "docs/components/skeleton.md"
     },
     {
+      "name": "SkeletonList",
+      "kind": "component",
+      "module": "src/Skeleton.tsx",
+      "client": true,
+      "summary": "Rows of a divided list (an `ItemGroup`, an inbox, a people list): optional avatar, a title and a meta line, then `columns` short values on the right (from `md` after the first). Matches `Item` rows (`px-4 py-3`).",
+      "props": [
+        "rows",
+        "columns",
+        "avatar",
+        "className",
+        "label"
+      ],
+      "doc": "docs/components/skeleton.md"
+    },
+    {
+      "name": "SkeletonTable",
+      "kind": "component",
+      "module": "src/Skeleton.tsx",
+      "client": true,
+      "summary": "Table-shaped placeholder for a hand-made `Table` (DataTable shows the same shape by itself while `loading`): a header row and `rows` rows of `columns` cells, the first column wider, `numeric` columns right-aligned.",
+      "props": [
+        "rows",
+        "columns",
+        "numeric",
+        "className",
+        "label"
+      ],
+      "doc": "docs/components/skeleton.md"
+    },
+    {
+      "name": "SkeletonDetail",
+      "kind": "component",
+      "module": "src/Skeleton.tsx",
+      "client": true,
+      "summary": "A record's detail panel (a `DetailOverlay`, a side panel, a detail page): title and status, a row of actions, then `fields` label / value pairs and a text block. `side` adds the facts column beside it from `lg`.",
+      "props": [
+        "fields",
+        "side",
+        "className",
+        "label"
+      ],
+      "doc": "docs/components/skeleton.md"
+    },
+    {
       "name": "PageSkeleton",
       "kind": "component",
       "module": "src/Skeleton.tsx",
@@ -2571,6 +2681,75 @@
         "className"
       ],
       "doc": "docs/components/view-switch.md"
+    },
+    {
+      "name": "WorkspaceLayout",
+      "kind": "component",
+      "module": "src/WorkspaceLayout.tsx",
+      "client": true,
+      "summary": "Page type \"workspace\" (#94 L12, docs/DESIGN_SYSTEM.md §4): a control panel on the left (segmented tabs, back + tool name, sections with a text-overline label and a counter, drop zones, steppers) with the main action pinned at its bottom, and the result on the right.",
+      "props": [
+        "header",
+        "panel",
+        "action",
+        "result",
+        "panelLabel",
+        "resultLabel",
+        "className"
+      ],
+      "doc": "docs/components/workspace-layout.md"
+    },
+    {
+      "name": "WorkspaceHeader",
+      "kind": "component",
+      "module": "src/WorkspaceLayout.tsx",
+      "client": true,
+      "summary": "Back + tool name (+ one meta line) at the top of the workspace panel; `tabs` (a `ToggleGroup`) sit above it.",
+      "props": [
+        "title",
+        "description",
+        "backHref",
+        "backLabel",
+        "onBack",
+        "tabs",
+        "headingLevel"
+      ],
+      "doc": "docs/components/workspace-layout.md"
+    },
+    {
+      "name": "WorkspaceSection",
+      "kind": "component",
+      "module": "src/WorkspaceLayout.tsx",
+      "client": true,
+      "summary": "A section of the workspace panel: a `text-overline` label, a counter (\"3/8\") and an optional action on its right.",
+      "props": [
+        "label",
+        "count",
+        "max",
+        "action",
+        "children",
+        "className"
+      ],
+      "doc": "docs/components/workspace-layout.md"
+    },
+    {
+      "name": "Stepper",
+      "kind": "component",
+      "module": "src/WorkspaceLayout.tsx",
+      "client": true,
+      "summary": "− value + for small counts (quantities, copies, seats). The value is a `spinbutton`: ↑ / → add `step`, ↓ / ← take it away, Page Up / Page Down move ten steps, Home / End go to `min` / `max`. The − + buttons are for pointer and touch (out of the Tab order: the keys do the same). Free typing of large numbers is `NumberInput`.",
+      "props": [
+        "value",
+        "onChange",
+        "min",
+        "max",
+        "step",
+        "label",
+        "unit",
+        "disabled",
+        "className"
+      ],
+      "doc": "docs/components/stepper.md"
     },
     {
       "name": "ConfirmHost",
@@ -2953,6 +3132,13 @@
       "module": "src/Chip.tsx",
       "client": true,
       "summary": "Solid dot in a tone (material / category chips and tags)."
+    },
+    {
+      "name": "localIntroStore",
+      "kind": "constant",
+      "module": "src/FeatureIntro.tsx",
+      "client": true,
+      "summary": "The default store: `localStorage[\"semi_intro_<id>\"]`. Blocked storage counts as seen, so nobody is shown it on every visit."
     },
     {
       "name": "ICONS",

@@ -24,11 +24,13 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Checkbox](checkbox.md) | `Checkbox` | Opt in to something in a form (accept terms, include archived). |
 | [Combobox](combobox.md) | `CustomCombobox` | Long lists the user searches (materials, customers, SKUs). |
 | [Date picker](date-picker.md) | `DatePicker` | Schedule a job, filter by day, set a due date. |
+| [Drop zone](drop-zone.md) | `DropZone` | Attachments in a WorkspaceSection (specs, sample photos), where the section label carries the count. |
 | [Field, Input, Textarea](field.md) | `Field`, `Input`, `Textarea` | Every form control: wrap it in Field instead of writing a <label>. |
 | [FileDrop](file-drop.md) | `FileDrop` | Choosing or dropping one or more files: CSV import, product photos, invoices, firmware, model files. |
 | [Filter chip row](filter-chip-row.md) | `FilterChipRow`, `FilterChip`, `FilterOptions` | The filters of a list, grid or table page on desktop and iPad (md+), under its SearchPill in a StickyContextBar. |
 | [Filter panel](filter-panel.md) | `PhoneFilterBar`, `FilterPanel` | Below md on every page that has a FilterChipRow on desktop (same filters, same state). |
 | [Form actions, unsaved guard, validation](form-actions.md) | `FormActions`, `useUnsavedGuard`, `useFormValidation`, `FormErrorSummary` | Every form: the action row is FormActions, never a hand-ordered pair of buttons. |
+| [Hint textarea](hint-textarea.md) | `HintTextarea` | A message or note where people mention a record (@ a supplier, a colleague) or insert a template or command (/). |
 | [Input group](input-group.md) | `InputGroup` | Money and units, URLs and domains, a copy or reveal button inside the field. |
 | [Input OTP](input-otp.md) | `InputOTP` | Verification codes, PINs, invite codes of a fixed length. |
 | [Number input](number-input.md) | `NumberInput`, `NumPadPopup` | Quantities, temperatures, prices, percentages. |
@@ -37,6 +39,7 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Search pill](search-pill.md) | `SearchPill`, `ResultLine` | The search of a list, grid or DataTable page, above its filter chips (inside StickyContextBar). |
 | [Select](select.md) | `CustomSelect` | One value from a short or medium list (printers, regions). |
 | [Slider](slider.md) | `Slider` | Values where the position matters more than the exact number (volume, opacity, infill, price range filters). |
+| [Stepper](stepper.md) | `Stepper` | A small whole number people nudge rather than type: tấn per line, copies, guests, 1–99. |
 | [Switch](switch.md) | `Switch` | Settings that take effect at once (notifications, dark sync, auto-print). |
 | [View switch](view-switch.md) | `ViewSwitch` | A collection people browse both as rows and as cards (products, files, suppliers). |
 
@@ -50,6 +53,7 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Context menu](context-menu.md) | `ContextMenu` | Power-user shortcuts on canvases, file grids and rows, when the same actions also exist in a visible Menu or toolbar. |
 | [Detail overlay](detail-overlay.md) | `DetailOverlay` | Open a record from a list, grid or table and step through the results without losing the list (suppliers, orders, leads). |
 | [Drawer](drawer.md) | `Drawer` | Filters of a list, details of a row, a secondary form that keeps the page visible. |
+| [Feature intro](feature-intro.md) | `FeatureIntro` | A new or reworked feature people already in the app should notice once (a new workspace, a new way to compare quotes). |
 | [Hover card](hover-card.md) | `HoverCard` | Peek at a linked record without opening it. |
 | [Menu](menu.md) | `Menu` | Secondary actions of a row, card or page (Đổi tên, Nhân bản, Xoá): G2, G4. |
 | [Modal](modal.md) | `Modal` | A short task that needs the user's full attention (edit settings, create an item). |
@@ -78,6 +82,7 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Subpage toolbar](subpage-toolbar.md) | `SubpageToolbar`, `RefreshButton` | Every list or grid page. |
 | [Tabs](tabs.md) | `Tabs` | Sections of one object: Tổng quan / Hoạt động / Cài đặt. |
 | [Text tabs](text-tabs.md) | `TextTabs` | A page whose heading is a choice of 2–4 sibling views (Đang xử lý / Đã giao / Tất cả). |
+| [Workspace layout](workspace-layout.md) | `WorkspaceLayout`, `WorkspaceHeader`, `WorkspaceSection` | A tool where the user sets inputs and sees what they produce: a quote request and its comparison, a generator, an import with a preview, a print job. |
 
 ## Data display
 
@@ -110,8 +115,9 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Alert](alert.md) | `Alert` | State the user must see while working (firmware update, low material, failed print). |
 | [Empty state](empty-state.md) | `EmptyState` | First use: no items yet, a feature not set up (variant first-use). |
 | [Error, not found, no access](states.md) | `ErrorState`, `NotFound`, `Forbidden` | A route or a fetch failed: ErrorState with onRetry (route error.tsx passes Next.js's reset). |
+| [Guided empty state](guided-empty-state.md) | `GuidedEmptyState` | First use of a page whose value needs setup in a few steps (suppliers before quotes, a catalogue before orders). |
 | [Progress](progress.md) | `Progress` | Print progress, upload, storage used. |
-| [Skeleton](skeleton.md) | `Skeleton`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton`, `Loading`, `BootLoader` | Any content that is loading: show its shape. |
+| [Skeleton](skeleton.md) | `Skeleton`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `SkeletonList`, `SkeletonTable`, `SkeletonDetail`, `PageSkeleton`, `Loading`, `BootLoader` | Any content that is loading: show its shape. |
 | [Task host](task-host.md) | `TaskHost` | The user started a job and cannot do anything useful until it finishes: an upload before printing, an import, a firmware update, a payment step, an AI job that the next screen needs. |
 
 ## AI

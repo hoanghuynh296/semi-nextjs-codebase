@@ -642,7 +642,10 @@ export function AppShell({
           )}
 
           {/* Right floating Bento content panel */}
-          <main id="main" className={cn(SHELL_MAIN, tabs && TAB_BAR_PAD)}>
+          {/* tabs mode: --semi-bottom-bar is the tab bar's height below md, so sticky bottom bars inside (WorkspaceLayout's
+              main action) sit above it, and --semi-bottom-pad drops their own safe-area padding (the tab bar already covers it);
+              TAB_BAR_PAD only pads the end of the scroll */}
+          <main id="main" className={cn(SHELL_MAIN, tabs && TAB_BAR_PAD, tabs && "max-md:[--semi-bottom-bar:calc(4rem+env(safe-area-inset-bottom))] max-md:[--semi-bottom-pad:1rem]")}>
             <div className={cn(SHELL_CONTAINER, !tabs && "max-sm:pt-2", containerClassName)}>
               <PageActionsSlot className="empty:hidden ml-auto mb-2 sticky top-0 max-md:top-[env(safe-area-inset-top)] z-sticky" />
               {children}
