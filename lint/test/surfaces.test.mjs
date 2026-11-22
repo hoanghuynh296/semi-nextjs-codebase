@@ -68,7 +68,7 @@ test("Flat light steps (canvas to app, app to panel) are at least Sharp's, in co
 });
 
 // ── C-030 surfaces (#93): panel scale, borderless cards, tint, inverted ─────────────────────────────────────────────
-import { contrast, blend } from "../../brand/color.mjs";
+import { contrast, blend, oklchToHex } from "../../brand/color.mjs";
 import { derivedSurfaces, mixOklab } from "../../brand/generate.mjs";
 
 const TEXT_KEYS = ["color-text-contrast", "color-text-body", "color-text-muted"];
@@ -76,7 +76,12 @@ const neutralsOf = (st, theme) => Object.fromEntries([...KEYS, ...TEXT_KEYS].map
 const palette = (name) => {
   for (const g of Object.values(tokens)) if (g && typeof g === "object" && g[name]) return typeof g[name] === "string" ? g[name] : g[name].value;
 };
-const hexOf = (v) => (/^var\(--([\w-]+)\)$/.exec(v) ? palette(/^var\(--([\w-]+)\)$/.exec(v)[1]) : v);
+/** A palette value as hex: v3 hex as is; violet is pinned to Tailwind 4's own OKLCH (no visual change), mapped into sRGB. */
+const toHex = (v) => {
+  const m = /^oklch\(([\d.]+)% ([\d.]+) ([\d.]+)\)$/.exec(String(v ?? ""));
+  return m ? oklchToHex({ l: +m[1] / 100, c: +m[2], h: +m[3] }) : v;
+};
+const hexOf = (v) => toHex(/^var\(--([\w-]+)\)$/.exec(v) ? palette(/^var\(--([\w-]+)\)$/.exec(v)[1]) : v);
 const kitSets = () => {
   const out = {};
   for (const [id, b] of Object.entries(kits))
@@ -143,7 +148,7 @@ test("status and tone text (badges: the 500 tint at 10%) read AA on the card in 
       const family = m[1] ?? { danger: "rose", success: "emerald", warning: "amber", info: "sky" }[m[2]];
       const fg = hexOf(v[theme]);
       assert.ok(fg?.startsWith("#") && palette(`color-${family}-500`), `${k}: its palette is pinned in tokens.json`);
-      const badge = blend(palette(`color-${family}-500`), card, 0.1);
+      const badge = blend(toHex(palette(`color-${family}-500`)), card, 0.1);
       const r = contrast(fg, badge);
       assert.ok(r >= 4.5, `${label}: ${k} ${fg} on a ${family} badge over the card ${r.toFixed(2)}`);
     }

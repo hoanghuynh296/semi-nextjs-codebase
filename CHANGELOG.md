@@ -26,7 +26,7 @@ Visible changes in every app after the update: every style's surfaces take the p
 - **`BTN_SECONDARY`, `MODAL_BTN_SECONDARY`** (the default `<Button>`), **`ICON_BTN`, `ICON_BTN_DANGER`, `MODAL_CLOSE`**: `bg-tint hover:bg-tint-hover`, no border. Focus rings unchanged.
 - **`TILE`**: `rounded-control bg-card-field`, no border.
 - **Core default light `accent-fg` is `primary-800`** (was 700): the default green read 4.37–4.48:1 on `bg-accent-subtle` over the recessed light card (Pagination's current page in a card); now ≥ 4.5:1. Only apps without a brand kit (and the docs site) see it. The brand generator now also requires its `accent-fg` to read on every allowed style's card, with and without the selected tint; the Semi and 3D Noobs kits already pass, so their `brand.css` is unchanged.
-- **Violet is pinned** to Tailwind v3 hex in `tokens.json` (`--color-violet-50…950`, like the other palettes), so `text-tone-violet` no longer follows Tailwind 4's OKLCH violet and the badge contrast test covers it.
+- **Violet is pinned** in `tokens.json` (`--color-violet-50…950`) to Tailwind 4's own OKLCH values, the ones it shipped with until now (no visual change; the other palettes stay on v3 hex), so the badge contrast test covers `text-tone-violet` too.
 - **Light tone text one shade deeper (#50):** `text-tone-amber`, `-orange`, `-cyan`, `-teal`, `-pink` go from `-700` to `-800` in light. On a badge (`bg-*-500/10`) over the recessed light card they were 3.9–4.5:1; now ≥ 5.5:1 (pink 4.6:1). Dark unchanged.
 
 ### Fixed
