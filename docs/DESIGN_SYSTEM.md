@@ -439,6 +439,20 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   carries `STICKY_TOOLBAR` so the filters stay on top of the scrolling content (below the safe area on phones).
   "Thêm …" and "Làm mới" buttons are icon-only (`BTN_PRIMARY`/`BTN_SECONDARY` + `BTN_ICON`, `RefreshButton`) with
   `title` + `aria-label` carrying the label.
+- **Search and filters (C-032, #99):** a list page that people search and filter opens, under its heading, with one
+  `StickyContextBar` (in place of a `SubpageToolbar`): a `SearchPill` (one per page, it feeds the list or `DataTable`;
+  250 ms debounce, Escape clears, `focusKey="/"`), then the filters, then a `ResultLine` ("“query” · N kết quả", the
+  sort on the right). On `md+` the filters are a `FilterChipRow`: one line of chips (`h-8 rounded-full`, `bg-tint`,
+  solid `bg-inverted` with the value or "Nhãn · N" when on), each a multi-select `Popover` or a switch chip; the row
+  scrolls sideways with ‹ › and never wraps; "Xoá lọc" shows while one is on; a `ViewSwitch` (list ↔ grid, density)
+  ends it. Below `md` a `PhoneFilterBar` (views · "Bộ lọc · N" · settings) opens a `FilterPanel`: full screen, sort
+  first, booleans as switches, one accordion per filter, "Xem N kết quả" at the bottom (a side sheet from `sm`, also for
+  a desktop page with more filters than chips). Phone chrome stays within two rows plus the result line (P1). State
+  lives in the URL: `useFilterParams(specs)`, or `readFilters` / `writeFilters` / `clearFilters` / `activeFilterCount`
+  on your router's params (`?f.status=new&f.status=won&f.big=1`); a filter change is a history entry, so Back undoes it.
+  A `SubpageToolbar` page gets the same on phones with `filters` (typed: up to two as chips, more collapse into
+  "Bộ lọc" with the active ones as chips, C-026), or `collapseFilters` for its `left` (a bottom `Drawer`), and
+  `secondaryActions` (text buttons from `sm`, a ⋯ `Menu` below it; the primary stays visible).
 - Grids expand across wide screens (e.g. `sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-group`); touch screens
   (iPad) stop at 4 columns (`not-any-pointer-coarse:` for 5+). Card grids **beside a sidebar** size columns by
   `@container` (`@xl:grid-cols-…`), never by viewport breakpoints (lint rule `viewport-grid-cols`, enabled per path via
@@ -774,7 +788,8 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 |---|---|
 | `@semi/ui` → `AppShell.tsx`, `MobileTabBar.tsx` | `AppShell` (floating Bento 2-panel frame: Create, sections, pinned group, utilities + account; `w-60` sidebar or icon rail, the rail on `md`; phone drawer; one level of sub-items; mega items), `useAppShell` (is the sidebar showing sub-items), `MobileTabBar`, `TAB_BAR_PAD` (opt-in `mobileNav="tabs"`) (§4) |
 | `MegaMenu.tsx`, `MinimalHeader.tsx`, `TextTabs.tsx` | `MegaMenu` (flyout of category columns, `text-overline` headers, New badges, See all), `MinimalHeader` (breadcrumb left, one link + one primary right), `TextTabs` (large text tabs as the page heading, ARIA tabs, `href` for URL-driven views) (§4) |
-| `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle`, `PageTabsTitle` (underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh) (§4a) |
+| `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle`, `PageTabsTitle` (underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh; phone layout with `filters` / `collapseFilters` / `secondaryActions`), `ToolbarFilters` (§4a) |
+| `SearchPill.tsx`, `FilterChipRow.tsx`, `ViewSwitch.tsx`, `FilterPanel.tsx`, `filterParams.ts` | `StickyContextBar` (sticky search + chips + result line), `SearchPill` (wide pill search, debounce, `/`), `ResultLine` (query · N kết quả + sort), `SortDef`, `FilterChipRow` (one-line chips, ‹ ›, Xoá lọc, trailing tools), `FilterChip`, `FilterOptions` (the checkbox list of one filter), `useFilterParams` (filter state in the URL, Back / Forward), `ViewSwitch` (list ↔ grid, density), `PhoneFilterBar` (views · Bộ lọc · settings), `FilterPanel` (full-screen / side-sheet filters); URL helpers `readFilters`, `readFilterValues`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, types `FilterSpec`, `FilterDef`, `FilterOption`, `FilterValues` (§4) |
 | `KpiCard.tsx`, `Modal.tsx` | `KpiCard` (metric card in the brand's figure font, neutral icon, `featured` for the screen's main number, shimmer), `Modal` (shared portal dialog with `MODAL_HEAD` + `MODAL_FOOT`) (§13, §14) |
 | `Icon.tsx` | `Icon`, `ICONS`, `IconName`, `IconTile`, `TILE_TONES`, `TONE_TEXT`, `TileTone` |
 | `AppHeader.tsx` | `AppHeader` (stand-alone app top bar, §4b) |

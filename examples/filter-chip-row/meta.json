@@ -1,0 +1,54 @@
+{
+  "title": "Filter chip row",
+  "group": "Forms",
+  "description": "A list page's filters as one line of chips (icon, label, chevron; solid with the value or count when on). Each chip opens a small multi-select popover, a switch chip toggles; the row scrolls sideways with ‹ › when it overflows, shows “Xoá lọc” while a filter is on and ends with the view tools. State in the URL with useFilterParams or the filterParams helpers.",
+  "components": [
+    "FilterChipRow",
+    "FilterChip",
+    "FilterOptions"
+  ],
+  "imports": [
+    "useFilterParams",
+    "readFilters",
+    "writeFilters",
+    "clearFilters"
+  ],
+  "when": [
+    "The filters of a list, grid or table page on desktop and iPad (md+), under its SearchPill in a StickyContextBar.",
+    "Facets with a few to a few dozen values each (status, channel, owner, country), more than one value at a time."
+  ],
+  "instead": [
+    {
+      "need": "Filters on phones (below md)",
+      "use": "PhoneFilterBar + FilterPanel"
+    },
+    {
+      "need": "One choice among 2–5 views of the same list",
+      "use": "Pills or TextTabs"
+    },
+    {
+      "need": "A facet with hundreds of values (a customer, a product)",
+      "use": "a Combobox in FilterPanel's children"
+    }
+  ],
+  "a11y": [
+    "Every chip is a button: a multi chip has aria-haspopup=dialog and aria-expanded (its popover traps nothing, Escape returns focus to the chip); a switch chip has aria-pressed.",
+    "An active chip's name says the filter and its value (“Quốc gia: Đức”, or “Quốc gia · 2”); the options are named checkboxes in a group named after the filter.",
+    "The ‹ › buttons are for the pointer only (aria-hidden, out of the tab order): Tab reaches every chip and scrolls it into view."
+  ],
+  "notes": [
+    "One line, never wrapping rows of chips (C-032 L3); more than one row → this row.",
+    "URL format: one repeated param per filter (?f.status=new&f.status=won&f.big=1); unknown values from an old link are dropped. useFilterParams reads location after mount (prerender-safe) and pushes a history entry per change, so Back undoes a filter.",
+    "With Next's router of your own: readFilters(useSearchParams(), specs) in, router.push(`?${writeFilters(params, { status: [...] }, specs)}`) out."
+  ],
+  "examples": [
+    {
+      "file": "url-state",
+      "title": "State in the URL, with ViewSwitch"
+    },
+    {
+      "file": "many",
+      "title": "More chips than fit"
+    }
+  ]
+}

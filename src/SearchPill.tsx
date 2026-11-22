@@ -111,7 +111,7 @@ export function SearchPill({
     inputRef.current?.focus();
   };
   return (
-    <div className={cn("flex items-center gap-2 h-11 pl-4 pr-1.5 rounded-full bg-tint focus-within:ring-2 focus-within:ring-focus", className)}>
+    <div className={cn("flex items-center gap-2 h-11 pl-4 pr-1.5 rounded-full bg-tint border border-control-line hover:border-control-line-hover focus-within:border-focus focus-within:ring-1 focus-within:ring-focus transition-colors", className)}>
       <Icon name="search" className="w-[18px] h-[18px] text-muted shrink-0" />
       <input
         ref={inputRef}
@@ -145,7 +145,7 @@ export function SearchPill({
         </button>
       ) : (
         hint && (
-          <kbd aria-hidden className="max-sm:hidden inline-flex h-6 min-w-6 px-1.5 mr-1.5 items-center justify-center rounded-chip bg-tint text-caption font-medium text-muted font-sans">
+          <kbd aria-hidden className="max-sm:hidden inline-flex h-6 min-w-6 px-1.5 mr-1.5 items-center justify-center rounded-chip border border-line text-caption font-medium text-body font-sans">
             {hint}
           </kbd>
         )

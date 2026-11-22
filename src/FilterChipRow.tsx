@@ -33,14 +33,15 @@ export function FilterChip({ def, onChange }: { def: FilterDef; onChange: (selec
     );
   }
   const first = def.options?.find((o) => o.value === def.selected[0]);
-  const text = !on ? def.label : def.selected.length === 1 && first ? first.label : t.filterSelected(def.label, def.selected.length);
+  const single = on && def.selected.length === 1 && first;
+  const text = !on ? def.label : single ? first.label : t.filterSelected(def.label, def.selected.length);
   return (
     <Popover
       label={def.label}
       width={240}
       className="p-0"
       trigger={
-        <button type="button" aria-label={on ? `${def.label}: ${text}` : undefined} className={cn(CHIP, on ? CHIP_ON : CHIP_OFF)}>
+        <button type="button" aria-label={single ? `${def.label}: ${text}` : undefined} className={cn(CHIP, on ? CHIP_ON : CHIP_OFF)}>
           {icon}
           <span className="max-w-48 truncate">{text}</span>
           <Icon name="chevronDown" className="w-3.5 h-3.5 shrink-0 opacity-70" />

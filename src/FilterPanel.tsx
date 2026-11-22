@@ -68,13 +68,12 @@ export function PhoneFilterBar({
         onClick={onOpenFilters}
         aria-haspopup="dialog"
         aria-expanded={filtersOpen}
-        aria-label={t.filterCount(activeCount)}
         className={cn(SEG, "flex-1 min-w-0 px-3")}
       >
         <Icon name="filter" className="w-4 h-4 shrink-0" />
         {t.filters}
         {activeCount > 0 && (
-          <span aria-hidden className="h-5 min-w-5 px-1 rounded-full bg-inverted text-on-inverted text-caption tabular-nums leading-5 text-center">
+          <span className="h-5 min-w-5 px-1 rounded-full bg-inverted text-on-inverted text-caption tabular-nums leading-5 text-center">
             {activeCount}
           </span>
         )}

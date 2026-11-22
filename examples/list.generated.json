@@ -112,6 +112,27 @@
     ]
   },
   {
+    "id": "filter-chip-row",
+    "title": "Filter chip row",
+    "group": "Forms",
+    "description": "A list page's filters as one line of chips (icon, label, chevron; solid with the value or count when on). Each chip opens a small multi-select popover, a switch chip toggles; the row scrolls sideways with ‹ › when it overflows, shows “Xoá lọc” while a filter is on and ends with the view tools. State in the URL with useFilterParams or the filterParams helpers.",
+    "components": [
+      "FilterChipRow",
+      "FilterChip",
+      "FilterOptions"
+    ]
+  },
+  {
+    "id": "filter-panel",
+    "title": "Filter panel",
+    "group": "Forms",
+    "description": "Filters on phones: one segmented pill (the page's views · Bộ lọc with the count · sort and view settings) that opens a full-screen panel: sort first, booleans as switches, one accordion per filter, “Xem N kết quả” at the bottom. From sm the panel is a side sheet, also the “Bộ lọc” panel of a page with more filters than its chip row shows.",
+    "components": [
+      "PhoneFilterBar",
+      "FilterPanel"
+    ]
+  },
+  {
     "id": "form-actions",
     "title": "Form actions, unsaved guard, validation",
     "group": "Forms",
@@ -170,6 +191,16 @@
     ]
   },
   {
+    "id": "search-pill",
+    "title": "Search pill",
+    "group": "Forms",
+    "description": "The wide pill search of a list page (one per page) and the result line under it: “query” · N kết quả on the left, the sort menu on the right. Typing is debounced (250 ms), Escape and the clear button clear at once, an optional key (/) focuses it.",
+    "components": [
+      "SearchPill",
+      "ResultLine"
+    ]
+  },
+  {
     "id": "select",
     "title": "Select",
     "group": "Forms",
@@ -194,6 +225,15 @@
     "description": "An on / off toggle for settings that apply immediately.",
     "components": [
       "Switch"
+    ]
+  },
+  {
+    "id": "view-switch",
+    "title": "View switch",
+    "group": "Forms",
+    "description": "List ↔ grid and an optional density toggle, as small icon toggles at the end of the filter row (FilterChipRow trailing).",
+    "components": [
+      "ViewSwitch"
     ]
   },
   {
@@ -407,6 +447,15 @@
     "components": [
       "SidePanel",
       "SidePanelToggle"
+    ]
+  },
+  {
+    "id": "sticky-context-bar",
+    "title": "Sticky context bar",
+    "group": "Navigation & layout",
+    "description": "The top of a list page that stays while the rows scroll under it: SearchPill, then FilterChipRow (PhoneFilterBar on phones), then ResultLine. An opaque STICKY_TOOLBAR strip, below the safe area on phones.",
+    "components": [
+      "StickyContextBar"
     ]
   },
   {

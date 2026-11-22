@@ -1,0 +1,38 @@
+{
+  "title": "Sticky context bar",
+  "group": "Navigation & layout",
+  "description": "The top of a list page that stays while the rows scroll under it: SearchPill, then FilterChipRow (PhoneFilterBar on phones), then ResultLine. An opaque STICKY_TOOLBAR strip, below the safe area on phones.",
+  "components": [
+    "StickyContextBar"
+  ],
+  "when": [
+    "A list, grid or table page with a search and filters people change while they scroll (customers, suppliers, products).",
+    "In place of a SubpageToolbar when the page needs the wide search and the chip row."
+  ],
+  "instead": [
+    {
+      "need": "A page with one or two filters and a few actions",
+      "use": "SubpageToolbar"
+    },
+    {
+      "need": "Actions of one record",
+      "use": "MinimalHeader or PageActions"
+    }
+  ],
+  "a11y": [
+    "With label it is a search landmark (role=search) named for the page, so screen-reader users jump to it.",
+    "Its children keep their own names; the result line announces the new count."
+  ],
+  "notes": [
+    "One per page, right under the page heading (TextTabs or PageTitle); the page's primary action stays in the header (MinimalHeader), not in this bar.",
+    "Desktop and iPad show FilterChipRow (max-md:hidden on the phone bar's sibling), phones PhoneFilterBar (md:hidden): same filters, same state.",
+    "Phone chrome: at most 2 rows plus the result line, under 25% of the viewport (P1)."
+  ],
+  "examples": [
+    {
+      "file": "list-page",
+      "title": "Suppliers list",
+      "preview": "frame"
+    }
+  ]
+}
