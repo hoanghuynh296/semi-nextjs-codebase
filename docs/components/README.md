@@ -24,6 +24,7 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Date picker](date-picker.md) | `DatePicker` | Schedule a job, filter by day, set a due date. |
 | [Field, Input, Textarea](field.md) | `Field`, `Input`, `Textarea` | Every form control: wrap it in Field instead of writing a <label>. |
 | [FileDrop](file-drop.md) | `FileDrop` | Choosing or dropping one or more files: CSV import, product photos, invoices, firmware, model files. |
+| [Form actions, unsaved guard, validation](form-actions.md) | `FormActions`, `useUnsavedGuard`, `useFormValidation`, `FormErrorSummary` | Every form: the action row is FormActions, never a hand-ordered pair of buttons. |
 | [Input group](input-group.md) | `InputGroup` | Money and units, URLs and domains, a copy or reveal button inside the field. |
 | [Input OTP](input-otp.md) | `InputOTP` | Verification codes, PINs, invite codes of a fixed length. |
 | [Number input](number-input.md) | `NumberInput`, `NumPadPopup` | Quantities, temperatures, prices, percentages. |

@@ -7,6 +7,7 @@
 import React, { useRef, useState } from "react";
 import { NumPadPopup, useCoarsePointer } from "./NumPadPopup";
 import { useField } from "./Field";
+import { kindAttrs } from "./fieldKinds";
 import { useSemiLocale } from "./locale";
 
 type Props = Omit<React.InputHTMLAttributes<HTMLInputElement>, "inputMode"> & {
@@ -46,6 +47,8 @@ export function NumberInput({ ref, numpadLabel, unit, integer, onClick, readOnly
         aria-describedby={field?.describedBy}
         aria-invalid={field?.invalid || undefined}
         required={field?.required}
+        autoComplete={kindAttrs(field?.kind).autoComplete}
+        enterKeyHint={kindAttrs(field?.kind).enterKeyHint}
         {...rest}
         ref={setRefs}
         type={usePad ? "text" : type}

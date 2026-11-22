@@ -10,7 +10,8 @@
 // literal (lint/classes.mjs), so className strings, cn() args, constants and template parts are all covered.
 //
 // HARD rules fail on any hit. RATCHET rules are old debt: each file may not get more hits than recorded in the
-// baseline (new files start at 0), so the debt only shrinks.
+// baseline (new files start at 0), so the debt only shrinks. WARN rules (the form kit) only print a warning: they never
+// fail the run and are not in the baseline, until a major release makes them rules (`disable` / `skip` work as for the others).
 //
 // Config: semi-lint.json in the current directory (all keys optional):
 //   {
@@ -296,6 +297,50 @@ const CSS_RAW = /(?:#[0-9a-fA-F]{3,8}\b|\b(?:rgba?|hsla?|oklch|oklab)\()|\b(?:bo
 /** Distinct iconTone values in one file from which the colours read as decoration, not meaning. */
 const DECORATIVE_TONES = 3;
 
+/** Warnings of the form kit (§9b): [id, message]. They print, never fail, and stay out of the baseline until a major release. */
+export const WARN = [
+  ["form-no-guard", "A form on a page loses typed work when the page is left: call useUnsavedGuard(dirty) (@semi/ui) and keep <FormActions> at the end of the form. A form in a Modal or Drawer is exempt."],
+  ["action-order", "Huỷ comes before Lưu / Tạo: right-aligned, ghost Huỷ then the primary, with a destructive action alone on the left. Use <FormActions>."],
+  ["toast-for-validation", "A field problem is told under the field (<Field error>), with an Alert summary above FormActions for several, not in a toast that disappears. A toast is for the result of an action."],
+  ["field-input-mode", "An email, phone, URL, password, search or money field sets its phone keyboard and autofill: <Field kind=\"email|tel|number|money|url|search|password\">."],
+];
+const SAVE_WORDS = "Lưu|Tạo|Save|Create|Gửi|Thêm";
+const CANCEL_WORDS = "Huỷ|Hủy|Cancel";
+const ACTION_ORDER = new RegExp(`>\\s*(?:${SAVE_WORDS})[^<{]*</(?:Button|button)>\\s*<(?:Button|button)\\b[^>]*>\\s*(?:${CANCEL_WORDS})\\s*<`, "g");
+const VALIDATION_TEXT = /(?<!\p{L})(?:bắt buộc|không hợp lệ|không được để trống|vui lòng nhập|nhập (?:đủ|đúng|lại)|invalid|is required|required field)(?!\p{L})/iu;
+const KIND_LABEL = /(?<![\p{L}])(?:e-?mail|điện thoại|sđt|phone|website|url|đường dẫn|mật khẩu|password|tìm kiếm|số tiền|giá bán|giá|price|amount)(?![\p{L}])/iu;
+const lineOf = (src, index) => src.slice(0, index).split("\n").length;
+
+/** Warnings [rule, line] of the form kit for one source file. */
+export function warnHits(src) {
+  const out = [];
+  const rows = src.split(/\r?\n/);
+  const code = rows.map((r) => (isComment(r) ? "" : r)).join("\n"); // same line numbers, comments blank
+  // form-no-guard: a page form (not a modal's or a popover's) without useUnsavedGuard
+  const form = /<FormActions\b|<form\b/.exec(code);
+  if (form && /<(?:Field|Input|Textarea)\b/.test(code) && !/\buseUnsavedGuard\b/.test(code) && !/<(?:Modal|Drawer|Popover)\b|placement=["']modal["']/.test(code)) out.push(["form-no-guard", lineOf(code, form.index)]);
+  // action-order: the primary before Huỷ in one row
+  for (const m of code.matchAll(ACTION_ORDER)) out.push(["action-order", lineOf(code, m.index)]);
+  rows.forEach((raw, i) => {
+    if (!raw.trim() || isComment(raw)) return;
+    // toast-for-validation: a toast whose text is about a missing / invalid field
+    const call = /\btoast(?:\.\w+)?\(\s*\{([^}]*)\}/.exec(rows.slice(i, i + 4).join("\n"));
+    if (/\btoast(?:\.\w+)?\(/.test(raw) && call && [...call[1].matchAll(/(["'`])((?:(?!\1).)*)\1/g)].some((m) => VALIDATION_TEXT.test(m[2]))) out.push(["toast-for-validation", i + 1]);
+    // field-input-mode (a): a <Field> labelled like an email, phone, URL, password or money field without kind
+    if (/<Field\b/.test(raw)) {
+      const tag = tagAt(rows, i);
+      const label = /\blabel=(?:"([^"]*)"|'([^']*)'|\{\s*["'`]([^"'`]*)["'`]\s*\})/.exec(tag);
+      if (label && KIND_LABEL.test(label[1] ?? label[2] ?? label[3] ?? "") && !/\bkind=/.test(tag)) out.push(["field-input-mode", i + 1]);
+    }
+    // field-input-mode (b): <Input type="email|tel|url|search|password"> without inputMode, in a file that sets no kind
+    if (/<Input\b/.test(raw) && !/\bkind=/.test(src)) {
+      const tag = tagAt(rows, i);
+      if (/\btype=["'](?:email|tel|url|search|password)["']/.test(tag) && !/\binputMode=/.test(tag)) out.push(["field-input-mode", i + 1]);
+    }
+  });
+  return out;
+}
+
 const DEFAULT_CONFIG = { scan: ["app", "components"], baseline: "semi-lint-baseline.json", skip: {}, only: {}, disable: [] };
 
 export function loadConfig(cwd = process.cwd()) {
@@ -421,6 +466,7 @@ export function scan(paths, cfg, cwd) {
   const hard = [];
   const counts = Object.fromEntries(RATCHET.map(([id]) => [id, {}]));
   const lines = Object.fromEntries(RATCHET.map(([id]) => [id, {}])); // rule → file → first hit lines (for messages)
+  const warnings = []; // form-kit warnings { file, line, rule, message }: print only
   const hits = []; // every ratchet hit { file, line, rule, token? } (the audit lists them all)
   const skipped = (id, name) => disabled.has(id) || skipPaths(skip[id]).some((s) => name.startsWith(s));
   const add = (id, name, line, token) => {
@@ -450,6 +496,7 @@ export function scan(paths, cfg, cwd) {
       if (new Set(tones.map((m) => m[1])).size >= DECORATIVE_TONES) add("decorative-icon-tones", name, src.slice(0, tones[0].index).split("\n").length);
     }
     for (const [id, line] of shellHits(p, src, cwd)) if (!skipped(id, name)) add(id, name, line);
+    for (const [id, line] of warnHits(src)) if (!skipped(id, name)) warnings.push({ file: name, line, rule: id, message: WARN.find(([w]) => w === id)[1] });
     const rows = src.split(/\r?\n/);
     rows.forEach((raw, i) => {
       if (!raw.trim() || isComment(raw)) return;
@@ -468,7 +515,7 @@ export function scan(paths, cfg, cwd) {
       }
     });
   }
-  return { hard, counts, lines, hits };
+  return { hard, counts, lines, hits, warnings };
 }
 
 function sortedCounts(counts) {
@@ -516,9 +563,10 @@ export function configGrowth(cwd, cfg, baseline) {
   if (cfgTxt) {
     const was = JSON.parse(cfgTxt);
     const paths = (v) => (!v ? [] : Array.isArray(v) ? v : Object.keys(v));
+    const warn = new Set(WARN.map(([id]) => id)); // warning tier: turning one off is not growth
     for (const [id, v] of Object.entries(cfg.skip || {}))
-      for (const p of paths(v)) if (!paths(was.skip?.[id]).includes(p)) out.push(`semi-lint.json: new skip ${id} → ${p} (needs the user's OK; put the reason in the pull request)`);
-    for (const id of cfg.disable || []) if (!(was.disable || []).includes(id)) out.push(`semi-lint.json: rule ${id} newly disabled (needs the user's OK)`);
+      for (const p of warn.has(id) ? [] : paths(v)) if (!paths(was.skip?.[id]).includes(p)) out.push(`semi-lint.json: new skip ${id} → ${p} (needs the user's OK; put the reason in the pull request)`);
+    for (const id of cfg.disable || []) if (!warn.has(id) && !(was.disable || []).includes(id)) out.push(`semi-lint.json: rule ${id} newly disabled (needs the user's OK)`);
   }
   return out;
 }
@@ -555,7 +603,7 @@ function main(argv) {
     return 2;
   }
   const paths = filesToScan(cfg, cwd, args.files);
-  const { hard, counts, lines } = scan(paths, cfg, cwd);
+  const { hard, counts, lines, warnings } = scan(paths, cfg, cwd);
   const baselinePath = resolve(cwd, cfg.baseline);
 
   if (args.update) {
@@ -600,10 +648,11 @@ function main(argv) {
   const known = Object.values(base).reduce((s, v) => s + Object.values(v).reduce((a, b) => a + b, 0), 0);
 
   if (args.json) {
-    console.log(JSON.stringify({ files: paths.length, hard, grown, grownConfig, ratchet: sortedCounts(counts), ratchetTotal: total, baselineTotal: known }, null, 1));
+    console.log(JSON.stringify({ files: paths.length, hard, grown, grownConfig, warnings, ratchet: sortedCounts(counts), ratchetTotal: total, baselineTotal: known }, null, 1));
     return hard.length || grown.length || grownConfig.length ? 1 : 0;
   }
   for (const g of grownConfig) console.log(`semi-lint --ci: ${g}`);
+  for (const w of warnings) console.log(`${w.file}:${w.line}: warning [${w.rule}] ${w.message}`);
   for (const h of hard) console.log(`${h.file}:${h.line}: [${h.rule}] ${h.message}\n    ${h.text}`);
   for (const g of grown) console.log(`${g.file}: [${g.rule}] ${g.hits} hits (lines ${g.lines.join(", ")}${g.hits > g.lines.length ? ", …" : ""}), baseline ${g.baseline}: ${g.message}`);
   if (hard.length || grown.length || grownConfig.length) {
@@ -616,7 +665,8 @@ function main(argv) {
   if (!args.files) {
     const hint = total < known ? " (run --update-baseline to lock in the fixes)" : "";
     const where = cfg._found ? "" : " [no semi-lint.json: default scan app/ components/]";
-    console.log(`semi-lint: clean, ${paths.length} files (${total} known ratchet hits left${hint})${where}`);
+    const warned = warnings.length ? `, ${warnings.length} warning(s)` : "";
+    console.log(`semi-lint: clean, ${paths.length} files (${total} known ratchet hits left${hint}${warned})${where}`);
   }
   return 0;
 }

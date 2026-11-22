@@ -47,6 +47,10 @@ If neither works (`semi_status` answers, or `npx semi` is missing), the app has 
    real shape), empty (the action that fills it) and "no result" for a search or filter, error (what failed, a
    retry, the loaded data kept), no permission, and too much data (long names, many rows). A destructive action is
    confirmed (`confirmDialog`) or undoable (`toast` with an action).
+   Forms are built from `FormActions` (Huỷ ghost then Lưu / Tạo, sticky on a page, `placement="modal"` in a Modal footer),
+   `useUnsavedGuard(dirty)`, `Field kind="email|tel|number|money|url|search|password"` and `useFormValidation` +
+   `FormErrorSummary` (error on blur then change, under the field, never a toast; `max-w-2xl`): `npx semi example form-actions`
+   (lint warns: `form-no-guard`, `action-order`, `toast-for-validation`, `field-input-mode`).
 4. **A part:** copy the closest example and adapt it. Examples import from `@semi/ui` only and type-check, so keep
    their props and structure; change data, labels and handlers.
 5. **Compose, do not invent.** No local wrappers (`components/ui.tsx`), no raw `<select>` / `<table>` / `<dialog>`,

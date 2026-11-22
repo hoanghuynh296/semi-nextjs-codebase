@@ -5,9 +5,11 @@
 //     <Input value={name} onChange={(e) => setName(e.target.value)} />
 //   </Field>
 // Input, Textarea, NumberInput, CustomSelect and CustomCombobox inside a Field pick up its id, aria-describedby,
-// aria-invalid and required automatically.
+// aria-invalid and required automatically; `kind` (email, tel, number, money, url, search, password) also gives Input
+// the right type, phone keyboard, autofill and Enter key.
 import React, { createContext, useContext, useId } from "react";
 import { Icon, type IconName } from "./Icon";
+import { kindAttrs, type FieldKind } from "./fieldKinds";
 import { useSemiLocale } from "./locale";
 import { FIELD_INPUT, FIELD_LABEL, FIELD_TEXTAREA } from "../styles/surfaces";
 import { cn } from "../styles/utils";
@@ -19,6 +21,8 @@ export interface FieldState {
   describedBy?: string;
   invalid: boolean;
   required: boolean;
+  /** The Field's `kind`: Input and NumberInput take their type, inputMode, autoComplete and enterKeyHint from it. */
+  kind?: FieldKind;
 }
 
 const FieldContext = createContext<FieldState | null>(null);
@@ -31,6 +35,7 @@ export function Field({
   hint,
   error,
   required = false,
+  kind,
   id: idProp,
   className,
   children,
@@ -41,6 +46,11 @@ export function Field({
   /** Error message; marks the control aria-invalid and announces the message. */
   error?: React.ReactNode;
   required?: boolean;
+  /**
+   * What the control holds: `email`, `tel`, `number`, `money`, `url`, `search` or `password`. Sets the control's `type`,
+   * `inputMode` (the phone keyboard), `autoComplete` and `enterKeyHint`; a prop on the control itself wins.
+   */
+  kind?: FieldKind;
   id?: string;
   className?: string;
   children: React.ReactNode;
@@ -51,7 +61,7 @@ export function Field({
   const hintId = hint && !error ? `${id}-hint` : undefined;
   const errorId = error ? `${id}-error` : undefined;
   const labelId = `${id}-label`;
-  const state: FieldState = { id, labelId, describedBy: errorId ?? hintId, invalid: !!error, required };
+  const state: FieldState = { id, labelId, describedBy: errorId ?? hintId, invalid: !!error, required, kind };
   return (
     <FieldContext.Provider value={state}>
       <div className={cn("min-w-0", className)}>
@@ -100,6 +110,7 @@ export function Input({ ref, icon, className, ...rest }: InputProps) {
       aria-describedby={field?.describedBy}
       aria-invalid={field?.invalid || undefined}
       required={field?.required}
+      {...kindAttrs(field?.kind)}
       {...rest}
       className={cn(FIELD_INPUT, INVALID, icon && "pl-8", className)}
     />
