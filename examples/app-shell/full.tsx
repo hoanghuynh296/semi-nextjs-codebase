@@ -96,6 +96,8 @@ export default function FullShell() {
       create={{
         label: "Tạo mới",
         items: [
+          // not available on this plan: shown, but disabled (the phone drawer focuses the first enabled row)
+          { label: "Báo giá", icon: "fileText", disabled: true, onSelect: () => {} },
           { label: "Đơn hàng", icon: "bag", onSelect: () => setActive("orders-open") },
           { label: "Khách hàng", icon: "users", onSelect: () => setActive("customers") },
           { label: "Sản phẩm", icon: "box", onSelect: () => {} },

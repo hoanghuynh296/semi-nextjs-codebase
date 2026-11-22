@@ -57,7 +57,7 @@ export interface ShellNavItem {
 export interface ShellCreate {
   label: string;
   icon?: IconName;
-  /** What can be created; the button opens them in a Menu (on phones the drawer shows the first four as tiles). */
+  /** What can be created; the button opens them in a Menu. On phones the drawer shows one Create row that opens the items as a level. */
   items?: MenuItem[];
   href?: string;
   onClick?: () => void;
@@ -777,7 +777,10 @@ function PhoneDrawer({
   useEffect(() => {
     const root = ref.current;
     if (!root) return;
-    const target = level ? root.querySelector<HTMLElement>("[data-drawer-start]") : returnTo ? root.querySelector<HTMLElement>(`[data-drawer-row="${CSS.escape(returnTo)}"]`) : null;
+    // the level's first enabled row, or its back button when every row is disabled (focus never drops to the body)
+    const target = level
+      ? (root.querySelector<HTMLElement>("[data-drawer-row-level]:not(:disabled)") ?? root.querySelector<HTMLElement>("[data-drawer-back]"))
+      : returnTo ? root.querySelector<HTMLElement>(`[data-drawer-row="${CSS.escape(returnTo)}"]`) : null;
     target?.focus({ preventScroll: true });
   }, [level, returnTo]);
   const open = (l: DrillLevel) => {
@@ -844,7 +847,7 @@ function PhoneDrawer({
     <div ref={ref} role="dialog" aria-modal="true" aria-labelledby={titleId} className="md:hidden fixed inset-0 z-drawer bg-panel flex flex-col pt-[env(safe-area-inset-top)]">
       <div className="flex items-center gap-2 h-14 px-2 shrink-0">
         {level ? (
-          <button type="button" onClick={back} className={cn("flex items-center gap-2 h-11 px-2 rounded-control text-ui font-semibold text-contrast hover:bg-tint cursor-pointer min-w-0", FOCUS_RING)}>
+          <button type="button" data-drawer-back="" onClick={back} className={cn("flex items-center gap-2 h-11 px-2 rounded-control text-ui font-semibold text-contrast hover:bg-tint cursor-pointer min-w-0", FOCUS_RING)}>
             <Icon name="back" className="w-5 h-5 shrink-0" />
             <span id={titleId} className="truncate">
               {level.label}
@@ -867,10 +870,10 @@ function PhoneDrawer({
       <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-2 pb-3 flex flex-col gap-4">
         {level ? (
           <ul className="flex flex-col gap-0.5">
-            {level.rows.map((c, i) => {
+            {level.rows.map((c) => {
               const on = !c.onSelect && c.id === activeId;
               const props = {
-                "data-drawer-start": i === 0 ? "" : undefined,
+                "data-drawer-row-level": "",
                 "aria-current": on ? ("page" as const) : undefined,
                 className: cn(row, on && "bg-tint-hover", "disabled:opacity-40"),
               };

@@ -405,7 +405,11 @@ test("phones get the drawer: focus moves in, stays in, drills down and returns t
   await expect(orders).toBeFocused();
   // Create is one row that opens what can be created (no tiles repeating the nav's names)
   await drawer.getByRole("button", { name: "Tạo mới" }).click();
-  await expect(page.getByRole("dialog", { name: "Tạo mới" }).getByRole("button", { name: "Phiếu nhập" })).toBeVisible();
+  const createLevel = page.getByRole("dialog", { name: "Tạo mới" });
+  await expect(createLevel.getByRole("button", { name: "Phiếu nhập" })).toBeVisible();
+  // its first row is disabled: focus goes to the first enabled row, never to the body (#98)
+  await expect(createLevel.getByRole("button", { name: "Báo giá" })).toBeDisabled();
+  await expect(createLevel.getByRole("button", { name: "Đơn hàng" })).toBeFocused();
   await page.keyboard.press("Escape");
   expect(await lowContrast(page)).toEqual([]);
   await page.keyboard.press("Escape");

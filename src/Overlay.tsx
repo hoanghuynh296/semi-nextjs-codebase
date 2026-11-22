@@ -19,7 +19,10 @@ import { cn } from "../styles/utils";
 export function Tooltip(props: {
   content: React.ReactNode;
   children: React.ReactElement;
-  /** Where the hint shows; `right` is for a vertical icon rail (AppShell's collapsed sidebar). */
+  /**
+   * Where the hint shows; `right` is for a vertical icon rail (AppShell's collapsed sidebar).
+   * @default "top"
+   */
   side?: "top" | "bottom" | "right";
 }) {
   // Props given to the Tooltip itself (a Menu or Popover that uses it as its trigger passes ref, handlers, aria-*) go
