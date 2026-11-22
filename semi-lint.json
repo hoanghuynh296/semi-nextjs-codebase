@@ -57,7 +57,11 @@
       "src/Chart.tsx": "data colours: series colours of the chart",
       "app/brand/page.tsx": "data colours: the brand's swatches",
       "app/lab/ColorPanel.tsx": "data colours: the generated scale swatches of the Design Lab"
-    }
+    },
+    "raw-pill-button": [
+      "src/",
+      "styles/"
+    ]
   },
   "ignore": [
     "examples/registry.generated.ts",

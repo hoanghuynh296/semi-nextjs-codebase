@@ -304,7 +304,18 @@ export const WARN = [
   ["toast-for-validation", "A field problem is told under the field (<Field error>), with an Alert summary above FormActions for several, not in a toast that disappears. A toast is for the result of an action."],
   ["field-input-mode", "An email, phone, URL, password, search or money field sets its phone keyboard and autofill: <Field kind=\"email|tel|number|money|url|search|password\">."],
   ["local-toast", "One toast API (§14c): use toast / toast.success|error|warning|info|undo|promise from @semi/ui, not a toast library or an app-level wrapper. Its extras (action, duration, promise, undo) are already in Semi's toast."],
+  // The patterns of the #94 study (C-031 / C-032, #107): warnings until 1.0 (C-021).
+  [
+    "no-spinner-in-list",
+    "A list, grid or table that is loading shows its own shape (§13b, L16): DataTable / List `loading`, SkeletonRows, SkeletonGrid or the shaped skeletons (#106), not a Spinner or \"Đang tải\" text in place of the rows. A Spinner stays inside the button or field that runs its own action.",
+  ],
+  ["filter-chip-wrap", "Filter chips are one line (L4, C-026): FilterChipRow + useFilterParams from @semi/ui (it scrolls sideways and keeps the state in the URL), not hand-made chip buttons in a flex-wrap that grows to several rows."],
+  ["raw-pill-button", "A round icon button is <Button iconOnly shape=\"round\" icon aria-label> from @semi/ui (it keeps the focus ring, the title and the hit area), not a hand-made rounded-full button with a tint / field fill."],
+  ["detail-overlay-url", "A DetailOverlay is driven by the URL (L9): const { openId, open, close } = useDetailParam(); open={openId !== null} onClose={close}, so the record has a link, Back closes it and the list keeps its scroll."],
+  ["overline-place", "text-overline (C-032) is for section labels only: a sidebar / drawer group, a palette group, a mega menu column, a workspace panel section. Never a button, link, field label, title, badge, table head or a sentence: those are sentence case in their own type style."],
 ];
+/** Hard rules that read a whole JSX tag: [id, message]. */
+export const TAG_HARD = [["card-hover-actions-touch", "<CardActions> needs a label (\"Thao tác với <tên>\"): on a touch screen the ⋯ is the only control, and the label is its name."]];
 const TOAST_LIB = /\bfrom\s+["'](?:sonner|react-hot-toast|react-toastify|react-toast-notifications|notistack|@radix-ui\/react-toast)["']/g;
 // an import clause has no quote or semicolon, so a match cannot run on into the next statement
 const TOAST_LOCAL_IMPORT = /\bimport\s+[^;'"]*?\bfrom\s+["'](?!@semi\/ui["']|(?:\.\.\/)+src\/Toast["'])[^"']*[\/@.](?:use)?[Tt]oasts?(?:Store|Context|Provider|Helpers?|Utils?)?["']/g;
@@ -347,6 +358,260 @@ export function warnHits(src) {
       if (/\btype=["'](?:email|tel|url|search|password)["']/.test(tag) && !/\binputMode=/.test(tag)) out.push(["field-input-mode", i + 1]);
     }
   });
+  return [...out, ...patternHits(code)];
+}
+
+// ---- The #94 patterns (#107): lists that load, filter chips, round icon buttons, DetailOverlay, text-overline ----
+
+/** Whether the quote at `k` opens a string: where a value goes (after = ( { [ , : ? & | ! + ; or =>, return, case,
+ * typeof, in, of, default), not an apostrophe in JSX text inside an attribute (`trigger={<span>Don't</span>}`). */
+function opensString(text, k) {
+  const before = text.slice(Math.max(0, k - 40), k).replace(/\s+$/, "");
+  return before === "" || /[=({[,:?&|!+;]$/.test(before) || /(?:=>|\b(?:return|case|typeof|in|of|default))$/.test(before);
+}
+/** End (exclusive) of the JSX opening tag that starts at `start`, counting braces and quotes, so neither the `>` of an
+ * arrow (`onClick={() => x}`) nor JSX inside an attribute (`empty={<Spinner />}`) ends it. */
+function tagEnd(code, start) {
+  let depth = 0;
+  let quote = null;
+  const stop = Math.min(code.length, start + 4000);
+  for (let k = start + 1; k < stop; k++) {
+    const c = code[k];
+    if (quote) {
+      if (c === "\\") k++;
+      else if (c === quote) quote = null;
+      continue;
+    }
+    if ((c === '"' || c === "'" || c === "`") && opensString(code, k)) quote = c;
+    else if (c === "{") depth++;
+    else if (c === "}") depth--;
+    else if (c === ">" && depth <= 0) return k + 1;
+  }
+  return stop;
+}
+/** The JSX opening tag that contains position `index` (an attribute value, a class string): { name, start, end, text }, or null. */
+function enclosingTag(code, index) {
+  const from = Math.max(0, index - 3000);
+  const opens = [...code.slice(from, index).matchAll(/<([A-Za-z][\w.]*)\b/g)];
+  for (let k = opens.length - 1; k >= 0; k--) {
+    const start = from + opens[k].index;
+    const end = tagEnd(code, start);
+    if (end > index) return { name: opens[k][1], start, end, text: code.slice(start, end) };
+  }
+  return null;
+}
+/** The opening tag that starts at `start`: { name, start, end, text }. */
+const tagFrom = (code, start) => {
+  const end = tagEnd(code, start);
+  return { name: /^<([A-Za-z][\w.]*)/.exec(code.slice(start))?.[1], start, end, text: code.slice(start, end) };
+};
+
+/** Elements still open at the end of `text` (innermost last): [{ name, attrs }]. */
+function openStack(text) {
+  const stack = [];
+  for (const m of text.matchAll(/<(\/?)([A-Za-z][\w.]*)\b/g)) {
+    const [, close, name] = m;
+    if (close) {
+      const at = stack.map((e) => e.name).lastIndexOf(name);
+      if (at >= 0) stack.length = at;
+      continue;
+    }
+    const tag = text.slice(m.index, tagEnd(text, m.index));
+    if (!tag.endsWith(">")) stack.push({ name, attrs: tag }); // still being written: the hit is inside this tag
+    else if (!/\/\s*>$/.test(tag)) stack.push({ name, attrs: tag });
+  }
+  return stack;
+}
+const LIST_TAGS = new Set(["ul", "ol", "tbody", "TBody", "DataTable", "ItemGroup", "List"]);
+const LIST_ATTRS = /\brole=["'](?:list|grid|rowgroup|listbox|feed)["']|(?<![\w-])(?:[\w@\[\]():-]*:)?grid-cols-|(?<![\w-])divide-y\b/;
+const isList = (e) => LIST_TAGS.has(e.name) || LIST_ATTRS.test(e.attrs);
+/** A control that runs its own action: a Spinner inside it is the allowed use (§13b). */
+const OWN_ACTION = /^(?:button|Button|SplitButton|Input|SearchInput|SearchPill|Field|NumberInput|Textarea)$/;
+/** Loading marks: Semi's Spinner, a lucide Loader2, a hand-spun element, loading text ("…" or "..."). */
+const LOADING_MARK = /<(?:Spinner|Loader2|LoaderCircle)\b|(?<![\w-])animate-spin(?![\w-])|Đang tải|Loading(?:\.\.\.|…)/g;
+/** The text right after a loading mark renders a list: the other branch of a ternary (`? <Spinner/> : rows.map(…)`). */
+const LIST_BRANCH = /^[^?;]*?:\s*\(?\s*(?:<(?:ul|ol|tbody|TBody|DataTable|ItemGroup|List|Table)\b|[\w.?!]+\.map\(|<[A-Za-z][\w.]*\b[^>]*?(?:grid-cols-|divide-y\b|role=["'](?:list|grid)["']))/;
+/** A list rendered anywhere in the file (for an early `if (loading) return <Spinner />`). */
+const RENDERS_LIST = /<(?:ul|ol|tbody|TBody|DataTable|ItemGroup|List)\b|\.map\(\s*\(?[\w{}, ]*\)?\s*=>\s*\(?\s*<|grid-cols-/;
+
+/** The value of a JSX attribute in a tag text: the string, or the {expression} (balanced braces), or null. */
+function attrValue(tag, name) {
+  const m = new RegExp(`\\s${name}=`).exec(tag);
+  if (!m) return null;
+  const rest = tag.slice(m.index + m[0].length);
+  if (/^["']/.test(rest)) return rest.slice(1, rest.indexOf(rest[0], 1));
+  if (rest[0] !== "{") return null;
+  let depth = 0;
+  for (let k = 0; k < rest.length; k++) {
+    if (rest[k] === "{") depth++;
+    else if (rest[k] === "}" && --depth === 0) return rest.slice(1, k);
+  }
+  return rest.slice(1);
+}
+/** Whether a tag sets the attribute itself, at the top level (not inside an object in another attribute). */
+function hasOwnAttr(tag, name) {
+  let depth = 0;
+  let quote = null;
+  for (let k = 0; k < tag.length; k++) {
+    const c = tag[k];
+    if (quote) {
+      if (c === "\\") k++;
+      else if (c === quote) quote = null;
+      continue;
+    }
+    if ((c === '"' || c === "'" || c === "`") && opensString(tag, k)) quote = c;
+    else if (c === "{") depth++;
+    else if (c === "}") depth--;
+    else if (depth === 0 && /\s/.test(c) && tag.startsWith(name + "=", k + 1)) return true;
+  }
+  return false;
+}
+
+const ALPHA = String.raw`(?:\/(?:\d+|\[[\d.]+\]))?`;
+const ROUND_FILL = new RegExp(String.raw`(?<![\w-])(?:[\w-]+:)*bg-(?:(?:tint|field|raised|card(?:-field)?|panel(?:-\d)?|app|canvas)${ALPHA}|(?:black|white)\/(?:\d+|\[[\d.]+\]))(?![\w-])`);
+/** Square size of an icon button (28px and up; a radio dot or a slider thumb is smaller): size-N, w-N with h-N of
+ * the same N, aspect-square with a width, or the control size. */
+const isSquare = (cls) => {
+  const big = (n) => n === "control" || Number(n) >= 7;
+  for (const m of cls.matchAll(/(?<![\w:-])size-(\d+(?:\.\d+)?|control)(?![\w-])/g)) if (big(m[1])) return true;
+  for (const m of cls.matchAll(/(?<![\w:-])w-(\d+(?:\.\d+)?|control)(?![\w-])/g)) {
+    if (big(m[1]) && (/(?<![\w-])aspect-square(?![\w-])/.test(cls) || new RegExp(`(?<![\\w:-])h-${m[1].replace(".", "\\.")}(?![\\w-])`).test(cls))) return true;
+  }
+  return false;
+};
+const INTERACTIVE_CLS = /(?<![\w-])(?:hover:bg-|cursor-pointer|focus-visible:)/;
+const CLICKABLE_TAG = /^<(?:button|Button|a|Link)\b|\sonClick=/;
+/** Where text-overline may go (C-032 allow-list): a plain section label (div, span, p, h2–h6, dt, figcaption) that is
+ * not clickable and holds a label, not a sentence. Everything else (controls, links, field labels, h1, badges, table
+ * cells, any component) is flagged. */
+const OVERLINE_TAGS = /^(?:div|span|p|h[2-6]|dt|figcaption|header)$/;
+const OVERLINE_LABEL_MAX = 40;
+
+/** Code with JS `.filter(` calls removed: what is left says whether the UI is about filtering. */
+const filterWords = (text) => /filter|lọc/i.test(text.replace(/\.filter\s*\(/g, "("));
+
+/** Warnings [rule, line] of the #94 patterns in one source file (comments already blanked). */
+export function patternHits(code) {
+  const out = [];
+  const seen = new Set();
+  const push = (rule, index) => {
+    const line = lineOf(code, index);
+    if (seen.has(rule + ":" + line)) return;
+    seen.add(rule + ":" + line);
+    out.push([rule, line]);
+  };
+
+  // no-spinner-in-list: a loading mark inside a list (or as a list's prop), as the other branch of a list, or as an
+  // early return of a component that renders a list.
+  for (const m of code.matchAll(LOADING_MARK)) {
+    let at = m.index;
+    const host = enclosingTag(code, at + 1);
+    if (/^animate-spin/.test(m[0])) {
+      if (!host) continue; // a class constant: where it lands is not visible here
+      if (/^(?:Spinner|Loader2|LoaderCircle)$/.test(host.name)) continue; // counted at its own tag
+      if (/^(?:Icon)$/.test(host.name) && /name=\{?["']?(?:refresh|loader)/.test(host.text)) continue;
+      at = host.start;
+    } else if (m[0].startsWith("<")) {
+      const parent = enclosingTag(code, at); // <DataTable empty={<Spinner />}>
+      if (parent && /^(?:DataTable|List)$/.test(parent.name)) {
+        push("no-spinner-in-list", m.index);
+        continue;
+      }
+    }
+    const stack = openStack(code.slice(Math.max(0, at - 4000), at));
+    if (/^animate-spin/.test(m[0]) && OWN_ACTION.test(host.name)) continue; // a hand-spun button: custom-spinner says it
+    const own = stack.findLastIndex((e) => OWN_ACTION.test(e.name));
+    const list = stack.findLastIndex(isList);
+    if (own > list) continue; // the spinner of a button inside a row
+    const before = code.slice(Math.max(0, at - 200), at);
+    const markEnd = code[at] === "<" ? tagEnd(code, at) : at + m[0].length;
+    const after = code.slice(markEnd, markEnd + 600);
+    const branch = /\?\s*\(?\s*(?:<[A-Za-z][\w.]*\b[^<>]*>\s*)*$/.test(before) && LIST_BRANCH.test(after);
+    const early = /\breturn\s*\(?\s*(?:<[A-Za-z][\w.]*\b[^<>]*>\s*)*$/.test(before) && /\bif\s*\([^)]*\b(?:loading|isLoading|pending|isPending|fetching)\b/i.test(before) && RENDERS_LIST.test(code.slice(at));
+    if (list >= 0 || branch || early) push("no-spinner-in-list", m.index);
+  }
+
+  // filter-chip-wrap: an element with flex-wrap whose children are clickable chip-like buttons that filter.
+  for (const m of code.matchAll(/<([A-Za-z][\w.]*)\b/g)) {
+    const name = m[1];
+    if (name === "FilterChipRow") continue;
+    const open = tagFrom(code, m.index);
+    if (!/(?<![\w-])flex-wrap(?![\w-])/.test(open.text) || /\/\s*>$/.test(open.text)) continue;
+    // the element's body, up to its own close (depth of the same tag name)
+    let depth = 1;
+    let end = Math.min(code.length, open.end + 3000);
+    for (const t of code.slice(open.end, end).matchAll(new RegExp(`<(/?)${name.replace(".", "\\.")}\\b`, "g"))) {
+      const abs = open.end + t.index;
+      if (t[1]) depth--;
+      else if (!/\/\s*>$/.test(tagFrom(code, abs).text)) depth++;
+      if (depth === 0) {
+        end = abs;
+        break;
+      }
+    }
+    const body = code.slice(open.end, end);
+    const chips = [...body.matchAll(/<(button|Button|Chip)\b/g)]
+      .map((c) => ({ tag: c[1], text: tagFrom(body, c.index).text }))
+      .filter((c) => (c.tag === "Chip" || /rounded-full/.test(c.text)) && /\s(?:onClick|aria-pressed|selected|active|onRemove)[=\s/>]/.test(c.text));
+    // Chips also pick values (materials, colours) and legends toggle chart series: only chips that filter count.
+    if (!filterWords(open.text + body)) continue; // the container's own tag counts (aria-label="Lọc")
+    if (chips.length >= 2 || (chips.length === 1 && /\.map\(/.test(body))) push("filter-chip-wrap", m.index);
+  }
+
+  // raw-pill-button: a string of classes that draws a round, filled, square, clickable button.
+  for (const m of code.matchAll(/(["'`])((?:(?!\1)[^\n\\]|\\.)*?(?<![\w-])rounded-full(?![\w-])(?:(?!\1)[^\n\\]|\\.)*)\1/g)) {
+    const cls = m[2];
+    if (!ROUND_FILL.test(cls) || !isSquare(cls)) continue;
+    const host = enclosingTag(code, m.index);
+    // In a tag, that tag must be clickable (a span inside a clickable tile, a play mark, is decoration); a class
+    // constant counts when it has a hover / pointer / focus class.
+    if (host) {
+      if (/^(?:Avatar|Button)$/.test(host.name) || !CLICKABLE_TAG.test(host.text)) continue;
+    } else if (!INTERACTIVE_CLS.test(cls)) continue;
+    push("raw-pill-button", m.index);
+  }
+  // …and a Button made round by className instead of shape="round".
+  for (const m of code.matchAll(/<Button\b/g)) {
+    const tag = tagFrom(code, m.index).text;
+    if (/\siconOnly\b/.test(tag) && /(?<![\w-])!?rounded-full(?![\w-])/.test(attrValue(tag, "className") ?? "")) push("raw-pill-button", m.index);
+  }
+
+  // detail-overlay-url: DetailOverlay whose open does not come from the URL.
+  const urlDriven = /\buseDetailParam\s*\(|\buseSearchParams\s*\(|\bsearchParams\b|\buseFilterParams\s*\(|\bopenDetail\s*\(/.test(code);
+  for (const m of code.matchAll(/<DetailOverlay\b/g)) {
+    if (urlDriven) break;
+    const tag = tagFrom(code, m.index).text;
+    if (/\s\{\s*\.\.\./.test(tag)) continue;
+    const open = (attrValue(tag, "open") ?? "").trim();
+    // a wrapper that passes its own `open` prop on: the page that renders the wrapper is checked instead
+    const prop = /^[A-Za-z_$][\w$]*$/.test(open) && new RegExp(`(?:function\\s*\\w*\\s*\\(|=\\s*\\()\\s*\\{[^}]*\\b${open}\\b[^}]*\\}`).test(code);
+    if (!prop && !/^props\./.test(open)) push("detail-overlay-url", m.index);
+  }
+
+  // overline-place: text-overline outside a plain, non-clickable section label.
+  for (const m of code.matchAll(/(?<![\w-])text-overline(?![\w-])/g)) {
+    const host = enclosingTag(code, m.index);
+    if (!host) continue; // a class constant: where it lands is not visible here
+    const clickable = /\s(?:onClick|href|htmlFor|tabIndex)=|\srole=\{?\s*["'](?:button|link|tab|menuitem\w*|option|checkbox|switch)["']/.test(host.text);
+    // the element's own text up to its first child or expression ({col.title} is a label passed in)
+    const text = /^([^<{]*)/.exec(code.slice(host.end, host.end + 400))[1].replace(/\s+/g, " ").trim();
+    if (!OVERLINE_TAGS.test(host.name) || clickable || text.length > OVERLINE_LABEL_MAX) push("overline-place", m.index);
+  }
+  return out;
+}
+
+/** Hard hits [rule, line, text] that read a whole JSX tag (TAG_HARD). */
+export function tagHardHits(src) {
+  const rows = src.split(/\r?\n/).map((r) => (isComment(r) ? "" : r));
+  const code = rows.join("\n");
+  const out = [];
+  for (const m of code.matchAll(/<CardActions\b/g)) {
+    const tag = tagFrom(code, m.index).text;
+    if (!hasOwnAttr(tag, "label") && !/\s\{\s*\.\.\./.test(tag)) {
+      const line = lineOf(code, m.index);
+      out.push(["card-hover-actions-touch", line, rows[line - 1].trim().slice(0, 140)]);
+    }
+  }
   return out;
 }
 
@@ -506,6 +771,7 @@ export function scan(paths, cfg, cwd) {
     }
     for (const [id, line] of shellHits(p, src, cwd)) if (!skipped(id, name)) add(id, name, line);
     for (const [id, line] of warnHits(src)) if (!skipped(id, name)) warnings.push({ file: name, line, rule: id, message: WARN.find(([w]) => w === id)[1] });
+    for (const [id, line, text] of tagHardHits(src)) if (!skipped(id, name)) hard.push({ file: name, line, rule: id, message: TAG_HARD.find(([h]) => h === id)[1], text });
     const rows = src.split(/\r?\n/);
     rows.forEach((raw, i) => {
       if (!raw.trim() || isComment(raw)) return;

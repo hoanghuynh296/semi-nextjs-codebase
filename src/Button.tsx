@@ -63,6 +63,12 @@ type Base = Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "children"> & {
   /** Shows a spinner in place of the icon and blocks clicks (aria-busy). */
   loading?: boolean;
   fullWidth?: boolean;
+  /**
+   * `round`: a circle instead of the style's control radius, for round icon buttons (media tiles, overlay headers,
+   * carousel arrows). Use it with `iconOnly`; lint `raw-pill-button` flags hand-made ones.
+   * @default "default"
+   */
+  shape?: "default" | "round";
 };
 
 export type ButtonProps =
@@ -77,6 +83,7 @@ export function Button({
   loading = false,
   fullWidth = false,
   iconOnly = false,
+  shape = "default",
   type = "button",
   disabled,
   className,
@@ -91,7 +98,7 @@ export function Button({
       disabled={disabled || loading}
       aria-busy={loading || undefined}
       title={iconOnly ? rest["aria-label"] : undefined}
-      className={cn(CLASSES[size][variant], iconOnly && BTN_ICON, iconOnly && size === "sm" && "!w-7", fullWidth && "w-full", className)}
+      className={cn(CLASSES[size][variant], iconOnly && BTN_ICON, iconOnly && size === "sm" && "!w-7", shape === "round" && "!rounded-full", fullWidth && "w-full", className)}
       {...rest}
     >
       {loading ? <Spinner className={iconCls} /> : icon && <Icon name={icon} className={iconCls} />}
