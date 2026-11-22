@@ -95,7 +95,7 @@
     "id": "field",
     "title": "Field, Input, Textarea",
     "group": "Forms",
-    "description": "Field gives any control a label, a hint and an error, wired for screen readers. Input and Textarea are the standard text controls (bg-field, h-field).",
+    "description": "Field gives any control a label, a hint and an error, wired for screen readers; `kind` sets the phone keyboard, autofill and Enter key of an email, phone, number, money, URL, search or password field. Input and Textarea are the standard text controls (bg-field, h-field).",
     "components": [
       "Field",
       "Input",
@@ -109,6 +109,18 @@
     "description": "A file picker and dropzone with one row per file: size, upload progress, done, and remove / retry on failure. Controlled: the app owns the list and does the upload.",
     "components": [
       "FileDrop"
+    ]
+  },
+  {
+    "id": "form-actions",
+    "title": "Form actions, unsaved guard, validation",
+    "group": "Forms",
+    "description": "The same form behaviour everywhere: FormActions (Huỷ then Lưu / Tạo, sticky on a page, the footer of a Modal), useUnsavedGuard (nobody loses typed work), and validation that shows on blur then follows changes, with an Alert summary for several errors.",
+    "components": [
+      "FormActions",
+      "useUnsavedGuard",
+      "useFormValidation",
+      "FormErrorSummary"
     ]
   },
   {

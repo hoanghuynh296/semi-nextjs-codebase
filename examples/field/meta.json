@@ -1,7 +1,7 @@
 {
   "title": "Field, Input, Textarea",
   "group": "Forms",
-  "description": "Field gives any control a label, a hint and an error, wired for screen readers. Input and Textarea are the standard text controls (bg-field, h-field).",
+  "description": "Field gives any control a label, a hint and an error, wired for screen readers; `kind` sets the phone keyboard, autofill and Enter key of an email, phone, number, money, URL, search or password field. Input and Textarea are the standard text controls (bg-field, h-field).",
   "components": [
     "Field",
     "Input",
@@ -9,7 +9,8 @@
   ],
   "when": [
     "Every form control: wrap it in Field instead of writing a <label>.",
-    "Text, email, password, search inside forms; multi-line notes."
+    "Text, email, password, search inside forms; multi-line notes.",
+    "An email, phone, number, money, URL, search or password field: set `kind` so phones show the right keyboard."
   ],
   "instead": [
     {
@@ -27,16 +28,26 @@
     {
       "need": "Filter a list in a toolbar",
       "use": "SearchInput"
+    },
+    {
+      "need": "Save / Cancel under the fields, validation timing, warn before leaving",
+      "use": "FormActions, useFormValidation, useUnsavedGuard"
     }
   ],
   "a11y": [
     "Field links label (htmlFor), hint and error (aria-describedby) and sets aria-invalid on error.",
-    "The error is announced when it appears; required adds a visible mark and aria-required."
+    "The error is announced when it appears; required adds a visible mark and aria-required.",
+    "kind sets inputMode (the keyboard), autoComplete (autofill) and enterKeyHint (the Enter key label); a prop on the control wins, e.g. autoComplete=\"new-password\" on a sign-up password."
   ],
   "examples": [
     {
       "file": "basic",
       "title": "Label and hint"
+    },
+    {
+      "file": "kinds",
+      "title": "Kinds",
+      "description": "kind=\"email | tel | number | money | url | search | password\" sets type, inputMode, autoComplete and enterKeyHint."
     },
     {
       "file": "validation",
@@ -47,5 +58,9 @@
       "file": "textarea",
       "title": "Textarea"
     }
+  ],
+  "notes": [
+    "kind: email (type email, keyboard with @, autocomplete email), tel (tel keypad), number (decimal keypad), money (numeric keypad, whole units; inputMode=\"decimal\" for cents), url, search (Enter reads \"search\"), password (autocomplete current-password, Enter reads \"go\"). number and money stay type=\"text\": never a native type=\"number\" (use NumberInput for a touch numpad).",
+    "Labels sit above the control, required fields get `*` (and \"bắt buộc\" for screen readers), the error shows under the field (`error`). Page forms are at most max-w-2xl (FORM_PAGE)."
   ]
 }

@@ -1,0 +1,64 @@
+{
+  "title": "Form actions, unsaved guard, validation",
+  "group": "Forms",
+  "description": "The same form behaviour everywhere: FormActions (Huỷ then Lưu / Tạo, sticky on a page, the footer of a Modal), useUnsavedGuard (nobody loses typed work), and validation that shows on blur then follows changes, with an Alert summary for several errors.",
+  "components": [
+    "FormActions",
+    "useUnsavedGuard",
+    "useFormValidation",
+    "FormErrorSummary"
+  ],
+  "when": [
+    "Every form: the action row is FormActions, never a hand-ordered pair of buttons.",
+    "Any form the user can lose by leaving (a page, a long modal): useUnsavedGuard(dirty).",
+    "Validation of a form with more than one required field: useFormValidation + Field error."
+  ],
+  "instead": [
+    {
+      "need": "The action row of a confirmation (Xoá? Huỷ / Xoá)",
+      "use": "confirmDialog"
+    },
+    {
+      "need": "A setting that applies at once, no Save",
+      "use": "Switch (a toast says it was saved)"
+    },
+    {
+      "need": "The result of Save (saved, failed to reach the server)",
+      "use": "toast; a problem inside a field is Field error, never a toast"
+    },
+    {
+      "need": "Page-level buttons of a list (Thêm máy in)",
+      "use": "PageActions / PageTitle"
+    }
+  ],
+  "a11y": [
+    "Tab order follows the visual order: destructive action, Huỷ, then the primary; Enter in a field submits the form (the primary is type=\"submit\").",
+    "Buttons are 44px high (h-11) below sm; the page bar sits above the on-screen keyboard and the home-indicator inset.",
+    "A field error is announced (role=\"alert\") and sets aria-invalid; the Alert summary (several errors) is role=\"alert\" too.",
+    "useUnsavedGuard asks with confirmDialog (a focus-trapped dialog, Escape stays); reload and tab close use the browser's own prompt."
+  ],
+  "notes": [
+    "Order: [destructive … ] Huỷ (ghost) Lưu (primary), right-aligned. \"Tạo\" (`create`) when the form makes something new, \"Lưu\" when it edits. Page forms are at most `max-w-2xl` (`FORM_PAGE`), labels above the fields, required fields marked `*` (Field `required`).",
+    "Sticky: on a page FormActions is `sticky bottom-0` in the page's scroll area, over `bg-app` with a line above, lifted above the keyboard (visualViewport) and padded by the safe-area inset. A page that scrolls inside an `overflow` box keeps the bar at the end of that box. In a Modal pass `placement=\"modal\"` as the footer.",
+    "Validation timing: nothing while a field is first filled, its error on blur, then on every change (it clears the moment it is fixed). On submit `form.validate()` touches every field. One error shows only under its field; two or more also show a FormErrorSummary above FormActions.",
+    "Guard: `dirty` must be false right after a successful save, before you navigate on. It covers reload and tab close (beforeunload), link clicks and back / forward; for a navigation your own code starts (router.push after a button, a Huỷ that goes back) wrap it: `confirmLeave(() => router.back())`. While dirty one history entry is added so back can be asked about; it is dropped when the form is clean again.",
+    "Texts (Huỷ, Lưu, Tạo, \"Bạn có thay đổi chưa lưu…\", Rời đi, Ở lại, \"Có n mục cần sửa\") are Vietnamese by default and come from SemiLocaleProvider. Mount ConfirmHost once in the root layout (useUnsavedGuard asks through it)."
+  ],
+  "examples": [
+    {
+      "file": "page-form",
+      "title": "Page form",
+      "description": "Required fields, kinds for the phone keyboard, validation on blur then change, the summary for several errors, the guard, and Huỷ / Tạo."
+    },
+    {
+      "file": "destructive",
+      "title": "Destructive action on the left",
+      "description": "Editing an existing record: Xoá is alone on the left, away from Lưu, and asks first."
+    },
+    {
+      "file": "modal",
+      "title": "In a Modal footer",
+      "description": "placement=\"modal\": the same order, 44px buttons on phones; the primary is type=\"button\" with onSubmit because the footer sits outside the form."
+    }
+  ]
+}

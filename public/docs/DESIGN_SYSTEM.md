@@ -484,6 +484,35 @@ tiles use `w-11 h-11 rounded-card` with their area's `TILE_TONES`.
 state toggles (power) are round: `w-20 h-20 sm:w-24 sm:h-24 rounded-full`, flat `bg-accent text-on-accent` when on,
 `bg-field` when off. A running action shows a spinner inside its own button only.
 
+## 9b. Forms: actions, unsaved changes, validation
+
+Forms behave the same everywhere and nobody loses typed work (owner decision C-021, F2 / D13 / P11). Additive: apps adopt
+it form by form; the four lint rules below are warnings until 1.0.
+
+- **`FormActions`** is the action row: `Huỷ` (ghost) then `Lưu` (edit) or `Tạo` (`create`, a new record) as the primary,
+  right-aligned, with any destructive action (`destructive`, a `variant="danger"` button) alone on the left. On a page it
+  is **sticky** at the bottom of the page (`FORM_ACTIONS_STICKY`: `sticky bottom-0 z-sticky bg-app`, a line above), lifted
+  above the on-screen keyboard (it follows `visualViewport`) and padded by the safe-area inset; buttons are `h-11` below
+  `sm`. In a `Modal` pass `placement="modal"` and put it in `footer`; the primary is then `type="button"` with `onSubmit`
+  (the footer sits outside the form). Inside a `<form>` leave `onSubmit` off: the primary submits, so Enter works.
+- **`useUnsavedGuard(dirty)`** warns when changes would be lost. The browser's own prompt covers reload, tab close and the
+  address bar (`beforeunload`; its text cannot be changed). Inside the Next.js app router, which has no navigation event,
+  a link click is caught in the capture phase, asked with `confirmDialog` (mount `<ConfirmHost />`: "Bạn có thay đổi chưa
+  lưu…", `Rời đi` / `Ở lại`) and repeated on agreement, so `next/link`, `basePath` and prefetch are untouched; back /
+  forward is asked through one history entry added while `dirty`. A navigation the app starts in code is wrapped:
+  `confirmLeave(() => router.back())` (returned by the hook). Set `dirty` to false right after a successful save, before
+  navigating on.
+- **`Field kind`** (`email`, `tel`, `number`, `money`, `url`, `search`, `password`) sets `type`, `inputMode`,
+  `autoComplete` and `enterKeyHint` on its `Input` / `NumberInput` (table in `FIELD_KINDS`); a prop on the control wins
+  (`autoComplete="new-password"`). `number` and `money` stay text inputs with a numeric keypad, never `type="number"`.
+- **Layout and validation.** Labels sit above fields, required fields get `*` (`Field required`), the error shows under the
+  field (`Field error`). Validation runs on blur, then on every change (`useFormValidation`: `form.errors`, `onBlur={form.blur("x")}`,
+  `form.validate()` on submit). With more than one error `FormErrorSummary` puts an `Alert` above `FormActions`; one error is
+  shown only under its field. A problem inside a field is never a toast. Page forms are at most `max-w-2xl` (`FORM_PAGE`).
+- **Lint (warnings, they never fail):** `form-no-guard` (a page form without `useUnsavedGuard`), `action-order` (the primary
+  before Huỷ), `toast-for-validation` (a toast about a missing or invalid field), `field-input-mode` (an email / phone / URL /
+  password / money field without `kind`). `npx semi example form-actions`.
+
 ## 10. Pills, chips, badges
 
 - Single choice: `Pills` (`h-control rounded-control` track, active = `SEGMENT_ON`).
@@ -641,6 +670,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `AppHeader.tsx` | `AppHeader` (stand-alone app top bar, §4b) |
 | `PageActions.tsx` | `PageActions` (a tab's header buttons), `PageActionsSlot` + `PageActionsProvider` |
 | `Skeleton.tsx` | `Skeleton`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton` (`shape` cards / list / detail), `Loading`, `BootLoader` (boot / session gate only) (§13b) |
+| `FormActions.tsx`, `useUnsavedGuard.ts`, `formValidation.tsx`, `fieldKinds.ts` | `FormActions` (Huỷ + Lưu / Tạo, sticky on a page, `placement="modal"` footer), `useUnsavedGuard` (reload, tab close, link, back), `useFormValidation` + `FormErrorSummary` (blur, then change; Alert summary), `FIELD_KINDS` / `FieldKind` (§9b) |
 | `Feedback.tsx`, `States.tsx` | `EmptyState` (`variant` first-use / no-results, `onClearFilters`), `ErrorState`, `NotFound`, `Forbidden` (§13, §13c) |
 | `FileDrop.tsx` | `FileDrop`, `FileDropItem`, `FileRejection`, `matchesAccept`, `formatFileSize`, `classifyFiles`, `FileRejectReason` (§13b uploads: `FileDrop` + `Progress`) |
 | `confirmDialog.tsx` | `confirmDialog()`, `ConfirmHost`, `ConfirmOptions` (§14) |
@@ -654,7 +684,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `NumberInput` (+ `NumPadPopup`, `useCoarsePointer`) | every number field (app numpad on touch screens) |
 | `SidePanel`, `SidePanelToggle`, `RefreshButton` | tool-app left panel, icon-only reload action |
 | Hooks (`Field.tsx`, `a11y.ts`, `floating.ts`) | `useField` (a custom control reads its `Field`: id, `aria-describedby`, invalid), `useDialog` (focus trap + scroll lock + Escape for a modal-like surface; built on `useFocusTrap` and `useScrollLock`), `useBackdropClose` (a backdrop that wraps its panel closes only on a click that starts and ends on it), `useAnchoredPosition` (fixed menu / tooltip next to its trigger, flips above, never clipped), `useCoarsePointer`, `useTheme` |
-| `@semi/ui/styles` → `surfaces.ts` | `SHELL_*`, `CARD`, `CARD_HOVER`, `CARD_ACTIVE`, `HERO`, `TILE`, `SECTION_*`, `COUNT_PILL`, `EMPTY`, `ICON_BTN` / `ICON_BTN_DANGER`, `STATUS_PILL`, `STATUS_DOT`, `STICKY_TOOLBAR`, `MODAL_*`, `FIELD_LABEL`, `FIELD_INPUT`, `FIELD_TEXTAREA` |
+| `@semi/ui/styles` → `surfaces.ts` | `SHELL_*`, `CARD`, `CARD_HOVER`, `CARD_ACTIVE`, `HERO`, `TILE`, `SECTION_*`, `COUNT_PILL`, `EMPTY`, `ICON_BTN` / `ICON_BTN_DANGER`, `STATUS_PILL`, `STATUS_DOT`, `STICKY_TOOLBAR`, `MODAL_*`, `FIELD_LABEL`, `FIELD_INPUT`, `FIELD_TEXTAREA`, `FORM_PAGE`, `FORM_ACTIONS`, `FORM_ACTIONS_STICKY` |
 | `buttons.ts` | `BTN_PRIMARY`, `BTN_SECONDARY`, `BTN_DANGER`, `BTN_ICON`, `MODAL_BTN_*` |
 | `appChrome.ts` | `HEADER_ICON_*`, `headerPrimary`, `HEADER_PILL`, `VIEWPORT_*` |
 
@@ -665,7 +695,7 @@ A component used by **two or more Semi apps** belongs here; open a change in the
 
 ## Form fields
 
-Wrap every control in `<Field label hint error required>`: it renders the label (`FIELD_LABEL`), links the hint / error
+Wrap every control in `<Field label hint error required kind>` (`kind` sets the phone keyboard and autofill, §9b): it renders the label (`FIELD_LABEL`), links the hint / error
 with `aria-describedby`, sets `aria-invalid` and announces the error (`role="alert"`). `Input`, `Textarea`,
 `NumberInput`, `CustomSelect` (`variant="field"`) and `CustomCombobox` read the Field automatically:
 
@@ -693,6 +723,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Feedback after an action | `toast({ title, tone, action })` + `<ToastHost />` in the layout (`label` when a page section is also called "Thông báo") |
 | A job the user must wait for | `startTask({ label, onCancel, timer })` + `<TaskHost />` in the layout |
 | Persistent message in a page | `Alert` (tone, title, action, `onDismiss`) |
+| Save / Cancel under a form; losing typed work; field errors | `FormActions`, `useUnsavedGuard`, `useFormValidation` + `FormErrorSummary` (§9b) |
 | Secondary task beside the page | `Drawer` (right / left / bottom / top sheet) |
 | Sections of one record | `Tabs` (underline; `segmented` inside a toolbar); 2–4 sibling pages → `PageTabsTitle` |
 | Compared rows | `Table` + `THead` / `TBody` / `TR` / `TH` / `TD numeric`; cells stay on one line and the table scrolls sideways on phones (`TD wrap` for a long-text column); entity overviews stay Bento `Card`s |
@@ -856,6 +887,7 @@ catches and what it must not:
   or in a stylesheet (`css-raw-value`).
 - **Keyboard (`click-target`, `focus-hidden`):** `<div onClick>` without a role (a backdrop is `role="presentation"`),
   `outline-none` with no focus style on the same element (a text field's caret counts).
+- **Forms (warnings until 1.0):** `form-no-guard`, `action-order`, `toast-for-validation`, `field-input-mode` (§9b). They print and never fail the run.
 - **Emoji as icons (`emoji-icon`):** a brand whose voice allows emoji in copy disables the rule in `semi-lint.json`.
 
 **The baseline only shrinks.** `semi-lint --update-baseline` lowers it to what is left and refuses new hits;

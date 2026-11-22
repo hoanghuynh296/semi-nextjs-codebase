@@ -1287,6 +1287,7 @@
         "hint",
         "error",
         "required",
+        "kind",
         "id",
         "className",
         "children"
@@ -1344,6 +1345,26 @@
         "className"
       ],
       "doc": "docs/components/file-drop.md"
+    },
+    {
+      "name": "FormActions",
+      "kind": "component",
+      "module": "src/FormActions.tsx",
+      "client": true,
+      "summary": "Cancel (ghost) then Save / Create (primary), right-aligned, `destructive` on the left. Page forms stick to the bottom of the screen, above the on-screen keyboard and the home indicator; in a Modal pass `placement=\"modal\"` as the footer.",
+      "props": [
+        "onCancel",
+        "cancelLabel",
+        "submitLabel",
+        "create",
+        "onSubmit",
+        "loading",
+        "disabled",
+        "destructive",
+        "placement",
+        "className"
+      ],
+      "doc": "docs/components/form-actions.md"
     },
     {
       "name": "Icon",
@@ -2260,6 +2281,18 @@
       "doc": "docs/components/confirm-dialog.md"
     },
     {
+      "name": "FormErrorSummary",
+      "kind": "component",
+      "module": "src/formValidation.tsx",
+      "client": true,
+      "summary": "The summary of a form with several errors: an `Alert` listing them, placed above `FormActions`. One error shows only under its field (the summary renders nothing), so a form never says the same thing twice.",
+      "props": [
+        "errors",
+        "className"
+      ],
+      "doc": "docs/components/form-actions.md"
+    },
+    {
       "name": "SemiLocaleProvider",
       "kind": "component",
       "module": "src/locale.tsx",
@@ -2344,11 +2377,25 @@
       "summary": ""
     },
     {
+      "name": "useFormValidation",
+      "kind": "hook",
+      "module": "src/formValidation.tsx",
+      "client": true,
+      "summary": ""
+    },
+    {
       "name": "useSemiLocale",
       "kind": "hook",
       "module": "src/locale.tsx",
       "client": true,
       "summary": "Strings for the current locale (vi unless a SemiLocaleProvider says otherwise)."
+    },
+    {
+      "name": "useUnsavedGuard",
+      "kind": "hook",
+      "module": "src/useUnsavedGuard.ts",
+      "client": true,
+      "summary": "`dirty` is true while the form holds changes that are not saved (compare with the loaded values; false right after a successful save, before navigating on). Prompts texts come from the locale table (`unsavedTitle`, `unsavedChanges`, `leave`, `stay`)."
     }
   ],
   "functions": [
@@ -2435,6 +2482,13 @@
       "module": "src/confirmDialog.tsx",
       "client": true,
       "summary": "Resolves true when the user picks the confirm button. A dialog opened while another shows cancels the first."
+    },
+    {
+      "name": "kindAttrs",
+      "kind": "function",
+      "module": "src/fieldKinds.ts",
+      "client": false,
+      "summary": "The attributes of a kind (an empty object for no kind, so a spread leaves the control alone)."
     },
     {
       "name": "composeRefs",
@@ -2612,6 +2666,13 @@
       "module": "src/a11y.ts",
       "client": true,
       "summary": "Marks a floating layer (Popover, Menu, select list…) that is rendered in a portal on `body`: focus inside it counts as inside the dialog that opened it, so the focus trap leaves it alone. Spread on the portaled element."
+    },
+    {
+      "name": "FIELD_KINDS",
+      "kind": "constant",
+      "module": "src/fieldKinds.ts",
+      "client": false,
+      "summary": "`number` and `money` stay `type=\"text\"` (a native `type=\"number\"` has no keyboard-safe formatting and spinner arrows; `NumberInput` is the number control) and ask for the numeric keypad: `number` allows a decimal point, `money` is whole units (VND). Pass `inputMode=\"decimal\"` on the control for a currency with cents. A new password field passes `autoComplete=\"new-password\"` on the control."
     },
     {
       "name": "vi",
@@ -2955,6 +3016,27 @@
       "module": "styles/surfaces.ts",
       "client": false,
       "summary": "Modal footer: buttons right-aligned; stretched on a phone with safe-area bottom padding."
+    },
+    {
+      "name": "FORM_PAGE",
+      "kind": "constant",
+      "module": "styles/surfaces.ts",
+      "client": false,
+      "summary": "A page form's column (D13): never wider than `max-w-2xl`, fields stacked `gap-stack`, labels above the controls."
+    },
+    {
+      "name": "FORM_ACTIONS",
+      "kind": "constant",
+      "module": "styles/surfaces.ts",
+      "client": false,
+      "summary": "The action row of a form (`FormActions`): right-aligned, a destructive action alone on the left. Phones get 44px buttons from the component."
+    },
+    {
+      "name": "FORM_ACTIONS_STICKY",
+      "kind": "constant",
+      "module": "styles/surfaces.ts",
+      "client": false,
+      "summary": "`FormActions` on a page: sticks to the bottom of the scrolling page, over the page background, with a line above. The component adds the safe-area padding and lifts it above the on-screen keyboard (`bottom`)."
     },
     {
       "name": "FIELD_LABEL",

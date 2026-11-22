@@ -8,7 +8,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 ## Machine-readable
 
-- [components.json](./components.json): all 128 components, hooks and constants with props, summaries and their doc page
+- [components.json](./components.json): all 130 components, hooks and constants with props, summaries and their doc page
 - [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
@@ -45,8 +45,9 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Checkbox](./components/checkbox/) ([markdown](./docs/components/checkbox.md)): A native checkbox with label and description, checked fill in the accent, and an indeterminate state for “select all”. Components: Checkbox.
 - [Combobox](./components/combobox/) ([markdown](./docs/components/combobox.md)): CustomCombobox: type to filter a long list, then pick one value. Components: CustomCombobox.
 - [Date picker](./components/date-picker/) ([markdown](./docs/components/date-picker.md)): A date field with a Calendar popover (YYYY-MM-DD, min / max). Never type="date". Components: DatePicker.
-- [Field, Input, Textarea](./components/field/) ([markdown](./docs/components/field.md)): Field gives any control a label, a hint and an error, wired for screen readers. Input and Textarea are the standard text controls (bg-field, h-field). Components: Field, Input, Textarea.
+- [Field, Input, Textarea](./components/field/) ([markdown](./docs/components/field.md)): Field gives any control a label, a hint and an error, wired for screen readers; `kind` sets the phone keyboard, autofill and Enter key of an email, phone, number, money, URL, search or password field. Input and Textarea are the standard text controls (bg-field, h-field). Components: Field, Input, Textarea.
 - [FileDrop](./components/file-drop/) ([markdown](./docs/components/file-drop.md)): A file picker and dropzone with one row per file: size, upload progress, done, and remove / retry on failure. Controlled: the app owns the list and does the upload. Components: FileDrop.
+- [Form actions, unsaved guard, validation](./components/form-actions/) ([markdown](./docs/components/form-actions.md)): The same form behaviour everywhere: FormActions (Huỷ then Lưu / Tạo, sticky on a page, the footer of a Modal), useUnsavedGuard (nobody loses typed work), and validation that shows on blur then follows changes, with an Alert summary for several errors. Components: FormActions, useUnsavedGuard, useFormValidation, FormErrorSummary.
 - [Input group](./components/input-group/) ([markdown](./docs/components/input-group.md)): An input with fixed parts around it: a prefix (https://), a unit (kg, ₫), an icon or a small button (copy, show password). Components: InputGroup.
 - [Input OTP](./components/input-otp/) ([markdown](./docs/components/input-otp.md)): One-time code entry (OTP, PIN, 2FA): boxes on screen, one real input underneath, so paste, SMS autofill, screen readers and the number keypad work like a normal field. Components: InputOTP.
 - [Number input](./components/number-input/) ([markdown](./docs/components/number-input.md)): NumberInput: numbers with a touch keypad (NumPadPopup) on phones and tablets, plain typing elsewhere. Never type="number". Components: NumberInput, NumPadPopup.
@@ -227,6 +228,7 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
   - Loading: `Skeleton` / `SkeletonCard` / `SkeletonGrid` / `SkeletonRows` / `PageSkeleton`; no "Đang tải…" text or page spinners. Only exception: `BootLoader` (below).
   - States (§13, §13c): `EmptyState variant="first-use"` (one icon, one sentence, one primary action) or `"no-results"` (+ `onClearFilters` → "Xoá lọc"); hide the title-row primary while the empty state shows its own; `ErrorState onRetry`, `NotFound`, `Forbidden` (link home). Each route group ships `loading.tsx` (`<PageSkeleton shape inShell />`), `error.tsx` (`<ErrorState headingLevel={1} onRetry={reset} />`), `not-found.tsx` (`<NotFound />`), plus root `app/error.tsx` and `app/global-error.tsx`; `npx semi example states`.
   - Shell and loading: `AppShell` once in `app/(app)/layout.tsx` (never in a page, `app-shell-in-page`); items routed by `href` (`shell-nav-href`); the session check once in that layout, best on the server; before the layout is known `if (!session) return <BootLoader />` (centred spinner, layouts only, `boot-loader-place`); content loading is a `loading.tsx` beside the layout with `PageSkeleton`, never a skeleton around the shell (`shell-gate`).
+  - Forms (§9b): `FormActions` (Huỷ ghost, then Lưu / Tạo; `destructive` on the left; sticky on a page, `placement="modal"` in a Modal footer), `useUnsavedGuard(dirty)` (+ `<ConfirmHost />`; `confirmLeave(() => router.push(…))` for your own navigation), `<Field kind="email|tel|number|money|url|search|password">`, `useFormValidation` (error on blur, then change) + `FormErrorSummary`; page forms `max-w-2xl`; a field problem is never a toast. Lint warnings `form-no-guard`, `action-order`, `toast-for-validation`, `field-input-mode`; `npx semi example form-actions`.
   - Confirmations: `confirmDialog({ title, message, confirmLabel, tone, icon })` + `<ConfirmHost />`, never `window.confirm`.
   - AI chat (§14b): `<AIChat messages busy onSend onStop onRetry onNewChat empty toolbar />` (or `ChatPanel` > `ChatView` > `ChatList` + `ChatComposer` with `UserMessage` / `AssistantMessage` / `ChatError` / `ChatThinking` / `ChatIntro` / `ChatSuggestion`). UI only: the app keeps messages and streaming; the provider → model → effort chips are `toolbar={<ChatModelPicker providers models efforts … />}`. Never a local composer or bubbles.
 - **Style Constants (`@semi/ui/styles`):**
@@ -271,7 +273,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (128)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (130)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
@@ -300,6 +302,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `Feedback`: `Alert`, `Progress`, `Avatar`, `EmptyState`
 - `Field`: `Field`, `Input`, `Textarea`
 - `FileDrop`: `FileDrop`
+- `FormActions`: `FormActions`
 - `Icon`: `Icon`, `IconTile`
 - `InputGroup`: `InputGroup`
 - `InputOTP`: `InputOTP`
@@ -339,9 +342,10 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `Toast`: `ToastHost`
 - `Toggle`: `Toggle`, `ToggleGroup`
 - `confirmDialog`: `ConfirmHost`
+- `formValidation`: `FormErrorSummary`
 - `locale`: `SemiLocaleProvider`
 
-**Hooks:** `useAppShell`, `useHotkey`, `useField`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useSemiLocale` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `pageWindow`, `startTask`, `themeScript`, `toast`, `dismissToast`, `confirmDialog`, `composeRefs`, `cloneTrigger`, `cn`
+**Hooks:** `useAppShell`, `useHotkey`, `useField`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useFormValidation`, `useSemiLocale`, `useUnsavedGuard` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `pageWindow`, `startTask`, `themeScript`, `toast`, `dismissToast`, `confirmDialog`, `kindAttrs`, `composeRefs`, `cloneTrigger`, `cn`
 <!-- generated:components:end -->
 
 
@@ -835,6 +839,35 @@ tiles use `w-11 h-11 rounded-card` with their area's `TILE_TONES`.
 state toggles (power) are round: `w-20 h-20 sm:w-24 sm:h-24 rounded-full`, flat `bg-accent text-on-accent` when on,
 `bg-field` when off. A running action shows a spinner inside its own button only.
 
+## 9b. Forms: actions, unsaved changes, validation
+
+Forms behave the same everywhere and nobody loses typed work (owner decision C-021, F2 / D13 / P11). Additive: apps adopt
+it form by form; the four lint rules below are warnings until 1.0.
+
+- **`FormActions`** is the action row: `Huỷ` (ghost) then `Lưu` (edit) or `Tạo` (`create`, a new record) as the primary,
+  right-aligned, with any destructive action (`destructive`, a `variant="danger"` button) alone on the left. On a page it
+  is **sticky** at the bottom of the page (`FORM_ACTIONS_STICKY`: `sticky bottom-0 z-sticky bg-app`, a line above), lifted
+  above the on-screen keyboard (it follows `visualViewport`) and padded by the safe-area inset; buttons are `h-11` below
+  `sm`. In a `Modal` pass `placement="modal"` and put it in `footer`; the primary is then `type="button"` with `onSubmit`
+  (the footer sits outside the form). Inside a `<form>` leave `onSubmit` off: the primary submits, so Enter works.
+- **`useUnsavedGuard(dirty)`** warns when changes would be lost. The browser's own prompt covers reload, tab close and the
+  address bar (`beforeunload`; its text cannot be changed). Inside the Next.js app router, which has no navigation event,
+  a link click is caught in the capture phase, asked with `confirmDialog` (mount `<ConfirmHost />`: "Bạn có thay đổi chưa
+  lưu…", `Rời đi` / `Ở lại`) and repeated on agreement, so `next/link`, `basePath` and prefetch are untouched; back /
+  forward is asked through one history entry added while `dirty`. A navigation the app starts in code is wrapped:
+  `confirmLeave(() => router.back())` (returned by the hook). Set `dirty` to false right after a successful save, before
+  navigating on.
+- **`Field kind`** (`email`, `tel`, `number`, `money`, `url`, `search`, `password`) sets `type`, `inputMode`,
+  `autoComplete` and `enterKeyHint` on its `Input` / `NumberInput` (table in `FIELD_KINDS`); a prop on the control wins
+  (`autoComplete="new-password"`). `number` and `money` stay text inputs with a numeric keypad, never `type="number"`.
+- **Layout and validation.** Labels sit above fields, required fields get `*` (`Field required`), the error shows under the
+  field (`Field error`). Validation runs on blur, then on every change (`useFormValidation`: `form.errors`, `onBlur={form.blur("x")}`,
+  `form.validate()` on submit). With more than one error `FormErrorSummary` puts an `Alert` above `FormActions`; one error is
+  shown only under its field. A problem inside a field is never a toast. Page forms are at most `max-w-2xl` (`FORM_PAGE`).
+- **Lint (warnings, they never fail):** `form-no-guard` (a page form without `useUnsavedGuard`), `action-order` (the primary
+  before Huỷ), `toast-for-validation` (a toast about a missing or invalid field), `field-input-mode` (an email / phone / URL /
+  password / money field without `kind`). `npx semi example form-actions`.
+
 ## 10. Pills, chips, badges
 
 - Single choice: `Pills` (`h-control rounded-control` track, active = `SEGMENT_ON`).
@@ -992,6 +1025,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `AppHeader.tsx` | `AppHeader` (stand-alone app top bar, §4b) |
 | `PageActions.tsx` | `PageActions` (a tab's header buttons), `PageActionsSlot` + `PageActionsProvider` |
 | `Skeleton.tsx` | `Skeleton`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton` (`shape` cards / list / detail), `Loading`, `BootLoader` (boot / session gate only) (§13b) |
+| `FormActions.tsx`, `useUnsavedGuard.ts`, `formValidation.tsx`, `fieldKinds.ts` | `FormActions` (Huỷ + Lưu / Tạo, sticky on a page, `placement="modal"` footer), `useUnsavedGuard` (reload, tab close, link, back), `useFormValidation` + `FormErrorSummary` (blur, then change; Alert summary), `FIELD_KINDS` / `FieldKind` (§9b) |
 | `Feedback.tsx`, `States.tsx` | `EmptyState` (`variant` first-use / no-results, `onClearFilters`), `ErrorState`, `NotFound`, `Forbidden` (§13, §13c) |
 | `FileDrop.tsx` | `FileDrop`, `FileDropItem`, `FileRejection`, `matchesAccept`, `formatFileSize`, `classifyFiles`, `FileRejectReason` (§13b uploads: `FileDrop` + `Progress`) |
 | `confirmDialog.tsx` | `confirmDialog()`, `ConfirmHost`, `ConfirmOptions` (§14) |
@@ -1005,7 +1039,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `NumberInput` (+ `NumPadPopup`, `useCoarsePointer`) | every number field (app numpad on touch screens) |
 | `SidePanel`, `SidePanelToggle`, `RefreshButton` | tool-app left panel, icon-only reload action |
 | Hooks (`Field.tsx`, `a11y.ts`, `floating.ts`) | `useField` (a custom control reads its `Field`: id, `aria-describedby`, invalid), `useDialog` (focus trap + scroll lock + Escape for a modal-like surface; built on `useFocusTrap` and `useScrollLock`), `useBackdropClose` (a backdrop that wraps its panel closes only on a click that starts and ends on it), `useAnchoredPosition` (fixed menu / tooltip next to its trigger, flips above, never clipped), `useCoarsePointer`, `useTheme` |
-| `@semi/ui/styles` → `surfaces.ts` | `SHELL_*`, `CARD`, `CARD_HOVER`, `CARD_ACTIVE`, `HERO`, `TILE`, `SECTION_*`, `COUNT_PILL`, `EMPTY`, `ICON_BTN` / `ICON_BTN_DANGER`, `STATUS_PILL`, `STATUS_DOT`, `STICKY_TOOLBAR`, `MODAL_*`, `FIELD_LABEL`, `FIELD_INPUT`, `FIELD_TEXTAREA` |
+| `@semi/ui/styles` → `surfaces.ts` | `SHELL_*`, `CARD`, `CARD_HOVER`, `CARD_ACTIVE`, `HERO`, `TILE`, `SECTION_*`, `COUNT_PILL`, `EMPTY`, `ICON_BTN` / `ICON_BTN_DANGER`, `STATUS_PILL`, `STATUS_DOT`, `STICKY_TOOLBAR`, `MODAL_*`, `FIELD_LABEL`, `FIELD_INPUT`, `FIELD_TEXTAREA`, `FORM_PAGE`, `FORM_ACTIONS`, `FORM_ACTIONS_STICKY` |
 | `buttons.ts` | `BTN_PRIMARY`, `BTN_SECONDARY`, `BTN_DANGER`, `BTN_ICON`, `MODAL_BTN_*` |
 | `appChrome.ts` | `HEADER_ICON_*`, `headerPrimary`, `HEADER_PILL`, `VIEWPORT_*` |
 
@@ -1016,7 +1050,7 @@ A component used by **two or more Semi apps** belongs here; open a change in the
 
 ## Form fields
 
-Wrap every control in `<Field label hint error required>`: it renders the label (`FIELD_LABEL`), links the hint / error
+Wrap every control in `<Field label hint error required kind>` (`kind` sets the phone keyboard and autofill, §9b): it renders the label (`FIELD_LABEL`), links the hint / error
 with `aria-describedby`, sets `aria-invalid` and announces the error (`role="alert"`). `Input`, `Textarea`,
 `NumberInput`, `CustomSelect` (`variant="field"`) and `CustomCombobox` read the Field automatically:
 
@@ -1044,6 +1078,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Feedback after an action | `toast({ title, tone, action })` + `<ToastHost />` in the layout (`label` when a page section is also called "Thông báo") |
 | A job the user must wait for | `startTask({ label, onCancel, timer })` + `<TaskHost />` in the layout |
 | Persistent message in a page | `Alert` (tone, title, action, `onDismiss`) |
+| Save / Cancel under a form; losing typed work; field errors | `FormActions`, `useUnsavedGuard`, `useFormValidation` + `FormErrorSummary` (§9b) |
 | Secondary task beside the page | `Drawer` (right / left / bottom / top sheet) |
 | Sections of one record | `Tabs` (underline; `segmented` inside a toolbar); 2–4 sibling pages → `PageTabsTitle` |
 | Compared rows | `Table` + `THead` / `TBody` / `TR` / `TH` / `TD numeric`; cells stay on one line and the table scrolls sideways on phones (`TD wrap` for a long-text column); entity overviews stay Bento `Card`s |
@@ -1207,6 +1242,7 @@ catches and what it must not:
   or in a stylesheet (`css-raw-value`).
 - **Keyboard (`click-target`, `focus-hidden`):** `<div onClick>` without a role (a backdrop is `role="presentation"`),
   `outline-none` with no focus style on the same element (a text field's caret counts).
+- **Forms (warnings until 1.0):** `form-no-guard`, `action-order`, `toast-for-validation`, `field-input-mode` (§9b). They print and never fail the run.
 - **Emoji as icons (`emoji-icon`):** a brand whose voice allows emoji in copy disables the rule in `semi-lint.json`.
 
 **The baseline only shrinks.** `semi-lint --update-baseline` lowers it to what is left and refuses new hits;
@@ -2192,6 +2228,7 @@ All web UI here follows the **Semi Design System** (`@semi/ui`, repo `https://gi
 4. **Not the generic AI screen** (`DESIGN_SYSTEM.md` §19): one main block per screen (`KpiCard featured`, not four equal cards); icons neutral unless they mean a status; proof (a real number, a quote, a product shot) instead of three icon feature cards; icons only where they help scanning; sample data and empty states from this product, never "Lorem", "John Doe" or another domain.
    **Density budgets** (`DESIGN_SYSTEM.md` §4c, measured on the page by `npx semi density <url>`): at most three frames inside each other (page panel › card › tile); at most four text sizes and three colours (accent + status) in one box; one filled accent button per view; text 12px from a box's sides and 8px from its top and bottom; a list row at least `h-control` tall (`Item`, `Menu`, `DataTable`); 8px or more between boxes; one line between two things (no `border-b` on a card's last row). `px-2` / `py-1` are for the inside of a control, never a row's or a box's padding.
    **Every state** (`DESIGN_SYSTEM.md` §19b, §13c): use `EmptyState` (`first-use` / `no-results`), `ErrorState`, `NotFound`, `Forbidden`, and give each route group `loading.tsx` / `error.tsx` / `not-found.tsx` (`npx semi example states`); each screen has its loading (skeleton of the real shape), empty (with the action that fills it), "no result", error (what failed + retry, loaded data kept), no-permission and too-much-data states; a destructive action is confirmed (`confirmDialog`) or undoable (`toast` with an action); Escape closes, Enter submits, back works.
+   **Forms** (`DESIGN_SYSTEM.md` §9b): the action row is `FormActions` (Huỷ ghost, then Lưu / Tạo, destructive on the left, sticky on a page); `useUnsavedGuard(dirty)` so typed work is never lost; `Field kind` for email / phone / number / money / URL / search / password; errors under the field (`useFormValidation`, `FormErrorSummary`), never in a toast; page forms `max-w-2xl` (`npx semi example form-actions`).
 5. **Brand** (when `semi-lint.json` has `"brand"`): ask `semi_brand` (or `npx semi brand voice|color|logo|brief`) before writing UI text or placing colour. Write in the brand's voice, use colour as its colour-use rule says, import the logo from the kit, use only its allowed styles; never define colours, fonts or Semi tokens in the app (`brand-override`). Brand changes happen in the brand repo with `/semi-brand`, then `/semi-sync` here.
 6. **Accessibility** (`DESIGN_SYSTEM.md` §18, checked on the page by `npx semi a11y <url>`): icon-only controls have `aria-label`, and a field's name comes from `Field` (a placeholder is not a label); anything clickable is a button or a link (`click-target`); custom controls keep `FOCUS_RING`, never a bare `outline-none` (`focus-hidden`); every text / background pair reaches 4.5:1 in both themes (themed text tokens, never a fixed shade on a tinted surface); a field you type in shows `border-control-line` (3:1); a control drawn smaller than 24px gets `HIT_AREA`; images have `alt`; never `maximum-scale` or `user-scalable=no` in the viewport.
 7. **Gaps go upstream, lint is never silenced.** When `@semi/ui` cannot express a need, run `/semi-sync`, re-check the docs, then `/semi-propose`; meanwhile a minimal compliant workaround marked `// TODO(semi#<issue>)`. Never add a `skip`, disable a rule or grow `semi-lint-baseline.json` to get past lint: fix the code. The baseline only shrinks (`semi-lint --update-baseline`); `--accept-new` is for `/semi-sync` and needs the user's OK otherwise, and `semi-lint --ci` fails a pull request whose baseline or skips grew. The one per-file `skip`, with the user's OK and a reason, is for illustrations and data colours (not UI chrome): `"skip": { "literal-colour-value": { "lib/scenePalette.ts": "data colours: 3D scene" } }` (also `inline-svg-path`, `no-literal-palette`, `inline-style-value`). Shared rules change in the Semi repo, never only in this file; app-specific patterns go in `docs/UI_EXTENSIONS.md`.
@@ -2240,8 +2277,8 @@ import { Button } from "@semi/ui";
 export default function ButtonVariants() {
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <Button variant="primary">Lưu</Button>
       <Button>Huỷ</Button>
+      <Button variant="primary">Lưu</Button>
       <Button variant="danger">Xoá</Button>
       <Button variant="ghost">Xem thêm</Button>
       <Button disabled>Không khả dụng</Button>
@@ -3117,12 +3154,13 @@ export default function DatePickerBasic() {
 
 # Field, Input, Textarea
 
-Field gives any control a label, a hint and an error, wired for screen readers. Input and Textarea are the standard text controls (bg-field, h-field).
+Field gives any control a label, a hint and an error, wired for screen readers; `kind` sets the phone keyboard, autofill and Enter key of an email, phone, number, money, URL, search or password field. Input and Textarea are the standard text controls (bg-field, h-field).
 
 ## When to use
 
 - Every form control: wrap it in Field instead of writing a <label>.
 - Text, email, password, search inside forms; multi-line notes.
+- An email, phone, number, money, URL, search or password field: set `kind` so phones show the right keyboard.
 
 ## Use something else when
 
@@ -3132,6 +3170,7 @@ Field gives any control a label, a hint and an error, wired for screen readers. 
 | A date | DatePicker |
 | Pick from a list | CustomSelect or CustomCombobox |
 | Filter a list in a toolbar | SearchInput |
+| Save / Cancel under the fields, validation timing, warn before leaving | FormActions, useFormValidation, useUnsavedGuard |
 
 ## Import
 
@@ -3151,6 +3190,42 @@ export default function FieldBasic() {
     <Field label="Tên máy in" hint="Hiện trên thẻ và trong thông báo.">
       <Input placeholder="VD: X1 Carbon xưởng A" icon="printer" />
     </Field>
+  );
+}
+```
+
+### Kinds
+
+kind="email | tel | number | money | url | search | password" sets type, inputMode, autoComplete and enterKeyHint.
+
+```tsx
+import { Field, Input } from "@semi/ui";
+
+export default function FieldKinds() {
+  return (
+    <div className="grid gap-stack max-w-md">
+      <Field label="Email" kind="email" hint="Bàn phím có @ và dấu chấm; trình duyệt gợi ý email đã lưu.">
+        <Input placeholder="ten@congty.vn" />
+      </Field>
+      <Field label="Số điện thoại" kind="tel">
+        <Input placeholder="0901 234 567" />
+      </Field>
+      <Field label="Số lượng" kind="number">
+        <Input defaultValue="12" />
+      </Field>
+      <Field label="Giá bán (₫)" kind="money">
+        <Input defaultValue="250000" />
+      </Field>
+      <Field label="Website" kind="url">
+        <Input placeholder="3dnoobs.vn" />
+      </Field>
+      <Field label="Mật khẩu" kind="password">
+        <Input />
+      </Field>
+      <Field label="Tìm kiếm" kind="search">
+        <Input icon="search" placeholder="Tên máy in" />
+      </Field>
+    </div>
   );
 }
 ```
@@ -3200,6 +3275,7 @@ export default function FieldTextarea() {
 | `hint` | `React.ReactNode` |  | One short helper line under the control (hidden while an error shows). |
 | `error` | `React.ReactNode` |  | Error message; marks the control aria-invalid and announces the message. |
 | `required` | `boolean` | `false` |  |
+| `kind` | `'number' \| 'search' \| 'email' \| 'tel' \| 'money' \| 'url' \| 'password'` |  | What the control holds: `email`, `tel`, `number`, `money`, `url`, `search` or `password`. Sets the control's `type`, `inputMode` (the phone keyboard), `autoComplete` and `enterKeyHint`; a prop on the control itself wins. |
 | `id` | `string` |  |  |
 | `className` | `string` |  |  |
 | `children` * | `React.ReactNode` |  |  |
@@ -3225,6 +3301,12 @@ Multi-line text on the field surface (FIELD_TEXTAREA).
 
 - Field links label (htmlFor), hint and error (aria-describedby) and sets aria-invalid on error.
 - The error is announced when it appears; required adds a visible mark and aria-required.
+- kind sets inputMode (the keyboard), autoComplete (autofill) and enterKeyHint (the Enter key label); a prop on the control wins, e.g. autoComplete="new-password" on a sign-up password.
+
+## Notes
+
+- kind: email (type email, keyboard with @, autocomplete email), tel (tel keypad), number (decimal keypad), money (numeric keypad, whole units; inputMode="decimal" for cents), url, search (Enter reads "search"), password (autocomplete current-password, Enter reads "go"). number and money stay type="text": never a native type="number" (use NumberInput for a touch numpad).
+- Labels sit above the control, required fields get `*` (and "bắt buộc" for screen readers), the error shows under the field (`error`). Page forms are at most max-w-2xl (FORM_PAGE).
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/field/ and the types in src/ -->
 
@@ -3411,6 +3493,235 @@ export default function FileDropSingle() {
 
 ---
 
+<!-- docs/components/form-actions.md -->
+
+# Form actions, unsaved guard, validation
+
+The same form behaviour everywhere: FormActions (Huỷ then Lưu / Tạo, sticky on a page, the footer of a Modal), useUnsavedGuard (nobody loses typed work), and validation that shows on blur then follows changes, with an Alert summary for several errors.
+
+## When to use
+
+- Every form: the action row is FormActions, never a hand-ordered pair of buttons.
+- Any form the user can lose by leaving (a page, a long modal): useUnsavedGuard(dirty).
+- Validation of a form with more than one required field: useFormValidation + Field error.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| The action row of a confirmation (Xoá? Huỷ / Xoá) | confirmDialog |
+| A setting that applies at once, no Save | Switch (a toast says it was saved) |
+| The result of Save (saved, failed to reach the server) | toast; a problem inside a field is Field error, never a toast |
+| Page-level buttons of a list (Thêm máy in) | PageActions / PageTitle |
+
+## Import
+
+```tsx
+import { FormActions, useUnsavedGuard, useFormValidation, FormErrorSummary } from "@semi/ui";
+```
+
+## Examples
+
+### Page form
+
+Required fields, kinds for the phone keyboard, validation on blur then change, the summary for several errors, the guard, and Huỷ / Tạo.
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Field, FormActions, FormErrorSummary, Input, toast, useFormValidation, useUnsavedGuard } from "@semi/ui";
+
+const EMPTY = { name: "", email: "", phone: "", price: "" };
+
+export default function FormActionsPageForm() {
+  const [values, setValues] = useState(EMPTY);
+  const [saved, setSaved] = useState(EMPTY);
+  const [saving, setSaving] = useState(false);
+  const set = (key: keyof typeof EMPTY) => (e: React.ChangeEvent<HTMLInputElement>) => setValues((v) => ({ ...v, [key]: e.target.value }));
+
+  // errors show after a field loses focus, then follow every change
+  const form = useFormValidation(values, {
+    name: (v) => (v.trim() ? undefined : "Nhập tên máy in."),
+    email: (v) => (/^\S+@\S+\.\S+$/.test(v) ? undefined : "Email chưa đúng, ví dụ ten@congty.vn."),
+    phone: (v) => (v && !/^0\d{9}$/.test(v) ? "Số điện thoại gồm 10 số, bắt đầu bằng 0." : undefined),
+  });
+  // warns on reload, tab close, a link or back while this is true
+  const dirty = JSON.stringify(values) !== JSON.stringify(saved);
+  const { confirmLeave } = useUnsavedGuard(dirty);
+
+  const save = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.validate()) return;
+    setSaving(true);
+    setTimeout(() => {
+      setSaving(false);
+      setSaved(values); // not dirty any more: leaving does not ask
+      toast({ title: "Đã tạo máy in", tone: "success" });
+    }, 600);
+  };
+
+  return (
+    <form data-form="page-form" onSubmit={save} noValidate className="w-full max-w-2xl flex flex-col gap-stack">
+      <Field label="Tên máy in" required error={form.errors.name}>
+        <Input value={values.name} onChange={set("name")} onBlur={form.blur("name")} />
+      </Field>
+      <Field label="Email liên hệ" kind="email" required error={form.errors.email}>
+        <Input value={values.email} onChange={set("email")} onBlur={form.blur("email")} />
+      </Field>
+      <Field label="Số điện thoại" kind="tel" hint="Không bắt buộc." error={form.errors.phone}>
+        <Input value={values.phone} onChange={set("phone")} onBlur={form.blur("phone")} />
+      </Field>
+      <Field label="Giá bán" kind="money">
+        <Input value={values.price} onChange={set("price")} />
+      </Field>
+      <FormErrorSummary errors={form.errors} />
+      <FormActions create loading={saving} onCancel={() => confirmLeave(() => { setValues(EMPTY); form.reset(); })} />
+    </form>
+  );
+}
+```
+
+### Destructive action on the left
+
+Editing an existing record: Xoá is alone on the left, away from Lưu, and asks first.
+
+```tsx
+"use client";
+
+import { Button, confirmDialog, Field, FormActions, Input, toast, useUnsavedGuard } from "@semi/ui";
+import { useState } from "react";
+
+export default function FormActionsDestructive() {
+  const [name, setName] = useState("Bambu X1C");
+  const [saved, setSaved] = useState("Bambu X1C");
+  const { confirmLeave } = useUnsavedGuard(name !== saved);
+
+  const remove = async () => {
+    if (await confirmDialog({ title: "Xoá máy in này?", message: "Lịch sử in của máy cũng bị xoá.", confirmLabel: "Xoá", tone: "danger" })) toast({ title: "Đã xoá máy in", tone: "success" });
+  };
+
+  return (
+    <form
+      data-form="destructive"
+      className="w-full max-w-2xl flex flex-col gap-stack"
+      onSubmit={(e) => {
+        e.preventDefault();
+        setSaved(name);
+      }}
+    >
+      <Field label="Tên máy in" required>
+        <Input value={name} onChange={(e) => setName(e.target.value)} />
+      </Field>
+      <FormActions
+        onCancel={() => confirmLeave(() => setName(saved))}
+        destructive={
+          <Button variant="danger" icon="trash" onClick={remove}>
+            Xoá máy in
+          </Button>
+        }
+      />
+    </form>
+  );
+}
+```
+
+### In a Modal footer
+
+placement="modal": the same order, 44px buttons on phones; the primary is type="button" with onSubmit because the footer sits outside the form.
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Button, Field, FormActions, Input, Modal } from "@semi/ui";
+
+export default function FormActionsModal() {
+  const [open, setOpen] = useState(false);
+  const close = () => setOpen(false);
+  return (
+    <>
+      <Button icon="edit" onClick={() => setOpen(true)}>
+        Đổi tên máy in
+      </Button>
+      <Modal
+        open={open}
+        onClose={close}
+        title="Đổi tên máy in"
+        closeOnBackdrop={false}
+        footer={<FormActions placement="modal" onCancel={close} onSubmit={close} />}
+      >
+        <Field label="Tên máy in" required>
+          <Input defaultValue="Bambu X1C" />
+        </Field>
+      </Modal>
+    </>
+  );
+}
+```
+
+## API
+
+### FormActions
+
+Cancel (ghost) then Save / Create (primary), right-aligned, `destructive` on the left. Page forms stick to the bottom
+of the screen, above the on-screen keyboard and the home indicator; in a Modal pass `placement="modal"` as the footer.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `onCancel` | `() => void` |  | Huỷ: leaves the form (route back, close the modal). Omit for a form that cannot be cancelled. |
+| `cancelLabel` | `React.ReactNode` |  | Text of the cancel button (default "Huỷ"). |
+| `submitLabel` | `React.ReactNode` |  | Text of the primary button (default "Lưu", or "Tạo" with `create`). |
+| `create` | `boolean` | `false` | The form makes something new: the primary reads "Tạo" instead of "Lưu". |
+| `onSubmit` | `() => void` |  | Runs when the primary is pressed. Omit it inside a `<form>`: the button is then `type="submit"` and the form's `onSubmit` handles it (Enter in a field works too). Pass it in a Modal footer, which sits outside the form. |
+| `loading` | `boolean` | `false` | The save is running: the primary shows a spinner and blocks clicks. |
+| `disabled` | `boolean` | `false` | Disables the primary (nothing changed, or the form is invalid and the screen chose not to say so on press). |
+| `destructive` | `React.ReactNode` |  | A destructive action (Xoá…) shown alone on the left, away from the primary. A `variant="danger"` Button. |
+| `placement` | `'modal' \| 'page'` | `"page"` | `page` (default): sticky at the bottom of the page. `modal`: the footer of a Modal (not sticky, stretched on phones by the footer). |
+| `className` | `string` |  |  |
+
+### useUnsavedGuard
+
+`dirty` is true while the form holds changes that are not saved (compare with the loaded values; false right after a
+successful save, before navigating on). Prompts texts come from the locale table (`unsavedTitle`, `unsavedChanges`,
+`leave`, `stay`).
+
+No props of its own.
+
+### useFormValidation
+
+No props of its own.
+
+### FormErrorSummary
+
+The summary of a form with several errors: an `Alert` listing them, placed above `FormActions`. One error shows only
+under its field (the summary renders nothing), so a form never says the same thing twice.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `errors` * | `Record<string, string \| undefined>` |  |  |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- Tab order follows the visual order: destructive action, Huỷ, then the primary; Enter in a field submits the form (the primary is type="submit").
+- Buttons are 44px high (h-11) below sm; the page bar sits above the on-screen keyboard and the home-indicator inset.
+- A field error is announced (role="alert") and sets aria-invalid; the Alert summary (several errors) is role="alert" too.
+- useUnsavedGuard asks with confirmDialog (a focus-trapped dialog, Escape stays); reload and tab close use the browser's own prompt.
+
+## Notes
+
+- Order: [destructive … ] Huỷ (ghost) Lưu (primary), right-aligned. "Tạo" (`create`) when the form makes something new, "Lưu" when it edits. Page forms are at most `max-w-2xl` (`FORM_PAGE`), labels above the fields, required fields marked `*` (Field `required`).
+- Sticky: on a page FormActions is `sticky bottom-0` in the page's scroll area, over `bg-app` with a line above, lifted above the keyboard (visualViewport) and padded by the safe-area inset. A page that scrolls inside an `overflow` box keeps the bar at the end of that box. In a Modal pass `placement="modal"` as the footer.
+- Validation timing: nothing while a field is first filled, its error on blur, then on every change (it clears the moment it is fixed). On submit `form.validate()` touches every field. One error shows only under its field; two or more also show a FormErrorSummary above FormActions.
+- Guard: `dirty` must be false right after a successful save, before you navigate on. It covers reload and tab close (beforeunload), link clicks and back / forward; for a navigation your own code starts (router.push after a button, a Huỷ that goes back) wrap it: `confirmLeave(() => router.back())`. While dirty one history entry is added so back can be asked about; it is dropped when the form is clean again.
+- Texts (Huỷ, Lưu, Tạo, "Bạn có thay đổi chưa lưu…", Rời đi, Ở lại, "Có n mục cần sửa") are Vietnamese by default and come from SemiLocaleProvider. Mount ConfirmHost once in the root layout (useUnsavedGuard asks through it).
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/form-actions/ and the types in src/ -->
+
+
+---
+
 <!-- docs/components/input-group.md -->
 
 # Input group
@@ -3447,17 +3758,17 @@ export default function InputGroupAddons() {
   const [show, setShow] = useState(false);
   return (
     <div className="grid gap-4 max-w-md">
-      <Field label="Website">
+      <Field label="Website" kind="url">
         <InputGroup start="https://">
           <Input placeholder="3dnoobs.vn" />
         </InputGroup>
       </Field>
-      <Field label="Giá bán">
+      <Field label="Giá bán" kind="money">
         <InputGroup end="₫">
           <Input defaultValue="250.000" className="tabular-nums" />
         </InputGroup>
       </Field>
-      <Field label="Mật khẩu Wi-Fi máy in">
+      <Field label="Mật khẩu Wi-Fi máy in" kind="password">
         <InputGroup end={<Button size="sm" variant="ghost" iconOnly icon={show ? "eyeOff" : "eye"} aria-label={show ? "Ẩn" : "Hiện"} onClick={() => setShow((v) => !v)} />}>
           <Input type={show ? "text" : "password"} defaultValue="noobs-2026" />
         </InputGroup>

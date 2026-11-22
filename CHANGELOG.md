@@ -15,6 +15,19 @@ The states kit (#66, owner decision C-021): every app can show first use, no res
 - **`PageSkeleton shape` and `inShell`**: `cards` (as before), `list` or `detail`, so loading has the shape of the page; `inShell` drops the full-page height and padding for a route `loading.tsx`. `headingLevel` on the states sets the title's heading (h1 for a route page).
 - Docs: `DESIGN_SYSTEM.md` §13 / §13c, the `states` example doc (with the route-file recipe: `loading.tsx`, `error.tsx`, `not-found.tsx`) and the `first-use` / `no-results` / `list-shape` examples; the `semi-ui` skill builds the states from them.
 
+### Form kit (#67, owner decision C-021)
+
+Forms behave the same everywhere and nobody loses typed work (F2, D13, P11). Additive; nothing breaks. New lint rules are warnings.
+
+#### Added
+- **`FormActions`** (`FormActions.tsx`): `Huỷ` (ghost) then `Lưu` or `Tạo` (`create`), right-aligned, `destructive` alone on the left. Sticky at the bottom of a page, above the on-screen keyboard (`visualViewport`) and the safe-area inset, `h-11` buttons below `sm`; `placement="modal"` is a `Modal` footer. Constants `FORM_ACTIONS`, `FORM_ACTIONS_STICKY`, `FORM_PAGE` (`max-w-2xl`).
+- **`useUnsavedGuard(dirty)`**: warns on reload and tab close (`beforeunload`), on link clicks (asked with `confirmDialog`, then the click is repeated, so `next/link` and `basePath` work) and on back / forward in the Next.js app router; returns `confirmLeave(then)` for navigation the app starts itself.
+- **`Field kind`** (`email`, `tel`, `number`, `money`, `url`, `search`, `password`): sets `type`, `inputMode`, `autoComplete` and `enterKeyHint` on `Input` / `NumberInput` (`FIELD_KINDS`, `FieldKind`); a prop on the control wins.
+- **`useFormValidation`** (error on blur, then on every change, `validate()` on submit) and **`FormErrorSummary`** (an `Alert` above `FormActions` when there is more than one error).
+- **Locale keys** (Vietnamese default, English in `en`): `save` "Lưu", `create` "Tạo", `unsavedTitle`, `unsavedChanges`, `leave`, `stay`, `formErrors`; Huỷ is the existing `cancel`.
+- **Lint warnings** (new: a warning tier that prints and never fails, outside the baseline): `form-no-guard`, `action-order`, `toast-for-validation`, `field-input-mode`; `--json` reports them as `warnings`.
+- Docs: `DESIGN_SYSTEM.md` §9b, the `form-actions` example doc (`page-form`, `destructive`, `modal`), a `kinds` example on `Field`, the `semi-ui` skill and agent rules.
+
 ## [0.33.0] - 2026-11-22
 
 Text fields no longer make iOS zoom the page in. Apps get the fix by updating `@semi/ui`. `/semi-check` and `semi a11y` now also report an app's own fields whose text is under 16px on a phone (the new `field-size` rule); an app's own field adds `max-sm:text-title-lg` or `FIELD_TEXT_PHONE`. There are no breaking changes.
