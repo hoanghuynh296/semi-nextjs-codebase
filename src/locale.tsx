@@ -158,6 +158,16 @@ export const vi = {
   densityComfortable: "Thoáng",
   viewOptions: "Sắp xếp và kiểu xem",
   moreActions: "Thao tác khác",
+  copyLink: "Sao chép liên kết",
+  prevItem: "Mục trước",
+  nextItem: "Mục sau",
+  itemOf: (n: number, total: number) => `Mục ${n} trên ${total}`,
+  paletteLabel: "Tìm hoặc tạo",
+  palettePlaceholder: "Tìm hoặc tạo…",
+  paletteEmpty: (query: string) => `Không có kết quả cho “${query}”. Thử từ khác.`,
+  paletteSelect: "Chọn",
+  paletteOpen: "Mở",
+  paletteNewTab: "Mở tab mới",
 };
 
 export type SemiStrings = typeof vi;
@@ -316,6 +326,16 @@ export const en: SemiStrings = {
   densityComfortable: "Comfortable",
   viewOptions: "Sort and view",
   moreActions: "More actions",
+  copyLink: "Copy link",
+  prevItem: "Previous item",
+  nextItem: "Next item",
+  itemOf: (n: number, total: number) => `Item ${n} of ${total}`,
+  paletteLabel: "Search or create",
+  palettePlaceholder: "Search or create…",
+  paletteEmpty: (query: string) => `No results for “${query}”. Try another word.`,
+  paletteSelect: "Select",
+  paletteOpen: "Open",
+  paletteNewTab: "Open in new tab",
 };
 
 const LocaleContext = createContext<SemiStrings>(vi);

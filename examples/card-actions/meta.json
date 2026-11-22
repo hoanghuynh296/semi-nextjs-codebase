@@ -1,0 +1,35 @@
+{
+  "title": "Card actions",
+  "group": "Actions",
+  "description": "Quick actions on a card or media tile: round icon buttons in the top right corner that show on hover or keyboard focus where the device can hover, and one always-visible ⋯ with every action on touch screens. Goes inside a `group relative` card.",
+  "components": [
+    "CardActions"
+  ],
+  "imports": [
+    "type CardAction"
+  ],
+  "when": [
+    "Cards and media tiles in a grid (suppliers, products, templates, files) that open on click and have one or two quick actions.",
+    "A card's ⋯ overflow (G4 for grids: one or two inline actions at most, the rest in ⋯, danger last)."
+  ],
+  "instead": [
+    {
+      "need": "Actions of a table row",
+      "use": "Menu (row ⋯)"
+    },
+    {
+      "need": "Actions on several selected cards",
+      "use": "the bulk bar (D7)"
+    }
+  ],
+  "a11y": [
+    "A group named by `label` (with the item's name); every icon button has an aria-label and a title; the hover row is in the tab order and shows on focus; on touch the ⋯ is always visible, so it never depends on hover.",
+    "Clicks inside do not reach the card under it."
+  ],
+  "examples": [
+    {
+      "file": "grid",
+      "title": "Card grid"
+    }
+  ]
+}

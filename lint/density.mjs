@@ -312,7 +312,8 @@ export function densityAudit(opts) {
     const views = new Map();
     for (const el of root.querySelectorAll("button, a[href], [role=button]")) {
       // A selected day, an "on" switch or the current tab is a state, not an action.
-      if (!visible(el) || skipped(el) || el.closest("[role=switch], [role=checkbox], [role=radio], [role=tab], [role=gridcell], [aria-pressed=true], [aria-selected=true], [aria-checked=true], [aria-current]")) continue;
+      // A SplitButton's ▾ (data-split-menu) is part of its main action: one primary, not two.
+      if (!visible(el) || skipped(el) || el.matches("[data-split-menu]") || el.closest("[role=switch], [role=checkbox], [role=radio], [role=tab], [role=gridcell], [aria-pressed=true], [aria-selected=true], [aria-checked=true], [aria-current]")) continue;
       const bg = rgba(css(el).backgroundColor);
       if (bg[3] < 0.9 || !near(bg, accent, 12)) continue;
       const view = el.closest("[role=dialog], [role=alertdialog], form, [data-density-view], main") || root;

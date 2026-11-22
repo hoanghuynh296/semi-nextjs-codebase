@@ -18,6 +18,10 @@
   ],
   "instead": [
     {
+      "need": "The app-wide ⌘K “search or create” box, fed by every page",
+      "use": "CommandPalette"
+    },
+    {
       "need": "Pick one value in a form",
       "use": "CustomCombobox"
     },

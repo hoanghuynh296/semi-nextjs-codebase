@@ -1,0 +1,40 @@
+{
+  "title": "Split button",
+  "group": "Actions",
+  "description": "The main action and a ▾ that opens a Menu of the other ways to do the same job (Thêm khách hàng | ▾ Nhập từ file, Tìm trong Data Hub). One filled button in total; below sm one button opens the whole list, the main action first.",
+  "components": [
+    "SplitButton"
+  ],
+  "when": [
+    "Two or more ways to start one job (type it in, import a file, copy from another system): G1.",
+    "A detail header or side panel action with variants (Gửi hỏi giá | ▾ Gửi từ mẫu, Gọi điện)."
+  ],
+  "instead": [
+    {
+      "need": "Unrelated secondary actions (export, settings, print)",
+      "use": "Menu (⋯)"
+    },
+    {
+      "need": "A toggle or the steps of one control (view mode, ‹ Hôm nay ›)",
+      "use": "ButtonGroup"
+    },
+    {
+      "need": "One action with no alternatives",
+      "use": "Button"
+    }
+  ],
+  "a11y": [
+    "A group named by the main label; the ▾ is a menu button (aria-haspopup=menu, aria-expanded) with its own name (menuLabel); the menu follows Menu's keyboard."
+  ],
+  "examples": [
+    {
+      "file": "toolbar",
+      "title": "In a toolbar",
+      "description": "Narrow the window below sm: one button opens Thêm khách hàng and its alternatives."
+    },
+    {
+      "file": "secondary",
+      "title": "Secondary, loading"
+    }
+  ]
+}

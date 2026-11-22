@@ -927,7 +927,7 @@ function PhoneDrawer({
                     open({
                       id: "__create",
                       label: create.label,
-                      rows: create.items!.map((c, i) => ({ id: `__create-${i}`, label: c.label, icon: c.icon ?? "plus", onSelect: c.onSelect, disabled: c.disabled })),
+                      rows: create.items!.filter((c) => !c.hidden).map((c, i) => ({ id: `__create-${i}`, label: c.label, href: c.href, icon: c.icon ?? "plus", onSelect: c.onSelect, disabled: Boolean(c.disabled) })),
                     })
                   }
                   className={cn("mx-1 flex items-center gap-2 h-11 px-3 rounded-control bg-accent text-on-accent hover:bg-accent-hover text-ui font-semibold cursor-pointer", FOCUS_RING)}

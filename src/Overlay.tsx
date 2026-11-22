@@ -5,7 +5,9 @@
 // Both render in a portal with fixed positioning, so scrolling panels and modals never clip them.
 import React, { isValidElement, useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import Link from "next/link";
 import { Icon, type IconName } from "./Icon";
+import { Spinner } from "./Button";
 import { cloneTrigger, useAnchoredPosition, type AnchoredPosition } from "./floating";
 import { FLOATING_LAYER } from "./a11y";
 import { useSemiLocale } from "./locale";
@@ -111,46 +113,112 @@ export function Tooltip(props: {
 export interface MenuItem {
   label: React.ReactNode;
   icon?: IconName;
-  onSelect: () => void;
-  /** Destructive item (Xoá): danger text, placed last by convention. */
+  /** What the item does. Optional when `href` is given (the link navigates). */
+  onSelect?: () => void;
+  /** A link item: renders a `next/link` (router navigation, ⌘-click opens a tab). `onSelect` still runs first. */
+  href?: string;
+  /** One short line under the label ("Từ Excel hoặc CSV"). */
+  description?: React.ReactNode;
+  /**
+   * Destructive item (Xoá): danger text. Danger items are always listed last, after a separator (G5), whatever
+   * their place in `items`.
+   */
   danger?: boolean;
-  disabled?: boolean;
+  /**
+   * Not available now. A string is the reason, shown under the label: the item then stays reachable with the arrows
+   * (aria-disabled) so screen reader users hear why. `true` greys it out and skips it.
+   */
+  disabled?: boolean | string;
+  /** Leave the item out (a permission or device the user lacks). A group whose items are all hidden disappears. */
+  hidden?: boolean;
+  /** A toggle or the current choice: shows a check and makes the item `menuitemcheckbox` with aria-checked. */
+  checked?: boolean;
+  /** The action is running: a spinner in place of the icon; the item cannot be picked again (aria-busy). */
+  loading?: boolean;
   /** Draw a divider above this item. */
   separator?: boolean;
-  /** Keyboard shortcut shown on the right ("⌘D"); the app binds the key itself. */
+  /**
+   * Heading of the group the item belongs to ("Nhập", "Xuất"). Consecutive items with the same group are listed
+   * under one `text-overline` heading, with a divider between groups.
+   */
+  group?: string;
+  /** Keyboard shortcut or short trailing hint shown on the right ("⌘D", ":3000"); the app binds the key itself. */
   shortcut?: string;
 }
 
+/** The items as shown: hidden ones left out, danger ones moved last (after a divider), group headings resolved. */
+function arrangeMenuItems(items: MenuItem[]): (MenuItem & { heading?: string })[] {
+  const visible = items.filter((it) => !it.hidden);
+  const safe = visible.filter((it) => !it.danger);
+  const danger = visible.filter((it) => it.danger);
+  const ordered = [...safe, ...danger.map((it, i) => (i === 0 && safe.length ? { ...it, separator: true } : it))];
+  return ordered.map((it, i) => {
+    const prev = ordered[i - 1];
+    const startsGroup = it.group !== undefined && it.group !== prev?.group;
+    const leavesGroup = prev?.group !== undefined && it.group !== prev.group;
+    return { ...it, heading: startsGroup ? it.group : undefined, separator: it.separator || (i > 0 && (startsGroup || leavesGroup)) };
+  });
+}
+
+/** Can the item be focused with the arrows (enabled, or disabled with a reason). */
+const reachable = (it: MenuItem) => !it.disabled || typeof it.disabled === "string";
+const pickable = (it: MenuItem) => !it.disabled && !it.loading;
+
 /** The floating list of a Menu / ContextMenu: ↑/↓ Home End move (skipping disabled items), Enter / Space pick,
- * Escape closes, Tab closes and moves on. Rendered in a portal at `pos`. */
+ * a letter jumps to the next item starting with it, Escape closes, Tab closes and moves on. Rendered in a portal at
+ * `pos`; below `sm` it is a bottom sheet over a backdrop (`sheet`). */
 function MenuPanel({
   id,
-  items,
+  items: raw,
   label,
   pos,
   initial,
   onClose,
   panelRef,
   onSide,
+  sheet = true,
 }: {
   id: string;
   items: MenuItem[];
   label: string;
   pos: AnchoredPosition;
-  initial: number;
+  /** "first" / "last" reachable item, or an index in the arranged list. */
+  initial: number | "first" | "last";
   onClose: (refocus: boolean) => void;
   panelRef: React.RefObject<HTMLDivElement | null>;
   /** ←/→ inside the panel (Menubar moves to the neighbouring menu). */
   onSide?: (dir: 1 | -1) => void;
+  sheet?: boolean;
 }) {
-  const [active, setActive] = useState(initial);
-  const enabled = items.map((it, i) => (it.disabled ? -1 : i)).filter((i) => i >= 0);
+  const items = useMemo(() => arrangeMenuItems(raw), [raw]);
+  const enabled = items.map((it, i) => (reachable(it) ? i : -1)).filter((i) => i >= 0);
+  const [active, setActive] = useState(() => (initial === "last" ? enabled[enabled.length - 1] : initial === "first" ? enabled[0] : initial) ?? 0);
+  const base = useId();
+  // runs of items: a group with a heading becomes a role=group labelled by it
+  const segments = useMemo(() => {
+    const out: { heading?: string; items: { it: (typeof items)[number]; i: number }[] }[] = [];
+    items.forEach((it, i) => {
+      const last = out[out.length - 1];
+      if (!last || it.heading || (last.heading !== undefined && it.group !== items[i - 1]?.group)) out.push({ heading: it.heading, items: [{ it, i }] });
+      else last.items.push({ it, i });
+    });
+    return out;
+  }, [items]);
   useEffect(() => {
     panelRef.current?.querySelector<HTMLElement>(`[data-idx="${active}"]`)?.focus();
   }, [active, panelRef]);
   const step = (dir: 1 | -1) => {
+    if (!enabled.length) return;
     const k = enabled.indexOf(active);
     setActive(enabled[(k + dir + enabled.length) % enabled.length]);
+  };
+  const typeAhead = (ch: string) => {
+    const nodes = Array.from(panelRef.current?.querySelectorAll<HTMLElement>("[data-idx]") ?? []);
+    const text = (i: number) => nodes.find((n) => n.dataset.idx === String(i))?.querySelector("[data-label]")?.textContent?.trim().toLocaleLowerCase() ?? "";
+    const k = enabled.indexOf(active);
+    const order = [...enabled.slice(k + 1), ...enabled.slice(0, k + 1)];
+    const hit = order.find((i) => text(i).startsWith(ch.toLocaleLowerCase()));
+    if (hit !== undefined) setActive(hit);
   };
   const onKey = (e: React.KeyboardEvent) => {
     if (e.key === "Tab") return onClose(false);
@@ -162,48 +230,121 @@ function MenuPanel({
       Escape: () => onClose(true),
       ...(onSide ? { ArrowRight: () => onSide(1), ArrowLeft: () => onSide(-1) } : {}),
     };
-    if (!actions[e.key]) return;
+    // a link item (an <a>) does not activate on Space by itself, as a menuitem must
+    if (e.key === " " && items[active]?.href && !items[active]?.disabled) {
+      e.preventDefault();
+      panelRef.current?.querySelector<HTMLElement>(`[data-idx="${active}"]`)?.click();
+      return;
+    }
+    if (!actions[e.key]) {
+      if (e.key.length === 1 && e.key !== " " && !e.ctrlKey && !e.metaKey && !e.altKey) typeAhead(e.key);
+      return;
+    }
     e.preventDefault();
     e.stopPropagation();
     actions[e.key]();
   };
+  const pick = (it: MenuItem, e: React.MouseEvent) => {
+    if (!pickable(it)) {
+      e.preventDefault();
+      return;
+    }
+    onClose(!it.href);
+    it.onSelect?.();
+  };
+  const rowCls = (it: MenuItem) =>
+    cn(
+      "w-full text-left px-3 py-2 max-sm:py-3 rounded-control text-label flex items-center gap-2 transition outline-none",
+      it.disabled ? "opacity-40 cursor-not-allowed" : it.loading ? "cursor-progress" : "cursor-pointer",
+      it.danger ? "text-danger-fg hover:bg-danger-bg focus-visible:bg-danger-bg" : "text-body hover:bg-raised hover:text-contrast focus-visible:bg-raised focus-visible:text-contrast",
+    );
   return createPortal(
-    <div
-      {...FLOATING_LAYER}
-      ref={panelRef}
-      id={id}
-      role="menu"
-      aria-label={label}
-      onKeyDown={onKey}
-      style={{ left: pos.left, top: pos.top, bottom: pos.bottom, minWidth: pos.minWidth, maxHeight: pos.maxHeight }}
-      className="fixed z-popover overflow-y-auto overscroll-contain bg-panel border border-line rounded-card shadow-overlay p-1 flex flex-col gap-0.5"
-    >
-      {items.map((it, i) => (
-        <React.Fragment key={i}>
-          {it.separator && <div role="separator" className="my-1 h-px bg-divider" />}
-          <button
-            type="button"
-            role="menuitem"
-            data-idx={i}
-            tabIndex={i === active ? 0 : -1}
-            disabled={it.disabled}
-            onPointerEnter={() => !it.disabled && setActive(i)}
-            onClick={() => {
-              onClose(true);
-              it.onSelect();
-            }}
-            className={cn(
-              "w-full text-left px-3 py-2 rounded-control text-label flex items-center gap-2 transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed outline-none",
-              it.danger ? "text-danger-fg hover:bg-danger-bg focus-visible:bg-danger-bg" : "text-body hover:bg-raised hover:text-contrast focus-visible:bg-raised focus-visible:text-contrast",
-            )}
-          >
-            {it.icon && <Icon name={it.icon} className="w-3.5 h-3.5 shrink-0" />}
-            <span className="truncate flex-1">{it.label}</span>
-            {it.shortcut && <span className="text-caption text-muted tabular-nums">{it.shortcut}</span>}
-          </button>
-        </React.Fragment>
-      ))}
-    </div>,
+    <>
+      {sheet && <div {...FLOATING_LAYER} aria-hidden className="sm:hidden fixed inset-0 z-popover bg-overlay" />}
+      <div
+        {...FLOATING_LAYER}
+        ref={panelRef}
+        id={id}
+        role="menu"
+        aria-label={label}
+        onKeyDown={onKey}
+        style={{ left: pos.left, top: pos.top, bottom: pos.bottom, minWidth: pos.minWidth, maxHeight: pos.maxHeight }}
+        className={cn(
+          "fixed z-popover overflow-y-auto overscroll-contain bg-panel border border-line rounded-card shadow-overlay p-1 flex flex-col gap-0.5",
+          // below sm: a bottom sheet (P6); !important beats the anchored inline position
+          sheet && "max-sm:!left-0 max-sm:!right-0 max-sm:!top-auto max-sm:!bottom-0 max-sm:!min-w-0 max-sm:!max-h-[75dvh] max-sm:rounded-b-none max-sm:rounded-t-panel max-sm:border-x-0 max-sm:border-b-0 max-sm:p-2 max-sm:pb-[max(8px,env(safe-area-inset-bottom))]",
+        )}
+      >
+        {segments.map((seg, si) => {
+          const rows = seg.items.map(({ it, i }, k) => {
+            const reason = typeof it.disabled === "string" ? it.disabled : undefined;
+            const descId = it.description || reason ? `${base}-d-${i}` : undefined;
+            const common = {
+              role: it.checked !== undefined ? "menuitemcheckbox" : "menuitem",
+              "aria-checked": it.checked,
+              "aria-disabled": it.disabled ? true : undefined,
+              "aria-busy": it.loading || undefined,
+              "aria-describedby": descId,
+              "data-idx": i,
+              tabIndex: i === active ? 0 : -1,
+              onPointerEnter: () => reachable(it) && setActive(i),
+              onClick: (e: React.MouseEvent) => pick(it, e),
+              className: rowCls(it),
+            };
+            const lead = it.loading ? (
+              <Spinner className="w-3.5 h-3.5 shrink-0" />
+            ) : it.checked !== undefined ? (
+              <Icon name="check" className={cn("w-3.5 h-3.5 shrink-0", !it.checked && "invisible")} />
+            ) : (
+              it.icon && <Icon name={it.icon} className="w-3.5 h-3.5 shrink-0" />
+            );
+            const body = (
+              <>
+                {lead}
+                <span className="flex-1 min-w-0">
+                  <span data-label className="block truncate">
+                    {it.label}
+                  </span>
+                  {(it.description || reason) && (
+                    <span id={descId} className="block text-caption text-muted truncate">
+                      {reason ?? it.description}
+                    </span>
+                  )}
+                </span>
+                {it.shortcut && <span className="text-caption text-muted tabular-nums">{it.shortcut}</span>}
+              </>
+            );
+            return (
+              <React.Fragment key={i}>
+                {it.separator && !(seg.heading && k === 0) && <div role="separator" className="my-1 h-px bg-divider" />}
+                {it.href && !it.disabled ? (
+                  <Link href={it.href} {...common}>
+                    {body}
+                  </Link>
+                ) : (
+                  <button type="button" {...common}>
+                    {body}
+                  </button>
+                )}
+              </React.Fragment>
+            );
+          });
+          if (!seg.heading) return <React.Fragment key={si}>{rows}</React.Fragment>;
+          const hid = `${base}-g-${si}`;
+          return (
+            <React.Fragment key={si}>
+              {seg.items[0].it.separator && <div role="separator" className="my-1 h-px bg-divider" />}
+            <div role="group" aria-labelledby={hid} className="flex flex-col gap-0.5">
+              <div id={hid} role="presentation" className="px-3 pt-1.5 pb-0.5 text-overline text-muted">
+                {seg.heading}
+              </div>
+              {rows}
+            </div>
+            </React.Fragment>
+          );
+        })}
+      </div>
+    </>,
     document.body,
   );
 }
@@ -230,21 +371,28 @@ export function Menu({
   label: labelProp,
   align = "right",
   trigger,
+  sheet = true,
 }: {
+  /** The actions. Danger items are listed last, hidden ones left out (see MenuItem). */
   items: MenuItem[];
   /** Accessible name of the default trigger. */
   label?: string;
   align?: "left" | "right";
   trigger?: React.ReactElement;
+  /**
+   * Below `sm` the list opens as a bottom sheet over a backdrop (P6, since 0.39). `false` keeps the anchored
+   * dropdown on phones too.
+   * @default true
+   */
+  sheet?: boolean;
 }) {
   const t = useSemiLocale();
   const label = labelProp ?? t.actions;
-  const [open, setOpen] = useState<false | number>(false);
+  const [open, setOpen] = useState<false | "first" | "last">(false);
   const btnRef = useRef<HTMLElement | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const id = useId();
   const pos = useAnchoredPosition(btnRef, open !== false, { align, minWidth: 180 });
-  const enabled = items.map((it, i) => (it.disabled ? -1 : i)).filter((i) => i >= 0);
   const close = useCallback((refocus = true) => {
     setOpen(false);
     if (refocus) btnRef.current?.focus();
@@ -255,10 +403,10 @@ export function Menu({
   const onTriggerKey = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
       e.preventDefault();
-      setOpen(enabled[0] ?? 0);
+      setOpen("first");
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
-      setOpen(enabled[enabled.length - 1] ?? 0);
+      setOpen("last");
     }
   };
   const triggerProps = {
@@ -268,7 +416,7 @@ export function Menu({
     "aria-haspopup": "menu" as const,
     "aria-expanded": open !== false,
     "aria-controls": open !== false ? id : undefined,
-    onClick: () => (open !== false ? close() : setOpen(enabled[0] ?? 0)),
+    onClick: () => (open !== false ? close() : setOpen("first")),
     onKeyDown: onTriggerKey,
   };
 
@@ -281,7 +429,7 @@ export function Menu({
           <Icon name="more" className="w-4 h-4" />
         </button>
       )}
-      {open !== false && pos && <MenuPanel id={id} items={items} label={label} pos={pos} initial={open} onClose={close} panelRef={menuRef} />}
+      {open !== false && pos && <MenuPanel id={id} items={items} label={label} pos={pos} initial={open} onClose={close} panelRef={menuRef} sheet={sheet} />}
     </>
   );
 }
@@ -295,6 +443,7 @@ export function ContextMenu({
   label: labelProp,
   className,
   children,
+  sheet = true,
 }: {
   items: MenuItem[];
   /** Accessible name of the menu. */
@@ -302,6 +451,11 @@ export function ContextMenu({
   className?: string;
   /** The area that opens the menu (it becomes focusable). */
   children: React.ReactNode;
+  /**
+   * Below `sm` the list opens as a bottom sheet over a backdrop (P6, since 0.39); `false` keeps it at the pointer.
+   * @default true
+   */
+  sheet?: boolean;
 }) {
   const t = useSemiLocale();
   const label = labelProp ?? t.actions;
@@ -312,7 +466,6 @@ export function ContextMenu({
   const press = useRef<ReturnType<typeof setTimeout> | null>(null);
   const id = useId();
   const pos = useAnchoredPosition(anchorRef, at !== null, { minWidth: 180, gap: 0 });
-  const enabled = items.map((it, i) => (it.disabled ? -1 : i)).filter((i) => i >= 0);
   const close = useCallback((refocus = true) => {
     setAt(null);
     if (refocus) areaRef.current?.focus();
@@ -352,7 +505,7 @@ export function ContextMenu({
     >
       {children}
       {at && <span ref={anchorRef} aria-hidden style={{ position: "fixed", left: at.x, top: at.y, width: 0, height: 0 }} />}
-      {at && pos && <MenuPanel id={id} items={items} label={label} pos={pos} initial={enabled[0] ?? 0} onClose={close} panelRef={menuRef} />}
+      {at && pos && <MenuPanel id={id} items={items} label={label} pos={pos} initial="first" onClose={close} panelRef={menuRef} sheet={sheet} />}
     </div>
   );
 }
@@ -457,5 +610,5 @@ function MenubarDropdown({
   const anchorRef = useRef<HTMLElement | null>(anchor);
   const pos = useAnchoredPosition(anchorRef, true, { minWidth: 200 });
   if (!pos) return null;
-  return <MenuPanel id={id} items={menu.items} label={menu.label} pos={pos} initial={Math.max(0, menu.items.findIndex((it) => !it.disabled))} onClose={onClose} panelRef={panelRef} onSide={onSide} />;
+  return <MenuPanel id={id} items={menu.items} label={menu.label} pos={pos} initial="first" onClose={onClose} panelRef={panelRef} onSide={onSide} sheet={false} />;
 }

@@ -8,7 +8,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 ## Machine-readable
 
-- [components.json](./components.json): all 142 components, hooks and constants with props, summaries and their doc page
+- [components.json](./components.json): all 146 components, hooks and constants with props, summaries and their doc page
 - [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
@@ -34,9 +34,11 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 - [Button](./components/button/) ([markdown](./docs/components/button.md)): The action control: one primary per area (the action fill: the accent, or a neutral inverted fill in a brand with primaryStyle inverted), secondary (a translucent tint, no border) for the rest, outline (field fill + line) for framed toolbars, danger for destructive actions, ghost for quiet ones. Spinner shows work in progress inside the control that runs it. Components: Button, Spinner.
 - [Button group](./components/button-group/) ([markdown](./docs/components/button-group.md)): Joins related buttons into one segmented control: shared borders, outer corners only (‹ Hôm nay ›, Lưu | ▾). Components: ButtonGroup.
+- [Card actions](./components/card-actions/) ([markdown](./docs/components/card-actions.md)): Quick actions on a card or media tile: round icon buttons in the top right corner that show on hover or keyboard focus where the device can hover, and one always-visible ⋯ with every action on touch screens. Goes inside a `group relative` card. Components: CardActions.
 - [Chip](./components/chip/) ([markdown](./docs/components/chip.md)): A pill-shaped toggle for filters and tags. Neutral when off; active uses the high-contrast surface, with colour only on its dot or icon (tone). Components: Chip.
 - [External link](./components/external-link/) ([markdown](./docs/components/external-link.md)): A link to another site: opens a new tab on desktop and the external browser inside a mobile WebView, with an external-link icon. Components: ExternalLink.
 - [Pills](./components/pills/) ([markdown](./docs/components/pills.md)): A single-choice filter of 2–5 options on one track (segmented look). The left side of a SubpageToolbar. Components: Pills.
+- [Split button](./components/split-button/) ([markdown](./docs/components/split-button.md)): The main action and a ▾ that opens a Menu of the other ways to do the same job (Thêm khách hàng | ▾ Nhập từ file, Tìm trong Data Hub). One filled button in total; below sm one button opens the whole list, the main action first. Components: SplitButton.
 - [Toggle](./components/toggle/) ([markdown](./docs/components/toggle.md)): Buttons that stay pressed. Toggle for one (pin, mute, bold); ToggleGroup for a set of icon or short options, one or several at a time (list / grid view, text styles). Components: Toggle, ToggleGroup.
 
 ### Forms
@@ -64,11 +66,13 @@ In a project with the package installed, ask the docs instead of reading files: 
 ### Overlays
 
 - [Command](./components/command/) ([markdown](./docs/components/command.md)): A command palette: type to filter actions and pages, ↑/↓ to move, Enter to run. Command is the inline list; CommandDialog opens it over the page, usually on ⌘K (useHotkey). Matching ignores case and Vietnamese marks. Components: Command, CommandDialog.
+- [Command palette](./components/command-palette/) ([markdown](./docs/components/command-palette.md)): The app-wide “search or create” box on ⌘K / Ctrl+K, built on Command: one dialog for places, records and quick actions. Mount it once in the root layout; pages register their own items with useRegisterCommands. Groups get text-overline headings, actions a coloured tile, records a hint line; the footer shows the keys, and ⌘↵ opens an item with href in a new tab. Components: CommandPalette.
 - [Confirm dialog](./components/confirm-dialog/) ([markdown](./docs/components/confirm-dialog.md)): confirmDialog() asks one yes / no question and resolves to true or false; confirmDelete({ name }) is the irreversible-action form (names the object, red Xoá). Mount ConfirmHost once in the root layout. Never window.confirm. Components: ConfirmHost.
 - [Context menu](./components/context-menu/) ([markdown](./docs/components/context-menu.md)): The menu of an area opened at the pointer: right-click, long-press on touch, or the Menu key / Shift+F10 when the area has focus. Components: ContextMenu.
+- [Detail overlay](./components/detail-overlay/) ([markdown](./docs/components/detail-overlay.md)): An item of a list opens over the list instead of on its own page: its own URL (?open=<id> with useDetailParam, Next App Router safe), ‹ › and ← → through the current results with “n / N”, close / Esc / Back return to the list at the same scroll position. The side panel holds the actions (SplitButton, an icon row, ⋯); existing detail routes stay as deep-link targets. Components: DetailOverlay.
 - [Drawer](./components/drawer/) ([markdown](./docs/components/drawer.md)): A panel that slides in from the right, left, bottom or top (a sheet), with title and footer. Components: Drawer.
 - [Hover card](./components/hover-card/) ([markdown](./docs/components/hover-card.md)): A preview card while the pointer rests on, or focus is on, a link: a person, a product, an order. Components: HoverCard.
-- [Menu](./components/menu/) ([markdown](./docs/components/menu.md)): The overflow menu of a row or card: a ⋯ trigger (or your own) with items, icons, separators and a danger item last. Components: Menu.
+- [Menu](./components/menu/) ([markdown](./docs/components/menu.md)): The action menu behind a trigger: a ⋯ (or your own Button) with items that have an icon, a description line, a shortcut or hint, a check, a spinner, a link, a reason when disabled, and group headings. Danger items always go last after a divider; hidden items (and empty groups) leave the list; below sm it opens as a bottom sheet. Components: Menu.
 - [Modal](./components/modal/) ([markdown](./docs/components/modal.md)): The shared dialog: full screen on phones, a centred panel from sm up, with title, description, body and footer. Focus is trapped and returns to the opener. Components: Modal.
 - [Popover](./components/popover/) ([markdown](./docs/components/popover.md)): A small non-modal panel under its trigger for interactive content: a quick form, filters, a picker. Components: Popover.
 - [Toast](./components/toast/) ([markdown](./docs/components/toast.md)): One toast API for feedback after an action: toast.success / error / warning / info, toast.undo for a reversible destructive action, toast.promise for work in progress. Irreversible actions ask first (confirmDelete). Mount ToastHost once in the root layout. Components: ToastHost.
