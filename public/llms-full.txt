@@ -1450,8 +1450,8 @@ catches and what it must not:
 - **The #94 patterns (#107, warnings until 1.0, C-021):** `no-spinner-in-list` (a `Spinner` or "Đang tải" / "Loading..." in a
   list, grid or table body, as the other branch of `loading ? … : rows.map(…)` or as an early `if (loading) return <Spinner />`
   of a component that renders a list: show the shape, §13b; a spinner inside the button or field that runs its own action is
-  fine), `filter-chip-wrap` (hand-made clickable chips, or `Chip`s that filter, in a `flex-wrap`: `FilterChipRow` +
-  `useFilterParams`, §4), `raw-pill-button` (a `rounded-full` button of 28px or more with a tint / field / panel fill:
+  fine), `filter-chip-wrap` (clickable chips, hand-made or `Chip`, that filter, in a `flex-wrap`: `FilterChipRow` +
+  `useFilterParams`, §4), `raw-pill-button` (a `rounded-full` button or link of 28px or more with a tint / field / panel fill, or a class constant of one:
   `<Button iconOnly shape="round">`), `detail-overlay-url` (a `DetailOverlay` in a file that reads no URL state:
   `useDetailParam`; a wrapper that passes its own `open` prop on is fine), `overline-place` (`text-overline` on a button,
   link, field label, `h1` / `PageTitle`, badge, chip, table head or a text longer than a label: C-032 allows it on section
