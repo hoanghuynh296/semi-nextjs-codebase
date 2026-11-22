@@ -5465,7 +5465,7 @@ export default function ToastPromise() {
 
 ## Notes
 
-- <ToastHost /> goes once in the root layout (see Theme › Root layout); every toast() call anywhere shows there.
+- <ToastHost /> goes once in the root layout (see Theme › Root layout); every toast() call anywhere shows there. No <Suspense> is needed around it: the route-change watcher inside ToastHost has its own boundary, so it is safe in a root layout that prerenders dynamic routes.
 - Feedback rule (§14c): reversible destructive action → toast.undo; irreversible → confirmDelete (names the object, red Xoá, Huỷ); success is one toast, never a modal. The same text still showing is replaced, not stacked.
 - `toast(opts)` keeps working; `toast.success(title, opts | ms)` etc. are shorthands. Use `updateToast(id, patch)` to change a toast that is still showing.
 - Undo: `onUndo` must restore on the server too (it can run after the component is gone); `onCommit` runs when the window closes without an undo (also on pagehide: best effort, use keepalive / sendBeacon; commit first, undo restores). Undo toasts already showing close on a route change; one shown just before the action's own navigation stays. `toast.promise` has `timeout` (default 30 s: a neutral "Vẫn đang xử lý…", not an error). `updateToast` keeps the id.
