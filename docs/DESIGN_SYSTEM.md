@@ -58,6 +58,7 @@ hook of the `semi-design` plugin).
 | Section / card title | `text-ui–text-title font-semibold text-contrast tracking-tight` |
 | UI / nav text | `text-label font-medium text-body` |
 | Label | `text-label font-medium text-muted` (sentence case, never uppercase) |
+| Section label (sidebar pinned group, drawer group, command palette group, mega menu column) | `text-overline text-muted`: the only uppercase text (C-032); written in sentence case in code |
 | Caption | `text-caption–text-label text-muted` |
 | Big number (KPI) | `text-heading leading-tight font-semibold tracking-tight tabular-nums text-contrast` |
 | Numbers (temperatures, %, times, money, counts) | add `tabular-nums` (Geist, digits line up) |
@@ -84,6 +85,7 @@ Tailwind's `text-xs` / `text-sm` / `text-base`:
 | `text-heading` | 22 | page titles on phones, KPI figures from sm |
 | `text-heading-lg` | 24 | display numbers |
 | `text-display` | 26 | page titles from sm (`text-heading sm:text-display`) |
+| `text-overline` | 11 | section labels only: uppercase, `0.06em` tracking, semibold (C-032). Never a button, field label, title or badge |
 
 **Fields on a phone:** text you type in is 16px (`text-title-lg`) below `sm`, whatever the field's desktop size. iOS Safari
 zooms the page into a focused field under 16px and never zooms back; the fix is the text size, never `maximum-scale` /
@@ -398,10 +400,23 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   never the padding of a row or a box. A card or panel is never tighter than `p-card` (`card-padding`), a list row
   never shorter than a control (`Item` is `px-4 py-3`): a cramped box with text against its edges is the most common
   layout bug. The budgets are in §4c.
-- **Home shell (`md+`):** two inset `rounded-panel` panels inside a `bg-canvas` frame (`md:p-2 md:gap-2`): a collapsible
-  left **Panel Menu** (`w-52`, or `w-14` collapsed, toggled via the `sidebar` icon button) and a right **Panel
-  Content** (`bg-app`) holding a full-width content container (`max-w-[1440px] px-4 sm:px-6`). Phones (`< md`) use a
-  bottom tab bar with the same tabs (icons `w-5 h-5`).
+- **Home shell (`md+`):** two inset `rounded-panel` panels inside a `bg-canvas` frame (`md:p-2 md:gap-2`), separated by
+  tone (no border): a collapsible left **Panel Menu** (`bg-panel`, `w-60` on `lg+`, or the `w-[60px]` icon rail) and a
+  right **Panel Content** (`bg-app`) holding a full-width content container (`max-w-[1440px] px-4 sm:px-6`).
+- **Sidebar order (C-031, #96):** brand + collapse toggle (the logo expands the rail) · one accent **Create** action
+  (`create`: a `Menu` of things to create, or one link) · the main nav (`sections`) · a **pinned** group (saved views,
+  frequent records) under a divider with a `text-overline` label · at the bottom the **utilities** (help, theme,
+  notifications: items with `onClick`) and the **account**. Rows are `h-9`, icons 18px; the active row is
+  `bg-tint-hover text-contrast`, others `text-body hover:bg-tint`.
+- **Rail:** `lg+` shows labels unless collapsed (remembered per app, `storageKey`); `md` (iPad) is always the rail. In
+  the rail every item has an `aria-label` and a `Tooltip` on the right.
+- **Mega menu:** a nav item with `mega` opens a `MegaMenu` flyout beside the sidebar: 2–4 category columns headed by
+  `text-overline`, links with a grey icon, a hint and a "Mới" badge, and a "Xem tất cả" link.
+- **Phones (`< md`):** a top bar (menu button, logo, product name) opens a full-screen drawer with the same groups:
+  one accent Create row (its items open as a level), rows `min-h-12` with › for sub-items and mega menus (a
+  drill-down level with a back row; a parent with its own page is the level's first row, "Tất cả …"), the pinned
+  group, utilities and the account at the bottom. The drawer is the default when the app sets neither `mobileNav` nor
+  `mobileTabIds`; `mobileTabIds` (deprecated) keeps the old bottom tab bar (`MobileTabBar`), as does `mobileNav="tabs"`.
 - **Shell lifecycle:** `AppShell` renders once in the root or a route-group `layout.tsx`, so it stays mounted while
   people navigate; a page renders only its content, never `AppShell` or a component that renders it
   (`app-shell-in-page`). Page items carry `href` and stay `next/link` links even when `onSelect` is set (`onSelect`
@@ -757,7 +772,8 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 
 | Import | Exports |
 |---|---|
-| `@semi/ui` → `AppShell.tsx`, `MobileTabBar.tsx` | `AppShell` (floating Bento 2-panel frame, collapsible `w-52`/`w-14` menu, one level of sub-items), `useAppShell` (is the sidebar showing sub-items), `MobileTabBar`, `TAB_BAR_PAD` (§4) |
+| `@semi/ui` → `AppShell.tsx`, `MobileTabBar.tsx` | `AppShell` (floating Bento 2-panel frame: Create, sections, pinned group, utilities + account; `w-60` sidebar or icon rail, the rail on `md`; phone drawer; one level of sub-items; mega items), `useAppShell` (is the sidebar showing sub-items), `MobileTabBar`, `TAB_BAR_PAD` (opt-in `mobileNav="tabs"`) (§4) |
+| `MegaMenu.tsx`, `MinimalHeader.tsx`, `TextTabs.tsx` | `MegaMenu` (flyout of category columns, `text-overline` headers, New badges, See all), `MinimalHeader` (breadcrumb left, one link + one primary right), `TextTabs` (large text tabs as the page heading, ARIA tabs, `href` for URL-driven views) (§4) |
 | `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle`, `PageTabsTitle` (underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh) (§4a) |
 | `KpiCard.tsx`, `Modal.tsx` | `KpiCard` (metric card in the brand's figure font, neutral icon, `featured` for the screen's main number, shimmer), `Modal` (shared portal dialog with `MODAL_HEAD` + `MODAL_FOOT`) (§13, §14) |
 | `Icon.tsx` | `Icon`, `ICONS`, `IconName`, `IconTile`, `TILE_TONES`, `TONE_TEXT`, `TileTone` |
@@ -819,7 +835,9 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Persistent message in a page | `Alert` (tone, title, action, `onDismiss`) |
 | Save / Cancel under a form; losing typed work; field errors | `FormActions`, `useUnsavedGuard`, `useFormValidation` + `FormErrorSummary` (§9b) |
 | Secondary task beside the page | `Drawer` (right / left / bottom / top sheet) |
-| Sections of one record | `Tabs` (underline; `segmented` inside a toolbar); 2–4 sibling pages → `PageTabsTitle` |
+| Sections of one record | `Tabs` (underline; `segmented` inside a toolbar); 2–4 sibling views as the page heading → `TextTabs` (or `PageTabsTitle`) |
+| Top row of a detail / settings page | `MinimalHeader` (`Breadcrumb` left, one link + one primary right) |
+| Many destinations of one area in a few groups | `MegaMenu` (AppShell item `mega`, or its own trigger) |
 | Compared rows | `Table` + `THead` / `TBody` / `TR` / `TH` / `TD numeric`; cells stay on one line and the table scrolls sideways on phones (`TD wrap` for a long-text column); entity overviews stay Bento `Card`s |
 | Progress / quota | `Progress` (determinate or indeterminate) |
 | Choose or drop files, per-file upload progress | `FileDrop` (controlled `items`; `onAdd` accepted files, `onReject` (type, size, directory, duplicate, multiple), `onRemove`, `onRetry`; `accept`, `maxSize`; inside `Field`). Never a native `<input type="file">` |

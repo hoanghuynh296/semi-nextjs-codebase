@@ -8,7 +8,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 ## Machine-readable
 
-- [components.json](./components.json): all 130 components, hooks and constants with props, summaries and their doc page
+- [components.json](./components.json): all 133 components, hooks and constants with props, summaries and their doc page
 - [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
@@ -73,9 +73,11 @@ In a project with the package installed, ask the docs instead of reading files: 
 ### Navigation & layout
 
 - [App header](./components/app-header/) ([markdown](./docs/components/app-header.md)): The top bar of a stand-alone tool app: logo + title go home, the module name, and one primary action on the right. No Home button. Components: AppHeader.
-- [App shell](./components/app-shell/) ([markdown](./docs/components/app-shell.md)): The frame of a multi-page app: a floating bento sidebar (w-52, collapses to a w-14 icon rail) on bg-canvas, the content panel beside it, and MobileTabBar at the bottom on phones. Items can carry sub-items that open only while their parent is chosen. This docs site is an AppShell. Components: AppShell, MobileTabBar.
+- [App shell](./components/app-shell/) ([markdown](./docs/components/app-shell.md)): The frame of a multi-page app: a floating sidebar on bg-canvas with the accent Create action on top, the main nav, a pinned group and the utilities and account at the bottom; it collapses to an icon rail (the default on iPad) and becomes a full-screen drawer on phones. Items can carry sub-items or a mega menu. This docs site is an AppShell; the full example runs at /demo/app-shell/. Components: AppShell, MobileTabBar.
 - [Breadcrumb](./components/breadcrumb/) ([markdown](./docs/components/breadcrumb.md)): Where the page sits: a trail of links ending with the current page. Long trails collapse their middle into a “…” menu. Components: Breadcrumb.
+- [Mega menu](./components/mega-menu/) ([markdown](./docs/components/mega-menu.md)): A flyout of links in category columns: a text-overline header per column, links with a grey icon, a hint and a New badge, and a See all link. AppShell opens it beside the sidebar from a nav item with mega; an app can open it from its own trigger. Components: MegaMenu.
 - [Menubar](./components/menubar/) ([markdown](./docs/components/menubar.md)): The menu bar of a desktop-style tool (Tệp · Sửa · Xem): menus that open from a bar and behave like Menu. Components: Menubar.
+- [Minimal header](./components/minimal-header/) ([markdown](./docs/components/minimal-header.md)): The top row of a detail or settings page inside AppShell: where the page sits on the left (a Breadcrumb), one text link and one primary action on the right. The page's own heading follows it. Components: MinimalHeader.
 - [Navigation menu](./components/navigation-menu/) ([markdown](./docs/components/navigation-menu.md)): Top navigation of a website or landing page: links, and items that open a panel of links with descriptions. Below md it becomes one menu button with a sheet. Components: NavigationMenu.
 - [Page actions](./components/page-actions/) ([markdown](./docs/components/page-actions.md)): Lets a page put its actions into a slot of the shared header: PageActionsProvider wraps the layout, PageActionsSlot marks where they render, PageActions sends them from the page. Components: PageActions, PageActionsProvider, PageActionsSlot.
 - [Page title](./components/page-title/) ([markdown](./docs/components/page-title.md)): PageTitle is the large display title of a page (text only). PageTabsTitle turns it into 2–4 underline tabs for sibling pages. Components: PageTitle, PageTabsTitle.
@@ -85,6 +87,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Side panel](./components/side-panel/) ([markdown](./docs/components/side-panel.md)): A 320px tool panel beside a canvas that collapses to a 48px rail; SidePanelToggle is its collapse button. Components: SidePanel, SidePanelToggle.
 - [Subpage toolbar](./components/subpage-toolbar/) ([markdown](./docs/components/subpage-toolbar.md)): The sticky row with a page's filters on the left and search, refresh and the icon-only primary action on the right: under the page title, or with the title on the same row (title). RefreshButton spins while its promise runs. Components: SubpageToolbar, RefreshButton.
 - [Tabs](./components/tabs/) ([markdown](./docs/components/tabs.md)): Switch between panels of content inside a page or card: underline (default) or segmented, with icons and counts. Components: Tabs.
+- [Text tabs](./components/text-tabs/) ([markdown](./docs/components/text-tabs.md)): Large text tabs that are the page heading: 2–4 sibling views in display type, the current one bright and the others dim, no underline. Buttons switch at once; tabs with href are links, so the URL picks the view. Components: TextTabs.
 
 ### Data display
 
@@ -160,7 +163,7 @@ Style: restrained dark & light dual-theme (`data-theme="dark|light"`) + bento ca
 left panel menu (`w-52` / `w-14`) floating on `bg-canvas` (`md:p-2 md:gap-2`), full-width right content panel (`md:rounded-panel bg-app`),
 `font-display` page titles (`PageTitle` / `PageTabsTitle`, text only, no subtitle; either on their own row above the toolbar, or on the toolbar row via `SubpageToolbar title`),
 sticky sub-page toolbar row (`SubpageToolbar`: filters left, icon-only primary CTA + `SearchInput` + `RefreshButton` right).
-Phones (`< md`) hide the top logo header and use `MobileTabBar` at the bottom (never a hamburger slide-over drawer).
+Phones (`< md`) get AppShell's top bar and its full-screen drawer (same groups, drill-down rows, utilities at the bottom); never a hand-made slide-over. `mobileNav="tabs"` (or the deprecated `mobileTabIds`) keeps `MobileTabBar`.
 
 **Two-Tier Semantic Tokens (Dark & Light Mode):**
 | Semantic Token | Tailwind Class | Dark Mode (`[data-theme="dark"]`) | Light Mode (`[data-theme="light"]`) | Usage |
@@ -198,7 +201,7 @@ KPI figure (`KpiCard`) `font-figure font-title text-figure sm:text-heading tabul
 font-semibold text-contrast` · UI `text-label font-medium text-body` · label `text-label font-medium text-muted` ·
 caption `text-caption`–`text-label` text-muted` · numbers `tabular-nums` (Geist; `font-mono` only for code) · Geist +
 Montserrat Alternates (`font-display`) · weights medium/semibold · type scale only: `text-caption` 11 · `label` 12 · `ui` 14 (compact 13) · `ui-lg` 15 (compact 14) · `title` 15 · `title-lg` 16 · `figure` 18 · `heading-sm` 20 · `heading` 22 · `heading-lg` 24 · `display` 26 (no `text-xs/sm`, no `text-[13px]`) ·
-sentence case, no ALL CAPS.
+sentence case, no ALL CAPS. The one exception is `text-overline` (uppercase, tracked) for section labels: a sidebar or drawer group, a palette group, a mega menu column (C-032).
 
 **Status, layers, elevation:** callouts / badges `bg-{danger,success,warning,info}-bg border-*-border text-*-fg` (`Alert`) ·
 dots / bars `bg-*-solid` · backdrop `bg-overlay` · floating layers `shadow-overlay` (canvas controls `shadow-float`) ·
@@ -222,7 +225,7 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
 **Use the shared blocks (`@semi/ui` and `@semi/ui/styles`) — never create a local `ui.tsx` wrapper barrel:**
 - **Layout & Structure (`@semi/ui`):**
   - `ThemeProvider`, `useTheme`, `ThemeToggle`: Zero-runtime-overhead dual-theme management via `data-theme` attribute and CSS variables.
-  - `AppShell` (+ `MobileTabBar`, `TAB_BAR_PAD`): 2-panel floating Bento frame on `bg-canvas`, collapsible `w-52`/`w-14` sidebar with grouped `sections`, and mobile bottom tab bar. Items may carry `children` (one level, optional grey icon, no colour or count): closed by default, open only while the parent or a child is active; hidden in the rail / below `lg` / phones, so pages check `useAppShell().submenuVisible` and offer their own picker.
+  - `AppShell` (+ `MobileTabBar`, `TAB_BAR_PAD` for `mobileNav="tabs"`): 2-panel floating Bento frame on `bg-canvas`; sidebar top to bottom: accent `create`, grouped `sections`, `pinned` (a `text-overline` label), `utilities` + `account` (`footer` is deprecated); `w-60` or the icon rail (always on `md`, Tooltips on the right); phones: top bar + full-screen drawer. A nav item with `mega` opens a `MegaMenu`. Detail pages open with `MinimalHeader`; sibling views as the heading are `TextTabs`. Items may carry `children` (one level, optional grey icon, no colour or count): closed by default, open only while the parent or a child is active; hidden in the rail / below `lg` / phones, so pages check `useAppShell().submenuVisible` and offer their own picker.
   - `PageTitle`, `PageTabsTitle`: text-only display heading or underline tab heading (`h-[2.5px] bg-primary`).
   - `SubpageToolbar`: sticky toolbar (`STICKY_TOOLBAR`) with `left` filters and `right` icon-only `BTN_PRIMARY BTN_ICON` + `SearchInput` + `RefreshButton`; `title` puts the page title on the same row (then no `PageTitle`).
   - `KpiCard`: metric card with a `tabular-nums` value in the style's figure font (`font-figure`), optional neutral icon (`iconTone` only for a status), `featured` for the screen's main number, shimmer `loading` state.
@@ -273,14 +276,14 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - **Typography:** `font-bold`, `text-[9|10px]`, `text-xs/sm`, uppercase labels, ALL CAPS buttons.
 - **Shell structure (`app-shell-in-page`, `shell-gate`, `shell-nav-href`, `boot-loader-place`):** AppShell only from a layout; no `if (!ready) return <PageSkeleton />` before it; `href` on page items, not `onSelect` + `router.push`; `BootLoader` only as the layout's boot gate.
 - **Radii (`radius-token`):** `rounded`, `rounded-sm/md/lg/xl/2xl`, `rounded-[Npx]` (they ignore the app's style); per-style classes or `[data-style=…]` selectors in an app.
-- **Navigation & Layout:** fixed `border-r` sidebars or `-translate-x-full` hamburger drawers (use `AppShell` + `MobileTabBar`) · local `ui.tsx` wrapper barrels (`PageHeader`, `Select`, `Input`, `Button`, `Modal`): use `Button`, `Field` + `Input`, `CustomSelect`, `Modal`, `EmptyState` from `@semi/ui`.
+- **Navigation & Layout:** fixed `border-r` sidebars or `-translate-x-full` hamburger drawers (use `AppShell`: its phone drawer) · local `ui.tsx` wrapper barrels (`PageHeader`, `Select`, `Input`, `Button`, `Modal`): use `Button`, `Field` + `Input`, `CustomSelect`, `Modal`, `EmptyState` from `@semi/ui`.
 - **Icons & Controls:** emoji / ✕ ✓ glyphs, stroke 2+, inline `<path>` · native `<select>` / date / number inputs, `window.confirm` · "Đang tải…" text (a progress step label or a `role="status"` line is fine) · Home button in app headers, page subtitles, text buttons on the page title row.
 - **Content colours:** illustrations and data palettes go under `skip` with a reason per file (`"skip": { "literal-colour-value": { "lib/scenePalette.ts": "data colours: 3D scene" } }`; `literal-colour-value`, `inline-svg-path`, `no-literal-palette` only), not in the baseline. `font-mono` only on code (`<code>`, `<pre>`, `CodeBlock`, `Terminal`, code editors); `max-w-4xl…6xl` only on dialogs and drawers.
 
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (130)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (133)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
@@ -317,6 +320,8 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `Kbd`: `Kbd`
 - `KpiCard`: `KpiCard`
 - `Markdown`: `Markdown`
+- `MegaMenu`: `MegaMenu`
+- `MinimalHeader`: `MinimalHeader`
 - `MobileTabBar`: `MobileTabBar`
 - `Modal`: `Modal`
 - `NavigationMenu`: `NavigationMenu`
@@ -344,6 +349,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `Tabs`: `Tabs`
 - `TaskHost`: `TaskHost`
 - `Terminal`: `Terminal`
+- `TextTabs`: `TextTabs`
 - `ThemeProvider`: `ThemeProvider`, `ThemeToggle`, `ThemeSwitcher`
 - `ThemeScript`: `ThemeScript`
 - `Toast`: `ToastHost`
@@ -420,6 +426,7 @@ hook of the `semi-design` plugin).
 | Section / card title | `text-ui–text-title font-semibold text-contrast tracking-tight` |
 | UI / nav text | `text-label font-medium text-body` |
 | Label | `text-label font-medium text-muted` (sentence case, never uppercase) |
+| Section label (sidebar pinned group, drawer group, command palette group, mega menu column) | `text-overline text-muted`: the only uppercase text (C-032); written in sentence case in code |
 | Caption | `text-caption–text-label text-muted` |
 | Big number (KPI) | `text-heading leading-tight font-semibold tracking-tight tabular-nums text-contrast` |
 | Numbers (temperatures, %, times, money, counts) | add `tabular-nums` (Geist, digits line up) |
@@ -446,6 +453,7 @@ Tailwind's `text-xs` / `text-sm` / `text-base`:
 | `text-heading` | 22 | page titles on phones, KPI figures from sm |
 | `text-heading-lg` | 24 | display numbers |
 | `text-display` | 26 | page titles from sm (`text-heading sm:text-display`) |
+| `text-overline` | 11 | section labels only: uppercase, `0.06em` tracking, semibold (C-032). Never a button, field label, title or badge |
 
 **Fields on a phone:** text you type in is 16px (`text-title-lg`) below `sm`, whatever the field's desktop size. iOS Safari
 zooms the page into a focused field under 16px and never zooms back; the fix is the text size, never `maximum-scale` /
@@ -760,10 +768,23 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   never the padding of a row or a box. A card or panel is never tighter than `p-card` (`card-padding`), a list row
   never shorter than a control (`Item` is `px-4 py-3`): a cramped box with text against its edges is the most common
   layout bug. The budgets are in §4c.
-- **Home shell (`md+`):** two inset `rounded-panel` panels inside a `bg-canvas` frame (`md:p-2 md:gap-2`): a collapsible
-  left **Panel Menu** (`w-52`, or `w-14` collapsed, toggled via the `sidebar` icon button) and a right **Panel
-  Content** (`bg-app`) holding a full-width content container (`max-w-[1440px] px-4 sm:px-6`). Phones (`< md`) use a
-  bottom tab bar with the same tabs (icons `w-5 h-5`).
+- **Home shell (`md+`):** two inset `rounded-panel` panels inside a `bg-canvas` frame (`md:p-2 md:gap-2`), separated by
+  tone (no border): a collapsible left **Panel Menu** (`bg-panel`, `w-60` on `lg+`, or the `w-[60px]` icon rail) and a
+  right **Panel Content** (`bg-app`) holding a full-width content container (`max-w-[1440px] px-4 sm:px-6`).
+- **Sidebar order (C-031, #96):** brand + collapse toggle (the logo expands the rail) · one accent **Create** action
+  (`create`: a `Menu` of things to create, or one link) · the main nav (`sections`) · a **pinned** group (saved views,
+  frequent records) under a divider with a `text-overline` label · at the bottom the **utilities** (help, theme,
+  notifications: items with `onClick`) and the **account**. Rows are `h-9`, icons 18px; the active row is
+  `bg-tint-hover text-contrast`, others `text-body hover:bg-tint`.
+- **Rail:** `lg+` shows labels unless collapsed (remembered per app, `storageKey`); `md` (iPad) is always the rail. In
+  the rail every item has an `aria-label` and a `Tooltip` on the right.
+- **Mega menu:** a nav item with `mega` opens a `MegaMenu` flyout beside the sidebar: 2–4 category columns headed by
+  `text-overline`, links with a grey icon, a hint and a "Mới" badge, and a "Xem tất cả" link.
+- **Phones (`< md`):** a top bar (menu button, logo, product name) opens a full-screen drawer with the same groups:
+  one accent Create row (its items open as a level), rows `min-h-12` with › for sub-items and mega menus (a
+  drill-down level with a back row; a parent with its own page is the level's first row, "Tất cả …"), the pinned
+  group, utilities and the account at the bottom. The drawer is the default when the app sets neither `mobileNav` nor
+  `mobileTabIds`; `mobileTabIds` (deprecated) keeps the old bottom tab bar (`MobileTabBar`), as does `mobileNav="tabs"`.
 - **Shell lifecycle:** `AppShell` renders once in the root or a route-group `layout.tsx`, so it stays mounted while
   people navigate; a page renders only its content, never `AppShell` or a component that renders it
   (`app-shell-in-page`). Page items carry `href` and stay `next/link` links even when `onSelect` is set (`onSelect`
@@ -1119,7 +1140,8 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 
 | Import | Exports |
 |---|---|
-| `@semi/ui` → `AppShell.tsx`, `MobileTabBar.tsx` | `AppShell` (floating Bento 2-panel frame, collapsible `w-52`/`w-14` menu, one level of sub-items), `useAppShell` (is the sidebar showing sub-items), `MobileTabBar`, `TAB_BAR_PAD` (§4) |
+| `@semi/ui` → `AppShell.tsx`, `MobileTabBar.tsx` | `AppShell` (floating Bento 2-panel frame: Create, sections, pinned group, utilities + account; `w-60` sidebar or icon rail, the rail on `md`; phone drawer; one level of sub-items; mega items), `useAppShell` (is the sidebar showing sub-items), `MobileTabBar`, `TAB_BAR_PAD` (opt-in `mobileNav="tabs"`) (§4) |
+| `MegaMenu.tsx`, `MinimalHeader.tsx`, `TextTabs.tsx` | `MegaMenu` (flyout of category columns, `text-overline` headers, New badges, See all), `MinimalHeader` (breadcrumb left, one link + one primary right), `TextTabs` (large text tabs as the page heading, ARIA tabs, `href` for URL-driven views) (§4) |
 | `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle`, `PageTabsTitle` (underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh) (§4a) |
 | `KpiCard.tsx`, `Modal.tsx` | `KpiCard` (metric card in the brand's figure font, neutral icon, `featured` for the screen's main number, shimmer), `Modal` (shared portal dialog with `MODAL_HEAD` + `MODAL_FOOT`) (§13, §14) |
 | `Icon.tsx` | `Icon`, `ICONS`, `IconName`, `IconTile`, `TILE_TONES`, `TONE_TEXT`, `TileTone` |
@@ -1181,7 +1203,9 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Persistent message in a page | `Alert` (tone, title, action, `onDismiss`) |
 | Save / Cancel under a form; losing typed work; field errors | `FormActions`, `useUnsavedGuard`, `useFormValidation` + `FormErrorSummary` (§9b) |
 | Secondary task beside the page | `Drawer` (right / left / bottom / top sheet) |
-| Sections of one record | `Tabs` (underline; `segmented` inside a toolbar); 2–4 sibling pages → `PageTabsTitle` |
+| Sections of one record | `Tabs` (underline; `segmented` inside a toolbar); 2–4 sibling views as the page heading → `TextTabs` (or `PageTabsTitle`) |
+| Top row of a detail / settings page | `MinimalHeader` (`Breadcrumb` left, one link + one primary right) |
+| Many destinations of one area in a few groups | `MegaMenu` (AppShell item `mega`, or its own trigger) |
 | Compared rows | `Table` + `THead` / `TBody` / `TR` / `TH` / `TD numeric`; cells stay on one line and the table scrolls sideways on phones (`TD wrap` for a long-text column); entity overviews stay Bento `Card`s |
 | Progress / quota | `Progress` (determinate or indeterminate) |
 | Choose or drop files, per-file upload progress | `FileDrop` (controlled `items`; `onAdd` accepted files, `onReject` (type, size, directory, duplicate, multiple), `onRemove`, `onRetry`; `accept`, `maxSize`; inside `Field`). Never a native `<input type="file">` |
@@ -2371,10 +2395,10 @@ with `data-style` re-styles only its subtree (used by Storybook previews), not s
 All web UI here follows the **Semi Design System** (`@semi/ui`, repo `https://github.com/hoanghuynh296/semi-nextjs-codebase`). `npx semi-lint` enforces most of this; the full rules are `node_modules/@semi/ui/docs/QUICK_REF.md` (details in `docs/DESIGN_SYSTEM.md`).
 
 1. **Ask Semi before writing UI.** Find the component for each need with the `semi` MCP tools (`semi_search` → `semi_docs` → `semi_example`; `semi_block` for whole pages; `semi_props` for props) or the terminal (`npx semi search "bảng có sắp xếp"`, `npx semi docs DataTable`, `npx semi example data-table`, `npx semi add dashboard`). They answer from the installed `@semi/ui`. Read *When to use*, *Use something else when* and *Accessibility*, then start from an example.
-2. **Compose, never re-create.** Import from `@semi/ui` and `@semi/ui/styles` directly. No local wrappers (`components/ui.tsx`), no raw `<select>`, `<table>`, `<dialog>`, `type="date"`, `type="number"`, `window.confirm` / `alert`, no inline `<svg>` or glyph icons (`<Icon name>`, mapping in `docs/ICONS.md`). Every AI conversation is `AIChat`; agent work uses `Reasoning`, `ToolCall`, `TaskList`, `Terminal`, `Sources`; an outward-facing, paid or irreversible agent action waits for `ActionConfirmation`. Pages sit in `AppShell` (or `AppHeader` for a one-screen tool) with `PageTitle` (or the title on the toolbar row: `SubpageToolbar title`); sub-views of one area go in nav `children` (closed until the parent is chosen, optional grey icon, no colour or count; check `useAppShell().submenuVisible` and add a page picker when false); dialogs are `Modal` / `Drawer` / `confirmDialog`; loading is `Skeleton`, never "Đang tải…" text. `AppShell` renders once in a `layout.tsx` (never from a page), its items route by `href` (not `onSelect` + `router.push`), the session check runs once in that layout (best on the server) with `BootLoader` as the only centred spinner, and content loading is a `loading.tsx` with `PageSkeleton` inside the shell, never a skeleton gate around it. No other UI or icon library (`lucide-react`, `react-icons`, `@radix-ui`, `@mui`, a shadcn `components/ui` copy: `foreign-ui`), no own `Card` / `Badge` / `Tooltip`… (`local-primitive`), no raw `<button>`, `<input>`, `<textarea>`, `<table>` (`raw-control`), no hand-made overlay or spinner (`custom-overlay`, `custom-spinner`); a clickable card is `<Card onClick>` (keyboard-ready), never `<div onClick>` (`click-target`).
+2. **Compose, never re-create.** Import from `@semi/ui` and `@semi/ui/styles` directly. No local wrappers (`components/ui.tsx`), no raw `<select>`, `<table>`, `<dialog>`, `type="date"`, `type="number"`, `window.confirm` / `alert`, no inline `<svg>` or glyph icons (`<Icon name>`, mapping in `docs/ICONS.md`). Every AI conversation is `AIChat`; agent work uses `Reasoning`, `ToolCall`, `TaskList`, `Terminal`, `Sources`; an outward-facing, paid or irreversible agent action waits for `ActionConfirmation`. Pages sit in `AppShell` (or `AppHeader` for a one-screen tool) with `PageTitle` (or the title on the toolbar row: `SubpageToolbar title`, or `TextTabs` for 2–4 sibling views; a detail page opens with `MinimalHeader`); the shell's accent action is `create`, its bottom is `utilities` + `account` (never `footer`), and phones use its drawer; sub-views of one area go in nav `children` (closed until the parent is chosen, optional grey icon, no colour or count; check `useAppShell().submenuVisible` and add a page picker when false); dialogs are `Modal` / `Drawer` / `confirmDialog`; loading is `Skeleton`, never "Đang tải…" text. `AppShell` renders once in a `layout.tsx` (never from a page), its items route by `href` (not `onSelect` + `router.push`), the session check runs once in that layout (best on the server) with `BootLoader` as the only centred spinner, and content loading is a `loading.tsx` with `PageSkeleton` inside the shell, never a skeleton gate around it. No other UI or icon library (`lucide-react`, `react-icons`, `@radix-ui`, `@mui`, a shadcn `components/ui` copy: `foreign-ui`), no own `Card` / `Badge` / `Tooltip`… (`local-primitive`), no raw `<button>`, `<input>`, `<textarea>`, `<table>` (`raw-control`), no hand-made overlay or spinner (`custom-overlay`, `custom-spinner`); a clickable card is `<Card onClick>` (keyboard-ready), never `<div onClick>` (`click-target`).
 3. **Tokens only** (dual theme, any brand, any style):
    - Surfaces and text: `bg-canvas|app|panel|field|raised` (the scale `bg-panel-0…4`: 0 = canvas, 2 = app, 4 = panel), `text-contrast|body|muted`, `border-line|divider` (an input's own edge: `border-control-line`, ≥ 3:1); status `bg-*-bg border-*-border text-*-fg` (danger, success, warning, info). Pages separate by tone, not borders: a block that is a card is `<Card>` / `bg-card` (no border; `<Card bordered>` only for a dense data view), never `bg-panel` (the sidebar / modal step); a secondary button is `<Button>` (tint fill `bg-tint`, no border). Main button: `BTN_PRIMARY` / `bg-action text-on-action` (the brand may make it inverted). Accent: `bg-accent text-on-accent` for checked / "on" marks, `text-accent-fg`, `bg-accent-subtle`, `border-accent-line`, `ring-focus`. Never physical colours (`bg-white`, `text-slate-900`, `text-amber-600 dark:text-amber-400`), arbitrary colours (`bg-[#…]`), `primary-N/alpha` or `bg-primary-N` fills (`primary-fill`), gradients or glow shadows.
-   - Type scale only: `text-caption|label|ui|ui-lg|title|title-lg`, `text-figure`, `text-heading`, `text-display`; `font-medium` / `font-semibold`, titles and big numbers `font-title` / `font-figure`; `tabular-nums` for numbers; sentence case. Running text (sentences, descriptions, table cells, list rows) is `text-ui`; `text-label` / `text-caption` only for short marks beside it (a field label, a button, a time, a count). Each size sets its own line height: no `leading-*` on body text.
+   - Type scale only: `text-caption|label|ui|ui-lg|title|title-lg`, `text-figure`, `text-heading`, `text-display`; `font-medium` / `font-semibold`, titles and big numbers `font-title` / `font-figure`; `tabular-nums` for numbers; sentence case (the one uppercase style is `text-overline`, for section labels only: a sidebar / drawer group, a palette group, a mega menu column). Running text (sentences, descriptions, table cells, list rows) is `text-ui`; `text-label` / `text-caption` only for short marks beside it (a field label, a button, a time, a count). Each size sets its own line height: no `leading-*` on body text.
    - Spacing by role (scaled by density): `p-card` inside every card, popover and panel section (`<Card>` sets it; `p-card sm:p-panel` for a roomy one), `gap-stack` between items in a card or form, `gap-group` between cards, `gap-section` between page sections. `gap-1`–`gap-2`, `px-2`, `py-1` only inside one control or row. A card is never tighter than `p-card` (`card-padding`). No arbitrary spacing, z-index or opacity (`p-[13px]`, `z-[9999]`, `bg-panel/[0.05]`: `arbitrary-value`); no `shadow-sm…2xl` (`tw-shadow`), `uppercase` (`text-case`) or `leading-*` other than `leading-tight` (`leading-override`); no colours, sizes or radii in `style={{}}` (`inline-style-value`) or in `.css` (`css-raw-value`).
    - Shape and size come from the app's style (`"style"` in `semi-lint.json`, `data-style` on `<html>`): `rounded-chip|control|card|panel|full`, `shadow-card`, `h-control`, `h-field`. Never `rounded-lg`, `rounded-[Npx]`, `h-[34px]` or `[data-style]` selectors. Density and type scale are this product's (`data-density`, `data-type-scale`): never tune paddings or text sizes by hand for that.
    - Layers: `z-sticky` < `z-drawer` < `z-modal` < `z-dialog` < `z-popover` < `z-toast` < `z-tooltip`; never `z-[9999]`.
@@ -5593,7 +5617,7 @@ the tooltip is linked with aria-describedby. Touch screens show nothing: never p
 |---|---|---|---|
 | `content` * | `React.ReactNode` |  |  |
 | `children` * | `ReactElement<unknown, string \| JSXElementConstructor<any>>` |  |  |
-| `side` | `'bottom' \| 'top'` | `"top"` |  |
+| `side` | `'right' \| 'bottom' \| 'top'` |  | Where the hint shows; `right` is for a vertical icon rail (AppShell's collapsed sidebar). |
 
 ## Accessibility
 
@@ -5681,12 +5705,13 @@ export default function AppHeaderTool() {
 
 # App shell
 
-The frame of a multi-page app: a floating bento sidebar (w-52, collapses to a w-14 icon rail) on bg-canvas, the content panel beside it, and MobileTabBar at the bottom on phones. Items can carry sub-items that open only while their parent is chosen. This docs site is an AppShell.
+The frame of a multi-page app: a floating sidebar on bg-canvas with the accent Create action on top, the main nav, a pinned group and the utilities and account at the bottom; it collapses to an icon rail (the default on iPad) and becomes a full-screen drawer on phones. Items can carry sub-items or a mega menu. This docs site is an AppShell; the full example runs at /demo/app-shell/.
 
 ## When to use
 
 - Every app with several pages (dashboards, admin, store back office).
 - An area with its own sub-views that people switch between often (mailbox folders, saved views): sub-items under one nav item.
+- An area with many destinations in a few groups (a catalogue): a nav item with mega (MegaMenu).
 
 ## Use something else when
 
@@ -5703,6 +5728,158 @@ import { AppShell, MobileTabBar } from "@semi/ui";
 ```
 
 ## Examples
+
+### Create, pinned, utilities, mega menu
+
+The whole shell in one screen, opened full screen at /demo/app-shell/ of this site: Create menu, sub-items, a mega menu, a pinned group, utilities and the account; MinimalHeader and TextTabs in the page.
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import {
+  AppShell,
+  Avatar,
+  Breadcrumb,
+  Button,
+  Card,
+  MinimalHeader,
+  TextTabs,
+  useTheme,
+  type ShellNavItem,
+  type ShellNavSection,
+} from "@semi/ui";
+
+// The whole shell of the #94 study in one screen. A real app renders AppShell in layout.tsx and gives page items an
+// `href` (shell-nav-href); this demo keeps everything on one page with onSelect so it can run anywhere.
+const SECTIONS: ShellNavSection[] = [
+  {
+    items: [
+      { id: "inbox", label: "Hộp thư", icon: "inbox", right: <span className="px-1 text-caption text-muted tabular-nums">3</span> },
+      {
+        id: "orders",
+        label: "Đơn hàng",
+        icon: "bag",
+        href: "#orders",
+        children: [
+          { id: "orders-open", label: "Đang xử lý" },
+          { id: "orders-done", label: "Đã giao" },
+        ],
+      },
+      {
+        id: "catalog",
+        label: "Sản phẩm",
+        icon: "box",
+        mega: {
+          columns: [
+            {
+              title: "Danh mục",
+              items: [
+                { id: "printers", label: "Máy in", icon: "printer", href: "#", hint: "Máy in 3D và phụ kiện" },
+                { id: "filament", label: "Nhựa in", icon: "layers", href: "#", hint: "PLA, PETG, TPU" },
+              ],
+            },
+            {
+              title: "Bán hàng",
+              items: [
+                { id: "prices", label: "Bảng giá", icon: "tag", href: "#" },
+                { id: "bundles", label: "Combo", icon: "package", href: "#", isNew: true },
+              ],
+            },
+          ],
+          seeAll: { href: "#" },
+        },
+      },
+      { id: "suppliers", label: "Nhà cung cấp", icon: "truck" },
+      { id: "customers", label: "Khách hàng", icon: "users" },
+    ],
+  },
+];
+
+const PINNED = {
+  label: "Đã ghim",
+  items: [
+    { id: "pin-late", label: "Đơn trễ hạn", icon: "clock" },
+    { id: "pin-vip", label: "Khách VIP", icon: "star" },
+  ] satisfies ShellNavItem[],
+};
+
+const PRICE = new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" });
+
+const TABS = [
+  { key: "open", label: "Đang xử lý" },
+  { key: "done", label: "Đã giao" },
+  { key: "all", label: "Tất cả" },
+] as const;
+
+export default function FullShell() {
+  const [active, setActive] = useState("orders-open");
+  const [tab, setTab] = useState<(typeof TABS)[number]["key"]>("open");
+  const { resolvedTheme, toggleTheme } = useTheme();
+  const utilities: ShellNavItem[] = [
+    { id: "help", label: "Trợ giúp", icon: "info", onClick: () => {} },
+    { id: "theme", label: resolvedTheme === "dark" ? "Giao diện sáng" : "Giao diện tối", icon: resolvedTheme === "dark" ? "sun" : "moon", onClick: toggleTheme },
+    { id: "settings", label: "Cài đặt", icon: "settings" },
+  ];
+
+  return (
+    <AppShell
+      productName="Sales Hub"
+      logoIcon="bag"
+      sections={SECTIONS}
+      activeId={active}
+      onSelect={setActive}
+      create={{
+        label: "Tạo mới",
+        items: [
+          { label: "Đơn hàng", icon: "bag", onSelect: () => setActive("orders-open") },
+          { label: "Khách hàng", icon: "users", onSelect: () => setActive("customers") },
+          { label: "Sản phẩm", icon: "box", onSelect: () => {} },
+          { label: "Phiếu nhập", icon: "receipt", onSelect: () => {} },
+        ],
+      }}
+      pinned={PINNED}
+      utilities={utilities}
+      account={({ rail }) => (
+        <div className={rail ? "flex justify-center py-1" : "flex items-center gap-2.5 px-1.5 py-1 min-w-0"}>
+          <Avatar name="Lan Phạm" size="sm" />
+          {!rail && (
+            <span className="min-w-0">
+              <span className="block truncate text-label font-medium text-contrast">Lan Phạm</span>
+              <span className="block truncate text-caption text-muted">Cửa hàng Quận 1</span>
+            </span>
+          )}
+        </div>
+      )}
+    >
+      <MinimalHeader
+        left={<Breadcrumb items={[{ label: "Sales Hub", href: "#" }, { label: "Đơn hàng" }]} />}
+        link={<a href="#" className="text-accent-fg hover:underline">Hướng dẫn</a>}
+        primary={
+          <Button variant="primary" icon="plus">
+            Tạo đơn
+          </Button>
+        }
+      />
+      <TextTabs label="Đơn hàng" items={[...TABS]} value={tab} onChange={setTab}>
+        <div className="@container">
+        <div className="grid gap-group @2xl:grid-cols-2 @5xl:grid-cols-3">
+          {["DH-1042", "DH-1041", "DH-1039", "DH-1037", "DH-1036", "DH-1033"].map((id, i) => (
+            <Card key={id} className="flex flex-col gap-stack">
+              <div className="flex items-center justify-between gap-3 min-w-0">
+                <span className="text-ui font-semibold text-contrast truncate">{id}</span>
+                <span className="text-label text-muted tabular-nums shrink-0">{PRICE.format((i + 2) * 450_000)}</span>
+              </div>
+              <p className="text-ui text-body truncate">{["Bambu Lab A1 mini", "PLA Basic 1kg × 4", "Combo AMS Lite", "PETG HF 1kg × 2", "Bàn in PEI", "TPU 95A 1kg"][i]}</p>
+            </Card>
+          ))}
+        </div>
+        </div>
+      </TextTabs>
+    </AppShell>
+  );
+}
+```
 
 ### Root layout
 
@@ -5863,14 +6040,19 @@ export default function AppShellSubmenu() {
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `productName` * | `string` |  | Product title shown in the sidebar header (e.g. "3D Noobs Studio", "Auton"). |
-| `logoIcon` | `IconName` | `"sparkles"` | Icon inside the default 24x24 brand tile. |
+| `logoIcon` | `IconName` | `"sparkles"` | Icon inside the default brand tile. |
 | `logo` | `React.ReactNode` |  | Optional custom logo element replacing the default brand tile. |
 | `sections` * | `ShellNavSection[]` |  | Navigation groups separated by thin dividers in the left panel. |
 | `activeId` * | `string` |  | Currently active item id (or route path). |
 | `onSelect` | `(id: string) => void` |  | Called with the item id when an item is clicked. Items with `href` stay `next/link` links either way, so use it to react to a click (close a sheet, track), not to route: give page items an `href` (`shell-nav-href`). |
-| `primaryCta` | `{ label: string; icon: IconName; href?: string; external?: boolean; onClick?: () => void; }` |  | Optional highlighted CTA button at the top of the sidebar (e.g. Slicer launcher). |
-| `footer` | `React.ReactNode \| ((state: { collapsed: boolean }) => React.ReactNode)` |  | Footer content at the bottom of the sidebar. Receives `{ collapsed }` so it can hide text in rail mode. |
-| `mobileTabIds` | `string[]` |  | Up to 5 item ids to pin on the phone bottom tab bar (defaults to the first 5 items). |
+| `create` | `ShellCreate` |  | The accent Create action on top (one per app): a menu of things to create, or one link / action. |
+| `primaryCta` | `{ label: string; icon: IconName; href?: string; external?: boolean; onClick?: () => void; }` |  | Optional highlighted launcher under Create (another app, a docs link). |
+| `pinned` | `ShellPinned` |  | A group under the main nav (saved views, frequent records) with a `text-overline` label. |
+| `utilities` | `ShellNavItem[]` | `[]` | Utilities at the bottom of the sidebar (help, theme, notifications): usually items with `onClick`. |
+| `account` | `ShellSlot` |  | The account at the very bottom (avatar, workspace switcher). Receives `{ collapsed, rail }`: hide text when `rail`. |
+| `footer` | `ShellSlot` |  |  |
+| `mobileNav` | `'drawer' \| 'tabs'` |  | Phone navigation: `drawer` (a full-screen menu from the top bar) or `tabs` (MobileTabBar). Default: `tabs` when `mobileTabIds` is set (as before 0.36), else `drawer`. |
+| `mobileTabIds` | `string[]` |  |  |
 | `storageKey` | `string` | `"semi_sidebar_collapsed"` | localStorage key for persisting sidebar collapsed state. |
 | `children` * | `React.ReactNode` |  |  |
 | `containerClassName` | `string` | `""` |  |
@@ -5888,18 +6070,22 @@ export default function AppShellSubmenu() {
 
 ## Accessibility
 
-- The sidebar is a nav landmark; the active item has aria-current; the collapse state is remembered per app (storageKey).
-- An item with sub-items has aria-expanded; its sub-items are a list named after it, the active one with aria-current.
+- The sidebar is a complementary landmark named after the product with nav landmarks inside; the active item has aria-current; the collapse state is remembered per app (storageKey).
+- In the rail (collapsed, or md) every item is named (aria-label) and shows its name in a Tooltip on the right on hover and focus.
+- An item with sub-items has aria-expanded; its sub-items are a list named after it, the active one with aria-current. A mega item has aria-haspopup="dialog" and aria-expanded.
+- The phone drawer is a modal dialog: focus moves in, Tab stays in, Escape goes back a level or closes, and focus returns to the menu button.
 
 ## Notes
 
 - Render it once in the root layout (or a route group layout); pages render only their content.
 - Page items take an href: they stay next/link links even when onSelect is set (onSelect then only reports the click). Never route with onSelect + router.push (shell-nav-href).
 - Never gate the shell behind a page skeleton (shell-gate): a route loading.tsx next to the layout shimmers the content only, and the boot / session check before the layout is known renders BootLoader once in the layout. A page never renders AppShell or imports a component that does (app-shell-in-page).
-- MobileTabBar is used by AppShell; render it yourself only in a custom shell.
+- Top to bottom: create (one accent action, a Menu when it has items), primaryCta (an optional launcher), sections, pinned (a text-overline label), then utilities (items with onClick: help, theme) and account (avatar, workspace).
+- footer is deprecated: split it into utilities (actions) and account (who is signed in). The 0.36.0 migration renames footer to account.
+- Phones use the drawer (a top bar with the menu button) unless the app sets mobileNav="tabs" or the deprecated mobileTabIds (both keep MobileTabBar). In the drawer a parent with its own href is the first row of its level.
 - Sub-items (children) are closed by default: they open under their parent while the parent or one of them is the activeId, and close when another item is chosen. One level only.
 - Sub-items take an optional grey icon (give every sub-item of a parent one, or none); no colour dot or count (the menu stays neutral, §4). Put counts and colours in the page.
-- The rail (w-14), widths below lg and phones never show sub-items: read useAppShell().submenuVisible and give the page its own picker (a CustomSelect in the toolbar) when it is false.
+- The rail and widths below lg never show sub-items: read useAppShell().submenuVisible and give the page its own picker (a CustomSelect in the toolbar) when it is false. The phone drawer shows them as a drill-down level.
 - Choosing the parent alone usually opens its first sub-item: map it in onSelect.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/app-shell/ and the types in src/ -->
@@ -5994,6 +6180,113 @@ export default function BreadcrumbCollapsed() {
 
 ---
 
+<!-- docs/components/mega-menu.md -->
+
+# Mega menu
+
+A flyout of links in category columns: a text-overline header per column, links with a grey icon, a hint and a New badge, and a See all link. AppShell opens it beside the sidebar from a nav item with mega; an app can open it from its own trigger.
+
+## When to use
+
+- One sidebar item leads to many destinations of one area that fall into 2–4 groups (a catalogue, tools, reports).
+- A top-bar item of an app with that kind of area (placement="bottom").
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| 2–6 views of one area that people switch between often | AppShell sub-items (children) |
+| Actions (create, export), not places | Menu |
+| Top navigation of a website | NavigationMenu |
+
+## Import
+
+```tsx
+import { MegaMenu } from "@semi/ui";
+```
+
+## Examples
+
+### From a button
+
+placement="bottom" under its own trigger; in AppShell it opens beside the sidebar.
+
+```tsx
+"use client";
+
+import { useRef, useState } from "react";
+import { Button, MegaMenu } from "@semi/ui";
+
+export default function MegaMenuFlyout() {
+  const [open, setOpen] = useState(false);
+  const anchor = useRef<HTMLDivElement>(null);
+  return (
+    <div ref={anchor} className="inline-flex">
+      <Button icon="box" aria-haspopup="dialog" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+        Sản phẩm
+      </Button>
+      <MegaMenu
+        open={open}
+        onClose={() => setOpen(false)}
+        anchorRef={anchor}
+        placement="bottom"
+        label="Sản phẩm"
+        columns={[
+          {
+            title: "Danh mục",
+            items: [
+              { id: "printers", label: "Máy in", icon: "printer", href: "#", hint: "Máy in 3D và phụ kiện" },
+              { id: "filament", label: "Nhựa in", icon: "layers", href: "#", hint: "PLA, PETG, TPU" },
+            ],
+          },
+          {
+            title: "Bán hàng",
+            items: [
+              { id: "prices", label: "Bảng giá", icon: "tag", href: "#" },
+              { id: "bundles", label: "Combo", icon: "package", href: "#", isNew: true },
+            ],
+          },
+        ]}
+        seeAll={{ href: "#" }}
+      />
+    </div>
+  );
+}
+```
+
+## API
+
+### MegaMenu
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `open` * | `boolean` |  |  |
+| `onClose` * | `() => void` |  | Called on Escape, a click outside, Tab out of the panel or a link chosen. |
+| `anchorRef` * | `RefObject<HTMLElement \| null>` |  | The element the panel is placed against (a sidebar for `right`, a top-bar button for `bottom`). |
+| `triggerRef` | `RefObject<HTMLElement \| null>` |  | Where focus returns when the menu closes; defaults to the element focused when it opened. |
+| `label` * | `string` |  | Accessible name of the panel (the nav item's label). |
+| `placement` | `'right' \| 'bottom'` | `"right"` | `right` beside the anchor (a sidebar), `bottom` under it (a top bar). |
+| `onNavigate` | `(id: string) => void` |  | Called with the item id when a link is chosen (the link still navigates). |
+| `columns` * | `MegaMenuColumn[]` |  |  |
+| `seeAll` | `{ href: string; label?: string \| undefined; }` |  | Link to the full list; `label` defaults to the locale's `seeAll`. |
+
+## Accessibility
+
+- A non-modal dialog named after its trigger; the trigger has aria-haspopup="dialog" and aria-expanded.
+- Focus moves to the first link; ↑/↓ move between links; Escape or a click outside closes it and focus returns to the trigger; Tab out of the panel closes it.
+- Column headers are headings (h2) and each column is a labelled section.
+
+## Notes
+
+- In AppShell give the nav item `mega: { columns, seeAll }`: on phones the drawer shows the same links as a drill-down level.
+- Column titles are written in sentence case: text-overline renders them uppercase (C-032, the only place besides sidebar and palette group labels).
+- Give every link an icon, or none; at most one New badge per column.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/mega-menu/ and the types in src/ -->
+
+
+---
+
 <!-- docs/components/menubar.md -->
 
 # Menubar
@@ -6077,6 +6370,81 @@ open, the menus behave like Menu. For page navigation use NavigationMenu or AppS
 - role="menubar": ←/→ move between menus (and switch the open one), ↓ / Enter open, Escape closes and returns focus; one tab stop for the bar.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/menubar/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/minimal-header.md -->
+
+# Minimal header
+
+The top row of a detail or settings page inside AppShell: where the page sits on the left (a Breadcrumb), one text link and one primary action on the right. The page's own heading follows it.
+
+## When to use
+
+- A detail page (one order, one customer) or a settings page reached from a list.
+- A page with one main action and at most one secondary link.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A list page with filters, search and refresh | SubpageToolbar |
+| A stand-alone tool app (no sidebar) | AppHeader |
+| Several actions of a record | MinimalHeader primary + Menu in the page |
+
+## Import
+
+```tsx
+import { MinimalHeader } from "@semi/ui";
+```
+
+## Examples
+
+### Detail page
+
+```tsx
+"use client";
+
+import { Breadcrumb, Button, MinimalHeader } from "@semi/ui";
+
+export default function MinimalHeaderDetail() {
+  return (
+    <MinimalHeader
+      left={<Breadcrumb items={[{ label: "Đơn hàng", href: "#" }, { label: "DH-1042" }]} />}
+      link={<a href="#" className="text-accent-fg hover:underline">Xem lịch sử</a>}
+      primary={
+        <Button variant="primary" icon="check">
+          Xác nhận đơn
+        </Button>
+      }
+    />
+  );
+}
+```
+
+## API
+
+### MinimalHeader
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `left` * | `React.ReactNode` |  | Left side: a `Breadcrumb` (usual) or a short title. Truncates, never wraps the row. |
+| `link` | `React.ReactNode` |  | One text link (a `Link` / `ExternalLink`: "Hướng dẫn", "Xem lịch sử"). Hidden below `sm`, so do not put the only way to something here. |
+| `primary` | `React.ReactNode` |  | One primary action (`<Button variant="primary">`); a second action belongs in the page or a `Menu`. |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- A header element; the Breadcrumb is its own nav landmark.
+- The link is hidden below sm: never make it the only way to reach something.
+
+## Notes
+
+- One primary (Button variant="primary") at most: a second filled button on the screen breaks the one-primary rule (§4b, §4c).
+- It sits above the page heading (PageTitle or TextTabs), inside AppShell's content container.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/minimal-header/ and the types in src/ -->
 
 
 ---
@@ -6870,6 +7238,115 @@ export default function TabsSegmented() {
 - tablist / tab / tabpanel; ←/→, Home, End move; the panel is linked to its tab.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/tabs/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/text-tabs.md -->
+
+# Text tabs
+
+Large text tabs that are the page heading: 2–4 sibling views in display type, the current one bright and the others dim, no underline. Buttons switch at once; tabs with href are links, so the URL picks the view.
+
+## When to use
+
+- A page whose heading is a choice of 2–4 sibling views (Đang xử lý / Đã giao / Tất cả).
+- Views people link to or reload into: give the tabs an href (URL-driven).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Sections of one record inside a page or card | Tabs |
+| Filters of one list (status, owner) | Pills |
+| A page with one title | PageTitle |
+
+## Import
+
+```tsx
+import { TextTabs } from "@semi/ui";
+```
+
+## Examples
+
+### Page heading with a panel
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { TextTabs } from "@semi/ui";
+
+export default function TextTabsHeading() {
+  const [view, setView] = useState<"open" | "done" | "all">("open");
+  return (
+    <TextTabs
+      label="Đơn hàng"
+      value={view}
+      onChange={setView}
+      items={[
+        { key: "open", label: "Đang xử lý" },
+        { key: "done", label: "Đã giao" },
+        { key: "all", label: "Tất cả" },
+      ]}
+    >
+      <p className="text-ui text-body">{view === "open" ? "12 đơn đang xử lý." : view === "done" ? "48 đơn đã giao tuần này." : "60 đơn."}</p>
+    </TextTabs>
+  );
+}
+```
+
+### URL-driven
+
+```tsx
+"use client";
+
+import { TextTabs } from "@semi/ui";
+
+/** URL-driven: each tab is a link and the page reads the current one from the URL (here a fixed value). */
+export default function TextTabsLinked() {
+  const view = "suppliers"; // e.g. from useSearchParams().get("view") or the route
+  return (
+    <TextTabs
+      label="Mua hàng"
+      heading={false}
+      value={view}
+      items={[
+        { key: "requests", label: "Yêu cầu", href: "?view=requests" },
+        { key: "suppliers", label: "Nhà cung cấp", href: "?view=suppliers" },
+      ]}
+    />
+  );
+}
+```
+
+## API
+
+### TextTabs
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `items` * | `TextTabItem<T>[]` |  |  |
+| `value` * | `T` |  | The current tab (read it from the URL for linked tabs). |
+| `onChange` | `(key: T) => void` |  | Called with the tab chosen; tabs with `href` call it too, then navigate. |
+| `label` * | `string` |  | Accessible name of the tab list ("Đơn hàng"). |
+| `heading` | `boolean` | `true` | Wrap the tabs in the page's `h1` (default): they are the page heading. Set false when the page has its own h1. |
+| `children` | `React.ReactNode` |  | The current tab's content, rendered in the tab panel. Omit to render the content yourself below. |
+| `className` | `string` |  |  |
+| `panelClassName` | `string` | `"pt-4"` |  |
+
+## Accessibility
+
+- WAI-ARIA tabs: tablist / tab / tabpanel, ←/→, Home, End move and the current tab is the only tab stop.
+- Buttons switch as focus moves; linked tabs (href) move focus only and Enter follows the link, so arrows never load a route.
+- The tabs sit in the page h1 by default (heading={false} when the page has its own h1); the panel is linked to its tab when children are given.
+
+## Notes
+
+- Dim tabs use text-muted (≥ 4.5:1 in both themes): never lighter.
+- More than 4 views, or long names: Tabs or a CustomSelect, not TextTabs.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/text-tabs/ and the types in src/ -->
 
 
 ---

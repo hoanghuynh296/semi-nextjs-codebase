@@ -139,6 +139,10 @@ export const FOUNDATIONS = {
     {
       "cls": "text-display",
       "size": "26px / 1.25"
+    },
+    {
+      "cls": "text-overline",
+      "size": "11px / 1.5"
     }
   ],
   "z": [

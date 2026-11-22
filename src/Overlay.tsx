@@ -3,7 +3,7 @@
 // Floating layers anchored to a trigger: Tooltip (hint on hover / focus), Menu (action list, WAI-ARIA menu button) and
 // ContextMenu (the same list opened at the pointer).
 // Both render in a portal with fixed positioning, so scrolling panels and modals never clip them.
-import React, { isValidElement, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import React, { isValidElement, useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Icon, type IconName } from "./Icon";
 import { cloneTrigger, useAnchoredPosition, type AnchoredPosition } from "./floating";
@@ -16,11 +16,26 @@ import { cn } from "../styles/utils";
  * Short hint for an icon-only control (one line, no interactive content). The trigger keeps its own aria-label;
  * the tooltip is linked with aria-describedby. Touch screens show nothing: never put essential text in a tooltip.
  */
-export function Tooltip({ content, children, side = "top" }: { content: React.ReactNode; children: React.ReactElement; side?: "top" | "bottom" }) {
+export function Tooltip(props: {
+  content: React.ReactNode;
+  children: React.ReactElement;
+  /** Where the hint shows; `right` is for a vertical icon rail (AppShell's collapsed sidebar). */
+  side?: "top" | "bottom" | "right";
+}) {
+  // Props given to the Tooltip itself (a Menu or Popover that uses it as its trigger passes ref, handlers, aria-*) go
+  // on to the trigger, so <Menu trigger={<Tooltip><Button/></Tooltip>}> works.
+  const { content, children, side = "top", ...rest } = props as typeof props & Record<string, unknown>;
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLElement | null>(null);
   const id = useId();
-  const pos = useAnchoredPosition(ref, open, { align: "center", minWidth: 0, gap: 6, preferAbove: side === "top" });
+  const anchored = useAnchoredPosition(ref, open && side !== "right", { align: "center", minWidth: 0, gap: 6, preferAbove: side === "top" });
+  const [beside, setBeside] = useState<{ left: number; top: number } | null>(null);
+  useLayoutEffect(() => {
+    if (!open || side !== "right") return;
+    const r = ref.current?.getBoundingClientRect();
+    if (r) setBeside({ left: r.right + 8, top: r.top + r.height / 2 });
+  }, [open, side]);
+  const pos = side === "right" ? beside && { ...beside, bottom: undefined } : anchored;
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => () => void (timer.current && clearTimeout(timer.current)), []);
@@ -48,7 +63,8 @@ export function Tooltip({ content, children, side = "top" }: { content: React.Re
     if (timer.current) clearTimeout(timer.current);
     setOpen(false);
   };
-  const child = children as React.ReactElement<Record<string, unknown>>;
+  const own = children as React.ReactElement<Record<string, unknown>>;
+  const child = (Object.keys(rest).length ? cloneTrigger(own, rest) : own) as React.ReactElement<Record<string, unknown>>;
   const trigger = cloneTrigger(child, {
     ref: (el: HTMLElement | null) => {
       ref.current = el;
@@ -76,7 +92,10 @@ export function Tooltip({ content, children, side = "top" }: { content: React.Re
             onPointerEnter={() => timer.current && clearTimeout(timer.current)}
             onPointerLeave={hide}
             style={{ left: pos.left, top: pos.top, bottom: pos.bottom }}
-            className="fixed z-tooltip max-w-[260px] px-2 py-1 rounded-control bg-raised border border-line text-label text-contrast shadow-overlay"
+            className={cn(
+              "fixed z-tooltip max-w-[260px] px-2 py-1 rounded-control bg-raised border border-line text-label text-contrast shadow-overlay",
+              side === "right" && "-translate-y-1/2",
+            )}
           >
             {content}
           </div>,

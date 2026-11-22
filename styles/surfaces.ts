@@ -186,6 +186,6 @@ export const SHELL_OUTER =
 export const SHELL_ASIDE =
   "max-md:hidden shrink-0 rounded-panel bg-panel border-card shadow-card flex flex-col overflow-hidden select-none transition-[width] duration-200";
 export const SHELL_MAIN =
-  "flex-1 min-w-0 min-h-0 md:rounded-panel bg-app md:border md:border-line overflow-y-auto overflow-x-hidden overscroll-contain flex flex-col";
+  "flex-1 min-w-0 min-h-0 md:rounded-panel bg-app overflow-y-auto overflow-x-hidden overscroll-contain flex flex-col";
 export const SHELL_CONTAINER =
   "flex-1 min-w-0 w-full max-w-[1440px] mx-auto px-4 sm:px-6 pt-[max(1rem,env(safe-area-inset-top))] sm:pt-8 pb-8 sm:pb-10 flex flex-col";

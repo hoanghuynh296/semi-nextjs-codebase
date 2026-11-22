@@ -5,7 +5,7 @@
   /* Monospace font (font-sans / font-display come from the style: tokens/styles/*.json) */
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
 
-  /* Type scale: text-caption 11 · label 12 · ui 14 · ui-lg 15 · title 15 · title-lg 16 · figure 18 · heading-sm 20 · heading 22 · heading-lg 24 · display 26 (compact density: ui 13 · ui-lg 14). Each size carries its line height (1.5 body, 1.25 titles); leading-* overrides it */
+  /* Type scale: text-caption 11 · label 12 · ui 14 · ui-lg 15 · title 15 · title-lg 16 · figure 18 · heading-sm 20 · heading 22 · heading-lg 24 · display 26 · overline 11 (section labels, uppercase) (compact density: ui 13 · ui-lg 14). Each size carries its line height (1.5 body, 1.25 titles); leading-* overrides it */
   --text-caption: 0.6875rem;
   --text-label: 0.75rem;
   --text-ui: 0.875rem;
@@ -17,6 +17,9 @@
   --text-heading: 1.375rem;
   --text-heading-lg: 1.5rem;
   --text-display: 1.625rem;
+  --text-overline: 0.6875rem; /* Section labels only (C-032): a sidebar or drawer group, a command palette group, a mega menu column. Uppercase, tracked, semibold; never a button, field label or title */
+  --text-overline--letter-spacing: 0.06em;
+  --text-overline--font-weight: 600;
   --text-caption--line-height: 1.5; /* Paired line height: text-* sets it, leading-* still overrides */
   --text-label--line-height: 1.5;
   --text-ui--line-height: 1.5;
@@ -28,6 +31,7 @@
   --text-heading--line-height: 1.25;
   --text-heading-lg--line-height: 1.25;
   --text-display--line-height: 1.25;
+  --text-overline--line-height: 1.5;
   --text-kpi: var(--text-figure); /* Deprecated (0.30.0): renamed text-figure; the migration rewrites it */
   --text-kpi--line-height: var(--text-figure--line-height);
 
@@ -694,6 +698,11 @@
 /* Field, tile or table head inside a card: one step off the card */
 @utility bg-card-field {
   background-color: var(--semi-card-field);
+}
+
+/* text-overline: Section labels only (C-032): a sidebar or drawer group, a command palette group, a mega menu column. Uppercase, tracked, semibold; never a button, field label or title */
+@utility text-overline {
+  text-transform: uppercase;
 }
 
 /* Card / hero / sidebar border (border-card): transparent since 0.36 (C-030), cards separate by tone (bg-card); the 1px box keeps hover and CARD_ACTIVE borders from shifting the layout */

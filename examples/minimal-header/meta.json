@@ -1,0 +1,40 @@
+{
+  "title": "Minimal header",
+  "group": "Navigation & layout",
+  "description": "The top row of a detail or settings page inside AppShell: where the page sits on the left (a Breadcrumb), one text link and one primary action on the right. The page's own heading follows it.",
+  "components": [
+    "MinimalHeader"
+  ],
+  "when": [
+    "A detail page (one order, one customer) or a settings page reached from a list.",
+    "A page with one main action and at most one secondary link."
+  ],
+  "instead": [
+    {
+      "need": "A list page with filters, search and refresh",
+      "use": "SubpageToolbar"
+    },
+    {
+      "need": "A stand-alone tool app (no sidebar)",
+      "use": "AppHeader"
+    },
+    {
+      "need": "Several actions of a record",
+      "use": "MinimalHeader primary + Menu in the page"
+    }
+  ],
+  "a11y": [
+    "A header element; the Breadcrumb is its own nav landmark.",
+    "The link is hidden below sm: never make it the only way to reach something."
+  ],
+  "notes": [
+    "One primary (Button variant=\"primary\") at most: a second filled button on the screen breaks the one-primary rule (§4b, §4c).",
+    "It sits above the page heading (PageTitle or TextTabs), inside AppShell's content container."
+  ],
+  "examples": [
+    {
+      "file": "detail",
+      "title": "Detail page"
+    }
+  ]
+}

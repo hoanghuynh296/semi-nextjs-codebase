@@ -1,14 +1,15 @@
 {
   "title": "App shell",
   "group": "Navigation & layout",
-  "description": "The frame of a multi-page app: a floating bento sidebar (w-52, collapses to a w-14 icon rail) on bg-canvas, the content panel beside it, and MobileTabBar at the bottom on phones. Items can carry sub-items that open only while their parent is chosen. This docs site is an AppShell.",
+  "description": "The frame of a multi-page app: a floating sidebar on bg-canvas with the accent Create action on top, the main nav, a pinned group and the utilities and account at the bottom; it collapses to an icon rail (the default on iPad) and becomes a full-screen drawer on phones. Items can carry sub-items or a mega menu. This docs site is an AppShell; the full example runs at /demo/app-shell/.",
   "components": [
     "AppShell",
     "MobileTabBar"
   ],
   "when": [
     "Every app with several pages (dashboards, admin, store back office).",
-    "An area with its own sub-views that people switch between often (mailbox folders, saved views): sub-items under one nav item."
+    "An area with its own sub-views that people switch between often (mailbox folders, saved views): sub-items under one nav item.",
+    "An area with many destinations in a few groups (a catalogue): a nav item with mega (MegaMenu)."
   ],
   "instead": [
     {
@@ -25,20 +26,30 @@
     }
   ],
   "a11y": [
-    "The sidebar is a nav landmark; the active item has aria-current; the collapse state is remembered per app (storageKey).",
-    "An item with sub-items has aria-expanded; its sub-items are a list named after it, the active one with aria-current."
+    "The sidebar is a complementary landmark named after the product with nav landmarks inside; the active item has aria-current; the collapse state is remembered per app (storageKey).",
+    "In the rail (collapsed, or md) every item is named (aria-label) and shows its name in a Tooltip on the right on hover and focus.",
+    "An item with sub-items has aria-expanded; its sub-items are a list named after it, the active one with aria-current. A mega item has aria-haspopup=\"dialog\" and aria-expanded.",
+    "The phone drawer is a modal dialog: focus moves in, Tab stays in, Escape goes back a level or closes, and focus returns to the menu button."
   ],
   "notes": [
     "Render it once in the root layout (or a route group layout); pages render only their content.",
     "Page items take an href: they stay next/link links even when onSelect is set (onSelect then only reports the click). Never route with onSelect + router.push (shell-nav-href).",
     "Never gate the shell behind a page skeleton (shell-gate): a route loading.tsx next to the layout shimmers the content only, and the boot / session check before the layout is known renders BootLoader once in the layout. A page never renders AppShell or imports a component that does (app-shell-in-page).",
-    "MobileTabBar is used by AppShell; render it yourself only in a custom shell.",
+    "Top to bottom: create (one accent action, a Menu when it has items), primaryCta (an optional launcher), sections, pinned (a text-overline label), then utilities (items with onClick: help, theme) and account (avatar, workspace).",
+    "footer is deprecated: split it into utilities (actions) and account (who is signed in). The 0.36.0 migration renames footer to account.",
+    "Phones use the drawer (a top bar with the menu button) unless the app sets mobileNav=\"tabs\" or the deprecated mobileTabIds (both keep MobileTabBar). In the drawer a parent with its own href is the first row of its level.",
     "Sub-items (children) are closed by default: they open under their parent while the parent or one of them is the activeId, and close when another item is chosen. One level only.",
     "Sub-items take an optional grey icon (give every sub-item of a parent one, or none); no colour dot or count (the menu stays neutral, §4). Put counts and colours in the page.",
-    "The rail (w-14), widths below lg and phones never show sub-items: read useAppShell().submenuVisible and give the page its own picker (a CustomSelect in the toolbar) when it is false.",
+    "The rail and widths below lg never show sub-items: read useAppShell().submenuVisible and give the page its own picker (a CustomSelect in the toolbar) when it is false. The phone drawer shows them as a drill-down level.",
     "Choosing the parent alone usually opens its first sub-item: map it in onSelect."
   ],
   "examples": [
+    {
+      "file": "full",
+      "title": "Create, pinned, utilities, mega menu",
+      "preview": "none",
+      "description": "The whole shell in one screen, opened full screen at /demo/app-shell/ of this site: Create menu, sub-items, a mega menu, a pinned group, utilities and the account; MinimalHeader and TextTabs in the page."
+    },
     {
       "file": "layout",
       "title": "Root layout",

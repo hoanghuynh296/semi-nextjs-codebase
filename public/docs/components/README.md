@@ -56,7 +56,9 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [App header](app-header.md) | `AppHeader` | Single-screen tools: 3D editors, slicers, colour tools. |
 | [App shell](app-shell.md) | `AppShell`, `MobileTabBar` | Every app with several pages (dashboards, admin, store back office). |
 | [Breadcrumb](breadcrumb.md) | `Breadcrumb` | Detail pages deep in a hierarchy (Kho › Vật liệu › PLA đen). |
+| [Mega menu](mega-menu.md) | `MegaMenu` | One sidebar item leads to many destinations of one area that fall into 2–4 groups (a catalogue, tools, reports). |
 | [Menubar](menubar.md) | `Menubar` | Editors and tool apps with many commands (3D, slicer, image tools), next to an AppHeader. |
+| [Minimal header](minimal-header.md) | `MinimalHeader` | A detail page (one order, one customer) or a settings page reached from a list. |
 | [Navigation menu](navigation-menu.md) | `NavigationMenu` | Marketing sites, storefronts, docs headers. |
 | [Page actions](page-actions.md) | `PageActions`, `PageActionsProvider`, `PageActionsSlot` | A layout owns the header row but the page decides the actions (PageTabsTitle + “+”). |
 | [Page title](page-title.md) | `PageTitle`, `PageTabsTitle` | The first line of every page (PageTitle). |
@@ -66,6 +68,7 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Side panel](side-panel.md) | `SidePanel`, `SidePanelToggle` | Settings or layers beside a 3D view, map or editor. |
 | [Subpage toolbar](subpage-toolbar.md) | `SubpageToolbar`, `RefreshButton` | Every list or grid page. |
 | [Tabs](tabs.md) | `Tabs` | Sections of one object: Tổng quan / Hoạt động / Cài đặt. |
+| [Text tabs](text-tabs.md) | `TextTabs` | A page whose heading is a choice of 2–4 sibling views (Đang xử lý / Đã giao / Tất cả). |
 
 ## Data display
 
