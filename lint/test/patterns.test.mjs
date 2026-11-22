@@ -45,6 +45,7 @@ test("filter-chip-wrap: hand-made clickable chips in a flex-wrap warn; FilterChi
     `<div className="flex flex-wrap gap-2">\n  {STATUSES.map((s) => (\n    <button key={s} onClick={() => setFilter(s)} className={cn("h-8 px-3 rounded-full", active === s ? "bg-inverted" : "bg-tint")}>{s}</button>\n  ))}\n</div>`,
     `<div className="flex flex-wrap gap-1.5">\n  <Chip selected={a} onClick={() => setFilter("open")}>Đang mở</Chip>\n  <Chip selected={b} onClick={() => setFilter("closed")}>Đã đóng</Chip>\n</div>`,
     `<div className="flex flex-wrap gap-2">{filters.map((f) => <Chip key={f.id} onClick={() => pick(f.id)}>{f.label}</Chip>)}</div>`,
+    `<div className="flex flex-wrap gap-2" aria-label="Lọc">\n  <Chip active={a} onClick={() => setA(!a)}>Đang mở</Chip>\n  <Chip active={b} onClick={() => setB(!b)}>Đã đóng</Chip>\n</div>`,
     `<div className="flex flex-wrap items-center gap-2">\n  {active.map((c) => (\n    <Chip key={c} active onClick={() => remove(c)} title={\`Bỏ lọc \${c}\`}>{c}</Chip>\n  ))}\n</div>`,
   ];
   for (const code of FAIL) assert.deepEqual(rules(code), ["filter-chip-wrap"], code);
@@ -113,6 +114,7 @@ test("overline-place (C-032): text-overline on a section label passes; on a butt
     `    <div className="flex">\n      <a href="/all" className="text-overline">Xem tất cả</a>\n    </div>`,
     `<div onClick={() => open()} className="text-overline">Mở</div>`,
     `<Card className="p-card">\n  <Text className="text-overline">Mới</Text>\n</Card>`,
+    `  <div role="button" className="text-overline" aria-pressed={on}>Ghim</div>`,
   ];
   for (const code of FAIL) assert.deepEqual(rules(code), ["overline-place"], code);
   const PASS = [
@@ -140,6 +142,10 @@ test("card-hover-actions-touch: CardActions without a label is a hard error; wit
   // a label inside an action object is not the menu's label
   assert.deepEqual(rule(`<CardActions actions={[{ icon: "edit", label: "Sửa", onClick: () => edit(id) }]} />`), ["card-hover-actions-touch"]);
   assert.deepEqual(rule(`<CardActions\n  menu={[{ label: "Xoá", onSelect: () => del() }]}\n/>`), ["card-hover-actions-touch"]);
+  // an apostrophe in JSX text inside an attribute is not a quote
+  assert.deepEqual(rule(`<CardActions menu={more} trigger={<span>Don't</span>} label="Thao tác" />`), []);
+  assert.deepEqual(rule(`<CardActions trigger={<span>Don't</span>} actions={acts} />`), ["card-hover-actions-touch"]);
+  assert.deepEqual(rule(`<CardActions label={isOpen ? 'Đóng' : 'Mở'} actions={acts} />`), [], "a JS string after ? and : is still a string");
   assert.deepEqual(rule(`// <CardActions actions={a} />\nconst a = 1;`), []);
 });
 

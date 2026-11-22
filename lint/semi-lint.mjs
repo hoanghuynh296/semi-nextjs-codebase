@@ -363,6 +363,12 @@ export function warnHits(src) {
 
 // ---- The #94 patterns (#107): lists that load, filter chips, round icon buttons, DetailOverlay, text-overline ----
 
+/** Whether the quote at `k` opens a string: where a value goes (after = ( { [ , : ? & | ! + or a space before an
+ * operator), not an apostrophe in JSX text inside an attribute (`trigger={<span>Don't</span>}`). */
+function opensString(text, k) {
+  const before = text.slice(Math.max(0, k - 40), k).replace(/\s+$/, "");
+  return before === "" || /[=({[,:?&|!+]$/.test(before) || /\breturn$/.test(before);
+}
 /** End (exclusive) of the JSX opening tag that starts at `start`, counting braces and quotes, so neither the `>` of an
  * arrow (`onClick={() => x}`) nor JSX inside an attribute (`empty={<Spinner />}`) ends it. */
 function tagEnd(code, start) {
@@ -376,7 +382,7 @@ function tagEnd(code, start) {
       else if (c === quote) quote = null;
       continue;
     }
-    if (c === '"' || c === "'" || c === "`") quote = c;
+    if ((c === '"' || c === "'" || c === "`") && opensString(code, k)) quote = c;
     else if (c === "{") depth++;
     else if (c === "}") depth--;
     else if (c === ">" && depth <= 0) return k + 1;
@@ -453,7 +459,7 @@ function hasOwnAttr(tag, name) {
       else if (c === quote) quote = null;
       continue;
     }
-    if (c === '"' || c === "'" || c === "`") quote = c;
+    if ((c === '"' || c === "'" || c === "`") && opensString(tag, k)) quote = c;
     else if (c === "{") depth++;
     else if (c === "}") depth--;
     else if (depth === 0 && /\s/.test(c) && tag.startsWith(name + "=", k + 1)) return true;
@@ -548,7 +554,7 @@ export function patternHits(code) {
       .map((c) => ({ tag: c[1], text: tagFrom(body, c.index).text }))
       .filter((c) => (c.tag === "Chip" || /rounded-full/.test(c.text)) && /\s(?:onClick|aria-pressed|selected|active|onRemove)[=\s/>]/.test(c.text));
     // Chips also pick values (materials, colours) and legends toggle chart series: only chips that filter count.
-    if (!filterWords(body)) continue;
+    if (!filterWords(open.text + body)) continue; // the container's own tag counts (aria-label="Lọc")
     if (chips.length >= 2 || (chips.length === 1 && /\.map\(/.test(body))) push("filter-chip-wrap", m.index);
   }
 
@@ -586,7 +592,7 @@ export function patternHits(code) {
   for (const m of code.matchAll(/(?<![\w-])text-overline(?![\w-])/g)) {
     const host = enclosingTag(code, m.index);
     if (!host) continue; // a class constant: where it lands is not visible here
-    const clickable = /\s(?:onClick|href|htmlFor|tabIndex)=/.test(host.text);
+    const clickable = /\s(?:onClick|href|htmlFor|tabIndex)=|\srole=["'](?:button|link|tab|menuitem\w*|option|checkbox|switch)["']/.test(host.text);
     // the element's own text up to its first child or expression ({col.title} is a label passed in)
     const text = /^([^<{]*)/.exec(code.slice(host.end, host.end + 400))[1].replace(/\s+/g, " ").trim();
     if (!OVERLINE_TAGS.test(host.name) || clickable || text.length > OVERLINE_LABEL_MAX) push("overline-place", m.index);
