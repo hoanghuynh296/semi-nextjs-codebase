@@ -47,5 +47,5 @@ export function keyboardInset(vv: { height: number; offsetTop: number; scale: nu
   return inset > 80 ? inset : 0;
 }
 
-/** The marker `useUnsavedGuard` puts on the history entry it adds, so back / forward can be told apart. */
+/** The marker `useUnsavedGuard` puts on the history entry it adds, so back / forward can be told apart: `true` while the form is dirty, `"spent"` after a save. */
 export const GUARD_STATE_KEY = "__semiUnsavedGuard";

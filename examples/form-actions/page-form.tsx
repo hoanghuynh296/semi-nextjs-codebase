@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Field, FormActions, FormErrorSummary, Input, toast, useFormValidation, useUnsavedGuard } from "@semi/ui";
 
 const EMPTY = { name: "", email: "", phone: "", price: "" };
@@ -22,6 +22,12 @@ export default function FormActionsPageForm() {
   const dirty = JSON.stringify(values) !== JSON.stringify(saved);
   const { confirmLeave } = useUnsavedGuard(dirty);
   const router = useRouter();
+
+  // after a save, go on with confirmLeave: the form is clean, so it only drops the guard's history entry (Back stays one press)
+  useEffect(() => {
+    if (saved !== EMPTY) void confirmLeave(() => router.push("/components/button/"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [saved]);
 
   const save = (e: React.FormEvent) => {
     e.preventDefault();

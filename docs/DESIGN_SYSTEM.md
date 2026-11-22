@@ -499,7 +499,7 @@ it form by form; the four lint rules below are warnings until 1.0.
   address bar (`beforeunload`; its text cannot be changed). Inside the Next.js app router, which has no navigation event,
   a link click is caught in the capture phase, asked with `confirmDialog` (mount `<ConfirmHost />`: "Bạn có thay đổi chưa
   lưu…", `Rời đi` / `Ở lại`) and repeated on agreement, so `next/link`, `basePath` and prefetch are untouched; back /
-  forward is asked through one history entry added while `dirty` (dropped before an agreed navigation; turned into a plain copy of the page after a save). A navigation the app starts in code is wrapped:
+  forward is asked through one history entry added while `dirty` (dropped before an agreed navigation; a "spent" marker after a save: go on with `confirmLeave(() => router.push(x))`, which pops it first). A navigation the app starts in code is wrapped:
   `confirmLeave(() => router.back())` (returned by the hook). Set `dirty` to false right after a successful save, before
   navigating on.
 - **`Field kind`** (`email`, `tel`, `number`, `money`, `url`, `search`, `password`) sets `type`, `inputMode`,

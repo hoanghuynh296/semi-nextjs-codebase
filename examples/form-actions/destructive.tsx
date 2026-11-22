@@ -27,7 +27,7 @@ export default function FormActionsDestructive() {
       <FormActions
         onCancel={() => confirmLeave(() => setName(saved))}
         destructive={
-          <Button variant="danger" icon="trash" onClick={remove}>
+          <Button variant="danger" icon="trash" onClick={() => confirmLeave(remove)}>
             Xoá máy in
           </Button>
         }

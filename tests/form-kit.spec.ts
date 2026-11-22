@@ -181,29 +181,6 @@ test("useUnsavedGuard · reload and tab close: the browser's prompt only while t
   await closing;
 });
 
-test("useUnsavedGuard · saving makes the form clean: no prompt, and the guard's history entry stops being a marker", async ({ page }) => {
-  await page.goto("/components/button/");
-  await page.locator('a[href$="/components/form-actions/"]').first().click();
-  await expect(page).toHaveURL(/\/components\/form-actions\/$/);
-  const lengthBefore = await historyLength(page);
-  const f = page.locator(FORM);
-  await f.getByLabel("Tên máy in").fill("Bambu P1S");
-  await f.getByLabel("Email liên hệ").fill("ban@congty.vn");
-  expect(await page.evaluate(() => history.length)).toBe(lengthBefore + 1); // one entry while dirty
-  await f.getByRole("button", { name: "Tạo" }).click();
-  await expect(page.getByText("Đã tạo máy in")).toBeVisible();
-  await expect.poll(() => page.evaluate(() => history.state && (history.state as Record<string, unknown>).__semiUnsavedGuard === true)).toBe(false);
-  const prevented = await page.evaluate(() => {
-    const e = new Event("beforeunload", { cancelable: true });
-    window.dispatchEvent(e);
-    return e.defaultPrevented;
-  });
-  expect(prevented).toBe(false);
-  await toButton(page).click();
-  await expect(page).toHaveURL(/\/components\/button\/$/);
-  await expect(page.getByRole("alertdialog")).toHaveCount(0);
-});
-
 const LEAVE = (page: Page) => page.getByRole("alertdialog", { name: "Rời khỏi trang?" });
 const historyLength = (page: Page) => page.evaluate(() => history.length);
 
@@ -254,20 +231,67 @@ test("useUnsavedGuard · a plain <a> (hard navigation) asks once, then leaves wi
   expect(browserPrompts).toEqual([]);
 });
 
-test("useUnsavedGuard · save, then router.push to a route that was not prefetched: the navigation is not cancelled", async ({ page }) => {
+test("useUnsavedGuard · save: the entry is spent, confirmLeave(router.push) goes on without a question and Back is one press", async ({ page }) => {
   await page.goto("/components/button/");
   await page.locator('a[href$="/components/form-actions/"]').first().click();
+  await expect(page).toHaveURL(/\/components\/form-actions\/$/);
+  const lengthBefore = await historyLength(page);
   const f = page.locator(FORM);
   await f.getByLabel("Tên máy in").fill("Bambu P1S");
   await f.getByLabel("Email liên hệ").fill("ban@congty.vn");
+  expect(await historyLength(page)).toBe(lengthBefore + 1); // one entry while dirty
   await f.getByRole("button", { name: "Tạo" }).click();
+  // the example calls confirmLeave(() => router.push("/components/button/")) once the form is clean
+  await expect(page).toHaveURL(/\/components\/button\/$/);
   await expect(page.getByText("Đã tạo máy in")).toBeVisible();
-  // straight after the save, in the same tick the app would call router.push
-  await page.evaluate(() => (window as unknown as { next: { router: { push: (u: string) => void } } }).next.router.push("/foundations/"));
-  await expect(page).toHaveURL(/\/foundations\/$/);
-  await page.waitForTimeout(600); // a pending history.back() would undo it by now
-  await expect(page).toHaveURL(/\/foundations\/$/);
+  await page.waitForTimeout(600); // a pending history.back() or a late prompt would show by now
+  await expect(page).toHaveURL(/\/components\/button\/$/);
   await expect(LEAVE(page)).toHaveCount(0);
+  await page.goBack();
+  await page.goBack(); // button → (form) → button: the form page, then the first button page; no dead press between
+  await expect(page).toHaveURL(/\/components\/button\/$/);
+  await expect(page.getByRole("alertdialog")).toHaveCount(0);
+});
+
+test("useUnsavedGuard · saved but staying: the entry is spent, not a marker, and the browser no longer prompts", async ({ page }) => {
+  await page.goto(PAGE);
+  const state = () => page.evaluate(() => (history.state as Record<string, unknown> | null)?.__semiUnsavedGuard);
+  const d = page.locator('[data-example="form-actions/destructive"] form');
+  await d.getByLabel("Tên máy in").fill("Bambu P1S đổi tên");
+  await expect.poll(state).toBe(true);
+  await d.evaluate((el) => (el as HTMLFormElement).requestSubmit()); // saves: clean again, stays on the page
+  await expect.poll(state).toBe("spent");
+  const prevented = await page.evaluate(() => {
+    const e = new Event("beforeunload", { cancelable: true });
+    window.dispatchEvent(e);
+    return e.defaultPrevented;
+  });
+  expect(prevented).toBe(false);
+  // dirty again re-uses the spent entry instead of stacking another one
+  const n = await historyLength(page);
+  await d.getByLabel("Tên máy in").fill("lại");
+  await expect.poll(state).toBe(true);
+  expect(await historyLength(page)).toBe(n);
+});
+
+test("useUnsavedGuard · an agreed confirmLeave that does not navigate (delete declined) guards the form again", async ({ page }) => {
+  await page.goto(PAGE);
+  const d = page.locator('[data-example="form-actions/destructive"] form');
+  await d.getByLabel("Tên máy in").fill("Bambu P1S đổi tên");
+  await d.getByRole("button", { name: "Xoá máy in" }).click();
+  await LEAVE(page).getByRole("button", { name: "Rời đi" }).click();
+  await page.getByRole("alertdialog", { name: "Xoá máy in này?" }).getByRole("button", { name: "Huỷ" }).click(); // no navigation
+  await page.waitForTimeout(1300); // the grace period
+  const prevented = () =>
+    page.evaluate(() => {
+      const e = new Event("beforeunload", { cancelable: true });
+      window.dispatchEvent(e);
+      return e.defaultPrevented;
+    });
+  expect(await prevented()).toBe(true);
+  expect(await page.evaluate(() => (history.state as Record<string, unknown> | null)?.__semiUnsavedGuard)).toBe(true);
+  await toButton(page).click();
+  await expect(LEAVE(page)).toBeVisible(); // links ask again
 });
 
 // ---- Field kind ----
