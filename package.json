@@ -61,6 +61,7 @@
     "lint": "node lint/semi-lint.mjs",
     "check": "npm run check:tokens && npm run check:vendor && npm run check:version && npm run check:manifest && npm run check:workflows && npm run typecheck && npm run lint && npm test",
     "build:storybook": "next build",
+    "build:prerender-test": "next build tests/prerender-app",
     "build:brand-book": "node scripts/build-brand-book.mjs",
     "dev": "next dev"
   },

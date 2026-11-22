@@ -60,6 +60,9 @@ jobs:
       - name: Build the site (GitHub Pages path) and the sample brand book
         run: npx next build && npm run build:brand-book
 
+      - name: "Prerender regression build (#82: bare ToastHost in a root layout, dynamic route)"
+        run: npm run build:prerender-test
+
       - name: Browser checks on that build (contrast AA both themes, axe, theme, keyboard)
         run: npm run test:ui
 

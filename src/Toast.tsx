@@ -4,7 +4,7 @@
 // Render <ToastHost /> once in the root layout, then call toast({ title, tone }), toast.success("Đã lưu"),
 // toast.undo("Đã xoá", restore) or toast.promise(save(), { loading, success, error }) anywhere. Two sibling live
 // regions announce them (danger assertive, the rest polite; never nested); auto-dismiss pauses on hover and on keyboard focus.
-import React, { useEffect, useRef, useSyncExternalStore } from "react";
+import React, { Suspense, useEffect, useRef, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
 import { Spinner } from "./Button";
 import { Icon, type IconName } from "./Icon";
@@ -265,16 +265,24 @@ export interface ToastHostProps {
   label?: string;
 }
 
-export function ToastHost({ label, durationScale = 1, hotkey = "Alt+T" }: ToastHostProps = {}) {
-  const t = useSemiLocale();
-  const region = useRef<HTMLElement>(null);
+/**
+ * Closes the undo windows when the route changes (their onCommit runs); the first render is not a change.
+ * Kept apart from ToastHost because usePathname() suspends while a dynamic route is prerendered: here it is wrapped in
+ * its own <Suspense>, so an app never needs one around ToastHost and the toast stack always renders (#82).
+ */
+function RouteWatcher() {
   const path = usePathname();
   const first = useRef(true);
-  // a route change closes the undo windows (their onCommit runs); the first render is not a change
   useEffect(() => {
     if (first.current) first.current = false;
     else dropUndo();
   }, [path]);
+  return null;
+}
+
+export function ToastHost({ label, durationScale = 1, hotkey = "Alt+T" }: ToastHostProps = {}) {
+  const t = useSemiLocale();
+  const region = useRef<HTMLElement>(null);
   // the hotkey moves keyboard focus to the newest toast's action (it then stays open: focus pauses the timer), so a keyboard user can reach Hoàn tác in time
   useEffect(() => {
     if (hotkey === false) return;
@@ -301,22 +309,27 @@ export function ToastHost({ label, durationScale = 1, hotkey = "Alt+T" }: ToastH
   // two sibling live regions, never nested: danger toasts are assertive, the rest polite; cards carry no live role
   const col = "flex flex-col gap-2 items-stretch sm:items-end empty:hidden";
   return (
-    <section
-      ref={region}
-      aria-keyshortcuts={hotkey || undefined}
-      aria-label={label ?? t.notifications}
-      className="fixed z-toast inset-x-0 top-0 sm:top-auto sm:bottom-0 sm:left-auto p-3 sm:p-4 pt-[max(0.75rem,env(safe-area-inset-top))] flex flex-col gap-2 items-stretch sm:items-end pointer-events-none"
-    >
-      <div aria-live="assertive" className={col}>
-        {list.filter((it) => it.tone === "danger").map((item) => (
-          <ToastCard key={`${item.id}:${item.rev}`} item={item} scale={durationScale} />
-        ))}
-      </div>
-      <div aria-live="polite" className={col}>
-        {list.filter((it) => it.tone !== "danger").map((item) => (
-          <ToastCard key={`${item.id}:${item.rev}`} item={item} scale={durationScale} />
-        ))}
-      </div>
-    </section>
+    <>
+      <Suspense fallback={null}>
+        <RouteWatcher />
+      </Suspense>
+      <section
+        ref={region}
+        aria-keyshortcuts={hotkey || undefined}
+        aria-label={label ?? t.notifications}
+        className="fixed z-toast inset-x-0 top-0 sm:top-auto sm:bottom-0 sm:left-auto p-3 sm:p-4 pt-[max(0.75rem,env(safe-area-inset-top))] flex flex-col gap-2 items-stretch sm:items-end pointer-events-none"
+      >
+        <div aria-live="assertive" className={col}>
+          {list.filter((it) => it.tone === "danger").map((item) => (
+            <ToastCard key={`${item.id}:${item.rev}`} item={item} scale={durationScale} />
+          ))}
+        </div>
+        <div aria-live="polite" className={col}>
+          {list.filter((it) => it.tone !== "danger").map((item) => (
+            <ToastCard key={`${item.id}:${item.rev}`} item={item} scale={durationScale} />
+          ))}
+        </div>
+      </section>
+    </>
   );
 }
