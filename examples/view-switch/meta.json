@@ -1,0 +1,36 @@
+{
+  "title": "View switch",
+  "group": "Forms",
+  "description": "List ↔ grid and an optional density toggle, as small icon toggles at the end of the filter row (FilterChipRow trailing).",
+  "components": [
+    "ViewSwitch"
+  ],
+  "when": [
+    "A collection people browse both as rows and as cards (products, files, suppliers).",
+    "A dense list where some people want more rows on screen (density)."
+  ],
+  "instead": [
+    {
+      "need": "Switching between different data (orders vs. returns)",
+      "use": "TextTabs or Pills"
+    },
+    {
+      "need": "A table ↔ chart switch of one data set",
+      "use": "Chart's table view"
+    }
+  ],
+  "a11y": [
+    "A group named “Kiểu xem” of toggle buttons (aria-pressed), each with an aria-label and a title.",
+    "The density button is pressed while the view is compact."
+  ],
+  "notes": [
+    "Keep the view in the URL (?view=grid, replace, not push) when people share it, or per person (localStorage) when it is a taste.",
+    "On phones it moves into FilterPanel's children or the settings button of PhoneFilterBar."
+  ],
+  "examples": [
+    {
+      "file": "default",
+      "title": "View and density"
+    }
+  ]
+}

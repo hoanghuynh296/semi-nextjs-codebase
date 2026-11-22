@@ -87,11 +87,14 @@ export function readApi(root, names) {
           if (!prev.types.includes(t)) prev.types.push(t);
           continue;
         }
+        // A default the signature cannot show (props read in the body, as Tooltip does) comes from a `@default` tag.
+        const tagged = p.getJsDocTags(checker).find((tg) => tg.name === "default");
+        const dflt = defaults[p.name] ?? (tagged ? ts.displayPartsToString(tagged.text).trim() : undefined);
         seen.set(p.name, {
           name: p.name,
           types: [shown(ptype, pd)],
           required: !optional,
-          ...(defaults[p.name] !== undefined ? { default: defaults[p.name] } : {}),
+          ...(dflt ? { default: dflt } : {}),
           description: ts.displayPartsToString(p.getDocumentationComment(checker)).trim().replace(/\s+/g, " "),
         });
       }

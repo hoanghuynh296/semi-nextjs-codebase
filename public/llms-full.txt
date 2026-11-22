@@ -8,7 +8,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 ## Machine-readable
 
-- [components.json](./components.json): all 133 components, hooks and constants with props, summaries and their doc page
+- [components.json](./components.json): all 142 components, hooks and constants with props, summaries and their doc page
 - [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
@@ -47,15 +47,19 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Date picker](./components/date-picker/) ([markdown](./docs/components/date-picker.md)): A date field with a Calendar popover (YYYY-MM-DD, min / max). Never type="date". Components: DatePicker.
 - [Field, Input, Textarea](./components/field/) ([markdown](./docs/components/field.md)): Field gives any control a label, a hint and an error, wired for screen readers; `kind` sets the phone keyboard, autofill and Enter key of an email, phone, number, money, URL, search or password field. Input and Textarea are the standard text controls (bg-field, h-field). Components: Field, Input, Textarea.
 - [FileDrop](./components/file-drop/) ([markdown](./docs/components/file-drop.md)): A file picker and dropzone with one row per file: size, upload progress, done, and remove / retry on failure. Controlled: the app owns the list and does the upload. Components: FileDrop.
+- [Filter chip row](./components/filter-chip-row/) ([markdown](./docs/components/filter-chip-row.md)): A list page's filters as one line of chips (icon, label, chevron; solid with the value or count when on). Each chip opens a small multi-select popover, a switch chip toggles; the row scrolls sideways with ‹ › when it overflows, shows “Xoá lọc” while a filter is on and ends with the view tools. State in the URL with useFilterParams or the filterParams helpers. Components: FilterChipRow, FilterChip, FilterOptions.
+- [Filter panel](./components/filter-panel/) ([markdown](./docs/components/filter-panel.md)): Filters on phones: one segmented pill (the page's views · Bộ lọc with the count · sort and view settings) that opens a full-screen panel: sort first, booleans as switches, one accordion per filter, “Xem N kết quả” at the bottom. From sm the panel is a side sheet, also the “Bộ lọc” panel of a page with more filters than its chip row shows. Components: PhoneFilterBar, FilterPanel.
 - [Form actions, unsaved guard, validation](./components/form-actions/) ([markdown](./docs/components/form-actions.md)): The same form behaviour everywhere: FormActions (Huỷ then Lưu / Tạo, sticky on a page, the footer of a Modal), useUnsavedGuard (nobody loses typed work), and validation that shows on blur then follows changes, with an Alert summary for several errors. Components: FormActions, useUnsavedGuard, useFormValidation, FormErrorSummary.
 - [Input group](./components/input-group/) ([markdown](./docs/components/input-group.md)): An input with fixed parts around it: a prefix (https://), a unit (kg, ₫), an icon or a small button (copy, show password). Components: InputGroup.
 - [Input OTP](./components/input-otp/) ([markdown](./docs/components/input-otp.md)): One-time code entry (OTP, PIN, 2FA): boxes on screen, one real input underneath, so paste, SMS autofill, screen readers and the number keypad work like a normal field. Components: InputOTP.
 - [Number input](./components/number-input/) ([markdown](./docs/components/number-input.md)): NumberInput: numbers with a touch keypad (NumPadPopup) on phones and tablets, plain typing elsewhere. Never type="number". Components: NumberInput, NumPadPopup.
 - [Radio group](./components/radio-group/) ([markdown](./docs/components/radio-group.md)): Exactly one option of a few, each with an optional description; vertical by default. Components: RadioGroup.
 - [Search input](./components/search-input/) ([markdown](./docs/components/search-input.md)): The toolbar search: an icon button that opens into a field (clear button, h-control); it collapses again when empty and focus leaves. SubpageToolbar includes one. Components: SearchInput.
+- [Search pill](./components/search-pill/) ([markdown](./docs/components/search-pill.md)): The wide pill search of a list page (one per page) and the result line under it: “query” · N kết quả on the left, the sort menu on the right. Typing is debounced (250 ms), Escape and the clear button clear at once, an optional key (/) focuses it. Components: SearchPill, ResultLine.
 - [Select](./components/select/) ([markdown](./docs/components/select.md)): CustomSelect: pick one value from a list, in a field, in a toolbar, inline in a row or bare. Never the native <select>. Components: CustomSelect.
 - [Slider](./components/slider/) ([markdown](./docs/components/slider.md)): Pick a number in a range by dragging: one thumb, or two with range for a min–max pair. Components: Slider.
 - [Switch](./components/switch/) ([markdown](./docs/components/switch.md)): An on / off toggle for settings that apply immediately. Components: Switch.
+- [View switch](./components/view-switch/) ([markdown](./docs/components/view-switch.md)): List ↔ grid and an optional density toggle, as small icon toggles at the end of the filter row (FilterChipRow trailing). Components: ViewSwitch.
 
 ### Overlays
 
@@ -85,6 +89,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Resizable panels](./components/resizable/) ([markdown](./docs/components/resizable.md)): Panels side by side or stacked with handles to resize them (an editor beside a preview, a list beside details). Sizes are percentages and can be remembered. Components: ResizablePanels.
 - [Scroll area](./components/scroll-area/) ([markdown](./docs/components/scroll-area.md)): A fixed-size scrolling region (a long list in a card, a log). Semi hides scrollbars, so it marks the edges that have more content, can show a thin scrollbar, and is reachable by keyboard. Components: ScrollArea.
 - [Side panel](./components/side-panel/) ([markdown](./docs/components/side-panel.md)): A 320px tool panel beside a canvas that collapses to a 48px rail; SidePanelToggle is its collapse button. Components: SidePanel, SidePanelToggle.
+- [Sticky context bar](./components/sticky-context-bar/) ([markdown](./docs/components/sticky-context-bar.md)): The top of a list page that stays while the rows scroll under it: SearchPill, then FilterChipRow (PhoneFilterBar on phones), then ResultLine. An opaque STICKY_TOOLBAR strip, below the safe area on phones. Components: StickyContextBar.
 - [Subpage toolbar](./components/subpage-toolbar/) ([markdown](./docs/components/subpage-toolbar.md)): The sticky row with a page's filters on the left and search, refresh and the icon-only primary action on the right: under the page title, or with the title on the same row (title). RefreshButton spins while its promise runs. Components: SubpageToolbar, RefreshButton.
 - [Tabs](./components/tabs/) ([markdown](./docs/components/tabs.md)): Switch between panels of content inside a page or card: underline (default) or segmented, with icons and counts. Components: Tabs.
 - [Text tabs](./components/text-tabs/) ([markdown](./docs/components/text-tabs.md)): Large text tabs that are the page heading: 2–4 sibling views in display type, the current one bright and the others dim, no underline. Buttons switch at once; tabs with href are links, so the URL picks the view. Components: TextTabs.
@@ -228,6 +233,8 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
   - `AppShell` (+ `MobileTabBar`, `TAB_BAR_PAD` for `mobileNav="tabs"`): 2-panel floating Bento frame on `bg-canvas`; sidebar top to bottom: accent `create`, grouped `sections`, `pinned` (a `text-overline` label), `utilities` + `account` (`footer` is deprecated); `w-60` or the icon rail (always on `md`, Tooltips on the right); phones: top bar + full-screen drawer. A nav item with `mega` opens a `MegaMenu`. Detail pages open with `MinimalHeader`; sibling views as the heading are `TextTabs`. Items may carry `children` (one level, optional grey icon, no colour or count): closed by default, open only while the parent or a child is active; hidden in the rail / below `lg` / phones, so pages check `useAppShell().submenuVisible` and offer their own picker.
   - `PageTitle`, `PageTabsTitle`: text-only display heading or underline tab heading (`h-[2.5px] bg-primary`).
   - `SubpageToolbar`: sticky toolbar (`STICKY_TOOLBAR`) with `left` filters and `right` icon-only `BTN_PRIMARY BTN_ICON` + `SearchInput` + `RefreshButton`; `title` puts the page title on the same row (then no `PageTitle`).
+    Phone layout (opt-in): `filters` (typed, `FilterDef[]`; more than two collapse into "Bộ lọc · N" + active chips) or `collapseFilters` (for `left`), and `secondaryActions` (a ⋯ menu below `sm`).
+  - Search and filters (§4, #99): `<StickyContextBar>` with `<SearchPill>`, `<FilterChipRow className="max-md:hidden" trailing={<ViewSwitch/>}>`, `<PhoneFilterBar className="md:hidden">` (opens `<FilterPanel>`) and `<ResultLine count query sort>`. One line of chips, never wrapped rows; state in the URL with `useFilterParams(specs)` or `readFilters` / `writeFilters` / `clearFilters`.
   - `KpiCard`: metric card with a `tabular-nums` value in the style's figure font (`font-figure`), optional neutral icon (`iconTone` only for a status), `featured` for the screen's main number, shimmer `loading` state.
   - `Modal`: portal dialog with `MODAL_BACKDROP`, `MODAL_PANEL`, `MODAL_HEAD`, `MODAL_CLOSE`, and `footer` (`MODAL_FOOT`).
 - **Controls (`@semi/ui`):**
@@ -283,7 +290,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (133)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (142)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
@@ -312,6 +319,8 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `Feedback`: `Alert`, `Progress`, `Avatar`, `EmptyState`
 - `Field`: `Field`, `Input`, `Textarea`
 - `FileDrop`: `FileDrop`
+- `FilterChipRow`: `FilterChip`, `FilterOptions`, `FilterChipRow`
+- `FilterPanel`: `PhoneFilterBar`, `FilterPanel`
 - `FormActions`: `FormActions`
 - `Icon`: `Icon`, `IconTile`
 - `InputGroup`: `InputGroup`
@@ -339,6 +348,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `Resizable`: `ResizablePanels`
 - `ScrollArea`: `ScrollArea`
 - `SearchInput`: `SearchInput`
+- `SearchPill`: `StickyContextBar`, `SearchPill`, `ResultLine`
 - `Separator`: `Separator`
 - `SidePanel`: `SidePanelToggle`, `SidePanel`
 - `Skeleton`: `Skeleton`, `Loading`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton`, `BootLoader`
@@ -354,11 +364,12 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `ThemeScript`: `ThemeScript`
 - `Toast`: `ToastHost`
 - `Toggle`: `Toggle`, `ToggleGroup`
+- `ViewSwitch`: `ViewSwitch`
 - `confirmDialog`: `ConfirmHost`
 - `formValidation`: `FormErrorSummary`
 - `locale`: `SemiLocaleProvider`
 
-**Hooks:** `useAppShell`, `useHotkey`, `useField`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useFormValidation`, `useSemiLocale`, `useUnsavedGuard` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `pageWindow`, `startTask`, `themeScript`, `updateToast`, `dismissToast`, `confirmDialog`, `confirmDelete`, `kindAttrs`, `composeRefs`, `cloneTrigger`, `cn`
+**Hooks:** `useAppShell`, `useHotkey`, `useField`, `useFilterParams`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useFormValidation`, `useSemiLocale`, `useUnsavedGuard` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `pageWindow`, `startTask`, `themeScript`, `updateToast`, `dismissToast`, `confirmDialog`, `confirmDelete`, `kindAttrs`, `readFilterValues`, `readFilters`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `composeRefs`, `cloneTrigger`, `cn`
 <!-- generated:components:end -->
 
 
@@ -807,6 +818,20 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   carries `STICKY_TOOLBAR` so the filters stay on top of the scrolling content (below the safe area on phones).
   "Thêm …" and "Làm mới" buttons are icon-only (`BTN_PRIMARY`/`BTN_SECONDARY` + `BTN_ICON`, `RefreshButton`) with
   `title` + `aria-label` carrying the label.
+- **Search and filters (C-032, #99):** a list page that people search and filter opens, under its heading, with one
+  `StickyContextBar` (in place of a `SubpageToolbar`): a `SearchPill` (one per page, it feeds the list or `DataTable`;
+  250 ms debounce, Escape clears, `focusKey="/"`), then the filters, then a `ResultLine` ("“query” · N kết quả", the
+  sort on the right). On `md+` the filters are a `FilterChipRow`: one line of chips (`h-8 rounded-full`, `bg-tint`,
+  solid `bg-inverted` with the value or "Nhãn · N" when on), each a multi-select `Popover` or a switch chip; the row
+  scrolls sideways with ‹ › and never wraps; "Xoá lọc" shows while one is on; a `ViewSwitch` (list ↔ grid, density)
+  ends it. Below `md` a `PhoneFilterBar` (views · "Bộ lọc · N" · settings) opens a `FilterPanel`: full screen, sort
+  first, booleans as switches, one accordion per filter, "Xem N kết quả" at the bottom (a side sheet from `sm`, also for
+  a desktop page with more filters than chips). Phone chrome stays within two rows plus the result line (P1). State
+  lives in the URL: `useFilterParams(specs)`, or `readFilters` / `writeFilters` / `clearFilters` / `activeFilterCount`
+  on your router's params (`?f.status=new&f.status=won&f.big=1`); a filter change is a history entry, so Back undoes it.
+  A `SubpageToolbar` page gets the same on phones with `filters` (typed: up to two as chips, more collapse into
+  "Bộ lọc" with the active ones as chips, C-026), or `collapseFilters` for its `left` (a bottom `Drawer`), and
+  `secondaryActions` (text buttons from `sm`, a ⋯ `Menu` below it; the primary stays visible).
 - Grids expand across wide screens (e.g. `sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-group`); touch screens
   (iPad) stop at 4 columns (`not-any-pointer-coarse:` for 5+). Card grids **beside a sidebar** size columns by
   `@container` (`@xl:grid-cols-…`), never by viewport breakpoints (lint rule `viewport-grid-cols`, enabled per path via
@@ -1142,7 +1167,8 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 |---|---|
 | `@semi/ui` → `AppShell.tsx`, `MobileTabBar.tsx` | `AppShell` (floating Bento 2-panel frame: Create, sections, pinned group, utilities + account; `w-60` sidebar or icon rail, the rail on `md`; phone drawer; one level of sub-items; mega items), `useAppShell` (is the sidebar showing sub-items), `MobileTabBar`, `TAB_BAR_PAD` (opt-in `mobileNav="tabs"`) (§4) |
 | `MegaMenu.tsx`, `MinimalHeader.tsx`, `TextTabs.tsx` | `MegaMenu` (flyout of category columns, `text-overline` headers, New badges, See all), `MinimalHeader` (breadcrumb left, one link + one primary right), `TextTabs` (large text tabs as the page heading, ARIA tabs, `href` for URL-driven views) (§4) |
-| `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle`, `PageTabsTitle` (underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh) (§4a) |
+| `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle`, `PageTabsTitle` (underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh; phone layout with `filters` / `collapseFilters` / `secondaryActions`), `ToolbarFilters` (§4a) |
+| `SearchPill.tsx`, `FilterChipRow.tsx`, `ViewSwitch.tsx`, `FilterPanel.tsx`, `filterParams.ts` | `StickyContextBar` (sticky search + chips + result line), `SearchPill` (wide pill search, debounce, `/`), `ResultLine` (query · N kết quả + sort), `SortDef`, `FilterChipRow` (one-line chips, ‹ ›, Xoá lọc, trailing tools), `FilterChip`, `FilterOptions` (the checkbox list of one filter), `useFilterParams` (filter state in the URL, Back / Forward), `ViewSwitch` (list ↔ grid, density), `PhoneFilterBar` (views · Bộ lọc · settings), `FilterPanel` (full-screen / side-sheet filters); URL helpers `readFilters`, `readFilterValues`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, types `FilterSpec`, `FilterDef`, `FilterOption`, `FilterValues` (§4) |
 | `KpiCard.tsx`, `Modal.tsx` | `KpiCard` (metric card in the brand's figure font, neutral icon, `featured` for the screen's main number, shimmer), `Modal` (shared portal dialog with `MODAL_HEAD` + `MODAL_FOOT`) (§13, §14) |
 | `Icon.tsx` | `Icon`, `ICONS`, `IconName`, `IconTile`, `TILE_TONES`, `TONE_TEXT`, `TileTone` |
 | `AppHeader.tsx` | `AppHeader` (stand-alone app top bar, §4b) |
@@ -2395,7 +2421,7 @@ with `data-style` re-styles only its subtree (used by Storybook previews), not s
 All web UI here follows the **Semi Design System** (`@semi/ui`, repo `https://github.com/hoanghuynh296/semi-nextjs-codebase`). `npx semi-lint` enforces most of this; the full rules are `node_modules/@semi/ui/docs/QUICK_REF.md` (details in `docs/DESIGN_SYSTEM.md`).
 
 1. **Ask Semi before writing UI.** Find the component for each need with the `semi` MCP tools (`semi_search` → `semi_docs` → `semi_example`; `semi_block` for whole pages; `semi_props` for props) or the terminal (`npx semi search "bảng có sắp xếp"`, `npx semi docs DataTable`, `npx semi example data-table`, `npx semi add dashboard`). They answer from the installed `@semi/ui`. Read *When to use*, *Use something else when* and *Accessibility*, then start from an example.
-2. **Compose, never re-create.** Import from `@semi/ui` and `@semi/ui/styles` directly. No local wrappers (`components/ui.tsx`), no raw `<select>`, `<table>`, `<dialog>`, `type="date"`, `type="number"`, `window.confirm` / `alert`, no inline `<svg>` or glyph icons (`<Icon name>`, mapping in `docs/ICONS.md`). Every AI conversation is `AIChat`; agent work uses `Reasoning`, `ToolCall`, `TaskList`, `Terminal`, `Sources`; an outward-facing, paid or irreversible agent action waits for `ActionConfirmation`. Pages sit in `AppShell` (or `AppHeader` for a one-screen tool) with `PageTitle` (or the title on the toolbar row: `SubpageToolbar title`, or `TextTabs` for 2–4 sibling views; a detail page opens with `MinimalHeader`); the shell's accent action is `create`, its bottom is `utilities` + `account` (never `footer`), and phones use its drawer; sub-views of one area go in nav `children` (closed until the parent is chosen, optional grey icon, no colour or count; check `useAppShell().submenuVisible` and add a page picker when false); dialogs are `Modal` / `Drawer` / `confirmDialog`; loading is `Skeleton`, never "Đang tải…" text. `AppShell` renders once in a `layout.tsx` (never from a page), its items route by `href` (not `onSelect` + `router.push`), the session check runs once in that layout (best on the server) with `BootLoader` as the only centred spinner, and content loading is a `loading.tsx` with `PageSkeleton` inside the shell, never a skeleton gate around it. No other UI or icon library (`lucide-react`, `react-icons`, `@radix-ui`, `@mui`, a shadcn `components/ui` copy: `foreign-ui`), no own `Card` / `Badge` / `Tooltip`… (`local-primitive`), no raw `<button>`, `<input>`, `<textarea>`, `<table>` (`raw-control`), no hand-made overlay or spinner (`custom-overlay`, `custom-spinner`); a clickable card is `<Card onClick>` (keyboard-ready), never `<div onClick>` (`click-target`).
+2. **Compose, never re-create.** Import from `@semi/ui` and `@semi/ui/styles` directly. No local wrappers (`components/ui.tsx`), no raw `<select>`, `<table>`, `<dialog>`, `type="date"`, `type="number"`, `window.confirm` / `alert`, no inline `<svg>` or glyph icons (`<Icon name>`, mapping in `docs/ICONS.md`). Every AI conversation is `AIChat`; agent work uses `Reasoning`, `ToolCall`, `TaskList`, `Terminal`, `Sources`; an outward-facing, paid or irreversible agent action waits for `ActionConfirmation`. Pages sit in `AppShell` (or `AppHeader` for a one-screen tool) with `PageTitle` (or the title on the toolbar row: `SubpageToolbar title`, or `TextTabs` for 2–4 sibling views; a detail page opens with `MinimalHeader`); the shell's accent action is `create`, its bottom is `utilities` + `account` (never `footer`), and phones use its drawer; sub-views of one area go in nav `children` (closed until the parent is chosen, optional grey icon, no colour or count; check `useAppShell().submenuVisible` and add a page picker when false); a list page that people search and filter opens with `StickyContextBar` (`SearchPill`, `FilterChipRow` on `md+` / `PhoneFilterBar` + `FilterPanel` on phones, `ResultLine`), filter state in the URL (`useFilterParams`), chips on one line, never wrapped rows; dialogs are `Modal` / `Drawer` / `confirmDialog`; loading is `Skeleton`, never "Đang tải…" text. `AppShell` renders once in a `layout.tsx` (never from a page), its items route by `href` (not `onSelect` + `router.push`), the session check runs once in that layout (best on the server) with `BootLoader` as the only centred spinner, and content loading is a `loading.tsx` with `PageSkeleton` inside the shell, never a skeleton gate around it. No other UI or icon library (`lucide-react`, `react-icons`, `@radix-ui`, `@mui`, a shadcn `components/ui` copy: `foreign-ui`), no own `Card` / `Badge` / `Tooltip`… (`local-primitive`), no raw `<button>`, `<input>`, `<textarea>`, `<table>` (`raw-control`), no hand-made overlay or spinner (`custom-overlay`, `custom-spinner`); a clickable card is `<Card onClick>` (keyboard-ready), never `<div onClick>` (`click-target`).
 3. **Tokens only** (dual theme, any brand, any style):
    - Surfaces and text: `bg-canvas|app|panel|field|raised` (the scale `bg-panel-0…4`: 0 = canvas, 2 = app, 4 = panel), `text-contrast|body|muted`, `border-line|divider` (an input's own edge: `border-control-line`, ≥ 3:1); status `bg-*-bg border-*-border text-*-fg` (danger, success, warning, info). Pages separate by tone, not borders: a block that is a card is `<Card>` / `bg-card` (no border; `<Card bordered>` only for a dense data view), never `bg-panel` (the sidebar / modal step); a secondary button is `<Button>` (tint fill `bg-tint`, no border). Main button: `BTN_PRIMARY` / `bg-action text-on-action` (the brand may make it inverted). Accent: `bg-accent text-on-accent` for checked / "on" marks, `text-accent-fg`, `bg-accent-subtle`, `border-accent-line`, `ring-focus`. Never physical colours (`bg-white`, `text-slate-900`, `text-amber-600 dark:text-amber-400`), arbitrary colours (`bg-[#…]`), `primary-N/alpha` or `bg-primary-N` fills (`primary-fill`), gradients or glow shadows.
    - Type scale only: `text-caption|label|ui|ui-lg|title|title-lg`, `text-figure`, `text-heading`, `text-display`; `font-medium` / `font-semibold`, titles and big numbers `font-title` / `font-figure`; `tabular-nums` for numbers; sentence case (the one uppercase style is `text-overline`, for section labels only: a sidebar / drawer group, a palette group, a mega menu column). Running text (sentences, descriptions, table cells, list rows) is `text-ui`; `text-label` / `text-caption` only for short marks beside it (a field label, a button, a time, a count). Each size sets its own line height: no `leading-*` on body text.
@@ -3672,6 +3698,298 @@ export default function FileDropSingle() {
 
 ---
 
+<!-- docs/components/filter-chip-row.md -->
+
+# Filter chip row
+
+A list page's filters as one line of chips (icon, label, chevron; solid with the value or count when on). Each chip opens a small multi-select popover, a switch chip toggles; the row scrolls sideways with ‹ › when it overflows, shows “Xoá lọc” while a filter is on and ends with the view tools. State in the URL with useFilterParams or the filterParams helpers.
+
+## When to use
+
+- The filters of a list, grid or table page on desktop and iPad (md+), under its SearchPill in a StickyContextBar.
+- Facets with a few to a few dozen values each (status, channel, owner, country), more than one value at a time.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Filters on phones (below md) | PhoneFilterBar + FilterPanel |
+| One choice among 2–5 views of the same list | Pills or TextTabs |
+| A facet with hundreds of values (a customer, a product) | a Combobox in FilterPanel's children |
+
+## Import
+
+```tsx
+import { FilterChipRow, FilterChip, FilterOptions, useFilterParams, readFilters, writeFilters, clearFilters } from "@semi/ui";
+```
+
+## Examples
+
+### State in the URL, with ViewSwitch
+
+```tsx
+"use client";
+
+import { FilterChipRow, ResultLine, ViewSwitch, useFilterParams, type ViewMode } from "@semi/ui";
+
+const ORDERS = [
+  { id: "1024", status: "new", channel: "shopee", paid: true },
+  { id: "1025", status: "packing", channel: "web", paid: true },
+  { id: "1026", status: "new", channel: "web", paid: false },
+  { id: "1027", status: "shipped", channel: "shopee", paid: true },
+  { id: "1028", status: "packing", channel: "store", paid: false },
+];
+
+export default function FilterChipRowUrlState() {
+  // state lives in the URL (?o.status=new&o.paid=1): reload, share a link, Back / Forward all keep it
+  const f = useFilterParams(
+    [
+      { key: "status", label: "Trạng thái", icon: "activity", options: [
+        { value: "new", label: "Mới", count: 2 },
+        { value: "packing", label: "Đang đóng gói", count: 2 },
+        { value: "shipped", label: "Đã giao", count: 1 },
+      ] },
+      { key: "channel", label: "Kênh bán", icon: "store", options: [
+        { value: "shopee", label: "Shopee" },
+        { value: "web", label: "Website" },
+        { value: "store", label: "Cửa hàng" },
+      ] },
+      { key: "paid", label: "Đã thanh toán", icon: "check", kind: "switch" },
+    ],
+    { prefix: "o." },
+  );
+  const view: ViewMode = f.params.get("view") === "grid" ? "grid" : "list";
+  const rows = ORDERS.filter(
+    (o) =>
+      (!f.values.status.length || f.values.status.includes(o.status)) &&
+      (!f.values.channel.length || f.values.channel.includes(o.channel)) &&
+      (!f.values.paid.length || o.paid),
+  );
+  return (
+    <div className="flex flex-col gap-2 w-full min-w-0">
+      <FilterChipRow
+        filters={f.filters}
+        onChange={f.onChange}
+        onClear={f.onClear}
+        trailing={<ViewSwitch view={view} onViewChange={(v) => f.setParams({ view: v === "list" ? null : v }, "replace")} />}
+      />
+      <ResultLine count={rows.length} unit="đơn hàng" />
+      <p className="text-label text-muted">{rows.map((o) => `#${o.id}`).join(" · ") || "—"}</p>
+    </div>
+  );
+}
+```
+
+### More chips than fit
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { FilterChipRow, type FilterDef } from "@semi/ui";
+
+const SPECS: Omit<FilterDef, "selected">[] = [
+  { key: "status", label: "Trạng thái", icon: "activity", options: [{ value: "new", label: "Mới" }, { value: "quoting", label: "Đang báo giá" }, { value: "won", label: "Đã chốt" }] },
+  { key: "country", label: "Quốc gia", icon: "mapPin", options: [{ value: "DE", label: "Đức" }, { value: "AE", label: "UAE" }, { value: "IN", label: "Ấn Độ" }] },
+  { key: "owner", label: "Phụ trách", icon: "user", options: [{ value: "ha", label: "Trần Thu Hà" }, { value: "nam", label: "Lê Hoàng Nam" }] },
+  { key: "source", label: "Nguồn", icon: "database", options: [{ value: "fair", label: "Gulfood 2026" }, { value: "web", label: "Website" }] },
+  { key: "mail", label: "Thư", icon: "mail", options: [{ value: "sent", label: "Đã gửi" }, { value: "replied", label: "Đã trả lời" }] },
+  { key: "product", label: "Mặt hàng", icon: "box", options: [{ value: "pepper", label: "Tiêu đen" }, { value: "cinnamon", label: "Quế" }] },
+  { key: "big", label: "Từ 100 tấn/năm", icon: "gauge", kind: "switch" },
+];
+
+export default function FilterChipRowMany() {
+  // local state; the row scrolls sideways with ‹ › when the chips do not fit
+  const [sel, setSel] = useState<Record<string, string[]>>({ country: ["DE", "AE"] });
+  const filters: FilterDef[] = SPECS.map((s) => ({ ...s, selected: sel[s.key] ?? [] }));
+  return (
+    <div className="w-full min-w-0 max-w-xl">
+      <FilterChipRow filters={filters} onChange={(key, selected) => setSel({ ...sel, [key]: selected })} onClear={() => setSel({})} />
+    </div>
+  );
+}
+```
+
+## API
+
+### FilterChipRow
+
+The filter chips of a list page on one line. When they overflow, the row scrolls sideways and ‹ › buttons appear
+(hidden from screen readers and the tab order: every chip is reachable by Tab, which scrolls it into view).
+"Xoá lọc" shows while a filter is on; `trailing` (ViewSwitch) sits at the end behind a divider.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `filters` * | `FilterDef[]` |  |  |
+| `onChange` * | `(key: string, selected: string[]) => void` |  |  |
+| `onClear` | `() => void` |  | Clears every filter; the "Xoá lọc" button shows while one is on. |
+| `trailing` | `React.ReactNode` |  | Tools at the end of the row: ViewSwitch, a sort that is not in a ResultLine. |
+| `label` | `string` |  | Accessible name of the chip group (default "Bộ lọc"). |
+| `className` | `string` |  |  |
+
+### FilterChip
+
+One filter facet as a chip. A `multi` filter opens a popover of checkboxes (aria-expanded on the chip); a `switch`
+filter toggles on click (aria-pressed). Active, it turns solid (`bg-inverted`) and shows the one value or the count.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `def` * | `FilterDef` |  |  |
+| `onChange` * | `(selected: string[]) => void` |  |  |
+
+### FilterOptions
+
+The checkbox list of one multi filter (FilterChip's popover, FilterPanel's accordion).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `def` * | `FilterDef` |  |  |
+| `onChange` * | `(selected: string[]) => void` |  |  |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- Every chip is a button: a multi chip has aria-haspopup=dialog and aria-expanded (its popover traps nothing, Escape returns focus to the chip); a switch chip has aria-pressed.
+- An active chip's name says the filter and its value (“Quốc gia: Đức”, or “Quốc gia · 2”); the options are named checkboxes in a group named after the filter.
+- The ‹ › buttons are for the pointer only (aria-hidden, out of the tab order): Tab reaches every chip and scrolls it into view.
+
+## Notes
+
+- One line, never wrapping rows of chips (C-032 L3); more than one row → this row.
+- URL format: one repeated param per filter (?f.status=new&f.status=won&f.big=1); unknown values from an old link are dropped. useFilterParams reads the URL after hydration (prerender-safe, no useSearchParams), writes with history.pushState(null, …) so Next's useSearchParams and router.refresh() keep the filters, pushes one history entry per change (Back undoes a filter) and follows Back / Forward, other hooks on the page and (with the Navigation API, or on the next render) a Link or router.push to the same route.
+- With Next's router of your own: readFilters(useSearchParams(), specs) in, router.push(`?${writeFilters(params, { status: [...] }, specs)}`) out.
+- Without the Navigation API (Firefox, Safari before 26) the hook re-reads the URL on Back / Forward, on its own writes and whenever its component renders. A hook in a component that stays mounted and does not re-render (a layout) can then miss a Link or router.push to the same route: there, read the filters with useSearchParams + readFilters (inside Suspense) and write them with writeFilters + router.push instead.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/filter-chip-row/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/filter-panel.md -->
+
+# Filter panel
+
+Filters on phones: one segmented pill (the page's views · Bộ lọc with the count · sort and view settings) that opens a full-screen panel: sort first, booleans as switches, one accordion per filter, “Xem N kết quả” at the bottom. From sm the panel is a side sheet, also the “Bộ lọc” panel of a page with more filters than its chip row shows.
+
+## When to use
+
+- Below md on every page that has a FilterChipRow on desktop (same filters, same state).
+- A desktop page whose filters do not fit in chips (many facets, a date range): a Bộ lọc button opens the panel as a side sheet.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Filters on desktop and iPad | FilterChipRow |
+| A form in a sheet (edit a record) | Drawer |
+
+## Import
+
+```tsx
+import { PhoneFilterBar, FilterPanel } from "@semi/ui";
+```
+
+## Examples
+
+### Phone bar and panel
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { FilterPanel, PhoneFilterBar, activeFilterCount, type FilterDef } from "@semi/ui";
+
+const SPECS: Omit<FilterDef, "selected">[] = [
+  { key: "status", label: "Trạng thái", icon: "activity", options: [{ value: "new", label: "Mới", count: 12 }, { value: "quoting", label: "Đang báo giá", count: 5 }, { value: "won", label: "Đã chốt", count: 31 }] },
+  { key: "country", label: "Quốc gia", icon: "mapPin", options: [{ value: "DE", label: "Đức" }, { value: "AE", label: "UAE" }, { value: "IN", label: "Ấn Độ" }] },
+  { key: "owner", label: "Phụ trách", icon: "user", options: [{ value: "ha", label: "Trần Thu Hà" }, { value: "nam", label: "Lê Hoàng Nam" }] },
+  { key: "big", label: "Từ 100 tấn/năm", icon: "gauge", kind: "switch" },
+];
+const VIEWS = { all: "Tất cả", pending: "Chờ duyệt", mine: "Của tôi" } as const;
+
+export default function FilterPanelPhone() {
+  const [sel, setSel] = useState<Record<string, string[]>>({ status: ["new"] });
+  const [view, setView] = useState<keyof typeof VIEWS>("all");
+  const [sort, setSort] = useState("recent");
+  const [open, setOpen] = useState(false);
+  const filters: FilterDef[] = SPECS.map((s) => ({ ...s, selected: sel[s.key] ?? [] }));
+  return (
+    <div className="w-full max-w-sm">
+      <PhoneFilterBar
+        typeLabel={VIEWS[view]}
+        typeItems={(Object.keys(VIEWS) as (keyof typeof VIEWS)[]).map((k) => ({ label: VIEWS[k], icon: k === view ? "check" : undefined, onSelect: () => setView(k) }))}
+        activeCount={activeFilterCount(filters)}
+        onOpenFilters={() => setOpen(true)}
+        filtersOpen={open}
+        onOpenSettings={() => setOpen(true)}
+      />
+      <FilterPanel
+        open={open}
+        onClose={() => setOpen(false)}
+        filters={filters}
+        onChange={(key, selected) => setSel({ ...sel, [key]: selected })}
+        onClear={() => setSel({})}
+        sort={{ value: sort, onChange: setSort, options: [{ value: "recent", label: "Mới thêm" }, { value: "volume", label: "Sản lượng năm" }] }}
+        resultCount={sel.status?.length ? 12 : 48}
+      />
+    </div>
+  );
+}
+```
+
+## API
+
+### PhoneFilterBar
+
+The filter controls of a phone list page in one row: an optional type menu (the page's views), "Bộ lọc" with the
+active count (opens FilterPanel) and an optional settings button (sort and view). Show it below `md` in place of
+FilterChipRow (`md:hidden` / `max-md:hidden` around each).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `typeLabel` | `string` |  | The current view's name ("Tất cả"); shown with `typeItems`. |
+| `typeItems` | `MenuItem[]` |  | The views to switch between (a Menu). |
+| `activeCount` * | `number` |  | How many filters are on (activeFilterCount); shown on the button. |
+| `onOpenFilters` * | `() => void` |  |  |
+| `filtersOpen` | `boolean` |  | Whether the panel is open (aria-expanded on the button). |
+| `onOpenSettings` | `() => void` |  | Opens the sort and view settings; the button shows when given. |
+| `className` | `string` |  |  |
+
+### FilterPanel
+
+The full filter set in a modal panel: full screen on phones, a right side sheet from `sm` (also the "Bộ lọc" panel
+of a desktop page with more filters than its chip row shows). Changes apply at once (the list behind updates);
+"Xem N kết quả" closes. Focus moves in, is trapped, and returns to the opener; Escape closes.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `open` * | `boolean` |  |  |
+| `onClose` * | `() => void` |  |  |
+| `filters` * | `FilterDef[]` |  |  |
+| `onChange` * | `(key: string, selected: string[]) => void` |  |  |
+| `onClear` * | `() => void` |  |  |
+| `sort` | `SortDef` |  | Sort choices, shown first as a row of chips. |
+| `resultCount` | `number` |  | Rows matching now, on the bottom button ("Xem 12 kết quả"); without it the button says "Đóng". |
+| `title` | `string` |  | Heading (default "Bộ lọc"). |
+| `children` | `React.ReactNode` |  | More settings under the filters (a ViewSwitch, a date range). |
+
+## Accessibility
+
+- The panel is a modal dialog named “Bộ lọc”: focus moves in, Tab stays inside, Escape closes and focus returns to the button that opened it.
+- The Bộ lọc button's name is its text and the count (“Bộ lọc 2”); it has aria-haspopup=dialog and aria-expanded (filtersOpen).
+- Each accordion is a heading with a button (aria-expanded, aria-controls); the sort is a group of toggle buttons (aria-pressed).
+
+## Notes
+
+- Changes apply at once (the list behind updates); “Xem N kết quả” only closes. Keep the open state in the URL (?filters=1) when Back should close it.
+- The accordions of filters that are on start open (at most two).
+- Phone chrome stays within 2 rows (P1): the search, then this bar; the result line may follow.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/filter-panel/ and the types in src/ -->
+
+
+---
+
 <!-- docs/components/form-actions.md -->
 
 # Form actions, unsaved guard, validation
@@ -4269,6 +4587,131 @@ export default function SearchInputBasic() {
 
 ---
 
+<!-- docs/components/search-pill.md -->
+
+# Search pill
+
+The wide pill search of a list page (one per page) and the result line under it: “query” · N kết quả on the left, the sort menu on the right. Typing is debounced (250 ms), Escape and the clear button clear at once, an optional key (/) focuses it.
+
+## When to use
+
+- The search of a list, grid or DataTable page, above its filter chips (inside StickyContextBar).
+- Showing how many rows match and how they are sorted, right above the rows.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A search among the toolbar's icon buttons (a small page, few rows) | SubpageToolbar onSearchChange (SearchInput) |
+| Jump to any page or action from anywhere | Command |
+| A search field inside a form or a popover | Input with a search icon (InputGroup) |
+
+## Import
+
+```tsx
+import { SearchPill, ResultLine } from "@semi/ui";
+```
+
+## Examples
+
+### Search
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { SearchPill } from "@semi/ui";
+
+export default function SearchPillDefault() {
+  const [q, setQ] = useState("");
+  return (
+    <div className="flex flex-col gap-2 w-full">
+      <SearchPill value={q} onChange={setQ} label="Tìm khách hàng" placeholder="Tìm khách, quốc gia, mặt hàng…" focusKey="/" />
+      <p className="text-label text-muted">
+        Đang tìm: <span className="text-contrast">{q || "—"}</span> (gõ xong 250 ms mới gửi; Esc để xoá; phím / để vào ô tìm)
+      </p>
+    </div>
+  );
+}
+```
+
+### With the result line and sort
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { ResultLine, SearchPill } from "@semi/ui";
+
+const SORTS = [
+  { value: "recent", label: "Mới thêm" },
+  { value: "volume", label: "Sản lượng năm" },
+  { value: "name", label: "Tên A–Z" },
+];
+
+export default function SearchPillResultLine() {
+  const [q, setQ] = useState("tiêu đen");
+  const [sort, setSort] = useState("recent");
+  return (
+    <div className="flex flex-col gap-2 w-full">
+      <SearchPill value={q} onChange={setQ} label="Tìm khách hàng" shortcut="⌘K" />
+      <ResultLine query={q} count={q ? 128 : 1240} unit="khách hàng" sort={{ value: sort, onChange: setSort, options: SORTS }} />
+    </div>
+  );
+}
+```
+
+## API
+
+### SearchPill
+
+The wide pill search of a list page: one per page, it feeds the list (or DataTable). Typing calls `onChange` after
+`debounce` ms; the clear button and Escape clear at once. `focusKey` ("/") focuses it from anywhere on the page
+(not while typing in another field).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `value` * | `string` |  |  |
+| `onChange` * | `(value: string) => void` |  |  |
+| `label` * | `string` |  | Accessible name ("Tìm khách hàng"); also the placeholder when none is given. |
+| `placeholder` | `string` |  |  |
+| `debounce` | `number` | `250` | Milliseconds to wait after the last key before `onChange` (0: every key). |
+| `focusKey` | `string` |  | A key that focuses the field from anywhere on the page, e.g. "/". Shown as a key cap while the field is empty. |
+| `shortcut` | `string` |  | Key cap shown while empty when the app binds the shortcut itself ("⌘K" for a command palette). |
+| `trailing` | `React.ReactNode` |  | Extra tools at the right end (image search, voice): IconButtons. |
+| `className` | `string` |  |  |
+
+### ResultLine
+
+The line under the search: `“query” · N kết quả` on the left (announced politely when it changes), the sort menu on
+the right. Leave out `query` for a plain count.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `count` * | `number` |  |  |
+| `query` | `string` |  |  |
+| `unit` | `string` |  | What is counted ("khách hàng"); default the locale's "kết quả". |
+| `sort` | `SortDef` |  |  |
+| `trailing` | `React.ReactNode` |  | More tools at the right end, after the sort (a ViewSwitch when there is no chip row). |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- label is required: it names the field (type=search) and is the placeholder when none is given.
+- The result line is a polite live region, so the new count is read after typing; the sort trigger says the current choice (“Sắp xếp: Mới thêm”).
+- focusKey is ignored while typing in another field and with ⌘ / Ctrl / Alt; the key cap is hidden from screen readers.
+
+## Notes
+
+- Controlled: keep the query in the URL (?q=) so a reload or a shared link keeps it; the field shows a value changed from outside (Back, Xoá lọc).
+- One search per page, feeding the list or DataTable (C-021 D5): never a second search in the table header.
+- debounce={0} sends every key (a small local list).
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/search-pill/ and the types in src/ -->
+
+
+---
+
 <!-- docs/components/select.md -->
 
 # Select
@@ -4579,6 +5022,84 @@ export default function SwitchCardHeader() {
 - On touch screens (any coarse pointer) the hit area is 44 × 44 px around the track; the visible size and layout do not change.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/switch/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/view-switch.md -->
+
+# View switch
+
+List ↔ grid and an optional density toggle, as small icon toggles at the end of the filter row (FilterChipRow trailing).
+
+## When to use
+
+- A collection people browse both as rows and as cards (products, files, suppliers).
+- A dense list where some people want more rows on screen (density).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Switching between different data (orders vs. returns) | TextTabs or Pills |
+| A table ↔ chart switch of one data set | Chart's table view |
+
+## Import
+
+```tsx
+import { ViewSwitch } from "@semi/ui";
+```
+
+## Examples
+
+### View and density
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { ViewSwitch, type ViewDensity, type ViewMode } from "@semi/ui";
+
+export default function ViewSwitchDefault() {
+  const [view, setView] = useState<ViewMode>("grid");
+  const [density, setDensity] = useState<ViewDensity>("comfortable");
+  return (
+    <div className="flex items-center gap-4">
+      <ViewSwitch view={view} onViewChange={setView} density={density} onDensityChange={setDensity} />
+      <span className="text-label text-muted">
+        {view === "grid" ? "Lưới" : "Danh sách"} · {density === "compact" ? "Gọn" : "Thoáng"}
+      </span>
+    </div>
+  );
+}
+```
+
+## API
+
+### ViewSwitch
+
+Two toggle buttons (list, grid; aria-pressed) and an optional density toggle. Put it in FilterChipRow's `trailing`;
+keep the choice in the URL (`?view=grid`) or per person (localStorage) as the page needs.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `view` * | `'grid' \| 'list'` |  |  |
+| `onViewChange` * | `(view: ViewMode) => void` |  |  |
+| `density` | `'comfortable' \| 'compact'` |  | Shows the density toggle when given with `onDensityChange`. |
+| `onDensityChange` | `(density: ViewDensity) => void` |  |  |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- A group named “Kiểu xem” of toggle buttons (aria-pressed), each with an aria-label and a title.
+- The density button is pressed while the view is compact.
+
+## Notes
+
+- Keep the view in the URL (?view=grid, replace, not push) when people share it, or per person (localStorage) when it is a taste.
+- On phones it moves into FilterPanel's children or the settings button of PhoneFilterBar.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/view-switch/ and the types in src/ -->
 
 
 ---
@@ -5617,7 +6138,7 @@ the tooltip is linked with aria-describedby. Touch screens show nothing: never p
 |---|---|---|---|
 | `content` * | `React.ReactNode` |  |  |
 | `children` * | `ReactElement<unknown, string \| JSXElementConstructor<any>>` |  |  |
-| `side` | `'right' \| 'bottom' \| 'top'` |  | Where the hint shows; `right` is for a vertical icon rail (AppShell's collapsed sidebar). |
+| `side` | `'right' \| 'bottom' \| 'top'` | `"top"` | Where the hint shows; `right` is for a vertical icon rail (AppShell's collapsed sidebar). |
 
 ## Accessibility
 
@@ -5832,6 +6353,8 @@ export default function FullShell() {
       create={{
         label: "Tạo mới",
         items: [
+          // not available on this plan: shown, but disabled (the phone drawer focuses the first enabled row)
+          { label: "Báo giá", icon: "fileText", disabled: true, onSelect: () => {} },
           { label: "Đơn hàng", icon: "bag", onSelect: () => setActive("orders-open") },
           { label: "Khách hàng", icon: "users", onSelect: () => setActive("customers") },
           { label: "Sản phẩm", icon: "box", onSelect: () => {} },
@@ -6988,6 +7511,147 @@ The collapse toggle placed at the top of the panel content (next to the first la
 
 ---
 
+<!-- docs/components/sticky-context-bar.md -->
+
+# Sticky context bar
+
+The top of a list page that stays while the rows scroll under it: SearchPill, then FilterChipRow (PhoneFilterBar on phones), then ResultLine. An opaque STICKY_TOOLBAR strip, below the safe area on phones.
+
+## When to use
+
+- A list, grid or table page with a search and filters people change while they scroll (customers, suppliers, products).
+- In place of a SubpageToolbar when the page needs the wide search and the chip row.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A page with one or two filters and a few actions | SubpageToolbar |
+| Actions of one record | MinimalHeader or PageActions |
+
+## Import
+
+```tsx
+import { StickyContextBar } from "@semi/ui";
+```
+
+## Examples
+
+### Suppliers list
+
+```tsx
+"use client";
+
+import { useMemo, useState } from "react";
+import {
+  FilterChipRow,
+  FilterPanel,
+  Item,
+  PhoneFilterBar,
+  ResultLine,
+  SearchPill,
+  StickyContextBar,
+  ViewSwitch,
+  type FilterDef,
+  type ViewMode,
+} from "@semi/ui";
+
+const SUPPLIERS = [
+  { name: "Hợp tác xã Tiêu Chư Sê", region: "highlands", item: "pepper", certified: true },
+  { name: "Công ty Quế Văn Yên", region: "north", item: "cinnamon", certified: true },
+  { name: "Hồi Lạng Sơn Xanh", region: "north", item: "anise", certified: false },
+  { name: "Nông trại Tiêu Phú Quốc", region: "south", item: "pepper", certified: false },
+  { name: "Gia vị Bình Phước", region: "south", item: "pepper", certified: true },
+  { name: "Quế Trà My", region: "central", item: "cinnamon", certified: false },
+];
+const SPECS: Omit<FilterDef, "selected">[] = [
+  { key: "item", label: "Mặt hàng", icon: "box", options: [{ value: "pepper", label: "Tiêu" }, { value: "cinnamon", label: "Quế" }, { value: "anise", label: "Hồi" }] },
+  { key: "region", label: "Vùng", icon: "mapPin", options: [{ value: "north", label: "Miền Bắc" }, { value: "central", label: "Miền Trung" }, { value: "highlands", label: "Tây Nguyên" }, { value: "south", label: "Miền Nam" }] },
+  { key: "certified", label: "Có chứng nhận", icon: "badgeCheck", kind: "switch" },
+];
+const SORTS = [
+  { value: "name", label: "Tên A–Z" },
+  { value: "recent", label: "Mới thêm" },
+];
+
+export default function StickyContextBarListPage() {
+  const [q, setQ] = useState("");
+  const [sel, setSel] = useState<Record<string, string[]>>({});
+  const [sort, setSort] = useState("name");
+  const [view, setView] = useState<ViewMode>("list");
+  const [panel, setPanel] = useState(false);
+  const filters: FilterDef[] = SPECS.map((s) => ({ ...s, selected: sel[s.key] ?? [] }));
+  const onChange = (key: string, selected: string[]) => setSel({ ...sel, [key]: selected });
+  const rows = useMemo(() => {
+    const r = SUPPLIERS.filter(
+      (s) =>
+        s.name.toLocaleLowerCase("vi").includes(q.toLocaleLowerCase("vi")) &&
+        (!sel.item?.length || sel.item.includes(s.item)) &&
+        (!sel.region?.length || sel.region.includes(s.region)) &&
+        (!sel.certified?.length || s.certified),
+    );
+    return sort === "name" ? [...r].sort((a, b) => a.name.localeCompare(b.name, "vi")) : r;
+  }, [q, sel, sort]);
+  const sortDef = { value: sort, onChange: setSort, options: SORTS };
+  const active = filters.filter((f) => f.selected.length > 0).length;
+  return (
+    // the scrolling content panel of the page: STICKY_TOOLBAR bleeds into its side padding (px-4 sm:px-6, as AppShell's)
+    <div className="w-full min-w-0 h-96 overflow-y-auto overscroll-contain rounded-card bg-app px-4 sm:px-6 pt-2.5 pb-4">
+      <StickyContextBar label="Tìm và lọc nhà cung cấp">
+        <SearchPill value={q} onChange={setQ} label="Tìm nhà cung cấp" placeholder="Tìm tên nhà cung cấp…" focusKey="/" />
+        <FilterChipRow
+          className="max-md:hidden"
+          filters={filters}
+          onChange={onChange}
+          onClear={() => setSel({})}
+          trailing={<ViewSwitch view={view} onViewChange={setView} />}
+        />
+        <PhoneFilterBar className="md:hidden" activeCount={active} onOpenFilters={() => setPanel(true)} filtersOpen={panel} />
+        <ResultLine query={q} count={rows.length} unit="nhà cung cấp" sort={sortDef} />
+      </StickyContextBar>
+      <ul className={view === "grid" ? "grid grid-cols-2 gap-group" : "flex flex-col"}>
+        {rows.map((s) => (
+          <li key={s.name}>
+            <Item title={s.name} description={`${SPECS[0].options?.find((o) => o.value === s.item)?.label} · ${SPECS[1].options?.find((o) => o.value === s.region)?.label}`} />
+          </li>
+        ))}
+      </ul>
+      <FilterPanel open={panel} onClose={() => setPanel(false)} filters={filters} onChange={onChange} onClear={() => setSel({})} sort={sortDef} resultCount={rows.length} />
+    </div>
+  );
+}
+```
+
+## API
+
+### StickyContextBar
+
+The search, the filter chips and the result line of a list page, pinned to the top of the scrolling content while
+the rows scroll under it. It is `STICKY_TOOLBAR` (opaque, bleeds to the panel's side padding, below the safe area on
+phones) stacked as a column. One per page, in place of a SubpageToolbar.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `children` * | `React.ReactNode` |  | Usually SearchPill, then FilterChipRow (PhoneFilterBar on phones), then ResultLine. |
+| `label` | `string` |  | Accessible name of the region ("Tìm và lọc khách hàng"); leave it out when the bar holds only a search. |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- With label it is a search landmark (role=search) named for the page, so screen-reader users jump to it.
+- Its children keep their own names; the result line announces the new count.
+
+## Notes
+
+- One per page, right under the page heading (TextTabs or PageTitle); the page's primary action stays in the header (MinimalHeader), not in this bar.
+- Desktop and iPad show FilterChipRow (max-md:hidden on the phone bar's sibling), phones PhoneFilterBar (md:hidden): same filters, same state.
+- Phone chrome: at most 2 rows plus the result line, under 25% of the viewport (P1).
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/sticky-context-bar/ and the types in src/ -->
+
+
+---
+
 <!-- docs/components/subpage-toolbar.md -->
 
 # Subpage toolbar
@@ -7091,6 +7755,47 @@ export default function SubpageToolbarTitleRow() {
 }
 ```
 
+### Typed filters and secondary actions (phone layout)
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { SubpageToolbar, toast, type FilterDef } from "@semi/ui";
+
+const SPECS: Omit<FilterDef, "selected">[] = [
+  { key: "group", label: "Nhóm", options: [{ value: "retail", label: "Bán lẻ" }, { value: "wholesale", label: "Bán sỉ" }] },
+  { key: "region", label: "Khu vực", options: [{ value: "hn", label: "Hà Nội" }, { value: "hcm", label: "TP.HCM" }, { value: "dn", label: "Đà Nẵng" }] },
+  { key: "owner", label: "Phụ trách", options: [{ value: "ha", label: "Thu Hà" }, { value: "nam", label: "Hoàng Nam" }] },
+  { key: "debt", label: "Còn nợ", kind: "switch" },
+];
+
+export default function SubpageToolbarPhone() {
+  const [sel, setSel] = useState<Record<string, string[]>>({ region: ["hn"] });
+  const [q, setQ] = useState("");
+  return (
+    <SubpageToolbar
+      title="Khách hàng"
+      filters={{
+        filters: SPECS.map((s) => ({ ...s, selected: sel[s.key] ?? [] })),
+        onChange: (key, selected) => setSel({ ...sel, [key]: selected }),
+        onClear: () => setSel({}),
+        resultCount: 42,
+      }}
+      secondaryActions={[
+        { label: "Nhập tệp", icon: "upload", onSelect: () => toast({ title: "Nhập tệp" }) },
+        { label: "Xuất Excel", icon: "download", onSelect: () => toast({ title: "Xuất Excel" }) },
+      ]}
+      searchValue={q}
+      onSearchChange={setQ}
+      searchPlaceholder="Tìm khách hàng…"
+      onPrimaryAction={() => toast({ title: "Thêm khách hàng" })}
+      primaryActionLabel="Thêm khách hàng"
+    />
+  );
+}
+```
+
 ### RefreshButton
 
 ```tsx
@@ -7117,6 +7822,10 @@ export default function RefreshButtonBasic() {
 | `onSearchChange` | `(val: string) => void` |  | Search change handler. |
 | `searchPlaceholder` | `string` |  | Placeholder for SearchInput. |
 | `onRefresh` | `() => unknown` |  | Async or sync reload callback (renders RefreshButton when provided). |
+| `filters` | `ToolbarFilters` |  | Typed filters (C-026): up to two show as chips; with more, and always below `sm`, a "Bộ lọc · N" button opens a FilterPanel and the active ones show as chips beside it. Use instead of hand-made chips in `left`. |
+| `collapseFilters` | `boolean` | `false` | Below `sm`, move `left` into a bottom sheet opened by a "Bộ lọc" button (above `sm` it renders as before). |
+| `filterCount` | `number` |  | Active filters in `left`, shown on that button ("Bộ lọc · 2") when `collapseFilters` is set. |
+| `secondaryActions` | `MenuItem[]` |  | Text actions that are not the primary one: buttons from `sm`, a ⋯ menu below it (the primary stays visible). |
 | `className` | `string` | `""` |  |
 
 ### RefreshButton
@@ -7130,12 +7839,14 @@ export default function RefreshButtonBasic() {
 ## Accessibility
 
 - The primary action is icon-only, so primaryActionLabel is required (aria-label + title).
+- The Bộ lọc button says the active count (“Bộ lọc · 2”) and opens a modal FilterPanel (or a bottom Drawer for collapseFilters): focus trap, Escape, focus back to the button; the ⋯ menu is named “Thao tác khác”.
 
 ## Notes
 
 - Two layouts, both valid: PageTitle + SubpageToolbar (title on its own row), or SubpageToolbar with title (one row). Pick one per page, never both.
 - With title, a string becomes the page h1 in PageTitle type; a PageTabsTitle works too. Narrow screens wrap the filters and actions below the title.
 - Text buttons belong in right (secondary actions); the title itself stays text only and the primary action stays icon-only.
+- Phone layout (#57): with filters (typed, FilterDef[]) or collapseFilters (for left), below sm the toolbar is two rows at most: the title, then Bộ lọc · N, ⋯ (secondaryActions), the primary, the search. Above sm it is the row it always was; more than two typed filters collapse into Bộ lọc with the active ones as chips beside it (C-026).
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/subpage-toolbar/ and the types in src/ -->
 

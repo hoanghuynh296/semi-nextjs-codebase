@@ -405,7 +405,11 @@ test("phones get the drawer: focus moves in, stays in, drills down and returns t
   await expect(orders).toBeFocused();
   // Create is one row that opens what can be created (no tiles repeating the nav's names)
   await drawer.getByRole("button", { name: "Tạo mới" }).click();
-  await expect(page.getByRole("dialog", { name: "Tạo mới" }).getByRole("button", { name: "Phiếu nhập" })).toBeVisible();
+  const createLevel = page.getByRole("dialog", { name: "Tạo mới" });
+  await expect(createLevel.getByRole("button", { name: "Phiếu nhập" })).toBeVisible();
+  // its first row is disabled: focus goes to the first enabled row, never to the body (#98)
+  await expect(createLevel.getByRole("button", { name: "Báo giá" })).toBeDisabled();
+  await expect(createLevel.getByRole("button", { name: "Đơn hàng" })).toBeFocused();
   await page.keyboard.press("Escape");
   expect(await lowContrast(page)).toEqual([]);
   await page.keyboard.press("Escape");
@@ -752,6 +756,135 @@ test("Popover moves focus in and returns it; ContextMenu opens with Shift+F10", 
   await page.keyboard.press("Escape");
   await expect(page.getByRole("menu")).toBeHidden();
   await expect(area).toBeFocused();
+});
+
+test("FilterChipRow: a chip's popover by keyboard, state in the URL, Back / Forward restore it (#99)", async ({ page }) => {
+  await open(page, "/components/filter-chip-row/", "dark");
+  const ex = example(page, "filter-chip-row/url-state");
+  const chip = ex.getByRole("button", { name: "Trạng thái" });
+  await expect(chip).toHaveAttribute("aria-expanded", "false");
+  await chip.focus();
+  await page.keyboard.press("Enter");
+  const pop = page.getByRole("dialog", { name: "Trạng thái" });
+  await expect(pop).toBeVisible();
+  await expect(chip).toHaveAttribute("aria-expanded", "true");
+  await expect(pop.getByRole("checkbox", { name: "Mới" })).toBeFocused();
+  await page.keyboard.press("Space");
+  await expect(page).toHaveURL(/[?&]o\.status=new(&|$)/);
+  await page.keyboard.press("Escape");
+  await expect(pop).toBeHidden();
+  const on = ex.getByRole("button", { name: "Trạng thái: Mới" });
+  await expect(on).toBeFocused();
+  await expect(ex.getByText("#1024 · #1026")).toBeVisible();
+  // a switch chip is a toggle button
+  const paid = ex.getByRole("button", { name: "Đã thanh toán" });
+  await paid.click();
+  await expect(paid).toHaveAttribute("aria-pressed", "true");
+  await expect(ex.getByText("#1024", { exact: true })).toBeVisible();
+  // Back undoes the last filter, then the first; Forward brings them back
+  await page.goBack();
+  await expect(paid).toHaveAttribute("aria-pressed", "false");
+  await expect(on).toBeVisible();
+  await page.goBack();
+  await expect(ex.getByRole("button", { name: "Trạng thái" })).toBeVisible();
+  await expect(ex.getByRole("button", { name: "Xoá lọc" })).toHaveCount(0);
+  await page.goForward();
+  await expect(on).toBeVisible();
+  // a link with the state opens filtered (an unknown value from an old link is dropped)
+  await page.goto("/components/filter-chip-row/?o.status=shipped&o.status=lost&o.paid=1");
+  await expect(ex.getByRole("button", { name: "Trạng thái: Đã giao" })).toBeVisible();
+  await expect(ex.getByRole("button", { name: "Đã thanh toán" })).toHaveAttribute("aria-pressed", "true");
+  await ex.getByRole("button", { name: "Xoá lọc" }).click();
+  await expect(page).not.toHaveURL(/o\./);
+});
+
+test("FilterChipRow: ‹ › scroll a row that overflows and stay out of the tab order and the accessibility tree", async ({ page }) => {
+  await page.setViewportSize({ width: 900, height: 800 });
+  await open(page, "/components/filter-chip-row/", "light");
+  const ex = example(page, "filter-chip-row/many");
+  const right = ex.locator('button[title="Cuộn phải"]');
+  await expect(right).toBeVisible();
+  await expect(right).toHaveAttribute("aria-hidden", "true");
+  await expect(right).toHaveAttribute("tabindex", "-1");
+  await expect(ex.getByRole("button", { name: "Cuộn phải" })).toHaveCount(0);
+  await right.click();
+  await expect(ex.locator('button[title="Cuộn trái"]')).toBeVisible();
+  // the last chip is reachable by Tab (it scrolls into view)
+  await ex.getByRole("button", { name: "Từ 100 tấn/năm" }).focus();
+  await expect(ex.getByRole("button", { name: "Từ 100 tấn/năm" })).toBeInViewport();
+});
+
+test("SearchPill: debounced, Escape clears, / focuses it from the page", async ({ page }) => {
+  await open(page, "/components/search-pill/", "dark");
+  const ex = example(page, "search-pill/default");
+  const field = ex.getByRole("searchbox", { name: "Tìm khách hàng" });
+  await page.locator("body").click({ position: { x: 1, y: 1 } });
+  await page.keyboard.press("/");
+  await expect(field).toBeFocused();
+  await expect(field).toHaveValue("");
+  await page.keyboard.type("quế");
+  await expect(ex.getByText("Đang tìm: quế")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(field).toHaveValue("");
+  await expect(field).toBeFocused();
+  await expect(ex.getByText("Đang tìm: —")).toBeVisible();
+});
+
+test("FilterPanel on a phone: the bar says the count, the panel traps focus, Escape returns to the button (#57)", async ({ browser }) => {
+  const page = await browser.newPage({ viewport: { width: 430, height: 932 }, isMobile: true, hasTouch: true });
+  await open(page, "/components/filter-panel/", "dark");
+  const ex = example(page, "filter-panel/phone");
+  // the name is its visible text: "Bộ lọc" and the count
+  const button = ex.getByRole("button", { name: /^Bộ lọc\s*1$/ });
+  await button.click();
+  const panel = page.getByRole("dialog", { name: "Bộ lọc" });
+  await expect(panel).toBeVisible();
+  const box = await panel.boundingBox();
+  expect(box && Math.round(box.width)).toBe(430);
+  await expect(panel.getByRole("button", { name: "Trạng thái" })).toHaveAttribute("aria-expanded", "true");
+  await panel.getByRole("button", { name: "Quốc gia" }).click();
+  await panel.getByText("Đức").click();
+  await panel.getByRole("switch", { name: "Từ 100 tấn/năm" }).click();
+  await expect(panel.getByRole("button", { name: "Sản lượng năm" })).toHaveAttribute("aria-pressed", "false");
+  for (let i = 0; i < 25; i++) await page.keyboard.press("Tab");
+  expect(await panel.evaluate((el) => el.contains(document.activeElement))).toBe(true);
+  expect(await lowContrast(page)).toEqual([]);
+  await page.keyboard.press("Escape");
+  await expect(panel).toBeHidden();
+  await expect(ex.getByRole("button", { name: /^Bộ lọc\s*3$/ })).toBeFocused();
+  await page.close();
+});
+
+test("SubpageToolbar phone layout: two rows, filters behind Bộ lọc, secondary actions in ⋯ (#57)", async ({ browser }) => {
+  const page = await browser.newPage({ viewport: { width: 430, height: 932 }, isMobile: true, hasTouch: true });
+  await open(page, "/components/subpage-toolbar/", "light");
+  const ex = example(page, "subpage-toolbar/phone");
+  // a toolbar without the phone props still wraps as before (#100 review)
+  await expect(example(page, "subpage-toolbar/list-page").locator(".ml-auto").first()).not.toHaveClass(/flex-nowrap/);
+  await expect(ex.getByRole("button", { name: "Khu vực: Hà Nội" })).toBeHidden();
+  await expect(ex.getByRole("button", { name: "Xuất Excel" })).toBeHidden();
+  const bar = ex.locator(".sticky").first();
+  const height = (await bar.boundingBox())!.height;
+  // title row + one row of controls (≥ 36px each), never three
+  expect(height).toBeLessThan(130);
+  await ex.getByRole("button", { name: "Thao tác khác" }).click();
+  await expect(page.getByRole("menuitem", { name: "Xuất Excel" })).toBeVisible();
+  await page.keyboard.press("Escape");
+  const filters = ex.getByRole("button", { name: "Bộ lọc · 1" });
+  await filters.click();
+  await expect(page.getByRole("dialog", { name: "Bộ lọc" })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(filters).toBeFocused();
+  await page.close();
+  // desktop: more than two typed filters collapse into Bộ lọc, the active one stays as a chip beside it
+  const wide = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await open(wide, "/components/subpage-toolbar/", "light");
+  const exw = example(wide, "subpage-toolbar/phone");
+  await expect(exw.getByRole("button", { name: "Bộ lọc · 1" })).toBeVisible();
+  await expect(exw.getByRole("button", { name: "Khu vực: Hà Nội" })).toBeVisible();
+  await expect(exw.getByRole("button", { name: "Nhóm" })).toHaveCount(0);
+  await expect(exw.getByRole("button", { name: "Xuất Excel" })).toBeVisible();
+  await wide.close();
 });
 
 test("Charts: the keyboard reads every point, and the table view shows the values", async ({ page }) => {

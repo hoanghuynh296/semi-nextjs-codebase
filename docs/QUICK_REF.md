@@ -75,6 +75,8 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
   - `AppShell` (+ `MobileTabBar`, `TAB_BAR_PAD` for `mobileNav="tabs"`): 2-panel floating Bento frame on `bg-canvas`; sidebar top to bottom: accent `create`, grouped `sections`, `pinned` (a `text-overline` label), `utilities` + `account` (`footer` is deprecated); `w-60` or the icon rail (always on `md`, Tooltips on the right); phones: top bar + full-screen drawer. A nav item with `mega` opens a `MegaMenu`. Detail pages open with `MinimalHeader`; sibling views as the heading are `TextTabs`. Items may carry `children` (one level, optional grey icon, no colour or count): closed by default, open only while the parent or a child is active; hidden in the rail / below `lg` / phones, so pages check `useAppShell().submenuVisible` and offer their own picker.
   - `PageTitle`, `PageTabsTitle`: text-only display heading or underline tab heading (`h-[2.5px] bg-primary`).
   - `SubpageToolbar`: sticky toolbar (`STICKY_TOOLBAR`) with `left` filters and `right` icon-only `BTN_PRIMARY BTN_ICON` + `SearchInput` + `RefreshButton`; `title` puts the page title on the same row (then no `PageTitle`).
+    Phone layout (opt-in): `filters` (typed, `FilterDef[]`; more than two collapse into "Bộ lọc · N" + active chips) or `collapseFilters` (for `left`), and `secondaryActions` (a ⋯ menu below `sm`).
+  - Search and filters (§4, #99): `<StickyContextBar>` with `<SearchPill>`, `<FilterChipRow className="max-md:hidden" trailing={<ViewSwitch/>}>`, `<PhoneFilterBar className="md:hidden">` (opens `<FilterPanel>`) and `<ResultLine count query sort>`. One line of chips, never wrapped rows; state in the URL with `useFilterParams(specs)` or `readFilters` / `writeFilters` / `clearFilters`.
   - `KpiCard`: metric card with a `tabular-nums` value in the style's figure font (`font-figure`), optional neutral icon (`iconTone` only for a status), `featured` for the screen's main number, shimmer `loading` state.
   - `Modal`: portal dialog with `MODAL_BACKDROP`, `MODAL_PANEL`, `MODAL_HEAD`, `MODAL_CLOSE`, and `footer` (`MODAL_FOOT`).
 - **Controls (`@semi/ui`):**
@@ -130,7 +132,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (133)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (142)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
@@ -159,6 +161,8 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `Feedback`: `Alert`, `Progress`, `Avatar`, `EmptyState`
 - `Field`: `Field`, `Input`, `Textarea`
 - `FileDrop`: `FileDrop`
+- `FilterChipRow`: `FilterChip`, `FilterOptions`, `FilterChipRow`
+- `FilterPanel`: `PhoneFilterBar`, `FilterPanel`
 - `FormActions`: `FormActions`
 - `Icon`: `Icon`, `IconTile`
 - `InputGroup`: `InputGroup`
@@ -186,6 +190,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `Resizable`: `ResizablePanels`
 - `ScrollArea`: `ScrollArea`
 - `SearchInput`: `SearchInput`
+- `SearchPill`: `StickyContextBar`, `SearchPill`, `ResultLine`
 - `Separator`: `Separator`
 - `SidePanel`: `SidePanelToggle`, `SidePanel`
 - `Skeleton`: `Skeleton`, `Loading`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton`, `BootLoader`
@@ -201,9 +206,10 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `ThemeScript`: `ThemeScript`
 - `Toast`: `ToastHost`
 - `Toggle`: `Toggle`, `ToggleGroup`
+- `ViewSwitch`: `ViewSwitch`
 - `confirmDialog`: `ConfirmHost`
 - `formValidation`: `FormErrorSummary`
 - `locale`: `SemiLocaleProvider`
 
-**Hooks:** `useAppShell`, `useHotkey`, `useField`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useFormValidation`, `useSemiLocale`, `useUnsavedGuard` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `pageWindow`, `startTask`, `themeScript`, `updateToast`, `dismissToast`, `confirmDialog`, `confirmDelete`, `kindAttrs`, `composeRefs`, `cloneTrigger`, `cn`
+**Hooks:** `useAppShell`, `useHotkey`, `useField`, `useFilterParams`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useFormValidation`, `useSemiLocale`, `useUnsavedGuard` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `pageWindow`, `startTask`, `themeScript`, `updateToast`, `dismissToast`, `confirmDialog`, `confirmDelete`, `kindAttrs`, `readFilterValues`, `readFilters`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `composeRefs`, `cloneTrigger`, `cn`
 <!-- generated:components:end -->

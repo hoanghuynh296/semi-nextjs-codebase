@@ -1,0 +1,39 @@
+{
+  "title": "Filter panel",
+  "group": "Forms",
+  "description": "Filters on phones: one segmented pill (the page's views · Bộ lọc with the count · sort and view settings) that opens a full-screen panel: sort first, booleans as switches, one accordion per filter, “Xem N kết quả” at the bottom. From sm the panel is a side sheet, also the “Bộ lọc” panel of a page with more filters than its chip row shows.",
+  "components": [
+    "PhoneFilterBar",
+    "FilterPanel"
+  ],
+  "when": [
+    "Below md on every page that has a FilterChipRow on desktop (same filters, same state).",
+    "A desktop page whose filters do not fit in chips (many facets, a date range): a Bộ lọc button opens the panel as a side sheet."
+  ],
+  "instead": [
+    {
+      "need": "Filters on desktop and iPad",
+      "use": "FilterChipRow"
+    },
+    {
+      "need": "A form in a sheet (edit a record)",
+      "use": "Drawer"
+    }
+  ],
+  "a11y": [
+    "The panel is a modal dialog named “Bộ lọc”: focus moves in, Tab stays inside, Escape closes and focus returns to the button that opened it.",
+    "The Bộ lọc button's name is its text and the count (“Bộ lọc 2”); it has aria-haspopup=dialog and aria-expanded (filtersOpen).",
+    "Each accordion is a heading with a button (aria-expanded, aria-controls); the sort is a group of toggle buttons (aria-pressed)."
+  ],
+  "notes": [
+    "Changes apply at once (the list behind updates); “Xem N kết quả” only closes. Keep the open state in the URL (?filters=1) when Back should close it.",
+    "The accordions of filters that are on start open (at most two).",
+    "Phone chrome stays within 2 rows (P1): the search, then this bar; the result line may follow."
+  ],
+  "examples": [
+    {
+      "file": "phone",
+      "title": "Phone bar and panel"
+    }
+  ]
+}

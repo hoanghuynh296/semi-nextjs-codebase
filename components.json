@@ -1370,6 +1370,83 @@
       "doc": "docs/components/file-drop.md"
     },
     {
+      "name": "FilterChip",
+      "kind": "component",
+      "module": "src/FilterChipRow.tsx",
+      "client": true,
+      "summary": "One filter facet as a chip. A `multi` filter opens a popover of checkboxes (aria-expanded on the chip); a `switch` filter toggles on click (aria-pressed). Active, it turns solid (`bg-inverted`) and shows the one value or the count.",
+      "props": [
+        "def",
+        "onChange"
+      ],
+      "doc": "docs/components/filter-chip-row.md"
+    },
+    {
+      "name": "FilterOptions",
+      "kind": "component",
+      "module": "src/FilterChipRow.tsx",
+      "client": true,
+      "summary": "The checkbox list of one multi filter (FilterChip's popover, FilterPanel's accordion).",
+      "props": [
+        "def",
+        "onChange",
+        "className"
+      ],
+      "doc": "docs/components/filter-chip-row.md"
+    },
+    {
+      "name": "FilterChipRow",
+      "kind": "component",
+      "module": "src/FilterChipRow.tsx",
+      "client": true,
+      "summary": "The filter chips of a list page on one line. When they overflow, the row scrolls sideways and ‹ › buttons appear (hidden from screen readers and the tab order: every chip is reachable by Tab, which scrolls it into view). \"Xoá lọc\" shows while a filter is on; `trailing` (ViewSwitch) sits at the end behind a divider.",
+      "props": [
+        "filters",
+        "onChange",
+        "onClear",
+        "trailing",
+        "label",
+        "className"
+      ],
+      "doc": "docs/components/filter-chip-row.md"
+    },
+    {
+      "name": "PhoneFilterBar",
+      "kind": "component",
+      "module": "src/FilterPanel.tsx",
+      "client": true,
+      "summary": "The filter controls of a phone list page in one row: an optional type menu (the page's views), \"Bộ lọc\" with the active count (opens FilterPanel) and an optional settings button (sort and view). Show it below `md` in place of FilterChipRow (`md:hidden` / `max-md:hidden` around each).",
+      "props": [
+        "typeLabel",
+        "typeItems",
+        "activeCount",
+        "onOpenFilters",
+        "filtersOpen",
+        "onOpenSettings",
+        "className"
+      ],
+      "doc": "docs/components/filter-panel.md"
+    },
+    {
+      "name": "FilterPanel",
+      "kind": "component",
+      "module": "src/FilterPanel.tsx",
+      "client": true,
+      "summary": "The full filter set in a modal panel: full screen on phones, a right side sheet from `sm` (also the \"Bộ lọc\" panel of a desktop page with more filters than its chip row shows). Changes apply at once (the list behind updates); \"Xem N kết quả\" closes. Focus moves in, is trapped, and returns to the opener; Escape closes.",
+      "props": [
+        "open",
+        "onClose",
+        "filters",
+        "onChange",
+        "onClear",
+        "sort",
+        "resultCount",
+        "title",
+        "children"
+      ],
+      "doc": "docs/components/filter-panel.md"
+    },
+    {
       "name": "FormActions",
       "kind": "component",
       "module": "src/FormActions.tsx",
@@ -1908,6 +1985,54 @@
       "doc": "docs/components/search-input.md"
     },
     {
+      "name": "StickyContextBar",
+      "kind": "component",
+      "module": "src/SearchPill.tsx",
+      "client": true,
+      "summary": "The search, the filter chips and the result line of a list page, pinned to the top of the scrolling content while the rows scroll under it. It is `STICKY_TOOLBAR` (opaque, bleeds to the panel's side padding, below the safe area on phones) stacked as a column. One per page, in place of a SubpageToolbar.",
+      "props": [
+        "children",
+        "label",
+        "className"
+      ],
+      "doc": "docs/components/sticky-context-bar.md"
+    },
+    {
+      "name": "SearchPill",
+      "kind": "component",
+      "module": "src/SearchPill.tsx",
+      "client": true,
+      "summary": "The wide pill search of a list page: one per page, it feeds the list (or DataTable). Typing calls `onChange` after `debounce` ms; the clear button and Escape clear at once. `focusKey` (\"/\") focuses it from anywhere on the page (not while typing in another field).",
+      "props": [
+        "value",
+        "onChange",
+        "label",
+        "placeholder",
+        "debounce",
+        "focusKey",
+        "shortcut",
+        "trailing",
+        "className"
+      ],
+      "doc": "docs/components/search-pill.md"
+    },
+    {
+      "name": "ResultLine",
+      "kind": "component",
+      "module": "src/SearchPill.tsx",
+      "client": true,
+      "summary": "The line under the search: `“query” · N kết quả` on the left (announced politely when it changes), the sort menu on the right. Leave out `query` for a plain count.",
+      "props": [
+        "count",
+        "query",
+        "unit",
+        "sort",
+        "trailing",
+        "className"
+      ],
+      "doc": "docs/components/search-pill.md"
+    },
+    {
       "name": "Separator",
       "kind": "component",
       "module": "src/Separator.tsx",
@@ -2102,7 +2227,7 @@
       "kind": "component",
       "module": "src/SubpageToolbar.tsx",
       "client": true,
-      "summary": "Unified sticky sub-page toolbar row (docs/DESIGN_SYSTEM.md §4a): - Optional title: the page title shares the row with filters and actions (instead of a PageTitle above) - Left slot: filter pills / chips / CustomSelect dropdowns - Right slot: icon-only primary CTA (BTN_PRIMARY BTN_ICON) + SearchInput + RefreshButton (+ optional extra controls)",
+      "summary": "Unified sticky sub-page toolbar row (docs/DESIGN_SYSTEM.md §4a): - Optional title: the page title shares the row with filters and actions (instead of a PageTitle above) - Left slot: filter pills / chips / CustomSelect dropdowns - Right slot: icon-only primary CTA (BTN_PRIMARY BTN_ICON) + SearchInput + RefreshButton (+ optional extra controls) - Phone layout (#57, opt-in): `filters` (or `left` with `collapseFilters`) go behind a \"Bộ lọc · N\" button and `secondaryActions` into a ⋯ menu, so below `sm` the toolbar is at most two rows (title, then search + buttons).",
       "props": [
         "title",
         "left",
@@ -2114,6 +2239,10 @@
         "onSearchChange",
         "searchPlaceholder",
         "onRefresh",
+        "filters",
+        "collapseFilters",
+        "filterCount",
+        "secondaryActions",
         "className"
       ],
       "doc": "docs/components/subpage-toolbar.md"
@@ -2344,6 +2473,21 @@
       "doc": "docs/components/toggle.md"
     },
     {
+      "name": "ViewSwitch",
+      "kind": "component",
+      "module": "src/ViewSwitch.tsx",
+      "client": true,
+      "summary": "Two toggle buttons (list, grid; aria-pressed) and an optional density toggle. Put it in FilterChipRow's `trailing`; keep the choice in the URL (`?view=grid`) or per person (localStorage) as the page needs.",
+      "props": [
+        "view",
+        "onViewChange",
+        "density",
+        "onDensityChange",
+        "className"
+      ],
+      "doc": "docs/components/view-switch.md"
+    },
+    {
       "name": "ConfirmHost",
       "kind": "component",
       "module": "src/confirmDialog.tsx",
@@ -2398,6 +2542,13 @@
       "module": "src/Field.tsx",
       "client": true,
       "summary": "The surrounding Field's ids and state (null outside a Field)."
+    },
+    {
+      "name": "useFilterParams",
+      "kind": "hook",
+      "module": "src/FilterChipRow.tsx",
+      "client": true,
+      "summary": "Filter state in the URL, with no router hook. The server render and hydration see no params (prerender-safe: no `window` in render, no `useSearchParams`, which would suspend a prerendered route); the URL is read right after. Writes use `history.pushState(null, …)` / `replaceState(null, …)`, which Next's App Router turns into its own navigation, so `useSearchParams` and `router.refresh()` keep the filters. It follows Back / Forward, every other useFilterParams on the page, and (where the Navigation API exists, and on any re-render elsewhere) a Link or `router.push` to the same route. Without the Navigation API (Firefox, Safari < 26) a hook in a layout that does not re-render can miss such a navigation: there, and with a router of your own, use the pure helpers (`readFilters`, `writeFilters`, `clearFilters`) on `useSearchParams`."
     },
     {
       "name": "useCoarsePointer",
@@ -2568,6 +2719,48 @@
       "module": "src/fieldKinds.ts",
       "client": false,
       "summary": "The attributes of a kind (an empty object for no kind, so a spread leaves the control alone)."
+    },
+    {
+      "name": "readFilterValues",
+      "kind": "function",
+      "module": "src/filterParams.ts",
+      "client": false,
+      "summary": "The selected values of every filter, read from the URL."
+    },
+    {
+      "name": "readFilters",
+      "kind": "function",
+      "module": "src/filterParams.ts",
+      "client": false,
+      "summary": "The filters with their state, ready for FilterChipRow / FilterPanel."
+    },
+    {
+      "name": "writeFilters",
+      "kind": "function",
+      "module": "src/filterParams.ts",
+      "client": false,
+      "summary": "New search params with `patch` applied: each key given is replaced (an empty list removes it); other params (the search query, sort, a page) stay. Pass `specs` to keep the options' order and drop unknown values."
+    },
+    {
+      "name": "clearFilters",
+      "kind": "function",
+      "module": "src/filterParams.ts",
+      "client": false,
+      "summary": "New search params without any of these filters (the \"Xoá lọc\" action)."
+    },
+    {
+      "name": "activeFilterCount",
+      "kind": "function",
+      "module": "src/filterParams.ts",
+      "client": false,
+      "summary": "How many filters have a value (the count on \"Bộ lọc · 2\")."
+    },
+    {
+      "name": "toQueryString",
+      "kind": "function",
+      "module": "src/filterParams.ts",
+      "client": false,
+      "summary": "A query string for a URL: \"\" when there are no params, else \"?a=1&b=2\"."
     },
     {
       "name": "composeRefs",
@@ -2766,6 +2959,13 @@
       "module": "src/fieldKinds.ts",
       "client": false,
       "summary": "`number` and `money` stay `type=\"text\"` (a native `type=\"number\"` has no keyboard-safe formatting and spinner arrows; `NumberInput` is the number control) and ask for the decimal keypad (the plain numeric one has no separator key, and Vietnamese amounts are typed \"1.250.000\" or \"1,5\"). The text then holds separators: parse it with the number helpers (`parseMoney` / `parseNumber`, #69), not `Number()`. A whole-number field passes `inputMode=\"numeric\"` on the control. A new password field passes `autoComplete=\"new-password\"` on the control. `NumberInput` takes only `autoComplete` and `enterKeyHint` from a kind (it keeps its own type and keypad)."
+    },
+    {
+      "name": "FILTER_PARAM_PREFIX",
+      "kind": "constant",
+      "module": "src/filterParams.ts",
+      "client": false,
+      "summary": ""
     },
     {
       "name": "vi",

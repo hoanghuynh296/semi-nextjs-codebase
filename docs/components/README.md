@@ -24,15 +24,19 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Date picker](date-picker.md) | `DatePicker` | Schedule a job, filter by day, set a due date. |
 | [Field, Input, Textarea](field.md) | `Field`, `Input`, `Textarea` | Every form control: wrap it in Field instead of writing a <label>. |
 | [FileDrop](file-drop.md) | `FileDrop` | Choosing or dropping one or more files: CSV import, product photos, invoices, firmware, model files. |
+| [Filter chip row](filter-chip-row.md) | `FilterChipRow`, `FilterChip`, `FilterOptions` | The filters of a list, grid or table page on desktop and iPad (md+), under its SearchPill in a StickyContextBar. |
+| [Filter panel](filter-panel.md) | `PhoneFilterBar`, `FilterPanel` | Below md on every page that has a FilterChipRow on desktop (same filters, same state). |
 | [Form actions, unsaved guard, validation](form-actions.md) | `FormActions`, `useUnsavedGuard`, `useFormValidation`, `FormErrorSummary` | Every form: the action row is FormActions, never a hand-ordered pair of buttons. |
 | [Input group](input-group.md) | `InputGroup` | Money and units, URLs and domains, a copy or reveal button inside the field. |
 | [Input OTP](input-otp.md) | `InputOTP` | Verification codes, PINs, invite codes of a fixed length. |
 | [Number input](number-input.md) | `NumberInput`, `NumPadPopup` | Quantities, temperatures, prices, percentages. |
 | [Radio group](radio-group.md) | `RadioGroup` | 2–5 options where the descriptions help the choice (plans, shipping). |
 | [Search input](search-input.md) | `SearchInput` | Filter the list or grid on the current page. |
+| [Search pill](search-pill.md) | `SearchPill`, `ResultLine` | The search of a list, grid or DataTable page, above its filter chips (inside StickyContextBar). |
 | [Select](select.md) | `CustomSelect` | One value from a short or medium list (printers, regions). |
 | [Slider](slider.md) | `Slider` | Values where the position matters more than the exact number (volume, opacity, infill, price range filters). |
 | [Switch](switch.md) | `Switch` | Settings that take effect at once (notifications, dark sync, auto-print). |
+| [View switch](view-switch.md) | `ViewSwitch` | A collection people browse both as rows and as cards (products, files, suppliers). |
 
 ## Overlays
 
@@ -66,6 +70,7 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Resizable panels](resizable.md) | `ResizablePanels` | Tools where people tune the space between two or three areas. |
 | [Scroll area](scroll-area.md) | `ScrollArea` | A list or log inside a card that must keep its height. |
 | [Side panel](side-panel.md) | `SidePanel`, `SidePanelToggle` | Settings or layers beside a 3D view, map or editor. |
+| [Sticky context bar](sticky-context-bar.md) | `StickyContextBar` | A list, grid or table page with a search and filters people change while they scroll (customers, suppliers, products). |
 | [Subpage toolbar](subpage-toolbar.md) | `SubpageToolbar`, `RefreshButton` | Every list or grid page. |
 | [Tabs](tabs.md) | `Tabs` | Sections of one object: Tổng quan / Hoạt động / Cài đặt. |
 | [Text tabs](text-tabs.md) | `TextTabs` | A page whose heading is a choice of 2–4 sibling views (Đang xử lý / Đã giao / Tất cả). |
