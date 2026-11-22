@@ -1,0 +1,77 @@
+{
+  "name": "3dnoobs",
+  "package": "@3dnoobs/brand",
+  "primary": "#008509",
+  "secondary": null,
+  "neutral": "tinted",
+  "styles": {
+    "default": "flat",
+    "allowed": [
+      "flat",
+      "soft"
+    ]
+  },
+  "fonts": {
+    "sans": "Geist",
+    "display": "Montserrat Alternates"
+  },
+  "semi": ">=0.26.0 <1.0.0",
+  "brief": {
+    "product": "Hệ sinh thái in 3D: cửa hàng máy in 3D và vật liệu, cộng đồng in 3D, và các phần mềm phục vụ ngành in 3D",
+    "audience": "Mọi người quan tâm đến in 3D, từ người mới bắt đầu dùng điện thoại đến maker và kỹ sư làm việc trên máy tính",
+    "personality": [
+      "thân thiện",
+      "vui vẻ",
+      "sáng tạo"
+    ],
+    "sample": {
+      "list": "Mẫu in",
+      "items": [
+        "Móc khoá logo PLA đen",
+        "Giá đỡ điện thoại PETG",
+        "Hộp đựng linh kiện in nhiều màu"
+      ],
+      "metric": {
+        "label": "Bản in tháng này",
+        "value": "128",
+        "sub": "+12 so với tháng trước"
+      },
+      "proof": {
+        "label": "Thành viên cộng đồng",
+        "value": "12.000+"
+      }
+    },
+    "tagline": "In 3D dễ hơn, cùng nhau."
+  },
+  "voice": {
+    "tone": "friendly",
+    "address": "bạn",
+    "we": "3D Noobs",
+    "emoji": false,
+    "do": [
+      "Nói như một người bạn đã in 3D lâu năm: giải thích thuật ngữ bằng lời thường khi người dùng có thể là người mới.",
+      "Khuyến khích thử nghiệm và chỉ rõ bước tiếp theo, kể cả khi có lỗi."
+    ],
+    "dont": [
+      "Không chê hay làm người dùng thấy mình \"noob\" khi họ hỏi hoặc làm sai.",
+      "Không đùa trong thông báo về tiền, đơn hàng hay lỗi làm mất dữ liệu."
+    ],
+    "examples": {
+      "button": [
+        "Thêm vào giỏ",
+        "Bắt đầu in",
+        "Chia sẻ mẫu"
+      ],
+      "error": "Chưa tải được file của bạn. Kiểm tra kết nối rồi thử lại nhé.",
+      "empty": "Bạn chưa có mẫu nào. Tải lên mẫu đầu tiên hoặc xem thư viện của cộng đồng để lấy cảm hứng."
+    }
+  },
+  "color": {
+    "accent": "balanced"
+  },
+  "imagery": "Ảnh chụp thật máy in, vật liệu và mô hình do cộng đồng in; ánh sáng tự nhiên, nền gọn.",
+  "logo": {
+    "full": "assets/logo.svg",
+    "fullDark": "assets/logo-dark.svg"
+  }
+}

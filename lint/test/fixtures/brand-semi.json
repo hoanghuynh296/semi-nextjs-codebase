@@ -1,0 +1,74 @@
+{
+  "name": "Semi",
+  "package": "@semi/brand",
+  "primary": "#DD592A",
+  "secondary": null,
+  "neutral": "tinted",
+  "styles": {
+    "default": "flat",
+    "allowed": [
+      "flat",
+      "soft",
+      "sharp"
+    ]
+  },
+  "fonts": {
+    "sans": "Inter",
+    "display": "Plus Jakarta Sans"
+  },
+  "semi": ">=0.30.0 <1.0.0",
+  "voice": {
+    "tone": "neutral",
+    "address": "bạn",
+    "we": "chúng tôi",
+    "emoji": false,
+    "do": [
+      "Nói thẳng điều người dùng cần làm, câu ngắn, động từ đứng đầu",
+      "Khi có lỗi, nói rõ chuyện gì xảy ra và cách sửa"
+    ],
+    "dont": [
+      "Dùng thuật ngữ kỹ thuật hoặc tiếng Anh khi đã có từ tiếng Việt quen thuộc",
+      "Hứa hẹn quá đà hay dùng dấu chấm than liên tục"
+    ],
+    "examples": {
+      "button": [
+        "Lưu thay đổi",
+        "Tạo dự án",
+        "Thử lại"
+      ],
+      "error": "Không lưu được thay đổi vì mất kết nối. Kiểm tra mạng rồi bấm Thử lại.",
+      "empty": "Chưa có dự án nào. Tạo dự án đầu tiên để bắt đầu."
+    }
+  },
+  "color": {
+    "accent": "restrained"
+  },
+  "brief": {
+    "product": "Công ty phần mềm làm ứng dụng web, mobile và công cụ cho doanh nghiệp",
+    "audience": "Mọi người dùng: dân văn phòng trên máy tính và người dùng phổ thông trên điện thoại",
+    "personality": [
+      "nhanh",
+      "rõ ràng",
+      "đáng tin"
+    ],
+    "tagline": "Phần mềm chạy nhanh, dùng rõ ràng.",
+    "sample": {
+      "list": "Dự án",
+      "items": [
+        "Đặt lịch khám",
+        "App giao hàng",
+        "Đối soát hoá đơn"
+      ],
+      "metric": {
+        "label": "Dự án đang chạy",
+        "value": "12",
+        "sub": "3 dự án bàn giao tuần này"
+      },
+      "proof": {
+        "label": "Ứng dụng đã bàn giao",
+        "value": "120+"
+      }
+    }
+  },
+  "imagery": "Ảnh chụp màn hình sản phẩm thật và minh hoạ phẳng đơn giản; tránh ảnh stock người cười trước laptop."
+}

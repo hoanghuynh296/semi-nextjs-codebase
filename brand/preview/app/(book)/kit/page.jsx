@@ -67,14 +67,32 @@ export default function UiKit() {
                 <Button>Huỷ</Button>
                 <span className="text-ui text-accent-fg font-medium">Chữ màu chính</span>
               </div>
-              <div className="text-caption text-muted tabular-nums">
-                nút {brand.themes[t]["color-accent"]}
-                {fid[t] ? (fid[t].deltaE === 0 ? " (đúng màu thương hiệu)" : ` (primary-${fid[t].fill}, lệch ΔE ${fid[t].deltaE.toFixed(2)})`) : ""} · chữ trên nút{" "}
-                {brand.themes[t]["color-on-accent"]} · chữ màu {brand.themes[t]["color-accent-fg"]}
+              <div className="space-y-1 text-caption text-muted tabular-nums">
+                {[
+                  ["Nút", "color-accent", fid[t]?.fill ? `primary-${fid[t].fill}` : "", `nút chính (${t === "dark" ? "tối" : "sáng"})`],
+                  ["Hover", "color-accent-hover", "", `nút chính khi hover (${t === "dark" ? "tối" : "sáng"})`],
+                ].map(([name, key, shade, check]) => (
+                  <div key={key} className="flex items-center gap-2">
+                    <span className="h-3.5 w-3.5 rounded-control border border-line shrink-0" style={{ background: brand.themes[t][key] }} />
+                    <span>
+                      {name} {brand.themes[t][key]}
+                      {shade ? ` (${shade})` : ""} · chữ trên nút {brand.themes[t]["color-on-accent"]}
+                      {(() => {
+                        const r = brand.report.find((x) => x.check === check);
+                        return r ? ` · ${r.ratio.toFixed(2)}:1` : "";
+                      })()}
+                    </span>
+                  </div>
+                ))}
+                <div>Chữ màu chính {brand.themes[t]["color-accent-fg"]}</div>
               </div>
             </div>
           ))}
         </div>
+        <p className="text-caption text-muted">
+          Hai theme có sắc khác nhau: theme tối dùng bậc sáng và rực hơn (400-500), theme sáng dùng bậc 600, hover đi thêm một bậc theo hướng của theme.
+          {brand.accent?.sameInBothThemes ? " Thương hiệu này chọn một màu chung cho cả hai theme (accent.sameInBothThemes)." : ""}
+        </p>
       </Section>
 
       <Section title="Cỡ chữ" icon="fileText">

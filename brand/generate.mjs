@@ -141,8 +141,31 @@ export function validateBrand(brand, { styles }) {
       warnings.push(`fonts.${role}: "${family}" không nằm trong danh sách đã kiểm tra; nếu font không có bản variable, thêm "weight": ["400", "600"]`);
   }
   if (brand.semi && !/^([\^~]?\d+\.\d+(\.\d+)?|>=\d+\.\d+(\.\d+)? <\d+\.\d+(\.\d+)?)$/.test(brand.semi)) fail(errors, `semi: "${brand.semi}" phải là dải phiên bản như ">=0.26.0 <1.0.0" (từ minor này đến trước major kế tiếp) hoặc ^0.6.0`);
+  validateAccent(brand, errors);
   validateGuide(brand, errors, warnings);
   return { errors, warnings };
+}
+
+/** brand.json "accent": { sameInBothThemes?, light?: pin, dark?: pin }, pin = { fill, hover?, on? } (shade 50…900 or hex; on: white | dark | hex). */
+function validateAccent(brand, errors) {
+  const a = brand.accent;
+  if (a === undefined) return;
+  if (typeof a !== "object" || a === null) return fail(errors, "accent: phải là object { sameInBothThemes?, light?, dark? }");
+  if (a.sameInBothThemes !== undefined && typeof a.sameInBothThemes !== "boolean") fail(errors, "accent.sameInBothThemes: true hoặc false");
+  if (a.sameInBothThemes && (a.light || a.dark)) fail(errors, "accent: sameInBothThemes không đi cùng accent.light / accent.dark (chọn một màu chung hoặc ghim từng theme)");
+  const ref = (v) => (typeof v === "number" ? SHADES.includes(v) : isHex(v));
+  for (const th of THEMES) {
+    const pin = a[th];
+    if (pin === undefined) continue;
+    if (typeof pin !== "object" || pin === null) {
+      fail(errors, `accent.${th}: phải là object { fill, hover?, on? }`);
+      continue;
+    }
+    if (!ref(pin.fill)) fail(errors, `accent.${th}.fill: bậc ${SHADES.join("/")} của primary hoặc mã hex`);
+    if (pin.hover !== undefined && !ref(pin.hover)) fail(errors, `accent.${th}.hover: bậc ${SHADES.join("/")} của primary hoặc mã hex`);
+    if (typeof pin.fill === "string" && pin.hover === undefined) fail(errors, `accent.${th}.hover: bắt buộc khi fill là mã hex`);
+    if (pin.on !== undefined && !(pin.on === "white" || pin.on === "dark" || isHex(pin.on))) fail(errors, `accent.${th}.on: white, dark hoặc mã hex`);
+  }
 }
 
 // ── Guideline: what a brand designer writes besides colours and fonts (all optional; defaults below) ──────────────
@@ -327,6 +350,8 @@ export function scale(hex, p = PARAMS) {
 
 const DARK_TEXT = "#0c0d0e";
 const WHITE = "#ffffff";
+/** Shades the per-theme accent is taken from, in order of preference (docs/BRANDS.md "Accent per theme"). */
+const ACCENT_RANGE = { light: [600, 700], dark: [500, 400] };
 const minContrast = (color, backgrounds) => Math.min(...backgrounds.map((bg) => contrast(color, bg)));
 
 /**
@@ -361,6 +386,91 @@ function pickHover(sc, fill) {
   const away = fill.on === DARK_TEXT ? [i - 1, i + 1] : [i + 1, i - 1];
   for (const j of away) if (j >= 0 && j < SHADES.length && contrast(sc[SHADES[j]], fill.on) >= AA) return SHADES[j];
   return SHADES[Math.min(SHADES.length - 1, Math.max(0, away[0]))];
+}
+
+/**
+ * Per-theme accent (Apple's system-colour practice: the dark variant lighter and more vivid, the light one deeper).
+ * Light: shade 600 (closest to the brand, owner decision on #85), 700 only when 600 fails white text at AA or the 3:1 page rule.
+ * Dark: of 400-500, the one closest to the brand colour under the same two rules (ties go to 500, Semi's own default).
+ * Text colour: the theme's usual one (white on the light fill, dark text on the dark fill) when it reads, else the other.
+ * When no shade of that range works (a very light or very dark brand) the rest of the scale is tried, nearest to the
+ * range first, and `wide` says so. Returns { shade, on, ratio, de, page, wide } or null.
+ */
+function pickThemeFill(sc, brandHex, theme, pages, text = "auto") {
+  const usual = theme === "dark" ? DARK_TEXT : WHITE;
+  const forced = text === "white" ? [WHITE] : text === "dark" ? [DARK_TEXT] : null;
+  const ons = [...(forced && SHADES.some((s) => contrast(sc[s], forced[0]) >= AA) ? forced : [DARK_TEXT, WHITE])].sort((a, b) => (b === usual) - (a === usual));
+  const fit = (shades, wide) => {
+    const found = [];
+    for (const shade of shades) {
+      const on = ons.find((o) => contrast(sc[shade], o) >= AA);
+      const page = minContrast(sc[shade], pages);
+      if (on && page >= NON_TEXT) found.push({ shade, on, ratio: contrast(sc[shade], on), de: deltaE(sc[shade], brandHex), page, wide });
+    }
+    return found;
+  };
+  const range = ACCENT_RANGE[theme];
+  const inRange = fit(range, false);
+  if (inRange.length) return theme === "light" ? inRange[0] : inRange.sort((a, b) => a.de - b.de || b.shade - a.shade)[0];
+  const rest = fit(SHADES.filter((s) => !range.includes(s)), true);
+  const mid = theme === "light" ? 650 : 450;
+  return rest.sort((a, b) => Math.abs(a.shade - mid) - Math.abs(b.shade - mid))[0] ?? null;
+}
+
+/** Hover: one step in the theme's direction (deeper in light, lighter in dark); the other way when that no longer reads. */
+function pickThemeHover(sc, fill, theme) {
+  const i = SHADES.indexOf(fill.shade);
+  const dir = theme === "light" ? 1 : -1;
+  for (const j of [i + dir, i - dir]) if (j >= 0 && j < SHADES.length && contrast(sc[SHADES[j]], fill.on) >= AA) return SHADES[j];
+  return pickHover(sc, fill);
+}
+
+/** A pinned value of brand.json accent.<theme>: a shade number of the primary scale or a hex. */
+const pinColor = (sc, v) => String(typeof v === "number" ? sc[v] : v).toLowerCase();
+const pinOn = (v) => (v === "white" ? WHITE : v === "dark" ? DARK_TEXT : v.toLowerCase());
+
+/**
+ * The accent of one theme: pinned in brand.json (accent.light / accent.dark) or derived. Returns
+ * { fill, shade, hover, hoverShade, on, de, page, wide } (colours as hex; shade / hoverShade null for a pinned hex).
+ */
+function accentOf(sc, brandHex, theme, pages, pin, text, reach) {
+  if (pin) {
+    const fill = pinColor(sc, pin.fill);
+    const shade = typeof pin.fill === "number" ? pin.fill : null;
+    const usual = theme === "dark" ? [DARK_TEXT, WHITE] : [WHITE, DARK_TEXT];
+    const on = pin.on ? pinOn(pin.on) : usual.find((o) => contrast(fill, o) >= AA) ?? usual.reduce((a, b) => (contrast(fill, a) >= contrast(fill, b) ? a : b));
+    const hoverShade = typeof pin.hover === "number" ? pin.hover : pin.hover === undefined && shade !== null ? pickThemeHover(sc, { shade, on }, theme) : null;
+    const hover = pin.hover === undefined ? sc[hoverShade] : pinColor(sc, pin.hover);
+    return { fill, shade, hover, hoverShade, on, de: deltaE(fill, brandHex), page: minContrast(fill, pages), wide: false, pinned: true };
+  }
+  const f = pickThemeFill(sc, brandHex, theme, pages, text) ?? { ...pickFill(sc, brandHex, theme, pages, text, reach), wide: true };
+  const hoverShade = pickThemeHover(sc, f, theme);
+  return { fill: sc[f.shade], shade: f.shade, hover: sc[hoverShade], hoverShade, on: f.on, de: f.de, page: f.page, wide: f.wide };
+}
+
+/**
+ * Accent of both themes. `sameInBothThemes: true` (an explicit brand choice) takes one fill that reads and stands out on
+ * the pages of both themes; otherwise each theme has its own (pickThemeFill) unless accent.light / accent.dark pin it.
+ */
+function accents(sc, brand, pagesBy, reach) {
+  const text = brand.color?.buttonText;
+  if (brand.accent?.sameInBothThemes) {
+    const all = [...pagesBy.dark, ...pagesBy.light];
+    const f = pickFill(sc, brand.primary, "dark", all, text, reach);
+    const h = pickHover(sc, f);
+    const a = { fill: sc[f.shade], shade: f.shade, hover: sc[h], hoverShade: h, on: f.on, de: f.de, page: f.page, wide: false };
+    return { dark: a, light: a };
+  }
+  return Object.fromEntries(THEMES.map((th) => [th, accentOf(sc, brand.primary, th, pagesBy[th], brand.accent?.[th], text, reach)]));
+}
+
+/** Errors for an accent that does not switch: light and dark fills equal without accent.sameInBothThemes. */
+export function accentErrors(themes, brand) {
+  const d = themes?.dark?.["color-accent"];
+  const l = themes?.light?.["color-accent"];
+  if (d && l && String(d).toLowerCase() === String(l).toLowerCase() && !brand?.accent?.sameInBothThemes)
+    return [`accent: màu nút chính giống nhau ở theme sáng và tối (${d}). Theme tối nên sáng và rực hơn, theme sáng sâu hơn; nếu thương hiệu cố ý giữ một màu thì đặt "accent": { "sameInBothThemes": true }`];
+  return [];
 }
 
 /**
@@ -462,34 +572,36 @@ export function generateBrand(brand, { tokens, styles, version = "", params }) {
   const themes = {};
   const fidelity = {};
   const themeName = { dark: "tối", light: "sáng" };
+  const pagesBy = Object.fromEntries(THEMES.map((th) => [th, allowed.flatMap((st) => PAGES.map((k) => neutrals[st.id][th][k]))]));
+  const accent = accents(primary, brand, pagesBy, p.fillReach);
   for (const theme of THEMES) {
     const surfaces = allowed.flatMap((st) => SURFACES.map((k) => neutrals[st.id][theme][k]));
-    const pages = allowed.flatMap((st) => PAGES.map((k) => neutrals[st.id][theme][k]));
+    const pages = pagesBy[theme];
     const subtle = subtleAlpha(tokens, theme);
-    const fill = pickFill(primary, brand.primary, theme, pages, brand.color?.buttonText, p.fillReach);
-    const hover = pickHover(primary, fill);
+    const fill = accent[theme];
+    const label = (shade, hex) => (shade === null ? hex : `primary-${shade}`);
+    const fillName = label(fill.shade, fill.fill);
+    const hoverName = label(fill.hoverShade, fill.hover);
     const fg = pickText(primary, brand.primary, theme, surfaces, pages, subtle);
     themes[theme] = {
-      "color-accent": primary[fill.shade],
-      "color-accent-hover": primary[hover],
+      "color-accent": fill.fill,
+      "color-accent-hover": fill.hover,
       "color-on-accent": fill.on,
       "color-accent-fg": primary[fg.shade],
     };
     fidelity[theme] = { fill: fill.shade, text: fg.shade, deltaE: +fill.de.toFixed(3) };
     const t = themeName[theme];
-    report.push({ check: `nút chính (${t})`, pair: `chữ ${fill.on} / primary-${fill.shade}`, ratio: contrast(fill.on, primary[fill.shade]), min: AA });
-    report.push({ check: `nút chính khi hover (${t})`, pair: `chữ ${fill.on} / primary-${hover}`, ratio: contrast(fill.on, primary[hover]), min: AA });
+    report.push({ check: `nút chính (${t})`, pair: `chữ ${fill.on} / ${fillName}`, ratio: contrast(fill.on, fill.fill), min: AA });
+    report.push({ check: `nút chính khi hover (${t})`, pair: `chữ ${fill.on} / ${hoverName}`, ratio: contrast(fill.on, fill.hover), min: AA });
     report.push({ check: `chữ màu chính (${t})`, pair: `primary-${fg.shade} / nền + nền chọn`, ratio: fg.ratio, min: AA });
     report.push({ check: `viền focus (${t})`, pair: `primary-${fg.shade} / nền`, ratio: minContrast(primary[fg.shade], surfaces), min: NON_TEXT });
     // Soft: a filled control may blend into the page (light brands on white) and still be usable through its text or
     // check mark; reported so the person sees it, never a build failure.
-    report.push({ check: `nút tách khỏi nền (${t})`, pair: `primary-${fill.shade} / nền`, ratio: fill.page, min: NON_TEXT, soft: true });
-    if (fill.de > 0.08)
+    report.push({ check: `nút tách khỏi nền (${t})`, pair: `${fillName} / nền`, ratio: fill.page, min: NON_TEXT, soft: true });
+    if (fill.wide)
       warnings.push(
-        `Theme ${t}: nút chính dùng primary-${fill.shade} (${primary[fill.shade]}) thay vì đúng màu thương hiệu ${brand.primary} (ΔE ${fill.de.toFixed(2)}), ` +
-          ([DARK_TEXT, WHITE].some((on) => contrast(brand.primary, on) >= AA)
-            ? `để nút tách khỏi nền (màu gốc chỉ ${minContrast(brand.primary, surfaces).toFixed(2)}:1 với nền trang, cần 3:1)`
-            : "vì cả chữ trắng lẫn chữ tối trên màu gốc đều chưa đạt 4.5:1"),
+        `Theme ${t}: không có bậc nào trong ${ACCENT_RANGE[theme].join("/")} vừa đạt chữ 4.5:1 vừa tách khỏi nền 3:1, nút chính dùng ${fillName} (${fill.fill}). ` +
+          ([DARK_TEXT, WHITE].some((on) => contrast(brand.primary, on) >= AA) ? "" : "Cả chữ trắng lẫn chữ tối trên màu gốc đều chưa đạt 4.5:1"),
       );
     if (fill.page < NON_TEXT)
       warnings.push(`Theme ${t}: nút màu thương hiệu chỉ tách khỏi nền ${fill.page.toFixed(2)}:1 (< 3:1). Nút vẫn đọc được nhờ chữ, nhưng công tắc, thanh trượt và ô chọn khó thấy hơn`);
@@ -520,6 +632,8 @@ export function generateBrand(brand, { tokens, styles, version = "", params }) {
     }
   }
   for (const r of report) r.ok = r.ratio >= r.min;
+  const same = accentErrors(themes, brand);
+  if (same.length) throw Object.assign(new Error(`brand.json không hợp lệ:\n- ${same.join("\n- ")}`), { errors: same });
   for (const [st, e] of Object.entries(status)) {
     const name = { danger: "lỗi", success: "thành công", warning: "cảnh báo", info: "thông tin" }[st];
     const left = hueDistance(hue, hexToOklch(e.to).h);
@@ -541,6 +655,7 @@ export function generateBrand(brand, { tokens, styles, version = "", params }) {
     brandStep: brandStep(brand.primary, p),
     ...(secondary ? { secondary, secondaryStep: brandStep(brand.secondary, p) } : {}),
     themes,
+    ...(brand.accent ? { accent: brand.accent } : {}),
     ...(Object.keys(status).length ? { status } : {}),
     fidelity,
     neutrals,

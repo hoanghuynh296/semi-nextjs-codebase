@@ -4,6 +4,20 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+### Fixed
+- **Brand kits no longer have the same solid accent in light and dark (#84).** `semi-brand build` now derives `--semi-accent`, `--semi-accent-hover` and `--semi-on-accent` per theme, following Apple's system-colour practice: **light** takes `primary-600` (owner decision: closest to the brand), or 700 only when 600 fails white text at 4.5:1 or the fill stands out from the page less than 3:1, **dark** takes the shade of `400…500` closest to the brand colour under the same two rules, hover moves one step in the theme's direction (deeper in light, lighter in dark), and `on-accent` follows the theme (white on the light fill, dark text on the dark fill when it reads). Rebuilt locally: Semi light `#bd4516` / `#9d3100` / white (5.22:1), dark `#dd592a` / `#e8896a` / `#0c0d0e` (5.13:1); 3D Noobs light `#008509` / `#006f06` / white (4.82:1), dark `#539f50` / `#81b67d` / `#0c0d0e` (5.97:1).
+- **Visible change for 3D Noobs in the dark theme:** the primary button becomes `#539f50` with dark text (`#0c0d0e`, 5.97:1) instead of `#008509` with white text; `#008509` now appears only in the light theme (a brand that wants one accent in both themes sets `accent.sameInBothThemes: true`, as Radix and Carbon do). Semi dark stays `#dd592a`.
+- **`--semi-chart-6` switches between themes and is no longer a second green.** It was `#008300` in both themes, and a darker green in dark would sit next to chart-3 (aqua) and chart-4 (yellow) under colour-vision deficiency. It is now a plum: dark `#a175b1` (4.32:1 on the dark panel, in the other dark colours' lightness band), light `#88558a` (5.66:1 on white). OKLab ΔE to every other chart colour under normal, protan, deutan and tritan vision is at least 0.081 in dark (0.10 is not reachable inside that band) and 0.125 in light. Apps that drew a series 6 in green now get plum.
+
+### Added
+- **`brand.json` `accent`**: `{ "sameInBothThemes": true }` keeps one accent for both themes as an explicit brand choice; `{ "light": { fill, hover?, on? }, "dark": { … } }` pins a theme (a shade of `primary` or a hex). `semi-brand build` and `check` now **fail when the light and dark accent are equal** unless `sameInBothThemes` is set. Docs: `BRANDS.md` "Accent theo theme".
+- **Brand book and the docs Brand preview** show the button, hover, text on the button and their contrast for both themes side by side.
+- **Tests:** a themed-token test over the built CSS (core `tokens.css` and a built brand kit) fails when a `--semi-*` token is equal in light and dark, except an allowlist (`--semi-on-solid` and tokens that only reference themed tokens: `accent-line`, `focus`, `control-line-hover`); the two shipped brands get different accents with AA contrast.
+
+### Migration
+- **Brand kits must be rebuilt and re-released** to pick this up: `/semi-brand update` (or `semi-brand build`), then a new kit tag. Until then an installed kit keeps its old, equal accent. Brand releases are the brand owner's. A kit that wants one accent in both themes adds `"accent": { "sameInBothThemes": true }`.
+- A kit's primary button now changes colour between themes (and the light theme's is deeper); `semi-brand check` fails on a kit built by an older version because the generated files are stale.
+
 ## [0.34.0] - 2026-11-22
 
 Three kits that make every app behave the same way: **states** (first use, no results, error, not found, no access, loading), **forms** (nobody loses typed work, one action bar, the right keypad) and **feedback** (undo for what can be reversed, a named confirm for what cannot, success once). Apps get them by updating `@semi/ui`. There are **no breaking changes**, and no migration is required.

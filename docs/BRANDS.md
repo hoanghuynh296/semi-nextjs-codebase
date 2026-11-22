@@ -265,9 +265,9 @@ tắc bố cục đi kèm (tránh giao diện "AI" chung chung): `DESIGN_SYSTEM.
   BRAND.md ghi sắc độ đó ("nằm ở `primary-…`"). Giao diện không bao giờ tô bằng thang (`bg-primary-500`): nút chính và mark
   "on" là `bg-accent` + `text-on-accent`, chữ `text-accent-fg`, viền chọn `border-accent-line`; thang chỉ dành cho biểu
   đồ và hình minh hoạ (`semi-lint`: `primary-fill`).
-- **Nút chính (`bg-accent` + `text-on-accent`), mỗi theme:** trong mọi cặp sắc độ × chữ (trắng hoặc tối) đạt 4.5:1, chọn
-  sắc độ **gần màu thương hiệu nhất**. Nếu sắc độ đó gần như trùng với nền trang (< 3:1, vd. navy trên nền tối), lấy sắc
-  độ gần nhất có tách khỏi nền, miễn là không lệch quá xa; không có thì giữ màu thương hiệu và báo "lưu ý".
+- **Nút chính (`bg-accent` + `text-on-accent`) riêng cho từng theme** (xem [Accent theo theme](#accent-theo-theme)):
+  theme sáng lấy bậc 600 (700 chỉ khi 600 không đạt), theme tối lấy bậc sáng và rực hơn (400-500), như cách Apple làm với màu hệ thống.
+  Hai theme không trùng nhau trừ khi thương hiệu tự chọn như vậy.
 - **Chữ màu chính (`text-accent-fg`):** sắc độ gần màu thương hiệu nhất đọc được 4.5:1 trên mọi nền và trên nền chọn
   (`bg-accent-subtle`). Viền focus (`ring-focus`) và viền mục chọn (`border-accent-line`) đi theo nó.
 - **Màu phụ:** `secondary-*`, chữ `text-secondary-fg`, và nền đặc `bg-secondary-solid` + `text-on-secondary` (badge, điểm
@@ -281,7 +281,49 @@ tắc bố cục đi kèm (tránh giao diện "AI" chung chung): `DESIGN_SYSTEM.
   trạng thái đó ra xa màu chính, giữ độ sáng và độ đậm (nên contrast không đổi), trong giới hạn vẫn giữ nghĩa: lỗi 12°,
   cảnh báo 12°, thành công 20°, thông tin 20°. `brand.css` ghi đè `--semi-<trạng thái>-fg | bg | border | solid`; lưu ý
   trong BRAND.md ghi xoay bao nhiêu độ. Đổi theo bản Semi mới thì `/semi-brand update` báo mức minor. `fidelity` cho biết nút mỗi theme ở sắc độ nào và lệch màu
-  thương hiệu bao nhiêu (ΔE OKLab, 0 = đúng màu); lệch trên 0.08 có cảnh báo kèm lý do.
+  thương hiệu bao nhiêu (ΔE OKLab, 0 = đúng màu).
+
+### Accent theo theme
+
+`--semi-accent`, `--semi-accent-hover` và `--semi-on-accent` được sinh **riêng cho theme sáng và theme tối** (trước đây hai
+theme dùng chung một giá trị, chỉ `accent-fg` đổi, trong khi Semi tự dùng `primary-500` ở tối và `primary-700` ở sáng):
+
+| | Theme sáng | Theme tối |
+|---|---|---|
+| Nút (`accent`) | bậc **600** (gần màu thương hiệu nhất); chỉ khi 600 không đạt (chữ trắng ≥ 4.5:1 và nút tách khỏi nền trang ≥ 3:1) thì lấy 700 | trong 400-500, bậc gần màu thương hiệu nhất, cùng hai điều kiện (hoà thì 500, mặc định của Semi) |
+| Hover | một bậc sâu hơn (600 → 700) | một bậc sáng hơn |
+| Chữ trên nút (`on-accent`) | trắng khi đọc được | chữ tối khi đọc được, ngược lại màu kia |
+
+Không có bậc nào trong dải đạt hai điều kiện (màu rất nhạt hoặc rất đậm): thử các bậc còn lại, gần dải nhất trước, và có
+cảnh báo. `color.buttonText` vẫn ép màu chữ. Báo cáo kiểm từng theme: chữ 4.5:1, hover 4.5:1, nút tách khỏi nền 3:1.
+
+`brand.json` có thể ghim giá trị từng theme:
+
+```json
+"accent": {
+  "light": { "fill": 700, "hover": 800, "on": "white" },
+  "dark":  { "fill": "#3DDC84", "hover": "#6BE8A3", "on": "dark" }
+}
+```
+
+`fill` / `hover` là bậc của `primary` (50…900) hoặc mã hex (`hover` bắt buộc khi `fill` là hex); `on` là `white`, `dark` hoặc
+hex; bỏ qua thì bộ sinh chọn. Ghim mà không đạt AA vẫn hiện trong báo cáo và `semi-brand check` thất bại.
+
+```json
+"accent": { "sameInBothThemes": true }
+```
+
+là lựa chọn **có chủ ý** của thương hiệu: một nút, hover và chữ cho cả hai theme (một giá trị đọc được và tách khỏi nền ở
+cả hai). **Không có khai báo này mà theme sáng và tối ra cùng một màu nút thì `semi-brand build` và `check` báo lỗi.**
+`sameInBothThemes` không đi cùng `accent.light` / `accent.dark`.
+
+Quy tắc tóm lại: **sáng dùng bậc 600, tối dùng bậc 400-500**. Thương hiệu muốn đúng một màu nút ở cả hai theme (như Radix và
+Carbon, vốn dùng một màu nhấn cho cả hai) đặt `accent.sameInBothThemes: true`. Hệ quả nhìn thấy: màu chính xanh lá của 3D Noobs
+(`#008509`) giờ chỉ còn ở theme sáng; theme tối dùng `#539f50` với chữ tối thay cho `#008509` với chữ trắng.
+
+**Kit đã phát hành cần build lại và phát hành lại** (`/semi-brand update`, rồi tag mới) để nút đổi màu theo theme; phát hành
+kit là việc của chủ sở hữu thương hiệu. Brand book (`semi-brand preview`, trang *UI kit*) và trang Brand preview của docs
+hiện cả hai theme cạnh nhau: màu nút, hover, chữ trên nút và tỉ lệ tương phản.
 
 Các con số của cách sinh (độ sáng từng sắc độ, nút được lệch bao xa, độ phủ màu của màu trung tính, giới hạn xoay màu
 trạng thái) nằm ở `brand/params.mjs`, giống nhau cho mọi thương hiệu. Người bảo trì Semi thử chúng trên trang **Design
