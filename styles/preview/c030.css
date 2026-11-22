@@ -1,0 +1,132 @@
+/* PREVIEW (semi-nextjs-codebase#93 / #94, not released): C-030 surfaces as a scoped variant.
+   Opt in with data-surfaces="c030" on <html> (next to data-theme). Options on the same element:
+   data-neutral="pure" (0% saturation greys) | "brand" (the brand's warm tint);
+   data-primary="inverted" (neutral main action) | "brand".
+   Phase 2 moves these values into tokens/tokens.json (panel-0..4, card, tint, inverted) and drops this file.
+   Values: the measured draft in #93's comment. */
+
+@theme inline {
+  --color-panel-0: var(--semi-panel-0, var(--semi-canvas));
+  --color-panel-1: var(--semi-panel-1, var(--semi-canvas));
+  --color-panel-2: var(--semi-panel-2, var(--semi-app));
+  --color-panel-3: var(--semi-panel-3, var(--semi-app));
+  --color-panel-4: var(--semi-panel-4, var(--semi-panel));
+  --color-card: var(--semi-card, var(--semi-panel));
+  --color-card-field: var(--semi-card-field, var(--semi-field));
+  --color-tint: var(--semi-tint, var(--semi-field));
+  --color-tint-hover: var(--semi-tint-hover, var(--semi-raised));
+  --color-inverted: var(--semi-inverted, var(--semi-text-contrast));
+  --color-inverted-hover: var(--semi-inverted-hover, var(--semi-text-body));
+  --color-on-inverted: var(--semi-on-inverted, var(--semi-panel));
+}
+
+/* ── Brand neutral (warm tint of the Semi brand) ── */
+html[data-surfaces="c030"][data-theme="dark"] {
+  --semi-panel-0: #100f0f;
+  --semi-panel-1: #131212;
+  --semi-panel-2: #161515;
+  --semi-panel-3: #181717;
+  --semi-panel-4: #1b1a1a;
+  --semi-card: #262424;
+  --semi-card-field: #2e2c2c;
+  --semi-card-raised: #383636;
+  --semi-tint: rgba(255, 255, 255, 0.07);
+  --semi-tint-hover: rgba(255, 255, 255, 0.11);
+  --semi-inverted: #f5f3f2;
+  --semi-inverted-hover: #ffffff;
+  --semi-on-inverted: #1b1a1a;
+  --semi-field: #232121;
+  --semi-raised: #2e2c2c;
+  --semi-line: rgba(255, 255, 255, 0.09);
+}
+html[data-surfaces="c030"][data-theme="light"] {
+  --semi-panel-0: #f5f3f2;
+  --semi-panel-1: #f8f6f5;
+  --semi-panel-2: #fbf9f8;
+  --semi-panel-3: #fdfcfc;
+  --semi-panel-4: #ffffff;
+  --semi-card: #eeeceb;
+  --semi-card-field: #e6e4e3;
+  --semi-card-raised: #dcdad9;
+  --semi-tint: rgba(0, 0, 0, 0.05);
+  --semi-tint-hover: rgba(0, 0, 0, 0.09);
+  --semi-inverted: #1b1a1a;
+  --semi-inverted-hover: #34302f;
+  --semi-on-inverted: #ffffff;
+  --semi-field: #f2f0ef;
+  --semi-raised: #e6e4e3;
+  --semi-line: rgba(0, 0, 0, 0.07);
+}
+
+/* ── Pure neutral: 0% saturation greys, text included ── */
+html[data-surfaces="c030"][data-neutral="pure"][data-theme="dark"] {
+  --semi-panel-0: #101010;
+  --semi-panel-1: #131313;
+  --semi-panel-2: #161616;
+  --semi-panel-3: #181818;
+  --semi-panel-4: #1b1b1b;
+  --semi-card: #262626;
+  --semi-card-field: #2e2e2e;
+  --semi-card-raised: #383838;
+  --semi-inverted: #f5f5f5;
+  --semi-on-inverted: #1b1b1b;
+  --semi-field: #232323;
+  --semi-raised: #2e2e2e;
+  --semi-text-contrast: #ffffff;
+  --semi-text-body: #d6d6d6;
+  --semi-text-muted: #a3a3a3;
+}
+html[data-surfaces="c030"][data-neutral="pure"][data-theme="light"] {
+  --semi-panel-0: #f5f5f5;
+  --semi-panel-1: #f8f8f8;
+  --semi-panel-2: #fafafa;
+  --semi-panel-3: #fdfdfd;
+  --semi-panel-4: #ffffff;
+  --semi-card: #ececec;
+  --semi-card-field: #e4e4e4;
+  --semi-card-raised: #dadada;
+  --semi-inverted: #1b1b1b;
+  --semi-inverted-hover: #333333;
+  --semi-on-inverted: #ffffff;
+  --semi-field: #f2f2f2;
+  --semi-raised: #e6e6e6;
+  --semi-text-contrast: #171717;
+  --semi-text-body: #404040;
+  --semi-text-muted: #636363;
+}
+
+/* ── Mapping onto today's names (the additive-minor aliases of #93) ── */
+html[data-surfaces="c030"] {
+  --semi-canvas: var(--semi-panel-0);
+  --semi-app: var(--semi-panel-2);
+  --semi-panel: var(--semi-panel-4);
+}
+
+/* Cards: no border, one tone off their panel (dark: up; light: recessed). Fields inside a card step from the card. */
+html[data-surfaces="c030"] .border-card {
+  border-color: transparent;
+}
+html[data-surfaces="c030"] main .border-card,
+html[data-surfaces="c030"] .bg-card {
+  background-color: var(--semi-card);
+  --color-field: var(--semi-card-field);
+  --color-raised: var(--semi-card-raised);
+}
+
+/* Secondary buttons: translucent overlay fill, no border; hover one step up. Focus ring unchanged. */
+html[data-surfaces="c030"] :is(button, a).bg-field.border-line {
+  background-color: var(--semi-tint);
+  border-color: transparent;
+}
+html[data-surfaces="c030"] :is(button, a).bg-field.border-line:hover {
+  background-color: var(--semi-tint-hover);
+}
+
+/* primaryStyle "inverted": the main action is neutral; the accent stays on links, selection, badges and focus. */
+html[data-surfaces="c030"][data-primary="inverted"] .bg-accent.text-on-accent {
+  background-color: var(--semi-inverted);
+  color: var(--semi-on-inverted);
+}
+html[data-surfaces="c030"][data-primary="inverted"] .bg-accent.text-on-accent:hover {
+  background-color: var(--semi-inverted-hover);
+}

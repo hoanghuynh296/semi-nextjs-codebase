@@ -12,6 +12,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./styles": "./styles/index.ts",
+    "./preview": "./src/preview/index.ts",
+    "./preview/c030.css": "./styles/preview/c030.css",
     "./tokens.css": "./tokens/tokens.css",
     "./base.css": "./styles/base.css",
     "./tokens.json": "./tokens/tokens.json",
