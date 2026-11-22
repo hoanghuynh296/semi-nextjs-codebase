@@ -253,6 +253,16 @@
   --color-panel: var(--semi-panel); /* Thẻ Bento Card, Sidebar, Modal */
   --color-field: var(--semi-field); /* Nền ô nhập liệu, header bảng */
   --color-raised: var(--semi-raised); /* Hover / track fills on top of field */
+  --color-panel-0: var(--semi-panel-0); /* Surface step 0 (C-030): the outer canvas. Same value as canvas (canvas is its alias) */
+  --color-panel-1: var(--semi-panel-1); /* Surface step 1: halfway between canvas and app */
+  --color-panel-2: var(--semi-panel-2); /* Surface step 2: main content. Same value as app (app is its alias) */
+  --color-panel-3: var(--semi-panel-3); /* Surface step 3: halfway between app and panel */
+  --color-panel-4: var(--semi-panel-4); /* Surface step 4: sidebar, modal, popover. Same value as panel (panel is its alias) */
+  --color-tint: var(--semi-tint); /* Translucent fill of a secondary button (BTN_SECONDARY): reads on every surface, no border */
+  --color-tint-hover: var(--semi-tint-hover); /* Hover of tint */
+  --color-inverted: var(--semi-inverted); /* Neutral solid fill, the opposite of the page (near-white in dark, near-black in light): the main button of a brand with primaryStyle inverted */
+  --color-inverted-hover: var(--semi-inverted-hover); /* Hover of inverted */
+  --color-on-inverted: var(--semi-on-inverted); /* Text / icon on bg-inverted */
   --color-contrast: var(--semi-text-contrast); /* Tiêu đề, chữ độ tương phản cao */
   --color-body: var(--semi-text-body); /* Nội dung văn bản chính */
   --color-muted: var(--semi-text-muted); /* Nhãn phụ, placeholder, gợi ý */
@@ -264,7 +274,10 @@
   --color-accent: var(--semi-accent); /* Solid primary fill (BTN_PRIMARY, active marks). Pair with on-accent */
   --color-accent-hover: var(--semi-accent-hover); /* Hover of the solid primary fill */
   --color-on-accent: var(--semi-on-accent); /* Text/icon on bg-accent (WCAG AA ≥ 4.5:1 in both themes) */
-  --color-accent-fg: var(--semi-accent-fg); /* Primary-coloured text/icons on surfaces (links, check marks, active tab) */
+  --color-action: var(--semi-action); /* Fill of the main button (BTN_PRIMARY). The accent by default; a brand with primaryStyle inverted points it at inverted */
+  --color-action-hover: var(--semi-action-hover); /* Hover of action */
+  --color-on-action: var(--semi-on-action); /* Text / icon on bg-action */
+  --color-accent-fg: var(--semi-accent-fg); /* Primary-coloured text/icons on surfaces (links, check marks, active tab); light 800 so it reads on accent-subtle over the recessed card (C-030) */
   --color-focus: var(--semi-focus); /* Focus ring (ring-focus) and focused field border: follows accent-fg, so it reaches 3:1 on every surface */
   --color-accent-subtle: var(--semi-accent-subtle); /* Selected / active tint behind text-accent-fg or text-contrast (selected option, active tab pill, IconTile) */
   --color-accent-subtle-hover: var(--semi-accent-subtle-hover); /* Hover of an accent-subtle surface */
@@ -316,11 +329,23 @@
 [data-theme="dark"],
 [data-theme="system"],
 .dark {
-  --semi-canvas: #0c0d0e;
-  --semi-app: #121316;
-  --semi-panel: #202226;
-  --semi-field: #272a2f;
-  --semi-raised: #31343a;
+  --semi-canvas: #0f1011;
+  --semi-app: #151619;
+  --semi-panel: #191b1f;
+  --semi-field: #202328;
+  --semi-raised: #2b2e34;
+  --semi-panel-0: var(--semi-canvas);
+  --semi-panel-1: color-mix(in oklab, var(--semi-canvas), var(--semi-app));
+  --semi-panel-2: var(--semi-app);
+  --semi-panel-3: color-mix(in oklab, var(--semi-app), var(--semi-panel));
+  --semi-panel-4: var(--semi-panel);
+  --semi-card: color-mix(in oklab, var(--semi-panel) 95%, var(--semi-text-contrast));
+  --semi-card-field: color-mix(in oklab, var(--semi-card) 95%, var(--semi-text-contrast));
+  --semi-tint: color-mix(in oklab, var(--semi-text-contrast) 7%, transparent);
+  --semi-tint-hover: color-mix(in oklab, var(--semi-text-contrast) 11%, transparent);
+  --semi-inverted: color-mix(in oklab, var(--semi-text-contrast) 96%, var(--semi-canvas));
+  --semi-inverted-hover: var(--semi-text-contrast);
+  --semi-on-inverted: var(--semi-canvas);
   --semi-text-contrast: #ffffff;
   --semi-text-body: #d1d5db;
   --semi-text-muted: #9ba1aa;
@@ -332,6 +357,9 @@
   --semi-accent: var(--color-primary-500);
   --semi-accent-hover: var(--color-primary-400);
   --semi-on-accent: #0c0d0e;
+  --semi-action: var(--semi-accent);
+  --semi-action-hover: var(--semi-accent-hover);
+  --semi-on-action: var(--semi-on-accent);
   --semi-accent-fg: var(--color-primary-400);
   --semi-focus: var(--semi-accent-fg);
   --semi-accent-subtle: color-mix(in oklab, var(--semi-accent-fg) 14%, transparent);
@@ -383,11 +411,23 @@
 /* Semantic Tokens: Light Mode */
 [data-theme="light"],
 .light {
-  --semi-canvas: #f1f5f9;
-  --semi-app: #f8fafc;
+  --semi-canvas: #eff3f7;
+  --semi-app: #f7f9fb;
   --semi-panel: #ffffff;
-  --semi-field: #f1f5f9;
-  --semi-raised: #e2e8f0;
+  --semi-field: #eff3f7;
+  --semi-raised: #e1e7ef;
+  --semi-panel-0: var(--semi-canvas);
+  --semi-panel-1: color-mix(in oklab, var(--semi-canvas), var(--semi-app));
+  --semi-panel-2: var(--semi-app);
+  --semi-panel-3: color-mix(in oklab, var(--semi-app), var(--semi-panel));
+  --semi-panel-4: var(--semi-panel);
+  --semi-card: color-mix(in oklab, var(--semi-app) 95%, var(--semi-text-contrast));
+  --semi-card-field: color-mix(in oklab, var(--semi-card) 97%, var(--semi-text-contrast));
+  --semi-tint: color-mix(in oklab, var(--semi-text-contrast) 5%, transparent);
+  --semi-tint-hover: color-mix(in oklab, var(--semi-text-contrast) 9%, transparent);
+  --semi-inverted: var(--semi-text-contrast);
+  --semi-inverted-hover: color-mix(in oklab, var(--semi-text-contrast) 85%, var(--semi-panel));
+  --semi-on-inverted: var(--semi-panel);
   --semi-text-contrast: #0f172a;
   --semi-text-body: #334155;
   --semi-text-muted: #5b6779;
@@ -399,7 +439,10 @@
   --semi-accent: var(--color-primary-700);
   --semi-accent-hover: var(--color-primary-800);
   --semi-on-accent: #ffffff;
-  --semi-accent-fg: var(--color-primary-700);
+  --semi-action: var(--semi-accent);
+  --semi-action-hover: var(--semi-accent-hover);
+  --semi-on-action: var(--semi-on-accent);
+  --semi-accent-fg: var(--color-primary-800);
   --semi-focus: var(--semi-accent-fg);
   --semi-accent-subtle: color-mix(in oklab, var(--semi-accent-fg) 11%, transparent);
   --semi-accent-subtle-hover: color-mix(in oklab, var(--semi-accent-fg) 18%, transparent);
@@ -413,13 +456,13 @@
   --semi-tone-indigo: var(--color-indigo-700);
   --semi-tone-blue: var(--color-blue-700);
   --semi-tone-sky: var(--color-sky-700);
-  --semi-tone-cyan: var(--color-cyan-700);
-  --semi-tone-teal: var(--color-teal-700);
+  --semi-tone-cyan: var(--color-cyan-800);
+  --semi-tone-teal: var(--color-teal-800);
   --semi-tone-emerald: var(--color-emerald-700);
-  --semi-tone-amber: var(--color-amber-700);
-  --semi-tone-orange: var(--color-orange-700);
+  --semi-tone-amber: var(--color-amber-800);
+  --semi-tone-orange: var(--color-orange-800);
   --semi-tone-rose: var(--color-rose-700);
-  --semi-tone-pink: var(--color-pink-700);
+  --semi-tone-pink: var(--color-pink-800);
   --semi-danger-bg: color-mix(in oklab, var(--color-rose-500) 10%, transparent);
   --semi-danger-border: color-mix(in oklab, var(--color-rose-500) 30%, transparent);
   --semi-danger-solid: var(--color-rose-600);
@@ -450,11 +493,23 @@
 /* data-theme="system": follows the OS without JS (ThemeScript resolves it to dark|light before paint) */
 @media (prefers-color-scheme: light) {
   [data-theme="system"] {
-    --semi-canvas: #f1f5f9;
-    --semi-app: #f8fafc;
+    --semi-canvas: #eff3f7;
+    --semi-app: #f7f9fb;
     --semi-panel: #ffffff;
-    --semi-field: #f1f5f9;
-    --semi-raised: #e2e8f0;
+    --semi-field: #eff3f7;
+    --semi-raised: #e1e7ef;
+    --semi-panel-0: var(--semi-canvas);
+    --semi-panel-1: color-mix(in oklab, var(--semi-canvas), var(--semi-app));
+    --semi-panel-2: var(--semi-app);
+    --semi-panel-3: color-mix(in oklab, var(--semi-app), var(--semi-panel));
+    --semi-panel-4: var(--semi-panel);
+    --semi-card: color-mix(in oklab, var(--semi-app) 95%, var(--semi-text-contrast));
+    --semi-card-field: color-mix(in oklab, var(--semi-card) 97%, var(--semi-text-contrast));
+    --semi-tint: color-mix(in oklab, var(--semi-text-contrast) 5%, transparent);
+    --semi-tint-hover: color-mix(in oklab, var(--semi-text-contrast) 9%, transparent);
+    --semi-inverted: var(--semi-text-contrast);
+    --semi-inverted-hover: color-mix(in oklab, var(--semi-text-contrast) 85%, var(--semi-panel));
+    --semi-on-inverted: var(--semi-panel);
     --semi-text-contrast: #0f172a;
     --semi-text-body: #334155;
     --semi-text-muted: #5b6779;
@@ -466,7 +521,10 @@
     --semi-accent: var(--color-primary-700);
     --semi-accent-hover: var(--color-primary-800);
     --semi-on-accent: #ffffff;
-    --semi-accent-fg: var(--color-primary-700);
+    --semi-action: var(--semi-accent);
+    --semi-action-hover: var(--semi-accent-hover);
+    --semi-on-action: var(--semi-on-accent);
+    --semi-accent-fg: var(--color-primary-800);
     --semi-focus: var(--semi-accent-fg);
     --semi-accent-subtle: color-mix(in oklab, var(--semi-accent-fg) 11%, transparent);
     --semi-accent-subtle-hover: color-mix(in oklab, var(--semi-accent-fg) 18%, transparent);
@@ -480,13 +538,13 @@
     --semi-tone-indigo: var(--color-indigo-700);
     --semi-tone-blue: var(--color-blue-700);
     --semi-tone-sky: var(--color-sky-700);
-    --semi-tone-cyan: var(--color-cyan-700);
-    --semi-tone-teal: var(--color-teal-700);
+    --semi-tone-cyan: var(--color-cyan-800);
+    --semi-tone-teal: var(--color-teal-800);
     --semi-tone-emerald: var(--color-emerald-700);
-    --semi-tone-amber: var(--color-amber-700);
-    --semi-tone-orange: var(--color-orange-700);
+    --semi-tone-amber: var(--color-amber-800);
+    --semi-tone-orange: var(--color-orange-800);
     --semi-tone-rose: var(--color-rose-700);
-    --semi-tone-pink: var(--color-pink-700);
+    --semi-tone-pink: var(--color-pink-800);
     --semi-danger-bg: color-mix(in oklab, var(--color-rose-500) 10%, transparent);
     --semi-danger-border: color-mix(in oklab, var(--color-rose-500) 30%, transparent);
     --semi-danger-solid: var(--color-rose-600);
@@ -525,6 +583,18 @@
   --color-panel: var(--semi-panel);
   --color-field: var(--semi-field);
   --color-raised: var(--semi-raised);
+  --color-panel-0: var(--semi-panel-0);
+  --color-panel-1: var(--semi-panel-1);
+  --color-panel-2: var(--semi-panel-2);
+  --color-panel-3: var(--semi-panel-3);
+  --color-panel-4: var(--semi-panel-4);
+  --color-card: var(--semi-card);
+  --color-card-field: var(--semi-card-field);
+  --color-tint: var(--semi-tint);
+  --color-tint-hover: var(--semi-tint-hover);
+  --color-inverted: var(--semi-inverted);
+  --color-inverted-hover: var(--semi-inverted-hover);
+  --color-on-inverted: var(--semi-on-inverted);
   --color-text-contrast: var(--semi-text-contrast);
   --color-contrast: var(--semi-text-contrast);
   --color-text-body: var(--semi-text-body);
@@ -539,6 +609,9 @@
   --color-accent: var(--semi-accent);
   --color-accent-hover: var(--semi-accent-hover);
   --color-on-accent: var(--semi-on-accent);
+  --color-action: var(--semi-action);
+  --color-action-hover: var(--semi-action-hover);
+  --color-on-action: var(--semi-on-action);
   --color-accent-fg: var(--semi-accent-fg);
   --color-focus: var(--semi-focus);
   --color-accent-subtle: var(--semi-accent-subtle);
@@ -602,7 +675,17 @@
   --spacing: var(--semi-spacing); /* Tailwind spacing unit (p-4 = 4 × it). The product's density (data-density on <html>) scales every padding and gap */
 }
 
-/* Card / hero / sidebar border (border-card) */
+/* Content card (CARD): no border, separated by tone. Dark one step above panel (5%); light recessed below app (5%) */
+@utility bg-card {
+  background-color: var(--semi-card);
+}
+
+/* Field, tile or table head inside a card: one step off the card */
+@utility bg-card-field {
+  background-color: var(--semi-card-field);
+}
+
+/* Card / hero / sidebar border (border-card): transparent since 0.36 (C-030), cards separate by tone (bg-card); the 1px box keeps hover and CARD_ACTIVE borders from shifting the layout */
 @utility border-card {
   border: var(--semi-card-border);
 }
@@ -617,7 +700,7 @@
   --semi-radius-card: 0.75rem;
   --semi-radius-panel: 1rem;
   --semi-shadow-card: 0 0 #0000;
-  --semi-card-border: 1px solid var(--semi-line);
+  --semi-card-border: 1px solid transparent;
   --semi-font-sans: var(--font-sans-family, var(--font-geist)), Geist, Inter, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
   --semi-font-display: var(--font-display-family, var(--font-montserrat-alternates)), "Montserrat Alternates", var(--font-geist), sans-serif;
   --semi-spacing-control: 34px;
@@ -674,11 +757,11 @@
 [data-style="sharp"] [data-theme="dark"],
 [data-style="sharp"][data-theme="system"],
 [data-style="sharp"] [data-theme="system"] {
-  --semi-canvas: #0e0e0e;
-  --semi-app: #121212;
-  --semi-panel: #222222;
-  --semi-field: #2b2b2b;
-  --semi-raised: #353535;
+  --semi-canvas: #101010;
+  --semi-app: #161616;
+  --semi-panel: #1b1b1b;
+  --semi-field: #232323;
+  --semi-raised: #2e2e2e;
   --semi-text-contrast: #f5f5f2;
   --semi-text-body: #d6d6d2;
   --semi-text-muted: #a4a4a0;
@@ -690,11 +773,11 @@
 /* Style: Sharp: neutrals, light */
 [data-style="sharp"][data-theme="light"],
 [data-style="sharp"] [data-theme="light"] {
-  --semi-canvas: #f7f7f4;
-  --semi-app: #fbfbf9;
+  --semi-canvas: #f5f5f2;
+  --semi-app: #fafaf8;
   --semi-panel: #ffffff;
-  --semi-field: #f0f0ec;
-  --semi-raised: #e2e2dd;
+  --semi-field: #f2f2ee;
+  --semi-raised: #e6e6e1;
   --semi-text-contrast: #141414;
   --semi-text-body: #333331;
   --semi-text-muted: #5c5c58;
@@ -706,11 +789,11 @@
 @media (prefers-color-scheme: light) {
   [data-style="sharp"][data-theme="system"],
   [data-style="sharp"] [data-theme="system"] {
-    --semi-canvas: #f7f7f4;
-    --semi-app: #fbfbf9;
+    --semi-canvas: #f5f5f2;
+    --semi-app: #fafaf8;
     --semi-panel: #ffffff;
-    --semi-field: #f0f0ec;
-    --semi-raised: #e2e2dd;
+    --semi-field: #f2f2ee;
+    --semi-raised: #e6e6e1;
     --semi-text-contrast: #141414;
     --semi-text-body: #333331;
     --semi-text-muted: #5c5c58;
@@ -757,9 +840,9 @@
 [data-style="soft"] [data-theme="system"] {
   --semi-canvas: #12100e;
   --semi-app: #181512;
-  --semi-panel: #26211d;
-  --semi-field: #2e2823;
-  --semi-raised: #39322c;
+  --semi-panel: #1f1a16;
+  --semi-field: #28221d;
+  --semi-raised: #342d27;
   --semi-text-contrast: #fbf8f3;
   --semi-text-body: #ded7cd;
   --semi-text-muted: #aea59a;
@@ -772,11 +855,11 @@
 /* Style: Soft: neutrals, light */
 [data-style="soft"][data-theme="light"],
 [data-style="soft"] [data-theme="light"] {
-  --semi-canvas: #f3eee7;
-  --semi-app: #faf7f2;
+  --semi-canvas: #f9f4ed;
+  --semi-app: #fdfaf5;
   --semi-panel: #ffffff;
-  --semi-field: #f3eee7;
-  --semi-raised: #e8e0d5;
+  --semi-field: #f6f1ea;
+  --semi-raised: #ede5da;
   --semi-text-contrast: #1f1a14;
   --semi-text-body: #463d33;
   --semi-text-muted: #665c51;
@@ -789,11 +872,11 @@
 @media (prefers-color-scheme: light) {
   [data-style="soft"][data-theme="system"],
   [data-style="soft"] [data-theme="system"] {
-    --semi-canvas: #f3eee7;
-    --semi-app: #faf7f2;
+    --semi-canvas: #f9f4ed;
+    --semi-app: #fdfaf5;
     --semi-panel: #ffffff;
-    --semi-field: #f3eee7;
-    --semi-raised: #e8e0d5;
+    --semi-field: #f6f1ea;
+    --semi-raised: #ede5da;
     --semi-text-contrast: #1f1a14;
     --semi-text-body: #463d33;
     --semi-text-muted: #665c51;
@@ -863,16 +946,3 @@
   z-index: var(--z-keypad);
 }
 
-/* Utility fallbacks & direct semantic text/bg/border helpers */
-@layer utilities {
-  .text-contrast { color: var(--color-text-contrast); }
-  .text-body { color: var(--color-text-body); }
-  .text-muted { color: var(--color-text-muted); }
-  .bg-canvas { background-color: var(--color-canvas); }
-  .bg-app { background-color: var(--color-app); }
-  .bg-panel { background-color: var(--color-panel); }
-  .bg-field { background-color: var(--color-field); }
-  .bg-raised { background-color: var(--color-raised); }
-  .border-line { border-color: var(--color-line); }
-  .border-divider { border-color: var(--color-divider); }
-}

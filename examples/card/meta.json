@@ -1,18 +1,20 @@
 {
   "title": "Card",
   "group": "Data display",
-  "description": "The bento content card: panel fill and the style's card border, radius and resting shadow. interactive adds hover / press, active marks the selected or running item.",
+  "description": "The bento content card: the card surface (bg-card, separated from the page by tone, no visible border in Flat and Soft) with the style's radius and resting shadow. bordered frames a dense data view; interactive adds hover / press, active marks the selected or running item.",
   "components": [
     "Card"
   ],
   "imports": [
     "CARD",
+    "CARD_BORDERED",
     "CARD_HOVER",
     "CARD_ACTIVE",
     "TILE"
   ],
   "when": [
-    "Group the content of a page in cards; nested facts in TILE."
+    "Group the content of a page in cards; nested facts in TILE (bg-card-field).",
+    "bordered for a dense data view (a table or rows that need an edge)."
   ],
   "instead": [
     {
@@ -30,7 +32,8 @@
   ],
   "notes": [
     "It pads itself: padding=\"card\" (p-card, default), \"panel\" (p-card sm:p-panel) or \"none\" for an image or table to the edge. Never tighter than p-card (card-padding); a p-* in className replaces the default.",
-    "Pass padding and layout only: no bg-* or shadow-* on <Card> (card-class-override)."
+    "Pass padding and layout only: no bg-* or shadow-* on <Card> (card-class-override).",
+    "Light: the card is recessed one step below the app; dark: one step above the panel. A block meant as a card uses bg-card (or Card), never bg-panel: panel is the sidebar / modal step."
   ],
   "examples": [
     {
@@ -40,6 +43,10 @@
     {
       "file": "states",
       "title": "Interactive and active"
+    },
+    {
+      "file": "bordered",
+      "title": "Bordered (dense data)"
     }
   ]
 }

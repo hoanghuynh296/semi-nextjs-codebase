@@ -1,13 +1,21 @@
 // Shared surface classes (docs/DESIGN_SYSTEM.md §5, §13, §15). Use these instead of re-typing them.
 
-/** Content card: panel fill, the style's card border, radius and resting shadow (Flat: thin line, no shadow). Add padding at the call site: p-card (sm:p-panel for a roomy one), never tighter (semi-lint card-padding). */
-export const CARD = "bg-panel border-card rounded-card shadow-card min-w-0";
+/** Content card (C-030): the card surface (bg-card: dark one step above the panel, light recessed one step below the
+ * app), separated by tone, no visible border in Flat and Soft (the style's card border, radius and resting shadow; Sharp
+ * keeps its 2px line). Add padding at the call site: p-card (sm:p-panel for a roomy one), never tighter (semi-lint card-padding). */
+export const CARD = "bg-card border-card rounded-card shadow-card min-w-0";
 
-/** Clickable card (opens a detail view). */
+/** Bordered card for dense data views (a table or a list of rows that needs a frame): the panel fill and a 1px line, the look of CARD before 0.36. */
+export const CARD_BORDERED = "bg-panel border border-line rounded-card shadow-card min-w-0";
+
+/** Clickable card (opens a detail view): the border shows on hover. */
 export const CARD_HOVER = `${CARD} hover:border-line-hover active:scale-[0.99] transition`;
 
-/** Plain hero panel at the top of a page. No glow (docs/DESIGN_SYSTEM.md, "Flat, no glow, no gradients"). */
-export const HERO = "relative overflow-hidden rounded-panel border-card bg-panel shadow-card p-card sm:p-panel";
+/** Clickable bordered card. */
+export const CARD_BORDERED_HOVER = `${CARD_BORDERED} hover:border-line-hover active:scale-[0.99] transition`;
+
+/** Plain hero panel at the top of a page, on the card surface. No glow (docs/DESIGN_SYSTEM.md, "Flat, no glow, no gradients"). */
+export const HERO = "relative overflow-hidden rounded-panel border-card bg-card shadow-card p-card sm:p-panel";
 
 /** Add to CARD for an active / "on" / printing card: primary border, no glow. */
 export const CARD_ACTIVE = "!border-accent-line";
@@ -27,8 +35,8 @@ export const STATUS_DOT = {
 export const STICKY_TOOLBAR =
   "sticky top-0 max-md:top-[env(safe-area-inset-top)] z-sticky -mx-4 sm:-mx-6 px-4 sm:px-6 -my-2.5 py-2.5 bg-app before:absolute before:inset-x-0 before:bottom-full before:h-[env(safe-area-inset-top)] before:bg-app";
 
-/** Tonal tile inside a card (stats, readings, nested rows). */
-export const TILE = "rounded-control bg-field border border-line";
+/** Tonal tile inside a card (stats, readings, nested rows): one step off the card (bg-card-field), no border. */
+export const TILE = "rounded-control bg-card-field";
 
 /** Section heading row: <div className={SECTION_HEAD}><h2 className={SECTION_TITLE}>…</h2><span className={COUNT_PILL}>3</span></div> */
 export const SECTION_HEAD = "flex items-center gap-2 px-1";
@@ -51,13 +59,13 @@ export const EMPTY_PHONE_CAP = "max-sm:p-4 max-sm:gap-2 max-sm:max-h-[40svh] max
 
 /** Square icon-only action button in a card header (edit, delete, more). */
 export const ICON_BTN =
-  "w-7 h-7 rounded-control flex items-center justify-center text-muted hover:text-contrast bg-field hover:bg-raised border border-line transition outline-none focus-visible:ring-2 focus-visible:ring-focus active:scale-95";
+  "w-7 h-7 rounded-control flex items-center justify-center text-muted hover:text-contrast bg-tint hover:bg-tint-hover transition outline-none focus-visible:ring-2 focus-visible:ring-focus active:scale-95";
 export const ICON_BTN_DANGER =
-  "w-7 h-7 rounded-control flex items-center justify-center text-muted hover:text-danger-fg bg-field hover:bg-danger-bg active:bg-danger-border border border-line transition outline-none focus-visible:ring-2 focus-visible:ring-focus active:scale-95";
+  "w-7 h-7 rounded-control flex items-center justify-center text-muted hover:text-danger-fg bg-tint hover:bg-danger-bg active:bg-danger-border transition outline-none focus-visible:ring-2 focus-visible:ring-focus active:scale-95";
 
 /** Close button in modal headers: visible background pill with clear contrast, easily tappable on dark backgrounds. */
 export const MODAL_CLOSE =
-  "w-9 h-9 sm:w-8 sm:h-8 rounded-full bg-field hover:bg-raised text-muted hover:text-contrast flex items-center justify-center transition outline-none focus-visible:ring-2 focus-visible:ring-focus border border-line active:scale-95 shrink-0";
+  "w-9 h-9 sm:w-8 sm:h-8 rounded-full bg-tint hover:bg-tint-hover text-muted hover:text-contrast flex items-center justify-center transition outline-none focus-visible:ring-2 focus-visible:ring-focus active:scale-95 shrink-0";
 
 /** Status pill (device state, job result): coloured 15% fill + 300 text. */
 export const STATUS_PILL = "inline-flex items-center gap-1.5 h-6 px-2 rounded-full text-caption font-medium whitespace-nowrap";

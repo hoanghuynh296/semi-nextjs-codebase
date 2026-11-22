@@ -54,23 +54,23 @@
   "semantic": {
     "color-canvas": {
       "dark": "#12100e",
-      "light": "#f3eee7"
+      "light": "#f9f4ed"
     },
     "color-app": {
       "dark": "#181512",
-      "light": "#faf7f2"
+      "light": "#fdfaf5"
     },
     "color-panel": {
-      "dark": "#26211d",
+      "dark": "#1f1a16",
       "light": "#ffffff"
     },
     "color-field": {
-      "dark": "#2e2823",
-      "light": "#f3eee7"
+      "dark": "#28221d",
+      "light": "#f6f1ea"
     },
     "color-raised": {
-      "dark": "#39322c",
-      "light": "#e8e0d5"
+      "dark": "#342d27",
+      "light": "#ede5da"
     },
     "color-text-contrast": {
       "dark": "#fbf8f3",

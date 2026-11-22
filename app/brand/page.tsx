@@ -97,11 +97,22 @@ export default function BrandPage() {
           </div>
           <Field label="Màu trung tính">
             <Pills
-              value={brand.neutral}
-              onChange={(v) => update({ neutral: v })}
+              value={!brand.neutral || brand.neutral === "tinted" ? "brand" : brand.neutral}
+              onChange={(v) => update({ neutral: v as Brand["neutral"] })}
               options={[
-                { key: "tinted", label: "Phủ theo màu chính" },
-                { key: "preset", label: "Có sẵn của style" },
+                { key: "brand", label: "Theo màu chính" },
+                { key: "pure", label: "Xám" },
+                { key: "preset", label: "Theo style" },
+              ]}
+            />
+          </Field>
+          <Field label="Nút chính" hint="Đảo màu: đen trên nền sáng, trắng trên nền tối; màu chính vẫn dùng cho link, mục chọn, focus">
+            <Pills
+              value={brand.primaryStyle ?? "brand"}
+              onChange={(v) => update({ primaryStyle: v as Brand["primaryStyle"] })}
+              options={[
+                { key: "brand", label: "Màu thương hiệu" },
+                { key: "inverted", label: "Đảo màu" },
               ]}
             />
           </Field>

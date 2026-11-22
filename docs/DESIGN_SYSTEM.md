@@ -109,11 +109,17 @@ Semi architecture separates tokens into two tiers:
 
 | Semantic Token | Tailwind Utility | Purpose | Dark Mode (`[data-theme="dark"]`) | Light Mode (`[data-theme="light"]`) |
 |---|---|---|---|---|
-| `--color-canvas` | `bg-canvas` | Nền ứng dụng ngoài cùng (outer bento shell) | `#0c0d0e` | `#f1f5f9` (Slate-100) |
-| `--color-app` | `bg-app` | Khung bề mặt màn hình chính (content panel) | `#121316` | `#f8fafc` |
-| `--color-panel` | `bg-panel` | Thẻ Bento Card, Sidebar, Modal shell | `#202226` | `#ffffff` |
-| `--color-field` | `bg-field` | Nền ô nhập liệu, header bảng | `#272a2f` | `#f1f5f9` (Slate-100) |
-| `--color-raised` | `bg-raised` | Hover / track fills trên nền field hoặc panel | `#31343a` | `#e2e8f0` (Slate-200) |
+| `--color-canvas` | `bg-canvas` | Nền ứng dụng ngoài cùng (outer bento shell) = `panel-0` | `#0f1011` | `#eff3f7` |
+| `--color-app` | `bg-app` | Khung bề mặt màn hình chính (content panel) = `panel-2` | `#151619` | `#f7f9fb` |
+| `--color-panel` | `bg-panel` | Sidebar, Modal shell, popover = `panel-4` (thẻ nội dung: `bg-card`) | `#191b1f` | `#ffffff` |
+| `--color-panel-0` … `-4` | `bg-panel-0` … `bg-panel-4` | Thang bề mặt (Surfaces bên dưới) | canvas → panel | canvas → panel |
+| `--color-card` | `bg-card` | Thẻ nội dung (`CARD`, `HERO`): không viền, tách bằng tông | `panel` + 5% `text-contrast` (`#222428`) | `app` + 5% `text-contrast`, lõm (`#eaecef`) |
+| `--color-card-field` | `bg-card-field` | Ô, tile, header bảng nằm trong thẻ (`TILE`) | `card` + 5% (`#2b2d31`) | `card` + 3% (`#e2e5e8`) |
+| `--color-tint` | `bg-tint`, `hover:bg-tint-hover` | Nền trong suốt của nút phụ (`BTN_SECONDARY`, `ICON_BTN`), không viền | `text-contrast` 7% / 11% | `text-contrast` 5% / 9% |
+| `--color-inverted` | `bg-inverted` + `text-on-inverted` | Nền đặc trung tính ngược với trang (nút chính của brand `primaryStyle: inverted`) | `#f4f4f4` / chữ `canvas` | `text-contrast` / chữ `panel` |
+| `--color-action` | `bg-action`, `hover:bg-action-hover`, `text-on-action` | Nền nút chính (`BTN_PRIMARY`, `MODAL_BTN_PRIMARY`, `headerPrimary`) | = `accent` | = `accent` (brand inverted: = `inverted`) |
+| `--color-field` | `bg-field` | Nền ô nhập liệu, header bảng | `#202328` | `#eff3f7` |
+| `--color-raised` | `bg-raised` | Hover / track fills trên nền field hoặc panel | `#2b2e34` | `#e1e7ef` |
 | `--color-text-contrast` | `text-contrast` | Tiêu đề, chữ độ tương phản cao | `#ffffff` | `#0f172a` (Slate-900) |
 | `--color-text-body` | `text-body` | Nội dung văn bản chính | `#d1d5db` (Gray-300) | `#334155` (Slate-700) |
 | `--color-text-muted` | `text-muted` | Nhãn phụ, placeholder, gợi ý | `#9ba1aa` | `#5b6779` |
@@ -125,13 +131,13 @@ Semi architecture separates tokens into two tiers:
 | `--color-accent` | `bg-accent` | Nền nút chính / mark "on" (BTN_PRIMARY, headerPrimary) | `primary-500` | `primary-700` |
 | `--color-accent-hover` | `hover:bg-accent-hover` | Hover của nền accent | `primary-400` | `primary-800` |
 | `--color-on-accent` | `text-on-accent` | Chữ / icon trên `bg-accent` (≥ 4.5:1) | `#0c0d0e` | `#ffffff` |
-| `--color-accent-fg` | `text-accent-fg` | Chữ / icon màu primary trên surface (link, check, tab active) | `primary-400` | `primary-700` |
+| `--color-accent-fg` | `text-accent-fg` | Chữ / icon màu primary trên surface (link, check, tab active), cả trên nền chọn trong thẻ lõm | `primary-400` | `primary-800` (brand kit: bộ sinh chọn, kiểm cả trên `card`) |
 | `--color-focus` | `ring-focus`, `border-focus` | Viền focus (`FOCUS_RING`), viền ô nhập đang gõ (≥ 3:1 trên mọi surface) | = `accent-fg` | = `accent-fg` |
 | `--color-accent-subtle` | `bg-accent-subtle` | Nền nhạt của mục đang chọn (option, trang hiện tại, pill active, IconTile) | `accent-fg` 14% | `accent-fg` 11% |
 | `--color-accent-subtle-hover` | `hover:bg-accent-subtle-hover` | Hover của nền nhạt accent | `accent-fg` 22% | `accent-fg` 18% |
 | `--color-accent-line` | `border-accent-line` | Viền của mục đang chọn (card được chọn, ngày hôm nay) | `accent-fg` 40% | `accent-fg` 40% |
 | `--color-danger-fg` · `success-fg` · `warning-fg` · `info-fg` | `text-danger-fg` … | Chữ trạng thái trên surface | `rose/emerald/amber/sky-400` | `-700` (`warning`: `amber-800`, ≥ 4.5:1 cả trên ô nhập Soft / Sharp) |
-| `--color-tone-<hue>` | `text-tone-<hue>` | Chữ tonal 12 hue (purple, violet, indigo, blue, sky, cyan, teal, emerald, amber, orange, rose, pink) | `<hue>-300` | `<hue>-700` |
+| `--color-tone-<hue>` | `text-tone-<hue>` | Chữ tonal 12 hue (purple, violet, indigo, blue, sky, cyan, teal, emerald, amber, orange, rose, pink) | `<hue>-300` | `<hue>-700` (amber, orange, cyan, teal, pink: `-800`, ≥ 4.5:1 trên badge trong thẻ lõm, #50) |
 
 Mọi cặp chữ / nền ở trên đạt WCAG AA (≥ 4.5:1) ở cả hai theme. Không viết `text-*-400` hay `text-*-700 dark:text-*-300` trong component: dùng `text-accent-fg`, `text-*-fg` hoặc `text-tone-*`.
 Trạng thái (focus, chọn, hover) không dùng thang `primary-*` với alpha (`ring-primary-500/50`, `bg-primary-500/15`): thang đó
@@ -140,6 +146,42 @@ không đổi theo theme nên biến mất với brand sáng trên nền sáng (
 nên `primary-500` có thể nhạt hay lệch hẳn; nền nút / mark "on" là `bg-accent` + `text-on-accent` (`primary-fill`).
 Thang `primary-*` chỉ dùng cho biểu đồ và hình minh hoạ. Brand: dùng brand kit
 (`docs/BRANDS.md`); bộ sinh màu đặt `accent`, `on-accent`, `accent-fg` cho từng theme, các token trạng thái đi theo `accent-fg`.
+
+### Surfaces (C-030, #93)
+
+Pages separate by **tone, not borders** (measured on magnific.com, owner decision C-030). One numbered scale, from the
+outermost frame to the brightest step, plus the card and two fills:
+
+| Step | Utility | Value | Use |
+|---|---|---|---|
+| `panel-0` | `bg-panel-0` = `bg-canvas` | canvas | The frame around the bento shell (`SHELL_OUTER md:bg-canvas`) |
+| `panel-1` | `bg-panel-1` | halfway canvas → app | A band between the frame and the content (rare) |
+| `panel-2` | `bg-panel-2` = `bg-app` | app | Main content (`SHELL_MAIN`, page background) |
+| `panel-3` | `bg-panel-3` | halfway app → panel | A calm block inside the content (sticky bars, inset areas) |
+| `panel-4` | `bg-panel-4` = `bg-panel` | panel | Sidebar (`SHELL_ASIDE`), modal, popover, menu, toast |
+| card | `bg-card` | dark: panel + 5% text-contrast (above the panel); light: app + 5% text-contrast (recessed) | Content cards: `CARD`, `<Card>`, `HERO` |
+| card-field | `bg-card-field` | card + 5% (dark) / 3% (light) text-contrast | Tiles, readings, table heads inside a card (`TILE`) |
+| tint / tint-hover | `bg-tint`, `hover:bg-tint-hover` | text-contrast at 7% / 11% (dark), 5% / 9% (light) | Secondary buttons (`BTN_SECONDARY`, `MODAL_BTN_SECONDARY`, `ICON_BTN`, `MODAL_CLOSE`): no border |
+| inverted | `bg-inverted` + `text-on-inverted` | near-white on dark, near-black on light | The main button of a brand with `primaryStyle: "inverted"` |
+
+- `canvas`, `app` and `panel` are `panel-0`, `panel-2`, `panel-4` (one value, two names). Since 0.36 every style takes
+  the preview's lightness steps (OKLCH L, dark 0.173 / 0.200 / 0.222, field 0.256, raised 0.301; light ≈ 0.96 / 0.98 /
+  1.0) with its own hue: small, even steps, the sidebar barely above the main block. The steps between, the card, the
+  fills and inverted are mixed from them in CSS (`color-mix(in oklab, …)`), so every style and every brand kit (tinted,
+  `pure` or `preset` neutrals) gets them with no extra values.
+- **Cards have no border** in Flat and Soft (`card-border` is `1px solid transparent`: the box stays, so hover and
+  `CARD_ACTIVE` borders do not move the layout); Sharp keeps its 2px line. A dense data view that needs an edge uses
+  `<Card bordered>` / `CARD_BORDERED` (panel fill + `border-line`, the pre-0.36 card).
+- **A block that means "card" is `bg-card`**, never `bg-panel` (that is the sidebar / modal step: on the light app it
+  now reads as a raised white block, not a card).
+- **Secondary buttons are a tint fill** with no border; `outline` (`BTN_OUTLINE`, `<Button variant="outline">`) keeps
+  the framed look for a toolbar of framed controls. Focus rings are unchanged.
+- **Main buttons read `action`**, not `accent`: the accent by default, the inverted neutral when the brand kit sets
+  `primaryStyle: "inverted"`. Checked controls, selection, links, focus, badges stay on the accent tokens.
+- Measured (core Flat / Soft / Sharp and the Semi and 3D Noobs kits, tinted and pure, both themes): `text-muted` ≥ 4.53:1
+  on every panel step, the card and card-field (worst: 3D Noobs Flat light card-field); card vs app 1.12:1 light, ≥ 1.16:1
+  dark (#10 asks ≥ 1.15 dark); app vs panel 1.04–1.06:1 (deliberately subtle); inverted text ≥ 15:1; every status and tone text ≥ 4.5:1 on its badge inside a card
+  (`lint/test/surfaces.test.mjs`).
 
 **Cách sinh CSS:** giá trị theo theme nằm ở biến nguồn `--semi-*` (đặt trong `:root/[data-theme=dark]` và `[data-theme=light]`); utility đọc qua `@theme inline` (`bg-panel` → `var(--semi-panel)`), còn `--color-*` được khai báo lại ở mỗi theme scope cho CSS của app (`var(--color-panel)`).
 
@@ -228,7 +270,7 @@ In `data-theme="dark"`, solid pastels have luminance > 95% and turn into glaring
 
 Instead, follow the canonical Semi patterns:
 1. **Categorized / Feature Cards:**
-   Keep the card shell neutral (`<Card>`, or `bg-panel border-line`) and express the category on the icon tile:
+   Keep the card shell neutral (`<Card>`, or `bg-card`) and express the category on the icon tile:
    ```tsx
    <Card>
      <div className="flex items-center gap-2">
@@ -439,18 +481,20 @@ What no number catches stays a review by eye (§19): one main block per screen, 
 
 ## 5. Card
 
+Cards separate from the page by tone (`bg-card`, Surfaces in §2), with no visible border in Flat and Soft.
 `<Card>` (`@semi/ui`) wraps the same classes and pads itself (`padding`: `"card"` = `p-card` by default, `"panel"` =
-`p-card sm:p-panel`, `"none"` for media that runs to the edge; a `p-*` in `className` replaces it): `<Card>`, `<Card interactive>` (CARD_HOVER), `<Card active>`
-(CARD_ACTIVE). It owns its surface: pass padding / layout only, never `bg-*` or `shadow-*`. With `onClick` it is a
+`p-card sm:p-panel`, `"none"` for media that runs to the edge; a `p-*` in `className` replaces it): `<Card>`, `<Card interactive>` (CARD_HOVER, the border shows on hover), `<Card active>`
+(CARD_ACTIVE), `<Card bordered>` (CARD_BORDERED: panel fill + 1px line, for a dense table or list that needs an edge). It owns its surface: pass padding / layout only, never `bg-*` or `shadow-*`. With `onClick` it is a
 button for keyboards and screen readers too (`role="button"`, in the tab order, Enter / Space, `FOCUS_RING`; `active`
 becomes `aria-pressed`): a selectable tile is `<Card onClick active>`, never a `<div onClick>` (`click-target`).
 
 ```tsx
-import { CARD, CARD_HOVER, CARD_ACTIVE } from "@semi/ui/styles";
+import { CARD, CARD_BORDERED, CARD_HOVER, CARD_ACTIVE } from "@semi/ui/styles";
 
 <div className={`${CARD} p-card flex flex-col gap-stack`}>…</div>          // static
 <button className={`${CARD_HOVER} p-card text-left`}>…</button>         // opens something
 <div className={`${CARD} ${CARD_ACTIVE} p-card`}>…</div>                // active / "on" / running: primary border, no glow
+<div className={`${CARD_BORDERED} overflow-hidden`}>…table…</div>        // dense data view that needs an edge
 ```
 
 Card header row: `IconTile` (or the item's image) · name (`text-ui-lg font-semibold`) + caption · icon actions
@@ -458,7 +502,7 @@ Card header row: `IconTile` (or the item's image) · name (`text-ui-lg font-semi
 
 ## 6. Hero card
 
-`HERO` (`rounded-panel p-card sm:p-panel`): a plain panel for the top block of a page. No glow blob.
+`HERO` (`rounded-panel bg-card p-card sm:p-panel`): a plain card-surface block for the top of a page. No glow blob.
 
 ## 7. Icon tile
 
@@ -479,8 +523,9 @@ tiles use `w-11 h-11 rounded-card` with their area's `TILE_TONES`.
 
 ## 9. Buttons
 
-`BTN_PRIMARY` / `BTN_SECONDARY` / `BTN_DANGER` from `@semi/ui/styles` (`rounded-control`, `h-control`,
-`text-label font-medium`, flat). Icon-only: add `BTN_ICON`, or `ICON_BTN` (`w-7 h-7 rounded-control`) inside cards. Big
+`BTN_PRIMARY` / `BTN_SECONDARY` / `BTN_OUTLINE` / `BTN_DANGER` from `@semi/ui/styles` (`rounded-control`, `h-control`,
+`text-label font-medium`, flat). Primary fills with `bg-action` (the accent, or inverted in a brand with
+`primaryStyle: "inverted"`); secondary is a translucent `bg-tint` with no border; outline is the framed field look. Icon-only: add `BTN_ICON`, or `ICON_BTN` (`w-7 h-7 rounded-control`) inside cards. Big
 state toggles (power) are round: `w-20 h-20 sm:w-24 sm:h-24 rounded-full`, flat `bg-accent text-on-accent` when on,
 `bg-field` when off. A running action shows a spinner inside its own button only.
 
@@ -531,7 +576,7 @@ Size `w-2 h-2` (`w-1.5 h-1.5` inline in a caption).
 
 ## 12. Tiles & readings
 
-Nested facts (readings, KPIs, sensor values) sit in `TILE` (`rounded-control bg-field border border-line`)
+Nested facts (readings, KPIs, sensor values) sit in `TILE` (`rounded-control bg-card-field`, no border)
 with an icon above or before a `tabular-nums` value. Progress is a ring or a `h-1.5 rounded-full` bar in
 `bg-accent` on `bg-raised` (`Progress`).
 
@@ -730,8 +775,8 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `NumberInput` (+ `NumPadPopup`, `useCoarsePointer`) | every number field (app numpad on touch screens) |
 | `SidePanel`, `SidePanelToggle`, `RefreshButton` | tool-app left panel, icon-only reload action |
 | Hooks (`Field.tsx`, `a11y.ts`, `floating.ts`) | `useField` (a custom control reads its `Field`: id, `aria-describedby`, invalid), `useDialog` (focus trap + scroll lock + Escape for a modal-like surface; built on `useFocusTrap` and `useScrollLock`), `useBackdropClose` (a backdrop that wraps its panel closes only on a click that starts and ends on it), `useAnchoredPosition` (fixed menu / tooltip next to its trigger, flips above, never clipped), `useCoarsePointer`, `useTheme` |
-| `@semi/ui/styles` → `surfaces.ts` | `SHELL_*`, `CARD`, `CARD_HOVER`, `CARD_ACTIVE`, `HERO`, `TILE`, `SECTION_*`, `COUNT_PILL`, `EMPTY`, `ICON_BTN` / `ICON_BTN_DANGER`, `STATUS_PILL`, `STATUS_DOT`, `STICKY_TOOLBAR`, `MODAL_*`, `FIELD_LABEL`, `FIELD_INPUT`, `FIELD_TEXTAREA`, `FORM_PAGE`, `FORM_ACTIONS`, `FORM_ACTIONS_STICKY` |
-| `buttons.ts` | `BTN_PRIMARY`, `BTN_SECONDARY`, `BTN_DANGER`, `BTN_ICON`, `MODAL_BTN_*` |
+| `@semi/ui/styles` → `surfaces.ts` | `SHELL_*`, `CARD`, `CARD_HOVER`, `CARD_BORDERED`, `CARD_BORDERED_HOVER`, `CARD_ACTIVE`, `HERO`, `TILE`, `SECTION_*`, `COUNT_PILL`, `EMPTY`, `ICON_BTN` / `ICON_BTN_DANGER`, `STATUS_PILL`, `STATUS_DOT`, `STICKY_TOOLBAR`, `MODAL_*`, `FIELD_LABEL`, `FIELD_INPUT`, `FIELD_TEXTAREA`, `FORM_PAGE`, `FORM_ACTIONS`, `FORM_ACTIONS_STICKY` |
+| `buttons.ts` | `BTN_PRIMARY`, `BTN_SECONDARY`, `BTN_OUTLINE`, `BTN_DANGER`, `BTN_ICON`, `MODAL_BTN_*` (incl. `MODAL_BTN_OUTLINE`) |
 | `appChrome.ts` | `HEADER_ICON_*`, `headerPrimary`, `HEADER_PILL`, `VIEWPORT_*` |
 
 Components are client components (`"use client"`), shipped as TypeScript source: the app adds
@@ -763,7 +808,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 
 | Need | Use |
 |---|---|
-| Any action | `Button` (`variant` primary / secondary / danger / ghost, `size` md / sm / modal, `icon`, `iconOnly` + `aria-label`, `loading`); `Spinner` only inside a button or field running its own action, never for a page) |
+| Any action | `Button` (`variant` primary / secondary / outline / danger / ghost, `size` md / sm / modal, `icon`, `iconOnly` + `aria-label`, `loading`); `Spinner` only inside a button or field running its own action, never for a page) |
 | Overflow actions of a row / card | `Menu` (icon-only "more" trigger; `danger` item last) |
 | Hint for an icon-only control | `Tooltip` (never essential text: touch screens do not show it) |
 | Feedback after an action | `toast.success|error|warning|info(title)`, `toast.undo(title, restore)` after a reversible destructive action, `toast.promise(p, { loading, success, error })` (§14c) + `<ToastHost />` in the layout (`label` when a page section is also called "Thông báo"). Irreversible: `confirmDelete({ name })` first |

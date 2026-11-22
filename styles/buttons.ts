@@ -2,11 +2,14 @@
 const BASE =
   "inline-flex items-center justify-center gap-1.5 h-control rounded-control text-label font-medium transition outline-none focus-visible:ring-2 focus-visible:ring-focus cursor-pointer shrink-0 whitespace-nowrap disabled:opacity-40 disabled:cursor-not-allowed";
 
-/** Main action (Thêm, Lưu). */
-export const BTN_PRIMARY = `${BASE} px-3 bg-accent hover:bg-accent-hover active:scale-[0.98] text-on-accent`;
+/** Main action (Thêm, Lưu): the action fill (the accent, or the inverted neutral in a brand with primaryStyle inverted). */
+export const BTN_PRIMARY = `${BASE} px-3 bg-action hover:bg-action-hover active:scale-[0.98] text-on-action`;
 
-/** Secondary action (Làm mới, Tính lại, Đóng). */
-export const BTN_SECONDARY = `${BASE} px-3 bg-field hover:bg-raised border border-line text-body hover:text-contrast`;
+/** Secondary action (Làm mới, Tính lại, Đóng): translucent tint fill, no border (C-030); reads on every surface. */
+export const BTN_SECONDARY = `${BASE} px-3 bg-tint hover:bg-tint-hover text-body hover:text-contrast`;
+
+/** Outlined secondary action: field fill and a 1px line, the look of BTN_SECONDARY before 0.36 (a toolbar of framed controls). */
+export const BTN_OUTLINE = `${BASE} px-3 bg-field hover:bg-raised border border-line text-body hover:text-contrast`;
 
 /** Icon-only toolbar button (Thêm, Làm mới): add to BTN_PRIMARY / BTN_SECONDARY; keep `title` + `aria-label`. */
 export const BTN_ICON = "w-control !px-0";
@@ -19,10 +22,13 @@ const MODAL_BASE =
   "inline-flex items-center justify-center gap-2 max-sm:h-11 sm:h-control px-4 sm:px-3 rounded-card sm:rounded-control max-sm:text-ui-lg text-label font-medium transition outline-none focus-visible:ring-2 focus-visible:ring-focus cursor-pointer shrink-0 whitespace-nowrap disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98]";
 
 /** Main action in dialogs & modals (Lưu, In lại, Gửi lệnh). */
-export const MODAL_BTN_PRIMARY = `${MODAL_BASE} bg-accent hover:bg-accent-hover text-on-accent`;
+export const MODAL_BTN_PRIMARY = `${MODAL_BASE} bg-action hover:bg-action-hover text-on-action`;
 
-/** Secondary action in dialogs & modals (Huỷ, Đóng). */
-export const MODAL_BTN_SECONDARY = `${MODAL_BASE} bg-field hover:bg-raised border border-line text-body hover:text-contrast`;
+/** Secondary action in dialogs & modals (Huỷ, Đóng): tint fill, no border. */
+export const MODAL_BTN_SECONDARY = `${MODAL_BASE} bg-tint hover:bg-tint-hover text-body hover:text-contrast`;
+
+/** Outlined secondary action in dialogs & modals. */
+export const MODAL_BTN_OUTLINE = `${MODAL_BASE} bg-field hover:bg-raised border border-line text-body hover:text-contrast`;
 
 /** Destructive action in dialogs & modals (Dừng in, Xoá). */
 export const MODAL_BTN_DANGER = `${MODAL_BASE} bg-danger-bg hover:bg-danger-border border border-danger-border text-danger-fg`;

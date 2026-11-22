@@ -60,6 +60,7 @@ const lightVars = [];
 const inlineVars = [];
 const compatVars = [];
 const zKeys = [];
+const bgUtilities = [];
 const srcVar = (key) => `--semi-${key.replace(/^color-/, "")}`;
 
 for (const [group, entries] of Object.entries(tokens)) {
@@ -73,6 +74,15 @@ for (const [group, entries] of Object.entries(tokens)) {
         continue;
       }
       const note = raw.note ? ` /* ${raw.note} */` : "";
+      if (raw.utility === "bg") {
+        // Background only (bg-card): a --color-card theme variable would also make Tailwind generate a border-card
+        // colour utility, which collides with the style's own border-card.
+        bgUtilities.push(`/* ${raw.note} */\n@utility bg-${key.replace(/^color-/, "")} {\n  background-color: var(${srcVar(key)});\n}\n\n`);
+        darkVars.push(`  ${srcVar(key)}: ${raw.dark};`);
+        lightVars.push(`  ${srcVar(key)}: ${raw.light};`);
+        compatVars.push(`  --${key}: var(${srcVar(key)});`);
+        continue;
+      }
       // An aliased key (color-text-contrast → color-contrast) only gets the alias as a utility (text-contrast).
       inlineVars.push(`  --${raw.alias ?? key}: var(${srcVar(key)});${note}`);
       darkVars.push(`  ${srcVar(key)}: ${raw.dark};`);
@@ -108,6 +118,7 @@ if (darkVars.length > 0) {
   const themeKeys = styleKeys.filter((k) => !UTILITY_KEYS[k]);
   out += `/* Styles (tokens/styles/*.json, docs/STYLES.md): set data-style="${styles.map((s) => s.id).join("|")}" on <html> or a wrapper; default ${def.id} */\n`;
   out += `@theme inline {\n${themeKeys.map((k) => `  --${k}: var(--semi-${k});${note(def.tokens[k])}`).join("\n")}\n}\n\n`;
+  out += bgUtilities.join("");
   out += Object.entries(UTILITY_KEYS).map(([k, [name, prop]]) => `/* ${def.tokens[k].note ?? k} */\n@utility ${name} {\n  ${prop}: var(--semi-${k});\n}\n\n`).join("");
   for (const s of styles) {
     const sel = styleSelectors(s.id, s.default);
@@ -142,18 +153,6 @@ if (darkVars.length > 0) {
   out += `/* Product: type scale (data-type-scale="${Object.keys(prod.typeScale).join("|")}") */\n`;
   for (const [id, t] of Object.entries(prod.typeScale)) if (t.sizes) out += `[data-type-scale="${id}"] { /* ${t.note} */\n${Object.entries(t.sizes).map(([k, v]) => `  --${k}: ${toRem(k, v)};`).join("\n")}\n}\n\n`;
   out += zKeys.map((k) => `@utility ${k} {\n  z-index: var(--${k});\n}\n`).join("") + "\n";
-  out += `/* Utility fallbacks & direct semantic text/bg/border helpers */\n@layer utilities {\n` +
-    `  .text-contrast { color: var(--color-text-contrast); }\n` +
-    `  .text-body { color: var(--color-text-body); }\n` +
-    `  .text-muted { color: var(--color-text-muted); }\n` +
-    `  .bg-canvas { background-color: var(--color-canvas); }\n` +
-    `  .bg-app { background-color: var(--color-app); }\n` +
-    `  .bg-panel { background-color: var(--color-panel); }\n` +
-    `  .bg-field { background-color: var(--color-field); }\n` +
-    `  .bg-raised { background-color: var(--color-raised); }\n` +
-    `  .border-line { border-color: var(--color-line); }\n` +
-    `  .border-divider { border-color: var(--color-divider); }\n` +
-    `}\n`;
 }
 
 const styleList =

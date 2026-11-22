@@ -3,7 +3,7 @@
     "id": "button",
     "title": "Button",
     "group": "Actions",
-    "description": "The action control: one primary per area, secondary for the rest, danger for destructive actions, ghost for quiet ones. Spinner shows work in progress inside the control that runs it.",
+    "description": "The action control: one primary per area (the action fill: the accent, or a neutral inverted fill in a brand with primaryStyle inverted), secondary (a translucent tint, no border) for the rest, outline (field fill + line) for framed toolbars, danger for destructive actions, ghost for quiet ones. Spinner shows work in progress inside the control that runs it.",
     "components": [
       "Button",
       "Spinner"
@@ -450,7 +450,7 @@
     "id": "card",
     "title": "Card",
     "group": "Data display",
-    "description": "The bento content card: panel fill and the style's card border, radius and resting shadow. interactive adds hover / press, active marks the selected or running item.",
+    "description": "The bento content card: the card surface (bg-card, separated from the page by tone, no visible border in Flat and Soft) with the style's radius and resting shadow. bordered frames a dense data view; interactive adds hover / press, active marks the selected or running item.",
     "components": [
       "Card"
     ]

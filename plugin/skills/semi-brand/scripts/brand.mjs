@@ -2,9 +2,9 @@
 // /semi-brand helper: creates, edits and updates a brand kit repo (docs/BRANDS.md). Zero external deps; the colour
 // work is done by the kit's own @semi/ui (semi-brand build).
 //   node brand.mjs create --cwd <dir> --name "3D Noobs" --package @3dnoobs/brand --primary "#00AE42"
-//        [--secondary "#hex"] [--neutral tinted|preset] [--style flat] [--allow flat,soft]
+//        [--secondary "#hex"] [--neutral brand|pure|preset] [--primary-style brand|inverted] [--style flat] [--allow flat,soft]
 //        [--sans Geist] [--display "Montserrat Alternates"]
-//   node brand.mjs set --cwd <dir> primary=#00C853 secondary=none neutral=preset allow=flat,soft
+//   node brand.mjs set --cwd <dir> primary=#00C853 secondary=none neutral=pure primaryStyle=inverted allow=flat,soft
 //        style=flat sans=Inter display=Inter        edit brand.json, then build
 //   node brand.mjs build|check --cwd <dir>          the kit's semi-brand
 //   node brand.mjs preview --cwd <dir> [--port N]   serve the kit's preview site (http://localhost:4600); keep it running
@@ -257,6 +257,10 @@ Hướng dẫn đầy đủ: \`node_modules/@semi/ui/docs/BRANDS.md\`.
 function applyPair(brand, key, value) {
   const v = value === "none" || value === "null" ? null : value;
   if (key === "primary" || key === "secondary" || key === "name" || key === "neutral") brand[key] = v;
+  else if (key === "primaryStyle") {
+    if (v === null || v === "brand") delete brand.primaryStyle; // the default: keep brand.json short
+    else brand.primaryStyle = v;
+  }
   else if (key === "allow") brand.styles.allowed = v.split(",").map((x) => x.trim()).filter(Boolean);
   else if (key === "style") brand.styles.default = v;
   else if (key === "sans" || key === "display") brand.fonts[key] = v;
@@ -287,7 +291,7 @@ function applyPair(brand, key, value) {
     throw new Error(`"${key}" là lựa chọn của từng sản phẩm, không phải của thương hiệu: chọn khi tạo app (/semi-new-app --${key === "scale" ? "type-scale" : "density"})`);
   } else
     throw new Error(
-      `không biết khoá "${key}" (primary, secondary, name, neutral, allow, style, sans, display, tone, address, we, emoji, accent, secondaryRole, buttonText, product, audience, personality, tagline, logo, logoDark, mark, imagery)`,
+      `không biết khoá "${key}" (primary, secondary, name, neutral, primaryStyle, allow, style, sans, display, tone, address, we, emoji, accent, secondaryRole, buttonText, product, audience, personality, tagline, logo, logoDark, mark, imagery)`,
     );
 }
 
@@ -337,6 +341,7 @@ if (cmd === "create") {
     // A brand.json from the docs Brand preview or another kit: its choices become the flags below.
     const src = readJson(resolve(cwd, opts.from));
     for (const k of ["name", "package", "primary", "secondary", "neutral"]) if (src[k] && !opts[k]) opts[k] = src[k];
+    if (src.primaryStyle && !opts["primary-style"]) opts["primary-style"] = src.primaryStyle;
     if (src.styles && !opts.style) (opts.style = src.styles.default), (opts.allow = src.styles.allowed.join(","));
     if (src.fonts) (opts.sans ||= src.fonts.sans), (opts.display ||= src.fonts.display);
     opts.guide = JSON.stringify(Object.fromEntries(["brief", "logo", "voice", "color", "imagery"].filter((k) => src[k] !== undefined).map((k) => [k, src[k]])));
@@ -358,7 +363,8 @@ if (cmd === "create") {
     package: opts.package,
     primary: opts.primary,
     secondary: opts.secondary && opts.secondary !== "none" ? opts.secondary : null,
-    neutral: opts.neutral || "tinted",
+    neutral: opts.neutral || "brand",
+    ...(opts["primary-style"] && opts["primary-style"] !== "brand" ? { primaryStyle: opts["primary-style"] } : {}),
     styles: { default: style, allowed: (opts.allow || style).split(",").map((s) => s.trim()) },
     fonts: { sans: opts.sans || "Geist", display: opts.display || "Montserrat Alternates" },
     ...(opts.guide ? JSON.parse(opts.guide) : {}),

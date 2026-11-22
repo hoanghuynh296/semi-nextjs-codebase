@@ -78,7 +78,7 @@ test("report: focus ring and hover are checked; a fill that blends into the page
 
 test("every pair reaches AA for very different brand colours, in every style and theme", () => {
   for (const primary of ["#00AE42", "#FACC15", "#2563EB", "#E11D48", "#14B8A6", "#7C3AED", "#F97316", "#0EA5E9", "#84CC16", "#DB2777", "#8B5CF6", "#B45309"]) {
-    for (const neutral of ["tinted", "preset"]) {
+    for (const neutral of ["tinted", "preset", "pure"]) {
       const r = generateBrand(brand({ primary, secondary: "#F59E0B", neutral }), { tokens, styles });
       assert.deepEqual(r.report.filter((x) => !x.ok && !x.soft).map((x) => `${primary} ${neutral} ${x.check} ${x.ratio.toFixed(2)}`), []);
       for (const theme of ["dark", "light"]) {
@@ -313,4 +313,34 @@ test("status colours close to the primary turn away from it, within a bound that
   const violet = generateBrand(brand({ primary: "#7C3AED" }), { tokens, styles });
   assert.equal(violet.tokens.status, undefined, "far from every status: nothing turns");
   assert.doesNotMatch(violet.css, /Status, turned/);
+});
+
+test("neutral brand | pure and primaryStyle brand | inverted (#93): defaults change nothing, pure is grey, inverted re-points the main button", () => {
+  const css = (over) => generateBrand(brand(over), { tokens, styles, version: "0.0.0" }).css;
+  const base = css({});
+  // "tinted" is the older name of "brand", and leaving both keys out is the same kit: byte-identical brand.css
+  const { neutral, ...noNeutral } = brand();
+  assert.equal(generateBrand(noNeutral, { tokens, styles, version: "0.0.0" }).css, base);
+  assert.equal(css({ neutral: "brand" }), base);
+  assert.equal(css({ primaryStyle: "brand" }), base);
+  assert.doesNotMatch(base, /--semi-action/);
+  // pure: every neutral is a 0% saturation grey (chroma ~0), text and lines included
+  const pure = generateBrand(brand({ neutral: "pure" }), { tokens, styles });
+  for (const [sid, themes] of Object.entries(pure.tokens.neutrals))
+    for (const [theme, n] of Object.entries(themes))
+      for (const k of ["color-canvas", "color-app", "color-panel", "color-field", "color-raised", "color-text-contrast", "color-text-body", "color-text-muted"])
+        assert.ok(hexToOklch(n[k]).c < 0.002, `${sid} ${theme} ${k} ${n[k]} is grey`);
+  assert.deepEqual(pure.report.filter((x) => !x.ok && !x.soft).map((x) => x.check), []);
+  // inverted: one block points the action fill at inverted; the accent itself is unchanged
+  const inv = generateBrand(brand({ primaryStyle: "inverted" }), { tokens, styles, version: "0.0.0" });
+  assert.match(inv.css, /--semi-action: var\(--semi-inverted\);\n  --semi-action-hover: var\(--semi-inverted-hover\);\n  --semi-on-action: var\(--semi-on-inverted\);/);
+  assert.equal(inv.css.replace(/\/\* Main button: inverted[^]*?\}\n\n/, ""), base);
+  assert.equal(inv.tokens.primaryStyle, "inverted");
+  assert.ok(inv.report.some((r) => /đảo màu/.test(r.check) && r.ok));
+  assert.ok(!generateBrand(brand(), { tokens, styles }).report.some((r) => /đảo màu/.test(r.check)), "no inverted rows by default");
+  // validation
+  const { errors } = validateBrand(brand({ neutral: "grey", primaryStyle: "black" }), { styles });
+  assert.equal(errors.length, 2);
+  assert.match(errors.join("\n"), /neutral/);
+  assert.match(errors.join("\n"), /primaryStyle/);
 });

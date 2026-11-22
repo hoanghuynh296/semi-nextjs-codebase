@@ -8,10 +8,12 @@ import {
   BTN_DANGER,
   BTN_GHOST,
   BTN_ICON,
+  BTN_OUTLINE,
   BTN_PRIMARY,
   BTN_SECONDARY,
   BTN_SM,
   MODAL_BTN_DANGER,
+  MODAL_BTN_OUTLINE,
   MODAL_BTN_PRIMARY,
   MODAL_BTN_SECONDARY,
 } from "../styles/buttons";
@@ -34,17 +36,25 @@ export function Spinner({ className = "w-4 h-4", label }: { className?: string; 
   );
 }
 
-export type ButtonVariant = "primary" | "secondary" | "danger" | "ghost";
+/** primary = the main action (action fill) · secondary = tint fill, no border · outline = field fill + 1px line (framed toolbars) · danger · ghost. */
+export type ButtonVariant = "primary" | "secondary" | "outline" | "danger" | "ghost";
 export type ButtonSize = "sm" | "md" | "modal";
 
 const CLASSES: Record<ButtonSize, Record<ButtonVariant, string>> = {
-  md: { primary: BTN_PRIMARY, secondary: BTN_SECONDARY, danger: BTN_DANGER, ghost: BTN_GHOST },
-  sm: { primary: `${BTN_PRIMARY} ${BTN_SM}`, secondary: `${BTN_SECONDARY} ${BTN_SM}`, danger: `${BTN_DANGER} ${BTN_SM}`, ghost: `${BTN_GHOST} ${BTN_SM}` },
-  modal: { primary: MODAL_BTN_PRIMARY, secondary: MODAL_BTN_SECONDARY, danger: MODAL_BTN_DANGER, ghost: MODAL_BTN_SECONDARY },
+  md: { primary: BTN_PRIMARY, secondary: BTN_SECONDARY, outline: BTN_OUTLINE, danger: BTN_DANGER, ghost: BTN_GHOST },
+  sm: {
+    primary: `${BTN_PRIMARY} ${BTN_SM}`,
+    secondary: `${BTN_SECONDARY} ${BTN_SM}`,
+    outline: `${BTN_OUTLINE} ${BTN_SM}`,
+    danger: `${BTN_DANGER} ${BTN_SM}`,
+    ghost: `${BTN_GHOST} ${BTN_SM}`,
+  },
+  modal: { primary: MODAL_BTN_PRIMARY, secondary: MODAL_BTN_SECONDARY, outline: MODAL_BTN_OUTLINE, danger: MODAL_BTN_DANGER, ghost: MODAL_BTN_SECONDARY },
 };
 
 type Base = Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "children"> & {
   ref?: React.Ref<HTMLButtonElement>;
+  /** Look of the button (default `secondary`): `primary` main action, `secondary` tint fill without border (since 0.36), `outline` field fill with a 1px line (the pre-0.36 secondary), `danger`, `ghost`. */
   variant?: ButtonVariant;
   /** md = h-control toolbar / form (34px in Flat) · sm = 28px dense rows · modal = 44px on phones, 34px from sm (dialog footers). */
   size?: ButtonSize;

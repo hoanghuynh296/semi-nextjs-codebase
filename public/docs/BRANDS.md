@@ -210,7 +210,7 @@ dải của brand cùng cách sửa: chạy `/semi-brand update` trong repo bran
   "package": "@3dnoobs/brand",
   "primary": "#00AE42",
   "secondary": null,
-  "neutral": "tinted",
+  "neutral": "brand",
   "styles": { "default": "flat", "allowed": ["flat", "soft"] },
   "fonts": { "sans": "Geist", "display": "Montserrat Alternates" },
   "brief": {
@@ -239,7 +239,8 @@ dải của brand cùng cách sửa: chạy `/semi-brand update` trong repo bran
 | `name`, `package` | Tên hiển thị, tên npm (`@scope/brand`) | Bắt buộc |
 | `primary` | Hex | Bắt buộc. Không quá xám (độ đậm tối thiểu), bộ sinh tự chọn sắc độ đọc rõ (xem dưới) |
 | `secondary` | Hex hoặc `null` | Tuỳ chọn; sinh `secondary-50 … 900` (`bg-secondary-500`, `text-secondary-fg`) |
-| `neutral` | `"tinted"` / `"preset"` | `tinted`: màu trung tính của mỗi style phủ nhẹ tông màu chính (bề mặt gần như trung tính, chữ và viền có tông rõ hơn). `preset`: giữ màu trung tính có sẵn của style |
+| `neutral` | `"brand"` (mặc định) / `"pure"` / `"preset"` | `brand` (tên cũ `tinted`, vẫn nhận): màu trung tính của mỗi style phủ nhẹ tông màu chính (bề mặt gần như trung tính, chữ và viền có tông rõ hơn). `pure`: xám trung tính 0% sắc (kiểu magnific.com), cả chữ và viền. `preset`: giữ màu trung tính có sẵn của style. Thẻ, bậc bề mặt và nút phụ (C-030) tự đi theo lựa chọn này |
+| `primaryStyle` | `"brand"` (mặc định) / `"inverted"` | `brand`: nút chính tô màu thương hiệu (`accent`). `inverted`: nút chính trung tính, gần đen trên nền sáng và gần trắng trên nền tối (`bg-inverted`, ≥ 15:1); màu thương hiệu vẫn dùng cho link, mục đang chọn, focus, badge, công tắc. `brand.css` thêm một khối trỏ `--semi-action` sang `inverted`; bỏ khoá này thì `brand.css` giữ nguyên từng byte |
 | `styles.default`, `styles.allowed` | `flat` · `soft` · `sharp` | Ít nhất một; `default` phải nằm trong `allowed` |
 | `fonts.sans`, `fonts.display` | Tên Google Font | `next/font/google` phải có font đó |
 | `semi` | Dải phiên bản `@semi/ui` | `/semi-brand update` cập nhật |

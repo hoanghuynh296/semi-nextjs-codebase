@@ -15,11 +15,15 @@ Phones (`< md`) hide the top logo header and use `MobileTabBar` at the bottom (n
 **Two-Tier Semantic Tokens (Dark & Light Mode):**
 | Semantic Token | Tailwind Class | Dark Mode (`[data-theme="dark"]`) | Light Mode (`[data-theme="light"]`) | Usage |
 |---|---|---|---|---|
-| `--color-canvas` | `bg-canvas` | `#0c0d0e` | `#f1f5f9` (Slate-100) | Outermost viewport frame |
-| `--color-app` | `bg-app` | `#121316` | `#f8fafc` | Main workspace & content canvas |
-| `--color-panel` | `bg-panel` | `#202226` | `#ffffff` | Bento Cards, Sidebar, Modals, Menus |
-| `--color-field` | `bg-field` | `#272a2f` | `#f1f5f9` (Slate-100) | Form inputs (`FIELD_INPUT`), table headers |
-| `--color-raised` | `bg-raised` | `#26282e` | `#e2e8f0` (Slate-200) | Hover surface, subtle elevation, skeleton shimmer |
+| `--color-canvas` | `bg-canvas` | `#0f1011` | `#eff3f7` | Outermost viewport frame |
+| `--color-app` | `bg-app` | `#151619` | `#f7f9fb` | Main workspace & content canvas |
+| `--color-panel` | `bg-panel` | `#191b1f` | `#ffffff` | Sidebar, Modals, Menus (= `panel-4`) |
+| `--color-panel-0…4` | `bg-panel-0` … `bg-panel-4` | canvas → panel | canvas → panel | Surface scale: 0 = canvas, 2 = app, 4 = panel, 1 / 3 halfway |
+| `--color-card` | `bg-card` | panel + 5% (`#222428`) | app + 5%, recessed (`#eaecef`) | Content cards (`CARD`, `<Card>`, `HERO`): no border, tone only |
+| `--color-card-field` | `bg-card-field` | `#2b2d31` | `#e2e5e8` | Tiles / table heads inside a card (`TILE`) |
+| `--color-tint` | `bg-tint` / `hover:bg-tint-hover` | contrast 7% / 11% | contrast 5% / 9% | Secondary buttons, no border |
+| `--color-field` | `bg-field` | `#202328` | `#eff3f7` | Form inputs (`FIELD_INPUT`), table headers |
+| `--color-raised` | `bg-raised` | `#2b2e34` | `#e1e7ef` | Hover surface, subtle elevation, skeleton shimmer |
 | `--color-text-contrast` | `text-contrast` | `#ffffff` | `#0f172a` (Slate-900) | Headings, active state, high-contrast text |
 | `--color-text-body` | `text-body` | `#d1d5db` (Gray-300) | `#334155` (Slate-700) | Primary UI labels, body text |
 | `--color-text-muted` | `text-muted` | `#9ba1aa` | `#5b6779` | Captions, placeholders, inactive hints |
@@ -28,7 +32,9 @@ Phones (`< md`) hide the top logo header and use `MobileTabBar` at the bottom (n
 | `--color-control-line` | `border-control-line` | `text-muted` 65% | `text-muted` 80% | Edge of inputs, checkboxes, radios (≥ 3:1); hover `border-control-line-hover` |
 | `--color-divider` | `border-divider` | `rgba(255,255,255,0.05)` | `rgba(0,0,0,0.05)` (Slate-100) | Subtle row & item separators |
 
-*Accent & status (AA in both themes):* solid action `bg-accent hover:bg-accent-hover text-on-accent` · primary text/icon `text-accent-fg` · focus `ring-focus` / focused field `border-focus` · selected `bg-accent-subtle` (hover `bg-accent-subtle-hover`) + `border-accent-line` · status text `text-danger-fg` / `text-success-fg` / `text-warning-fg` / `text-info-fg` · tonal text `text-tone-<hue>`. Never `text-*-400` or `text-*-700 dark:text-*-300` in shared UI.
+*Surfaces (C-030):* pages separate by tone, not borders: cards are `bg-card` (never `bg-panel`, the sidebar step), `<Card bordered>` / `CARD_BORDERED` only for a dense data view; secondary buttons `bg-tint` without border (`outline` keeps the frame); the main button is `bg-action hover:bg-action-hover text-on-action` (accent, or `inverted` in a brand with `primaryStyle: "inverted"`).
+
+*Accent & status (AA in both themes):* main button `bg-action` (`BTN_PRIMARY`) · accent fill for checked / "on" marks `bg-accent text-on-accent` · primary text/icon `text-accent-fg` · focus `ring-focus` / focused field `border-focus` · selected `bg-accent-subtle` (hover `bg-accent-subtle-hover`) + `border-accent-line` · status text `text-danger-fg` / `text-success-fg` / `text-warning-fg` / `text-info-fg` · tonal text `text-tone-<hue>`. Never `text-*-400` or `text-*-700 dark:text-*-300` in shared UI.
 
 *Theme:* `<html suppressHydrationWarning>` + `<ThemeScript />` in `<head>` (no flash) + `<ThemeProvider defaultTheme="dark">` (same options); `<ThemeSwitcher />` (Sáng · Tối · Hệ thống, settings / sidebar footer) or `<ThemeToggle />` (one-tap dark/light), or `const { theme, resolvedTheme, mounted, setTheme } = useTheme()`. `data-theme="system"` follows the OS.
 
@@ -83,8 +89,8 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
   - Feedback (§14c): one toast API: `toast.success|error|warning|info(title)`, `toast.undo(title, restore)` (reversible destructive: Hoàn tác, 8 s), `toast.promise(p, { loading, success, error })`, `updateToast`; irreversible: `confirmDelete({ name })` (names the object, red Xoá, Huỷ); success once, never a modal; no toast libraries or local wrappers (`local-toast`, warning).
   - AI chat (§14b): `<AIChat messages busy onSend onStop onRetry onNewChat empty toolbar />` (or `ChatPanel` > `ChatView` > `ChatList` + `ChatComposer` with `UserMessage` / `AssistantMessage` / `ChatError` / `ChatThinking` / `ChatIntro` / `ChatSuggestion`). UI only: the app keeps messages and streaming; the provider → model → effort chips are `toolbar={<ChatModelPicker providers models efforts … />}`. Never a local composer or bubbles.
 - **Style Constants (`@semi/ui/styles`):**
-  - `surfaces.ts`: `SHELL_OUTER`, `SHELL_ASIDE`, `SHELL_MAIN`, `SHELL_CONTAINER`, `CARD`, `CARD_HOVER`, `CARD_ACTIVE`, `HERO`, `TILE`, `SECTION_*`, `COUNT_PILL`, `EMPTY`, `ICON_BTN*`, `STATUS_PILL`, `STATUS_DOT`, `TONAL_SURFACE`, `TONAL_CONTAINER`, `TONAL_HOVER`, `BADGE_BASE`, `STICKY_TOOLBAR`, `MODAL_*`, `FIELD_LABEL`, `FIELD_INPUT`, `FIELD_TEXTAREA`.
-  - `buttons.ts`: `BTN_PRIMARY`, `BTN_SECONDARY`, `BTN_DANGER`, `BTN_ICON`, `MODAL_BTN_*`.
+  - `surfaces.ts`: `SHELL_OUTER`, `SHELL_ASIDE`, `SHELL_MAIN`, `SHELL_CONTAINER`, `CARD`, `CARD_HOVER`, `CARD_BORDERED`, `CARD_BORDERED_HOVER`, `CARD_ACTIVE`, `HERO`, `TILE`, `SECTION_*`, `COUNT_PILL`, `EMPTY`, `ICON_BTN*`, `STATUS_PILL`, `STATUS_DOT`, `TONAL_SURFACE`, `TONAL_CONTAINER`, `TONAL_HOVER`, `BADGE_BASE`, `STICKY_TOOLBAR`, `MODAL_*`, `FIELD_LABEL`, `FIELD_INPUT`, `FIELD_TEXTAREA`.
+  - `buttons.ts`: `BTN_PRIMARY`, `BTN_SECONDARY`, `BTN_OUTLINE`, `BTN_DANGER`, `BTN_ICON`, `MODAL_BTN_*`.
   - `appChrome.ts`: `HEADER_ICON_*`, `headerPrimary`, `HEADER_PILL`, `VIEWPORT_*`.
 
 **Not the generic AI screen (§19):** one main block per screen (`KpiCard featured`, not four equal cards) · KPI icons
