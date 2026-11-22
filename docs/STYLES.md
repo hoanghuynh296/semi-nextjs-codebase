@@ -9,7 +9,7 @@ per app: §2b), status and tone colours, both themes (light / dark), icons, acce
 |---|---|---|---|
 | For | Dense, information-first screens: dashboards, tools, admin | Calm, friendly screens: consumer apps, storefronts, onboarding | Bold, editorial screens: landing pages, portfolios, creative tools |
 | Fonts | Geist + Montserrat Alternates (titles) | Plus Jakarta Sans | Space Grotesk |
-| Card (`border-card`, `shadow-card`) | 1px line border, no shadow | No visible border, soft lifted shadow | 2px solid border, hard 4px offset shadow |
+| Card (`bg-card`, `border-card`, `shadow-card`) | No visible border (`1px solid transparent`, since 0.36), no shadow: tone only | No visible border, soft lifted shadow | 2px solid border, hard 4px offset shadow |
 | Lines (`border-line`) | 8–9% | 9%, tinted | 18–32%, strong |
 | `rounded-chip` / `control` / `card` / `panel` | 4 · 8 · 12 · 16px | 6 · 12 · 20 · 24px | 2 · 0 · 0 · 0 |
 | `h-control` / `h-field` | 34 / 36px | 40 / 44px | 36 / 40px |
@@ -27,8 +27,12 @@ Source: `tokens/styles/<id>.json` (`tokens`: shape, card border, fonts, sizes; `
 `tokens/styles.json` (`@semi/ui/styles.json`). Preview: the Flat / Sharp / Soft switch at the bottom of the Storybook
 sidebar.
 
+The C-030 surfaces (`panel-0…4`, `card`, `card-field`, `tint`, `inverted`; DESIGN_SYSTEM.md §2 "Surfaces") are mixed
+from each style's `canvas` / `app` / `panel` and text in CSS, so a style sets no extra values for them.
+
 A brand kit (docs/BRANDS.md) builds on these: it picks the allowed styles and either tints their neutrals with its
-primary or keeps the style's own neutrals (`"neutral": "preset"`), so products of a brand never set neutral colours.
+primary (`"neutral": "brand"`, the default), takes the hue out (`"pure"`) or keeps the style's own neutrals
+(`"preset"`), so products of a brand never set neutral colours.
 The spacing unit follows the product's density (`data-density` on `<html>`; DESIGN_SYSTEM.md §19), not the style
 or the brand.
 

@@ -10,7 +10,7 @@ export const HEADER_ICON_ON = "bg-raised text-contrast";
 /** The app's main action at the right of the header (Slice, Phối màu, Xong). */
 export const headerPrimary = (enabled: boolean) =>
   `h-control px-4 rounded-control text-label font-semibold flex items-center justify-center gap-1.5 transition outline-none focus-visible:ring-2 focus-visible:ring-focus select-none shrink-0 ${
-    enabled ? "bg-accent hover:bg-accent-hover text-on-accent" : "bg-raised text-muted border border-line cursor-not-allowed"
+    enabled ? "bg-action hover:bg-action-hover text-on-action" : "bg-raised text-muted border border-line cursor-not-allowed"
   }`;
 
 /** Round pill buttons of the header centre (file badge, save). */

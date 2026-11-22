@@ -191,7 +191,8 @@ không định nghĩa màu, font hay style riêng trong sản phẩm. Muốn đ�
 |---|---|
 | Màu chính | \`${t.primary[t.brandStep ?? 500]}\` (nằm ở \`primary-${t.brandStep ?? 500}\`) |
 | Màu phụ | ${t.secondary ? `\`${t.secondary[t.secondaryStep ?? 500]}\` (nằm ở \`secondary-${t.secondaryStep ?? 500}\`)` : "không có"} |
-| Màu trung tính | ${t.neutral === "tinted" ? "phủ theo màu chính" : "có sẵn của style"} |
+| Màu trung tính | ${t.neutral === "pure" ? "xám trung tính (0% sắc)" : t.neutral === "preset" ? "có sẵn của style" : "phủ theo màu chính"} |
+| Nút chính | ${t.primaryStyle === "inverted" ? "đảo màu: đen trên nền sáng, trắng trên nền tối (màu chính giữ cho link, mục chọn, focus)" : "màu thương hiệu"} |
 | Style | ${allowed} |
 | Font | ${font("sans")} (giao diện, nội dung) · ${font("display")} (tiêu đề, số KPI) |
 | Giọng văn | ${t.guide.voice.toneLabel}, gọi người dùng “${t.guide.voice.address}” |

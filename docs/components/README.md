@@ -75,7 +75,7 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Aspect ratio](aspect-ratio.md) | `AspectRatio` | Thumbnails and media that must not jump while loading. |
 | [Avatar](avatar.md) | `Avatar` | Owners, assignees, customers in rows and cards. |
 | [Badge](badge.md) | `Badge` | Status of a row or card (Đã thanh toán, Lỗi), a plan or role tag. |
-| [Card](card.md) | `Card` | Group the content of a page in cards; nested facts in TILE. |
+| [Card](card.md) | `Card` | Group the content of a page in cards; nested facts in TILE (bg-card-field). |
 | [Carousel](carousel.md) | `Carousel` | Product photos, featured items, onboarding steps. |
 | [Chart](chart.md) | `BarChart`, `LineChart`, `DonutChart`, `Sparkline` | Compare categories (BarChart), show change over time (LineChart), parts of a whole with ≤ 5 parts (DonutChart), a trend next to a KPI (Sparkline). |
 | [Code block](code-block.md) | `CodeBlock` | API keys and commands to copy, config snippets, developer docs. |

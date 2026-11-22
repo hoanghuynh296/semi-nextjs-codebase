@@ -198,7 +198,7 @@ Trong `app/globals.css`:
 /* semi-design-system:end */
 ```
 
-Không khai báo màu hay `@theme` riêng trong app (`brand-override` chặn): màu của một thương hiệu đến từ brand kit (`/semi-brand`), app chỉ nhập `brand.css` của kit ngay dưới khối trên.
+Không khai báo màu hay `@theme` riêng trong app (`brand-override` chặn): màu của một thương hiệu đến từ brand kit (`/semi-brand`), app chỉ nhập `brand.css` của kit ngay dưới khối trên (luôn sau `@semi/ui/tokens.css`: kit ghi đè biến của Semi ở cùng độ ưu tiên, nhập trước thì kit không có tác dụng, kể cả `primaryStyle: "inverted"`).
 
 Trong `app/layout.tsx` (chống nháy sai theme khi tải trang):
 ```tsx

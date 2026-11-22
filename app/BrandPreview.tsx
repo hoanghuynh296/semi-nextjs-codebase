@@ -21,7 +21,8 @@ export type Brand = {
   package: string;
   primary: string;
   secondary?: string | null;
-  neutral: "tinted" | "preset";
+  neutral?: "brand" | "tinted" | "pure" | "preset";
+  primaryStyle?: "brand" | "inverted";
   styles: { default: string; allowed: string[] };
   fonts: { sans: string; display: string };
   semi?: string;

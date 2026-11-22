@@ -15,7 +15,10 @@ test("every shipped migration has a version up to this release, a unique id, a d
   const ids = new Set();
   for (const m of list) {
     assert.match(String(m.version), /^\d+\.\d+\.\d+$/, m.file);
-    assert.ok(cmpVersion(m.version, pkg.version) <= 0 || pkg.version === m.version, `${m.file}: version after ${pkg.version}`);
+    // Up to the next minor: an unreleased migration ([Unreleased] in the CHANGELOG) ships with the next release, and
+    // /semi-sync only runs migrations up to the version it installs.
+    const [maj, min] = pkg.version.split(".").map(Number);
+    assert.ok(cmpVersion(m.version, `${maj}.${min + 1}.0`) <= 0, `${m.file}: version after the next minor of ${pkg.version}`);
     assert.ok(m.id && !ids.has(m.id), `${m.file}: id`);
     ids.add(m.id);
     assert.ok(m.description, `${m.file}: description`);
@@ -102,4 +105,29 @@ test("0.30.0 role-token-names: text-kpi → text-figure, z-keypad → z-sheet, c
   assert.match(out, /var\(--text-figure\); line-height: var\(--text-figure--line-height\); z-index: var\(--z-sheet\)/);
   assert.match(out, /"text-kpis z-keypadx my-text-kpi"/, "only whole token names change");
   assert.equal(renameRoleTokens(out), out);
+});
+
+test("0.36.0 surfaces: hand-made cards, copied secondary and primary buttons; floating layers and other orders stay; twice-safe", async () => {
+  const { migrateSurfaces, version } = await import("../../migrations/0.36.0-surfaces.mjs");
+  assert.equal(version, "0.36.0");
+  const src = [
+    `<div className="bg-panel border border-line rounded-card p-card" />`,
+    `<div className="fixed bg-panel border border-line rounded-card shadow-overlay" />`,
+    `<div className="sticky top-0 bg-panel border border-line rounded-card" />`,
+    `<div className="rounded-card border border-line bg-panel" />`,
+    `const b = "h-control px-3 bg-field hover:bg-raised border border-line text-body hover:text-contrast";`,
+    `const p = 'h-control bg-accent hover:bg-accent-hover text-on-accent';`,
+    `const on = "bg-accent text-on-accent";`,
+    `const t = \`bg-panel border border-line rounded-card \${x}\`;`,
+  ].join("\n");
+  const out = migrateSurfaces(src);
+  assert.match(out, /className="bg-card rounded-card p-card"/);
+  assert.match(out, /"fixed bg-panel border border-line rounded-card shadow-overlay"/, "a popover keeps its panel and line");
+  assert.match(out, /"sticky top-0 bg-panel border border-line rounded-card"/, "a sticky bar keeps its panel and line");
+  assert.match(out, /"rounded-card border border-line bg-panel"/, "another order is a manual step");
+  assert.match(out, /"h-control px-3 bg-tint hover:bg-tint-hover text-body hover:text-contrast"/);
+  assert.match(out, /'h-control bg-action hover:bg-action-hover text-on-action'/);
+  assert.match(out, /"bg-accent text-on-accent"/, "an accent mark without the button hover stays");
+  assert.match(out, /`bg-panel border border-line rounded-card \$\{x\}`/, "template literals with expressions are left alone");
+  assert.equal(migrateSurfaces(out), out, "second run changes nothing");
 });

@@ -41,8 +41,8 @@
       "note": "Resting card shadow"
     },
     "card-border": {
-      "value": "1px solid var(--semi-line)",
-      "note": "Card / hero / sidebar border (border-card)"
+      "value": "1px solid transparent",
+      "note": "Card / hero / sidebar border (border-card): transparent since 0.36 (C-030), cards separate by tone (bg-card); the 1px box keeps hover and CARD_ACTIVE borders from shifting the layout"
     },
     "font-sans": {
       "value": "var(--font-sans-family, var(--font-geist)), Geist, Inter, -apple-system, BlinkMacSystemFont, \"SF Pro Text\", sans-serif",

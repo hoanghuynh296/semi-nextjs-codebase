@@ -1,6 +1,6 @@
 # Button
 
-The action control: one primary per area, secondary for the rest, danger for destructive actions, ghost for quiet ones. Spinner shows work in progress inside the control that runs it.
+The action control: one primary per area (the action fill: the accent, or a neutral inverted fill in a brand with primaryStyle inverted), secondary (a translucent tint, no border) for the rest, outline (field fill + line) for framed toolbars, danger for destructive actions, ghost for quiet ones. Spinner shows work in progress inside the control that runs it.
 
 ## When to use
 
@@ -27,7 +27,7 @@ import { Button, Spinner } from "@semi/ui";
 
 ### Variants
 
-primary for the main action of an area, secondary (default) for the rest, danger for destructive, ghost for quiet actions.
+primary for the main action of an area, secondary (default, tint fill without border) for the rest, outline where a framed control is needed, danger for destructive, ghost for quiet actions.
 
 ```tsx
 import { Button } from "@semi/ui";
@@ -37,6 +37,7 @@ export default function ButtonVariants() {
     <div className="flex flex-wrap items-center gap-2">
       <Button>Huỷ</Button>
       <Button variant="primary">Lưu</Button>
+      <Button variant="outline">Xuất file</Button>
       <Button variant="danger">Xoá</Button>
       <Button variant="ghost">Xem thêm</Button>
       <Button disabled>Không khả dụng</Button>
@@ -132,7 +133,7 @@ export default function ButtonSizes() {
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `ref` | `React.Ref<HTMLButtonElement>` |  |  |
-| `variant` | `'primary' \| 'secondary' \| 'danger' \| 'ghost'` | `"secondary"` |  |
+| `variant` | `'primary' \| 'secondary' \| 'outline' \| 'danger' \| 'ghost'` | `"secondary"` | Look of the button (default `secondary`): `primary` main action, `secondary` tint fill without border (since 0.36), `outline` field fill with a 1px line (the pre-0.36 secondary), `danger`, `ghost`. |
 | `size` | `'sm' \| 'md' \| 'modal'` | `"md"` | md = h-control toolbar / form (34px in Flat) · sm = 28px dense rows · modal = 44px on phones, 34px from sm (dialog footers). |
 | `icon` | `IconName` |  | Leading icon from the Semi registry. |
 | `loading` | `boolean` | `false` | Shows a spinner in place of the icon and blocks clicks (aria-busy). |

@@ -3,8 +3,9 @@
 //   validateBrand(brand, { styles })              → { errors, warnings }
 //   generateBrand(brand, { tokens, styles, version, params }) → { tokens, css, fonts, report }
 //
-// What the brand chooses (docs/BRANDS.md): primary, optional secondary, neutral ("tinted" from the primary or a style
-// "preset"), the styles it allows, fonts. What is derived: the 50…900 scales (fixed OKLCH lightness per shade, the
+// What the brand chooses (docs/BRANDS.md): primary, optional secondary, neutral ("brand": tinted from the primary, the
+// default; "pure": 0% saturation greys; "preset": the style's own), primaryStyle ("brand" accent-filled main button, the
+// default; "inverted": a neutral near-black / near-white one), the styles it allows, fonts. What is derived: the 50…900 scales (fixed OKLCH lightness per shade, the
 // brand colour itself on the nearest shade), the accent / on-accent / accent-fg shades of each theme (the readable shade
 // closest to the brand colour), the neutrals of every allowed style. No dependencies; the docs site's brand preview
 // runs the same code in the browser. The numbers of the derivation live in ./params.mjs (tried in the Design Lab).
@@ -86,6 +87,15 @@ function separateStatus(tokens, primaryHex, p = PARAMS) {
   return out;
 }
 
+/** brand.json "neutral": "brand" (default; "tinted" is its older name) tints the greys with the primary's hue, "pure" takes
+ * the hue out (0% saturation, text and lines included), "preset" keeps the style's own neutrals. */
+export const NEUTRALS = ["brand", "tinted", "pure", "preset"];
+/** brand.json "primaryStyle": "brand" (default) fills the main button with the accent; "inverted" makes it neutral
+ * (bg-inverted, near-black in light, near-white in dark) and keeps the accent for links, selection, focus and badges. */
+export const PRIMARY_STYLES = ["brand", "inverted"];
+/** The neutral mode of a brand.json, defaults filled in ("tinted" reads as "brand"). */
+export const neutralMode = (brand) => (brand.neutral === undefined || brand.neutral === "tinted" ? "brand" : brand.neutral);
+
 /** Text colour on the main button: "auto" picks the readable shade closest to the brand; "white" / "dark" force it. */
 const BUTTON_TEXT = ["auto", "white", "dark"];
 
@@ -127,7 +137,8 @@ export function validateBrand(brand, { styles }) {
     const { c } = hexToOklch(v);
     if (c < 0.04) fail(errors, `${key}: ${v} gần như xám (độ đậm ${c.toFixed(3)} < 0.04); chọn màu có sắc rõ hơn`);
   }
-  if (!["tinted", "preset"].includes(brand.neutral)) fail(errors, `neutral: "${brand.neutral ?? ""}" phải là "tinted" hoặc "preset"`);
+  if (brand.neutral !== undefined && !NEUTRALS.includes(brand.neutral)) fail(errors, `neutral: "${brand.neutral}" phải là "brand" (mặc định, xám ngả màu chính), "pure" (xám trung tính 0%) hoặc "preset" (của style); "tinted" là tên cũ của "brand"`);
+  if (brand.primaryStyle !== undefined && !PRIMARY_STYLES.includes(brand.primaryStyle)) fail(errors, `primaryStyle: "${brand.primaryStyle}" phải là "brand" (mặc định, nút chính màu thương hiệu) hoặc "inverted" (nút chính trung tính đen / trắng)`);
   const allowed = brand.styles?.allowed ?? [];
   if (!allowed.length) fail(errors, "styles.allowed: cần ít nhất một style");
   for (const s of allowed) if (!ids.includes(s)) fail(errors, `styles.allowed: "${s}" không có; chọn trong ${ids.join(", ")}`);
@@ -537,6 +548,31 @@ function fixText(n, theme, alpha) {
   return n;
 }
 
+/** color-mix(in oklab, a (1 - p), b p) as hex, the way the browser mixes tokens.json's color-mix() surfaces. */
+export function mixOklab(a, b, p) {
+  const lab = (hex) => {
+    const { l, c, h } = hexToOklch(hex);
+    const r = (h * Math.PI) / 180;
+    return [l, c * Math.cos(r), c * Math.sin(r)];
+  };
+  const A = lab(a);
+  const B = lab(b);
+  const [l, x, y] = A.map((v, i) => v * (1 - p) + B[i] * p);
+  const h = (Math.atan2(y, x) * 180) / Math.PI;
+  return oklchToHex({ l, c: Math.hypot(x, y), h: h < 0 ? h + 360 : h });
+}
+
+/** The C-030 surfaces tokens.json mixes from a theme's neutrals (card, card-field, inverted), as hex for the report. */
+export function derivedSurfaces(n, theme) {
+  const C = n["color-text-contrast"];
+  const card = theme === "light" ? mixOklab(n["color-app"], C, 0.05) : mixOklab(n["color-panel"], C, 0.05);
+  const cardField = mixOklab(card, C, theme === "light" ? 0.03 : 0.05);
+  const inverted = theme === "light" ? C : mixOklab(C, n["color-canvas"], 0.04);
+  const invertedHover = theme === "light" ? mixOklab(C, n["color-panel"], 0.15) : C;
+  const onInverted = theme === "light" ? n["color-panel"] : n["color-canvas"];
+  return { card, cardField, inverted, invertedHover, onInverted };
+}
+
 /** Every token of a brand, its CSS and a contrast report. Throws when validateBrand finds errors. */
 export function generateBrand(brand, { tokens, styles, version = "", params }) {
   const p = mergeParams(params);
@@ -555,7 +591,9 @@ export function generateBrand(brand, { tokens, styles, version = "", params }) {
     neutrals[st.id] = {};
     for (const theme of THEMES) {
       const n = { ...base[theme] };
-      if (brand.neutral === "tinted") {
+      const mode = neutralMode(brand);
+      if (mode === "pure") for (const k of NEUTRAL_KEYS) n[k] = tint(n[k], 0, 0);
+      if (mode === "brand") {
         const ch = p.tint[st.id] ?? 0.01;
         const surf = p.surfaceTint[st.id] ?? 0.003;
         for (const k of NEUTRAL_KEYS) {
@@ -582,7 +620,9 @@ export function generateBrand(brand, { tokens, styles, version = "", params }) {
     const label = (shade, hex) => (shade === null ? hex : `primary-${shade}`);
     const fillName = label(fill.shade, fill.fill);
     const hoverName = label(fill.hoverShade, fill.hover);
-    const fg = pickText(primary, brand.primary, theme, surfaces, pages, subtle);
+    // Coloured text also sits on the C-030 card (selected page, active row inside a card), with and without the tint.
+    const cards = allowed.map((st) => derivedSurfaces(neutrals[st.id][theme], theme).card);
+    const fg = pickText(primary, brand.primary, theme, [...surfaces, ...cards], [...pages, ...cards], subtle);
     themes[theme] = {
       "color-accent": fill.fill,
       "color-accent-hover": fill.hover,
@@ -622,6 +662,17 @@ export function generateBrand(brand, { tokens, styles, version = "", params }) {
       // Edge of inputs, checkboxes, radios and of the chosen segment (SEGMENT_ON): WCAG 1.4.11.
       if (alpha) report.push({ check: `viền ô nhập ${st.name} (${t})`, pair: `control-line / nền`, ratio: controlEdge(n, alpha), min: NON_TEXT });
     }
+    // Surfaces of C-030 (tokens.json: card, card-field, inverted are mixed from these neutrals in CSS; the same mix here).
+    for (const st of allowed) {
+      const n = neutrals[st.id][theme];
+      const s = derivedSurfaces(n, theme);
+      report.push({ check: `chữ mờ trên thẻ ${st.name} (${t})`, pair: `text-muted / card + card-field`, ratio: Math.min(contrast(n["color-text-muted"], s.card), contrast(n["color-text-muted"], s.cardField)), min: AA });
+      report.push({ check: `thẻ tách khỏi nền ${st.name} (${t})`, pair: `card / app`, ratio: contrast(s.card, n["color-app"]), min: 1.1, soft: true });
+      if (brand.primaryStyle === "inverted") {
+        report.push({ check: `nút chính đảo màu ${st.name} (${t})`, pair: `on-inverted / inverted`, ratio: contrast(s.onInverted, s.inverted), min: AA });
+        report.push({ check: `nút chính đảo màu khi hover ${st.name} (${t})`, pair: `on-inverted / inverted-hover`, ratio: contrast(s.onInverted, s.invertedHover), min: AA });
+      }
+    }
     // Semi's status text stays the same for every brand; the brand's tinted surfaces must still carry it (the surfaces
     // text sits on: canvas, app, panel, field, like text-muted; raised is a hover / track fill).
     const textSurfaces = allowed.flatMap((st) => SURFACES.slice(0, 4).map((k) => neutrals[st.id][theme][k]));
@@ -651,6 +702,7 @@ export function generateBrand(brand, { tokens, styles, version = "", params }) {
     semi: brand.semi ?? null,
     styles: brand.styles,
     neutral: brand.neutral,
+    ...(brand.primaryStyle ? { primaryStyle: brand.primaryStyle } : {}),
     primary,
     brandStep: brandStep(brand.primary, p),
     ...(secondary ? { secondary, secondaryStep: brandStep(brand.secondary, p) } : {}),
@@ -728,6 +780,11 @@ export function brandCss(t, version, { runtime = false, loadedFonts = [] } = {})
     css += `@media (prefers-color-scheme: light) {\n${block([`[data-theme="system"]`], sv("light"), "  ")}}\n\n`;
   }
   css += `@media (prefers-color-scheme: light) {\n${block([`[data-theme="system"]`], vars("light"), "  ")}}\n\n`;
+  // primaryStyle "inverted": the main button reads the neutral inverted fill; the accent stays for everything else.
+  if (t.primaryStyle === "inverted") {
+    const inv = [["--semi-action", "var(--semi-inverted)"], ["--semi-action-hover", "var(--semi-inverted-hover)"], ["--semi-on-action", "var(--semi-on-inverted)"]];
+    css += `/* Main button: inverted (primaryStyle) */\n${block([":root", "[data-theme]"], inv)}\n`;
+  }
   // Neutrals per allowed style. The default style (Flat) also applies without data-style.
   for (const [sid, themes] of Object.entries(t.neutrals)) {
     const sel = (theme) => [

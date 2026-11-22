@@ -5,36 +5,36 @@ export const FOUNDATIONS = {
       "key": "color-canvas",
       "cls": "bg-canvas",
       "note": "Khung ngoài cùng AppShell, lớp bọc toàn trang",
-      "dark": "#0c0d0e",
-      "light": "#f1f5f9"
+      "dark": "#0f1011",
+      "light": "#eff3f7"
     },
     {
       "key": "color-app",
       "cls": "bg-app",
       "note": "Nền chính của content panel, trang nội dung",
-      "dark": "#121316",
-      "light": "#f8fafc"
+      "dark": "#151619",
+      "light": "#f7f9fb"
     },
     {
       "key": "color-panel",
       "cls": "bg-panel",
       "note": "Thẻ Card, sidebar, thanh công cụ",
-      "dark": "#202226",
+      "dark": "#191b1f",
       "light": "#ffffff"
     },
     {
       "key": "color-field",
       "cls": "bg-field",
       "note": "Ô nhập, nền của control và popup",
-      "dark": "#272a2f",
-      "light": "#f1f5f9"
+      "dark": "#202328",
+      "light": "#eff3f7"
     },
     {
       "key": "color-raised",
       "cls": "bg-raised",
       "note": "Hover, track, dòng được chọn",
-      "dark": "#31343a",
-      "light": "#e2e8f0"
+      "dark": "#2b2e34",
+      "light": "#e1e7ef"
     }
   ],
   "text": [
@@ -92,7 +92,7 @@ export const FOUNDATIONS = {
       "cls": "text-accent-fg",
       "note": "Chữ và icon nhấn trên nền tối/sáng",
       "dark": "primary-400",
-      "light": "primary-700"
+      "light": "primary-800"
     }
   ],
   "type": [
@@ -202,7 +202,7 @@ export const FOUNDATIONS = {
       },
       "controlHeight": "34px",
       "fieldHeight": "36px",
-      "cardBorder": "1px solid var(--semi-line)",
+      "cardBorder": "1px solid transparent",
       "cardShadow": "0 0 #0000"
     },
     {

@@ -126,7 +126,13 @@ function themedScopes(css) {
 /** The plain theme scope. */
 const themed = (css) => themedScopes(css).plain;
 /** Intended to be the same in both themes: white text on the solid status fills, and tokens that only point at themed ones. */
-const SAME_OK = new Set(["--semi-on-solid", "--semi-accent-line", "--semi-focus", "--semi-control-line-hover"]);
+const REFS = [
+  "--semi-accent-line", "--semi-focus", "--semi-control-line-hover",
+  // C-030 surfaces: the panel scale and the main-button fill point at themed tokens (canvas / app / panel, accent)
+  "--semi-panel-0", "--semi-panel-1", "--semi-panel-2", "--semi-panel-3", "--semi-panel-4",
+  "--semi-action", "--semi-action-hover", "--semi-on-action",
+];
+const SAME_OK = new Set(["--semi-on-solid", ...REFS]);
 function sameTokens({ dark, light }) {
   return Object.keys(light)
     .filter((k) => k.startsWith("--semi-") && k in dark && dark[k].toLowerCase() === light[k].toLowerCase() && !SAME_OK.has(k))
@@ -138,7 +144,7 @@ test("core tokens.css: every themed --semi-* token differs between light and dar
   assert.ok(Object.keys(t.light).length > 50, "parsed the light theme");
   assert.deepEqual(sameTokens(t), []);
   // The allowlisted references really are references, not hidden constants.
-  for (const k of ["--semi-accent-line", "--semi-focus", "--semi-control-line-hover"]) assert.match(t.light[k], /var\(--semi-/, k);
+  for (const k of REFS) assert.match(t.light[k], /var\(--semi-/, k);
   // Every chart colour has its own dark value, and each reads against its panel (marks need 3:1).
   for (let n = 1; n <= 8; n++) assert.notEqual(t.dark[`--semi-chart-${n}`], t.light[`--semi-chart-${n}`], `chart-${n}`);
   assert.ok(contrast(t.dark["--semi-chart-6"], t.dark["--semi-panel"]) >= 3, "chart-6 on the dark panel");

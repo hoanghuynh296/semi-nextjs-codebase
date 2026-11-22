@@ -17,6 +17,18 @@
       "panel",
       "field",
       "raised",
+      "panel-0",
+      "panel-1",
+      "panel-2",
+      "panel-3",
+      "panel-4",
+      "card",
+      "card-field",
+      "tint",
+      "tint-hover",
+      "inverted",
+      "inverted-hover",
+      "on-inverted",
       "contrast",
       "body",
       "muted",
@@ -28,6 +40,9 @@
       "accent",
       "accent-hover",
       "on-accent",
+      "action",
+      "action-hover",
+      "on-action",
       "accent-fg",
       "focus",
       "accent-subtle",
@@ -620,6 +635,7 @@
       "props": [
         "interactive",
         "active",
+        "bordered",
         "padding",
         "className",
         "onClick",
@@ -2793,14 +2809,21 @@
       "kind": "constant",
       "module": "styles/buttons.ts",
       "client": false,
-      "summary": "Main action (Thêm, Lưu)."
+      "summary": "Main action (Thêm, Lưu): the action fill (the accent, or the inverted neutral in a brand with primaryStyle inverted)."
     },
     {
       "name": "BTN_SECONDARY",
       "kind": "constant",
       "module": "styles/buttons.ts",
       "client": false,
-      "summary": "Secondary action (Làm mới, Tính lại, Đóng)."
+      "summary": "Secondary action (Làm mới, Tính lại, Đóng): translucent tint fill, no border (C-030); reads on every surface."
+    },
+    {
+      "name": "BTN_OUTLINE",
+      "kind": "constant",
+      "module": "styles/buttons.ts",
+      "client": false,
+      "summary": "Outlined secondary action: field fill and a 1px line, the look of BTN_SECONDARY before 0.36 (a toolbar of framed controls)."
     },
     {
       "name": "BTN_ICON",
@@ -2828,7 +2851,14 @@
       "kind": "constant",
       "module": "styles/buttons.ts",
       "client": false,
-      "summary": "Secondary action in dialogs & modals (Huỷ, Đóng)."
+      "summary": "Secondary action in dialogs & modals (Huỷ, Đóng): tint fill, no border."
+    },
+    {
+      "name": "MODAL_BTN_OUTLINE",
+      "kind": "constant",
+      "module": "styles/buttons.ts",
+      "client": false,
+      "summary": "Outlined secondary action in dialogs & modals."
     },
     {
       "name": "MODAL_BTN_DANGER",
@@ -2856,21 +2886,35 @@
       "kind": "constant",
       "module": "styles/surfaces.ts",
       "client": false,
-      "summary": "Content card: panel fill, the style's card border, radius and resting shadow (Flat: thin line, no shadow). Add padding at the call site: p-card (sm:p-panel for a roomy one), never tighter (semi-lint card-padding)."
+      "summary": "Content card (C-030): the card surface (bg-card: dark one step above the panel, light recessed one step below the app), separated by tone, no visible border in Flat and Soft (the style's card border, radius and resting shadow; Sharp keeps its 2px line). Add padding at the call site: p-card (sm:p-panel for a roomy one), never tighter (semi-lint card-padding)."
+    },
+    {
+      "name": "CARD_BORDERED",
+      "kind": "constant",
+      "module": "styles/surfaces.ts",
+      "client": false,
+      "summary": "Bordered card for dense data views (a table or a list of rows that needs a frame): the panel fill and a 1px line, the look of CARD before 0.36."
     },
     {
       "name": "CARD_HOVER",
       "kind": "constant",
       "module": "styles/surfaces.ts",
       "client": false,
-      "summary": "Clickable card (opens a detail view)."
+      "summary": "Clickable card (opens a detail view): the border shows on hover."
+    },
+    {
+      "name": "CARD_BORDERED_HOVER",
+      "kind": "constant",
+      "module": "styles/surfaces.ts",
+      "client": false,
+      "summary": "Clickable bordered card."
     },
     {
       "name": "HERO",
       "kind": "constant",
       "module": "styles/surfaces.ts",
       "client": false,
-      "summary": "Plain hero panel at the top of a page. No glow (docs/DESIGN_SYSTEM.md, \"Flat, no glow, no gradients\")."
+      "summary": "Plain hero panel at the top of a page, on the card surface. No glow (docs/DESIGN_SYSTEM.md, \"Flat, no glow, no gradients\")."
     },
     {
       "name": "CARD_ACTIVE",
@@ -2898,7 +2942,7 @@
       "kind": "constant",
       "module": "styles/surfaces.ts",
       "client": false,
-      "summary": "Tonal tile inside a card (stats, readings, nested rows)."
+      "summary": "Tonal tile inside a card (stats, readings, nested rows): one step off the card (bg-card-field), no border."
     },
     {
       "name": "SECTION_HEAD",

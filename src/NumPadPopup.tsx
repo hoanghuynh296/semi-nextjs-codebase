@@ -250,7 +250,7 @@ export function NumPadPopup({ label, unit, initial, integer, allowPercent, onCom
         <button
           type="button"
           onClick={confirm}
-          className="mt-2 w-full h-12 rounded-control bg-accent hover:bg-accent-hover text-on-accent flex items-center justify-center cursor-pointer touch-manipulation"
+          className="mt-2 w-full h-12 rounded-control bg-action hover:bg-action-hover text-on-action flex items-center justify-center cursor-pointer touch-manipulation"
           aria-label={strings.confirm}
         >
           <Icon name="check" className="w-6 h-6" />

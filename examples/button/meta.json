@@ -1,7 +1,7 @@
 {
   "title": "Button",
   "group": "Actions",
-  "description": "The action control: one primary per area, secondary for the rest, danger for destructive actions, ghost for quiet ones. Spinner shows work in progress inside the control that runs it.",
+  "description": "The action control: one primary per area (the action fill: the accent, or a neutral inverted fill in a brand with primaryStyle inverted), secondary (a translucent tint, no border) for the rest, outline (field fill + line) for framed toolbars, danger for destructive actions, ghost for quiet ones. Spinner shows work in progress inside the control that runs it.",
   "components": ["Button", "Spinner"],
   "when": [
     "Any action: save, create, refresh, delete, open a dialog.",
@@ -20,7 +20,7 @@
     "loading sets aria-busy and blocks clicks; the visible focus ring stays."
   ],
   "examples": [
-    { "file": "variants", "title": "Variants", "description": "primary for the main action of an area, secondary (default) for the rest, danger for destructive, ghost for quiet actions." },
+    { "file": "variants", "title": "Variants", "description": "primary for the main action of an area, secondary (default, tint fill without border) for the rest, outline where a framed control is needed, danger for destructive, ghost for quiet actions." },
     { "file": "icons", "title": "Icon and icon-only", "description": "icon adds a leading icon; iconOnly needs an aria-label." },
     { "file": "loading", "title": "Loading", "description": "loading swaps the icon for a spinner and blocks clicks." },
     { "file": "sizes", "title": "Sizes", "description": "sm for dense rows, md (default) for toolbars and forms, modal for dialog footers." }
