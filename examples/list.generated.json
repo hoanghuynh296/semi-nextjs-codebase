@@ -300,7 +300,7 @@
     "id": "app-shell",
     "title": "App shell",
     "group": "Navigation & layout",
-    "description": "The frame of a multi-page app: a floating bento sidebar (w-52, collapses to a w-14 icon rail) on bg-canvas, the content panel beside it, and MobileTabBar at the bottom on phones. Items can carry sub-items that open only while their parent is chosen. This docs site is an AppShell.",
+    "description": "The frame of a multi-page app: a floating sidebar on bg-canvas with the accent Create action on top, the main nav, a pinned group and the utilities and account at the bottom; it collapses to an icon rail (the default on iPad) and becomes a full-screen drawer on phones. Items can carry sub-items or a mega menu. This docs site is an AppShell; the full example runs at /demo/app-shell/.",
     "components": [
       "AppShell",
       "MobileTabBar"
@@ -316,12 +316,30 @@
     ]
   },
   {
+    "id": "mega-menu",
+    "title": "Mega menu",
+    "group": "Navigation & layout",
+    "description": "A flyout of links in category columns: a text-overline header per column, links with a grey icon, a hint and a New badge, and a See all link. AppShell opens it beside the sidebar from a nav item with mega; an app can open it from its own trigger.",
+    "components": [
+      "MegaMenu"
+    ]
+  },
+  {
     "id": "menubar",
     "title": "Menubar",
     "group": "Navigation & layout",
     "description": "The menu bar of a desktop-style tool (Tệp · Sửa · Xem): menus that open from a bar and behave like Menu.",
     "components": [
       "Menubar"
+    ]
+  },
+  {
+    "id": "minimal-header",
+    "title": "Minimal header",
+    "group": "Navigation & layout",
+    "description": "The top row of a detail or settings page inside AppShell: where the page sits on the left (a Breadcrumb), one text link and one primary action on the right. The page's own heading follows it.",
+    "components": [
+      "MinimalHeader"
     ]
   },
   {
@@ -408,6 +426,15 @@
     "description": "Switch between panels of content inside a page or card: underline (default) or segmented, with icons and counts.",
     "components": [
       "Tabs"
+    ]
+  },
+  {
+    "id": "text-tabs",
+    "title": "Text tabs",
+    "group": "Navigation & layout",
+    "description": "Large text tabs that are the page heading: 2–4 sibling views in display type, the current one bright and the others dim, no underline. Buttons switch at once; tabs with href are links, so the URL picks the view.",
+    "components": [
+      "TextTabs"
     ]
   },
   {

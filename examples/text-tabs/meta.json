@@ -1,0 +1,45 @@
+{
+  "title": "Text tabs",
+  "group": "Navigation & layout",
+  "description": "Large text tabs that are the page heading: 2–4 sibling views in display type, the current one bright and the others dim, no underline. Buttons switch at once; tabs with href are links, so the URL picks the view.",
+  "components": [
+    "TextTabs"
+  ],
+  "when": [
+    "A page whose heading is a choice of 2–4 sibling views (Đang xử lý / Đã giao / Tất cả).",
+    "Views people link to or reload into: give the tabs an href (URL-driven)."
+  ],
+  "instead": [
+    {
+      "need": "Sections of one record inside a page or card",
+      "use": "Tabs"
+    },
+    {
+      "need": "Filters of one list (status, owner)",
+      "use": "Pills"
+    },
+    {
+      "need": "A page with one title",
+      "use": "PageTitle"
+    }
+  ],
+  "a11y": [
+    "WAI-ARIA tabs: tablist / tab / tabpanel, ←/→, Home, End move and the current tab is the only tab stop.",
+    "Buttons switch as focus moves; linked tabs (href) move focus only and Enter follows the link, so arrows never load a route.",
+    "The tabs sit in the page h1 by default (heading={false} when the page has its own h1); the panel is linked to its tab when children are given."
+  ],
+  "notes": [
+    "Dim tabs use text-muted (≥ 4.5:1 in both themes): never lighter.",
+    "More than 4 views, or long names: Tabs or a CustomSelect, not TextTabs."
+  ],
+  "examples": [
+    {
+      "file": "heading",
+      "title": "Page heading with a panel"
+    },
+    {
+      "file": "linked",
+      "title": "URL-driven"
+    }
+  ]
+}

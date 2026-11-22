@@ -51,7 +51,7 @@ export const HARD = [
   [
     "legacy-shell-aside",
     /\bw-(56|60|64)\b[^"'\n]*\bborder-r\b|\b-translate-x-full\b/,
-    "use AppShell from @semi/ui (floating rounded-panel bento sidebar + MobileTabBar), not a fixed border-r or hamburger drawer <aside>",
+    "use AppShell from @semi/ui (floating rounded-panel bento sidebar, icon rail, phone drawer), not a fixed border-r or hand-made drawer <aside>",
   ],
   [
     "legacy-ui-wrapper",

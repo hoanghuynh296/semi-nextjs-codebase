@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { usePathname } from "next/navigation";
 import { type ShellNavSection } from "../src/AppShell";
 import { ICONS } from "../src/Icon";
 import { ThemeSwitcher, ThemeToggle } from "../src/ThemeProvider";
@@ -31,14 +32,16 @@ const START: ShellNavSection[] = [
 ];
 
 export function SiteShell({ children }: { children: React.ReactNode }) {
+  // /demo/*: an example that is a whole app shell itself (examples/app-shell/full.tsx) renders without the docs shell
+  const pathname = usePathname();
+  if (pathname?.startsWith("/demo/")) return <>{children}</>;
   return (
     <DocsShell
       productName="Semi Design"
       logoIcon="sparkles"
       sections={START}
-      mobileTabIds={["home", "components", "foundations", "brand"]}
       primaryCta={{ label: "GitHub Repository", icon: "external", href: "https://github.com/hoanghuynh296/semi-nextjs-codebase", external: true }}
-      footer={({ collapsed }) =>
+      account={({ collapsed }) =>
         collapsed ? (
           <div className="flex justify-center">
             <ThemeToggle />

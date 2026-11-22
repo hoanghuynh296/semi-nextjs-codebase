@@ -182,7 +182,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       ${logoEl ? `logo={${logoEl}}` : `logoIcon="layers"`}
       sections={SECTIONS}
       activeId={active}
-      footer={() => <ThemeToggle />}
+      account={() => <ThemeToggle />}
     >
       {children}
     </AppShell>

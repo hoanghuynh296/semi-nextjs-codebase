@@ -50,7 +50,7 @@ the tooltip is linked with aria-describedby. Touch screens show nothing: never p
 |---|---|---|---|
 | `content` * | `React.ReactNode` |  |  |
 | `children` * | `ReactElement<unknown, string \| JSXElementConstructor<any>>` |  |  |
-| `side` | `'bottom' \| 'top'` | `"top"` |  |
+| `side` | `'right' \| 'bottom' \| 'top'` | `"top"` | Where the hint shows; `right` is for a vertical icon rail (AppShell's collapsed sidebar). |
 
 ## Accessibility
 

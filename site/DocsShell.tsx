@@ -2,7 +2,7 @@
 
 import React from "react";
 import { usePathname } from "next/navigation";
-import { AppShell, type ShellNavSection } from "../src/AppShell";
+import { AppShell, type AppShellProps, type ShellNavSection } from "../src/AppShell";
 import type { IconName } from "../src/Icon";
 import { DOCS, GROUPS } from "../examples/registry.generated";
 
@@ -45,8 +45,9 @@ export function DocsShell({
   productName,
   logoIcon = "sparkles",
   sections = [],
+  account,
+  utilities,
   footer,
-  mobileTabIds,
   primaryCta,
   children,
 }: {
@@ -54,9 +55,15 @@ export function DocsShell({
   logoIcon?: IconName;
   /** Sections shown above the component groups (e.g. Introduction, Foundations). */
   sections?: ShellNavSection[];
+  /** Bottom of the menu (theme and style switches, version): AppShell `account`. */
+  account?: AppShellProps["account"];
+  /** Utilities above the account: AppShell `utilities`. */
+  utilities?: AppShellProps["utilities"];
+  /** @deprecated Since 0.36: use `account` (AppShell `footer` was split into `utilities` + `account`). */
   footer?: (state: { collapsed: boolean }) => React.ReactNode;
+  /** @deprecated Since 0.36: phones use AppShell's drawer; ignored. */
   mobileTabIds?: string[];
-  primaryCta?: React.ComponentProps<typeof AppShell>["primaryCta"];
+  primaryCta?: AppShellProps["primaryCta"];
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -66,8 +73,8 @@ export function DocsShell({
       logoIcon={logoIcon}
       sections={[...sections, ...componentSections()]}
       activeId={activeFromPath(pathname)}
-      footer={footer}
-      mobileTabIds={mobileTabIds}
+      account={account ?? footer}
+      utilities={utilities}
       primaryCta={primaryCta}
     >
       {/* w-full: an auto-margin flex item would size to its widest demo and push the page past a phone screen */}

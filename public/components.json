@@ -102,6 +102,7 @@
       "text-heading",
       "text-heading-lg",
       "text-display",
+      "text-overline",
       "text-caption--line-height",
       "text-label--line-height",
       "text-ui--line-height",
@@ -112,7 +113,8 @@
       "text-heading-sm--line-height",
       "text-heading--line-height",
       "text-heading-lg--line-height",
-      "text-display--line-height"
+      "text-display--line-height",
+      "text-overline--line-height"
     ],
     "z": [
       "z-sticky",
@@ -510,7 +512,7 @@
       "kind": "component",
       "module": "src/AppShell.tsx",
       "client": true,
-      "summary": "2-panel floating Bento shell of the Semi Design System (docs/DESIGN_SYSTEM.md §4): - Outer bg-canvas (#111111) with md:p-2 md:gap-2 - Collapsible rounded-panel bg-panel left menu (w-52 <-> w-14 icon rail, persisted in localStorage) - Rounded-2xl bg-app right content panel with max-w-[1440px] container - Mobile (< md): hides the top logo header and renders MobileTabBar at the bottom (plus a bottom sheet if >5 routes) - Sub-items (`children`) open under their parent only while the parent or one of them is active",
+      "summary": "2-panel floating Bento shell of the Semi Design System (docs/DESIGN_SYSTEM.md §4), after the #94 study (C-031/C-032): - Outer bg-canvas frame with md:p-2 md:gap-2; the sidebar (bg-panel) and the content panel (bg-app) separate by tone - Sidebar from top to bottom: brand + collapse toggle, the accent Create action, the main nav (sections), a pinned group (text-overline label), then the utilities and the account at the bottom - lg+: labels (w-60) or the icon rail (w-[60px], remembered in localStorage); md (iPad): always the rail.",
       "props": [
         "productName",
         "logoIcon",
@@ -518,8 +520,13 @@
         "sections",
         "activeId",
         "onSelect",
+        "create",
         "primaryCta",
+        "pinned",
+        "utilities",
+        "account",
         "footer",
+        "mobileNav",
         "mobileTabIds",
         "storageKey",
         "children",
@@ -1523,6 +1530,39 @@
       "doc": "docs/components/markdown.md"
     },
     {
+      "name": "MegaMenu",
+      "kind": "component",
+      "module": "src/MegaMenu.tsx",
+      "client": true,
+      "summary": "Mega menu (#96, L8 of the #94 study): a flyout of links grouped in category columns, each column headed by a text-overline label, links with an optional grey icon, hint and \"New\" badge, and an optional \"See all\" link.",
+      "props": [
+        "open",
+        "onClose",
+        "anchorRef",
+        "triggerRef",
+        "label",
+        "columns",
+        "seeAll",
+        "placement",
+        "onNavigate"
+      ],
+      "doc": "docs/components/mega-menu.md"
+    },
+    {
+      "name": "MinimalHeader",
+      "kind": "component",
+      "module": "src/MinimalHeader.tsx",
+      "client": true,
+      "summary": "Minimal page header (#96, L18 of the #94 study): where the page sits on the left (a Breadcrumb, or a title), and at most one text link plus one primary action on the right.",
+      "props": [
+        "left",
+        "link",
+        "primary",
+        "className"
+      ],
+      "doc": "docs/components/minimal-header.md"
+    },
+    {
       "name": "MobileTabBar",
       "kind": "component",
       "module": "src/MobileTabBar.tsx",
@@ -2194,6 +2234,24 @@
         "className"
       ],
       "doc": "docs/components/terminal.md"
+    },
+    {
+      "name": "TextTabs",
+      "kind": "component",
+      "module": "src/TextTabs.tsx",
+      "client": true,
+      "summary": "Text tabs as the page heading (#96, L19 of the #94 study): 2–4 sibling views named in display type, the current one bright and the others dim, no underline or tab chrome.",
+      "props": [
+        "items",
+        "value",
+        "onChange",
+        "label",
+        "heading",
+        "children",
+        "className",
+        "panelClassName"
+      ],
+      "doc": "docs/components/text-tabs.md"
     },
     {
       "name": "ThemeProvider",

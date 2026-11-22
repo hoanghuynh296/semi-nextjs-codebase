@@ -45,7 +45,7 @@ const TITLES = {
   gray: "Neutral gray (exact hex, zero blue cast)",
   palette: "Tailwind palettes pinned to v3 hex (v4 OKLCH shifts hues)",
   scale: "v3 scale semantics for rounded / shadow / blur / ring; radius scale lg (controls) / xl (cards) / 2xl (panels)",
-  type: "Type scale: text-caption 11 · label 12 · ui 14 · ui-lg 15 · title 15 · title-lg 16 · figure 18 · heading-sm 20 · heading 22 · heading-lg 24 · display 26 (compact density: ui 13 · ui-lg 14). Each size carries its line height (1.5 body, 1.25 titles); leading-* overrides it",
+  type: "Type scale: text-caption 11 · label 12 · ui 14 · ui-lg 15 · title 15 · title-lg 16 · figure 18 · heading-sm 20 · heading 22 · heading-lg 24 · display 26 · overline 11 (section labels, uppercase) (compact density: ui 13 · ui-lg 14). Each size carries its line height (1.5 body, 1.25 titles); leading-* overrides it",
   motion: "Easing (ease-out-soft for entering, ease-in-soft for leaving)",
   z: "Global layers (utilities z-sticky … z-tooltip); local stacking inside a component keeps z-10 / z-20",
 };
@@ -61,6 +61,7 @@ const inlineVars = [];
 const compatVars = [];
 const zKeys = [];
 const bgUtilities = [];
+const caseUtilities = [];
 const srcVar = (key) => `--semi-${key.replace(/^color-/, "")}`;
 
 for (const [group, entries] of Object.entries(tokens)) {
@@ -100,6 +101,11 @@ for (const [group, entries] of Object.entries(tokens)) {
     const value = typeof raw === "string" ? raw : raw.value;
     const note = typeof raw === "string" ? "" : raw.note ? ` /* ${raw.note} */` : "";
     out += `  --${key}: ${toRem(key, value)};${note}\n`;
+    // A type role with its own tracking, weight and case (text-overline): Tailwind reads the --letter-spacing and
+    // --font-weight modifiers; the case is an @utility of the same name, which Tailwind merges into text-overline.
+    if (typeof raw === "object" && raw.letterSpacing) out += `  --${key}--letter-spacing: ${raw.letterSpacing};\n`;
+    if (typeof raw === "object" && raw.fontWeight) out += `  --${key}--font-weight: ${raw.fontWeight};\n`;
+    if (typeof raw === "object" && raw.transform) caseUtilities.push(`/* ${key}: ${raw.note ?? ""} */\n@utility ${key} {\n  text-transform: ${raw.transform};\n}\n\n`);
   }
 }
 out += "}\n\n";
@@ -119,6 +125,7 @@ if (darkVars.length > 0) {
   out += `/* Styles (tokens/styles/*.json, docs/STYLES.md): set data-style="${styles.map((s) => s.id).join("|")}" on <html> or a wrapper; default ${def.id} */\n`;
   out += `@theme inline {\n${themeKeys.map((k) => `  --${k}: var(--semi-${k});${note(def.tokens[k])}`).join("\n")}\n}\n\n`;
   out += bgUtilities.join("");
+  out += caseUtilities.join("");
   out += Object.entries(UTILITY_KEYS).map(([k, [name, prop]]) => `/* ${def.tokens[k].note ?? k} */\n@utility ${name} {\n  ${prop}: var(--semi-${k});\n}\n\n`).join("");
   for (const s of styles) {
     const sel = styleSelectors(s.id, s.default);
