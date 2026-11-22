@@ -42,3 +42,23 @@ test("useFilterParams under Next's App Router: useSearchParams sees each change,
   // and the chip row reads it too
   await expect(bar.getByRole("button", { name: "Status · 2" })).toBeVisible();
 });
+
+// React reports updates scheduled inside an insertion effect only in development: run against `next dev`
+// (SEMI_DEV_URL=http://127.0.0.1:4332 after `npx next dev tests/prerender-app -p 4332`). Skipped in test:ui.
+test("useFilterParams in next dev: same-route Link and router.push log no React error", async ({ page }) => {
+  const dev = process.env.SEMI_DEV_URL;
+  test.skip(!dev, "set SEMI_DEV_URL to a running `next dev tests/prerender-app`");
+  const errors: string[] = [];
+  page.on("console", (m) => {
+    if (m.type() === "error" && !/Failed to load resource/.test(m.text())) errors.push(m.text());
+  });
+  await page.goto(`${dev}/filters/a`);
+  const hook = page.getByTestId("hook-status").filter({ visible: true });
+  await page.getByRole("link", { name: "Done only" }).click();
+  await expect(hook).toHaveText("done");
+  await page.getByRole("button", { name: "Push both" }).click();
+  await expect(hook).toHaveText("new,done");
+  await page.goBack();
+  await expect(hook).toHaveText("done");
+  expect(errors).toEqual([]);
+});

@@ -194,15 +194,18 @@ const URL_EVENT = "semi:urlchange";
 type NavigationLike = { addEventListener(type: string, cb: () => void): void; removeEventListener(type: string, cb: () => void): void };
 
 function subscribeUrl(onChange: () => void) {
-  window.addEventListener("popstate", onChange);
-  window.addEventListener(URL_EVENT, onChange);
+  // Next writes history inside an insertion effect (HistoryUpdater) and `currententrychange` fires synchronously in
+  // that write: an update scheduled there is an error in React. Read the URL a microtask later instead.
+  const deferred = () => queueMicrotask(onChange);
+  window.addEventListener("popstate", deferred);
+  window.addEventListener(URL_EVENT, deferred);
   // Navigation API (Chromium, Safari 26+): also hears Next's own history writes (a Link or router.push to this route)
   const nav = (window as unknown as { navigation?: NavigationLike }).navigation;
-  nav?.addEventListener("currententrychange", onChange);
+  nav?.addEventListener("currententrychange", deferred);
   return () => {
-    window.removeEventListener("popstate", onChange);
-    window.removeEventListener(URL_EVENT, onChange);
-    nav?.removeEventListener("currententrychange", onChange);
+    window.removeEventListener("popstate", deferred);
+    window.removeEventListener(URL_EVENT, deferred);
+    nav?.removeEventListener("currententrychange", deferred);
   };
 }
 
@@ -212,8 +215,9 @@ function subscribeUrl(onChange: () => void) {
  * Writes use `history.pushState(null, …)` / `replaceState(null, …)`, which Next's App Router turns into its own
  * navigation, so `useSearchParams` and `router.refresh()` keep the filters. It follows Back / Forward, every other
  * useFilterParams on the page, and (where the Navigation API exists, and on any re-render elsewhere) a Link or
- * `router.push` to the same route. With a router of your own, use the pure helpers (`readFilters`, `writeFilters`,
- * `clearFilters`) on its search params.
+ * `router.push` to the same route. Without the Navigation API (Firefox, Safari < 26) a hook in a layout that does
+ * not re-render can miss such a navigation: there, and with a router of your own, use the pure helpers
+ * (`readFilters`, `writeFilters`, `clearFilters`) on `useSearchParams`.
  */
 export function useFilterParams<K extends string>(specs: readonly (FilterSpec & { key: K })[], options: { prefix?: string } = {}): FilterParamsState<K> {
   const { prefix } = options;
