@@ -8,3 +8,4 @@ test-results/
 playwright-report/
 .brand-book/
 out-brand/
+tests/prerender-app/next-env.d.ts

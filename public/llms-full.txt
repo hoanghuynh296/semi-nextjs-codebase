@@ -166,7 +166,7 @@ Phones (`< md`) hide the top logo header and use `MobileTabBar` at the bottom (n
 | Semantic Token | Tailwind Class | Dark Mode (`[data-theme="dark"]`) | Light Mode (`[data-theme="light"]`) | Usage |
 |---|---|---|---|---|
 | `--color-canvas` | `bg-canvas` | `#0c0d0e` | `#f1f5f9` (Slate-100) | Outermost viewport frame |
-| `--color-app` | `bg-app` | `#121316` | `#ffffff` | Main workspace & content canvas |
+| `--color-app` | `bg-app` | `#121316` | `#f8fafc` | Main workspace & content canvas |
 | `--color-panel` | `bg-panel` | `#202226` | `#ffffff` | Bento Cards, Sidebar, Modals, Menus |
 | `--color-field` | `bg-field` | `#272a2f` | `#f1f5f9` (Slate-100) | Form inputs (`FIELD_INPUT`), table headers |
 | `--color-raised` | `bg-raised` | `#26282e` | `#e2e8f0` (Slate-200) | Hover surface, subtle elevation, skeleton shimmer |
@@ -466,7 +466,7 @@ Semi architecture separates tokens into two tiers:
 | Semantic Token | Tailwind Utility | Purpose | Dark Mode (`[data-theme="dark"]`) | Light Mode (`[data-theme="light"]`) |
 |---|---|---|---|---|
 | `--color-canvas` | `bg-canvas` | Nền ứng dụng ngoài cùng (outer bento shell) | `#0c0d0e` | `#f1f5f9` (Slate-100) |
-| `--color-app` | `bg-app` | Khung bề mặt màn hình chính (content panel) | `#121316` | `#ffffff` |
+| `--color-app` | `bg-app` | Khung bề mặt màn hình chính (content panel) | `#121316` | `#f8fafc` |
 | `--color-panel` | `bg-panel` | Thẻ Bento Card, Sidebar, Modal shell | `#202226` | `#ffffff` |
 | `--color-field` | `bg-field` | Nền ô nhập liệu, header bảng | `#272a2f` | `#f1f5f9` (Slate-100) |
 | `--color-raised` | `bg-raised` | Hover / track fills trên nền field hoặc panel | `#31343a` | `#e2e8f0` (Slate-200) |
@@ -5465,7 +5465,7 @@ export default function ToastPromise() {
 
 ## Notes
 
-- <ToastHost /> goes once in the root layout (see Theme › Root layout); every toast() call anywhere shows there.
+- <ToastHost /> goes once in the root layout (see Theme › Root layout); every toast() call anywhere shows there. No <Suspense> is needed around it: the route-change watcher inside ToastHost has its own boundary, so it is safe in a root layout that prerenders dynamic routes.
 - Feedback rule (§14c): reversible destructive action → toast.undo; irreversible → confirmDelete (names the object, red Xoá, Huỷ); success is one toast, never a modal. The same text still showing is replaced, not stacked.
 - `toast(opts)` keeps working; `toast.success(title, opts | ms)` etc. are shorthands. Use `updateToast(id, patch)` to change a toast that is still showing.
 - Undo: `onUndo` must restore on the server too (it can run after the component is gone); `onCommit` runs when the window closes without an undo (also on pagehide: best effort, use keepalive / sendBeacon; commit first, undo restores). Undo toasts already showing close on a route change; one shown just before the action's own navigation stays. `toast.promise` has `timeout` (default 30 s: a neutral "Vẫn đang xử lý…", not an error). `updateToast` keeps the id.

@@ -47,7 +47,7 @@ export function Item({
   );
   const rowCls = "flex items-center gap-3 min-w-0 flex-1 text-left";
   return (
-    <div className={cn("relative flex items-center gap-3 px-4 py-3", (href || onClick) && "hover:bg-field/60 transition-colors", className)}>
+    <div className={cn("relative flex items-center gap-3 px-4 py-3", (href || onClick) && "hover:bg-field/60 light:hover:bg-field/80 transition-colors", className)}>
       {href ? (
         <Link href={href} className={cn(rowCls, "after:absolute after:inset-0 rounded-control", FOCUS_RING)}>
           {main}

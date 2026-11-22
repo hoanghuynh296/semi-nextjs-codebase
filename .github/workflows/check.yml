@@ -31,6 +31,9 @@ jobs:
       - name: Build Next.js Static Storybook
         run: npx next build
 
+      - name: "Prerender regression build (#82: bare ToastHost in a root layout, dynamic route)"
+        run: npm run build:prerender-test
+
       - name: Build the sample brand book (tests/fixtures/brand.json)
         run: npm run build:brand-book
 
