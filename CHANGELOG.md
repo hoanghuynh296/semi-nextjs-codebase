@@ -4,6 +4,16 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.35.0] - 2026-11-22
+
+Brand kits get a different solid accent in each theme, the light Flat page gets a visible surface step, the dark chart palette gets a plum sixth colour, and `ToastHost` no longer needs a `<Suspense>` wrapper. There is **no breaking API change**.
+
+**Brand kits must be rebuilt and re-released** to get per-theme accents and the Flat light app step (`/semi-brand update` or `semi-brand build`, then a new kit tag); the brand owner releases the kits. A kit with equal light and dark accents fails `semi-brand check` until it is rebuilt or sets `accent.sameInBothThemes`.
+
+Visible changes: Semi orange light becomes `#bd4516`; 3D Noobs dark becomes `#539f50` with dark text; the light Flat page gets an app step (`#f8fafc`) behind the white panels; `--semi-chart-6` is now plum.
+
+`ToastHost` fix: apps can drop the `<Suspense>` they wrapped around it; `next build` of dynamic routes works with a bare `ToastHost`.
+
 ### Changed
 - **Visible change, Flat light (the default style): the page now has a surface step (#88).** `--semi-app` was `#ffffff`, the same as `--semi-panel`, so the AppShell content panel and the sidebar blended into the page. `app` is now `#f8fafc` (OKLCH L 0.984, halfway between canvas and panel: 0.016 on both sides, Sharp's are 0.012), `panel` stays `#ffffff`, `canvas` (`#f1f5f9`), `field` and `raised` are unchanged, so the order is canvas < app < panel. Dark Flat, Soft and Sharp are unchanged. The brand generator takes the Flat light neutrals from the same token, so kits get the step too: Semi `#fcf9f8` app (was `#ffffff`) and 3D Noobs `#f9faf8` (was `#ffffff`); canvas `#f6f4f3` / `#f3f5f3` and panel `#ffffff` stay. Light hover fills on `Item` rows and `TABLE_ROW_HOVER` go from `bg-field/60` to `/80` so they still read on the new app (dark unchanged). Ships in **v0.35.0** together with #84, so the kits are rebuilt once.
 - **Tests:** a surface test (`lint/test/surfaces.test.mjs`) checks every style x theme in core tokens and in built kits: dark canvas < app < panel < field < raised, light canvas < app < panel and field / raised below the panel and the app, each with an OKLCH L step of at least 0.01, and that Flat light's canvas-to-app and app-to-panel steps are at least Sharp's.
