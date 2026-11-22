@@ -1402,6 +1402,23 @@ test("a clickable Card is a keyboard button: Tab reaches it, Enter picks it, ari
 });
 
 // #106 page types and states: every new control's keyboard path. Each first step retries until React has hydrated.
+test("WorkspaceLayout on a phone: the panel stacks on top and its main action stays at the bottom of the screen (#106)", async ({ page }) => {
+  await page.setViewportSize({ width: 430, height: 932 });
+  await open(page, "/components/workspace-layout/", "dark");
+  const box = example(page, "workspace-layout/request");
+  // the docs frame scrolls sideways (overflow-x-auto), which would be the sticky container: take it out, as in an app
+  await box.locator("[data-density-view]").evaluate((el) => el.classList.remove("overflow-x-auto"));
+  await box.getByRole("group", { name: "Mặt hàng" }).scrollIntoViewIfNeeded();
+  const panel = await box.getByRole("region", { name: "Bảng điều khiển" }).boundingBox();
+  const result = await box.getByRole("region", { name: "Kết quả" }).boundingBox();
+  expect(result!.y).toBeGreaterThan(panel!.y + panel!.height - 1);
+  expect(panel!.y + panel!.height).toBeGreaterThan(932);
+  await expect(async () => {
+    const send = await box.getByRole("button", { name: /Gửi hỏi giá/ }).boundingBox();
+    expect(send!.y + send!.height).toBeLessThanOrEqual(932);
+  }).toPass({ timeout: 5_000 });
+});
+
 test("Stepper: a spinbutton; arrows, Page Up / Down, Home / End; the − + buttons are out of the Tab order (#106)", async ({ page }) => {
   await open(page, "/components/stepper/", "dark");
   const box = example(page, "stepper/basic");

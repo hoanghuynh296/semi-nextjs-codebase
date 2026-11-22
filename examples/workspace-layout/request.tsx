@@ -76,7 +76,7 @@ export default function WorkspaceRequest() {
         </>
       }
       action={
-        <div className="flex items-center gap-2">
+        <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-2">
           <Button>Lưu nháp</Button>
           <Button variant="primary" icon="send" fullWidth>
             Gửi hỏi giá (2)

@@ -33,7 +33,7 @@
     {
       "file": "request",
       "title": "Quote request",
-      "description": "Tabs, back + name, sections with counters, steppers, a drop zone, a message with @ and / hints; the comparison on the right. Narrow the window: the panel stacks on top and the action stays at the bottom."
+      "description": "Tabs, back + name, sections with counters, steppers, a drop zone, a message with @ and / hints; the comparison on the right. Below lg the panel stacks on top and its action stays at the bottom of the screen (not inside this docs frame, which scrolls sideways: sticky needs a page that scrolls vertically)."
     },
     {
       "file": "minimal",
@@ -43,6 +43,7 @@
   ],
   "notes": [
     "The panel is 380px wide on lg+, sticky under the top of the scrolling area, and scrolls inside; the result scrolls with the page.",
-    "One primary in the action bar (fullWidth), a secondary beside it at most (Lưu nháp). Section labels are the only uppercase text (text-overline, written in sentence case in code)."
+    "One primary in the action bar (fullWidth), a secondary beside it at most (Lưu nháp). Section labels are the only uppercase text (text-overline, written in sentence case in code).",
+    "Do not put WorkspaceLayout inside an overflow-x-auto / overflow-hidden box: that box becomes the sticky container and the phone action no longer stays on screen."
   ]
 }
