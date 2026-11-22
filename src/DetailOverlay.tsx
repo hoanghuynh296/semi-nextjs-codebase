@@ -184,8 +184,9 @@ export function DetailOverlay({
     return () => document.removeEventListener("focusin", onFocusIn);
   }, []);
   useEffect(() => {
-    if (lastFocus.current === "next" && !hasNext && document.activeElement !== nextBtn.current) prevBtn.current?.focus();
-    if (lastFocus.current === "prev" && !hasPrev && document.activeElement !== prevBtn.current) nextBtn.current?.focus();
+    // (Chrome blurs a disabled button only at the next frame, so do not wait for activeElement to change)
+    if (lastFocus.current === "next" && !hasNext) prevBtn.current?.focus();
+    else if (lastFocus.current === "prev" && !hasPrev) nextBtn.current?.focus();
   }, [hasPrev, hasNext]);
 
   // a new item starts at its top
