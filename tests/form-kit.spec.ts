@@ -1,0 +1,275 @@
+// Form kit (#67): FormActions order and stickiness on a phone (375×812, above the keyboard and the safe area),
+// useUnsavedGuard in the Next.js app router (link, back, reload, tab close), Field kind attributes, validation timing.
+import { expect, test, type Page } from "@playwright/test";
+
+const PAGE = "/components/form-actions/";
+const FORM = '[data-example="form-actions/page-form"] form';
+
+const names = (page: Page, sel: string) => page.locator(`${sel} [data-form-actions] button`).allInnerTexts();
+
+test("FormActions: Huỷ (ghost) then Tạo (primary), right-aligned; the destructive action alone on the left", async ({ page }) => {
+  await page.goto(PAGE);
+  expect((await names(page, FORM)).map((s) => s.trim())).toEqual(["Huỷ", "Tạo"]);
+  const bar = page.locator(`${FORM} [data-form-actions]`);
+  const [cancel, create] = [bar.getByRole("button", { name: "Huỷ" }), bar.getByRole("button", { name: "Tạo" })];
+  const b = await page.locator(FORM).boundingBox(); // the bar bleeds into the page padding and pads itself back: buttons end where the form ends
+  const [c, p] = [await cancel.boundingBox(), await create.boundingBox()];
+  expect(c!.x).toBeLessThan(p!.x);
+  expect(Math.abs(p!.x + p!.width - (b!.x + b!.width))).toBeLessThanOrEqual(2); // right edge of the row
+  await expect(create).toHaveAttribute("type", "submit");
+  await expect(cancel).toHaveAttribute("type", "button");
+  expect(await cancel.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe("rgba(0, 0, 0, 0)"); // ghost
+  expect(await create.evaluate((el) => getComputedStyle(el).backgroundColor)).not.toBe("rgba(0, 0, 0, 0)"); // filled
+
+  const sel = '[data-example="form-actions/destructive"] form';
+  expect((await names(page, sel)).map((s) => s.trim())).toEqual(["Xoá máy in", "Huỷ", "Lưu"]);
+  const row = page.locator(`${sel} [data-form-actions]`);
+  const rb = await page.locator(sel).boundingBox();
+  const del = await row.getByRole("button", { name: "Xoá máy in" }).boundingBox();
+  const save = await row.getByRole("button", { name: "Lưu" }).boundingBox();
+  expect(del!.x - rb!.x).toBeLessThanOrEqual(2); // left edge
+  expect(Math.abs(save!.x + save!.width - (rb!.x + rb!.width))).toBeLessThanOrEqual(2); // right edge
+});
+
+test("FormActions in a Modal: the footer, the same order, 44px buttons on a phone", async ({ browser }) => {
+  const page = await browser.newPage({ viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true });
+  await page.goto(PAGE);
+  await page.locator('[data-example="form-actions/modal"]').getByRole("button", { name: "Đổi tên máy in" }).click();
+  const dialog = page.getByRole("dialog", { name: "Đổi tên máy in" });
+  await expect(dialog.locator('[data-form-actions="modal"]')).toBeVisible();
+  expect((await dialog.locator("[data-form-actions] button").allInnerTexts()).map((s) => s.trim())).toEqual(["Huỷ", "Lưu"]);
+  for (const name of ["Huỷ", "Lưu"]) expect((await dialog.getByRole("button", { name, exact: true }).boundingBox())!.height).toBeCloseTo(44, 0);
+  expect(await dialog.locator('[data-form-actions="modal"]').evaluate((el) => getComputedStyle(el).position)).not.toBe("sticky");
+  await dialog.getByRole("button", { name: "Huỷ" }).click();
+  await expect(dialog).toHaveCount(0);
+  await page.close();
+});
+
+/** A phone with a tall form: the preview box does not scroll, so the bar sticks to the page's viewport. */
+async function phoneWithTallForm(browser: import("@playwright/test").Browser, keyboard = false) {
+  const page = await browser.newPage({ viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true });
+  if (keyboard) {
+    // a stand-in visualViewport the test can shrink (a headless browser has no on-screen keyboard)
+    await page.addInitScript(() => {
+      const vv = Object.assign(new EventTarget(), { height: window.innerHeight, offsetTop: 0, scale: 1 });
+      Object.defineProperty(window, "visualViewport", { value: vv, configurable: true });
+    });
+  }
+  await page.goto(PAGE);
+  await page.evaluate((form) => {
+    const f = document.querySelector(form) as HTMLElement;
+    for (let el: HTMLElement | null = f; el && el !== document.body; el = el.parentElement) el.style.overflow = "visible";
+    const spacer = document.createElement("div");
+    spacer.style.height = "1600px";
+    f.insertBefore(spacer, f.querySelector("[data-form-actions]"));
+  }, FORM);
+  await page.locator(FORM).scrollIntoViewIfNeeded();
+  await page.evaluate((form) => window.scrollTo(0, (document.querySelector(form) as HTMLElement).getBoundingClientRect().top + scrollY - 100), FORM);
+  return page;
+}
+
+test("FormActions on a phone: sticks to the bottom of the screen with 44px buttons, however far the form runs on", async ({ browser }) => {
+  const page = await phoneWithTallForm(browser);
+  const bar = page.locator(`${FORM} [data-form-actions]`);
+  const place = async () => (await bar.boundingBox())!;
+  let b = await place();
+  expect(b.y + b.height).toBeCloseTo(812, 0); // pinned to the bottom edge while the form is still above it
+  await page.mouse.wheel(0, 400);
+  b = await place();
+  expect(b.y + b.height).toBeCloseTo(812, 0);
+  expect(await bar.evaluate((el) => getComputedStyle(el).position)).toBe("sticky");
+  for (const name of ["Huỷ", "Tạo"]) expect((await bar.getByRole("button", { name, exact: true }).boundingBox())!.height).toBeCloseTo(44, 0);
+  // the home-indicator inset sits below the buttons (env() is 0 here, so the 12px floor shows)
+  expect(await bar.evaluate((el) => (el as HTMLElement).style.paddingBottom)).toContain("env(safe-area-inset-bottom)");
+  expect(parseFloat(await bar.evaluate((el) => getComputedStyle(el).paddingBottom))).toBeGreaterThanOrEqual(12);
+  await page.close();
+});
+
+test("FormActions on a phone: the bar rides above the on-screen keyboard and drops back when it closes", async ({ browser }) => {
+  const page = await phoneWithTallForm(browser, true);
+  const bar = page.locator(`${FORM} [data-form-actions]`);
+  const bottom = async () => {
+    const b = (await bar.boundingBox())!;
+    return Math.round(b.y + b.height);
+  };
+  expect(await bottom()).toBe(812);
+  await page.evaluate(() => {
+    // the keyboard opens: the visual viewport is 342px shorter
+    Object.assign(window.visualViewport!, { height: 470 });
+    window.visualViewport!.dispatchEvent(new Event("resize"));
+  });
+  await expect.poll(bottom).toBe(812 - 342); // bar bottom = top of the keyboard
+  const pad = await bar.evaluate((el) => parseFloat(getComputedStyle(el).paddingBottom));
+  expect(pad).toBeCloseTo(12, 0); // the keyboard covers the safe area: no extra inset
+  await page.evaluate(() => {
+    Object.assign(window.visualViewport!, { height: 812 });
+    window.visualViewport!.dispatchEvent(new Event("resize"));
+  });
+  await expect.poll(bottom).toBe(812);
+  await page.close();
+});
+
+// ---- useUnsavedGuard with the app router (the docs site is a Next.js app router app) ----
+
+const nameField = (page: Page) => page.locator(FORM).getByLabel("Tên máy in", { exact: false });
+const toButton = (page: Page) => page.locator('a[href$="/components/button/"]').first();
+
+test("useUnsavedGuard · route change: a link click asks, Ở lại keeps the typed text, Rời đi goes", async ({ page }) => {
+  await page.goto(PAGE);
+  await nameField(page).fill("Bambu P1S");
+  await toButton(page).click();
+  const ask = page.getByRole("alertdialog", { name: "Rời khỏi trang?" });
+  await expect(ask).toContainText("Bạn có thay đổi chưa lưu");
+  await ask.getByRole("button", { name: "Ở lại" }).click();
+  await expect(page).toHaveURL(/\/components\/form-actions\/$/);
+  await expect(nameField(page)).toHaveValue("Bambu P1S");
+  await toButton(page).click();
+  await page.getByRole("alertdialog", { name: "Rời khỏi trang?" }).getByRole("button", { name: "Rời đi" }).click();
+  await expect(page).toHaveURL(/\/components\/button\/$/);
+});
+
+test("useUnsavedGuard · a clean form never asks", async ({ page }) => {
+  await page.goto(PAGE);
+  await toButton(page).click();
+  await expect(page).toHaveURL(/\/components\/button\/$/);
+  await expect(page.getByRole("alertdialog")).toHaveCount(0);
+  // typed and then emptied again is clean too
+  await page.goBack();
+  await nameField(page).fill("x");
+  await nameField(page).fill("");
+  const prevented = await page.evaluate(() => {
+    const e = new Event("beforeunload", { cancelable: true });
+    window.dispatchEvent(e);
+    return e.defaultPrevented;
+  });
+  expect(prevented).toBe(false);
+});
+
+test("useUnsavedGuard · back and forward: asked once, Ở lại stays on the form, Rời đi goes back", async ({ page }) => {
+  await page.goto("/components/button/");
+  await page.locator('a[href$="/components/form-actions/"]').first().click();
+  await expect(page).toHaveURL(/\/components\/form-actions\/$/);
+  await nameField(page).fill("Bambu P1S");
+  await page.goBack();
+  const ask = page.getByRole("alertdialog", { name: "Rời khỏi trang?" });
+  await expect(ask).toBeVisible();
+  await ask.getByRole("button", { name: "Ở lại" }).click();
+  await expect(page).toHaveURL(/\/components\/form-actions\/$/);
+  await expect(nameField(page)).toHaveValue("Bambu P1S");
+  await page.goBack();
+  await page.getByRole("alertdialog", { name: "Rời khỏi trang?" }).getByRole("button", { name: "Rời đi" }).click();
+  await expect(page).toHaveURL(/\/components\/button\/$/);
+});
+
+test("useUnsavedGuard · reload and tab close: the browser's prompt only while there are unsaved changes", async ({ page }) => {
+  await page.goto(PAGE);
+  const fire = () =>
+    page.evaluate(() => {
+      const e = new Event("beforeunload", { cancelable: true });
+      window.dispatchEvent(e);
+      return e.defaultPrevented;
+    });
+  expect(await fire()).toBe(false);
+  await nameField(page).fill("Bambu P1S");
+  expect(await fire()).toBe(true);
+  // the real prompt on closing the tab
+  const prompt = page.waitForEvent("dialog");
+  const closing = page.close({ runBeforeUnload: true });
+  const d = await prompt;
+  expect(d.type()).toBe("beforeunload");
+  await d.accept(); // "Leave"
+  await closing;
+});
+
+test("useUnsavedGuard · saving makes the form clean: no prompt, and the extra history entry is gone", async ({ page }) => {
+  await page.goto("/components/button/");
+  await page.locator('a[href$="/components/form-actions/"]').first().click();
+  const lengthBefore = await page.evaluate(() => history.length);
+  const f = page.locator(FORM);
+  await f.getByLabel("Tên máy in").fill("Bambu P1S");
+  await f.getByLabel("Email liên hệ").fill("ban@congty.vn");
+  expect(await page.evaluate(() => history.length)).toBe(lengthBefore + 1); // one entry while dirty
+  await f.getByRole("button", { name: "Tạo" }).click();
+  await expect(page.getByText("Đã tạo máy in")).toBeVisible();
+  await expect.poll(() => page.evaluate(() => history.state && (history.state as Record<string, unknown>).__semiUnsavedGuard === true)).toBe(false);
+  const prevented = await page.evaluate(() => {
+    const e = new Event("beforeunload", { cancelable: true });
+    window.dispatchEvent(e);
+    return e.defaultPrevented;
+  });
+  expect(prevented).toBe(false);
+  await toButton(page).click();
+  await expect(page).toHaveURL(/\/components\/button\/$/);
+  await expect(page.getByRole("alertdialog")).toHaveCount(0);
+});
+
+// ---- Field kind ----
+
+test("Field kind: type, inputMode, autoComplete and enterKeyHint of each kind", async ({ page }) => {
+  await page.goto("/components/field/");
+  const ex = page.locator('[data-example="field/kinds"]');
+  const attrs = (label: string) =>
+    ex.getByLabel(label).evaluate((el) => ({ type: (el as HTMLInputElement).type, inputmode: el.getAttribute("inputmode"), autocomplete: el.getAttribute("autocomplete"), enterkeyhint: el.getAttribute("enterkeyhint") }));
+  expect(await attrs("Email")).toEqual({ type: "email", inputmode: "email", autocomplete: "email", enterkeyhint: "next" });
+  expect(await attrs("Số điện thoại")).toEqual({ type: "tel", inputmode: "tel", autocomplete: "tel", enterkeyhint: "next" });
+  expect(await attrs("Số lượng")).toEqual({ type: "text", inputmode: "decimal", autocomplete: "off", enterkeyhint: "next" });
+  expect(await attrs("Giá bán (₫)")).toEqual({ type: "text", inputmode: "numeric", autocomplete: "off", enterkeyhint: "next" });
+  expect(await attrs("Website")).toEqual({ type: "url", inputmode: "url", autocomplete: "url", enterkeyhint: "next" });
+  expect(await attrs("Mật khẩu")).toEqual({ type: "password", inputmode: "text", autocomplete: "current-password", enterkeyhint: "go" });
+  expect(await attrs("Tìm kiếm")).toEqual({ type: "search", inputmode: "search", autocomplete: "off", enterkeyhint: "search" });
+});
+
+test("Field without a kind sets none of them, and a prop on the control wins over the kind", async ({ page }) => {
+  await page.goto("/components/field/");
+  const plain = await page.locator('[data-example="field/basic"] input').first().evaluate((el) => ({ im: el.getAttribute("inputmode"), ac: el.getAttribute("autocomplete"), eh: el.getAttribute("enterkeyhint") }));
+  expect(plain).toEqual({ im: null, ac: null, eh: null });
+  // the Wi-Fi password in the input-group example is kind="password" with its own type (text while shown)
+  await page.goto("/components/input-group/");
+  const wifi = page.locator('[data-example="input-group/addons"]').getByLabel("Mật khẩu Wi-Fi máy in");
+  await expect(wifi).toHaveAttribute("type", "password");
+  await expect(wifi).toHaveAttribute("autocomplete", "current-password");
+  await page.locator('[data-example="input-group/addons"]').getByRole("button", { name: "Hiện" }).click();
+  await expect(wifi).toHaveAttribute("type", "text"); // the control's own prop beat the kind's type
+  await expect(wifi).toHaveAttribute("inputmode", "text");
+});
+
+// ---- validation timing ----
+
+test("validation: silent while filling, error on blur, then it follows every change; two errors add the summary above FormActions", async ({ page }) => {
+  await page.goto(PAGE);
+  const f = page.locator(FORM);
+  const name = f.getByLabel("Tên máy in");
+  const email = f.getByLabel("Email liên hệ");
+  const err = (text: string) => f.getByText(text, { exact: true });
+
+  await name.focus();
+  await page.keyboard.type("B");
+  await page.keyboard.press("Backspace");
+  await expect(err("Nhập tên máy in.")).toHaveCount(0); // nothing before the first blur
+  await email.focus(); // blur the name
+  await expect(err("Nhập tên máy in.")).toBeVisible();
+  await expect(name).toHaveAttribute("aria-invalid", "true");
+  await expect(f.getByRole("alert")).toHaveCount(1); // one error: under its field only, no summary
+  await name.focus();
+  await page.keyboard.type("M");
+  await expect(err("Nhập tên máy in.")).toHaveCount(0); // on change it clears at once
+
+  await email.fill("abc");
+  await name.focus(); // blur the email
+  await expect(err("Email chưa đúng, ví dụ ten@congty.vn.")).toBeVisible();
+  await email.fill("abc@congty");
+  await expect(err("Email chưa đúng, ví dụ ten@congty.vn.")).toBeVisible(); // still wrong, still shown
+  await email.fill("abc@congty.vn");
+  await expect(err("Email chưa đúng, ví dụ ten@congty.vn.")).toHaveCount(0);
+
+  // Tạo with everything wrong: both errors under their fields, plus the summary
+  await name.fill("");
+  await email.fill("");
+  await f.getByRole("button", { name: "Tạo" }).click();
+  const summary = f.getByRole("alert").filter({ hasText: "Có 2 mục cần sửa" });
+  await expect(summary).toBeVisible();
+  await expect(summary).toContainText("Nhập tên máy in.");
+  const [s, a] = [await summary.boundingBox(), await f.locator("[data-form-actions]").boundingBox()];
+  expect(s!.y + s!.height).toBeLessThanOrEqual(a!.y + 1); // above FormActions
+  await expect(f.getByText("Đã tạo máy in")).toHaveCount(0);
+});
