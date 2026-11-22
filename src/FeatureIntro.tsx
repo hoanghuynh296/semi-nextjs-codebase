@@ -83,13 +83,26 @@ export function FeatureIntro({
   const storeRef = useRef(store);
   storeRef.current = store;
 
-  // after mount only: read the store, then open once no other dialog is up
+  // the page-wide "one intro open" slot, if this instance holds it
+  const owns = useRef(false);
+  const release = () => {
+    if (!owns.current) return;
+    owns.current = false;
+    introOpen = false;
+    // a waiting intro tries again (after this one's dialog has left the DOM)
+    queueMicrotask(() => window.dispatchEvent(new Event(INTRO_CLOSED)));
+  };
+  const hasSlides = slides.length > 0;
+
+  // after mount only: read the store, then open once no other dialog (or intro) is up
   useEffect(() => {
+    if (!hasSlides) return;
     let live = true;
     let observer: MutationObserver | undefined;
     const tryOpen = () => {
       if (!live || introOpen || otherDialogOpen()) return false;
       introOpen = true;
+      owns.current = true;
       observer?.disconnect();
       window.removeEventListener(INTRO_CLOSED, retry);
       setStep(0);
@@ -114,20 +127,17 @@ export function FeatureIntro({
       live = false;
       observer?.disconnect();
       window.removeEventListener(INTRO_CLOSED, retry);
+      // unmount, a new id, or StrictMode's second run: give the slot back (the re-run takes it again at once)
+      if (owns.current) {
+        release();
+        setOpen(false);
+      }
     };
-  }, [id, forceOpen]);
-
-  // unmounted while open: free the slot
-  useEffect(() => {
-    if (!open) return;
-    return () => {
-      introOpen = false;
-      queueMicrotask(() => window.dispatchEvent(new Event(INTRO_CLOSED)));
-    };
-  }, [open]);
+  }, [id, forceOpen, hasSlides]);
 
   const close = (how: "finished" | "skipped") => {
     setOpen(false);
+    release();
     Promise.resolve(storeRef.current.set(id)).catch(() => undefined);
     onDone?.(how);
   };

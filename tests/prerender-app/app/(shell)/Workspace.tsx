@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { StrictMode, useState } from "react";
 import { Button } from "../../../../src/Button";
 import { DropZone } from "../../../../src/FileDrop";
 import { FeatureIntro } from "../../../../src/FeatureIntro";
@@ -14,6 +14,7 @@ import { Stepper, WorkspaceHeader, WorkspaceLayout, WorkspaceSection } from "../
 export function Workspace() {
   const [qty, setQty] = useState(3);
   const [msg, setMsg] = useState("");
+  const [replay, setReplay] = useState(0);
   return (
     <>
       <WorkspaceLayout
@@ -45,6 +46,16 @@ export function Workspace() {
           { title: "Mention with @", body: "Suppliers are suggested as you type.", visual: <IconTile name="sparkles" size="lg" tone="gray" /> },
         ]}
       />
+      {/* "Xem lại giới thiệu" under StrictMode (next dev runs effects twice): it must not open again after it closes */}
+      <button type="button" onClick={() => setReplay((n) => n + 1)}>
+        Replay intro
+      </button>
+      {replay > 0 && (
+        <StrictMode>
+          <FeatureIntro key={replay} id="prerender-replay" forceOpen slides={[{ title: "Replayed intro", body: "Opened again on request.", visual: <IconTile name="info" size="lg" tone="gray" /> }]} />
+        </StrictMode>
+      )}
+      <FeatureIntro id="prerender-empty" slides={[]} />
       {/* a second unseen intro on the same page: it waits for the first to close */}
       <FeatureIntro id="prerender-second" slides={[{ title: "Second intro", body: "Shown after the first.", visual: <IconTile name="info" size="lg" tone="gray" /> }]} />
     </>

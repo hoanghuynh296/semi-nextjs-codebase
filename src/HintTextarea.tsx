@@ -139,6 +139,8 @@ export function HintTextarea({
           aria-label={field ? undefined : label}
           aria-describedby={[`${auto}-hint`, field?.describedBy].filter(Boolean).join(" ")}
           aria-invalid={field?.invalid || undefined}
+          // ARIA in HTML lists no role for <textarea>, but a combobox is what screen readers follow for a suggestion list
+          // (aria-expanded, aria-activedescendant are not supported on a plain textbox); axe accepts it
           role="combobox"
           aria-autocomplete="list"
           aria-haspopup="listbox"

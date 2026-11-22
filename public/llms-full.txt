@@ -1127,8 +1127,8 @@ skeletons: a route `loading.tsx` beside the layout shows `PageSkeleton` in the c
 `AppShell` behind a skeleton (`shell-gate`), never `BootLoader` in a page, a `loading.tsx` or shell content
 (`boot-loader-place`).
 A list, grid or table never swaps its rows for a `Spinner` or loading text (`no-spinner-in-list`, warning): `DataTable` and
-`List` take `loading`, other lists render `SkeletonRows` / `SkeletonGrid` (#106 adds shaped skeletons for list rows, cards,
-table rows and detail panels).
+`List` take `loading`, other lists render a skeleton of their shape: `SkeletonList` (divided rows), `SkeletonTable` (a
+hand-made table), `SkeletonDetail` (a record), `SkeletonRows` / `SkeletonGrid` (cards).
 Another exception: a list a form field fetches by itself in the background shows one small `role="status"` line under that
 field while it loads: a `w-3 h-3` spinner + "Đang tải …" in `text-label text-muted` (the text sits in the
 `role="status"` element, which the lint allows), gone when done; a failed fetch stays silent.

@@ -307,7 +307,7 @@ export const WARN = [
   // The patterns of the #94 study (C-031 / C-032, #107): warnings until 1.0 (C-021).
   [
     "no-spinner-in-list",
-    "A list, grid or table that is loading shows its own shape (§13b, L16): DataTable / List `loading`, SkeletonRows, SkeletonGrid or the shaped skeletons (#106), not a Spinner or \"Đang tải\" text in place of the rows. A Spinner stays inside the button or field that runs its own action.",
+    "A list, grid or table that is loading shows its own shape (§13b, L16): DataTable / List `loading`, SkeletonList, SkeletonTable, SkeletonDetail, SkeletonRows or SkeletonGrid (shaped like the rows), not a Spinner or \"Đang tải\" text in place of the rows. A Spinner stays inside the button or field that runs its own action.",
   ],
   ["filter-chip-wrap", "Filter chips are one line (L4, C-026): FilterChipRow + useFilterParams from @semi/ui (it scrolls sideways and keeps the state in the URL), not hand-made chip buttons in a flex-wrap that grows to several rows."],
   ["raw-pill-button", "A round icon button is <Button iconOnly shape=\"round\" icon aria-label> from @semi/ui (it keeps the focus ring, the title and the hit area), not a hand-made rounded-full button with a tint / field fill."],
