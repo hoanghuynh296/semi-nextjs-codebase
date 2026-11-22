@@ -210,7 +210,7 @@
     "id": "confirm-dialog",
     "title": "Confirm dialog",
     "group": "Overlays",
-    "description": "confirmDialog() asks one yes / no question and resolves to true or false. Mount ConfirmHost once in the root layout. Never window.confirm.",
+    "description": "confirmDialog() asks one yes / no question and resolves to true or false; confirmDelete({ name }) is the irreversible-action form (names the object, red Xoá). Mount ConfirmHost once in the root layout. Never window.confirm.",
     "components": [
       "ConfirmHost"
     ]
@@ -273,7 +273,7 @@
     "id": "toast",
     "title": "Toast",
     "group": "Overlays",
-    "description": "toast() shows a short message after an action, with a tone and an optional action (Hoàn tác). Mount ToastHost once in the root layout.",
+    "description": "One toast API for feedback after an action: toast.success / error / warning / info, toast.undo for a reversible destructive action, toast.promise for work in progress. Irreversible actions ask first (confirmDelete). Mount ToastHost once in the root layout.",
     "components": [
       "ToastHost"
     ]

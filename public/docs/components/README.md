@@ -39,14 +39,14 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | Doc | Components | When to use |
 |---|---|---|
 | [Command](command.md) | `Command`, `CommandDialog` | Jump anywhere and run any action from the keyboard (⌘K) in apps with many pages. |
-| [Confirm dialog](confirm-dialog.md) | `ConfirmHost` | Before deleting, stopping a print or discarding changes. |
+| [Confirm dialog](confirm-dialog.md) | `ConfirmHost` | Before an irreversible action: delete, stop a print, discard changes. confirmDelete names the object. |
 | [Context menu](context-menu.md) | `ContextMenu` | Power-user shortcuts on canvases, file grids and rows, when the same actions also exist in a visible Menu or toolbar. |
 | [Drawer](drawer.md) | `Drawer` | Filters of a list, details of a row, a secondary form that keeps the page visible. |
 | [Hover card](hover-card.md) | `HoverCard` | Peek at a linked record without opening it. |
 | [Menu](menu.md) | `Menu` | Secondary actions of a row or card (Đổi tên, Nhân bản, Xoá). |
 | [Modal](modal.md) | `Modal` | A short task that needs the user's full attention (edit settings, create an item). |
 | [Popover](popover.md) | `Popover` | Quick edits without leaving the page (rename, set a limit), compact filter forms. |
-| [Toast](toast.md) | `ToastHost` | Confirm an action happened (Đã lưu), warn about something passing (mất kết nối), offer undo. |
+| [Toast](toast.md) | `ToastHost` | Confirm an action happened (Đã lưu): toast.success, shown once, never a modal. |
 | [Tooltip](tooltip.md) | `Tooltip` | Name an icon-only control; add a short hint to a truncated value. |
 
 ## Navigation & layout

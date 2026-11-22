@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, confirmDialog, Field, FormActions, Input, toast, useUnsavedGuard } from "@semi/ui";
+import { Button, confirmDelete, Field, FormActions, Input, toast, useUnsavedGuard } from "@semi/ui";
 import { useState } from "react";
 
 export default function FormActionsDestructive() {
@@ -9,7 +9,7 @@ export default function FormActionsDestructive() {
   const { confirmLeave } = useUnsavedGuard(name !== saved);
 
   const remove = async () => {
-    if (await confirmDialog({ title: "Xoá máy in này?", message: "Lịch sử in của máy cũng bị xoá.", confirmLabel: "Xoá", tone: "danger" })) toast({ title: "Đã xoá máy in", tone: "success" });
+    if (await confirmDelete({ name: saved, message: "Lịch sử in của máy cũng bị xoá." })) toast.success("Đã xoá máy in");
   };
 
   return (

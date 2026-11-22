@@ -46,7 +46,9 @@ If neither works (`semi_status` answers, or `npx semi` is missing), the app has 
    group gets `loading.tsx`, `error.tsx`, `not-found.tsx`): loading (a skeleton of the
    real shape), empty (the action that fills it) and "no result" for a search or filter, error (what failed, a
    retry, the loaded data kept), no permission, and too much data (long names, many rows). A destructive action is
-   confirmed (`confirmDialog`) or undoable (`toast` with an action).
+   undoable (`toast.undo(title, restore)`, Hoàn tác) when reversible, or, when irreversible, confirmed with
+   `confirmDelete({ name })` (names the object, red Xoá, Huỷ). Feedback is one toast API (`toast.success|error|warning|info`, `toast.promise`),
+   shown once and never as a modal, no toast library or local wrapper: `npx semi example toast` (lint warns: `local-toast`).
    Forms are built from `FormActions` (Huỷ ghost then Lưu / Tạo, sticky on a page, `placement="modal"` in a Modal footer),
    `useUnsavedGuard(dirty)`, `Field kind="email|tel|number|money|url|search|password"` and `useFormValidation` +
    `FormErrorSummary` (error on blur then change, under the field, never a toast; `max-w-2xl`): `npx semi example form-actions`

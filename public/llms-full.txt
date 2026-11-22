@@ -60,14 +60,14 @@ In a project with the package installed, ask the docs instead of reading files: 
 ### Overlays
 
 - [Command](./components/command/) ([markdown](./docs/components/command.md)): A command palette: type to filter actions and pages, ↑/↓ to move, Enter to run. Command is the inline list; CommandDialog opens it over the page, usually on ⌘K (useHotkey). Matching ignores case and Vietnamese marks. Components: Command, CommandDialog.
-- [Confirm dialog](./components/confirm-dialog/) ([markdown](./docs/components/confirm-dialog.md)): confirmDialog() asks one yes / no question and resolves to true or false. Mount ConfirmHost once in the root layout. Never window.confirm. Components: ConfirmHost.
+- [Confirm dialog](./components/confirm-dialog/) ([markdown](./docs/components/confirm-dialog.md)): confirmDialog() asks one yes / no question and resolves to true or false; confirmDelete({ name }) is the irreversible-action form (names the object, red Xoá). Mount ConfirmHost once in the root layout. Never window.confirm. Components: ConfirmHost.
 - [Context menu](./components/context-menu/) ([markdown](./docs/components/context-menu.md)): The menu of an area opened at the pointer: right-click, long-press on touch, or the Menu key / Shift+F10 when the area has focus. Components: ContextMenu.
 - [Drawer](./components/drawer/) ([markdown](./docs/components/drawer.md)): A panel that slides in from the right, left, bottom or top (a sheet), with title and footer. Components: Drawer.
 - [Hover card](./components/hover-card/) ([markdown](./docs/components/hover-card.md)): A preview card while the pointer rests on, or focus is on, a link: a person, a product, an order. Components: HoverCard.
 - [Menu](./components/menu/) ([markdown](./docs/components/menu.md)): The overflow menu of a row or card: a ⋯ trigger (or your own) with items, icons, separators and a danger item last. Components: Menu.
 - [Modal](./components/modal/) ([markdown](./docs/components/modal.md)): The shared dialog: full screen on phones, a centred panel from sm up, with title, description, body and footer. Focus is trapped and returns to the opener. Components: Modal.
 - [Popover](./components/popover/) ([markdown](./docs/components/popover.md)): A small non-modal panel under its trigger for interactive content: a quick form, filters, a picker. Components: Popover.
-- [Toast](./components/toast/) ([markdown](./docs/components/toast.md)): toast() shows a short message after an action, with a tone and an optional action (Hoàn tác). Mount ToastHost once in the root layout. Components: ToastHost.
+- [Toast](./components/toast/) ([markdown](./docs/components/toast.md)): One toast API for feedback after an action: toast.success / error / warning / info, toast.undo for a reversible destructive action, toast.promise for work in progress. Irreversible actions ask first (confirmDelete). Mount ToastHost once in the root layout. Components: ToastHost.
 - [Tooltip](./components/tooltip/) ([markdown](./docs/components/tooltip.md)): A short label on hover or focus, mostly for icon-only buttons. Components: Tooltip.
 
 ### Navigation & layout
@@ -230,6 +230,7 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
   - Shell and loading: `AppShell` once in `app/(app)/layout.tsx` (never in a page, `app-shell-in-page`); items routed by `href` (`shell-nav-href`); the session check once in that layout, best on the server; before the layout is known `if (!session) return <BootLoader />` (centred spinner, layouts only, `boot-loader-place`); content loading is a `loading.tsx` beside the layout with `PageSkeleton`, never a skeleton around the shell (`shell-gate`).
   - Forms (§9b): `FormActions` (Huỷ ghost, then Lưu / Tạo; `destructive` on the left; sticky on a page, `placement="modal"` in a Modal footer), `useUnsavedGuard(dirty)` (+ `<ConfirmHost />`; `confirmLeave(() => router.push(…))` for your own navigation), `<Field kind="email|tel|number|money|url|search|password">`, `useFormValidation` (error on blur, then change) + `FormErrorSummary`; page forms `max-w-2xl`; a field problem is never a toast. Lint warnings `form-no-guard`, `action-order`, `toast-for-validation`, `field-input-mode`; `npx semi example form-actions`.
   - Confirmations: `confirmDialog({ title, message, confirmLabel, tone, icon })` + `<ConfirmHost />`, never `window.confirm`.
+  - Feedback (§14c): one toast API: `toast.success|error|warning|info(title)`, `toast.undo(title, restore)` (reversible destructive: Hoàn tác, 8 s), `toast.promise(p, { loading, success, error })`, `updateToast`; irreversible: `confirmDelete({ name })` (names the object, red Xoá, Huỷ); success once, never a modal; no toast libraries or local wrappers (`local-toast`, warning).
   - AI chat (§14b): `<AIChat messages busy onSend onStop onRetry onNewChat empty toolbar />` (or `ChatPanel` > `ChatView` > `ChatList` + `ChatComposer` with `UserMessage` / `AssistantMessage` / `ChatError` / `ChatThinking` / `ChatIntro` / `ChatSuggestion`). UI only: the app keeps messages and streaming; the provider → model → effort chips are `toolbar={<ChatModelPicker providers models efforts … />}`. Never a local composer or bubbles.
 - **Style Constants (`@semi/ui/styles`):**
   - `surfaces.ts`: `SHELL_OUTER`, `SHELL_ASIDE`, `SHELL_MAIN`, `SHELL_CONTAINER`, `CARD`, `CARD_HOVER`, `CARD_ACTIVE`, `HERO`, `TILE`, `SECTION_*`, `COUNT_PILL`, `EMPTY`, `ICON_BTN*`, `STATUS_PILL`, `STATUS_DOT`, `TONAL_SURFACE`, `TONAL_CONTAINER`, `TONAL_HOVER`, `BADGE_BASE`, `STICKY_TOOLBAR`, `MODAL_*`, `FIELD_LABEL`, `FIELD_INPUT`, `FIELD_TEXTAREA`.
@@ -345,7 +346,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `formValidation`: `FormErrorSummary`
 - `locale`: `SemiLocaleProvider`
 
-**Hooks:** `useAppShell`, `useHotkey`, `useField`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useFormValidation`, `useSemiLocale`, `useUnsavedGuard` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `pageWindow`, `startTask`, `themeScript`, `toast`, `dismissToast`, `confirmDialog`, `kindAttrs`, `composeRefs`, `cloneTrigger`, `cn`
+**Hooks:** `useAppShell`, `useHotkey`, `useField`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useFormValidation`, `useSemiLocale`, `useUnsavedGuard` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `pageWindow`, `startTask`, `themeScript`, `updateToast`, `dismissToast`, `confirmDialog`, `confirmDelete`, `kindAttrs`, `composeRefs`, `cloneTrigger`, `cn`
 <!-- generated:components:end -->
 
 
@@ -956,14 +957,42 @@ The panel caps itself at `92dvh` and scrolls; pass only a width (`max-w-md`…) 
 `flex flex-col` with a `flex-1 overflow-y-auto` body. `MODAL_HEAD` / `MODAL_TITLE` / `MODAL_FOOT`: header = `IconTile`
 + title + close `MODAL_CLOSE`; footer buttons right-aligned, stretched on a phone. Buttons are `MODAL_BTN_*`.
 Every overlay (modals, full-screen viewers, popups, numpad) uses this backdrop. Big detail views split into two columns
-from `md` (iPad). Confirmations go through `confirmDialog()` (mount `<ConfirmHost />` once in the root layout), never
-`window.confirm`. Phones can use a bottom sheet for pickers and filter panels.
+from `md` (iPad). Confirmations go through `confirmDialog()` / `confirmDelete()` (mount `<ConfirmHost />` once in the root layout), never
+`window.confirm`; what to use when is §14c. Phones can use a bottom sheet for pickers and filter panels.
 
 **Links to other sites** always use `ExternalLink` (new tab, `rel="noopener noreferrer"`). Apps inside a native
 WebView pass an `onClick` that opens the URL outside. Never a bare `<a target="_blank">` to another site.
 
 **AI text** is rendered with `Markdown` (light markdown: paragraphs, headings as bold lines, lists, bold, code,
 links), never raw. AI conversations use the chat parts below (§14b), never an app's own composer or bubbles.
+
+## 14c. Feedback: one toast API, undo or confirm
+
+One way to answer an action (owner decision C-021, D20 / F10, owner question 17). Additive: apps move over one call at a time;
+the lint rule `local-toast` is a warning until 1.0.
+
+| The action is… | Feedback | Never |
+|---|---|---|
+| Done, nothing to take back (saved, sent) | `toast.success("Đã lưu")`, once | a modal, a second toast for the same thing |
+| **Reversible and destructive** (archive, remove from a list, move to trash) | do it at once, then `toast.undo("Đã lưu trữ "A"", restore)`: a "Hoàn tác" button for 8 s | asking first |
+| **Irreversible** (delete for good, disconnect, send) | `confirmDelete({ name })` before: the title names the object, the button is red (`MODAL_BTN_DANGER`) and says "Xoá", Huỷ is the safe default; then `toast.success` | a bare "Bạn chắc chắn?" or a red button that says "Đồng ý" |
+| Takes a moment (save, import) | `toast.promise(promise, { loading, success, error })` | a page spinner, a modal "Đang lưu" |
+| Failed | `toast.error("Không lưu được", { description })` (assertive) | an `alert()`; use `Alert` when it must stay on the page |
+| A problem inside a field | `Field error` (§9b) | a toast |
+
+- **The API** (`Toast.tsx`): `toast({ title, description, tone, duration, action, undo, pending })` and the shorthands
+  `toast.success|error|warning|info(title, options | ms)`, `toast.undo(title, onUndo, options)`, `toast.promise(promise, { loading,
+  success, error })` (messages may be functions of the value or the error; it returns the promise), `updateToast(id, patch)`,
+  `dismissToast(id)`. `<ToastHost />` is mounted once in the root layout.
+- **Defaults:** 4 s, danger 6 s, a toast with an action or undo 8 s; hover and keyboard focus pause the timer; `pending` has no timer
+  until it settles. The same text on screen (same tone) is **replaced, not stacked**, so success appears once. At most four show.
+- **Undo means undone:** `onUndo` reverses what already happened; if it cannot (a sent email), the action is irreversible: confirm first.
+- **`confirmDelete({ name, message?, confirmLabel? })`** is `confirmDialog` with `tone: "danger"` and the default texts `deleteTitle(name)`,
+  `deleteMessage`, `delete` ("Xoá") from the locale table (`undo` "Hoàn tác" too). Another language: pass `title`, `message`, `confirmLabel`,
+  `cancelLabel`. Say what else goes in `message` ("12 bản in cũng bị xoá").
+- **Lint (warning, never fails):** `local-toast` flags `sonner` / `react-hot-toast` / `react-toastify`, an import of an app-level
+  `toast` / `toastStore` / `useToast` module, and an exported `toast` / `notify` / `showToast` wrapper around Semi's toast: the extras apps
+  added (an action, a longer duration, promise, undo) are in Semi's toast now. `npx semi example toast`, `npx semi example confirm-dialog`.
 
 ## 14b. AI chat
 
@@ -1030,7 +1059,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `FormActions.tsx`, `useUnsavedGuard.ts`, `formValidation.tsx`, `fieldKinds.ts` | `FormActions` (Huỷ + Lưu / Tạo, sticky on a page, `placement="modal"` footer), `useUnsavedGuard` (reload, tab close, link, back), `useFormValidation` + `FormErrorSummary` (blur, then change; Alert summary), `FIELD_KINDS` / `FieldKind` (§9b) |
 | `Feedback.tsx`, `States.tsx` | `EmptyState` (`variant` first-use / no-results, `onClearFilters`), `ErrorState`, `NotFound`, `Forbidden` (§13, §13c) |
 | `FileDrop.tsx` | `FileDrop`, `FileDropItem`, `FileRejection`, `matchesAccept`, `formatFileSize`, `classifyFiles`, `FileRejectReason` (§13b uploads: `FileDrop` + `Progress`) |
-| `confirmDialog.tsx` | `confirmDialog()`, `ConfirmHost`, `ConfirmOptions` (§14) |
+| `confirmDialog.tsx` | `confirmDialog()`, `confirmDelete()`, `ConfirmHost`, `ConfirmOptions`, `ConfirmDeleteOptions` (§14, §14c) |
 | `TaskHost.tsx` | `startTask()`, `TaskHost`, `TaskOptions`, `TaskHandle` (blocking task overlay, §13b) |
 | `ThemeProvider.tsx` | `ThemeProvider`, `useTheme`, `ThemeToggle` (§2) |
 | `Markdown.tsx` | `Markdown` (AI answers) |
@@ -1077,7 +1106,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Any action | `Button` (`variant` primary / secondary / danger / ghost, `size` md / sm / modal, `icon`, `iconOnly` + `aria-label`, `loading`); `Spinner` only inside a button or field running its own action, never for a page) |
 | Overflow actions of a row / card | `Menu` (icon-only "more" trigger; `danger` item last) |
 | Hint for an icon-only control | `Tooltip` (never essential text: touch screens do not show it) |
-| Feedback after an action | `toast({ title, tone, action })` + `<ToastHost />` in the layout (`label` when a page section is also called "Thông báo") |
+| Feedback after an action | `toast.success|error|warning|info(title)`, `toast.undo(title, restore)` after a reversible destructive action, `toast.promise(p, { loading, success, error })` (§14c) + `<ToastHost />` in the layout (`label` when a page section is also called "Thông báo"). Irreversible: `confirmDelete({ name })` first |
 | A job the user must wait for | `startTask({ label, onCancel, timer })` + `<TaskHost />` in the layout |
 | Persistent message in a page | `Alert` (tone, title, action, `onDismiss`) |
 | Save / Cancel under a form; losing typed work; field errors | `FormActions`, `useUnsavedGuard`, `useFormValidation` + `FormErrorSummary` (§9b) |
@@ -1245,6 +1274,7 @@ catches and what it must not:
 - **Keyboard (`click-target`, `focus-hidden`):** `<div onClick>` without a role (a backdrop is `role="presentation"`),
   `outline-none` with no focus style on the same element (a text field's caret counts).
 - **Forms (warnings until 1.0):** `form-no-guard`, `action-order`, `toast-for-validation`, `field-input-mode` (§9b). They print and never fail the run.
+- **Feedback (warning until 1.0):** `local-toast` (§14c): a toast library or an app-level toast wrapper instead of `toast` from `@semi/ui`.
 - **Emoji as icons (`emoji-icon`):** a brand whose voice allows emoji in copy disables the rule in `semi-lint.json`.
 
 **The baseline only shrinks.** `semi-lint --update-baseline` lowers it to what is left and refuses new hits;
@@ -2229,7 +2259,8 @@ All web UI here follows the **Semi Design System** (`@semi/ui`, repo `https://gi
    - Layers: `z-sticky` < `z-drawer` < `z-modal` < `z-dialog` < `z-popover` < `z-toast` < `z-tooltip`; never `z-[9999]`.
 4. **Not the generic AI screen** (`DESIGN_SYSTEM.md` §19): one main block per screen (`KpiCard featured`, not four equal cards); icons neutral unless they mean a status; proof (a real number, a quote, a product shot) instead of three icon feature cards; icons only where they help scanning; sample data and empty states from this product, never "Lorem", "John Doe" or another domain.
    **Density budgets** (`DESIGN_SYSTEM.md` §4c, measured on the page by `npx semi density <url>`): at most three frames inside each other (page panel › card › tile); at most four text sizes and three colours (accent + status) in one box; one filled accent button per view; text 12px from a box's sides and 8px from its top and bottom; a list row at least `h-control` tall (`Item`, `Menu`, `DataTable`); 8px or more between boxes; one line between two things (no `border-b` on a card's last row). `px-2` / `py-1` are for the inside of a control, never a row's or a box's padding.
-   **Every state** (`DESIGN_SYSTEM.md` §19b, §13c): use `EmptyState` (`first-use` / `no-results`), `ErrorState`, `NotFound`, `Forbidden`, and give each route group `loading.tsx` / `error.tsx` / `not-found.tsx` (`npx semi example states`); each screen has its loading (skeleton of the real shape), empty (with the action that fills it), "no result", error (what failed + retry, loaded data kept), no-permission and too-much-data states; a destructive action is confirmed (`confirmDialog`) or undoable (`toast` with an action); Escape closes, Enter submits, back works.
+   **Every state** (`DESIGN_SYSTEM.md` §19b, §13c): use `EmptyState` (`first-use` / `no-results`), `ErrorState`, `NotFound`, `Forbidden`, and give each route group `loading.tsx` / `error.tsx` / `not-found.tsx` (`npx semi example states`); each screen has its loading (skeleton of the real shape), empty (with the action that fills it), "no result", error (what failed + retry, loaded data kept), no-permission and too-much-data states; a destructive action is undoable (`toast.undo`) or, when irreversible, confirmed (`confirmDelete`); Escape closes, Enter submits, back works.
+   **Feedback** (`DESIGN_SYSTEM.md` §14c): one toast API from `@semi/ui` (`toast.success|error|warning|info`, `toast.undo`, `toast.promise`), never a toast library or a local wrapper (`local-toast`, warning); a reversible destructive action is done at once with `toast.undo(title, restore)` (Hoàn tác, 8 s); an irreversible one asks first with `confirmDelete({ name })` (names the object, red Xoá, Huỷ); success is one toast, never a modal (`npx semi example toast`).
    **Forms** (`DESIGN_SYSTEM.md` §9b): the action row is `FormActions` (Huỷ ghost, then Lưu / Tạo, destructive on the left, sticky on a page); `useUnsavedGuard(dirty)` so typed work is never lost; `Field kind` for email / phone / number / money / URL / search / password; errors under the field (`useFormValidation`, `FormErrorSummary`), never in a toast; page forms `max-w-2xl` (`npx semi example form-actions`).
 5. **Brand** (when `semi-lint.json` has `"brand"`): ask `semi_brand` (or `npx semi brand voice|color|logo|brief`) before writing UI text or placing colour. Write in the brand's voice, use colour as its colour-use rule says, import the logo from the kit, use only its allowed styles; never define colours, fonts or Semi tokens in the app (`brand-override`). Brand changes happen in the brand repo with `/semi-brand`, then `/semi-sync` here.
 6. **Accessibility** (`DESIGN_SYSTEM.md` §18, checked on the page by `npx semi a11y <url>`): icon-only controls have `aria-label`, and a field's name comes from `Field` (a placeholder is not a label); anything clickable is a button or a link (`click-target`); custom controls keep `FOCUS_RING`, never a bare `outline-none` (`focus-hidden`); every text / background pair reaches 4.5:1 in both themes (themed text tokens, never a fixed shade on a tinted surface); a field you type in shows `border-control-line` (3:1); a control drawn smaller than 24px gets `HIT_AREA`; images have `alt`; never `maximum-scale` or `user-scalable=no` in the viewport.
@@ -3599,7 +3630,7 @@ Editing an existing record: Xoá is alone on the left, away from Lưu, and asks 
 ```tsx
 "use client";
 
-import { Button, confirmDialog, Field, FormActions, Input, toast, useUnsavedGuard } from "@semi/ui";
+import { Button, confirmDelete, Field, FormActions, Input, toast, useUnsavedGuard } from "@semi/ui";
 import { useState } from "react";
 
 export default function FormActionsDestructive() {
@@ -3608,7 +3639,7 @@ export default function FormActionsDestructive() {
   const { confirmLeave } = useUnsavedGuard(name !== saved);
 
   const remove = async () => {
-    if (await confirmDialog({ title: "Xoá máy in này?", message: "Lịch sử in của máy cũng bị xoá.", confirmLabel: "Xoá", tone: "danger" })) toast({ title: "Đã xoá máy in", tone: "success" });
+    if (await confirmDelete({ name: saved, message: "Lịch sử in của máy cũng bị xoá." })) toast.success("Đã xoá máy in");
   };
 
   return (
@@ -4529,23 +4560,24 @@ The command palette over the page: a modal dialog near the top, closed by Escape
 
 # Confirm dialog
 
-confirmDialog() asks one yes / no question and resolves to true or false. Mount ConfirmHost once in the root layout. Never window.confirm.
+confirmDialog() asks one yes / no question and resolves to true or false; confirmDelete({ name }) is the irreversible-action form (names the object, red Xoá). Mount ConfirmHost once in the root layout. Never window.confirm.
 
 ## When to use
 
-- Before deleting, stopping a print or discarding changes.
+- Before an irreversible action: delete, stop a print, discard changes. confirmDelete names the object.
+- A reversible action does not ask: do it and offer toast.undo.
 
 ## Use something else when
 
 | Need | Use |
 |---|---|
 | A form or several fields | Modal |
-| Undo instead of asking | toast() with an action |
+| Undo instead of asking (reversible actions) | toast.undo() |
 
 ## Import
 
 ```tsx
-import { ConfirmHost, confirmDialog } from "@semi/ui";
+import { ConfirmHost, confirmDialog, confirmDelete } from "@semi/ui";
 ```
 
 ## Examples
@@ -4576,6 +4608,29 @@ export default function ConfirmDanger() {
       </Button>
       {result && <span className="text-label text-muted">{result}</span>}
     </div>
+  );
+}
+```
+
+### Irreversible delete
+
+confirmDelete: the title names the object, the button is red and says Xoá.
+
+```tsx
+"use client";
+
+import { Button, confirmDelete, toast } from "@semi/ui";
+
+// An irreversible action: the dialog names the object, the button is red ("Xoá"), Huỷ is the safe default.
+// Success is a toast afterwards, never a second dialog.
+export default function ConfirmDeleteExample() {
+  const remove = async () => {
+    if (await confirmDelete({ name: "Máy in xưởng 3", message: "Lịch sử in của máy cũng bị xoá." })) toast.success("Đã xoá máy in");
+  };
+  return (
+    <Button variant="danger" icon="trash" onClick={remove}>
+      Xoá máy in
+    </Button>
   );
 }
 ```
@@ -5197,23 +5252,26 @@ Escape returns focus to the trigger. Controlled with `open` + `onOpenChange`, or
 
 # Toast
 
-toast() shows a short message after an action, with a tone and an optional action (Hoàn tác). Mount ToastHost once in the root layout.
+One toast API for feedback after an action: toast.success / error / warning / info, toast.undo for a reversible destructive action, toast.promise for work in progress. Irreversible actions ask first (confirmDelete). Mount ToastHost once in the root layout.
 
 ## When to use
 
-- Confirm an action happened (Đã lưu), warn about something passing (mất kết nối), offer undo.
+- Confirm an action happened (Đã lưu): toast.success, shown once, never a modal.
+- Right after a reversible destructive action (archive, remove from a list, move): toast.undo with Hoàn tác.
+- Work that takes a moment (save, import, send): toast.promise.
 
 ## Use something else when
 
 | Need | Use |
 |---|---|
 | A message that must stay on the page | Alert |
-| Ask before acting | confirmDialog() |
+| Ask before an irreversible action (delete, disconnect) | confirmDelete() / confirmDialog() |
+| A problem inside a field | Field error |
 
 ## Import
 
 ```tsx
-import { ToastHost, toast, dismissToast } from "@semi/ui";
+import { ToastHost, toast, updateToast, dismissToast } from "@semi/ui";
 ```
 
 ## Examples
@@ -5238,6 +5296,65 @@ export default function ToastTones() {
 }
 ```
 
+### Undo after a reversible delete
+
+The row goes at once; the toast offers Hoàn tác for 8 seconds.
+
+```tsx
+"use client";
+
+import { Button, toast } from "@semi/ui";
+import { useState } from "react";
+
+// A reversible destructive action: do it at once, then offer "Hoàn tác" for 8 seconds. No question first.
+export default function ToastUndo() {
+  const [rows, setRows] = useState(["Bản in mẫu A", "Bản in mẫu B", "Bản in mẫu C"]);
+
+  const archive = (name: string, index: number) => {
+    setRows((r) => r.filter((x) => x !== name));
+    toast.undo(`Đã lưu trữ "${name}"`, () => setRows((r) => [...r.slice(0, index), name, ...r.slice(index)]));
+  };
+
+  return (
+    <ul data-undo-list className="w-full max-w-sm flex flex-col gap-2">
+      {rows.map((name, i) => (
+        <li key={name} className="flex items-center justify-between gap-2 rounded-control border border-line bg-panel px-3 py-2 text-ui text-contrast">
+          {name}
+          <Button size="sm" variant="ghost" icon="trash" onClick={() => archive(name, i)}>
+            Lưu trữ
+          </Button>
+        </li>
+      ))}
+      {rows.length === 0 && <li className="text-label text-muted">Đã lưu trữ hết, bấm Hoàn tác để khôi phục.</li>}
+    </ul>
+  );
+}
+```
+
+### Promise toast
+
+A spinner toast that turns into the result.
+
+```tsx
+"use client";
+
+import { Button, toast } from "@semi/ui";
+
+const save = (fail: boolean) => new Promise<number>((resolve, reject) => setTimeout(() => (fail ? reject(new Error("offline")) : resolve(12)), 1500));
+
+// toast.promise: one toast follows the work, then becomes the result (success once, or the failure with the reason).
+export default function ToastPromise() {
+  return (
+    <div className="flex flex-wrap gap-2">
+      <Button onClick={() => toast.promise(save(false), { loading: "Đang lưu…", success: (n) => `Đã lưu ${n} dòng`, error: "Không lưu được" })}>Lưu</Button>
+      <Button variant="secondary" onClick={() => toast.promise(save(true), { loading: "Đang lưu…", success: "Đã lưu", error: (e) => `Không lưu được: ${e instanceof Error ? e.message : "lỗi"}` }).catch(() => {})}>
+        Lưu (lỗi)
+      </Button>
+    </div>
+  );
+}
+```
+
 ## API
 
 ### ToastHost
@@ -5250,10 +5367,13 @@ export default function ToastTones() {
 
 - A live region (polite, assertive for danger); toasts with an action stay until dismissed or wait longer.
 - The stack is a region named by the locale's notifications string with two sibling live regions (danger assertive, the rest polite), never nested. Auto-dismiss pauses on hover and on keyboard focus.
+- A toast with an action or undo waits 8 s (and while hovered or focused); undo is a real button, so it is reachable by keyboard. A pending (promise) toast has no timer until it settles.
 
 ## Notes
 
 - <ToastHost /> goes once in the root layout (see Theme › Root layout); every toast() call anywhere shows there.
+- Feedback rule (§14c): reversible destructive action → toast.undo; irreversible → confirmDelete (names the object, red Xoá, Huỷ); success is one toast, never a modal. The same text still showing is replaced, not stacked.
+- `toast(opts)` keeps working; `toast.success(title, opts | ms)` etc. are shorthands. Use `updateToast(id, patch)` to change a toast that is still showing.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/toast/ and the types in src/ -->
 

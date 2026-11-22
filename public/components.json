@@ -2233,7 +2233,7 @@
       "kind": "component",
       "module": "src/Toast.tsx",
       "client": true,
-      "summary": "Transient feedback after an action (\"Đã lưu\", \"Không kết nối được\").",
+      "summary": "Transient feedback after an action (\"Đã lưu\", \"Không kết nối được\"): the one toast API (docs/DESIGN_SYSTEM.md §14c).",
       "props": [
         "label"
       ],
@@ -2463,11 +2463,11 @@
       "summary": "Inline script that sets data-theme + .dark/.light on <html> before the first paint (no flash of the wrong theme). Keep the options identical to ThemeProvider's. Exported as a string for non-React heads."
     },
     {
-      "name": "toast",
+      "name": "updateToast",
       "kind": "function",
       "module": "src/Toast.tsx",
       "client": true,
-      "summary": ""
+      "summary": "Change a toast that is still showing (title, tone, …); its timer restarts. Does nothing once it is closed."
     },
     {
       "name": "dismissToast",
@@ -2482,6 +2482,13 @@
       "module": "src/confirmDialog.tsx",
       "client": true,
       "summary": "Resolves true when the user picks the confirm button. A dialog opened while another shows cancels the first."
+    },
+    {
+      "name": "confirmDelete",
+      "kind": "function",
+      "module": "src/confirmDialog.tsx",
+      "client": true,
+      "summary": "For an irreversible action: a dialog that names the object, with a red button (\"Xoá\") and Huỷ. A reversible one is done at once and offers `toast.undo` instead. Text is the Vietnamese default; pass `title`, `message`, `confirmLabel` and `cancelLabel` (the English ones are `en.deleteTitle` …) for another language."
     },
     {
       "name": "kindAttrs",
@@ -2651,6 +2658,13 @@
       "kind": "constant",
       "module": "src/Table.tsx",
       "client": false,
+      "summary": ""
+    },
+    {
+      "name": "toast",
+      "kind": "constant",
+      "module": "src/Toast.tsx",
+      "client": true,
       "summary": ""
     },
     {

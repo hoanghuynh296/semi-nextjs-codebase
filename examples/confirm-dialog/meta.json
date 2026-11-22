@@ -1,15 +1,17 @@
 {
   "title": "Confirm dialog",
   "group": "Overlays",
-  "description": "confirmDialog() asks one yes / no question and resolves to true or false. Mount ConfirmHost once in the root layout. Never window.confirm.",
+  "description": "confirmDialog() asks one yes / no question and resolves to true or false; confirmDelete({ name }) is the irreversible-action form (names the object, red Xoá). Mount ConfirmHost once in the root layout. Never window.confirm.",
   "components": [
     "ConfirmHost"
   ],
   "imports": [
-    "confirmDialog"
+    "confirmDialog",
+    "confirmDelete"
   ],
   "when": [
-    "Before deleting, stopping a print or discarding changes."
+    "Before an irreversible action: delete, stop a print, discard changes. confirmDelete names the object.",
+    "A reversible action does not ask: do it and offer toast.undo."
   ],
   "instead": [
     {
@@ -17,8 +19,8 @@
       "use": "Modal"
     },
     {
-      "need": "Undo instead of asking",
-      "use": "toast() with an action"
+      "need": "Undo instead of asking (reversible actions)",
+      "use": "toast.undo()"
     }
   ],
   "a11y": [
@@ -28,6 +30,11 @@
     {
       "file": "danger",
       "title": "Destructive confirmation"
+    },
+    {
+      "file": "delete",
+      "title": "Irreversible delete",
+      "description": "confirmDelete: the title names the object, the button is red and says Xoá."
     }
   ],
   "notes": [
