@@ -501,12 +501,23 @@ test("DetailOverlay: opens by URL, ‹ › and ← → step with n / N, Back clo
 test("CommandPalette hotkey: the platform's key opens it from a field, not the other modifier or a rich-text editor (#102)", async ({ page }) => {
   await open(page, "/components/command-palette/", "dark");
   const apple = await page.evaluate(() => /Mac|iPhone|iPad/i.test(navigator.platform || navigator.userAgent));
+  const dialog = page.getByRole("dialog", { name: "Tìm hoặc tạo" });
+  // hydrated first (the shortcut works), so React never re-renders over the probes; they live outside its tree
+  await expect(example(page, "command-palette/app").getByRole("button", { name: /Tìm hoặc tạo/ })).toBeVisible();
+  await expect(async () => {
+    await page.keyboard.press("ControlOrMeta+k");
+    await expect(dialog).toBeVisible({ timeout: 500 });
+  }).toPass({ timeout: 10_000 });
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
   await page.evaluate(() => {
+    const box = Object.assign(document.createElement("div"), { id: "hk-probes" });
+    box.style.cssText = "position:fixed;top:8px;left:8px;z-index:1";
     const field = Object.assign(document.createElement("input"), { id: "hk-input", ariaLabel: "probe" });
     const rich = Object.assign(document.createElement("div"), { id: "hk-rich", contentEditable: "true", textContent: "rich text" });
-    document.querySelector("main")!.prepend(field, rich);
+    box.append(field, rich);
+    document.body.append(box);
   });
-  const dialog = page.getByRole("dialog", { name: "Tìm hoặc tạo" });
   await page.locator("#hk-input").focus();
   // Ctrl+K on a Mac is the field's own "delete to end of line"; ⌘K elsewhere is not the app shortcut
   await page.keyboard.press(apple ? "Control+k" : "Meta+k");
