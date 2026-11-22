@@ -139,6 +139,10 @@ Next.js + `@semi/ui` + `@3dnoobs/brand`, rồi nối sẵn:
 /* semi-design-system:end */
 ```
 
+Thứ tự import là bắt buộc: `brand.css` **sau** `@semi/ui/tokens.css`. Kit ghi đè biến của Semi ở cùng độ ưu tiên
+(specificity), nên file nhập sau mới thắng; nhập ngược thì màu, màu trung tính và `primaryStyle: "inverted"` (khối trỏ
+`--semi-action` sang `inverted`) đều không có tác dụng.
+
 ```tsx
 // app/layout.tsx: font của brand, style và mật độ đã chọn, theme mặc định theo loại sản phẩm
 <html data-style="flat" data-density="compact" className={`dark ${beVietnamPro.variable} ${montserratAlternates.variable}`}>
@@ -240,7 +244,7 @@ dải của brand cùng cách sửa: chạy `/semi-brand update` trong repo bran
 | `primary` | Hex | Bắt buộc. Không quá xám (độ đậm tối thiểu), bộ sinh tự chọn sắc độ đọc rõ (xem dưới) |
 | `secondary` | Hex hoặc `null` | Tuỳ chọn; sinh `secondary-50 … 900` (`bg-secondary-500`, `text-secondary-fg`) |
 | `neutral` | `"brand"` (mặc định) / `"pure"` / `"preset"` | `brand` (tên cũ `tinted`, vẫn nhận): màu trung tính của mỗi style phủ nhẹ tông màu chính (bề mặt gần như trung tính, chữ và viền có tông rõ hơn). `pure`: xám trung tính 0% sắc (kiểu magnific.com), cả chữ và viền. `preset`: giữ màu trung tính có sẵn của style. Thẻ, bậc bề mặt và nút phụ (C-030) tự đi theo lựa chọn này |
-| `primaryStyle` | `"brand"` (mặc định) / `"inverted"` | `brand`: nút chính tô màu thương hiệu (`accent`). `inverted`: nút chính trung tính, gần đen trên nền sáng và gần trắng trên nền tối (`bg-inverted`, ≥ 15:1); màu thương hiệu vẫn dùng cho link, mục đang chọn, focus, badge, công tắc. `brand.css` thêm một khối trỏ `--semi-action` sang `inverted`; bỏ khoá này thì `brand.css` giữ nguyên từng byte |
+| `primaryStyle` | `"brand"` (mặc định) / `"inverted"` | `brand`: nút chính tô màu thương hiệu (`accent`). `inverted`: nút chính trung tính, gần đen trên nền sáng và gần trắng trên nền tối (`bg-inverted`, ≥ 15:1); màu thương hiệu vẫn dùng cho link, mục đang chọn, focus, badge, công tắc. `brand.css` thêm một khối trỏ `--semi-action` sang `inverted` (chỉ thắng khi `brand.css` được nhập sau `tokens.css`); bỏ khoá này thì `brand.css` giữ nguyên từng byte |
 | `styles.default`, `styles.allowed` | `flat` · `soft` · `sharp` | Ít nhất một; `default` phải nằm trong `allowed` |
 | `fonts.sans`, `fonts.display` | Tên Google Font | `next/font/google` phải có font đó |
 | `semi` | Dải phiên bản `@semi/ui` | `/semi-brand update` cập nhật |

@@ -172,6 +172,9 @@ outermost frame to the brightest step, plus the card and two fills:
 - **Cards have no border** in Flat and Soft (`card-border` is `1px solid transparent`: the box stays, so hover and
   `CARD_ACTIVE` borders do not move the layout); Sharp keeps its 2px line. A dense data view that needs an edge uses
   `<Card bordered>` / `CARD_BORDERED` (panel fill + `border-line`, the pre-0.36 card).
+- `bg-card` and `bg-card-field` are `@utility` rules, not theme colours (a `--color-card` theme colour would also
+  generate a `border-card` colour utility that collides with the style's `border-card`), so opacity modifiers
+  (`bg-card/80`) do not work; `var(--color-card)` is still there for app CSS.
 - **A block that means "card" is `bg-card`**, never `bg-panel` (that is the sidebar / modal step: on the light app it
   now reads as a raised white block, not a card).
 - **Secondary buttons are a tint fill** with no border; `outline` (`BTN_OUTLINE`, `<Button variant="outline">`) keeps

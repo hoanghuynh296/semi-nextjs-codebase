@@ -142,9 +142,8 @@ test("status and tone text (badges: the 500 tint at 10%) read AA on the card in 
       if (!m) continue;
       const family = m[1] ?? { danger: "rose", success: "emerald", warning: "amber", info: "sky" }[m[2]];
       const fg = hexOf(v[theme]);
-      // violet is Tailwind's own palette (not pinned in tokens.json): #8b5cf6
-      const badge = blend(palette(`color-${family}-500`) ?? (family === "violet" ? "#8b5cf6" : undefined), card, 0.1);
-      if (!fg?.startsWith("#")) continue; // a tone of Tailwind's own palette (violet-*): not pinned here
+      assert.ok(fg?.startsWith("#") && palette(`color-${family}-500`), `${k}: its palette is pinned in tokens.json`);
+      const badge = blend(palette(`color-${family}-500`), card, 0.1);
       const r = contrast(fg, badge);
       assert.ok(r >= 4.5, `${label}: ${k} ${fg} on a ${family} badge over the card ${r.toFixed(2)}`);
     }

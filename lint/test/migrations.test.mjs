@@ -113,6 +113,7 @@ test("0.36.0 surfaces: hand-made cards, copied secondary and primary buttons; fl
   const src = [
     `<div className="bg-panel border border-line rounded-card p-card" />`,
     `<div className="fixed bg-panel border border-line rounded-card shadow-overlay" />`,
+    `<div className="sticky top-0 bg-panel border border-line rounded-card" />`,
     `<div className="rounded-card border border-line bg-panel" />`,
     `const b = "h-control px-3 bg-field hover:bg-raised border border-line text-body hover:text-contrast";`,
     `const p = 'h-control bg-accent hover:bg-accent-hover text-on-accent';`,
@@ -122,6 +123,7 @@ test("0.36.0 surfaces: hand-made cards, copied secondary and primary buttons; fl
   const out = migrateSurfaces(src);
   assert.match(out, /className="bg-card rounded-card p-card"/);
   assert.match(out, /"fixed bg-panel border border-line rounded-card shadow-overlay"/, "a popover keeps its panel and line");
+  assert.match(out, /"sticky top-0 bg-panel border border-line rounded-card"/, "a sticky bar keeps its panel and line");
   assert.match(out, /"rounded-card border border-line bg-panel"/, "another order is a manual step");
   assert.match(out, /"h-control px-3 bg-tint hover:bg-tint-hover text-body hover:text-contrast"/);
   assert.match(out, /'h-control bg-action hover:bg-action-hover text-on-action'/);

@@ -7,8 +7,9 @@ export const version = "0.36.0";
 export const id = "surfaces";
 export const description = "Hand-made cards → bg-card, copied secondary buttons → tint fill, copied primary buttons → action fill";
 
-/** A class string that floats over the page (popover, menu, toast, toolbar): it keeps its panel fill and line. */
-const FLOATING = /(?:^|\s)(?:[\w-]+:)*(?:shadow-overlay|shadow-float|fixed|absolute|backdrop-blur[\w-]*)(?=\s|$)/;
+/** A class string that floats over the page (popover, menu, toast, toolbar, sticky bar): it keeps its panel fill and line.
+ * A panel whose `fixed` sits on a parent is not seen here: the CHANGELOG migration note asks to review those. */
+const FLOATING = /(?:^|\s)(?:[\w-]+:)*(?:shadow-overlay|shadow-float|fixed|absolute|sticky|backdrop-blur[\w-]*)(?=\s|$)/;
 
 /** One class string. Exact sequences only; safe to run twice. */
 export function surfaceClasses(cls) {
