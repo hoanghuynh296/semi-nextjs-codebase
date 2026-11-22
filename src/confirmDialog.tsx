@@ -4,7 +4,7 @@
 // layout, then `if (await confirmDialog({ title: "Xoá?", tone: "danger" })) …` anywhere. No state library needed.
 import React, { useRef, useSyncExternalStore } from "react";
 import { useDialog } from "./a11y";
-import { useSemiLocale } from "./locale";
+import { useSemiLocale, vi } from "./locale";
 import type { ReactNode } from "react";
 import { MODAL_BTN_DANGER, MODAL_BTN_PRIMARY, MODAL_BTN_SECONDARY } from "../styles/buttons";
 
@@ -45,6 +45,31 @@ export function confirmDialog(opts: ConfirmOptions): Promise<boolean> {
     pending = resolve;
     current = { ...opts, id: nextId++ };
     emit();
+  });
+}
+
+export interface ConfirmDeleteOptions {
+  /** The object that goes: shown in the title, so the user sees what is lost ("Xoá "Máy in 3"?"). */
+  name: string;
+  /** Replaces the default "Thao tác này không thể hoàn tác." (say what else goes: "12 bản in cũng bị xoá"). */
+  message?: string;
+  /** Default "Xoá". Name the verb when it is not a delete ("Ngắt kết nối"). */
+  confirmLabel?: string;
+  /** Replaces the whole title when the app is not in Vietnamese. */
+  title?: string;
+  cancelLabel?: string;
+}
+
+/** For an irreversible action: a dialog that names the object, with a red button ("Xoá") and Huỷ. A reversible one
+ *  is done at once and offers `toast.undo` instead. Text is the Vietnamese default; pass `title`, `message`,
+ *  `confirmLabel` and `cancelLabel` (the English ones are `en.deleteTitle` …) for another language. */
+export function confirmDelete(o: ConfirmDeleteOptions): Promise<boolean> {
+  return confirmDialog({
+    title: o.title ?? vi.deleteTitle(o.name),
+    message: o.message ?? vi.deleteMessage,
+    confirmLabel: o.confirmLabel ?? vi.delete,
+    cancelLabel: o.cancelLabel,
+    tone: "danger",
   });
 }
 

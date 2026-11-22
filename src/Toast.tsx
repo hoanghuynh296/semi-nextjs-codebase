@@ -1,9 +1,11 @@
 "use client";
 
-// Transient feedback after an action ("Đã lưu", "Không kết nối được"). Render <ToastHost /> once in the root layout,
-// then call toast({ title, tone }) anywhere. Two sibling live regions announce them (danger assertive, the rest polite;
-// never nested); auto-dismiss pauses on hover and on keyboard focus.
+// Transient feedback after an action ("Đã lưu", "Không kết nối được"): the one toast API (docs/DESIGN_SYSTEM.md §14c).
+// Render <ToastHost /> once in the root layout, then call toast({ title, tone }), toast.success("Đã lưu"),
+// toast.undo("Đã xoá", restore) or toast.promise(save(), { loading, success, error }) anywhere. Two sibling live
+// regions announce them (danger assertive, the rest polite; never nested); auto-dismiss pauses on hover and on keyboard focus.
 import React, { useEffect, useRef, useSyncExternalStore } from "react";
+import { Spinner } from "./Button";
 import { Icon, type IconName } from "./Icon";
 import { useSemiLocale } from "./locale";
 import { cn, FOCUS_RING } from "../styles/utils";
@@ -14,10 +16,19 @@ export interface ToastOptions {
   title: React.ReactNode;
   description?: React.ReactNode;
   tone?: StatusTone;
-  /** ms before it closes; 0 keeps it until dismissed (default 4000, danger 6000). */
+  /** ms before it closes; 0 keeps it until dismissed (default 4000, danger 6000, with an action or undo 8000). */
   duration?: number;
   action?: { label: string; onClick: () => void };
+  /** Reverses what just happened: shows the locale's "Hoàn tác" button (`undo`), runs this, closes the toast. For a
+   *  reversible destructive action; an irreversible one asks first with `confirmDelete` / `confirmDialog`. */
+  undo?: () => void;
+  /** Work in progress: a spinner in place of the tone icon and no auto-dismiss, until `updateToast` settles it
+   *  (`toast.promise` does that). */
+  pending?: boolean;
 }
+
+/** What the `toast.success|error|warning|info|undo` helpers take after the title: a duration in ms or options. */
+export type ToastExtras = number | Omit<ToastOptions, "title" | "tone">;
 
 interface ToastItem extends ToastOptions {
   id: number;
@@ -28,11 +39,62 @@ let nextId = 1;
 const listeners = new Set<() => void>();
 const emit = () => listeners.forEach((l) => l());
 
-export function toast(opts: ToastOptions): number {
+function show(opts: ToastOptions): number {
   const id = nextId++;
-  items = [...items, { id, ...opts }].slice(-4);
+  // success is shown once: the same text still on screen is replaced (and its timer restarts), never stacked
+  const same = (t: ToastItem) => typeof opts.title === "string" && !opts.pending && !t.pending && t.title === opts.title && (t.tone ?? "info") === (opts.tone ?? "info");
+  items = [...items.filter((t) => !same(t)), { id, ...opts }].slice(-4);
   emit();
   return id;
+}
+
+const extras = (x?: ToastExtras) => (typeof x === "number" ? { duration: x } : x ?? {});
+
+type Kind = (title: React.ReactNode, opts?: ToastExtras) => number;
+
+export interface ToastPromiseMessages<T> {
+  loading: React.ReactNode;
+  success: React.ReactNode | ((value: T) => React.ReactNode);
+  error: React.ReactNode | ((error: unknown) => React.ReactNode);
+}
+
+interface ToastApi {
+  (opts: ToastOptions): number;
+  /** Done: `toast.success("Đã lưu")`. Shown once and never as a modal. */
+  success: Kind;
+  /** Failed: `toast.error("Không lưu được", { description })` (tone danger, announced assertively). */
+  error: Kind;
+  warning: Kind;
+  info: Kind;
+  /** A reversible destructive action that already happened: `toast.undo("Đã xoá 3 dòng", restore)` shows "Hoàn tác" for 8 s. */
+  undo: (title: React.ReactNode, onUndo: () => void, opts?: ToastExtras) => number;
+  /** Follow a promise: a spinner toast, then success or danger in the same place. Resolves to the promise's value. */
+  promise: <T>(promise: Promise<T>, msgs: ToastPromiseMessages<T>) => Promise<T>;
+}
+
+export const toast: ToastApi = Object.assign((opts: ToastOptions) => show(opts), {
+  success: (title: React.ReactNode, o?: ToastExtras) => show({ title, tone: "success", ...extras(o) }),
+  error: (title: React.ReactNode, o?: ToastExtras) => show({ title, tone: "danger", ...extras(o) }),
+  warning: (title: React.ReactNode, o?: ToastExtras) => show({ title, tone: "warning", ...extras(o) }),
+  info: (title: React.ReactNode, o?: ToastExtras) => show({ title, tone: "info", ...extras(o) }),
+  undo: (title: React.ReactNode, undo: () => void, o?: ToastExtras) => show({ title, tone: "success", undo, ...extras(o) }),
+  promise: <T,>(promise: Promise<T>, m: ToastPromiseMessages<T>): Promise<T> => {
+    const id = show({ title: m.loading, tone: "info", pending: true, duration: 0 });
+    const settle = (title: React.ReactNode, tone: StatusTone) => updateToast(id, { title, tone, pending: false, duration: undefined });
+    promise.then(
+      (v) => settle(typeof m.success === "function" ? (m.success as (v: T) => React.ReactNode)(v) : m.success, "success"),
+      (e) => settle(typeof m.error === "function" ? (m.error as (e: unknown) => React.ReactNode)(e) : m.error, "danger"),
+    );
+    return promise;
+  },
+});
+
+/** Change a toast that is still showing (title, tone, …); its timer restarts. Does nothing once it is closed. */
+export function updateToast(id: number, patch: Partial<ToastOptions>) {
+  if (!items.some((t) => t.id === id)) return;
+  const nid = nextId++; // a new key remounts the card, so the timer restarts and the right live region announces it
+  items = items.map((t) => (t.id === id ? { ...t, ...patch, id: nid } : t));
+  emit();
 }
 
 export function dismissToast(id: number) {
@@ -56,7 +118,7 @@ export const STATUS_ICON: Record<StatusTone, { icon: IconName; fg: string; surfa
 function ToastCard({ item }: { item: ToastItem }) {
   const t = useSemiLocale();
   const tone = item.tone ?? "info";
-  const ms = item.duration ?? (tone === "danger" ? 6000 : 4000);
+  const ms = item.pending ? 0 : item.duration ?? (item.action || item.undo ? 8000 : tone === "danger" ? 6000 : 4000);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // paused while pointed at or while keyboard focus is inside (WCAG 2.2.1: time to reach the action and read)
   const hold = useRef({ pointer: false, focus: false });
@@ -78,6 +140,7 @@ function ToastCard({ item }: { item: ToastItem }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const s = STATUS_ICON[tone];
+  const act = item.undo ? { label: t.undo, onClick: item.undo } : item.action;
   return (
     <div
       onPointerEnter={() => set("pointer", true)}
@@ -89,21 +152,22 @@ function ToastCard({ item }: { item: ToastItem }) {
       className="pointer-events-auto w-full sm:w-[360px] bg-panel border border-line rounded-card shadow-overlay p-3 flex items-start gap-2.5"
     >
       <span className={cn("mt-px w-6 h-6 rounded-control border flex items-center justify-center shrink-0", s.surface, s.fg)}>
-        <Icon name={s.icon} className="w-3.5 h-3.5" />
+        {item.pending ? <Spinner className="w-3.5 h-3.5" /> : <Icon name={s.icon} className="w-3.5 h-3.5" />}
       </span>
       <div className="flex-1 min-w-0">
         <div className="text-ui font-medium text-contrast">{item.title}</div>
         {item.description && <div className="text-label text-muted mt-0.5">{item.description}</div>}
-        {item.action && (
+        {act && (
           <button
             type="button"
+            data-toast-action
             onClick={() => {
-              item.action!.onClick();
+              act.onClick();
               dismissToast(item.id);
             }}
             className={cn("mt-1.5 text-label font-medium text-accent-fg hover:text-contrast transition cursor-pointer rounded-chip", FOCUS_RING)}
           >
-            {item.action.label}
+            {act.label}
           </button>
         )}
       </div>
