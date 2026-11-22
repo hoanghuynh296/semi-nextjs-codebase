@@ -984,8 +984,13 @@ test("side menu: items have icon in desktop mode, and keeps its scroll position 
   const menu = page.locator("aside .overflow-y-auto").first();
   await expect(page.locator("aside nav svg").first()).toBeVisible();
   const link = page.locator("aside").getByRole("link", { name: "Menubar" });
-  await menu.evaluate((el) => (el.scrollTop = el.scrollHeight));
-  await link.scrollIntoViewIfNeeded(); // a real person clicks what is already in view: Playwright would scroll it itself
+  // the menu can re-render once after load (#101: "Element is not attached to the DOM"): retry the pair together, so
+  // the item is looked up again on the settled menu. A real person clicks what is already in view; Playwright would
+  // scroll it itself.
+  await expect(async () => {
+    await menu.evaluate((el) => (el.scrollTop = el.scrollHeight));
+    await link.scrollIntoViewIfNeeded({ timeout: 1000 });
+  }).toPass({ timeout: 10_000 });
   const before = await menu.evaluate((el) => el.scrollTop);
   expect(before).toBeGreaterThan(0);
   await link.click();
