@@ -102,7 +102,7 @@ export default function FeatureIntroStoreExample() {
 ## Accessibility
 
 - A modal dialog named by the slide's title and described by its line: focus moves to the primary, Tab stays inside, Escape and the backdrop skip, focus returns to where it was.
-- It never opens over another dialog: it waits until no aria-modal dialog is on the page. The step (“Bước 1 / 3”) is screen-reader text; the dots are decorative.
+- It never opens over another dialog: it waits until no aria-modal dialog is on the page, and only one FeatureIntro is open at a time (a second unseen one follows when the first closes). The step (“Bước 1 / 3”) is screen-reader text; the dots are decorative.
 
 ## Notes
 

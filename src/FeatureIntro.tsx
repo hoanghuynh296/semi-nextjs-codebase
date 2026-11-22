@@ -45,6 +45,10 @@ export const localIntroStore: FeatureIntroStore = {
 
 const otherDialogOpen = () => document.querySelector('[aria-modal="true"]') !== null;
 
+// One intro at a time on the page: a second unseen one waits for the first to close (then its own check runs again).
+let introOpen = false;
+const INTRO_CLOSED = "semi:introclosed";
+
 export function FeatureIntro({
   id,
   slides,
@@ -83,19 +87,21 @@ export function FeatureIntro({
   useEffect(() => {
     let live = true;
     let observer: MutationObserver | undefined;
+    const tryOpen = () => {
+      if (!live || introOpen || otherDialogOpen()) return false;
+      introOpen = true;
+      observer?.disconnect();
+      window.removeEventListener(INTRO_CLOSED, retry);
+      setStep(0);
+      setOpen(true);
+      return true;
+    };
+    const retry = () => void tryOpen();
     const openWhenFree = () => {
-      if (!otherDialogOpen()) {
-        setStep(0);
-        setOpen(true);
-        return;
-      }
-      observer = new MutationObserver(() => {
-        if (!live || otherDialogOpen()) return;
-        observer?.disconnect();
-        setStep(0);
-        setOpen(true);
-      });
+      if (tryOpen()) return;
+      observer = new MutationObserver(retry);
       observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["aria-modal"] });
+      window.addEventListener(INTRO_CLOSED, retry);
     };
     if (forceOpen) openWhenFree();
     else
@@ -107,8 +113,18 @@ export function FeatureIntro({
     return () => {
       live = false;
       observer?.disconnect();
+      window.removeEventListener(INTRO_CLOSED, retry);
     };
   }, [id, forceOpen]);
+
+  // unmounted while open: free the slot
+  useEffect(() => {
+    if (!open) return;
+    return () => {
+      introOpen = false;
+      queueMicrotask(() => window.dispatchEvent(new Event(INTRO_CLOSED)));
+    };
+  }, [open]);
 
   const close = (how: "finished" | "skipped") => {
     setOpen(false);

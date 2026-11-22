@@ -2,9 +2,9 @@
 
 // A text area that says what it can do (#94 L15, docs/DESIGN_SYSTEM.md §9b): a hint row under the text ("Gõ @ để nhắc
 // nhà cung cấp · Gõ / để chèn mẫu") and a suggestion list while the word at the caret starts with a trigger.
-// Textbox + listbox (aria-autocomplete="list", aria-activedescendant): ↑ / ↓ move, Enter or Tab inserts, Escape closes
+// Combobox + listbox (role=combobox on the textarea, aria-expanded, aria-autocomplete="list", aria-activedescendant): ↑ / ↓ move, Enter or Tab inserts, Escape closes
 // the list (and only the list). Keys typed while an input method is composing (Vietnamese Telex) are left alone.
-import React, { useId, useMemo, useRef, useState } from "react";
+import React, { useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useField } from "./Field";
 import { Icon, type IconName } from "./Icon";
 import { useSemiLocale } from "./locale";
@@ -88,19 +88,27 @@ export function HintTextarea({
     const text = `${tok.value}${after.startsWith(" ") ? "" : " "}`;
     const next = value.slice(0, word.start) + text + after;
     const pos = word.start + text.length + (after.startsWith(" ") ? 1 : 0);
+    pendingCaret.current = pos;
     onChange(next);
     setActive(0);
     setCaret(pos);
-    requestAnimationFrame(() => {
-      const el = ref.current;
-      if (!el) return;
-      el.focus();
-      el.setSelectionRange(pos, pos);
-    });
   };
 
+  // after an insert: put the caret after the token in the same commit as the new value, before the next key
+  const pendingCaret = useRef<number | null>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    const pos = pendingCaret.current;
+    if (!el || pos === null || el.value !== value) return;
+    pendingCaret.current = null;
+    el.focus();
+    el.setSelectionRange(pos, pos);
+  }, [value]);
+
   const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (!open || e.nativeEvent.isComposing) return;
+    // an input method is composing (Vietnamese Telex): Safari confirms it with an Enter whose isComposing is already
+    // false, but keyCode 229
+    if (!open || e.nativeEvent.isComposing || e.keyCode === 229) return;
     if (e.key === "ArrowDown") {
       e.preventDefault();
       setActive((current + 1) % matches.length);
@@ -131,7 +139,10 @@ export function HintTextarea({
           aria-label={field ? undefined : label}
           aria-describedby={[`${auto}-hint`, field?.describedBy].filter(Boolean).join(" ")}
           aria-invalid={field?.invalid || undefined}
+          role="combobox"
           aria-autocomplete="list"
+          aria-haspopup="listbox"
+          aria-expanded={open}
           aria-controls={open ? listId : undefined}
           aria-activedescendant={open ? optionId(current) : undefined}
           placeholder={placeholder}

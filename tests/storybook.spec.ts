@@ -1419,6 +1419,34 @@ test("WorkspaceLayout on a phone: the panel stacks on top and its main action st
   }).toPass({ timeout: 5_000 });
 });
 
+test("WorkspaceLayout in AppShell with the phone tab bar: the main action sticks above the tab bar, not under it (#106)", async ({ page }) => {
+  await page.setViewportSize({ width: 430, height: 700 });
+  await open(page, "/demo/workspace/", "dark");
+  const send = page.getByRole("button", { name: "Gửi hỏi giá" });
+  const bar = page.getByRole("navigation").filter({ has: page.getByRole("link", { name: "Hộp thư" }) }).filter({ visible: true }).last();
+  await expect(bar).toBeVisible();
+  const panel = await page.getByRole("region", { name: "Bảng điều khiển" }).boundingBox();
+  const tabs = (await bar.boundingBox())!;
+  expect(panel!.y + panel!.height).toBeGreaterThan(tabs.y); // the panel runs under the tab bar: the action must stick
+  await expect(async () => {
+    const b = (await send.boundingBox())!;
+    expect(b.y + b.height).toBeLessThanOrEqual(tabs.y + 1);
+    expect(b.y).toBeGreaterThan(tabs.y - 120);
+  }).toPass({ timeout: 5_000 });
+  // and the button is really on top (not covered by the tab bar)
+  const b = (await send.boundingBox())!;
+  expect(await page.evaluate(([x, y]) => document.elementFromPoint(x, y)?.closest("button")?.textContent ?? "", [b.x + b.width / 2, b.y + b.height / 2])).toContain("Gửi hỏi giá");
+});
+
+test("GuidedEmptyState on a phone: the starting points are one row that scrolls sideways (#106)", async ({ page }) => {
+  await page.setViewportSize({ width: 430, height: 932 });
+  await open(page, "/components/guided-empty-state/", "dark");
+  const tiles = example(page, "guided-empty-state/carousel").getByRole("list").first().getByRole("listitem");
+  await expect(tiles).toHaveCount(3);
+  const ys = await tiles.evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().top)));
+  expect(new Set(ys).size).toBe(1);
+});
+
 test("Stepper: a spinbutton; arrows, Page Up / Down, Home / End; the − + buttons are out of the Tab order (#106)", async ({ page }) => {
   await open(page, "/components/stepper/", "dark");
   const box = example(page, "stepper/basic");
@@ -1533,7 +1561,7 @@ test("FeatureIntro: a dialog with focus trap and restore, Escape skips, and it w
 test("HintTextarea: @ and / open a listbox; arrows, Enter inserts at the caret, Escape closes only the list (#106)", async ({ page }) => {
   await open(page, "/components/hint-textarea/", "dark");
   const box = example(page, "hint-textarea/basic");
-  const text = box.getByRole("textbox", { name: "Lời nhắn gửi nhà cung cấp" });
+  const text = box.getByRole("combobox", { name: "Lời nhắn gửi nhà cung cấp" });
   const list = box.getByRole("listbox");
   await expect(async () => {
     await text.fill("Chào anh chị, bên em cần báo giá cho @tay");
@@ -1545,9 +1573,16 @@ test("HintTextarea: @ and / open a listbox; arrows, Enter inserts at the caret, 
   const active = await text.getAttribute("aria-activedescendant");
   expect(active).toBeTruthy();
   await expect(text).toHaveAttribute("aria-controls", (await list.getAttribute("id"))!);
+  await expect(text).toHaveAttribute("aria-expanded", "true");
+  await expect(text).toHaveAttribute("aria-haspopup", "listbox");
+  // an input method confirming a composition (Safari: Enter with keyCode 229, isComposing already false) inserts nothing
+  await text.evaluate((el) => el.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", keyCode: 229, bubbles: true, cancelable: true })));
+  await expect(text).toHaveValue("Chào anh chị, bên em cần báo giá cho @tay");
+  await expect(list).toBeVisible();
   await page.keyboard.press("Enter");
   await expect(text).toHaveValue("Chào anh chị, bên em cần báo giá cho @taynguyen ");
   await expect(list).toBeHidden();
+  await expect(text).toHaveAttribute("aria-expanded", "false");
   await expect(text).toBeFocused();
   // a trigger in the middle of the text: the word at the caret is replaced, the rest kept
   await text.fill("Gửi @ hôm nay");
@@ -1563,7 +1598,8 @@ test("HintTextarea: @ and / open a listbox; arrows, Enter inserts at the caret, 
   await page.keyboard.press("Tab");
   await expect(text).toHaveValue("Gửi @yenbai hôm nay");
   // the / templates; Escape closes the list and leaves the text and focus alone
-  await page.keyboard.press("End");
+  // to the end (End does not move the caret in a macOS text field)
+  await text.evaluate((el: HTMLTextAreaElement) => el.setSelectionRange(el.value.length, el.value.length));
   await page.keyboard.type(" /");
   await expect(list.getByRole("option")).toHaveCount(2);
   await page.keyboard.press("Escape");

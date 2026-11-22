@@ -115,8 +115,8 @@ export default function HintTextareaField() {
 
 ## Accessibility
 
-- A textbox with aria-autocomplete="list": while the list shows, aria-controls names the listbox and aria-activedescendant the current option. ↑ / ↓ move (wrapping), Enter or Tab inserts, Escape closes the list only (not a dialog around it); a polite status says how many suggestions there are.
-- Keys typed while an input method composes (Vietnamese Telex) are left alone. The hint row is the field's description. Named by its Field label or label.
+- The textarea is a combobox (role="combobox", aria-expanded, aria-haspopup="listbox", aria-autocomplete="list"): while the list shows, aria-controls names the listbox and aria-activedescendant the current option. ↑ / ↓ move (wrapping), Enter or Tab inserts, Escape closes the list only (not a dialog around it); a polite status says how many suggestions there are.
+- Keys typed while an input method composes (Vietnamese Telex; also the keyCode 229 Enter Safari sends to confirm) are left alone. The hint row is the field's description. Named by its Field label or label.
 
 ## Notes
 

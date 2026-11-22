@@ -154,8 +154,14 @@ test("WorkspaceLayout and FeatureIntro under Next's App Router: prerendered with
   const intro = page.getByRole("dialog", { name: "One screen per request" });
   await expect(intro).toBeVisible();
   await expect(intro.getByRole("button", { name: "Tiếp" })).toBeFocused();
+  // one intro at a time: the second waits
+  await expect(page.getByRole("dialog")).toHaveCount(1);
   await page.keyboard.press("Escape");
   await expect(intro).toBeHidden();
+  const second = page.getByRole("dialog", { name: "Second intro" });
+  await expect(second).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(second).toBeHidden();
   // seen: not again after a reload
   await page.reload();
   await expect(page.getByRole("region", { name: "Bảng điều khiển" }).filter({ visible: true })).toBeVisible();

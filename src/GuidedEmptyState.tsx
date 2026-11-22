@@ -172,7 +172,8 @@ export function GuidedEmptyState({
                 </button>
               ))}
           </div>
-          <ul className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-stack">
+          {/* phones: one row that scrolls sideways (snap), so the starting points add one row, not a column of cards */}
+          <ul className="max-sm:flex max-sm:overflow-x-auto max-sm:snap-x max-sm:snap-mandatory max-sm:pb-1 sm:grid sm:grid-cols-2 xl:grid-cols-3 gap-stack">
             {g.items.map((it) => {
               const body = (
                 <>
@@ -184,7 +185,7 @@ export function GuidedEmptyState({
                 </>
               );
               return (
-                <li key={it.title} className="flex min-w-0">
+                <li key={it.title} className="flex min-w-0 max-sm:w-[78%] max-sm:shrink-0 max-sm:snap-start">
                   {it.href ? (
                     <Link href={it.href} className={cn(TILE, "flex-1")}>
                       {body}

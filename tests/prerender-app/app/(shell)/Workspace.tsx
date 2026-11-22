@@ -45,6 +45,8 @@ export function Workspace() {
           { title: "Mention with @", body: "Suppliers are suggested as you type.", visual: <IconTile name="sparkles" size="lg" tone="gray" /> },
         ]}
       />
+      {/* a second unseen intro on the same page: it waits for the first to close */}
+      <FeatureIntro id="prerender-second" slides={[{ title: "Second intro", body: "Shown after the first.", visual: <IconTile name="info" size="lg" tone="gray" /> }]} />
     </>
   );
 }

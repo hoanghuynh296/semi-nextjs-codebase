@@ -472,8 +472,9 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   name as the page `h1`, one muted line). Then `WorkspaceSection`s: a `text-overline` label, a counter ("3/8") and a
   small text action on the right; inside, cards of lines with a `Stepper`, a `DropZone`, a `HintTextarea`. The **main
   action** is pinned to the panel's bottom (one primary `fullWidth`, a secondary beside it at most). Below `lg` the panel
-  stacks above the result and its action stays at the bottom of the screen while the panel is in view. Headings in the
-  result start at `h2`.
+  stacks above the result and its action stays at the bottom of the screen while the panel is in view (above MobileTabBar:
+  AppShell sets `--semi-bottom-bar` in tabs mode; never put the layout in an `overflow-*` box). Headings in the result
+  start at `h2`.
 - Grids expand across wide screens (e.g. `sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-group`); touch screens
   (iPad) stop at 4 columns (`not-any-pointer-coarse:` for 5+). Card grids **beside a sidebar** size columns by
   `@container` (`@xl:grid-cols-…`), never by viewport breakpoints (lint rule `viewport-grid-cols`, enabled per path via
@@ -633,7 +634,7 @@ it form by form; the four lint rules below are warnings until 1.0.
 - **Small counts and hinted text (#106).** A small whole number people nudge (tấn per line, copies, seats) is a `Stepper`
   (− value +, a spinbutton: arrows, Page Up / Down, Home / End; the − + buttons are out of the Tab order); typed numbers stay
   `NumberInput`. A message or note that can mention a record or insert a template is a `HintTextarea`: a hint row under
-  the text ("Gõ @ để nhắc nhà cung cấp · Gõ / để chèn mẫu") and a listbox of at most six suggestions while the word at the
+  the text ("Gõ @ để nhắc nhà cung cấp · Gõ / để chèn mẫu") and a listbox of at most six suggestions (the textarea is a `combobox`; keyCode 229 / composing keys are left to the input method) while the word at the
   caret starts with a trigger (↑ ↓, Enter / Tab inserts, Escape closes only the list; matching ignores Vietnamese marks).
 - **Layout and validation.** Labels sit above fields, required fields get `*` (`Field required`), the error shows under the
   field (`Field error`). Validation runs on blur, then on every change (`useFormValidation`: `form.errors`, `onBlur={form.blur("x")}`,
@@ -680,7 +681,7 @@ Below `sm` the state is compact and takes at most 40% of the viewport (`EMPTY_PH
 carousel ("Bước 1 / 4" in `text-overline`, a visual, ‹ ›; `layout="carousel"`, the default) or as a numbered list
 (`layout="steps"`), and the one primary action. Below it, rows of ready starting points by category (`templates`: grey
 `IconTile`s, colour only where they need telling apart), each with "Xem tất cả". Below `sm` the card follows the phone
-cap (the visual hidden); the starting points follow as normal content. Hide the page's own primary while it shows.
+cap (the visual hidden); the starting points become one row that scrolls sideways. Hide the page's own primary while it shows.
 
 ## 13c. Error, not found, no access
 
@@ -749,7 +750,7 @@ from `md` (iPad). Confirmations go through `confirmDialog()` / `confirmDelete()`
 **Feature intro** (`FeatureIntro`, L14, #106): the first visit of a new or reworked feature gets one small dialog: a
 16:9 visual, a title, one line, dots, "Bỏ qua" and "Tiếp" / "Bắt đầu" (a bottom sheet on phones). It shows once per user
 per `id`: "seen" lives in a store (`localIntroStore`, localStorage, by default; pass `store` to keep it on the account),
-read after mount only. It never opens over another dialog (it waits until none is open); Escape and the backdrop skip.
+read after mount only. It never opens over another dialog (it waits until none is open), and one intro opens at a time; Escape and the backdrop skip.
 At most three slides and one per page; a page that is empty on first use gets `GuidedEmptyState` instead.
 
 **Links to other sites** always use `ExternalLink` (new tab, `rel="noopener noreferrer"`). Apps inside a native

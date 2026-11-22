@@ -45,6 +45,6 @@
   ],
   "notes": [
     "One filled button on the screen: hide the page's own primary while the guided state shows (§13).",
-    "Below sm the guide card follows the phone cap (at most 40% of the screen, the visual hidden, scrolls inside); the starting points follow it as normal content."
+    "Below sm the guide card follows the phone cap (at most 40% of the screen, the visual hidden, scrolls inside); the starting points become one row that scrolls sideways."
   ]
 }

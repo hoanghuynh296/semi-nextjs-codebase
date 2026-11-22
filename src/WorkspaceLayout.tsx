@@ -43,7 +43,7 @@ export function WorkspaceLayout({
       >
         {header && <div className="px-4 pt-4 pb-2 shrink-0">{header}</div>}
         <div className={cn("lg:flex-1 min-h-0 lg:overflow-y-auto lg:overscroll-contain px-4 pb-4 flex flex-col gap-section", !header && "pt-4")}>{panel}</div>
-        <div className="sticky bottom-0 z-sticky shrink-0 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] lg:pb-4 border-t border-divider bg-panel-3 rounded-b-panel">
+        <div className="sticky bottom-[var(--semi-bottom-bar,0px)] z-sticky shrink-0 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] lg:pb-4 border-t border-divider bg-panel-3 rounded-b-panel">
           {action}
         </div>
       </section>

@@ -36,13 +36,19 @@
       "description": "Tabs, back + name, sections with counters, steppers, a drop zone, a message with @ and / hints; the comparison on the right. Below lg the panel stacks on top and its action stays at the bottom of the screen (not inside this docs frame, which scrolls sideways: sticky needs a page that scrolls vertically)."
     },
     {
+      "file": "in-shell",
+      "title": "In the app shell",
+      "description": "AppShell with the phone tab bar (mobileNav=\"tabs\"): the main action stays above the tab bar. Full screen at /demo/workspace/.",
+      "preview": "none"
+    },
+    {
       "file": "minimal",
       "title": "Minimal",
       "description": "No header: just sections, the action and the result."
     }
   ],
   "notes": [
-    "The panel is 380px wide on lg+, sticky under the top of the scrolling area, and scrolls inside; the result scrolls with the page.",
+    "The panel is 380px wide on lg+, sticky under the top of the scrolling area, and scrolls inside; the result scrolls with the page. On phones the action sticks at `bottom: var(--semi-bottom-bar, 0px)`: AppShell sets it to the tab bar's height in tabs mode, so the action sits above MobileTabBar.",
     "One primary in the action bar (fullWidth), a secondary beside it at most (Lưu nháp). Section labels are the only uppercase text (text-overline, written in sentence case in code).",
     "Do not put WorkspaceLayout inside an overflow-x-auto / overflow-hidden box: that box becomes the sticky container and the phone action no longer stays on screen."
   ]
