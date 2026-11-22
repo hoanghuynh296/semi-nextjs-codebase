@@ -197,8 +197,9 @@ test("brand preview: a #brand= link recolours every page, passes contrast in bot
     seen[theme] = await accent();
     expect(await lowContrast(page)).toEqual([]);
   }
+  // Exact values (update when the light 600/700 choice changes): dark primary-400/500 lighter blue, light the brand blue on 600.
   expect(seen.dark).toBe("#5286ef");
-  expect(seen.light).not.toBe(seen.dark);
+  expect(seen.light).toBe("#2563eb");
   await page.getByRole("radio", { name: "Tối" }).first().click();
   await page.goto("/components/button/"); // stays on across pages (applied once the page hydrates)
   await expect.poll(accent).toBe(seen.dark);

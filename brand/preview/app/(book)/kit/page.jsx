@@ -90,7 +90,7 @@ export default function UiKit() {
           ))}
         </div>
         <p className="text-caption text-muted">
-          Hai theme có sắc khác nhau: theme tối dùng bậc sáng và rực hơn (400-500), theme sáng dùng bậc sâu hơn (600-700), hover đi thêm một bậc theo hướng của theme.
+          Hai theme có sắc khác nhau: theme tối dùng bậc sáng và rực hơn (400-500), theme sáng dùng bậc 600, hover đi thêm một bậc theo hướng của theme.
           {brand.accent?.sameInBothThemes ? " Thương hiệu này chọn một màu chung cho cả hai theme (accent.sameInBothThemes)." : ""}
         </p>
       </Section>

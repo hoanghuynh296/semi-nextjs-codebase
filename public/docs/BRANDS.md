@@ -266,7 +266,7 @@ tắc bố cục đi kèm (tránh giao diện "AI" chung chung): `DESIGN_SYSTEM.
   "on" là `bg-accent` + `text-on-accent`, chữ `text-accent-fg`, viền chọn `border-accent-line`; thang chỉ dành cho biểu
   đồ và hình minh hoạ (`semi-lint`: `primary-fill`).
 - **Nút chính (`bg-accent` + `text-on-accent`) riêng cho từng theme** (xem [Accent theo theme](#accent-theo-theme)):
-  theme sáng lấy bậc sâu hơn (600-700), theme tối lấy bậc sáng và rực hơn (400-500), như cách Apple làm với màu hệ thống.
+  theme sáng lấy bậc 600 (700 chỉ khi 600 không đạt), theme tối lấy bậc sáng và rực hơn (400-500), như cách Apple làm với màu hệ thống.
   Hai theme không trùng nhau trừ khi thương hiệu tự chọn như vậy.
 - **Chữ màu chính (`text-accent-fg`):** sắc độ gần màu thương hiệu nhất đọc được 4.5:1 trên mọi nền và trên nền chọn
   (`bg-accent-subtle`). Viền focus (`ring-focus`) và viền mục chọn (`border-accent-line`) đi theo nó.
@@ -290,8 +290,8 @@ theme dùng chung một giá trị, chỉ `accent-fg` đổi, trong khi Semi t�
 
 | | Theme sáng | Theme tối |
 |---|---|---|
-| Nút (`accent`) | bậc **tối nhất** trong 600-700 mà chữ trên nút đạt 4.5:1 và nút tách khỏi nền trang ≥ 3:1 | trong 400-500, bậc gần màu thương hiệu nhất, cùng hai điều kiện (hoà thì 500, mặc định của Semi) |
-| Hover | một bậc sâu hơn | một bậc sáng hơn |
+| Nút (`accent`) | bậc **600** (gần màu thương hiệu nhất); chỉ khi 600 không đạt (chữ trắng ≥ 4.5:1 và nút tách khỏi nền trang ≥ 3:1) thì lấy 700 | trong 400-500, bậc gần màu thương hiệu nhất, cùng hai điều kiện (hoà thì 500, mặc định của Semi) |
+| Hover | một bậc sâu hơn (600 → 700) | một bậc sáng hơn |
 | Chữ trên nút (`on-accent`) | trắng khi đọc được | chữ tối khi đọc được, ngược lại màu kia |
 
 Không có bậc nào trong dải đạt hai điều kiện (màu rất nhạt hoặc rất đậm): thử các bậc còn lại, gần dải nhất trước, và có
@@ -316,6 +316,10 @@ hex; bỏ qua thì bộ sinh chọn. Ghim mà không đạt AA vẫn hiện tron
 là lựa chọn **có chủ ý** của thương hiệu: một nút, hover và chữ cho cả hai theme (một giá trị đọc được và tách khỏi nền ở
 cả hai). **Không có khai báo này mà theme sáng và tối ra cùng một màu nút thì `semi-brand build` và `check` báo lỗi.**
 `sameInBothThemes` không đi cùng `accent.light` / `accent.dark`.
+
+Quy tắc tóm lại: **sáng dùng bậc 600, tối dùng bậc 400-500**. Thương hiệu muốn đúng một màu nút ở cả hai theme (như Radix và
+Carbon, vốn dùng một màu nhấn cho cả hai) đặt `accent.sameInBothThemes: true`. Hệ quả nhìn thấy: màu chính xanh lá của 3D Noobs
+(`#008509`) giờ chỉ còn ở theme sáng; theme tối dùng `#539f50` với chữ tối thay cho `#008509` với chữ trắng.
 
 **Kit đã phát hành cần build lại và phát hành lại** (`/semi-brand update`, rồi tag mới) để nút đổi màu theo theme; phát hành
 kit là việc của chủ sở hữu thương hiệu. Brand book (`semi-brand preview`, trang *UI kit*) và trang Brand preview của docs

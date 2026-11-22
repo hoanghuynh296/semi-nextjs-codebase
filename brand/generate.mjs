@@ -351,7 +351,7 @@ export function scale(hex, p = PARAMS) {
 const DARK_TEXT = "#0c0d0e";
 const WHITE = "#ffffff";
 /** Shades the per-theme accent is taken from, in order of preference (docs/BRANDS.md "Accent per theme"). */
-const ACCENT_RANGE = { light: [700, 600], dark: [500, 400] };
+const ACCENT_RANGE = { light: [600, 700], dark: [500, 400] };
 const minContrast = (color, backgrounds) => Math.min(...backgrounds.map((bg) => contrast(color, bg)));
 
 /**
@@ -390,7 +390,7 @@ function pickHover(sc, fill) {
 
 /**
  * Per-theme accent (Apple's system-colour practice: the dark variant lighter and more vivid, the light one deeper).
- * Light: the darkest shade of 600-700 whose text reads at AA and whose fill stands out from the page (3:1).
+ * Light: shade 600 (closest to the brand, owner decision on #85), 700 only when 600 fails white text at AA or the 3:1 page rule.
  * Dark: of 400-500, the one closest to the brand colour under the same two rules (ties go to 500, Semi's own default).
  * Text colour: the theme's usual one (white on the light fill, dark text on the dark fill) when it reads, else the other.
  * When no shade of that range works (a very light or very dark brand) the rest of the scale is tried, nearest to the
@@ -433,7 +433,7 @@ const pinOn = (v) => (v === "white" ? WHITE : v === "dark" ? DARK_TEXT : v.toLow
  * The accent of one theme: pinned in brand.json (accent.light / accent.dark) or derived. Returns
  * { fill, shade, hover, hoverShade, on, de, page, wide } (colours as hex; shade / hoverShade null for a pinned hex).
  */
-function accentOf(sc, brandHex, theme, pages, pin, text) {
+function accentOf(sc, brandHex, theme, pages, pin, text, reach) {
   if (pin) {
     const fill = pinColor(sc, pin.fill);
     const shade = typeof pin.fill === "number" ? pin.fill : null;
@@ -443,7 +443,7 @@ function accentOf(sc, brandHex, theme, pages, pin, text) {
     const hover = pin.hover === undefined ? sc[hoverShade] : pinColor(sc, pin.hover);
     return { fill, shade, hover, hoverShade, on, de: deltaE(fill, brandHex), page: minContrast(fill, pages), wide: false, pinned: true };
   }
-  const f = pickThemeFill(sc, brandHex, theme, pages, text) ?? { ...pickFill(sc, brandHex, theme, pages, text), wide: true };
+  const f = pickThemeFill(sc, brandHex, theme, pages, text) ?? { ...pickFill(sc, brandHex, theme, pages, text, reach), wide: true };
   const hoverShade = pickThemeHover(sc, f, theme);
   return { fill: sc[f.shade], shade: f.shade, hover: sc[hoverShade], hoverShade, on: f.on, de: f.de, page: f.page, wide: f.wide };
 }
@@ -452,16 +452,16 @@ function accentOf(sc, brandHex, theme, pages, pin, text) {
  * Accent of both themes. `sameInBothThemes: true` (an explicit brand choice) takes one fill that reads and stands out on
  * the pages of both themes; otherwise each theme has its own (pickThemeFill) unless accent.light / accent.dark pin it.
  */
-function accents(sc, brand, pagesBy) {
+function accents(sc, brand, pagesBy, reach) {
   const text = brand.color?.buttonText;
   if (brand.accent?.sameInBothThemes) {
     const all = [...pagesBy.dark, ...pagesBy.light];
-    const f = pickFill(sc, brand.primary, "dark", all, text);
+    const f = pickFill(sc, brand.primary, "dark", all, text, reach);
     const h = pickHover(sc, f);
     const a = { fill: sc[f.shade], shade: f.shade, hover: sc[h], hoverShade: h, on: f.on, de: f.de, page: f.page, wide: false };
     return { dark: a, light: a };
   }
-  return Object.fromEntries(THEMES.map((th) => [th, accentOf(sc, brand.primary, th, pagesBy[th], brand.accent?.[th], text)]));
+  return Object.fromEntries(THEMES.map((th) => [th, accentOf(sc, brand.primary, th, pagesBy[th], brand.accent?.[th], text, reach)]));
 }
 
 /** Errors for an accent that does not switch: light and dark fills equal without accent.sameInBothThemes. */
@@ -573,7 +573,7 @@ export function generateBrand(brand, { tokens, styles, version = "", params }) {
   const fidelity = {};
   const themeName = { dark: "tối", light: "sáng" };
   const pagesBy = Object.fromEntries(THEMES.map((th) => [th, allowed.flatMap((st) => PAGES.map((k) => neutrals[st.id][th][k]))]));
-  const accent = accents(primary, brand, pagesBy);
+  const accent = accents(primary, brand, pagesBy, p.fillReach);
   for (const theme of THEMES) {
     const surfaces = allowed.flatMap((st) => SURFACES.map((k) => neutrals[st.id][theme][k]));
     const pages = pagesBy[theme];

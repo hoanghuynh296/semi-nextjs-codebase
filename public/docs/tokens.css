@@ -306,7 +306,7 @@
   --color-chart-3: var(--semi-chart-3); /* Chart series 3 (aqua); fixed order, never cycled. Marks only, never text */
   --color-chart-4: var(--semi-chart-4); /* Chart series 4 (yellow); fixed order, never cycled. Marks only, never text */
   --color-chart-5: var(--semi-chart-5); /* Chart series 5 (magenta); fixed order, never cycled. Marks only, never text */
-  --color-chart-6: var(--semi-chart-6); /* Chart series 6 (green); fixed order, never cycled. Marks only, never text */
+  --color-chart-6: var(--semi-chart-6); /* Chart series 6 (plum); fixed order, never cycled. Marks only, never text */
   --color-chart-7: var(--semi-chart-7); /* Chart series 7 (violet); fixed order, never cycled. Marks only, never text */
   --color-chart-8: var(--semi-chart-8); /* Chart series 8 (red); fixed order, never cycled. Marks only, never text */
 }
@@ -375,7 +375,7 @@
   --semi-chart-3: #199e70;
   --semi-chart-4: #c98500;
   --semi-chart-5: #d55181;
-  --semi-chart-6: #2a9926;
+  --semi-chart-6: #a175b1;
   --semi-chart-7: #9085e9;
   --semi-chart-8: #e66767;
 }
@@ -442,7 +442,7 @@
   --semi-chart-3: #1baf7a;
   --semi-chart-4: #eda100;
   --semi-chart-5: #e87ba4;
-  --semi-chart-6: #008300;
+  --semi-chart-6: #88558a;
   --semi-chart-7: #6250d6;
   --semi-chart-8: #e34948;
 }
@@ -509,7 +509,7 @@
     --semi-chart-3: #1baf7a;
     --semi-chart-4: #eda100;
     --semi-chart-5: #e87ba4;
-    --semi-chart-6: #008300;
+    --semi-chart-6: #88558a;
     --semi-chart-7: #6250d6;
     --semi-chart-8: #e34948;
   }

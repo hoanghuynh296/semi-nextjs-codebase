@@ -276,7 +276,7 @@ test("report: input edges (control-line) reach 3:1 in every style; Semi's status
 test("color.buttonText: white forces white text on a deeper shade; invalid values are errors; no logo warns", () => {
   const auto = generateBrand(brand({ primary: "#DD592A" }), { tokens, styles });
   assert.equal(auto.tokens.themes.dark["color-on-accent"], "#0c0d0e");
-  const white = generateBrand(brand({ primary: "#DD592A", color: { buttonText: "white" } }), { tokens, styles });
+  const white = generateBrand(brand({ primary: "#DD592A", color: { buttonText: "white" }, accent: { sameInBothThemes: true } }), { tokens, styles });
   for (const th of ["dark", "light"]) {
     assert.equal(white.tokens.themes[th]["color-on-accent"], "#ffffff");
     assert.ok(contrast("#ffffff", white.tokens.themes[th]["color-accent"]) >= 4.5);
