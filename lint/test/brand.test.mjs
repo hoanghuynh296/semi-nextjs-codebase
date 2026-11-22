@@ -47,15 +47,15 @@ test("scale: fixed lightness per shade, the brand colour itself on its nearest s
   for (const s of [200, 400, 600, 800]) assert.ok(Math.abs(hexToOklch(scale("#2563EB")[s]).h - hue) < 6, `shade ${s} keeps the hue`);
 });
 
-test("fill: the readable shade closest to the brand; lifted only when it would vanish into the page", () => {
+test("fill: per-theme accent (see brand-accent.test.mjs); the dark brand colour stays itself on 500, hover differs and reads", () => {
   const themes = (primary) => generateBrand(brand({ primary }), { tokens, styles }).tokens.themes;
-  // Orange stays orange in the light theme (dark text) instead of turning brown under white text.
-  const orange = themes("#FF6B00").light;
-  assert.equal(orange["color-on-accent"], "#0c0d0e");
-  assert.ok(deltaE(orange["color-accent"], "#FF6B00") < 0.1, `orange light fill ${orange["color-accent"]}`);
-  // Navy keeps its exact colour in the light theme, and is lifted in the dark theme where it would blend in.
+  // Orange stays orange in the dark theme (dark text), and is deeper under white text in the light theme.
+  const orange = themes("#FF6B00");
+  assert.equal(orange.dark["color-on-accent"], "#0c0d0e");
+  assert.ok(deltaE(orange.dark["color-accent"], "#FF6B00") < 0.1, `orange dark fill ${orange.dark["color-accent"]}`);
+  assert.equal(orange.light["color-on-accent"], "#ffffff");
+  // Navy is lifted in the dark theme, where its own colour would blend into the page.
   const navy = themes("#1E3A8A");
-  assert.equal(navy.light["color-accent"], "#1e3a8a");
   assert.notEqual(navy.dark["color-accent"], "#1e3a8a");
   assert.ok(contrast(navy.dark["color-accent"], "#181918") >= 3, "navy dark fill stands out from the panel");
   // Hover always differs from the fill and still reads.
@@ -71,10 +71,9 @@ test("report: focus ring and hover are checked; a fill that blends into the page
   const r = generateBrand(brand({ primary: "#FFD600" }), { tokens, styles });
   assert.ok(r.report.some((x) => x.check.startsWith("viền focus") && x.min === 3 && x.ok));
   assert.ok(r.report.some((x) => x.check.startsWith("nút chính khi hover") && x.ok));
+  // The per-theme fill is chosen to stand out from the page, so the soft finding passes (yellow no longer blends into white).
   const soft = r.report.find((x) => x.check === "nút tách khỏi nền (sáng)");
-  assert.ok(soft.soft && !soft.ok, "yellow on white is reported");
-  assert.ok(r.warnings.some((w) => /tách khỏi nền/.test(w)));
-  assert.deepEqual(r.tokens.fidelity.light, { fill: 200, text: r.tokens.fidelity.light.text, deltaE: 0 });
+  assert.ok(soft.soft && soft.ok, "yellow light fill stands out from white");
 });
 
 test("every pair reaches AA for very different brand colours, in every style and theme", () => {
@@ -94,9 +93,10 @@ test("Semi's own green stays itself: dark text on 500 in the dark theme, white o
   const t = generateBrand(brand(), { tokens, styles }).tokens.themes;
   assert.deepEqual([t.dark["color-accent"], t.dark["color-on-accent"]], ["#00ae42", "#0c0d0e"]);
   assert.equal(t.light["color-on-accent"], "#ffffff");
-  // A very light brand colour keeps its own fill (dark text) in the light theme instead of turning brown.
-  const y = generateBrand(brand({ primary: "#FACC15" }), { tokens, styles }).tokens.themes.light;
-  assert.deepEqual([y["color-accent"], y["color-on-accent"]], ["#facc15", "#0c0d0e"]);
+  // A very light brand colour keeps a bright fill with dark text in the dark theme; the light theme gets a deep shade.
+  const y = generateBrand(brand({ primary: "#FACC15" }), { tokens, styles }).tokens.themes;
+  assert.equal(y.dark["color-on-accent"], "#0c0d0e");
+  assert.equal(y.light["color-on-accent"], "#ffffff");
 });
 
 test("guideline: brief, logo, voice, colour use and imagery are validated; defaults fill what the brand leaves out", () => {
@@ -275,7 +275,7 @@ test("report: input edges (control-line) reach 3:1 in every style; Semi's status
 
 test("color.buttonText: white forces white text on a deeper shade; invalid values are errors; no logo warns", () => {
   const auto = generateBrand(brand({ primary: "#DD592A" }), { tokens, styles });
-  assert.equal(auto.tokens.themes.light["color-on-accent"], "#0c0d0e");
+  assert.equal(auto.tokens.themes.dark["color-on-accent"], "#0c0d0e");
   const white = generateBrand(brand({ primary: "#DD592A", color: { buttonText: "white" } }), { tokens, styles });
   for (const th of ["dark", "light"]) {
     assert.equal(white.tokens.themes[th]["color-on-accent"], "#ffffff");
