@@ -7,6 +7,7 @@ The action control: one primary per area (the action fill: the accent, or a neut
 - Any action: save, create, refresh, delete, open a dialog.
 - Icon-only toolbar actions (iconOnly + aria-label).
 - Dialog footers (size="modal": 44px touch target on phones).
+- Round icon buttons over media, in an overlay header or beside a carousel (iconOnly + shape="round").
 
 ## Use something else when
 
@@ -65,6 +66,27 @@ export default function ButtonIcons() {
       </Button>
       <Button iconOnly icon="settings" aria-label="Cài đặt" title="Cài đặt" />
       <Button iconOnly icon="download" aria-label="Tải xuống" title="Tải xuống" />
+    </div>
+  );
+}
+```
+
+### Round
+
+shape="round" makes an icon-only button a circle (media tiles, overlay headers, carousel arrows); the fill, focus ring and size stay the variant's.
+
+```tsx
+import { Button } from "@semi/ui";
+
+// Round icon buttons: over media, in an overlay header, beside a carousel. shape="round" keeps the variant's fill,
+// the focus ring, the title and the size; only the corner changes.
+export default function ButtonRound() {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <Button iconOnly shape="round" icon="close" aria-label="Đóng" />
+      <Button iconOnly shape="round" icon="copy" aria-label="Sao chép liên kết" />
+      <Button iconOnly shape="round" variant="ghost" icon="more" aria-label="Thao tác khác" />
+      <Button iconOnly shape="round" variant="primary" icon="plus" aria-label="Tạo mới" />
     </div>
   );
 }
@@ -138,6 +160,7 @@ export default function ButtonSizes() {
 | `icon` | `IconName` |  | Leading icon from the Semi registry. |
 | `loading` | `boolean` | `false` | Shows a spinner in place of the icon and blocks clicks (aria-busy). |
 | `fullWidth` | `boolean` | `false` |  |
+| `shape` | `'default' \| 'round'` | `"default"` | `round`: a circle instead of the style's control radius, for round icon buttons (media tiles, overlay headers, carousel arrows). Use it with `iconOnly`; lint `raw-pill-button` flags hand-made ones. |
 | `iconOnly` | `boolean` | `false` |  |
 | `children` | `React.ReactNode \| undefined` |  |  |
 | `aria-label` | `string` |  | Defines a string value that labels the current element. |

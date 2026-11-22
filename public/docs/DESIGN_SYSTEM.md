@@ -703,6 +703,9 @@ app renders `<BootLoader />` once in the root or route-group layout: the one cen
 skeletons: a route `loading.tsx` beside the layout shows `PageSkeleton` in the content area only. Never gate
 `AppShell` behind a skeleton (`shell-gate`), never `BootLoader` in a page, a `loading.tsx` or shell content
 (`boot-loader-place`).
+A list, grid or table never swaps its rows for a `Spinner` or loading text (`no-spinner-in-list`, warning): `DataTable` and
+`List` take `loading`, other lists render `SkeletonRows` / `SkeletonGrid` (#106 adds shaped skeletons for list rows, cards,
+table rows and detail panels).
 Another exception: a list a form field fetches by itself in the background shows one small `role="status"` line under that
 field while it loads: a `w-3 h-3` spinner + "Đang tải …" in `text-label text-muted` (the text sits in the
 `role="status"` element, which the lint allows), gone when done; a failed fetch stays silent.
@@ -880,7 +883,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 
 | Need | Use |
 |---|---|
-| Any action | `Button` (`variant` primary / secondary / outline / danger / ghost, `size` md / sm / modal, `icon`, `iconOnly` + `aria-label`, `loading`); `Spinner` only inside a button or field running its own action, never for a page) |
+| Any action | `Button` (`variant` primary / secondary / outline / danger / ghost, `size` md / sm / modal, `icon`, `iconOnly` + `aria-label`, `shape="round"` for a round icon button, `loading`); `Spinner` only inside a button or field running its own action, never for a page) |
 | Overflow actions of a row / card / page | `Menu` (icon-only "more" trigger or your own; `danger` items always last; `group`, `description`, `checked`, `loading`, `href`, `hidden`; a bottom sheet below `sm`) (§9 G2, G4, G5) |
 | Other ways to start the main action | `SplitButton` (Thêm khách hàng \| ▾ Nhập từ file, Tìm trong Data Hub) (§9 G1) |
 | Quick actions on a card or media tile | `CardActions` (inside a `group relative` card; `label` names the item) |
@@ -1057,6 +1060,16 @@ catches and what it must not:
   `outline-none` with no focus style on the same element (a text field's caret counts).
 - **Forms (warnings until 1.0):** `form-no-guard`, `action-order`, `toast-for-validation`, `field-input-mode` (§9b). They print and never fail the run.
 - **Feedback (warning until 1.0):** `local-toast` (§14c): a toast library or an app-level toast wrapper instead of `toast` from `@semi/ui`.
+- **The #94 patterns (#107, warnings until 1.0, C-021):** `no-spinner-in-list` (a `Spinner` or "Đang tải" / "Loading..." in a
+  list, grid or table body, as the other branch of `loading ? … : rows.map(…)` or as an early `if (loading) return <Spinner />`
+  of a component that renders a list: show the shape, §13b; a spinner inside the button or field that runs its own action is
+  fine), `filter-chip-wrap` (hand-made clickable chips, or `Chip`s that filter, in a `flex-wrap`: `FilterChipRow` +
+  `useFilterParams`, §4), `raw-pill-button` (a `rounded-full` button of 28px or more with a tint / field / panel fill:
+  `<Button iconOnly shape="round">`), `detail-overlay-url` (a `DetailOverlay` in a file that reads no URL state:
+  `useDetailParam`; a wrapper that passes its own `open` prop on is fine), `overline-place` (`text-overline` on a button,
+  link, field label, `h1` / `PageTitle`, badge, chip, table head or a text longer than a label: C-032 allows it on section
+  labels only). One hard rule: `card-hover-actions-touch` (`<CardActions>` without `label`: on touch the ⋯ is the only
+  control). The fixtures are `lint/test/patterns.test.mjs`.
 - **Emoji as icons (`emoji-icon`):** a brand whose voice allows emoji in copy disables the rule in `semi-lint.json`.
 
 **The baseline only shrinks.** `semi-lint --update-baseline` lowers it to what is left and refuses new hits;

@@ -58,6 +58,10 @@ If neither works (`semi_status` answers, or `npx semi` is missing), the app has 
    `useUnsavedGuard(dirty)`, `Field kind="email|tel|number|money|url|search|password"` and `useFormValidation` +
    `FormErrorSummary` (error on blur then change, under the field, never a toast; `max-w-2xl`): `npx semi example form-actions`
    (lint warns: `form-no-guard`, `action-order`, `toast-for-validation`, `field-input-mode`).
+   List pages: loading rows are skeletons, never a `Spinner` in the list; filter chips are one `FilterChipRow`; a record
+   opens in a `DetailOverlay` driven by `useDetailParam`; round icon buttons are `<Button iconOnly shape="round">`;
+   `text-overline` only on section labels (lint warns: `no-spinner-in-list`, `filter-chip-wrap`, `detail-overlay-url`,
+   `raw-pill-button`, `overline-place`; `CardActions` without `label` fails: `card-hover-actions-touch`).
 4. **A part:** copy the closest example and adapt it. Examples import from `@semi/ui` only and type-check, so keep
    their props and structure; change data, labels and handlers.
 5. **Compose, do not invent.** No local wrappers (`components/ui.tsx`), no raw `<select>` / `<table>` / `<dialog>`,

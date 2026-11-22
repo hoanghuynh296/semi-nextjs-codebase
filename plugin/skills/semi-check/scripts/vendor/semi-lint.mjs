@@ -304,7 +304,18 @@ export const WARN = [
   ["toast-for-validation", "A field problem is told under the field (<Field error>), with an Alert summary above FormActions for several, not in a toast that disappears. A toast is for the result of an action."],
   ["field-input-mode", "An email, phone, URL, password, search or money field sets its phone keyboard and autofill: <Field kind=\"email|tel|number|money|url|search|password\">."],
   ["local-toast", "One toast API (§14c): use toast / toast.success|error|warning|info|undo|promise from @semi/ui, not a toast library or an app-level wrapper. Its extras (action, duration, promise, undo) are already in Semi's toast."],
+  // The patterns of the #94 study (C-031 / C-032, #107): warnings until 1.0 (C-021).
+  [
+    "no-spinner-in-list",
+    "A list, grid or table that is loading shows its own shape (§13b, L16): DataTable / List `loading`, SkeletonRows, SkeletonGrid or the shaped skeletons (#106), not a Spinner or \"Đang tải\" text in place of the rows. A Spinner stays inside the button or field that runs its own action.",
+  ],
+  ["filter-chip-wrap", "Filter chips are one line (L4, C-026): FilterChipRow + useFilterParams from @semi/ui (it scrolls sideways and keeps the state in the URL), not hand-made chip buttons in a flex-wrap that grows to several rows."],
+  ["raw-pill-button", "A round icon button is <Button iconOnly shape=\"round\" icon aria-label> from @semi/ui (it keeps the focus ring, the title and the hit area), not a hand-made rounded-full button with a tint / field fill."],
+  ["detail-overlay-url", "A DetailOverlay is driven by the URL (L9): const { openId, open, close } = useDetailParam(); open={openId !== null} onClose={close}, so the record has a link, Back closes it and the list keeps its scroll."],
+  ["overline-place", "text-overline (C-032) is for section labels only: a sidebar / drawer group, a palette group, a mega menu column, a workspace panel section. Never a button, link, field label, title, badge, table head or a sentence: those are sentence case in their own type style."],
 ];
+/** Hard rules that read a whole JSX tag: [id, message]. */
+export const TAG_HARD = [["card-hover-actions-touch", "<CardActions> needs a label (\"Thao tác với <tên>\"): on a touch screen the ⋯ is the only control, and the label is its name."]];
 const TOAST_LIB = /\bfrom\s+["'](?:sonner|react-hot-toast|react-toastify|react-toast-notifications|notistack|@radix-ui\/react-toast)["']/g;
 // an import clause has no quote or semicolon, so a match cannot run on into the next statement
 const TOAST_LOCAL_IMPORT = /\bimport\s+[^;'"]*?\bfrom\s+["'](?!@semi\/ui["']|(?:\.\.\/)+src\/Toast["'])[^"']*[\/@.](?:use)?[Tt]oasts?(?:Store|Context|Provider|Helpers?|Utils?)?["']/g;
@@ -347,6 +358,179 @@ export function warnHits(src) {
       if (/\btype=["'](?:email|tel|url|search|password)["']/.test(tag) && !/\binputMode=/.test(tag)) out.push(["field-input-mode", i + 1]);
     }
   });
+  return [...out, ...patternHits(code)];
+}
+
+// ---- The #94 patterns (#107): lists that load, filter chips, round icon buttons, DetailOverlay, text-overline ----
+
+/** Elements still open at the end of `text` (innermost last): [{ name, attrs }]. A tag whose attributes hold `=>` is
+ * read up to the arrow, which is enough to know its name and its className. */
+function openStack(text) {
+  const stack = [];
+  for (const m of text.matchAll(/<(\/?)([A-Za-z][\w.]*)\b([^<>]*?)(\/?)>/g)) {
+    const [, close, name, attrs, self] = m;
+    if (close) {
+      const at = stack.map((e) => e.name).lastIndexOf(name);
+      if (at >= 0) stack.length = at;
+    } else if (!self) stack.push({ name, attrs });
+  }
+  return stack;
+}
+const LIST_TAGS = new Set(["ul", "ol", "tbody", "TBody", "DataTable", "ItemGroup", "List"]);
+const LIST_ATTRS = /\brole=["'](?:list|grid|rowgroup|listbox|feed)["']|(?<![\w-])(?:[\w@\[\]():-]*:)?grid-cols-|(?<![\w-])divide-y\b/;
+const isList = (e) => LIST_TAGS.has(e.name) || LIST_ATTRS.test(e.attrs);
+/** A control that runs its own action: a Spinner inside it is the allowed use (§13b). */
+const OWN_ACTION = /^(?:button|Button|SplitButton|Input|SearchInput|SearchPill|Field|NumberInput|Textarea)$/;
+const LOADING_MARK = /<Spinner\b|Đang tải|Loading\.\.\./g;
+/** The text right after a loading mark renders a list: the other branch of a ternary (`? <Spinner/> : rows.map(…)`). */
+const LIST_BRANCH = /^[^?;]*?:\s*\(?\s*(?:<(?:ul|ol|tbody|TBody|DataTable|ItemGroup|List|Table)\b|[\w.?!]+\.map\(|<[A-Za-z][\w.]*\b[^>]*?(?:grid-cols-|divide-y\b|role=["'](?:list|grid)["']))/;
+/** A list rendered anywhere in the file (for an early `if (loading) return <Spinner />`). */
+const RENDERS_LIST = /<(?:ul|ol|tbody|TBody|DataTable|ItemGroup|List)\b|\.map\(\s*\(?[\w{}, ]*\)?\s*=>\s*\(?\s*<|grid-cols-/;
+
+/** The value of a JSX attribute in a tag text: the string, or the {expression} (balanced braces), or null. */
+function attrValue(tag, name) {
+  const m = new RegExp(`\\b${name}=`).exec(tag);
+  if (!m) return null;
+  const rest = tag.slice(m.index + m[0].length);
+  if (/^["']/.test(rest)) return rest.slice(1, rest.indexOf(rest[0], 1));
+  if (rest[0] !== "{") return null;
+  let depth = 0;
+  for (let k = 0; k < rest.length; k++) {
+    if (rest[k] === "{") depth++;
+    else if (rest[k] === "}" && --depth === 0) return rest.slice(1, k);
+  }
+  return rest.slice(1);
+}
+
+const ROUND_FILL = /(?<![\w-])(?:[\w-]+:)*bg-(?:tint|field|raised|card(?:-field)?|panel(?:-\d)?|app|canvas|(?:black|white)\/\d+)(?![\w-])/;
+/** Square size of an icon button (28px and up; a radio dot or a slider thumb is smaller): size-N, w-N with h-N of
+ * the same N, aspect-square with a width, or the control size. */
+const isSquare = (cls) => {
+  const big = (n) => n === "control" || Number(n) >= 7;
+  for (const m of cls.matchAll(/(?<![\w:-])size-(\d+(?:\.\d+)?|control)(?![\w-])/g)) if (big(m[1])) return true;
+  for (const m of cls.matchAll(/(?<![\w:-])w-(\d+(?:\.\d+)?|control)(?![\w-])/g)) {
+    if (big(m[1]) && (/(?<![\w-])aspect-square(?![\w-])/.test(cls) || new RegExp(`(?<![\\w:-])h-${m[1].replace(".", "\\.")}(?![\\w-])`).test(cls))) return true;
+  }
+  return false;
+};
+const INTERACTIVE_CLS = /(?<![\w-])(?:hover:bg-|cursor-pointer|focus-visible:)/;
+const CLICKABLE_TAG = /^<(?:button|Button|a|Link)\b|\bonClick=/;
+/** Tags text-overline must never style (C-032): controls, links, field labels, titles, badges, table heads. */
+const OVERLINE_DENY = /^(?:button|Button|a|Link|label|Label|Badge|Chip|h1|PageTitle|input|Input|Field|th|TH|Tab|Tabs|TextTabs|Pills|Toggle|summary|Kbd|legend)$/;
+
+/** Warnings [rule, line] of the #94 patterns in one source file (comments already blanked). */
+export function patternHits(code) {
+  const out = [];
+  const rows = code.split("\n");
+  const offsets = [];
+  rows.reduce((at, r, i) => ((offsets[i] = at), at + r.length + 1), 0);
+  const seen = new Set();
+  const push = (rule, line) => {
+    if (seen.has(rule + ":" + line)) return;
+    seen.add(rule + ":" + line);
+    out.push([rule, line]);
+  };
+
+  // no-spinner-in-list: a Spinner / loading text inside a list, as the other branch of a list, or as an early return
+  // of a component that renders a list.
+  for (const m of code.matchAll(LOADING_MARK)) {
+    const line = lineOf(code, m.index);
+    if (/<(?:DataTable|List)\b(?:[^<>]|=>)*\b\w+=\{\s*\(?\s*$/.test(code.slice(Math.max(0, m.index - 600), m.index))) {
+      push("no-spinner-in-list", line); // <DataTable empty={<Spinner />}>
+      continue;
+    }
+    const stack = openStack(code.slice(Math.max(0, offsets[Math.max(0, line - 40)]), m.index));
+    const own = stack.findLastIndex((e) => OWN_ACTION.test(e.name));
+    const list = stack.findLastIndex(isList);
+    if (own > list) continue; // the spinner of a button inside a row
+    const before = code.slice(Math.max(0, m.index - 200), m.index);
+    const inList = list >= 0;
+    const branch = /\?\s*\(?\s*(?:<[A-Za-z][\w.]*\b[^<>]*>\s*)*$/.test(before) && LIST_BRANCH.test(code.slice(m.index, m.index + 600).replace(/^<Spinner\b[^>]*\/>|^[^<]*/, ""));
+    const early = /\breturn\s*\(?\s*(?:<[A-Za-z][\w.]*\b[^<>]*>\s*)*$/.test(before) && /\bif\s*\([^)]*\b(?:loading|isLoading|pending|isPending|fetching)\b/i.test(before) && RENDERS_LIST.test(code.slice(m.index));
+    if (inList || branch || early) push("no-spinner-in-list", line);
+  }
+
+  // filter-chip-wrap: an element with flex-wrap whose children are clickable chip-like buttons.
+  for (const m of code.matchAll(/<([A-Za-z][\w.]*)\b[^<>]*?(?<![\w-])flex-wrap(?![\w-])/g)) {
+    const name = m[1];
+    if (name === "FilterChipRow") continue;
+    const rest = code.slice(m.index, m.index + 3000);
+    // cut at the element's own close (depth of the same tag name)
+    let depth = 0;
+    let end = rest.length;
+    for (const t of rest.matchAll(new RegExp(`<(/?)${name.replace(".", "\\.")}\\b[^<>]*?(/?)>`, "g"))) {
+      if (t[1]) depth--;
+      else if (!t[2]) depth++;
+      if (depth === 0) {
+        end = t.index + t[0].length;
+        break;
+      }
+    }
+    const body = rest.slice(0, end);
+    const chips = [...body.matchAll(/<(button|Button|Chip)\b([^<>]*?(?:=>[^<>]*?)*)>/g)].filter(
+      ([, tag, attrs]) => (tag === "Chip" || /rounded-full/.test(attrs)) && /\bonClick=|\baria-pressed=|\bselected=|\bactive=|\bonRemove=/.test(attrs),
+    );
+    // Semi's Chip also picks values in a form (materials, tags): it counts only where the code is about filtering.
+    const filtering = /filter|lọc/i.test(body);
+    const counted = chips.filter(([, tag]) => tag !== "Chip" || filtering);
+    const looped = /\.map\(/.test(body);
+    if (counted.length >= 2 || (counted.length === 1 && looped)) {
+      if (filtering || /aria-pressed|selected|active|toggle/i.test(body)) push("filter-chip-wrap", lineOf(code, m.index));
+    }
+  }
+
+  // raw-pill-button: a string of classes that draws a round, filled, square, clickable button.
+  for (const m of code.matchAll(/(["'`])((?:(?!\1)[^\n\\]|\\.)*?(?<![\w-])rounded-full(?![\w-])(?:(?!\1)[^\n\\]|\\.)*)\1/g)) {
+    const cls = m[2];
+    if (!ROUND_FILL.test(cls) || !isSquare(cls)) continue;
+    const line = lineOf(code, m.index);
+    const tag = tagAround(rows, line - 1);
+    if (/^<(?:Avatar|Button)\b/.test(tag)) continue; // Button: see below
+    if (INTERACTIVE_CLS.test(cls) || CLICKABLE_TAG.test(tag)) push("raw-pill-button", line);
+  }
+  // …and a Button made round by className instead of shape="round".
+  for (const m of code.matchAll(/<Button\b/g)) {
+    const line = lineOf(code, m.index);
+    const tag = tagAt(rows, line - 1);
+    if (/\biconOnly\b/.test(tag) && /(?<![\w-])!?rounded-full(?![\w-])/.test(attrValue(tag, "className") ?? "")) push("raw-pill-button", line);
+  }
+
+  // detail-overlay-url: DetailOverlay whose open does not come from the URL.
+  const urlDriven = /\buseDetailParam\s*\(|\buseSearchParams\s*\(|\bsearchParams\b|\buseFilterParams\s*\(|\bopenDetail\s*\(/.test(code);
+  for (const m of code.matchAll(/<DetailOverlay\b/g)) {
+    if (urlDriven) break;
+    const line = lineOf(code, m.index);
+    const tag = tagAt(rows, line - 1);
+    if (/\{\s*\.\.\./.test(tag)) continue;
+    const open = (attrValue(tag, "open") ?? "").trim();
+    // a wrapper that passes its own `open` prop on: the page that renders the wrapper is checked instead
+    const prop = /^[A-Za-z_$][\w$]*$/.test(open) && new RegExp(`(?:function\\s*\\w*\\s*\\(|=\\s*\\()\\s*\\{[^}]*\\b${open}\\b[^}]*\\}`).test(code);
+    const fromProps = /^props\./.test(open);
+    if (!prop && !fromProps) push("detail-overlay-url", line);
+  }
+
+  // overline-place: text-overline on a control, link, field label, title, badge, table head or a long text.
+  for (const m of code.matchAll(/(?<![\w-])text-overline(?![\w-])/g)) {
+    const line = lineOf(code, m.index);
+    const tag = tagAround(rows, line - 1);
+    const name = /^<([A-Za-z][\w.]*)/.exec(tag)?.[1];
+    if (!name) continue; // a class constant: where it lands is not visible here
+    const text = /^[^>]*>([^<{]*)/.exec(rows.slice(line - 1, line + 2).join(" ").slice(rows[line - 1].indexOf("<" + name)))?.[1]?.trim() ?? "";
+    if (OVERLINE_DENY.test(name) || text.length > 40) push("overline-place", line);
+  }
+  return out;
+}
+
+/** Hard hits [rule, line, text] that read a whole JSX tag (TAG_HARD). */
+export function tagHardHits(src) {
+  const rows = src.split(/\r?\n/).map((r) => (isComment(r) ? "" : r));
+  const code = rows.join("\n");
+  const out = [];
+  for (const m of code.matchAll(/<CardActions\b/g)) {
+    const line = lineOf(code, m.index);
+    const tag = tagAt(rows, line - 1);
+    if (!/\blabel=/.test(tag) && !/\{\s*\.\.\./.test(tag)) out.push(["card-hover-actions-touch", line, rows[line - 1].trim().slice(0, 140)]);
+  }
   return out;
 }
 
@@ -506,6 +690,7 @@ export function scan(paths, cfg, cwd) {
     }
     for (const [id, line] of shellHits(p, src, cwd)) if (!skipped(id, name)) add(id, name, line);
     for (const [id, line] of warnHits(src)) if (!skipped(id, name)) warnings.push({ file: name, line, rule: id, message: WARN.find(([w]) => w === id)[1] });
+    for (const [id, line, text] of tagHardHits(src)) if (!skipped(id, name)) hard.push({ file: name, line, rule: id, message: TAG_HARD.find(([h]) => h === id)[1], text });
     const rows = src.split(/\r?\n/);
     rows.forEach((raw, i) => {
       if (!raw.trim() || isComment(raw)) return;

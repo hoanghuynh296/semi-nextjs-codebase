@@ -603,6 +603,7 @@
         "loading",
         "fullWidth",
         "iconOnly",
+        "shape",
         "type",
         "disabled",
         "className",

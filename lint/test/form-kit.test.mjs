@@ -108,7 +108,7 @@ test("field-input-mode: an email / phone / url / password / money field without 
 });
 
 test("the form-kit rules are warnings: scan() reports them apart from hard and ratchet hits, and skip / disable work", () => {
-  assert.deepEqual(WARN.map(([id]) => id), ["form-no-guard", "action-order", "toast-for-validation", "field-input-mode", "local-toast"]);
+  assert.deepEqual(WARN.map(([id]) => id).slice(0, 5), ["form-no-guard", "action-order", "toast-for-validation", "field-input-mode", "local-toast"]); // the #94 rules follow (patterns.test.mjs)
   const dir = mkdtempSync(join(tmpdir(), "semi-lint-"));
   const file = join(dir, "page.tsx");
   writeFileSync(file, `export default function P() {\n  return <form><Field label="Email"><Input /></Field><FormActions /></form>;\n}\n`);
