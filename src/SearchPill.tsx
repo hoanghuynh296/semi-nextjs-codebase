@@ -78,6 +78,9 @@ export function SearchPill({
   // the value changed from outside (back / forward, a "Xoá lọc" that also clears the query): show it
   useEffect(() => {
     if (value !== sent.current) {
+      // a pending debounced send would overwrite what came from outside (Back / Forward restoring the URL)
+      if (timer.current) clearTimeout(timer.current);
+      timer.current = null;
       sent.current = value;
       setText(value);
     }

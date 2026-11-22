@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { FiltersBar } from "../../FiltersBar";
+import { Probe } from "../../Probe";
 
 async function Id({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -11,6 +12,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
     <>
       <FiltersBar />
       <Suspense fallback={<p>Loading</p>}>
+        <Probe />
         <Id params={params} />
       </Suspense>
     </>

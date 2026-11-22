@@ -859,6 +859,8 @@ test("SubpageToolbar phone layout: two rows, filters behind Bộ lọc, secondar
   const page = await browser.newPage({ viewport: { width: 430, height: 932 }, isMobile: true, hasTouch: true });
   await open(page, "/components/subpage-toolbar/", "light");
   const ex = example(page, "subpage-toolbar/phone");
+  // a toolbar without the phone props still wraps as before (#100 review)
+  await expect(example(page, "subpage-toolbar/list-page").locator(".ml-auto").first()).not.toHaveClass(/flex-nowrap/);
   await expect(ex.getByRole("button", { name: "Khu vực: Hà Nội" })).toBeHidden();
   await expect(ex.getByRole("button", { name: "Xuất Excel" })).toBeHidden();
   const bar = ex.locator(".sticky").first();

@@ -3,7 +3,7 @@
 // Search and filters (#99, C-032 L3): one filter chip per facet on a single line (icon, label, count when active,
 // chevron), a multi-select popover per chip, ‹ › when the row overflows, "Xoá lọc", and the view tools at the end.
 // The chips are controlled: the page owns the state, usually in the URL (useFilterParams or the filterParams helpers).
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { Icon } from "./Icon";
 import { Popover } from "./Popover";
 import { Checkbox } from "./Choice";
@@ -188,26 +188,42 @@ function currentSearch() {
   return typeof window === "undefined" ? "" : window.location.search;
 }
 
+/** Fired after useFilterParams writes the URL, so every hook on the page (and a second one) re-reads it. */
+const URL_EVENT = "semi:urlchange";
+
+type NavigationLike = { addEventListener(type: string, cb: () => void): void; removeEventListener(type: string, cb: () => void): void };
+
+function subscribeUrl(onChange: () => void) {
+  window.addEventListener("popstate", onChange);
+  window.addEventListener(URL_EVENT, onChange);
+  // Navigation API (Chromium, Safari 26+): also hears Next's own history writes (a Link or router.push to this route)
+  const nav = (window as unknown as { navigation?: NavigationLike }).navigation;
+  nav?.addEventListener("currententrychange", onChange);
+  return () => {
+    window.removeEventListener("popstate", onChange);
+    window.removeEventListener(URL_EVENT, onChange);
+    nav?.removeEventListener("currententrychange", onChange);
+  };
+}
+
 /**
- * Filter state in the URL, with no router: reads `location.search` after mount (so a prerendered page renders the
- * unfiltered state first, never touching `window` in render), writes with `history.pushState` (Next's App Router
- * keeps `useSearchParams` in step) and follows Back / Forward (`popstate`). With a router of your own, use the pure
- * helpers instead (`readFilters`, `writeFilters`, `clearFilters`) on its search params.
+ * Filter state in the URL, with no router hook. The server render and hydration see no params (prerender-safe: no
+ * `window` in render, no `useSearchParams`, which would suspend a prerendered route); the URL is read right after.
+ * Writes use `history.pushState(null, …)` / `replaceState(null, …)`, which Next's App Router turns into its own
+ * navigation, so `useSearchParams` and `router.refresh()` keep the filters. It follows Back / Forward, every other
+ * useFilterParams on the page, and (where the Navigation API exists, and on any re-render elsewhere) a Link or
+ * `router.push` to the same route. With a router of your own, use the pure helpers (`readFilters`, `writeFilters`,
+ * `clearFilters`) on its search params.
  */
 export function useFilterParams<K extends string>(specs: readonly (FilterSpec & { key: K })[], options: { prefix?: string } = {}): FilterParamsState<K> {
   const { prefix } = options;
-  const [search, setSearch] = useState("");
-  useEffect(() => {
-    setSearch(currentSearch());
-    const onPop = () => setSearch(currentSearch());
-    window.addEventListener("popstate", onPop);
-    return () => window.removeEventListener("popstate", onPop);
-  }, []);
+  const search = useSyncExternalStore(subscribeUrl, currentSearch, () => "");
   const go = useCallback((next: URLSearchParams, mode: "push" | "replace") => {
     const url = `${window.location.pathname}${toQueryString(next)}${window.location.hash}`;
-    if (mode === "push") window.history.pushState(window.history.state, "", url);
-    else window.history.replaceState(window.history.state, "", url);
-    setSearch(toQueryString(next));
+    // state null, as Next documents: it keeps its own history state and syncs useSearchParams
+    if (mode === "push") window.history.pushState(null, "", url);
+    else window.history.replaceState(null, "", url);
+    window.dispatchEvent(new Event(URL_EVENT));
   }, []);
   // specs are usually an inline array: key the memo on their content, not their identity
   const specsKey = JSON.stringify(specs);

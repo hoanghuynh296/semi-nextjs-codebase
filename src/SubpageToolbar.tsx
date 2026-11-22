@@ -91,6 +91,8 @@ export function SubpageToolbar({
   // more than two typed filters collapse into the panel at every width (C-026); below sm they always do
   const typedCollapsed = typed.length > 2;
   const count = filters ? typedActive : (filterCount ?? 0);
+  // the opt-in phone layout (#57): one row of controls below sm; without these props the toolbar wraps as before
+  const phoneLayout = Boolean(filters || collapseFilters || secondaryActions?.length);
   const filterButton = (extra: string) => (
     <button
       type="button"
@@ -120,7 +122,8 @@ export function SubpageToolbar({
         ))}
       {(left || !title || filters) && (
         <div className={cn("flex items-center gap-2 flex-wrap min-w-0", (collapseFilters || filters) && "max-sm:hidden")}>
-          {left}
+          {/* with collapseFilters, `left` lives in one place at a time: here, or in the sheet while it is open */}
+          {!(collapseFilters && sheet) && left}
           {filters && typedCollapsed && filterButton("")}
           {filters &&
             typed
@@ -128,7 +131,7 @@ export function SubpageToolbar({
               .map((f) => <FilterChip key={f.key} def={f} onChange={(sel) => filters.onChange(f.key, sel)} />)}
         </div>
       )}
-      <div className="flex flex-wrap items-center gap-2 ml-auto shrink-0 max-sm:w-full max-sm:justify-end max-sm:flex-nowrap">
+      <div className={cn("flex flex-wrap items-center gap-2 ml-auto shrink-0 max-sm:w-full max-sm:justify-end", phoneLayout && "max-sm:flex-nowrap")}>
         {(collapseFilters || filters) && filterButton("sm:hidden max-sm:mr-auto")}
         {right}
         {secondaryActions?.map((a, i) => (

@@ -53,7 +53,8 @@ export default function StickyContextBarListPage() {
   const sortDef = { value: sort, onChange: setSort, options: SORTS };
   const active = filters.filter((f) => f.selected.length > 0).length;
   return (
-    <div className="w-full min-w-0 h-96 overflow-y-auto overscroll-contain -m-card sm:-m-panel p-card sm:p-panel">
+    // the scrolling content panel of the page: STICKY_TOOLBAR bleeds into its side padding (px-4 sm:px-6, as AppShell's)
+    <div className="w-full min-w-0 h-96 overflow-y-auto overscroll-contain rounded-card bg-app px-4 sm:px-6 pt-2.5 pb-4">
       <StickyContextBar label="Tìm và lọc nhà cung cấp">
         <SearchPill value={q} onChange={setQ} label="Tìm nhà cung cấp" placeholder="Tìm tên nhà cung cấp…" focusKey="/" />
         <FilterChipRow

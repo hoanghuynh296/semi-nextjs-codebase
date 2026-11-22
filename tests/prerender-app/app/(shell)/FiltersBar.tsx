@@ -26,6 +26,7 @@ export function FiltersBar() {
         <PhoneFilterBar activeCount={f.activeCount} onOpenFilters={() => setOpen(true)} />
         <ResultLine query={q} count={3} />
       </StickyContextBar>
+      <output data-testid="hook-status">{f.values.status.join(",") || "none"}</output>
       <FilterPanel open={open} onClose={() => setOpen(false)} filters={f.filters} onChange={f.onChange} onClear={f.onClear} resultCount={3} />
     </>
   );

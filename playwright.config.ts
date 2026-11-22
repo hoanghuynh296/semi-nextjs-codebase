@@ -5,6 +5,7 @@ import { defineConfig } from "@playwright/test";
 
 const PORT = 4319;
 export const BOOK_PORT = 4320;
+export const PRERENDER_PORT = 4321;
 
 export default defineConfig({
   testDir: "tests",
@@ -22,6 +23,12 @@ export default defineConfig({
       // The sample kit's brand book in out-brand/ (npm run build:brand-book first).
       command: `node scripts/serve-static.mjs out-brand ${BOOK_PORT}`,
       url: `http://127.0.0.1:${BOOK_PORT}/`,
+      reuseExistingServer: !process.env.CI,
+    },
+    {
+      // The server-rendered regression app (npm run build:prerender-test first): Next's router with Semi's URL helpers.
+      command: `npx next start tests/prerender-app -p ${PRERENDER_PORT} -H 127.0.0.1`,
+      url: `http://127.0.0.1:${PRERENDER_PORT}/filters/a`,
       reuseExistingServer: !process.env.CI,
     },
   ],

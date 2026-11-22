@@ -179,3 +179,21 @@ test("accent text reads AA on the card and on the selected tint over it (Paginat
       for (const theme of ["light", "dark"]) check(`kit ${id} ${sid}`, theme, r.themes[theme]["color-accent-fg"], derivedSurfaces(t[theme], theme).card);
   }
 });
+
+// WCAG 1.4.11 asks the field's boundary to stand out from what is around it (the surface), as lint/a11y.mjs measures it;
+// the line against the field's own fill is not a boundary (2.7-3:1 there is fine).
+test("a field drawn on a tint fill (SearchPill, #99): control-line reads 3:1 against the surface around it, in both themes", () => {
+  const pct = (key, theme) => +/(\d+)%/.exec(tokens.semantic[key][theme])[1] / 100;
+  for (const [label, [theme, n]] of Object.entries(allSets())) {
+    const s = derivedSurfaces(n, theme);
+    for (const [where, under] of Object.entries({ app: n["color-app"], panel: n["color-panel"], card: s.card })) {
+      for (const tintKey of ["color-tint", "color-tint-hover"]) {
+        const fill = blend(n["color-text-contrast"], under, pct(tintKey, theme));
+        // the border paints over the element's own fill (background-clip: border-box)
+        const edge = blend(n["color-text-muted"], fill, pct("color-control-line", theme));
+        const out = contrast(edge, under);
+        assert.ok(out >= 3, `${label}: control-line on ${tintKey} over ${where} vs the surface ${out.toFixed(2)}`);
+      }
+    }
+  }
+});
