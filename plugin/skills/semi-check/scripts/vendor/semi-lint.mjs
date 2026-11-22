@@ -502,6 +502,7 @@ export function patternHits(code) {
     const host = enclosingTag(code, at + 1);
     if (/^animate-spin/.test(m[0])) {
       if (!host) continue; // a class constant: where it lands is not visible here
+      if (/^(?:Spinner|Loader2|LoaderCircle)$/.test(host.name)) continue; // counted at its own tag
       if (/^(?:Icon)$/.test(host.name) && /name=\{?["']?(?:refresh|loader)/.test(host.text)) continue;
       at = host.start;
     } else if (m[0].startsWith("<")) {

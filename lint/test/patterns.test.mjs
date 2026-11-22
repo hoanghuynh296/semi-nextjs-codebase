@@ -37,6 +37,7 @@ test("no-spinner-in-list: a Spinner or loading text in a list, as the other bran
     `<ul>{rows.map((r) => <li key={r.id}><Icon name="refresh" className={cn("w-4 h-4", r.syncing && "animate-spin")} /></li>)}</ul>`,
   ];
   for (const code of PASS) assert.deepEqual(rules(code), [], code);
+  assert.equal(hits(`<td>\n  {busy ? (\n    <Loader2\n      size={14}\n      className="animate-spin"\n    />\n  ) : null}\n</td>`.replace(/^/, "<tbody><tr>") + "</tr></tbody>", "no-spinner-in-list"), 1, "a spinning Loader2 is one hit");
 });
 
 test("filter-chip-wrap: hand-made clickable chips in a flex-wrap warn; FilterChipRow, tags and Pills do not", () => {
