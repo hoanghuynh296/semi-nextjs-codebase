@@ -56,16 +56,25 @@ export function filterCommands(items: CommandItem[], query: string): CommandItem
   return scored.sort((a, b) => a.score - b.score || a.i - b.i).map((x) => x.it);
 }
 
-/** Register a global ⌘ / Ctrl + key shortcut (default ⌘K). The handler runs on keydown; the browser action is prevented. */
+/** Apple keyboards use ⌘ for app shortcuts; Ctrl+K there is "delete to end of line" in every text field. */
+const isApple = () => typeof navigator !== "undefined" && /Mac|iPhone|iPad|iPod/i.test((navigator as Navigator & { userAgentData?: { platform?: string } }).userAgentData?.platform || navigator.platform || navigator.userAgent);
+
+/**
+ * Register a global shortcut: ⌘ + key on Apple devices, Ctrl + key elsewhere (default K). The handler runs on keydown
+ * and the browser action is prevented. It does nothing when a widget already handled the key (`preventDefault()`) or
+ * focus is in a rich-text editor (contenteditable), which owns its own Ctrl/⌘ shortcuts.
+ */
 export function useHotkey(handler: () => void, key = "k") {
   const ref = useRef(handler);
   ref.current = handler;
   useEffect(() => {
+    const apple = isApple();
     const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && !e.altKey && e.key.toLowerCase() === key.toLowerCase()) {
-        e.preventDefault();
-        ref.current();
-      }
+      if (e.defaultPrevented || e.altKey || e.shiftKey || e.key.toLowerCase() !== key.toLowerCase()) return;
+      if (apple ? !e.metaKey || e.ctrlKey : !e.ctrlKey || e.metaKey) return;
+      if ((e.target as HTMLElement | null)?.isContentEditable) return;
+      e.preventDefault();
+      ref.current();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);

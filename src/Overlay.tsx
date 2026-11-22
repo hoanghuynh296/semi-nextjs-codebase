@@ -230,6 +230,12 @@ function MenuPanel({
       Escape: () => onClose(true),
       ...(onSide ? { ArrowRight: () => onSide(1), ArrowLeft: () => onSide(-1) } : {}),
     };
+    // a link item (an <a>) does not activate on Space by itself, as a menuitem must
+    if (e.key === " " && items[active]?.href && !items[active]?.disabled) {
+      e.preventDefault();
+      panelRef.current?.querySelector<HTMLElement>(`[data-idx="${active}"]`)?.click();
+      return;
+    }
     if (!actions[e.key]) {
       if (e.key.length === 1 && e.key !== " " && !e.ctrlKey && !e.metaKey && !e.altKey) typeAhead(e.key);
       return;
@@ -437,6 +443,7 @@ export function ContextMenu({
   label: labelProp,
   className,
   children,
+  sheet = true,
 }: {
   items: MenuItem[];
   /** Accessible name of the menu. */
@@ -444,6 +451,11 @@ export function ContextMenu({
   className?: string;
   /** The area that opens the menu (it becomes focusable). */
   children: React.ReactNode;
+  /**
+   * Below `sm` the list opens as a bottom sheet over a backdrop (P6, since 0.39); `false` keeps it at the pointer.
+   * @default true
+   */
+  sheet?: boolean;
 }) {
   const t = useSemiLocale();
   const label = labelProp ?? t.actions;
@@ -493,7 +505,7 @@ export function ContextMenu({
     >
       {children}
       {at && <span ref={anchorRef} aria-hidden style={{ position: "fixed", left: at.x, top: at.y, width: 0, height: 0 }} />}
-      {at && pos && <MenuPanel id={id} items={items} label={label} pos={pos} initial="first" onClose={close} panelRef={menuRef} />}
+      {at && pos && <MenuPanel id={id} items={items} label={label} pos={pos} initial="first" onClose={close} panelRef={menuRef} sheet={sheet} />}
     </div>
   );
 }

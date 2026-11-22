@@ -466,7 +466,8 @@ test("DetailOverlay: opens by URL, ‹ › and ← → step with n / N, Back clo
   await expect(page).toHaveURL(/[?&]item=DH-1041/);
   const dialog = page.getByRole("dialog", { name: "Đơn DH-1041" });
   await expect(dialog).toBeVisible();
-  await expect(dialog.getByLabel("Mục 2 trên 12")).toHaveText("2 / 12");
+  await expect(dialog.getByText("Mục 2 trên 12")).toHaveCount(1);
+  await expect(dialog.getByText("2 / 12")).toHaveAttribute("aria-hidden", "true");
   await dialog.getByRole("button", { name: "Mục sau" }).click();
   await expect(page.getByRole("dialog", { name: "Đơn DH-1042" })).toBeVisible();
   await page.keyboard.press("ArrowLeft");
@@ -480,9 +481,57 @@ test("DetailOverlay: opens by URL, ‹ › and ← → step with n / N, Back clo
   // a deep link opens it; the close button removes the param
   await page.goto(page.url().replace(/#.*$/, "") + "?item=DH-1050");
   await expect(page.getByRole("dialog", { name: "Đơn DH-1050" })).toBeVisible();
+  // at the end › turns disabled: focus moves to ‹ instead of dropping to the page
+  await page.getByRole("dialog").getByRole("button", { name: "Mục sau" }).click();
+  await expect(page.getByRole("dialog", { name: "Đơn DH-1051" })).toBeVisible();
+  await expect(page.getByRole("dialog").getByRole("button", { name: "Mục sau" })).toBeDisabled();
+  await expect(page.getByRole("dialog").getByRole("button", { name: "Mục trước" })).toBeFocused();
   await page.getByRole("dialog").getByRole("button", { name: "Đóng", exact: true }).click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect(page).not.toHaveURL(/item=/);
+});
+
+test("CommandPalette hotkey: the platform's key opens it from a field, not the other modifier or a rich-text editor (#102)", async ({ page }) => {
+  await open(page, "/components/command-palette/", "dark");
+  const apple = await page.evaluate(() => /Mac|iPhone|iPad/i.test(navigator.platform || navigator.userAgent));
+  await page.evaluate(() => {
+    const field = Object.assign(document.createElement("input"), { id: "hk-input", ariaLabel: "probe" });
+    const rich = Object.assign(document.createElement("div"), { id: "hk-rich", contentEditable: "true", textContent: "rich text" });
+    document.querySelector("main")!.prepend(field, rich);
+  });
+  const dialog = page.getByRole("dialog", { name: "Tìm hoặc tạo" });
+  await page.locator("#hk-input").focus();
+  // Ctrl+K on a Mac is the field's own "delete to end of line"; ⌘K elsewhere is not the app shortcut
+  await page.keyboard.press(apple ? "Control+k" : "Meta+k");
+  await expect(dialog).toBeHidden();
+  await page.keyboard.press("ControlOrMeta+k");
+  await expect(dialog).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+  await page.locator("#hk-rich").focus();
+  await page.keyboard.press("ControlOrMeta+k");
+  await page.waitForTimeout(200);
+  await expect(dialog).toBeHidden();
+});
+
+test("ContextMenu on touch: a long-press opens a bottom sheet, a tap on the backdrop closes it (#102)", async ({ browser }) => {
+  const context = await browser.newContext({ viewport: { width: 430, height: 932 }, hasTouch: true, isMobile: true });
+  const page = await context.newPage();
+  await open(page, "/components/context-menu/", "dark");
+  const area = page.getByRole("group", { name: "Thao tác tệp" });
+  await area.scrollIntoViewIfNeeded();
+  const b = (await area.boundingBox())!;
+  await area.dispatchEvent("pointerdown", { pointerType: "touch", isPrimary: true, clientX: b.x + 20, clientY: b.y + 20, bubbles: true });
+  const menu = page.getByRole("menu", { name: "Thao tác tệp" });
+  await expect(menu).toBeVisible();
+  await area.dispatchEvent("pointerup", { pointerType: "touch", isPrimary: true, bubbles: true });
+  const box = (await menu.boundingBox())!;
+  expect(box.x).toBe(0);
+  expect(box.width).toBe(430);
+  expect(Math.round(box.y + box.height)).toBe(932);
+  await page.mouse.click(215, 40);
+  await expect(menu).toBeHidden();
+  await context.close();
 });
 
 test("CommandPalette: ⌘K, a combobox over a grouped listbox, page items first, Escape closes (#102)", async ({ page }) => {

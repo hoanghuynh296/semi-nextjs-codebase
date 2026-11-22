@@ -4,11 +4,11 @@
 // through the current result set with "n / N", close / Esc / Back returns to the list at the same scroll position
 // (the list never unmounts). The side panel holds the actions (SplitButton + an icon row + ⋯). Existing detail routes
 // stay as deep-link targets.
-import React, { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { Icon } from "./Icon";
 import { useDialog } from "./a11y";
-import { useFilterParams } from "./FilterChipRow";
+import { currentSearch, navigationApi, patchSearch, subscribeUrl } from "./urlState";
 import { useSemiLocale } from "./locale";
 import { cn } from "../styles/utils";
 
@@ -24,33 +24,66 @@ export interface DetailParamState {
   close: () => void;
 }
 
+// History entries this page opened (pushed). With the Navigation API an entry keeps its key across Back / Forward and
+// replaceState, so close knows the entry is ours after Back then Forward too. Without it (Firefox, Safari < 26) only
+// the entry pushed last in this page's life is known.
+const OWN_KEY = "semi:detail-entries";
+let lastPushedHref: string | null = null;
+
+function ownEntries(): string[] {
+  try {
+    return JSON.parse(sessionStorage.getItem(OWN_KEY) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function markOwnEntry() {
+  lastPushedHref = window.location.href;
+  const key = navigationApi()?.currentEntry?.key;
+  if (!key) return;
+  try {
+    sessionStorage.setItem(OWN_KEY, JSON.stringify([...ownEntries().filter((k) => k !== key), key].slice(-50)));
+  } catch {
+    /* storage blocked: the in-memory mark below still covers the common case */
+  }
+}
+
+function isOwnEntry() {
+  const key = navigationApi()?.currentEntry?.key;
+  if (key) return ownEntries().includes(key);
+  return lastPushedHref !== null && lastPushedHref.split("?")[0] === window.location.href.split("?")[0];
+}
+
 /**
- * The open item of a DetailOverlay in the URL, built on useFilterParams (Next App Router safe: `null` history state,
- * no `useSearchParams`, the URL is read after hydration; it follows Back / Forward). Keep the other list state
- * (filters, query, sort) in the URL too, so a shared link opens the same item over the same results.
+ * Open an item of the DetailOverlay on this route from anywhere (a CommandPalette item, a notification): a new
+ * history entry with `?<key>=<id>`, read at once by useDetailParam. Use it instead of `router.push("?open=…")` to the
+ * same route: without the Navigation API (Firefox, Safari < 26) the hook cannot hear Next's own same-route navigation
+ * unless the list re-renders. For another route, navigate there with the param in the URL (the hook reads it on mount).
+ */
+export function openDetail(id: string, key = "open") {
+  patchSearch({ [key]: id }, "push");
+  markOwnEntry();
+}
+
+/**
+ * The open item of a DetailOverlay in the URL, on the same URL state as useFilterParams (Next App Router safe: `null`
+ * history state, deferred listeners, no `useSearchParams`; it follows Back / Forward). Keep the other list state
+ * (filters, query, sort) in the URL too, so a shared link opens the same item over the same results. Opening is a
+ * history entry, ‹ › replace it, and close goes back when the entry is one this page opened (also after Back then
+ * Forward), else removes the param (a deep link), so the list never gets a duplicate entry.
  */
 export function useDetailParam(key = "open"): DetailParamState {
-  const { params, setParams } = useFilterParams([]);
-  const openId = params.get(key);
-  // did this page push the entry? then close = Back (a deep link has nothing behind it to go back to)
-  const pushed = useRef(false);
-  useEffect(() => {
-    if (!openId) pushed.current = false;
-  }, [openId]);
-  const open = useCallback(
-    (id: string) => {
-      pushed.current = true;
-      setParams({ [key]: id }, "push");
-    },
-    [key, setParams],
-  );
-  const show = useCallback((id: string) => setParams({ [key]: id }, "replace"), [key, setParams]);
+  const search = useSyncExternalStore(subscribeUrl, currentSearch, () => "");
+  const openId = useMemo(() => new URLSearchParams(search).get(key), [search, key]);
+  const open = useCallback((id: string) => openDetail(id, key), [key]);
+  const show = useCallback((id: string) => patchSearch({ [key]: id }, "replace"), [key]);
   const close = useCallback(() => {
-    if (pushed.current) {
-      pushed.current = false;
+    if (isOwnEntry()) {
+      lastPushedHref = null;
       window.history.back();
-    } else setParams({ [key]: null }, "replace");
-  }, [key, setParams]);
+    } else patchSearch({ [key]: null }, "replace");
+  }, [key]);
   return { openId, open, show, close };
 }
 
@@ -137,6 +170,24 @@ export function DetailOverlay({
     return () => document.removeEventListener("keydown", onKey);
   }, [shown]);
 
+  // at an end the button just pressed turns disabled and would drop focus to the body: hand it to the other one
+  const prevBtn = useRef<HTMLButtonElement>(null);
+  const nextBtn = useRef<HTMLButtonElement>(null);
+  const hasPrev = Boolean(onPrev);
+  const hasNext = Boolean(onNext);
+  const lastFocus = useRef<"prev" | "next" | null>(null);
+  useEffect(() => {
+    const onFocusIn = (e: FocusEvent) => {
+      lastFocus.current = e.target === prevBtn.current ? "prev" : e.target === nextBtn.current ? "next" : null;
+    };
+    document.addEventListener("focusin", onFocusIn);
+    return () => document.removeEventListener("focusin", onFocusIn);
+  }, []);
+  useEffect(() => {
+    if (lastFocus.current === "next" && !hasNext && document.activeElement !== nextBtn.current) prevBtn.current?.focus();
+    if (lastFocus.current === "prev" && !hasPrev && document.activeElement !== prevBtn.current) nextBtn.current?.focus();
+  }, [hasPrev, hasNext]);
+
   // a new item starts at its top
   useEffect(() => {
     scrollRef.current?.scrollTo?.({ top: 0 });
@@ -172,16 +223,19 @@ export function DetailOverlay({
             </button>
           )}
           {counted && (
-            <span className="text-label text-muted tabular-nums px-1" aria-label={t.itemOf(index + 1, total)}>
-              {index + 1} / {total}
+            <span className="text-label text-muted tabular-nums px-1">
+              <span aria-hidden>
+                {index + 1} / {total}
+              </span>
+              <span className="sr-only">{t.itemOf(index + 1, total)}</span>
             </span>
           )}
           {(onPrev || onNext || counted) && (
             <>
-              <button type="button" onClick={onPrev} disabled={!onPrev} aria-label={t.prevItem} title={`${t.prevItem} (←)`} aria-keyshortcuts="ArrowLeft" className={NAV}>
+              <button ref={prevBtn} type="button" onClick={onPrev} disabled={!onPrev} aria-label={t.prevItem} title={`${t.prevItem} (←)`} aria-keyshortcuts="ArrowLeft" className={NAV}>
                 <Icon name="back" className="w-4 h-4" />
               </button>
-              <button type="button" onClick={onNext} disabled={!onNext} aria-label={t.nextItem} title={`${t.nextItem} (→)`} aria-keyshortcuts="ArrowRight" className={NAV}>
+              <button ref={nextBtn} type="button" onClick={onNext} disabled={!onNext} aria-label={t.nextItem} title={`${t.nextItem} (→)`} aria-keyshortcuts="ArrowRight" className={NAV}>
                 <Icon name="chevron" className="w-4 h-4" />
               </button>
             </>

@@ -7,6 +7,7 @@
   ],
   "imports": [
     "useDetailParam",
+    "openDetail",
     "type DetailParamState"
   ],
   "when": [
@@ -29,7 +30,7 @@
   ],
   "a11y": [
     "A modal dialog named by its title (an h2), focus trapped and returned to the row that opened it; Escape closes.",
-    "‹ › are labelled (Mục trước / Mục sau, with aria-keyshortcuts) and disabled at the ends; “n / N” is read as “Mục n trên N”; ← → do not fire inside inputs, menus or sliders."
+    "‹ › are labelled (Mục trước / Mục sau, with aria-keyshortcuts) and disabled at the ends, where focus moves to the other one; “n / N” is read as “Mục n trên N”; ← → do not fire inside inputs, menus or sliders."
   ],
   "examples": [
     {
@@ -37,5 +38,10 @@
       "title": "List with ?item= in the URL",
       "description": "Open a row, step with ← →, press Back: the list is where you left it."
     }
+  ],
+  "notes": [
+    "Open a record from elsewhere on the same route (a CommandPalette item, a notification) with the hook's `open(id)` or `openDetail(id)`, not `router.push(\"?open=…\")`: browsers without the Navigation API (Firefox, Safari < 26) do not tell the hook about Next's own same-route navigation, so the overlay would not open unless the list re-renders. To another route, navigate with the param in the URL; the hook reads it when the list mounts.",
+    "Close goes back when the entry is one this page opened (also after Back then Forward where the Navigation API exists), else it removes the param, so the list never gets a second history entry. Without the Navigation API only the entry opened last is known.",
+    "Keep filters, query and sort in the URL too (useFilterParams), so ‹ › and a shared link walk the same results."
   ]
 }

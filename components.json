@@ -1817,7 +1817,8 @@
         "items",
         "label",
         "className",
-        "children"
+        "children",
+        "sheet"
       ],
       "doc": "docs/components/context-menu.md"
     },
@@ -2617,7 +2618,7 @@
       "kind": "hook",
       "module": "src/Command.tsx",
       "client": true,
-      "summary": "Register a global ⌘ / Ctrl + key shortcut (default ⌘K). The handler runs on keydown; the browser action is prevented."
+      "summary": "Register a global shortcut: ⌘ + key on Apple devices, Ctrl + key elsewhere (default K). The handler runs on keydown and the browser action is prevented. It does nothing when a widget already handled the key (`preventDefault()`) or focus is in a rich-text editor (contenteditable), which owns its own Ctrl/⌘ shortcuts."
     },
     {
       "name": "useRegisterCommands",
@@ -2631,7 +2632,7 @@
       "kind": "hook",
       "module": "src/DetailOverlay.tsx",
       "client": true,
-      "summary": "The open item of a DetailOverlay in the URL, built on useFilterParams (Next App Router safe: `null` history state, no `useSearchParams`, the URL is read after hydration; it follows Back / Forward). Keep the other list state (filters, query, sort) in the URL too, so a shared link opens the same item over the same results."
+      "summary": "The open item of a DetailOverlay in the URL, on the same URL state as useFilterParams (Next App Router safe: `null` history state, deferred listeners, no `useSearchParams`; it follows Back / Forward). Keep the other list state (filters, query, sort) in the URL too, so a shared link opens the same item over the same results. Opening is a history entry, ‹ › replace it, and close goes back when the entry is one this page opened (also after Back then Forward), else removes the param (a deep link), so the list never gets a duplicate entry."
     },
     {
       "name": "useField",
@@ -2767,6 +2768,13 @@
       "module": "src/Command.tsx",
       "client": true,
       "summary": "Open (or close) an uncontrolled CommandPalette from anywhere: a SearchPill, a \"Tìm hoặc tạo\" button."
+    },
+    {
+      "name": "openDetail",
+      "kind": "function",
+      "module": "src/DetailOverlay.tsx",
+      "client": true,
+      "summary": "Open an item of the DetailOverlay on this route from anywhere (a CommandPalette item, a notification): a new history entry with `?<key>=<id>`, read at once by useDetailParam. Use it instead of `router.push(\"?open=…\")` to the same route: without the Navigation API (Firefox, Safari < 26) the hook cannot hear Next's own same-route navigation unless the list re-renders. For another route, navigate there with the param in the URL (the hook reads it on mount)."
     },
     {
       "name": "pageWindow",

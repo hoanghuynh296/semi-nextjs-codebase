@@ -76,7 +76,7 @@ test("DetailOverlay under Next's App Router: open by URL, Back closes it at the 
   await expect(page).toHaveURL(/\/items\/a\?open=r30$/);
   const dialog = page.getByRole("dialog", { name: "Item 30" });
   await expect(dialog).toBeVisible();
-  await expect(dialog.getByLabel("Mục 30 trên 40")).toBeVisible();
+  await expect(dialog.getByText("Mục 30 trên 40")).toHaveCount(1);
   await dialog.getByRole("button", { name: "Mục sau" }).click();
   await expect(page).toHaveURL(/\?open=r31$/);
   await expect(page.getByRole("dialog", { name: "Item 31" })).toBeVisible();
@@ -86,11 +86,21 @@ test("DetailOverlay under Next's App Router: open by URL, Back closes it at the 
   await expect(page).toHaveURL(/\/items\/a$/);
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(y);
   await expect(row).toBeFocused();
-  // Forward opens it again; Escape closes it by going back
+  // Forward opens it again; the entry is still known as ours, so Escape goes back (no duplicate list entry)
+  const entries = await page.evaluate(() => history.length);
   await page.goForward();
   await expect(page.getByRole("dialog", { name: "Item 31" })).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(page).toHaveURL(/\/items\/a$/);
+  expect(await page.evaluate(() => history.length)).toBe(entries);
+  await page.goForward();
+  await expect(page.getByRole("dialog", { name: "Item 31" })).toBeVisible();
+  // at the end › turns disabled and focus moves to ‹
+  await page.goto(`${BASE}/items/a?open=r39`);
+  await page.getByRole("dialog").getByRole("button", { name: "Mục sau" }).click();
+  await expect(page.getByRole("dialog", { name: "Item 40" })).toBeVisible();
+  await expect(page.getByRole("dialog").getByRole("button", { name: "Mục trước" })).toBeFocused();
   // a deep link (server-rendered) opens it after hydration; close removes the param without leaving the page
   await page.goto(`${BASE}/items/a?open=r5`);
   await expect(page.getByRole("dialog", { name: "Item 5" })).toBeVisible();

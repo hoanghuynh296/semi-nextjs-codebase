@@ -377,7 +377,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `formValidation`: `FormErrorSummary`
 - `locale`: `SemiLocaleProvider`
 
-**Hooks:** `useAppShell`, `useHotkey`, `useRegisterCommands`, `useDetailParam`, `useField`, `useFilterParams`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useFormValidation`, `useSemiLocale`, `useUnsavedGuard` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `openCommandPalette`, `pageWindow`, `startTask`, `themeScript`, `updateToast`, `dismissToast`, `confirmDialog`, `confirmDelete`, `kindAttrs`, `readFilterValues`, `readFilters`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `composeRefs`, `cloneTrigger`, `cn`
+**Hooks:** `useAppShell`, `useHotkey`, `useRegisterCommands`, `useDetailParam`, `useField`, `useFilterParams`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useFormValidation`, `useSemiLocale`, `useUnsavedGuard` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `openCommandPalette`, `openDetail`, `pageWindow`, `startTask`, `themeScript`, `updateToast`, `dismissToast`, `confirmDialog`, `confirmDelete`, `kindAttrs`, `readFilterValues`, `readFilters`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `composeRefs`, `cloneTrigger`, `cn`
 <!-- generated:components:end -->
 
 
@@ -846,7 +846,8 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   close, the title, "n / N" and ‹ › (← →) through the **current** results (the filtered, sorted list), the side
   panel the actions: one `SplitButton` (the main action and its variants), a row of icon buttons, a ⋯ `Menu`, then the
   facts. Keep the filters in the URL too, so a shared link opens the record over the same results; existing detail
-  routes stay for deep links and long workflows. Cards and media tiles in a grid get `CardActions` (one or two round
+  routes stay for deep links and long workflows. A palette item or notification opens a record of the current route with
+  `openDetail(id)` (not a same-route `router.push`, which Firefox and Safari < 26 do not report to the list). Cards and media tiles in a grid get `CardActions` (one or two round
   icon actions on hover or focus, a ⋯ always visible on touch). The app-wide "Tìm hoặc tạo" box is one
   `CommandPalette` in the root layout (⌘K / Ctrl+K, `openCommandPalette()` from a header button): places from the
   layout, each page's quick actions and records from `useRegisterCommands`; groups under `text-overline` headings,
@@ -1213,7 +1214,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `MegaMenu.tsx`, `MinimalHeader.tsx`, `TextTabs.tsx` | `MegaMenu` (flyout of category columns, `text-overline` headers, New badges, See all), `MinimalHeader` (breadcrumb left, one link + one primary right), `TextTabs` (large text tabs as the page heading, ARIA tabs, `href` for URL-driven views) (§4) |
 | `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle`, `PageTabsTitle` (underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh; phone layout with `filters` / `collapseFilters` / `secondaryActions`), `ToolbarFilters` (§4a) |
 | `SearchPill.tsx`, `FilterChipRow.tsx`, `ViewSwitch.tsx`, `FilterPanel.tsx`, `filterParams.ts` | `StickyContextBar` (sticky search + chips + result line), `SearchPill` (wide pill search, debounce, `/`), `ResultLine` (query · N kết quả + sort), `SortDef`, `FilterChipRow` (one-line chips, ‹ ›, Xoá lọc, trailing tools), `FilterChip`, `FilterOptions` (the checkbox list of one filter), `useFilterParams` (filter state in the URL, Back / Forward), `ViewSwitch` (list ↔ grid, density), `PhoneFilterBar` (views · Bộ lọc · settings), `FilterPanel` (full-screen / side-sheet filters); URL helpers `readFilters`, `readFilterValues`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, types `FilterSpec`, `FilterDef`, `FilterOption`, `FilterValues` (§4) |
-| `SplitButton.tsx`, `CardActions.tsx`, `DetailOverlay.tsx` | `SplitButton` (main action + ▾ `Menu` of its variants, one button on phones, G1), `CardActions` (hover / focus icon actions + ⋯ on cards, ⋯ only on touch), `DetailOverlay` (record over its list: ‹ › with n / N, side panel, scroll kept), `useDetailParam` (`?open=` in the URL, Back closes), types `CardAction`, `DetailParamState` (§4, §9) |
+| `SplitButton.tsx`, `CardActions.tsx`, `DetailOverlay.tsx` | `SplitButton` (main action + ▾ `Menu` of its variants, one button on phones, G1), `CardActions` (hover / focus icon actions + ⋯ on cards, ⋯ only on touch), `DetailOverlay` (record over its list: ‹ › with n / N, side panel, scroll kept), `useDetailParam` (`?open=` in the URL, Back closes), `openDetail` (open one from anywhere on the route), types `CardAction`, `DetailParamState` (§4, §9) |
 | `KpiCard.tsx`, `Modal.tsx` | `KpiCard` (metric card in the brand's figure font, neutral icon, `featured` for the screen's main number, shimmer), `Modal` (shared portal dialog with `MODAL_HEAD` + `MODAL_FOOT`) (§13, §14) |
 | `Icon.tsx` | `Icon`, `ICONS`, `IconName`, `IconTile`, `TILE_TONES`, `TONE_TEXT`, `TileTone` |
 | `AppHeader.tsx` | `AppHeader` (stand-alone app top bar, §4b) |
@@ -5571,6 +5572,11 @@ it once in the root layout with the app's places; pages add their own items with
 
 - A modal dialog (focus trapped, Escape closes, focus returns); the input is a combobox that owns a listbox (aria-activedescendant), groups are labelled by their heading, disabled items are aria-disabled.
 
+## Notes
+
+- A record that opens in a DetailOverlay on the current route: its `onSelect` calls `openDetail(id)` (or the page's `open(id)`), not `router.push("?open=…")` to the same route, which browsers without the Navigation API do not report to the list. Give it `href` too, for ⌘↵.
+- ⌘K on Apple devices, Ctrl+K elsewhere (Ctrl+K on a Mac deletes to the end of the line in text fields); a key a widget already handled, or typed in a rich-text editor, does not open it.
+
 <!-- GENERATED by scripts/build-docs.mjs from examples/command-palette/ and the types in src/ -->
 
 
@@ -5741,10 +5747,15 @@ area has focus. Use for power-user shortcuts that also exist elsewhere (a row's 
 | `label` | `string` |  | Accessible name of the menu. |
 | `className` | `string` |  |  |
 | `children` * | `React.ReactNode` |  | The area that opens the menu (it becomes focusable). |
+| `sheet` | `boolean` | `true` | Below `sm` the list opens as a bottom sheet over a backdrop (P6, since 0.39); `false` keeps it at the pointer. |
 
 ## Accessibility
 
 - The area is focusable; Menu key / Shift+F10 open the menu, which behaves like Menu (arrows, Escape returns focus).
+
+## Notes
+
+- Below sm the menu opens as a bottom sheet over a backdrop (a tap on the backdrop closes it); `sheet={false}` keeps it at the pointer.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/context-menu/ and the types in src/ -->
 
@@ -5773,7 +5784,7 @@ An item of a list opens over the list instead of on its own page: its own URL (?
 ## Import
 
 ```tsx
-import { DetailOverlay, useDetailParam, type DetailParamState } from "@semi/ui";
+import { DetailOverlay, useDetailParam, openDetail, type DetailParamState } from "@semi/ui";
 ```
 
 ## Examples
@@ -5896,7 +5907,13 @@ export default function DetailOverlayList() {
 ## Accessibility
 
 - A modal dialog named by its title (an h2), focus trapped and returned to the row that opened it; Escape closes.
-- ‹ › are labelled (Mục trước / Mục sau, with aria-keyshortcuts) and disabled at the ends; “n / N” is read as “Mục n trên N”; ← → do not fire inside inputs, menus or sliders.
+- ‹ › are labelled (Mục trước / Mục sau, with aria-keyshortcuts) and disabled at the ends, where focus moves to the other one; “n / N” is read as “Mục n trên N”; ← → do not fire inside inputs, menus or sliders.
+
+## Notes
+
+- Open a record from elsewhere on the same route (a CommandPalette item, a notification) with the hook's `open(id)` or `openDetail(id)`, not `router.push("?open=…")`: browsers without the Navigation API (Firefox, Safari < 26) do not tell the hook about Next's own same-route navigation, so the overlay would not open unless the list re-renders. To another route, navigate with the param in the URL; the hook reads it when the list mounts.
+- Close goes back when the entry is one this page opened (also after Back then Forward where the Navigation API exists), else it removes the param, so the list never gets a second history entry. Without the Navigation API only the entry opened last is known.
+- Keep filters, query and sort in the URL too (useFilterParams), so ‹ › and a shared link walk the same results.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/detail-overlay/ and the types in src/ -->
 

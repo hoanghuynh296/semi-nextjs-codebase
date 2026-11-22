@@ -22,5 +22,8 @@
       "file": "file",
       "title": "On a file card"
     }
+  ],
+  "notes": [
+    "Below sm the menu opens as a bottom sheet over a backdrop (a tap on the backdrop closes it); `sheet={false}` keeps it at the pointer."
   ]
 }

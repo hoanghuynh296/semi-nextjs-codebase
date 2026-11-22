@@ -37,5 +37,9 @@
       "title": "App-wide palette",
       "description": "Press ⌘K (Ctrl+K) or the button; type “tieu” to find the supplier by keyword."
     }
+  ],
+  "notes": [
+    "A record that opens in a DetailOverlay on the current route: its `onSelect` calls `openDetail(id)` (or the page's `open(id)`), not `router.push(\"?open=…\")` to the same route, which browsers without the Navigation API do not report to the list. Give it `href` too, for ⌘↵.",
+    "⌘K on Apple devices, Ctrl+K elsewhere (Ctrl+K on a Mac deletes to the end of the line in text fields); a key a widget already handled, or typed in a rich-text editor, does not open it."
   ]
 }
