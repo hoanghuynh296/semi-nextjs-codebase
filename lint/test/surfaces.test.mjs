@@ -28,6 +28,10 @@ function checkLadder(label, theme, s) {
   };
   step("color-canvas", "color-app", "canvas < app");
   step("color-app", "color-panel", "app < panel");
+  if (theme === "light") {
+    step("color-field", "color-app", "field < app");
+    step("color-canvas", "color-app", "canvas < app");
+  }
   if (theme === "dark") {
     step("color-panel", "color-field", "panel < field");
     step("color-field", "color-raised", "field < raised");
@@ -49,14 +53,16 @@ test("built kits: every allowed style x theme has strictly ordered, distinct sur
   }
 });
 
-test("Flat light panel steps off the app as much as Soft and Sharp do (core and kits)", () => {
-  const gap = (n) => L(n["color-panel"]) - L(n["color-app"]);
+test("Flat light steps (canvas to app, app to panel) are at least Sharp's, in core and in kits", () => {
+  const gaps = (n) => ({ low: L(n["color-app"]) - L(n["color-canvas"]), high: L(n["color-panel"]) - L(n["color-app"]) });
+  const check = (label, flat, sharp) => {
+    const f = gaps(flat), r = gaps(sharp);
+    for (const k of ["low", "high"]) assert.ok(f[k] >= r[k] - 1e-6, `${label} flat ${k} ${f[k].toFixed(4)} vs sharp ${r[k].toFixed(4)}`);
+  };
   const core = (id) => coreSurfaces(styles.styles.find((s) => s.id === id), "light");
-  const ref = Math.min(gap(core("soft")), gap(core("sharp")));
-  assert.ok(gap(core("flat")) >= ref - 0.005, `core flat ${gap(core("flat")).toFixed(4)} vs ${ref.toFixed(4)}`);
+  check("core", core("flat"), core("sharp"));
   for (const [id, b] of Object.entries(kits)) {
     const n = kitNeutrals(b);
-    const kref = Math.min(gap(n.soft.light), gap(n.sharp.light));
-    assert.ok(gap(n.flat.light) >= kref - 0.005, `kit ${id} flat ${gap(n.flat.light).toFixed(4)} vs ${kref.toFixed(4)}`);
+    check(`kit ${id}`, n.flat.light, n.sharp.light);
   }
 });
