@@ -115,6 +115,7 @@ test("overline-place (C-032): text-overline on a section label passes; on a butt
     `<div onClick={() => open()} className="text-overline">Mở</div>`,
     `<Card className="p-card">\n  <Text className="text-overline">Mới</Text>\n</Card>`,
     `  <div role="button" className="text-overline" aria-pressed={on}>Ghim</div>`,
+    `<div role={"button"} className="text-overline">Ghim</div>`,
   ];
   for (const code of FAIL) assert.deepEqual(rules(code), ["overline-place"], code);
   const PASS = [
@@ -146,6 +147,11 @@ test("card-hover-actions-touch: CardActions without a label is a hard error; wit
   assert.deepEqual(rule(`<CardActions menu={more} trigger={<span>Don't</span>} label="Thao tác" />`), []);
   assert.deepEqual(rule(`<CardActions trigger={<span>Don't</span>} actions={acts} />`), ["card-hover-actions-touch"]);
   assert.deepEqual(rule(`<CardActions label={isOpen ? 'Đóng' : 'Mở'} actions={acts} />`), [], "a JS string after ? and : is still a string");
+  // strings after => and case hold braces and quotes that must not end or open anything
+  assert.deepEqual(rule(`<CardActions getTitle={() => "a}b"} label="Thao tác" />`), []);
+  assert.deepEqual(rule(`<CardActions render={() => '{'} label="Thao tác" />`), []);
+  assert.deepEqual(rule(`<CardActions\n  tone={(k) => {\n    switch (k) {\n      case "a}":\n        return 'x{';\n      default:\n        return "y";\n    }\n  }}\n  label="Thao tác"\n/>`), []);
+  assert.deepEqual(rule(`<CardActions getTitle={() => "a}b"} actions={acts} />`), ["card-hover-actions-touch"]);
   assert.deepEqual(rule(`// <CardActions actions={a} />\nconst a = 1;`), []);
 });
 

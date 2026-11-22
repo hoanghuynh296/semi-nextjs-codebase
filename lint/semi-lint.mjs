@@ -363,11 +363,11 @@ export function warnHits(src) {
 
 // ---- The #94 patterns (#107): lists that load, filter chips, round icon buttons, DetailOverlay, text-overline ----
 
-/** Whether the quote at `k` opens a string: where a value goes (after = ( { [ , : ? & | ! + or a space before an
- * operator), not an apostrophe in JSX text inside an attribute (`trigger={<span>Don't</span>}`). */
+/** Whether the quote at `k` opens a string: where a value goes (after = ( { [ , : ? & | ! + ; or =>, return, case,
+ * typeof, in, of, default), not an apostrophe in JSX text inside an attribute (`trigger={<span>Don't</span>}`). */
 function opensString(text, k) {
   const before = text.slice(Math.max(0, k - 40), k).replace(/\s+$/, "");
-  return before === "" || /[=({[,:?&|!+]$/.test(before) || /\breturn$/.test(before);
+  return before === "" || /[=({[,:?&|!+;]$/.test(before) || /(?:=>|\b(?:return|case|typeof|in|of|default))$/.test(before);
 }
 /** End (exclusive) of the JSX opening tag that starts at `start`, counting braces and quotes, so neither the `>` of an
  * arrow (`onClick={() => x}`) nor JSX inside an attribute (`empty={<Spinner />}`) ends it. */
@@ -592,7 +592,7 @@ export function patternHits(code) {
   for (const m of code.matchAll(/(?<![\w-])text-overline(?![\w-])/g)) {
     const host = enclosingTag(code, m.index);
     if (!host) continue; // a class constant: where it lands is not visible here
-    const clickable = /\s(?:onClick|href|htmlFor|tabIndex)=|\srole=["'](?:button|link|tab|menuitem\w*|option|checkbox|switch)["']/.test(host.text);
+    const clickable = /\s(?:onClick|href|htmlFor|tabIndex)=|\srole=\{?\s*["'](?:button|link|tab|menuitem\w*|option|checkbox|switch)["']/.test(host.text);
     // the element's own text up to its first child or expression ({col.title} is a label passed in)
     const text = /^([^<{]*)/.exec(code.slice(host.end, host.end + 400))[1].replace(/\s+/g, " ").trim();
     if (!OVERLINE_TAGS.test(host.name) || clickable || text.length > OVERLINE_LABEL_MAX) push("overline-place", m.index);
