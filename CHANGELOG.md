@@ -4,6 +4,14 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+## [0.34.0] - 2026-11-22
+
+Three kits that make every app behave the same way: **states** (first use, no results, error, not found, no access, loading), **forms** (nobody loses typed work, one action bar, the right keypad) and **feedback** (undo for what can be reversed, a named confirm for what cannot, success once). Apps get them by updating `@semi/ui`. There are **no breaking changes**, and no migration is required.
+
+What changes without any code change in an app: `EmptyState` is compact on a phone, a toast with an action stays 8 s, and identical plain toasts show once. `semi-lint` has new **warnings** (`form-no-guard`, `action-order`, `toast-for-validation`, `field-input-mode`, `local-toast`): a warning prints, is reported as `warnings` in `--json`, stays outside the baseline and never fails CI.
+
+How apps adopt: add `error.tsx`, `not-found.tsx` and `loading.tsx` (`PageSkeleton inShell`) to each route group (recipe in the `states` doc); call `useUnsavedGuard(dirty)` on every edit page and use `FormActions`; use `toast.undo` for a delete that can be reversed and `confirmDelete({ name })` for one that cannot; replace a local toast wrapper with `toast` from `@semi/ui`.
+
 The states kit (#66, owner decision C-021): every app can show first use, no results, error, not found, no access and loading the same way. Additive; nothing breaks.
 
 ### Changed
