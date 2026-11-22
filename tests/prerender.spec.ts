@@ -62,3 +62,46 @@ test("useFilterParams in next dev: same-route Link and router.push log no React 
   await expect(hook).toHaveText("done");
   expect(errors).toEqual([]);
 });
+
+test("DetailOverlay under Next's App Router: open by URL, Back closes it at the same scroll, the palette is app-wide (#102)", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(`${BASE}/items/a`);
+  const list = page.getByRole("list", { name: "Items" }).filter({ visible: true });
+  const row = list.getByRole("button", { name: "Item 30", exact: true });
+  await row.scrollIntoViewIfNeeded();
+  await page.mouse.wheel(0, 200);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(800);
+  const y = await page.evaluate(() => window.scrollY);
+  await row.click();
+  await expect(page).toHaveURL(/\/items\/a\?open=r30$/);
+  const dialog = page.getByRole("dialog", { name: "Item 30" });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByLabel("Mục 30 trên 40")).toBeVisible();
+  await dialog.getByRole("button", { name: "Mục sau" }).click();
+  await expect(page).toHaveURL(/\?open=r31$/);
+  await expect(page.getByRole("dialog", { name: "Item 31" })).toBeVisible();
+  // ‹ › replaced the entry: one Back is the list, at the same scroll, and Next's router agrees (refresh keeps it)
+  await page.goBack();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(page).toHaveURL(/\/items\/a$/);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(y);
+  await expect(row).toBeFocused();
+  // Forward opens it again; Escape closes it by going back
+  await page.goForward();
+  await expect(page.getByRole("dialog", { name: "Item 31" })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  // a deep link (server-rendered) opens it after hydration; close removes the param without leaving the page
+  await page.goto(`${BASE}/items/a?open=r5`);
+  await expect(page.getByRole("dialog", { name: "Item 5" })).toBeVisible();
+  await page.getByRole("dialog").getByRole("button", { name: "Đóng", exact: true }).click();
+  await expect(page).toHaveURL(/\/items\/a$/);
+  // the root layout's CommandPalette: ⌘K, the page's registered action is listed first, a place navigates
+  await page.keyboard.press("ControlOrMeta+k");
+  const palette = page.getByRole("dialog", { name: "Tìm hoặc tạo" });
+  await expect(palette.getByRole("option").first()).toHaveText(/New item/);
+  await palette.getByRole("combobox").fill("item 3");
+  await palette.getByRole("combobox").press("Enter");
+  await expect(page).toHaveURL(/\?open=r3$/);
+  await expect(page.getByRole("dialog", { name: "Item 3" })).toBeVisible();
+});

@@ -12,6 +12,14 @@
     {
       "need": "Choose one value",
       "use": "ToggleGroup or Pills"
+    },
+    {
+      "need": "A main action with other ways to do it (Thêm | ▾ Nhập từ file)",
+      "use": "SplitButton"
+    },
+    {
+      "need": "Unrelated actions side by side",
+      "use": "Menu (⋯), G3"
     }
   ],
   "a11y": [

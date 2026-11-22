@@ -18,13 +18,12 @@ export interface CardAction {
 const ROUND =
   "w-8 h-8 rounded-full bg-panel-4/90 backdrop-blur text-contrast hover:bg-panel-4 shadow-card flex items-center justify-center cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-focus";
 
-function MoreButton({ label }: { label: string }) {
-  return (
-    <button type="button" aria-label={label} title={label} className={ROUND}>
-      <Icon name="more" className="w-4 h-4" />
-    </button>
-  );
-}
+/** The ⋯ trigger: a plain element, so Menu can add its ref, handlers and aria-* to it. */
+const moreButton = (label: string) => (
+  <button type="button" aria-label={label} title={label} className={ROUND}>
+    <Icon name="more" className="w-4 h-4" />
+  </button>
+);
 
 export function CardActions({
   actions = [],
@@ -45,17 +44,17 @@ export function CardActions({
   return (
     // clicks here must not open the card underneath
     <div role="group" aria-label={label} onClick={stop} className={cn("absolute top-2 right-2 z-10 flex gap-1.5", className)}>
-      <div className="hidden [@media(hover:hover)]:flex gap-1.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-within:opacity-100 transition-opacity">
+      <div className="hidden [@media(hover:hover)]:flex gap-1.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-within:opacity-100 has-[[aria-expanded=true]]:opacity-100 transition-opacity">
         {actions.map((a) => (
           <button key={a.label} type="button" onClick={a.onClick} aria-label={a.label} title={a.label} className={ROUND}>
             <Icon name={a.icon} className="w-4 h-4" />
           </button>
         ))}
-        {menu && menu.some((m) => !m.hidden) && <Menu label={label} items={menu} trigger={<MoreButton label={label} />} />}
+        {menu && menu.some((m) => !m.hidden) && <Menu label={label} items={menu} trigger={moreButton(label)} />}
       </div>
       {all.some((m) => !m.hidden) && (
         <div className="[@media(hover:hover)]:hidden">
-          <Menu label={label} items={all} trigger={<MoreButton label={label} />} />
+          <Menu label={label} items={all} trigger={moreButton(label)} />
         </div>
       )}
     </div>

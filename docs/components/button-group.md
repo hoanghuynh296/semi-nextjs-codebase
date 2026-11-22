@@ -11,6 +11,8 @@ Joins related buttons into one segmented control: shared borders, outer corners 
 | Need | Use |
 |---|---|
 | Choose one value | ToggleGroup or Pills |
+| A main action with other ways to do it (Thêm \| ▾ Nhập từ file) | SplitButton |
+| Unrelated actions side by side | Menu (⋯), G3 |
 
 ## Import
 

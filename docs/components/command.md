@@ -11,6 +11,7 @@ A command palette: type to filter actions and pages, ↑/↓ to move, Enter to r
 
 | Need | Use |
 |---|---|
+| The app-wide ⌘K “search or create” box, fed by every page | CommandPalette |
 | Pick one value in a form | CustomCombobox |
 | Filter the list on the page | SearchInput |
 

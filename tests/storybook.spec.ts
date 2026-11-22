@@ -367,6 +367,147 @@ test("Menu opens from the keyboard and Escape returns focus", async ({ page }) =
   await expect(trigger).toBeFocused();
 });
 
+test("Menu: groups, a reason for a disabled item, type-ahead, danger last, hidden items left out (#90)", async ({ page }) => {
+  await open(page, "/components/menu/", "dark");
+  const trigger = example(page, "menu/grouped").getByRole("button", { name: "Thao tác" });
+  await expect(trigger).toHaveAttribute("aria-haspopup", "menu");
+  await trigger.click();
+  const menu = page.getByRole("menu", { name: "Thao tác với danh sách khách hàng" });
+  await expect(menu.getByRole("group", { name: "Xuất" })).toBeVisible();
+  await expect(menu.getByRole("group", { name: "Xem" })).toBeVisible();
+  // the danger item is first in the code and last on screen; the hidden one is not listed
+  const names = await menu.locator("[role^=menuitem]").evaluateAll((els) => els.map((e) => e.querySelector("[data-label]")?.textContent));
+  expect(names[names.length - 1]).toBe("Xoá danh sách");
+  expect(names).not.toContain("Chỉ quản trị viên");
+  // a disabled item with a reason stays reachable and is described by it
+  const zalo = menu.getByRole("menuitem", { name: "Gửi qua Zalo" });
+  await expect(zalo).toHaveAttribute("aria-disabled", "true");
+  await expect(zalo).toHaveAccessibleDescription("Chưa kết nối Zalo OA");
+  await expect(menu.getByRole("menuitemcheckbox", { name: "Hiển thị gọn" })).toHaveAttribute("aria-checked", "false");
+  // type-ahead: "g" jumps to Gửi qua Zalo
+  await page.keyboard.press("g");
+  await expect(zalo).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(menu).toBeVisible(); // a disabled item does nothing
+  await page.keyboard.press("Escape");
+  await expect(trigger).toBeFocused();
+});
+
+test("Menu on a phone opens as a bottom sheet; SplitButton becomes one button with the main action first (#90)", async ({ browser }) => {
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  await open(page, "/components/menu/", "dark");
+  await example(page, "menu/row-actions").getByRole("button", { name: "Thao tác máy in" }).click();
+  const menu = page.getByRole("menu");
+  const box = (await menu.boundingBox())!;
+  expect(box.x).toBe(0);
+  expect(box.width).toBe(390);
+  expect(Math.round(box.y + box.height)).toBe(844);
+  await page.keyboard.press("Escape");
+  await open(page, "/components/split-button/", "dark");
+  const wide = example(page, "split-button/toolbar").getByRole("group", { name: "Thêm khách hàng" });
+  await expect(wide).toBeHidden();
+  const one = example(page, "split-button/toolbar").getByRole("button", { name: "Thêm khách hàng" });
+  await expect(one).toHaveAttribute("aria-haspopup", "menu");
+  await one.click();
+  await expect(page.getByRole("menu").getByRole("menuitem").first()).toHaveText(/Thêm khách hàng/);
+  await page.close();
+});
+
+test("SplitButton: main action, a named menu button with aria-expanded, focus back on Escape (#90)", async ({ page }) => {
+  await open(page, "/components/split-button/", "dark");
+  const group = example(page, "split-button/toolbar").getByRole("group", { name: "Thêm khách hàng" });
+  await group.getByRole("button", { name: "Thêm khách hàng" }).click();
+  await expect(page.getByText("Mở biểu mẫu thêm khách hàng")).toBeVisible();
+  const more = group.getByRole("button", { name: "Cách thêm khác" });
+  await expect(more).toHaveAttribute("aria-expanded", "false");
+  await more.focus();
+  await page.keyboard.press("Enter");
+  await expect(more).toHaveAttribute("aria-expanded", "true");
+  await expect(page.getByRole("menuitem", { name: /Nhập từ file/ })).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(more).toBeFocused();
+});
+
+test("CardActions: hidden until hover or focus, named, and clicks do not open the card (#102)", async ({ page }) => {
+  await open(page, "/components/card-actions/", "dark");
+  const grid = example(page, "card-actions/grid");
+  const actions = grid.getByRole("group", { name: "Thao tác với Gia vị Tây Nguyên" });
+  const send = actions.getByRole("button", { name: "Gửi hỏi giá" });
+  expect(await send.evaluate((el) => getComputedStyle(el.parentElement!).opacity)).toBe("0");
+  await grid.getByRole("button", { name: "Gia vị Tây Nguyên Đắk Lắk" }).focus();
+  await page.keyboard.press("Tab");
+  await expect(send).toBeFocused();
+  await expect.poll(() => send.evaluate((el) => getComputedStyle(el.parentElement!).opacity)).toBe("1");
+  await send.click();
+  await expect(page.getByText("Gửi hỏi giá Gia vị Tây Nguyên")).toBeVisible();
+  await expect(page.getByText("Mở Gia vị Tây Nguyên")).toHaveCount(0);
+  await actions.getByRole("button", { name: "Thao tác với Gia vị Tây Nguyên" }).click();
+  await expect(page.getByRole("menuitem")).toHaveText([/Sửa/, /Ngừng hợp tác/]);
+});
+
+test("CardActions on touch: one always-visible ⋯ with every action (#102)", async ({ browser }) => {
+  const context = await browser.newContext({ viewport: { width: 430, height: 932 }, hasTouch: true, isMobile: true });
+  const page = await context.newPage();
+  await open(page, "/components/card-actions/", "dark");
+  const actions = example(page, "card-actions/grid").getByRole("group", { name: "Thao tác với Gia vị Tây Nguyên" });
+  await expect(actions.getByRole("button", { name: "Gửi hỏi giá" })).toBeHidden();
+  const more = actions.getByRole("button", { name: "Thao tác với Gia vị Tây Nguyên" });
+  await expect(more).toBeVisible();
+  await more.click();
+  await expect(page.getByRole("menuitem")).toHaveText([/Gửi hỏi giá/, /Ghim/, /Sửa/, /Ngừng hợp tác/]);
+  await context.close();
+});
+
+test("DetailOverlay: opens by URL, ‹ › and ← → step with n / N, Back closes it, focus returns (#102)", async ({ page }) => {
+  await open(page, "/components/detail-overlay/", "dark");
+  const list = example(page, "detail-overlay/list");
+  const row = list.getByRole("button", { name: /Nhà sách Phú Lợi.*DH-1041/ });
+  await row.click();
+  await expect(page).toHaveURL(/[?&]item=DH-1041/);
+  const dialog = page.getByRole("dialog", { name: "Đơn DH-1041" });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByLabel("Mục 2 trên 12")).toHaveText("2 / 12");
+  await dialog.getByRole("button", { name: "Mục sau" }).click();
+  await expect(page.getByRole("dialog", { name: "Đơn DH-1042" })).toBeVisible();
+  await page.keyboard.press("ArrowLeft");
+  await expect(page.getByRole("dialog", { name: "Đơn DH-1041" })).toBeVisible();
+  await expect(page).toHaveURL(/[?&]item=DH-1041/);
+  // ‹ › replaced the entry: one Back returns to the list
+  await page.goBack();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(page).not.toHaveURL(/item=/);
+  await expect(row).toBeFocused();
+  // a deep link opens it; the close button removes the param
+  await page.goto(page.url().replace(/#.*$/, "") + "?item=DH-1050");
+  await expect(page.getByRole("dialog", { name: "Đơn DH-1050" })).toBeVisible();
+  await page.getByRole("dialog").getByRole("button", { name: "Đóng", exact: true }).click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(page).not.toHaveURL(/item=/);
+});
+
+test("CommandPalette: ⌘K, a combobox over a grouped listbox, page items first, Escape closes (#102)", async ({ page }) => {
+  await open(page, "/components/command-palette/", "dark");
+  await page.keyboard.press("ControlOrMeta+k");
+  const dialog = page.getByRole("dialog", { name: "Tìm hoặc tạo" });
+  await expect(dialog).toBeVisible();
+  const input = dialog.getByRole("combobox");
+  await expect(input).toBeFocused();
+  await expect(dialog.getByRole("group", { name: "Tạo nhanh" })).toBeVisible();
+  await expect(dialog.getByRole("option").first()).toHaveText(/Thêm nhà cung cấp/);
+  await input.fill("tieu");
+  await expect(dialog.getByRole("option")).toHaveText([/Gia vị Tây Nguyên.*Đắk Lắk/]);
+  await input.press("Enter");
+  await expect(dialog).toBeHidden();
+  await expect(page.getByText("Mở Gia vị Tây Nguyên")).toBeVisible();
+  await example(page, "command-palette/app").getByRole("button", { name: /Tìm hoặc tạo/ }).click();
+  await expect(dialog).toBeVisible();
+  await input.fill("khong co");
+  await expect(dialog.getByText("Không có kết quả cho “khong co”. Thử từ khác.")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+});
+
 test("Field wires label, hint and error to the input", async ({ page }) => {
   await open(page, "/components/field/", "light");
   await expect(page.getByLabel("Tên máy in")).toHaveAttribute("aria-describedby", /hint/);
