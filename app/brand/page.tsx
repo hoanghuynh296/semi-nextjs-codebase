@@ -179,17 +179,21 @@ export default function BrandPage() {
                   tone={result.report.every((r) => r.ok || r.soft) ? "good" : "danger"}
                 />
                 <div className={`${CARD} p-card space-y-2 @xl:col-span-2`}>
-                  <DemoLabel>Nút chính so với màu thương hiệu</DemoLabel>
+                  <DemoLabel>Nút chính theo theme (sáng sâu hơn, tối sáng hơn)</DemoLabel>
                   <div className="flex flex-col gap-2 text-label">
                     {(["dark", "light"] as const).map((t) => {
                       const f = result.tokens.fidelity[t];
+                      const th = result.tokens.themes[t];
+                      const ratio = result.report.find((r) => r.check === `nút chính (${t === "dark" ? "tối" : "sáng"})`)?.ratio;
                       return (
                         <span key={t} className="inline-flex flex-wrap items-center gap-2">
                           <Badge tone="gray">{t === "dark" ? "Tối" : "Sáng"}</Badge>
+                          <span className="inline-block h-3.5 w-3.5 rounded-control border border-line" style={{ background: th["color-accent"] }} />
                           <span className="tabular-nums text-body">
-                            primary-{f.fill} {result.tokens.themes[t]["color-accent"]} · chữ {result.tokens.themes[t]["color-on-accent"]}
+                            {f.fill ? `primary-${f.fill} ` : ""}
+                            {th["color-accent"]} · hover {th["color-accent-hover"]} · chữ {th["color-on-accent"]}
+                            {ratio ? ` · ${ratio.toFixed(2)}:1` : ""}
                           </span>
-                          <Badge tone={f.deltaE <= 0.08 ? "green" : "amber"}>{f.deltaE === 0 ? "đúng màu thương hiệu" : `lệch ΔE ${f.deltaE.toFixed(2)}`}</Badge>
                         </span>
                       );
                     })}

@@ -4,6 +4,19 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## [Unreleased]
 
+### Fixed
+- **Brand kits no longer have the same solid accent in light and dark (#84).** `semi-brand build` now derives `--semi-accent`, `--semi-accent-hover` and `--semi-on-accent` per theme, following Apple's system-colour practice: **light** takes the darkest shade of `primary-600…700` whose text reads at 4.5:1 and whose fill stands out from the page at 3:1, **dark** takes the shade of `400…500` closest to the brand colour under the same two rules, hover moves one step in the theme's direction (deeper in light, lighter in dark), and `on-accent` follows the theme (white on the light fill, dark text on the dark fill when it reads). Rebuilt locally: Semi light `#9d3100` / `#792400` / white (7.31:1), dark `#dd592a` / `#e8896a` / `#0c0d0e` (5.13:1); 3D Noobs light `#006f06` / `#005503` / white (6.41:1), dark `#539f50` / `#81b67d` / `#0c0d0e` (5.97:1).
+- **`--semi-chart-6` now has a dark value** (`#2a9926`, 4.31:1 on the dark panel); it was `#008300` in both themes while the other seven chart colours switch.
+
+### Added
+- **`brand.json` `accent`**: `{ "sameInBothThemes": true }` keeps one accent for both themes as an explicit brand choice; `{ "light": { fill, hover?, on? }, "dark": { … } }` pins a theme (a shade of `primary` or a hex). `semi-brand build` and `check` now **fail when the light and dark accent are equal** unless `sameInBothThemes` is set. Docs: `BRANDS.md` "Accent theo theme".
+- **Brand book and the docs Brand preview** show the button, hover, text on the button and their contrast for both themes side by side.
+- **Tests:** a themed-token test over the built CSS (core `tokens.css` and a built brand kit) fails when a `--semi-*` token is equal in light and dark, except an allowlist (`--semi-on-solid` and tokens that only reference themed tokens: `accent-line`, `focus`, `control-line-hover`); the two shipped brands get different accents with AA contrast.
+
+### Migration
+- **Brand kits must be rebuilt and re-released** to pick this up: `/semi-brand update` (or `semi-brand build`), then a new kit tag. Until then an installed kit keeps its old, equal accent. Brand releases are the brand owner's. A kit that wants one accent in both themes adds `"accent": { "sameInBothThemes": true }`.
+- A kit's primary button now changes colour between themes (and the light theme's is deeper); `semi-brand check` fails on a kit built by an older version because the generated files are stale.
+
 ## [0.34.0] - 2026-11-22
 
 Three kits that make every app behave the same way: **states** (first use, no results, error, not found, no access, loading), **forms** (nobody loses typed work, one action bar, the right keypad) and **feedback** (undo for what can be reversed, a named confirm for what cannot, success once). Apps get them by updating `@semi/ui`. There are **no breaking changes**, and no migration is required.

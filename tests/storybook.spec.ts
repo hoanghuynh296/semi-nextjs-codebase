@@ -189,15 +189,19 @@ test("brand preview: a #brand= link recolours every page, passes contrast in bot
   const accent = () => page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--semi-accent").trim());
   await open(page, `/components/#brand=${hash}`, "dark", "soft");
   await expect(page.getByText("Blue Co", { exact: true })).toBeVisible();
+  const seen: Record<string, string> = {};
   for (const theme of THEMES) {
     await page.getByRole("radio", { name: theme === "dark" ? "Tối" : "Sáng" }).first().click();
-    // The exact brand blue in both themes: white text reads on it and it stands out from the dark page (≥ 3:1).
-    await expect.poll(accent).toBe("#2563eb");
+    // The accent is derived per theme (#84): lighter and more vivid in dark, deeper in light.
+    await expect.poll(accent).not.toBe(theme === "dark" ? seen.light ?? "" : seen.dark ?? "");
+    seen[theme] = await accent();
     expect(await lowContrast(page)).toEqual([]);
   }
+  expect(seen.dark).toBe("#5286ef");
+  expect(seen.light).not.toBe(seen.dark);
   await page.getByRole("radio", { name: "Tối" }).first().click();
   await page.goto("/components/button/"); // stays on across pages (applied once the page hydrates)
-  await expect.poll(accent).toBe("#2563eb");
+  await expect.poll(accent).toBe(seen.dark);
   await page.getByRole("button", { name: "Tắt xem trước brand" }).click();
   await expect.poll(accent).toBe("#00ae42"); // Semi's own green again (dark theme)
 });

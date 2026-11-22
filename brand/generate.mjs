@@ -655,6 +655,7 @@ export function generateBrand(brand, { tokens, styles, version = "", params }) {
     brandStep: brandStep(brand.primary, p),
     ...(secondary ? { secondary, secondaryStep: brandStep(brand.secondary, p) } : {}),
     themes,
+    ...(brand.accent ? { accent: brand.accent } : {}),
     ...(Object.keys(status).length ? { status } : {}),
     fidelity,
     neutrals,
