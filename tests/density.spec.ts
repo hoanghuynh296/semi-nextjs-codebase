@@ -48,7 +48,7 @@ const CASES: [string, string, string][] = [
   [
     "primary-actions",
     `<form><button style="background:${ACCENT};color:#fff">Lưu</button><button style="background:${ACCENT};color:#fff">Gửi</button></form>`,
-    `<form><button style="background:${ACCENT};color:#fff">Lưu</button><button style="background:#eee">Huỷ</button><button role="switch" aria-checked="true" style="background:${ACCENT}">on</button></form>`,
+    `<form><button style="background:${ACCENT};color:#fff">Lưu</button><button style="background:#eee">Huỷ</button><button role="switch" aria-checked="true" style="background:${ACCENT}">on</button><button data-split-menu aria-haspopup="menu" style="background:${ACCENT}">▾</button></form>`,
   ],
   [
     "cramped-boxes",

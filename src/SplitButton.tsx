@@ -59,7 +59,10 @@ export function SplitButton({
         <Menu
           label={more}
           items={items}
-          trigger={<Button variant={variant} size={size} iconOnly icon="chevronDown" aria-label={more} disabled={disabled} className={divider} />}
+          // data-split-menu: the density audit counts the two halves as one primary (G7)
+          trigger={
+            <Button variant={variant} size={size} iconOnly icon="chevronDown" aria-label={more} disabled={disabled} className={divider} data-split-menu="" />
+          }
         />
       )}
     </ButtonGroup>
