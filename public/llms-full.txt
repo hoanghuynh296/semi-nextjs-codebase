@@ -8359,7 +8359,7 @@ Signed in but not allowed (a 403, or a page the role cannot open): say so and li
 
 ## Notes
 
-- Recipe: per route group put loading.tsx, error.tsx and not-found.tsx beside layout.tsx (the route-* examples), titles as h1 (`headingLevel={1}`; NotFound and Forbidden default to h1). Put app/not-found.tsx at the root for URLs that match no group. A group's error.tsx does not catch errors in its own layout: add a root app/error.tsx for the root layout's children and app/global-error.tsx (it renders its own html and body) for the root layout itself.
+- Recipe: per route group put loading.tsx, error.tsx and not-found.tsx beside layout.tsx (the route-* examples), titles as h1 (`headingLevel={1}`; NotFound and Forbidden default to h1). A fully static (prerendered) site needs no loading.tsx: it would wrap every page in a Suspense boundary, so the HTML ships the page inside a hidden segment that a script swaps in. Put app/not-found.tsx at the root for URLs that match no group. A group's error.tsx does not catch errors in its own layout: add a root app/error.tsx for the root layout's children and app/global-error.tsx (it renders its own html and body) for the root layout itself.
 - Keep data already loaded: when a refetch fails, show ErrorState in place of the failed part only and leave the rest on screen.
 - Show a code or digest in `detail` for support, never the stack. Texts are Vietnamese by default and come from SemiLocaleProvider; pass title / message for product wording.
 - 403 means signed in but not allowed (Forbidden, no retry); not signed in goes to the login page, not to Forbidden.
