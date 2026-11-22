@@ -110,7 +110,7 @@ Semi architecture separates tokens into two tiers:
 | Semantic Token | Tailwind Utility | Purpose | Dark Mode (`[data-theme="dark"]`) | Light Mode (`[data-theme="light"]`) |
 |---|---|---|---|---|
 | `--color-canvas` | `bg-canvas` | Nền ứng dụng ngoài cùng (outer bento shell) | `#0c0d0e` | `#f1f5f9` (Slate-100) |
-| `--color-app` | `bg-app` | Khung bề mặt màn hình chính (content panel) | `#121316` | `#ffffff` |
+| `--color-app` | `bg-app` | Khung bề mặt màn hình chính (content panel) | `#121316` | `#f7f8fa` |
 | `--color-panel` | `bg-panel` | Thẻ Bento Card, Sidebar, Modal shell | `#202226` | `#ffffff` |
 | `--color-field` | `bg-field` | Nền ô nhập liệu, header bảng | `#272a2f` | `#f1f5f9` (Slate-100) |
 | `--color-raised` | `bg-raised` | Hover / track fills trên nền field hoặc panel | `#31343a` | `#e2e8f0` (Slate-200) |

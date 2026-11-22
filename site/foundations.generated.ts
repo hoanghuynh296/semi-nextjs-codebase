@@ -13,7 +13,7 @@ export const FOUNDATIONS = {
       "cls": "bg-app",
       "note": "Nền chính của content panel, trang nội dung",
       "dark": "#121316",
-      "light": "#ffffff"
+      "light": "#f7f8fa"
     },
     {
       "key": "color-panel",
