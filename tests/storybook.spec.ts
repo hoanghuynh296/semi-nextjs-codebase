@@ -10,7 +10,7 @@ import { a11yHits, lowContrast } from "./contrast";
 import { densityAudit } from "../lint/density.mjs";
 
 const DOC_PAGES = docs.map((d) => `/components/${d.id}/`);
-const PAGES = ["/", "/components/", "/foundations/", "/brand/", "/lab/", ...DOC_PAGES];
+const PAGES = ["/", "/components/", "/foundations/", "/brand/", "/lab/", "/demo/app-shell/", ...DOC_PAGES];
 /** Pages checked in every style: the gallery shows one example of every doc. */
 const LOOK_PAGES = ["/", "/components/", "/components/table/", "/components/field/"];
 const THEMES = ["dark", "light"] as const;
@@ -376,10 +376,74 @@ test("Field wires label, hint and error to the input", async ({ page }) => {
   await expect(page.getByRole("alert").filter({ hasText: "ít nhất 3 ký tự" })).toBeVisible();
 });
 
-test("phones get the bottom tab bar", async ({ browser }) => {
-  const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
-  await open(page, "/components/", "dark");
-  await expect(page.getByRole("navigation", { name: "Điều hướng", exact: true })).toBeVisible();
+test("phones get the drawer: focus moves in, stays in, drills down and returns to the menu button", async ({ browser }) => {
+  const page = await browser.newPage({ viewport: { width: 430, height: 932 }, isMobile: true, hasTouch: true });
+  await open(page, "/demo/app-shell/", "dark");
+  const menuButton = page.getByRole("button", { name: "Mở menu" });
+  await menuButton.click();
+  const drawer = page.getByRole("dialog", { name: "Sales Hub" });
+  await expect(drawer).toBeVisible();
+  await expect(drawer.getByRole("button", { name: "Đóng menu" })).toBeFocused();
+  // Tab stays inside
+  for (let i = 0; i < 30; i++) await page.keyboard.press("Tab");
+  expect(await drawer.evaluate((el) => el.contains(document.activeElement))).toBe(true);
+  // a mega item drills down to its links, with a back row; Escape goes back a level, then closes
+  await drawer.getByRole("button", { name: "Sản phẩm" }).click();
+  await expect(page.getByRole("dialog", { name: "Sản phẩm" }).getByRole("link", { name: "Nhựa in" })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(drawer.getByRole("button", { name: "Sản phẩm" })).toBeVisible();
+  expect(await lowContrast(page)).toEqual([]);
+  await page.keyboard.press("Escape");
+  await expect(drawer).toBeHidden();
+  await expect(menuButton).toBeFocused();
+  await page.close();
+});
+
+test("AppShell rail (iPad): every item is named and shows a tooltip on the right; mega menu and TextTabs by keyboard", async ({ browser }) => {
+  const page = await browser.newPage({ viewport: { width: 834, height: 1194 } });
+  await open(page, "/demo/app-shell/", "light");
+  const aside = page.locator("aside");
+  await expect(aside).toHaveCSS("width", "60px");
+  const inbox = aside.getByRole("button", { name: "Hộp thư" });
+  await inbox.focus();
+  const tip = page.getByRole("tooltip");
+  await expect(tip).toHaveText("Hộp thư");
+  const [t, b] = [await tip.boundingBox(), await inbox.boundingBox()];
+  expect(t!.x).toBeGreaterThan(b!.x + b!.width);
+  // mega menu: opens beside the sidebar, focus on the first link, ↓ moves, Escape returns focus
+  const catalog = aside.getByRole("button", { name: "Sản phẩm" });
+  await catalog.click();
+  const mega = page.getByRole("dialog", { name: "Sản phẩm" });
+  await expect(mega.getByRole("link", { name: /Máy in/ })).toBeFocused();
+  await page.keyboard.press("ArrowDown");
+  await expect(mega.getByRole("link", { name: /Nhựa in/ })).toBeFocused();
+  expect(await lowContrast(page)).toEqual([]);
+  await page.keyboard.press("Escape");
+  await expect(mega).toBeHidden();
+  await expect(catalog).toBeFocused();
+  // TextTabs: one tab stop, arrows move and select
+  const tabs = page.getByRole("tablist", { name: "Đơn hàng" });
+  await tabs.getByRole("tab", { name: "Đang xử lý" }).focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(tabs.getByRole("tab", { name: "Đã giao" })).toBeFocused();
+  await expect(tabs.getByRole("tab", { name: "Đã giao" })).toHaveAttribute("aria-selected", "true");
+  await expect(tabs.getByRole("tab", { name: "Đang xử lý" })).toHaveAttribute("tabindex", "-1");
+  await expect(page.getByRole("tabpanel")).toBeVisible();
+  await page.close();
+});
+
+test("AppShell desktop: Create menu, collapse to the rail and back from the logo", async ({ browser }) => {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await open(page, "/demo/app-shell/", "dark");
+  const aside = page.locator("aside");
+  await expect(aside).toHaveCSS("width", "240px");
+  await aside.getByRole("button", { name: "Tạo mới" }).click();
+  await expect(page.getByRole("menu")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await aside.getByRole("button", { name: "Thu gọn menu" }).click();
+  await expect(aside).toHaveCSS("width", "60px");
+  await aside.getByRole("button", { name: "Mở rộng menu" }).click();
+  await expect(aside).toHaveCSS("width", "240px");
   await page.close();
 });
 

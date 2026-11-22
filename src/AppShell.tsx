@@ -69,7 +69,14 @@ export interface ShellPinned {
   items: ShellNavItem[];
 }
 
-type ShellSlot = React.ReactNode | ((state: { collapsed: boolean }) => React.ReactNode);
+/** `collapsed`: the person collapsed the sidebar. `rail`: it shows icons only (collapsed, or the md width) — hide text
+ * by this one. Both are false in the phone drawer. */
+export interface ShellSlotState {
+  collapsed: boolean;
+  rail: boolean;
+}
+
+type ShellSlot = React.ReactNode | ((state: ShellSlotState) => React.ReactNode);
 
 interface AppShellState {
   /** True when the sidebar shows sub-items (expanded sidebar, `lg` and up). False in the rail, below `lg` and on phones. */
@@ -126,7 +133,7 @@ export interface AppShellProps {
   pinned?: ShellPinned;
   /** Utilities at the bottom of the sidebar (help, theme, notifications): usually items with `onClick`. */
   utilities?: ShellNavItem[];
-  /** The account at the very bottom (avatar, workspace switcher). Receives `{ collapsed }` to hide text in the rail. */
+  /** The account at the very bottom (avatar, workspace switcher). Receives `{ collapsed, rail }`: hide text when `rail`. */
   account?: ShellSlot;
   /** @deprecated Since 0.36: split into `utilities` (actions) and `account`. Rendered like `account`. */
   footer?: ShellSlot;
@@ -146,7 +153,7 @@ const abbreviate = (label: string) => {
   return words.length > 1 ? words.map((w) => w[0]).join("").slice(0, 3).toUpperCase() : label.slice(0, 2);
 };
 
-const slot = (s: ShellSlot | undefined, collapsed: boolean) => (typeof s === "function" ? s({ collapsed }) : s);
+const slot = (s: ShellSlot | undefined, state: ShellSlotState) => (typeof s === "function" ? s(state) : s);
 
 let warned = false;
 
@@ -303,7 +310,6 @@ export function AppShell({
           onClick={(e) => {
             megaTrigger.current = e.currentTarget;
             setMegaId(megaId === item.id ? null : item.id);
-            onSelect?.(item.id);
           }}
           title={title}
           className={cn(navItemClass, stateClass)}
@@ -597,7 +603,7 @@ export function AppShell({
             {(utilities.length > 0 || account) && (
               <div className="shrink-0 p-2 border-t border-divider flex flex-col gap-1">
                 {utilities.length > 0 && <div className="flex flex-col gap-0.5">{renderItems(utilities)}</div>}
-                {account && <div>{slot(account, collapsed)}</div>}
+                {account && <div>{slot(account, { collapsed, rail })}</div>}
               </div>
             )}
           </aside>
@@ -695,7 +701,7 @@ export function AppShell({
                     );
                   })}
                 </div>
-                {account && <div className="pt-2 border-t border-divider">{slot(account, false)}</div>}
+                {account && <div className="pt-2 border-t border-divider">{slot(account, { collapsed: false, rail: false })}</div>}
               </div>
             </div>
           )}
@@ -941,7 +947,7 @@ function PhoneDrawer({
               })}
             </ul>
           )}
-          {account && <div>{slot(account, false)}</div>}
+          {account && <div>{slot(account, { collapsed: false, rail: false })}</div>}
         </div>
       )}
     </div>

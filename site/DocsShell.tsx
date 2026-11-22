@@ -60,7 +60,7 @@ export function DocsShell({
   /** Utilities above the account: AppShell `utilities`. */
   utilities?: AppShellProps["utilities"];
   /** @deprecated Since 0.36: use `account` (AppShell `footer` was split into `utilities` + `account`). */
-  footer?: (state: { collapsed: boolean }) => React.ReactNode;
+  footer?: AppShellProps["account"];
   /** @deprecated Since 0.36: phones use AppShell's drawer; ignored. */
   mobileTabIds?: string[];
   primaryCta?: AppShellProps["primaryCta"];

@@ -101,11 +101,11 @@ export default function FullShell() {
       }}
       pinned={PINNED}
       utilities={utilities}
-      account={({ collapsed }) => (
-        <div className={collapsed ? "flex justify-center py-1" : "flex items-center gap-2.5 px-1.5 py-1 min-w-0"}>
+      account={({ rail }) => (
+        <div className={rail ? "flex justify-center py-1" : "flex items-center gap-2.5 px-1.5 py-1 min-w-0"}>
           <Avatar name="Lan Phạm" size="sm" />
-          {!collapsed && (
-            <span className="hidden lg:block min-w-0">
+          {!rail && (
+            <span className="min-w-0">
               <span className="block truncate text-label font-medium text-contrast">Lan Phạm</span>
               <span className="block truncate text-caption text-muted">Cửa hàng Quận 1</span>
             </span>

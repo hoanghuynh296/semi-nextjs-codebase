@@ -5836,11 +5836,11 @@ export default function FullShell() {
       }}
       pinned={PINNED}
       utilities={utilities}
-      account={({ collapsed }) => (
-        <div className={collapsed ? "flex justify-center py-1" : "flex items-center gap-2.5 px-1.5 py-1 min-w-0"}>
+      account={({ rail }) => (
+        <div className={rail ? "flex justify-center py-1" : "flex items-center gap-2.5 px-1.5 py-1 min-w-0"}>
           <Avatar name="Lan Phạm" size="sm" />
-          {!collapsed && (
-            <span className="hidden lg:block min-w-0">
+          {!rail && (
+            <span className="min-w-0">
               <span className="block truncate text-label font-medium text-contrast">Lan Phạm</span>
               <span className="block truncate text-caption text-muted">Cửa hàng Quận 1</span>
             </span>
@@ -6045,7 +6045,7 @@ export default function AppShellSubmenu() {
 | `primaryCta` | `{ label: string; icon: IconName; href?: string; external?: boolean; onClick?: () => void; }` |  | Optional highlighted launcher under Create (another app, a docs link). |
 | `pinned` | `ShellPinned` |  | A group under the main nav (saved views, frequent records) with a `text-overline` label. |
 | `utilities` | `ShellNavItem[]` | `[]` | Utilities at the bottom of the sidebar (help, theme, notifications): usually items with `onClick`. |
-| `account` | `ShellSlot` |  | The account at the very bottom (avatar, workspace switcher). Receives `{ collapsed }` to hide text in the rail. |
+| `account` | `ShellSlot` |  | The account at the very bottom (avatar, workspace switcher). Receives `{ collapsed, rail }`: hide text when `rail`. |
 | `footer` | `ShellSlot` |  |  |
 | `mobileNav` | `'drawer' \| 'tabs'` | `"drawer"` | Phone navigation: `drawer` (default, a full-screen menu from the top bar) or `tabs` (the old MobileTabBar). |
 | `mobileTabIds` | `string[]` |  |  |
