@@ -10,7 +10,7 @@ Style: restrained dark & light dual-theme (`data-theme="dark|light"`) + bento ca
 left panel menu (`w-52` / `w-14`) floating on `bg-canvas` (`md:p-2 md:gap-2`), full-width right content panel (`md:rounded-panel bg-app`),
 `font-display` page titles (`PageTitle` / `PageTabsTitle`, text only, no subtitle; either on their own row above the toolbar, or on the toolbar row via `SubpageToolbar title`),
 sticky sub-page toolbar row (`SubpageToolbar`: filters left, icon-only primary CTA + `SearchInput` + `RefreshButton` right).
-Phones (`< md`) get AppShell's top bar and its full-screen drawer (same groups, drill-down rows, utilities at the bottom); never a hand-made slide-over. `mobileNav="tabs"` keeps `MobileTabBar`.
+Phones (`< md`) get AppShell's top bar and its full-screen drawer (same groups, drill-down rows, utilities at the bottom); never a hand-made slide-over. `mobileNav="tabs"` (or the deprecated `mobileTabIds`) keeps `MobileTabBar`.
 
 **Two-Tier Semantic Tokens (Dark & Light Mode):**
 | Semantic Token | Tailwind Class | Dark Mode (`[data-theme="dark"]`) | Light Mode (`[data-theme="light"]`) | Usage |

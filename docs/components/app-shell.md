@@ -50,11 +50,12 @@ import {
 const SECTIONS: ShellNavSection[] = [
   {
     items: [
-      { id: "inbox", label: "Hộp thư", icon: "inbox" },
+      { id: "inbox", label: "Hộp thư", icon: "inbox", right: <span className="px-1 text-caption text-muted tabular-nums">3</span> },
       {
         id: "orders",
         label: "Đơn hàng",
         icon: "bag",
+        href: "#orders",
         children: [
           { id: "orders-open", label: "Đang xử lý" },
           { id: "orders-done", label: "Đã giao" },
@@ -97,6 +98,8 @@ const PINNED = {
     { id: "pin-vip", label: "Khách VIP", icon: "star" },
   ] satisfies ShellNavItem[],
 };
+
+const PRICE = new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" });
 
 const TABS = [
   { key: "open", label: "Đang xử lý" },
@@ -160,7 +163,7 @@ export default function FullShell() {
             <Card key={id} className="flex flex-col gap-stack">
               <div className="flex items-center justify-between gap-3 min-w-0">
                 <span className="text-ui font-semibold text-contrast truncate">{id}</span>
-                <span className="text-label text-muted tabular-nums shrink-0">{(i + 2) * 450}.000 ₫</span>
+                <span className="text-label text-muted tabular-nums shrink-0">{PRICE.format((i + 2) * 450_000)}</span>
               </div>
               <p className="text-ui text-body truncate">{["Bambu Lab A1 mini", "PLA Basic 1kg × 4", "Combo AMS Lite", "PETG HF 1kg × 2", "Bàn in PEI", "TPU 95A 1kg"][i]}</p>
             </Card>
@@ -343,7 +346,7 @@ export default function AppShellSubmenu() {
 | `utilities` | `ShellNavItem[]` | `[]` | Utilities at the bottom of the sidebar (help, theme, notifications): usually items with `onClick`. |
 | `account` | `ShellSlot` |  | The account at the very bottom (avatar, workspace switcher). Receives `{ collapsed, rail }`: hide text when `rail`. |
 | `footer` | `ShellSlot` |  |  |
-| `mobileNav` | `'drawer' \| 'tabs'` | `"drawer"` | Phone navigation: `drawer` (default, a full-screen menu from the top bar) or `tabs` (the old MobileTabBar). |
+| `mobileNav` | `'drawer' \| 'tabs'` |  | Phone navigation: `drawer` (a full-screen menu from the top bar) or `tabs` (MobileTabBar). Default: `tabs` when `mobileTabIds` is set (as before 0.36), else `drawer`. |
 | `mobileTabIds` | `string[]` |  |  |
 | `storageKey` | `string` | `"semi_sidebar_collapsed"` | localStorage key for persisting sidebar collapsed state. |
 | `children` * | `React.ReactNode` |  |  |
@@ -374,7 +377,7 @@ export default function AppShellSubmenu() {
 - Never gate the shell behind a page skeleton (shell-gate): a route loading.tsx next to the layout shimmers the content only, and the boot / session check before the layout is known renders BootLoader once in the layout. A page never renders AppShell or imports a component that does (app-shell-in-page).
 - Top to bottom: create (one accent action, a Menu when it has items), primaryCta (an optional launcher), sections, pinned (a text-overline label), then utilities (items with onClick: help, theme) and account (avatar, workspace).
 - footer is deprecated: split it into utilities (actions) and account (who is signed in). The 0.36.0 migration renames footer to account.
-- Phones use the drawer (a top bar with the menu button). mobileNav="tabs" brings back MobileTabBar; mobileTabIds is deprecated and only applies there.
+- Phones use the drawer (a top bar with the menu button) unless the app sets mobileNav="tabs" or the deprecated mobileTabIds (both keep MobileTabBar). In the drawer a parent with its own href is the first row of its level.
 - Sub-items (children) are closed by default: they open under their parent while the parent or one of them is the activeId, and close when another item is chosen. One level only.
 - Sub-items take an optional grey icon (give every sub-item of a parent one, or none); no colour dot or count (the menu stays neutral, §4). Put counts and colours in the page.
 - The rail and widths below lg never show sub-items: read useAppShell().submenuVisible and give the page its own picker (a CustomSelect in the toolbar) when it is false. The phone drawer shows them as a drill-down level.

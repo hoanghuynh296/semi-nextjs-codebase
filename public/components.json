@@ -1651,11 +1651,7 @@
       "module": "src/Overlay.tsx",
       "client": true,
       "summary": "Short hint for an icon-only control (one line, no interactive content). The trigger keeps its own aria-label; the tooltip is linked with aria-describedby. Touch screens show nothing: never put essential text in a tooltip.",
-      "props": [
-        "content",
-        "children",
-        "side"
-      ],
+      "props": [],
       "doc": "docs/components/tooltip.md"
     },
     {

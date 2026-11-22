@@ -133,7 +133,7 @@ test("0.36.0 surfaces: hand-made cards, copied secondary and primary buttons; fl
 });
 
 test("0.36.0 shell: footer → account on AppShell and DocsShell only; mobileTabIds warning; twice-safe", async () => {
-  const { migrateShell, deprecatedTabIds, version } = await import("../../migrations/0.36.0-shell.mjs");
+  const { migrateShell, deprecatedTabIds, footerAndAccount, version } = await import("../../migrations/0.36.0-shell.mjs");
   assert.equal(version, "0.36.0");
   const src = `import { AppShell, Modal } from "@semi/ui";\n<AppShell productName="A" footer={({ collapsed }) => <X />} mobileTabIds={["a"]}>\n<Modal footer={<B />} />\n<DocsShell onX={() => 1} footer={f} />\n`;
   const out = migrateShell(src);
@@ -144,4 +144,11 @@ test("0.36.0 shell: footer → account on AppShell and DocsShell only; mobileTab
   assert.equal(migrateShell(`<AppShell footer={x} />`), `<AppShell footer={x} />`, "files that do not import @semi/ui are left alone");
   assert.equal(deprecatedTabIds(src), 1);
   assert.equal(deprecatedTabIds(`<AppShell mobileNav="tabs" mobileTabIds={["a"]} />`), 0);
+  // account already set: footer stays (two account props would not compile) and the tag is reported
+  const both = `import { AppShell } from "@semi/ui";\n<AppShell footer={f} account={a} />\n`;
+  assert.equal(migrateShell(both), both);
+  assert.equal(footerAndAccount(both), 1);
+  assert.equal(footerAndAccount(out), 0);
+  // account inside another prop's braces does not count
+  assert.match(migrateShell(`import { AppShell } from "@semi/ui";\n<AppShell x={{ account: 1 }} footer={f} />`), /x=\{\{ account: 1 \}\} account=\{f\}/);
 });

@@ -37,7 +37,7 @@
     "Never gate the shell behind a page skeleton (shell-gate): a route loading.tsx next to the layout shimmers the content only, and the boot / session check before the layout is known renders BootLoader once in the layout. A page never renders AppShell or imports a component that does (app-shell-in-page).",
     "Top to bottom: create (one accent action, a Menu when it has items), primaryCta (an optional launcher), sections, pinned (a text-overline label), then utilities (items with onClick: help, theme) and account (avatar, workspace).",
     "footer is deprecated: split it into utilities (actions) and account (who is signed in). The 0.36.0 migration renames footer to account.",
-    "Phones use the drawer (a top bar with the menu button). mobileNav=\"tabs\" brings back MobileTabBar; mobileTabIds is deprecated and only applies there.",
+    "Phones use the drawer (a top bar with the menu button) unless the app sets mobileNav=\"tabs\" or the deprecated mobileTabIds (both keep MobileTabBar). In the drawer a parent with its own href is the first row of its level.",
     "Sub-items (children) are closed by default: they open under their parent while the parent or one of them is the activeId, and close when another item is chosen. One level only.",
     "Sub-items take an optional grey icon (give every sub-item of a parent one, or none); no colour dot or count (the menu stays neutral, §4). Put counts and colours in the page.",
     "The rail and widths below lg never show sub-items: read useAppShell().submenuVisible and give the page its own picker (a CustomSelect in the toolbar) when it is false. The phone drawer shows them as a drill-down level.",

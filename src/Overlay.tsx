@@ -16,16 +16,15 @@ import { cn } from "../styles/utils";
  * Short hint for an icon-only control (one line, no interactive content). The trigger keeps its own aria-label;
  * the tooltip is linked with aria-describedby. Touch screens show nothing: never put essential text in a tooltip.
  */
-export function Tooltip({
-  content,
-  children,
-  side = "top",
-}: {
+export function Tooltip(props: {
   content: React.ReactNode;
   children: React.ReactElement;
   /** Where the hint shows; `right` is for a vertical icon rail (AppShell's collapsed sidebar). */
   side?: "top" | "bottom" | "right";
 }) {
+  // Props given to the Tooltip itself (a Menu or Popover that uses it as its trigger passes ref, handlers, aria-*) go
+  // on to the trigger, so <Menu trigger={<Tooltip><Button/></Tooltip>}> works.
+  const { content, children, side = "top", ...rest } = props as typeof props & Record<string, unknown>;
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLElement | null>(null);
   const id = useId();
@@ -64,7 +63,8 @@ export function Tooltip({
     if (timer.current) clearTimeout(timer.current);
     setOpen(false);
   };
-  const child = children as React.ReactElement<Record<string, unknown>>;
+  const own = children as React.ReactElement<Record<string, unknown>>;
+  const child = (Object.keys(rest).length ? cloneTrigger(own, rest) : own) as React.ReactElement<Record<string, unknown>>;
   const trigger = cloneTrigger(child, {
     ref: (el: HTMLElement | null) => {
       ref.current = el;

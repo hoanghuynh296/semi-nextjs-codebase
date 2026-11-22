@@ -413,9 +413,10 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
 - **Mega menu:** a nav item with `mega` opens a `MegaMenu` flyout beside the sidebar: 2–4 category columns headed by
   `text-overline`, links with a grey icon, a hint and a "Mới" badge, and a "Xem tất cả" link.
 - **Phones (`< md`):** a top bar (menu button, logo, product name) opens a full-screen drawer with the same groups:
-  Create items as tiles, rows `min-h-12` with › for sub-items and mega menus (a drill-down level with a back row),
-  the pinned group, utilities and the account at the bottom. `mobileNav="tabs"` keeps the old bottom tab bar
-  (`MobileTabBar`, `mobileTabIds` deprecated).
+  one accent Create row (its items open as a level), rows `min-h-12` with › for sub-items and mega menus (a
+  drill-down level with a back row; a parent with its own page is the level's first row, "Tất cả …"), the pinned
+  group, utilities and the account at the bottom. The drawer is the default when the app sets neither `mobileNav` nor
+  `mobileTabIds`; `mobileTabIds` (deprecated) keeps the old bottom tab bar (`MobileTabBar`), as does `mobileNav="tabs"`.
 - **Shell lifecycle:** `AppShell` renders once in the root or a route-group `layout.tsx`, so it stays mounted while
   people navigate; a page renders only its content, never `AppShell` or a component that renders it
   (`app-shell-in-page`). Page items carry `href` and stay `next/link` links even when `onSelect` is set (`onSelect`

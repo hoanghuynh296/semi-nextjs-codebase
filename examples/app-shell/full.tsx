@@ -19,11 +19,12 @@ import {
 const SECTIONS: ShellNavSection[] = [
   {
     items: [
-      { id: "inbox", label: "Hộp thư", icon: "inbox" },
+      { id: "inbox", label: "Hộp thư", icon: "inbox", right: <span className="px-1 text-caption text-muted tabular-nums">3</span> },
       {
         id: "orders",
         label: "Đơn hàng",
         icon: "bag",
+        href: "#orders",
         children: [
           { id: "orders-open", label: "Đang xử lý" },
           { id: "orders-done", label: "Đã giao" },
@@ -66,6 +67,8 @@ const PINNED = {
     { id: "pin-vip", label: "Khách VIP", icon: "star" },
   ] satisfies ShellNavItem[],
 };
+
+const PRICE = new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" });
 
 const TABS = [
   { key: "open", label: "Đang xử lý" },
@@ -129,7 +132,7 @@ export default function FullShell() {
             <Card key={id} className="flex flex-col gap-stack">
               <div className="flex items-center justify-between gap-3 min-w-0">
                 <span className="text-ui font-semibold text-contrast truncate">{id}</span>
-                <span className="text-label text-muted tabular-nums shrink-0">{(i + 2) * 450}.000 ₫</span>
+                <span className="text-label text-muted tabular-nums shrink-0">{PRICE.format((i + 2) * 450_000)}</span>
               </div>
               <p className="text-ui text-body truncate">{["Bambu Lab A1 mini", "PLA Basic 1kg × 4", "Combo AMS Lite", "PETG HF 1kg × 2", "Bàn in PEI", "TPU 95A 1kg"][i]}</p>
             </Card>

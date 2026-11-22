@@ -388,11 +388,25 @@ test("phones get the drawer: focus moves in, stays in, drills down and returns t
   for (let i = 0; i < 30; i++) await page.keyboard.press("Tab");
   expect(await drawer.evaluate((el) => el.contains(document.activeElement))).toBe(true);
   // a mega item drills down to its links, with a back row; Escape goes back a level, then closes
-  const navRow = drawer.getByRole("navigation", { name: "Menu chính" }).getByRole("button", { name: "Sản phẩm" });
+  const nav = drawer.getByRole("navigation", { name: "Menu chính" });
+  const navRow = nav.getByRole("button", { name: "Sản phẩm" });
   await navRow.click();
   await expect(page.getByRole("dialog", { name: "Sản phẩm" }).getByRole("link", { name: "Nhựa in" })).toBeVisible();
   await page.keyboard.press("Escape");
-  await expect(navRow).toBeVisible();
+  await expect(navRow).toBeFocused();
+  // a parent with its own page keeps it as the first row of its level; the back row returns focus to the parent row
+  const orders = nav.getByRole("button", { name: "Đơn hàng" });
+  await orders.click();
+  const level = page.getByRole("dialog", { name: "Đơn hàng" });
+  await expect(level.getByRole("link").first()).toHaveText("Tất cả đơn hàng");
+  await expect(level.getByRole("link").first()).toBeFocused();
+  await expect(level.getByRole("button", { name: "Đang xử lý" })).toBeVisible();
+  await level.getByRole("button", { name: /Quay lại/ }).click();
+  await expect(orders).toBeFocused();
+  // Create is one row that opens what can be created (no tiles repeating the nav's names)
+  await drawer.getByRole("button", { name: "Tạo mới" }).click();
+  await expect(page.getByRole("dialog", { name: "Tạo mới" }).getByRole("button", { name: "Phiếu nhập" })).toBeVisible();
+  await page.keyboard.press("Escape");
   expect(await lowContrast(page)).toEqual([]);
   await page.keyboard.press("Escape");
   await expect(drawer).toBeHidden();
@@ -405,12 +419,20 @@ test("AppShell rail (iPad): every item is named and shows a tooltip on the right
   await open(page, "/demo/app-shell/", "light");
   const aside = page.locator("aside");
   await expect(aside).toHaveCSS("width", "60px");
+  // an item with `right` (a count) and the Create menu trigger get the rail tooltip too
   const inbox = aside.getByRole("button", { name: "Hộp thư" });
   await inbox.focus();
   const tip = page.getByRole("tooltip");
   await expect(tip).toHaveText("Hộp thư");
   const [t, b] = [await tip.boundingBox(), await inbox.boundingBox()];
   expect(t!.x).toBeGreaterThan(b!.x + b!.width);
+  const create = aside.getByRole("button", { name: "Tạo mới" });
+  await create.focus();
+  await expect(tip).toHaveText("Tạo mới");
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("menu")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(create).toBeFocused();
   // mega menu: opens beside the sidebar, focus on the first link, ↓ moves, Escape returns focus
   const catalog = aside.getByRole("button", { name: "Sản phẩm" });
   await catalog.click();
@@ -441,8 +463,12 @@ test("AppShell desktop: Create menu, collapse to the rail and back from the logo
   await aside.getByRole("button", { name: "Tạo mới" }).click();
   await expect(page.getByRole("menu")).toBeVisible();
   await page.keyboard.press("Escape");
-  await aside.getByRole("button", { name: "Thu gọn menu" }).click();
+  const collapse = aside.getByRole("button", { name: "Thu gọn menu" });
+  await expect(collapse).toHaveAttribute("aria-expanded", "true");
+  await expect(collapse).toHaveAttribute("aria-controls", (await aside.getAttribute("id"))!);
+  await collapse.click();
   await expect(aside).toHaveCSS("width", "60px");
+  await expect(aside.getByRole("button", { name: "Mở rộng menu" })).toHaveAttribute("aria-expanded", "false");
   await aside.getByRole("button", { name: "Mở rộng menu" }).click();
   await expect(aside).toHaveCSS("width", "240px");
   await page.close();

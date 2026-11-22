@@ -10,7 +10,7 @@
 // - Phones (< md): a top bar with the menu button opens a full-screen drawer with the same groups, drill-down rows (›)
 //   for sub-items and mega menus, and the utilities at the bottom. `mobileNav="tabs"` keeps the old MobileTabBar
 // - Sub-items (`children`) open under their parent only while the parent or one of them is active
-import React, { createContext, useContext, useEffect, useRef, useState } from "react";
+import React, { createContext, useContext, useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { useSemiLocale } from "./locale";
 import { Icon, type IconName } from "./Icon";
@@ -137,9 +137,9 @@ export interface AppShellProps {
   account?: ShellSlot;
   /** @deprecated Since 0.36: split into `utilities` (actions) and `account`. Rendered like `account`. */
   footer?: ShellSlot;
-  /** Phone navigation: `drawer` (default, a full-screen menu from the top bar) or `tabs` (the old MobileTabBar). */
+  /** Phone navigation: `drawer` (a full-screen menu from the top bar) or `tabs` (MobileTabBar). Default: `tabs` when `mobileTabIds` is set (as before 0.36), else `drawer`. */
   mobileNav?: "drawer" | "tabs";
-  /** @deprecated Since 0.36 (the drawer is the default). With `mobileNav="tabs"`: up to 5 item ids on the tab bar. */
+  /** @deprecated Since 0.36: up to 5 item ids on the tab bar. Without `mobileNav` it keeps the tab bar (as before); set `mobileNav="tabs"` explicitly, or remove both for the drawer. */
   mobileTabIds?: string[];
   /** localStorage key for persisting sidebar collapsed state. */
   storageKey?: string;
@@ -170,7 +170,7 @@ export function AppShell({
   utilities = [],
   account: accountProp,
   footer,
-  mobileNav = "drawer",
+  mobileNav,
   mobileTabIds,
   storageKey = "semi_sidebar_collapsed",
   children,
@@ -185,16 +185,20 @@ export function AppShell({
   const [wide, setWide] = useState(false);
   const asideRef = useRef<HTMLElement>(null);
   const megaTrigger = useRef<HTMLElement | null>(null);
+  const asideId = useId();
 
   useEffect(() => {
     if (warned || process.env.NODE_ENV === "production") return;
-    if (footer !== undefined || (mobileTabIds && mobileNav !== "tabs")) {
+    if (footer !== undefined || mobileTabIds) {
       warned = true;
       console.warn(
         "[@semi/ui] AppShell: " +
           [
             footer !== undefined && "`footer` is deprecated: use `utilities` (actions) and `account`.",
-            mobileTabIds && mobileNav !== "tabs" && 'phones use the drawer now; `mobileTabIds` only applies with mobileNav="tabs" (deprecated).',
+            mobileTabIds &&
+              (mobileNav === "drawer"
+                ? '`mobileTabIds` is ignored with mobileNav="drawer": remove it.'
+                : '`mobileTabIds` is deprecated: set mobileNav="tabs" to keep the tab bar, or remove both for the phone drawer.'),
           ]
             .filter(Boolean)
             .join(" "),
@@ -333,10 +337,10 @@ export function AppShell({
           aria-label={rail ? item.label : undefined}
           {...expanded}
           title={title}
-          className={cn(navItemClass, stateClass, "group", Boolean(item.right) && !collapsed && "lg:!pr-1.5")}
+          className={cn(navItemClass, stateClass, "group", Boolean(item.right) && !rail && "lg:!pr-1.5")}
         >
           {inner}
-          {item.right && !collapsed && <span className="hidden lg:flex items-center shrink-0 ml-auto">{item.right}</span>}
+          {item.right && !rail && <span className="hidden lg:flex items-center shrink-0 ml-auto">{item.right}</span>}
         </Link>,
         item.id,
       );
@@ -344,7 +348,7 @@ export function AppShell({
 
     const onClick = () => (item.onClick ? item.onClick() : onSelect?.(item.id));
 
-    if (item.right && !collapsed) {
+    if (item.right && !rail) {
       return (
         <div key={item.id} className={cn(navItemClass, stateClass, "group relative lg:!pr-1.5")} title={title}>
           <button
@@ -451,9 +455,17 @@ export function AppShell({
         items={create.items}
         label={create.label}
         trigger={
-          <button type="button" aria-label={create.label} title={rail ? create.label : undefined} className={createClass}>
-            {createInner}
-          </button>
+          rail ? (
+            <Tooltip content={create.label} side="right">
+              <button type="button" aria-label={create.label} className={createClass}>
+                {createInner}
+              </button>
+            </Tooltip>
+          ) : (
+            <button type="button" aria-label={create.label} className={createClass}>
+              {createInner}
+            </button>
+          )
         }
       />
     ) : create.href ? (
@@ -488,7 +500,8 @@ export function AppShell({
     </>
   );
 
-  const tabs = mobileNav === "tabs";
+  // backward compatible: an app that set mobileTabIds keeps its tab bar; the drawer is the default only when neither is set
+  const tabs = mobileNav ? mobileNav === "tabs" : Boolean(mobileTabIds);
   const pinnedItems = tabs
     ? mobileTabIds
       ? mobileTabIds.map((id) => navItems.find((i) => i.id === id)).filter((x): x is ShellNavItem => Boolean(x))
@@ -502,13 +515,13 @@ export function AppShell({
       <PageActionsProvider>
         <div className={SHELL_OUTER}>
           {/* Left floating Bento sidebar (md+) */}
-          <aside ref={asideRef} aria-label={productName} className={cn(SHELL_ASIDE, collapsed ? "w-[60px]" : "w-[60px] lg:w-60")}>
+          <aside ref={asideRef} id={asideId} aria-label={productName} className={cn(SHELL_ASIDE, collapsed ? "w-[60px]" : "w-[60px] lg:w-60")}>
             <div className="shrink-0 p-2 pb-0 flex flex-col gap-2.5">
               {/* Brand + collapse toggle (the logo expands the rail) */}
               <div className={cn("h-9 flex items-center gap-2 shrink-0", collapsed ? "justify-center" : "justify-center lg:justify-between lg:pl-1")}>
                 {collapsed && wide ? (
                   <Tooltip content={t.expandMenu} side="right">
-                    <button type="button" onClick={toggleCollapsed} aria-label={t.expandMenu} className={cn(brandClass, "cursor-pointer")}>
+                    <button type="button" onClick={toggleCollapsed} aria-label={t.expandMenu} aria-expanded={false} aria-controls={asideId} className={cn(brandClass, "cursor-pointer")}>
                       {logoTile}
                     </button>
                   </Tooltip>
@@ -526,6 +539,8 @@ export function AppShell({
                     type="button"
                     onClick={toggleCollapsed}
                     aria-label={t.collapseMenu}
+                    aria-expanded
+                    aria-controls={asideId}
                     title={t.collapseMenu}
                     className={cn("hidden lg:flex w-7 h-7 rounded-control items-center justify-center text-muted hover:text-contrast hover:bg-tint transition shrink-0 cursor-pointer", FOCUS_RING)}
                   >
@@ -721,7 +736,8 @@ export function AppShell({
   );
 }
 
-type DrillLevel = { label: string; rows: { id: string; label: string; href?: string; icon?: IconName }[]; seeAll?: { href: string; label?: string } };
+type DrillRow = { id: string; label: React.ReactNode; href?: string; icon?: IconName; external?: boolean; onSelect?: () => void; disabled?: boolean };
+type DrillLevel = { id: string; label: string; rows: DrillRow[]; seeAll?: { href: string; label?: string } };
 
 /** Phones: the full-screen menu. Same groups as the sidebar; sub-items and mega menus open as a level with a back row. */
 function PhoneDrawer({
@@ -752,22 +768,34 @@ function PhoneDrawer({
   const t = useSemiLocale();
   const ref = useRef<HTMLDivElement>(null);
   const [level, setLevel] = useState<DrillLevel | null>(null);
-  const { titleId } = useDialog(ref, true, () => (level ? setLevel(null) : onClose()));
-  // a new level gets focus on its first row, so a screen reader hears where it went
+  // the row that opened the level: focus returns to it on the way back
+  const [returnTo, setReturnTo] = useState<string | null>(null);
+  const back = () => setLevel(null);
+  const { titleId } = useDialog(ref, true, () => (level ? back() : onClose()));
+  // a new level gets focus on its first row, so a screen reader hears where it went; back at the root, the row that
+  // opened it gets focus again
   useEffect(() => {
-    ref.current?.querySelector<HTMLElement>("[data-drawer-start]")?.focus({ preventScroll: true });
-  }, [level]);
+    const root = ref.current;
+    if (!root) return;
+    const target = level ? root.querySelector<HTMLElement>("[data-drawer-start]") : returnTo ? root.querySelector<HTMLElement>(`[data-drawer-row="${CSS.escape(returnTo)}"]`) : null;
+    target?.focus({ preventScroll: true });
+  }, [level, returnTo]);
+  const open = (l: DrillLevel) => {
+    setReturnTo(l.id);
+    setLevel(l);
+  };
 
   const row = cn(
     "w-full flex items-center gap-3 min-h-12 px-3 rounded-control text-ui font-medium text-contrast hover:bg-tint transition cursor-pointer",
     FOCUS_RING,
   );
-  const levelOf = (it: ShellNavItem): DrillLevel | null =>
-    it.children?.length
-      ? { label: it.label, rows: it.children }
-      : it.mega
-        ? { label: it.label, rows: it.mega.columns.flatMap((c) => c.items), seeAll: it.mega.seeAll }
-        : null;
+  // A parent with its own page keeps it reachable: "Tất cả <label>" is the first row of its level.
+  const levelOf = (it: ShellNavItem): DrillLevel | null => {
+    const rows: DrillRow[] | null = it.children?.length ? it.children : it.mega ? it.mega.columns.flatMap((c) => c.items) : null;
+    if (!rows) return null;
+    const self: DrillRow[] = it.href ? [{ id: it.id, label: t.allOf(it.label), href: it.href, external: it.external }] : [];
+    return { id: it.id, label: it.label, rows: [...self, ...rows], seeAll: it.mega?.seeAll };
+  };
   const go = (id: string) => {
     onSelect?.(id);
     onClose();
@@ -780,7 +808,7 @@ function PhoneDrawer({
     return (
       <li key={it.id}>
         {drill ? (
-          <button type="button" className={cn(row, on && "bg-tint-hover")} onClick={() => setLevel(drill)} aria-current={on ? "page" : undefined}>
+          <button type="button" data-drawer-row={it.id} className={cn(row, on && "bg-tint-hover")} onClick={() => open(drill)} aria-current={on ? "page" : undefined}>
             {icon}
             <span className="flex-1 min-w-0 truncate text-left">{it.label}</span>
             <Icon name="chevron" className="w-4 h-4 text-muted shrink-0" />
@@ -816,7 +844,7 @@ function PhoneDrawer({
     <div ref={ref} role="dialog" aria-modal="true" aria-labelledby={titleId} className="md:hidden fixed inset-0 z-drawer bg-panel flex flex-col pt-[env(safe-area-inset-top)]">
       <div className="flex items-center gap-2 h-14 px-2 shrink-0">
         {level ? (
-          <button type="button" data-drawer-start onClick={() => setLevel(null)} className={cn("flex items-center gap-2 h-11 px-2 rounded-control text-ui font-semibold text-contrast hover:bg-tint cursor-pointer min-w-0", FOCUS_RING)}>
+          <button type="button" onClick={back} className={cn("flex items-center gap-2 h-11 px-2 rounded-control text-ui font-semibold text-contrast hover:bg-tint cursor-pointer min-w-0", FOCUS_RING)}>
             <Icon name="back" className="w-5 h-5 shrink-0" />
             <span id={titleId} className="truncate">
               {level.label}
@@ -839,20 +867,42 @@ function PhoneDrawer({
       <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-2 pb-3 flex flex-col gap-4">
         {level ? (
           <ul className="flex flex-col gap-0.5">
-            {level.rows.map((c, i) => (
-              <li key={c.id}>
-                <Link
-                  href={c.href ?? "#"}
-                  data-drawer-start={i === 0 ? "" : undefined}
-                  onClick={() => go(c.id)}
-                  aria-current={c.id === activeId ? "page" : undefined}
-                  className={cn(row, c.id === activeId && "bg-tint-hover")}
-                >
+            {level.rows.map((c, i) => {
+              const on = !c.onSelect && c.id === activeId;
+              const props = {
+                "data-drawer-start": i === 0 ? "" : undefined,
+                "aria-current": on ? ("page" as const) : undefined,
+                className: cn(row, on && "bg-tint-hover", "disabled:opacity-40"),
+              };
+              const body = (
+                <>
                   {c.icon && <Icon name={c.icon} className="w-5 h-5 text-muted shrink-0" />}
-                  <span className="flex-1 min-w-0 truncate">{c.label}</span>
-                </Link>
-              </li>
-            ))}
+                  <span className="flex-1 min-w-0 truncate text-left">{c.label}</span>
+                </>
+              );
+              return (
+                <li key={c.id}>
+                  {c.href ? (
+                    <Link href={c.href} target={c.external ? "_blank" : undefined} rel={c.external ? "noopener noreferrer" : undefined} onClick={() => go(c.id)} {...props}>
+                      {body}
+                    </Link>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled={c.disabled}
+                      onClick={() => {
+                        if (!c.onSelect) return go(c.id);
+                        onClose();
+                        c.onSelect();
+                      }}
+                      {...props}
+                    >
+                      {body}
+                    </button>
+                  )}
+                </li>
+              );
+            })}
             {level.seeAll && (
               <li>
                 <Link href={level.seeAll.href} onClick={onClose} className={cn(row, "text-accent-fg")}>
@@ -866,23 +916,23 @@ function PhoneDrawer({
           <>
             {create &&
               (create.items?.length ? (
-                <div className="grid grid-cols-2 gap-2 px-1">
-                  {create.items.slice(0, 4).map((c, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      disabled={c.disabled}
-                      onClick={() => {
-                        onClose();
-                        c.onSelect();
-                      }}
-                      className={cn("flex items-center gap-2 h-11 px-3 rounded-control bg-tint hover:bg-tint-hover text-label font-medium text-contrast transition cursor-pointer disabled:opacity-40", FOCUS_RING)}
-                    >
-                      <Icon name={c.icon ?? "plus"} className="w-4 h-4 text-muted shrink-0" />
-                      <span className="truncate">{c.label}</span>
-                    </button>
-                  ))}
-                </div>
+                // one accent row that opens what can be created as a level (tiles repeated the nav's own names)
+                <button
+                  type="button"
+                  data-drawer-row="__create"
+                  onClick={() =>
+                    open({
+                      id: "__create",
+                      label: create.label,
+                      rows: create.items!.map((c, i) => ({ id: `__create-${i}`, label: c.label, icon: c.icon ?? "plus", onSelect: c.onSelect, disabled: c.disabled })),
+                    })
+                  }
+                  className={cn("mx-1 flex items-center gap-2 h-11 px-3 rounded-control bg-accent text-on-accent hover:bg-accent-hover text-ui font-semibold cursor-pointer", FOCUS_RING)}
+                >
+                  <Icon name={create.icon ?? "plus"} className="w-4 h-4 shrink-0" />
+                  <span className="flex-1 text-left">{create.label}</span>
+                  <Icon name="chevron" className="w-4 h-4 shrink-0" />
+                </button>
               ) : create.href ? (
                 <Link href={create.href} onClick={onClose} className={cn("mx-1 flex items-center justify-center gap-2 h-11 rounded-control bg-accent text-on-accent hover:bg-accent-hover text-ui font-semibold", FOCUS_RING)}>
                   <Icon name={create.icon ?? "plus"} className="w-4 h-4" />

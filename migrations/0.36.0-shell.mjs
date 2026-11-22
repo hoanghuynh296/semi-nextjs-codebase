@@ -1,11 +1,11 @@
 // 0.36.0 (#96, C-031 / C-032): AppShell's `footer` is split into `utilities` (actions: help, theme) and `account` (who
 // is signed in). The footer content is the account in almost every app, so `footer=` becomes `account=` on AppShell and
 // DocsShell (same `{ collapsed }` render prop). Moving actions out of it into `utilities` is a judgement: CHANGELOG note.
-// Phones now get the drawer instead of MobileTabBar; `mobileTabIds` is deprecated and only applies with
-// `mobileNav="tabs"`. Whether an app keeps the tab bar is the app's choice, so the migration only warns where it is set.
+// Phones get the drawer by default, but an app that sets `mobileTabIds` keeps MobileTabBar (deprecated prop); whether to
+// move to the drawer is the app's choice, so the migration only warns where it is set.
 export const version = "0.36.0";
 export const id = "shell";
-export const description = "AppShell / DocsShell footer → account; warns where mobileTabIds is set (phones use the drawer now)";
+export const description = "AppShell / DocsShell footer → account (not where account is already set); warns where mobileTabIds is set";
 
 /** The opening tags of AppShell / DocsShell as [start, end) ranges: a `>` inside `{…}` (an arrow function) or a string
  * does not end the tag. */
@@ -30,6 +30,31 @@ function shellTags(src) {
   return out;
 }
 
+/** Whether a prop name appears at brace depth 0 of an opening tag (not inside an attribute's {…} or a string). */
+function hasTopLevelProp(tag, name) {
+  let depth = 0;
+  let quote = "";
+  for (let i = 0; i < tag.length; i++) {
+    const ch = tag[i];
+    if (quote) {
+      if (ch === quote && tag[i - 1] !== "\\") quote = "";
+      continue;
+    }
+    if (ch === '"' || ch === "'" || ch === "`") quote = ch;
+    else if (ch === "{") depth++;
+    else if (ch === "}") depth--;
+    else if (depth === 0 && /\s/.test(ch) && tag.startsWith(name, i + 1) && /[=\s/>]/.test(tag[i + 1 + name.length] ?? "")) return true;
+  }
+  return false;
+}
+
+/** AppShell / DocsShell tags that set both footer and account: the migration leaves them for a person to merge. */
+export function footerAndAccount(src) {
+  return shellTags(src)
+    .map(([a, b]) => src.slice(a, b))
+    .filter((tag) => hasTopLevelProp(tag, "footer") && hasTopLevelProp(tag, "account")).length;
+}
+
 /** One source file; exact and safe to run twice. Only the `footer` prop at the top level of the tag is renamed. */
 export function migrateShell(src) {
   if (!/@semi\/ui/.test(src)) return src;
@@ -37,6 +62,12 @@ export function migrateShell(src) {
   let at = 0;
   for (const [a, b] of shellTags(src)) {
     const tag = src.slice(a, b);
+    // a tag that already has `account` keeps its footer: two account props would not compile (migrate() warns)
+    if (hasTopLevelProp(tag, "account")) {
+      out += src.slice(at, b);
+      at = b;
+      continue;
+    }
     // `footer` as a prop of the tag itself: at brace depth 0, after whitespace, followed by =, space, / or >
     let depth = 0;
     let quote = "";
@@ -61,11 +92,11 @@ export function migrateShell(src) {
   return out + src.slice(at);
 }
 
-/** How many AppShell / DocsShell tags still set mobileTabIds without mobileNav="tabs" (it no longer does anything there). */
+/** How many AppShell / DocsShell tags set mobileTabIds without mobileNav (it still keeps the tab bar, but is deprecated). */
 export function deprecatedTabIds(src) {
   return shellTags(src)
     .map(([a, b]) => src.slice(a, b))
-    .filter((tag) => /\smobileTabIds\b/.test(tag) && !/mobileNav=["']tabs["']/.test(tag)).length;
+    .filter((tag) => /\smobileTabIds\b/.test(tag) && !/\smobileNav=/.test(tag)).length;
 }
 
 export default function migrate({ files, read, write }) {
@@ -74,6 +105,7 @@ export default function migrate({ files, read, write }) {
     const src = read(f);
     write(f, migrateShell(src));
     if (deprecatedTabIds(src))
-      console.warn(`${f}: mobileTabIds is deprecated: phones use AppShell's drawer now. Remove it, or add mobileNav="tabs" to keep MobileTabBar.`);
+      console.warn(`${f}: mobileTabIds is deprecated. It still keeps MobileTabBar; add mobileNav="tabs" to keep it on purpose, or remove mobileTabIds for the phone drawer.`);
+    if (footerAndAccount(src)) console.warn(`${f}: AppShell sets both footer and account; footer was left as is: merge it into account / utilities by hand.`);
   }
 }
