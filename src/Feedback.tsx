@@ -2,10 +2,12 @@
 
 // Inline feedback & identity: Alert (callout / banner), Progress, Avatar, EmptyState.
 import React from "react";
+import { useOverflowing } from "./useOverflowing";
 import { Icon, type IconName } from "./Icon";
 import { STATUS_ICON, type StatusTone } from "./Toast";
 import { useSemiLocale } from "./locale";
-import { EMPTY_STATIC, TONAL_SURFACE } from "../styles/surfaces";
+import { Button } from "./Button";
+import { EMPTY_PHONE_CAP, EMPTY_STATIC, TONAL_SURFACE } from "../styles/surfaces";
 import { cn, FOCUS_RING } from "../styles/utils";
 
 /** Callout inside a page or form (docs/DESIGN_SYSTEM.md §3b): tinted surface, tone icon, optional action / dismiss. */
@@ -130,29 +132,48 @@ export function Avatar({ name, src, size = "md", className }: { name: string; sr
   );
 }
 
-/** Empty list / first-run state: icon, one short line, optional description and action (EMPTY surface). */
+/**
+ * Empty list / first-run state (docs/DESIGN_SYSTEM.md §13).
+ * - `first-use`: nothing exists yet. One icon, one sentence (the title), one primary action (`action`).
+ * - `no-results`: a search or filter matched nothing. Own title, and `onClearFilters` adds a "Xoá lọc" button.
+ * Below `sm` it takes at most 40% of the viewport (compact padding, scrolls inside if a long text still overflows).
+ */
 export function EmptyState({
-  icon = "box",
+  icon,
   title,
   description,
   action,
+  variant,
+  onClearFilters,
   className,
 }: {
+  /** Defaults: `search` for no-results, `box` otherwise. */
   icon?: IconName;
+  /** Defaults: "Không có kết quả" for no-results, "Chưa có dữ liệu" otherwise. */
   title?: React.ReactNode;
+  /** One short hint. A `first-use` state needs none: the title is its one sentence. */
   description?: React.ReactNode;
+  /** The one primary action (a filled Button) that fills the list. Not used by `no-results` when `onClearFilters` is set. */
   action?: React.ReactNode;
+  /** `first-use` (nothing yet, one primary action) or `no-results` (a search / filter matched nothing). Omit for the plain state. */
+  variant?: "first-use" | "no-results";
+  /** no-results: clears the search and filters; renders a secondary "Xoá lọc" button. */
+  onClearFilters?: () => void;
   className?: string;
 }) {
   const t = useSemiLocale();
+  const noResults = variant === "no-results";
+  const [ref, over] = useOverflowing<HTMLDivElement>();
+  const heading = title ?? (noResults ? t.noResults : t.noData);
+  const shownAction = noResults && onClearFilters ? <Button variant="secondary" icon="close" onClick={onClearFilters}>{t.clearFilters}</Button> : action;
   return (
-    <div className={cn(EMPTY_STATIC, className)}>
-      <span className="w-9 h-9 rounded-card bg-field border border-line flex items-center justify-center text-muted">
-        <Icon name={icon} className="w-4 h-4" />
+    <div ref={ref} data-empty={variant ?? "default"} tabIndex={over ? 0 : undefined} aria-label={over && typeof heading === "string" ? heading : undefined} className={cn(EMPTY_STATIC, EMPTY_PHONE_CAP, "max-sm:justify-start", className)}>
+      <span className="w-9 h-9 rounded-card bg-field border border-line flex items-center justify-center text-muted shrink-0">
+        <Icon name={icon ?? (noResults ? "search" : "box")} className="w-4 h-4" />
       </span>
-      <div className="text-ui font-medium text-contrast">{title ?? t.noData}</div>
-      {description && <div className="text-label text-muted max-w-sm">{description}</div>}
-      {action && <div className="pt-1">{action}</div>}
+      <div className="text-ui font-medium text-contrast">{heading}</div>
+      {(description ?? (noResults ? t.noResultsHint : undefined)) && <div className="text-label text-muted max-w-sm">{description ?? t.noResultsHint}</div>}
+      {shownAction && <div className="pt-1">{shownAction}</div>}
     </div>
   );
 }

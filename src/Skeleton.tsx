@@ -77,16 +77,40 @@ export function SkeletonRows({ count = 5, className = "flex flex-col gap-2", lab
   );
 }
 
-/** Whole-page placeholder (Suspense fallbacks): title row + a grid of cards. */
-export function PageSkeleton() {
+/**
+ * Whole-page placeholder (Suspense fallbacks, route `loading.tsx`): title row + the shape of the content.
+ * `cards` (default) = a grid of cards, `list` = a toolbar and table rows, `detail` = a header card and two panels.
+ * Pick the shape the real page has, so nothing jumps when the data arrives (§13b).
+ * `inShell` drops the full-viewport height, background and padding: use it in a route `loading.tsx` (the shell and its
+ * content slot already give those). Without it the skeleton is a whole page, for a Suspense fallback outside the shell.
+ */
+export function PageSkeleton({ shape = "cards", inShell = false }: { shape?: "cards" | "list" | "detail"; inShell?: boolean }) {
   return (
-    <div className="h-dvh bg-app p-4 sm:p-6 max-w-[1440px] w-full mx-auto flex flex-col gap-5">
+    <div className={inShell ? "w-full flex flex-col gap-5" : "h-dvh bg-app p-4 sm:p-6 max-w-[1440px] w-full mx-auto flex flex-col gap-5"}>
       <div className="flex items-center gap-3">
         <Skeleton className="w-10 h-10 !rounded-control" />
         <Skeleton className="h-5 w-40" />
         <Skeleton className="ml-auto h-9 w-24 !rounded-control" />
       </div>
-      <SkeletonGrid count={6} />
+      {shape === "cards" && <SkeletonGrid count={6} />}
+      {shape === "list" && (
+        <>
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-9 flex-1 sm:max-w-xs" />
+            <Skeleton className="h-9 w-20" />
+          </div>
+          <SkeletonRows count={8} />
+        </>
+      )}
+      {shape === "detail" && (
+        <Loading className="flex flex-col gap-3">
+          <SkeletonCard body="h-16" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+            <SkeletonCard body="h-40" />
+            <SkeletonCard body="h-40" />
+          </div>
+        </Loading>
+      )}
     </div>
   );
 }

@@ -1,0 +1,78 @@
+{
+  "title": "Error, not found, no access",
+  "group": "Feedback",
+  "description": "The page-level states every app needs: ErrorState (what failed, with a retry), NotFound (a wrong URL) and Forbidden (no access), each with a link home, plus the route-file recipe (loading.tsx, error.tsx, not-found.tsx) that uses them.",
+  "components": [
+    "ErrorState",
+    "NotFound",
+    "Forbidden"
+  ],
+  "when": [
+    "A route or a fetch failed: ErrorState with onRetry (route error.tsx passes Next.js's reset).",
+    "An unknown URL or notFound(): NotFound. A signed-in user without the role: Forbidden.",
+    "Every Next.js route group ships loading.tsx (PageSkeleton), error.tsx (ErrorState) and not-found.tsx (NotFound)."
+  ],
+  "instead": [
+    {
+      "need": "A list with nothing in it",
+      "use": "EmptyState variant first-use or no-results"
+    },
+    {
+      "need": "A form field or action failed",
+      "use": "Field error text, Alert or a danger toast"
+    },
+    {
+      "need": "Content is loading",
+      "use": "PageSkeleton / Skeleton in the shape of the content"
+    }
+  ],
+  "a11y": [
+    "ErrorState is role=\"alert\", so screen readers announce it; the retry is a normal button.",
+    "NotFound and Forbidden have one heading and a link home; Forbidden offers no retry.",
+    "A route-level state is the page's h1 (headingLevel={1}); inside a page keep ErrorState at h2. Below sm the state is capped at 40% of the viewport and, if its content overflows, becomes a focusable, scrollable region."
+  ],
+  "notes": [
+    "Recipe: per route group put loading.tsx, error.tsx and not-found.tsx beside layout.tsx (the route-* examples), titles as h1 (`headingLevel={1}`; NotFound and Forbidden default to h1). A fully static (prerendered) site needs no loading.tsx: it would wrap every page in a Suspense boundary, so the HTML ships the page inside a hidden segment that a script swaps in. Put app/not-found.tsx at the root for URLs that match no group. A group's error.tsx does not catch errors in its own layout: add a root app/error.tsx for the root layout's children and app/global-error.tsx (it renders its own html and body) for the root layout itself.",
+    "Keep data already loaded: when a refetch fails, show ErrorState in place of the failed part only and leave the rest on screen.",
+    "Show a code or digest in `detail` for support, never the stack. Texts are Vietnamese by default and come from SemiLocaleProvider; pass title / message for product wording.",
+    "403 means signed in but not allowed (Forbidden, no retry); not signed in goes to the login page, not to Forbidden."
+  ],
+  "examples": [
+    {
+      "file": "error",
+      "title": "Error with retry"
+    },
+    {
+      "file": "not-found",
+      "title": "Not found"
+    },
+    {
+      "file": "forbidden",
+      "title": "No access"
+    },
+    {
+      "file": "route-error",
+      "title": "Route error.tsx",
+      "preview": "none",
+      "description": "The error boundary of a route group: Next.js gives it error and reset."
+    },
+    {
+      "file": "route-not-found",
+      "title": "Route not-found.tsx",
+      "preview": "none",
+      "description": "Shown for notFound() and for URLs that match no route."
+    },
+    {
+      "file": "route-loading",
+      "title": "Route loading.tsx",
+      "preview": "none",
+      "description": "PageSkeleton in the shape of the page (list, cards or detail)."
+    },
+    {
+      "file": "route-global-error",
+      "title": "Root global-error.tsx",
+      "preview": "none",
+      "description": "The net for an error in the root layout; it renders its own html and body."
+    }
+  ]
+}

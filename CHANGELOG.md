@@ -2,6 +2,19 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
+## [Unreleased]
+
+The states kit (#66, owner decision C-021): every app can show first use, no results, error, not found, no access and loading the same way. Additive; nothing breaks.
+
+### Changed
+- **Every existing `EmptyState` (and the `DataTable` empty row) is now compact below `sm`**: `p-4`, `gap-2`, at most 40% of the viewport (`EMPTY_PHONE_CAP`), content top-aligned and, if it still overflows, focusable and scrollable. From `sm` up nothing changes.
+
+### Added
+- **`ErrorState`**, **`NotFound`**, **`Forbidden`** (`States.tsx`): title, message, a primary retry (`onRetry`), a link home (`homeHref`), a small `detail` line. Vietnamese default texts in the locale table (`errorTitle`, `errorMessage`, `notFoundTitle`, `notFoundMessage`, `forbiddenTitle`, `forbiddenMessage`, `retry`), English in `en`.
+- **`EmptyState` variants** `first-use` (one icon, one sentence, one primary action) and `no-results` (own title and hint, `onClearFilters` renders "Xoá lọc"); new locale keys `noResults`, `noResultsHint`, `clearFilters`. Below `sm` every `EmptyState` is compact and at most 40% of the viewport (`EMPTY_PHONE_CAP`).
+- **`PageSkeleton shape` and `inShell`**: `cards` (as before), `list` or `detail`, so loading has the shape of the page; `inShell` drops the full-page height and padding for a route `loading.tsx`. `headingLevel` on the states sets the title's heading (h1 for a route page).
+- Docs: `DESIGN_SYSTEM.md` §13 / §13c, the `states` example doc (with the route-file recipe: `loading.tsx`, `error.tsx`, `not-found.tsx`) and the `first-use` / `no-results` / `list-shape` examples; the `semi-ui` skill builds the states from them.
+
 ## [0.33.0] - 2026-11-22
 
 Text fields no longer make iOS zoom the page in. Apps get the fix by updating `@semi/ui`. `/semi-check` and `semi a11y` now also report an app's own fields whose text is under 16px on a phone (the new `field-size` rule); an app's own field adds `max-sm:text-title-lg` or `FIELD_TEXT_PHONE`. There are no breaking changes.

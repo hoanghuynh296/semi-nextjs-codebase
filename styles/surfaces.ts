@@ -46,6 +46,9 @@ export const EMPTY =
 export const EMPTY_STATIC =
   "rounded-card border border-dashed border-line p-8 flex flex-col items-center gap-2.5 text-center text-label text-muted";
 
+/** Phone cap for an empty or error state (P13): compact padding, at most 40% of the viewport, scrolls inside if a long text still overflows. */
+export const EMPTY_PHONE_CAP = "max-sm:p-4 max-sm:gap-2 max-sm:max-h-[40svh] max-sm:overflow-y-auto";
+
 /** Square icon-only action button in a card header (edit, delete, more). */
 export const ICON_BTN =
   "w-7 h-7 rounded-control flex items-center justify-center text-muted hover:text-contrast bg-field hover:bg-raised border border-line transition outline-none focus-visible:ring-2 focus-visible:ring-focus active:scale-95";

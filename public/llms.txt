@@ -8,7 +8,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 ## Machine-readable
 
-- [components.json](./components.json): all 125 components, hooks and constants with props, summaries and their doc page
+- [components.json](./components.json): all 128 components, hooks and constants with props, summaries and their doc page
 - [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
@@ -110,7 +110,8 @@ In a project with the package installed, ask the docs instead of reading files: 
 ### Feedback
 
 - [Alert](./components/alert/) ([markdown](./docs/components/alert.md)): A message that stays on the page: info, success, warning, danger, with a title, an action and an optional dismiss. Components: Alert.
-- [Empty state](./components/empty-state/) ([markdown](./docs/components/empty-state.md)): What an empty list or page shows: an icon, one short title, a description and the action that fills it. Components: EmptyState.
+- [Empty state](./components/empty-state/) ([markdown](./docs/components/empty-state.md)): What an empty list or page shows. `first-use`: one icon, one sentence, the one primary action that fills it. `no-results`: a search or filter matched nothing, with its own title and a “Xoá lọc” action. Components: EmptyState.
+- [Error, not found, no access](./components/states/) ([markdown](./docs/components/states.md)): The page-level states every app needs: ErrorState (what failed, with a retry), NotFound (a wrong URL) and Forbidden (no access), each with a link home, plus the route-file recipe (loading.tsx, error.tsx, not-found.tsx) that uses them. Components: ErrorState, NotFound, Forbidden.
 - [Progress](./components/progress/) ([markdown](./docs/components/progress.md)): A determinate bar with value, or an indeterminate one when the end is unknown; tones for success and danger. Components: Progress.
 - [Skeleton](./components/skeleton/) ([markdown](./docs/components/skeleton.md)): Shimmer placeholders while content loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton; Loading announces the region. Never “Đang tải…” text. BootLoader is the one centred spinner, for the boot / session gate before the shell exists. Components: Skeleton, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton, Loading, BootLoader.
 - [Task host](./components/task-host/) ([markdown](./docs/components/task-host.md)): startTask() shows one blocking overlay for a job the user must wait for: label, current step, progress, elapsed time and an optional Cancel. Mount TaskHost once in the root layout, next to ToastHost and ConfirmHost. Components: TaskHost.

@@ -41,7 +41,9 @@ If neither works (`semi_status` answers, or `npx semi` is missing), the app has 
    number, a quote, a product shot); icons only where they help scanning; plain sections and white space next to
    cards. Keep the density budgets (`DESIGN_SYSTEM.md` §4c): three frames deep at most, four text sizes and three
    colours per box, one filled button per view, rows a control tall, text 12px from a box's sides.
-   Build every state of the screen, not only the filled one (`DESIGN_SYSTEM.md` §19b): loading (a skeleton of the
+   Build every state of the screen, not only the filled one (`DESIGN_SYSTEM.md` §19b), from `EmptyState` (`first-use`,
+   `no-results`), `ErrorState`, `NotFound`, `Forbidden` and `PageSkeleton shape` (`npx semi example states`; each route
+   group gets `loading.tsx`, `error.tsx`, `not-found.tsx`): loading (a skeleton of the
    real shape), empty (the action that fills it) and "no result" for a search or filter, error (what failed, a
    retry, the loaded data kept), no permission, and too much data (long names, many rows). A destructive action is
    confirmed (`confirmDialog`) or undoable (`toast` with an action).
