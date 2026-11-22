@@ -60,14 +60,14 @@ In a project with the package installed, ask the docs instead of reading files: 
 ### Overlays
 
 - [Command](./components/command/) ([markdown](./docs/components/command.md)): A command palette: type to filter actions and pages, ↑/↓ to move, Enter to run. Command is the inline list; CommandDialog opens it over the page, usually on ⌘K (useHotkey). Matching ignores case and Vietnamese marks. Components: Command, CommandDialog.
-- [Confirm dialog](./components/confirm-dialog/) ([markdown](./docs/components/confirm-dialog.md)): confirmDialog() asks one yes / no question and resolves to true or false. Mount ConfirmHost once in the root layout. Never window.confirm. Components: ConfirmHost.
+- [Confirm dialog](./components/confirm-dialog/) ([markdown](./docs/components/confirm-dialog.md)): confirmDialog() asks one yes / no question and resolves to true or false; confirmDelete({ name }) is the irreversible-action form (names the object, red Xoá). Mount ConfirmHost once in the root layout. Never window.confirm. Components: ConfirmHost.
 - [Context menu](./components/context-menu/) ([markdown](./docs/components/context-menu.md)): The menu of an area opened at the pointer: right-click, long-press on touch, or the Menu key / Shift+F10 when the area has focus. Components: ContextMenu.
 - [Drawer](./components/drawer/) ([markdown](./docs/components/drawer.md)): A panel that slides in from the right, left, bottom or top (a sheet), with title and footer. Components: Drawer.
 - [Hover card](./components/hover-card/) ([markdown](./docs/components/hover-card.md)): A preview card while the pointer rests on, or focus is on, a link: a person, a product, an order. Components: HoverCard.
 - [Menu](./components/menu/) ([markdown](./docs/components/menu.md)): The overflow menu of a row or card: a ⋯ trigger (or your own) with items, icons, separators and a danger item last. Components: Menu.
 - [Modal](./components/modal/) ([markdown](./docs/components/modal.md)): The shared dialog: full screen on phones, a centred panel from sm up, with title, description, body and footer. Focus is trapped and returns to the opener. Components: Modal.
 - [Popover](./components/popover/) ([markdown](./docs/components/popover.md)): A small non-modal panel under its trigger for interactive content: a quick form, filters, a picker. Components: Popover.
-- [Toast](./components/toast/) ([markdown](./docs/components/toast.md)): toast() shows a short message after an action, with a tone and an optional action (Hoàn tác). Mount ToastHost once in the root layout. Components: ToastHost.
+- [Toast](./components/toast/) ([markdown](./docs/components/toast.md)): One toast API for feedback after an action: toast.success / error / warning / info, toast.undo for a reversible destructive action, toast.promise for work in progress. Irreversible actions ask first (confirmDelete). Mount ToastHost once in the root layout. Components: ToastHost.
 - [Tooltip](./components/tooltip/) ([markdown](./docs/components/tooltip.md)): A short label on hover or focus, mostly for icon-only buttons. Components: Tooltip.
 
 ### Navigation & layout

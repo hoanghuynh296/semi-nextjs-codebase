@@ -44,6 +44,9 @@
       "src/",
       "styles/"
     ],
+    "local-toast": [
+      "src/"
+    ],
     "custom-spinner": [
       "src/"
     ],

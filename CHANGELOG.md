@@ -15,6 +15,28 @@ The states kit (#66, owner decision C-021): every app can show first use, no res
 - **`PageSkeleton shape` and `inShell`**: `cards` (as before), `list` or `detail`, so loading has the shape of the page; `inShell` drops the full-page height and padding for a route `loading.tsx`. `headingLevel` on the states sets the title's heading (h1 for a route page).
 - Docs: `DESIGN_SYSTEM.md` §13 / §13c, the `states` example doc (with the route-file recipe: `loading.tsx`, `error.tsx`, `not-found.tsx`) and the `first-use` / `no-results` / `list-shape` examples; the `semi-ui` skill builds the states from them.
 
+### Feedback kit (#75, owner decision C-021)
+
+One way to answer an action (D20, F10, owner question 17): undo for what can be reversed, a confirm that names the object for what cannot, success once. Additive; nothing breaks. The new lint rule is a warning.
+
+#### Changed
+- **A toast with an `action` (or `undo`) now waits 8 s** instead of 4 s (WCAG 2.2.1); hover and focus still pause it. Pass `duration` to keep the old time.
+- **A plain toast with the same text, tone and description as one still showing replaces it** instead of stacking (success shows once). Toasts with `action`, `undo` or `onCommit` are never merged.
+
+#### Added
+- **`toast.success|error|warning|info(title, options | ms)`**, **`toast.undo(title, onUndo, options)`** and **`toast.promise(promise, { loading, success, error })`** on the existing `toast`; `toast({ ... })` works as before. The extras the apps had added locally (Studio's `toastStore`: kind helpers, a number as duration, an action that stays longer) are in Semi now; promise toasts and undo had no local version.
+- **`ToastOptions.undo`** (shows the locale's "Hoàn tác", runs it, closes) and **`pending`** (spinner, no timer); **`updateToast(id, patch)`** changes a toast still showing. A toast with an `action` or `undo` waits 8 s (was 4 s), still pausing on hover and focus.
+- **`onCommit`** (the undo window closed without an undo: timeout, closed, pushed out, route change, `pagehide`; best effort, fire-and-forget with `keepalive` / `sendBeacon`) and **route-change cleanup**: undo toasts already showing close when the route changes; one shown within 2 s before it (the action's own `router.push`) stays. `onUndo` must restore on the server, not only in local state; the robust pattern is to commit first (soft delete) and let undo restore.
+- **`toast.promise` `timeout`** (default 30 s, `0` = none): the toast turns into the neutral "Vẫn đang xử lý…" (locale `stillWorking`), a rejection still shows the error. **`updateToast`** keeps the toast's id.
+- **`ToastHost durationScale`** (multiplies every auto-dismiss time) and **`hotkey`** (default Alt+T, `false` off; skips inputs and IME composition) that focuses the newest toast's action (WCAG 2.2.1); Firefox's Alt menu is a caveat.
+- **`confirmDelete({ name, message?, confirmLabel? })`**: `confirmDialog` for an irreversible action, the title names the object, red Xoá button, Huỷ. Its texts come from the provider's locale (`ConfirmHost` resolves them); in a danger dialog focus starts on Huỷ.
+- **Locale keys** (Vietnamese default, English in `en`): `undo` "Hoàn tác", `stillWorking` "Vẫn đang xử lý…", `delete` "Xoá", `deleteTitle(name)`, `deleteMessage`; Huỷ is the existing `cancel`.
+- **Lint warning `local-toast`** (warning tier, like the form rules): a toast library (`sonner`, `react-hot-toast`, `react-toastify`), an import of an app-level `toast` module or an exported `toast` / `notify` wrapper around Semi's toast.
+- Docs: `DESIGN_SYSTEM.md` §14c, the `toast` (new `undo`, `promise`) and `confirm-dialog` (new `delete`) example docs, the `semi-ui` skill and agent rules.
+
+#### Migration
+Optional: replace a local toast wrapper with `toast` from `@semi/ui` (`toast.success("…")` is the same call as `toast({ title, tone: "success" })`), `window.confirm` / a "bạn chắc chứ" dialog for a delete with `confirmDelete({ name })`, and a delete you can reverse with `toast.undo`. `confirmDelete` follows the locale provider (English with `locale={en}`).
+
 ### Form kit (#67, owner decision C-021)
 
 Forms behave the same everywhere and nobody loses typed work (F2, D13, P11). Additive; nothing breaks. New lint rules are warnings.

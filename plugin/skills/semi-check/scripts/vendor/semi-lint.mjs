@@ -303,7 +303,13 @@ export const WARN = [
   ["action-order", "Huỷ comes before Lưu / Tạo: right-aligned, ghost Huỷ then the primary, with a destructive action alone on the left. Use <FormActions>."],
   ["toast-for-validation", "A field problem is told under the field (<Field error>), with an Alert summary above FormActions for several, not in a toast that disappears. A toast is for the result of an action."],
   ["field-input-mode", "An email, phone, URL, password, search or money field sets its phone keyboard and autofill: <Field kind=\"email|tel|number|money|url|search|password\">."],
+  ["local-toast", "One toast API (§14c): use toast / toast.success|error|warning|info|undo|promise from @semi/ui, not a toast library or an app-level wrapper. Its extras (action, duration, promise, undo) are already in Semi's toast."],
 ];
+const TOAST_LIB = /\bfrom\s+["'](?:sonner|react-hot-toast|react-toastify|react-toast-notifications|notistack|@radix-ui\/react-toast)["']/g;
+// an import clause has no quote or semicolon, so a match cannot run on into the next statement
+const TOAST_LOCAL_IMPORT = /\bimport\s+[^;'"]*?\bfrom\s+["'](?!@semi\/ui["']|(?:\.\.\/)+src\/Toast["'])[^"']*[\/@.](?:use)?[Tt]oasts?(?:Store|Context|Provider|Helpers?|Utils?)?["']/g;
+const TOAST_WRAPPER = /\bexport\s+(?:default\s+)?(?:async\s+)?(?:const|function|let)\s+(?:toast|notify|useToast|showToast|showNotification)\b/g;
+const TOAST_REEXPORT = /\bexport\s*\{[^}'"]*\btoast\b[^}'"]*\}\s*from\s*["']/g;
 const SAVE_WORDS = "Lưu|Tạo|Save|Create|Gửi|Thêm";
 const CANCEL_WORDS = "Huỷ|Hủy|Cancel";
 const ACTION_ORDER = new RegExp(`>\\s*(?:${SAVE_WORDS})[^<{]*</(?:Button|button)>\\s*<(?:Button|button)\\b[^>]*>\\s*(?:${CANCEL_WORDS})\\s*<`, "g");
@@ -321,6 +327,9 @@ export function warnHits(src) {
   if (form && /<(?:Field|Input|Textarea)\b/.test(code) && !/\buseUnsavedGuard\b/.test(code) && !/<(?:Modal|Drawer|Popover)\b|placement=["']modal["']/.test(code)) out.push(["form-no-guard", lineOf(code, form.index)]);
   // action-order: the primary before Huỷ in one row
   for (const m of code.matchAll(ACTION_ORDER)) out.push(["action-order", lineOf(code, m.index)]);
+  // local-toast: a toast library, an import of an app-level toast module, or an exported wrapper around Semi's toast
+  const semiToast = /\bimport\s+[^;'"]*\btoast\b[^;'"]*\bfrom\s+["']@semi\/ui["']/.test(code);
+  for (const re of semiToast ? [TOAST_LIB, TOAST_LOCAL_IMPORT, TOAST_REEXPORT, TOAST_WRAPPER] : [TOAST_LIB, TOAST_LOCAL_IMPORT, TOAST_REEXPORT]) for (const m of code.matchAll(re)) out.push(["local-toast", lineOf(code, m.index)]);
   rows.forEach((raw, i) => {
     if (!raw.trim() || isComment(raw)) return;
     // toast-for-validation: a toast whose text is about a missing / invalid field

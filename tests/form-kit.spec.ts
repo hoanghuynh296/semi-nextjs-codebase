@@ -286,7 +286,7 @@ test("useUnsavedGuard · an agreed confirmLeave that does not navigate (delete d
   await d.getByLabel("Tên máy in").fill("Bambu P1S đổi tên");
   await d.getByRole("button", { name: "Xoá máy in" }).click();
   await LEAVE(page).getByRole("button", { name: "Rời đi" }).click();
-  await page.getByRole("alertdialog", { name: "Xoá máy in này?" }).getByRole("button", { name: "Huỷ" }).click(); // no navigation
+  await page.getByRole("alertdialog", { name: /^Xoá "Bambu X1C"\?$/ }).getByRole("button", { name: "Huỷ" }).click(); // no navigation
   await page.waitForTimeout(1300); // the grace period
   const prevented = () =>
     page.evaluate(() => {

@@ -108,7 +108,7 @@ test("field-input-mode: an email / phone / url / password / money field without 
 });
 
 test("the form-kit rules are warnings: scan() reports them apart from hard and ratchet hits, and skip / disable work", () => {
-  assert.deepEqual(WARN.map(([id]) => id), ["form-no-guard", "action-order", "toast-for-validation", "field-input-mode"]);
+  assert.deepEqual(WARN.map(([id]) => id), ["form-no-guard", "action-order", "toast-for-validation", "field-input-mode", "local-toast"]);
   const dir = mkdtempSync(join(tmpdir(), "semi-lint-"));
   const file = join(dir, "page.tsx");
   writeFileSync(file, `export default function P() {\n  return <form><Field label="Email"><Input /></Field><FormActions /></form>;\n}\n`);
@@ -143,4 +143,26 @@ test("semi-lint --ci: turning a warning rule off (disable or skip) is not growth
     delete process.env.SEMI_LINT_BASE;
     rmSync(dir, { recursive: true });
   }
+});
+
+test("local-toast (#75): a toast library, an app-level toast module or an exported wrapper warns; Semi's toast does not", () => {
+  assert.deepEqual(warn(`import { toast } from "sonner";`), ["local-toast"]);
+  assert.deepEqual(warn(`import toast from 'react-hot-toast';`), ["local-toast"]);
+  assert.deepEqual(warn(`import { toast } from "@/store/toastStore";`), ["local-toast"]);
+  assert.deepEqual(warn(`import { useToast } from "../hooks/useToast";`), ["local-toast"]);
+  assert.deepEqual(warnHits(`import {\n  Button,\n} from "@semi/ui";\nimport { toast } from "@/lib/toast";`), [["local-toast", 4]]);
+  // a wrapper that re-exports Semi's toast under an app name
+  assert.deepEqual(warn(`import { toast as semiToast } from "@semi/ui";\nexport const toast = { ok: (m) => semiToast({ title: m }) };`), ["local-toast"]);
+  assert.deepEqual(warn(`import { Button, toast } from "@semi/ui";\nexport function notify(m) { toast.success(m); }`), ["local-toast"]);
+  assert.deepEqual(warn(`import { Button, toast } from "@semi/ui";\ntoast.success("Đã lưu");`), []);
+  assert.deepEqual(warn(`import { toast, confirmDelete } from "@semi/ui";`), []);
+  assert.deepEqual(warn(`export function notify() {}`), [], "a notify that does not use Semi's toast is not a toast wrapper");
+  // anchored per statement: an unrelated import before it does not drag in a later one
+  assert.deepEqual(warn(`import { a } from "./a"\nimport { toast } from "@semi/ui";`), []);
+  assert.deepEqual(warn(`import { Toaster } from "./Toaster";\nimport { toast } from "@semi/ui";`), []);
+  assert.deepEqual(warn(`import { toast } from "./Toast";`), ["local-toast"], "a local Toast module");
+  assert.deepEqual(warn(`export { toast } from "@semi/ui";`), ["local-toast"], "a re-export is a wrapper module");
+  assert.deepEqual(warn(`export { toast, confirmDelete } from "./feedback";`), ["local-toast"]);
+  assert.deepEqual(warn(`import { toast } from "../../src/Toast";`), [], "the docs app imports the library's own source");
+  assert.deepEqual(warn(`// import { toast } from "sonner";\nconst a = 1;`), []);
 });

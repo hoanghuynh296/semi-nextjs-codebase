@@ -1,16 +1,19 @@
 {
   "title": "Toast",
   "group": "Overlays",
-  "description": "toast() shows a short message after an action, with a tone and an optional action (Hoàn tác). Mount ToastHost once in the root layout.",
+  "description": "One toast API for feedback after an action: toast.success / error / warning / info, toast.undo for a reversible destructive action, toast.promise for work in progress. Irreversible actions ask first (confirmDelete). Mount ToastHost once in the root layout.",
   "components": [
     "ToastHost"
   ],
   "imports": [
     "toast",
+    "updateToast",
     "dismissToast"
   ],
   "when": [
-    "Confirm an action happened (Đã lưu), warn about something passing (mất kết nối), offer undo."
+    "Confirm an action happened (Đã lưu): toast.success, shown once, never a modal.",
+    "Right after a reversible destructive action (archive, remove from a list, move): toast.undo with Hoàn tác.",
+    "Work that takes a moment (save, import, send): toast.promise."
   ],
   "instead": [
     {
@@ -18,21 +21,40 @@
       "use": "Alert"
     },
     {
-      "need": "Ask before acting",
-      "use": "confirmDialog()"
+      "need": "Ask before an irreversible action (delete, disconnect)",
+      "use": "confirmDelete() / confirmDialog()"
+    },
+    {
+      "need": "A problem inside a field",
+      "use": "Field error"
     }
   ],
   "a11y": [
     "A live region (polite, assertive for danger); toasts with an action stay until dismissed or wait longer.",
-    "The stack is a region named by the locale's notifications string with two sibling live regions (danger assertive, the rest polite), never nested. Auto-dismiss pauses on hover and on keyboard focus."
+    "The stack is a region named by the locale's notifications string with two sibling live regions (danger assertive, the rest polite), never nested. Auto-dismiss pauses on hover and on keyboard focus.",
+    "A toast with an action or undo waits 8 s (and while hovered or focused); undo is a real button, so it is reachable by keyboard. A pending (promise) toast has no timer until it settles.",
+    "Alt+T (ToastHost hotkey, false turns it off; ignored while typing and in IME composition; Firefox's Alt menu is a caveat) moves keyboard focus to the newest toast's action; focus pauses its timer. ToastHost durationScale multiplies every auto-dismiss time (WCAG 2.2.1)."
   ],
   "examples": [
     {
       "file": "tones",
       "title": "Tones and actions"
+    },
+    {
+      "file": "undo",
+      "title": "Undo after a reversible delete",
+      "description": "The row goes at once; the toast offers Hoàn tác for 8 seconds."
+    },
+    {
+      "file": "promise",
+      "title": "Promise toast",
+      "description": "A spinner toast that turns into the result."
     }
   ],
   "notes": [
-    "<ToastHost /> goes once in the root layout (see Theme › Root layout); every toast() call anywhere shows there."
+    "<ToastHost /> goes once in the root layout (see Theme › Root layout); every toast() call anywhere shows there.",
+    "Feedback rule (§14c): reversible destructive action → toast.undo; irreversible → confirmDelete (names the object, red Xoá, Huỷ); success is one toast, never a modal. The same text still showing is replaced, not stacked.",
+    "`toast(opts)` keeps working; `toast.success(title, opts | ms)` etc. are shorthands. Use `updateToast(id, patch)` to change a toast that is still showing.",
+    "Undo: `onUndo` must restore on the server too (it can run after the component is gone); `onCommit` runs when the window closes without an undo (also on pagehide: best effort, use keepalive / sendBeacon; commit first, undo restores). Undo toasts already showing close on a route change; one shown just before the action's own navigation stays. `toast.promise` has `timeout` (default 30 s: a neutral \"Vẫn đang xử lý…\", not an error). `updateToast` keeps the id."
   ]
 }
