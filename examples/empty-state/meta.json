@@ -1,20 +1,49 @@
 {
   "title": "Empty state",
   "group": "Feedback",
-  "description": "What an empty list or page shows: an icon, one short title, a description and the action that fills it.",
+  "description": "What an empty list or page shows. `first-use`: one icon, one sentence, the one primary action that fills it. `no-results`: a search or filter matched nothing, with its own title and a “Xoá lọc” action.",
   "components": [
     "EmptyState"
   ],
   "when": [
-    "No items yet, no search results, a feature not set up."
+    "First use: no items yet, a feature not set up (variant first-use).",
+    "A search or filter matched nothing (variant no-results, with onClearFilters)."
   ],
   "a11y": [
-    "The title is a heading; the action is a normal button."
+    "The action is a normal button; below sm the state takes at most 40% of the viewport."
   ],
   "examples": [
     {
       "file": "basic",
-      "title": "First item"
+      "title": "Plain"
+    },
+    {
+      "file": "first-use",
+      "title": "First use",
+      "description": "One icon, one sentence, one primary action."
+    },
+    {
+      "file": "no-results",
+      "title": "No results",
+      "description": "A filter matched nothing: different title, “Xoá lọc” clears it."
     }
+  ],
+  "instead": [
+    {
+      "need": "The page or the data failed to load",
+      "use": "ErrorState"
+    },
+    {
+      "need": "A wrong URL or a page the user cannot open",
+      "use": "NotFound / Forbidden"
+    },
+    {
+      "need": "Data is still loading",
+      "use": "Skeleton in the shape of the content"
+    }
+  ],
+  "notes": [
+    "When the list is empty and the state shows its own primary action, hide the primary button in the page's title row (one filled button per view, §13).",
+    "Keep the title and toolbar on screen around a no-results state: the user must be able to change the filter."
   ]
 }

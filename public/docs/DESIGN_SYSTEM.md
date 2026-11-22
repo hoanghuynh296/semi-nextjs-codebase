@@ -509,6 +509,31 @@ with an icon above or before a `tabular-nums` value. Progress is a ring or a `h-
 `EMPTY`: dashed `rounded-card` card with an icon in a `w-12 h-12 rounded-card bg-field` square above one short
 line. Make it the button that adds the first item when there is one.
 
+`EmptyState` has two variants (D14): **`first-use`** (nothing exists yet): one icon, one sentence (the title, no
+description), and the one primary action that fills the list. **`no-results`** (a search or filter matched nothing):
+its own title ("Không có kết quả"), a hint, and `onClearFilters` for a secondary "Xoá lọc" button; keep the title and
+toolbar on screen around it. When an empty list shows its own primary action, hide the primary button in the page's
+title row while the list is empty, so the view has one filled button (`primary-actions` in `semi density` catches two).
+Below `sm` the state is compact and takes at most 40% of the viewport (`EMPTY_PHONE_CAP`, P13).
+
+## 13c. Error, not found, no access
+
+`States.tsx`: **`ErrorState`** (title, message, optional `detail` code, primary "Thử lại" via `onRetry`; `role="alert"`),
+**`NotFound`** and **`Forbidden`** (one sentence and a link home, `homeHref`; Forbidden has no retry). Defaults are
+Vietnamese and come from the locale table (`errorTitle`, `notFoundMessage`, `forbiddenTitle`, `retry`, `clearFilters`,
+…). A failed refetch shows `ErrorState` in place of the failed part and keeps the loaded data on screen.
+**Route-file recipe (F1, D17, D23):** each Next.js route group ships three files beside `layout.tsx`, and the root
+`app/` gets a `not-found.tsx` for URLs that match no group:
+
+```tsx
+// loading.tsx  → <PageSkeleton shape="list" />      (shape = the page's: cards, list or detail)
+// error.tsx    → "use client"; <ErrorState onRetry={reset} detail={error.digest} />
+// not-found.tsx → <NotFound />
+```
+
+The shell stays mounted; only the content area changes. Examples: `npx semi example states route-error` (and
+`route-not-found`, `route-loading`). 401 (not signed in) redirects to login; 403 (signed in, not allowed) is `Forbidden`.
+
 ## 13b. Loading (shimmer skeleton)
 
 While a page, tab, list or number loads, show its shape with shimmering placeholders, never a "Đang tải…" line or a
@@ -612,7 +637,8 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `Icon.tsx` | `Icon`, `ICONS`, `IconName`, `IconTile`, `TILE_TONES`, `TONE_TEXT`, `TileTone` |
 | `AppHeader.tsx` | `AppHeader` (stand-alone app top bar, §4b) |
 | `PageActions.tsx` | `PageActions` (a tab's header buttons), `PageActionsSlot` + `PageActionsProvider` |
-| `Skeleton.tsx` | `Skeleton`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton`, `Loading`, `BootLoader` (boot / session gate only) (§13b) |
+| `Skeleton.tsx` | `Skeleton`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton` (`shape` cards / list / detail), `Loading`, `BootLoader` (boot / session gate only) (§13b) |
+| `Feedback.tsx`, `States.tsx` | `EmptyState` (`variant` first-use / no-results, `onClearFilters`), `ErrorState`, `NotFound`, `Forbidden` (§13, §13c) |
 | `FileDrop.tsx` | `FileDrop`, `FileDropItem`, `FileRejection`, `matchesAccept`, `formatFileSize`, `classifyFiles`, `FileRejectReason` (§13b uploads: `FileDrop` + `Progress`) |
 | `confirmDialog.tsx` | `confirmDialog()`, `ConfirmHost`, `ConfirmOptions` (§14) |
 | `TaskHost.tsx` | `startTask()`, `TaskHost`, `TaskOptions`, `TaskHandle` (blocking task overlay, §13b) |

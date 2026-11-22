@@ -1264,12 +1264,14 @@
       "kind": "component",
       "module": "src/Feedback.tsx",
       "client": true,
-      "summary": "Empty list / first-run state: icon, one short line, optional description and action (EMPTY surface).",
+      "summary": "Empty list / first-run state (docs/DESIGN_SYSTEM.md §13). - `first-use`: nothing exists yet. One icon, one sentence (the title), one primary action (`action`). - `no-results`: a search or filter matched nothing. Own title, and `onClearFilters` adds a \"Xoá lọc\" button. Below `sm` it takes at most 40% of the viewport (compact padding, scrolls inside if a long text still overflows).",
       "props": [
         "icon",
         "title",
         "description",
         "action",
+        "variant",
+        "onClearFilters",
         "className"
       ],
       "doc": "docs/components/empty-state.md"
@@ -1941,8 +1943,10 @@
       "kind": "component",
       "module": "src/Skeleton.tsx",
       "client": true,
-      "summary": "Whole-page placeholder (Suspense fallbacks): title row + a grid of cards.",
-      "props": [],
+      "summary": "Whole-page placeholder (Suspense fallbacks, route `loading.tsx`): title row + the shape of the content. `cards` (default) = a grid of cards, `list` = a toolbar and table rows, `detail` = a header card and two panels. Pick the shape the real page has, so nothing jumps when the data arrives (§13b).",
+      "props": [
+        "shape"
+      ],
       "doc": "docs/components/skeleton.md"
     },
     {
@@ -1966,6 +1970,55 @@
       "summary": "One or two thumbs (role=\"slider\"): ←/↓ and →/↑ step, PageUp / PageDown jump 10 steps, Home / End go to the ends; drag or click the track. `value` is a number, or [low, high] with `range`.",
       "props": [],
       "doc": "docs/components/slider.md"
+    },
+    {
+      "name": "ErrorState",
+      "kind": "component",
+      "module": "src/States.tsx",
+      "client": true,
+      "summary": "Something failed to load or run (route `error.tsx`, a failed fetch). Says what failed and offers a retry; keep any data already loaded on screen and show this in place of the failed part only (§13c).",
+      "props": [
+        "title",
+        "message",
+        "detail",
+        "onRetry",
+        "retryLabel",
+        "action",
+        "icon",
+        "className"
+      ],
+      "doc": "docs/components/states.md"
+    },
+    {
+      "name": "NotFound",
+      "kind": "component",
+      "module": "src/States.tsx",
+      "client": true,
+      "summary": "A wrong or removed URL (route `not-found.tsx`, `notFound()`): one sentence and a link home.",
+      "props": [
+        "title",
+        "message",
+        "homeHref",
+        "homeLabel",
+        "className"
+      ],
+      "doc": "docs/components/states.md"
+    },
+    {
+      "name": "Forbidden",
+      "kind": "component",
+      "module": "src/States.tsx",
+      "client": true,
+      "summary": "Signed in but not allowed (a 403, or a page the role cannot open): say so and link home; do not offer a retry.",
+      "props": [
+        "title",
+        "message",
+        "homeHref",
+        "homeLabel",
+        "action",
+        "className"
+      ],
+      "doc": "docs/components/states.md"
     },
     {
       "name": "SubpageToolbar",
@@ -2800,6 +2853,13 @@
       "module": "styles/surfaces.ts",
       "client": false,
       "summary": "Non-interactive empty state (EmptyState): same dashed card as EMPTY without the hover."
+    },
+    {
+      "name": "EMPTY_PHONE_CAP",
+      "kind": "constant",
+      "module": "styles/surfaces.ts",
+      "client": false,
+      "summary": "Phone cap for an empty or error state (P13): compact padding, at most 40% of the viewport, scrolls inside if a long text still overflows."
     },
     {
       "name": "ICON_BTN",

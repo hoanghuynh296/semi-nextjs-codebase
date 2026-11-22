@@ -8,7 +8,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 ## Machine-readable
 
-- [components.json](./components.json): all 125 components, hooks and constants with props, summaries and their doc page
+- [components.json](./components.json): all 128 components, hooks and constants with props, summaries and their doc page
 - [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
@@ -110,7 +110,8 @@ In a project with the package installed, ask the docs instead of reading files: 
 ### Feedback
 
 - [Alert](./components/alert/) ([markdown](./docs/components/alert.md)): A message that stays on the page: info, success, warning, danger, with a title, an action and an optional dismiss. Components: Alert.
-- [Empty state](./components/empty-state/) ([markdown](./docs/components/empty-state.md)): What an empty list or page shows: an icon, one short title, a description and the action that fills it. Components: EmptyState.
+- [Empty state](./components/empty-state/) ([markdown](./docs/components/empty-state.md)): What an empty list or page shows. `first-use`: one icon, one sentence, the one primary action that fills it. `no-results`: a search or filter matched nothing, with its own title and a “Xoá lọc” action. Components: EmptyState.
+- [Error, not found, no access](./components/states/) ([markdown](./docs/components/states.md)): The page-level states every app needs: ErrorState (what failed, with a retry), NotFound (a wrong URL) and Forbidden (no access), each with a link home, plus the route-file recipe (loading.tsx, error.tsx, not-found.tsx) that uses them. Components: ErrorState, NotFound, Forbidden.
 - [Progress](./components/progress/) ([markdown](./docs/components/progress.md)): A determinate bar with value, or an indeterminate one when the end is unknown; tones for success and danger. Components: Progress.
 - [Skeleton](./components/skeleton/) ([markdown](./docs/components/skeleton.md)): Shimmer placeholders while content loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton; Loading announces the region. Never “Đang tải…” text. BootLoader is the one centred spinner, for the boot / session gate before the shell exists. Components: Skeleton, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton, Loading, BootLoader.
 - [Task host](./components/task-host/) ([markdown](./docs/components/task-host.md)): startTask() shows one blocking overlay for a job the user must wait for: label, current step, progress, elapsed time and an optional Cancel. Mount TaskHost once in the root layout, next to ToastHost and ConfirmHost. Components: TaskHost.
@@ -224,6 +225,7 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
   - `Pills`, `Chip` (+ `tone`), `Badge` (`tone="purple|blue|emerald|amber|rose|sky|..."`), `SearchInput`, `CustomSelect` (toolbar default vs `variant="field"` in forms), `CustomCombobox`, `DatePicker`, `Pagination`, `NumberInput` (+ `NumPadPopup`). Never native `<select>`, `type="date"`, `type="number"`.
   - `AppHeader` (stand-alone tool/3D app top bar), `PageActions`, `SidePanel`, `RefreshButton`, `ExternalLink`, `Markdown`.
   - Loading: `Skeleton` / `SkeletonCard` / `SkeletonGrid` / `SkeletonRows` / `PageSkeleton`; no "Đang tải…" text or page spinners. Only exception: `BootLoader` (below).
+  - States (§13, §13c): `EmptyState variant="first-use"` (one icon, one sentence, one primary action) or `"no-results"` (+ `onClearFilters` → "Xoá lọc"); hide the title-row primary while the empty state shows its own; `ErrorState onRetry`, `NotFound`, `Forbidden` (link home). Each route group ships `loading.tsx` (`PageSkeleton shape`), `error.tsx` (`<ErrorState onRetry={reset} />`), `not-found.tsx` (`<NotFound />`); `npx semi example states`.
   - Shell and loading: `AppShell` once in `app/(app)/layout.tsx` (never in a page, `app-shell-in-page`); items routed by `href` (`shell-nav-href`); the session check once in that layout, best on the server; before the layout is known `if (!session) return <BootLoader />` (centred spinner, layouts only, `boot-loader-place`); content loading is a `loading.tsx` beside the layout with `PageSkeleton`, never a skeleton around the shell (`shell-gate`).
   - Confirmations: `confirmDialog({ title, message, confirmLabel, tone, icon })` + `<ConfirmHost />`, never `window.confirm`.
   - AI chat (§14b): `<AIChat messages busy onSend onStop onRetry onNewChat empty toolbar />` (or `ChatPanel` > `ChatView` > `ChatList` + `ChatComposer` with `UserMessage` / `AssistantMessage` / `ChatError` / `ChatThinking` / `ChatIntro` / `ChatSuggestion`). UI only: the app keeps messages and streaming; the provider → model → effort chips are `toolbar={<ChatModelPicker providers models efforts … />}`. Never a local composer or bubbles.
@@ -269,7 +271,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (125)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (128)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
@@ -326,6 +328,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `SidePanel`: `SidePanelToggle`, `SidePanel`
 - `Skeleton`: `Skeleton`, `Loading`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton`, `BootLoader`
 - `Slider`: `Slider`
+- `States`: `ErrorState`, `NotFound`, `Forbidden`
 - `SubpageToolbar`: `SubpageToolbar`
 - `Table`: `Table`, `THead`, `TBody`, `TR`, `TH`, `TD`
 - `Tabs`: `Tabs`
@@ -857,6 +860,31 @@ with an icon above or before a `tabular-nums` value. Progress is a ring or a `h-
 `EMPTY`: dashed `rounded-card` card with an icon in a `w-12 h-12 rounded-card bg-field` square above one short
 line. Make it the button that adds the first item when there is one.
 
+`EmptyState` has two variants (D14): **`first-use`** (nothing exists yet): one icon, one sentence (the title, no
+description), and the one primary action that fills the list. **`no-results`** (a search or filter matched nothing):
+its own title ("Không có kết quả"), a hint, and `onClearFilters` for a secondary "Xoá lọc" button; keep the title and
+toolbar on screen around it. When an empty list shows its own primary action, hide the primary button in the page's
+title row while the list is empty, so the view has one filled button (`primary-actions` in `semi density` catches two).
+Below `sm` the state is compact and takes at most 40% of the viewport (`EMPTY_PHONE_CAP`, P13).
+
+## 13c. Error, not found, no access
+
+`States.tsx`: **`ErrorState`** (title, message, optional `detail` code, primary "Thử lại" via `onRetry`; `role="alert"`),
+**`NotFound`** and **`Forbidden`** (one sentence and a link home, `homeHref`; Forbidden has no retry). Defaults are
+Vietnamese and come from the locale table (`errorTitle`, `notFoundMessage`, `forbiddenTitle`, `retry`, `clearFilters`,
+…). A failed refetch shows `ErrorState` in place of the failed part and keeps the loaded data on screen.
+**Route-file recipe (F1, D17, D23):** each Next.js route group ships three files beside `layout.tsx`, and the root
+`app/` gets a `not-found.tsx` for URLs that match no group:
+
+```tsx
+// loading.tsx  → <PageSkeleton shape="list" />      (shape = the page's: cards, list or detail)
+// error.tsx    → "use client"; <ErrorState onRetry={reset} detail={error.digest} />
+// not-found.tsx → <NotFound />
+```
+
+The shell stays mounted; only the content area changes. Examples: `npx semi example states route-error` (and
+`route-not-found`, `route-loading`). 401 (not signed in) redirects to login; 403 (signed in, not allowed) is `Forbidden`.
+
 ## 13b. Loading (shimmer skeleton)
 
 While a page, tab, list or number loads, show its shape with shimmering placeholders, never a "Đang tải…" line or a
@@ -960,7 +988,8 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `Icon.tsx` | `Icon`, `ICONS`, `IconName`, `IconTile`, `TILE_TONES`, `TONE_TEXT`, `TileTone` |
 | `AppHeader.tsx` | `AppHeader` (stand-alone app top bar, §4b) |
 | `PageActions.tsx` | `PageActions` (a tab's header buttons), `PageActionsSlot` + `PageActionsProvider` |
-| `Skeleton.tsx` | `Skeleton`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton`, `Loading`, `BootLoader` (boot / session gate only) (§13b) |
+| `Skeleton.tsx` | `Skeleton`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton` (`shape` cards / list / detail), `Loading`, `BootLoader` (boot / session gate only) (§13b) |
+| `Feedback.tsx`, `States.tsx` | `EmptyState` (`variant` first-use / no-results, `onClearFilters`), `ErrorState`, `NotFound`, `Forbidden` (§13, §13c) |
 | `FileDrop.tsx` | `FileDrop`, `FileDropItem`, `FileRejection`, `matchesAccept`, `formatFileSize`, `classifyFiles`, `FileRejectReason` (§13b uploads: `FileDrop` + `Progress`) |
 | `confirmDialog.tsx` | `confirmDialog()`, `ConfirmHost`, `ConfirmOptions` (§14) |
 | `TaskHost.tsx` | `startTask()`, `TaskHost`, `TaskOptions`, `TaskHandle` (blocking task overlay, §13b) |
@@ -2159,7 +2188,7 @@ All web UI here follows the **Semi Design System** (`@semi/ui`, repo `https://gi
    - Layers: `z-sticky` < `z-drawer` < `z-modal` < `z-dialog` < `z-popover` < `z-toast` < `z-tooltip`; never `z-[9999]`.
 4. **Not the generic AI screen** (`DESIGN_SYSTEM.md` §19): one main block per screen (`KpiCard featured`, not four equal cards); icons neutral unless they mean a status; proof (a real number, a quote, a product shot) instead of three icon feature cards; icons only where they help scanning; sample data and empty states from this product, never "Lorem", "John Doe" or another domain.
    **Density budgets** (`DESIGN_SYSTEM.md` §4c, measured on the page by `npx semi density <url>`): at most three frames inside each other (page panel › card › tile); at most four text sizes and three colours (accent + status) in one box; one filled accent button per view; text 12px from a box's sides and 8px from its top and bottom; a list row at least `h-control` tall (`Item`, `Menu`, `DataTable`); 8px or more between boxes; one line between two things (no `border-b` on a card's last row). `px-2` / `py-1` are for the inside of a control, never a row's or a box's padding.
-   **Every state** (`DESIGN_SYSTEM.md` §19b): each screen has its loading (skeleton of the real shape), empty (with the action that fills it), "no result", error (what failed + retry, loaded data kept), no-permission and too-much-data states; a destructive action is confirmed (`confirmDialog`) or undoable (`toast` with an action); Escape closes, Enter submits, back works.
+   **Every state** (`DESIGN_SYSTEM.md` §19b, §13c): use `EmptyState` (`first-use` / `no-results`), `ErrorState`, `NotFound`, `Forbidden`, and give each route group `loading.tsx` / `error.tsx` / `not-found.tsx` (`npx semi example states`); each screen has its loading (skeleton of the real shape), empty (with the action that fills it), "no result", error (what failed + retry, loaded data kept), no-permission and too-much-data states; a destructive action is confirmed (`confirmDialog`) or undoable (`toast` with an action); Escape closes, Enter submits, back works.
 5. **Brand** (when `semi-lint.json` has `"brand"`): ask `semi_brand` (or `npx semi brand voice|color|logo|brief`) before writing UI text or placing colour. Write in the brand's voice, use colour as its colour-use rule says, import the logo from the kit, use only its allowed styles; never define colours, fonts or Semi tokens in the app (`brand-override`). Brand changes happen in the brand repo with `/semi-brand`, then `/semi-sync` here.
 6. **Accessibility** (`DESIGN_SYSTEM.md` §18, checked on the page by `npx semi a11y <url>`): icon-only controls have `aria-label`, and a field's name comes from `Field` (a placeholder is not a label); anything clickable is a button or a link (`click-target`); custom controls keep `FOCUS_RING`, never a bare `outline-none` (`focus-hidden`); every text / background pair reaches 4.5:1 in both themes (themed text tokens, never a fixed shade on a tinted surface); a field you type in shows `border-control-line` (3:1); a control drawn smaller than 24px gets `HIT_AREA`; images have `alt`; never `maximum-scale` or `user-scalable=no` in the viewport.
 7. **Gaps go upstream, lint is never silenced.** When `@semi/ui` cannot express a need, run `/semi-sync`, re-check the docs, then `/semi-propose`; meanwhile a minimal compliant workaround marked `// TODO(semi#<issue>)`. Never add a `skip`, disable a rule or grow `semi-lint-baseline.json` to get past lint: fix the code. The baseline only shrinks (`semi-lint --update-baseline`); `--accept-new` is for `/semi-sync` and needs the user's OK otherwise, and `semi-lint --ci` fails a pull request whose baseline or skips grew. The one per-file `skip`, with the user's OK and a reason, is for illustrations and data colours (not UI chrome): `"skip": { "literal-colour-value": { "lib/scenePalette.ts": "data colours: 3D scene" } }` (also `inline-svg-path`, `no-literal-palette`, `inline-style-value`). Shared rules change in the Semi repo, never only in this file; app-specific patterns go in `docs/UI_EXTENSIONS.md`.
@@ -8038,11 +8067,20 @@ Callout inside a page or form (docs/DESIGN_SYSTEM.md §3b): tinted surface, tone
 
 # Empty state
 
-What an empty list or page shows: an icon, one short title, a description and the action that fills it.
+What an empty list or page shows. `first-use`: one icon, one sentence, the one primary action that fills it. `no-results`: a search or filter matched nothing, with its own title and a “Xoá lọc” action.
 
 ## When to use
 
-- No items yet, no search results, a feature not set up.
+- First use: no items yet, a feature not set up (variant first-use).
+- A search or filter matched nothing (variant no-results, with onClearFilters).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| The page or the data failed to load | ErrorState |
+| A wrong URL or a page the user cannot open | NotFound / Forbidden |
+| Data is still loading | Skeleton in the shape of the content |
 
 ## Import
 
@@ -8052,7 +8090,7 @@ import { EmptyState } from "@semi/ui";
 
 ## Examples
 
-### First item
+### Plain
 
 ```tsx
 import { Button, EmptyState } from "@semi/ui";
@@ -8073,25 +8111,229 @@ export default function EmptyStateBasic() {
 }
 ```
 
+### First use
+
+One icon, one sentence, one primary action.
+
+```tsx
+import { Button, EmptyState } from "@semi/ui";
+
+export default function EmptyStateFirstUse() {
+  return (
+    <EmptyState
+      variant="first-use"
+      icon="printer"
+      title="Chưa có máy in nào"
+      action={
+        <Button variant="primary" icon="plus">
+          Thêm máy in
+        </Button>
+      }
+    />
+  );
+}
+```
+
+### No results
+
+A filter matched nothing: different title, “Xoá lọc” clears it.
+
+```tsx
+import { EmptyState } from "@semi/ui";
+
+export default function EmptyStateNoResults() {
+  return <EmptyState variant="no-results" title="Không có máy in khớp bộ lọc" onClearFilters={() => {}} />;
+}
+```
+
 ## API
 
 ### EmptyState
 
-Empty list / first-run state: icon, one short line, optional description and action (EMPTY surface).
+Empty list / first-run state (docs/DESIGN_SYSTEM.md §13).
+- `first-use`: nothing exists yet. One icon, one sentence (the title), one primary action (`action`).
+- `no-results`: a search or filter matched nothing. Own title, and `onClearFilters` adds a "Xoá lọc" button.
+Below `sm` it takes at most 40% of the viewport (compact padding, scrolls inside if a long text still overflows).
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `icon` | `IconName` | `"box"` |  |
-| `title` | `React.ReactNode` |  |  |
-| `description` | `React.ReactNode` |  |  |
-| `action` | `React.ReactNode` |  |  |
+| `icon` | `IconName` |  | Defaults: `search` for no-results, `box` otherwise. |
+| `title` | `React.ReactNode` |  | Defaults: "Không có kết quả" for no-results, "Chưa có dữ liệu" otherwise. |
+| `description` | `React.ReactNode` |  | One short hint. A `first-use` state needs none: the title is its one sentence. |
+| `action` | `React.ReactNode` |  | The one primary action (a filled Button) that fills the list. Not used by `no-results` when `onClearFilters` is set. |
+| `variant` | `'first-use' \| 'no-results'` |  | `first-use` (nothing yet, one primary action) or `no-results` (a search / filter matched nothing). Omit for the plain state. |
+| `onClearFilters` | `() => void` |  | no-results: clears the search and filters; renders a secondary "Xoá lọc" button. |
 | `className` | `string` |  |  |
 
 ## Accessibility
 
-- The title is a heading; the action is a normal button.
+- The action is a normal button; below sm the state takes at most 40% of the viewport.
+
+## Notes
+
+- When the list is empty and the state shows its own primary action, hide the primary button in the page's title row (one filled button per view, §13).
+- Keep the title and toolbar on screen around a no-results state: the user must be able to change the filter.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/empty-state/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/states.md -->
+
+# Error, not found, no access
+
+The page-level states every app needs: ErrorState (what failed, with a retry), NotFound (a wrong URL) and Forbidden (no access), each with a link home, plus the route-file recipe (loading.tsx, error.tsx, not-found.tsx) that uses them.
+
+## When to use
+
+- A route or a fetch failed: ErrorState with onRetry (route error.tsx passes Next.js's reset).
+- An unknown URL or notFound(): NotFound. A signed-in user without the role: Forbidden.
+- Every Next.js route group ships loading.tsx (PageSkeleton), error.tsx (ErrorState) and not-found.tsx (NotFound).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A list with nothing in it | EmptyState variant first-use or no-results |
+| A form field or action failed | Field error text, Alert or a danger toast |
+| Content is loading | PageSkeleton / Skeleton in the shape of the content |
+
+## Import
+
+```tsx
+import { ErrorState, NotFound, Forbidden } from "@semi/ui";
+```
+
+## Examples
+
+### Error with retry
+
+```tsx
+import { ErrorState } from "@semi/ui";
+
+export default function StatesError() {
+  return <ErrorState onRetry={() => {}} message="Không tải được danh sách đơn hàng. Kiểm tra kết nối rồi thử lại." detail="Mã lỗi 3871042" />;
+}
+```
+
+### Not found
+
+```tsx
+import { NotFound } from "@semi/ui";
+
+export default function StatesNotFound() {
+  return <NotFound />;
+}
+```
+
+### No access
+
+```tsx
+import { Forbidden } from "@semi/ui";
+
+export default function StatesForbidden() {
+  return <Forbidden />;
+}
+```
+
+### Route error.tsx
+
+The error boundary of a route group: Next.js gives it error and reset.
+
+```tsx
+"use client";
+
+// app/(app)/error.tsx: Next.js renders it inside the layout, so the shell stays and only the content is replaced.
+import { ErrorState } from "@semi/ui";
+
+export default function ErrorPage({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+  return <ErrorState onRetry={reset} detail={error.digest} />;
+}
+```
+
+### Route not-found.tsx
+
+Shown for notFound() and for URLs that match no route.
+
+```tsx
+// app/(app)/not-found.tsx (also app/not-found.tsx for URLs that match no route group): shown for notFound() and unknown URLs.
+import { NotFound } from "@semi/ui";
+
+export default function NotFoundPage() {
+  return <NotFound />;
+}
+```
+
+### Route loading.tsx
+
+PageSkeleton in the shape of the page (list, cards or detail).
+
+```tsx
+// app/(app)/loading.tsx: the shell stays and the content shimmers in the shape of the page (list, cards or detail).
+import { PageSkeleton } from "@semi/ui";
+
+export default function Loading() {
+  return <PageSkeleton shape="list" />;
+}
+```
+
+## API
+
+### ErrorState
+
+Something failed to load or run (route `error.tsx`, a failed fetch). Says what failed and offers a retry; keep any
+data already loaded on screen and show this in place of the failed part only (§13c).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `title` | `React.ReactNode` |  | Defaults to "Có lỗi xảy ra". |
+| `message` | `React.ReactNode` |  | What failed and what to do next, in the product's voice. Defaults to a generic Vietnamese sentence. |
+| `detail` | `React.ReactNode` |  | Small technical line (an error digest or code) for support, never the raw stack. |
+| `onRetry` | `() => void` |  | Shows a primary "Thử lại" button. In `error.tsx` pass the `reset` Next.js gives you. |
+| `retryLabel` | `string` |  |  |
+| `action` | `React.ReactNode` |  | Extra action beside the retry (a link home, "Báo lỗi"). |
+| `icon` | `IconName` | `"alert"` |  |
+| `className` | `string` |  |  |
+
+### NotFound
+
+A wrong or removed URL (route `not-found.tsx`, `notFound()`): one sentence and a link home.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `title` | `React.ReactNode` |  |  |
+| `message` | `React.ReactNode` |  |  |
+| `homeHref` | `string` | `"/"` | Where "Về trang chủ" goes. |
+| `homeLabel` | `string` |  |  |
+| `className` | `string` |  |  |
+
+### Forbidden
+
+Signed in but not allowed (a 403, or a page the role cannot open): say so and link home; do not offer a retry.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `title` | `React.ReactNode` |  |  |
+| `message` | `React.ReactNode` |  |  |
+| `homeHref` | `string` | `"/"` |  |
+| `homeLabel` | `string` |  |  |
+| `action` | `React.ReactNode` |  | Extra action beside the link home (a mailto to the admin, "Đổi tài khoản"). |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- ErrorState is role="alert", so screen readers announce it; the retry is a normal button.
+- NotFound and Forbidden have one heading and a link home; Forbidden offers no retry.
+
+## Notes
+
+- Recipe: per route group put loading.tsx, error.tsx and not-found.tsx beside layout.tsx (the three route-* examples). Put app/not-found.tsx at the root for URLs that match no group.
+- Keep data already loaded: when a refetch fails, show ErrorState in place of the failed part only and leave the rest on screen.
+- Show a code or digest in `detail` for support, never the stack. Texts are Vietnamese by default and come from SemiLocaleProvider; pass title / message for product wording.
+- 403 means signed in but not allowed (Forbidden, no retry); not signed in goes to the login page, not to Forbidden.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/states/ and the types in src/ -->
 
 
 ---
@@ -8237,6 +8479,27 @@ export default function SkeletonPage() {
 }
 ```
 
+### Shape of a list page
+
+A toolbar row and rows: match what the real page shows. PageSkeleton shape="list" does the same for a whole page.
+
+```tsx
+import { Skeleton, SkeletonRows } from "@semi/ui";
+
+// The shape of a records page: a toolbar row, then rows. Use it as a Suspense fallback or inside loading.tsx.
+export default function SkeletonListShape() {
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="flex items-center gap-2">
+        <Skeleton className="h-9 flex-1 sm:max-w-xs" />
+        <Skeleton className="h-9 w-20" />
+      </div>
+      <SkeletonRows count={4} label="Đang tải đơn hàng" />
+    </div>
+  );
+}
+```
+
 ## API
 
 ### Skeleton
@@ -8280,9 +8543,13 @@ List row placeholders (dialog lists, tables).
 
 ### PageSkeleton
 
-Whole-page placeholder (Suspense fallbacks): title row + a grid of cards.
+Whole-page placeholder (Suspense fallbacks, route `loading.tsx`): title row + the shape of the content.
+`cards` (default) = a grid of cards, `list` = a toolbar and table rows, `detail` = a header card and two panels.
+Pick the shape the real page has, so nothing jumps when the data arrives (§13b).
 
-No props of its own.
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `shape` | `'list' \| 'cards' \| 'detail'` | `"cards"` |  |
 
 ### Loading
 
@@ -8314,6 +8581,7 @@ Prefer a server-side session check (proxy / async layout), which needs no gate a
 ## Notes
 
 - BootLoader waits `delay` (300 ms) before the spinner shows, so a fast check flashes nothing; the spin stops under prefers-reduced-motion. Prefer a server-side session check, which needs no gate (see the App shell doc, "Session gate in the layout").
+- PageSkeleton takes shape="cards" (default), "list" or "detail": pick the one the real page has so nothing jumps when the data arrives.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/skeleton/ and the types in src/ -->
 

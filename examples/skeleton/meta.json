@@ -41,9 +41,15 @@
     {
       "file": "page",
       "title": "Page and grid"
+    },
+    {
+      "file": "list-shape",
+      "title": "Shape of a list page",
+      "description": "A toolbar row and rows: match what the real page shows. PageSkeleton shape=\"list\" does the same for a whole page."
     }
   ],
   "notes": [
-    "BootLoader waits `delay` (300 ms) before the spinner shows, so a fast check flashes nothing; the spin stops under prefers-reduced-motion. Prefer a server-side session check, which needs no gate (see the App shell doc, \"Session gate in the layout\")."
+    "BootLoader waits `delay` (300 ms) before the spinner shows, so a fast check flashes nothing; the spin stops under prefers-reduced-motion. Prefer a server-side session check, which needs no gate (see the App shell doc, \"Session gate in the layout\").",
+    "PageSkeleton takes shape=\"cards\" (default), \"list\" or \"detail\": pick the one the real page has so nothing jumps when the data arrives."
   ]
 }

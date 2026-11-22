@@ -592,9 +592,20 @@
     "id": "empty-state",
     "title": "Empty state",
     "group": "Feedback",
-    "description": "What an empty list or page shows: an icon, one short title, a description and the action that fills it.",
+    "description": "What an empty list or page shows. `first-use`: one icon, one sentence, the one primary action that fills it. `no-results`: a search or filter matched nothing, with its own title and a “Xoá lọc” action.",
     "components": [
       "EmptyState"
+    ]
+  },
+  {
+    "id": "states",
+    "title": "Error, not found, no access",
+    "group": "Feedback",
+    "description": "The page-level states every app needs: ErrorState (what failed, with a retry), NotFound (a wrong URL) and Forbidden (no access), each with a link home, plus the route-file recipe (loading.tsx, error.tsx, not-found.tsx) that uses them.",
+    "components": [
+      "ErrorState",
+      "NotFound",
+      "Forbidden"
     ]
   },
   {
