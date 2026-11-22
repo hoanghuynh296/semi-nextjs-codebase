@@ -1,7 +1,7 @@
 name: Check
 
 # One run per PR push (agents always open a PR, so a separate push run was a duplicate); a newer push cancels the
-# older run of the same ref. main runs the same checks in deploy-storybook.yml.
+# older run of the same ref (about 4.5 min wall: 1 min build, 3 min shards). main runs the same checks in deploy-storybook.yml.
 on:
   pull_request:
   workflow_dispatch:
