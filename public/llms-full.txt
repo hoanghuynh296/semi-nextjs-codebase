@@ -989,13 +989,19 @@ the lint rule `local-toast` is a warning until 1.0.
   appears once; a toast with `undo`, `action` or `onCommit` is never merged (each carries its own callback). At most four show.
 - **Time (WCAG 2.2.1):** `<ToastHost durationScale={2} />` multiplies every auto-dismiss time (`0` keeps toasts until dismissed).
   **Alt+T** moves keyboard focus to the newest toast's action (to Hoàn tác, or its close button); focus inside a toast pauses its timer.
+  The shortcut is the `hotkey` prop (`"Ctrl+Alt+T"`, `false` turns it off); it is ignored in inputs, textareas, contenteditable and during
+  IME composition. Firefox on Windows / Linux may open its Alt menu bar on Alt+letter: set another `hotkey` or `false` there.
 - **Undo means undone:** `onUndo` reverses what already happened; if it cannot (a sent email), the action is irreversible: confirm first.
   `onUndo` must restore on the **server**, not only in local state: it can run after the component that showed the toast is gone.
-  `onCommit` runs once when the undo window closes without an undo (timeout, closed, pushed out by newer toasts, or the route changed):
-  do the real, lasting step there (delete on the server after the grace period). A **route change closes undo toasts** (and commits them),
-  so an undo never fires on a page that is gone.
+  `onCommit` runs once when the undo window closes without an undo (timeout, closed, pushed out by newer toasts, the route changed, or
+  `pagehide`: tab close and reload). It is **best effort and fire-and-forget**: a closing page cannot wait for it, so use
+  `fetch(url, { keepalive: true })` or `navigator.sendBeacon`. The robust pattern is to **commit first** (a soft delete on the server when
+  the user acts) and let `undo` restore on the server, so a missed `onCommit` only leaves a soft-deleted row.
+  A **route change closes undo toasts** that were already showing (and commits them), so an undo never fires on a page that is gone; a toast
+  shown within 2 s before the change (`TOAST_NAV_GRACE`) is the action's own navigation (delete on a detail page, then `router.push(list)`) and stays.
 - **`toast.promise(p, { loading, success, error, timeout })`:** `timeout` (default 30000 ms, `0` = none) ends a wait that never settles:
-  the toast shows `error` (called with an `Error("timeout")`) and closes on its normal timer; a late result of the promise is ignored by the toast.
+  the toast turns into the neutral "Vẫn đang xử lý…" (locale `stillWorking`; not an error, the work may still succeed) and closes on its normal
+  timer. A rejection always shows `error`; a result that arrives later updates the toast while it is still showing. Pass `timeout: 0` to wait for ever.
   `updateToast(id, patch)` keeps the id, so a second update and `dismissToast(id)` still work.
 - **`confirmDelete({ name, message?, confirmLabel? })`** is `confirmDialog` with `tone: "danger"`; `ConfirmHost` takes `deleteTitle(name)`,
   `deleteMessage` and `delete` ("Xoá") from the **provider's locale** (English under `SemiLocaleProvider locale={en}`); a prop wins.
@@ -5315,6 +5321,7 @@ The row goes at once; the toast offers Hoàn tác for 8 seconds.
 "use client";
 
 import { Button, toast } from "@semi/ui";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 // A reversible destructive action: do it at once, then offer "Hoàn tác" for 8 seconds. No question first.
@@ -5323,6 +5330,13 @@ import { useState } from "react";
 export default function ToastUndo() {
   const [rows, setRows] = useState(["Bản in mẫu A", "Bản in mẫu B", "Bản in mẫu C"]);
   const [gone, setGone] = useState(0);
+  const router = useRouter();
+
+  // delete on a detail page, then back to the list: the toast shown just before the navigation stays, and Hoàn tác works
+  const archiveAndLeave = () => {
+    toast.undo('Đã lưu trữ "Bản in mẫu D"', () => toast.success("Đã khôi phục bản in mẫu D"));
+    router.push("/components/confirm-dialog/");
+  };
 
   const archive = (name: string, index: number) => {
     setRows((r) => r.filter((x) => x !== name));
@@ -5340,6 +5354,11 @@ export default function ToastUndo() {
         </li>
       ))}
       {rows.length === 0 && <li className="text-label text-muted">Đã lưu trữ hết, bấm Hoàn tác để khôi phục.</li>}
+      <li>
+        <Button size="sm" variant="secondary" onClick={archiveAndLeave}>
+          Lưu trữ rồi chuyển trang
+        </Button>
+      </li>
       <li data-committed className="text-label text-muted">
         Đã chốt: {gone}
       </li>
@@ -5391,6 +5410,7 @@ export default function ToastPromise() {
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
+| `hotkey` | `string \| false` | `"Alt+T"` | Keyboard shortcut that focuses the newest toast's action (default "Alt+T"; `false` turns it off). Modifiers `Alt` `Ctrl` `Shift` `Meta` plus one letter. It is ignored while typing (inputs, textareas, contenteditable) and during IME composition. Firefox on Windows and Linux may open its Alt menu bar on Alt+letter; choose `"Ctrl+Alt+T"` or turn it off there. |
 | `durationScale` | `number` | `1` | Multiplies every auto-dismiss time (WCAG 2.2.1, "time to read"): 2 doubles them, for a product whose users read slowly or use a screen magnifier. Default 1; 0 keeps every toast until it is dismissed. |
 | `label` | `string` |  | Name of the notification region (default: locale `notifications`, "Thông báo"). Change it when a page section has the same name, e.g. a "Thông báo" settings group, so the two landmarks can be told apart. |
 
@@ -5399,14 +5419,14 @@ export default function ToastPromise() {
 - A live region (polite, assertive for danger); toasts with an action stay until dismissed or wait longer.
 - The stack is a region named by the locale's notifications string with two sibling live regions (danger assertive, the rest polite), never nested. Auto-dismiss pauses on hover and on keyboard focus.
 - A toast with an action or undo waits 8 s (and while hovered or focused); undo is a real button, so it is reachable by keyboard. A pending (promise) toast has no timer until it settles.
-- Alt+T moves keyboard focus to the newest toast's action (Hoàn tác or close); focus pauses its timer. ToastHost durationScale multiplies every auto-dismiss time (WCAG 2.2.1).
+- Alt+T (ToastHost hotkey, false turns it off; ignored while typing and in IME composition; Firefox's Alt menu is a caveat) moves keyboard focus to the newest toast's action; focus pauses its timer. ToastHost durationScale multiplies every auto-dismiss time (WCAG 2.2.1).
 
 ## Notes
 
 - <ToastHost /> goes once in the root layout (see Theme › Root layout); every toast() call anywhere shows there.
 - Feedback rule (§14c): reversible destructive action → toast.undo; irreversible → confirmDelete (names the object, red Xoá, Huỷ); success is one toast, never a modal. The same text still showing is replaced, not stacked.
 - `toast(opts)` keeps working; `toast.success(title, opts | ms)` etc. are shorthands. Use `updateToast(id, patch)` to change a toast that is still showing.
-- Undo: `onUndo` must restore on the server too (it can run after the component is gone); `onCommit` runs when the window closes without an undo, and undo toasts close on a route change. `toast.promise` has `timeout` (default 30 s). `updateToast` keeps the id.
+- Undo: `onUndo` must restore on the server too (it can run after the component is gone); `onCommit` runs when the window closes without an undo (also on pagehide: best effort, use keepalive / sendBeacon; commit first, undo restores). Undo toasts already showing close on a route change; one shown just before the action's own navigation stays. `toast.promise` has `timeout` (default 30 s: a neutral "Vẫn đang xử lý…", not an error). `updateToast` keeps the id.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/toast/ and the types in src/ -->
 

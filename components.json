@@ -2236,7 +2236,8 @@
       "summary": "Transient feedback after an action (\"Đã lưu\", \"Không kết nối được\"): the one toast API (docs/DESIGN_SYSTEM.md §14c).",
       "props": [
         "label",
-        "durationScale"
+        "durationScale",
+        "hotkey"
       ],
       "doc": "docs/components/toast.md"
     },
@@ -2660,6 +2661,13 @@
       "module": "src/Table.tsx",
       "client": false,
       "summary": ""
+    },
+    {
+      "name": "TOAST_NAV_GRACE",
+      "kind": "constant",
+      "module": "src/Toast.tsx",
+      "client": true,
+      "summary": "A navigation within this long of an undo toast being shown is that action's own (delete, then `router.push(list)`)."
     },
     {
       "name": "toast",

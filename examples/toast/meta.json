@@ -33,7 +33,7 @@
     "A live region (polite, assertive for danger); toasts with an action stay until dismissed or wait longer.",
     "The stack is a region named by the locale's notifications string with two sibling live regions (danger assertive, the rest polite), never nested. Auto-dismiss pauses on hover and on keyboard focus.",
     "A toast with an action or undo waits 8 s (and while hovered or focused); undo is a real button, so it is reachable by keyboard. A pending (promise) toast has no timer until it settles.",
-    "Alt+T moves keyboard focus to the newest toast's action (Hoàn tác or close); focus pauses its timer. ToastHost durationScale multiplies every auto-dismiss time (WCAG 2.2.1)."
+    "Alt+T (ToastHost hotkey, false turns it off; ignored while typing and in IME composition; Firefox's Alt menu is a caveat) moves keyboard focus to the newest toast's action; focus pauses its timer. ToastHost durationScale multiplies every auto-dismiss time (WCAG 2.2.1)."
   ],
   "examples": [
     {
@@ -55,6 +55,6 @@
     "<ToastHost /> goes once in the root layout (see Theme › Root layout); every toast() call anywhere shows there.",
     "Feedback rule (§14c): reversible destructive action → toast.undo; irreversible → confirmDelete (names the object, red Xoá, Huỷ); success is one toast, never a modal. The same text still showing is replaced, not stacked.",
     "`toast(opts)` keeps working; `toast.success(title, opts | ms)` etc. are shorthands. Use `updateToast(id, patch)` to change a toast that is still showing.",
-    "Undo: `onUndo` must restore on the server too (it can run after the component is gone); `onCommit` runs when the window closes without an undo, and undo toasts close on a route change. `toast.promise` has `timeout` (default 30 s). `updateToast` keeps the id."
+    "Undo: `onUndo` must restore on the server too (it can run after the component is gone); `onCommit` runs when the window closes without an undo (also on pagehide: best effort, use keepalive / sendBeacon; commit first, undo restores). Undo toasts already showing close on a route change; one shown just before the action's own navigation stays. `toast.promise` has `timeout` (default 30 s: a neutral \"Vẫn đang xử lý…\", not an error). `updateToast` keeps the id."
   ]
 }

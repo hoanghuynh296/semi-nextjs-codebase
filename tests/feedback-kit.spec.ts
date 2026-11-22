@@ -87,12 +87,31 @@ test("onCommit runs when the undo window closes without an undo, not after an un
   await expect(committed).toContainText("Đã chốt: 1");
 });
 
-test("a route change closes the undo window", async ({ page }) => {
+test("a route change closes an undo window that was open before it, but not the one the action itself started", async ({ page }) => {
+  // delete on a detail page, then router.push(list): the toast stays and Hoàn tác still works
+  let root = await open(page, "toast", "toast/undo");
+  await root.getByRole("button", { name: "Lưu trữ rồi chuyển trang" }).click();
+  await expect(page).toHaveURL(/confirm-dialog/);
+  const undo = STACK(page).getByRole("button", { name: "Hoàn tác" });
+  await expect(undo).toBeVisible();
+  await undo.click();
+  await expect(STACK(page).getByText("Đã khôi phục bản in mẫu D")).toBeVisible();
+  // a toast that has been showing a while is closed (and committed) when the user goes elsewhere
+  root = await open(page, "toast", "toast/undo");
+  await root.locator("[data-undo-list] li").first().getByRole("button", { name: "Lưu trữ" }).click();
+  await expect(STACK(page).getByRole("button", { name: "Hoàn tác" })).toBeVisible();
+  await page.waitForTimeout(2400);
+  await page.getByRole("link", { name: "Confirm dialog" }).first().click();
+  await expect(page).toHaveURL(/confirm-dialog/);
+  await expect(STACK(page).getByRole("button", { name: "Hoàn tác" })).toHaveCount(0);
+});
+
+test("onCommit also runs on pagehide (tab close, reload)", async ({ page }) => {
   const root = await open(page, "toast", "toast/undo");
   await root.locator("[data-undo-list] li").first().getByRole("button", { name: "Lưu trữ" }).click();
   await expect(STACK(page).getByRole("button", { name: "Hoàn tác" })).toBeVisible();
-  await page.getByRole("link", { name: "Confirm dialog" }).first().click();
-  await expect(page).toHaveURL(/confirm-dialog/);
+  await page.evaluate(() => window.dispatchEvent(new Event("pagehide")));
+  await expect(root.locator("[data-committed]")).toContainText("Đã chốt: 1");
   await expect(STACK(page).getByRole("button", { name: "Hoàn tác" })).toHaveCount(0);
 });
 
@@ -105,6 +124,27 @@ test("Alt+T moves keyboard focus to the newest toast's action", async ({ page })
   await expect(undo).toBeFocused();
 });
 
+test("Alt+T focuses the newest toast, and does nothing while typing in a field", async ({ page }) => {
+  const root = await open(page, "toast", "toast/undo");
+  const rows = root.locator("[data-undo-list] li").filter({ hasText: "Bản in mẫu" });
+  await rows.nth(0).getByRole("button", { name: "Lưu trữ" }).click(); // A
+  await rows.nth(0).getByRole("button", { name: "Lưu trữ" }).click(); // B: the newest
+  await expect(STACK(page).getByRole("button", { name: "Hoàn tác" })).toHaveCount(2);
+  await page.evaluate(() => {
+    const i = document.createElement("input");
+    i.id = "probe";
+    document.body.append(i);
+    i.focus();
+  });
+  await page.keyboard.press("Alt+T");
+  await expect(page.locator("#probe")).toBeFocused(); // typing: left alone
+  await page.evaluate(() => (document.activeElement as HTMLElement).blur());
+  await page.keyboard.press("Alt+T");
+  const focused = page.locator("[data-toast-action]:focus");
+  await expect(focused).toHaveCount(1);
+  await expect(page.locator("[data-toast-id]", { has: focused })).toContainText('"Bản in mẫu B"');
+});
+
 test("updateToast keeps the id: a second update lands in the same toast and the close button still dismisses it", async ({ page }) => {
   const root = await open(page, "toast", "toast/promise");
   await root.getByRole("button", { name: "Tiến độ" }).click();
@@ -114,11 +154,12 @@ test("updateToast keeps the id: a second update lands in the same toast and the 
   await expect(STACK(page).getByText("Đã gửi 3/3")).toHaveCount(0);
 });
 
-test("toast.promise timeout: a promise that never settles ends with the error text and closes", async ({ page }) => {
+test("toast.promise timeout: a promise that never settles turns into the neutral still-working text, not an error", async ({ page }) => {
   const root = await open(page, "toast", "toast/promise");
   await root.getByRole("button", { name: "Kết nối (treo)" }).click();
   await expect(STACK(page).getByText("Đang kết nối…")).toBeVisible();
-  await expect(STACK(page).locator('[aria-live="assertive"]')).toContainText("Quá thời gian chờ", { timeout: 4000 });
+  await expect(STACK(page).getByText("Vẫn đang xử lý…")).toBeVisible({ timeout: 4000 }); // neutral, not an error: the work may still finish
+  await expect(STACK(page).locator('[aria-live="assertive"]')).not.toContainText("Quá thời gian chờ");
   await expect(STACK(page).locator("svg.animate-spin")).toHaveCount(0);
 });
 
@@ -137,6 +178,10 @@ test("confirmDelete and the undo button take their texts from the provider's loc
   await dialog.getByRole("button", { name: "Cancel" }).click();
   await page.getByRole("button", { name: "Archive" }).click();
   await expect(page.getByRole("button", { name: "Undo" }).first()).toBeVisible();
+  await page.keyboard.press("Alt+T");
+  await expect(page.getByRole("button", { name: "Undo" })).not.toBeFocused();
+  await page.keyboard.press("Control+Alt+Y");
+  await expect(page.getByRole("button", { name: "Undo" }).first()).toBeFocused();
   await page.getByRole("button", { name: "Quick note" }).click();
   const note = page.locator("[aria-live]").getByText("Quick note");
   await expect(note.first()).toBeVisible();

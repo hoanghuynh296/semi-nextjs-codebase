@@ -8,12 +8,12 @@ export default function FeedbackLocale() {
   return (
     <SemiLocaleProvider locale={en}>
       <ConfirmHost />
-      <ToastHost label="Fast notifications" durationScale={0.1} />
+      <ToastHost label="Fast notifications" durationScale={0.1} hotkey="Ctrl+Alt+Y" />
       <div className="p-6 flex flex-wrap gap-2">
         <Button variant="danger" onClick={() => void confirmDelete({ name: "Server 1" })}>
           Delete server
         </Button>
-        <Button onClick={() => toast.undo("Archived", () => {})}>Archive</Button>
+        <Button onClick={() => toast.undo("Archived", () => {}, { duration: 0 })}>Archive</Button>
         <Button onClick={() => toast.info("Quick note")}>Quick note</Button>
       </div>
     </SemiLocaleProvider>

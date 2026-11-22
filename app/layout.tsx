@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Montserrat_Alternates, Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 import { ThemeProvider } from "../src/ThemeProvider";
 import { ThemeScript } from "../src/ThemeScript";
-import { ToastHost } from "../src/Toast";
-import { ConfirmHost } from "../src/confirmDialog";
-import { TaskHost } from "../src/TaskHost";
+import { SiteHosts } from "./SiteHosts";
 import { STYLE_SCRIPT } from "./styleScript";
 import { SiteShell } from "./SiteShell";
 import "./globals.css";
@@ -39,9 +37,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-canvas text-body antialiased selection:bg-accent-subtle-hover selection:text-accent-fg">
         <ThemeProvider defaultTheme="dark">
-          <ToastHost label="Thông báo nổi" />
-          <ConfirmHost />
-          <TaskHost />
+          <SiteHosts />
           {/* One shell for every page: the menu keeps its scroll and state when the page changes */}
           <SiteShell>{children}</SiteShell>
         </ThemeProvider>

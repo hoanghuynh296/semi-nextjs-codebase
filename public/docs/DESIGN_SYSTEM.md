@@ -633,13 +633,19 @@ the lint rule `local-toast` is a warning until 1.0.
   appears once; a toast with `undo`, `action` or `onCommit` is never merged (each carries its own callback). At most four show.
 - **Time (WCAG 2.2.1):** `<ToastHost durationScale={2} />` multiplies every auto-dismiss time (`0` keeps toasts until dismissed).
   **Alt+T** moves keyboard focus to the newest toast's action (to Hoàn tác, or its close button); focus inside a toast pauses its timer.
+  The shortcut is the `hotkey` prop (`"Ctrl+Alt+T"`, `false` turns it off); it is ignored in inputs, textareas, contenteditable and during
+  IME composition. Firefox on Windows / Linux may open its Alt menu bar on Alt+letter: set another `hotkey` or `false` there.
 - **Undo means undone:** `onUndo` reverses what already happened; if it cannot (a sent email), the action is irreversible: confirm first.
   `onUndo` must restore on the **server**, not only in local state: it can run after the component that showed the toast is gone.
-  `onCommit` runs once when the undo window closes without an undo (timeout, closed, pushed out by newer toasts, or the route changed):
-  do the real, lasting step there (delete on the server after the grace period). A **route change closes undo toasts** (and commits them),
-  so an undo never fires on a page that is gone.
+  `onCommit` runs once when the undo window closes without an undo (timeout, closed, pushed out by newer toasts, the route changed, or
+  `pagehide`: tab close and reload). It is **best effort and fire-and-forget**: a closing page cannot wait for it, so use
+  `fetch(url, { keepalive: true })` or `navigator.sendBeacon`. The robust pattern is to **commit first** (a soft delete on the server when
+  the user acts) and let `undo` restore on the server, so a missed `onCommit` only leaves a soft-deleted row.
+  A **route change closes undo toasts** that were already showing (and commits them), so an undo never fires on a page that is gone; a toast
+  shown within 2 s before the change (`TOAST_NAV_GRACE`) is the action's own navigation (delete on a detail page, then `router.push(list)`) and stays.
 - **`toast.promise(p, { loading, success, error, timeout })`:** `timeout` (default 30000 ms, `0` = none) ends a wait that never settles:
-  the toast shows `error` (called with an `Error("timeout")`) and closes on its normal timer; a late result of the promise is ignored by the toast.
+  the toast turns into the neutral "Vẫn đang xử lý…" (locale `stillWorking`; not an error, the work may still succeed) and closes on its normal
+  timer. A rejection always shows `error`; a result that arrives later updates the toast while it is still showing. Pass `timeout: 0` to wait for ever.
   `updateToast(id, patch)` keeps the id, so a second update and `dismissToast(id)` still work.
 - **`confirmDelete({ name, message?, confirmLabel? })`** is `confirmDialog` with `tone: "danger"`; `ConfirmHost` takes `deleteTitle(name)`,
   `deleteMessage` and `delete` ("Xoá") from the **provider's locale** (English under `SemiLocaleProvider locale={en}`); a prop wins.
