@@ -91,6 +91,27 @@ export default function SkeletonListShape() {
 }
 ```
 
+### Page shapes (in the shell)
+
+cards, list and detail with inShell: what a route loading.tsx renders.
+
+```tsx
+import { PageSkeleton } from "@semi/ui";
+
+// The three page shapes of a route loading.tsx (`inShell`: no full-page height or padding).
+export default function SkeletonShapes() {
+  return (
+    <div className="flex flex-col gap-6">
+      {(["cards", "list", "detail"] as const).map((shape) => (
+        <div key={shape} data-shape={shape} className="max-h-56 overflow-hidden">
+          <PageSkeleton shape={shape} inShell />
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
 ## API
 
 ### Skeleton
@@ -137,10 +158,13 @@ List row placeholders (dialog lists, tables).
 Whole-page placeholder (Suspense fallbacks, route `loading.tsx`): title row + the shape of the content.
 `cards` (default) = a grid of cards, `list` = a toolbar and table rows, `detail` = a header card and two panels.
 Pick the shape the real page has, so nothing jumps when the data arrives (§13b).
+`inShell` drops the full-viewport height, background and padding: use it in a route `loading.tsx` (the shell and its
+content slot already give those). Without it the skeleton is a whole page, for a Suspense fallback outside the shell.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `shape` | `'list' \| 'cards' \| 'detail'` | `"cards"` |  |
+| `inShell` | `boolean` | `false` |  |
 
 ### Loading
 

@@ -1943,9 +1943,10 @@
       "kind": "component",
       "module": "src/Skeleton.tsx",
       "client": true,
-      "summary": "Whole-page placeholder (Suspense fallbacks, route `loading.tsx`): title row + the shape of the content. `cards` (default) = a grid of cards, `list` = a toolbar and table rows, `detail` = a header card and two panels. Pick the shape the real page has, so nothing jumps when the data arrives (§13b).",
+      "summary": "Whole-page placeholder (Suspense fallbacks, route `loading.tsx`): title row + the shape of the content. `cards` (default) = a grid of cards, `list` = a toolbar and table rows, `detail` = a header card and two panels. Pick the shape the real page has, so nothing jumps when the data arrives (§13b). `inShell` drops the full-viewport height, background and padding: use it in a route `loading.tsx` (the shell and its content slot already give those). Without it the skeleton is a whole page, for a Suspense fallback outside the shell.",
       "props": [
-        "shape"
+        "shape",
+        "inShell"
       ],
       "doc": "docs/components/skeleton.md"
     },
@@ -1985,6 +1986,7 @@
         "retryLabel",
         "action",
         "icon",
+        "headingLevel",
         "className"
       ],
       "doc": "docs/components/states.md"
@@ -2000,6 +2002,7 @@
         "message",
         "homeHref",
         "homeLabel",
+        "headingLevel",
         "className"
       ],
       "doc": "docs/components/states.md"
@@ -2016,6 +2019,7 @@
         "homeHref",
         "homeLabel",
         "action",
+        "headingLevel",
         "className"
       ],
       "doc": "docs/components/states.md"

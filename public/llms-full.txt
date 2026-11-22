@@ -225,7 +225,7 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
   - `Pills`, `Chip` (+ `tone`), `Badge` (`tone="purple|blue|emerald|amber|rose|sky|..."`), `SearchInput`, `CustomSelect` (toolbar default vs `variant="field"` in forms), `CustomCombobox`, `DatePicker`, `Pagination`, `NumberInput` (+ `NumPadPopup`). Never native `<select>`, `type="date"`, `type="number"`.
   - `AppHeader` (stand-alone tool/3D app top bar), `PageActions`, `SidePanel`, `RefreshButton`, `ExternalLink`, `Markdown`.
   - Loading: `Skeleton` / `SkeletonCard` / `SkeletonGrid` / `SkeletonRows` / `PageSkeleton`; no "Đang tải…" text or page spinners. Only exception: `BootLoader` (below).
-  - States (§13, §13c): `EmptyState variant="first-use"` (one icon, one sentence, one primary action) or `"no-results"` (+ `onClearFilters` → "Xoá lọc"); hide the title-row primary while the empty state shows its own; `ErrorState onRetry`, `NotFound`, `Forbidden` (link home). Each route group ships `loading.tsx` (`PageSkeleton shape`), `error.tsx` (`<ErrorState onRetry={reset} />`), `not-found.tsx` (`<NotFound />`); `npx semi example states`.
+  - States (§13, §13c): `EmptyState variant="first-use"` (one icon, one sentence, one primary action) or `"no-results"` (+ `onClearFilters` → "Xoá lọc"); hide the title-row primary while the empty state shows its own; `ErrorState onRetry`, `NotFound`, `Forbidden` (link home). Each route group ships `loading.tsx` (`<PageSkeleton shape inShell />`), `error.tsx` (`<ErrorState headingLevel={1} onRetry={reset} />`), `not-found.tsx` (`<NotFound />`), plus root `app/error.tsx` and `app/global-error.tsx`; `npx semi example states`.
   - Shell and loading: `AppShell` once in `app/(app)/layout.tsx` (never in a page, `app-shell-in-page`); items routed by `href` (`shell-nav-href`); the session check once in that layout, best on the server; before the layout is known `if (!session) return <BootLoader />` (centred spinner, layouts only, `boot-loader-place`); content loading is a `loading.tsx` beside the layout with `PageSkeleton`, never a skeleton around the shell (`shell-gate`).
   - Confirmations: `confirmDialog({ title, message, confirmLabel, tone, icon })` + `<ConfirmHost />`, never `window.confirm`.
   - AI chat (§14b): `<AIChat messages busy onSend onStop onRetry onNewChat empty toolbar />` (or `ChatPanel` > `ChatView` > `ChatList` + `ChatComposer` with `UserMessage` / `AssistantMessage` / `ChatError` / `ChatThinking` / `ChatIntro` / `ChatSuggestion`). UI only: the app keeps messages and streaming; the provider → model → effort chips are `toolbar={<ChatModelPicker providers models efforts … />}`. Never a local composer or bubbles.
@@ -877,12 +877,15 @@ Vietnamese and come from the locale table (`errorTitle`, `notFoundMessage`, `for
 `app/` gets a `not-found.tsx` for URLs that match no group:
 
 ```tsx
-// loading.tsx  → <PageSkeleton shape="list" />      (shape = the page's: cards, list or detail)
-// error.tsx    → "use client"; <ErrorState onRetry={reset} detail={error.digest} />
+// loading.tsx  → <PageSkeleton shape="list" inShell />   (shape = the page's: cards, list or detail; inShell = no full-page height / padding)
+// error.tsx    → "use client"; <ErrorState headingLevel={1} onRetry={reset} detail={error.digest} />
 // not-found.tsx → <NotFound />
 ```
 
-The shell stays mounted; only the content area changes. Examples: `npx semi example states route-error` (and
+The shell stays mounted; only the content area changes. A route state is the page's `h1` (`headingLevel={1}`;
+`NotFound` and `Forbidden` default to it). A group's `error.tsx` does **not** catch errors in its own `layout.tsx`: add
+`app/error.tsx` for the root layout's children and `app/global-error.tsx` (it renders its own `<html>` and `<body>`)
+for the root layout itself. A phone-capped state whose content still overflows becomes focusable and scrolls. Examples: `npx semi example states route-error` (and
 `route-not-found`, `route-loading`). 401 (not signed in) redirects to login; 403 (signed in, not allowed) is `Forbidden`.
 
 ## 13b. Loading (shimmer skeleton)
@@ -8245,10 +8248,11 @@ The error boundary of a route group: Next.js gives it error and reset.
 "use client";
 
 // app/(app)/error.tsx: Next.js renders it inside the layout, so the shell stays and only the content is replaced.
+// A route error is the whole page, so its title is the h1. It does not catch errors in its own layout: see root error.tsx.
 import { ErrorState } from "@semi/ui";
 
 export default function ErrorPage({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
-  return <ErrorState onRetry={reset} detail={error.digest} />;
+  return <ErrorState headingLevel={1} onRetry={reset} detail={error.digest} />;
 }
 ```
 
@@ -8271,10 +8275,33 @@ PageSkeleton in the shape of the page (list, cards or detail).
 
 ```tsx
 // app/(app)/loading.tsx: the shell stays and the content shimmers in the shape of the page (list, cards or detail).
+// `inShell` drops the full-page height and padding, because the shell's content slot already gives them.
 import { PageSkeleton } from "@semi/ui";
 
 export default function Loading() {
-  return <PageSkeleton shape="list" />;
+  return <PageSkeleton shape="list" inShell />;
+}
+```
+
+### Root global-error.tsx
+
+The net for an error in the root layout; it renders its own html and body.
+
+```tsx
+"use client";
+
+// app/global-error.tsx: the last net, for an error in the ROOT layout (which app/error.tsx cannot catch). It replaces the
+// whole document, so it renders its own <html> and <body>, and cannot use the shell or ThemeProvider.
+import { ErrorState } from "@semi/ui";
+
+export default function GlobalError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+  return (
+    <html lang="vi">
+      <body>
+        <ErrorState headingLevel={1} onRetry={reset} detail={error.digest} />
+      </body>
+    </html>
+  );
 }
 ```
 
@@ -8294,6 +8321,7 @@ data already loaded on screen and show this in place of the failed part only (§
 | `retryLabel` | `string` |  |  |
 | `action` | `React.ReactNode` |  | Extra action beside the retry (a link home, "Báo lỗi"). |
 | `icon` | `IconName` | `"alert"` |  |
+| `headingLevel` | `2 \| 3 \| 1` |  | Heading level of the title: 2 inside a page (default), 1 when this is the whole page (a route `error.tsx`). |
 | `className` | `string` |  |  |
 
 ### NotFound
@@ -8306,6 +8334,7 @@ A wrong or removed URL (route `not-found.tsx`, `notFound()`): one sentence and a
 | `message` | `React.ReactNode` |  |  |
 | `homeHref` | `string` | `"/"` | Where "Về trang chủ" goes. |
 | `homeLabel` | `string` |  |  |
+| `headingLevel` | `2 \| 3 \| 1` | `1` | Heading level of the title: 1 (default, a not-found page is the whole page) or 2 inside a page. |
 | `className` | `string` |  |  |
 
 ### Forbidden
@@ -8318,6 +8347,7 @@ Signed in but not allowed (a 403, or a page the role cannot open): say so and li
 | `message` | `React.ReactNode` |  |  |
 | `homeHref` | `string` | `"/"` |  |
 | `homeLabel` | `string` |  |  |
+| `headingLevel` | `2 \| 3 \| 1` | `1` | Heading level of the title: 1 (default) or 2 inside a page. |
 | `action` | `React.ReactNode` |  | Extra action beside the link home (a mailto to the admin, "Đổi tài khoản"). |
 | `className` | `string` |  |  |
 
@@ -8325,10 +8355,11 @@ Signed in but not allowed (a 403, or a page the role cannot open): say so and li
 
 - ErrorState is role="alert", so screen readers announce it; the retry is a normal button.
 - NotFound and Forbidden have one heading and a link home; Forbidden offers no retry.
+- A route-level state is the page's h1 (headingLevel={1}); inside a page keep ErrorState at h2. Below sm the state is capped at 40% of the viewport and, if its content overflows, becomes a focusable, scrollable region.
 
 ## Notes
 
-- Recipe: per route group put loading.tsx, error.tsx and not-found.tsx beside layout.tsx (the three route-* examples). Put app/not-found.tsx at the root for URLs that match no group.
+- Recipe: per route group put loading.tsx, error.tsx and not-found.tsx beside layout.tsx (the route-* examples), titles as h1 (`headingLevel={1}`; NotFound and Forbidden default to h1). Put app/not-found.tsx at the root for URLs that match no group. A group's error.tsx does not catch errors in its own layout: add a root app/error.tsx for the root layout's children and app/global-error.tsx (it renders its own html and body) for the root layout itself.
 - Keep data already loaded: when a refetch fails, show ErrorState in place of the failed part only and leave the rest on screen.
 - Show a code or digest in `detail` for support, never the stack. Texts are Vietnamese by default and come from SemiLocaleProvider; pass title / message for product wording.
 - 403 means signed in but not allowed (Forbidden, no retry); not signed in goes to the login page, not to Forbidden.
@@ -8500,6 +8531,27 @@ export default function SkeletonListShape() {
 }
 ```
 
+### Page shapes (in the shell)
+
+cards, list and detail with inShell: what a route loading.tsx renders.
+
+```tsx
+import { PageSkeleton } from "@semi/ui";
+
+// The three page shapes of a route loading.tsx (`inShell`: no full-page height or padding).
+export default function SkeletonShapes() {
+  return (
+    <div className="flex flex-col gap-6">
+      {(["cards", "list", "detail"] as const).map((shape) => (
+        <div key={shape} data-shape={shape} className="max-h-56 overflow-hidden">
+          <PageSkeleton shape={shape} inShell />
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
 ## API
 
 ### Skeleton
@@ -8546,10 +8598,13 @@ List row placeholders (dialog lists, tables).
 Whole-page placeholder (Suspense fallbacks, route `loading.tsx`): title row + the shape of the content.
 `cards` (default) = a grid of cards, `list` = a toolbar and table rows, `detail` = a header card and two panels.
 Pick the shape the real page has, so nothing jumps when the data arrives (§13b).
+`inShell` drops the full-viewport height, background and padding: use it in a route `loading.tsx` (the shell and its
+content slot already give those). Without it the skeleton is a whole page, for a Suspense fallback outside the shell.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `shape` | `'list' \| 'cards' \| 'detail'` | `"cards"` |  |
+| `inShell` | `boolean` | `false` |  |
 
 ### Loading
 

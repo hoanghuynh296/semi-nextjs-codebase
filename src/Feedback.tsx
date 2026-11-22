@@ -2,6 +2,7 @@
 
 // Inline feedback & identity: Alert (callout / banner), Progress, Avatar, EmptyState.
 import React from "react";
+import { useOverflowing } from "./useOverflowing";
 import { Icon, type IconName } from "./Icon";
 import { STATUS_ICON, type StatusTone } from "./Toast";
 import { useSemiLocale } from "./locale";
@@ -162,13 +163,15 @@ export function EmptyState({
 }) {
   const t = useSemiLocale();
   const noResults = variant === "no-results";
+  const [ref, over] = useOverflowing<HTMLDivElement>();
+  const heading = title ?? (noResults ? t.noResults : t.noData);
   const shownAction = noResults && onClearFilters ? <Button variant="secondary" icon="close" onClick={onClearFilters}>{t.clearFilters}</Button> : action;
   return (
-    <div data-empty={variant ?? "default"} className={cn(EMPTY_STATIC, EMPTY_PHONE_CAP, className)}>
+    <div ref={ref} data-empty={variant ?? "default"} tabIndex={over ? 0 : undefined} aria-label={over && typeof heading === "string" ? heading : undefined} className={cn(EMPTY_STATIC, EMPTY_PHONE_CAP, "max-sm:justify-start", className)}>
       <span className="w-9 h-9 rounded-card bg-field border border-line flex items-center justify-center text-muted shrink-0">
         <Icon name={icon ?? (noResults ? "search" : "box")} className="w-4 h-4" />
       </span>
-      <div className="text-ui font-medium text-contrast">{title ?? (noResults ? t.noResults : t.noData)}</div>
+      <div className="text-ui font-medium text-contrast">{heading}</div>
       {(description ?? (noResults ? t.noResultsHint : undefined)) && <div className="text-label text-muted max-w-sm">{description ?? t.noResultsHint}</div>}
       {shownAction && <div className="pt-1">{shownAction}</div>}
     </div>

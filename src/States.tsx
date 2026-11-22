@@ -6,11 +6,13 @@ import Link from "next/link";
 import { Button } from "./Button";
 import { Icon, type IconName } from "./Icon";
 import { useSemiLocale } from "./locale";
+import { useOverflowing } from "./useOverflowing";
 import { BTN_PRIMARY } from "../styles/buttons";
 import { EMPTY_PHONE_CAP } from "../styles/surfaces";
 import { cn } from "../styles/utils";
 
 type StateTone = "danger" | "neutral";
+export type StateHeadingLevel = 1 | 2 | 3;
 
 function StateBlock({
   kind,
@@ -20,6 +22,7 @@ function StateBlock({
   message,
   detail,
   role,
+  headingLevel = 2,
   children,
   className,
 }: {
@@ -30,14 +33,20 @@ function StateBlock({
   message?: React.ReactNode;
   detail?: React.ReactNode;
   role?: "alert";
+  headingLevel?: StateHeadingLevel;
   children?: React.ReactNode;
   className?: string;
 }) {
+  const [ref, over] = useOverflowing<HTMLDivElement>();
+  const Heading = `h${headingLevel}` as const;
   return (
     <div
+      ref={ref}
       role={role}
       data-state={kind}
-      className={cn("w-full flex flex-col items-center justify-center gap-3 text-center px-4 py-12 sm:py-16 min-h-[40dvh] max-sm:min-h-0", EMPTY_PHONE_CAP, className)}
+      tabIndex={over ? 0 : undefined}
+      aria-label={over && typeof title === "string" ? title : undefined}
+      className={cn("w-full flex flex-col items-center justify-center max-sm:justify-start gap-3 text-center px-4 py-12 sm:py-16 min-h-[40dvh] max-sm:min-h-0", EMPTY_PHONE_CAP, className)}
     >
       <span
         className={cn(
@@ -47,7 +56,7 @@ function StateBlock({
       >
         <Icon name={icon} className="w-5 h-5" />
       </span>
-      <h2 className="text-heading font-title text-contrast">{title}</h2>
+      <Heading className="text-heading font-title text-contrast">{title}</Heading>
       {message && <p className="text-ui text-muted max-w-md">{message}</p>}
       {detail && <p className="text-caption text-muted tabular-nums break-all max-w-md">{detail}</p>}
       {children && <div className="pt-1 flex flex-wrap items-center justify-center gap-2">{children}</div>}
@@ -67,6 +76,7 @@ export function ErrorState({
   retryLabel,
   action,
   icon = "alert",
+  headingLevel,
   className,
 }: {
   /** Defaults to "Có lỗi xảy ra". */
@@ -81,11 +91,13 @@ export function ErrorState({
   /** Extra action beside the retry (a link home, "Báo lỗi"). */
   action?: React.ReactNode;
   icon?: IconName;
+  /** Heading level of the title: 2 inside a page (default), 1 when this is the whole page (a route `error.tsx`). */
+  headingLevel?: StateHeadingLevel;
   className?: string;
 }) {
   const t = useSemiLocale();
   return (
-    <StateBlock kind="error" role="alert" icon={icon} tone="danger" title={title ?? t.errorTitle} message={message ?? t.errorMessage} detail={detail} className={className}>
+    <StateBlock kind="error" role="alert" headingLevel={headingLevel} icon={icon} tone="danger" title={title ?? t.errorTitle} message={message ?? t.errorMessage} detail={detail} className={className}>
       {onRetry && (
         <Button variant="primary" icon="refresh" onClick={onRetry}>
           {retryLabel ?? t.retry}
@@ -111,6 +123,7 @@ export function NotFound({
   message,
   homeHref = "/",
   homeLabel,
+  headingLevel = 1,
   className,
 }: {
   title?: React.ReactNode;
@@ -118,11 +131,13 @@ export function NotFound({
   /** Where "Về trang chủ" goes. */
   homeHref?: string;
   homeLabel?: string;
+  /** Heading level of the title: 1 (default, a not-found page is the whole page) or 2 inside a page. */
+  headingLevel?: StateHeadingLevel;
   className?: string;
 }) {
   const t = useSemiLocale();
   return (
-    <StateBlock kind="not-found" icon="search" tone="neutral" title={title ?? t.notFoundTitle} message={message ?? t.notFoundMessage} className={className}>
+    <StateBlock kind="not-found" headingLevel={headingLevel} icon="search" tone="neutral" title={title ?? t.notFoundTitle} message={message ?? t.notFoundMessage} className={className}>
       <HomeLink href={homeHref} label={homeLabel ?? t.home} />
     </StateBlock>
   );
@@ -135,19 +150,22 @@ export function Forbidden({
   homeHref = "/",
   homeLabel,
   action,
+  headingLevel = 1,
   className,
 }: {
   title?: React.ReactNode;
   message?: React.ReactNode;
   homeHref?: string;
   homeLabel?: string;
+  /** Heading level of the title: 1 (default) or 2 inside a page. */
+  headingLevel?: StateHeadingLevel;
   /** Extra action beside the link home (a mailto to the admin, "Đổi tài khoản"). */
   action?: React.ReactNode;
   className?: string;
 }) {
   const t = useSemiLocale();
   return (
-    <StateBlock kind="forbidden" icon="lock" tone="neutral" title={title ?? t.forbiddenTitle} message={message ?? t.forbiddenMessage} className={className}>
+    <StateBlock kind="forbidden" headingLevel={headingLevel} icon="lock" tone="neutral" title={title ?? t.forbiddenTitle} message={message ?? t.forbiddenMessage} className={className}>
       <HomeLink href={homeHref} label={homeLabel ?? t.home} />
       {action}
     </StateBlock>

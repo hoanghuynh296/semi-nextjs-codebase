@@ -46,6 +46,11 @@
       "file": "list-shape",
       "title": "Shape of a list page",
       "description": "A toolbar row and rows: match what the real page shows. PageSkeleton shape=\"list\" does the same for a whole page."
+    },
+    {
+      "file": "shapes",
+      "title": "Page shapes (in the shell)",
+      "description": "cards, list and detail with inShell: what a route loading.tsx renders."
     }
   ],
   "notes": [

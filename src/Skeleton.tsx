@@ -81,10 +81,12 @@ export function SkeletonRows({ count = 5, className = "flex flex-col gap-2", lab
  * Whole-page placeholder (Suspense fallbacks, route `loading.tsx`): title row + the shape of the content.
  * `cards` (default) = a grid of cards, `list` = a toolbar and table rows, `detail` = a header card and two panels.
  * Pick the shape the real page has, so nothing jumps when the data arrives (§13b).
+ * `inShell` drops the full-viewport height, background and padding: use it in a route `loading.tsx` (the shell and its
+ * content slot already give those). Without it the skeleton is a whole page, for a Suspense fallback outside the shell.
  */
-export function PageSkeleton({ shape = "cards" }: { shape?: "cards" | "list" | "detail" }) {
+export function PageSkeleton({ shape = "cards", inShell = false }: { shape?: "cards" | "list" | "detail"; inShell?: boolean }) {
   return (
-    <div className="h-dvh bg-app p-4 sm:p-6 max-w-[1440px] w-full mx-auto flex flex-col gap-5">
+    <div className={inShell ? "w-full flex flex-col gap-5" : "h-dvh bg-app p-4 sm:p-6 max-w-[1440px] w-full mx-auto flex flex-col gap-5"}>
       <div className="flex items-center gap-3">
         <Skeleton className="w-10 h-10 !rounded-control" />
         <Skeleton className="h-5 w-40" />

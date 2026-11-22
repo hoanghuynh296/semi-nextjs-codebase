@@ -62,10 +62,11 @@ The error boundary of a route group: Next.js gives it error and reset.
 "use client";
 
 // app/(app)/error.tsx: Next.js renders it inside the layout, so the shell stays and only the content is replaced.
+// A route error is the whole page, so its title is the h1. It does not catch errors in its own layout: see root error.tsx.
 import { ErrorState } from "@semi/ui";
 
 export default function ErrorPage({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
-  return <ErrorState onRetry={reset} detail={error.digest} />;
+  return <ErrorState headingLevel={1} onRetry={reset} detail={error.digest} />;
 }
 ```
 
@@ -88,10 +89,33 @@ PageSkeleton in the shape of the page (list, cards or detail).
 
 ```tsx
 // app/(app)/loading.tsx: the shell stays and the content shimmers in the shape of the page (list, cards or detail).
+// `inShell` drops the full-page height and padding, because the shell's content slot already gives them.
 import { PageSkeleton } from "@semi/ui";
 
 export default function Loading() {
-  return <PageSkeleton shape="list" />;
+  return <PageSkeleton shape="list" inShell />;
+}
+```
+
+### Root global-error.tsx
+
+The net for an error in the root layout; it renders its own html and body.
+
+```tsx
+"use client";
+
+// app/global-error.tsx: the last net, for an error in the ROOT layout (which app/error.tsx cannot catch). It replaces the
+// whole document, so it renders its own <html> and <body>, and cannot use the shell or ThemeProvider.
+import { ErrorState } from "@semi/ui";
+
+export default function GlobalError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+  return (
+    <html lang="vi">
+      <body>
+        <ErrorState headingLevel={1} onRetry={reset} detail={error.digest} />
+      </body>
+    </html>
+  );
 }
 ```
 
@@ -111,6 +135,7 @@ data already loaded on screen and show this in place of the failed part only (§
 | `retryLabel` | `string` |  |  |
 | `action` | `React.ReactNode` |  | Extra action beside the retry (a link home, "Báo lỗi"). |
 | `icon` | `IconName` | `"alert"` |  |
+| `headingLevel` | `2 \| 3 \| 1` |  | Heading level of the title: 2 inside a page (default), 1 when this is the whole page (a route `error.tsx`). |
 | `className` | `string` |  |  |
 
 ### NotFound
@@ -123,6 +148,7 @@ A wrong or removed URL (route `not-found.tsx`, `notFound()`): one sentence and a
 | `message` | `React.ReactNode` |  |  |
 | `homeHref` | `string` | `"/"` | Where "Về trang chủ" goes. |
 | `homeLabel` | `string` |  |  |
+| `headingLevel` | `2 \| 3 \| 1` | `1` | Heading level of the title: 1 (default, a not-found page is the whole page) or 2 inside a page. |
 | `className` | `string` |  |  |
 
 ### Forbidden
@@ -135,6 +161,7 @@ Signed in but not allowed (a 403, or a page the role cannot open): say so and li
 | `message` | `React.ReactNode` |  |  |
 | `homeHref` | `string` | `"/"` |  |
 | `homeLabel` | `string` |  |  |
+| `headingLevel` | `2 \| 3 \| 1` | `1` | Heading level of the title: 1 (default) or 2 inside a page. |
 | `action` | `React.ReactNode` |  | Extra action beside the link home (a mailto to the admin, "Đổi tài khoản"). |
 | `className` | `string` |  |  |
 
@@ -142,10 +169,11 @@ Signed in but not allowed (a 403, or a page the role cannot open): say so and li
 
 - ErrorState is role="alert", so screen readers announce it; the retry is a normal button.
 - NotFound and Forbidden have one heading and a link home; Forbidden offers no retry.
+- A route-level state is the page's h1 (headingLevel={1}); inside a page keep ErrorState at h2. Below sm the state is capped at 40% of the viewport and, if its content overflows, becomes a focusable, scrollable region.
 
 ## Notes
 
-- Recipe: per route group put loading.tsx, error.tsx and not-found.tsx beside layout.tsx (the three route-* examples). Put app/not-found.tsx at the root for URLs that match no group.
+- Recipe: per route group put loading.tsx, error.tsx and not-found.tsx beside layout.tsx (the route-* examples), titles as h1 (`headingLevel={1}`; NotFound and Forbidden default to h1). Put app/not-found.tsx at the root for URLs that match no group. A group's error.tsx does not catch errors in its own layout: add a root app/error.tsx for the root layout's children and app/global-error.tsx (it renders its own html and body) for the root layout itself.
 - Keep data already loaded: when a refetch fails, show ErrorState in place of the failed part only and leave the rest on screen.
 - Show a code or digest in `detail` for support, never the stack. Texts are Vietnamese by default and come from SemiLocaleProvider; pass title / message for product wording.
 - 403 means signed in but not allowed (Forbidden, no retry); not signed in goes to the login page, not to Forbidden.

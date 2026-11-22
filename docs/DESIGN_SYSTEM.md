@@ -526,12 +526,15 @@ Vietnamese and come from the locale table (`errorTitle`, `notFoundMessage`, `for
 `app/` gets a `not-found.tsx` for URLs that match no group:
 
 ```tsx
-// loading.tsx  → <PageSkeleton shape="list" />      (shape = the page's: cards, list or detail)
-// error.tsx    → "use client"; <ErrorState onRetry={reset} detail={error.digest} />
+// loading.tsx  → <PageSkeleton shape="list" inShell />   (shape = the page's: cards, list or detail; inShell = no full-page height / padding)
+// error.tsx    → "use client"; <ErrorState headingLevel={1} onRetry={reset} detail={error.digest} />
 // not-found.tsx → <NotFound />
 ```
 
-The shell stays mounted; only the content area changes. Examples: `npx semi example states route-error` (and
+The shell stays mounted; only the content area changes. A route state is the page's `h1` (`headingLevel={1}`;
+`NotFound` and `Forbidden` default to it). A group's `error.tsx` does **not** catch errors in its own `layout.tsx`: add
+`app/error.tsx` for the root layout's children and `app/global-error.tsx` (it renders its own `<html>` and `<body>`)
+for the root layout itself. A phone-capped state whose content still overflows becomes focusable and scrolls. Examples: `npx semi example states route-error` (and
 `route-not-found`, `route-loading`). 401 (not signed in) redirects to login; 403 (signed in, not allowed) is `Forbidden`.
 
 ## 13b. Loading (shimmer skeleton)
