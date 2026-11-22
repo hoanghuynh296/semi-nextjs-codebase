@@ -148,3 +148,111 @@ Migration plan: (1) release migration `migrations/<ver>-type-scale.mjs` rewritin
 6. Want `DataTable` to switch to cards on phones (new component work), or horizontal scroll with a sticky first column?
 
 **Not done:** real iPhone/Safari check, Vietnamese long-label wrapping beyond the sample pages, dark-theme screenshots (dark was audited on 3 pages only).
+
+---
+
+# Part 2. Phone layout (scope added by the owner)
+
+Question: why do phone screens agents build in the apps look messy, and what should Semi enforce?
+
+## 8. What the rules say today
+
+| Topic | Today (DESIGN_SYSTEM.md, skills) | Gap |
+|---|---|---|
+| "Phone first" (§1) | no horizontal page scroll at 375, touch targets ≥ 36px (44 for nav) | a floor, not a layout: nothing says how a screen is built |
+| Page structure | `PageTitle` then `SubpageToolbar` (pill filters left, icon CTA right), sticky below the safe area; a title row variant (§4a) | no phone variant: the same row wraps (ds#57) |
+| Spacing | `px-4 sm:px-6`, `gap-group` 16, `p-card` 16, density budgets (`tight-box`, `tight-row`) | budgets catch tightness, not *too many rows of chrome* |
+| Columns | grids use `sm:grid-cols-…`; "single column" only implied | no rule: one column + full-width cards on phones |
+| List vs table | `Table` "scrolls sideways on phones"; `DataTable` has no phone mode (ds#25) | wide tables are the default phone result |
+| Detail, back | none; `Drawer` has a bottom side; modals are "full screen on phones" | no push-detail + Back pattern (ds#59), no sheet detents or grabber |
+| Sticky actions, safe area | `STICKY_TOOLBAR`, tab bar and Drawer use `env(safe-area-*)` | no sticky bottom action bar; forms have no submit-bar rule |
+| Forms | `Field` stacks label above input; fields 16px (v0.33.0) | no `inputMode` / `enterKeyHint` / `autoComplete` rule (only `NumberInput` sets `inputMode`) |
+| Empty / loading | `EMPTY` card, skeleton (§13, §13b) | fine on phones, but the empty card can fill the screen (see studio) |
+| Checks | `semi density` and `semi a11y` at 375 (budgets, 24px targets, 16px fields) | no check for toolbar rows, table width, duplicate title, bar overlap (ds#60) |
+| Skills | `semi-ui` and AGENTS rules say "check at phone width"; `semi-check` runs the two tools | agents are told to *look*, never *what good looks like* |
+
+## 9. Real screens at 375×812 (read-only, dev servers)
+
+Reached: **sales-hub** (3300: Inbox, Customers, Settings), **3dnoobs-studio** (3140: dashboard, Slicer), **project-manager** (3011: start
+screen), **data-hub** (3190: login only, needs a session). **Down, skipped:** sme-hub (3200), feedback-hub (33000). I did not log in or change data.
+Sales-hub shows real customer names and mail, so its screenshots are **not committed**; studio's are
+(`assets/app-studio-dashboard-375.png`, `app-studio-slicer-375.png`).
+
+Recurring problems:
+1. **Toolbar becomes 3–4 rows of chrome before content** (sales-hub Customers): three filter selects on two rows, then a row with
+   two text buttons plus the primary "+", then a lone search icon on a fourth row, then a summary line. About 190px of 812 before the first record.
+2. **Header cramped / split** (Inbox): the page title shares a row with a select, then three icon buttons wrap to a second row;
+   the card inside repeats the same title ("Hộp thư đến") the select already shows: **duplicate title**.
+3. **Tab rows clip** (sales-hub Settings): five section tabs run off the edge with no affordance; options styled as bare text with no boundary.
+4. **Bottom tab bar overload** (studio): six tabs with truncated labels ("Dashboa…", "Filament …", "Periphe…", "Automatio…"); sales-hub has four and reads fine.
+5. **Tables on a phone:** Customers shows one data column plus a checkbox column; the rest is off-screen, the selection checkbox costs 40px for a rarely used action.
+6. **Marketing inside a tool** (studio Slicer): a large upload card and three feature cards, no title or back in the top bar (only an AI icon), actions hidden below the fold.
+7. **Empty states too large** (studio dashboard): "No prints in this period" sits in a ~150px blank block, and a dashed empty card follows; the first screen shows zero data.
+8. **Popover covers the action** (project-manager): the folder suggestions open on load and cover the helper text and the primary button.
+9. **Inconsistent paddings:** nested cards (page panel › card › tile) give about 32px of side margin on each side, so content is ~310px wide in a 375 screen (studio dashboard).
+10. **Tile row scrolls sideways** (studio quick tiles) with no hint, the cut-off tile reads as a bug.
+
+## 10. Apple HIG, iPhone (current pages)
+
+Sources: [layout](https://developer.apple.com/design/human-interface-guidelines/layout), [toolbars](https://developer.apple.com/design/human-interface-guidelines/toolbars),
+[tab bars](https://developer.apple.com/design/human-interface-guidelines/tab-bars), [sheets](https://developer.apple.com/design/human-interface-guidelines/sheets),
+[lists and tables](https://developer.apple.com/design/human-interface-guidelines/lists-and-tables), [text fields](https://developer.apple.com/design/human-interface-guidelines/text-fields),
+[entering data](https://developer.apple.com/design/human-interface-guidelines/entering-data), [buttons](https://developer.apple.com/design/human-interface-guidelines/buttons).
+The navigation-bars and forms pages returned 404 (their rules are folded into toolbars and entering-data). HIG gives **no iPhone margin, row-height or safe-area numbers**;
+those below are Apple's *rules*, numbers only where the page has one.
+
+- **Margins / safe area:** respect safe areas and the Dynamic Island; limit text width for readability; stack views vertically and let rows grow when text is larger.
+- **Navigation / toolbar:** large title that becomes standard on scroll; standard Back (no "Back" text); keep titles under 15 characters; **one primary action, trailing**; overflow goes to a More menu; about three groups of items.
+- **Tab bar:** fewer tabs, single-word labels, never hide or disable a tab, avoid an overflow tab, badges only for critical info; stays visible across sections.
+- **Sheets:** detents medium (about half) and large; **grabber** on resizable sheets; swipe to dismiss (confirm when unsaved); Cancel leading, Done trailing; one sheet at a time; full-screen for long flows.
+- **Lists:** disclosure chevron to drill in; succinct text; selection only in an edit mode.
+- **Forms:** a real label (placeholder is only a hint); fields stacked vertically; keyboard type fits the content; prefill, pickers over typing; validate as you go; **hit target ≥ 44×44pt**; one or two prominent buttons per view; spinner inside a button for slow actions.
+- **Empty / loading:** no HIG page; closest is "don't hide tabs, explain why a section is empty".
+
+Semi differs: filters/CTA in a wrapping row instead of a nav bar with one trailing action and a More menu; tables instead of disclosure lists; no sheet grabber/detents; 34px controls.
+
+## 11. Proposed phone layout rules (below `sm`, 375 is the test width)
+
+Each rule says what provides it and what could check it (`D` = `semi density`, `A` = `semi a11y`, `L` = `semi-lint`, `S` = `semi-ui` skill).
+
+| # | Rule | Provided by | Check |
+|---|---|---|---|
+| P1 | **Chrome budget:** title + toolbar + filters ≤ 2 rows, ≤ 25% of viewport height (≈200px) before first content; a 3rd row means filters move into a sheet | `SubpageToolbar` phone mode: filters → "Lọc" button opening a bottom `Drawer` with active filters as removable chips; secondary actions → "⋯" menu (ds#57) | D `toolbar-rows` (count distinct rows of controls above the first content block; ds#60) |
+| P2 | **One primary action, trailing/bottom:** one filled accent button per view; on phones a primary create action is a round icon button in the toolbar or a sticky bottom bar, never a text button row | `SubpageToolbar` `primary`, new `StickyActionBar` | D `primary-actions` (exists) |
+| P3 | **Tables become lists:** a table wider than the viewport is a stacked list (title line, 1–2 meta lines, status badge, chevron) below `sm`; never more than 2 data columns beside a checkbox | `DataTable` `phone="list"` (default for ≥ 3 columns), `Item`/`ItemGroup` (ds#25) | D `phone-table` (a `table` whose scrollWidth > clientWidth + 8px at 375) |
+| P4 | **Selection is a mode:** row checkboxes appear after "Chọn" (Apple's edit mode), not as a permanent 40px column | `DataTable` `selectable="mode"` | A/D count checkbox columns at 375 |
+| P5 | **Detail = push with Back:** opening a record navigates to a detail page with a Back button, title ≤ 15 chars short form, one primary + "⋯" overflow; no master-detail split on phones | new `DetailView` / `PageTitle back` (ds#59) | L `detail-no-back` (a route with `[id]` and no `back`) |
+| P6 | **Sheets:** pickers, filters, row actions and small forms are bottom sheets with grabber, Cancel/Done, medium and large detents; long or multi-step flows are a full-screen `Modal` | `Drawer side="bottom"` gains `detents`, `grabber`; `Modal` stays full screen | L `custom-overlay` (exists) |
+| P7 | **Navigation:** ≤ 5 tabs, labels one word ≤ 10 chars, no truncation; the rest go in "Menu"; no sub-items on phones (§4a) | `MobileTabBar`/`AppShell` (cap and warn at 6) | A `tabbar-labels` (label scrollWidth > clientWidth) |
+| P8 | **No titled duplicates:** one `h1` per screen; a card/section title may not repeat the `h1` or the selected filter label | `PageTitle`, `Card` | D `duplicate-heading` (ds#60) |
+| P9 | **Margins and nesting:** page gutter 16, at most one framed box inside the page panel on phones (use dividers, not nested cards); content width ≥ 343px | `Card` flat variant `max-sm`, `AppShell` content container | D `box-nesting` (exists, make it 2 at 375), `narrow-content` |
+| P10 | **Single column:** grids are one column below `sm` (two only for tiles ≤ 4 short items); no horizontal-scroll rows without a visible partial next item and `scroll-snap` | `grid` examples, `ScrollRow` (new, or `Carousel`) | D `clipped-row` |
+| P11 | **Forms:** label above field; ≤ 1 field per row; `inputMode`/`autoComplete`/`enterKeyHint` set by field `kind` (email, tel, number, url, search); submit in a sticky bottom bar above the keyboard with `h-11`; validate on blur | `Field` `kind`, `FormActions` (new sticky bar), `NumberInput` | L `field-input-mode` (an `<Input>` named email/phone/amount without `kind`/`inputMode`), A `form-submit-visible` |
+| P12 | **Targets:** controls ≥ 44px tall on phones, 8px apart (table/list rows ≥ 44) | style token `spacing-control` 44 below `sm`, `Button`, `Item` | A `target-size` raised to 44 at < 640 (today 24) |
+| P13 | **States:** an empty state is ≤ 40% of the viewport, one icon, one sentence, one action; loading uses the same shape as the content (skeleton) | `EMPTY` `max-sm` compact, `Skeleton` | D `empty-height` |
+| P14 | **Safe areas:** sticky bars and tab bar pad `env(safe-area-inset-bottom)`; content never sits under them (bottom padding = bar height) | `STICKY_TOOLBAR`, `MobileTabBar`, `StickyActionBar` | A `bar-overlap` (last element's bottom is above the fixed bar) |
+| P15 | **Popovers and menus don't open on load or cover the primary action;** use sheets when taller than 40% of the viewport | `Popover`, `CustomCombobox` (sheet mode) | D `overlay-on-load` |
+
+**Belongs in the `semi-ui` skill (agents follow it by default):** P1, P2, P3, P5, P6, P8, P9, P10, P11, P13, P15, plus a "phone screen recipe" (title → one toolbar row →
+content as list/cards → one primary action) and a checklist "screenshot at 375: is the first record visible without scrolling?".
+**Tool-only (skill just says "run it"):** P7, P12, P14. Fold into existing issues: P1 → ds#57, P3/P4 → ds#25, P5 → ds#59, new checks → ds#60.
+
+## 12. Findings, ranked (layout)
+
+1. **No phone page recipe.** Rules describe the desktop page and say "check at 375"; agents therefore stack desktop toolbars. (P1, recipe in skill)
+2. **Toolbars eat the phone screen** (3–4 rows before data). Needs `SubpageToolbar` phone mode: sheet filters + overflow (ds#57).
+3. **Tables as the phone default** (one column visible): list mode (ds#25).
+4. **No detail/back pattern**, so master-detail is hand-built, differently in each app (ds#59).
+5. **Tools cannot see these problems** (all budgets pass): add toolbar-rows, phone-table, duplicate-heading, tab-label, overlap checks (ds#60).
+6. **Tab bar overload and tile rows** (studio): cap and warn.
+7. **Forms:** no keyboard-type rule, no submit bar.
+8. **Empty states too tall; marketing cards inside tools** (studio): size cap, skill hint.
+
+## 13. Open questions (layout)
+
+1. Phone tables: list by default for ≥ 3 columns, or keep horizontal scroll as the default and make lists opt-in?
+2. Primary action: sticky bottom bar, or a trailing toolbar icon (Apple)? One rule for all six apps.
+3. Is a 44px control height acceptable for the dense apps (data-hub, 3dnoobs-studio) on phones?
+4. Ship P1/P3/P5 as new components in a minor, or together with the type-scale major (Part 1) as one "phone-first" 1.0?
+5. sme-hub and feedback-hub dev servers were down: should I review them when up? Should app screenshots (real data) stay out of the repo, as here?
+6. Do the apps have an iPad layout target, or is "tablet" just desktop with touch?
