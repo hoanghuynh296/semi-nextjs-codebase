@@ -142,3 +142,27 @@ test("DetailOverlay without the Navigation API (Firefox, Safari < 26): close aft
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect(page).toHaveURL(/\/items\/a$/);
 });
+
+test("WorkspaceLayout and FeatureIntro under Next's App Router: prerendered without the intro, which opens after mount once (#106)", async ({ page, request }) => {
+  // the server HTML has the workspace and no dialog (storage is read after mount only)
+  const html = await (await request.get(`${BASE}/workspace/a`)).text();
+  expect(html).toContain("Send (3)");
+  expect(html).not.toContain("One screen per request");
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(`${BASE}/workspace/a`);
+  const intro = page.getByRole("dialog", { name: "One screen per request" });
+  await expect(intro).toBeVisible();
+  await expect(intro.getByRole("button", { name: "Tiếp" })).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(intro).toBeHidden();
+  // seen: not again after a reload
+  await page.reload();
+  await expect(page.getByRole("region", { name: "Bảng điều khiển" }).filter({ visible: true })).toBeVisible();
+  await page.waitForTimeout(300);
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  const spin = page.getByRole("spinbutton", { name: "tons" }).filter({ visible: true });
+  await spin.focus();
+  await page.keyboard.press("ArrowUp");
+  await expect(spin).toHaveAttribute("aria-valuenow", "4");
+  await expect(page.getByRole("button", { name: "Send (4)" }).filter({ visible: true })).toBeVisible();
+});

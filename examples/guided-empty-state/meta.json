@@ -1,0 +1,50 @@
+{
+  "title": "Guided empty state",
+  "group": "Feedback",
+  "description": "The EmptyState variant “guided” (L13): the first use of a page that needs a few steps before it is useful. A step carousel (“Bước 1 / 4”, a visual, ‹ ›) or numbered steps, the one primary action, a link to the full guide, and rows of ready starting points by category, each with “Xem tất cả”.",
+  "components": [
+    "GuidedEmptyState"
+  ],
+  "imports": [
+    "type GuideStep",
+    "type GuideTemplate",
+    "type GuideTemplateGroup"
+  ],
+  "when": [
+    "First use of a page whose value needs setup in a few steps (suppliers before quotes, a catalogue before orders).",
+    "A first use with ready starting points (import from Excel, find in DataHub, templates by category)."
+  ],
+  "instead": [
+    {
+      "need": "First use that one action fills",
+      "use": "EmptyState variant=\"first-use\""
+    },
+    {
+      "need": "A search or filter matched nothing",
+      "use": "EmptyState variant=\"no-results\""
+    },
+    {
+      "need": "Introduce a new feature to people who already use the page",
+      "use": "FeatureIntro"
+    }
+  ],
+  "a11y": [
+    "The guide is a region named by the title (an h2, headingLevel to change); a step change is read from a polite live region. At an end the pressed arrow turns disabled and focus moves to the other one.",
+    "Starting points are links (href) or buttons in a list under an h3 per category; “Xem tất cả” is a link or a button."
+  ],
+  "examples": [
+    {
+      "file": "carousel",
+      "title": "Carousel and starting points"
+    },
+    {
+      "file": "steps",
+      "title": "Numbered steps",
+      "description": "layout=\"steps\": every step at once, for two to four short steps."
+    }
+  ],
+  "notes": [
+    "One filled button on the screen: hide the page's own primary while the guided state shows (§13).",
+    "Below sm the guide card follows the phone cap (at most 40% of the screen, the visual hidden, scrolls inside); the starting points follow it as normal content."
+  ]
+}

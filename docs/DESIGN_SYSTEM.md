@@ -465,6 +465,15 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   `CommandPalette` in the root layout (⌘K / Ctrl+K, `openCommandPalette()` from a header button): places from the
   layout, each page's quick actions and records from `useRegisterCommands`; groups under `text-overline` headings,
   coloured tiles only for actions, ⌘↵ opens an item with `href` in a new tab.
+- **Page type "workspace" (C-032, #106, L12):** a tool where people set inputs and see what they produce (a quote request
+  and its comparison, a generator, an import with a preview) is a `WorkspaceLayout`: a `bg-panel-3 rounded-panel`
+  control panel on the left (`lg:w-[380px]`, sticky, scrolls inside) and the result on the right. Top of the panel: the
+  tool's parts as a full-width `ToggleGroup`, then `WorkspaceHeader` (round back link named by where it goes, the tool
+  name as the page `h1`, one muted line). Then `WorkspaceSection`s: a `text-overline` label, a counter ("3/8") and a
+  small text action on the right; inside, cards of lines with a `Stepper`, a `DropZone`, a `HintTextarea`. The **main
+  action** is pinned to the panel's bottom (one primary `fullWidth`, a secondary beside it at most). Below `lg` the panel
+  stacks above the result and its action stays at the bottom of the screen while the panel is in view. Headings in the
+  result start at `h2`.
 - Grids expand across wide screens (e.g. `sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-group`); touch screens
   (iPad) stop at 4 columns (`not-any-pointer-coarse:` for 5+). Card grids **beside a sidebar** size columns by
   `@container` (`@xl:grid-cols-…`), never by viewport breakpoints (lint rule `viewport-grid-cols`, enabled per path via
@@ -621,6 +630,11 @@ it form by form; the four lint rules below are warnings until 1.0.
   `enterKeyHint`, it keeps its own type and keypad); a prop on the control wins (`autoComplete="new-password"`, `type="text"`
   next to an `https://` addon). `number` and `money` stay text inputs with the decimal keypad, never `type="number"`; the text
   holds Vietnamese separators, so parse it with `parseMoney` / `parseNumber` (#69), not `Number()`.
+- **Small counts and hinted text (#106).** A small whole number people nudge (tấn per line, copies, seats) is a `Stepper`
+  (− value +, a spinbutton: arrows, Page Up / Down, Home / End; the − + buttons are out of the Tab order); typed numbers stay
+  `NumberInput`. A message or note that can mention a record or insert a template is a `HintTextarea`: a hint row under
+  the text ("Gõ @ để nhắc nhà cung cấp · Gõ / để chèn mẫu") and a listbox of at most six suggestions while the word at the
+  caret starts with a trigger (↑ ↓, Enter / Tab inserts, Escape closes only the list; matching ignores Vietnamese marks).
 - **Layout and validation.** Labels sit above fields, required fields get `*` (`Field required`), the error shows under the
   field (`Field error`). Validation runs on blur, then on every change (`useFormValidation`: `form.errors`, `onBlur={form.blur("x")}`,
   `form.validate()` on submit). With more than one error `FormErrorSummary` puts an `Alert` above `FormActions`; one error is
@@ -661,6 +675,13 @@ toolbar on screen around it. When an empty list shows its own primary action, hi
 title row while the list is empty, so the view has one filled button (`primary-actions` in `semi density` catches two).
 Below `sm` the state is compact and takes at most 40% of the viewport (`EMPTY_PHONE_CAP`, P13).
 
+**Guided** (`GuidedEmptyState`, the variant `guided`, L13, #106): the first use of a page whose value needs a few steps
+(suppliers before quotes). One card: the title (one sentence, `h2`), a link to the full guide from `sm`, the steps as a
+carousel ("Bước 1 / 4" in `text-overline`, a visual, ‹ ›; `layout="carousel"`, the default) or as a numbered list
+(`layout="steps"`), and the one primary action. Below it, rows of ready starting points by category (`templates`: grey
+`IconTile`s, colour only where they need telling apart), each with "Xem tất cả". Below `sm` the card follows the phone
+cap (the visual hidden); the starting points follow as normal content. Hide the page's own primary while it shows.
+
 ## 13c. Error, not found, no access
 
 `States.tsx`: **`ErrorState`** (title, message, optional `detail` code, primary "Thử lại" via `onRetry`; `role="alert"`),
@@ -687,7 +708,11 @@ for the root layout itself. A phone-capped state whose content still overflows b
 While a page, tab, list or number loads, show its shape with shimmering placeholders, never a "Đang tải…" line or a
 centred spinner. `Skeleton.tsx`: `Skeleton` (one block, size via className), `SkeletonCard`, `SkeletonGrid` (use the
 real grid's classes), `SkeletonRows` (lists, dialogs, tables), `PageSkeleton` (Suspense fallbacks), `Loading` (adds
-`role="status"` / `aria-busy`; its `label` is for screen readers only). The sweep is the `.shimmer` class in
+`role="status"` / `aria-busy`; its `label` is for screen readers only). Shaped skeletons (L16, #106): `SkeletonList`
+(divided rows: avatar, title, meta, short values on the right), `SkeletonTable` (a header and rows, the first column
+long, number columns short and right-aligned), `SkeletonDetail` (a record: title and status, actions, label / value
+pairs, a text block, `side` facts column). `DataTable` draws the same table shape while `loading` (rows `aria-hidden`,
+the table `aria-busy`). **No spinners in lists**: a list, grid or table that loads shows its rows' shape. The sweep is the `.shimmer` class in
 `base.css` (stops under `prefers-reduced-motion`). Keep "not loaded yet" apart from "empty" (e.g. `undefined` =
 loading, `null` = failed, or a `loaded` flag) so an empty state never flashes before data. Long operations the user
 started (upload, export) show a progress bar with a short label and percentage; files the user picks or drops use `FileDrop` (one `Progress` row per file). When the user cannot do anything
@@ -720,6 +745,12 @@ The panel caps itself at `92dvh` and scrolls; pass only a width (`max-w-md`…) 
 Every overlay (modals, full-screen viewers, popups, numpad) uses this backdrop. Big detail views split into two columns
 from `md` (iPad). Confirmations go through `confirmDialog()` / `confirmDelete()` (mount `<ConfirmHost />` once in the root layout), never
 `window.confirm`; what to use when is §14c. Phones can use a bottom sheet for pickers and filter panels.
+
+**Feature intro** (`FeatureIntro`, L14, #106): the first visit of a new or reworked feature gets one small dialog: a
+16:9 visual, a title, one line, dots, "Bỏ qua" and "Tiếp" / "Bắt đầu" (a bottom sheet on phones). It shows once per user
+per `id`: "seen" lives in a store (`localIntroStore`, localStorage, by default; pass `store` to keep it on the account),
+read after mount only. It never opens over another dialog (it waits until none is open); Escape and the backdrop skip.
+At most three slides and one per page; a page that is empty on first use gets `GuidedEmptyState` instead.
 
 **Links to other sites** always use `ExternalLink` (new tab, `rel="noopener noreferrer"`). Apps inside a native
 WebView pass an `onClick` that opens the URL outside. Never a bare `<a target="_blank">` to another site.
@@ -831,14 +862,15 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle`, `PageTabsTitle` (underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh; phone layout with `filters` / `collapseFilters` / `secondaryActions`), `ToolbarFilters` (§4a) |
 | `SearchPill.tsx`, `FilterChipRow.tsx`, `ViewSwitch.tsx`, `FilterPanel.tsx`, `filterParams.ts` | `StickyContextBar` (sticky search + chips + result line), `SearchPill` (wide pill search, debounce, `/`), `ResultLine` (query · N kết quả + sort), `SortDef`, `FilterChipRow` (one-line chips, ‹ ›, Xoá lọc, trailing tools), `FilterChip`, `FilterOptions` (the checkbox list of one filter), `useFilterParams` (filter state in the URL, Back / Forward), `ViewSwitch` (list ↔ grid, density), `PhoneFilterBar` (views · Bộ lọc · settings), `FilterPanel` (full-screen / side-sheet filters); URL helpers `readFilters`, `readFilterValues`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, types `FilterSpec`, `FilterDef`, `FilterOption`, `FilterValues` (§4) |
 | `SplitButton.tsx`, `CardActions.tsx`, `DetailOverlay.tsx` | `SplitButton` (main action + ▾ `Menu` of its variants, one button on phones, G1), `CardActions` (hover / focus icon actions + ⋯ on cards, ⋯ only on touch), `DetailOverlay` (record over its list: ‹ › with n / N, side panel, scroll kept), `useDetailParam` (`?open=` in the URL, Back closes), `openDetail` (open one from anywhere on the route), types `CardAction`, `DetailParamState` (§4, §9) |
+| `WorkspaceLayout.tsx`, `GuidedEmptyState.tsx`, `FeatureIntro.tsx`, `HintTextarea.tsx` | `WorkspaceLayout` (page type workspace: control panel + sticky main action, result), `WorkspaceHeader` (back + tool name, tabs), `WorkspaceSection` (`text-overline` label + counter), `Stepper` (− value +, spinbutton), `GuidedEmptyState` (EmptyState variant guided: step carousel or numbered steps, starting points), `FeatureIntro` (once-per-user feature dialog, `localIntroStore`), `HintTextarea` (@ / `/` hints and suggestions), types `GuideStep`, `GuideTemplate`, `GuideTemplateGroup`, `FeatureIntroSlide`, `FeatureIntroStore`, `HintToken`, `HintTrigger` (§4, §9b, §13, §14) |
 | `KpiCard.tsx`, `Modal.tsx` | `KpiCard` (metric card in the brand's figure font, neutral icon, `featured` for the screen's main number, shimmer), `Modal` (shared portal dialog with `MODAL_HEAD` + `MODAL_FOOT`) (§13, §14) |
 | `Icon.tsx` | `Icon`, `ICONS`, `IconName`, `IconTile`, `TILE_TONES`, `TONE_TEXT`, `TileTone` |
 | `AppHeader.tsx` | `AppHeader` (stand-alone app top bar, §4b) |
 | `PageActions.tsx` | `PageActions` (a tab's header buttons), `PageActionsSlot` + `PageActionsProvider` |
-| `Skeleton.tsx` | `Skeleton`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton` (`shape` cards / list / detail), `Loading`, `BootLoader` (boot / session gate only) (§13b) |
+| `Skeleton.tsx` | `Skeleton`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `SkeletonList`, `SkeletonTable`, `SkeletonDetail` (shaped: list rows, table rows, a record), `PageSkeleton` (`shape` cards / list / detail), `Loading`, `BootLoader` (boot / session gate only) (§13b) |
 | `FormActions.tsx`, `useUnsavedGuard.ts`, `formValidation.tsx`, `fieldKinds.ts` | `FormActions` (Huỷ + Lưu / Tạo, sticky on a page, `placement="modal"` footer), `useUnsavedGuard` (reload, tab close, link, back), `useFormValidation` + `FormErrorSummary` (blur, then change; Alert summary), `FIELD_KINDS` / `FieldKind` (§9b) |
 | `Feedback.tsx`, `States.tsx` | `EmptyState` (`variant` first-use / no-results, `onClearFilters`), `ErrorState`, `NotFound`, `Forbidden` (§13, §13c) |
-| `FileDrop.tsx` | `FileDrop`, `FileDropItem`, `FileRejection`, `matchesAccept`, `formatFileSize`, `classifyFiles`, `FileRejectReason` (§13b uploads: `FileDrop` + `Progress`) |
+| `FileDrop.tsx` | `FileDrop`, `DropZone` (compact FileDrop for a workspace panel), `DropZoneProps`, `FileDropItem`, `FileRejection`, `matchesAccept`, `formatFileSize`, `classifyFiles`, `FileRejectReason` (§13b uploads: `FileDrop` + `Progress`) |
 | `confirmDialog.tsx` | `confirmDialog()`, `confirmDelete()`, `ConfirmHost`, `ConfirmOptions`, `ConfirmDeleteOptions` (§14, §14c) |
 | `TaskHost.tsx` | `startTask()`, `TaskHost`, `TaskOptions`, `TaskHandle` (blocking task overlay, §13b) |
 | `ThemeProvider.tsx` | `ThemeProvider`, `useTheme`, `ThemeToggle` (§2) |

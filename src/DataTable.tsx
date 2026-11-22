@@ -8,6 +8,7 @@ import { EmptyState } from "./Feedback";
 import { Icon } from "./Icon";
 import { Pagination } from "./Pagination";
 import { Skeleton } from "./Skeleton";
+import { skeletonCellClass } from "./skeletonShape";
 import { Table, TBody, TD, TH, THead, TR } from "./Table";
 import { normalizeSearch } from "./Command";
 import { useSemiLocale } from "./locale";
@@ -177,11 +178,17 @@ export function DataTable<T>({
           <TBody>
             {loading
               ? Array.from({ length: Math.min(pageSize || 5, 5) }, (_, i) => (
-                  <TR key={`s${i}`}>
-                    {selectable && <TD />}
-                    {columns.map((c) => (
-                      <TD key={c.key}>
-                        <Skeleton className="h-3.5 w-24" />
+                  // shaped like the real rows (first column long, numbers short and right-aligned); hidden from AT,
+                  // the table says aria-busy
+                  <TR key={`s${i}`} aria-hidden>
+                    {selectable && (
+                      <TD>
+                        <Skeleton className="w-4 h-4 !rounded-chip" />
+                      </TD>
+                    )}
+                    {columns.map((c, ci) => (
+                      <TD key={c.key} numeric={c.numeric}>
+                        <Skeleton className={cn("h-3.5", skeletonCellClass(ci, i, c.numeric))} />
                       </TD>
                     ))}
                   </TR>

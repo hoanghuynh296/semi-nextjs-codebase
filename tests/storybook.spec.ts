@@ -1400,3 +1400,157 @@ test("a clickable Card is a keyboard button: Tab reaches it, Enter picks it, ari
   await expect(tile).toHaveAttribute("aria-pressed", "true");
   expect(await tile.evaluate((e) => getComputedStyle(e).boxShadow)).not.toBe("none");
 });
+
+// #106 page types and states: every new control's keyboard path. Each first step retries until React has hydrated.
+test("Stepper: a spinbutton; arrows, Page Up / Down, Home / End; the − + buttons are out of the Tab order (#106)", async ({ page }) => {
+  await open(page, "/components/stepper/", "dark");
+  const box = example(page, "stepper/basic");
+  const spin = box.getByRole("spinbutton", { name: "số tấn tiêu đen" });
+  await expect(async () => {
+    await spin.focus();
+    await page.keyboard.press("Home");
+    await expect(spin).toHaveAttribute("aria-valuenow", "1", { timeout: 500 });
+  }).toPass({ timeout: 10_000 });
+  await expect(spin).toHaveAttribute("aria-valuetext", "1 tấn");
+  await expect(box.getByRole("button", { name: "Giảm số tấn tiêu đen" })).toBeDisabled();
+  await page.keyboard.press("ArrowUp");
+  await page.keyboard.press("ArrowRight");
+  await expect(spin).toHaveAttribute("aria-valuenow", "3");
+  await page.keyboard.press("PageUp");
+  await expect(spin).toHaveAttribute("aria-valuenow", "13");
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("ArrowLeft");
+  await expect(spin).toHaveAttribute("aria-valuenow", "11");
+  await page.keyboard.press("End");
+  await expect(spin).toHaveAttribute("aria-valuenow", "99");
+  await page.keyboard.press("ArrowUp");
+  await expect(spin).toHaveAttribute("aria-valuenow", "99");
+  await box.getByRole("button", { name: "Giảm số tấn tiêu đen" }).click();
+  await expect(spin).toHaveAttribute("aria-valuenow", "98");
+  // one Tab stop per stepper: from the first stepper's value straight to the second one's
+  const limits = example(page, "stepper/limits");
+  await limits.getByRole("spinbutton", { name: "số thùng" }).focus();
+  await page.keyboard.press("ArrowUp");
+  await expect(limits.getByRole("spinbutton", { name: "số thùng" })).toHaveAttribute("aria-valuenow", "60");
+  await page.keyboard.press("Tab");
+  await expect(limits.getByRole("spinbutton", { name: "số thùng" })).not.toBeFocused();
+  await expect(limits.getByRole("button", { name: /số thùng/ }).first()).not.toBeFocused();
+});
+
+test("DropZone: Enter on the tile opens the file picker; the file shows and the section counter follows (#106)", async ({ page }) => {
+  await open(page, "/components/drop-zone/", "dark");
+  const box = example(page, "drop-zone/basic");
+  const zone = box.getByRole("button", { name: /Kéo tệp quy cách vào đây/ });
+  await zone.focus();
+  let chooser!: import("@playwright/test").FileChooser;
+  await expect(async () => {
+    const wait = page.waitForEvent("filechooser", { timeout: 1000 });
+    await zone.focus();
+    await page.keyboard.press("Enter");
+    chooser = await wait;
+  }).toPass({ timeout: 10_000 });
+  await chooser.setFiles({ name: "quy-cach.pdf", mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.4") });
+  await expect(box.getByText("quy-cach.pdf")).toBeVisible();
+  await expect(box.getByRole("group", { name: "Quy cách đính kèm" })).toContainText("1/5");
+});
+
+test("GuidedEmptyState: the carousel steps with the keyboard, focus moves to the other arrow at an end (#106)", async ({ page }) => {
+  await open(page, "/components/guided-empty-state/", "dark");
+  const box = example(page, "guided-empty-state/carousel");
+  const next = box.getByRole("button", { name: "Bước sau" });
+  await expect(async () => {
+    await next.focus();
+    await page.keyboard.press("Enter");
+    await expect(box.getByText("Bước 2 / 4")).toBeVisible({ timeout: 500 });
+  }).toPass({ timeout: 10_000 });
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("Enter");
+  await expect(box.getByText("Bước 4 / 4")).toBeVisible();
+  await expect(box.getByRole("heading", { name: "So sánh và chốt" })).toBeVisible();
+  await expect(next).toBeDisabled();
+  await expect(box.getByRole("button", { name: "Bước trước" })).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(box.getByText("Bước 3 / 4")).toBeVisible();
+  // the starting points are a list of buttons / links under a heading per category
+  await expect(box.getByRole("heading", { name: "Theo mặt hàng" })).toBeVisible();
+  await expect(box.getByRole("link", { name: /Tất cả mặt hàng/ })).toBeVisible();
+});
+
+test("FeatureIntro: a dialog with focus trap and restore, Escape skips, and it waits while another dialog is open (#106)", async ({ page }) => {
+  await open(page, "/components/feature-intro/", "dark");
+  const trigger = example(page, "feature-intro/basic").getByRole("button", { name: "Xem lại giới thiệu" });
+  const dialog = page.getByRole("dialog", { name: "Yêu cầu mua trên một màn hình" });
+  await expect(async () => {
+    await trigger.click();
+    await expect(page.getByRole("dialog")).toBeVisible({ timeout: 500 });
+  }).toPass({ timeout: 10_000 });
+  await expect(dialog.getByRole("button", { name: "Tiếp" })).toBeFocused();
+  await expect(dialog).toContainText("Bước 1 / 3");
+  // Tab stays inside: Bỏ qua ↔ Tiếp
+  await page.keyboard.press("Tab");
+  await expect(dialog.getByRole("button", { name: "Bỏ qua" })).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(dialog.getByRole("button", { name: "Tiếp" })).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("dialog", { name: "So sánh từng mặt hàng" })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(trigger).toBeFocused();
+  // another modal dialog is up: the intro waits until it is gone
+  await page.evaluate(() => {
+    const d = Object.assign(document.createElement("div"), { id: "other-dialog", textContent: "Other" });
+    d.setAttribute("role", "dialog");
+    d.setAttribute("aria-modal", "true");
+    d.setAttribute("aria-label", "Other");
+    document.body.append(d);
+  });
+  await trigger.click();
+  await page.waitForTimeout(300);
+  await expect(page.getByRole("dialog", { name: "Yêu cầu mua trên một màn hình" })).toHaveCount(0);
+  await page.evaluate(() => document.getElementById("other-dialog")?.remove());
+  await expect(page.getByRole("dialog", { name: "Yêu cầu mua trên một màn hình" })).toBeVisible();
+  await page.getByRole("button", { name: "Bỏ qua" }).click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+});
+
+test("HintTextarea: @ and / open a listbox; arrows, Enter inserts at the caret, Escape closes only the list (#106)", async ({ page }) => {
+  await open(page, "/components/hint-textarea/", "dark");
+  const box = example(page, "hint-textarea/basic");
+  const text = box.getByRole("textbox", { name: "Lời nhắn gửi nhà cung cấp" });
+  const list = box.getByRole("listbox");
+  await expect(async () => {
+    await text.fill("Chào anh chị, bên em cần báo giá cho @tay");
+    await expect(list).toBeVisible({ timeout: 500 });
+  }).toPass({ timeout: 10_000 });
+  // matching ignores Vietnamese marks: "tay" finds "Tây Nguyên"
+  await expect(list.getByRole("option")).toHaveCount(1);
+  await expect(list.getByRole("option", { name: /Gia vị Tây Nguyên/ })).toHaveAttribute("aria-selected", "true");
+  const active = await text.getAttribute("aria-activedescendant");
+  expect(active).toBeTruthy();
+  await expect(text).toHaveAttribute("aria-controls", (await list.getAttribute("id"))!);
+  await page.keyboard.press("Enter");
+  await expect(text).toHaveValue("Chào anh chị, bên em cần báo giá cho @taynguyen ");
+  await expect(list).toBeHidden();
+  await expect(text).toBeFocused();
+  // a trigger in the middle of the text: the word at the caret is replaced, the rest kept
+  await text.fill("Gửi @ hôm nay");
+  await text.evaluate((el: HTMLTextAreaElement) => el.setSelectionRange(5, 5));
+  await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("ArrowLeft");
+  await expect(list.getByRole("option")).toHaveCount(3);
+  await page.keyboard.press("ArrowDown");
+  await expect(list.getByRole("option", { name: /HTX Tiêu Chư Sê/ })).toHaveAttribute("aria-selected", "true");
+  await page.keyboard.press("ArrowUp");
+  await page.keyboard.press("ArrowUp");
+  await expect(list.getByRole("option", { name: /Hương Quế Yên Bái/ })).toHaveAttribute("aria-selected", "true");
+  await page.keyboard.press("Tab");
+  await expect(text).toHaveValue("Gửi @yenbai hôm nay");
+  // the / templates; Escape closes the list and leaves the text and focus alone
+  await page.keyboard.press("End");
+  await page.keyboard.type(" /");
+  await expect(list.getByRole("option")).toHaveCount(2);
+  await page.keyboard.press("Escape");
+  await expect(list).toBeHidden();
+  await expect(text).toBeFocused();
+  await expect(text).toHaveValue("Gửi @yenbai hôm nay /");
+});

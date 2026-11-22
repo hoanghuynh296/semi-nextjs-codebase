@@ -8,7 +8,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 ## Machine-readable
 
-- [components.json](./components.json): all 146 components, hooks and constants with props, summaries and their doc page
+- [components.json](./components.json): all 157 components, hooks and constants with props, summaries and their doc page
 - [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
@@ -47,11 +47,13 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Checkbox](./components/checkbox/) ([markdown](./docs/components/checkbox.md)): A native checkbox with label and description, checked fill in the accent, and an indeterminate state for “select all”. Components: Checkbox.
 - [Combobox](./components/combobox/) ([markdown](./docs/components/combobox.md)): CustomCombobox: type to filter a long list, then pick one value. Components: CustomCombobox.
 - [Date picker](./components/date-picker/) ([markdown](./docs/components/date-picker.md)): A date field with a Calendar popover (YYYY-MM-DD, min / max). Never type="date". Components: DatePicker.
+- [Drop zone](./components/drop-zone/) ([markdown](./docs/components/drop-zone.md)): The compact FileDrop for a workspace panel: a light dashed tile on the panel surface with a title and a hint, the same checks (accept, maxSize, duplicates), keyboard and announcements; the file rows are optional. Components: DropZone.
 - [Field, Input, Textarea](./components/field/) ([markdown](./docs/components/field.md)): Field gives any control a label, a hint and an error, wired for screen readers; `kind` sets the phone keyboard, autofill and Enter key of an email, phone, number, money, URL, search or password field. Input and Textarea are the standard text controls (bg-field, h-field). Components: Field, Input, Textarea.
 - [FileDrop](./components/file-drop/) ([markdown](./docs/components/file-drop.md)): A file picker and dropzone with one row per file: size, upload progress, done, and remove / retry on failure. Controlled: the app owns the list and does the upload. Components: FileDrop.
 - [Filter chip row](./components/filter-chip-row/) ([markdown](./docs/components/filter-chip-row.md)): A list page's filters as one line of chips (icon, label, chevron; solid with the value or count when on). Each chip opens a small multi-select popover, a switch chip toggles; the row scrolls sideways with ‹ › when it overflows, shows “Xoá lọc” while a filter is on and ends with the view tools. State in the URL with useFilterParams or the filterParams helpers. Components: FilterChipRow, FilterChip, FilterOptions.
 - [Filter panel](./components/filter-panel/) ([markdown](./docs/components/filter-panel.md)): Filters on phones: one segmented pill (the page's views · Bộ lọc with the count · sort and view settings) that opens a full-screen panel: sort first, booleans as switches, one accordion per filter, “Xem N kết quả” at the bottom. From sm the panel is a side sheet, also the “Bộ lọc” panel of a page with more filters than its chip row shows. Components: PhoneFilterBar, FilterPanel.
 - [Form actions, unsaved guard, validation](./components/form-actions/) ([markdown](./docs/components/form-actions.md)): The same form behaviour everywhere: FormActions (Huỷ then Lưu / Tạo, sticky on a page, the footer of a Modal), useUnsavedGuard (nobody loses typed work), and validation that shows on blur then follows changes, with an Alert summary for several errors. Components: FormActions, useUnsavedGuard, useFormValidation, FormErrorSummary.
+- [Hint textarea](./components/hint-textarea/) ([markdown](./docs/components/hint-textarea.md)): A text area that says what it can do (L15): a hint row under the text (“Gõ @ để nhắc nhà cung cấp · Gõ / để chèn mẫu”) and a suggestion list while the word at the caret starts with a trigger; the chosen item is inserted with a space after it. Components: HintTextarea.
 - [Input group](./components/input-group/) ([markdown](./docs/components/input-group.md)): An input with fixed parts around it: a prefix (https://), a unit (kg, ₫), an icon or a small button (copy, show password). Components: InputGroup.
 - [Input OTP](./components/input-otp/) ([markdown](./docs/components/input-otp.md)): One-time code entry (OTP, PIN, 2FA): boxes on screen, one real input underneath, so paste, SMS autofill, screen readers and the number keypad work like a normal field. Components: InputOTP.
 - [Number input](./components/number-input/) ([markdown](./docs/components/number-input.md)): NumberInput: numbers with a touch keypad (NumPadPopup) on phones and tablets, plain typing elsewhere. Never type="number". Components: NumberInput, NumPadPopup.
@@ -60,6 +62,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Search pill](./components/search-pill/) ([markdown](./docs/components/search-pill.md)): The wide pill search of a list page (one per page) and the result line under it: “query” · N kết quả on the left, the sort menu on the right. Typing is debounced (250 ms), Escape and the clear button clear at once, an optional key (/) focuses it. Components: SearchPill, ResultLine.
 - [Select](./components/select/) ([markdown](./docs/components/select.md)): CustomSelect: pick one value from a list, in a field, in a toolbar, inline in a row or bare. Never the native <select>. Components: CustomSelect.
 - [Slider](./components/slider/) ([markdown](./docs/components/slider.md)): Pick a number in a range by dragging: one thumb, or two with range for a min–max pair. Components: Slider.
+- [Stepper](./components/stepper/) ([markdown](./docs/components/stepper.md)): − value + for a small count (quantities, copies, seats) in a workspace panel or a card: one tap per step, a unit after the value, min and max. Components: Stepper.
 - [Switch](./components/switch/) ([markdown](./docs/components/switch.md)): An on / off toggle for settings that apply immediately. Components: Switch.
 - [View switch](./components/view-switch/) ([markdown](./docs/components/view-switch.md)): List ↔ grid and an optional density toggle, as small icon toggles at the end of the filter row (FilterChipRow trailing). Components: ViewSwitch.
 
@@ -71,6 +74,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Context menu](./components/context-menu/) ([markdown](./docs/components/context-menu.md)): The menu of an area opened at the pointer: right-click, long-press on touch, or the Menu key / Shift+F10 when the area has focus. Components: ContextMenu.
 - [Detail overlay](./components/detail-overlay/) ([markdown](./docs/components/detail-overlay.md)): An item of a list opens over the list instead of on its own page: its own URL (?open=<id> with useDetailParam, Next App Router safe), ‹ › and ← → through the current results with “n / N”, close / Esc / Back return to the list at the same scroll position. The side panel holds the actions (SplitButton, an icon row, ⋯); existing detail routes stay as deep-link targets. Components: DetailOverlay.
 - [Drawer](./components/drawer/) ([markdown](./docs/components/drawer.md)): A panel that slides in from the right, left, bottom or top (a sheet), with title and footer. Components: Drawer.
+- [Feature intro](./components/feature-intro/) ([markdown](./docs/components/feature-intro.md)): The first visit of a feature (L14): a small dialog with a visual, a title, one line, dots, “Bỏ qua” and “Tiếp” / “Bắt đầu”. Shown once per user per id; “seen” lives in a store (localStorage by default, pass your own to keep it per account). It waits while another dialog is open. Components: FeatureIntro.
 - [Hover card](./components/hover-card/) ([markdown](./docs/components/hover-card.md)): A preview card while the pointer rests on, or focus is on, a link: a person, a product, an order. Components: HoverCard.
 - [Menu](./components/menu/) ([markdown](./docs/components/menu.md)): The action menu behind a trigger: a ⋯ (or your own Button) with items that have an icon, a description line, a shortcut or hint, a check, a spinner, a link, a reason when disabled, and group headings. Danger items always go last after a divider; hidden items (and empty groups) leave the list; below sm it opens as a bottom sheet. Components: Menu.
 - [Modal](./components/modal/) ([markdown](./docs/components/modal.md)): The shared dialog: full screen on phones, a centred panel from sm up, with title, description, body and footer. Focus is trapped and returns to the opener. Components: Modal.
@@ -97,6 +101,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Subpage toolbar](./components/subpage-toolbar/) ([markdown](./docs/components/subpage-toolbar.md)): The sticky row with a page's filters on the left and search, refresh and the icon-only primary action on the right: under the page title, or with the title on the same row (title). RefreshButton spins while its promise runs. Components: SubpageToolbar, RefreshButton.
 - [Tabs](./components/tabs/) ([markdown](./docs/components/tabs.md)): Switch between panels of content inside a page or card: underline (default) or segmented, with icons and counts. Components: Tabs.
 - [Text tabs](./components/text-tabs/) ([markdown](./docs/components/text-tabs.md)): Large text tabs that are the page heading: 2–4 sibling views in display type, the current one bright and the others dim, no underline. Buttons switch at once; tabs with href are links, so the URL picks the view. Components: TextTabs.
+- [Workspace layout](./components/workspace-layout/) ([markdown](./docs/components/workspace-layout.md)): Page type “workspace” (L12): a control panel on the left (segmented tabs, back + tool name, sections with a text-overline label and a counter like “3/8”, drop zones, steppers, a message box) with the main action pinned at its bottom, and the result on the right. Phones stack the panel above the result with the action at the bottom of the screen. Components: WorkspaceLayout, WorkspaceHeader, WorkspaceSection.
 
 ### Data display
 
@@ -125,8 +130,9 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Alert](./components/alert/) ([markdown](./docs/components/alert.md)): A message that stays on the page: info, success, warning, danger, with a title, an action and an optional dismiss. Components: Alert.
 - [Empty state](./components/empty-state/) ([markdown](./docs/components/empty-state.md)): What an empty list or page shows. `first-use`: one icon, one sentence, the one primary action that fills it. `no-results`: a search or filter matched nothing, with its own title and a “Xoá lọc” action. Components: EmptyState.
 - [Error, not found, no access](./components/states/) ([markdown](./docs/components/states.md)): The page-level states every app needs: ErrorState (what failed, with a retry), NotFound (a wrong URL) and Forbidden (no access), each with a link home, plus the route-file recipe (loading.tsx, error.tsx, not-found.tsx) that uses them. Components: ErrorState, NotFound, Forbidden.
+- [Guided empty state](./components/guided-empty-state/) ([markdown](./docs/components/guided-empty-state.md)): The EmptyState variant “guided” (L13): the first use of a page that needs a few steps before it is useful. A step carousel (“Bước 1 / 4”, a visual, ‹ ›) or numbered steps, the one primary action, a link to the full guide, and rows of ready starting points by category, each with “Xem tất cả”. Components: GuidedEmptyState.
 - [Progress](./components/progress/) ([markdown](./docs/components/progress.md)): A determinate bar with value, or an indeterminate one when the end is unknown; tones for success and danger. Components: Progress.
-- [Skeleton](./components/skeleton/) ([markdown](./docs/components/skeleton.md)): Shimmer placeholders while content loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton; Loading announces the region. Never “Đang tải…” text. BootLoader is the one centred spinner, for the boot / session gate before the shell exists. Components: Skeleton, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton, Loading, BootLoader.
+- [Skeleton](./components/skeleton/) ([markdown](./docs/components/skeleton.md)): Shimmer placeholders while content loads, shaped like what loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, SkeletonList (divided list rows), SkeletonTable (table rows), SkeletonDetail (a record's detail panel), PageSkeleton; Loading announces the region. Never “Đang tải…” text or a spinner in a list. BootLoader is the one centred spinner, for the boot / session gate before the shell exists. Components: Skeleton, SkeletonCard, SkeletonGrid, SkeletonRows, SkeletonList, SkeletonTable, SkeletonDetail, PageSkeleton, Loading, BootLoader.
 - [Task host](./components/task-host/) ([markdown](./docs/components/task-host.md)): startTask() shows one blocking overlay for a job the user must wait for: label, current step, progress, elapsed time and an optional Cancel. Mount TaskHost once in the root layout, next to ToastHost and ConfirmHost. Components: TaskHost.
 
 ### AI
@@ -295,7 +301,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (146)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (157)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
@@ -323,12 +329,15 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `Disclosure`: `Collapsible`, `Accordion`
 - `Drawer`: `Drawer`
 - `ExternalLink`: `ExternalLink`
+- `FeatureIntro`: `FeatureIntro`
 - `Feedback`: `Alert`, `Progress`, `Avatar`, `EmptyState`
 - `Field`: `Field`, `Input`, `Textarea`
-- `FileDrop`: `FileDrop`
+- `FileDrop`: `DropZone`, `FileDrop`
 - `FilterChipRow`: `FilterChip`, `FilterOptions`, `FilterChipRow`
 - `FilterPanel`: `PhoneFilterBar`, `FilterPanel`
 - `FormActions`: `FormActions`
+- `GuidedEmptyState`: `GuidedEmptyState`
+- `HintTextarea`: `HintTextarea`
 - `Icon`: `Icon`, `IconTile`
 - `InputGroup`: `InputGroup`
 - `InputOTP`: `InputOTP`
@@ -358,7 +367,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `SearchPill`: `StickyContextBar`, `SearchPill`, `ResultLine`
 - `Separator`: `Separator`
 - `SidePanel`: `SidePanelToggle`, `SidePanel`
-- `Skeleton`: `Skeleton`, `Loading`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton`, `BootLoader`
+- `Skeleton`: `Skeleton`, `Loading`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `SkeletonList`, `SkeletonTable`, `SkeletonDetail`, `PageSkeleton`, `BootLoader`
 - `Slider`: `Slider`
 - `SplitButton`: `SplitButton`
 - `States`: `ErrorState`, `NotFound`, `Forbidden`
@@ -373,6 +382,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `Toast`: `ToastHost`
 - `Toggle`: `Toggle`, `ToggleGroup`
 - `ViewSwitch`: `ViewSwitch`
+- `WorkspaceLayout`: `WorkspaceLayout`, `WorkspaceHeader`, `WorkspaceSection`, `Stepper`
 - `confirmDialog`: `ConfirmHost`
 - `formValidation`: `FormErrorSummary`
 - `locale`: `SemiLocaleProvider`
@@ -852,6 +862,15 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   `CommandPalette` in the root layout (⌘K / Ctrl+K, `openCommandPalette()` from a header button): places from the
   layout, each page's quick actions and records from `useRegisterCommands`; groups under `text-overline` headings,
   coloured tiles only for actions, ⌘↵ opens an item with `href` in a new tab.
+- **Page type "workspace" (C-032, #106, L12):** a tool where people set inputs and see what they produce (a quote request
+  and its comparison, a generator, an import with a preview) is a `WorkspaceLayout`: a `bg-panel-3 rounded-panel`
+  control panel on the left (`lg:w-[380px]`, sticky, scrolls inside) and the result on the right. Top of the panel: the
+  tool's parts as a full-width `ToggleGroup`, then `WorkspaceHeader` (round back link named by where it goes, the tool
+  name as the page `h1`, one muted line). Then `WorkspaceSection`s: a `text-overline` label, a counter ("3/8") and a
+  small text action on the right; inside, cards of lines with a `Stepper`, a `DropZone`, a `HintTextarea`. The **main
+  action** is pinned to the panel's bottom (one primary `fullWidth`, a secondary beside it at most). Below `lg` the panel
+  stacks above the result and its action stays at the bottom of the screen while the panel is in view. Headings in the
+  result start at `h2`.
 - Grids expand across wide screens (e.g. `sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-group`); touch screens
   (iPad) stop at 4 columns (`not-any-pointer-coarse:` for 5+). Card grids **beside a sidebar** size columns by
   `@container` (`@xl:grid-cols-…`), never by viewport breakpoints (lint rule `viewport-grid-cols`, enabled per path via
@@ -1008,6 +1027,11 @@ it form by form; the four lint rules below are warnings until 1.0.
   `enterKeyHint`, it keeps its own type and keypad); a prop on the control wins (`autoComplete="new-password"`, `type="text"`
   next to an `https://` addon). `number` and `money` stay text inputs with the decimal keypad, never `type="number"`; the text
   holds Vietnamese separators, so parse it with `parseMoney` / `parseNumber` (#69), not `Number()`.
+- **Small counts and hinted text (#106).** A small whole number people nudge (tấn per line, copies, seats) is a `Stepper`
+  (− value +, a spinbutton: arrows, Page Up / Down, Home / End; the − + buttons are out of the Tab order); typed numbers stay
+  `NumberInput`. A message or note that can mention a record or insert a template is a `HintTextarea`: a hint row under
+  the text ("Gõ @ để nhắc nhà cung cấp · Gõ / để chèn mẫu") and a listbox of at most six suggestions while the word at the
+  caret starts with a trigger (↑ ↓, Enter / Tab inserts, Escape closes only the list; matching ignores Vietnamese marks).
 - **Layout and validation.** Labels sit above fields, required fields get `*` (`Field required`), the error shows under the
   field (`Field error`). Validation runs on blur, then on every change (`useFormValidation`: `form.errors`, `onBlur={form.blur("x")}`,
   `form.validate()` on submit). With more than one error `FormErrorSummary` puts an `Alert` above `FormActions`; one error is
@@ -1048,6 +1072,13 @@ toolbar on screen around it. When an empty list shows its own primary action, hi
 title row while the list is empty, so the view has one filled button (`primary-actions` in `semi density` catches two).
 Below `sm` the state is compact and takes at most 40% of the viewport (`EMPTY_PHONE_CAP`, P13).
 
+**Guided** (`GuidedEmptyState`, the variant `guided`, L13, #106): the first use of a page whose value needs a few steps
+(suppliers before quotes). One card: the title (one sentence, `h2`), a link to the full guide from `sm`, the steps as a
+carousel ("Bước 1 / 4" in `text-overline`, a visual, ‹ ›; `layout="carousel"`, the default) or as a numbered list
+(`layout="steps"`), and the one primary action. Below it, rows of ready starting points by category (`templates`: grey
+`IconTile`s, colour only where they need telling apart), each with "Xem tất cả". Below `sm` the card follows the phone
+cap (the visual hidden); the starting points follow as normal content. Hide the page's own primary while it shows.
+
 ## 13c. Error, not found, no access
 
 `States.tsx`: **`ErrorState`** (title, message, optional `detail` code, primary "Thử lại" via `onRetry`; `role="alert"`),
@@ -1074,7 +1105,11 @@ for the root layout itself. A phone-capped state whose content still overflows b
 While a page, tab, list or number loads, show its shape with shimmering placeholders, never a "Đang tải…" line or a
 centred spinner. `Skeleton.tsx`: `Skeleton` (one block, size via className), `SkeletonCard`, `SkeletonGrid` (use the
 real grid's classes), `SkeletonRows` (lists, dialogs, tables), `PageSkeleton` (Suspense fallbacks), `Loading` (adds
-`role="status"` / `aria-busy`; its `label` is for screen readers only). The sweep is the `.shimmer` class in
+`role="status"` / `aria-busy`; its `label` is for screen readers only). Shaped skeletons (L16, #106): `SkeletonList`
+(divided rows: avatar, title, meta, short values on the right), `SkeletonTable` (a header and rows, the first column
+long, number columns short and right-aligned), `SkeletonDetail` (a record: title and status, actions, label / value
+pairs, a text block, `side` facts column). `DataTable` draws the same table shape while `loading` (rows `aria-hidden`,
+the table `aria-busy`). **No spinners in lists**: a list, grid or table that loads shows its rows' shape. The sweep is the `.shimmer` class in
 `base.css` (stops under `prefers-reduced-motion`). Keep "not loaded yet" apart from "empty" (e.g. `undefined` =
 loading, `null` = failed, or a `loaded` flag) so an empty state never flashes before data. Long operations the user
 started (upload, export) show a progress bar with a short label and percentage; files the user picks or drops use `FileDrop` (one `Progress` row per file). When the user cannot do anything
@@ -1107,6 +1142,12 @@ The panel caps itself at `92dvh` and scrolls; pass only a width (`max-w-md`…) 
 Every overlay (modals, full-screen viewers, popups, numpad) uses this backdrop. Big detail views split into two columns
 from `md` (iPad). Confirmations go through `confirmDialog()` / `confirmDelete()` (mount `<ConfirmHost />` once in the root layout), never
 `window.confirm`; what to use when is §14c. Phones can use a bottom sheet for pickers and filter panels.
+
+**Feature intro** (`FeatureIntro`, L14, #106): the first visit of a new or reworked feature gets one small dialog: a
+16:9 visual, a title, one line, dots, "Bỏ qua" and "Tiếp" / "Bắt đầu" (a bottom sheet on phones). It shows once per user
+per `id`: "seen" lives in a store (`localIntroStore`, localStorage, by default; pass `store` to keep it on the account),
+read after mount only. It never opens over another dialog (it waits until none is open); Escape and the backdrop skip.
+At most three slides and one per page; a page that is empty on first use gets `GuidedEmptyState` instead.
 
 **Links to other sites** always use `ExternalLink` (new tab, `rel="noopener noreferrer"`). Apps inside a native
 WebView pass an `onClick` that opens the URL outside. Never a bare `<a target="_blank">` to another site.
@@ -1218,14 +1259,15 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle`, `PageTabsTitle` (underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh; phone layout with `filters` / `collapseFilters` / `secondaryActions`), `ToolbarFilters` (§4a) |
 | `SearchPill.tsx`, `FilterChipRow.tsx`, `ViewSwitch.tsx`, `FilterPanel.tsx`, `filterParams.ts` | `StickyContextBar` (sticky search + chips + result line), `SearchPill` (wide pill search, debounce, `/`), `ResultLine` (query · N kết quả + sort), `SortDef`, `FilterChipRow` (one-line chips, ‹ ›, Xoá lọc, trailing tools), `FilterChip`, `FilterOptions` (the checkbox list of one filter), `useFilterParams` (filter state in the URL, Back / Forward), `ViewSwitch` (list ↔ grid, density), `PhoneFilterBar` (views · Bộ lọc · settings), `FilterPanel` (full-screen / side-sheet filters); URL helpers `readFilters`, `readFilterValues`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, types `FilterSpec`, `FilterDef`, `FilterOption`, `FilterValues` (§4) |
 | `SplitButton.tsx`, `CardActions.tsx`, `DetailOverlay.tsx` | `SplitButton` (main action + ▾ `Menu` of its variants, one button on phones, G1), `CardActions` (hover / focus icon actions + ⋯ on cards, ⋯ only on touch), `DetailOverlay` (record over its list: ‹ › with n / N, side panel, scroll kept), `useDetailParam` (`?open=` in the URL, Back closes), `openDetail` (open one from anywhere on the route), types `CardAction`, `DetailParamState` (§4, §9) |
+| `WorkspaceLayout.tsx`, `GuidedEmptyState.tsx`, `FeatureIntro.tsx`, `HintTextarea.tsx` | `WorkspaceLayout` (page type workspace: control panel + sticky main action, result), `WorkspaceHeader` (back + tool name, tabs), `WorkspaceSection` (`text-overline` label + counter), `Stepper` (− value +, spinbutton), `GuidedEmptyState` (EmptyState variant guided: step carousel or numbered steps, starting points), `FeatureIntro` (once-per-user feature dialog, `localIntroStore`), `HintTextarea` (@ / `/` hints and suggestions), types `GuideStep`, `GuideTemplate`, `GuideTemplateGroup`, `FeatureIntroSlide`, `FeatureIntroStore`, `HintToken`, `HintTrigger` (§4, §9b, §13, §14) |
 | `KpiCard.tsx`, `Modal.tsx` | `KpiCard` (metric card in the brand's figure font, neutral icon, `featured` for the screen's main number, shimmer), `Modal` (shared portal dialog with `MODAL_HEAD` + `MODAL_FOOT`) (§13, §14) |
 | `Icon.tsx` | `Icon`, `ICONS`, `IconName`, `IconTile`, `TILE_TONES`, `TONE_TEXT`, `TileTone` |
 | `AppHeader.tsx` | `AppHeader` (stand-alone app top bar, §4b) |
 | `PageActions.tsx` | `PageActions` (a tab's header buttons), `PageActionsSlot` + `PageActionsProvider` |
-| `Skeleton.tsx` | `Skeleton`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton` (`shape` cards / list / detail), `Loading`, `BootLoader` (boot / session gate only) (§13b) |
+| `Skeleton.tsx` | `Skeleton`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `SkeletonList`, `SkeletonTable`, `SkeletonDetail` (shaped: list rows, table rows, a record), `PageSkeleton` (`shape` cards / list / detail), `Loading`, `BootLoader` (boot / session gate only) (§13b) |
 | `FormActions.tsx`, `useUnsavedGuard.ts`, `formValidation.tsx`, `fieldKinds.ts` | `FormActions` (Huỷ + Lưu / Tạo, sticky on a page, `placement="modal"` footer), `useUnsavedGuard` (reload, tab close, link, back), `useFormValidation` + `FormErrorSummary` (blur, then change; Alert summary), `FIELD_KINDS` / `FieldKind` (§9b) |
 | `Feedback.tsx`, `States.tsx` | `EmptyState` (`variant` first-use / no-results, `onClearFilters`), `ErrorState`, `NotFound`, `Forbidden` (§13, §13c) |
-| `FileDrop.tsx` | `FileDrop`, `FileDropItem`, `FileRejection`, `matchesAccept`, `formatFileSize`, `classifyFiles`, `FileRejectReason` (§13b uploads: `FileDrop` + `Progress`) |
+| `FileDrop.tsx` | `FileDrop`, `DropZone` (compact FileDrop for a workspace panel), `DropZoneProps`, `FileDropItem`, `FileRejection`, `matchesAccept`, `formatFileSize`, `classifyFiles`, `FileRejectReason` (§13b uploads: `FileDrop` + `Progress`) |
 | `confirmDialog.tsx` | `confirmDialog()`, `confirmDelete()`, `ConfirmHost`, `ConfirmOptions`, `ConfirmDeleteOptions` (§14, §14c) |
 | `TaskHost.tsx` | `startTask()`, `TaskHost`, `TaskOptions`, `TaskHandle` (blocking task overlay, §13b) |
 | `ThemeProvider.tsx` | `ThemeProvider`, `useTheme`, `ThemeToggle` (§2) |
@@ -3644,6 +3686,96 @@ export default function DatePickerBasic() {
 
 ---
 
+<!-- docs/components/drop-zone.md -->
+
+# Drop zone
+
+The compact FileDrop for a workspace panel: a light dashed tile on the panel surface with a title and a hint, the same checks (accept, maxSize, duplicates), keyboard and announcements; the file rows are optional.
+
+## When to use
+
+- Attachments in a WorkspaceSection (specs, sample photos), where the section label carries the count.
+- A narrow side panel that takes files.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A form field or an import page with a row and progress per file | FileDrop |
+| An image to crop or a single avatar | an image picker of the app |
+
+## Import
+
+```tsx
+import { DropZone, type DropZoneProps } from "@semi/ui";
+```
+
+## Examples
+
+### In a workspace section
+
+```tsx
+import { useState } from "react";
+import { DropZone, WorkspaceSection, type FileDropItem } from "@semi/ui";
+
+export default function DropZoneBasic() {
+  const [items, setItems] = useState<FileDropItem[]>([]);
+  return (
+    <div className="max-w-sm rounded-panel bg-panel-3 p-4">
+      <WorkspaceSection label="Quy cách đính kèm" count={items.length} max={5}>
+        <DropZone
+          title="Kéo tệp quy cách vào đây"
+          hint="PDF, ảnh mẫu hoặc Excel, tối đa 10 MB"
+          accept={[".pdf", "image/*", ".xlsx"]}
+          maxSize={10_000_000}
+          multiple
+          items={items}
+          onAdd={(files) => setItems((cur) => [...cur, ...files.map((f) => ({ id: `${f.name}-${f.size}`, name: f.name, size: f.size, status: "done" as const }))])}
+          onRemove={(id) => setItems((cur) => cur.filter((i) => i.id !== id))}
+        />
+      </WorkspaceSection>
+    </div>
+  );
+}
+```
+
+## API
+
+### DropZone
+
+Compact FileDrop for a workspace panel (`WorkspaceSection`, L12): a lighter dashed tile on the panel surface (no
+field fill), smaller type, the same checks (`accept`, `maxSize`, duplicates), keyboard (Enter / Space opens the
+picker) and announcements. `items` is optional.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `disabled` | `boolean` |  |  |
+| `className` | `string` |  |  |
+| `id` | `string` |  | Set by the surrounding Field when omitted. |
+| `title` | `React.ReactNode` |  | Main line of the drop area (default from the locale). |
+| `aria-describedby` | `string` |  |  |
+| `aria-label` | `string` |  | Names the drop button and the hidden file input (wins over the Field label / title). Without it the input is named by the button (`aria-labelledby`), so `getByLabel(label)` in a test reaches the input too. |
+| `multiple` | `boolean` |  |  |
+| `onAdd` * | `(files: File[]) => void` |  | Only the files that passed every check (see `onReject`); a batch never repeats a name + size. |
+| `onReject` | `(rejections: FileRejection[]) => void` |  | Everything not added, with its reason: "type" / "size" (`accept`, `maxSize`), "directory" (a dropped folder), "duplicate" (same name + size as an item or an earlier file of the batch), "multiple" (extra files while `multiple` is off). The app decides whether to show them (e.g. as a Field error). |
+| `onRemove` | `(id: string) => void` |  |  |
+| `onRetry` | `(id: string) => void` |  |  |
+| `accept` | `string[]` |  | MIME types, wildcards ("image/*") or extensions (".csv"). Omit to accept everything. |
+| `maxSize` | `number` |  | Largest file in bytes. |
+| `hint` | `React.ReactNode` |  | Second line, e.g. "CSV or XLSX, up to 10 MB". |
+| `invalid` | `boolean` |  |  |
+| `items` | `FileDropItem[]` |  | Rows of the files already added; omit when the panel shows them elsewhere (a count in its section label). |
+
+## Accessibility
+
+- A button (Enter / Space opens the file picker) named by aria-label, the surrounding Field or its title; the hidden input carries the same name for tests.
+- Added and rejected files are announced in a polite live region, as in FileDrop.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/drop-zone/ and the types in src/ -->
+
+
+---
+
 <!-- docs/components/field.md -->
 
 # Field, Input, Textarea
@@ -3955,6 +4087,8 @@ export default function FileDropSingle() {
 ## API
 
 ### FileDrop
+
+Picker + drop area with a row per file (forms, import pages). In a narrow workspace panel use `DropZone`.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
@@ -4512,6 +4646,137 @@ under its field (the summary renders nothing), so a form never says the same thi
 - Texts (Huỷ, Lưu, Tạo, "Bạn có thay đổi chưa lưu…", Rời đi, Ở lại, "Có n mục cần sửa") are Vietnamese by default and come from SemiLocaleProvider. Mount ConfirmHost once in the root layout (useUnsavedGuard asks through it).
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/form-actions/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/hint-textarea.md -->
+
+# Hint textarea
+
+A text area that says what it can do (L15): a hint row under the text (“Gõ @ để nhắc nhà cung cấp · Gõ / để chèn mẫu”) and a suggestion list while the word at the caret starts with a trigger; the chosen item is inserted with a space after it.
+
+## When to use
+
+- A message or note where people mention a record (@ a supplier, a colleague) or insert a template or command (/).
+- A prompt box of a workspace or an AI tool with a few shortcuts.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Pick one value from a list | CustomCombobox |
+| A plain multi-line field | Field + textarea (FIELD_TEXTAREA) |
+| An AI chat composer | ChatComposer |
+
+## Import
+
+```tsx
+import { HintTextarea, type HintToken, type HintTrigger } from "@semi/ui";
+```
+
+## Examples
+
+### Mentions and templates
+
+Type @ or / at the start of a word.
+
+```tsx
+import { useState } from "react";
+import { HintTextarea } from "@semi/ui";
+
+export default function HintTextareaBasic() {
+  const [msg, setMsg] = useState("Chào anh chị, bên em cần báo giá cho ");
+  return (
+    <div className="max-w-md">
+      <HintTextarea
+        label="Lời nhắn gửi nhà cung cấp"
+        value={msg}
+        onChange={setMsg}
+        triggers={[
+          {
+            char: "@",
+            hint: "để nhắc nhà cung cấp",
+            items: [
+              { value: "@taynguyen", label: "Gia vị Tây Nguyên", hint: "Đắk Lắk", icon: "truck" },
+              { value: "@chuse", label: "HTX Tiêu Chư Sê", hint: "Gia Lai", icon: "truck" },
+              { value: "@yenbai", label: "Hương Quế Yên Bái", hint: "Yên Bái", icon: "truck" },
+            ],
+          },
+          {
+            char: "/",
+            hint: "để chèn mẫu",
+            items: [
+              { value: "/fob", label: "Hỏi giá FOB", hint: "Giá FOB Hải Phòng, hạn giao", icon: "fileText" },
+              { value: "/mau", label: "Xin mẫu", hint: "Gửi 1 kg mẫu trước khi chốt", icon: "fileText" },
+            ],
+          },
+        ]}
+      />
+    </div>
+  );
+}
+```
+
+### In a Field
+
+```tsx
+import { useState } from "react";
+import { Field, HintTextarea } from "@semi/ui";
+
+export default function HintTextareaField() {
+  const [note, setNote] = useState("");
+  return (
+    <div className="max-w-md">
+      <Field label="Ghi chú nội bộ" hint="Người được nhắc sẽ nhận thông báo.">
+        <HintTextarea
+          rows={3}
+          placeholder="Ghi chú cho đồng nghiệp…"
+          value={note}
+          onChange={setNote}
+          triggers={[
+            {
+              char: "@",
+              hint: "để nhắc đồng nghiệp",
+              items: [
+                { value: "@ha", label: "Trần Thu Hà", hint: "Mua hàng", icon: "user" },
+                { value: "@minh", label: "Lê Văn Minh", hint: "Kho", icon: "user" },
+              ],
+            },
+          ]}
+        />
+      </Field>
+    </div>
+  );
+}
+```
+
+## API
+
+### HintTextarea
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `value` * | `string` |  |  |
+| `onChange` * | `(value: string) => void` |  |  |
+| `triggers` * | `HintTrigger[]` |  | One per trigger character, each with its suggestions. |
+| `label` | `string` |  | Accessible name when there is no surrounding `Field` label. |
+| `placeholder` | `string` |  |  |
+| `rows` | `number` | `4` |  |
+| `disabled` | `boolean` | `false` |  |
+| `id` | `string` |  | Set by the surrounding Field when omitted. |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- A textbox with aria-autocomplete="list": while the list shows, aria-controls names the listbox and aria-activedescendant the current option. ↑ / ↓ move (wrapping), Enter or Tab inserts, Escape closes the list only (not a dialog around it); a polite status says how many suggestions there are.
+- Keys typed while an input method composes (Vietnamese Telex) are left alone. The hint row is the field's description. Named by its Field label or label.
+
+## Notes
+
+- Matching ignores case and Vietnamese marks (“tay nguyen” finds “Tây Nguyên”); at most six suggestions show.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/hint-textarea/ and the types in src/ -->
 
 
 ---
@@ -5202,6 +5467,95 @@ drag or click the track. `value` is a number, or [low, high] with `range`.
 - role="slider" per thumb with aria-valuenow / aria-valuetext (format): arrows step, PageUp / PageDown jump, Home / End go to the ends.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/slider/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/stepper.md -->
+
+# Stepper
+
+− value + for a small count (quantities, copies, seats) in a workspace panel or a card: one tap per step, a unit after the value, min and max.
+
+## When to use
+
+- A small whole number people nudge rather than type: tấn per line, copies, guests, 1–99.
+- Inside a WorkspaceSection or a line card of a request.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A number people type (price, weight with decimals, a large count) | NumberInput |
+| A value on a continuous range | Slider |
+
+## Import
+
+```tsx
+import { Stepper } from "@semi/ui";
+```
+
+## Examples
+
+### With a unit
+
+```tsx
+import { useState } from "react";
+import { Stepper } from "@semi/ui";
+
+export default function StepperBasic() {
+  const [tons, setTons] = useState(12);
+  return (
+    <div className="max-w-xs">
+      <Stepper label="số tấn tiêu đen" unit="tấn" min={1} value={tons} onChange={setTons} />
+    </div>
+  );
+}
+```
+
+### Limits, step, disabled
+
+```tsx
+import { useState } from "react";
+import { Stepper } from "@semi/ui";
+
+export default function StepperLimits() {
+  const [boxes, setBoxes] = useState(50);
+  return (
+    <div className="max-w-xs flex flex-col gap-3">
+      <Stepper label="số thùng" unit="thùng" min={0} max={200} step={10} value={boxes} onChange={setBoxes} />
+      <Stepper label="số bản in" value={1} onChange={() => undefined} disabled />
+    </div>
+  );
+}
+```
+
+## API
+
+### Stepper
+
+− value + for small counts (quantities, copies, seats). The value is a `spinbutton`: ↑ / → add `step`, ↓ / ← take
+it away, Page Up / Page Down move ten steps, Home / End go to `min` / `max`. The − + buttons are for pointer and
+touch (out of the Tab order: the keys do the same). Free typing of large numbers is `NumberInput`.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `value` * | `number` |  |  |
+| `onChange` * | `(value: number) => void` |  |  |
+| `min` | `number` | `0` |  |
+| `max` | `number` | `99` |  |
+| `step` | `number` | `1` |  |
+| `label` * | `string` |  | What is counted, lower case ("số tấn tiêu đen"): names the value and the buttons ("Giảm số tấn tiêu đen"). |
+| `unit` | `string` |  | Shown after the value and read with it ("12 tấn"). |
+| `disabled` | `boolean` | `false` |  |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- The value is a spinbutton (aria-valuenow / min / max, aria-valuetext with the unit) named by label: ↑ / → and ↓ / ← step, Page Up / Page Down move ten steps, Home / End go to min / max.
+- The − + buttons are named (“Giảm …”, “Tăng …”) and left out of the Tab order: the keys do the same, so Tab reaches one stop per stepper.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/stepper/ and the types in src/ -->
 
 
 ---
@@ -6072,6 +6426,124 @@ export default function DrawerSides() {
 - A modal dialog: focus trap, Escape, focus returns to the opener; the title labels it.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/drawer/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/feature-intro.md -->
+
+# Feature intro
+
+The first visit of a feature (L14): a small dialog with a visual, a title, one line, dots, “Bỏ qua” and “Tiếp” / “Bắt đầu”. Shown once per user per id; “seen” lives in a store (localStorage by default, pass your own to keep it per account). It waits while another dialog is open.
+
+## When to use
+
+- A new or reworked feature people already in the app should notice once (a new workspace, a new way to compare quotes).
+- “Xem lại giới thiệu” from a Help menu (forceOpen).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A page that is empty on first use | GuidedEmptyState or EmptyState first-use |
+| A one-line tip next to a control | Tooltip or a hint line |
+| A decision or a confirmation | Modal / confirmDialog |
+
+## Import
+
+```tsx
+import { FeatureIntro, localIntroStore, type FeatureIntroSlide, type FeatureIntroStore } from "@semi/ui";
+```
+
+## Examples
+
+### Once per user
+
+Mount it on the feature's page with an id; here a button shows it again (forceOpen).
+
+```tsx
+import { useState } from "react";
+import { Button, FeatureIntro, IconTile } from "@semi/ui";
+
+export default function FeatureIntroBasic() {
+  const [replay, setReplay] = useState(0);
+  return (
+    <>
+      <Button icon="sparkles" onClick={() => setReplay((n) => n + 1)}>
+        Xem lại giới thiệu
+      </Button>
+      {replay > 0 && (
+        <FeatureIntro
+          key={replay}
+          id="purchasing-workspace"
+          forceOpen
+          slides={[
+            { title: "Yêu cầu mua trên một màn hình", body: "Mặt hàng, nhà cung cấp và lời nhắn ở bên trái, báo giá hiện bên phải khi về.", visual: <IconTile name="layers" size="lg" tone="gray" /> },
+            { title: "So sánh từng mặt hàng", body: "Giá tốt nhất của mỗi dòng được đánh dấu, tổng tính theo số tấn bạn chọn.", visual: <IconTile name="chart" size="lg" tone="gray" /> },
+            { title: "Gõ @ để nhắc nhà cung cấp", body: "Trong lời nhắn, @ gợi ý nhà cung cấp và / chèn mẫu thư có sẵn.", visual: <IconTile name="sparkles" size="lg" tone="gray" /> },
+          ]}
+        />
+      )}
+    </>
+  );
+}
+```
+
+### Your own store
+
+Keep “seen” on the account instead of the browser.
+
+```tsx
+import { FeatureIntro, IconTile, type FeatureIntroStore } from "@semi/ui";
+
+// "Seen" on the account: the app's own API (any async get / set works).
+const accountStore: FeatureIntroStore = {
+  get: async (id) => {
+    const res = await fetch(`/api/me/intros/${id}`);
+    return res.ok && (await res.json()).seen === true;
+  },
+  set: (id) => {
+    void fetch(`/api/me/intros/${id}`, { method: "PUT" });
+  },
+};
+
+export default function FeatureIntroStoreExample() {
+  return (
+    <FeatureIntro
+      id="purchasing-workspace"
+      store={accountStore}
+      slides={[{ title: "Yêu cầu mua trên một màn hình", body: "Mặt hàng và nhà cung cấp bên trái, báo giá bên phải.", visual: <IconTile name="layers" size="lg" tone="gray" /> }]}
+    />
+  );
+}
+```
+
+## API
+
+### FeatureIntro
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `id` * | `string` |  | One id per feature ("purchasing-workspace"): shown once per id. |
+| `slides` * | `FeatureIntroSlide[]` |  | One to four slides. |
+| `store` | `FeatureIntroStore` | `localIntroStore` | Where "seen" is read and written (default `localIntroStore`). |
+| `forceOpen` | `boolean` | `false` | Show it even if seen (a Help menu's "Xem lại giới thiệu", docs). Still waits for other dialogs to close. |
+| `onDone` | `(how: 'finished' \| 'skipped') => void` |  | After it closes and is stored as seen: `finished` from the last slide's primary, `skipped` from Skip, Escape or the backdrop. |
+| `skipLabel` | `string` |  | Default "Bỏ qua". |
+| `nextLabel` | `string` |  | Default "Tiếp". |
+| `doneLabel` | `string` |  | Primary on the last slide; default "Bắt đầu". |
+
+## Accessibility
+
+- A modal dialog named by the slide's title and described by its line: focus moves to the primary, Tab stays inside, Escape and the backdrop skip, focus returns to where it was.
+- It never opens over another dialog: it waits until no aria-modal dialog is on the page. The step (“Bước 1 / 3”) is screen-reader text; the dots are decorative.
+
+## Notes
+
+- The store is read after mount only, so the server HTML never contains the dialog; blocked storage counts as seen.
+- At most three slides; one sentence each. One FeatureIntro per page.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/feature-intro/ and the types in src/ -->
 
 
 ---
@@ -8662,6 +9134,247 @@ export default function TextTabsLinked() {
 
 ---
 
+<!-- docs/components/workspace-layout.md -->
+
+# Workspace layout
+
+Page type “workspace” (L12): a control panel on the left (segmented tabs, back + tool name, sections with a text-overline label and a counter like “3/8”, drop zones, steppers, a message box) with the main action pinned at its bottom, and the result on the right. Phones stack the panel above the result with the action at the bottom of the screen.
+
+## When to use
+
+- A tool where the user sets inputs and sees what they produce: a quote request and its comparison, a generator, an import with a preview, a print job.
+- A record being composed step by step, with one main action at the end (Gửi hỏi giá, Tạo, In).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A list of records with search and filters | StickyContextBar + a list or DataTable |
+| A form that saves fields of one record | a form page with FormActions |
+| Settings that apply to a stand-alone tool app's canvas | SidePanel |
+
+## Import
+
+```tsx
+import { WorkspaceLayout, WorkspaceHeader, WorkspaceSection } from "@semi/ui";
+```
+
+## Examples
+
+### Quote request
+
+Tabs, back + name, sections with counters, steppers, a drop zone, a message with @ and / hints; the comparison on the right. Narrow the window: the panel stacks on top and the action stays at the bottom.
+
+```tsx
+import { useState } from "react";
+import { Badge, Button, DropZone, HintTextarea, Stepper, ToggleGroup, WorkspaceHeader, WorkspaceLayout, WorkspaceSection } from "@semi/ui";
+
+const LINES = [
+  { id: "l1", name: "Tiêu đen 500 g/l", spec: "Độ ẩm ≤ 13%, sạch 99,5%" },
+  { id: "l2", name: "Quế chẻ", spec: "Dài 30–40 cm, dầu ≥ 3%" },
+];
+const QUOTES = [
+  { supplier: "Gia vị Tây Nguyên", days: 12, prices: [4120, 2890], best: [false, true] },
+  { supplier: "HTX Tiêu Chư Sê", days: 15, prices: [4090, 2950], best: [true, false] },
+];
+const SUPPLIERS = [
+  { value: "@taynguyen", label: "Gia vị Tây Nguyên", hint: "Đắk Lắk" },
+  { value: "@chuse", label: "HTX Tiêu Chư Sê", hint: "Gia Lai" },
+  { value: "@yenbai", label: "Hương Quế Yên Bái", hint: "Yên Bái" },
+];
+const TEMPLATES = [{ value: "/fob", label: "Hỏi giá FOB", hint: "Giá FOB Hải Phòng, hạn giao" }];
+const usd = (n: number) => `${n.toLocaleString("vi-VN")} USD`;
+
+export default function WorkspaceRequest() {
+  const [tab, setTab] = useState<"lines" | "suppliers" | "terms">("lines");
+  const [qty, setQty] = useState([12, 4]);
+  const [msg, setMsg] = useState("Chào anh chị, bên em cần báo giá FOB Hải Phòng, giao trước 15/12.");
+  return (
+    <WorkspaceLayout
+      header={
+        <WorkspaceHeader
+          backHref="/components/workspace-layout/"
+          backLabel="Về Mua hàng"
+          title="YC-014 Tiêu đen cho Seoul Spice"
+          description="Cần hàng trước 15/12 · Trần Thu Hà"
+          headingLevel={2}
+          tabs={
+            <ToggleGroup
+              label="Phần của yêu cầu"
+              value={[tab]}
+              onChange={(v) => v[0] && setTab(v[0])}
+              options={[
+                { key: "lines", label: "Mặt hàng" },
+                { key: "suppliers", label: "Nhà cung cấp" },
+                { key: "terms", label: "Điều khoản" },
+              ]}
+              className="w-full [&>button]:flex-1"
+            />
+          }
+        />
+      }
+      panel={
+        <>
+          <WorkspaceSection label="Mặt hàng" count={LINES.length} max={8} action={<Button size="sm" variant="ghost" icon="plus">Thêm</Button>}>
+            {LINES.map((l, i) => (
+              <div key={l.id} className="rounded-card bg-card p-3 flex flex-col gap-2">
+                <div className="min-w-0">
+                  <div className="text-label font-semibold text-contrast">{l.name}</div>
+                  <div className="text-caption text-muted truncate">{l.spec}</div>
+                </div>
+                <Stepper label={`số tấn ${l.name}`} unit="tấn" min={1} value={qty[i]} onChange={(v) => setQty(qty.map((q, j) => (j === i ? v : q)))} />
+              </div>
+            ))}
+          </WorkspaceSection>
+          <WorkspaceSection label="Quy cách đính kèm" count={0} max={5}>
+            <DropZone title="Kéo tệp quy cách vào đây" hint="PDF, ảnh mẫu hoặc Excel, tối đa 10 MB" accept={[".pdf", "image/*", ".xlsx"]} maxSize={10_000_000} onAdd={() => undefined} />
+          </WorkspaceSection>
+          <WorkspaceSection label="Lời nhắn">
+            <HintTextarea
+              label="Lời nhắn gửi nhà cung cấp"
+              rows={3}
+              value={msg}
+              onChange={setMsg}
+              triggers={[
+                { char: "@", hint: "để nhắc nhà cung cấp", items: SUPPLIERS.map((s) => ({ ...s, icon: "truck" })) },
+                { char: "/", hint: "để chèn mẫu", items: TEMPLATES.map((t) => ({ ...t, icon: "fileText" })) },
+              ]}
+            />
+          </WorkspaceSection>
+        </>
+      }
+      action={
+        <div className="flex items-center gap-2">
+          <Button>Lưu nháp</Button>
+          <Button variant="primary" icon="send" fullWidth>
+            Gửi hỏi giá (2)
+          </Button>
+        </div>
+      }
+      result={
+        <>
+          <div className="flex flex-wrap items-center gap-3">
+            <h3 className="flex-1 text-title font-title font-semibold text-contrast">So sánh báo giá</h3>
+            <span className="text-label text-muted">2/2 nhà cung cấp đã trả lời</span>
+          </div>
+          <div className="grid md:grid-cols-2 gap-group">
+            {QUOTES.map((q) => (
+              <article key={q.supplier} className="rounded-card bg-card p-card flex flex-col gap-3">
+                <div className="min-w-0">
+                  <div className="text-ui font-semibold text-contrast truncate">{q.supplier}</div>
+                  <div className="text-caption text-muted">FOB · {q.days} ngày</div>
+                </div>
+                <div className="flex flex-col divide-y divide-divider">
+                  {LINES.map((l, i) => (
+                    <div key={l.id} className="flex items-center gap-2 py-2">
+                      <span className="flex-1 text-label text-body">{l.name}</span>
+                      {q.best[i] && (
+                        <Badge tone="emerald" size="sm">
+                          Tốt nhất
+                        </Badge>
+                      )}
+                      <span className="text-label tabular-nums text-contrast">{usd(q.prices[i])}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-center justify-between pt-1">
+                  <span className="text-caption text-muted">Tổng ({qty[0] + qty[1]} tấn)</span>
+                  <span className="text-ui-lg font-figure font-semibold text-contrast tabular-nums">{usd(q.prices[0] * qty[0] + q.prices[1] * qty[1])}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </>
+      }
+    />
+  );
+}
+```
+
+### Minimal
+
+No header: just sections, the action and the result.
+
+```tsx
+import { useState } from "react";
+import { Button, Stepper, WorkspaceLayout, WorkspaceSection } from "@semi/ui";
+
+export default function WorkspaceMinimal() {
+  const [copies, setCopies] = useState(2);
+  return (
+    <WorkspaceLayout
+      panel={
+        <WorkspaceSection label="Số bản" count={copies} max={10}>
+          <Stepper label="số bản in" value={copies} min={1} max={10} onChange={setCopies} />
+        </WorkspaceSection>
+      }
+      action={
+        <Button variant="primary" icon="printer" fullWidth>
+          In {copies} bản
+        </Button>
+      }
+      result={<div className="rounded-card bg-card p-card text-ui text-muted min-h-40">Bản xem trước của nhãn hiện ở đây.</div>}
+    />
+  );
+}
+```
+
+## API
+
+### WorkspaceLayout
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `header` | `React.ReactNode` |  | Top of the panel: a `WorkspaceHeader` (back + tool name), segmented tabs above it when the tool has parts. |
+| `panel` * | `React.ReactNode` |  | The controls: `WorkspaceSection`s. Scrolls inside the panel on `lg+`. |
+| `action` * | `React.ReactNode` |  | The main action (one primary Button, `fullWidth`, a secondary beside it at most). Pinned to the panel's bottom. |
+| `result` * | `React.ReactNode` |  | What the controls produce: a preview, a comparison, a list. Its headings start at h2 (the tool name is the h1). |
+| `panelLabel` | `string` |  | Name of the panel region (default "Bảng điều khiển"). |
+| `resultLabel` | `string` |  | Name of the result region (default "Kết quả"). |
+| `className` | `string` |  |  |
+
+### WorkspaceHeader
+
+Back + tool name (+ one meta line) at the top of the workspace panel; `tabs` (a `ToggleGroup`) sit above it.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `title` * | `React.ReactNode` |  | The tool or record name ("YC-014 Tiêu đen cho Seoul Spice"). The page's h1 by default. |
+| `description` | `React.ReactNode` |  | One muted line under the title (due date, owner). |
+| `backHref` | `string` |  | Where the round back button goes (a `next/link`). |
+| `onBack` | `() => void` |  | Back without a URL (closes the tool); ignored when `backHref` is set. |
+| `backLabel` | `string` |  | Accessible name of the back button: where it goes ("Về Mua hàng"). Default "Quay lại". |
+| `tabs` | `React.ReactNode` |  | Segmented tabs of the tool's parts, full width above the title (`<ToggleGroup className="w-full" …/>`). |
+| `headingLevel` | `2 \| 1` | `1` | 1 (default): the tool name is the page title. 2 when the page already has an h1. |
+
+### WorkspaceSection
+
+A section of the workspace panel: a `text-overline` label, a counter ("3/8") and an optional action on its right.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `label` * | `string` |  | Section name in sentence case ("Mặt hàng"); shown in `text-overline`. |
+| `count` | `number` |  | How many items the section holds. |
+| `max` | `number` |  | The limit, shown as "count/max". |
+| `action` | `React.ReactNode` |  | A small text button on the right ("Thêm"). |
+| `children` * | `React.ReactNode` |  |  |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- Two named regions (panel and result: “Bảng điều khiển”, “Kết quả”, override with panelLabel / resultLabel); each WorkspaceSection is a group named by its label.
+- WorkspaceHeader's title is the page h1 by default; headings in the result start at h2. The back button is a link named by backLabel (where it goes).
+
+## Notes
+
+- The panel is 380px wide on lg+, sticky under the top of the scrolling area, and scrolls inside; the result scrolls with the page.
+- One primary in the action bar (fullWidth), a secondary beside it at most (Lưu nháp). Section labels are the only uppercase text (text-overline, written in sentence case in code).
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/workspace-layout/ and the types in src/ -->
+
+
+---
+
 <!-- docs/components/accordion.md -->
 
 # Accordion
@@ -9119,7 +9832,7 @@ export default function CarouselProducts() {
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `label` * | `string` |  | Accessible name of the carousel ("Ảnh sản phẩm"). |
-| `perView` | `2 \| 3 \| 4 \| 1` | `1` | Slides visible at once from sm up (phones always show one and a peek of the next). |
+| `perView` | `2 \| 1 \| 3 \| 4` | `1` | Slides visible at once from sm up (phones always show one and a peek of the next). |
 | `className` | `string` |  |  |
 | `children` * | `React.ReactNode` |  | One child per slide. |
 
@@ -10731,7 +11444,7 @@ data already loaded on screen and show this in place of the failed part only (§
 | `retryLabel` | `string` |  |  |
 | `action` | `React.ReactNode` |  | Extra action beside the retry (a link home, "Báo lỗi"). |
 | `icon` | `IconName` | `"alert"` |  |
-| `headingLevel` | `2 \| 3 \| 1` |  | Heading level of the title: 2 inside a page (default), 1 when this is the whole page (a route `error.tsx`). |
+| `headingLevel` | `2 \| 1 \| 3` |  | Heading level of the title: 2 inside a page (default), 1 when this is the whole page (a route `error.tsx`). |
 | `className` | `string` |  |  |
 
 ### NotFound
@@ -10744,7 +11457,7 @@ A wrong or removed URL (route `not-found.tsx`, `notFound()`): one sentence and a
 | `message` | `React.ReactNode` |  |  |
 | `homeHref` | `string` | `"/"` | Where "Về trang chủ" goes. |
 | `homeLabel` | `string` |  |  |
-| `headingLevel` | `2 \| 3 \| 1` | `1` | Heading level of the title: 1 (default, a not-found page is the whole page) or 2 inside a page. |
+| `headingLevel` | `2 \| 1 \| 3` | `1` | Heading level of the title: 1 (default, a not-found page is the whole page) or 2 inside a page. |
 | `className` | `string` |  |  |
 
 ### Forbidden
@@ -10757,7 +11470,7 @@ Signed in but not allowed (a 403, or a page the role cannot open): say so and li
 | `message` | `React.ReactNode` |  |  |
 | `homeHref` | `string` | `"/"` |  |
 | `homeLabel` | `string` |  |  |
-| `headingLevel` | `2 \| 3 \| 1` | `1` | Heading level of the title: 1 (default) or 2 inside a page. |
+| `headingLevel` | `2 \| 1 \| 3` | `1` | Heading level of the title: 1 (default) or 2 inside a page. |
 | `action` | `React.ReactNode` |  | Extra action beside the link home (a mailto to the admin, "Đổi tài khoản"). |
 | `className` | `string` |  |  |
 
@@ -10775,6 +11488,137 @@ Signed in but not allowed (a 403, or a page the role cannot open): say so and li
 - 403 means signed in but not allowed (Forbidden, no retry); not signed in goes to the login page, not to Forbidden.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/states/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/guided-empty-state.md -->
+
+# Guided empty state
+
+The EmptyState variant “guided” (L13): the first use of a page that needs a few steps before it is useful. A step carousel (“Bước 1 / 4”, a visual, ‹ ›) or numbered steps, the one primary action, a link to the full guide, and rows of ready starting points by category, each with “Xem tất cả”.
+
+## When to use
+
+- First use of a page whose value needs setup in a few steps (suppliers before quotes, a catalogue before orders).
+- A first use with ready starting points (import from Excel, find in DataHub, templates by category).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| First use that one action fills | EmptyState variant="first-use" |
+| A search or filter matched nothing | EmptyState variant="no-results" |
+| Introduce a new feature to people who already use the page | FeatureIntro |
+
+## Import
+
+```tsx
+import { GuidedEmptyState, type GuideStep, type GuideTemplate, type GuideTemplateGroup } from "@semi/ui";
+```
+
+## Examples
+
+### Carousel and starting points
+
+```tsx
+import { Button, GuidedEmptyState } from "@semi/ui";
+
+export default function GuidedCarousel() {
+  return (
+    <GuidedEmptyState
+      title="Chưa có nhà cung cấp nào. Thêm nhà cung cấp đầu tiên để hỏi giá."
+      tutorial={{ label: "Xem hướng dẫn đầy đủ", href: "/components/guided-empty-state/" }}
+      action={
+        <Button variant="primary" icon="plus">
+          Thêm nhà cung cấp
+        </Button>
+      }
+      steps={[
+        { icon: "upload", title: "Nhập danh sách bạn đang có", body: "Kéo tệp Excel hoặc CSV vào đây. Sales Hub nhận cột tên, vùng, mặt hàng và email." },
+        { icon: "search", title: "Tìm thêm trong DataHub", body: "Lọc theo mặt hàng và vùng trồng, chọn nhà cung cấp rồi thêm vào danh sách một lần." },
+        { icon: "send", title: "Gửi hỏi giá", body: "Chọn nhiều nhà cung cấp, gửi một yêu cầu báo giá. Thư trả lời tự về đúng hồ sơ." },
+        { icon: "layers", title: "So sánh và chốt", body: "Giá từng mặt hàng đặt cạnh nhau, giá tốt nhất được đánh dấu. Chọn một báo giá để lập đơn." },
+      ]}
+      templates={[
+        {
+          category: "Bắt đầu nhanh",
+          onSeeAll: () => undefined,
+          items: [
+            { icon: "fileSpreadsheet", tone: "emerald", title: "Nhập từ Excel", hint: "Mẫu cột có sẵn, 2 phút" },
+            { icon: "database", tone: "sky", title: "Tìm trong DataHub", hint: "1.240 nhà cung cấp gia vị" },
+            { icon: "mail", tone: "amber", title: "Lấy từ hộp thư", hint: "Người đã gửi báo giá cho bạn" },
+          ],
+        },
+        {
+          category: "Theo mặt hàng",
+          seeAllLabel: "Tất cả mặt hàng",
+          seeAllHref: "/components/guided-empty-state/",
+          items: [
+            { icon: "package", title: "Tiêu đen, tiêu trắng", hint: "Gia Lai, Đắk Lắk, Bình Phước" },
+            { icon: "package", title: "Quế, hồi", hint: "Yên Bái, Lạng Sơn, Quảng Ngãi" },
+            { icon: "package", title: "Thảo quả, gừng sấy", hint: "Lào Cai, Đắk Nông" },
+          ],
+        },
+      ]}
+    />
+  );
+}
+```
+
+### Numbered steps
+
+layout="steps": every step at once, for two to four short steps.
+
+```tsx
+import { Button, GuidedEmptyState } from "@semi/ui";
+
+export default function GuidedSteps() {
+  return (
+    <GuidedEmptyState
+      layout="steps"
+      title="Chưa có mặt hàng nào. Thêm mặt hàng để nhận đơn."
+      action={
+        <Button variant="primary" icon="plus">
+          Thêm mặt hàng
+        </Button>
+      }
+      steps={[
+        { icon: "box", title: "Thêm mặt hàng", body: "Tên, quy cách và đơn vị bán." },
+        { icon: "tag", title: "Đặt giá", body: "Giá theo số lượng, theo khách." },
+        { icon: "send", title: "Gửi bảng giá", body: "Khách nhận một liên kết để đặt." },
+      ]}
+    />
+  );
+}
+```
+
+## API
+
+### GuidedEmptyState
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `title` * | `React.ReactNode` |  | The one sentence: what is missing and what to do ("Chưa có nhà cung cấp nào. Thêm nhà cung cấp đầu tiên để hỏi giá."). |
+| `steps` * | `GuideStep[]` |  | Two to five steps. |
+| `layout` | `'carousel' \| 'steps'` | `"carousel"` | `carousel` (default): one step at a time with a visual, ‹ › and "Bước n / N". `steps`: every step as a numbered list. |
+| `action` | `React.ReactNode` |  | The one primary action that fills the page (a filled Button). Hide the page's own primary while this shows. |
+| `tutorial` | `{ label: string; href: string; }` |  | Link to the full guide, top right from `sm`. |
+| `templates` | `GuideTemplateGroup[]` |  | Rows of ready starting points under the guide. |
+| `headingLevel` | `2 \| 1 \| 3` | `2` | Level of the title (2 inside a page, default); category headings are one below. |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- The guide is a region named by the title (an h2, headingLevel to change); a step change is read from a polite live region. At an end the pressed arrow turns disabled and focus moves to the other one.
+- Starting points are links (href) or buttons in a list under an h3 per category; “Xem tất cả” is a link or a button.
+
+## Notes
+
+- One filled button on the screen: hide the page's own primary while the guided state shows (§13).
+- Below sm the guide card follows the phone cap (at most 40% of the screen, the visual hidden, scrolls inside); the starting points follow it as normal content.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/guided-empty-state/ and the types in src/ -->
 
 
 ---
@@ -10850,11 +11694,12 @@ Determinate or indeterminate progress bar (uploads, quotas, print progress).
 
 # Skeleton
 
-Shimmer placeholders while content loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton; Loading announces the region. Never “Đang tải…” text. BootLoader is the one centred spinner, for the boot / session gate before the shell exists.
+Shimmer placeholders while content loads, shaped like what loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, SkeletonList (divided list rows), SkeletonTable (table rows), SkeletonDetail (a record's detail panel), PageSkeleton; Loading announces the region. Never “Đang tải…” text or a spinner in a list. BootLoader is the one centred spinner, for the boot / session gate before the shell exists.
 
 ## When to use
 
 - Any content that is loading: show its shape.
+- Lists, tables and detail panels: SkeletonList, SkeletonTable, SkeletonDetail (DataTable shows table-shaped rows by itself while loading).
 - BootLoader: before the app knows its layout (session, auth, boot), once in the root or route-group layout.
 
 ## Use something else when
@@ -10868,7 +11713,7 @@ Shimmer placeholders while content loads: Skeleton blocks, SkeletonCard, Skeleto
 ## Import
 
 ```tsx
-import { Skeleton, SkeletonCard, SkeletonGrid, SkeletonRows, PageSkeleton, Loading, BootLoader } from "@semi/ui";
+import { Skeleton, SkeletonCard, SkeletonGrid, SkeletonRows, SkeletonList, SkeletonTable, SkeletonDetail, PageSkeleton, Loading, BootLoader } from "@semi/ui";
 ```
 
 ## Examples
@@ -10915,6 +11760,27 @@ export default function SkeletonPage() {
           <PageSkeleton />
         </Loading>
       )}
+    </div>
+  );
+}
+```
+
+### List, table and detail
+
+Shaped like what loads: avatar rows, a table with a number column, a record with its side panel.
+
+```tsx
+import { SkeletonDetail, SkeletonList, SkeletonTable } from "@semi/ui";
+
+// Shaped like what loads: list rows, table rows, a record's detail. No spinners in lists (L16).
+export default function SkeletonShaped() {
+  return (
+    <div className="flex flex-col gap-section">
+      <div className="rounded-card bg-card">
+        <SkeletonList rows={4} columns={2} label="Đang tải hộp thư" />
+      </div>
+      <SkeletonTable rows={4} columns={5} numeric={[4]} label="Đang tải đơn hàng" />
+      <SkeletonDetail fields={4} side label="Đang tải nhà cung cấp" />
     </div>
   );
 }
@@ -11003,6 +11869,44 @@ List row placeholders (dialog lists, tables).
 | `className` | `string` | `"flex flex-col gap-2"` |  |
 | `label` | `string` |  |  |
 
+### SkeletonList
+
+Rows of a divided list (an `ItemGroup`, an inbox, a people list): optional avatar, a title and a meta line, then
+`columns` short values on the right (from `md` after the first). Matches `Item` rows (`px-4 py-3`).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `rows` | `number` | `6` |  |
+| `columns` | `number` | `1` | Short values on the right of each row (a date, a status). |
+| `avatar` | `boolean` | `true` | A round avatar / icon at the start of each row. |
+| `className` | `string` |  |  |
+| `label` | `string` |  |  |
+
+### SkeletonTable
+
+Table-shaped placeholder for a hand-made `Table` (DataTable shows the same shape by itself while `loading`): a
+header row and `rows` rows of `columns` cells, the first column wider, `numeric` columns right-aligned.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `rows` | `number` | `5` |  |
+| `columns` | `number` | `4` |  |
+| `numeric` | `number[]` | `[]` | Indexes of number columns (short, right-aligned). |
+| `className` | `string` |  |  |
+| `label` | `string` |  |  |
+
+### SkeletonDetail
+
+A record's detail panel (a `DetailOverlay`, a side panel, a detail page): title and status, a row of actions, then
+`fields` label / value pairs and a text block. `side` adds the facts column beside it from `lg`.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `fields` | `number` | `6` |  |
+| `side` | `boolean` | `false` | A second column of facts from `lg` (the overlay's side panel). |
+| `className` | `string` |  |  |
+| `label` | `string` |  |  |
+
 ### PageSkeleton
 
 Whole-page placeholder (Suspense fallbacks, route `loading.tsx`): title row + the shape of the content.
@@ -11040,7 +11944,7 @@ Prefer a server-side session check (proxy / async layout), which needs no gate a
 
 ## Accessibility
 
-- Loading (and the Skeleton* groups with label) set role="status" + aria-busy so screen readers hear one message.
+- Loading (and every Skeleton* group) sets role="status" + aria-busy on the container with one screen-reader label; the blocks themselves are aria-hidden.
 - BootLoader is a role="status" region whose label (default: the locale's booting string) is for screen readers only.
 
 ## Notes

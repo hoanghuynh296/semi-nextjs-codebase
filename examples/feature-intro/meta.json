@@ -1,0 +1,52 @@
+{
+  "title": "Feature intro",
+  "group": "Overlays",
+  "description": "The first visit of a feature (L14): a small dialog with a visual, a title, one line, dots, “Bỏ qua” and “Tiếp” / “Bắt đầu”. Shown once per user per id; “seen” lives in a store (localStorage by default, pass your own to keep it per account). It waits while another dialog is open.",
+  "components": [
+    "FeatureIntro"
+  ],
+  "imports": [
+    "localIntroStore",
+    "type FeatureIntroSlide",
+    "type FeatureIntroStore"
+  ],
+  "when": [
+    "A new or reworked feature people already in the app should notice once (a new workspace, a new way to compare quotes).",
+    "“Xem lại giới thiệu” from a Help menu (forceOpen)."
+  ],
+  "instead": [
+    {
+      "need": "A page that is empty on first use",
+      "use": "GuidedEmptyState or EmptyState first-use"
+    },
+    {
+      "need": "A one-line tip next to a control",
+      "use": "Tooltip or a hint line"
+    },
+    {
+      "need": "A decision or a confirmation",
+      "use": "Modal / confirmDialog"
+    }
+  ],
+  "a11y": [
+    "A modal dialog named by the slide's title and described by its line: focus moves to the primary, Tab stays inside, Escape and the backdrop skip, focus returns to where it was.",
+    "It never opens over another dialog: it waits until no aria-modal dialog is on the page. The step (“Bước 1 / 3”) is screen-reader text; the dots are decorative."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "Once per user",
+      "description": "Mount it on the feature's page with an id; here a button shows it again (forceOpen)."
+    },
+    {
+      "file": "store",
+      "title": "Your own store",
+      "description": "Keep “seen” on the account instead of the browser.",
+      "preview": "none"
+    }
+  ],
+  "notes": [
+    "The store is read after mount only, so the server HTML never contains the dialog; blocked storage counts as seen.",
+    "At most three slides; one sentence each. One FeatureIntro per page."
+  ]
+}

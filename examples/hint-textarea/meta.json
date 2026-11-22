@@ -1,0 +1,48 @@
+{
+  "title": "Hint textarea",
+  "group": "Forms",
+  "description": "A text area that says what it can do (L15): a hint row under the text (“Gõ @ để nhắc nhà cung cấp · Gõ / để chèn mẫu”) and a suggestion list while the word at the caret starts with a trigger; the chosen item is inserted with a space after it.",
+  "components": [
+    "HintTextarea"
+  ],
+  "imports": [
+    "type HintToken",
+    "type HintTrigger"
+  ],
+  "when": [
+    "A message or note where people mention a record (@ a supplier, a colleague) or insert a template or command (/).",
+    "A prompt box of a workspace or an AI tool with a few shortcuts."
+  ],
+  "instead": [
+    {
+      "need": "Pick one value from a list",
+      "use": "CustomCombobox"
+    },
+    {
+      "need": "A plain multi-line field",
+      "use": "Field + textarea (FIELD_TEXTAREA)"
+    },
+    {
+      "need": "An AI chat composer",
+      "use": "ChatComposer"
+    }
+  ],
+  "a11y": [
+    "A textbox with aria-autocomplete=\"list\": while the list shows, aria-controls names the listbox and aria-activedescendant the current option. ↑ / ↓ move (wrapping), Enter or Tab inserts, Escape closes the list only (not a dialog around it); a polite status says how many suggestions there are.",
+    "Keys typed while an input method composes (Vietnamese Telex) are left alone. The hint row is the field's description. Named by its Field label or label."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "Mentions and templates",
+      "description": "Type @ or / at the start of a word."
+    },
+    {
+      "file": "field",
+      "title": "In a Field"
+    }
+  ],
+  "notes": [
+    "Matching ignores case and Vietnamese marks (“tay nguyen” finds “Tây Nguyên”); at most six suggestions show."
+  ]
+}

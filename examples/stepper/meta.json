@@ -1,0 +1,36 @@
+{
+  "title": "Stepper",
+  "group": "Forms",
+  "description": "− value + for a small count (quantities, copies, seats) in a workspace panel or a card: one tap per step, a unit after the value, min and max.",
+  "components": [
+    "Stepper"
+  ],
+  "when": [
+    "A small whole number people nudge rather than type: tấn per line, copies, guests, 1–99.",
+    "Inside a WorkspaceSection or a line card of a request."
+  ],
+  "instead": [
+    {
+      "need": "A number people type (price, weight with decimals, a large count)",
+      "use": "NumberInput"
+    },
+    {
+      "need": "A value on a continuous range",
+      "use": "Slider"
+    }
+  ],
+  "a11y": [
+    "The value is a spinbutton (aria-valuenow / min / max, aria-valuetext with the unit) named by label: ↑ / → and ↓ / ← step, Page Up / Page Down move ten steps, Home / End go to min / max.",
+    "The − + buttons are named (“Giảm …”, “Tăng …”) and left out of the Tab order: the keys do the same, so Tab reaches one stop per stepper."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "With a unit"
+    },
+    {
+      "file": "limits",
+      "title": "Limits, step, disabled"
+    }
+  ]
+}

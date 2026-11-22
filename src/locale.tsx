@@ -168,6 +168,18 @@ export const vi = {
   paletteSelect: "Chọn",
   paletteOpen: "Mở",
   paletteNewTab: "Mở tab mới",
+  workspacePanel: "Bảng điều khiển",
+  workspaceResult: "Kết quả",
+  decrease: (label: string) => `Giảm ${label}`,
+  increase: (label: string) => `Tăng ${label}`,
+  stepOf: (n: number, total: number) => `Bước ${n} / ${total}`,
+  prevStep: "Bước trước",
+  nextStep: "Bước sau",
+  introSkip: "Bỏ qua",
+  introNext: "Tiếp",
+  introDone: "Bắt đầu",
+  hintType: "Gõ",
+  hintSuggestions: (n: number) => `${n} gợi ý, dùng ↑ ↓ để chọn, Enter để chèn`,
 };
 
 export type SemiStrings = typeof vi;
@@ -336,6 +348,18 @@ export const en: SemiStrings = {
   paletteSelect: "Select",
   paletteOpen: "Open",
   paletteNewTab: "Open in new tab",
+  workspacePanel: "Controls",
+  workspaceResult: "Result",
+  decrease: (label: string) => `Decrease ${label}`,
+  increase: (label: string) => `Increase ${label}`,
+  stepOf: (n: number, total: number) => `Step ${n} of ${total}`,
+  prevStep: "Previous step",
+  nextStep: "Next step",
+  introSkip: "Skip",
+  introNext: "Next",
+  introDone: "Get started",
+  hintType: "Type",
+  hintSuggestions: (n: number) => `${n} ${n === 1 ? "suggestion" : "suggestions"}, use ↑ ↓ to choose, Enter to insert`,
 };
 
 const LocaleContext = createContext<SemiStrings>(vi);

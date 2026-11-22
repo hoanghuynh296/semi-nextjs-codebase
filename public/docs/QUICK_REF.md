@@ -133,7 +133,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (146)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (157)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
@@ -161,12 +161,15 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `Disclosure`: `Collapsible`, `Accordion`
 - `Drawer`: `Drawer`
 - `ExternalLink`: `ExternalLink`
+- `FeatureIntro`: `FeatureIntro`
 - `Feedback`: `Alert`, `Progress`, `Avatar`, `EmptyState`
 - `Field`: `Field`, `Input`, `Textarea`
-- `FileDrop`: `FileDrop`
+- `FileDrop`: `DropZone`, `FileDrop`
 - `FilterChipRow`: `FilterChip`, `FilterOptions`, `FilterChipRow`
 - `FilterPanel`: `PhoneFilterBar`, `FilterPanel`
 - `FormActions`: `FormActions`
+- `GuidedEmptyState`: `GuidedEmptyState`
+- `HintTextarea`: `HintTextarea`
 - `Icon`: `Icon`, `IconTile`
 - `InputGroup`: `InputGroup`
 - `InputOTP`: `InputOTP`
@@ -196,7 +199,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `SearchPill`: `StickyContextBar`, `SearchPill`, `ResultLine`
 - `Separator`: `Separator`
 - `SidePanel`: `SidePanelToggle`, `SidePanel`
-- `Skeleton`: `Skeleton`, `Loading`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton`, `BootLoader`
+- `Skeleton`: `Skeleton`, `Loading`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `SkeletonList`, `SkeletonTable`, `SkeletonDetail`, `PageSkeleton`, `BootLoader`
 - `Slider`: `Slider`
 - `SplitButton`: `SplitButton`
 - `States`: `ErrorState`, `NotFound`, `Forbidden`
@@ -211,6 +214,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `Toast`: `ToastHost`
 - `Toggle`: `Toggle`, `ToggleGroup`
 - `ViewSwitch`: `ViewSwitch`
+- `WorkspaceLayout`: `WorkspaceLayout`, `WorkspaceHeader`, `WorkspaceSection`, `Stepper`
 - `confirmDialog`: `ConfirmHost`
 - `formValidation`: `FormErrorSummary`
 - `locale`: `SemiLocaleProvider`

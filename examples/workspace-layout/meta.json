@@ -1,0 +1,48 @@
+{
+  "title": "Workspace layout",
+  "group": "Navigation & layout",
+  "description": "Page type “workspace” (L12): a control panel on the left (segmented tabs, back + tool name, sections with a text-overline label and a counter like “3/8”, drop zones, steppers, a message box) with the main action pinned at its bottom, and the result on the right. Phones stack the panel above the result with the action at the bottom of the screen.",
+  "components": [
+    "WorkspaceLayout",
+    "WorkspaceHeader",
+    "WorkspaceSection"
+  ],
+  "when": [
+    "A tool where the user sets inputs and sees what they produce: a quote request and its comparison, a generator, an import with a preview, a print job.",
+    "A record being composed step by step, with one main action at the end (Gửi hỏi giá, Tạo, In)."
+  ],
+  "instead": [
+    {
+      "need": "A list of records with search and filters",
+      "use": "StickyContextBar + a list or DataTable"
+    },
+    {
+      "need": "A form that saves fields of one record",
+      "use": "a form page with FormActions"
+    },
+    {
+      "need": "Settings that apply to a stand-alone tool app's canvas",
+      "use": "SidePanel"
+    }
+  ],
+  "a11y": [
+    "Two named regions (panel and result: “Bảng điều khiển”, “Kết quả”, override with panelLabel / resultLabel); each WorkspaceSection is a group named by its label.",
+    "WorkspaceHeader's title is the page h1 by default; headings in the result start at h2. The back button is a link named by backLabel (where it goes)."
+  ],
+  "examples": [
+    {
+      "file": "request",
+      "title": "Quote request",
+      "description": "Tabs, back + name, sections with counters, steppers, a drop zone, a message with @ and / hints; the comparison on the right. Narrow the window: the panel stacks on top and the action stays at the bottom."
+    },
+    {
+      "file": "minimal",
+      "title": "Minimal",
+      "description": "No header: just sections, the action and the result."
+    }
+  ],
+  "notes": [
+    "The panel is 380px wide on lg+, sticky under the top of the scrolling area, and scrolls inside; the result scrolls with the page.",
+    "One primary in the action bar (fullWidth), a secondary beside it at most (Lưu nháp). Section labels are the only uppercase text (text-overline, written in sentence case in code)."
+  ]
+}

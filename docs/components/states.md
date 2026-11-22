@@ -135,7 +135,7 @@ data already loaded on screen and show this in place of the failed part only (§
 | `retryLabel` | `string` |  |  |
 | `action` | `React.ReactNode` |  | Extra action beside the retry (a link home, "Báo lỗi"). |
 | `icon` | `IconName` | `"alert"` |  |
-| `headingLevel` | `2 \| 3 \| 1` |  | Heading level of the title: 2 inside a page (default), 1 when this is the whole page (a route `error.tsx`). |
+| `headingLevel` | `2 \| 1 \| 3` |  | Heading level of the title: 2 inside a page (default), 1 when this is the whole page (a route `error.tsx`). |
 | `className` | `string` |  |  |
 
 ### NotFound
@@ -148,7 +148,7 @@ A wrong or removed URL (route `not-found.tsx`, `notFound()`): one sentence and a
 | `message` | `React.ReactNode` |  |  |
 | `homeHref` | `string` | `"/"` | Where "Về trang chủ" goes. |
 | `homeLabel` | `string` |  |  |
-| `headingLevel` | `2 \| 3 \| 1` | `1` | Heading level of the title: 1 (default, a not-found page is the whole page) or 2 inside a page. |
+| `headingLevel` | `2 \| 1 \| 3` | `1` | Heading level of the title: 1 (default, a not-found page is the whole page) or 2 inside a page. |
 | `className` | `string` |  |  |
 
 ### Forbidden
@@ -161,7 +161,7 @@ Signed in but not allowed (a 403, or a page the role cannot open): say so and li
 | `message` | `React.ReactNode` |  |  |
 | `homeHref` | `string` | `"/"` |  |
 | `homeLabel` | `string` |  |  |
-| `headingLevel` | `2 \| 3 \| 1` | `1` | Heading level of the title: 1 (default) or 2 inside a page. |
+| `headingLevel` | `2 \| 1 \| 3` | `1` | Heading level of the title: 1 (default) or 2 inside a page. |
 | `action` | `React.ReactNode` |  | Extra action beside the link home (a mailto to the admin, "Đổi tài khoản"). |
 | `className` | `string` |  |  |
 
