@@ -388,10 +388,11 @@ test("phones get the drawer: focus moves in, stays in, drills down and returns t
   for (let i = 0; i < 30; i++) await page.keyboard.press("Tab");
   expect(await drawer.evaluate((el) => el.contains(document.activeElement))).toBe(true);
   // a mega item drills down to its links, with a back row; Escape goes back a level, then closes
-  await drawer.getByRole("button", { name: "Sản phẩm" }).click();
+  const navRow = drawer.getByRole("navigation", { name: "Menu chính" }).getByRole("button", { name: "Sản phẩm" });
+  await navRow.click();
   await expect(page.getByRole("dialog", { name: "Sản phẩm" }).getByRole("link", { name: "Nhựa in" })).toBeVisible();
   await page.keyboard.press("Escape");
-  await expect(drawer.getByRole("button", { name: "Sản phẩm" })).toBeVisible();
+  await expect(navRow).toBeVisible();
   expect(await lowContrast(page)).toEqual([]);
   await page.keyboard.press("Escape");
   await expect(drawer).toBeHidden();
