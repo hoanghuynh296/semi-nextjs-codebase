@@ -61,9 +61,6 @@
     "raw-pill-button": [
       "src/",
       "styles/"
-    ],
-    "filter-chip-wrap": [
-      "src/"
     ]
   },
   "ignore": [

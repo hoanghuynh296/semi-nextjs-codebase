@@ -48,7 +48,7 @@ KPI figure (`KpiCard`) `font-figure font-title text-figure sm:text-heading tabul
 font-semibold text-contrast` · UI `text-label font-medium text-body` · label `text-label font-medium text-muted` ·
 caption `text-caption`–`text-label` text-muted` · numbers `tabular-nums` (Geist; `font-mono` only for code) · Geist +
 Montserrat Alternates (`font-display`) · weights medium/semibold · type scale only: `text-caption` 11 · `label` 12 · `ui` 14 (compact 13) · `ui-lg` 15 (compact 14) · `title` 15 · `title-lg` 16 · `figure` 18 · `heading-sm` 20 · `heading` 22 · `heading-lg` 24 · `display` 26 (no `text-xs/sm`, no `text-[13px]`) ·
-sentence case, no ALL CAPS. The one exception is `text-overline` (uppercase, tracked) for section labels: a sidebar or drawer group, a palette group, a mega menu column (C-032); on a button, link, field label, title, badge or sentence it warns (`overline-place`).
+sentence case, no ALL CAPS. The one exception is `text-overline` (uppercase, tracked) for section labels: a sidebar or drawer group, a palette group, a mega menu column (C-032); anywhere but a plain, non-clickable label element it warns (`overline-place`).
 
 **Status, layers, elevation:** callouts / badges `bg-{danger,success,warning,info}-bg border-*-border text-*-fg` (`Alert`) ·
 dots / bars `bg-*-solid` · backdrop `bg-overlay` · floating layers `shadow-overlay` (canvas controls `shadow-float`) ·

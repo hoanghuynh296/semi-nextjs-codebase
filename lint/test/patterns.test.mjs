@@ -21,6 +21,9 @@ test("no-spinner-in-list: a Spinner or loading text in a list, as the other bran
     `function L() {\n  if (isLoading) return <div className="py-8"><Spinner /></div>;\n  return <ul>{rows.map((r) => <li key={r.id} />)}</ul>;\n}`,
     `<DataTable rows={rows} columns={cols} empty={<Spinner />} />`,
     `<div role="list">\n  <span>Loading...</span>\n</div>`,
+    `<ul>\n  {loading && <li><span>Loading…</span></li>}\n</ul>`,
+    `<div className="divide-y divide-divider">\n  {loading && <div className="w-5 h-5 border-2 rounded-full animate-spin" />}\n</div>`,
+    `{isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : items.map((i) => <Row key={i.id} />)}`,
   ];
   for (const code of FAIL) assert.deepEqual(rules(code), ["no-spinner-in-list"], code);
   const PASS = [
@@ -31,6 +34,7 @@ test("no-spinner-in-list: a Spinner or loading text in a list, as the other bran
     `{loading ? <Spinner /> : <p>{total} kết quả</p>}`,
     `function P() {\n  if (loading) return <PageSkeleton shape="list" />;\n  return <ul>{rows.map((r) => <li key={r.id} />)}</ul>;\n}`,
     `<div className="flex gap-2"><Spinner label="Đang đồng bộ" /></div>`,
+    `<ul>{rows.map((r) => <li key={r.id}><Icon name="refresh" className={cn("w-4 h-4", r.syncing && "animate-spin")} /></li>)}</ul>`,
   ];
   for (const code of PASS) assert.deepEqual(rules(code), [], code);
 });
@@ -51,6 +55,7 @@ test("filter-chip-wrap: hand-made clickable chips in a flex-wrap warn; FilterChi
     `<Pills value={v} onChange={setV} options={OPTS} />`,
     `<div className="flex flex-wrap gap-1.5">{series.map((s) => <button key={s.key} onClick={() => highlight(s.key)} className={cn("h-7 px-2 rounded-full", isActive && "bg-tint")}>{s.label}</button>)}</div>`,
     `<div className="flex flex-wrap gap-2">{COLOURS.map((c) => <button key={c} aria-pressed={c === pick} onClick={() => setPick(c)} className="h-8 px-3 rounded-full bg-tint">{c}</button>)}</div>`,
+    `<div className="flex flex-wrap gap-1">\n  {brands.map((b) => (\n    <button key={b} aria-pressed={on(b)} onClick={() => onChange(on(b) ? sel.filter((x) => x !== b) : [...sel, b])} className="h-7 px-2 rounded-full bg-tint">{b}</button>\n  ))}\n</div>`,
   ];
   for (const code of PASS) assert.deepEqual(rules(code), [], code);
 });
@@ -62,6 +67,8 @@ test("raw-pill-button: a round, filled, square clickable button warns; Button sh
     `<Link href="/new" className="w-10 h-10 rounded-full bg-field flex items-center justify-center"><Icon name="plus" /></Link>`,
     `<button onClick={next} className="absolute right-2 w-8 h-8 rounded-full bg-black/40 text-white"><Icon name="chevronRight" /></button>`,
     `<Button iconOnly icon="more" aria-label="Thêm" className="rounded-full" />`,
+    `      <button onClick={onClose} className="w-9 h-9 rounded-full bg-white/[0.06] hover:bg-white/[0.12] flex items-center justify-center"><Icon name="close" /></button>`,
+    `<Button\n  iconOnly\n  icon="close"\n  onClick={() => close()}\n  aria-label="Đóng"\n  className="rounded-full"\n/>`,
   ];
   for (const code of FAIL) assert.deepEqual(rules(code), ["raw-pill-button"], code);
   const PASS = [
@@ -101,6 +108,10 @@ test("overline-place (C-032): text-overline on a section label passes; on a butt
     `<h1 className="text-overline">Đơn hàng</h1>`,
     `<Badge className="text-overline">Mới</Badge>`,
     `<p className="text-overline text-muted">Đây là một câu mô tả dài về tính năng mới của sản phẩm</p>`,
+    `export function T() {\n  return (\n    <table>\n      <tbody>\n        <tr>\n          <td className="px-2 text-overline">Tổng</td>\n        </tr>\n      </tbody>\n    </table>\n  );\n}`,
+    `    <div className="flex">\n      <a href="/all" className="text-overline">Xem tất cả</a>\n    </div>`,
+    `<div onClick={() => open()} className="text-overline">Mở</div>`,
+    `<Card className="p-card">\n  <Text className="text-overline">Mới</Text>\n</Card>`,
   ];
   for (const code of FAIL) assert.deepEqual(rules(code), ["overline-place"], code);
   const PASS = [
@@ -109,6 +120,8 @@ test("overline-place (C-032): text-overline on a section label passes; on a butt
     `<div role="presentation" className="px-3 pt-2 pb-1 text-overline text-muted">Thao tác nhanh</div>`,
     `<span className="text-overline text-muted">Tài liệu 0/8</span>`,
     `const LABEL = "text-overline text-muted";`,
+    `export function Panel() {\n  return (\n    <aside>\n      <section>\n        <div className="px-3 pt-2 text-overline text-muted">\n          Tài liệu tham khảo\n        </div>\n      </section>\n    </aside>\n  );\n}`,
+    `        <div className="flex items-center justify-between">\n          <span className={cn("text-overline", "text-muted")}>Bước 1/3</span>\n        </div>`,
   ];
   for (const code of PASS) assert.deepEqual(rules(code), [], code);
 });
@@ -120,6 +133,12 @@ test("card-hover-actions-touch: CardActions without a label is a hard error; wit
   assert.deepEqual(rule(`<CardActions label={\`Thao tác với \${s.name}\`} actions={acts} />`), []);
   assert.deepEqual(rule(`<CardActions\n  actions={acts}\n  label="Thao tác"\n/>`), []);
   assert.deepEqual(rule(`<CardActions {...p} />`), []);
+  // label last, after attributes whose arrows (=>) hold a ">": the tag runs to its real end
+  assert.deepEqual(rule(`<CardActions actions={[{ icon: "edit", label: "Sửa", onClick: () => edit(id) }]} label="Thao tác với A" />`), []);
+  assert.deepEqual(rule(`<CardActions\n  actions={[{ icon: "pin", label: "Ghim", onClick: () => pin(s.id) }]}\n  menu={[{ label: "Xoá", danger: true, onSelect: () => del(s.id) }]}\n  label={\`Thao tác với \${s.name}\`}\n/>`), []);
+  // a label inside an action object is not the menu's label
+  assert.deepEqual(rule(`<CardActions actions={[{ icon: "edit", label: "Sửa", onClick: () => edit(id) }]} />`), ["card-hover-actions-touch"]);
+  assert.deepEqual(rule(`<CardActions\n  menu={[{ label: "Xoá", onSelect: () => del() }]}\n/>`), ["card-hover-actions-touch"]);
   assert.deepEqual(rule(`// <CardActions actions={a} />\nconst a = 1;`), []);
 });
 

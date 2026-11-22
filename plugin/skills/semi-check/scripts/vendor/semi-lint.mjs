@@ -363,16 +363,56 @@ export function warnHits(src) {
 
 // ---- The #94 patterns (#107): lists that load, filter chips, round icon buttons, DetailOverlay, text-overline ----
 
-/** Elements still open at the end of `text` (innermost last): [{ name, attrs }]. A tag whose attributes hold `=>` is
- * read up to the arrow, which is enough to know its name and its className. */
+/** End (exclusive) of the JSX opening tag that starts at `start`, counting braces and quotes, so neither the `>` of an
+ * arrow (`onClick={() => x}`) nor JSX inside an attribute (`empty={<Spinner />}`) ends it. */
+function tagEnd(code, start) {
+  let depth = 0;
+  let quote = null;
+  const stop = Math.min(code.length, start + 4000);
+  for (let k = start + 1; k < stop; k++) {
+    const c = code[k];
+    if (quote) {
+      if (c === "\\") k++;
+      else if (c === quote) quote = null;
+      continue;
+    }
+    if (c === '"' || c === "'" || c === "`") quote = c;
+    else if (c === "{") depth++;
+    else if (c === "}") depth--;
+    else if (c === ">" && depth <= 0) return k + 1;
+  }
+  return stop;
+}
+/** The JSX opening tag that contains position `index` (an attribute value, a class string): { name, start, end, text }, or null. */
+function enclosingTag(code, index) {
+  const from = Math.max(0, index - 3000);
+  const opens = [...code.slice(from, index).matchAll(/<([A-Za-z][\w.]*)\b/g)];
+  for (let k = opens.length - 1; k >= 0; k--) {
+    const start = from + opens[k].index;
+    const end = tagEnd(code, start);
+    if (end > index) return { name: opens[k][1], start, end, text: code.slice(start, end) };
+  }
+  return null;
+}
+/** The opening tag that starts at `start`: { name, start, end, text }. */
+const tagFrom = (code, start) => {
+  const end = tagEnd(code, start);
+  return { name: /^<([A-Za-z][\w.]*)/.exec(code.slice(start))?.[1], start, end, text: code.slice(start, end) };
+};
+
+/** Elements still open at the end of `text` (innermost last): [{ name, attrs }]. */
 function openStack(text) {
   const stack = [];
-  for (const m of text.matchAll(/<(\/?)([A-Za-z][\w.]*)\b([^<>]*?)(\/?)>/g)) {
-    const [, close, name, attrs, self] = m;
+  for (const m of text.matchAll(/<(\/?)([A-Za-z][\w.]*)\b/g)) {
+    const [, close, name] = m;
     if (close) {
       const at = stack.map((e) => e.name).lastIndexOf(name);
       if (at >= 0) stack.length = at;
-    } else if (!self) stack.push({ name, attrs });
+      continue;
+    }
+    const tag = text.slice(m.index, tagEnd(text, m.index));
+    if (!tag.endsWith(">")) stack.push({ name, attrs: tag }); // still being written: the hit is inside this tag
+    else if (!/\/\s*>$/.test(tag)) stack.push({ name, attrs: tag });
   }
   return stack;
 }
@@ -381,7 +421,8 @@ const LIST_ATTRS = /\brole=["'](?:list|grid|rowgroup|listbox|feed)["']|(?<![\w-]
 const isList = (e) => LIST_TAGS.has(e.name) || LIST_ATTRS.test(e.attrs);
 /** A control that runs its own action: a Spinner inside it is the allowed use (§13b). */
 const OWN_ACTION = /^(?:button|Button|SplitButton|Input|SearchInput|SearchPill|Field|NumberInput|Textarea)$/;
-const LOADING_MARK = /<Spinner\b|Đang tải|Loading\.\.\./g;
+/** Loading marks: Semi's Spinner, a lucide Loader2, a hand-spun element, loading text ("…" or "..."). */
+const LOADING_MARK = /<(?:Spinner|Loader2|LoaderCircle)\b|(?<![\w-])animate-spin(?![\w-])|Đang tải|Loading(?:\.\.\.|…)/g;
 /** The text right after a loading mark renders a list: the other branch of a ternary (`? <Spinner/> : rows.map(…)`). */
 const LIST_BRANCH = /^[^?;]*?:\s*\(?\s*(?:<(?:ul|ol|tbody|TBody|DataTable|ItemGroup|List|Table)\b|[\w.?!]+\.map\(|<[A-Za-z][\w.]*\b[^>]*?(?:grid-cols-|divide-y\b|role=["'](?:list|grid)["']))/;
 /** A list rendered anywhere in the file (for an early `if (loading) return <Spinner />`). */
@@ -389,7 +430,7 @@ const RENDERS_LIST = /<(?:ul|ol|tbody|TBody|DataTable|ItemGroup|List)\b|\.map\(\
 
 /** The value of a JSX attribute in a tag text: the string, or the {expression} (balanced braces), or null. */
 function attrValue(tag, name) {
-  const m = new RegExp(`\\b${name}=`).exec(tag);
+  const m = new RegExp(`\\s${name}=`).exec(tag);
   if (!m) return null;
   const rest = tag.slice(m.index + m[0].length);
   if (/^["']/.test(rest)) return rest.slice(1, rest.indexOf(rest[0], 1));
@@ -401,8 +442,27 @@ function attrValue(tag, name) {
   }
   return rest.slice(1);
 }
+/** Whether a tag sets the attribute itself, at the top level (not inside an object in another attribute). */
+function hasOwnAttr(tag, name) {
+  let depth = 0;
+  let quote = null;
+  for (let k = 0; k < tag.length; k++) {
+    const c = tag[k];
+    if (quote) {
+      if (c === "\\") k++;
+      else if (c === quote) quote = null;
+      continue;
+    }
+    if (c === '"' || c === "'" || c === "`") quote = c;
+    else if (c === "{") depth++;
+    else if (c === "}") depth--;
+    else if (depth === 0 && /\s/.test(c) && tag.startsWith(name + "=", k + 1)) return true;
+  }
+  return false;
+}
 
-const ROUND_FILL = /(?<![\w-])(?:[\w-]+:)*bg-(?:tint|field|raised|card(?:-field)?|panel(?:-\d)?|app|canvas|(?:black|white)\/\d+)(?![\w-])/;
+const ALPHA = String.raw`(?:\/(?:\d+|\[[\d.]+\]))?`;
+const ROUND_FILL = new RegExp(String.raw`(?<![\w-])(?:[\w-]+:)*bg-(?:(?:tint|field|raised|card(?:-field)?|panel(?:-\d)?|app|canvas)${ALPHA}|(?:black|white)\/(?:\d+|\[[\d.]+\]))(?![\w-])`);
 /** Square size of an icon button (28px and up; a radio dot or a slider thumb is smaller): size-N, w-N with h-N of
  * the same N, aspect-square with a width, or the control size. */
 const isSquare = (cls) => {
@@ -414,115 +474,121 @@ const isSquare = (cls) => {
   return false;
 };
 const INTERACTIVE_CLS = /(?<![\w-])(?:hover:bg-|cursor-pointer|focus-visible:)/;
-const CLICKABLE_TAG = /^<(?:button|Button|a|Link)\b|\bonClick=/;
-/** Tags text-overline must never style (C-032): controls, links, field labels, titles, badges, table heads. */
-const OVERLINE_DENY = /^(?:button|Button|a|Link|label|Label|Badge|Chip|h1|PageTitle|input|Input|Field|th|TH|Tab|Tabs|TextTabs|Pills|Toggle|summary|Kbd|legend)$/;
+const CLICKABLE_TAG = /^<(?:button|Button|a|Link)\b|\sonClick=/;
+/** Where text-overline may go (C-032 allow-list): a plain section label (div, span, p, h2–h6, dt, figcaption) that is
+ * not clickable and holds a label, not a sentence. Everything else (controls, links, field labels, h1, badges, table
+ * cells, any component) is flagged. */
+const OVERLINE_TAGS = /^(?:div|span|p|h[2-6]|dt|figcaption|header)$/;
+const OVERLINE_LABEL_MAX = 40;
+
+/** Code with JS `.filter(` calls removed: what is left says whether the UI is about filtering. */
+const filterWords = (text) => /filter|lọc/i.test(text.replace(/\.filter\s*\(/g, "("));
 
 /** Warnings [rule, line] of the #94 patterns in one source file (comments already blanked). */
 export function patternHits(code) {
   const out = [];
-  const rows = code.split("\n");
-  const offsets = [];
-  rows.reduce((at, r, i) => ((offsets[i] = at), at + r.length + 1), 0);
   const seen = new Set();
-  const push = (rule, line) => {
+  const push = (rule, index) => {
+    const line = lineOf(code, index);
     if (seen.has(rule + ":" + line)) return;
     seen.add(rule + ":" + line);
     out.push([rule, line]);
   };
 
-  // no-spinner-in-list: a Spinner / loading text inside a list, as the other branch of a list, or as an early return
-  // of a component that renders a list.
+  // no-spinner-in-list: a loading mark inside a list (or as a list's prop), as the other branch of a list, or as an
+  // early return of a component that renders a list.
   for (const m of code.matchAll(LOADING_MARK)) {
-    const line = lineOf(code, m.index);
-    if (/<(?:DataTable|List)\b(?:[^<>]|=>)*\b\w+=\{\s*\(?\s*$/.test(code.slice(Math.max(0, m.index - 600), m.index))) {
-      push("no-spinner-in-list", line); // <DataTable empty={<Spinner />}>
-      continue;
+    let at = m.index;
+    const host = enclosingTag(code, at + 1);
+    if (/^animate-spin/.test(m[0])) {
+      if (!host) continue; // a class constant: where it lands is not visible here
+      if (/^(?:Icon)$/.test(host.name) && /name=\{?["']?(?:refresh|loader)/.test(host.text)) continue;
+      at = host.start;
+    } else if (m[0].startsWith("<")) {
+      const parent = enclosingTag(code, at); // <DataTable empty={<Spinner />}>
+      if (parent && /^(?:DataTable|List)$/.test(parent.name)) {
+        push("no-spinner-in-list", m.index);
+        continue;
+      }
     }
-    const stack = openStack(code.slice(Math.max(0, offsets[Math.max(0, line - 40)]), m.index));
+    const stack = openStack(code.slice(Math.max(0, at - 4000), at));
+    if (/^animate-spin/.test(m[0]) && OWN_ACTION.test(host.name)) continue; // a hand-spun button: custom-spinner says it
     const own = stack.findLastIndex((e) => OWN_ACTION.test(e.name));
     const list = stack.findLastIndex(isList);
     if (own > list) continue; // the spinner of a button inside a row
-    const before = code.slice(Math.max(0, m.index - 200), m.index);
-    const inList = list >= 0;
-    const branch = /\?\s*\(?\s*(?:<[A-Za-z][\w.]*\b[^<>]*>\s*)*$/.test(before) && LIST_BRANCH.test(code.slice(m.index, m.index + 600).replace(/^<Spinner\b[^>]*\/>|^[^<]*/, ""));
-    const early = /\breturn\s*\(?\s*(?:<[A-Za-z][\w.]*\b[^<>]*>\s*)*$/.test(before) && /\bif\s*\([^)]*\b(?:loading|isLoading|pending|isPending|fetching)\b/i.test(before) && RENDERS_LIST.test(code.slice(m.index));
-    if (inList || branch || early) push("no-spinner-in-list", line);
+    const before = code.slice(Math.max(0, at - 200), at);
+    const markEnd = code[at] === "<" ? tagEnd(code, at) : at + m[0].length;
+    const after = code.slice(markEnd, markEnd + 600);
+    const branch = /\?\s*\(?\s*(?:<[A-Za-z][\w.]*\b[^<>]*>\s*)*$/.test(before) && LIST_BRANCH.test(after);
+    const early = /\breturn\s*\(?\s*(?:<[A-Za-z][\w.]*\b[^<>]*>\s*)*$/.test(before) && /\bif\s*\([^)]*\b(?:loading|isLoading|pending|isPending|fetching)\b/i.test(before) && RENDERS_LIST.test(code.slice(at));
+    if (list >= 0 || branch || early) push("no-spinner-in-list", m.index);
   }
 
-  // filter-chip-wrap: an element with flex-wrap whose children are clickable chip-like buttons.
-  for (const m of code.matchAll(/<([A-Za-z][\w.]*)\b[^<>]*?(?<![\w-])flex-wrap(?![\w-])/g)) {
+  // filter-chip-wrap: an element with flex-wrap whose children are clickable chip-like buttons that filter.
+  for (const m of code.matchAll(/<([A-Za-z][\w.]*)\b/g)) {
     const name = m[1];
     if (name === "FilterChipRow") continue;
-    const rest = code.slice(m.index, m.index + 3000);
-    // cut at the element's own close (depth of the same tag name)
-    let depth = 0;
-    let end = rest.length;
-    for (const t of rest.matchAll(new RegExp(`<(/?)${name.replace(".", "\\.")}\\b[^<>]*?(/?)>`, "g"))) {
+    const open = tagFrom(code, m.index);
+    if (!/(?<![\w-])flex-wrap(?![\w-])/.test(open.text) || /\/\s*>$/.test(open.text)) continue;
+    // the element's body, up to its own close (depth of the same tag name)
+    let depth = 1;
+    let end = Math.min(code.length, open.end + 3000);
+    for (const t of code.slice(open.end, end).matchAll(new RegExp(`<(/?)${name.replace(".", "\\.")}\\b`, "g"))) {
+      const abs = open.end + t.index;
       if (t[1]) depth--;
-      else if (!t[2]) depth++;
+      else if (!/\/\s*>$/.test(tagFrom(code, abs).text)) depth++;
       if (depth === 0) {
-        end = t.index + t[0].length;
+        end = abs;
         break;
       }
     }
-    const body = rest.slice(0, end);
-    const chips = [...body.matchAll(/<(button|Button|Chip)\b([^<>]*?(?:=>[^<>]*?)*)>/g)].filter(
-      ([, tag, attrs]) => (tag === "Chip" || /rounded-full/.test(attrs)) && /\bonClick=|\baria-pressed=|\bselected=|\bactive=|\bonRemove=/.test(attrs),
-    );
+    const body = code.slice(open.end, end);
+    const chips = [...body.matchAll(/<(button|Button|Chip)\b/g)]
+      .map((c) => ({ tag: c[1], text: tagFrom(body, c.index).text }))
+      .filter((c) => (c.tag === "Chip" || /rounded-full/.test(c.text)) && /\s(?:onClick|aria-pressed|selected|active|onRemove)[=\s/>]/.test(c.text));
     // Chips also pick values (materials, colours) and legends toggle chart series: only chips that filter count.
-    if (!/filter|lọc/i.test(body)) continue;
-    if (chips.length >= 2 || (chips.length === 1 && /\.map\(/.test(body))) push("filter-chip-wrap", lineOf(code, m.index));
+    if (!filterWords(body)) continue;
+    if (chips.length >= 2 || (chips.length === 1 && /\.map\(/.test(body))) push("filter-chip-wrap", m.index);
   }
 
   // raw-pill-button: a string of classes that draws a round, filled, square, clickable button.
   for (const m of code.matchAll(/(["'`])((?:(?!\1)[^\n\\]|\\.)*?(?<![\w-])rounded-full(?![\w-])(?:(?!\1)[^\n\\]|\\.)*)\1/g)) {
     const cls = m[2];
     if (!ROUND_FILL.test(cls) || !isSquare(cls)) continue;
-    const line = lineOf(code, m.index);
-    // The JSX tag the classes sit in: the last `<Name` before them with no closing `>` in between (`=>` is an arrow).
-    const before = code.slice(Math.max(0, m.index - 600), m.index);
-    const open = [...before.matchAll(/<([A-Za-z][\w.]*)\b/g)].pop();
-    const inTag = open && !/(?<!=)>/.test(before.slice(open.index));
-    // That tag must be clickable (a span inside a clickable tile, a play mark, is decoration); a class constant
-    // counts when it has a hover / pointer / focus class.
-    if (inTag) {
-      const after = code.slice(m.index, m.index + 600);
-      const end = after.search(/(?<!=)>/);
-      const tag = before.slice(open.index) + (end < 0 ? after : after.slice(0, end + 1));
-      if (/^(?:Avatar|Button)$/.test(open[1]) || !CLICKABLE_TAG.test(tag)) continue;
+    const host = enclosingTag(code, m.index);
+    // In a tag, that tag must be clickable (a span inside a clickable tile, a play mark, is decoration); a class
+    // constant counts when it has a hover / pointer / focus class.
+    if (host) {
+      if (/^(?:Avatar|Button)$/.test(host.name) || !CLICKABLE_TAG.test(host.text)) continue;
     } else if (!INTERACTIVE_CLS.test(cls)) continue;
-    push("raw-pill-button", line);
+    push("raw-pill-button", m.index);
   }
   // …and a Button made round by className instead of shape="round".
   for (const m of code.matchAll(/<Button\b/g)) {
-    const line = lineOf(code, m.index);
-    const tag = tagAt(rows, line - 1);
-    if (/\biconOnly\b/.test(tag) && /(?<![\w-])!?rounded-full(?![\w-])/.test(attrValue(tag, "className") ?? "")) push("raw-pill-button", line);
+    const tag = tagFrom(code, m.index).text;
+    if (/\siconOnly\b/.test(tag) && /(?<![\w-])!?rounded-full(?![\w-])/.test(attrValue(tag, "className") ?? "")) push("raw-pill-button", m.index);
   }
 
   // detail-overlay-url: DetailOverlay whose open does not come from the URL.
   const urlDriven = /\buseDetailParam\s*\(|\buseSearchParams\s*\(|\bsearchParams\b|\buseFilterParams\s*\(|\bopenDetail\s*\(/.test(code);
   for (const m of code.matchAll(/<DetailOverlay\b/g)) {
     if (urlDriven) break;
-    const line = lineOf(code, m.index);
-    const tag = tagAt(rows, line - 1);
-    if (/\{\s*\.\.\./.test(tag)) continue;
+    const tag = tagFrom(code, m.index).text;
+    if (/\s\{\s*\.\.\./.test(tag)) continue;
     const open = (attrValue(tag, "open") ?? "").trim();
     // a wrapper that passes its own `open` prop on: the page that renders the wrapper is checked instead
     const prop = /^[A-Za-z_$][\w$]*$/.test(open) && new RegExp(`(?:function\\s*\\w*\\s*\\(|=\\s*\\()\\s*\\{[^}]*\\b${open}\\b[^}]*\\}`).test(code);
-    const fromProps = /^props\./.test(open);
-    if (!prop && !fromProps) push("detail-overlay-url", line);
+    if (!prop && !/^props\./.test(open)) push("detail-overlay-url", m.index);
   }
 
-  // overline-place: text-overline on a control, link, field label, title, badge, table head or a long text.
+  // overline-place: text-overline outside a plain, non-clickable section label.
   for (const m of code.matchAll(/(?<![\w-])text-overline(?![\w-])/g)) {
-    const line = lineOf(code, m.index);
-    const tag = tagAround(rows, line - 1);
-    const name = /^<([A-Za-z][\w.]*)/.exec(tag)?.[1];
-    if (!name) continue; // a class constant: where it lands is not visible here
-    const text = /^[^>]*>([^<{]*)/.exec(rows.slice(line - 1, line + 2).join(" ").slice(rows[line - 1].indexOf("<" + name)))?.[1]?.trim() ?? "";
-    if (OVERLINE_DENY.test(name) || text.length > 40) push("overline-place", line);
+    const host = enclosingTag(code, m.index);
+    if (!host) continue; // a class constant: where it lands is not visible here
+    const clickable = /\s(?:onClick|href|htmlFor|tabIndex)=/.test(host.text);
+    // the element's own text up to its first child or expression ({col.title} is a label passed in)
+    const text = /^([^<{]*)/.exec(code.slice(host.end, host.end + 400))[1].replace(/\s+/g, " ").trim();
+    if (!OVERLINE_TAGS.test(host.name) || clickable || text.length > OVERLINE_LABEL_MAX) push("overline-place", m.index);
   }
   return out;
 }
@@ -533,9 +599,11 @@ export function tagHardHits(src) {
   const code = rows.join("\n");
   const out = [];
   for (const m of code.matchAll(/<CardActions\b/g)) {
-    const line = lineOf(code, m.index);
-    const tag = tagAt(rows, line - 1);
-    if (!/\blabel=/.test(tag) && !/\{\s*\.\.\./.test(tag)) out.push(["card-hover-actions-touch", line, rows[line - 1].trim().slice(0, 140)]);
+    const tag = tagFrom(code, m.index).text;
+    if (!hasOwnAttr(tag, "label") && !/\s\{\s*\.\.\./.test(tag)) {
+      const line = lineOf(code, m.index);
+      out.push(["card-hover-actions-touch", line, rows[line - 1].trim().slice(0, 140)]);
+    }
   }
   return out;
 }

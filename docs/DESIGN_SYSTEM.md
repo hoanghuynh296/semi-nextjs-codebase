@@ -1060,15 +1060,16 @@ catches and what it must not:
   `outline-none` with no focus style on the same element (a text field's caret counts).
 - **Forms (warnings until 1.0):** `form-no-guard`, `action-order`, `toast-for-validation`, `field-input-mode` (§9b). They print and never fail the run.
 - **Feedback (warning until 1.0):** `local-toast` (§14c): a toast library or an app-level toast wrapper instead of `toast` from `@semi/ui`.
-- **The #94 patterns (#107, warnings until 1.0, C-021):** `no-spinner-in-list` (a `Spinner` or "Đang tải" / "Loading..." in a
+- **The #94 patterns (#107, warnings until 1.0, C-021):** `no-spinner-in-list` (a `Spinner`, a lucide `Loader2`, an `animate-spin` element or "Đang tải" / "Loading…" in a
   list, grid or table body, as the other branch of `loading ? … : rows.map(…)` or as an early `if (loading) return <Spinner />`
   of a component that renders a list: show the shape, §13b; a spinner inside the button or field that runs its own action is
   fine), `filter-chip-wrap` (clickable chips, hand-made or `Chip`, that filter, in a `flex-wrap`: `FilterChipRow` +
-  `useFilterParams`, §4), `raw-pill-button` (a `rounded-full` button or link of 28px or more with a tint / field / panel fill, or a class constant of one:
+  `useFilterParams`, §4), `raw-pill-button` (a `rounded-full` button or link of 28px or more with a tint / field / panel fill, or a white / black alpha such as `bg-white/[0.06]`, or a class constant of one:
   `<Button iconOnly shape="round">`), `detail-overlay-url` (a `DetailOverlay` in a file that reads no URL state:
-  `useDetailParam`; a wrapper that passes its own `open` prop on is fine), `overline-place` (`text-overline` on a button,
-  link, field label, `h1` / `PageTitle`, badge, chip, table head or a text longer than a label: C-032 allows it on section
-  labels only). One hard rule: `card-hover-actions-touch` (`<CardActions>` without `label`: on touch the ⋯ is the only
+  `useDetailParam`; a wrapper that passes its own `open` prop on is fine), `overline-place` (an allow-list, C-032: `text-overline` only on
+  a plain, non-clickable section label (`div`, `span`, `p`, `h2`–`h6`, `dt`, `figcaption`, `header`) whose text is a label
+  of 40 characters or less; anywhere else (a control, link, field label, `h1`, table cell, any component) it warns; a class
+  constant is not checked). One hard rule: `card-hover-actions-touch` (`<CardActions>` without `label`: on touch the ⋯ is the only
   control). The fixtures are `lint/test/patterns.test.mjs`.
 - **Emoji as icons (`emoji-icon`):** a brand whose voice allows emoji in copy disables the rule in `semi-lint.json`.
 
