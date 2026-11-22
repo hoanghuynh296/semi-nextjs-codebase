@@ -391,6 +391,13 @@ test("Menu: groups, a reason for a disabled item, type-ahead, danger last, hidde
   await expect(menu).toBeVisible(); // a disabled item does nothing
   await page.keyboard.press("Escape");
   await expect(trigger).toBeFocused();
+  // Space activates a link item (an <a>, which would not by itself)
+  await trigger.click();
+  await page.keyboard.press("m");
+  await expect(menu.getByRole("menuitem", { name: "Mở trang cài đặt" })).toBeFocused();
+  await page.keyboard.press(" ");
+  await expect(page).toHaveURL(/#settings$/);
+  await expect(menu).toBeHidden();
 });
 
 test("Menu on a phone opens as a bottom sheet; SplitButton becomes one button with the main action first (#90)", async ({ browser }) => {
@@ -509,6 +516,12 @@ test("CommandPalette hotkey: the platform's key opens it from a field, not the o
   await page.keyboard.press("Escape");
   await expect(dialog).toBeHidden();
   await page.locator("#hk-rich").focus();
+  await page.keyboard.press("ControlOrMeta+k");
+  await page.waitForTimeout(200);
+  await expect(dialog).toBeHidden();
+  // a widget that handles the key itself (preventDefault) keeps it
+  await page.evaluate(() => document.querySelector("#hk-input")!.addEventListener("keydown", (e) => e.preventDefault()));
+  await page.locator("#hk-input").focus();
   await page.keyboard.press("ControlOrMeta+k");
   await page.waitForTimeout(200);
   await expect(dialog).toBeHidden();

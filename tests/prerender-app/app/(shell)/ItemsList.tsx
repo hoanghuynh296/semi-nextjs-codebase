@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import Link from "next/link";
 import { DetailOverlay, useDetailParam } from "../../../../src/DetailOverlay";
 import { SplitButton } from "../../../../src/SplitButton";
 import { CardActions } from "../../../../src/CardActions";
@@ -26,6 +27,7 @@ export function ItemsList() {
       <div className="group relative w-64 h-24 rounded-card bg-card">
         <CardActions label="Actions for Item 1" actions={[{ icon: "pin", label: "Pin", onClick: () => {} }]} menu={[{ label: "Delete", icon: "trash", danger: true, onSelect: () => {} }]} />
       </div>
+      <Link href="/filters/a">To filters</Link>
       <ul aria-label="Items">
         {ROWS.map((r) => (
           <li key={r.id}>

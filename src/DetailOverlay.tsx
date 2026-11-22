@@ -26,7 +26,7 @@ export interface DetailParamState {
 
 // History entries this page opened (pushed). With the Navigation API an entry keeps its key across Back / Forward and
 // replaceState, so close knows the entry is ours after Back then Forward too. Without it (Firefox, Safari < 26) only
-// the entry pushed last in this page's life is known.
+// the entry pushed last while the list is mounted is known (by its full address).
 const OWN_KEY = "semi:detail-entries";
 let lastPushedHref: string | null = null;
 
@@ -52,7 +52,8 @@ function markOwnEntry() {
 function isOwnEntry() {
   const key = navigationApi()?.currentEntry?.key;
   if (key) return ownEntries().includes(key);
-  return lastPushedHref !== null && lastPushedHref.split("?")[0] === window.location.href.split("?")[0];
+  // no Navigation API: only the entry this list pushed last, at exactly this address (‹ › keep it current)
+  return lastPushedHref !== null && lastPushedHref === window.location.href;
 }
 
 /**
@@ -77,7 +78,21 @@ export function useDetailParam(key = "open"): DetailParamState {
   const search = useSyncExternalStore(subscribeUrl, currentSearch, () => "");
   const openId = useMemo(() => new URLSearchParams(search).get(key), [search, key]);
   const open = useCallback((id: string) => openDetail(id, key), [key]);
-  const show = useCallback((id: string) => patchSearch({ [key]: id }, "replace"), [key]);
+  const show = useCallback(
+    (id: string) => {
+      const own = lastPushedHref === window.location.href;
+      patchSearch({ [key]: id }, "replace");
+      if (own) lastPushedHref = window.location.href;
+    },
+    [key],
+  );
+  // a list that unmounts (another route) forgets the entry it pushed: coming back by a link is not "ours"
+  useEffect(
+    () => () => {
+      lastPushedHref = null;
+    },
+    [],
+  );
   const close = useCallback(() => {
     if (isOwnEntry()) {
       lastPushedHref = null;

@@ -115,3 +115,30 @@ test("DetailOverlay under Next's App Router: open by URL, Back closes it at the 
   await expect(page).toHaveURL(/\?open=r3$/);
   await expect(page.getByRole("dialog", { name: "Item 3" })).toBeVisible();
 });
+
+test("DetailOverlay without the Navigation API (Firefox, Safari < 26): close after leaving the list and coming back by a link stays on the list (#105)", async ({ page }) => {
+  await page.addInitScript(() => Object.defineProperty(window, "navigation", { value: undefined, configurable: true }));
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(`${BASE}/items/a`);
+  expect(await page.evaluate(() => (window as unknown as { navigation?: unknown }).navigation)).toBeUndefined();
+  const list = page.getByRole("list", { name: "Items" }).filter({ visible: true });
+  // our own entry: ‹ › keep it ours, Escape goes back
+  await list.getByRole("button", { name: "Item 2", exact: true }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "Mục sau" }).click();
+  await expect(page).toHaveURL(/\?open=r3$/);
+  await page.keyboard.press("Escape");
+  await expect(page).toHaveURL(/\/items\/a$/);
+  // open, Back, leave for another route, come back with ?open= by router.push: close must not leave the list
+  await list.getByRole("button", { name: "Item 2", exact: true }).click();
+  await page.goBack();
+  await page.getByRole("link", { name: "To filters" }).filter({ visible: true }).click();
+  await expect(page).toHaveURL(/\/filters\/a$/);
+  await page.keyboard.press("ControlOrMeta+k");
+  const palette = page.getByRole("dialog", { name: "Tìm hoặc tạo" });
+  await palette.getByRole("combobox").fill("item 3");
+  await palette.getByRole("combobox").press("Enter");
+  await expect(page.getByRole("dialog", { name: "Item 3" })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(page).toHaveURL(/\/items\/a$/);
+});
