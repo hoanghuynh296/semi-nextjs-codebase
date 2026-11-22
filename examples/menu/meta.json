@@ -1,12 +1,13 @@
 {
   "title": "Menu",
   "group": "Overlays",
-  "description": "The overflow menu of a row or card: a ⋯ trigger (or your own) with items, icons, separators and a danger item last.",
+  "description": "The action menu behind a trigger: a ⋯ (or your own Button) with items that have an icon, a description line, a shortcut or hint, a check, a spinner, a link, a reason when disabled, and group headings. Danger items always go last after a divider; hidden items (and empty groups) leave the list; below sm it opens as a bottom sheet.",
   "components": [
     "Menu"
   ],
   "when": [
-    "Secondary actions of a row or card (Đổi tên, Nhân bản, Xoá)."
+    "Secondary actions of a row, card or page (Đổi tên, Nhân bản, Xoá): G2, G4.",
+    "The ⋯ overflow of a toolbar, a bulk bar or a detail header (G2, G9, G12)."
   ],
   "instead": [
     {
@@ -14,17 +15,34 @@
       "use": "Button"
     },
     {
+      "need": "Other ways to start the main action (manual, import)",
+      "use": "SplitButton"
+    },
+    {
+      "need": "Actions on a card in a grid",
+      "use": "CardActions"
+    },
+    {
       "need": "Pick a value",
       "use": "CustomSelect"
     }
   ],
   "a11y": [
-    "role=\"menu\": Enter / Space / ↓ open, arrows move, Escape closes and returns focus to the trigger."
+    "WAI-ARIA menu button: Enter / Space / ↓ open on the first item, ↑ on the last; arrows, Home, End move; a letter jumps to the next item starting with it; Escape closes and returns focus to the trigger; Tab closes.",
+    "A check makes the item menuitemcheckbox with aria-checked; a disabled item with a reason stays reachable (aria-disabled) and its reason is its description; a group is role=group named by its heading."
   ],
   "examples": [
     {
       "file": "row-actions",
       "title": "Row actions"
+    },
+    {
+      "file": "grouped",
+      "title": "Groups, states and danger last",
+      "description": "Xoá is first in the code and shows last; the hidden item is not listed; Gửi qua Zalo says why it is off."
     }
+  ],
+  "imports": [
+    "type MenuItem"
   ]
 }

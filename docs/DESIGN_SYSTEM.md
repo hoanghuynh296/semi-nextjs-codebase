@@ -453,6 +453,17 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   A `SubpageToolbar` page gets the same on phones with `filters` (typed: up to two as chips, more collapse into
   "Bộ lọc" with the active ones as chips, C-026), or `collapseFilters` for its `left` (a bottom `Drawer`), and
   `secondaryActions` (text buttons from `sm`, a ⋯ `Menu` below it; the primary stays visible).
+- **Overlay and actions (C-032, #102):** a record of a list opens in a `DetailOverlay` over the list, not on its own
+  page: its id lives in the URL (`useDetailParam()` → `?open=<id>`; opening is a history entry, so Back closes it, ‹ ›
+  replace it), the list stays mounted under it, so close / Esc / Back land at the same scroll position. The header has
+  close, the title, "n / N" and ‹ › (← →) through the **current** results (the filtered, sorted list), the side
+  panel the actions: one `SplitButton` (the main action and its variants), a row of icon buttons, a ⋯ `Menu`, then the
+  facts. Keep the filters in the URL too, so a shared link opens the record over the same results; existing detail
+  routes stay for deep links and long workflows. Cards and media tiles in a grid get `CardActions` (one or two round
+  icon actions on hover or focus, a ⋯ always visible on touch). The app-wide "Tìm hoặc tạo" box is one
+  `CommandPalette` in the root layout (⌘K / Ctrl+K, `openCommandPalette()` from a header button): places from the
+  layout, each page's quick actions and records from `useRegisterCommands`; groups under `text-overline` headings,
+  coloured tiles only for actions, ⌘↵ opens an item with `href` in a new tab.
 - Grids expand across wide screens (e.g. `sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-group`); touch screens
   (iPad) stop at 4 columns (`not-any-pointer-coarse:` for 5+). Card grids **beside a sidebar** size columns by
   `@container` (`@xl:grid-cols-…`), never by viewport breakpoints (lint rule `viewport-grid-cols`, enabled per path via
@@ -560,6 +571,31 @@ tiles use `w-11 h-11 rounded-card` with their area's `TILE_TONES`.
 `primaryStyle: "inverted"`); secondary is a translucent `bg-tint` with no border; outline is the framed field look. Icon-only: add `BTN_ICON`, or `ICON_BTN` (`w-7 h-7 rounded-control`) inside cards. Big
 state toggles (power) are round: `w-20 h-20 sm:w-24 sm:h-24 rounded-full`, flat `bg-accent text-on-accent` when on,
 `bg-field` when off. A running action shows a spinner inside its own button only.
+
+### Grouping actions (G1–G12, C-025 / C-026)
+
+Related actions are one control, not a row of separate buttons (`Menu`, `SplitButton`, `ButtonGroup`, `CardActions`):
+
+| Rule | What |
+|---|---|
+| G1 | One way to start one job. The other ways to create the same thing (type it in, import a file, copy from another system) go under the primary in a `SplitButton` (or a `Menu`), never as separate toolbar buttons. |
+| G2 | Secondary page actions (export, settings, refresh, print, archive) go in the ⋯ `Menu`; at most one secondary button stays visible. |
+| G3 | `ButtonGroup` is for toggles or steps of one control (view mode, ‹ Hôm nay ›, zoom), not for unrelated actions. |
+| G4 | A table row has at most one inline action, the rest in a row ⋯ `Menu`; a card in a grid one or two `CardActions`, the rest in its ⋯. Bulk actions go in the bulk bar. |
+| G5 | Destructive items sit last in a menu, after a divider, with `danger` (`Menu` puts them there for you). |
+| G6 | An empty state repeats at most the toolbar's primary action, never a second way to create. |
+| G7 | One filled primary per view (toolbar or card); a `SplitButton` counts as one. |
+| G8 | Icon-only buttons have a `title` and an `aria-label`; three or more icon-only buttons in a row go into ⋯. |
+| G9 | A bulk bar has one primary + ⋯, danger last. |
+| G10 | Refresh comes only from `SubpageToolbar` `onRefresh`, never an extra button. |
+| G11 | More than two filter controls collapse into "Bộ lọc" with the active ones as chips (D6, `FilterChipRow` / `PhoneFilterBar`). |
+| G12 | A detail header (page or `DetailOverlay` side panel) has one primary (a `SplitButton` when it has variants) + ⋯. |
+
+`Menu` items carry an icon, a `description` line, a `shortcut` (or a short hint such as a port), `checked`
+(menuitemcheckbox), `loading`, `href` (a `next/link`), `disabled` (a string says why and keeps it reachable), `hidden`
+(left out: a permission or device the user lacks; an empty group disappears) and `group` (a `text-overline` heading,
+a divider between groups). A file picker item calls the hidden input's `click()` in `onSelect`. Below `sm` a `Menu`
+opens as a bottom sheet (`sheet={false}` keeps the dropdown). Lint rules for G7–G11 come with #94 PR 6.
 
 ## 9b. Forms: actions, unsaved changes, validation
 
@@ -790,6 +826,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `MegaMenu.tsx`, `MinimalHeader.tsx`, `TextTabs.tsx` | `MegaMenu` (flyout of category columns, `text-overline` headers, New badges, See all), `MinimalHeader` (breadcrumb left, one link + one primary right), `TextTabs` (large text tabs as the page heading, ARIA tabs, `href` for URL-driven views) (§4) |
 | `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle`, `PageTabsTitle` (underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh; phone layout with `filters` / `collapseFilters` / `secondaryActions`), `ToolbarFilters` (§4a) |
 | `SearchPill.tsx`, `FilterChipRow.tsx`, `ViewSwitch.tsx`, `FilterPanel.tsx`, `filterParams.ts` | `StickyContextBar` (sticky search + chips + result line), `SearchPill` (wide pill search, debounce, `/`), `ResultLine` (query · N kết quả + sort), `SortDef`, `FilterChipRow` (one-line chips, ‹ ›, Xoá lọc, trailing tools), `FilterChip`, `FilterOptions` (the checkbox list of one filter), `useFilterParams` (filter state in the URL, Back / Forward), `ViewSwitch` (list ↔ grid, density), `PhoneFilterBar` (views · Bộ lọc · settings), `FilterPanel` (full-screen / side-sheet filters); URL helpers `readFilters`, `readFilterValues`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, types `FilterSpec`, `FilterDef`, `FilterOption`, `FilterValues` (§4) |
+| `SplitButton.tsx`, `CardActions.tsx`, `DetailOverlay.tsx` | `SplitButton` (main action + ▾ `Menu` of its variants, one button on phones, G1), `CardActions` (hover / focus icon actions + ⋯ on cards, ⋯ only on touch), `DetailOverlay` (record over its list: ‹ › with n / N, side panel, scroll kept), `useDetailParam` (`?open=` in the URL, Back closes), types `CardAction`, `DetailParamState` (§4, §9) |
 | `KpiCard.tsx`, `Modal.tsx` | `KpiCard` (metric card in the brand's figure font, neutral icon, `featured` for the screen's main number, shimmer), `Modal` (shared portal dialog with `MODAL_HEAD` + `MODAL_FOOT`) (§13, §14) |
 | `Icon.tsx` | `Icon`, `ICONS`, `IconName`, `IconTile`, `TILE_TONES`, `TONE_TEXT`, `TileTone` |
 | `AppHeader.tsx` | `AppHeader` (stand-alone app top bar, §4b) |
@@ -843,7 +880,10 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Need | Use |
 |---|---|
 | Any action | `Button` (`variant` primary / secondary / outline / danger / ghost, `size` md / sm / modal, `icon`, `iconOnly` + `aria-label`, `loading`); `Spinner` only inside a button or field running its own action, never for a page) |
-| Overflow actions of a row / card | `Menu` (icon-only "more" trigger; `danger` item last) |
+| Overflow actions of a row / card / page | `Menu` (icon-only "more" trigger or your own; `danger` items always last; `group`, `description`, `checked`, `loading`, `href`, `hidden`; a bottom sheet below `sm`) (§9 G2, G4, G5) |
+| Other ways to start the main action | `SplitButton` (Thêm khách hàng \| ▾ Nhập từ file, Tìm trong Data Hub) (§9 G1) |
+| Quick actions on a card or media tile | `CardActions` (inside a `group relative` card; `label` names the item) |
+| Open a record from a list and step through it | `DetailOverlay` + `useDetailParam` (§4) |
 | Hint for an icon-only control | `Tooltip` (never essential text: touch screens do not show it) |
 | Feedback after an action | `toast.success|error|warning|info(title)`, `toast.undo(title, restore)` after a reversible destructive action, `toast.promise(p, { loading, success, error })` (§14c) + `<ToastHost />` in the layout (`label` when a page section is also called "Thông báo"). Irreversible: `confirmDelete({ name })` first |
 | A job the user must wait for | `startTask({ label, onCancel, timer })` + `<TaskHost />` in the layout |
@@ -858,7 +898,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Choose or drop files, per-file upload progress | `FileDrop` (controlled `items`; `onAdd` accepted files, `onReject` (type, size, directory, duplicate, multiple), `onRemove`, `onRetry`; `accept`, `maxSize`; inside `Field`). Never a native `<input type="file">` |
 | People | `Avatar` (photo or initials on a stable tone) |
 | Nothing to show yet | `EmptyState` (icon, one line, action) |
-| Related buttons as one control | `ButtonGroup` (‹ Hôm nay ›, Lưu + `Menu`) |
+| Related buttons as one control | `ButtonGroup` (‹ Hôm nay ›, zoom, view mode: G3); a main action with variants → `SplitButton` |
 | Pressed state / icon option sets | `Toggle` (one, `aria-pressed`); `ToggleGroup` (`type` single = radio group, multiple = toolbar). Text filters stay `Pills` |
 | Fixed parts around an input | `InputGroup` (`start` / `end`: prefix, unit, small button) |
 | A number by dragging | `Slider` (one thumb, or `range` for min–max; `format` for units) |
@@ -867,7 +907,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Hide / show sections | `Collapsible` (one), `Accordion` (list; `type` single / multiple) |
 | Small interactive panel under a trigger | `Popover` (non-modal dialog); a hover preview of a link → `HoverCard` |
 | Actions at the pointer | `ContextMenu` (right-click, long-press, Menu key); the same actions must exist in a visible `Menu` |
-| Jump / run anything from the keyboard | `CommandDialog` + `useHotkey` (⌘K), `Command` inline; matching ignores Vietnamese marks |
+| Jump / run anything from the keyboard | `CommandPalette` once in the root layout (⌘K, pages add items with `useRegisterCommands`, `openCommandPalette()`); `CommandDialog` + `useHotkey` for a palette of your own, `Command` inline; matching ignores Vietnamese marks |
 | Sort / filter / select / page rows | `DataTable` (`columns`, `search`, `selectable` + `bulkActions`, `pageSize`, `loading`) |
 | Fixed-height scrolling list | `ScrollArea` (edge lines, optional thin scrollbar, keyboard focusable) |
 | Divider / key cap | `Separator` (horizontal, vertical, with a label); `Kbd` (`keys={["⌘", "K"]}`) |

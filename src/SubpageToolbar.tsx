@@ -134,8 +134,8 @@ export function SubpageToolbar({
       <div className={cn("flex flex-wrap items-center gap-2 ml-auto shrink-0 max-sm:w-full max-sm:justify-end", phoneLayout && "max-sm:flex-nowrap")}>
         {(collapseFilters || filters) && filterButton("sm:hidden max-sm:mr-auto")}
         {right}
-        {secondaryActions?.map((a, i) => (
-          <button key={i} type="button" onClick={a.onSelect} disabled={a.disabled} className={cn(BTN_SECONDARY, "max-sm:hidden gap-1.5", a.danger && "text-danger-fg")}>
+        {secondaryActions?.filter((a) => !a.hidden).map((a, i) => (
+          <button key={i} type="button" onClick={a.onSelect} disabled={Boolean(a.disabled)} title={typeof a.disabled === "string" ? a.disabled : undefined} className={cn(BTN_SECONDARY, "max-sm:hidden gap-1.5", a.danger && "text-danger-fg")}>
             {a.icon && <Icon name={a.icon} className="w-4 h-4" />}
             {a.label}
           </button>

@@ -19,6 +19,15 @@
     ]
   },
   {
+    "id": "card-actions",
+    "title": "Card actions",
+    "group": "Actions",
+    "description": "Quick actions on a card or media tile: round icon buttons in the top right corner that show on hover or keyboard focus where the device can hover, and one always-visible ⋯ with every action on touch screens. Goes inside a `group relative` card.",
+    "components": [
+      "CardActions"
+    ]
+  },
+  {
     "id": "chip",
     "title": "Chip",
     "group": "Actions",
@@ -43,6 +52,15 @@
     "description": "A single-choice filter of 2–5 options on one track (segmented look). The left side of a SubpageToolbar.",
     "components": [
       "Pills"
+    ]
+  },
+  {
+    "id": "split-button",
+    "title": "Split button",
+    "group": "Actions",
+    "description": "The main action and a ▾ that opens a Menu of the other ways to do the same job (Thêm khách hàng | ▾ Nhập từ file, Tìm trong Data Hub). One filled button in total; below sm one button opens the whole list, the main action first.",
+    "components": [
+      "SplitButton"
     ]
   },
   {
@@ -247,6 +265,15 @@
     ]
   },
   {
+    "id": "command-palette",
+    "title": "Command palette",
+    "group": "Overlays",
+    "description": "The app-wide “search or create” box on ⌘K / Ctrl+K, built on Command: one dialog for places, records and quick actions. Mount it once in the root layout; pages register their own items with useRegisterCommands. Groups get text-overline headings, actions a coloured tile, records a hint line; the footer shows the keys, and ⌘↵ opens an item with href in a new tab.",
+    "components": [
+      "CommandPalette"
+    ]
+  },
+  {
     "id": "confirm-dialog",
     "title": "Confirm dialog",
     "group": "Overlays",
@@ -262,6 +289,15 @@
     "description": "The menu of an area opened at the pointer: right-click, long-press on touch, or the Menu key / Shift+F10 when the area has focus.",
     "components": [
       "ContextMenu"
+    ]
+  },
+  {
+    "id": "detail-overlay",
+    "title": "Detail overlay",
+    "group": "Overlays",
+    "description": "An item of a list opens over the list instead of on its own page: its own URL (?open=<id> with useDetailParam, Next App Router safe), ‹ › and ← → through the current results with “n / N”, close / Esc / Back return to the list at the same scroll position. The side panel holds the actions (SplitButton, an icon row, ⋯); existing detail routes stay as deep-link targets.",
+    "components": [
+      "DetailOverlay"
     ]
   },
   {
@@ -286,7 +322,7 @@
     "id": "menu",
     "title": "Menu",
     "group": "Overlays",
-    "description": "The overflow menu of a row or card: a ⋯ trigger (or your own) with items, icons, separators and a danger item last.",
+    "description": "The action menu behind a trigger: a ⋯ (or your own Button) with items that have an icon, a description line, a shortcut or hint, a check, a spinner, a link, a reason when disabled, and group headings. Danger items always go last after a divider; hidden items (and empty groups) leave the list; below sm it opens as a bottom sheet.",
     "components": [
       "Menu"
     ]

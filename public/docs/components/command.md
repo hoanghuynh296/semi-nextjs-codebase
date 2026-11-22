@@ -89,10 +89,16 @@ listbox; the active option follows aria-activedescendant so focus never leaves t
 |---|---|---|---|
 | `items` * | `CommandItem[]` |  |  |
 | `placeholder` | `string` |  |  |
-| `emptyText` | `React.ReactNode` |  | Shown when nothing matches (default from the locale). |
+| `emptyText` | `React.ReactNode \| ((query: string) => React.ReactNode)` |  | Shown when nothing matches (default from the locale); a function gets the query. |
 | `onEscape` | `() => void` |  | Escape on an empty query (CommandDialog closes). |
 | `autoFocus` | `boolean` | `false` |  |
 | `className` | `string` |  |  |
+| `size` | `'md' \| 'lg'` | `"md"` | `lg`: taller rows with an icon tile and the hint line, `text-overline` group headings (CommandPalette). |
+| `initialQuery` | `string` | `""` | The query when the list mounts. |
+| `label` | `string` |  | Accessible name of the listbox (default from the locale). |
+| `inputEnd` | `React.ReactNode` |  | Shown at the end of the input row (an Esc key cap). |
+| `footer` | `React.ReactNode` |  | Shown under the list (a key legend). |
+| `onOpenInNewTab` | `(item: CommandItem) => void` |  | ⌘↵ / Ctrl+↵ on an item with `href` (default: open `href` in a new tab). |
 
 ### CommandDialog
 

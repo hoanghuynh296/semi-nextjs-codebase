@@ -1,0 +1,41 @@
+{
+  "title": "Detail overlay",
+  "group": "Overlays",
+  "description": "An item of a list opens over the list instead of on its own page: its own URL (?open=<id> with useDetailParam, Next App Router safe), ‹ › and ← → through the current results with “n / N”, close / Esc / Back return to the list at the same scroll position. The side panel holds the actions (SplitButton, an icon row, ⋯); existing detail routes stay as deep-link targets.",
+  "components": [
+    "DetailOverlay"
+  ],
+  "imports": [
+    "useDetailParam",
+    "type DetailParamState"
+  ],
+  "when": [
+    "Open a record from a list, grid or table and step through the results without losing the list (suppliers, orders, leads).",
+    "A shared link to a record that should land over its list."
+  ],
+  "instead": [
+    {
+      "need": "Edit a few fields of a row",
+      "use": "SidePanel or Modal"
+    },
+    {
+      "need": "A long workflow with its own sub-pages",
+      "use": "a detail route"
+    },
+    {
+      "need": "A mail or chat reader beside the list",
+      "use": "a list + reader layout"
+    }
+  ],
+  "a11y": [
+    "A modal dialog named by its title (an h2), focus trapped and returned to the row that opened it; Escape closes.",
+    "‹ › are labelled (Mục trước / Mục sau, with aria-keyshortcuts) and disabled at the ends; “n / N” is read as “Mục n trên N”; ← → do not fire inside inputs, menus or sliders."
+  ],
+  "examples": [
+    {
+      "file": "list",
+      "title": "List with ?item= in the URL",
+      "description": "Open a row, step with ← →, press Back: the list is where you left it."
+    }
+  ]
+}

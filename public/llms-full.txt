@@ -8,7 +8,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 ## Machine-readable
 
-- [components.json](./components.json): all 142 components, hooks and constants with props, summaries and their doc page
+- [components.json](./components.json): all 146 components, hooks and constants with props, summaries and their doc page
 - [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
@@ -34,9 +34,11 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 - [Button](./components/button/) ([markdown](./docs/components/button.md)): The action control: one primary per area (the action fill: the accent, or a neutral inverted fill in a brand with primaryStyle inverted), secondary (a translucent tint, no border) for the rest, outline (field fill + line) for framed toolbars, danger for destructive actions, ghost for quiet ones. Spinner shows work in progress inside the control that runs it. Components: Button, Spinner.
 - [Button group](./components/button-group/) ([markdown](./docs/components/button-group.md)): Joins related buttons into one segmented control: shared borders, outer corners only (‹ Hôm nay ›, Lưu | ▾). Components: ButtonGroup.
+- [Card actions](./components/card-actions/) ([markdown](./docs/components/card-actions.md)): Quick actions on a card or media tile: round icon buttons in the top right corner that show on hover or keyboard focus where the device can hover, and one always-visible ⋯ with every action on touch screens. Goes inside a `group relative` card. Components: CardActions.
 - [Chip](./components/chip/) ([markdown](./docs/components/chip.md)): A pill-shaped toggle for filters and tags. Neutral when off; active uses the high-contrast surface, with colour only on its dot or icon (tone). Components: Chip.
 - [External link](./components/external-link/) ([markdown](./docs/components/external-link.md)): A link to another site: opens a new tab on desktop and the external browser inside a mobile WebView, with an external-link icon. Components: ExternalLink.
 - [Pills](./components/pills/) ([markdown](./docs/components/pills.md)): A single-choice filter of 2–5 options on one track (segmented look). The left side of a SubpageToolbar. Components: Pills.
+- [Split button](./components/split-button/) ([markdown](./docs/components/split-button.md)): The main action and a ▾ that opens a Menu of the other ways to do the same job (Thêm khách hàng | ▾ Nhập từ file, Tìm trong Data Hub). One filled button in total; below sm one button opens the whole list, the main action first. Components: SplitButton.
 - [Toggle](./components/toggle/) ([markdown](./docs/components/toggle.md)): Buttons that stay pressed. Toggle for one (pin, mute, bold); ToggleGroup for a set of icon or short options, one or several at a time (list / grid view, text styles). Components: Toggle, ToggleGroup.
 
 ### Forms
@@ -64,11 +66,13 @@ In a project with the package installed, ask the docs instead of reading files: 
 ### Overlays
 
 - [Command](./components/command/) ([markdown](./docs/components/command.md)): A command palette: type to filter actions and pages, ↑/↓ to move, Enter to run. Command is the inline list; CommandDialog opens it over the page, usually on ⌘K (useHotkey). Matching ignores case and Vietnamese marks. Components: Command, CommandDialog.
+- [Command palette](./components/command-palette/) ([markdown](./docs/components/command-palette.md)): The app-wide “search or create” box on ⌘K / Ctrl+K, built on Command: one dialog for places, records and quick actions. Mount it once in the root layout; pages register their own items with useRegisterCommands. Groups get text-overline headings, actions a coloured tile, records a hint line; the footer shows the keys, and ⌘↵ opens an item with href in a new tab. Components: CommandPalette.
 - [Confirm dialog](./components/confirm-dialog/) ([markdown](./docs/components/confirm-dialog.md)): confirmDialog() asks one yes / no question and resolves to true or false; confirmDelete({ name }) is the irreversible-action form (names the object, red Xoá). Mount ConfirmHost once in the root layout. Never window.confirm. Components: ConfirmHost.
 - [Context menu](./components/context-menu/) ([markdown](./docs/components/context-menu.md)): The menu of an area opened at the pointer: right-click, long-press on touch, or the Menu key / Shift+F10 when the area has focus. Components: ContextMenu.
+- [Detail overlay](./components/detail-overlay/) ([markdown](./docs/components/detail-overlay.md)): An item of a list opens over the list instead of on its own page: its own URL (?open=<id> with useDetailParam, Next App Router safe), ‹ › and ← → through the current results with “n / N”, close / Esc / Back return to the list at the same scroll position. The side panel holds the actions (SplitButton, an icon row, ⋯); existing detail routes stay as deep-link targets. Components: DetailOverlay.
 - [Drawer](./components/drawer/) ([markdown](./docs/components/drawer.md)): A panel that slides in from the right, left, bottom or top (a sheet), with title and footer. Components: Drawer.
 - [Hover card](./components/hover-card/) ([markdown](./docs/components/hover-card.md)): A preview card while the pointer rests on, or focus is on, a link: a person, a product, an order. Components: HoverCard.
-- [Menu](./components/menu/) ([markdown](./docs/components/menu.md)): The overflow menu of a row or card: a ⋯ trigger (or your own) with items, icons, separators and a danger item last. Components: Menu.
+- [Menu](./components/menu/) ([markdown](./docs/components/menu.md)): The action menu behind a trigger: a ⋯ (or your own Button) with items that have an icon, a description line, a shortcut or hint, a check, a spinner, a link, a reason when disabled, and group headings. Danger items always go last after a divider; hidden items (and empty groups) leave the list; below sm it opens as a bottom sheet. Components: Menu.
 - [Modal](./components/modal/) ([markdown](./docs/components/modal.md)): The shared dialog: full screen on phones, a centred panel from sm up, with title, description, body and footer. Focus is trapped and returns to the opener. Components: Modal.
 - [Popover](./components/popover/) ([markdown](./docs/components/popover.md)): A small non-modal panel under its trigger for interactive content: a quick form, filters, a picker. Components: Popover.
 - [Toast](./components/toast/) ([markdown](./docs/components/toast.md)): One toast API for feedback after an action: toast.success / error / warning / info, toast.undo for a reversible destructive action, toast.promise for work in progress. Irreversible actions ask first (confirmDelete). Mount ToastHost once in the root layout. Components: ToastHost.
@@ -234,6 +238,7 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
   - `PageTitle`, `PageTabsTitle`: text-only display heading or underline tab heading (`h-[2.5px] bg-primary`).
   - `SubpageToolbar`: sticky toolbar (`STICKY_TOOLBAR`) with `left` filters and `right` icon-only `BTN_PRIMARY BTN_ICON` + `SearchInput` + `RefreshButton`; `title` puts the page title on the same row (then no `PageTitle`).
     Phone layout (opt-in): `filters` (typed, `FilterDef[]`; more than two collapse into "Bộ lọc · N" + active chips) or `collapseFilters` (for `left`), and `secondaryActions` (a ⋯ menu below `sm`).
+  - Overlay and actions (§4, §9, #102): a list record opens in `<DetailOverlay open onClose index total onPrev onNext side related>` driven by `useDetailParam()` (`?open=`, Back closes, ‹ › replace); cards get `<CardActions label actions menu>` inside a `group relative` card; one `<CommandPalette items>` in the root layout (⌘K; pages add `useRegisterCommands(items)`, a button calls `openCommandPalette()`). Grouping (G1–G12): alternatives of the main action → `<SplitButton label onClick items menuLabel>`; secondary page / row actions → ⋯ `Menu` (items: `group`, `description`, `checked`, `loading`, `href`, `hidden`, `disabled: "reason"`; danger always last; bottom sheet below `sm`); `ButtonGroup` only for toggles / steps of one control; one filled primary per view.
   - Search and filters (§4, #99): `<StickyContextBar>` with `<SearchPill>`, `<FilterChipRow className="max-md:hidden" trailing={<ViewSwitch/>}>`, `<PhoneFilterBar className="md:hidden">` (opens `<FilterPanel>`) and `<ResultLine count query sort>`. One line of chips, never wrapped rows; state in the URL with `useFilterParams(specs)` or `readFilters` / `writeFilters` / `clearFilters`.
   - `KpiCard`: metric card with a `tabular-nums` value in the style's figure font (`font-figure`), optional neutral icon (`iconTone` only for a status), `featured` for the screen's main number, shimmer `loading` state.
   - `Modal`: portal dialog with `MODAL_BACKDROP`, `MODAL_PANEL`, `MODAL_HEAD`, `MODAL_CLOSE`, and `footer` (`MODAL_FOOT`).
@@ -290,7 +295,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (142)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (146)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
@@ -302,17 +307,19 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `ButtonGroup`: `ButtonGroup`
 - `Calendar`: `Calendar`
 - `Card`: `Card`
+- `CardActions`: `CardActions`
 - `Carousel`: `Carousel`
 - `Chart`: `BarChart`, `LineChart`, `DonutChart`, `Sparkline`
 - `Chat`: `ChatAvatar`, `ChatThinking`, `UserMessage`, `AssistantMessage`, `ChatError`, `ChatCopyButton`, `ChatIntro`, `ChatSuggestion`, `ChatSuggestions`, `ChatList`, `ChatComposer`, `ChatModelPicker`, `ChatView`, `ChatPanel`, `ChatAnswer`, `AIChat`
 - `Chip`: `Chip`
 - `Choice`: `Checkbox`, `Switch`, `RadioGroup`
 - `CodeBlock`: `CodeBlock`
-- `Command`: `Command`, `CommandDialog`
+- `Command`: `Command`, `CommandDialog`, `CommandPalette`
 - `CustomCombobox`: `CustomCombobox`
 - `CustomSelect`: `CustomSelect`
 - `DataTable`: `DataTable`
 - `DatePicker`: `DatePicker`
+- `DetailOverlay`: `DetailOverlay`
 - `Disclosure`: `Collapsible`, `Accordion`
 - `Drawer`: `Drawer`
 - `ExternalLink`: `ExternalLink`
@@ -353,6 +360,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `SidePanel`: `SidePanelToggle`, `SidePanel`
 - `Skeleton`: `Skeleton`, `Loading`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton`, `BootLoader`
 - `Slider`: `Slider`
+- `SplitButton`: `SplitButton`
 - `States`: `ErrorState`, `NotFound`, `Forbidden`
 - `SubpageToolbar`: `SubpageToolbar`
 - `Table`: `Table`, `THead`, `TBody`, `TR`, `TH`, `TD`
@@ -369,7 +377,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `formValidation`: `FormErrorSummary`
 - `locale`: `SemiLocaleProvider`
 
-**Hooks:** `useAppShell`, `useHotkey`, `useField`, `useFilterParams`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useFormValidation`, `useSemiLocale`, `useUnsavedGuard` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `pageWindow`, `startTask`, `themeScript`, `updateToast`, `dismissToast`, `confirmDialog`, `confirmDelete`, `kindAttrs`, `readFilterValues`, `readFilters`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `composeRefs`, `cloneTrigger`, `cn`
+**Hooks:** `useAppShell`, `useHotkey`, `useRegisterCommands`, `useDetailParam`, `useField`, `useFilterParams`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useFormValidation`, `useSemiLocale`, `useUnsavedGuard` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `openCommandPalette`, `pageWindow`, `startTask`, `themeScript`, `updateToast`, `dismissToast`, `confirmDialog`, `confirmDelete`, `kindAttrs`, `readFilterValues`, `readFilters`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `composeRefs`, `cloneTrigger`, `cn`
 <!-- generated:components:end -->
 
 
@@ -832,6 +840,17 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   A `SubpageToolbar` page gets the same on phones with `filters` (typed: up to two as chips, more collapse into
   "Bộ lọc" with the active ones as chips, C-026), or `collapseFilters` for its `left` (a bottom `Drawer`), and
   `secondaryActions` (text buttons from `sm`, a ⋯ `Menu` below it; the primary stays visible).
+- **Overlay and actions (C-032, #102):** a record of a list opens in a `DetailOverlay` over the list, not on its own
+  page: its id lives in the URL (`useDetailParam()` → `?open=<id>`; opening is a history entry, so Back closes it, ‹ ›
+  replace it), the list stays mounted under it, so close / Esc / Back land at the same scroll position. The header has
+  close, the title, "n / N" and ‹ › (← →) through the **current** results (the filtered, sorted list), the side
+  panel the actions: one `SplitButton` (the main action and its variants), a row of icon buttons, a ⋯ `Menu`, then the
+  facts. Keep the filters in the URL too, so a shared link opens the record over the same results; existing detail
+  routes stay for deep links and long workflows. Cards and media tiles in a grid get `CardActions` (one or two round
+  icon actions on hover or focus, a ⋯ always visible on touch). The app-wide "Tìm hoặc tạo" box is one
+  `CommandPalette` in the root layout (⌘K / Ctrl+K, `openCommandPalette()` from a header button): places from the
+  layout, each page's quick actions and records from `useRegisterCommands`; groups under `text-overline` headings,
+  coloured tiles only for actions, ⌘↵ opens an item with `href` in a new tab.
 - Grids expand across wide screens (e.g. `sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-group`); touch screens
   (iPad) stop at 4 columns (`not-any-pointer-coarse:` for 5+). Card grids **beside a sidebar** size columns by
   `@container` (`@xl:grid-cols-…`), never by viewport breakpoints (lint rule `viewport-grid-cols`, enabled per path via
@@ -939,6 +958,31 @@ tiles use `w-11 h-11 rounded-card` with their area's `TILE_TONES`.
 `primaryStyle: "inverted"`); secondary is a translucent `bg-tint` with no border; outline is the framed field look. Icon-only: add `BTN_ICON`, or `ICON_BTN` (`w-7 h-7 rounded-control`) inside cards. Big
 state toggles (power) are round: `w-20 h-20 sm:w-24 sm:h-24 rounded-full`, flat `bg-accent text-on-accent` when on,
 `bg-field` when off. A running action shows a spinner inside its own button only.
+
+### Grouping actions (G1–G12, C-025 / C-026)
+
+Related actions are one control, not a row of separate buttons (`Menu`, `SplitButton`, `ButtonGroup`, `CardActions`):
+
+| Rule | What |
+|---|---|
+| G1 | One way to start one job. The other ways to create the same thing (type it in, import a file, copy from another system) go under the primary in a `SplitButton` (or a `Menu`), never as separate toolbar buttons. |
+| G2 | Secondary page actions (export, settings, refresh, print, archive) go in the ⋯ `Menu`; at most one secondary button stays visible. |
+| G3 | `ButtonGroup` is for toggles or steps of one control (view mode, ‹ Hôm nay ›, zoom), not for unrelated actions. |
+| G4 | A table row has at most one inline action, the rest in a row ⋯ `Menu`; a card in a grid one or two `CardActions`, the rest in its ⋯. Bulk actions go in the bulk bar. |
+| G5 | Destructive items sit last in a menu, after a divider, with `danger` (`Menu` puts them there for you). |
+| G6 | An empty state repeats at most the toolbar's primary action, never a second way to create. |
+| G7 | One filled primary per view (toolbar or card); a `SplitButton` counts as one. |
+| G8 | Icon-only buttons have a `title` and an `aria-label`; three or more icon-only buttons in a row go into ⋯. |
+| G9 | A bulk bar has one primary + ⋯, danger last. |
+| G10 | Refresh comes only from `SubpageToolbar` `onRefresh`, never an extra button. |
+| G11 | More than two filter controls collapse into "Bộ lọc" with the active ones as chips (D6, `FilterChipRow` / `PhoneFilterBar`). |
+| G12 | A detail header (page or `DetailOverlay` side panel) has one primary (a `SplitButton` when it has variants) + ⋯. |
+
+`Menu` items carry an icon, a `description` line, a `shortcut` (or a short hint such as a port), `checked`
+(menuitemcheckbox), `loading`, `href` (a `next/link`), `disabled` (a string says why and keeps it reachable), `hidden`
+(left out: a permission or device the user lacks; an empty group disappears) and `group` (a `text-overline` heading,
+a divider between groups). A file picker item calls the hidden input's `click()` in `onSelect`. Below `sm` a `Menu`
+opens as a bottom sheet (`sheet={false}` keeps the dropdown). Lint rules for G7–G11 come with #94 PR 6.
 
 ## 9b. Forms: actions, unsaved changes, validation
 
@@ -1169,6 +1213,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `MegaMenu.tsx`, `MinimalHeader.tsx`, `TextTabs.tsx` | `MegaMenu` (flyout of category columns, `text-overline` headers, New badges, See all), `MinimalHeader` (breadcrumb left, one link + one primary right), `TextTabs` (large text tabs as the page heading, ARIA tabs, `href` for URL-driven views) (§4) |
 | `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle`, `PageTabsTitle` (underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh; phone layout with `filters` / `collapseFilters` / `secondaryActions`), `ToolbarFilters` (§4a) |
 | `SearchPill.tsx`, `FilterChipRow.tsx`, `ViewSwitch.tsx`, `FilterPanel.tsx`, `filterParams.ts` | `StickyContextBar` (sticky search + chips + result line), `SearchPill` (wide pill search, debounce, `/`), `ResultLine` (query · N kết quả + sort), `SortDef`, `FilterChipRow` (one-line chips, ‹ ›, Xoá lọc, trailing tools), `FilterChip`, `FilterOptions` (the checkbox list of one filter), `useFilterParams` (filter state in the URL, Back / Forward), `ViewSwitch` (list ↔ grid, density), `PhoneFilterBar` (views · Bộ lọc · settings), `FilterPanel` (full-screen / side-sheet filters); URL helpers `readFilters`, `readFilterValues`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, types `FilterSpec`, `FilterDef`, `FilterOption`, `FilterValues` (§4) |
+| `SplitButton.tsx`, `CardActions.tsx`, `DetailOverlay.tsx` | `SplitButton` (main action + ▾ `Menu` of its variants, one button on phones, G1), `CardActions` (hover / focus icon actions + ⋯ on cards, ⋯ only on touch), `DetailOverlay` (record over its list: ‹ › with n / N, side panel, scroll kept), `useDetailParam` (`?open=` in the URL, Back closes), types `CardAction`, `DetailParamState` (§4, §9) |
 | `KpiCard.tsx`, `Modal.tsx` | `KpiCard` (metric card in the brand's figure font, neutral icon, `featured` for the screen's main number, shimmer), `Modal` (shared portal dialog with `MODAL_HEAD` + `MODAL_FOOT`) (§13, §14) |
 | `Icon.tsx` | `Icon`, `ICONS`, `IconName`, `IconTile`, `TILE_TONES`, `TONE_TEXT`, `TileTone` |
 | `AppHeader.tsx` | `AppHeader` (stand-alone app top bar, §4b) |
@@ -1222,7 +1267,10 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Need | Use |
 |---|---|
 | Any action | `Button` (`variant` primary / secondary / outline / danger / ghost, `size` md / sm / modal, `icon`, `iconOnly` + `aria-label`, `loading`); `Spinner` only inside a button or field running its own action, never for a page) |
-| Overflow actions of a row / card | `Menu` (icon-only "more" trigger; `danger` item last) |
+| Overflow actions of a row / card / page | `Menu` (icon-only "more" trigger or your own; `danger` items always last; `group`, `description`, `checked`, `loading`, `href`, `hidden`; a bottom sheet below `sm`) (§9 G2, G4, G5) |
+| Other ways to start the main action | `SplitButton` (Thêm khách hàng \| ▾ Nhập từ file, Tìm trong Data Hub) (§9 G1) |
+| Quick actions on a card or media tile | `CardActions` (inside a `group relative` card; `label` names the item) |
+| Open a record from a list and step through it | `DetailOverlay` + `useDetailParam` (§4) |
 | Hint for an icon-only control | `Tooltip` (never essential text: touch screens do not show it) |
 | Feedback after an action | `toast.success|error|warning|info(title)`, `toast.undo(title, restore)` after a reversible destructive action, `toast.promise(p, { loading, success, error })` (§14c) + `<ToastHost />` in the layout (`label` when a page section is also called "Thông báo"). Irreversible: `confirmDelete({ name })` first |
 | A job the user must wait for | `startTask({ label, onCancel, timer })` + `<TaskHost />` in the layout |
@@ -1237,7 +1285,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Choose or drop files, per-file upload progress | `FileDrop` (controlled `items`; `onAdd` accepted files, `onReject` (type, size, directory, duplicate, multiple), `onRemove`, `onRetry`; `accept`, `maxSize`; inside `Field`). Never a native `<input type="file">` |
 | People | `Avatar` (photo or initials on a stable tone) |
 | Nothing to show yet | `EmptyState` (icon, one line, action) |
-| Related buttons as one control | `ButtonGroup` (‹ Hôm nay ›, Lưu + `Menu`) |
+| Related buttons as one control | `ButtonGroup` (‹ Hôm nay ›, zoom, view mode: G3); a main action with variants → `SplitButton` |
 | Pressed state / icon option sets | `Toggle` (one, `aria-pressed`); `ToggleGroup` (`type` single = radio group, multiple = toolbar). Text filters stay `Pills` |
 | Fixed parts around an input | `InputGroup` (`start` / `end`: prefix, unit, small button) |
 | A number by dragging | `Slider` (one thumb, or `range` for min–max; `format` for units) |
@@ -1246,7 +1294,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Hide / show sections | `Collapsible` (one), `Accordion` (list; `type` single / multiple) |
 | Small interactive panel under a trigger | `Popover` (non-modal dialog); a hover preview of a link → `HoverCard` |
 | Actions at the pointer | `ContextMenu` (right-click, long-press, Menu key); the same actions must exist in a visible `Menu` |
-| Jump / run anything from the keyboard | `CommandDialog` + `useHotkey` (⌘K), `Command` inline; matching ignores Vietnamese marks |
+| Jump / run anything from the keyboard | `CommandPalette` once in the root layout (⌘K, pages add items with `useRegisterCommands`, `openCommandPalette()`); `CommandDialog` + `useHotkey` for a palette of your own, `Command` inline; matching ignores Vietnamese marks |
 | Sort / filter / select / page rows | `DataTable` (`columns`, `search`, `selectable` + `bulkActions`, `pageSize`, `loading`) |
 | Fixed-height scrolling list | `ScrollArea` (edge lines, optional thin scrollbar, keyboard focusable) |
 | Divider / key cap | `Separator` (horizontal, vertical, with a label); `Kbd` (`keys={["⌘", "K"]}`) |
@@ -2432,6 +2480,7 @@ All web UI here follows the **Semi Design System** (`@semi/ui`, repo `https://gi
    **Density budgets** (`DESIGN_SYSTEM.md` §4c, measured on the page by `npx semi density <url>`): at most three frames inside each other (page panel › card › tile); at most four text sizes and three colours (accent + status) in one box; one filled accent button per view; text 12px from a box's sides and 8px from its top and bottom; a list row at least `h-control` tall (`Item`, `Menu`, `DataTable`); 8px or more between boxes; one line between two things (no `border-b` on a card's last row). `px-2` / `py-1` are for the inside of a control, never a row's or a box's padding.
    **Every state** (`DESIGN_SYSTEM.md` §19b, §13c): use `EmptyState` (`first-use` / `no-results`), `ErrorState`, `NotFound`, `Forbidden`, and give each route group `loading.tsx` / `error.tsx` / `not-found.tsx` (`npx semi example states`); each screen has its loading (skeleton of the real shape), empty (with the action that fills it), "no result", error (what failed + retry, loaded data kept), no-permission and too-much-data states; a destructive action is undoable (`toast.undo`) or, when irreversible, confirmed (`confirmDelete`); Escape closes, Enter submits, back works.
    **Feedback** (`DESIGN_SYSTEM.md` §14c): one toast API from `@semi/ui` (`toast.success|error|warning|info`, `toast.undo`, `toast.promise`), never a toast library or a local wrapper (`local-toast`, warning); a reversible destructive action is done at once with `toast.undo(title, restore)` (Hoàn tác, 8 s); an irreversible one asks first with `confirmDelete({ name })` (names the object, red Xoá, Huỷ); success is one toast, never a modal (`npx semi example toast`).
+   **Grouped actions** (`DESIGN_SYSTEM.md` §9, G1–G12): one way to start one job (other ways to create the same thing go under the primary in a `SplitButton`, never as extra toolbar buttons); secondary page actions in the ⋯ `Menu` (at most one secondary button visible); `ButtonGroup` only for toggles or steps of one control; a table row has one inline action + ⋯, a card `CardActions`; danger last; one filled primary per view; 3+ icon-only buttons in a row go into ⋯. A list record opens in a `DetailOverlay` with `useDetailParam` (`?open=`), not a new page; the ⌘K box is one `CommandPalette` in the root layout (pages add items with `useRegisterCommands`).
    **Forms** (`DESIGN_SYSTEM.md` §9b): the action row is `FormActions` (Huỷ ghost, then Lưu / Tạo, destructive on the left, sticky on a page); `useUnsavedGuard(dirty)` so typed work is never lost; `Field kind` for email / phone / number / money / URL / search / password; errors under the field (`useFormValidation`, `FormErrorSummary`), never in a toast; page forms `max-w-2xl` (`npx semi example form-actions`).
 5. **Brand** (when `semi-lint.json` has `"brand"`): ask `semi_brand` (or `npx semi brand voice|color|logo|brief`) before writing UI text or placing colour. Write in the brand's voice, use colour as its colour-use rule says, import the logo from the kit, use only its allowed styles; never define colours, fonts or Semi tokens in the app (`brand-override`). Brand changes happen in the brand repo with `/semi-brand`, then `/semi-sync` here.
 6. **Accessibility** (`DESIGN_SYSTEM.md` §18, checked on the page by `npx semi a11y <url>`): icon-only controls have `aria-label`, and a field's name comes from `Field` (a placeholder is not a label); anything clickable is a button or a link (`click-target`); custom controls keep `FOCUS_RING`, never a bare `outline-none` (`focus-hidden`); every text / background pair reaches 4.5:1 in both themes (themed text tokens, never a fixed shade on a tinted surface); a field you type in shows `border-control-line` (3:1); a control drawn smaller than 24px gets `HIT_AREA`; images have `alt`; never `maximum-scale` or `user-scalable=no` in the viewport.
@@ -2682,6 +2731,91 @@ export default function ButtonGroupBasic() {
 
 ---
 
+<!-- docs/components/card-actions.md -->
+
+# Card actions
+
+Quick actions on a card or media tile: round icon buttons in the top right corner that show on hover or keyboard focus where the device can hover, and one always-visible ⋯ with every action on touch screens. Goes inside a `group relative` card.
+
+## When to use
+
+- Cards and media tiles in a grid (suppliers, products, templates, files) that open on click and have one or two quick actions.
+- A card's ⋯ overflow (G4 for grids: one or two inline actions at most, the rest in ⋯, danger last).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Actions of a table row | Menu (row ⋯) |
+| Actions on several selected cards | the bulk bar (D7) |
+
+## Import
+
+```tsx
+import { CardActions, type CardAction } from "@semi/ui";
+```
+
+## Examples
+
+### Card grid
+
+```tsx
+"use client";
+
+import { CardActions, IconTile, Item, toast } from "@semi/ui";
+
+const SUPPLIERS = [
+  { id: "s1", name: "Gia vị Tây Nguyên", region: "Đắk Lắk" },
+  { id: "s2", name: "Hồ tiêu Chư Sê", region: "Gia Lai" },
+  { id: "s3", name: "Quế Trà My", region: "Quảng Nam" },
+];
+
+// Hover (or Tab into) a card: Gửi hỏi giá, Ghim and ⋯. On a touch screen only the ⋯ shows, with every action.
+export default function CardActionsGrid() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      {SUPPLIERS.map((s) => (
+        <div key={s.id} className="group relative rounded-card bg-card">
+          <Item media={<IconTile name="store" tone="gray" size="md" />} title={s.name} description={s.region} onClick={() => toast({ title: `Mở ${s.name}` })} className="pr-24 rounded-card" />
+          <CardActions
+            label={`Thao tác với ${s.name}`}
+            actions={[
+              { icon: "send", label: "Gửi hỏi giá", onClick: () => toast({ title: `Gửi hỏi giá ${s.name}` }) },
+              { icon: "pin", label: "Ghim", onClick: () => toast({ title: "Đã ghim" }) },
+            ]}
+            menu={[
+              { label: "Sửa", icon: "edit", onSelect: () => toast({ title: "Sửa" }) },
+              { label: "Ngừng hợp tác", icon: "block", danger: true, onSelect: () => toast({ title: "Đã ngừng", tone: "danger" }) },
+            ]}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+## API
+
+### CardActions
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `actions` | `CardAction[]` | `[]` | One or two icon actions shown on hover (on touch they move into the ⋯ menu). |
+| `menu` | `MenuItem[]` |  | The rest, in the ⋯ menu (danger last). |
+| `label` * | `string` |  | Name of the ⋯ menu, with the item it acts on: "Thao tác với Gia vị Tây Nguyên". Required: on touch it is the only control. |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- A group named by `label` (with the item's name); every icon button has an aria-label and a title; the hover row is in the tab order and shows on focus; on touch the ⋯ is always visible, so it never depends on hover.
+- Clicks inside do not reach the card under it.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/card-actions/ and the types in src/ -->
+
+
+---
+
 <!-- docs/components/chip.md -->
 
 # Chip
@@ -2887,6 +3021,121 @@ export default function PillsBasic() {
 - The chosen option has an inset ring (SEGMENT_ON) as well as the fill, so it stands out at ≥ 3:1.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/pills/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/split-button.md -->
+
+# Split button
+
+The main action and a ▾ that opens a Menu of the other ways to do the same job (Thêm khách hàng | ▾ Nhập từ file, Tìm trong Data Hub). One filled button in total; below sm one button opens the whole list, the main action first.
+
+## When to use
+
+- Two or more ways to start one job (type it in, import a file, copy from another system): G1.
+- A detail header or side panel action with variants (Gửi hỏi giá | ▾ Gửi từ mẫu, Gọi điện).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Unrelated secondary actions (export, settings, print) | Menu (⋯) |
+| A toggle or the steps of one control (view mode, ‹ Hôm nay ›) | ButtonGroup |
+| One action with no alternatives | Button |
+
+## Import
+
+```tsx
+import { SplitButton } from "@semi/ui";
+```
+
+## Examples
+
+### In a toolbar
+
+Narrow the window below sm: one button opens Thêm khách hàng and its alternatives.
+
+```tsx
+"use client";
+
+import { Button, SearchInput, SplitButton, toast } from "@semi/ui";
+
+// G1: one way to start one job. The other ways to add a customer live under the ▾, not as toolbar buttons.
+export default function SplitButtonToolbar() {
+  return (
+    <div className="flex items-center gap-2 flex-wrap">
+      <SearchInput value="" onChange={() => undefined} placeholder="Tìm khách hàng" className="flex-1 min-w-48" />
+      <Button iconOnly icon="download" aria-label="Xuất Excel" />
+      <SplitButton
+        label="Thêm khách hàng"
+        icon="plus"
+        onClick={() => toast({ title: "Mở biểu mẫu thêm khách hàng" })}
+        menuLabel="Cách thêm khác"
+        items={[
+          { label: "Nhập từ file", icon: "upload", description: "Excel hoặc CSV", onSelect: () => toast({ title: "Chọn file" }) },
+          { label: "Tìm trong Data Hub", icon: "search", onSelect: () => toast({ title: "Mở Data Hub" }) },
+        ]}
+      />
+    </div>
+  );
+}
+```
+
+### Secondary, loading
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { SplitButton, toast } from "@semi/ui";
+
+// A secondary SplitButton (a detail header that already has its primary), with a running main action.
+export default function SplitButtonSecondary() {
+  const [busy, setBusy] = useState(false);
+  return (
+    <SplitButton
+      variant="secondary"
+      label="Mở trong IDE"
+      icon="code"
+      loading={busy}
+      onClick={() => {
+        setBusy(true);
+        setTimeout(() => setBusy(false), 1200);
+      }}
+      menuLabel="Mở bằng cách khác"
+      items={[
+        { label: "Mở Terminal", icon: "terminal", onSelect: () => toast({ title: "Mở Terminal" }) },
+        { label: "Mở trong Finder", icon: "folder", onSelect: () => toast({ title: "Mở Finder" }) },
+      ]}
+    />
+  );
+}
+```
+
+## API
+
+### SplitButton
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `label` * | `string` |  | The main action ("Thêm khách hàng"). |
+| `icon` | `IconName` |  |  |
+| `onClick` * | `() => void` |  |  |
+| `items` * | `MenuItem[]` |  | The other ways to do the same job (manual, import, copy from another system). Danger items go last. |
+| `menuLabel` | `string` |  | Accessible name of the ▾ button and of its menu (default "Thao tác khác"). |
+| `variant` | `'primary' \| 'secondary'` | `"primary"` | `primary` for the view's main action (G7: one filled primary per view), `secondary` elsewhere. |
+| `size` | `'sm' \| 'md'` | `"md"` |  |
+| `loading` | `boolean` | `false` | The main action is running: spinner and no clicks on the main half; the ▾ stays usable. |
+| `disabled` | `boolean` | `false` | Disables both halves. |
+| `collapseOnPhone` | `boolean` | `true` | Below `sm`, show one button (the icon, or the label with ▾) that opens a menu with the main action first. |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- A group named by the main label; the ▾ is a menu button (aria-haspopup=menu, aria-expanded) with its own name (menuLabel); the menu follows Menu's keyboard.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/split-button/ and the types in src/ -->
 
 
 ---
@@ -5197,10 +5446,16 @@ listbox; the active option follows aria-activedescendant so focus never leaves t
 |---|---|---|---|
 | `items` * | `CommandItem[]` |  |  |
 | `placeholder` | `string` |  |  |
-| `emptyText` | `React.ReactNode` |  | Shown when nothing matches (default from the locale). |
+| `emptyText` | `React.ReactNode \| ((query: string) => React.ReactNode)` |  | Shown when nothing matches (default from the locale); a function gets the query. |
 | `onEscape` | `() => void` |  | Escape on an empty query (CommandDialog closes). |
 | `autoFocus` | `boolean` | `false` |  |
 | `className` | `string` |  |  |
+| `size` | `'md' \| 'lg'` | `"md"` | `lg`: taller rows with an icon tile and the hint line, `text-overline` group headings (CommandPalette). |
+| `initialQuery` | `string` | `""` | The query when the list mounts. |
+| `label` | `string` |  | Accessible name of the listbox (default from the locale). |
+| `inputEnd` | `React.ReactNode` |  | Shown at the end of the input row (an Esc key cap). |
+| `footer` | `React.ReactNode` |  | Shown under the list (a key legend). |
+| `onOpenInNewTab` | `(item: CommandItem) => void` |  | ⌘↵ / Ctrl+↵ on an item with `href` (default: open `href` in a new tab). |
 
 ### CommandDialog
 
@@ -5219,6 +5474,101 @@ The command palette over the page: a modal dialog near the top, closed by Escape
 - The input is an ARIA combobox owning a listbox (aria-activedescendant), so focus stays in the input; groups are labelled; the dialog traps focus and Escape closes it.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/command/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/command-palette.md -->
+
+# Command palette
+
+The app-wide “search or create” box on ⌘K / Ctrl+K, built on Command: one dialog for places, records and quick actions. Mount it once in the root layout; pages register their own items with useRegisterCommands. Groups get text-overline headings, actions a coloured tile, records a hint line; the footer shows the keys, and ⌘↵ opens an item with href in a new tab.
+
+## When to use
+
+- Every app with more than a few pages: jump to a place or record and start a create action from anywhere (L1).
+- A SearchPill or “Tìm hoặc tạo” button in the header that opens the same box (openCommandPalette).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A small action list inside a page or Popover | Command |
+| A palette with your own open state and no app-wide registry | CommandDialog |
+| Filter the list on the page | SearchPill |
+
+## Import
+
+```tsx
+import { CommandPalette, useRegisterCommands, openCommandPalette, type CommandItem } from "@semi/ui";
+```
+
+## Examples
+
+### App-wide palette
+
+Press ⌘K (Ctrl+K) or the button; type “tieu” to find the supplier by keyword.
+
+```tsx
+"use client";
+
+import { useMemo } from "react";
+import { Button, CommandPalette, Kbd, openCommandPalette, toast, useRegisterCommands, type CommandItem } from "@semi/ui";
+
+// Mount CommandPalette once in the root layout with the app's places. A page adds its own quick actions and records
+// with useRegisterCommands while it is mounted. ⌘↵ opens an item with href in a new tab.
+const PLACES: CommandItem[] = [
+  { id: "inbox", label: "Hộp thư", group: "Trang", icon: "mail", href: "#inbox", onSelect: () => toast({ title: "Mở Hộp thư" }) },
+  { id: "suppliers", label: "Nhà cung cấp", group: "Trang", icon: "store", href: "#suppliers", onSelect: () => toast({ title: "Mở Nhà cung cấp" }) },
+  { id: "settings", label: "Cài đặt", group: "Trang", icon: "settings", onSelect: () => toast({ title: "Mở Cài đặt" }) },
+];
+
+export default function CommandPaletteApp() {
+  const pageItems = useMemo<CommandItem[]>(
+    () => [
+      { id: "new-supplier", label: "Thêm nhà cung cấp", group: "Tạo nhanh", icon: "plus", tone: "blue", shortcut: ["⌘", "N"], onSelect: () => toast({ title: "Thêm nhà cung cấp" }) },
+      { id: "new-request", label: "Tạo yêu cầu mua", group: "Tạo nhanh", icon: "clipboardList", tone: "green", onSelect: () => toast({ title: "Tạo yêu cầu mua" }) },
+      { id: "s1", label: "Gia vị Tây Nguyên", hint: "Nhà cung cấp · Đắk Lắk", group: "Nhà cung cấp", icon: "store", keywords: ["tieu", "pepper"], href: "#suppliers?open=s1", onSelect: () => toast({ title: "Mở Gia vị Tây Nguyên" }) },
+    ],
+    [],
+  );
+  useRegisterCommands(pageItems);
+  return (
+    <>
+      <Button icon="search" onClick={() => openCommandPalette()}>
+        Tìm hoặc tạo <Kbd keys={["⌘", "K"]} />
+      </Button>
+      <CommandPalette items={PLACES} />
+    </>
+  );
+}
+```
+
+## API
+
+### CommandPalette
+
+The app-wide "search or create" box (L1): one dialog for search and quick actions, opened with ⌘K / Ctrl+K. Mount
+it once in the root layout with the app's places; pages add their own items with useRegisterCommands. Groups get
+`text-overline` headings, actions a coloured tile (`tone`), records a hint line; the footer shows the keys
+(↑↓ select, ↵ open, ⌘↵ new tab for items with `href`, Esc close). Uncontrolled unless `open` is given.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `items` | `CommandItem[]` | `EMPTY` | The app's own items (places, global actions). Items registered by pages are listed first. |
+| `open` | `boolean` |  | Controlled open state; leave out to let the palette (⌘K, openCommandPalette) manage it. |
+| `onOpenChange` | `(open: boolean) => void` |  |  |
+| `hotkey` | `string \| false` | `"k"` | ⌘ / Ctrl + this key toggles the palette; `false` binds nothing. |
+| `placeholder` | `string` |  |  |
+| `emptyText` | `React.ReactNode \| ((query: string) => React.ReactNode)` |  |  |
+| `initialQuery` | `string` |  | The query when it opens (a `?q=` deep link). |
+| `onOpenInNewTab` | `(item: CommandItem) => void` |  |  |
+
+## Accessibility
+
+- A modal dialog (focus trapped, Escape closes, focus returns); the input is a combobox that owns a listbox (aria-activedescendant), groups are labelled by their heading, disabled items are aria-disabled.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/command-palette/ and the types in src/ -->
 
 
 ---
@@ -5394,6 +5744,158 @@ area has focus. Use for power-user shortcuts that also exist elsewhere (a row's 
 - The area is focusable; Menu key / Shift+F10 open the menu, which behaves like Menu (arrows, Escape returns focus).
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/context-menu/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/detail-overlay.md -->
+
+# Detail overlay
+
+An item of a list opens over the list instead of on its own page: its own URL (?open=<id> with useDetailParam, Next App Router safe), ‹ › and ← → through the current results with “n / N”, close / Esc / Back return to the list at the same scroll position. The side panel holds the actions (SplitButton, an icon row, ⋯); existing detail routes stay as deep-link targets.
+
+## When to use
+
+- Open a record from a list, grid or table and step through the results without losing the list (suppliers, orders, leads).
+- A shared link to a record that should land over its list.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Edit a few fields of a row | SidePanel or Modal |
+| A long workflow with its own sub-pages | a detail route |
+| A mail or chat reader beside the list | a list + reader layout |
+
+## Import
+
+```tsx
+import { DetailOverlay, useDetailParam, type DetailParamState } from "@semi/ui";
+```
+
+## Examples
+
+### List with ?item= in the URL
+
+Open a row, step with ← →, press Back: the list is where you left it.
+
+```tsx
+"use client";
+
+import { Badge, Button, DetailOverlay, Item, ItemGroup, Menu, SplitButton, toast, useDetailParam } from "@semi/ui";
+
+const ORDERS = Array.from({ length: 12 }, (_, i) => ({
+  id: `DH-${1040 + i}`,
+  customer: ["Cửa hàng Minh An", "Nhà sách Phú Lợi", "Quán Bếp Nhà"][i % 3],
+  total: (i + 3) * 185000,
+  paid: i % 4 !== 0,
+}));
+const vnd = (n: number) => `${n.toLocaleString("vi-VN")} ₫`;
+
+// Click a row: the order opens over the list with ?item= in the URL. ‹ › (or ← →) go through the list, Back or Esc
+// closes it and the list is where it was. Reload with ?item=DH-1045 to open it from a link.
+export default function DetailOverlayList() {
+  const { openId, open, show, close } = useDetailParam("item");
+  const index = ORDERS.findIndex((o) => o.id === openId);
+  const order = index >= 0 ? ORDERS[index] : null;
+  return (
+    <>
+      <ItemGroup label="Đơn hàng">
+        {ORDERS.map((o) => (
+          <Item key={o.id} title={o.customer} description={o.id} meta={vnd(o.total)} onClick={() => open(o.id)} />
+        ))}
+      </ItemGroup>
+      <DetailOverlay
+        open={order !== null}
+        onClose={close}
+        title={order ? `Đơn ${order.id}` : ""}
+        subtitle={order?.customer}
+        index={index}
+        total={ORDERS.length}
+        onPrev={index > 0 ? () => show(ORDERS[index - 1].id) : undefined}
+        onNext={index >= 0 && index < ORDERS.length - 1 ? () => show(ORDERS[index + 1].id) : undefined}
+        onCopyLink={() => (navigator.clipboard?.writeText(window.location.href), toast({ title: "Đã sao chép liên kết" }))}
+        side={
+          order && (
+            <>
+              <SplitButton
+                label="Giao hàng"
+                icon="truck"
+                onClick={() => toast({ title: `Giao ${order.id}` })}
+                menuLabel="Cách giao khác"
+                collapseOnPhone={false}
+                items={[
+                  { label: "Hẹn ngày giao", icon: "calendar", onSelect: () => toast({ title: "Hẹn ngày" }) },
+                  { label: "Khách tự lấy", icon: "store", onSelect: () => toast({ title: "Khách tự lấy" }) },
+                ]}
+              />
+              <div className="flex items-center gap-2">
+                <Button iconOnly icon="printer" aria-label="In đơn" />
+                <Button iconOnly icon="copy" aria-label="Nhân bản" />
+                <Menu
+                  label={`Thao tác khác với ${order.id}`}
+                  items={[
+                    { label: "Sửa đơn", icon: "edit", onSelect: () => undefined },
+                    { label: "Huỷ đơn", icon: "close", danger: true, onSelect: () => toast({ title: "Đã huỷ", tone: "danger" }) },
+                  ]}
+                />
+              </div>
+              <dl className="grid grid-cols-2 gap-3">
+                <div>
+                  <dt className="text-caption text-muted">Tổng tiền</dt>
+                  <dd className="text-ui text-contrast tabular-nums">{vnd(order.total)}</dd>
+                </div>
+                <div>
+                  <dt className="text-caption text-muted">Thanh toán</dt>
+                  <dd>
+                    <Badge tone={order.paid ? "emerald" : "amber"} dot size="sm">
+                      {order.paid ? "Đã trả" : "Chưa trả"}
+                    </Badge>
+                  </dd>
+                </div>
+              </dl>
+            </>
+          )
+        }
+      >
+        {order && (
+          <section className="flex flex-col gap-2">
+            <h3 className="text-label font-semibold text-contrast">Sản phẩm</h3>
+            <p className="text-ui text-body">3 mặt hàng · giao trong 2 ngày.</p>
+          </section>
+        )}
+      </DetailOverlay>
+    </>
+  );
+}
+```
+
+## API
+
+### DetailOverlay
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `open` * | `boolean` |  | Drive it from the URL: `open={openId !== null}` with useDetailParam. |
+| `onClose` * | `() => void` |  | Close button, Escape and a click on the backdrop. With useDetailParam pass its `close`. |
+| `title` * | `React.ReactNode` |  |  |
+| `subtitle` | `React.ReactNode` |  | One line under the title (region, category). |
+| `index` | `number` |  | Place of the item in the current result set (0-based) and its size: shows "n / N". |
+| `total` | `number` |  |  |
+| `onPrev` | `() => void` |  | Previous / next item of the result set; leave out at the ends (the button is disabled). ← → do the same. |
+| `onNext` | `() => void` |  |  |
+| `onCopyLink` | `() => void` |  | Shows a "copy link" button (the URL already opens this item). |
+| `label` | `string` |  | Accessible name of the dialog when `title` is not plain text. |
+| `children` * | `React.ReactNode` |  | The item itself. |
+| `side` | `React.ReactNode` |  | The action panel: a SplitButton, a row of icon buttons, a ⋯ Menu, then facts. Right column from `lg`, below the content before. |
+| `related` | `React.ReactNode` |  | Related items, under the main content. |
+
+## Accessibility
+
+- A modal dialog named by its title (an h2), focus trapped and returned to the row that opened it; Escape closes.
+- ‹ › are labelled (Mục trước / Mục sau, with aria-keyshortcuts) and disabled at the ends; “n / N” is read as “Mục n trên N”; ← → do not fire inside inputs, menus or sliders.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/detail-overlay/ and the types in src/ -->
 
 
 ---
@@ -5604,23 +6106,26 @@ only: touch screens never show it, so the link must work without it.
 
 # Menu
 
-The overflow menu of a row or card: a ⋯ trigger (or your own) with items, icons, separators and a danger item last.
+The action menu behind a trigger: a ⋯ (or your own Button) with items that have an icon, a description line, a shortcut or hint, a check, a spinner, a link, a reason when disabled, and group headings. Danger items always go last after a divider; hidden items (and empty groups) leave the list; below sm it opens as a bottom sheet.
 
 ## When to use
 
-- Secondary actions of a row or card (Đổi tên, Nhân bản, Xoá).
+- Secondary actions of a row, card or page (Đổi tên, Nhân bản, Xoá): G2, G4.
+- The ⋯ overflow of a toolbar, a bulk bar or a detail header (G2, G9, G12).
 
 ## Use something else when
 
 | Need | Use |
 |---|---|
 | One or two visible actions | Button |
+| Other ways to start the main action (manual, import) | SplitButton |
+| Actions on a card in a grid | CardActions |
 | Pick a value | CustomSelect |
 
 ## Import
 
 ```tsx
-import { Menu } from "@semi/ui";
+import { Menu, type MenuItem } from "@semi/ui";
 ```
 
 ## Examples
@@ -5647,6 +6152,42 @@ export default function MenuRowActions() {
 }
 ```
 
+### Groups, states and danger last
+
+Xoá is first in the code and shows last; the hidden item is not listed; Gửi qua Zalo says why it is off.
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Button, Menu, toast } from "@semi/ui";
+
+export default function MenuGrouped() {
+  const [compact, setCompact] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const exportFile = () => {
+    setExporting(true);
+    setTimeout(() => (setExporting(false), toast({ title: "Đã xuất 128 dòng", tone: "success" })), 1200);
+  };
+  return (
+    <Menu
+      label="Thao tác với danh sách khách hàng"
+      trigger={<Button icon="more">Thao tác</Button>}
+      items={[
+        // danger is listed first here on purpose: Menu always shows it last, after a divider (G5)
+        { label: "Xoá danh sách", icon: "trash", danger: true, onSelect: () => toast({ title: "Đã xoá", tone: "danger" }) },
+        { label: "Xuất Excel", icon: "download", group: "Xuất", description: "128 dòng đang lọc", loading: exporting, onSelect: exportFile },
+        { label: "In danh sách", icon: "printer", group: "Xuất", shortcut: "⌘P", onSelect: () => window.print() },
+        { label: "Gửi qua Zalo", icon: "send", group: "Xuất", disabled: "Chưa kết nối Zalo OA", onSelect: () => undefined },
+        { label: "Chỉ quản trị viên", icon: "lock", group: "Xuất", hidden: true, onSelect: () => undefined },
+        { label: "Hiển thị gọn", group: "Xem", checked: compact, onSelect: () => setCompact((v) => !v) },
+        { label: "Mở trang cài đặt", icon: "settings", group: "Xem", href: "#settings" },
+      ]}
+    />
+  );
+}
+```
+
 ## API
 
 ### Menu
@@ -5656,14 +6197,16 @@ returns focus. Default trigger: icon-only "more" button; pass `trigger` (an elem
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `items` * | `MenuItem[]` |  |  |
+| `items` * | `MenuItem[]` |  | The actions. Danger items are listed last, hidden ones left out (see MenuItem). |
 | `label` | `string` |  | Accessible name of the default trigger. |
 | `align` | `'left' \| 'right'` | `"right"` |  |
 | `trigger` | `ReactElement<unknown, string \| JSXElementConstructor<any>>` |  |  |
+| `sheet` | `boolean` | `true` | Below `sm` the list opens as a bottom sheet over a backdrop (P6, since 0.39). `false` keeps the anchored dropdown on phones too. |
 
 ## Accessibility
 
-- role="menu": Enter / Space / ↓ open, arrows move, Escape closes and returns focus to the trigger.
+- WAI-ARIA menu button: Enter / Space / ↓ open on the first item, ↑ on the last; arrows, Home, End move; a letter jumps to the next item starting with it; Escape closes and returns focus to the trigger; Tab closes.
+- A check makes the item menuitemcheckbox with aria-checked; a disabled item with a reason stays reachable (aria-disabled) and its reason is its description; a group is role=group named by its heading.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/menu/ and the types in src/ -->
 

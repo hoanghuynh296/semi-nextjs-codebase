@@ -9,9 +9,11 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 |---|---|---|
 | [Button](button.md) | `Button`, `Spinner` | Any action: save, create, refresh, delete, open a dialog. |
 | [Button group](button-group.md) | `ButtonGroup` | Previous / today / next; a primary action with its overflow menu; zoom − / +. |
+| [Card actions](card-actions.md) | `CardActions` | Cards and media tiles in a grid (suppliers, products, templates, files) that open on click and have one or two quick actions. |
 | [Chip](chip.md) | `Chip` | Several filters that can be on at once (materials, device types). |
 | [External link](external-link.md) | `ExternalLink` | Any link that leaves the app (docs, GitHub, a payment page). |
 | [Pills](pills.md) | `Pills` | Filter a list by status or period: Tất cả / Đang in / Xong. |
+| [Split button](split-button.md) | `SplitButton` | Two or more ways to start one job (type it in, import a file, copy from another system): G1. |
 | [Toggle](toggle.md) | `Toggle`, `ToggleGroup` | A view mode with icons; text formatting; a pin / follow / mute switch on a toolbar. |
 
 ## Forms
@@ -43,11 +45,13 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | Doc | Components | When to use |
 |---|---|---|
 | [Command](command.md) | `Command`, `CommandDialog` | Jump anywhere and run any action from the keyboard (⌘K) in apps with many pages. |
+| [Command palette](command-palette.md) | `CommandPalette` | Every app with more than a few pages: jump to a place or record and start a create action from anywhere (L1). |
 | [Confirm dialog](confirm-dialog.md) | `ConfirmHost` | Before an irreversible action: delete, stop a print, discard changes. confirmDelete names the object. |
 | [Context menu](context-menu.md) | `ContextMenu` | Power-user shortcuts on canvases, file grids and rows, when the same actions also exist in a visible Menu or toolbar. |
+| [Detail overlay](detail-overlay.md) | `DetailOverlay` | Open a record from a list, grid or table and step through the results without losing the list (suppliers, orders, leads). |
 | [Drawer](drawer.md) | `Drawer` | Filters of a list, details of a row, a secondary form that keeps the page visible. |
 | [Hover card](hover-card.md) | `HoverCard` | Peek at a linked record without opening it. |
-| [Menu](menu.md) | `Menu` | Secondary actions of a row or card (Đổi tên, Nhân bản, Xoá). |
+| [Menu](menu.md) | `Menu` | Secondary actions of a row, card or page (Đổi tên, Nhân bản, Xoá): G2, G4. |
 | [Modal](modal.md) | `Modal` | A short task that needs the user's full attention (edit settings, create an item). |
 | [Popover](popover.md) | `Popover` | Quick edits without leaving the page (rename, set a limit), compact filter forms. |
 | [Toast](toast.md) | `ToastHost` | Confirm an action happened (Đã lưu): toast.success, shown once, never a modal. |

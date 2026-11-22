@@ -41,6 +41,11 @@ If neither works (`semi_status` answers, or `npx semi` is missing), the app has 
    number, a quote, a product shot); icons only where they help scanning; plain sections and white space next to
    cards. Keep the density budgets (`DESIGN_SYSTEM.md` §4c): three frames deep at most, four text sizes and three
    colours per box, one filled button per view, rows a control tall, text 12px from a box's sides.
+   Group the actions (`DESIGN_SYSTEM.md` §9, G1–G12; page recipe D2): the title or toolbar row holds search, at most
+   one secondary button, a ⋯ `Menu` for the rest and one primary (a `SplitButton` when there are other ways to start
+   the same job: "Thêm khách hàng" | ▾ Nhập từ file, Tìm trong Data Hub); rows get one inline action + a row ⋯, cards
+   `CardActions`, bulk bars one primary + ⋯, danger last everywhere. A record of a list opens in a `DetailOverlay`
+   (`useDetailParam`, `npx semi example detail-overlay`) with its actions in the side panel (D10: one primary + ⋯).
    Build every state of the screen, not only the filled one (`DESIGN_SYSTEM.md` §19b), from `EmptyState` (`first-use`,
    `no-results`), `ErrorState`, `NotFound`, `Forbidden` and `PageSkeleton shape` (`npx semi example states`; each route
    group gets `loading.tsx`, `error.tsx`, `not-found.tsx`): loading (a skeleton of the

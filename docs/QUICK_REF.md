@@ -76,6 +76,7 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
   - `PageTitle`, `PageTabsTitle`: text-only display heading or underline tab heading (`h-[2.5px] bg-primary`).
   - `SubpageToolbar`: sticky toolbar (`STICKY_TOOLBAR`) with `left` filters and `right` icon-only `BTN_PRIMARY BTN_ICON` + `SearchInput` + `RefreshButton`; `title` puts the page title on the same row (then no `PageTitle`).
     Phone layout (opt-in): `filters` (typed, `FilterDef[]`; more than two collapse into "Bộ lọc · N" + active chips) or `collapseFilters` (for `left`), and `secondaryActions` (a ⋯ menu below `sm`).
+  - Overlay and actions (§4, §9, #102): a list record opens in `<DetailOverlay open onClose index total onPrev onNext side related>` driven by `useDetailParam()` (`?open=`, Back closes, ‹ › replace); cards get `<CardActions label actions menu>` inside a `group relative` card; one `<CommandPalette items>` in the root layout (⌘K; pages add `useRegisterCommands(items)`, a button calls `openCommandPalette()`). Grouping (G1–G12): alternatives of the main action → `<SplitButton label onClick items menuLabel>`; secondary page / row actions → ⋯ `Menu` (items: `group`, `description`, `checked`, `loading`, `href`, `hidden`, `disabled: "reason"`; danger always last; bottom sheet below `sm`); `ButtonGroup` only for toggles / steps of one control; one filled primary per view.
   - Search and filters (§4, #99): `<StickyContextBar>` with `<SearchPill>`, `<FilterChipRow className="max-md:hidden" trailing={<ViewSwitch/>}>`, `<PhoneFilterBar className="md:hidden">` (opens `<FilterPanel>`) and `<ResultLine count query sort>`. One line of chips, never wrapped rows; state in the URL with `useFilterParams(specs)` or `readFilters` / `writeFilters` / `clearFilters`.
   - `KpiCard`: metric card with a `tabular-nums` value in the style's figure font (`font-figure`), optional neutral icon (`iconTone` only for a status), `featured` for the screen's main number, shimmer `loading` state.
   - `Modal`: portal dialog with `MODAL_BACKDROP`, `MODAL_PANEL`, `MODAL_HEAD`, `MODAL_CLOSE`, and `footer` (`MODAL_FOOT`).
@@ -132,7 +133,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (142)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (146)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
@@ -144,17 +145,19 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `ButtonGroup`: `ButtonGroup`
 - `Calendar`: `Calendar`
 - `Card`: `Card`
+- `CardActions`: `CardActions`
 - `Carousel`: `Carousel`
 - `Chart`: `BarChart`, `LineChart`, `DonutChart`, `Sparkline`
 - `Chat`: `ChatAvatar`, `ChatThinking`, `UserMessage`, `AssistantMessage`, `ChatError`, `ChatCopyButton`, `ChatIntro`, `ChatSuggestion`, `ChatSuggestions`, `ChatList`, `ChatComposer`, `ChatModelPicker`, `ChatView`, `ChatPanel`, `ChatAnswer`, `AIChat`
 - `Chip`: `Chip`
 - `Choice`: `Checkbox`, `Switch`, `RadioGroup`
 - `CodeBlock`: `CodeBlock`
-- `Command`: `Command`, `CommandDialog`
+- `Command`: `Command`, `CommandDialog`, `CommandPalette`
 - `CustomCombobox`: `CustomCombobox`
 - `CustomSelect`: `CustomSelect`
 - `DataTable`: `DataTable`
 - `DatePicker`: `DatePicker`
+- `DetailOverlay`: `DetailOverlay`
 - `Disclosure`: `Collapsible`, `Accordion`
 - `Drawer`: `Drawer`
 - `ExternalLink`: `ExternalLink`
@@ -195,6 +198,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `SidePanel`: `SidePanelToggle`, `SidePanel`
 - `Skeleton`: `Skeleton`, `Loading`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `PageSkeleton`, `BootLoader`
 - `Slider`: `Slider`
+- `SplitButton`: `SplitButton`
 - `States`: `ErrorState`, `NotFound`, `Forbidden`
 - `SubpageToolbar`: `SubpageToolbar`
 - `Table`: `Table`, `THead`, `TBody`, `TR`, `TH`, `TD`
@@ -211,5 +215,5 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `formValidation`: `FormErrorSummary`
 - `locale`: `SemiLocaleProvider`
 
-**Hooks:** `useAppShell`, `useHotkey`, `useField`, `useFilterParams`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useFormValidation`, `useSemiLocale`, `useUnsavedGuard` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `pageWindow`, `startTask`, `themeScript`, `updateToast`, `dismissToast`, `confirmDialog`, `confirmDelete`, `kindAttrs`, `readFilterValues`, `readFilters`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `composeRefs`, `cloneTrigger`, `cn`
+**Hooks:** `useAppShell`, `useHotkey`, `useRegisterCommands`, `useDetailParam`, `useField`, `useFilterParams`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useFormValidation`, `useSemiLocale`, `useUnsavedGuard` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `openCommandPalette`, `pageWindow`, `startTask`, `themeScript`, `updateToast`, `dismissToast`, `confirmDialog`, `confirmDelete`, `kindAttrs`, `readFilterValues`, `readFilters`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `composeRefs`, `cloneTrigger`, `cn`
 <!-- generated:components:end -->
