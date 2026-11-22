@@ -53,13 +53,13 @@ export function useFormValidation<T extends Record<string, unknown>>(values: T, 
  */
 export function FormErrorSummary({ errors, className }: { errors: Record<string, string | undefined>; className?: string }) {
   const t = useSemiLocale();
-  const list = Object.values(errors).filter((e): e is string => !!e);
+  const list = Object.entries(errors).filter((e): e is [string, string] => !!e[1]);
   if (list.length < 2) return null;
   return (
     <Alert tone="danger" title={t.formErrors(list.length)} className={className}>
       <ul className="list-disc pl-4 space-y-0.5">
-        {list.map((m) => (
-          <li key={m}>{m}</li>
+        {list.map(([name, m]) => (
+          <li key={name}>{m}</li>
         ))}
       </ul>
     </Alert>

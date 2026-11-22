@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Field, FormActions, FormErrorSummary, Input, toast, useFormValidation, useUnsavedGuard } from "@semi/ui";
 
@@ -20,6 +21,7 @@ export default function FormActionsPageForm() {
   // warns on reload, tab close, a link or back while this is true
   const dirty = JSON.stringify(values) !== JSON.stringify(saved);
   const { confirmLeave } = useUnsavedGuard(dirty);
+  const router = useRouter();
 
   const save = (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,7 +49,7 @@ export default function FormActionsPageForm() {
         <Input value={values.price} onChange={set("price")} />
       </Field>
       <FormErrorSummary errors={form.errors} />
-      <FormActions create loading={saving} onCancel={() => confirmLeave(() => { setValues(EMPTY); form.reset(); })} />
+      <FormActions create loading={saving} onCancel={() => confirmLeave(() => router.back())} />
     </form>
   );
 }

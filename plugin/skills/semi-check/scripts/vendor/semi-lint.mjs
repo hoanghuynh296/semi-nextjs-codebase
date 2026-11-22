@@ -563,9 +563,10 @@ export function configGrowth(cwd, cfg, baseline) {
   if (cfgTxt) {
     const was = JSON.parse(cfgTxt);
     const paths = (v) => (!v ? [] : Array.isArray(v) ? v : Object.keys(v));
+    const warn = new Set(WARN.map(([id]) => id)); // warning tier: turning one off is not growth
     for (const [id, v] of Object.entries(cfg.skip || {}))
-      for (const p of paths(v)) if (!paths(was.skip?.[id]).includes(p)) out.push(`semi-lint.json: new skip ${id} → ${p} (needs the user's OK; put the reason in the pull request)`);
-    for (const id of cfg.disable || []) if (!(was.disable || []).includes(id)) out.push(`semi-lint.json: rule ${id} newly disabled (needs the user's OK)`);
+      for (const p of warn.has(id) ? [] : paths(v)) if (!paths(was.skip?.[id]).includes(p)) out.push(`semi-lint.json: new skip ${id} → ${p} (needs the user's OK; put the reason in the pull request)`);
+    for (const id of cfg.disable || []) if (!warn.has(id) && !(was.disable || []).includes(id)) out.push(`semi-lint.json: rule ${id} newly disabled (needs the user's OK)`);
   }
   return out;
 }

@@ -34,7 +34,7 @@ export default function InputGroupAddons() {
     <div className="grid gap-4 max-w-md">
       <Field label="Website" kind="url">
         <InputGroup start="https://">
-          <Input placeholder="3dnoobs.vn" />
+          <Input type="text" placeholder="3dnoobs.vn" />
         </InputGroup>
       </Field>
       <Field label="Giá bán" kind="money">

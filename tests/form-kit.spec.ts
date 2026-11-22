@@ -181,10 +181,11 @@ test("useUnsavedGuard · reload and tab close: the browser's prompt only while t
   await closing;
 });
 
-test("useUnsavedGuard · saving makes the form clean: no prompt, and the extra history entry is gone", async ({ page }) => {
+test("useUnsavedGuard · saving makes the form clean: no prompt, and the guard's history entry stops being a marker", async ({ page }) => {
   await page.goto("/components/button/");
   await page.locator('a[href$="/components/form-actions/"]').first().click();
-  const lengthBefore = await page.evaluate(() => history.length);
+  await expect(page).toHaveURL(/\/components\/form-actions\/$/);
+  const lengthBefore = await historyLength(page);
   const f = page.locator(FORM);
   await f.getByLabel("Tên máy in").fill("Bambu P1S");
   await f.getByLabel("Email liên hệ").fill("ban@congty.vn");
@@ -203,6 +204,72 @@ test("useUnsavedGuard · saving makes the form clean: no prompt, and the extra h
   await expect(page.getByRole("alertdialog")).toHaveCount(0);
 });
 
+const LEAVE = (page: Page) => page.getByRole("alertdialog", { name: "Rời khỏi trang?" });
+const historyLength = (page: Page) => page.evaluate(() => history.length);
+
+test("useUnsavedGuard · Huỷ with confirmLeave(router.back) asks once and goes back one step", async ({ page }) => {
+  await page.goto("/components/button/");
+  await page.locator('a[href$="/components/form-actions/"]').first().click();
+  await nameField(page).fill("Bambu P1S");
+  await page.locator(FORM).getByRole("button", { name: "Huỷ" }).click();
+  await LEAVE(page).getByRole("button", { name: "Rời đi" }).click();
+  await expect(page).toHaveURL(/\/components\/button\/$/);
+  await page.waitForTimeout(600); // a second prompt would show by now
+  await expect(LEAVE(page)).toHaveCount(0);
+});
+
+test("useUnsavedGuard · after Rời đi on a link the history has one entry for the new page: Back is one press", async ({ page }) => {
+  await page.goto("/components/button/");
+  await page.locator('a[href$="/components/form-actions/"]').first().click();
+  await nameField(page).fill("Bambu P1S");
+  await page.locator('a[href$="/components/states/"]').first().click();
+  await LEAVE(page).getByRole("button", { name: "Rời đi" }).click();
+  await expect(page).toHaveURL(/\/components\/states\/$/);
+  await page.goBack();
+  await expect(page).toHaveURL(/\/components\/form-actions\/$/); // one press, not two
+  await expect(nameField(page)).toHaveValue(""); // a fresh, clean page
+  await page.goBack();
+  await expect(page).toHaveURL(/\/components\/button\/$/);
+  await expect(LEAVE(page)).toHaveCount(0);
+});
+
+test("useUnsavedGuard · a plain <a> (hard navigation) asks once, then leaves without the browser's prompt", async ({ page }) => {
+  await page.goto(PAGE);
+  await nameField(page).fill("Bambu P1S");
+  await page.evaluate(() => {
+    const a = document.createElement("a");
+    a.href = "/foundations/";
+    a.id = "plain-link";
+    a.textContent = "plain";
+    document.body.appendChild(a);
+  });
+  const browserPrompts: string[] = [];
+  page.on("dialog", (d) => {
+    browserPrompts.push(d.type());
+    void d.accept();
+  });
+  await page.locator("#plain-link").dispatchEvent("click");
+  await LEAVE(page).getByRole("button", { name: "Rời đi" }).click();
+  await expect(page).toHaveURL(/\/foundations\/$/);
+  expect(browserPrompts).toEqual([]);
+});
+
+test("useUnsavedGuard · save, then router.push to a route that was not prefetched: the navigation is not cancelled", async ({ page }) => {
+  await page.goto("/components/button/");
+  await page.locator('a[href$="/components/form-actions/"]').first().click();
+  const f = page.locator(FORM);
+  await f.getByLabel("Tên máy in").fill("Bambu P1S");
+  await f.getByLabel("Email liên hệ").fill("ban@congty.vn");
+  await f.getByRole("button", { name: "Tạo" }).click();
+  await expect(page.getByText("Đã tạo máy in")).toBeVisible();
+  // straight after the save, in the same tick the app would call router.push
+  await page.evaluate(() => (window as unknown as { next: { router: { push: (u: string) => void } } }).next.router.push("/foundations/"));
+  await expect(page).toHaveURL(/\/foundations\/$/);
+  await page.waitForTimeout(600); // a pending history.back() would undo it by now
+  await expect(page).toHaveURL(/\/foundations\/$/);
+  await expect(LEAVE(page)).toHaveCount(0);
+});
+
 // ---- Field kind ----
 
 test("Field kind: type, inputMode, autoComplete and enterKeyHint of each kind", async ({ page }) => {
@@ -213,7 +280,7 @@ test("Field kind: type, inputMode, autoComplete and enterKeyHint of each kind", 
   expect(await attrs("Email")).toEqual({ type: "email", inputmode: "email", autocomplete: "email", enterkeyhint: "next" });
   expect(await attrs("Số điện thoại")).toEqual({ type: "tel", inputmode: "tel", autocomplete: "tel", enterkeyhint: "next" });
   expect(await attrs("Số lượng")).toEqual({ type: "text", inputmode: "decimal", autocomplete: "off", enterkeyhint: "next" });
-  expect(await attrs("Giá bán (₫)")).toEqual({ type: "text", inputmode: "numeric", autocomplete: "off", enterkeyhint: "next" });
+  expect(await attrs("Giá bán (₫)")).toEqual({ type: "text", inputmode: "decimal", autocomplete: "off", enterkeyhint: "next" });
   expect(await attrs("Website")).toEqual({ type: "url", inputmode: "url", autocomplete: "url", enterkeyhint: "next" });
   expect(await attrs("Mật khẩu")).toEqual({ type: "password", inputmode: "text", autocomplete: "current-password", enterkeyhint: "go" });
   expect(await attrs("Tìm kiếm")).toEqual({ type: "search", inputmode: "search", autocomplete: "off", enterkeyhint: "search" });

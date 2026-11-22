@@ -499,12 +499,14 @@ it form by form; the four lint rules below are warnings until 1.0.
   address bar (`beforeunload`; its text cannot be changed). Inside the Next.js app router, which has no navigation event,
   a link click is caught in the capture phase, asked with `confirmDialog` (mount `<ConfirmHost />`: "Bạn có thay đổi chưa
   lưu…", `Rời đi` / `Ở lại`) and repeated on agreement, so `next/link`, `basePath` and prefetch are untouched; back /
-  forward is asked through one history entry added while `dirty`. A navigation the app starts in code is wrapped:
+  forward is asked through one history entry added while `dirty` (dropped before an agreed navigation; turned into a plain copy of the page after a save). A navigation the app starts in code is wrapped:
   `confirmLeave(() => router.back())` (returned by the hook). Set `dirty` to false right after a successful save, before
   navigating on.
 - **`Field kind`** (`email`, `tel`, `number`, `money`, `url`, `search`, `password`) sets `type`, `inputMode`,
-  `autoComplete` and `enterKeyHint` on its `Input` / `NumberInput` (table in `FIELD_KINDS`); a prop on the control wins
-  (`autoComplete="new-password"`). `number` and `money` stay text inputs with a numeric keypad, never `type="number"`.
+  `autoComplete` and `enterKeyHint` on its `Input` (table in `FIELD_KINDS`; `NumberInput` takes only `autoComplete` and
+  `enterKeyHint`, it keeps its own type and keypad); a prop on the control wins (`autoComplete="new-password"`, `type="text"`
+  next to an `https://` addon). `number` and `money` stay text inputs with the decimal keypad, never `type="number"`; the text
+  holds Vietnamese separators, so parse it with `parseMoney` / `parseNumber` (#69), not `Number()`.
 - **Layout and validation.** Labels sit above fields, required fields get `*` (`Field required`), the error shows under the
   field (`Field error`). Validation runs on blur, then on every change (`useFormValidation`: `form.errors`, `onBlur={form.blur("x")}`,
   `form.validate()` on submit). With more than one error `FormErrorSummary` puts an `Alert` above `FormActions`; one error is

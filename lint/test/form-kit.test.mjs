@@ -7,7 +7,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { FIELD_KINDS, kindAttrs } from "../../src/fieldKinds.ts";
 import { keyboardInset, leavesPage } from "../../src/formGuard.ts";
-import { scan, warnHits, WARN } from "../semi-lint.mjs";
+import { spawnSync } from "node:child_process";
+import { configGrowth, scan, warnHits, WARN } from "../semi-lint.mjs";
 
 test("Field kind: every kind sets type, inputMode, autoComplete and enterKeyHint", () => {
   assert.deepEqual(Object.keys(FIELD_KINDS), ["email", "tel", "number", "money", "url", "search", "password"]);
@@ -18,7 +19,7 @@ test("Field kind: every kind sets type, inputMode, autoComplete and enterKeyHint
   assert.deepEqual(FIELD_KINDS.password, { type: "password", inputMode: "text", autoComplete: "current-password", enterKeyHint: "go" });
   // numbers are text inputs with a numeric keypad (never type="number"): decimals for number, whole units for money
   assert.deepEqual(FIELD_KINDS.number, { type: "text", inputMode: "decimal", autoComplete: "off", enterKeyHint: "next" });
-  assert.deepEqual(FIELD_KINDS.money, { type: "text", inputMode: "numeric", autoComplete: "off", enterKeyHint: "next" });
+  assert.deepEqual(FIELD_KINDS.money, { type: "text", inputMode: "decimal", autoComplete: "off", enterKeyHint: "next" });
   for (const [kind, a] of Object.entries(FIELD_KINDS)) {
     assert.ok(a.type && a.inputMode && a.autoComplete && a.enterKeyHint, `${kind} sets all four`);
     assert.notEqual(a.type, "number", `${kind} is never a native number input`);
@@ -119,4 +120,27 @@ test("the form-kit rules are warnings: scan() reports them apart from hard and r
   assert.deepEqual(scan([file], { disable: ["form-no-guard"] }, dir).warnings.map((w) => w.rule), ["field-input-mode"]);
   assert.deepEqual(scan([file], { skip: { "field-input-mode": ["page.tsx"] } }, dir).warnings.map((w) => w.rule), ["form-no-guard"]);
   rmSync(dir, { recursive: true });
+});
+
+test("semi-lint --ci: turning a warning rule off (disable or skip) is not growth; a ratchet rule still is", () => {
+  const dir = mkdtempSync(join(tmpdir(), "semi-lint-ci-"));
+  const git = (...a) => spawnSync("git", a, { cwd: dir, encoding: "utf8" });
+  git("init", "-q");
+  git("config", "user.email", "t@t");
+  git("config", "user.name", "t");
+  writeFileSync(join(dir, "semi-lint.json"), "{}");
+  writeFileSync(join(dir, "package.json"), "{}");
+  git("add", "-A");
+  git("commit", "-q", "-m", "base");
+  process.env.SEMI_LINT_BASE = "HEAD";
+  try {
+    const grow = (cfg) => configGrowth(dir, { baseline: "semi-lint-baseline.json", ...cfg }, {});
+    assert.deepEqual(grow({ disable: ["form-no-guard", "action-order", "toast-for-validation", "field-input-mode"] }), []);
+    assert.deepEqual(grow({ skip: { "field-input-mode": ["app/"], "form-no-guard": { "app/x.tsx": "reason" } } }), []);
+    assert.equal(grow({ disable: ["loading-text"] }).length, 1, "a ratchet rule is still growth");
+    assert.equal(grow({ skip: { "raw-control": ["app/"] } }).length, 1);
+  } finally {
+    delete process.env.SEMI_LINT_BASE;
+    rmSync(dir, { recursive: true });
+  }
 });
