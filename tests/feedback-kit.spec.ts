@@ -19,7 +19,7 @@ async function open(page: Page, doc: string, id: string) {
 
 test("toast.undo: the row goes at once, the toast offers Hoàn tác, undo puts it back where it was and closes the toast", async ({ page }) => {
   const root = await open(page, "toast", "toast/undo");
-  const rows = root.locator("[data-undo-list] li");
+  const rows = root.locator("[data-undo-list] li").filter({ hasText: "Bản in mẫu" });
   await expect(rows).toHaveCount(3);
   await rows.nth(1).getByRole("button", { name: "Lưu trữ" }).click();
   await expect(rows).toHaveCount(2);
@@ -83,7 +83,7 @@ test("onCommit runs when the undo window closes without an undo, not after an un
   await STACK(page).getByRole("button", { name: "Hoàn tác" }).click(); // undone: nothing to commit
   await expect(committed).toContainText("Đã chốt: 0");
   await rows.nth(0).getByRole("button", { name: "Lưu trữ" }).click();
-  await STACK(page).getByRole("button", { name: "Đóng" }).click(); // dismissed: committed
+  await STACK(page).getByRole("button", { name: "Bỏ qua" }).click(); // dismissed: committed
   await expect(committed).toContainText("Đã chốt: 1");
 });
 
@@ -138,8 +138,9 @@ test("confirmDelete and the undo button take their texts from the provider's loc
   await page.getByRole("button", { name: "Archive" }).click();
   await expect(page.getByRole("button", { name: "Undo" }).first()).toBeVisible();
   await page.getByRole("button", { name: "Quick note" }).click();
-  await expect(page.getByText("Quick note").first()).toBeVisible();
-  await expect(page.getByText("Quick note")).toHaveCount(0, { timeout: 2000 }); // 4 s x 0.1 (the default would take 4 s)
+  const note = page.locator("[aria-live]").getByText("Quick note");
+  await expect(note.first()).toBeVisible();
+  await expect(note).toHaveCount(0, { timeout: 2000 }); // 4 s x 0.1 (the default would take 4 s)
 });
 
 test("toast.promise: a spinner toast turns into the result in place; a failure is assertive and keeps the reason", async ({ page }) => {
