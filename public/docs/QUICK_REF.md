@@ -16,7 +16,7 @@ Phones (`< md`) hide the top logo header and use `MobileTabBar` at the bottom (n
 | Semantic Token | Tailwind Class | Dark Mode (`[data-theme="dark"]`) | Light Mode (`[data-theme="light"]`) | Usage |
 |---|---|---|---|---|
 | `--color-canvas` | `bg-canvas` | `#0c0d0e` | `#f1f5f9` (Slate-100) | Outermost viewport frame |
-| `--color-app` | `bg-app` | `#121316` | `#ffffff` | Main workspace & content canvas |
+| `--color-app` | `bg-app` | `#121316` | `#f8fafc` | Main workspace & content canvas |
 | `--color-panel` | `bg-panel` | `#202226` | `#ffffff` | Bento Cards, Sidebar, Modals, Menus |
 | `--color-field` | `bg-field` | `#272a2f` | `#f1f5f9` (Slate-100) | Form inputs (`FIELD_INPUT`), table headers |
 | `--color-raised` | `bg-raised` | `#26282e` | `#e2e8f0` (Slate-200) | Hover surface, subtle elevation, skeleton shimmer |

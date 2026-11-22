@@ -166,7 +166,7 @@ Phones (`< md`) hide the top logo header and use `MobileTabBar` at the bottom (n
 | Semantic Token | Tailwind Class | Dark Mode (`[data-theme="dark"]`) | Light Mode (`[data-theme="light"]`) | Usage |
 |---|---|---|---|---|
 | `--color-canvas` | `bg-canvas` | `#0c0d0e` | `#f1f5f9` (Slate-100) | Outermost viewport frame |
-| `--color-app` | `bg-app` | `#121316` | `#ffffff` | Main workspace & content canvas |
+| `--color-app` | `bg-app` | `#121316` | `#f8fafc` | Main workspace & content canvas |
 | `--color-panel` | `bg-panel` | `#202226` | `#ffffff` | Bento Cards, Sidebar, Modals, Menus |
 | `--color-field` | `bg-field` | `#272a2f` | `#f1f5f9` (Slate-100) | Form inputs (`FIELD_INPUT`), table headers |
 | `--color-raised` | `bg-raised` | `#26282e` | `#e2e8f0` (Slate-200) | Hover surface, subtle elevation, skeleton shimmer |
@@ -466,7 +466,7 @@ Semi architecture separates tokens into two tiers:
 | Semantic Token | Tailwind Utility | Purpose | Dark Mode (`[data-theme="dark"]`) | Light Mode (`[data-theme="light"]`) |
 |---|---|---|---|---|
 | `--color-canvas` | `bg-canvas` | Nền ứng dụng ngoài cùng (outer bento shell) | `#0c0d0e` | `#f1f5f9` (Slate-100) |
-| `--color-app` | `bg-app` | Khung bề mặt màn hình chính (content panel) | `#121316` | `#ffffff` |
+| `--color-app` | `bg-app` | Khung bề mặt màn hình chính (content panel) | `#121316` | `#f8fafc` |
 | `--color-panel` | `bg-panel` | Thẻ Bento Card, Sidebar, Modal shell | `#202226` | `#ffffff` |
 | `--color-field` | `bg-field` | Nền ô nhập liệu, header bảng | `#272a2f` | `#f1f5f9` (Slate-100) |
 | `--color-raised` | `bg-raised` | Hover / track fills trên nền field hoặc panel | `#31343a` | `#e2e8f0` (Slate-200) |

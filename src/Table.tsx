@@ -11,7 +11,7 @@ import { cn } from "../styles/utils";
 export const TABLE = "w-full text-label border-collapse";
 export const TABLE_HEAD_CELL = "h-9 px-3 text-left text-label font-medium text-muted bg-field border-b border-line whitespace-nowrap first:rounded-tl-card last:rounded-tr-card";
 export const TABLE_CELL = "h-11 px-3 py-2 text-body border-b border-divider whitespace-nowrap";
-export const TABLE_ROW_HOVER = "hover:bg-field/60 transition-colors";
+export const TABLE_ROW_HOVER = "hover:bg-field/60 light:hover:bg-field/80 transition-colors";
 
 type Align = "left" | "right" | "center";
 const ALIGN: Record<Align, string> = { left: "text-left", right: "text-right", center: "text-center" };
