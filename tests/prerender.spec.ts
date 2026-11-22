@@ -146,7 +146,8 @@ test("DetailOverlay without the Navigation API (Firefox, Safari < 26): close aft
 test("WorkspaceLayout and FeatureIntro under Next's App Router: prerendered without the intro, which opens after mount once (#106)", async ({ page, request }) => {
   // the server HTML has the workspace and no dialog (storage is read after mount only)
   const html = await (await request.get(`${BASE}/workspace/a`)).text();
-  expect(html).toContain("Send (3)");
+  expect(html.replace(/<!-- -->/g, "")).toContain("Send (3)");
+  expect(html).toContain('data-page-type="workspace"');
   expect(html).not.toContain("One screen per request");
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto(`${BASE}/workspace/a`);

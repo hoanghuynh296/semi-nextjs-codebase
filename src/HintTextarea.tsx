@@ -121,7 +121,7 @@ export function HintTextarea({
   const optionId = (n: number) => `${auto}-opt-${n}`;
   return (
     <div className={cn("relative min-w-0", className)}>
-      <div className={cn("rounded-card bg-tint focus-within:ring-2 focus-within:ring-focus", disabled && "opacity-40")}>
+      <div className={cn("rounded-card bg-tint border border-control-line hover:border-control-line-hover focus-within:border-focus focus-within:ring-1 focus-within:ring-focus transition-colors", disabled && "opacity-40")}>
         <textarea
           ref={ref}
           id={id ?? field?.id}
@@ -147,7 +147,7 @@ export function HintTextarea({
           onBlur={() => setFocused(false)}
           className="block w-full resize-none bg-transparent outline-none px-4 pt-3 text-ui max-sm:text-title-lg text-contrast placeholder:text-muted disabled:cursor-not-allowed"
         />
-        <p id={`${auto}-hint`} className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 pb-2.5 pt-1 text-caption text-muted">
+        <p id={`${auto}-hint`} className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 pb-2.5 pt-1 text-caption text-body">
           <Icon name="sparkles" className="w-3.5 h-3.5 shrink-0" />
           {triggers.map((tr) => (
             <span key={tr.char}>
