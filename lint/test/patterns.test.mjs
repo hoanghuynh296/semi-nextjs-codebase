@@ -37,9 +37,10 @@ test("no-spinner-in-list: a Spinner or loading text in a list, as the other bran
 
 test("filter-chip-wrap: hand-made clickable chips in a flex-wrap warn; FilterChipRow, tags and Pills do not", () => {
   const FAIL = [
-    `<div className="flex flex-wrap gap-2">\n  {STATUSES.map((s) => (\n    <button key={s} onClick={() => toggle(s)} className={cn("h-8 px-3 rounded-full", active === s ? "bg-inverted" : "bg-tint")}>{s}</button>\n  ))}\n</div>`,
+    `<div className="flex flex-wrap gap-2">\n  {STATUSES.map((s) => (\n    <button key={s} onClick={() => setFilter(s)} className={cn("h-8 px-3 rounded-full", active === s ? "bg-inverted" : "bg-tint")}>{s}</button>\n  ))}\n</div>`,
     `<div className="flex flex-wrap gap-1.5">\n  <Chip selected={a} onClick={() => setFilter("open")}>Đang mở</Chip>\n  <Chip selected={b} onClick={() => setFilter("closed")}>Đã đóng</Chip>\n</div>`,
     `<div className="flex flex-wrap gap-2">{filters.map((f) => <Chip key={f.id} onClick={() => pick(f.id)}>{f.label}</Chip>)}</div>`,
+    `<div className="flex flex-wrap items-center gap-2">\n  {active.map((c) => (\n    <Chip key={c} active onClick={() => remove(c)} title={\`Bỏ lọc \${c}\`}>{c}</Chip>\n  ))}\n</div>`,
   ];
   for (const code of FAIL) assert.deepEqual(rules(code), ["filter-chip-wrap"], code);
   const PASS = [
@@ -48,6 +49,8 @@ test("filter-chip-wrap: hand-made clickable chips in a flex-wrap warn; FilterChi
     `<div className="flex flex-wrap gap-2"><Button>Huỷ</Button><Button variant="primary">Lưu</Button></div>`,
     `<div className="flex flex-nowrap gap-2">{filters.map((f) => <Chip key={f.id} onClick={() => pick(f.id)}>{f.label}</Chip>)}</div>`,
     `<Pills value={v} onChange={setV} options={OPTS} />`,
+    `<div className="flex flex-wrap gap-1.5">{series.map((s) => <button key={s.key} onClick={() => highlight(s.key)} className={cn("h-7 px-2 rounded-full", isActive && "bg-tint")}>{s.label}</button>)}</div>`,
+    `<div className="flex flex-wrap gap-2">{COLOURS.map((c) => <button key={c} aria-pressed={c === pick} onClick={() => setPick(c)} className="h-8 px-3 rounded-full bg-tint">{c}</button>)}</div>`,
   ];
   for (const code of PASS) assert.deepEqual(rules(code), [], code);
 });
@@ -68,6 +71,7 @@ test("raw-pill-button: a round, filled, square clickable button warns; Button sh
     `<button type="button" className="h-8 px-3 rounded-full bg-tint hover:bg-tint-hover">Tất cả</button>`,
     `<Avatar name="An" className="w-8 h-8 rounded-full bg-panel hover:bg-raised" />`,
     `<button className="w-9 h-9 rounded-control bg-tint hover:bg-tint-hover"><Icon name="close" /></button>`,
+    `<button className="relative aspect-video" onClick={watch}>\n  <span className="w-14 h-14 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"><Icon name="play" /></span>\n</button>`,
   ];
   for (const code of PASS) assert.deepEqual(rules(code), [], code);
   assert.equal(hits(`<button className="w-9 h-9 rounded-full bg-tint hover:bg-tint-hover" onClick={a} /><button className="w-9 h-9 rounded-full bg-tint hover:bg-tint-hover" onClick={b} />`, "raw-pill-button"), 1, "one hit per line");

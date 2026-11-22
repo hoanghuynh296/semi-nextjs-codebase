@@ -470,13 +470,9 @@ export function patternHits(code) {
     const chips = [...body.matchAll(/<(button|Button|Chip)\b([^<>]*?(?:=>[^<>]*?)*)>/g)].filter(
       ([, tag, attrs]) => (tag === "Chip" || /rounded-full/.test(attrs)) && /\bonClick=|\baria-pressed=|\bselected=|\bactive=|\bonRemove=/.test(attrs),
     );
-    // Semi's Chip also picks values in a form (materials, tags): it counts only where the code is about filtering.
-    const filtering = /filter|lọc/i.test(body);
-    const counted = chips.filter(([, tag]) => tag !== "Chip" || filtering);
-    const looped = /\.map\(/.test(body);
-    if (counted.length >= 2 || (counted.length === 1 && looped)) {
-      if (filtering || /aria-pressed|selected|active|toggle/i.test(body)) push("filter-chip-wrap", lineOf(code, m.index));
-    }
+    // Chips also pick values (materials, colours) and legends toggle chart series: only chips that filter count.
+    if (!/filter|lọc/i.test(body)) continue;
+    if (chips.length >= 2 || (chips.length === 1 && /\.map\(/.test(body))) push("filter-chip-wrap", lineOf(code, m.index));
   }
 
   // raw-pill-button: a string of classes that draws a round, filled, square, clickable button.
@@ -484,9 +480,19 @@ export function patternHits(code) {
     const cls = m[2];
     if (!ROUND_FILL.test(cls) || !isSquare(cls)) continue;
     const line = lineOf(code, m.index);
-    const tag = tagAround(rows, line - 1);
-    if (/^<(?:Avatar|Button)\b/.test(tag)) continue; // Button: see below
-    if (INTERACTIVE_CLS.test(cls) || CLICKABLE_TAG.test(tag)) push("raw-pill-button", line);
+    // The JSX tag the classes sit in: the last `<Name` before them with no closing `>` in between (`=>` is an arrow).
+    const before = code.slice(Math.max(0, m.index - 600), m.index);
+    const open = [...before.matchAll(/<([A-Za-z][\w.]*)\b/g)].pop();
+    const inTag = open && !/(?<!=)>/.test(before.slice(open.index));
+    // That tag must be clickable (a span inside a clickable tile, a play mark, is decoration); a class constant
+    // counts when it has a hover / pointer / focus class.
+    if (inTag) {
+      const after = code.slice(m.index, m.index + 600);
+      const end = after.search(/(?<!=)>/);
+      const tag = before.slice(open.index) + (end < 0 ? after : after.slice(0, end + 1));
+      if (/^(?:Avatar|Button)$/.test(open[1]) || !CLICKABLE_TAG.test(tag)) continue;
+    } else if (!INTERACTIVE_CLS.test(cls)) continue;
+    push("raw-pill-button", line);
   }
   // …and a Button made round by className instead of shape="round".
   for (const m of code.matchAll(/<Button\b/g)) {
