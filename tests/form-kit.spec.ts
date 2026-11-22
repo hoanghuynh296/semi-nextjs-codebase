@@ -56,6 +56,12 @@ async function phoneWithTallForm(browser: import("@playwright/test").Browser, ke
     });
   }
   await page.goto(PAGE);
+  // the static HTML shows before React hydrates (slow on CI); hydration can replace the form's nodes, so wait for it
+  // before the test edits the DOM (React puts its fiber key on a node it has adopted)
+  await page.waitForFunction((form) => {
+    const el = document.querySelector(form);
+    return !!el && Object.keys(el).some((k) => k.startsWith("__reactFiber$"));
+  }, FORM);
   await page.evaluate((form) => {
     const f = document.querySelector(form) as HTMLElement;
     for (let el: HTMLElement | null = f; el && el !== document.body; el = el.parentElement) el.style.overflow = "visible";
