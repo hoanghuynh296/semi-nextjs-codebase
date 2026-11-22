@@ -1,0 +1,234 @@
+"use client";
+
+// Search and filters (#99, C-032 L3): one filter chip per facet on a single line (icon, label, count when active,
+// chevron), a multi-select popover per chip, ‹ › when the row overflows, "Xoá lọc", and the view tools at the end.
+// The chips are controlled: the page owns the state, usually in the URL (useFilterParams or the filterParams helpers).
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Icon } from "./Icon";
+import { Popover } from "./Popover";
+import { Checkbox } from "./Choice";
+import { useSemiLocale } from "./locale";
+import { activeFilterCount, clearFilters, readFilters, toQueryString, writeFilters, type FilterDef, type FilterSpec, type FilterValues } from "./filterParams";
+import { cn } from "../styles/utils";
+
+const CHIP =
+  "shrink-0 inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-label font-medium whitespace-nowrap transition outline-none focus-visible:ring-2 focus-visible:ring-focus cursor-pointer";
+const CHIP_ON = "bg-inverted text-on-inverted hover:bg-inverted-hover";
+const CHIP_OFF = "bg-tint text-body hover:text-contrast hover:bg-tint-hover";
+
+/**
+ * One filter facet as a chip. A `multi` filter opens a popover of checkboxes (aria-expanded on the chip); a `switch`
+ * filter toggles on click (aria-pressed). Active, it turns solid (`bg-inverted`) and shows the one value or the count.
+ */
+export function FilterChip({ def, onChange }: { def: FilterDef; onChange: (selected: string[]) => void }) {
+  const t = useSemiLocale();
+  const on = def.selected.length > 0;
+  const icon = def.icon && <Icon name={def.icon} className="w-3.5 h-3.5 shrink-0" />;
+  if (def.kind === "switch") {
+    return (
+      <button type="button" aria-pressed={on} className={cn(CHIP, on ? CHIP_ON : CHIP_OFF)} onClick={() => onChange(on ? [] : ["1"])}>
+        {icon}
+        {def.label}
+      </button>
+    );
+  }
+  const first = def.options?.find((o) => o.value === def.selected[0]);
+  const text = !on ? def.label : def.selected.length === 1 && first ? first.label : t.filterSelected(def.label, def.selected.length);
+  return (
+    <Popover
+      label={def.label}
+      width={240}
+      className="p-0"
+      trigger={
+        <button type="button" aria-label={on ? `${def.label}: ${text}` : undefined} className={cn(CHIP, on ? CHIP_ON : CHIP_OFF)}>
+          {icon}
+          <span className="max-w-48 truncate">{text}</span>
+          <Icon name="chevronDown" className="w-3.5 h-3.5 shrink-0 opacity-70" />
+        </button>
+      }
+    >
+      <FilterOptions def={def} onChange={onChange} />
+      {on && (
+        <div className="border-t border-divider p-1.5">
+          <button
+            type="button"
+            onClick={() => onChange([])}
+            className="w-full h-8 rounded-control text-label font-medium text-muted hover:text-contrast hover:bg-tint outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          >
+            {t.clearSelection}
+          </button>
+        </div>
+      )}
+    </Popover>
+  );
+}
+
+/** The checkbox list of one multi filter (FilterChip's popover, FilterPanel's accordion). */
+export function FilterOptions({ def, onChange, className }: { def: FilterDef; onChange: (selected: string[]) => void; className?: string }) {
+  const toggle = (value: string, checked: boolean) =>
+    onChange(checked ? [...def.selected, value] : def.selected.filter((s) => s !== value));
+  return (
+    <div role="group" aria-label={def.label} className={cn("flex flex-col gap-0.5 p-1.5 max-h-72 overflow-y-auto overscroll-contain", className)}>
+      {def.options?.map((o) => (
+        <div key={o.value} className="flex items-center gap-2 min-h-9 px-2 rounded-control hover:bg-tint">
+          <Checkbox
+            checked={def.selected.includes(o.value)}
+            onChange={(c) => toggle(o.value, c)}
+            label={
+              <span className="inline-flex items-center gap-2">
+                {o.icon && <Icon name={o.icon} className="w-4 h-4 text-muted shrink-0" />}
+                {o.label}
+              </span>
+            }
+            className="flex-1 min-w-0 py-1.5"
+          />
+          {o.count !== undefined && <span className="text-caption text-muted tabular-nums">{o.count}</span>}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * The filter chips of a list page on one line. When they overflow, the row scrolls sideways and ‹ › buttons appear
+ * (hidden from screen readers and the tab order: every chip is reachable by Tab, which scrolls it into view).
+ * "Xoá lọc" shows while a filter is on; `trailing` (ViewSwitch) sits at the end behind a divider.
+ */
+export function FilterChipRow({
+  filters,
+  onChange,
+  onClear,
+  trailing,
+  label,
+  className,
+}: {
+  filters: FilterDef[];
+  onChange: (key: string, selected: string[]) => void;
+  /** Clears every filter; the "Xoá lọc" button shows while one is on. */
+  onClear?: () => void;
+  /** Tools at the end of the row: ViewSwitch, a sort that is not in a ResultLine. */
+  trailing?: React.ReactNode;
+  /** Accessible name of the chip group (default "Bộ lọc"). */
+  label?: string;
+  className?: string;
+}) {
+  const t = useSemiLocale();
+  const ref = useRef<HTMLDivElement>(null);
+  const [edges, setEdges] = useState({ left: false, right: false });
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const update = () => setEdges({ left: el.scrollLeft > 2, right: el.scrollLeft + el.clientWidth < el.scrollWidth - 2 });
+    update();
+    el.addEventListener("scroll", update, { passive: true });
+    const ro = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(update);
+    ro?.observe(el);
+    return () => {
+      el.removeEventListener("scroll", update);
+      ro?.disconnect();
+    };
+  }, [filters.length]);
+  const scroll = (dir: 1 | -1) => ref.current?.scrollBy({ left: dir * Math.max(160, (ref.current?.clientWidth ?? 480) * 0.6), behavior: "smooth" });
+  const active = activeFilterCount(filters) > 0;
+  const arrow =
+    "absolute top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-panel shadow-overlay flex items-center justify-center text-contrast hover:bg-raised cursor-pointer";
+  return (
+    <div className={cn("flex items-center gap-2 min-w-0", className)}>
+      <div className="relative flex-1 min-w-0">
+        {edges.left && (
+          <button type="button" tabIndex={-1} aria-hidden onClick={() => scroll(-1)} title={t.scrollLeft} className={cn(arrow, "left-0")}>
+            <Icon name="back" className="w-4 h-4" />
+          </button>
+        )}
+        <div ref={ref} role="group" aria-label={label ?? t.filters} className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth py-0.5 px-0.5 -mx-0.5">
+          {filters.map((f) => (
+            <FilterChip key={f.key} def={f} onChange={(s) => onChange(f.key, s)} />
+          ))}
+          {active && onClear && (
+            <button
+              type="button"
+              onClick={onClear}
+              className="shrink-0 h-8 px-2 rounded-control text-label font-medium text-muted hover:text-contrast outline-none focus-visible:ring-2 focus-visible:ring-focus cursor-pointer"
+            >
+              {t.clearFilters}
+            </button>
+          )}
+        </div>
+        {edges.right && (
+          <button type="button" tabIndex={-1} aria-hidden onClick={() => scroll(1)} title={t.scrollRight} className={cn(arrow, "right-0")}>
+            <Icon name="chevron" className="w-4 h-4" />
+          </button>
+        )}
+      </div>
+      {trailing && <div className="shrink-0 flex items-center gap-1 pl-2 border-l border-divider">{trailing}</div>}
+    </div>
+  );
+}
+
+/** What useFilterParams returns: the filters with their state and the ways to change them (all write the URL). */
+export interface FilterParamsState<K extends string = string> {
+  /** The filters with `selected`, for FilterChipRow / FilterPanel. */
+  filters: FilterDef[];
+  /** Selected values by key, to filter the rows. */
+  values: FilterValues<K>;
+  /** How many filters are on (PhoneFilterBar's count). */
+  activeCount: number;
+  /** Set one filter (a new history entry, so Back undoes it). */
+  onChange: (key: string, selected: string[]) => void;
+  /** Clear every filter. */
+  onClear: () => void;
+  /** The current search params (the query, the sort, the view live there too). */
+  params: URLSearchParams;
+  /** Set or remove other params (`null` or "" removes): `setParams({ q: "tiêu" }, "replace")`. Default `push`. */
+  setParams: (patch: Record<string, string | null>, mode?: "push" | "replace") => void;
+}
+
+function currentSearch() {
+  return typeof window === "undefined" ? "" : window.location.search;
+}
+
+/**
+ * Filter state in the URL, with no router: reads `location.search` after mount (so a prerendered page renders the
+ * unfiltered state first, never touching `window` in render), writes with `history.pushState` (Next's App Router
+ * keeps `useSearchParams` in step) and follows Back / Forward (`popstate`). With a router of your own, use the pure
+ * helpers instead (`readFilters`, `writeFilters`, `clearFilters`) on its search params.
+ */
+export function useFilterParams<K extends string>(specs: readonly (FilterSpec & { key: K })[], options: { prefix?: string } = {}): FilterParamsState<K> {
+  const { prefix } = options;
+  const [search, setSearch] = useState("");
+  useEffect(() => {
+    setSearch(currentSearch());
+    const onPop = () => setSearch(currentSearch());
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
+  const go = useCallback((next: URLSearchParams, mode: "push" | "replace") => {
+    const url = `${window.location.pathname}${toQueryString(next)}${window.location.hash}`;
+    if (mode === "push") window.history.pushState(window.history.state, "", url);
+    else window.history.replaceState(window.history.state, "", url);
+    setSearch(toQueryString(next));
+  }, []);
+  // specs are usually an inline array: key the memo on their content, not their identity
+  const specsKey = JSON.stringify(specs);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const stableSpecs = useMemo(() => specs, [specsKey]);
+  return useMemo(() => {
+    const filters = readFilters(search, stableSpecs, prefix);
+    return {
+      filters,
+      values: Object.fromEntries(filters.map((f) => [f.key, f.selected])) as FilterValues<K>,
+      activeCount: activeFilterCount(filters),
+      onChange: (key, selected) => go(writeFilters(currentSearch(), { [key]: selected }, stableSpecs, prefix), "push"),
+      onClear: () => go(clearFilters(currentSearch(), stableSpecs, prefix), "push"),
+      params: new URLSearchParams(search),
+      setParams: (patch, mode = "push") => {
+        const next = new URLSearchParams(currentSearch());
+        for (const [k, v] of Object.entries(patch)) {
+          if (v === null || v === "") next.delete(k);
+          else next.set(k, v);
+        }
+        go(next, mode);
+      },
+    };
+  }, [search, stableSpecs, prefix, go]);
+}
