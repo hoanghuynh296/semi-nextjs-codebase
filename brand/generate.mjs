@@ -11,6 +11,8 @@
 // dependencies; the docs site's brand preview runs the same code in the browser. The one number lives in ./params.mjs.
 import { PARAMS, mergeParams } from "./params.mjs";
 import { contrast, hexToOklch, isHex, oklchToHex } from "./color.mjs";
+// Shipped in the package (package.json files): the same AA decision as the token build (the New tag's text).
+import { newTagText } from "../scripts/token-css.mjs";
 
 export { PARAMS, mergeParams };
 const THEMES = ["dark", "light"];
@@ -265,6 +267,8 @@ export function generateBrand(brand, { tokens, version = "", params } = {}) {
     if (!r.ok && r.soft) warnings.push(`${r.check}: chỉ ${r.ratio.toFixed(2)}:1 (< 3:1). Nút vẫn đọc được nhờ chữ trên nó, nhưng khó thấy hơn trên nền`);
   if (report.some((r) => !r.ok && !r.soft)) warnings.push("Có cặp màu chưa đạt AA: xem bảng contrast");
 
+  // The "Mới" / "New" tag: the primary at 18% behind primary text, or the strong text where the primary is not AA on it.
+  const newTag = tokens?.semantic ? Object.fromEntries(THEMES.map((th) => [th, newTagText(tokens, primary.fill, th)])) : null;
   const fonts = resolveFonts(brand, tokens);
   const out = {
     name: brand.name,
@@ -272,6 +276,7 @@ export function generateBrand(brand, { tokens, version = "", params } = {}) {
     semi: brand.semi ?? null,
     primary,
     secondary,
+    newTag,
     guide: resolveGuide(brand),
     fonts,
   };
@@ -332,6 +337,7 @@ export function brandCss(t, version, { runtime = false, loadedFonts = [] } = {})
     ["--semi-secondary", sec.fill],
     ["--semi-secondary-hover", sec.hover],
     ["--semi-on-secondary", sec.on],
+    ...(t.newTag ? [["--semi-new-tag-text-dark", t.newTag.dark], ["--semi-new-tag-text-light", t.newTag.light]] : []),
   ]) + "\n";
   const fontVars = [["--font-sans-family", family("sans")], ["--font-display-family", family("display")]].filter(([, v]) => v);
   if (runtime) for (const f of t.fonts) if (!loadedFonts.includes(f.variable)) fontVars.push([f.variable, `"${f.family}"`]);

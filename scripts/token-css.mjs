@@ -99,6 +99,59 @@ export const contrastRatio = (a, b) => {
   return (x + 0.05) / (y + 0.05);
 };
 
+/** Surfaces a button or a New tag sits on: the page surfaces and the card. */
+export const MARK_BASES = [...PAGE_SURFACES, "color-card"];
+/** Each button variant's text on its fill (1.0, #146), checked like the text tiers: [variant, text token, fill token]. */
+export const BUTTON_PAIRS = [
+  ["subtle", "color-text-strong", "color-subtle-button"],
+  ["subtle hover", "color-text-strong", "color-tint-hover"],
+  ["surface", "color-text-strong", "color-raised"],
+  ["surface hover", "color-text-strong", "color-raised-2"],
+  ["inverse", "color-on-inverted", "color-inverted"],
+  ["inverse hover", "color-on-inverted", "color-inverted-hover"],
+  ["outline / ghost hover", "color-text-strong", "color-item-hover"],
+  ["ghost", "color-text-body", null],
+  ["primary", "color-on-primary", "color-primary"],
+  ["primary hover", "color-on-primary", "color-primary-hover"],
+  ["secondary", "color-on-secondary", "color-secondary"],
+  ["secondary hover", "color-on-secondary", "color-secondary-hover"],
+  ["disabled", "color-text-muted", "color-subtle-button"],
+  ["count badge", "color-on-primary", "color-primary"],
+  ["new tag", "color-on-new-tag", "color-new-tag"],
+];
+
+/**
+ * The New tag's text in a theme: the brand primary when it reaches 4.5:1 on its 18% tint over every MARK_BASES surface,
+ * else the theme's strong text. The token build checks Semi's default with it; the brand generator picks a kit's with it.
+ */
+export function newTagText(tokens, primary, theme) {
+  const ok = MARK_BASES.every((b) => {
+    const base = resolveColor(tokens, b, theme);
+    return base && contrastRatio(primary, composite([primary, 0.18], base[0])) >= 4.5;
+  });
+  return ok ? primary.toLowerCase() : tokens.semantic["color-text-strong"][theme].toLowerCase();
+}
+
+/** BUTTON_PAIRS below 4.5:1 in either theme, over every MARK_BASES surface (a translucent fill composited over it). */
+export function buttonAaErrors(tokens) {
+  const errors = [];
+  for (const theme of ["dark", "light"])
+    for (const [name, fgKey, fillKey] of BUTTON_PAIRS)
+      for (const b of MARK_BASES) {
+        const fg = resolveColor(tokens, fgKey, theme);
+        const base = resolveColor(tokens, b, theme);
+        const fill = fillKey ? resolveColor(tokens, fillKey, theme) : null;
+        if (!fg || fg[1] !== 1 || !base || base[1] !== 1 || (fillKey && !fill)) {
+          errors.push(`${theme} button ${name}: ${fgKey} on ${fillKey ?? b} does not resolve to a colour`);
+          continue;
+        }
+        const over = fill ? composite(fill, base[0]) : base[0];
+        const r = contrastRatio(fg[0], over);
+        if (r < 4.5) errors.push(`${theme} button ${name}: ${fgKey} ${fg[0]} on ${fillKey ?? ""} over ${b} ${over}: ${r.toFixed(2)}:1`);
+      }
+  return errors;
+}
+
 /**
  * Every text tier × surface × theme pair of tokens.json below 4.5:1, as messages: all tiers on panel / app / canvas
  * and card; strong / body / muted also on card-field, raised and the item fills (hover / selected / checked) over the
@@ -122,5 +175,5 @@ export function aaErrors(tokens) {
         const r = contrastRatio(fg, bg);
         if (r < 4.5) errors.push(`${theme} ${t} ${fg} on ${where} ${bg}: ${r.toFixed(2)}:1`);
       }
-  return errors;
+  return errors.concat(buttonAaErrors(tokens));
 }

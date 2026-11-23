@@ -37,6 +37,7 @@
     "site",
     "docs",
     "migrations",
+    "scripts/token-css.mjs",
     "CHANGELOG.md",
     "components.json"
   ],

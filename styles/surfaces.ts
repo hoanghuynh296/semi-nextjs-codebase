@@ -43,6 +43,15 @@ export const SECTION_HEAD = "flex items-center gap-2 px-1";
 export const SECTION_TITLE = "text-ui font-semibold text-strong tracking-tight";
 export const COUNT_PILL = "h-4 min-w-[18px] px-1.5 rounded-full bg-raised text-chrome tabular-nums text-muted inline-flex items-center justify-center";
 
+/** Attention count (unread, to approve): the brand fill with its on-colour, text-badge (10/700). CountBadge renders it with the 99+ cap. */
+export const COUNT_BADGE = "inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full bg-primary text-on-primary text-badge tabular-nums";
+/** A plain count that is not an alert: neutral. */
+export const COUNT_BADGE_NEUTRAL = "inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full bg-raised text-strong text-badge tabular-nums";
+/** Add to COUNT_BADGE to pin it to the top-right corner of a `relative` icon button. */
+export const COUNT_BADGE_CORNER = "absolute -top-1 -right-1 pointer-events-none";
+/** "Mới" / "New" tag: the brand colour at 18% (bg-new-tag) behind brand text (text-on-new-tag: the brand, or the strong text where the brand is not AA on that tint; the token build decides). */
+export const NEW_TAG = "inline-flex items-center h-4 px-1.5 rounded-full bg-new-tag text-on-new-tag text-tag leading-none shrink-0";
+
 /** Text link on the right of a section heading ("Quản lý ›"). */
 export const SECTION_LINK = "ml-auto inline-flex items-center gap-1 text-ui font-medium text-muted hover:text-strong transition";
 
