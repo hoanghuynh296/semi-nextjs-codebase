@@ -38,17 +38,8 @@ export interface ShellAccount {
 // ─── Record crumb ───────────────────────────────────────────────────────────────────────────────────────────────
 
 type RecordCrumbState = { label: string | null; set: (label: string | null) => void };
-const RecordCrumbContext = createContext<RecordCrumbState>({ label: null, set: () => undefined });
-
-/** Inside AppShell: the record a detail page shows. Internal: AppShell provides it. */
-export function RecordCrumbProvider({ children, value }: { children: React.ReactNode; value: RecordCrumbState }) {
-  return <RecordCrumbContext.Provider value={value}>{children}</RecordCrumbContext.Provider>;
-}
-
-/** The record crumb set by `useRecordCrumb` (null when none). */
-export function useRecordCrumbLabel() {
-  return useContext(RecordCrumbContext).label;
-}
+/** The record a detail page shows (internal: AppShell provides it). */
+export const RecordCrumbContext = createContext<RecordCrumbState>({ label: null, set: () => undefined });
 
 /**
  * A detail page names its record ("DH-1042") for the route header's trail while it is on screen; the crumb goes away

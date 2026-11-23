@@ -8,7 +8,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 ## Machine-readable
 
-- [components.json](./components.json): all 157 components, hooks and constants with props, summaries and their doc page
+- [components.json](./components.json): all 159 components, hooks and constants with props, summaries and their doc page
 - [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
@@ -85,7 +85,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 ### Navigation & layout
 
 - [App header](./components/app-header/) ([markdown](./docs/components/app-header.md)): The top bar of a stand-alone tool app: logo + title go home, the module name, and one primary action on the right. No Home button. Components: AppHeader.
-- [App shell](./components/app-shell/) ([markdown](./docs/components/app-shell.md)): The frame of a multi-page app: a floating sidebar on bg-canvas with the accent Create action on top, the main nav, a pinned group and the utilities and account at the bottom; it collapses to an icon rail (the default on iPad) and becomes a full-screen drawer on phones. Items can carry sub-items or a mega menu. This docs site is an AppShell; the full example runs at /demo/app-shell/. Components: AppShell, MobileTabBar.
+- [App shell](./components/app-shell/) ([markdown](./docs/components/app-shell.md)): The 1.0 frame of a multi-page app: a canvas frame with the nav panel (main action, groups, pinned, a bottom row of icon tools) and the content column (the RouteHeader with crumbs, actions and the account avatar menu, then the content card). The nav is the 72px rail first when width runs short (always md–lg, by default lg–1280, the user's toggle remembered), then the phone drawer. Alt + 1…9 opens a nav item. This docs site is an AppShell; the full example runs at /demo/app-shell/. Components: AppShell, RouteHeader, AccountMenu, MobileTabBar.
 - [Breadcrumb](./components/breadcrumb/) ([markdown](./docs/components/breadcrumb.md)): Where the page sits: a trail of links ending with the current page. Long trails collapse their middle into a “…” menu. Components: Breadcrumb.
 - [Mega menu](./components/mega-menu/) ([markdown](./docs/components/mega-menu.md)): A flyout of links in category columns: a text-overline header per column, links with a grey icon, a hint and a New badge, and a See all link. AppShell opens it beside the sidebar from a nav item with mega; an app can open it from its own trigger. Components: MegaMenu.
 - [Menubar](./components/menubar/) ([markdown](./docs/components/menubar.md)): The menu bar of a desktop-style tool (Tệp · Sửa · Xem): menus that open from a bar and behave like Menu. Components: Menubar.
@@ -286,7 +286,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (157)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (159)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
@@ -347,6 +347,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `QRCode`: `QRCode`
 - `RefreshButton`: `RefreshButton`
 - `Resizable`: `ResizablePanels`
+- `RouteHeader`: `AccountMenu`, `RouteHeader`
 - `ScrollArea`: `ScrollArea`
 - `SearchInput`: `SearchInput`
 - `SearchPill`: `StickyContextBar`, `SearchPill`, `ResultLine`
@@ -372,7 +373,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `formValidation`: `FormErrorSummary`
 - `locale`: `SemiLocaleProvider`
 
-**Hooks:** `useAppShell`, `useHotkey`, `useRegisterCommands`, `useDetailParam`, `useField`, `useFilterParams`, `useCoarsePointer`, `useTheme`, `useThemeUtility`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useFormValidation`, `useSemiLocale`, `useUnsavedGuard` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `filterCommands`, `openCommandPalette`, `openDetail`, `pageWindow`, `startTask`, `themeScript`, `updateToast`, `dismissToast`, `confirmDialog`, `confirmDelete`, `kindAttrs`, `readFilterValues`, `readFilters`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `composeRefs`, `cloneTrigger`, `normalizeSearch`, `searchRows`, `sortRows`, `cn`
+**Hooks:** `useAppShell`, `useHotkey`, `useRegisterCommands`, `useDetailParam`, `useField`, `useFilterParams`, `useCoarsePointer`, `useRecordCrumb`, `useTheme`, `useThemeChoices`, `useThemeUtility`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useFormValidation`, `useSemiLocale`, `useUnsavedGuard` · **Functions:** `navScript`, `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `filterCommands`, `openCommandPalette`, `openDetail`, `pageWindow`, `startTask`, `themeScript`, `updateToast`, `dismissToast`, `confirmDialog`, `confirmDelete`, `kindAttrs`, `readFilterValues`, `readFilters`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `composeRefs`, `cloneTrigger`, `normalizeSearch`, `searchRows`, `sortRows`, `cn`
 <!-- generated:components:end -->
 
 
@@ -556,7 +557,7 @@ Themes are toggled via the `data-theme` attribute on `<html>` (with fallback `.d
 ```html
 <html lang="vi" data-theme="dark" class="dark">
 ```
-`data-theme="system"` follows the OS in pure CSS (no JS). Users pick a theme with `<ThemeSwitcher />` (Sáng · Tối · Hệ thống: settings pages, sidebar footer; `fullWidth` in a sidebar), `<ThemeSwitcher variant="menu" />` (one icon button whose `Menu` lists the three, the current one checked: headers, toolbars), `useThemeUtility()` (the same Menu as an AppShell `utilities` item, an icon in the rail, a level of the phone drawer: the shell's theme keeps "system") or flip it with `<ThemeToggle />` (one-tap dark/light). Any element can pin a theme for its subtree with `data-theme="light|dark"` (plus the matching class): all semantic tokens re-resolve inside it. Apps render `<ThemeScript />` in `<head>` (sets the stored theme
+`data-theme="system"` follows the OS in pure CSS (no JS). Users pick a theme with `<ThemeSwitcher />` (Sáng · Tối · Hệ thống: settings pages, sidebar footer; `fullWidth` in a sidebar), `<ThemeSwitcher variant="menu" />` (one icon button whose `Menu` lists the three, the current one checked: headers, toolbars), the account avatar menu of AppShell's route header (the same three as radio items, from the internal `useThemeChoices`), `useThemeUtility()` (the same Menu as an AppShell `tools` item, for an app without an account) or flip it with `<ThemeToggle />` (one-tap dark/light). Any element can pin a theme for its subtree with `data-theme="light|dark"` (plus the matching class): all semantic tokens re-resolve inside it. Apps render `<ThemeScript />` in `<head>` (sets the stored theme
 before the first paint, so there is no flash of the wrong theme) and wrap the body in `<ThemeProvider>` with the **same options**:
 ```tsx
 import { ThemeProvider, ThemeScript, ThemeToggle } from "@semi/ui";
@@ -747,27 +748,54 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   never the padding of a row or a box. A card or panel is never tighter than `p-card` (`card-padding`), a list row
   never shorter than a control (`Item` is `px-4 py-3`): a cramped box with text against its edges is the most common
   layout bug. The budgets are in §4c.
-- **Home shell (`md+`):** two inset `rounded-panel` panels inside a `bg-canvas` frame (`md:p-2 md:gap-2`), separated by
-  tone (no border): a collapsible left **Panel Menu** (`bg-panel`, `w-60` on `lg+`, or the `w-[60px]` icon rail) and a
-  right **Panel Content** (`bg-app`) holding a full-width content container (`max-w-[1440px] px-4 sm:px-6`).
-- **Sidebar order (C-031, #96):** brand + collapse toggle (the logo expands the rail) · one brand-filled **Create** action
-  (`create`: a `Menu` of things to create, or one link) · the main nav (`sections`) · a **pinned** group (saved views,
-  frequent records) under a divider with a `text-overline` label · at the bottom the **utilities** (help, theme,
-  notifications: items with `onClick`, or `menu` for a Menu of choices such as `useThemeUtility()`) and the **account**. Rows are `h-9`, icons 18px; the active row is
-  `bg-tint-hover text-strong`, others `text-body hover:bg-tint`.
-- **Rail:** `lg+` shows labels unless collapsed (remembered per app, `storageKey`); `md` (iPad) is always the rail. In
-  the rail every item has an `aria-label` and a `Tooltip` on the right. An item without `icon` shows its initials
-  (`shortLabel` to choose them): give pinned items distinct icons, or none, never one shared icon (touch has no
-  Tooltip). The `account` render prop gets `{ collapsed, rail }`: hide its text by `rail`, not only `collapsed` (at `md`
-  the sidebar is a rail while `collapsed` is false). `rail` is exact in the server HTML: until the width is known
-  AppShell renders the account twice (the rail copy below `lg`, the full one from `lg`, CSS shows one), then only the
-  copy for the width, so keep app-wide effects out of the account and take ids from `useId`.
+- **Frame (1.0, #144):** a `bg-canvas` frame (`sm:p-2 sm:gap-2`, none on phones) holding the **nav panel** (`bg-panel`,
+  `rounded-panel`, padding 16 / 20, 224px or the 72px rail, `railWidth`) and the **content column** (`bg-app`,
+  `rounded-panel`). The column holds the **RouteHeader** (h60 from `lg`, padding 0 8px / 16px from `sm`, the column's
+  full width: crumbs left, an optional `middle` hidden below `md`, `actions` icon buttons 32×32 and the account avatar
+  menu right; `middle` and `actions` sit in their own `Suspense`) and under it the **content card** (`bg-panel`,
+  `rounded-panel`, flush with the column, 4px above its bottom, no border; inside it `bg-app` paints the card's colour
+  so sticky strips match). `page="fixed"`: the card does not scroll, its panels do. `flush`: no centred
+  `max-w-[1440px]` container or padding around the page (the page layout decides). `header={false}` drops the row.
+- **Crumbs:** default group (a link: `section.href`, else its first item) › item › sub-item › the record a detail page
+  names with `useRecordCrumb(label)`; or `header.crumbs`. Every crumb is `text-chrome` muted 400 with a chevron, the
+  current one is not highlighted, the trail never wraps (long crumbs truncate). New crumbs enter with
+  `animate-crumb-in`, the old ones fade out (`motion-crumb-out`); the shell itself never moves on a route change.
+- **Account avatar menu (`AccountMenu`, `header.account`):** a one-letter avatar (32px) whose `Menu` has a header
+  (name, `detail` role or email: not an item), then Light / Dark / System (radio items), the app's `items` and
+  "Đăng xuất" (`onSignOut`). The nav has no account or company block.
+- **Nav order:** logo + collapse button (the logo expands the rail at `lg+`) · the **main action** (`mainAction`: an
+  ordinary primary button with the app's label and icon, a `Menu` when it has `items`, its icon with a Tooltip in the
+  rail; or your own slot) · the groups (`sections`, `pinned`) separated by a 24px spacer with a 1px `bg-raised` line,
+  labels `text-overline` (normal tracking, 500) `text-faint` in an h32 row with optional 16px icon actions (`section.right`) · the
+  **bottom row** pinned to the bottom (`tools`: 32×32 ghost icon buttons 4px apart with a Tooltip and an optional
+  `count` badge, brand-filled, "99+"; `toolsMenu` in a ••• Menu), stacked in the rail. Items are h32, 4px apart,
+  `rounded-control`, `text-chrome` 500, icon 16; inactive `text-muted`, hover `bg-item-hover`, active
+  `bg-item-selected text-strong`, the fill cross-fading with `transition-nav`. Brand colour in the shell: only the main
+  action and count badges.
+- **Responsive priority:** (1) the rail first: always between `md` and `lg`; between `lg` and `railBelow` (1280 by
+  default) it is the default, expanded from it; the user's toggle is one stored value (`storageKey`, "rail" / "full")
+  for every width. The width is CSS (media queries plus the stored choice, set on `<html>` before paint), and what the
+  rail hides is a container query on the panel, so the server HTML is exact and nothing remounts when the width
+  crosses a breakpoint or the nav collapses. (2) Below `md` a page's sub-nav stacks above its content (T7). (3) Phones
+  get the drawer and no frame padding. In the rail every item keeps its name (the label is `sr-only`) and shows it in
+  a `Tooltip` on the right with its shortcut. An item without `icon` shows its initials (`shortLabel`).
+- **Slots are components:** `mainAction`, `header.middle`, `header.actions` and `header.account` take an element or a
+  function of `{ collapsed, rail }` that is rendered as the body of one stable component, so it may call hooks; each
+  keeps one instance (and its state) across a collapse, a resize over any breakpoint and a route change. `rail` and
+  `collapsed` are exact after mount only: style what the rail hides with CSS.
+- **Nav shortcuts:** the first nine items (visual order) are numbered; ⌥ / Alt + digit (matched on `event.code`) clicks
+  the item, so the router and an unsaved-changes guard run as for a mouse; ⌘ / Ctrl + digit only in an installed app
+  (`display-mode: standalone`). Holding the modifier shows the numbers (row end, or a corner badge in the rail);
+  release, blur and any other key hide them. Ignored while composing (IME), in fields, `[role=combobox]` and
+  contenteditable, and when the app already took the key; `shortcuts={false}` turns them off. The keys are in the
+  expanded nav's titles, the rail tooltips, `useAppShell().shortcuts` and `navShortcutKeys(n)` (for a CommandPalette
+  item's `shortcut`).
 - **Mega menu:** a nav item with `mega` opens a `MegaMenu` flyout beside the sidebar: 2–4 category columns headed by
   `text-overline`, links with a grey icon, a hint and a "Mới" badge, and a "Xem tất cả" link.
-- **Phones (`< md`):** a top bar (menu button, logo, product name) opens a full-screen drawer with the same groups:
-  one brand-filled Create row (its items open as a level), rows `min-h-12` with › for sub-items and mega menus (a
+- **Phones (`< md`):** the route header's menu button opens a full-screen drawer with the same groups:
+  one brand-filled main action row (its items open as a level), rows `min-h-12` with › for sub-items and mega menus (a
   drill-down level with a back row; a parent with its own page is the level's first row, "Tất cả …"), the pinned
-  group, utilities and the account at the bottom. The drawer is the default when the app sets neither `mobileNav` nor
+  group, and the tools (with their counts and the ••• menu as a level) at the bottom. The drawer is the default when the app sets neither `mobileNav` nor
   `mobileTabIds`; `mobileNav="tabs"` keeps the bottom tab bar (`MobileTabBar`) with the items named in `mobileTabIds`
   (the first ones without it). `mobileTabIds` alone still keeps the tab bar (C-034) but warns in development.
 - **Shell lifecycle:** `AppShell` renders once in the root or a route-group `layout.tsx`, so it stays mounted while
@@ -1221,7 +1249,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 
 | Import | Exports |
 |---|---|
-| `@semi/ui` → `AppShell.tsx`, `MobileTabBar.tsx` | `AppShell` (floating Bento 2-panel frame: Create, sections, pinned group, utilities + account; `w-60` sidebar or icon rail, the rail on `md`; phone drawer; one level of sub-items; mega items), `useAppShell` (is the sidebar showing sub-items), `MobileTabBar`, `TAB_BAR_PAD` (opt-in `mobileNav="tabs"`) (§4) |
+| `@semi/ui` → `AppShell.tsx`, `RouteHeader.tsx`, `MobileTabBar.tsx` | `AppShell` (1.0 frame: nav panel with main action, groups, pinned, bottom row of tools; 224px or the 72px rail; RouteHeader; content card; phone drawer; nav shortcuts), `useAppShell` (sub-items shown, rail, shortcuts), `navShortcutKeys`, `RouteHeader` (crumbs, middle, actions, account), `AccountMenu` (the account avatar menu), `useRecordCrumb` (a detail page names its record), `MobileTabBar`, `TAB_BAR_PAD` (opt-in `mobileNav="tabs"`) (§4) |
 | `MegaMenu.tsx`, `MinimalHeader.tsx`, `TextTabs.tsx` | `MegaMenu` (flyout of category columns, `text-overline` headers, New badges, See all), `MinimalHeader` (breadcrumb left, one link + one primary right), `TextTabs` (large text tabs as the page heading, ARIA tabs, `href` for URL-driven views) (§4) |
 | `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle` (`actions`: the page's action on the title row), `PageTabsTitle` (underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh; phone layout with `filters` / `collapseFilters` / `secondaryActions`), `ToolbarFilters` (§4a) |
 | `SearchPill.tsx`, `FilterChipRow.tsx`, `ViewSwitch.tsx`, `FilterPanel.tsx`, `filterParams.ts` | `StickyContextBar` (sticky search + chips + result line), `SearchPill` (wide pill search, debounce, `/`), `ResultLine` (query · N kết quả + sort), `SortDef`, `FilterChipRow` (one-line chips, ‹ ›, Xoá lọc, leading views, trailing tools), `FilterChip`, `FilterOptions` (the checkbox list of one filter), `useFilterParams` (filter state in the URL, Back / Forward), `ViewSwitch` (list ↔ grid, density), `PhoneFilterBar` (views · Bộ lọc · settings), `FilterPanel` (full-screen / side-sheet filters); URL helpers `readFilters`, `readFilterValues`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, types `FilterSpec`, `FilterDef`, `FilterOption`, `FilterValues` (§4) |
@@ -6874,6 +6902,7 @@ returns focus. Default trigger: icon-only "more" button; pass `trigger` (an elem
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `items` * | `MenuItem[]` |  | The actions. Danger items are listed last, hidden ones left out (see MenuItem). |
+| `header` | `React.ReactNode` |  | Text above the items that is not an item (an account menu's name and role). It sits outside the `role="menu"` list, so arrows and type-ahead skip it. |
 | `label` | `string` |  | Accessible name of the default trigger. |
 | `align` | `'left' \| 'right'` | `"right"` |  |
 | `trigger` | `ReactElement<unknown, string \| JSXElementConstructor<any>>` |  |  |
@@ -7355,7 +7384,7 @@ the tooltip is linked with aria-describedby. Touch screens show nothing: never p
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `content` * | `React.ReactNode` |  |  |
+| `content` * | `React.ReactNode` |  | The hint. `null`, `false` or `""` turns the tooltip off and keeps the trigger as it is (same element, no remount). |
 | `children` * | `ReactElement<unknown, string \| JSXElementConstructor<any>>` |  |  |
 | `side` | `'right' \| 'bottom' \| 'top'` | `"top"` | Where the hint shows; `right` is for a vertical icon rail (AppShell's collapsed sidebar). |
 
@@ -7445,7 +7474,7 @@ export default function AppHeaderTool() {
 
 # App shell
 
-The frame of a multi-page app: a floating sidebar on bg-canvas with the accent Create action on top, the main nav, a pinned group and the utilities and account at the bottom; it collapses to an icon rail (the default on iPad) and becomes a full-screen drawer on phones. Items can carry sub-items or a mega menu. This docs site is an AppShell; the full example runs at /demo/app-shell/.
+The 1.0 frame of a multi-page app: a canvas frame with the nav panel (main action, groups, pinned, a bottom row of icon tools) and the content column (the RouteHeader with crumbs, actions and the account avatar menu, then the content card). The nav is the 72px rail first when width runs short (always md–lg, by default lg–1280, the user's toggle remembered), then the phone drawer. Alt + 1…9 opens a nav item. This docs site is an AppShell; the full example runs at /demo/app-shell/.
 
 ## When to use
 
@@ -7464,14 +7493,14 @@ The frame of a multi-page app: a floating sidebar on bg-canvas with the accent C
 ## Import
 
 ```tsx
-import { AppShell, MobileTabBar } from "@semi/ui";
+import { AppShell, RouteHeader, AccountMenu, MobileTabBar } from "@semi/ui";
 ```
 
 ## Examples
 
-### Create, pinned, utilities, mega menu
+### Main action, tools, header, account menu
 
-The whole shell in one screen, opened full screen at /demo/app-shell/ of this site: Create menu, sub-items, a mega menu, a pinned group, utilities and the account; MinimalHeader and TextTabs in the page.
+The whole shell in one screen, opened full screen at /demo/app-shell/ of this site: main action menu, sub-items, a mega menu, a pinned group, tools with a count and a ••• menu, a header action with its own state and the account avatar menu.
 
 ```tsx
 "use client";
@@ -7479,23 +7508,22 @@ The whole shell in one screen, opened full screen at /demo/app-shell/ of this si
 import { useState } from "react";
 import {
   AppShell,
-  Avatar,
-  Breadcrumb,
   Button,
   Card,
-  MinimalHeader,
+  PageTitle,
   TextTabs,
-  useThemeUtility,
+  Tooltip,
   type ShellNavItem,
   type ShellNavSection,
 } from "@semi/ui";
 
-// The whole shell of the #94 study in one screen. A real app renders AppShell in layout.tsx and gives page items an
+// The whole 1.0 shell in one screen: main action, groups, sub-items, a mega menu, a pinned group, the bottom row of
+// tools, and the route header with an action and the account avatar menu (theme, account, sign-out). A real app renders AppShell in layout.tsx and gives page items an
 // `href` (shell-nav-href); this demo keeps everything on one page with onSelect so it can run anywhere.
 const SECTIONS: ShellNavSection[] = [
   {
     items: [
-      { id: "inbox", label: "Hộp thư", icon: "inbox", right: <span className="px-1 text-ui text-muted tabular-nums">3</span> },
+      { id: "inbox", label: "Hộp thư", icon: "inbox", right: <span className="px-1 text-chrome text-muted tabular-nums">3</span> },
       {
         id: "orders",
         label: "Đơn hàng",
@@ -7552,16 +7580,19 @@ const TABS = [
   { key: "all", label: "Tất cả" },
 ] as const;
 
+/** A header action with its own state: a slot is rendered as a component, so it may hold state and call hooks. */
+function StarAction() {
+  const [on, setOn] = useState(false);
+  return (
+    <Tooltip content={on ? "Bỏ ghim trang" : "Ghim trang"}>
+      <Button variant="ghost" iconOnly icon="star" aria-label="Ghim trang" aria-pressed={on} onClick={() => setOn(!on)} className="!w-8 !h-8" />
+    </Tooltip>
+  );
+}
+
 export default function FullShell() {
   const [active, setActive] = useState("orders-open");
   const [tab, setTab] = useState<(typeof TABS)[number]["key"]>("open");
-  // Sáng / Tối / Hệ thống in a Menu (a level of the phone drawer): keeps "system", unlike a toggleTheme item
-  const theme = useThemeUtility();
-  const utilities: ShellNavItem[] = [
-    { id: "help", label: "Trợ giúp", icon: "info", onClick: () => {} },
-    theme,
-    { id: "settings", label: "Cài đặt", icon: "settings" },
-  ];
 
   return (
     <AppShell
@@ -7570,7 +7601,7 @@ export default function FullShell() {
       sections={SECTIONS}
       activeId={active}
       onSelect={setActive}
-      create={{
+      mainAction={{
         label: "Tạo mới",
         items: [
           // not available on this plan: shown, but disabled (the phone drawer focuses the first enabled row)
@@ -7582,23 +7613,27 @@ export default function FullShell() {
         ],
       }}
       pinned={PINNED}
-      utilities={utilities}
-      account={({ rail }) => (
-        <div className={rail ? "flex justify-center py-1" : "flex items-center gap-2.5 px-1.5 py-1 min-w-0"}>
-          <Avatar name="Lan Phạm" size="sm" />
-          {!rail && (
-            <span className="min-w-0">
-              <span className="block truncate text-ui font-medium text-strong">Lan Phạm</span>
-              <span className="block truncate text-ui text-muted">Cửa hàng Quận 1</span>
-            </span>
-          )}
-        </div>
-      )}
+      tools={[
+        { id: "notifications", label: "Thông báo", icon: "bell", count: 12, onClick: () => {} },
+        { id: "help", label: "Trợ giúp", icon: "info", onClick: () => {} },
+      ]}
+      toolsMenu={[
+        { label: "Cài đặt", icon: "settings", onSelect: () => {} },
+        { label: "Phím tắt", icon: "layers", onSelect: () => {} },
+      ]}
+      header={{
+        actions: <StarAction />,
+        account: {
+          name: "Lan Phạm",
+          detail: "Cửa hàng Quận 1",
+          items: [{ label: "Tài khoản", icon: "user", onSelect: () => {} }],
+          onSignOut: () => {},
+        },
+      }}
     >
-      <MinimalHeader
-        left={<Breadcrumb items={[{ label: "Sales Hub", href: "#" }, { label: "Đơn hàng" }]} />}
-        link={<a href="#" className="text-strong hover:underline">Hướng dẫn</a>}
-        primary={
+      <PageTitle
+        title="Đơn hàng"
+        actions={
           <Button variant="primary" icon="plus">
             Tạo đơn
           </Button>
@@ -7632,7 +7667,7 @@ AppShell fills the viewport, so it is shown as code: this very page is the live 
 "use client";
 
 import { usePathname } from "next/navigation";
-import { AppShell, useThemeUtility, type ShellNavSection } from "@semi/ui";
+import { AppShell, type ShellNavSection } from "@semi/ui";
 
 const SECTIONS: ShellNavSection[] = [
   {
@@ -7648,10 +7683,17 @@ const SECTIONS: ShellNavSection[] = [
 
 export default function Shell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
-  const theme = useThemeUtility();
   const active = SECTIONS.flatMap((s) => s.items).find((i) => i.href !== "/" && path.startsWith(i.href ?? ""))?.id ?? "overview";
   return (
-    <AppShell productName="3D Noobs Manager" logoIcon="printer" sections={SECTIONS} activeId={active} utilities={[theme]}>
+    <AppShell
+      productName="3D Noobs Manager"
+      logoIcon="printer"
+      sections={SECTIONS}
+      activeId={active}
+      tools={[{ id: "help", label: "Trợ giúp", icon: "info", href: "/help" }]}
+      // the account avatar menu holds the theme (Light / Dark / System), the app's items and sign-out
+      header={{ account: { name: "Minh Trần", detail: "minh@example.com", items: [{ label: "Tài khoản", icon: "user", href: "/account" }], onSignOut: () => {} } }}
+    >
       {children}
     </AppShell>
   );
@@ -7783,23 +7825,57 @@ export default function AppShellSubmenu() {
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `productName` * | `string` |  | Product title shown in the sidebar header (e.g. "3D Noobs Studio", "Auton"). |
+| `productName` * | `string` |  | Product title shown next to the logo (e.g. "3D Noobs Studio", "Auton"). |
 | `logoIcon` | `IconName` | `"sparkles"` | Icon inside the default brand tile. |
-| `logo` | `React.ReactNode` |  | Optional custom logo element replacing the default brand tile. |
-| `sections` * | `ShellNavSection[]` |  | Navigation groups separated by thin dividers in the left panel. |
+| `logo` | `React.ReactNode` |  | Optional custom logo element replacing the default brand tile (32px tall). |
+| `sections` * | `ShellNavSection[]` |  | Nav groups, separated by a 24px spacer with a line. |
 | `activeId` * | `string` |  | Currently active item id (or route path). |
 | `onSelect` | `(id: string) => void` |  | Called with the item id when an item is clicked. Items with `href` stay `next/link` links either way, so use it to react to a click (close a sheet, track), not to route: give page items an `href` (`shell-nav-href`). |
-| `create` | `ShellCreate` |  | The accent Create action on top (one per app): a menu of things to create, or one link / action. |
-| `primaryCta` | `{ label: string; icon: IconName; href?: string; external?: boolean; onClick?: () => void; }` |  | Optional highlighted launcher under Create (another app, a docs link). |
-| `pinned` | `ShellPinned` |  | A group under the main nav (saved views, frequent records) with a `text-overline` label. |
-| `utilities` | `ShellNavItem[]` | `[]` | Utilities at the bottom of the sidebar (help, theme, notifications): usually items with `onClick`. |
-| `account` | `ShellSlot` |  | The account at the very bottom (avatar, workspace switcher). Receives `{ collapsed, rail }`: hide text when `rail` (at `md` the sidebar is a rail while `collapsed` is false). `rail` is exact in the server HTML: until the width is known the slot renders twice (rail below `lg`, full from `lg`, CSS shows one), then once. So keep app-wide effects (hotkeys, intros) out of it, and let ids come from `useId`. |
-| `footer` | `ShellSlot` |  |  |
-| `mobileNav` | `'drawer' \| 'tabs'` |  | Phone navigation: `drawer` (a full-screen menu from the top bar) or `tabs` (MobileTabBar, the items in `mobileTabIds`). Default: `tabs` when `mobileTabIds` is set (as before 0.36), else `drawer`. |
-| `mobileTabIds` | `string[]` |  | With `mobileNav="tabs"`: the ids of the items on the tab bar (up to 5; the rest go in its More sheet). Without it, tabs mode shows the first items. Set `mobileNav` too: `mobileTabIds` alone still keeps the tab bar (as before 0.36) but warns in development. |
-| `storageKey` | `string` | `"semi_sidebar_collapsed"` | localStorage key for persisting sidebar collapsed state. |
+| `mainAction` | `ShellAction \| ShellSlot` |  | The nav's one main action, the only brand-filled control in the nav: data (label + icon, a menu, a link or an action) drawn as an ordinary primary button, or your own slot. In the rail: the icon with a Tooltip. |
+| `primaryCta` | `{ label: string; icon: IconName; href?: string; external?: boolean; onClick?: () => void; }` |  | Optional quiet launcher under the main action (another app, a docs link). |
+| `pinned` | `ShellPinned` |  | A group under the main nav (saved views, frequent records). |
+| `tools` | `ShellTool[]` | `[]` | The bottom row of the nav: 32×32 ghost icon buttons (help, notifications), stacked in the rail. |
+| `toolsMenu` | `MenuItem[]` | `[]` | The rest of the bottom row, in a ••• Menu after the tools. |
+| `header` | `false \| ShellHeader` |  | The route header (crumbs, middle, actions, account). Default: shown with the default crumbs. `false`: none. |
+| `page` | `'scroll' \| 'fixed'` | `"scroll"` | `scroll` (default): the content card scrolls. `fixed`: the card fills the column and does not scroll; the page's panels scroll inside it (list + reader, a pinned bar). Give the page `h-full min-h-0 flex flex-col`. |
+| `flush` | `boolean` | `false` | No centred max-width container and no padding around the page: the page layout decides (T7). |
+| `railBelow` | `number` | `1280` | Below this width (px, at least 1024) the nav starts as the rail while the user has not chosen; from it, expanded. Between md and lg it is always the rail. Default 1280. |
+| `railWidth` | `number` | `72` | Width of the rail in px (default 72; the icons stay 32px, centred). |
+| `shortcuts` | `boolean` | `true` | ⌥ / Alt + 1…9 opens the nth nav item (⌘ / Ctrl + digit in an installed app). Default true. |
+| `mobileNav` | `'drawer' \| 'tabs'` |  | Phone navigation: `drawer` (a full-screen menu from the header's menu button) or `tabs` (MobileTabBar, the items in `mobileTabIds`). Default: `tabs` when `mobileTabIds` is set, else `drawer`. |
+| `mobileTabIds` | `string[]` |  | With `mobileNav="tabs"`: the ids of the items on the tab bar (up to 5; the rest go in its More sheet). |
+| `storageKey` | `string` | `"semi-nav"` | localStorage key of the user's collapse choice ("rail" / "full"; one value for every width). |
 | `children` * | `React.ReactNode` |  |  |
-| `containerClassName` | `string` | `""` |  |
+| `containerClassName` | `string` | `""` | Classes added to the page container inside the content card. |
+
+### RouteHeader
+
+The route header: h60 from `lg` (56 below), padding 0 8px (16px from `sm`), the column's full width. Crumbs enter with
+`motion-crumb-in` and leave with `motion-crumb-out` (opacity only under reduced motion); the row itself never moves.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `crumbs` * | `RouteCrumb[]` |  | The trail: group (a link), page, record. Every crumb is muted; the trail never wraps and long crumbs truncate. |
+| `middle` | `React.ReactNode` |  | Optional middle: a search field on a search page, a small info banner. Hidden below `md`. In its own Suspense. |
+| `actions` | `React.ReactNode` |  | The page's action icon buttons (32×32, ghost or outline); keep room for a future AI chat button. In its own Suspense. |
+| `account` | `ShellAccount \| React.ReactNode` |  | The account avatar menu: the who-is-signed-in data, or your own element. |
+| `onMenu` | `() => void` |  | Phones: the menu button that opens the nav drawer (shown below `md` when set). |
+| `menuExpanded` | `boolean` |  |  |
+| `className` | `string` |  |  |
+
+### AccountMenu
+
+The account avatar menu of the route header: a one-letter avatar (32px) whose Menu has a header (name, role or email),
+then the theme (Light / Dark / System), the app's items and sign-out.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `name` * | `string` |  | The person's name: the avatar shows its first letter, the menu header shows it whole. |
+| `detail` | `string` |  | One line under the name in the menu header: a role or an email. |
+| `avatarSrc` | `string` |  | A photo in place of the letter. |
+| `items` | `MenuItem[]` | `[]` | The app's own items (Tài khoản, Cài đặt…), between the theme choices and sign-out. |
+| `onSignOut` | `() => void` |  | Adds the last item, "Đăng xuất" (locale `signOut`), after a divider. |
+| `theme` | `boolean` | `true` | Light / Dark / System as radio items at the top (default true). Turn off only when the app pins one theme. |
 
 ### MobileTabBar
 
@@ -7814,26 +7890,29 @@ export default function AppShellSubmenu() {
 
 ## Accessibility
 
-- The sidebar is a complementary landmark named after the product with nav landmarks inside; the active item has aria-current; the collapse state is remembered per app (storageKey).
-- In the rail (collapsed, or md) every item is named (aria-label) and shows its name in a Tooltip on the right on hover and focus.
-- An item with sub-items has aria-expanded; its sub-items are a list named after it, the active one with aria-current. A mega item has aria-haspopup="dialog" and aria-expanded.
+- The nav is a complementary landmark named after the product with nav landmarks inside; the active item has aria-current; the collapse choice is one stored value (storageKey).
+- In the rail every item keeps its name (the label is visually hidden, never removed) and shows it in a Tooltip on the right with its shortcut, on hover and focus.
+- The route header's trail is a navigation named "Đường dẫn" with aria-current on the last crumb; the account avatar is a named button opening a menu (a header that is not an item, radio items for the theme, account items, sign-out) by keyboard.
+- An item with sub-items has aria-expanded; its sub-items are a list named after it. A mega item has aria-haspopup="dialog" and aria-expanded.
+- Bottom-row tools are named with their count ("Thông báo (12)"); the badge itself is hidden from assistive tech.
+- Nav shortcuts (Alt + digit) click the link, so the router and an unsaved-changes guard run; ignored while composing (IME), in fields and editors, and when the app already took the key.
 - The phone drawer is a modal dialog: focus moves in, Tab stays in, Escape goes back a level or closes, and focus returns to the menu button.
 
 ## Notes
 
-- Render it once in the root layout (or a route group layout); pages render only their content.
+- Render it once in the root layout (or a route group layout); pages render only their content. It never remounts on a route change or a resize.
 - Page items take an href: they stay next/link links even when onSelect is set (onSelect then only reports the click). Never route with onSelect + router.push (shell-nav-href).
 - Never gate the shell behind a page skeleton (shell-gate): a route loading.tsx next to the layout shimmers the content only, and the boot / session check before the layout is known renders BootLoader once in the layout. A page never renders AppShell or imports a component that does (app-shell-in-page).
-- Top to bottom: create (one accent action, a Menu when it has items), primaryCta (an optional launcher), sections, pinned (a text-overline label), then utilities (items with onClick: help, theme) and account (avatar, workspace).
-- footer is deprecated: split it into utilities (actions) and account (who is signed in). The 0.36.0 migration renames footer to account and turns a render prop's collapsed check into collapsed || rail.
-- Phones use the drawer (a top bar with the menu button) unless the app sets mobileNav="tabs", with mobileTabIds naming the items on MobileTabBar (mobileTabIds alone still keeps the tab bar but warns). In the drawer a parent with its own href is the first row of its level.
-- The account render prop gets { collapsed, rail }: check rail, not only collapsed. At md the sidebar is a rail while collapsed is false. rail is exact in the server HTML: until the width is known AppShell renders the account twice (rail below lg, full from lg, CSS shows one), then once; keep app-wide effects out of it.
-- The theme in utilities: useThemeUtility() (Light / Dark / System in a Menu, a level of the phone drawer), not a toggleTheme item that drops system. Any utility with options can take menu (MenuItem[]).
-- Pinned items in the rail: give each a distinct icon, or none so the rail shows its initials (shortLabel to choose them); items sharing one icon look alike there and touch screens have no Tooltip.
-- Sub-items (children) are closed by default: they open under their parent while the parent or one of them is the activeId, and close when another item is chosen. One level only.
-- Sub-items take an optional grey icon (give every sub-item of a parent one, or none); no colour dot or count (the menu stays neutral, §4). Put counts and colours in the page.
-- The rail and widths below lg never show sub-items: read useAppShell().submenuVisible and give the page its own picker (a CustomSelect in the toolbar) when it is false. The phone drawer shows them as a drill-down level.
-- Choosing the parent alone usually opens its first sub-item: map it in onSelect.
+- Top to bottom: logo + collapse, mainAction (the one brand-filled button: label + icon, a Menu with items), primaryCta (an optional quiet launcher), sections, pinned, then tools (32×32 icons with a count) and toolsMenu (•••).
+- header: crumbs (default from the active item; useRecordCrumb(label) in a detail page adds its record), middle (search field, banner; hidden below md), actions (32×32 ghost icon buttons) and account ({ name, detail, items, onSignOut }: the theme is in that menu). header={false} drops the row.
+- Slots (mainAction, header.middle / actions / account) are an element or a function of { collapsed, rail } rendered as one stable component: it may call hooks and keeps its state across a collapse, a resize and a route change. rail is exact after mount only.
+- railBelow (default 1280, at least 1024) sets where the nav starts expanded; between md and lg it is always the rail. railWidth (default 72) sets the rail width.
+- page="fixed": the card does not scroll; give the page h-full min-h-0 flex flex-col and let its panels scroll. flush: no centred max-width container or padding.
+- 1.0 breaking: create → mainAction and utilities → tools (the 1.0.0-app-shell migration renames them); account / footer are gone from the nav (move the account to header.account); the stored collapse key is now semi-nav.
+- Phones use the drawer (the header's menu button) unless the app sets mobileNav="tabs", with mobileTabIds naming the items on MobileTabBar. In the drawer a parent with its own href is the first row of its level.
+- Sub-items (children) open under their parent while the parent or one of them is the activeId. The rail and widths below lg never show them: read useAppShell().submenuVisible and give the page its own picker when it is false.
+- Pinned items in the rail: give each a distinct icon, or none so the rail shows its initials (shortLabel to choose them).
+- Shortcut hints in a CommandPalette: shortcut: useAppShell().shortcuts[id] inside the shell, or navShortcutKeys(n) outside it.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/app-shell/ and the types in src/ -->
 

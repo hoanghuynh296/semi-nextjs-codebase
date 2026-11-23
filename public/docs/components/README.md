@@ -66,7 +66,7 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | Doc | Components | When to use |
 |---|---|---|
 | [App header](app-header.md) | `AppHeader` | Single-screen tools: 3D editors, slicers, colour tools. |
-| [App shell](app-shell.md) | `AppShell`, `MobileTabBar` | Every app with several pages (dashboards, admin, store back office). |
+| [App shell](app-shell.md) | `AppShell`, `RouteHeader`, `AccountMenu`, `MobileTabBar` | Every app with several pages (dashboards, admin, store back office). |
 | [Breadcrumb](breadcrumb.md) | `Breadcrumb` | Detail pages deep in a hierarchy (Kho › Vật liệu › PLA đen). |
 | [Mega menu](mega-menu.md) | `MegaMenu` | One sidebar item leads to many destinations of one area that fall into 2–4 groups (a catalogue, tools, reports). |
 | [Menubar](menubar.md) | `Menubar` | Editors and tool apps with many commands (3D, slicer, image tools), next to an AppHeader. |

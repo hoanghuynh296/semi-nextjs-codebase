@@ -371,7 +371,7 @@ function MenuPanel({
 function MenuList({ header, children, ...rest }: { header: boolean; children: React.ReactNode } & React.HTMLAttributes<HTMLDivElement>) {
   if (!header) return <>{children}</>;
   return (
-    <div {...rest} className="flex flex-col gap-0.5 outline-none">
+    <div {...rest} className="flex flex-col gap-0.5">
       {children}
     </div>
   );

@@ -20,7 +20,7 @@ import { MegaMenu, type MegaMenuContent } from "./MegaMenu";
 import { MobileTabBar, TAB_BAR_PAD, type MobileTabItem } from "./MobileTabBar";
 import { Menu, Tooltip, type MenuItem } from "./Overlay";
 import { PageActionsProvider, PageActionsSlot } from "./PageActions";
-import { RecordCrumbProvider, RouteHeader, type RouteCrumb, type ShellAccount } from "./RouteHeader";
+import { RecordCrumbContext, RouteHeader, type RouteCrumb, type ShellAccount } from "./RouteHeader";
 import { useDialog } from "./a11y";
 import { navShortcutKeys, shortcutText, useNavShortcuts } from "./navShortcuts";
 
@@ -591,7 +591,7 @@ export function AppShell({
   const groupSpacer = <div aria-hidden className="shrink-0 h-6 flex items-center px-2"><div className="h-px flex-1 bg-raised" /></div>;
   const groupLabel = (label: string, icon?: IconName, right?: React.ReactNode) => (
     <div className={cn("shrink-0 h-8 flex items-center justify-between gap-2 px-2 py-1.5 select-none", `@max-[120px]/nav:hidden`)}>
-      <span className="flex items-center gap-1.5 min-w-0 text-tag tracking-normal uppercase text-faint">
+      <span className="flex items-center gap-1.5 min-w-0 text-overline tracking-normal font-medium text-faint">
         {icon && <Icon name={icon} className="w-3.5 h-3.5 shrink-0" />}
         <span className="truncate">{label}</span>
       </span>
@@ -730,7 +730,7 @@ export function AppShell({
 
   return (
     <AppShellContext.Provider value={{ submenuVisible, rail, shortcuts: shortcutMap }}>
-      <RecordCrumbProvider value={recordValue}>
+      <RecordCrumbContext.Provider value={recordValue}>
         <PageActionsProvider>
           <script dangerouslySetInnerHTML={{ __html: navScript(storageKey) }} />
           <style dangerouslySetInnerHTML={{ __html: navWidthCss(railBelow, railWidth) }} />
@@ -1001,7 +1001,7 @@ export function AppShell({
             )}
           </div>
         </PageActionsProvider>
-      </RecordCrumbProvider>
+      </RecordCrumbContext.Provider>
     </AppShellContext.Provider>
   );
 }
