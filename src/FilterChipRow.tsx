@@ -3,13 +3,13 @@
 // Search and filters (#99, C-032 L3): one filter chip per facet on a single line (icon, label, count when active,
 // chevron), a multi-select popover per chip, ‹ › when the row overflows, "Xoá lọc", and the view tools at the end.
 // The chips are controlled: the page owns the state, usually in the URL (useFilterParams or the filterParams helpers).
-import React, { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import React, { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { Icon } from "./Icon";
 import { Popover } from "./Popover";
 import { Checkbox } from "./Choice";
 import { useSemiLocale } from "./locale";
 import { activeFilterCount, clearFilters, readFilters, toQueryString, writeFilters, type FilterDef, type FilterSpec, type FilterValues } from "./filterParams";
-import { currentSearch, subscribeUrl, writeSearch } from "./urlState";
+import { currentSearch, patchSearch, subscribeUrl, writeSearch } from "./urlState";
 import { cn } from "../styles/utils";
 
 const CHIP =
@@ -198,7 +198,6 @@ export interface FilterParamsState<K extends string = string> {
 export function useFilterParams<K extends string>(specs: readonly (FilterSpec & { key: K })[], options: { prefix?: string } = {}): FilterParamsState<K> {
   const { prefix } = options;
   const search = useSyncExternalStore(subscribeUrl, currentSearch, () => "");
-  const go = useCallback((next: URLSearchParams, mode: "push" | "replace") => writeSearch(next, mode), []);
   // specs are usually an inline array: key the memo on their content, not their identity
   const specsKey = JSON.stringify(specs);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -209,17 +208,11 @@ export function useFilterParams<K extends string>(specs: readonly (FilterSpec & 
       filters,
       values: Object.fromEntries(filters.map((f) => [f.key, f.selected])) as FilterValues<K>,
       activeCount: activeFilterCount(filters),
-      onChange: (key, selected) => go(writeFilters(currentSearch(), { [key]: selected }, stableSpecs, prefix), "push"),
-      onClear: () => go(clearFilters(currentSearch(), stableSpecs, prefix), "push"),
+      // built on the URL after a push flushed a pending search (#128), not the one read before it
+      onChange: (key, selected) => writeSearch((current) => writeFilters(current, { [key]: selected }, stableSpecs, prefix), "push"),
+      onClear: () => writeSearch((current) => clearFilters(current, stableSpecs, prefix), "push"),
       params: new URLSearchParams(search),
-      setParams: (patch, mode = "push") => {
-        const next = new URLSearchParams(currentSearch());
-        for (const [k, v] of Object.entries(patch)) {
-          if (v === null || v === "") next.delete(k);
-          else next.set(k, v);
-        }
-        go(next, mode);
-      },
+      setParams: (patch, mode = "push") => patchSearch(patch, mode),
     };
-  }, [search, stableSpecs, prefix, go]);
+  }, [search, stableSpecs, prefix]);
 }

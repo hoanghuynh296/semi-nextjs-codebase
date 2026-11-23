@@ -441,7 +441,8 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   `title` + `aria-label` carrying the label.
 - **Search and filters (C-032, #99):** a list page that people search and filter opens, under its heading, with one
   `StickyContextBar` (in place of a `SubpageToolbar`): a `SearchPill` (one per page, it feeds the list or `DataTable`;
-  250 ms debounce, Escape clears, `focusKey="/"`), then the filters, then a `ResultLine` ("“query” · N kết quả", the
+  250 ms debounce, Escape clears, `focusKey="/"`; a history push of `useFilterParams` / `useDetailParam` / `openDetail`
+  during the debounce sends the pending text first, onto the current entry, so Back keeps the query), then the filters, then a `ResultLine` ("“query” · N kết quả", the
   sort on the right). On `md+` the filters are a `FilterChipRow`: one line of chips (`h-8 rounded-full`, `bg-tint`,
   solid `bg-inverted` with the value or "Nhãn · N" when on), each a multi-select `Popover` or a switch chip; the row
   scrolls sideways with ‹ › and never wraps; "Xoá lọc" shows while one is on; a `ViewSwitch` (list ↔ grid, density)
