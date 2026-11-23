@@ -331,17 +331,33 @@ export function a11yAudit(opts) {
       for (let p = el.parentElement, i = 0; p && i < 3; p = p.parentElement, i++) watch.push(p);
       if (el.previousElementSibling) watch.push(el.previousElementSibling);
       if (el.nextElementSibling) watch.push(el.nextElementSibling);
+      // The baseline is the control without focus. A dialog's focus trap (DetailOverlay, Modal) has already put focus
+      // on its first control, ring and all: compared with itself, that ring would count as "nothing changes".
+      // A control that takes focus back when it loses it (an onblur that refocuses) has no unfocused baseline: it is
+      // reported with its own text, never left out, so a missing ring cannot hide behind it.
+      const held = document.activeElement;
+      if (held && held !== document.body && held.blur) held.blur();
+      const stuck = document.activeElement === el;
       const a = snap(watch);
       try {
         el.focus({ preventScroll: true, focusVisible: true });
       } catch {
         continue;
       }
-      if (document.activeElement !== el || !el.matches(":focus-visible")) continue;
+      const got = document.activeElement;
+      if (got !== el) {
+        // Nothing took focus (an inert or unfocusable control), or a modal dialog's trap kept it inside (the page
+        // behind an open DetailOverlay / Modal): not this control's ring to judge. Anything else that keeps focus
+        // would hide every control after it, so the control is reported.
+        const modal = got && got !== document.body && got.closest("[aria-modal=true]");
+        if (got && got !== document.body && !(modal && !modal.contains(el))) hit("focus-ring", el, `focus could not be moved onto it (${where(got)} keeps it)`);
+        continue;
+      }
+      if (!el.matches(":focus-visible")) continue;
       n++;
       const b = snap(watch);
       el.blur();
-      if (a.every((v, i) => v === b[i])) hit("focus-ring", el, "nothing changes when it takes keyboard focus");
+      if (a.every((v, i) => v === b[i])) hit("focus-ring", el, stuck ? "focus could not be moved off it to compare (it takes focus back on blur): check its ring with Tab by hand" : "nothing changes when it takes keyboard focus");
     }
     freeze.remove();
     if (before && before !== document.body && before.focus) before.focus({ preventScroll: true });

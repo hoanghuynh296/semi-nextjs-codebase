@@ -1,0 +1,36 @@
+<!doctype html>
+<!-- semi a11y focus-ring (#126): a dialog's focus trap puts focus on its first control before the audit runs. -->
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body { font: 14px/1.5 sans-serif; margin: 0; padding: 24px; background: #fff; color: #222 }
+  button { height: 34px; padding: 0 12px; border: 0; background: #eee; color: #222; outline: none }
+  .ring:focus-visible { box-shadow: 0 0 0 2px #0a6 }
+</style>
+</head>
+<body>
+  <div role="dialog" aria-label="Đơn DH-1041">
+    <button id="close" class="ring">Đóng</button>
+    <button id="next" class="ring">Mục sau</button>
+    <button id="no-ring">Không có viền</button>
+  </div>
+  <script>
+    // #trap: the close button takes focus back whenever it loses it, so the audit cannot compare it unfocused.
+    const mode = location.hash.slice(1) || "close";
+    const close = document.getElementById("close");
+    if (mode === "trap") close.addEventListener("blur", () => close.focus());
+    // #modal: an aria-modal dialog whose trap pulls focus that leaves it back in (useFocusTrap); the page behind it
+    // (a button with no ring) is not the dialog's to judge, the dialog's own controls still are.
+    if (mode === "modal") {
+      const dialog = document.querySelector("[role=dialog]");
+      dialog.setAttribute("aria-modal", "true");
+      const behind = Object.assign(document.createElement("button"), { id: "behind", textContent: "Phía sau" });
+      document.body.prepend(behind);
+      document.addEventListener("focusin", (e) => { if (!dialog.contains(e.target)) close.focus(); });
+    }
+    document.getElementById(mode === "trap" || mode === "modal" ? "close" : mode).focus();
+  </script>
+</body>
+</html>
