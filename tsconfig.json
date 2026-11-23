@@ -28,9 +28,6 @@
       ],
       "@semi/ui/styles": [
         "./styles/index.ts"
-      ],
-      "@semi/ui/styles.json": [
-        "./tokens/styles.json"
       ]
     }
   },

@@ -87,7 +87,7 @@ export default function FoundationsPage() {
       <div className="space-y-3">
         <PageTitle title="Foundations & icon" />
         <p className="text-ui text-muted max-w-3xl">
-          Token bề mặt và chữ cho cả hai theme, thang chữ, ba style và <strong className="text-body">{totalCount} icon</strong> của Semi. Không inline SVG,
+          Token bề mặt và chữ cho cả hai theme, thang chữ, hình khối và <strong className="text-body">{totalCount} icon</strong> của Semi. Không inline SVG,
           không dùng glyph unicode.
         </p>
         <div className="flex flex-wrap items-center gap-2">
@@ -98,7 +98,7 @@ export default function FoundationsPage() {
         </div>
       </div>
 
-      {/* Surfaces, text and styles: read from tokens/ (site/foundations.generated.ts) */}
+      {/* Surfaces, text and shape: read from tokens/ (site/foundations.generated.ts) */}
       <section id="surfaces" className="space-y-4">
         <div className={SECTION_HEAD}>
           <h2 className={SECTION_TITLE}>Bề mặt và chữ</h2>
@@ -128,27 +128,21 @@ export default function FoundationsPage() {
           ))}
         </div>
 
-        <h3 className="text-ui-lg font-semibold text-contrast pt-2">Style</h3>
-        <div className="grid gap-3 md:grid-cols-3">
-          {FOUNDATIONS.styles.map((st) => (
-            <div key={st.id} className={`${CARD} p-card space-y-3`}>
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-title font-semibold text-contrast">{st.name}</span>
-                <code className="text-caption text-muted">data-style=&quot;{st.id}&quot;</code>
-              </div>
-              <p className="text-label text-muted">{st.description}</p>
-              <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1.5 text-label">
-                <dt className="text-muted">Bo góc</dt>
-                <dd className="text-body tabular-nums">{[st.radius.chip, st.radius.control, st.radius.card, st.radius.panel].join(" · ")}</dd>
-                <dt className="text-muted">Control</dt>
-                <dd className="text-body tabular-nums">{st.controlHeight} · ô nhập {st.fieldHeight}</dd>
-                <dt className="text-muted">Viền card</dt>
-                <dd className="text-body break-all">{st.cardBorder}</dd>
-                <dt className="text-muted">Font</dt>
-                <dd className="text-body">{st.fonts.join(" + ")}</dd>
-              </dl>
-            </div>
-          ))}
+        <h3 className="text-ui-lg font-semibold text-contrast pt-2">Hình khối</h3>
+        <div className={`${CARD} p-card space-y-3 max-w-xl`}>
+          <p className="text-label text-muted">Một diện mạo cho mọi brand (tokens.json &quot;shape&quot;).</p>
+          <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1.5 text-label">
+            <dt className="text-muted">Bo góc</dt>
+            <dd className="text-body tabular-nums">{[FOUNDATIONS.shape.radius.chip, FOUNDATIONS.shape.radius.control, FOUNDATIONS.shape.radius.card, FOUNDATIONS.shape.radius.panel].join(" · ")}</dd>
+            <dt className="text-muted">Control</dt>
+            <dd className="text-body tabular-nums">{FOUNDATIONS.shape.controlHeight} · ô nhập {FOUNDATIONS.shape.fieldHeight}</dd>
+            <dt className="text-muted">Viền card</dt>
+            <dd className="text-body break-all">{FOUNDATIONS.shape.cardBorder}</dd>
+            <dt className="text-muted">Font</dt>
+            <dd className="text-body">{FOUNDATIONS.shape.fonts.join(" + ")}</dd>
+            <dt className="text-muted">Độ đậm tiêu đề</dt>
+            <dd className="text-body tabular-nums">{FOUNDATIONS.shape.titleWeight}</dd>
+          </dl>
         </div>
         <p className="text-caption text-muted">
           Bo góc luôn dùng tên token: <code className="text-body">rounded-chip</code> · <code className="text-body">rounded-control</code> ·{" "}

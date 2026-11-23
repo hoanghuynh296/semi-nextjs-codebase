@@ -12,14 +12,14 @@ import { chromium } from "./density.mjs";
 
 /** [id, rule]: the texts printed next to a hit. Keep them in step with DESIGN_SYSTEM.md §18. */
 export const A11Y_RULES = [
-  ["contrast", "Text reaches 4.5:1 against what is under it (3:1 from 24px, or bold from 18.66px), in both themes: text-muted / text-*-fg on their own surfaces, text-on-accent on bg-accent (WCAG 1.4.3)."],
+  ["contrast", "Text reaches 4.5:1 against what is under it (3:1 from 24px, or bold from 18.66px), in both themes: text-muted / text-faint / text-*-fg on their own surfaces, text-on-primary on bg-primary (WCAG 1.4.3)."],
   ["edge", "A field you type in or pick from shows its edge at 3:1 against the surface around it: border-control-line, as Semi's fields draw it (WCAG 1.4.11)."],
   ["name", "Every control has a name a screen reader can say: a visible text, a Field label, or aria-label on an icon-only control. A placeholder is not a label (WCAG 4.1.2, 1.3.1)."],
   ["focus-ring", "Every control shows where focus is when reached with Tab: FOCUS_RING, or a Semi component that draws it (WCAG 2.4.7)."],
   ["target-size", "Every control you click or tap is at least 24×24px, or keeps 24px from the next one (WCAG 2.5.8); Semi controls are h-control."],
   ["img-alt", "An image has alt (alt=\"\" when it only decorates); an element with role=img has aria-label (WCAG 1.1.1)."],
   ["lang", "<html lang> names the page's language, so a screen reader reads it with the right voice (WCAG 3.1.1)."],
-  ["field-size", "A field you type in has text of 16px or more below 640px: iOS Safari zooms the page into a smaller one on focus and never zooms back (use FIELD_INPUT, or max-sm:text-title-lg)."],
+  ["field-size", "A field you type in has text of 16px or more below 640px: iOS Safari zooms the page into a smaller one on focus and never zooms back (use FIELD_INPUT)."],
   ["zoom-lock", "The viewport meta allows zoom: no user-scalable=no and no maximum-scale below 2 (WCAG 1.4.4)."],
 ];
 

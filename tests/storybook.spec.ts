@@ -1,9 +1,8 @@
 // Browser checks of the docs export: every page (and every component doc) reaches WCAG AA in both themes, axe finds
-// no serious issue, nothing overflows a phone, the theme / style apply before paint, dialogs and menus are
+// no serious issue, nothing overflows a phone, the theme applies before paint, dialogs and menus are
 // keyboard-operable, and the agent files are served.
 import { expect, test, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import styleList from "../tokens/styles.json" with { type: "json" };
 import tokens from "../tokens/tokens.json" with { type: "json" };
 import docs from "../examples/list.generated.json" with { type: "json" };
 import { a11yHits, lowContrast } from "./contrast";
@@ -11,26 +10,22 @@ import { densityAudit } from "../lint/density.mjs";
 
 const DOC_PAGES = docs.map((d) => `/components/${d.id}/`);
 const PAGES = ["/", "/components/", "/foundations/", "/brand/", "/lab/", "/demo/app-shell/", ...DOC_PAGES];
-/** Pages checked in every style: the gallery shows one example of every doc. */
+/** Pages checked at phone width: the gallery shows one example of every doc. */
 const LOOK_PAGES = ["/", "/components/", "/components/table/", "/components/field/"];
 const THEMES = ["dark", "light"] as const;
-const STYLES = styleList.styles.map((s) => s.id);
-const LOOKS = styleList.styles.map((s) => ({ style: s.id, name: s.id }));
 const example = (page: Page, id: string) => page.locator(`[data-example="${id}"]`);
 
-async function open(page: Page, path: string, theme: "dark" | "light" | "system", style?: string) {
-  await page.addInitScript(([t, s]) => {
+async function open(page: Page, path: string, theme: "dark" | "light" | "system") {
+  await page.addInitScript(([t]) => {
     localStorage.setItem("semi-theme", t);
-    if (s) localStorage.setItem("semi-style", s);
     // Theme as soon as <body> exists = what the first paint uses (the inline ThemeScript runs in <head>).
     new MutationObserver((_, obs) => {
       if (document.body) {
         (window as unknown as { __firstPaintTheme?: string }).__firstPaintTheme = document.documentElement?.dataset.theme;
-        (window as unknown as { __firstPaintStyle?: string }).__firstPaintStyle = document.documentElement?.dataset.style;
         obs.disconnect();
       }
     }).observe(document, { childList: true, subtree: true });
-  }, [theme, style ?? ""] as const);
+  }, [theme] as const);
   await page.goto(path);
   await page.addStyleTag({ content: "*,*::before,*::after{transition:none!important;animation:none!important}" });
 }
@@ -71,22 +66,14 @@ for (const path of PAGES) {
   });
 }
 
-for (const path of LOOK_PAGES) {
-  for (const theme of THEMES)
-    for (const look of LOOKS)
-      test(`a11y audit · ${look.name} · ${theme} · ${path}`, async ({ page }) => {
-        await open(page, path, theme, look.style);
-        expect(await a11yHits(page)).toEqual([]);
-      });
-  for (const style of STYLES)
-    test(`fits a phone screen · ${style} · ${path}`, async ({ browser }) => {
-      const page = await browser.newPage({ viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true });
-      await open(page, path, "light", style);
-      expect(await phoneOverflow(page)).toEqual([]);
-      expect(await page.evaluate(densityAudit, { scope: "main" })).toEqual([]);
-      await page.close();
-    });
-}
+for (const path of LOOK_PAGES)
+  test(`fits a phone screen · ${path}`, async ({ browser }) => {
+    const page = await browser.newPage({ viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true });
+    await open(page, path, "light");
+    expect(await phoneOverflow(page)).toEqual([]);
+    expect(await page.evaluate(densityAudit, { scope: "main" })).toEqual([]);
+    await page.close();
+  });
 
 /** Everything stays inside the page column (16px gutters) unless it sits in its own horizontal scroller. */
 function phoneOverflow(page: Page) {
@@ -161,55 +148,39 @@ test("stored theme is applied before the first paint and survives reload", async
   expect(await page.evaluate(() => localStorage.getItem("semi-theme"))).toBe("dark");
 });
 
-test("styles: Soft is applied before paint, Soft and Sharp change the shape tokens and pass contrast in both themes", async ({ page }) => {
+test("one look: the docs offer no style switch, and a leftover data-style changes nothing", async ({ page }) => {
   const radius = () => page.evaluate(() => getComputedStyle(document.querySelector(".rounded-card")!).borderTopLeftRadius);
   await open(page, "/components/", "dark");
-  expect(await radius()).toBe("12px"); // Flat, the default
-  await page.getByRole("radiogroup", { name: "Style" }).getByRole("radio", { name: "Soft" }).click();
-  await expect(page.locator("html")).toHaveAttribute("data-style", "soft");
-  expect(await radius()).toBe("20px");
-  await page.reload();
-  expect(await page.evaluate(() => (window as unknown as { __firstPaintStyle?: string }).__firstPaintStyle)).toBe("soft");
-  await page.getByRole("radiogroup", { name: "Style" }).getByRole("radio", { name: "Sharp" }).click();
-  expect(await radius()).toBe("0px");
+  expect(await radius()).toBe("12px");
+  await expect(page.getByRole("radiogroup", { name: "Style" })).toHaveCount(0);
+  await page.evaluate(() => document.documentElement.setAttribute("data-style", "soft"));
+  expect(await radius()).toBe("12px");
 });
 
-test("styles: the docs offer the three styles only, and the chosen one applies before paint", async ({ page }) => {
-  await open(page, "/components/", "light", "sharp");
-  expect(await page.evaluate(() => (window as unknown as { __firstPaintStyle?: string }).__firstPaintStyle)).toBe("sharp");
-  await expect(page.getByRole("radiogroup", { name: "Style" }).getByRole("radio")).toHaveCount(3);
-  await expect(page.getByRole("radiogroup", { name: "Palette" })).toHaveCount(0);
-  await page.getByRole("radiogroup", { name: "Style" }).getByRole("radio", { name: "Soft" }).click();
-  await expect(page.locator("html")).toHaveAttribute("data-style", "soft");
-});
-
-test("brand preview: a #brand= link recolours every page, passes contrast in both themes, and turns off", async ({ page }) => {
-  const brand = { name: "Blue Co", package: "@blue/brand", primary: "#2563EB", neutral: "tinted", styles: { default: "soft", allowed: ["flat", "soft"] }, fonts: { sans: "Manrope", display: "Manrope" } };
+test("brand preview: a #brand= link sets the brand fills on every page, passes contrast in both themes, and turns off", async ({ page }) => {
+  const brand = { name: "Blue Co", package: "@blue/brand", primary: "#2563EB", fonts: { sans: "Manrope" } };
   const hash = Buffer.from(JSON.stringify(brand)).toString("base64url");
-  const accent = () => page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--semi-accent").trim());
-  await open(page, `/components/#brand=${hash}`, "dark", "soft");
+  const primary = () => page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--semi-primary").trim().toLowerCase());
+  const canvas = () => page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--semi-canvas").trim().toLowerCase());
+  await open(page, `/components/#brand=${hash}`, "dark");
   await expect(page.getByText("Blue Co", { exact: true })).toBeVisible();
-  const seen: Record<string, string> = {};
   for (const theme of THEMES) {
     await page.getByRole("radio", { name: theme === "dark" ? "Tối" : "Sáng" }).first().click();
-    // The accent is derived per theme (#84): lighter and more vivid in dark, deeper in light.
-    await expect.poll(accent).not.toBe(theme === "dark" ? seen.light ?? "" : seen.dark ?? "");
-    seen[theme] = await accent();
+    // 1.0: the brand fill is the brand colour as given, the same in both themes; the surfaces stay Semi's neutrals.
+    await expect.poll(primary).toBe("#2563eb");
+    await expect.poll(canvas).toBe(theme === "dark" ? "#101010" : "#ebebeb");
     expect(await lowContrast(page)).toEqual([]);
   }
-  // Exact values (update when the light 600/700 choice changes): dark primary-400/500 lighter blue, light the brand blue on 600.
-  expect(seen.dark).toBe("#5286ef");
-  expect(seen.light).toBe("#2563eb");
   await page.getByRole("radio", { name: "Tối" }).first().click();
   await page.goto("/components/button/"); // stays on across pages (applied once the page hydrates)
-  await expect.poll(accent).toBe(seen.dark);
+  await expect.poll(primary).toBe("#2563eb");
   await page.getByRole("button", { name: "Tắt xem trước brand" }).click();
-  await expect.poll(accent).toBe("#00ae42"); // Semi's own green again (dark theme)
+  await expect.poll(primary).toBe("#00ae42"); // Semi's own green again
 });
 
 // ─── Design Lab (docs/LAB.md) ───────────────────────────────────────────────────────────────────────────────────
 
-/** Computed `prop` of a fresh element with `cls` inside a wrapper with `attrs` (data-style, data-density …). */
+/** Computed `prop` of a fresh element with `cls` inside a wrapper with `attrs` (data-density, data-theme …). */
 const probe = (page: Page, attrs: Record<string, string>, cls: string, prop: string) =>
   page.evaluate(
     ([a, c, p]) => {
@@ -225,11 +196,11 @@ const probe = (page: Page, attrs: Record<string, string>, cls: string, prop: str
     },
     [attrs, cls, prop] as const,
   );
-const labHash = (d: object) => Buffer.from(JSON.stringify({ $semiLab: 1, type: {}, density: {}, typeScale: {}, styles: {}, params: {}, ...d })).toString("base64url");
+const labHash = (d: object) => Buffer.from(JSON.stringify({ $semiLab: 1, type: {}, density: {}, typeScale: {}, shape: {}, params: {}, ...d })).toString("base64url");
 const px = (v: string) => `${parseFloat(v) * (v.endsWith("rem") ? 16 : 1)}px`;
 
 test("Design Lab: every value it edits reaches the utility apps use (no value is frozen at build time)", async ({ page }) => {
-  // Each type size and each style token with a utility gets a distinct value; the real utility must follow it.
+  // Each type size and each shape token with a utility gets a distinct value; the real utility must follow it.
   const sizes = Object.keys(tokens.type).filter((k) => !k.includes("--") && !(tokens.type as Record<string, { deprecated?: boolean }>)[k]?.deprecated);
   const type = Object.fromEntries(sizes.map((k, i) => [k, `${30 + i}px`]));
   const shape: [string, string, string, string][] = [
@@ -241,50 +212,49 @@ test("Design Lab: every value it edits reaches the utility apps use (no value is
     ["spacing-field", "53px", "h-field", "height"],
     ["spacing", "0.3125rem", "p-4", "padding-top"],
   ];
-  const styles = Object.fromEntries(STYLES.map((id) => [id, { ...Object.fromEntries(shape.map(([k, v]) => [k, v])), "card-border": "3px solid red", "font-weight-title": "800" }]));
-  await open(page, `/components/#lab=${labHash({ type, styles })}`, "dark", "soft");
+  const shapeDraft = { ...Object.fromEntries(shape.map(([k, v]) => [k, v])), "card-border": "3px solid red", "font-weight-title": "800" };
+  await open(page, `/components/#lab=${labHash({ type, shape: shapeDraft })}`, "dark");
   await expect(page.getByText("Design Lab", { exact: true })).toBeVisible();
   for (const [k, v] of Object.entries(type)) await expect.poll(() => probe(page, {}, k, "font-size"), { message: k }).toBe(v);
-  for (const style of STYLES) {
-    for (const [k, v, cls, prop] of shape) expect(await probe(page, { "data-style": style }, cls, prop), `${style} ${k}`).toBe(k === "spacing" ? px(`${parseFloat(v) * 4}rem`) : px(v));
-    expect(await probe(page, { "data-style": style }, "border-card", "border-top-width"), `${style} card-border`).toBe("3px");
-    expect(await probe(page, { "data-style": style }, "font-title", "font-weight"), `${style} font-weight-title`).toBe("800");
+  for (const attrs of [{}, { "data-theme": "light" }]) {
+    for (const [k, v, cls, prop] of shape) expect(await probe(page, attrs, cls, prop), k).toBe(k === "spacing" ? px(`${parseFloat(v) * 4}rem`) : px(v));
+    expect(await probe(page, attrs, "border-card", "border-top-width"), "card-border").toBe("3px");
+    expect(await probe(page, attrs, "font-title", "font-weight"), "font-weight-title").toBe("800");
   }
 });
 
-test("Design Lab: a draft follows every page, keeps each style and density its own values, pauses, and its tabs pass AA", async ({ page }) => {
-  const soft = styleList.styles.find((s) => s.id === "soft")!.tokens["radius-card"];
-  const draft = { type: { "text-ui": "17px" }, density: { compact: { spacing: "0.3rem" } }, styles: { flat: { "radius-card": "1.5rem" } } };
-  await open(page, `/components/button/#lab=${labHash(draft)}`, "dark", "flat");
+test("Design Lab: a draft follows every page, keeps each density its own values, pauses, and its tabs pass AA", async ({ page }) => {
+  const draft = { type: { "text-ui": "17px", "text-copy": "18px" }, density: { compact: { spacing: "0.3rem" } }, shape: { "radius-card": "1.5rem" } };
+  await open(page, `/components/button/#lab=${labHash(draft)}`, "dark");
   await expect.poll(() => probe(page, {}, "text-ui", "font-size")).toBe("17px");
   expect(await probe(page, {}, "rounded-card", "border-top-left-radius")).toBe("24px");
-  expect(await probe(page, { "data-style": "soft" }, "rounded-card", "border-top-left-radius")).toBe(px(soft)); // a flat change stays in flat
-  expect(await probe(page, { "data-density": "compact" }, "text-ui", "font-size")).toBe("13px"); // compact keeps its own size
+  expect(await probe(page, { "data-theme": "light" }, "rounded-card", "border-top-left-radius")).toBe("24px"); // nested theme scopes too
+  expect(await probe(page, { "data-density": "compact" }, "text-copy", "font-size")).toBe("13px"); // compact keeps its own size
   expect(await probe(page, { "data-density": "compact" }, "p-4", "padding-top")).toBe("19.2px");
   await page.goto("/components/"); // stored: stays on across pages
   await expect.poll(() => probe(page, {}, "text-ui", "font-size")).toBe("17px");
   await page.getByRole("button", { name: "Tạm tắt bản nháp Lab (xem bản gốc)" }).click();
-  await expect.poll(() => probe(page, {}, "text-ui", "font-size")).toBe("14px");
+  await expect.poll(() => probe(page, {}, "text-ui", "font-size")).toBe("12px");
   await page.getByRole("button", { name: "Bật lại bản nháp Lab" }).click();
   await expect.poll(() => probe(page, {}, "text-ui", "font-size")).toBe("17px");
 
-  // Every tab of the Lab, both themes: the sample specimens of the compare tab included.
-  await page.goto(`/lab/#lab=${labHash({ ...draft, params: { ladder: { 500: 0.6 } } })}`);
+  // Every tab of the Lab, both themes: the sample brands of the colour tab included.
+  await page.goto(`/lab/#lab=${labHash({ ...draft, params: { hoverStep: 0.08 } })}`);
   await page.addStyleTag({ content: "*,*::before,*::after{transition:none!important;animation:none!important}" });
   for (const theme of THEMES) {
     await page.getByRole("radio", { name: theme === "dark" ? "Tối" : "Sáng" }).first().click();
-    for (const tab of ["Chữ", "Hình khối", "Màu", "So sánh brand", "Thay đổi"]) {
+    for (const tab of ["Chữ", "Hình khối", "Màu", "Thay đổi"]) {
       await page.getByRole("tab", { name: new RegExp(`^${tab}`) }).click();
       expect(await lowContrast(page), `${theme} · ${tab}`).toEqual([]);
       const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
       expect(violations.filter((v) => v.impact === "serious" || v.impact === "critical").map((v) => `${tab}: ${v.id}`)).toEqual([]);
     }
   }
-  await expect(page.getByRole("cell", { name: "ladder.500" })).toBeVisible();
+  await expect(page.getByRole("cell", { name: "hoverStep" })).toBeVisible();
   await page.getByRole("button", { name: "Bỏ bản nháp" }).click();
   await page.getByRole("alertdialog").getByRole("button", { name: "Bỏ bản nháp" }).click();
   await expect(page.getByText("Bản nháp đang trống")).toBeVisible();
-  expect(await probe(page, {}, "text-ui", "font-size")).toBe("14px");
+  expect(await probe(page, {}, "text-ui", "font-size")).toBe("12px");
 });
 
 test("system theme follows prefers-color-scheme", async ({ browser }) => {
@@ -1693,14 +1663,13 @@ function weakEdges(page: Page) {
   });
 }
 
-for (const style of STYLES)
-  for (const theme of THEMES)
-    test(`input edges ≥ 3:1 · ${style} · ${theme}`, async ({ page }) => {
-      await open(page, "/components/", theme, style);
-      expect(await weakEdges(page)).toEqual([]);
-      await open(page, "/components/field/", theme, style); // includes an invalid input
-      expect(await weakEdges(page)).toEqual([]);
-    });
+for (const theme of THEMES)
+  test(`input edges ≥ 3:1 · ${theme}`, async ({ page }) => {
+    await open(page, "/components/", theme);
+    expect(await weakEdges(page)).toEqual([]);
+    await open(page, "/components/field/", theme); // includes an invalid input
+    expect(await weakEdges(page)).toEqual([]);
+  });
 
 test("the chosen segment has a ring, not only a faint fill", async ({ page }) => {
   await open(page, "/components/tabs/", "light");

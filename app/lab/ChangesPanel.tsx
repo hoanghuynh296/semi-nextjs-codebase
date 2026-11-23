@@ -17,7 +17,7 @@ export function ChangesPanel({ lab, onReset }: { lab: ReturnType<typeof useLabEd
   const errors = validateDraft(draft, LAB_SOURCES) as string[];
   const paramsChanged = rows.some((r) => r.file === "brand/params.mjs");
   const samplesOk = React.useMemo(
-    () => !paramsChanged || comparisonOk(compareSamples({ tokens: LAB_SOURCES.tokens, styles: LAB_SOURCES.styles }, { after: lab.values.params })),
+    () => !paramsChanged || comparisonOk(compareSamples({ tokens: LAB_SOURCES.tokens }, { after: lab.values.params })),
     [paramsChanged, lab.values.params],
   );
   const patch = JSON.stringify(draft, null, 2);

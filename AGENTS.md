@@ -6,7 +6,7 @@ This repository (`hoanghuynh296/semi-nextjs-codebase`) is the **single source of
 
 ## Hard Rules for Maintaining This Repo
 
-1. **Never edit `tokens/tokens.css` or `tokens/styles.json` by hand:** Edit `tokens/tokens.json` / `tokens/styles/<id>.json` and run `npm run build:tokens`.
+1. **Never edit `tokens/tokens.css` by hand:** Edit `tokens/tokens.json` and run `npm run build:tokens`.
 2. **Docs and code change in the same commit:** see *Change checklist* below. A change is not done while a doc, an example or its meta still describes the old code.
 3. **Keep components generic across Semi brands:** Do not add domain-specific logic (e.g. 3D printer MQTT/slicer APIs or local app stores) to `src/`. Components must only depend on React, Next.js (`next/link`), and `@semi/ui` internals.
 4. **Always run `npm run check`** (`check:tokens` + `check:vendor` + `check:version` + `check:manifest` + `typecheck` + `semi-lint` + unit tests) before committing or tagging a release. After editing `lint/semi-lint.mjs` or `tokens/tokens.json`, run `npm run sync:vendor` (the plugin ships its own copies).
@@ -14,7 +14,7 @@ This repository (`hoanghuynh296/semi-nextjs-codebase`) is the **single source of
 6. **Generated files:** `components.json`, the component inventory in `docs/QUICK_REF.md`, `public/llms.txt`, `public/llms-full.txt`, `public/components.json` and `public/docs/*` come from `npm run build:manifest`; never edit them by hand. `lint/*.mjs` changes need fixtures in `lint/test` (`npm test`).
 7. **Docs site:** `deploy-storybook.yml` publishes main (labelled "· main" until released) and every release (without the label). It builds once with the Pages path (`NEXT_PUBLIC_BASE_PATH`), runs `test:ui` on that build (`serve-static.mjs` serves the prefix), and smoke-checks the live site after deploying. Release right after merging so the label goes away.
 8. **Browser checks:** after UI changes run `npm run build:storybook && npm run build:brand-book && npm run build:prerender-test && npm run test:ui` (the docs site: contrast AA on every page and every component doc in both themes, axe, phone width, theme before paint, keyboard flows; the server-rendered `tests/prerender-app` under Next's router, `tests/prerender.spec.ts`; the brand book of the sample kit `tests/fixtures/brand.json`: contrast in every allowed style, axe, nothing spilling from 320px up). CI (`check.yml`, PRs only, stale runs cancelled) builds once, then runs `test:ui` as 6 `--shard=N/6` jobs; locally run it unsharded as above. New components get a doc in `examples/` (`docs/COMPONENT_DOCS.md`).
-9. **Radii and card shadow are style tokens** (`rounded-chip|control|card|panel`, `shadow-card`, `docs/STYLES.md`): never `rounded-lg/xl/2xl` or `rounded-[Npx]` in `src/` or `styles/` (`radius-token`).
+9. **Radii and card shadow are shape tokens** (`rounded-chip|control|card|panel`, `shadow-card`; `tokens.json` "shape", `docs/TOKENS.md`): never `rounded-lg/xl/2xl` or `rounded-[Npx]` in `src/` or `styles/` (`radius-token`).
 10. **Contrast:** Shared UI uses themed tokens (`text-accent-fg`, `text-*-fg`, `text-tone-*`, `bg-accent` + `text-on-accent`), never fixed `-300/-400` shades or `dark:` pairs; every text/background pair must reach 4.5:1 in both themes.
 
 ## Change checklist (docs ↔ code)
@@ -28,16 +28,16 @@ This repository (`hoanghuynh296/semi-nextjs-codebase`) is the **single source of
 | A breaking change (renamed / removed component, prop, constant, token) | A release migration `migrations/<version>-<id>.mjs` (`migrations/README.md`) + its test in `lint/test/migrations.test.mjs`, and a CHANGELOG "Migration" note for what it cannot do |
 | Tokens or lint | `npm run build:tokens` / `npm run sync:vendor` |
 | The brand generator / kit format / kit preview site (`brand/`, `brand/preview`) | `lint/test/brand.test.mjs`, `docs/BRANDS.md` (the user guide: keep its steps true), the Brand preview page if inputs change, a real `semi-brand site` run on a sample kit when the preview template changes, `CHANGELOG.md` (kit format changes need `/semi-brand update` notes) |
-| A Design Lab patch (`npm run lab:apply`, `docs/LAB.md`) | What the script prints: `docs/STYLES.md` for style values, the type scale in `docs/DESIGN_SYSTEM.md` / `docs/QUICK_REF.md` / `TITLES.type` in `scripts/build-tokens.mjs`, `CHANGELOG.md` (+ a `/semi-brand update` note when `brand/params.mjs` changed), `docs/DECISIONS.md` (why) |
+| A Design Lab patch (`npm run lab:apply`, `docs/LAB.md`) | What the script prints: `docs/TOKENS.md` for shape values, the type scale in `docs/DESIGN_SYSTEM.md` / `docs/QUICK_REF.md` / `TITLES.type` in `scripts/build-tokens.mjs`, `CHANGELOG.md` (+ a `/semi-brand update` note when `brand/params.mjs` changed), `docs/DECISIONS.md` (why) |
 | The Lab itself (`scripts/lab.mjs`, `scripts/lab-apply.mjs`, `app/lab/`, `brand/params.mjs` keys, `brand/samples.mjs`) | `lint/test/lab.test.mjs`, the Lab tests in `tests/storybook.spec.ts`, `docs/LAB.md` |
-| A style (new, or a value of one) | `tokens/styles/<id>.json` → `npm run build:tokens` + `npm run sync:vendor`, its column in `docs/STYLES.md`, Storybook check in both themes, `CHANGELOG.md` (renamed / removed style: a release migration) |
+| A shape token (radius, card shadow / border, fonts, control size) | `tokens/tokens.json` "shape" → `npm run build:tokens` + `npm run sync:vendor`, its line in `docs/TOKENS.md`, Storybook check in both themes, `CHANGELOG.md` (renamed / removed token: a release migration) |
 
 Then run `npm run build:manifest` (regenerates the agent files) and `npm run check`. `check:manifest` fails when:
 - a generated file is stale;
 - an example imports a name `@semi/ui` does not export, imports a relative path, or has no default export;
 - a component has no doc, or a `meta.json` names a component that does not exist;
 - a component or hook is not named in `docs/DESIGN_SYSTEM.md`;
-- a style in `tokens/styles.json` has no column in `docs/STYLES.md`.
+- a shape token in `tokens/tokens.json` (or its utility) is not named in `docs/TOKENS.md`.
 
 It cannot check that prose still matches behaviour: when you change behaviour, reread the doc section yourself.
 

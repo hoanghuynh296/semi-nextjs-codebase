@@ -11,16 +11,8 @@ export type Values = {
   type: Record<string, string>;
   density: Record<string, { spacing?: string; sizes: Record<string, string> }>;
   typeScale: Record<string, { sizes: Record<string, string> }>;
-  styles: Record<string, Record<string, string>>;
-  params: {
-    ladder: Record<string, number>;
-    chroma: Record<string, number>;
-    fillReach: number;
-    tint: Record<string, number>;
-    surfaceTint: Record<string, number>;
-    statusGap: number;
-    statusTurn: Record<string, number>;
-  };
+  shape: Record<string, string>;
+  params: Record<string, number>;
 };
 export type Path = string[];
 export type Update = (path: Path, value: string | number | undefined) => void;

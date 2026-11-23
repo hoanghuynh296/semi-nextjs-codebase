@@ -11,10 +11,9 @@ import { useLabEditor } from "./shared";
 import { TypePanel } from "./TypePanel";
 import { ShapePanel } from "./ShapePanel";
 import { ColorPanel } from "./ColorPanel";
-import { ComparePanel } from "./ComparePanel";
 import { ChangesPanel } from "./ChangesPanel";
 
-type Tab = "type" | "shape" | "color" | "compare" | "changes";
+type Tab = "type" | "shape" | "color" | "changes";
 
 // Design Lab (docs/LAB.md): core values of Semi tried on the whole docs site before an agent writes them.
 export default function LabPage() {
@@ -31,7 +30,7 @@ export default function LabPage() {
       <div className="space-y-3 pb-2 border-b border-line/60">
         <PageTitle title="Design Lab" />
         <p className="text-ui text-muted max-w-3xl">
-          Thử giá trị core của Semi trước khi nhờ agent sửa design system: thang chữ, font và hình khối của từng style, density, tham số bộ sinh màu của
+          Thử giá trị core của Semi trước khi nhờ agent sửa design system: thang chữ, font và hình khối, density, tham số bộ sinh màu của
           brand. Mỗi thay đổi áp dụng ngay trên mọi trang của docs (nút ở góc dưới để tạm tắt và so với bản gốc) và được kiểm tra trên các brand mẫu. Ưng ý thì
           sang tab Thay đổi, copy lệnh cho agent: <code className="text-label">npm run lab:apply</code> ghi đúng file nguồn. Hướng dẫn: docs/LAB.md.
         </p>
@@ -49,7 +48,6 @@ export default function LabPage() {
           { key: "type", label: "Chữ", icon: "edit" },
           { key: "shape", label: "Hình khối", icon: "shapes" },
           { key: "color", label: "Màu", icon: "palette" },
-          { key: "compare", label: "So sánh brand", icon: "layers" },
           { key: "changes", label: "Thay đổi", icon: "code", count },
         ]}
       />
@@ -57,7 +55,6 @@ export default function LabPage() {
         {tab === "type" && <TypePanel lab={lab} />}
         {tab === "shape" && <ShapePanel lab={lab} />}
         {tab === "color" && <ColorPanel lab={lab} />}
-        {tab === "compare" && <ComparePanel lab={lab} />}
         {tab === "changes" && <ChangesPanel lab={lab} onReset={reset} />}
       </div>
     </>

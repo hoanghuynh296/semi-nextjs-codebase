@@ -13,13 +13,12 @@ import {
   runLocal,
   installPackage,
   nextFontCode,
-  semiStyles,
+  semiFonts,
   wireAgentsMd,
   wireGlobalsCss,
   wireNextConfig,
   wireBrand,
   wireSemiLintConfig,
-  wireStyle,
   wireProductLook,
 } from "./setup.mjs";
 
@@ -30,7 +29,6 @@ function parseArgs(argv) {
     appName: "Semi App",
     nextVersion: "latest",
     tailwindVersion: "latest",
-    style: null,
     brand: null,
     density: null,
     typeScale: null,
@@ -44,7 +42,7 @@ function parseArgs(argv) {
     else if (a === "--app-name" && argv[i + 1]) opts.appName = argv[++i];
     else if (a === "--next-version" && argv[i + 1]) opts.nextVersion = argv[++i];
     else if (a === "--tailwind-version" && argv[i + 1]) opts.tailwindVersion = argv[++i];
-    else if (a === "--style" && argv[i + 1]) opts.style = argv[++i];
+    else if (a === "--style" && argv[i + 1]) (++i, console.warn("--style: bỏ qua (từ 1.0 Semi chỉ có một diện mạo)"));
     else if (a === "--brand" && argv[i + 1]) opts.brand = argv[++i];
     else if (a === "--density" && argv[i + 1]) opts.density = argv[++i];
     else if (a === "--type-scale" && argv[i + 1]) opts.typeScale = argv[++i];
@@ -68,8 +66,8 @@ const THEMES = ["light", "dark", "system"];
  * opens in AppShell with its main figure and list; a store or landing page opens as a site with a top bar, a hero and
  * proof. The agent then builds the real screens from the brand book's Ứng dụng page.
  */
-function writeNewProjectStarter(webDir, { appName, style, guide = null, kind = "app", theme = "system", brandPkg = null }) {
-  const fonts = nextFontCode(style);
+function writeNewProjectStarter(webDir, { appName, fontSet, guide = null, kind = "app", theme = "system", brandPkg = null }) {
+  const fonts = nextFontCode(fontSet.fonts);
   const g = guide ?? {};
   const first = (x) => (Array.isArray(x) ? x[0] : x);
   const sample = g.brief?.sample ?? {};
@@ -84,7 +82,7 @@ ${fonts.importLine}
 import { ConfirmHost, TaskHost, ThemeProvider, ThemeScript, ToastHost } from "@semi/ui";
 import "./globals.css";
 
-// Fonts (${style.name})
+// Fonts (${fontSet.name})
 ${fonts.decls}
 
 export const metadata: Metadata = {
@@ -323,12 +321,6 @@ if (opts.theme && !THEMES.includes(opts.theme)) {
 opts.density ??= KINDS[opts.kind].density;
 opts.typeScale ??= KINDS[opts.kind].typeScale;
 opts.theme ??= KINDS[opts.kind].theme;
-const styles = semiStyles();
-if (!opts.brand) opts.style ||= styles.default; // with a brand, its default style once the kit is installed
-if (opts.style && !styles.styles.some((s) => s.id === opts.style)) {
-  console.error(`--style ${opts.style}: không có style này. Chọn: ${styles.styles.map((s) => s.id).join(", ")}`);
-  process.exit(2);
-}
 const cnaTag = opts.nextVersion && opts.nextVersion !== "keep" ? opts.nextVersion : "latest";
 console.log(`Scaffolding new Next.js (${cnaTag}) + Tailwind project in ${webDir}...`);
 const create = spawnSync(
@@ -351,11 +343,6 @@ if (opts.brand) {
   }
   brandPkg = b.name;
   brandKit = JSON.parse(readFileSync(kitFile, "utf8"));
-  opts.style ||= brandKit.styles.default;
-  if (!brandKit.styles.allowed.includes(opts.style)) {
-    console.error(`--style ${opts.style}: brand ${brandKit.name} chỉ cho phép ${brandKit.styles.allowed.join(", ")}`);
-    process.exit(2);
-  }
 }
 const { spec } = resolveTargetSpec({ range: brandKit?.semi });
 
@@ -392,19 +379,15 @@ if (brandPkg) {
   console.log(wired.message);
   if (!wired.ok) process.exit(2);
 }
-const chosenStyle = (semiStyles(webDir) || styles).styles.find((s) => s.id === opts.style) ?? styles.styles[0];
-// Fonts: the brand's when there is one, else the style's.
+// Fonts: the brand's when there is one, else those of Semi's one look.
 writeNewProjectStarter(webDir, {
   appName: opts.appName,
-  style: brandKit ? { ...chosenStyle, name: brandKit.name, fonts: brandKit.fonts } : chosenStyle,
+  fontSet: brandKit ? { name: brandKit.name, fonts: brandKit.fonts } : { name: "Semi", fonts: semiFonts(webDir) ?? semiFonts() ?? [] },
   guide: brandKit?.guide,
   kind: opts.kind,
   theme: opts.theme,
   brandPkg,
 });
-const styled = wireStyle(webDir, opts.style);
-console.log(styled.message);
-if (!styled.ok) process.exit(2);
 if (opts.density || opts.typeScale) {
   const look = wireProductLook(webDir, { density: opts.density, typeScale: opts.typeScale });
   console.log(look.message);
@@ -418,4 +401,4 @@ const failed = [
   spawnSync(pm, ["run", "build"], { cwd: webDir, stdio: "inherit" }),
 ].some((r) => r.status !== 0);
 if (failed) process.exit(1);
-console.log(`\nNew Semi app (@semi/ui v${installedVersion}${brandKit ? `, brand ${brandKit.name}` : ""}, style ${opts.style}, ${opts.kind}, theme ${opts.theme}) created and verified in ${webDir}`);
+console.log(`\nNew Semi app (@semi/ui v${installedVersion}${brandKit ? `, brand ${brandKit.name}` : ""}, ${opts.kind}, theme ${opts.theme}) created and verified in ${webDir}`);

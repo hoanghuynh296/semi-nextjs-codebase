@@ -1,6 +1,6 @@
 ---
 name: semi-ui
-description: Build or change UI in an app that uses the Semi Design System (@semi/ui) - a page, a form, a table, a dashboard, an AI chat or agent view, its texts in the brand's voice, or the app's style (Flat, Soft, Sharp). Finds the right Semi component or page block for each need (semi MCP tools or `npx semi search / docs / example / add`), starts from its example, composes it without local primitives, then checks with semi-lint. Use automatically for any UI work in a project with semi-lint.json or @semi/ui in package.json; the user does not need to type a command (/semi-ui also works).
+description: Build or change UI in an app that uses the Semi Design System (@semi/ui) - a page, a form, a table, a dashboard, an AI chat or agent view, its texts in the brand's voice, or the app's density and type scale. Finds the right Semi component or page block for each need (semi MCP tools or `npx semi search / docs / example / add`), starts from its example, composes it without local primitives, then checks with semi-lint. Use automatically for any UI work in a project with semi-lint.json or @semi/ui in package.json; the user does not need to type a command (/semi-ui also works).
 ---
 
 # Build UI with Semi
@@ -76,21 +76,10 @@ If neither works (`semi_status` answers, or `npx semi` is missing), the app has 
    size in both themes), or evaluate the output of their `--snippet` on the page with a browser tool. Fix every hit
    before finishing. Report what you used and any gap you filed.
 
-## Change the app's style (Flat, Soft, Sharp)
+## The app's look: density and type scale
 
-When the user asks for another style ("đổi sang Soft"). A style changes neutral colours, fonts, radii, card border /
-shadow and control sizes for the whole app; components, layout, the accent and status colours stay. With a brand kit
-only the brand's allowed styles can be picked; another one is added in the brand repo with `/semi-brand`.
-
-1. Show the current style and the choices: `node "<path-to-this-skill>/../semi-new-app/scripts/style.mjs" --cwd "<dir>"`.
-   Ask only when the user did not name one.
-2. Screenshots of 3–5 key pages in both themes, when the app runs.
-3. Switch: the same command with `--to "<id>" [--only "<app-dir>"]`. It sets `"style"` in `semi-lint.json` and
-   `data-style` on `<html>`, and prints `next/font` lines when the layout lacks the style's fonts: add them.
-4. Screenshots after. A place that did not change uses raw classes (`bg-white`, `rounded-lg`, `h-[34px]`): a lint hit,
-   fixed by `/semi-check`. Report old → new style per app and the files changed.
-
-Density and type scale are the product's too (not the brand's: one brand has a dense dashboard and a roomy store).
-"Gọn hơn", "thoáng hơn", "chữ tiêu đề to hơn": the same script with `--density compact|regular|airy` and / or
+Since 1.0 Semi has one look for every brand (no Flat / Soft / Sharp styles; a leftover `data-style` does nothing). What
+a product still chooses: density and type scale (the product's, not the brand's: one brand has a dense dashboard and a roomy store).
+"Gọn hơn", "thoáng hơn", "chữ tiêu đề to hơn": `node "<path-to-this-skill>/../semi-new-app/scripts/look.mjs" --cwd "<dir>"` with `--density compact|regular|airy` and / or
 `--type-scale even|contrast`; it sets `"density"` / `"typeScale"` in `semi-lint.json` and `data-density` /
 `data-type-scale` on `<html>`. Never change paddings or text sizes by hand for this.

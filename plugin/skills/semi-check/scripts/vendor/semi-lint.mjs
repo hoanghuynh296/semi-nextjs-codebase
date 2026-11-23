@@ -27,7 +27,6 @@
 //     "keep": { "tables": "reports need dense tables" }, // /semi-check structural checks the team chose to keep
 //                                                     // (reason string = whole app, array = path prefixes)
 //     "brand": "@3dnoobs/brand",                   // the app's brand kit (docs/BRANDS.md): turns on brand-override
-//     "style": "soft",                             // the app's style (docs/STYLES.md), = <html data-style> in the layout
 //     "density": "compact", "typeScale": "contrast" // the product's look (DESIGN_SYSTEM.md §19), = <html data-density / data-type-scale>
 //   }
 // A rule that the Semi docs add and that can be grepped belongs here too (change it in the semi repo, not per app).
@@ -39,13 +38,13 @@ import { analyse } from "./classes.mjs";
 /** [id, regex, message] */
 export const HARD = [
   ["font-weight", /font-(bold|extrabold|black)\b/, "weights are font-medium / font-semibold only"],
-  ["tiny-text", /text-\[(8|9|10)px\]/, "minimum text size is text-caption (11px)"],
+  ["tiny-text", /text-\[(8|9|10)px\]/, "minimum text size is text-tag / text-badge (10px)"],
   ["uppercase-label", /uppercase tracking-(wide|wider|widest)|tracking-(wide|wider|widest) uppercase/, "labels are sentence case"],
   ["native-select", /<select\b/, "use CustomSelect from @semi/ui"],
   [
     "tw-text-size",
     /\btext-(xs|sm|base|lg|xl)\b/,
-    "use the type scale: text-caption 11 · text-label 12 · text-ui 14 · text-ui-lg 15 (compact 13 · 14) · text-title 15 · text-title-lg 16, KPI figures text-figure sm:text-heading (KpiCard), titles text-heading sm:text-display (PageTitle)",
+    "use the type scale (docs/TOKENS.md): text-tag 10 · text-ui 12 (the base UI size) · text-copy 14 · text-lead 15 (compact 13 · 14) · text-figure 18 · text-section 20 · text-tab-xl 28 · text-title-xl 44 · text-hero 36",
   ],
   ["grey-surface", /bg-gray-(800|900)|border-gray-700/, "use the surface tokens (bg-panel, border-line…)"],
   [
@@ -77,7 +76,7 @@ export const HARD = [
   ["external-link", /window\.open\(|<(?!ExternalLink\b)[A-Za-z][\w.]*\b[^>]*\bhref=\{?["'`]https?:\/\//, "links to other sites use ExternalLink from @semi/ui"],
   [
     "app-chrome-copy",
-    /h-(?:\[34px\]|control) px-4 rounded-(?:lg|control) text-(?:\[12px\]|label) font-semibold|p-1 sm:p-1\.5 rounded-(?:2xl|panel) z-20|rounded-(?:2xl|panel) p-1 gap-1 select-none shadow-(?:xl|float)/,
+    /h-(?:\[34px\]|control) px-4 rounded-(?:lg|control) text-(?:\[12px\]|label|ui) font-semibold|p-1 sm:p-1\.5 rounded-(?:2xl|panel) z-20|rounded-(?:2xl|panel) p-1 gap-1 select-none shadow-(?:xl|float)/,
     "tool-app headers / canvas controls use @semi/ui/styles (headerPrimary, VIEWPORT_TOOLBAR, VIEWPORT_PILL…), not copies",
   ],
   [
@@ -94,7 +93,7 @@ export const HARD = [
 /** CSS rule of apps that use a brand kit ("brand" in semi-lint.json): the brand alone sets these variables. */
 export const BRAND_OVERRIDE = [
   "brand-override",
-  /(?:^|[\s;{])--(?:color-(?:primary|secondary|accent|on-accent)[\w-]*|semi-[\w-]+|brand-[\w-]+|density-spacing|spacing|font-(?:sans|display|figure|weight-title)(?:-family)?)\s*:/,
+  /(?:^|[\s;{])--(?:color-(?:primary|secondary|on-primary|on-secondary|accent|on-accent)[\w-]*|semi-[\w-]+|brand-[\w-]+|density-spacing|spacing|font-(?:sans|display|figure|weight-title)(?:-family)?)\s*:/,
   "this app uses a brand kit: its colours, fonts and Semi tokens come only from the brand, density and type scale from semi-lint.json (change them in the brand repo with /semi-brand)",
 ];
 /** Rules that are opt-in: they only run on the path prefixes listed in config "only". */
@@ -105,7 +104,7 @@ export const RATCHET = [
   [
     "no-literal-palette",
     null,
-    "No physical neutral / white / black colour classes (bg-white, text-slate-900, border-gray-200, divide-zinc-100, from-white, ring-slate-300, dark:bg-slate-800 …). Use semantic tokens: bg-canvas/app/panel/field/raised, text-contrast/body/muted, border-line/line-hover/divider. white/black with an alpha (bg-white/10) stays allowed.",
+    "No physical neutral / white / black colour classes (bg-white, text-slate-900, border-gray-200, divide-zinc-100, from-white, ring-slate-300, dark:bg-slate-800 …). Use semantic tokens: bg-canvas/app/panel/field/raised, text-strong/body/muted/faint, border-line/line-hover/divider/field-line/outline-line. white/black with an alpha (bg-white/10) stays allowed.",
   ],
   [
     "no-solid-pastel-surfaces",
@@ -115,22 +114,22 @@ export const RATCHET = [
   [
     "no-fixed-tone-text",
     null,
-    "No fixed chromatic text shades (text-emerald-400, text-rose-700, dark:text-sky-300, fill-amber-500 …): one shade cannot pass contrast in both themes. Use text-accent-fg, text-danger-fg / success-fg / warning-fg / info-fg or text-tone-<hue>.",
+    "No fixed chromatic text shades (text-emerald-400, text-rose-700, dark:text-sky-300, fill-amber-500 …): one shade cannot pass contrast in both themes. Use text-strong / text-body / text-muted, text-danger-fg / success-fg / warning-fg / info-fg or text-tone-<hue>.",
   ],
   [
     "accent-state-token",
     null,
-    "Accent states use themed tokens, not the brand scale: ring-focus (focus ring), border-focus (focused field), bg-accent-subtle / bg-accent-subtle-hover (selected or hover tint), border-accent-line (selected border), bg-accent (fill). primary-N/alpha is not checked in either theme and disappears for light brands.",
+    "States use the neutral tokens, never the brand scale: ring-focus (focus ring), border-focus / border-field-line-focus (focused field), bg-item-hover (hover), bg-item-selected (selected item, the open record), bg-item-checked (checked rows), border-outline-line (selected / outline border). primary-N/alpha is not checked in either theme and disappears for light brands.",
   ],
   [
     "primary-fill",
     null,
-    "Fills and borders use the themed accent tokens, not the brand scale: bg-accent hover:bg-accent-hover text-on-accent (main action, \"on\" mark), border-accent-line (selected) / border-focus (focused). The brand colour is one step of primary-*, so bg-primary-500 turns pale or wrong with a brand kit; primary-* is for charts and illustrations (\"skip\" those files).",
+    "There is no brand scale (primary-50…900): the brand fill is bg-primary hover:bg-primary-hover text-on-primary (or bg-secondary …), only for the main button and attention badges / tags; an \"on\" mark is bg-inverted text-on-inverted; borders are border-outline-line (selected) / border-focus (focused). Charts use the chart-* tokens (\"skip\" illustration files).",
   ],
   ["hex-colour-class", null, "No arbitrary colour values (bg-[#fff], text-[rgb(…)], border-[hsl(…)]): use colour tokens."],
   ["literal-colour-value", null, "No literal CSS colours in code (\"#fff\", \"rgb(…)\" in style props or configs): use var(--color-…) tokens."],
-  ["radius-token", null, "Radii are style tokens: rounded-chip (marks, checkboxes, inline code) · rounded-control (buttons, inputs, tiles, rows) · rounded-card · rounded-panel (hero, modal, drawer, sidebar), plus rounded-full / rounded-none. Not rounded / rounded-lg / rounded-xl / rounded-[Npx]: those do not follow the app's style."],
-  ["arbitrary-text-size", null, "Use the type scale instead of text-[Npx]: text-caption 11 · label 12 · ui 14 · ui-lg 15 · title 15 · title-lg 16 · figure 18 · heading-sm 20 · heading 22 · heading-lg 24 · display 26."],
+  ["radius-token", null, "Radii are shape tokens: rounded-chip (marks, checkboxes, inline code) · rounded-control (buttons, inputs, tiles, rows) · rounded-card · rounded-panel (hero, modal, drawer, sidebar), plus rounded-full / rounded-none. Not rounded / rounded-lg / rounded-xl / rounded-[Npx]: those do not follow the Semi radii."],
+  ["arbitrary-text-size", null, "Use the type scale instead of text-[Npx]: text-tag 10 · ui 12 · copy 14 · lead 15 · figure 18 · section 20 · tab-xl 28 · hero 36 · title-xl 44 (docs/TOKENS.md)."],
   [
     "card-padding",
     /(?:<Card\b[^>]*?\bclassName=[^>]*?|\$\{CARD(?:_HOVER)?\}[^`]*?|\bcn\(\s*CARD(?:_HOVER)?\b[^)]*?|\brounded-card\b[^"'`\n]*?)(?<![\w-])p-(?:0\.5|1|1\.5|2|2\.5)(?![\w.])|(?<![\w-])p-(?:0\.5|1|1\.5|2|2\.5)(?![\w.])(?=[^"'`\n]*\brounded-card\b)/g,
@@ -181,7 +180,7 @@ export const RATCHET = [
   ],
   ["custom-spinner", /\banimate-spin\b/g, "Work in progress is <Spinner> (or Button loading, Skeleton, Progress), not a hand-made spinning border."],
   ["arbitrary-value", null, "No arbitrary spacing, z-index, tracking or opacity (p-[13px], gap-[7px], z-[9999], bg-panel/[0.05], bg-[var(--semi-…)]): use the spacing roles (p-card, gap-stack…), the z-* layers, the token classes. Widths, heights and grid templates may be arbitrary."],
-  ["tw-shadow", null, "Flat UI: no shadow-sm…2xl. Cards take shadow-card (the style sets it), popovers shadow-overlay, floating controls shadow-float."],
+  ["tw-shadow", null, "Flat UI: no shadow-sm…2xl. Cards take shadow-card (a shape token), popovers shadow-overlay, floating controls shadow-float."],
   ["text-case", null, "Labels and buttons are sentence case: no uppercase class."],
   ["leading-override", null, "Every text size carries its line height (1.5 body, 1.25 titles): no leading-* except leading-tight on a multi-line title or leading-none in a one-line control."],
   ["css-raw-value", null, "Stylesheets use tokens too: no colour literals (#fff, rgb(), hsl(), oklch()), border-radius or font-size values in CSS. Use var(--color-…), the radius and text tokens, or utility classes."],

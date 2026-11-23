@@ -114,7 +114,7 @@ Removed sizes and their 1.0 names (the `1.0.0-foundation` migration rewrites the
 
 The one look's radii, card shadow and border, control sizes and spacing unit are the `shape` group of
 `tokens/tokens.json`: `rounded-chip` 4 · `rounded-control` 8 · `rounded-card` 12 · `rounded-panel` 16, `shadow-card`
-(none), `border-card` (transparent 1px), `h-control` 34, `h-field` 36, `font-title` 500, the density unit `--spacing`.
+(none), `border-card` (transparent 1px), `h-control` 34, `h-field` 36, `font-title` 500, `font-figure` (big numbers, the sans), the density unit `--spacing`.
 
 ## Motion
 

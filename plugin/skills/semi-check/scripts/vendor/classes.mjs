@@ -68,18 +68,18 @@ export function colourRule(utility) {
   if (c.kind === "arbitrary") return "hex-colour-class";
   if (c.kind === "white-black") return c.alpha ? null : "no-literal-palette"; // white/10 overlays and sheens stay allowed
   if (c.kind === "neutral") return "no-literal-palette";
-  // Brand scale as a solid fill or border (bg-primary-500, border-primary-500): the brand colour is one step of the
-  // scale, so a light brand fills pale. Fills read bg-accent (+ text-on-accent), borders border-accent-line / -focus;
-  // primary-* stays for charts and illustrations (skip those files).
+  // Brand scale as a solid fill or border (bg-primary-500, border-primary-500): there is no brand scale in 1.0. The
+  // brand fill is bg-primary (+ text-on-primary) for the main button and attention marks; borders border-outline-line /
+  // border-focus (skip illustration files).
   if (c.family === "primary" && !c.alpha && (c.prefix === "bg" || c.prefix.startsWith("border"))) return "primary-fill";
   // Brand scale as a state colour (ring-primary-500/50, bg-primary-500/15, border-primary-500/30): not themed, so it
-  // vanishes for light brands on light surfaces (yellow ring ≈ 1.3:1). Accent / focus tokens are themed and checked.
+  // vanishes for light brands on light surfaces (yellow ring ≈ 1.3:1). The neutral focus / item-* tokens are themed and checked.
   if (c.family === "primary" && !TEXTLIKE.has(c.prefix) && (c.alpha || c.prefix === "ring" || c.prefix === "outline" || c.prefix.startsWith("border")))
     return "accent-state-token";
   // Chromatic hue
   if (TEXTLIKE.has(c.prefix)) return "no-fixed-tone-text";
   if (SURFACE.has(c.prefix) && c.shade <= 200 && !c.alpha) return "no-solid-pastel-surfaces";
-  // A chromatic focus or state ring (ring-blue-500, outline-sky-400): focus is ring-focus, selection border-accent-line.
+  // A chromatic focus or state ring (ring-blue-500, outline-sky-400): focus is ring-focus, selection bg-item-selected / border-outline-line.
   if ((c.prefix === "ring" || c.prefix === "outline") && c.kind === "hue") return "accent-state-token";
   return null;
 }
@@ -91,8 +91,8 @@ export function sizeRule(utility) {
 
 const RADIUS = /^rounded(?:-(?:t|b|l|r|s|e|tl|tr|bl|br|ss|se|es|ee))?(?:-(sm|md|lg|xl|2xl|3xl|\[[^\]]+\]))?$/;
 /**
- * rounded / rounded-lg / rounded-t-xl / rounded-[10px] → "radius-token". Radii are style tokens (rounded-chip ·
- * control · card · panel, plus rounded-full / rounded-none), so a page follows the app's style (docs/STYLES.md).
+ * rounded / rounded-lg / rounded-t-xl / rounded-[10px] → "radius-token". Radii are shape tokens (rounded-chip ·
+ * control · card · panel, plus rounded-full / rounded-none), docs/TOKENS.md.
  */
 export function radiusRule(utility) {
   return RADIUS.test(utility) ? "radius-token" : null;
