@@ -434,6 +434,12 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   `PageTitle`), for pages whose few filters and actions fit beside the title: the content starts higher. In (b) the
   title is still the page `h1` in display type and text only; filters follow it, actions sit at the right end; narrow
   screens wrap filters and actions below the title. Text buttons stay in the toolbar's `right` slot in both layouts.
+- **List page header (#115, #120):** a list page with a `StickyContextBar` opens with its title row, `PageTitle` with
+  `actions`: the title on the left, the page's one action on the right (one `Button variant="primary"` or secondary,
+  icon + text, optionally a `RefreshButton` before it; more actions in a ⋯ `Menu`); below `sm` the actions wrap onto
+  their own row under the title. The title row scrolls away, the bar under it stays. `MinimalHeader` is the top row of
+  a detail or settings page (a `Breadcrumb` and one action), not of a list page; a `SubpageToolbar` page keeps its
+  actions in the toolbar and gives `PageTitle` no `actions`.
 - Each sub-page opens with a large display title (text only), followed by the toolbar row (or sharing it, above): pill filter tabs
   (`CHIP_BASE` + `chipClass(active)`) on the left, icon-only primary CTA + secondary controls on the right. The row
   carries `STICKY_TOOLBAR` so the filters stay on top of the scrolling content (below the safe area on phones).
@@ -444,10 +450,13 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   250 ms debounce, Escape clears, `focusKey="/"`; a history push of `useFilterParams` / `useDetailParam` / `openDetail`
   during the debounce sends the pending text first, onto the current entry, so Back keeps the query), then the filters, then a `ResultLine` ("“query” · N kết quả", the
   sort on the right). On `md+` the filters are a `FilterChipRow`: one line of chips (`h-8 rounded-full`, `bg-tint`,
-  solid `bg-inverted` with the value or "Nhãn · N" when on), each a multi-select `Popover` or a switch chip; the row
-  scrolls sideways with ‹ › and never wraps; "Xoá lọc" shows while one is on; a `ViewSwitch` (list ↔ grid, density)
-  ends it. Below `md` a `PhoneFilterBar` (views · "Bộ lọc · N" · settings) opens a `FilterPanel`: full screen, sort
-  first, booleans as switches, one accordion per filter, "Xem N kết quả" at the bottom (a side sheet from `sm`, also for
+  solid `bg-inverted` with the value or "Nhãn · N" when on), each a multi-select `Popover`, a single-choice radio
+  `Menu` (`kind: "single"`, "Hộp thư: Tất cả", `menuitemradio`; `clearValue` is the default option, never in the URL
+  and never an active filter) or a switch chip; the row scrolls sideways with ‹ › and never wraps; "Xoá lọc" shows
+  while one is on; the page's views (`Pills`: Đang mở · Đã đóng · Tất cả; the default may be other than "all") lead it
+  in `leading`, a `ViewSwitch` (list ↔ grid, density) ends it in `trailing`. Below `md` a `PhoneFilterBar` (views as
+  `typeItems` radio items · "Bộ lọc · N" · settings) opens a `FilterPanel`: full screen, sort first, booleans as
+  switches, one accordion per filter (a radio group for a single one), "Xem N kết quả" at the bottom (a side sheet from `sm`, also for
   a desktop page with more filters than chips). Phone chrome stays within two rows plus the result line (P1). State
   lives in the URL: `useFilterParams(specs)`, or `readFilters` / `writeFilters` / `clearFilters` / `activeFilterCount`
   on your router's params (`?f.status=new&f.status=won&f.big=1`); a filter change is a history entry, so Back undoes it.
@@ -604,7 +613,7 @@ Related actions are one control, not a row of separate buttons (`Menu`, `SplitBu
 | G12 | A detail header (page or `DetailOverlay` side panel) has one primary (a `SplitButton` when it has variants) + ⋯. |
 
 `Menu` items carry an icon, a `description` line, a `shortcut` (or a short hint such as a port), `checked`
-(menuitemcheckbox), `loading`, `href` (a `next/link`), `disabled` (a string says why and keeps it reachable), `hidden`
+(menuitemcheckbox; with `radio`, menuitemradio: one choice of a set, and the menu opens on the checked one), `loading`, `href` (a `next/link`), `disabled` (a string says why and keeps it reachable), `hidden`
 (left out: a permission or device the user lacks; an empty group disappears) and `group` (a `text-overline` heading,
 a divider between groups). A file picker item calls the hidden input's `click()` in `onSelect`. Below `sm` a `Menu`
 opens as a bottom sheet (`sheet={false}` keeps the dropdown). Lint rules for G7–G11 come with #94 PR 6.
@@ -861,8 +870,8 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 |---|---|
 | `@semi/ui` → `AppShell.tsx`, `MobileTabBar.tsx` | `AppShell` (floating Bento 2-panel frame: Create, sections, pinned group, utilities + account; `w-60` sidebar or icon rail, the rail on `md`; phone drawer; one level of sub-items; mega items), `useAppShell` (is the sidebar showing sub-items), `MobileTabBar`, `TAB_BAR_PAD` (opt-in `mobileNav="tabs"`) (§4) |
 | `MegaMenu.tsx`, `MinimalHeader.tsx`, `TextTabs.tsx` | `MegaMenu` (flyout of category columns, `text-overline` headers, New badges, See all), `MinimalHeader` (breadcrumb left, one link + one primary right), `TextTabs` (large text tabs as the page heading, ARIA tabs, `href` for URL-driven views) (§4) |
-| `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle`, `PageTabsTitle` (underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh; phone layout with `filters` / `collapseFilters` / `secondaryActions`), `ToolbarFilters` (§4a) |
-| `SearchPill.tsx`, `FilterChipRow.tsx`, `ViewSwitch.tsx`, `FilterPanel.tsx`, `filterParams.ts` | `StickyContextBar` (sticky search + chips + result line), `SearchPill` (wide pill search, debounce, `/`), `ResultLine` (query · N kết quả + sort), `SortDef`, `FilterChipRow` (one-line chips, ‹ ›, Xoá lọc, trailing tools), `FilterChip`, `FilterOptions` (the checkbox list of one filter), `useFilterParams` (filter state in the URL, Back / Forward), `ViewSwitch` (list ↔ grid, density), `PhoneFilterBar` (views · Bộ lọc · settings), `FilterPanel` (full-screen / side-sheet filters); URL helpers `readFilters`, `readFilterValues`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, types `FilterSpec`, `FilterDef`, `FilterOption`, `FilterValues` (§4) |
+| `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle` (`actions`: the page's action on the title row), `PageTabsTitle` (underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh; phone layout with `filters` / `collapseFilters` / `secondaryActions`), `ToolbarFilters` (§4a) |
+| `SearchPill.tsx`, `FilterChipRow.tsx`, `ViewSwitch.tsx`, `FilterPanel.tsx`, `filterParams.ts` | `StickyContextBar` (sticky search + chips + result line), `SearchPill` (wide pill search, debounce, `/`), `ResultLine` (query · N kết quả + sort), `SortDef`, `FilterChipRow` (one-line chips, ‹ ›, Xoá lọc, leading views, trailing tools), `FilterChip`, `FilterOptions` (the checkbox list of one filter), `useFilterParams` (filter state in the URL, Back / Forward), `ViewSwitch` (list ↔ grid, density), `PhoneFilterBar` (views · Bộ lọc · settings), `FilterPanel` (full-screen / side-sheet filters); URL helpers `readFilters`, `readFilterValues`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, types `FilterSpec`, `FilterDef`, `FilterOption`, `FilterValues` (§4) |
 | `SplitButton.tsx`, `CardActions.tsx`, `DetailOverlay.tsx` | `SplitButton` (main action + ▾ `Menu` of its variants, one button on phones, G1), `CardActions` (hover / focus icon actions + ⋯ on cards, ⋯ only on touch), `DetailOverlay` (record over its list: ‹ › with n / N, side panel, scroll kept), `useDetailParam` (`?open=` in the URL, Back closes), `openDetail` (open one from anywhere on the route), types `CardAction`, `DetailParamState` (§4, §9) |
 | `WorkspaceLayout.tsx`, `GuidedEmptyState.tsx`, `FeatureIntro.tsx`, `HintTextarea.tsx` | `WorkspaceLayout` (page type workspace: control panel + sticky main action, result), `WorkspaceHeader` (back + tool name, tabs), `WorkspaceSection` (`text-overline` label + counter), `Stepper` (− value +, spinbutton), `GuidedEmptyState` (EmptyState variant guided: step carousel or numbered steps, starting points), `FeatureIntro` (once-per-user feature dialog, `localIntroStore`), `HintTextarea` (@ / `/` hints and suggestions), types `GuideStep`, `GuideTemplate`, `GuideTemplateGroup`, `FeatureIntroSlide`, `FeatureIntroStore`, `HintToken`, `HintTrigger` (§4, §9b, §13, §14) |
 | `KpiCard.tsx`, `Modal.tsx` | `KpiCard` (metric card in the brand's figure font, neutral icon, `featured` for the screen's main number, shimmer), `Modal` (shared portal dialog with `MODAL_HEAD` + `MODAL_FOOT`) (§13, §14) |
@@ -930,6 +939,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Secondary task beside the page | `Drawer` (right / left / bottom / top sheet) |
 | Sections of one record | `Tabs` (underline; `segmented` inside a toolbar); 2–4 sibling views as the page heading → `TextTabs` (or `PageTabsTitle`) |
 | Top row of a detail / settings page | `MinimalHeader` (`Breadcrumb` left, one link + one primary right) |
+| Title row of a list page (title + create action + refresh) | `PageTitle actions` above the `StickyContextBar` (block `list-page`) |
 | Many destinations of one area in a few groups | `MegaMenu` (AppShell item `mega`, or its own trigger) |
 | Compared rows | `Table` + `THead` / `TBody` / `TR` / `TH` / `TD numeric`; cells stay on one line and the table scrolls sideways on phones (`TD wrap` for a long-text column); entity overviews stay Bento `Card`s |
 | Progress / quota | `Progress` (determinate or indeterminate) |

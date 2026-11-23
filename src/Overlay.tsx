@@ -133,6 +133,11 @@ export interface MenuItem {
   hidden?: boolean;
   /** A toggle or the current choice: shows a check and makes the item `menuitemcheckbox` with aria-checked. */
   checked?: boolean;
+  /**
+   * With `checked`: the item is one choice of a set (`menuitemradio`): a view, a mailbox, a sort. The menu opens on
+   * the checked one.
+   */
+  radio?: boolean;
   /** The action is running: a spinner in place of the icon; the item cannot be picked again (aria-busy). */
   loading?: boolean;
   /** Draw a divider above this item. */
@@ -192,7 +197,12 @@ function MenuPanel({
 }) {
   const items = useMemo(() => arrangeMenuItems(raw), [raw]);
   const enabled = items.map((it, i) => (reachable(it) ? i : -1)).filter((i) => i >= 0);
-  const [active, setActive] = useState(() => (initial === "last" ? enabled[enabled.length - 1] : initial === "first" ? enabled[0] : initial) ?? 0);
+  const [active, setActive] = useState(() => {
+    // a set of choices opens on the current one (APG menu radio pattern)
+    const current = items.findIndex((it) => it.radio && it.checked && reachable(it));
+    if (initial === "first" && current >= 0) return current;
+    return (initial === "last" ? enabled[enabled.length - 1] : initial === "first" ? enabled[0] : initial) ?? 0;
+  });
   const base = useId();
   // runs of items: a group with a heading becomes a role=group labelled by it
   const segments = useMemo(() => {
@@ -280,7 +290,7 @@ function MenuPanel({
             const reason = typeof it.disabled === "string" ? it.disabled : undefined;
             const descId = it.description || reason ? `${base}-d-${i}` : undefined;
             const common = {
-              role: it.checked !== undefined ? "menuitemcheckbox" : "menuitem",
+              role: it.checked === undefined ? "menuitem" : it.radio ? "menuitemradio" : "menuitemcheckbox",
               "aria-checked": it.checked,
               "aria-disabled": it.disabled ? true : undefined,
               "aria-busy": it.loading || undefined,

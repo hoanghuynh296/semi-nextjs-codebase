@@ -60,3 +60,20 @@ test("a custom prefix", () => {
   assert.deepEqual(readFilterValues(p, SPECS, "filter_").status, ["new"]);
   assert.deepEqual(readFilterValues(p, SPECS).status, []);
 });
+
+test("a single filter (#119): one value in the URL, clearValue never written and never active", () => {
+  const BOX = [
+    { key: "box", label: "Hộp thư", kind: "single", clearValue: "all", options: [{ value: "all", label: "Tất cả" }, { value: "sales", label: "Bán hàng" }, { value: "billing", label: "Kế toán" }] },
+    { key: "folder", label: "Thư mục", kind: "single" }, // options load later
+  ];
+  // the first known value wins; unknown values and the default are dropped
+  assert.deepEqual(readFilterValues("f.box=nope&f.box=billing&f.box=sales", BOX).box, ["billing"]);
+  assert.deepEqual(readFilterValues("f.box=all", BOX).box, []);
+  assert.deepEqual(readFilterValues("f.folder=x&f.folder=y", BOX).folder, ["x"]);
+  // writing keeps one value; the default removes the param
+  assert.equal(writeFilters("q=a", { box: ["sales", "billing"] }, BOX).toString(), "q=a&f.box=sales");
+  assert.equal(writeFilters("f.box=sales", { box: ["all"] }, BOX).has("f.box"), false);
+  assert.equal(activeFilterCount(readFilters("f.box=all", BOX)), 0);
+  assert.equal(activeFilterCount(readFilters("f.box=sales", BOX)), 1);
+  assert.equal(clearFilters("f.box=sales&f.folder=x&q=a", BOX).toString(), "q=a");
+});

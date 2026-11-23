@@ -1,13 +1,14 @@
 {
   "title": "Page title",
   "group": "Navigation & layout",
-  "description": "PageTitle is the large display title of a page (text only). PageTabsTitle turns it into 2–4 underline tabs for sibling pages.",
+  "description": "PageTitle is the large display title of a page (text only), with the page's own action on its row (`actions`). PageTabsTitle turns it into 2–4 underline tabs for sibling pages.",
   "components": [
     "PageTitle",
     "PageTabsTitle"
   ],
   "when": [
     "The first line of every page (PageTitle).",
+    "A list page's title row: the title and the page's action (one primary or secondary, plus RefreshButton) above a StickyContextBar (PageTitle actions).",
     "2–4 sibling views of one area: Máy in / Job in (PageTabsTitle)."
   ],
   "instead": [
@@ -18,18 +19,28 @@
     {
       "need": "A filter",
       "use": "Pills"
+    },
+    {
+      "need": "The top row of a detail or settings page (a Breadcrumb and one action)",
+      "use": "MinimalHeader"
     }
   ],
   "a11y": [
-    "PageTitle is the page h1. PageTabsTitle is a tablist with arrow-key navigation."
+    "PageTitle is the page h1; its actions follow it in the reading and tab order. PageTabsTitle is a tablist with arrow-key navigation."
   ],
   "notes": [
-    "No subtitle under the title and no text buttons on the title row: actions go to PageActions or the toolbar."
+    "No subtitle under the title. Title-row actions are one primary (or secondary) with icon and text, optionally a RefreshButton before it; more actions go in a ⋯ Menu. Filters never go on the title row: they belong in the StickyContextBar or SubpageToolbar under it.",
+    "Below sm the actions wrap onto their own row under the title.",
+    "A page whose SubpageToolbar carries the actions leaves `actions` out."
   ],
   "examples": [
     {
       "file": "title",
       "title": "PageTitle"
+    },
+    {
+      "file": "actions",
+      "title": "With the page's action"
     },
     {
       "file": "tabs",

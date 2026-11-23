@@ -1,7 +1,7 @@
 {
   "title": "Sticky context bar",
   "group": "Navigation & layout",
-  "description": "The top of a list page that stays while the rows scroll under it: SearchPill, then FilterChipRow (PhoneFilterBar on phones), then ResultLine. An opaque STICKY_TOOLBAR strip, below the safe area on phones.",
+  "description": "The top of a list page that stays while the rows scroll under it: SearchPill, then FilterChipRow (PhoneFilterBar on phones), then ResultLine. An opaque STICKY_TOOLBAR strip, below the safe area on phones. The title row with the page's action (PageTitle actions) sits above it and scrolls away.",
   "components": [
     "StickyContextBar"
   ],
@@ -15,6 +15,10 @@
       "use": "SubpageToolbar"
     },
     {
+      "need": "The page's create action and refresh",
+      "use": "PageTitle actions, above this bar"
+    },
+    {
       "need": "Actions of one record",
       "use": "MinimalHeader or PageActions"
     }
@@ -24,8 +28,9 @@
     "Its children keep their own names; the result line announces the new count."
   ],
   "notes": [
-    "One per page, right under the page heading (TextTabs or PageTitle); the page's primary action stays in the header (MinimalHeader), not in this bar.",
+    "One per page, right under the page heading: PageTitle with `actions` (the page's one primary or secondary + RefreshButton) or TextTabs. The page's actions stay on that title row, never in this bar (it holds search, filters and the result line only).",
     "Desktop and iPad show FilterChipRow (max-md:hidden on the phone bar's sibling), phones PhoneFilterBar (md:hidden): same filters, same state.",
+    "The page's views (Đang mở · Đã đóng · Tất cả) are Pills in FilterChipRow `leading` on md+ and PhoneFilterBar `typeItems` (radio items) on phones: same state, usually a plain param (?view=) written with useFilterParams().setParams. The default view may be other than “all”; leave it out of the URL.",
     "Phone chrome: at most 2 rows plus the result line, under 25% of the viewport (P1)."
   ],
   "examples": [

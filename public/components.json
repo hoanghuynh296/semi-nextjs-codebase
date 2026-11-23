@@ -1465,7 +1465,7 @@
       "kind": "component",
       "module": "src/FilterChipRow.tsx",
       "client": true,
-      "summary": "One filter facet as a chip. A `multi` filter opens a popover of checkboxes (aria-expanded on the chip); a `switch` filter toggles on click (aria-pressed). Active, it turns solid (`bg-inverted`) and shows the one value or the count.",
+      "summary": "One filter facet as a chip. A `multi` filter opens a popover of checkboxes (aria-expanded on the chip); a `switch` filter toggles on click (aria-pressed); a `single` filter opens a menu of radio items (`menuitemradio`) and always reads \"Hộp thư: Tất cả\". Active (a value other than `clearValue`), it turns solid (`bg-inverted`) and shows the one value or the count.",
       "props": [
         "def",
         "onChange"
@@ -1490,11 +1490,12 @@
       "kind": "component",
       "module": "src/FilterChipRow.tsx",
       "client": true,
-      "summary": "The filter chips of a list page on one line. When they overflow, the row scrolls sideways and ‹ › buttons appear (hidden from screen readers and the tab order: every chip is reachable by Tab, which scrolls it into view). \"Xoá lọc\" shows while a filter is on; `trailing` (ViewSwitch) sits at the end behind a divider.",
+      "summary": "The filter chips of a list page on one line. When they overflow, the row scrolls sideways and ‹ › buttons appear (hidden from screen readers and the tab order: every chip is reachable by Tab, which scrolls it into view). \"Xoá lọc\" shows while a filter is on; `leading` (the page's views as Pills) sits before the chips and `trailing` (ViewSwitch) at the end, each behind a divider; neither scrolls with the chips.",
       "props": [
         "filters",
         "onChange",
         "onClear",
+        "leading",
         "trailing",
         "label",
         "className"
@@ -1940,9 +1941,10 @@
       "kind": "component",
       "module": "src/PageTitle.tsx",
       "client": true,
-      "summary": "Page title and underline display-tab heading of the Semi Design System (docs/DESIGN_SYSTEM.md §1, §4a).",
+      "summary": "The page's display heading (its `h1`). With `actions`, the title row of a list page: the title on the left, the page's action on the right; below `sm` the actions wrap onto their own row under the title.",
       "props": [
         "title",
+        "actions",
         "className"
       ],
       "doc": "docs/components/page-title.md"

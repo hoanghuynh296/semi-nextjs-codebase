@@ -4,6 +4,19 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## Unreleased
 
+List page anatomy (C-041, #115 / #119 / #120): where a 0.36 list page puts its own action, its views and its one-of-N filters, and the `list-page` block on that anatomy. Additive: pages that do not use the new props look and behave as before.
+
+### Added
+- **`PageTitle actions` (#115, #120):** the page's own action at the right end of the title row (one `Button variant="primary"` or secondary with icon and text, optionally a `RefreshButton` before it; more in a ⋯ `Menu`). Below `sm` the actions wrap onto their own row under the title. Without `actions` PageTitle renders as before. New example `page-title/actions`.
+- **`FilterChipRow leading` (#115):** a slot before the chips for the page's views (`<Pills>`: Đang mở · Đã đóng · Tất cả), the md+ twin of `PhoneFilterBar typeItems`; it does not scroll with the chips and "Xoá lọc" leaves it alone. The default view may be other than "all". New example `filter-chip-row/views`.
+- **`FilterSpec.kind: "single"` and `clearValue` (#119):** a one-of-N filter (mailbox, folder, warehouse). In `FilterChipRow` / `SubpageToolbar filters` a chip that names its value ("Hộp thư: Tất cả") and opens a menu of radio items; in `FilterPanel` an accordion with a radio group (its heading shows the value); in the URL one value (`?f.box=sales`). `clearValue` is the default option: never written to the URL, `selected` is `[]` while it is in effect (read the value as `selected[0] ?? clearValue`), not counted as active, and "Xoá lọc" resets to it.
+- **`MenuItem.radio` (#119):** with `checked`, the item is `menuitemradio` (one choice of a set) and the menu opens on the checked item. Use it for `PhoneFilterBar typeItems` (the page's views). Items without `radio` are unchanged (`menuitemcheckbox`).
+
+### Changed
+- **`list-page` block (`semi add list-page`, #115):** rebuilt on the 0.36 anatomy: `PageTitle actions` (refresh + "Tạo đơn"), `StickyContextBar` (SearchPill, views as Pills in `FilterChipRow leading` + channel, branch (single) and amount chips on md+, `PhoneFilterBar` + `FilterPanel` on phones, `ResultLine`), `DataTable`; views, query and filters in the URL (`useFilterParams`). Pages already copied from the old block keep working; nothing changes in them.
+- **Docs (#120):** the StickyContextBar, MinimalHeader, PageTitle and list-page docs now agree: a list page's action is on its title row (`PageTitle actions`), never in the bar; `MinimalHeader` is for detail and settings pages.
+- **`/semi-check`:** a list page with a `StickyContextBar` no longer counts as a page without a `SubpageToolbar`.
+
 ### Fixed
 - `SearchPill`: a history push during its debounce (`useDetailParam().open`, `openDetail`, a filter chip, a `useFilterParams` push) no longer loses the query. The pending text is sent first, onto the current entry (with the app's `onChange`, usually `setParams({ q }, "replace")`), then the push is made, so Back lands on the list with its query; before, the late write replaced the pushed entry (#128). A pending text is dropped when the route changes and on unmount. Apps that set `debounce={0}` as a workaround can remove it. An `onChange` that pushes (for example `setParams({ q })` with no mode, which pushes by default) now gets its own entry before the pushed one. The flush only helps an `onChange` that writes the URL at once: `useFilterParams().setParams({ q }, "replace")`; `router.replace`, nuqs or state plus an effect still land after the push.
 
