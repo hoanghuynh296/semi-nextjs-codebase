@@ -31,3 +31,26 @@ test("a11y: the CLI prints its usage, and --snippet the expression", () => {
   assert.match(help.stdout, /semi a11y <url…>/);
   assert.match(cli(["--snippet", "--scope", "#app"]).stdout, /^\(function a11yAudit\(opts\)[\s\S]*\(\{"scope":"#app"\}\)\s*$/);
 });
+
+test("a11y: focus-ring compares a control with itself unfocused, so a dialog's first control that already has focus passes, and a control with no ring still fails (#126)", async (t) => {
+  const { chromium } = await import("../density.mjs");
+  const pw = await chromium();
+  const browser = pw && (await pw.launch({ channel: "chrome" }).catch(() => pw.launch().catch(() => null)));
+  if (!browser) return t.skip("no Chrome / Playwright browser here");
+  await browser.close();
+  const page = (hash) => `file://${join(root, "lint/test/fixtures/a11y-focus-ring.html")}#${hash}`;
+  const run = (url) => {
+    const r = spawnSync(process.execPath, [join(root, "cli/semi.mjs"), "a11y", url, "--json", "--no-axe", "--theme", "light", "--width", "1280"], { encoding: "utf8" });
+    return JSON.parse(r.stdout)[0].hits.map((h) => `${h.rule} ${h.where}: ${h.value}`);
+  };
+  for (const focused of ["close", "no-ring"])
+    assert.deepEqual(run(page(focused)), ["focus-ring button#no-ring: nothing changes when it takes keyboard focus"], `focus on #${focused} when the audit starts`);
+  // a control that takes focus back on blur has no unfocused baseline: it is reported, never left out
+  // behind an aria-modal dialog whose trap keeps focus: the page behind is left alone, the dialog is checked
+  assert.deepEqual(run(page("modal")), ["focus-ring button#no-ring: nothing changes when it takes keyboard focus"]);
+  assert.deepEqual(run(page("trap")), [
+    "focus-ring button#close: focus could not be moved off it to compare (it takes focus back on blur): check its ring with Tab by hand",
+    "focus-ring button#next: focus could not be moved onto it (button#close keeps it)",
+    "focus-ring button#no-ring: focus could not be moved onto it (button#close keeps it)",
+  ]);
+});
