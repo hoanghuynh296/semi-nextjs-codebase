@@ -174,7 +174,7 @@ Themes are toggled via the `data-theme` attribute on `<html>` (with fallback `.d
 ```html
 <html lang="vi" data-theme="dark" class="dark">
 ```
-`data-theme="system"` follows the OS in pure CSS (no JS). Users pick a theme with `<ThemeSwitcher />` (Sáng · Tối · Hệ thống: settings pages, sidebar footer; `fullWidth` in a sidebar), `<ThemeSwitcher variant="menu" />` (one icon button whose `Menu` lists the three, the current one checked: headers, toolbars), `useThemeUtility()` (the same Menu as an AppShell `utilities` item, an icon in the rail, a level of the phone drawer: the shell's theme keeps "system") or flip it with `<ThemeToggle />` (one-tap dark/light). Any element can pin a theme for its subtree with `data-theme="light|dark"` (plus the matching class): all semantic tokens re-resolve inside it. Apps render `<ThemeScript />` in `<head>` (sets the stored theme
+`data-theme="system"` follows the OS in pure CSS (no JS). Users pick a theme with `<ThemeSwitcher />` (Sáng · Tối · Hệ thống: settings pages, sidebar footer; `fullWidth` in a sidebar), `<ThemeSwitcher variant="menu" />` (one icon button whose `Menu` lists the three, the current one checked: headers, toolbars), the account avatar menu of AppShell's route header (the same three as radio items), `useThemeUtility()` (the same Menu as an AppShell `tools` item, for an app without an account) or flip it with `<ThemeToggle />` (one-tap dark/light). Any element can pin a theme for its subtree with `data-theme="light|dark"` (plus the matching class): all semantic tokens re-resolve inside it. Apps render `<ThemeScript />` in `<head>` (sets the stored theme
 before the first paint, so there is no flash of the wrong theme) and wrap the body in `<ThemeProvider>` with the **same options**:
 ```tsx
 import { ThemeProvider, ThemeScript, ThemeToggle } from "@semi/ui";
@@ -365,27 +365,54 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   never the padding of a row or a box. A card or panel is never tighter than `p-card` (`card-padding`), a list row
   never shorter than a control (`Item` is `px-4 py-3`): a cramped box with text against its edges is the most common
   layout bug. The budgets are in §4c.
-- **Home shell (`md+`):** two inset `rounded-panel` panels inside a `bg-canvas` frame (`md:p-2 md:gap-2`), separated by
-  tone (no border): a collapsible left **Panel Menu** (`bg-panel`, `w-60` on `lg+`, or the `w-[60px]` icon rail) and a
-  right **Panel Content** (`bg-app`) holding a full-width content container (`max-w-[1440px] px-4 sm:px-6`).
-- **Sidebar order (C-031, #96):** brand + collapse toggle (the logo expands the rail) · one brand-filled **Create** action
-  (`create`: a `Menu` of things to create, or one link) · the main nav (`sections`) · a **pinned** group (saved views,
-  frequent records) under a divider with a `text-overline` label · at the bottom the **utilities** (help, theme,
-  notifications: items with `onClick`, or `menu` for a Menu of choices such as `useThemeUtility()`) and the **account**. Rows are `h-9`, icons 18px; the active row is
-  `bg-tint-hover text-strong`, others `text-body hover:bg-tint`.
-- **Rail:** `lg+` shows labels unless collapsed (remembered per app, `storageKey`); `md` (iPad) is always the rail. In
-  the rail every item has an `aria-label` and a `Tooltip` on the right. An item without `icon` shows its initials
-  (`shortLabel` to choose them): give pinned items distinct icons, or none, never one shared icon (touch has no
-  Tooltip). The `account` render prop gets `{ collapsed, rail }`: hide its text by `rail`, not only `collapsed` (at `md`
-  the sidebar is a rail while `collapsed` is false). `rail` is exact in the server HTML: until the width is known
-  AppShell renders the account twice (the rail copy below `lg`, the full one from `lg`, CSS shows one), then only the
-  copy for the width, so keep app-wide effects out of the account and take ids from `useId`.
+- **Frame (1.0, #144):** a `bg-canvas` frame (`sm:p-2 sm:gap-2`, none on phones) holding the **nav panel** (`bg-panel`,
+  `rounded-panel`, padding 16 / 20, 224px or the 72px rail, `railWidth`) and the **content column** (`bg-app`,
+  `rounded-panel`). The column holds the **RouteHeader** (h60 from `lg`, padding 0 8px / 16px from `sm`, the column's
+  full width: crumbs left, an optional `middle` hidden below `md`, `actions` icon buttons 32×32 and the account avatar
+  menu right; `middle` and `actions` sit in their own `Suspense`) and under it the **content card** (`bg-panel`,
+  `rounded-panel`, flush with the column, 4px above its bottom, no border; inside it `bg-app` paints the card's colour
+  so sticky strips match). `page="fixed"`: the card does not scroll, its panels do. `flush`: no centred
+  `max-w-[1440px]` container or padding around the page (the page layout decides). `header={false}` drops the row.
+- **Crumbs:** default group (a link: `section.href`, else its first item) › item › sub-item › the record a detail page
+  names with `useRecordCrumb(label)`; or `header.crumbs`. Every crumb is `text-chrome` muted 400 with a chevron, the
+  current one is not highlighted, the trail never wraps (long crumbs truncate). New crumbs enter with
+  `animate-crumb-in`, the old ones fade out (`motion-crumb-out`); the shell itself never moves on a route change.
+- **Account avatar menu (`AccountMenu`, `header.account`):** a one-letter avatar (32px) whose `Menu` has a header
+  (name, `detail` role or email: not an item), then Light / Dark / System (radio items), the app's `items` and
+  "Đăng xuất" (`onSignOut`). The nav has no account or company block.
+- **Nav order:** logo + collapse button (the logo expands the rail at `lg+`) · the **main action** (`mainAction`: an
+  ordinary primary button with the app's label and icon, a `Menu` when it has `items`, its icon with a Tooltip in the
+  rail; or your own slot) · the groups (`sections`, `pinned`) separated by a 24px spacer with a 1px `bg-raised` line,
+  labels `text-tag` uppercase `text-faint` in an h32 row with optional 16px icon actions (`section.right`) · the
+  **bottom row** pinned to the bottom (`tools`: 32×32 ghost icon buttons 4px apart with a Tooltip and an optional
+  `count` badge, brand-filled, "99+"; `toolsMenu` in a ••• Menu), stacked in the rail. Items are h32, 4px apart,
+  `rounded-control`, `text-chrome` 500, icon 16; inactive `text-muted`, hover `bg-item-hover`, active
+  `bg-item-selected text-strong`, the fill cross-fading with `transition-nav`. Brand colour in the shell: only the main
+  action and count badges.
+- **Responsive priority:** (1) the rail first: always between `md` and `lg`; between `lg` and `railBelow` (1280 by
+  default) it is the default, expanded from it; the user's toggle is one stored value (`storageKey`, "rail" / "full")
+  for every width. The width is CSS (media queries plus the stored choice, set on `<html>` before paint), and what the
+  rail hides is a container query on the panel, so the server HTML is exact and nothing remounts when the width
+  crosses a breakpoint or the nav collapses. (2) Below `md` a page's sub-nav stacks above its content (T7). (3) Phones
+  get the drawer and no frame padding. In the rail every item keeps its name (the label is `sr-only`) and shows it in
+  a `Tooltip` on the right with its shortcut. An item without `icon` shows its initials (`shortLabel`).
+- **Slots are components:** `mainAction`, `header.middle`, `header.actions` and `header.account` take an element or a
+  function of `{ collapsed, rail }` that is rendered as the body of one stable component, so it may call hooks; each
+  keeps one instance (and its state) across a collapse, a resize over any breakpoint and a route change. `rail` and
+  `collapsed` are exact after mount only: style what the rail hides with CSS.
+- **Nav shortcuts:** the first nine items (visual order) are numbered; ⌥ / Alt + digit (matched on `event.code`) clicks
+  the item, so the router and an unsaved-changes guard run as for a mouse; ⌘ / Ctrl + digit only in an installed app
+  (`display-mode: standalone`). Holding the modifier shows the numbers (row end, or a corner badge in the rail);
+  release, blur and any other key hide them. Ignored while composing (IME), in fields, `[role=combobox]` and
+  contenteditable, and when the app already took the key; `shortcuts={false}` turns them off. The keys are in the
+  expanded nav's titles, the rail tooltips, `useAppShell().shortcuts` and `navShortcutKeys(n)` (for a CommandPalette
+  item's `shortcut`).
 - **Mega menu:** a nav item with `mega` opens a `MegaMenu` flyout beside the sidebar: 2–4 category columns headed by
   `text-overline`, links with a grey icon, a hint and a "Mới" badge, and a "Xem tất cả" link.
-- **Phones (`< md`):** a top bar (menu button, logo, product name) opens a full-screen drawer with the same groups:
-  one brand-filled Create row (its items open as a level), rows `min-h-12` with › for sub-items and mega menus (a
+- **Phones (`< md`):** the route header's menu button opens a full-screen drawer with the same groups:
+  one brand-filled main action row (its items open as a level), rows `min-h-12` with › for sub-items and mega menus (a
   drill-down level with a back row; a parent with its own page is the level's first row, "Tất cả …"), the pinned
-  group, utilities and the account at the bottom. The drawer is the default when the app sets neither `mobileNav` nor
+  group, and the tools (with their counts and the ••• menu as a level) at the bottom. The drawer is the default when the app sets neither `mobileNav` nor
   `mobileTabIds`; `mobileNav="tabs"` keeps the bottom tab bar (`MobileTabBar`) with the items named in `mobileTabIds`
   (the first ones without it). `mobileTabIds` alone still keeps the tab bar (C-034) but warns in development.
 - **Shell lifecycle:** `AppShell` renders once in the root or a route-group `layout.tsx`, so it stays mounted while
@@ -839,7 +866,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 
 | Import | Exports |
 |---|---|
-| `@semi/ui` → `AppShell.tsx`, `MobileTabBar.tsx` | `AppShell` (floating Bento 2-panel frame: Create, sections, pinned group, utilities + account; `w-60` sidebar or icon rail, the rail on `md`; phone drawer; one level of sub-items; mega items), `useAppShell` (is the sidebar showing sub-items), `MobileTabBar`, `TAB_BAR_PAD` (opt-in `mobileNav="tabs"`) (§4) |
+| `@semi/ui` → `AppShell.tsx`, `RouteHeader.tsx`, `MobileTabBar.tsx` | `AppShell` (1.0 frame: nav panel with main action, groups, pinned, bottom row of tools; 224px or the 72px rail; RouteHeader; content card; phone drawer; nav shortcuts), `useAppShell` (sub-items shown, rail, shortcuts), `navShortcutKeys`, `RouteHeader` (crumbs, middle, actions, account), `AccountMenu` (the account avatar menu), `useRecordCrumb` (a detail page names its record), `MobileTabBar`, `TAB_BAR_PAD` (opt-in `mobileNav="tabs"`) (§4) |
 | `MegaMenu.tsx`, `MinimalHeader.tsx`, `TextTabs.tsx` | `MegaMenu` (flyout of category columns, `text-overline` headers, New badges, See all), `MinimalHeader` (breadcrumb left, one link + one primary right), `TextTabs` (large text tabs as the page heading, ARIA tabs, `href` for URL-driven views) (§4) |
 | `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle` (`actions`: the page's action on the title row), `PageTabsTitle` (underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh; phone layout with `filters` / `collapseFilters` / `secondaryActions`), `ToolbarFilters` (§4a) |
 | `SearchPill.tsx`, `FilterChipRow.tsx`, `ViewSwitch.tsx`, `FilterPanel.tsx`, `filterParams.ts` | `StickyContextBar` (sticky search + chips + result line), `SearchPill` (wide pill search, debounce, `/`), `ResultLine` (query · N kết quả + sort), `SortDef`, `FilterChipRow` (one-line chips, ‹ ›, Xoá lọc, leading views, trailing tools), `FilterChip`, `FilterOptions` (the checkbox list of one filter), `useFilterParams` (filter state in the URL, Back / Forward), `ViewSwitch` (list ↔ grid, density), `PhoneFilterBar` (views · Bộ lọc · settings), `FilterPanel` (full-screen / side-sheet filters); URL helpers `readFilters`, `readFilterValues`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, types `FilterSpec`, `FilterDef`, `FilterOption`, `FilterValues` (§4) |

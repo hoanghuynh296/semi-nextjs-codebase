@@ -749,7 +749,7 @@ test("AppShell rail (1100 and iPad): every item is named, shows a tooltip on the
   await expect(tip).toHaveText(/^Hộp thư(Alt\+1|⌥1)$/);
   const [t, b] = [await tip.boundingBox(), await inbox.boundingBox()];
   expect(t!.x).toBeGreaterThan(b!.x + b!.width);
-  expect(b!.width).toBe(32);
+  expect((await aside.getByRole("link", { name: "Đơn hàng" }).boundingBox())!.width).toBe(32);
   const create = aside.getByRole("button", { name: "Tạo mới" });
   await create.focus();
   await expect(tip).toHaveText("Tạo mới");
@@ -914,7 +914,7 @@ for (const theme of THEMES) {
 test("AppShell nav shortcuts (#144): holding Alt shows the numbers, Alt + digit opens the item, fields and IME keep the key", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await open(page, "/components/button/", "dark");
-  const aside = page.locator("aside");
+  const aside = page.locator("aside[data-semi-nav-panel]");
   // wait for hydration: the shortcut shows in the expanded nav's title
   await expect(aside.getByRole("link", { name: "Giới thiệu" })).toHaveAttribute("title", /\((Alt\+1|⌥1)\)$/);
   await page.keyboard.down("Alt");

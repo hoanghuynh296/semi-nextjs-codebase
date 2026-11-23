@@ -510,7 +510,7 @@ export function AppShell({
             aria-current={activeId === item.id || open ? "page" : undefined}
             {...expanded}
             title={title}
-            className={cn(navItemClass, stateClass, "group", Boolean(item.right) && "pr-1.5")}
+            className={cn(navItemClass, stateClass, "group", Boolean(item.right) && "pr-1.5 @max-[120px]/nav:pr-2")}
           >
             {inner}
             {item.right && <span className={cn("flex items-center shrink-0 ml-auto", `@max-[120px]/nav:hidden`)}>{item.right}</span>}
@@ -527,7 +527,7 @@ export function AppShell({
         onClick={onClick}
         aria-current={item.onClick ? undefined : active ? "page" : undefined}
         {...expanded}
-        title={item.right ? undefined : title}
+        title={title}
         className={item.right ? "flex-1 min-w-0 h-full flex items-center gap-2 text-left cursor-pointer overflow-hidden focus:outline-none" : cn(navItemClass, stateClass)}
       >
         {inner}
@@ -535,7 +535,7 @@ export function AppShell({
     );
     // a trailing control next to a button can not sit inside it: the row is a div with both (the same in the rail)
     return item.right ? (
-      <div key={item.id} className={cn(navItemClass, stateClass, "group pr-1.5 focus-within:ring-2 focus-within:ring-focus")} title={title}>
+      <div key={item.id} className={cn(navItemClass, stateClass, "group pr-1.5 @max-[120px]/nav:pr-2 focus-within:ring-2 focus-within:ring-focus")}>
         <Tooltip content={tip(item.label, item.id)} side="right">
           {button}
         </Tooltip>

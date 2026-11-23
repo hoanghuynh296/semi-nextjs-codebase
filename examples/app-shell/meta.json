@@ -1,9 +1,11 @@
 {
   "title": "App shell",
   "group": "Navigation & layout",
-  "description": "The frame of a multi-page app: a floating sidebar on bg-canvas with the accent Create action on top, the main nav, a pinned group and the utilities and account at the bottom; it collapses to an icon rail (the default on iPad) and becomes a full-screen drawer on phones. Items can carry sub-items or a mega menu. This docs site is an AppShell; the full example runs at /demo/app-shell/.",
+  "description": "The 1.0 frame of a multi-page app: a canvas frame with the nav panel (main action, groups, pinned, a bottom row of icon tools) and the content column (the RouteHeader with crumbs, actions and the account avatar menu, then the content card). The nav is the 72px rail first when width runs short (always md–lg, by default lg–1280, the user's toggle remembered), then the phone drawer. Alt + 1…9 opens a nav item. This docs site is an AppShell; the full example runs at /demo/app-shell/.",
   "components": [
     "AppShell",
+    "RouteHeader",
+    "AccountMenu",
     "MobileTabBar"
   ],
   "when": [
@@ -26,32 +28,35 @@
     }
   ],
   "a11y": [
-    "The sidebar is a complementary landmark named after the product with nav landmarks inside; the active item has aria-current; the collapse state is remembered per app (storageKey).",
-    "In the rail (collapsed, or md) every item is named (aria-label) and shows its name in a Tooltip on the right on hover and focus.",
-    "An item with sub-items has aria-expanded; its sub-items are a list named after it, the active one with aria-current. A mega item has aria-haspopup=\"dialog\" and aria-expanded.",
+    "The nav is a complementary landmark named after the product with nav landmarks inside; the active item has aria-current; the collapse choice is one stored value (storageKey).",
+    "In the rail every item keeps its name (the label is visually hidden, never removed) and shows it in a Tooltip on the right with its shortcut, on hover and focus.",
+    "The route header's trail is a navigation named \"Đường dẫn\" with aria-current on the last crumb; the account avatar is a named button opening a menu (a header that is not an item, radio items for the theme, account items, sign-out) by keyboard.",
+    "An item with sub-items has aria-expanded; its sub-items are a list named after it. A mega item has aria-haspopup=\"dialog\" and aria-expanded.",
+    "Bottom-row tools are named with their count (\"Thông báo (12)\"); the badge itself is hidden from assistive tech.",
+    "Nav shortcuts (Alt + digit) click the link, so the router and an unsaved-changes guard run; ignored while composing (IME), in fields and editors, and when the app already took the key.",
     "The phone drawer is a modal dialog: focus moves in, Tab stays in, Escape goes back a level or closes, and focus returns to the menu button."
   ],
   "notes": [
-    "Render it once in the root layout (or a route group layout); pages render only their content.",
+    "Render it once in the root layout (or a route group layout); pages render only their content. It never remounts on a route change or a resize.",
     "Page items take an href: they stay next/link links even when onSelect is set (onSelect then only reports the click). Never route with onSelect + router.push (shell-nav-href).",
     "Never gate the shell behind a page skeleton (shell-gate): a route loading.tsx next to the layout shimmers the content only, and the boot / session check before the layout is known renders BootLoader once in the layout. A page never renders AppShell or imports a component that does (app-shell-in-page).",
-    "Top to bottom: create (one accent action, a Menu when it has items), primaryCta (an optional launcher), sections, pinned (a text-overline label), then utilities (items with onClick: help, theme) and account (avatar, workspace).",
-    "footer is deprecated: split it into utilities (actions) and account (who is signed in). The 0.36.0 migration renames footer to account and turns a render prop's collapsed check into collapsed || rail.",
-    "Phones use the drawer (a top bar with the menu button) unless the app sets mobileNav=\"tabs\", with mobileTabIds naming the items on MobileTabBar (mobileTabIds alone still keeps the tab bar but warns). In the drawer a parent with its own href is the first row of its level.",
-    "The account render prop gets { collapsed, rail }: check rail, not only collapsed. At md the sidebar is a rail while collapsed is false. rail is exact in the server HTML: until the width is known AppShell renders the account twice (rail below lg, full from lg, CSS shows one), then once; keep app-wide effects out of it.",
-    "The theme in utilities: useThemeUtility() (Light / Dark / System in a Menu, a level of the phone drawer), not a toggleTheme item that drops system. Any utility with options can take menu (MenuItem[]).",
-    "Pinned items in the rail: give each a distinct icon, or none so the rail shows its initials (shortLabel to choose them); items sharing one icon look alike there and touch screens have no Tooltip.",
-    "Sub-items (children) are closed by default: they open under their parent while the parent or one of them is the activeId, and close when another item is chosen. One level only.",
-    "Sub-items take an optional grey icon (give every sub-item of a parent one, or none); no colour dot or count (the menu stays neutral, §4). Put counts and colours in the page.",
-    "The rail and widths below lg never show sub-items: read useAppShell().submenuVisible and give the page its own picker (a CustomSelect in the toolbar) when it is false. The phone drawer shows them as a drill-down level.",
-    "Choosing the parent alone usually opens its first sub-item: map it in onSelect."
+    "Top to bottom: logo + collapse, mainAction (the one brand-filled button: label + icon, a Menu with items), primaryCta (an optional quiet launcher), sections, pinned, then tools (32×32 icons with a count) and toolsMenu (•••).",
+    "header: crumbs (default from the active item; useRecordCrumb(label) in a detail page adds its record), middle (search field, banner; hidden below md), actions (32×32 ghost icon buttons) and account ({ name, detail, items, onSignOut }: the theme is in that menu). header={false} drops the row.",
+    "Slots (mainAction, header.middle / actions / account) are an element or a function of { collapsed, rail } rendered as one stable component: it may call hooks and keeps its state across a collapse, a resize and a route change. rail is exact after mount only.",
+    "railBelow (default 1280, at least 1024) sets where the nav starts expanded; between md and lg it is always the rail. railWidth (default 72) sets the rail width.",
+    "page=\"fixed\": the card does not scroll; give the page h-full min-h-0 flex flex-col and let its panels scroll. flush: no centred max-width container or padding.",
+    "1.0 breaking: create → mainAction and utilities → tools (the 1.0.0-app-shell migration renames them); account / footer are gone from the nav (move the account to header.account); the stored collapse key is now semi-nav.",
+    "Phones use the drawer (the header's menu button) unless the app sets mobileNav=\"tabs\", with mobileTabIds naming the items on MobileTabBar. In the drawer a parent with its own href is the first row of its level.",
+    "Sub-items (children) open under their parent while the parent or one of them is the activeId. The rail and widths below lg never show them: read useAppShell().submenuVisible and give the page its own picker when it is false.",
+    "Pinned items in the rail: give each a distinct icon, or none so the rail shows its initials (shortLabel to choose them).",
+    "Shortcut hints in a CommandPalette: shortcut: useAppShell().shortcuts[id] inside the shell, or navShortcutKeys(n) outside it."
   ],
   "examples": [
     {
       "file": "full",
-      "title": "Create, pinned, utilities, mega menu",
+      "title": "Main action, tools, header, account menu",
       "preview": "none",
-      "description": "The whole shell in one screen, opened full screen at /demo/app-shell/ of this site: Create menu, sub-items, a mega menu, a pinned group, utilities and the account; MinimalHeader and TextTabs in the page."
+      "description": "The whole shell in one screen, opened full screen at /demo/app-shell/ of this site: main action menu, sub-items, a mega menu, a pinned group, tools with a count and a ••• menu, a header action with its own state and the account avatar menu."
     },
     {
       "file": "layout",
