@@ -285,13 +285,13 @@ export function AppShell({
   const labelHidden = collapsed ? "hidden" : "hidden lg:block";
   const rowLayout = collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2.5 lg:px-2.5";
   const navItemClass = cn(
-    "w-full h-9 flex items-center rounded-control text-ui font-medium transition whitespace-nowrap cursor-pointer",
+    "w-full h-9 flex items-center rounded-control text-chrome font-medium transition whitespace-nowrap cursor-pointer",
     FOCUS_RING,
     rowLayout,
   );
   const navLabelClass = cn(labelHidden, "flex-1 min-w-0 truncate text-left");
   // the narrow rail (collapsed, or below lg) shows a short name in place of the label when an item has no icon
-  const navShortClass = `${collapsed ? "block" : "block lg:hidden"} text-ui font-semibold leading-none truncate max-w-full`;
+  const navShortClass = `${collapsed ? "block" : "block lg:hidden"} text-chrome font-semibold leading-none truncate max-w-full`;
 
   const withTip = (label: string, node: React.ReactElement, key: string) =>
     rail ? (
@@ -444,7 +444,7 @@ export function AppShell({
         {item.children.map((child) => {
           const active = activeId === child.id;
           const cls = cn(
-            "w-full h-8 flex items-center gap-2 px-2.5 rounded-control text-ui transition whitespace-nowrap cursor-pointer",
+            "w-full h-8 flex items-center gap-2 px-2.5 rounded-control text-chrome transition whitespace-nowrap cursor-pointer",
             FOCUS_RING,
             active ? "bg-tint-hover text-strong font-medium" : "text-muted hover:text-strong hover:bg-tint",
           );
@@ -484,13 +484,13 @@ export function AppShell({
   const brandNode = (
     <>
       {logoTile}
-      <span className="hidden lg:block truncate text-ui font-semibold text-strong tracking-tight">{productName}</span>
+      <span className="hidden lg:block truncate text-chrome font-semibold text-strong tracking-tight">{productName}</span>
     </>
   );
   const brandClass = cn("min-w-0 flex items-center gap-2 text-left rounded-control", FOCUS_RING);
 
   const createClass = cn(
-    "shrink-0 h-9 rounded-control bg-primary text-on-primary hover:bg-primary-hover flex items-center justify-center gap-2 text-ui font-semibold transition active:scale-[0.99] cursor-pointer",
+    "shrink-0 h-9 rounded-control bg-primary text-on-primary hover:bg-primary-hover flex items-center justify-center gap-2 text-chrome font-semibold transition active:scale-[0.99] cursor-pointer",
     FOCUS_RING,
     collapsed ? "w-9 mx-auto" : "w-9 mx-auto lg:w-full lg:mx-0",
   );
@@ -540,7 +540,7 @@ export function AppShell({
     ));
 
   const ctaClass = cn(
-    "shrink-0 w-full h-9 rounded-control bg-subtle-button hover:bg-item-hover border border-outline-line text-strong flex items-center text-ui font-semibold transition active:scale-[0.99] cursor-pointer",
+    "shrink-0 w-full h-9 rounded-control bg-subtle-button hover:bg-item-hover border border-outline-line text-strong flex items-center text-chrome font-semibold transition active:scale-[0.99] cursor-pointer",
     FOCUS_RING,
     collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2 lg:px-2.5",
   );
@@ -635,7 +635,7 @@ export function AppShell({
                   <React.Fragment key={section.label ?? idx}>
                     {idx > 0 && <div className="my-1 mx-1.5 border-t border-divider" />}
                     {section.label && !section.hideLabel && (
-                      <div className={cn(collapsed ? "hidden" : "hidden lg:flex", "group shrink-0 items-center justify-between gap-1.5 px-2.5 py-0.5 text-ui font-medium text-muted select-none")}>
+                      <div className={cn(collapsed ? "hidden" : "hidden lg:flex", "group shrink-0 items-center justify-between gap-1.5 px-2.5 py-0.5 text-chrome font-medium text-muted select-none")}>
                         <div className="flex items-center gap-1.5 min-w-0 truncate">
                           {section.icon && <Icon name={section.icon} className="w-3.5 h-3.5 text-muted shrink-0" />}
                           <span className="truncate leading-normal">{section.label}</span>
@@ -1032,7 +1032,7 @@ function PhoneDrawer({
             {sections.map((s, idx) =>
               s.items?.length ? (
                 <nav key={s.label ?? idx} aria-label={s.label ?? (idx === 0 ? t.mainMenu : `Menu ${idx + 1}`)}>
-                  {s.label && !s.hideLabel && idx > 0 && <div className="px-3 pb-1 text-ui font-medium text-muted">{s.label}</div>}
+                  {s.label && !s.hideLabel && idx > 0 && <div className="px-3 pb-1 text-chrome font-medium text-muted">{s.label}</div>}
                   <ul className="flex flex-col gap-0.5">{s.items.map(renderRow)}</ul>
                 </nav>
               ) : null,
@@ -1052,7 +1052,7 @@ function PhoneDrawer({
           {utilities.length > 0 && (
             <ul className="grid grid-flow-col auto-cols-fr gap-1">
               {utilities.map((u) => {
-                const cls = cn("w-full flex flex-col items-center gap-1 py-2 rounded-control text-ui text-muted hover:text-strong hover:bg-tint transition cursor-pointer", FOCUS_RING);
+                const cls = cn("w-full flex flex-col items-center gap-1 py-2 rounded-control text-chrome text-muted hover:text-strong hover:bg-tint transition cursor-pointer", FOCUS_RING);
                 const body = (
                   <>
                     <Icon name={u.icon ?? "box"} className={cn("w-5 h-5", u.iconHidden && "opacity-0")} />

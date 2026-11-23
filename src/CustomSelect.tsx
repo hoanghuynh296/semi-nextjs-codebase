@@ -229,7 +229,7 @@ export function CustomSelect({
               const head = opt.group && opt.group !== options[i - 1]?.group;
               return (
                 <React.Fragment key={`${opt.group ?? ""}\u0000${opt.value}`}>
-                  {head && <div className="px-3 pt-2 pb-1 text-ui font-medium text-muted truncate">{opt.group}</div>}
+                  {head && <div className="px-3 pt-2 pb-1 text-chrome font-medium text-muted truncate">{opt.group}</div>}
                   <button
                     type="button"
                     role="option"

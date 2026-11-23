@@ -448,7 +448,7 @@ export function ChatComposer({
             <Button type="submit" variant="primary" iconOnly icon="send" aria-label={t.chatSend} disabled={busy || disabled || !value.trim()} className="shrink-0" />
           )}
         </div>
-        {toolbar && <div className="pl-1 pb-0.5 flex items-center gap-1.5 min-w-0 text-ui text-muted">{toolbar}</div>}
+        {toolbar && <div className="pl-1 pb-0.5 flex items-center gap-1.5 min-w-0 text-chrome text-muted">{toolbar}</div>}
       </div>
     </form>
   );
@@ -458,7 +458,7 @@ export function ChatComposer({
 
 /** A compact chip select under the composer field (provider, model, thinking effort). */
 export const CHAT_PICK_CHIP = cn(
-  "inline-flex items-center gap-1 h-6 px-2 rounded-full bg-field hover:bg-raised border border-line text-ui font-medium text-body hover:text-strong transition min-w-0 max-w-[150px] truncate",
+  "inline-flex items-center gap-1 h-6 px-2 rounded-full bg-field hover:bg-raised border border-line text-chrome font-medium text-body hover:text-strong transition min-w-0 max-w-[150px] truncate",
   FOCUS_RING,
 );
 

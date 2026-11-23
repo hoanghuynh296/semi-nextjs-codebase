@@ -41,7 +41,7 @@ export const TILE = "rounded-control bg-card-field";
 /** Section heading row: <div className={SECTION_HEAD}><h2 className={SECTION_TITLE}>…</h2><span className={COUNT_PILL}>3</span></div> */
 export const SECTION_HEAD = "flex items-center gap-2 px-1";
 export const SECTION_TITLE = "text-ui font-semibold text-strong tracking-tight";
-export const COUNT_PILL = "h-4 min-w-[18px] px-1.5 rounded-full bg-raised text-ui tabular-nums text-muted inline-flex items-center justify-center";
+export const COUNT_PILL = "h-4 min-w-[18px] px-1.5 rounded-full bg-raised text-chrome tabular-nums text-muted inline-flex items-center justify-center";
 
 /** Text link on the right of a section heading ("Quản lý ›"). */
 export const SECTION_LINK = "ml-auto inline-flex items-center gap-1 text-ui font-medium text-muted hover:text-strong transition";
@@ -68,7 +68,7 @@ export const MODAL_CLOSE =
   "w-9 h-9 sm:w-8 sm:h-8 rounded-full bg-tint hover:bg-tint-hover text-muted hover:text-strong flex items-center justify-center transition outline-none focus-visible:ring-2 focus-visible:ring-focus active:scale-95 shrink-0";
 
 /** Status pill (device state, job result): coloured 15% fill + 300 text. */
-export const STATUS_PILL = "inline-flex items-center gap-1.5 h-6 px-2 rounded-full text-ui font-medium whitespace-nowrap";
+export const STATUS_PILL = "inline-flex items-center gap-1.5 h-6 px-2 rounded-full text-chrome font-medium whitespace-nowrap";
 
 /** Standard chromatic tones across the Semi ecosystem. */
 export type SemanticTone =
@@ -110,7 +110,7 @@ export const TONAL_SURFACE: Record<SemanticTone, string> = {
 };
 
 /** Tonal badge base class (11px or 12px pill). */
-export const BADGE_BASE = "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-ui font-medium border whitespace-nowrap";
+export const BADGE_BASE = "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-chrome font-medium border whitespace-nowrap";
 
 /** Dual-theme tonal container (cards, callouts, alert banners): 10% alpha fill + 20% alpha border + dual-theme text. */
 export const TONAL_CONTAINER = TONAL_SURFACE;

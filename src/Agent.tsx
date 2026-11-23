@@ -134,7 +134,7 @@ export function ToolCall({
         {chevron(open)}
       </button>
       <div id={id} hidden={!open} className="border-t border-divider p-3 space-y-3">
-        {title && <div className="text-ui text-muted break-all">{name}</div>}
+        {title && <div className="text-chrome text-muted break-all">{name}</div>}
         {input !== undefined && <CodeBlock title={t.toolInput} code={asText(input)} />}
         {status === "error" && error ? (
           <div role="alert" className={cn("rounded-control border px-3 py-2 text-ui text-body", STATUS_ICON.danger.surface)}>
@@ -183,10 +183,10 @@ export function Sources({ sources, defaultOpen = false, className }: { sources: 
         {sources.map((s, i) => (
           <li key={s.href + i}>
             <ExternalLink href={s.href} className={cn("flex gap-2.5 rounded-control px-2 py-1.5 hover:bg-raised transition", FOCUS_RING)}>
-              <span className="w-5 h-5 shrink-0 rounded-chip bg-field border border-line text-ui text-muted tabular-nums flex items-center justify-center">{i + 1}</span>
+              <span className="w-5 h-5 shrink-0 rounded-chip bg-field border border-line text-chrome text-muted tabular-nums flex items-center justify-center">{i + 1}</span>
               <span className="min-w-0">
                 <span className="block text-ui font-medium text-strong truncate">{s.title}</span>
-                <span className="block text-ui text-muted truncate">{s.description ?? host(s.href)}</span>
+                <span className="block text-chrome text-muted truncate">{s.description ?? host(s.href)}</span>
               </span>
             </ExternalLink>
           </li>
@@ -204,7 +204,7 @@ export function Citation({ n, source }: { /** 1-based, matching the Sources list
       <ExternalLink
         href={source.href}
         aria-label={`${t.source(n)}: ${source.title}`}
-        className={cn("inline-flex items-center justify-center min-w-4 h-4 px-1 mx-0.5 align-[0.15em] rounded-chip bg-field border border-line text-ui leading-none text-muted hover:text-strong tabular-nums no-underline", FOCUS_RING)}
+        className={cn("inline-flex items-center justify-center min-w-4 h-4 px-1 mx-0.5 align-[0.15em] rounded-chip bg-field border border-line text-chrome leading-none text-muted hover:text-strong tabular-nums no-underline", FOCUS_RING)}
       >
         {n}
       </ExternalLink>
@@ -260,7 +260,7 @@ export function TaskList({ title, steps, className }: { title?: React.ReactNode;
             {title}
           </h3>
         )}
-        <span className="ml-auto text-ui text-muted tabular-nums">{t.taskProgress(done, steps.length)}</span>
+        <span className="ml-auto text-chrome text-muted tabular-nums">{t.taskProgress(done, steps.length)}</span>
       </div>
       <ol className="space-y-1.5">
         {steps.map((s, i) => (
@@ -487,7 +487,7 @@ export function FileTree({
             <Icon name={isFolder ? (open ? "folderOpen" : "folder") : "file"} className="w-4 h-4 text-muted shrink-0" />
             <span className={cn("flex-1 min-w-0 truncate", v.node.change === "deleted" && "line-through text-muted")}>{v.node.name}</span>
             {mark && (
-              <span className="inline-flex items-center gap-1 text-ui font-semibold text-muted tabular-nums">
+              <span className="inline-flex items-center gap-1 text-chrome font-semibold text-muted tabular-nums">
                 <span aria-hidden className={cn("w-1.5 h-1.5 rounded-full bg-current", mark[1])} />
                 <span aria-hidden>{mark[0]}</span>
                 <span className="sr-only">{t.fileChange[v.node.change!]}</span>
@@ -525,7 +525,7 @@ export function ContextMeter({ used, total, label, showValue = true, className }
         aria-valuemax={total}
         aria-valuenow={Math.min(used, total)}
         aria-valuetext={detail}
-        className={cn("inline-flex items-center gap-1.5 rounded-control px-1 h-6 text-ui text-muted tabular-nums", FOCUS_RING, className)}
+        className={cn("inline-flex items-center gap-1.5 rounded-control px-1 h-6 text-chrome text-muted tabular-nums", FOCUS_RING, className)}
       >
         <svg viewBox="0 0 16 16" className={cn("w-4 h-4 -rotate-90 shrink-0", tone)} aria-hidden>
           <circle cx="8" cy="8" r={r} fill="none" stroke="var(--color-line)" strokeWidth={2.5} />

@@ -355,7 +355,7 @@ export function DataTable<T>({
                                   <div>{content}</div>
                                   {/* the folded values: w-0 + min-w-full, so this line wraps in the column's width
                                       instead of widening it */}
-                                  <div className="w-0 min-w-full whitespace-normal text-ui text-muted mt-0.5" data-folded="">
+                                  <div className="w-0 min-w-full whitespace-normal text-chrome text-muted mt-0.5" data-folded="">
                                     {foldedCols.map((f) => {
                                       // no value, no "Header: " (a cell() may draw an element even for an empty value)
                                       const raw = valueOf(f, row);

@@ -29,7 +29,7 @@ export function Badge({
   size = "md",
   ...props
 }: BadgeProps) {
-  const sizeCls = size === "sm" ? "h-5 px-1.5 text-ui" : "h-6 px-2 text-ui";
+  const sizeCls = size === "sm" ? "h-5 px-1.5 text-chrome" : "h-6 px-2 text-chrome";
   const toneCls = TONAL_SURFACE[tone] || TONAL_SURFACE.gray;
   return (
     <span

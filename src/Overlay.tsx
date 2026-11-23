@@ -98,7 +98,7 @@ export function Tooltip(props: {
             onPointerLeave={hide}
             style={{ left: pos.left, top: pos.top, bottom: pos.bottom }}
             className={cn(
-              "fixed z-tooltip max-w-[260px] px-2 py-1 rounded-control bg-raised border border-line text-ui text-strong shadow-overlay",
+              "fixed z-tooltip max-w-[260px] px-2 py-1 rounded-control bg-raised border border-line text-chrome text-strong shadow-overlay",
               side === "right" && "-translate-y-1/2",
             )}
           >
@@ -316,12 +316,12 @@ function MenuPanel({
                     {it.label}
                   </span>
                   {(it.description || reason) && (
-                    <span id={descId} className="block text-ui text-muted truncate">
+                    <span id={descId} className="block text-chrome text-muted truncate">
                       {reason ?? it.description}
                     </span>
                   )}
                 </span>
-                {it.shortcut && <span className="text-ui text-muted tabular-nums">{it.shortcut}</span>}
+                {it.shortcut && <span className="text-chrome text-muted tabular-nums">{it.shortcut}</span>}
               </>
             );
             return (
@@ -581,7 +581,7 @@ export function Menubar({ menus, label, className }: { menus: MenubarMenu[]; /**
             e.preventDefault();
             keys[e.key]();
           }}
-          className={cn("h-7 px-2.5 rounded-control text-ui font-medium transition outline-none focus-visible:ring-2 focus-visible:ring-focus", open === i ? "bg-raised text-strong" : "text-body hover:bg-field hover:text-strong")}
+          className={cn("h-7 px-2.5 rounded-control text-chrome font-medium transition outline-none focus-visible:ring-2 focus-visible:ring-focus", open === i ? "bg-raised text-strong" : "text-body hover:bg-field hover:text-strong")}
         >
           {m.label}
         </button>

@@ -128,7 +128,7 @@ export function TaskHost() {
           <Progress value={c.value} showValue={c.value !== undefined} aria-label={c.step ?? c.label} />
           {(c.timer || c.onCancel) && (
             <div className="flex items-center justify-between gap-3 max-sm:pb-[env(safe-area-inset-bottom)]">
-              {c.timer ? <span className="text-ui text-muted tabular-nums">{t.elapsed(clock(Math.max(0, now - c.startedAt)))}</span> : <span />}
+              {c.timer ? <span className="text-chrome text-muted tabular-nums">{t.elapsed(clock(Math.max(0, now - c.startedAt)))}</span> : <span />}
               {c.onCancel && (
                 <button type="button" onClick={cancelTask} className={MODAL_BTN_SECONDARY}>
                   {c.cancelLabel || t.cancel}

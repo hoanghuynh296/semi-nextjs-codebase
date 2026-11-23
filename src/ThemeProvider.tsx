@@ -232,7 +232,7 @@ function ThemeSegments({ showLabels = false, fullWidth = false, labels: labelsPr
             aria-label={labels[key]}
             title={labels[key]}
             onClick={() => setTheme(key)}
-            className={`${fullWidth ? "flex-1" : ""} ${showLabels ? "px-2.5" : "w-8"} h-full rounded-control inline-flex items-center justify-center gap-1.5 text-ui font-medium whitespace-nowrap transition cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-focus ${
+            className={`${fullWidth ? "flex-1" : ""} ${showLabels ? "px-2.5" : "w-8"} h-full rounded-control inline-flex items-center justify-center gap-1.5 text-chrome font-medium whitespace-nowrap transition cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-focus ${
               on ? SEGMENT_ON : "text-muted hover:text-strong"
             }`}
           >

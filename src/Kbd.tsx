@@ -15,7 +15,7 @@ export function Kbd({
   children?: React.ReactNode;
   className?: string;
 }) {
-  const cap = "inline-flex items-center justify-center min-w-5 h-5 px-1 rounded-chip border border-line bg-field text-ui font-medium text-body tabular-nums";
+  const cap = "inline-flex items-center justify-center min-w-5 h-5 px-1 rounded-chip border border-line bg-field text-chrome font-medium text-body tabular-nums";
   if (keys?.length)
     return (
       <kbd className={cn("inline-flex items-center gap-0.5", className)}>

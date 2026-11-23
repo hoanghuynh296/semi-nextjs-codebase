@@ -58,7 +58,7 @@ function StateBlock({
       </span>
       <Heading className="text-section font-title text-strong">{title}</Heading>
       {message && <p className="text-ui text-muted max-w-md">{message}</p>}
-      {detail && <p className="text-ui text-muted tabular-nums break-all max-w-md">{detail}</p>}
+      {detail && <p className="text-chrome text-muted tabular-nums break-all max-w-md">{detail}</p>}
       {children && <div className="pt-1 flex flex-wrap items-center justify-center gap-2">{children}</div>}
     </div>
   );

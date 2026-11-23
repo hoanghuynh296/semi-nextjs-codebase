@@ -180,14 +180,14 @@ function CartesianFrame({
               {ticks.map((v) => (
                 <g key={v}>
                   <line x1={left} x2={width - 4} y1={y(v)} y2={y(v)} stroke={v === 0 ? "var(--color-line-hover)" : "var(--color-divider)"} strokeWidth={1} />
-                  <text x={left - 8} y={y(v)} dy="0.32em" textAnchor="end" className="fill-muted text-ui tabular-nums">
+                  <text x={left - 8} y={y(v)} dy="0.32em" textAnchor="end" className="fill-muted text-chrome tabular-nums">
                     {compact.format(v)}
                   </text>
                 </g>
               ))}
               {data.map((r, i) =>
                 i % labelEvery === 0 ? (
-                  <text key={i} x={cx(i)} y={height - 6} textAnchor="middle" className="fill-muted text-ui">
+                  <text key={i} x={cx(i)} y={height - 6} textAnchor="middle" className="fill-muted text-chrome">
                     {formatIndex(String(r[index]))}
                   </text>
                 ) : null,
@@ -198,12 +198,12 @@ function CartesianFrame({
           )}
           {active !== null && data[active] && (
             <div id={`${id}-tip`} role="status" className="pointer-events-none absolute top-1 z-10 min-w-36 rounded-control border border-line bg-panel px-3 py-2 shadow-overlay" style={{ left: tipLeft }}>
-              <div className="text-ui text-muted">{formatIndex(String(data[active][index]))}</div>
+              <div className="text-chrome text-muted">{formatIndex(String(data[active][index]))}</div>
               {series.map((s, k) => (
                 <div key={s.key} className="flex items-center gap-2">
                   <span aria-hidden className="h-0.5 w-3 rounded-full" style={{ background: slot(s, k) }} />
                   <span className="text-ui font-semibold text-strong tabular-nums">{format(num(data[active][s.key]))}</span>
-                  <span className="text-ui text-muted">{s.label}</span>
+                  <span className="text-chrome text-muted">{s.label}</span>
                 </div>
               ))}
             </div>
@@ -373,7 +373,7 @@ export function DonutChart({
         </svg>
         <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center" aria-hidden>
           <span className="text-lead font-semibold text-strong">{format(shown ? shown.value : total)}</span>
-          <span className="text-ui text-muted max-w-[60%] truncate">{shown ? shown.label : centerLabel}</span>
+          <span className="text-chrome text-muted max-w-[60%] truncate">{shown ? shown.label : centerLabel}</span>
         </div>
       </div>
       <ul className="space-y-1.5 min-w-0">

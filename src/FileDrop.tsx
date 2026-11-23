@@ -212,7 +212,7 @@ export function FileDrop({
       >
         <Icon name="upload" className="w-5 h-5 shrink-0" />
         <span className={compact ? "text-ui font-medium text-strong" : "text-ui text-strong"}>{title ?? t.fileDropTitle}</span>
-        {hint && <span className={compact ? "text-ui text-muted" : "text-ui text-muted"}>{hint}</span>}
+        {hint && <span className={compact ? "text-chrome text-muted" : "text-chrome text-muted"}>{hint}</span>}
       </button>
       <input
         ref={inputRef}
@@ -242,7 +242,7 @@ export function FileDrop({
               <div className="min-w-0 flex-1">
                 <div className="flex items-baseline gap-2 min-w-0">
                   <span className="text-ui text-strong truncate">{item.name}</span>
-                  <span className="text-ui text-muted tabular-nums shrink-0">{formatFileSize(item.size)}</span>
+                  <span className="text-chrome text-muted tabular-nums shrink-0">{formatFileSize(item.size)}</span>
                 </div>
                 {item.status === "uploading" && (
                   <Progress size="sm" className="mt-1.5" value={item.progress} aria-label={`${t.fileUploading}: ${item.name}`} />

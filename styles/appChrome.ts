@@ -9,7 +9,7 @@ export const HEADER_ICON_ON = "bg-raised text-strong";
 
 /** The app's main action at the right of the header (Slice, Phối màu, Xong). */
 export const headerPrimary = (enabled: boolean) =>
-  `h-control px-4 rounded-control text-ui font-semibold flex items-center justify-center gap-1.5 transition outline-none focus-visible:ring-2 focus-visible:ring-focus select-none shrink-0 ${
+  `h-control px-4 rounded-control text-chrome font-semibold flex items-center justify-center gap-1.5 transition outline-none focus-visible:ring-2 focus-visible:ring-focus select-none shrink-0 ${
     enabled ? "bg-primary hover:bg-primary-hover text-on-primary" : "bg-raised text-muted border border-line cursor-not-allowed"
   }`;
 
@@ -37,4 +37,4 @@ export const VIEWPORT_ROUND_BTN =
 
 /** Info badge at the bottom right of the 3D view (size, count). */
 export const VIEWPORT_BADGE =
-  "absolute bottom-4 right-4 z-20 bg-panel/80 backdrop-blur-md border border-line px-3 py-1.5 rounded-card text-ui text-muted tabular-nums flex items-center gap-1.5 shadow-float select-none";
+  "absolute bottom-4 right-4 z-20 bg-panel/80 backdrop-blur-md border border-line px-3 py-1.5 rounded-card text-chrome text-muted tabular-nums flex items-center gap-1.5 shadow-float select-none";

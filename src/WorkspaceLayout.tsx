@@ -98,7 +98,7 @@ export function WorkspaceHeader({
         ) : null}
         <div className="min-w-0">
           <H className="text-lead font-semibold text-strong truncate">{title}</H>
-          {description && <p className="text-ui text-muted truncate">{description}</p>}
+          {description && <p className="text-chrome text-muted truncate">{description}</p>}
         </div>
       </div>
     </div>
@@ -133,7 +133,7 @@ export function WorkspaceSection({
           {label}
         </span>
         {count !== undefined && (
-          <span className="text-ui text-muted tabular-nums">
+          <span className="text-chrome text-muted tabular-nums">
             {count}
             {max !== undefined ? `/${max}` : ""}
           </span>
