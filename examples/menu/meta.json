@@ -29,7 +29,7 @@
   ],
   "a11y": [
     "WAI-ARIA menu button: Enter / Space / ↓ open on the first item, ↑ on the last; arrows, Home, End move; a letter jumps to the next item starting with it; Escape closes and returns focus to the trigger; Tab closes.",
-    "A check makes the item menuitemcheckbox with aria-checked; a disabled item with a reason stays reachable (aria-disabled) and its reason is its description; a group is role=group named by its heading."
+    "A check makes the item menuitemcheckbox with aria-checked (with radio: menuitemradio, and the menu opens on the checked item); a disabled item with a reason stays reachable (aria-disabled) and its reason is its description; a group is role=group named by its heading."
   ],
   "examples": [
     {

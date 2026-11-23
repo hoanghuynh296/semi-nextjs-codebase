@@ -3,10 +3,11 @@
 // of @semi/ui, a server page's `searchParams`).
 //
 // Format: one repeated param per filter with the `f.` prefix, in the order of the options:
-// `?f.status=new&f.status=quoting&f.big=1`. Unknown values (an old link, a typo) are dropped when read.
+// `?f.status=new&f.status=quoting&f.big=1`; a single filter has one value (`?f.mailbox=sales`), none for its default.
+// Unknown values (an old link, a typo) are dropped when read.
 import type { IconName } from "./Icon";
 
-/** One choice of a multi-select filter. */
+/** One choice of a multi-select or single-choice filter. */
 export interface FilterOption {
   value: string;
   label: string;
@@ -21,12 +22,25 @@ export interface FilterSpec {
   key: string;
   label: string;
   icon?: IconName;
-  /** `multi` (default): a chip with a popover of `options`. `switch`: an on / off chip (a switch in the phone panel). */
-  kind?: "multi" | "switch";
+  /**
+   * `multi` (default): a chip with a popover of `options`. `switch`: an on / off chip (a switch in the phone panel).
+   * `single`: one of `options` (a mailbox, a folder, a warehouse): a chip "Hộp thư: Tất cả" with a radio menu, a radio
+   * group in FilterPanel, one value in the URL.
+   */
+  kind?: "multi" | "switch" | "single";
   options?: FilterOption[];
+  /**
+   * `single` only: the option shown while nothing is chosen ("all", or the page's default view). It is never written
+   * to the URL and never counts as an active filter: `selected` is `[]` while it is in effect, so read the value as
+   * `selected[0] ?? clearValue`. Picking it clears the filter.
+   */
+  clearValue?: string;
 }
 
-/** A filter with its state: what FilterChipRow, FilterChip and FilterPanel render. A switch is on when `selected` is `["1"]`. */
+/**
+ * A filter with its state: what FilterChipRow, FilterChip and FilterPanel render. A switch is on when `selected` is
+ * `["1"]`; a single filter has at most one value (none while its `clearValue` is in effect).
+ */
 export interface FilterDef extends FilterSpec {
   selected: string[];
 }
@@ -48,6 +62,11 @@ function toParams(params: ParamsInput): URLSearchParams {
 function clean(spec: FilterSpec, raw: string[]): string[] {
   if (spec.kind === "switch") return raw.includes(SWITCH_ON) ? [SWITCH_ON] : [];
   const values = raw.filter(Boolean);
+  if (spec.kind === "single") {
+    // the first known value; the default option means "no filter"
+    const known = values.find((v) => v !== spec.clearValue && (!spec.options || spec.options.some((o) => o.value === v)));
+    return known === undefined ? [] : [known];
+  }
   // without options (they load later) every value is kept; with options, only known ones, in the options' order
   if (!spec.options) return [...new Set(values)];
   return spec.options.map((o) => o.value).filter((v) => values.includes(v));

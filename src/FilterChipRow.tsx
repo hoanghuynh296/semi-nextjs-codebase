@@ -6,6 +6,7 @@
 import React, { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { Icon } from "./Icon";
 import { Popover } from "./Popover";
+import { Menu } from "./Overlay";
 import { Checkbox } from "./Choice";
 import { useSemiLocale } from "./locale";
 import { activeFilterCount, clearFilters, readFilters, toQueryString, writeFilters, type FilterDef, type FilterSpec, type FilterValues } from "./filterParams";
@@ -19,7 +20,9 @@ const CHIP_OFF = "bg-tint text-body hover:text-contrast hover:bg-tint-hover";
 
 /**
  * One filter facet as a chip. A `multi` filter opens a popover of checkboxes (aria-expanded on the chip); a `switch`
- * filter toggles on click (aria-pressed). Active, it turns solid (`bg-inverted`) and shows the one value or the count.
+ * filter toggles on click (aria-pressed); a `single` filter opens a menu of radio items (`menuitemradio`) and always
+ * reads "Hộp thư: Tất cả". Active (a value other than `clearValue`), it turns solid (`bg-inverted`) and shows the one
+ * value or the count.
  */
 export function FilterChip({ def, onChange }: { def: FilterDef; onChange: (selected: string[]) => void }) {
   const t = useSemiLocale();
@@ -31,6 +34,31 @@ export function FilterChip({ def, onChange }: { def: FilterDef; onChange: (selec
         {icon}
         {def.label}
       </button>
+    );
+  }
+  if (def.kind === "single") {
+    const current = def.selected[0] ?? def.clearValue;
+    const currentLabel = def.options?.find((o) => o.value === current)?.label;
+    return (
+      <Menu
+        align="left"
+        label={def.label}
+        items={(def.options ?? []).map((o) => ({
+          label: o.label,
+          icon: o.icon,
+          radio: true,
+          checked: o.value === current,
+          shortcut: o.count === undefined ? undefined : String(o.count),
+          onSelect: () => onChange(o.value === def.clearValue ? [] : [o.value]),
+        }))}
+        trigger={
+          <button type="button" className={cn(CHIP, on ? CHIP_ON : CHIP_OFF)}>
+            {icon}
+            <span className="max-w-56 truncate">{currentLabel ? `${def.label}: ${currentLabel}` : def.label}</span>
+            <Icon name="chevronDown" className="w-3.5 h-3.5 shrink-0 opacity-70" />
+          </button>
+        }
+      />
     );
   }
   const first = def.options?.find((o) => o.value === def.selected[0]);
@@ -94,12 +122,14 @@ export function FilterOptions({ def, onChange, className }: { def: FilterDef; on
 /**
  * The filter chips of a list page on one line. When they overflow, the row scrolls sideways and ‹ › buttons appear
  * (hidden from screen readers and the tab order: every chip is reachable by Tab, which scrolls it into view).
- * "Xoá lọc" shows while a filter is on; `trailing` (ViewSwitch) sits at the end behind a divider.
+ * "Xoá lọc" shows while a filter is on; `leading` (the page's views as Pills) sits before the chips and `trailing`
+ * (ViewSwitch) at the end, each behind a divider; neither scrolls with the chips.
  */
 export function FilterChipRow({
   filters,
   onChange,
   onClear,
+  leading,
   trailing,
   label,
   className,
@@ -108,6 +138,11 @@ export function FilterChipRow({
   onChange: (key: string, selected: string[]) => void;
   /** Clears every filter; the "Xoá lọc" button shows while one is on. */
   onClear?: () => void;
+  /**
+   * Before the chips: the page's views (`<Pills>`: Đang mở · Đã đóng · Tất cả), the md+ twin of PhoneFilterBar's
+   * `typeItems`. A view is not a filter: "Xoá lọc" leaves it alone. Keep it short (2–5 views); it does not scroll.
+   */
+  leading?: React.ReactNode;
   /** Tools at the end of the row: ViewSwitch, a sort that is not in a ResultLine. */
   trailing?: React.ReactNode;
   /** Accessible name of the chip group (default "Bộ lọc"). */
@@ -136,6 +171,7 @@ export function FilterChipRow({
     "absolute top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-panel shadow-overlay flex items-center justify-center text-contrast hover:bg-raised cursor-pointer";
   return (
     <div className={cn("flex items-center gap-2 min-w-0", className)}>
+      {leading && <div className="shrink-0 flex items-center gap-1 pr-2 border-r border-divider">{leading}</div>}
       <div className="relative flex-1 min-w-0">
         {edges.left && (
           <button type="button" tabIndex={-1} aria-hidden onClick={() => scroll(-1)} title={t.scrollLeft} className={cn(arrow, "left-0")}>

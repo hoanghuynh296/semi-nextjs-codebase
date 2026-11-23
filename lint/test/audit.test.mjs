@@ -53,6 +53,18 @@ test("detail and list pages: only list pages need a SubpageToolbar; AppHeader co
   rmSync(root, { recursive: true });
 });
 
+test("a list page on the StickyContextBar anatomy needs no SubpageToolbar (#115)", () => {
+  const { root, web } = app();
+  mkdirSync(join(web, "app/orders"));
+  writeFileSync(
+    join(web, "app/orders/page.tsx"),
+    `import { PageTitle, StickyContextBar, SearchPill } from "@semi/ui";\nexport default function O({ rows }) { return <><PageTitle title="x" /><StickyContextBar><SearchPill /></StickyContextBar><ul>{rows.map((r) => <li key={r}>{r}</li>)}</ul></>; }\n`,
+  );
+  const checks = auditProject(root).apps[0].issues.map((i) => `${i.check}:${i.file}`);
+  assert.ok(!checks.includes("subpage-toolbar:app/orders/page.tsx"));
+  rmSync(root, { recursive: true });
+});
+
 test("issues are sorted into decisions, hand fixes and codemod fixes with file:line", () => {
   const { root } = app();
   const r = auditProject(root);

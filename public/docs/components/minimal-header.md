@@ -11,7 +11,7 @@ The top row of a detail or settings page inside AppShell: where the page sits on
 
 | Need | Use |
 |---|---|
-| A list page with filters, search and refresh | SubpageToolbar |
+| A list page: its title, create action and refresh | PageTitle actions (then StickyContextBar or SubpageToolbar) |
 | A stand-alone tool app (no sidebar) | AppHeader |
 | Several actions of a record | MinimalHeader primary + Menu in the page |
 
