@@ -664,15 +664,16 @@ export function AppShell({
   const toolClass = cn("relative w-8 h-8 shrink-0 rounded-control flex items-center justify-center text-muted hover:text-strong hover:bg-item-hover transition-hover cursor-pointer", FOCUS_RING);
   const countBadge = (count?: number) =>
     count ? (
-      <span aria-hidden className="absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-primary text-on-primary text-badge leading-4 tabular-nums text-center">
+      <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-primary text-on-primary text-badge leading-4 tabular-nums text-center">
         {count > 99 ? "99+" : count}
       </span>
     ) : null;
   const renderTool = (tool: ShellTool) => {
-    const name = tool.count ? `${tool.label} (${tool.count > 99 ? "99+" : tool.count})` : tool.label;
+    // the name is the label, then the visible count (axe label-content-name-mismatch): "Thông báo 12"
     const inner = (
       <>
         <Icon name={tool.icon ?? "box"} className={cn("w-4 h-4", tool.iconHidden && "opacity-0")} />
+        <span className="sr-only">{tool.label} </span>
         {countBadge(tool.count)}
       </>
     );
@@ -685,7 +686,7 @@ export function AppShell({
           items={tool.menu}
           trigger={
             <Tooltip content={tool.label} side={toolSide}>
-              <button type="button" aria-label={name} className={toolClass}>
+              <button type="button" className={toolClass}>
                 {inner}
               </button>
             </Tooltip>
@@ -698,7 +699,6 @@ export function AppShell({
         {tool.href ? (
           <Link
             href={tool.href}
-            aria-label={name}
             target={tool.external ? "_blank" : undefined}
             rel={tool.external ? "noopener noreferrer" : undefined}
             onClick={() => onSelect?.(tool.id)}
@@ -707,7 +707,7 @@ export function AppShell({
             {inner}
           </Link>
         ) : (
-          <button type="button" aria-label={name} onClick={() => (tool.onClick ? tool.onClick() : onSelect?.(tool.id))} className={toolClass}>
+          <button type="button" onClick={() => (tool.onClick ? tool.onClick() : onSelect?.(tool.id))} className={toolClass}>
             {inner}
           </button>
         )}
@@ -880,7 +880,9 @@ export function AppShell({
             )}
 
             {/* The content column: the route header, then the content card */}
-            <div className={cn(SHELL_COLUMN, !headerOn && "max-sm:pt-2")}>
+            {/* data-density-view: the column is the screen, so the density audit counts the content card as the page
+                panel (page panel › card › tile), not as a frame inside the column */}
+            <div data-density-view="" className={cn(SHELL_COLUMN, !headerOn && "max-sm:pt-2")}>
               {headerOn && (
                 <RouteHeader
                   crumbs={crumbs}
@@ -1260,32 +1262,30 @@ function PhoneDrawer({
           <ul className="grid grid-flow-col auto-cols-fr gap-1">
             {[...utilities, ...(toolsMenu.length ? [{ id: "__more", label: t.moreTools, icon: "more" as IconName, menu: toolsMenu }] : [])].map((u: ShellTool) => {
               const cls = cn("relative w-full flex flex-col items-center gap-1 py-2 rounded-control text-chrome text-muted hover:text-strong hover:bg-item-hover transition-hover cursor-pointer", FOCUS_RING);
-              const name = u.count ? `${u.label} (${u.count > 99 ? "99+" : u.count})` : undefined;
+              // the name is the label, then the visible count ("Thông báo 12"), in reading order
               const body = (
                 <>
-                  <span className="relative">
-                    <Icon name={u.icon ?? "box"} className={cn("w-5 h-5", u.iconHidden && "opacity-0")} />
-                    {!!u.count && (
-                      <span aria-hidden className="absolute -top-1.5 -right-2.5 min-w-4 h-4 px-1 rounded-full bg-primary text-on-primary text-badge leading-4 tabular-nums text-center">
-                        {u.count > 99 ? "99+" : u.count}
-                      </span>
-                    )}
-                  </span>
-                  <span className="truncate max-w-full">{u.label}</span>
+                  <Icon name={u.icon ?? "box"} className={cn("w-5 h-5", u.iconHidden && "opacity-0")} />
+                  <span className="truncate max-w-full">{u.label}</span>{" "}
+                  {!!u.count && (
+                    <span className="absolute top-1 left-1/2 ml-1.5 min-w-4 h-4 px-1 rounded-full bg-primary text-on-primary text-badge leading-4 tabular-nums text-center">
+                      {u.count > 99 ? "99+" : u.count}
+                    </span>
+                  )}
                 </>
               );
               return (
                 <li key={u.id} className="min-w-0">
                   {u.href ? (
-                    <Link href={u.href} aria-label={name} onClick={() => go(u.id)} className={cls}>
+                    <Link href={u.href} onClick={() => go(u.id)} className={cls}>
                       {body}
                     </Link>
                   ) : u.menu ? (
-                    <button type="button" aria-label={name} data-drawer-row={u.id} onClick={() => open({ id: u.id, label: u.label, rows: menuRows(u.id, u.menu!) })} className={cls}>
+                    <button type="button" data-drawer-row={u.id} onClick={() => open({ id: u.id, label: u.label, rows: menuRows(u.id, u.menu!) })} className={cls}>
                       {body}
                     </button>
                   ) : (
-                    <button type="button" aria-label={name} onClick={() => (u.onClick ? u.onClick() : go(u.id))} className={cls}>
+                    <button type="button" onClick={() => (u.onClick ? u.onClick() : go(u.id))} className={cls}>
                       {body}
                     </button>
                   )}

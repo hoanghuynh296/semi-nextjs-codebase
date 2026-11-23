@@ -91,6 +91,12 @@ function phoneOverflow(page: Page) {
   });
 }
 
+/** Pick a theme in the route header's theme menu of the docs site. */
+async function pickTheme(page: Page, name: "Sáng" | "Tối" | "Hệ thống") {
+  await page.locator("header").getByRole("button", { name: "Giao diện", exact: true }).click();
+  await page.getByRole("menu", { name: "Giao diện" }).getByRole("menuitemradio", { name }).click();
+}
+
 // ─── Docs site ───────────────────────────────────────────────────────────────────────────────────────────────────
 
 test("the menu marks the page you are on, and follows navigation", async ({ page }) => {
@@ -132,7 +138,7 @@ test("stored theme is applied before the first paint and survives reload", async
   expect(await page.evaluate(() => (window as unknown as { __firstPaintTheme?: string }).__firstPaintTheme)).toBe("light");
   // the static HTML is clickable before React hydrates (slow on CI with every preview on the page): retry the click
   await expect(async () => {
-    await page.getByRole("radio", { name: "Tối" }).first().click();
+    await pickTheme(page, "Tối");
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark", { timeout: 1000 });
   }).toPass();
   expect(await page.evaluate(() => localStorage.getItem("semi-theme"))).toBe("dark");
@@ -155,13 +161,13 @@ test("brand preview: a #brand= link sets the brand fills on every page, passes c
   await open(page, `/components/#brand=${hash}`, "dark");
   await expect(page.getByText("Blue Co", { exact: true })).toBeVisible();
   for (const theme of THEMES) {
-    await page.getByRole("radio", { name: theme === "dark" ? "Tối" : "Sáng" }).first().click();
+    await pickTheme(page, theme === "dark" ? "Tối" : "Sáng");
     // 1.0: the brand fill is the brand colour as given, the same in both themes; the surfaces stay Semi's neutrals.
     await expect.poll(primary).toBe("#2563eb");
     await expect.poll(canvas).toBe(theme === "dark" ? "#101010" : "#ebebeb");
     expect(await lowContrast(page)).toEqual([]);
   }
-  await page.getByRole("radio", { name: "Tối" }).first().click();
+  await pickTheme(page, "Tối");
   await page.goto("/components/button/"); // stays on across pages (applied once the page hydrates)
   await expect.poll(primary).toBe("#2563eb");
   await page.getByRole("button", { name: "Tắt xem trước brand" }).click();
@@ -232,7 +238,7 @@ test("Design Lab: a draft follows every page, keeps each density its own values,
   await page.goto(`/lab/#lab=${labHash({ ...draft, params: { hoverStep: 0.08 } })}`);
   await page.addStyleTag({ content: "*,*::before,*::after{transition:none!important;animation:none!important}" });
   for (const theme of THEMES) {
-    await page.getByRole("radio", { name: theme === "dark" ? "Tối" : "Sáng" }).first().click();
+    await pickTheme(page, theme === "dark" ? "Tối" : "Sáng");
     for (const tab of ["Chữ", "Hình khối", "Màu", "Thay đổi"]) {
       await page.getByRole("tab", { name: new RegExp(`^${tab}`) }).click();
       expect(await lowContrast(page), `${theme} · ${tab}`).toEqual([]);
@@ -649,7 +655,7 @@ test("phones get the drawer: focus moves in, stays in, drills down and returns t
   await expect(createLevel.getByRole("button", { name: "Đơn hàng" })).toBeFocused();
   await page.keyboard.press("Escape");
   // the bottom row's tools: named with their count; the ••• menu opens its items as a level
-  await expect(drawer.getByRole("button", { name: "Thông báo (12)" })).toBeVisible();
+  await expect(drawer.getByRole("button", { name: "Thông báo 12" })).toBeVisible();
   const more = drawer.getByRole("button", { name: "Thêm" });
   await more.click();
   await expect(page.getByRole("dialog", { name: "Thêm" }).getByRole("button", { name: "Cài đặt" })).toBeFocused();
@@ -758,7 +764,7 @@ test("AppShell rail (1100 and iPad): every item is named, shows a tooltip on the
   await page.keyboard.press("Escape");
   await expect(create).toBeFocused();
   // the bottom row stacks: 32×32 tools one above the other, a count badge, the ••• menu by keyboard
-  const bell = aside.getByRole("button", { name: "Thông báo (12)" });
+  const bell = aside.getByRole("button", { name: "Thông báo 12" });
   const help = aside.getByRole("button", { name: "Trợ giúp" });
   const [bb, hb] = [await bell.boundingBox(), await help.boundingBox()];
   expect(bb).toMatchObject({ width: 32, height: 32 });
