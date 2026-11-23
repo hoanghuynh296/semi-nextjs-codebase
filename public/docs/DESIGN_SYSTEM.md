@@ -412,7 +412,9 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   the rail every item has an `aria-label` and a `Tooltip` on the right. An item without `icon` shows its initials
   (`shortLabel` to choose them): give pinned items distinct icons, or none, never one shared icon (touch has no
   Tooltip). The `account` render prop gets `{ collapsed, rail }`: hide its text by `rail`, not only `collapsed` (at `md`
-  the sidebar is a rail while `collapsed` is false).
+  the sidebar is a rail while `collapsed` is false). `rail` is known after mount (the server renders the rail); to show
+  the full block in the server HTML at `lg`, hide the text by CSS like the nav labels (`collapsed ? "hidden" : "hidden
+  lg:block"`), as the docs site does.
 - **Mega menu:** a nav item with `mega` opens a `MegaMenu` flyout beside the sidebar: 2–4 category columns headed by
   `text-overline`, links with a grey icon, a hint and a "Mới" badge, and a "Xem tất cả" link.
 - **Phones (`< md`):** a top bar (menu button, logo, product name) opens a full-screen drawer with the same groups:

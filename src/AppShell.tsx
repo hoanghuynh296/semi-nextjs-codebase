@@ -145,7 +145,11 @@ export interface AppShellProps {
   pinned?: ShellPinned;
   /** Utilities at the bottom of the sidebar (help, theme, notifications): usually items with `onClick`. */
   utilities?: ShellNavItem[];
-  /** The account at the very bottom (avatar, workspace switcher). Receives `{ collapsed, rail }`: hide text when `rail`. */
+  /**
+   * The account at the very bottom (avatar, workspace switcher). Receives `{ collapsed, rail }`: hide text when `rail`.
+   * `rail` is known after mount (the server and the first render show the rail); for the full block in the server HTML
+   * at `lg`, hide the text by CSS like the nav labels: `collapsed ? "hidden" : "hidden lg:block"`.
+   */
   account?: ShellSlot;
   /** @deprecated Since 0.36: split into `utilities` (actions) and `account`. Rendered like `account`. */
   footer?: ShellSlot;
