@@ -2,7 +2,13 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
-## Unreleased
+## 0.36.1 — 2026-11-23
+
+**Summary.** A patch with two fixes from sales-hub's 0.36.0 adoption (C-041): `SearchPill` no longer loses a query typed just before a history push (#128), and `semi a11y` no longer reports `focus-ring` on a dialog's own focused controls such as `DetailOverlay`'s close and ‹ › buttons (#126).
+
+**What apps must do.** Run `/semi-sync`. Remove `debounce={0}` from a `SearchPill` set that way to work around #128, and drop the `focus-ring` hits on `DetailOverlay` from the app's list of known Semi issues. No migration, no brand kit rebuild (no token changed).
+
+**Changed in behaviour.** An app `onChange` on `SearchPill` that pushes now gets its own history entry before the pushed one. `semi a11y` reports a control focus cannot be moved onto or off (`focus could not be moved …`) instead of leaving it out; the page behind an `aria-modal` dialog stays unflagged.
 
 ### Fixed
 - `semi a11y` no longer reports `focus-ring` on the first control of an open dialog (#126): `DetailOverlay`'s close button (and the first control of `Modal`, `Drawer`, `CommandPalette`, … whose focus trap focuses it on open) was measured against itself, already focused, so its ring counted as "nothing changes". The audit now takes the focus off first and compares the control unfocused with keyboard focus; a control with no ring is still reported, and one that takes focus back when it loses it (so it cannot be compared unfocused) is reported as "focus could not be moved off it to compare" instead of being left out, and so is every control it keeps focus from ("focus could not be moved onto it"); the page behind an `aria-modal` dialog whose focus trap keeps focus inside stays unflagged. The components were right; nothing to change in apps, the warning just goes away. The docs-site checks now audit `DetailOverlay` open, a `FilterChipRow` popover open and `ViewSwitch`, in both themes at 1280px and 375px.
