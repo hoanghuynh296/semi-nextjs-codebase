@@ -1,6 +1,6 @@
 # Typography
 
-The 1.0 type scale (text-tag 10 … text-hero 36, text-ui 12 the base UI size, font-display for hero and big titles) and Prose, which styles long-form text — headings, paragraphs, lists, links, quotes, inline code — from that scale.
+The 1.0 type scale (text-tag 10 … text-hero 36, text-ui 14 for content, text-chrome 12 for the shell chrome, font-display for hero and big titles) and Prose, which styles long-form text — headings, paragraphs, lists, links, quotes, inline code — from that scale.
 
 ## When to use
 
@@ -11,7 +11,7 @@ The 1.0 type scale (text-tag 10 … text-hero 36, text-ui 12 the base UI size, f
 | Need | Use |
 |---|---|
 | Page title | PageTitle |
-| UI text in cards and forms | the type classes directly (text-ui for labels, rows and meta; text-copy for reading copy) |
+| UI text in cards and forms | the type classes directly (text-ui for content: rows, labels, fields, buttons, copy; text-chrome for shell chrome and meta) |
 
 ## Import
 
@@ -32,9 +32,8 @@ export default function TypographyScale() {
       <div className="text-section text-strong">Tiêu đề mục 20</div>
       <div className="text-figure text-strong">Tiêu đề trang trong thẻ 18</div>
       <div className="text-lead text-strong font-medium">Tiêu đề thẻ 15</div>
-      <div className="text-copy text-body">Nội dung dài 14</div>
-      <div className="text-ui text-body">Giao diện 12</div>
-      <div className="text-ui text-muted">Nhãn 12</div>
+      <div className="text-ui text-body">Nội dung 14: dòng, nhãn, nút, đoạn văn</div>
+      <div className="text-chrome text-muted">Khung ứng dụng 12: điều hướng, đường dẫn, thông tin phụ</div>
       <div className="text-tag text-muted">Thẻ 10</div>
     </div>
   );

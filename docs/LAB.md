@@ -32,7 +32,7 @@ Bản nháp chỉ chứa giá trị khác file nguồn, và chính nó là patch
 {
   "$semiLab": 1,
   "type": { "text-ui": "13px" },
-  "density": { "compact": { "spacing": "0.225rem", "sizes": { "text-copy": "13px" } } },
+  "density": { "compact": { "spacing": "0.225rem", "sizes": { "text-ui": "13px" } } },
   "typeScale": { "contrast": { "sizes": { "text-section": "26px" } } },
   "shape": { "radius-card": "1rem" },
   "params": { "hoverStep": 0.08 }

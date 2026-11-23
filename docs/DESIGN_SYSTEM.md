@@ -62,9 +62,9 @@ hook of the `semi-design` plugin).
 | Big text tabs | `font-display text-tab-xl` (T5) |
 | Section heading | `text-section text-strong` (500 from the token) |
 | Card title, lead text | `text-lead font-medium text-strong` |
-| Reading copy, secondary body | `text-copy text-body` |
-| UI text: nav, breadcrumb, buttons, labels, meta, list rows | `text-ui` (12px, the base UI size) `text-body` / `text-muted` |
-| Group label, kbd hint, "Untitled" | `text-ui text-faint` |
+| Content: rows, form labels and help, field values, buttons, menu items, dialog text, body, reading copy | `text-ui` (14px, the content size) `text-body` / `text-muted` |
+| Shell chrome: nav, breadcrumb, toolbar compact buttons, meta (timestamps, counts, hints) | `text-chrome` (12px) `text-body` / `text-muted` |
+| Group label, kbd hint, "Untitled" | `text-chrome text-faint` |
 | Tag, chip | `text-tag` (10 / 500 / +0.02em) |
 | Count badge | `text-badge` (10 / 700) |
 | Section label (overline) | `text-overline text-muted`: 11 / 600 / +0.1em, the only uppercase text (C-032) |
@@ -76,8 +76,8 @@ set through `--font-sans-family`) for everything, and `font-display` (brand `fon
 without one it is the UI sans) only for hero, reading-page titles, big tabs and editorial section heads. ui-monospace
 only for code. **Headings are not bold:** 400 and 500 do almost everything (`font-title` is 500); 600 only for overlines
 and a few emphasised labels; 700 only in count badges. Tracking −0.01em on display sizes ≥ 20px (in the tokens). Sizes
-come from the type scale tokens, never `text-[13px]` and never Tailwind's `text-xs` / `text-sm` / `text-base`. The 14px
-size is `text-copy` because `text-body` is the body text colour.
+come from the type scale tokens, never `text-[13px]` and never Tailwind's `text-xs` / `text-sm` / `text-base`. Content is
+14px (`text-ui`); only the shell chrome is 12px (`text-chrome`), see `docs/TOKENS.md` for which piece uses which.
 
 **Fields on a phone:** text you type in is 16px (`text-input`) below `sm`, whatever the field's desktop size. iOS Safari
 zooms the page into a focused field under 16px and never zooms back; the fix is the text size, never `maximum-scale` /
@@ -87,8 +87,8 @@ Command, the Chat composer) already do it; a field of your own, or a NumberInput
 adds `max-sm:text-input`. `base.css` does the same for a bare
 `<input>` / `<textarea>` / `<select>`; the height stays `h-control` / `h-field`.
 
-Minimum `text-tag` / `text-badge` (10px, marks only). Running text (a sentence, a description) is `text-copy`; UI text
-(rows, labels, meta) is `text-ui`. Every size carries its line height (about 1.5 for UI and body: 12/18, 14/22, 15/24;
+Minimum `text-tag` / `text-badge` (10px, marks only). Content (rows, labels, help, buttons, sentences) is `text-ui`
+(14px); the shell chrome and meta are `text-chrome` (12px). Every size carries its line height (about 1.5 for UI and body: 14/22, 12/18, 15/24;
 1.1–1.3 for display sizes), so text rarely needs `leading-*`. Button and
 label text is sentence case ("Lưu", "Xem lại"), never ALL CAPS. Sizes are written in px here and in `tokens.json`
 but `tokens.css` emits them in rem (14px = 0.875rem), so text grows with the browser's default font size (WCAG 1.4.4).

@@ -5,7 +5,7 @@
   /* Monospace font (font-sans / font-display are shape tokens, below) */
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
 
-  /* Type scale (docs/TOKENS.md): text-hero 36 (32 below sm) · title-xl 44 · tab-xl 28 (24 below sm) · section 20 · figure 18 · lead 15 · copy 14 · input 16 (typed text below sm) · ui 12 (the base UI size) · tag 10 · badge 10 · overline 11 (section labels, uppercase). Each size carries its line height; leading-* overrides it */
+  /* Type scale (docs/TOKENS.md): text-hero 36 (32 below sm) · title-xl 44 · tab-xl 28 (24 below sm) · section 20 · figure 18 · lead 15 · ui 14 (content: rows, labels, fields, buttons, menus, body) · input 16 (typed text below sm) · chrome 12 (shell chrome: nav, breadcrumb, toolbar, meta) · tag 10 · badge 10 · overline 11 (section labels, uppercase). Each size carries its line height; leading-* overrides it */
   --text-hero: 2.25rem; /* Hero (font-display, 400). 32px below sm */
   --text-hero--letter-spacing: -0.01em;
   --text-hero--line-height: 1.1;
@@ -23,12 +23,12 @@
   --text-figure--line-height: 1.25;
   --text-lead: 0.9375rem; /* Lead text, card titles (15/24) */
   --text-lead--line-height: 1.6;
-  --text-copy: 0.875rem; /* Reading copy: secondary body, prose, larger buttons (14/22). Named copy, not body: text-body is the body text colour */
-  --text-copy--line-height: 1.5715;
   --text-input: 1rem; /* Text you type in, below sm (max-sm:text-input on fields): iOS zooms into a field under 16px */
   --text-input--line-height: 1.5;
-  --text-ui: 0.75rem; /* The base UI size: nav, breadcrumb, buttons, labels, meta, list rows (12/18) */
-  --text-ui--line-height: 1.5;
+  --text-ui: 0.875rem; /* Content: list and table rows, form labels and help, field values, buttons, menu items, dialog text, body (14/22). 13px compact */
+  --text-ui--line-height: 1.5715;
+  --text-chrome: 0.75rem; /* Shell chrome only: nav items, group labels, breadcrumb, header and toolbar compact buttons, meta (timestamps, counts, hints), kbd (12/18) */
+  --text-chrome--line-height: 1.5;
   --text-tag: 0.625rem; /* Tags and chips (500, +0.02em) */
   --text-tag--letter-spacing: 0.02em;
   --text-tag--font-weight: 500;
@@ -829,10 +829,10 @@
 }
 
 /* Product: density (data-density="compact|regular|airy"), read by the style's spacing token */
-[data-density="compact"] { /* Tools used all day: more on a screen (reading copy 13px) */
+[data-density="compact"] { /* Tools used all day: more on a screen (content 13px) */
   --density-spacing: 0.225rem;
   --semi-spacing: 0.225rem;
-  --text-copy: 0.8125rem;
+  --text-ui: 0.8125rem;
   --text-lead: 0.875rem;
 }
 

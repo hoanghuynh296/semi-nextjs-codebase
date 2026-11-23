@@ -5,7 +5,7 @@
   /* Monospace font (font-sans / font-display are shape tokens, below) */
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
 
-  /* Type scale (docs/TOKENS.md): text-hero 36 (32 below sm) · title-xl 44 · tab-xl 28 (24 below sm) · section 20 · figure 18 · lead 15 · copy 14 · input 16 (typed text below sm) · ui 12 (the base UI size) · tag 10 · badge 10 · overline 11 (section labels, uppercase). Each size carries its line height; leading-* overrides it */
+  /* Type scale (docs/TOKENS.md): text-hero 36 (32 below sm) · title-xl 44 · tab-xl 28 (24 below sm) · section 20 · figure 18 · lead 15 · ui 14 (content: rows, labels, fields, buttons, menus, body) · input 16 (typed text below sm) · chrome 12 (shell chrome: nav, breadcrumb, toolbar, meta) · tag 10 · badge 10 · overline 11 (section labels, uppercase). Each size carries its line height; leading-* overrides it */
   --text-hero: 2.25rem; /* Hero (font-display, 400). 32px below sm */
   --text-hero--letter-spacing: -0.01em;
   --text-hero--line-height: 1.1;
