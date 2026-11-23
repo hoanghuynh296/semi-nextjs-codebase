@@ -111,6 +111,36 @@ function subtleAlpha(tokens, theme) {
   const m = /(\d+(?:\.\d+)?)%/.exec(tokens.semantic?.["color-accent-subtle"]?.[theme] ?? "");
   return m ? +m[1] / 100 : theme === "dark" ? 0.14 : 0.11;
 }
+/** A private text token as hex: "var(--semi-x)" or "color-mix(in oklab, var(--semi-a) P%, var(--semi-b))", from `vars` (hex by key). */
+function mixToken(expr, vars) {
+  const v = String(expr ?? "").trim();
+  const one = /^var\(--semi-([\w-]+)\)$/.exec(v);
+  if (one) return vars[one[1]];
+  const m = /^color-mix\(in oklab, var\(--semi-([\w-]+)\) (\d+(?:\.\d+)?)%, var\(--semi-([\w-]+)\)\)$/.exec(v);
+  return m && vars[m[1]] && vars[m[3]] ? mixOklab(vars[m[1]], vars[m[3]], 1 - +m[2] / 100) : null;
+}
+
+/**
+ * The accent-subtle fills as tokens.json paints them (see-through over the pages and the card), each with the text
+ * colours that read on it: bg-accent-subtle / bg-accent-subtle-hover re-point text-muted (and accent-fg on hover) to
+ * their private "-on-subtle" tokens (#123). One entry per fill x surface: { key, on, fill, muted, body, accent }.
+ */
+export function accentSubtleText(tokens, theme, fg, n) {
+  const sem = tokens.semantic ?? {};
+  const vars = { "text-muted": n["color-text-muted"], "text-body": n["color-text-body"], "text-contrast": n["color-text-contrast"], "accent-fg": fg };
+  const unders = { canvas: n["color-canvas"], app: n["color-app"], panel: n["color-panel"], card: derivedSurfaces(n, theme).card };
+  const out = [];
+  for (const key of ["color-accent-subtle", "color-accent-subtle-hover"]) {
+    const m = /(\d+(?:\.\d+)?)%/.exec(sem[key]?.[theme] ?? "");
+    const a = m ? +m[1] / 100 : 0.14;
+    const sets = sem[key]?.sets ?? {};
+    const text = (k) => (sets[k] ? mixToken(sem[`color-${/^var\(--semi-([\w-]+)\)$/.exec(sets[k])?.[1]}`]?.[theme], vars) : null) ?? vars[k];
+    const t = { muted: text("text-muted"), body: text("text-body"), accent: text("accent-fg") };
+    for (const [on, under] of Object.entries(unders)) out.push({ key, on, under, fill: blend(fg, under, a), ...t });
+  }
+  return out;
+}
+
 /** Opacity of text-muted in Semi's control-line token per theme ("color-mix(… text-muted 80%, transparent)"), or null. */
 function controlLineAlpha(tokens, theme) {
   const m = /(\d+(?:\.\d+)?)%/.exec(tokens.semantic?.["color-control-line"]?.[theme] ?? "");
@@ -488,11 +518,25 @@ export function accentErrors(themes, brand) {
  * Coloured text (accent-fg): the shade closest to the brand colour that reads at AA on every surface and on the
  * accent-subtle tint of itself (selected rows, active pills). The focus ring and selected borders use it too.
  */
-function pickText(sc, brandHex, theme, surfaces, pages, subtle) {
-  const reads = (s) => minContrast(sc[s], [...surfaces, ...pages.map((bg) => blend(sc[s], bg, subtle))]);
+function pickText(sc, brandHex, theme, surfaces, pages, subtle, onHover = null) {
+  // onHover(fgHex): the hover fills with the accent text that sits on them (accent-fg re-pointed there, #123).
+  const hover = (s) => (onHover ? onHover(sc[s]).map(({ fill, accent }) => contrast(accent, fill)) : []);
+  const reads = (s) => Math.min(minContrast(sc[s], [...surfaces, ...pages.map((bg) => blend(sc[s], bg, subtle))]), ...hover(s));
   const ok = SHADES.filter((s) => reads(s) >= AA).sort((a, b) => deltaE(sc[a], brandHex) - deltaE(sc[b], brandHex));
   const shade = ok[0] ?? (theme === "dark" ? 50 : 900);
   return { shade, ratio: reads(shade) };
+}
+
+/** Nudge muted / body text until the text on the accent-subtle fills (with their scoped tokens) reads at AA (#123). */
+function fixTextOnSubtle(tokens, n, theme, fg) {
+  const weak = (k) => accentSubtleText(tokens, theme, fg, n).some((e) => contrast(k === "color-text-muted" ? e.muted : e.body, e.fill) < AA + 0.05);
+  for (const k of ["color-text-muted", "color-text-body"]) {
+    let { l, c, h } = hexToOklch(n[k]);
+    for (let i = 0; i < 40 && weak(k); i++) {
+      l += theme === "dark" ? 0.01 : -0.01;
+      n[k] = oklchToHex({ l, c, h });
+    }
+  }
 }
 
 /** Opaque version of a neutral (rgba lines are composited on the panel) for contrast checks. */
@@ -622,7 +666,11 @@ export function generateBrand(brand, { tokens, styles, version = "", params }) {
     const hoverName = label(fill.hoverShade, fill.hover);
     // Coloured text also sits on the C-030 card (selected page, active row inside a card), with and without the tint.
     const cards = allowed.map((st) => derivedSurfaces(neutrals[st.id][theme], theme).card);
-    const fg = pickText(primary, brand.primary, theme, [...surfaces, ...cards], [...pages, ...cards], subtle);
+    const onHover = (fgHex) => allowed.flatMap((st) => accentSubtleText(tokens, theme, fgHex, neutrals[st.id][theme]).filter((e) => e.key.endsWith("-hover")));
+    const fg = pickText(primary, brand.primary, theme, [...surfaces, ...cards], [...pages, ...cards], subtle, onHover);
+    // Secondary text of a selected row (time, snippet) uses the scoped text-muted (#123): nudge the style's muted / body
+    // when even that falls short on the tint or its hover.
+    for (const st of allowed) fixTextOnSubtle(tokens, neutrals[st.id][theme], theme, primary[fg.shade]);
     themes[theme] = {
       "color-accent": fill.fill,
       "color-accent-hover": fill.hover,
@@ -666,6 +714,9 @@ export function generateBrand(brand, { tokens, styles, version = "", params }) {
     for (const st of allowed) {
       const n = neutrals[st.id][theme];
       const s = derivedSurfaces(n, theme);
+      const on = accentSubtleText(tokens, theme, themes[theme]["color-accent-fg"], n);
+      report.push({ check: `chữ mờ trên nền chọn ${st.name} (${t})`, pair: `text-muted (on-subtle) / accent-subtle + hover`, ratio: Math.min(...on.map((e) => contrast(e.muted, e.fill))), min: AA });
+      report.push({ check: `chữ màu chính trên nền chọn khi hover ${st.name} (${t})`, pair: `accent-fg (on-subtle-hover) / accent-subtle-hover`, ratio: Math.min(...on.filter((e) => e.key.endsWith("-hover")).map((e) => contrast(e.accent, e.fill))), min: AA });
       report.push({ check: `chữ mờ trên thẻ ${st.name} (${t})`, pair: `text-muted / card + card-field`, ratio: Math.min(contrast(n["color-text-muted"], s.card), contrast(n["color-text-muted"], s.cardField)), min: AA });
       report.push({ check: `thẻ tách khỏi nền ${st.name} (${t})`, pair: `card / app`, ratio: contrast(s.card, n["color-app"]), min: 1.1, soft: true });
       if (brand.primaryStyle === "inverted") {

@@ -274,7 +274,8 @@ tắc bố cục đi kèm (tránh giao diện "AI" chung chung): `DESIGN_SYSTEM.
   theme sáng lấy bậc 600 (700 chỉ khi 600 không đạt), theme tối lấy bậc sáng và rực hơn (400-500), như cách Apple làm với màu hệ thống.
   Hai theme không trùng nhau trừ khi thương hiệu tự chọn như vậy.
 - **Chữ màu chính (`text-accent-fg`):** sắc độ gần màu thương hiệu nhất đọc được 4.5:1 trên mọi nền và trên nền chọn
-  (`bg-accent-subtle`). Viền focus (`ring-focus`) và viền mục chọn (`border-accent-line`) đi theo nó.
+  (`bg-accent-subtle`) và khi hover trên nền đó. Chữ phụ (`text-muted`) trên nền chọn được Semi làm đậm hơn trong phạm vi nền đó;
+  nếu vẫn thiếu 4.5:1, bộ sinh chỉnh chữ phụ / chữ thường của style đậm hơn (báo cáo: "chữ mờ trên nền chọn"). Viền focus (`ring-focus`) và viền mục chọn (`border-accent-line`) đi theo nó.
 - **Màu phụ:** `secondary-*`, chữ `text-secondary-fg`, và nền đặc `bg-secondary-solid` + `text-on-secondary` (badge, điểm
   nhấn), chọn theo cùng cách.
 - **Báo cáo** (`dist/brand.json` → `report`, BRAND.md, trang preview): chữ ≥ 4.5:1, viền focus ≥ 3:1, hover vẫn đọc được;

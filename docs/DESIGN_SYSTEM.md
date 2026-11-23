@@ -135,8 +135,8 @@ Semi architecture separates tokens into two tiers:
 | `--color-on-accent` | `text-on-accent` | Chữ / icon trên `bg-accent` (≥ 4.5:1) | `#0c0d0e` | `#ffffff` |
 | `--color-accent-fg` | `text-accent-fg` | Chữ / icon màu primary trên surface (link, check, tab active), cả trên nền chọn trong thẻ lõm | `primary-400` | `primary-800` (brand kit: bộ sinh chọn, kiểm cả trên `card`) |
 | `--color-focus` | `ring-focus`, `border-focus` | Viền focus (`FOCUS_RING`), viền ô nhập đang gõ (≥ 3:1 trên mọi surface) | = `accent-fg` | = `accent-fg` |
-| `--color-accent-subtle` | `bg-accent-subtle` | Nền nhạt của mục đang chọn (option, trang hiện tại, pill active, IconTile) | `accent-fg` 14% | `accent-fg` 11% |
-| `--color-accent-subtle-hover` | `hover:bg-accent-subtle-hover` | Hover của nền nhạt accent | `accent-fg` 22% | `accent-fg` 18% |
+| `--color-accent-subtle` | `bg-accent-subtle` | Nền nhạt của mục đang chọn (option, trang hiện tại, pill active, IconTile). Lớp này đổi `text-muted` bên trong sang `--semi-text-muted-on-subtle` (sáng: 25% về `text-body`) để chữ phụ đạt 4.5:1 (#123) | `accent-fg` 14% | `accent-fg` 11% |
+| `--color-accent-subtle-hover` | `hover:bg-accent-subtle-hover` | Hover của nền nhạt accent; đổi `text-muted` (tối 25%, sáng 45% về `text-body`) và `text-accent-fg` (tối 18%, sáng 15% về `text-contrast`) bên trong (#123) | `accent-fg` 22% | `accent-fg` 18% |
 | `--color-accent-line` | `border-accent-line` | Viền của mục đang chọn (card được chọn, ngày hôm nay) | `accent-fg` 40% | `accent-fg` 40% |
 | `--color-danger-fg` · `success-fg` · `warning-fg` · `info-fg` | `text-danger-fg` … | Chữ trạng thái trên surface | `rose/emerald/amber/sky-400` | `-700` (`warning`: `amber-800`, ≥ 4.5:1 cả trên ô nhập Soft / Sharp) |
 | `--color-tone-<hue>` | `text-tone-<hue>` | Chữ tonal 12 hue (purple, violet, indigo, blue, sky, cyan, teal, emerald, amber, orange, rose, pink) | `<hue>-300` | `<hue>-700` (amber, orange, cyan, teal, pink: `-800`, ≥ 4.5:1 trên badge trong thẻ lõm, #50) |
@@ -321,7 +321,7 @@ breaks under a brand kit or a style (`no-fixed-tone-text`, hard rule 10).
 | A category tint (card, tile, tag) | `TONAL_SURFACE[tone]` (= `TONAL_CONTAINER`), `<Badge tone>`, `TILE_TONES` | `bg-<color>-500/10 border-<color>-500/20 text-tone-<color>` |
 | Its hover | `TONAL_HOVER[tone]` | `hover:bg-<color>-500/15 hover:border-<color>-500/30` |
 | Coloured text or icon alone | `text-tone-<color>` (`TONE_TEXT`), `text-*-fg` for a status | Themed shade, 4.5:1 on panel |
-| A highlighted row | `bg-accent-subtle` (selected), a status `bg-*-bg` (a row that needs attention) | No hue picked per row |
+| A highlighted row | `bg-accent-subtle` (selected), a status `bg-*-bg` (a row that needs attention); its secondary text stays `text-muted` (the fill darkens it, #123) | No hue picked per row, no `active ? "text-body" : "text-muted"` swap |
 
 ### Examples Across Component Types
 
