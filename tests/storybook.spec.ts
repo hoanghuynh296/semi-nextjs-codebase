@@ -594,6 +594,24 @@ test("Field wires label, hint and error to the input", async ({ page }) => {
   await expect(page.getByRole("alert").filter({ hasText: "ít nhất 3 ký tự" })).toBeVisible();
 });
 
+test("type sizes (#155): content is text-ui 14px, shell chrome is text-chrome 12px", async ({ page }) => {
+  const size = (l: import("@playwright/test").Locator) => l.evaluate((el) => getComputedStyle(el).fontSize);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  // content: folded DataTable values (row content) and a field's help text
+  await open(page, "/components/data-table/", "dark");
+  const dt = example(page, "data-table/columns");
+  await dt.getByRole("radio", { name: "Máy tính bảng" }).click();
+  await expect(dt.locator("[data-folded]").first()).toBeVisible();
+  expect(await size(dt.locator("[data-folded]").first())).toBe("14px");
+  await open(page, "/components/field/", "dark");
+  const hint = example(page, "field/basic").getByText("Hiện trên thẻ và trong thông báo.");
+  expect(await size(hint)).toBe("14px");
+  // shell chrome: a sidebar nav item and the breadcrumb
+  await open(page, "/demo/app-shell/", "dark");
+  expect(await size(page.locator("aside").getByText("Khách hàng", { exact: true }).first())).toBe("12px");
+  expect(await size(page.getByRole("navigation", { name: "Đường dẫn" }).locator("ol").first())).toBe("12px");
+});
+
 test("phones get the drawer: focus moves in, stays in, drills down and returns to the menu button", async ({ browser }) => {
   const page = await browser.newPage({ viewport: { width: 430, height: 932 }, isMobile: true, hasTouch: true });
   await open(page, "/demo/app-shell/", "dark");

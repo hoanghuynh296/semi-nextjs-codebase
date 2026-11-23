@@ -2465,8 +2465,14 @@ ThemeToggle, table header cells, chart axes and tooltip labels, calendar weekday
 FileDrop sizes, DetailOverlay position, TaskHost timer, FilterChipRow / FilterPanel counts), menu-item descriptions and
 shortcuts, Separator labels, field-row hints of HintTextarea, MobileTabBar labels. **`text-ui`**: everything else that
 is UI text: buttons (`BTN_*`, `MODAL_BTN_*`), Field labels, help and errors, inputs and placeholders, select / combobox /
-menu items, list and table rows, dialogs, toasts, empty states, disclosure, chat, the phone drawer of the shell (touch
-rows stay 14).
+menu items, list and table rows (DataTable's folded column values too), dialogs and their subtitles (Modal,
+DetailOverlay, the WorkspaceLayout header), a field's help line (HintTextarea's hint under the field), toasts, empty
+states, disclosure, chat, NavigationMenu (the marketing nav, phone sheet included: it is not the shell), the phone
+drawer of the shell (touch rows stay 14).
+
+**Kept at 12 as chrome or compact controls** (owner's call, #155 review; say so to move one to 14): table header cells
+(`TABLE_HEAD_CELL`, DataTable's head), `BTN_SM` (the compact toolbar button), `headerPrimary` (the main action in an app
+header).
 
 Weights: headings are not bold. 400 and 500 do almost everything (`font-title` is 500); 600 only for overlines and a
 few emphasised labels; 700 only in count badges. Phones: fields you type in stay 16px below `sm` (`text-input`, iOS zoom) and touch

@@ -18,7 +18,7 @@
 export const version = "1.0.0";
 export const id = "foundation";
 export const description =
-  "text-contrast → text-strong, bg-accent/action → bg-primary, text-/border-/ring-accent → text-strong / *-outline-line, accent-fg → text-strong, accent-subtle → item-selected, accent-line → outline-line, old type sizes → the 1.0 scale (text-caption / text-label → text-chrome, text-ui unchanged; a field's max-sm:text-title-lg → max-sm:text-input), data-style removed; --semi-* declarations are flagged, not renamed";
+  "text-contrast → text-strong, bg-accent/action → bg-primary, text-/border-/ring-accent → text-strong / *-outline-line, accent-fg → text-strong, accent-subtle → item-selected, accent-line → outline-line, old type sizes → the 1.0 scale (text-caption / text-label → text-chrome, text-copy → text-ui, text-ui unchanged; a field's max-sm:text-title-lg → max-sm:text-input), data-style removed; --semi-* declarations are flagged, not renamed";
 
 /** Colour names after a utility prefix (bg-, text-, border-, ring- …) and in CSS variables. */
 export const COLORS = {
@@ -36,8 +36,10 @@ export const COLORS = {
   action: "primary",
 };
 
-/** Type sizes (text-<old> → text-<new>). text-ui keeps its name and its 14px (the content size), so it is not here. */
+/** Type sizes (text-<old> → text-<new>). text-ui keeps its name and its 14px (the content size), so it is not a source;
+ * text-copy (the 14px size of the first 1.0 draft, never released) → text-ui for an app that adopted it from main. */
 export const SIZES = {
+  copy: "ui",
   caption: "chrome",
   label: "chrome",
   "ui-lg": "lead",

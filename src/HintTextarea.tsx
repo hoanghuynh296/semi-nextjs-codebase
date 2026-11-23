@@ -160,7 +160,7 @@ export function HintTextarea({
           onBlur={() => setFocused(false)}
           className="block w-full resize-none bg-transparent outline-none px-4 pt-3 text-ui max-sm:text-input text-strong placeholder:text-muted disabled:cursor-not-allowed"
         />
-        <p id={`${auto}-hint`} className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 pb-2.5 pt-1 text-chrome text-body">
+        <p id={`${auto}-hint`} className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 pb-2.5 pt-1 text-ui text-body">
           <Icon name="sparkles" className="w-3.5 h-3.5 shrink-0" />
           {triggers.map((tr) => (
             <span key={tr.char}>

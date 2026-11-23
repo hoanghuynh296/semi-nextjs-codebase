@@ -129,7 +129,7 @@ export function NavigationMenu({
             <li key={it.label}>
               {it.links ? (
                 <>
-                  <div className="text-chrome font-medium text-muted pb-1">{it.label}</div>
+                  <div className="text-ui font-medium text-muted pb-1">{it.label}</div>
                   <ul className="space-y-0.5">
                     {it.links.map((l) => (
                       <li key={l.href}>

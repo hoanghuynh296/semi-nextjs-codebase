@@ -231,7 +231,7 @@ export function DetailOverlay({
             <h2 id={titleId} className="text-ui font-semibold text-strong truncate">
               {title}
             </h2>
-            {subtitle && <div className="text-chrome text-muted truncate">{subtitle}</div>}
+            {subtitle && <div className="text-ui text-muted truncate">{subtitle}</div>}
           </div>
           {onCopyLink && (
             <button type="button" onClick={onCopyLink} aria-label={t.copyLink} title={t.copyLink} className={cn(NAV, "max-sm:hidden")}>

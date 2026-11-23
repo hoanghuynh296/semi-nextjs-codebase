@@ -98,7 +98,7 @@ export function WorkspaceHeader({
         ) : null}
         <div className="min-w-0">
           <H className="text-lead font-semibold text-strong truncate">{title}</H>
-          {description && <p className="text-chrome text-muted truncate">{description}</p>}
+          {description && <p className="text-ui text-muted truncate">{description}</p>}
         </div>
       </div>
     </div>

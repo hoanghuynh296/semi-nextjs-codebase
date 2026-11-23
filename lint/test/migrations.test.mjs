@@ -302,6 +302,12 @@ test("1.0.0 foundation: brand colour never lands on text or lines; --semi-contra
   assert.equal(flagsOf(`<label className="text-label">x</label>`).filter((f) => f.startsWith(chromeFlag)).length, 1);
   assert.equal(flagsOf(`.x { font-size: var(--text-label); }`).filter((f) => f.startsWith(chromeFlag)).length, 1);
   assert.equal(flagsOf(`<span className="text-caption my-text-label-x">x</span>`).filter((f) => f.startsWith(chromeFlag)).length, 0);
+  // text-copy (the first 1.0 draft's 14px) → text-ui, class and variable; a second run changes nothing
+  const copy = `<p className="text-copy sm:text-copy/90 my-text-copy-x">x</p>\n.x { font-size: var(--text-copy); line-height: var(--text-copy--line-height); }`;
+  const copyOut = migrateFoundation(copy);
+  assert.equal(copyOut, `<p className="text-ui sm:text-ui/90 my-text-copy-x">x</p>\n.x { font-size: var(--text-ui); line-height: var(--text-ui--line-height); }`);
+  assert.equal(migrateFoundation(copyOut), copyOut);
+  assert.deepEqual(flagsOf(copy), []);
   const chrome = migrateFoundation(`<label className="text-label">x</label>`);
   assert.deepEqual(flagsOf(chrome), [], "a second run flags nothing");
 });
