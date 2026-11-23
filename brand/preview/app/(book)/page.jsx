@@ -134,7 +134,7 @@ function Logo() {
           {MISUSE.map(([label, css, textCss]) => (
             <figure key={label} className="space-y-1.5">
               <div data-theme="light" className="bg-canvas rounded-card border border-line h-28 flex items-center justify-center overflow-hidden">
-                <LogoArt theme="light" height={28} style={!logoSrc("light") && textCss ? { ...css, ...textCss } : css} />
+                <LogoArt theme="light" height={24} style={!logoSrc("light") && textCss ? { ...css, ...textCss } : css} />
               </div>
               <figcaption className="flex items-center gap-1.5 text-ui text-body px-1">
                 <Icon name="close" className="w-4 h-4 text-danger-fg shrink-0" />

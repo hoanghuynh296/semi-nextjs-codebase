@@ -36,6 +36,7 @@ const SAMPLE_CLASS: Record<string, string> = {
   "text-figure": "text-figure",
   "text-lead": "text-lead",
   "text-copy": "text-copy",
+  "text-input": "text-input",
   "text-ui": "text-ui",
   "text-tag": "text-tag",
   "text-badge": "text-badge",
@@ -82,7 +83,7 @@ export function TypePanel({ lab }: { lab: ReturnType<typeof useLabEditor> }) {
                 <TR key={k}>
                   <TD>
                     <span className="inline-flex items-center gap-2">
-                      <code className="text-label text-contrast">{k}</code>
+                      <code className="text-ui text-strong">{k}</code>
                       <Changed on={changed(["type", k]) || changed(["type", `${k}--line-height`])} />
                     </span>
                   </TD>
@@ -99,7 +100,7 @@ export function TypePanel({ lab }: { lab: ReturnType<typeof useLabEditor> }) {
                     />
                   </TD>
                   <TD>
-                    <span className={`text-contrast ${SAMPLE_CLASS[k] ?? ""}`}>In 3D dễ như bấm nút</span>
+                    <span className={`text-strong ${SAMPLE_CLASS[k] ?? ""}`}>In 3D dễ như bấm nút</span>
                   </TD>
                 </TR>
               ))}
@@ -184,8 +185,8 @@ export function TypePanel({ lab }: { lab: ReturnType<typeof useLabEditor> }) {
           </Field>
         </div>
         <div data-theme={resolvedTheme} className="bg-canvas text-body p-card rounded-card border border-line space-y-2">
-          <p className="font-display font-title text-heading text-contrast">Tiêu đề trang · 1.234.567</p>
-          <p className="font-figure font-title text-figure text-contrast tabular-nums">98.765.432 ₫</p>
+          <p className="font-display font-title text-section text-strong">Tiêu đề trang · 1.234.567</p>
+          <p className="font-figure font-title text-figure text-strong tabular-nums">98.765.432 ₫</p>
           <p className="font-sans text-ui">Chữ giao diện: nhãn, nút, bảng, đoạn văn ngắn. Aa Ăă Ââ Đđ Êê Ôô Ơơ Ưư 0123456789</p>
         </div>
       </ShowcaseSection>

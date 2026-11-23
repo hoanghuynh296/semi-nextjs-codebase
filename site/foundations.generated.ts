@@ -167,6 +167,10 @@ export const FOUNDATIONS = {
       "size": "14px / 1.5715"
     },
     {
+      "cls": "text-input",
+      "size": "16px / 1.5"
+    },
+    {
       "cls": "text-ui",
       "size": "12px / 1.5"
     },

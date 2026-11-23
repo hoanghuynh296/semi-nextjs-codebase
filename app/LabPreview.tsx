@@ -97,12 +97,12 @@ export function LabHost() {
   if (isEmptyDraft(draft)) return null;
   const count = diffDraft(draft, LAB_SOURCES).length;
   return (
-    <div className="flex items-center gap-2 pl-3 pr-1 h-control rounded-full bg-panel border border-line shadow-overlay text-label text-body">
-      <Icon name="sliders" className="w-3.5 h-3.5 text-accent-fg" />
+    <div className="flex items-center gap-2 pl-3 pr-1 h-control rounded-full bg-panel border border-line shadow-overlay text-ui text-body">
+      <Icon name="sliders" className="w-3.5 h-3.5 text-strong" />
       <span>
-        Design Lab <strong className="font-semibold text-contrast tabular-nums">{count}</strong> thay đổi{paused && " · đang tắt"}
+        Design Lab <strong className="font-semibold text-strong tabular-nums">{count}</strong> thay đổi{paused && " · đang tắt"}
       </span>
-      <Link href="/lab/" className="text-accent-fg hover:text-contrast font-medium">
+      <Link href="/lab/" className="text-strong hover:underline font-medium">
         Sửa
       </Link>
       <Button

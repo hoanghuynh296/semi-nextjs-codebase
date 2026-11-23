@@ -102,36 +102,37 @@ export default function FoundationsPage() {
       <section id="surfaces" className="space-y-4">
         <div className={SECTION_HEAD}>
           <h2 className={SECTION_TITLE}>Bề mặt và chữ</h2>
-          <span className="text-caption text-muted">Giá trị theo từng theme</span>
+          <span className="text-ui text-muted">Giá trị theo từng theme</span>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {FOUNDATIONS.surfaces.map((t) => (
             <div key={t.key} className={`p-card rounded-card ${t.cls} border border-line space-y-2`}>
-              <span className="text-caption font-medium text-muted block">{t.cls}</span>
-              <div className="text-caption text-body tabular-nums">Tối {t.dark}</div>
-              <div className="text-caption text-body tabular-nums">Sáng {t.light}</div>
-              <p className="text-caption text-muted">{t.note}</p>
+              {/* text-body, not muted: muted is for page surfaces and misses 4.5:1 on raised-2 (a pill, never a text ground) */}
+              <span className="text-ui font-medium text-strong block">{t.cls}</span>
+              <div className="text-ui text-body tabular-nums">Tối {t.dark}</div>
+              <div className="text-ui text-body tabular-nums">Sáng {t.light}</div>
+              <p className="text-ui text-body">{t.note}</p>
             </div>
           ))}
         </div>
 
         <div className={`${CARD} divide-y divide-divider`}>
           {FOUNDATIONS.text.map((t) => (
-            <div key={t.key} className="grid gap-2 px-card py-2.5 text-label sm:grid-cols-[180px_1fr_auto] sm:items-center">
+            <div key={t.key} className="grid gap-2 px-card py-2.5 text-ui sm:grid-cols-[180px_1fr_auto] sm:items-center">
               <code className="text-body">{t.cls}</code>
               <span className="text-muted">{t.note}</span>
-              <span className="text-caption text-muted tabular-nums">
+              <span className="text-ui text-muted tabular-nums">
                 {t.dark} · {t.light}
               </span>
             </div>
           ))}
         </div>
 
-        <h3 className="text-ui-lg font-semibold text-contrast pt-2">Hình khối</h3>
+        <h3 className="text-lead font-semibold text-strong pt-2">Hình khối</h3>
         <div className={`${CARD} p-card space-y-3 max-w-xl`}>
-          <p className="text-label text-muted">Một diện mạo cho mọi brand (tokens.json &quot;shape&quot;).</p>
-          <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1.5 text-label">
+          <p className="text-ui text-muted">Một diện mạo cho mọi brand (tokens.json &quot;shape&quot;).</p>
+          <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1.5 text-ui">
             <dt className="text-muted">Bo góc</dt>
             <dd className="text-body tabular-nums">{[FOUNDATIONS.shape.radius.chip, FOUNDATIONS.shape.radius.control, FOUNDATIONS.shape.radius.card, FOUNDATIONS.shape.radius.panel].join(" · ")}</dd>
             <dt className="text-muted">Control</dt>
@@ -144,7 +145,7 @@ export default function FoundationsPage() {
             <dd className="text-body tabular-nums">{FOUNDATIONS.shape.titleWeight}</dd>
           </dl>
         </div>
-        <p className="text-caption text-muted">
+        <p className="text-ui text-muted">
           Bo góc luôn dùng tên token: <code className="text-body">rounded-chip</code> · <code className="text-body">rounded-control</code> ·{" "}
           <code className="text-body">rounded-card</code> · <code className="text-body">rounded-panel</code>. Không dùng rounded-lg hay rounded-[Npx] (semi-lint).
         </p>
@@ -153,19 +154,19 @@ export default function FoundationsPage() {
       <section id="typography" className="space-y-4">
         <div className={SECTION_HEAD}>
           <h2 className={SECTION_TITLE}>Thang chữ</h2>
-          <span className="text-caption text-muted">Chỉ font-medium và font-semibold</span>
+          <span className="text-ui text-muted">Chỉ font-medium và font-semibold</span>
         </div>
 
         <div className={`${CARD} divide-y divide-divider`}>
           {FOUNDATIONS.type.map((t) => (
             <div key={t.cls} className="flex flex-wrap items-baseline gap-x-4 gap-y-1 px-card py-2.5">
-              <code className="text-label text-muted w-40 shrink-0">{t.cls}</code>
-              <span className="text-caption text-muted tabular-nums w-20 shrink-0">{t.size}</span>
-              <span className={`${t.cls} text-contrast font-medium min-w-0`}>Máy in X1 Carbon · 12.450.000 ₫</span>
+              <code className="text-ui text-muted w-40 shrink-0">{t.cls}</code>
+              <span className="text-ui text-muted tabular-nums w-20 shrink-0">{t.size}</span>
+              <span className={`${t.cls} text-strong font-medium min-w-0`}>Máy in X1 Carbon · 12.450.000 ₫</span>
             </div>
           ))}
         </div>
-        <p className="text-caption text-muted">
+        <p className="text-ui text-muted">
           Số đo, tiền, giờ luôn <code className="text-body">tabular-nums</code>. Tiêu đề trang dùng <code className="text-body">PageTitle</code> (font-display).
         </p>
       </section>
@@ -177,7 +178,7 @@ export default function FoundationsPage() {
             {filteredIcons.length} / {totalCount}
           </Badge>
         </div>
-        <p className="text-label text-muted">
+        <p className="text-ui text-muted">
           Bấm một icon để xem chi tiết và copy <code className="text-body">&lt;Icon name=&quot;…&quot; /&gt;</code>.
         </p>
 
@@ -225,8 +226,8 @@ export default function FoundationsPage() {
                 >
                   <IconTile name={name as IconName} tone={meta.domain === "brand" ? (BRAND_TONES[name as IconName] || activeTone) : activeTone} size="md" />
                   <span className="w-full">
-                    <span className="text-label font-medium text-contrast block truncate">{name}</span>
-                    <span className="text-caption text-muted block truncate">{meta.lucideEquivalent || meta.category}</span>
+                    <span className="text-ui font-medium text-strong block truncate">{name}</span>
+                    <span className="text-ui text-muted block truncate">{meta.lucideEquivalent || meta.category}</span>
                   </span>
                   {meta.domain && <Badge size="sm">{meta.domain}</Badge>}
                 </Card>
@@ -245,7 +246,7 @@ export default function FoundationsPage() {
 
           <div className={`${CARD} p-card lg:col-span-1 sticky top-4 space-y-4`}>
             <div className="flex items-center justify-between gap-2">
-              <h3 className="text-label font-semibold text-contrast">Chi tiết icon</h3>
+              <h3 className="text-ui font-semibold text-strong">Chi tiết icon</h3>
               {selectedMeta?.domain && (
                 <Badge size="sm" tone="green">
                   {selectedMeta.domain}
@@ -258,14 +259,14 @@ export default function FoundationsPage() {
                 <div className="flex items-center gap-3">
                   <IconTile name={selectedMeta.name} tone={selectedMeta.domain === "brand" ? (BRAND_TONES[selectedMeta.name] || activeTone) : activeTone} size="lg" />
                   <div className="min-w-0 flex-1">
-                    <div className="text-ui-lg font-semibold text-contrast truncate">{selectedMeta.name}</div>
-                    <div className="text-caption text-muted truncate">Nhóm: {selectedMeta.category}</div>
+                    <div className="text-lead font-semibold text-strong truncate">{selectedMeta.name}</div>
+                    <div className="text-ui text-muted truncate">Nhóm: {selectedMeta.category}</div>
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <span className="text-caption font-medium text-muted block">Dùng để</span>
-                  <p className="text-label text-body">{selectedMeta.purpose}</p>
+                  <span className="text-ui font-medium text-muted block">Dùng để</span>
+                  <p className="text-ui text-body">{selectedMeta.purpose}</p>
                 </div>
 
                 <Alert tone="success" title="Nên dùng">
@@ -277,20 +278,20 @@ export default function FoundationsPage() {
 
                 {selectedMeta.lucideEquivalent && (
                   <div className="space-y-1">
-                    <span className="text-caption font-medium text-muted block">Tên trong Lucide</span>
-                    <code className="text-label text-body">{selectedMeta.lucideEquivalent}</code>
+                    <span className="text-ui font-medium text-muted block">Tên trong Lucide</span>
+                    <code className="text-ui text-body">{selectedMeta.lucideEquivalent}</code>
                   </div>
                 )}
 
                 <div className="space-y-1">
-                  <span className="text-caption font-medium text-muted block">JSX</span>
+                  <span className="text-ui font-medium text-muted block">JSX</span>
                   <Button icon="copy" fullWidth onClick={() => handleCopy(selectedMeta.name)} aria-label={`Copy <Icon name="${selectedMeta.name}" />`}>
                     <code className="truncate">&lt;Icon name=&quot;{selectedMeta.name}&quot; /&gt;</code>
                   </Button>
                 </div>
 
                 <div className="space-y-1">
-                  <span className="text-caption font-medium text-muted block">Từ khoá tìm kiếm</span>
+                  <span className="text-ui font-medium text-muted block">Từ khoá tìm kiếm</span>
                   <div className="flex flex-wrap gap-1">
                     {selectedMeta.keywords.map((kw) => (
                       <Badge key={kw} size="sm">
@@ -301,7 +302,7 @@ export default function FoundationsPage() {
                 </div>
               </div>
             ) : (
-              <p className="text-label text-muted py-6 text-center">Chọn một icon để xem chi tiết</p>
+              <p className="text-ui text-muted py-6 text-center">Chọn một icon để xem chi tiết</p>
             )}
           </div>
         </div>

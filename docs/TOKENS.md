@@ -67,7 +67,8 @@ There is no brand-derived colour anywhere: `accent`, `accent-hover`, `on-accent`
 
 Nothing else in Semi uses the brand colour. The brand kit sets the fills; the generator checks 4.5:1 for the text on
 each and picks the on-colour. Status colours (`*-fg`, `*-bg`, `*-border`, `*-solid` for danger, success, warning, info)
-and `text-tone-*` are one fixed palette for every brand.
+and `text-tone-*` are one fixed palette for every brand. Their text (light: the 800 shade; dark: 300 / 400) reaches
+4.5:1 on its own tint (`*-bg`, `bg-<hue>-500/10`) over every surface, a card and the field in a card included.
 
 ## Type scale
 
@@ -82,6 +83,7 @@ and `text-tone-*` are one fixed palette for every brand.
 | `text-figure` | 18 · lh 1.25 | numeric figures; the page title in a content card (400) |
 | `text-lead` | 15 · lh 24 | lead text, card titles |
 | `text-copy` | 14 · lh 22 | reading copy, secondary body, larger buttons |
+| `text-input` | 16 · lh 24 | text you type in, below `sm` only (`max-sm:text-input`): iOS zooms into a field under 16px |
 | `text-ui` | **12 · lh 18, the base UI size** | nav, breadcrumb, buttons, labels, meta, list rows |
 | `text-tag` | 10 · 500 · +0.02em | tags, chips |
 | `text-badge` | 10 · 700 · lh 1 | count badges only |
@@ -91,7 +93,7 @@ Naming: the 14px size is `text-copy`, not `text-body`, because `text-body` is th
 `text-*` name cannot be both a size and a colour). `text-ui` keeps its name and is now 12px (was 14).
 
 Weights: headings are not bold. 400 and 500 do almost everything (`font-title` is 500); 600 only for overlines and a
-few emphasised labels; 700 only in count badges. Phones: fields you type in stay 16px below `sm` (iOS zoom) and touch
+few emphasised labels; 700 only in count badges. Phones: fields you type in stay 16px below `sm` (`text-input`, iOS zoom) and touch
 targets stay 44px.
 
 Density and type scale (`data-density`, `data-type-scale` on `<html>`): compact sets `text-copy` 13 and `text-lead`
@@ -99,7 +101,7 @@ Density and type scale (`data-density`, `data-type-scale` on `<html>`): compact 
 down below sm).
 
 Removed sizes and their 1.0 names (the `1.0.0-foundation` migration rewrites them): `text-caption`, `text-label` →
-`text-ui`; `text-ui-lg`, `text-title`, `text-title-lg` → `text-lead`; `text-heading-sm`, `text-heading` →
+`text-ui`; `text-ui-lg`, `text-title`, `text-title-lg` → `text-lead` (`max-sm:text-title-lg`, the phone size of a field, → `max-sm:text-input`); `text-heading-sm`, `text-heading` →
 `text-section`; `text-heading-lg`, `text-display` → `text-tab-xl`; `text-kpi` → `text-figure`.
 
 ## Fonts

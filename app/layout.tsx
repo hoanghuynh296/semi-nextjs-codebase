@@ -30,7 +30,7 @@ export default function RootLayout({
         <link rel="alternate" type="text/plain" href={`${BASE}/llms.txt`} title="llms.txt — Semi Design System for agents" />
         <link rel="alternate" type="application/json" href={`${BASE}/components.json`} title="components.json — component manifest" />
       </head>
-      <body className="min-h-screen bg-canvas text-body antialiased selection:bg-accent-subtle-hover selection:text-accent-fg">
+      <body className="min-h-screen bg-canvas text-body antialiased selection:bg-item-selected selection:text-strong">
         <ThemeProvider defaultTheme="dark">
           <SiteHosts />
           {/* One shell for every page: the menu keeps its scroll and state when the page changes */}

@@ -79,12 +79,12 @@ and a few emphasised labels; 700 only in count badges. Tracking −0.01em on dis
 come from the type scale tokens, never `text-[13px]` and never Tailwind's `text-xs` / `text-sm` / `text-base`. The 14px
 size is `text-copy` because `text-body` is the body text colour.
 
-**Fields on a phone:** text you type in is 16px (`text-lead`) below `sm`, whatever the field's desktop size. iOS Safari
+**Fields on a phone:** text you type in is 16px (`text-input`) below `sm`, whatever the field's desktop size. iOS Safari
 zooms the page into a focused field under 16px and never zooms back; the fix is the text size, never `maximum-scale` /
 `user-scalable=no` in the viewport (it blocks pinch zoom, an a11y failure). `FIELD_INPUT`, `FIELD_TEXTAREA` and every
 Semi text-entry control (Input, SearchInput, NumberInput with `FIELD_INPUT`, InputGroup, InputOTP, Textarea, CustomCombobox,
 Command, the Chat composer) already do it; a field of your own, or a NumberInput whose caller passes its own `text-ui`,
-adds `max-sm:text-lead`. `base.css` does the same for a bare
+adds `max-sm:text-input`. `base.css` does the same for a bare
 `<input>` / `<textarea>` / `<select>`; the height stays `h-control` / `h-field`.
 
 Minimum `text-tag` / `text-badge` (10px, marks only). Running text (a sentence, a description) is `text-copy`; UI text
@@ -927,7 +927,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Small interactive panel under a trigger | `Popover` (non-modal dialog); a hover preview of a link → `HoverCard` |
 | Actions at the pointer | `ContextMenu` (right-click, long-press, Menu key); the same actions must exist in a visible `Menu` |
 | Jump / run anything from the keyboard | `CommandPalette` once in the root layout (⌘K, pages add items with `useRegisterCommands`, `openCommandPalette()`); `CommandDialog` + `useHotkey` for a palette of your own, `Command` inline; matching ignores Vietnamese marks |
-| Sort / filter / select / page rows | `DataTable` (`columns`, `search`, `selectable` + `bulkActions`, `pageSize`, `loading`). Many columns (a tablet beside the rail, a split view): give the less important ones `priority` 1–3; they fold into the first column's second line when the table's **own box** is too narrow (3 first; the first column and columns without a priority never fold). The sorted column never folds (its header is the sort control). Folding is measured after hydration, so such a table may shift once on first load. What still does not fit scrolls sideways with a 2px accent line on each edge that has columns past it and the scroll box focusable; `stickyFirstColumn` keeps the names in place. The order it shows is `sortRows(searchRows(rows, columns, search), columns, sort)` (pure, also for a DetailOverlay's ‹ ›) |
+| Sort / filter / select / page rows | `DataTable` (`columns`, `search`, `selectable` + `bulkActions`, `pageSize`, `loading`). Many columns (a tablet beside the rail, a split view): give the less important ones `priority` 1–3; they fold into the first column's second line when the table's **own box** is too narrow (3 first; the first column and columns without a priority never fold). The sorted column never folds (its header is the sort control). Folding is measured after hydration, so such a table may shift once on first load. What still does not fit scrolls sideways with a 2px strong line (outline-line) on each edge that has columns past it and the scroll box focusable; `stickyFirstColumn` keeps the names in place. The order it shows is `sortRows(searchRows(rows, columns, search), columns, sort)` (pure, also for a DetailOverlay's ‹ ›) |
 | Fixed-height scrolling list | `ScrollArea` (edge lines, optional thin scrollbar, keyboard focusable) |
 | Divider / key cap | `Separator` (horizontal, vertical, with a label); `Kbd` (`keys={["⌘", "K"]}`) |
 | Charts | `BarChart` (grouped / `stacked`), `LineChart` (`area`), `DonutChart` (≤ 5 parts), `Sparkline` (trend in a KPI tile). Series colours are the fixed `chart-1…8` tokens in order, a 9th series folds into “Khác”; one y axis only; legend for 2+ series, keyboard tooltip and table view built in |
@@ -987,7 +987,7 @@ installed. Without Playwright, `--snippet` prints an expression to evaluate with
 | `target-size` | A control is smaller than 24 × 24 px (its `::before` / `::after` hit area included) and a 24px circle on its centre touches another target or another small target's circle; links in a sentence are exempt |
 | `img-alt` | An `<img>` has no `alt`, or a `role="img"` has no name |
 | `lang` | `<html>` has no `lang` |
-| `field-size` | At a viewport under 640px, an input, textarea or select you type in has text under 16px (iOS Safari zooms the page on focus and never zooms back); read-only and disabled fields are exempt |
+| `field-size` | At a viewport under 640px, an input, textarea or select you type in has text under 16px (iOS Safari zooms the page on focus and never zooms back); read-only and disabled fields are exempt. Fix: `FIELD_INPUT`, or `max-sm:text-input` |
 | `zoom-lock` | The viewport meta has `user-scalable=no` or `maximum-scale` below 2 |
 
 `data-a11y-skip="<reason>"` marks a specimen that breaks a rule on purpose (a contrast sample in a brand book); never

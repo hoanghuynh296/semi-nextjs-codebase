@@ -75,10 +75,10 @@ export function ChangesPanel({ lab, onReset }: { lab: ReturnType<typeof useLabEd
             <TR key={`${r.file}:${r.key}`}>
               <TD className="text-muted">{r.file}</TD>
               <TD>
-                <code className="text-label text-contrast">{r.key}</code>
+                <code className="text-ui text-strong">{r.key}</code>
               </TD>
               <TD className="text-muted break-all">{String(r.from)}</TD>
-              <TD className="text-contrast break-all">{String(r.to)}</TD>
+              <TD className="text-strong break-all">{String(r.to)}</TD>
             </TR>
           ))}
         </TBody>

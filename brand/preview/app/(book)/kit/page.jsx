@@ -79,13 +79,13 @@ export default function UiKit() {
       </Section>
 
       <Section title="Cỡ chữ" icon="fileText">
-        <div className="space-y-1">
+        <div className="space-y-1" data-density-skip="type scale specimen">
           <div className="font-display text-tab-xl text-strong">{brand.name}</div>
           <div className="text-ui text-muted">
             Hero, tiêu đề trang đọc, tab lớn: {font("display")} · Giao diện, nội dung: {font("sans")}
           </div>
         </div>
-        <div className="space-y-1.5">
+        <div className="space-y-1.5" data-density-skip="type scale specimen">
           {[
             ["text-section", "Tiêu đề mục 20"],
             ["text-lead", "Tiêu đề thẻ 15"],

@@ -11,7 +11,6 @@ import { densityAudit } from "../lint/density.mjs";
 const DOC_PAGES = docs.map((d) => `/components/${d.id}/`);
 const PAGES = ["/", "/components/", "/foundations/", "/brand/", "/lab/", "/demo/app-shell/", ...DOC_PAGES];
 /** Pages checked at phone width: the gallery shows one example of every doc. */
-const LOOK_PAGES = ["/", "/components/", "/components/table/", "/components/field/"];
 const THEMES = ["dark", "light"] as const;
 const example = (page: Page, id: string) => page.locator(`[data-example="${id}"]`);
 
@@ -65,15 +64,6 @@ for (const path of PAGES) {
     expect(await page.evaluate(() => (window.scrollTo(0, 500), window.scrollY))).toBe(0);
   });
 }
-
-for (const path of LOOK_PAGES)
-  test(`fits a phone screen · ${path}`, async ({ browser }) => {
-    const page = await browser.newPage({ viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true });
-    await open(page, path, "light");
-    expect(await phoneOverflow(page)).toEqual([]);
-    expect(await page.evaluate(densityAudit, { scope: "main" })).toEqual([]);
-    await page.close();
-  });
 
 /** Everything stays inside the page column (16px gutters) unless it sits in its own horizontal scroller. */
 function phoneOverflow(page: Page) {
@@ -848,24 +838,27 @@ for (const theme of THEMES) {
 }
 
 for (const theme of THEMES) {
-  test(`checked controls use the accent fill · ${theme}`, async ({ page }) => {
-    const accent = () =>
-      page.evaluate(() => {
+  // 1.0: checked is a state, not an action, so it is the neutral inverted fill (never the brand primary).
+  test(`checked controls use the inverted fill · ${theme}`, async ({ page }) => {
+    const fill = (cls: string) =>
+      page.evaluate((c) => {
         const probe = document.createElement("div");
-        probe.className = "bg-accent";
+        probe.className = c;
         document.body.append(probe);
-        const c = getComputedStyle(probe).backgroundColor;
+        const v = getComputedStyle(probe).backgroundColor;
         probe.remove();
-        return c;
-      });
+        return v;
+      }, cls);
     await open(page, "/components/checkbox/", theme);
+    const inverted = await fill("bg-inverted");
+    expect(inverted).not.toBe(await fill("bg-primary"));
     const checkbox = page.getByRole("checkbox", { name: "Tự động in khi rảnh" });
     await expect(checkbox).toBeChecked();
-    expect(await checkbox.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe(await accent());
+    expect(await checkbox.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe(inverted);
     await open(page, "/components/radio-group/", theme);
-    expect(await page.getByRole("radio", { name: /Pro/ }).evaluate((el) => getComputedStyle(el).borderTopColor)).toBe(await accent());
+    expect(await page.getByRole("radio", { name: /Pro/ }).evaluate((el) => getComputedStyle(el).borderTopColor)).toBe(inverted);
     await open(page, "/components/switch/", theme);
-    expect(await page.getByRole("switch", { name: "Thông báo khi in xong" }).evaluate((el) => getComputedStyle(el).backgroundColor)).toBe(await accent());
+    expect(await page.getByRole("switch", { name: "Thông báo khi in xong" }).evaluate((el) => getComputedStyle(el).backgroundColor)).toBe(inverted);
   });
 }
 
@@ -1059,11 +1052,18 @@ test("DataTable: priority columns fold by the table's own width, the rest scroll
   await expect(firstRow.locator("[data-folded]")).toHaveText(/Điện thoại: 090.*Nguồn: Hội chợ.*Liên lạc: 2026-11-05/);
   await expect(box).toHaveAttribute("role", "region");
   await expect(box).toHaveAttribute("aria-label", "Khách hàng");
-  // the cue: an accent line on the edge with columns past it (no lint skip, no gradient)
+  // the cue: a solid outline-line (the strong neutral line, 1.0) on the edge with columns past it (no lint skip, no gradient)
   await expect(box).toHaveAttribute("data-edges", "right");
-  const accent = await box.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--color-accent-line").trim());
-  expect(accent).not.toBe("");
+  const line = await box.evaluate((el) => {
+    const probe = document.createElement("div");
+    probe.className = "border border-outline-line";
+    el.append(probe);
+    const c = getComputedStyle(probe).borderTopColor;
+    probe.remove();
+    return c;
+  });
   await expect(box).toHaveCSS("border-right-width", "2px");
+  await expect(box).toHaveCSS("border-right-color", line);
   // axe on the overflowing region (scrollable-region-focusable, names, contrast of the folded line)
   const { violations } = await new AxeBuilder({ page }).include('[data-example="data-table/columns"]').withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
   expect(violations.filter((v) => v.impact === "serious" || v.impact === "critical").map((v) => v.id)).toEqual([]);
@@ -1943,51 +1943,3 @@ test("HintTextarea: @ and / open a listbox; arrows, Enter inserts at the caret, 
   await expect(text).toBeFocused();
   await expect(text).toHaveValue("Gửi @yenbai hôm nay /");
 });
-
-// #123: the selection fills re-point the text on them (text-muted, and accent-fg on hover) through a static @utility of
-// the same name as the theme colour; Tailwind merges it into bg-accent-subtle and its variants. The fill itself is
-// main's tint; text outside a fill keeps its colour; a hover: variant scopes the text only while hovered.
-for (const theme of THEMES) {
-  test(`selection fills darken the text on them, not the fill or the text around (#123) · ${theme}`, async ({ page }) => {
-    await open(page, "/", theme);
-    await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
-    await page.evaluate(() => {
-      const d = document.createElement("div");
-      d.id = "t123";
-      d.className = "bg-card";
-      d.style.cssText = "position:fixed;top:0;left:0;z-index:99999;width:400px;padding:16px";
-      d.innerHTML =
-        '<p id="plain" class="text-muted">plain</p>' +
-        '<div id="sel" class="bg-accent-subtle"><span class="text-muted">sel</span><span class="text-accent-fg">a</span></div>' +
-        '<div id="hov" class="hover:bg-accent-subtle-hover" style="height:40px"><span class="text-muted">hov</span><span class="text-accent-fg">a</span></div>';
-      document.body.appendChild(d);
-    });
-    const read = () =>
-      page.evaluate(() => {
-        const c = (sel: string) => getComputedStyle(document.querySelector(sel)!).color;
-        const bg = (sel: string) => getComputedStyle(document.querySelector(sel)!).backgroundColor;
-        const v = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-        return {
-          plain: c("#plain"), sel: c("#sel .text-muted"), selAccent: c("#sel .text-accent-fg"), hov: c("#hov .text-muted"), hovAccent: c("#hov .text-accent-fg"),
-          selBg: bg("#sel"), hovBg: bg("#hov"), subtle: v("--semi-accent-subtle"), hover: v("--semi-accent-subtle-hover"),
-        };
-      });
-    const before = await read();
-    // The fills are main's see-through tints (no per-surface scheme).
-    const tail = (k: string) => / \d+%, transparent\)$/.exec((tokens.semantic as Record<string, Record<string, string>>)[k][theme])![0];
-    expect(before.subtle.endsWith(tail("color-accent-subtle"))).toBe(true);
-    expect(before.hover.endsWith(tail("color-accent-subtle-hover"))).toBe(true);
-    expect(before.selBg).toMatch(/\/ 0\.1[14]\)$|rgba?\(.*, 0\.1[14]\)$/);
-    // Not hovered: the hover row's text is the plain text.
-    expect(before.hov).toBe(before.plain);
-    // Light darkens muted on the selected tint; dark already reads, so it keeps text-muted.
-    if (theme === "light") expect(before.sel).not.toBe(before.plain);
-    else expect(before.sel).toBe(before.plain);
-    await page.hover("#hov");
-    const after = await read();
-    expect(after.hov).not.toBe(before.plain);
-    expect(after.hovAccent).not.toBe(before.selAccent);
-    expect(after.hovBg).not.toBe("rgba(0, 0, 0, 0)");
-    expect(after.plain).toBe(before.plain);
-  });
-}

@@ -37,7 +37,7 @@ const COMPOSER_BAR = "relative p-3 border-t border-divider shrink-0 max-sm:pb-[m
 const COMPOSER_BOX = "flex flex-col gap-1 bg-field border border-control-line rounded-card p-1.5 pl-2 focus-within:border-focus focus-within:ring-1 focus-within:ring-focus transition min-w-0";
 /** The question field: grows with the text up to 45% of the screen, then scrolls inside. */
 const COMPOSER_FIELD =
-  "flex-1 min-w-0 block resize-none max-h-[45dvh] overflow-y-auto bg-transparent px-1.5 py-1.5 text-ui max-sm:text-lead text-strong placeholder:text-muted outline-none disabled:opacity-40";
+  "flex-1 min-w-0 block resize-none max-h-[45dvh] overflow-y-auto bg-transparent px-1.5 py-1.5 text-ui max-sm:text-input text-strong placeholder:text-muted outline-none disabled:opacity-40";
 const SMALL_ACTION = cn("w-7 h-7 rounded-control text-muted hover:text-strong hover:bg-raised flex items-center justify-center transition shrink-0", FOCUS_RING);
 
 // ─── Messages ────────────────────────────────────────────────────────────────────────────────────────────────────

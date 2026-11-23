@@ -63,7 +63,7 @@ export function InputOTP({
         disabled={disabled}
         autoFocus={autoFocus}
         spellCheck={false}
-        className="absolute inset-0 w-full h-full opacity-0 max-sm:text-lead cursor-text disabled:cursor-not-allowed"
+        className="absolute inset-0 w-full h-full opacity-0 max-sm:text-input cursor-text disabled:cursor-not-allowed"
       />
       <div aria-hidden className="flex items-center gap-2">
         {Array.from({ length }, (_, i) => (

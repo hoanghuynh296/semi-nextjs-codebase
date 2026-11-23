@@ -19,7 +19,7 @@ export const A11Y_RULES = [
   ["target-size", "Every control you click or tap is at least 24×24px, or keeps 24px from the next one (WCAG 2.5.8); Semi controls are h-control."],
   ["img-alt", "An image has alt (alt=\"\" when it only decorates); an element with role=img has aria-label (WCAG 1.1.1)."],
   ["lang", "<html lang> names the page's language, so a screen reader reads it with the right voice (WCAG 3.1.1)."],
-  ["field-size", "A field you type in has text of 16px or more below 640px: iOS Safari zooms the page into a smaller one on focus and never zooms back (use FIELD_INPUT)."],
+  ["field-size", "A field you type in has text of 16px or more below 640px: iOS Safari zooms the page into a smaller one on focus and never zooms back (use FIELD_INPUT, or add max-sm:text-input)."],
   ["zoom-lock", "The viewport meta allows zoom: no user-scalable=no and no maximum-scale below 2 (WCAG 1.4.4)."],
 ];
 
@@ -159,7 +159,7 @@ export function a11yAudit(opts) {
     for (const el of inScope(FIELD)) {
       if (!/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) || !shown(el) || disabled(el) || (el.readOnly && el.tagName !== "SELECT")) continue;
       const size = parseFloat(getComputedStyle(el).fontSize);
-      if (size < 16) hit("field-size", el, `${size}px, needs 16px or more below 640px (iOS zooms the page on focus)`);
+      if (size < 16) hit("field-size", el, `${size}px, needs 16px or more below 640px (iOS zooms the page on focus; max-sm:text-input)`);
     }
 
   if (on("edge"))

@@ -5,7 +5,7 @@
   /* Monospace font (font-sans / font-display are shape tokens, below) */
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
 
-  /* Type scale (docs/TOKENS.md): text-hero 36 (32 below sm) · title-xl 44 · tab-xl 28 (24 below sm) · section 20 · figure 18 · lead 15 · copy 14 · ui 12 (the base UI size) · tag 10 · badge 10 · overline 11 (section labels, uppercase). Each size carries its line height; leading-* overrides it */
+  /* Type scale (docs/TOKENS.md): text-hero 36 (32 below sm) · title-xl 44 · tab-xl 28 (24 below sm) · section 20 · figure 18 · lead 15 · copy 14 · input 16 (typed text below sm) · ui 12 (the base UI size) · tag 10 · badge 10 · overline 11 (section labels, uppercase). Each size carries its line height; leading-* overrides it */
   --text-hero: 2.25rem; /* Hero (font-display, 400). 32px below sm */
   --text-hero--letter-spacing: -0.01em;
   --text-hero--line-height: 1.1;
@@ -25,6 +25,8 @@
   --text-lead--line-height: 1.6;
   --text-copy: 0.875rem; /* Reading copy: secondary body, prose, larger buttons (14/22). Named copy, not body: text-body is the body text colour */
   --text-copy--line-height: 1.5715;
+  --text-input: 1rem; /* Text you type in, below sm (max-sm:text-input on fields): iOS zooms into a field under 16px */
+  --text-input--line-height: 1.5;
   --text-ui: 0.75rem; /* The base UI size: nav, breadcrumb, buttons, labels, meta, list rows (12/18) */
   --text-ui--line-height: 1.5;
   --text-tag: 0.625rem; /* Tags and chips (500, +0.02em) */
@@ -356,9 +358,9 @@
   --color-secondary-hover: var(--semi-secondary-hover); /* Hover of the secondary fill */
   --color-on-secondary: var(--semi-on-secondary); /* Text / icon on bg-secondary */
   --color-focus: var(--semi-focus); /* Keyboard focus ring (ring-focus) and focused-control border: the strong text colour, ≥ 3:1 on every surface. Neutral, never the brand */
-  --color-danger-fg: var(--semi-danger-fg); /* Destructive / error text on surfaces */
+  --color-danger-fg: var(--semi-danger-fg); /* Destructive / error text on surfaces and on its tint (≥ 4.5:1 over every surface) */
   --color-success-fg: var(--semi-success-fg); /* Success / online text on surfaces */
-  --color-warning-fg: var(--semi-warning-fg); /* Warning / pending text on surfaces (amber-700 was 4.35:1 on Soft / Sharp fields) */
+  --color-warning-fg: var(--semi-warning-fg); /* Warning / pending text on surfaces */
   --color-info-fg: var(--semi-info-fg); /* Informational text on surfaces */
   --color-tone-purple: var(--semi-tone-purple); /* Tonal purple text on tinted (bg-purple-500/10) or neutral surfaces */
   --color-tone-violet: var(--semi-tone-violet); /* Tonal violet text on tinted (bg-violet-500/10) or neutral surfaces */
@@ -446,7 +448,7 @@
   --semi-secondary-hover: var(--semi-primary-hover);
   --semi-on-secondary: var(--semi-on-primary);
   --semi-focus: var(--semi-text-strong);
-  --semi-danger-fg: var(--color-rose-400);
+  --semi-danger-fg: var(--color-rose-300);
   --semi-success-fg: var(--color-emerald-400);
   --semi-warning-fg: var(--color-amber-400);
   --semi-info-fg: var(--color-sky-400);
@@ -535,21 +537,21 @@
   --semi-secondary-hover: var(--semi-primary-hover);
   --semi-on-secondary: var(--semi-on-primary);
   --semi-focus: var(--semi-text-strong);
-  --semi-danger-fg: var(--color-rose-700);
-  --semi-success-fg: var(--color-emerald-700);
+  --semi-danger-fg: var(--color-rose-800);
+  --semi-success-fg: var(--color-emerald-800);
   --semi-warning-fg: var(--color-amber-800);
-  --semi-info-fg: var(--color-sky-700);
-  --semi-tone-purple: var(--color-purple-700);
-  --semi-tone-violet: var(--color-violet-700);
-  --semi-tone-indigo: var(--color-indigo-700);
-  --semi-tone-blue: var(--color-blue-700);
-  --semi-tone-sky: var(--color-sky-700);
+  --semi-info-fg: var(--color-sky-800);
+  --semi-tone-purple: var(--color-purple-800);
+  --semi-tone-violet: var(--color-violet-800);
+  --semi-tone-indigo: var(--color-indigo-800);
+  --semi-tone-blue: var(--color-blue-800);
+  --semi-tone-sky: var(--color-sky-800);
   --semi-tone-cyan: var(--color-cyan-800);
   --semi-tone-teal: var(--color-teal-800);
-  --semi-tone-emerald: var(--color-emerald-700);
+  --semi-tone-emerald: var(--color-emerald-800);
   --semi-tone-amber: var(--color-amber-800);
   --semi-tone-orange: var(--color-orange-800);
-  --semi-tone-rose: var(--color-rose-700);
+  --semi-tone-rose: var(--color-rose-800);
   --semi-tone-pink: var(--color-pink-800);
   --semi-danger-bg: color-mix(in oklab, var(--color-rose-500) 10%, transparent);
   --semi-danger-border: color-mix(in oklab, var(--color-rose-500) 30%, transparent);
@@ -624,21 +626,21 @@
     --semi-secondary-hover: var(--semi-primary-hover);
     --semi-on-secondary: var(--semi-on-primary);
     --semi-focus: var(--semi-text-strong);
-    --semi-danger-fg: var(--color-rose-700);
-    --semi-success-fg: var(--color-emerald-700);
+    --semi-danger-fg: var(--color-rose-800);
+    --semi-success-fg: var(--color-emerald-800);
     --semi-warning-fg: var(--color-amber-800);
-    --semi-info-fg: var(--color-sky-700);
-    --semi-tone-purple: var(--color-purple-700);
-    --semi-tone-violet: var(--color-violet-700);
-    --semi-tone-indigo: var(--color-indigo-700);
-    --semi-tone-blue: var(--color-blue-700);
-    --semi-tone-sky: var(--color-sky-700);
+    --semi-info-fg: var(--color-sky-800);
+    --semi-tone-purple: var(--color-purple-800);
+    --semi-tone-violet: var(--color-violet-800);
+    --semi-tone-indigo: var(--color-indigo-800);
+    --semi-tone-blue: var(--color-blue-800);
+    --semi-tone-sky: var(--color-sky-800);
     --semi-tone-cyan: var(--color-cyan-800);
     --semi-tone-teal: var(--color-teal-800);
-    --semi-tone-emerald: var(--color-emerald-700);
+    --semi-tone-emerald: var(--color-emerald-800);
     --semi-tone-amber: var(--color-amber-800);
     --semi-tone-orange: var(--color-orange-800);
-    --semi-tone-rose: var(--color-rose-700);
+    --semi-tone-rose: var(--color-rose-800);
     --semi-tone-pink: var(--color-pink-800);
     --semi-danger-bg: color-mix(in oklab, var(--color-rose-500) 10%, transparent);
     --semi-danger-border: color-mix(in oklab, var(--color-rose-500) 30%, transparent);

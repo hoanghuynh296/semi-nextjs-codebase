@@ -124,7 +124,7 @@ export function CustomCombobox({
           }}
           onKeyDown={onKeyDown}
           placeholder={placeholder}
-          className="w-full h-field bg-field border border-control-line hover:border-control-line-hover rounded-control pl-3 pr-8 text-ui max-sm:text-lead text-strong placeholder:text-muted focus:border-focus focus:ring-1 focus:ring-focus transition outline-none disabled:opacity-40 aria-invalid:border-danger-fg"
+          className="w-full h-field bg-field border border-control-line hover:border-control-line-hover rounded-control pl-3 pr-8 text-ui max-sm:text-input text-strong placeholder:text-muted focus:border-focus focus:ring-1 focus:ring-focus transition outline-none disabled:opacity-40 aria-invalid:border-danger-fg"
         />
         <button
           type="button"

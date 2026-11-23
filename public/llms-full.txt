@@ -201,7 +201,7 @@ Chips (`Chip`, `chipClass(active)`): `rounded-full h-control px-3.5`, ghost when
 leading dot or icon (`TONE_DOT`, `chipIconClass(tone)`). Card tiles keep their area tint. Flat: no gradients, no glow
 blobs, no `shadow-[0_0_…]` (status dots and power buttons too). Active card = `CARD_ACTIVE` (`border-outline-line`).
 
-**Type (`docs/TOKENS.md`):** `text-hero` 36 (32 below sm) · `text-title-xl` 44 · `text-tab-xl` 28 (24 below sm) · `text-section` 20 · `text-figure` 18 · `text-lead` 15 · `text-copy` 14 (reading copy; compact 13) · **`text-ui` 12, the base UI size** (nav, buttons, labels, meta, rows) · `text-tag` 10 · `text-badge` 10 · `text-overline` 11. `font-sans` (Geist or the brand's) everywhere; `font-display` (the brand's display face, else the sans) only for hero, reading-page titles, big tabs, editorial heads. Headings are not bold: 400 / 500 (`font-title` 500), 600 only overlines, 700 only count badges. `tabular-nums` for numbers, `font-mono` only for code. No `text-xs/sm`, no `text-[13px]` ·
+**Type (`docs/TOKENS.md`):** `text-hero` 36 (32 below sm) · `text-title-xl` 44 · `text-tab-xl` 28 (24 below sm) · `text-section` 20 · `text-figure` 18 · `text-lead` 15 · `text-copy` 14 (reading copy; compact 13) · `text-input` 16 (typed text below sm: `max-sm:text-input`) · **`text-ui` 12, the base UI size** (nav, buttons, labels, meta, rows) · `text-tag` 10 · `text-badge` 10 · `text-overline` 11. `font-sans` (Geist or the brand's) everywhere; `font-display` (the brand's display face, else the sans) only for hero, reading-page titles, big tabs, editorial heads. Headings are not bold: 400 / 500 (`font-title` 500), 600 only overlines, 700 only count badges. `tabular-nums` for numbers, `font-mono` only for code. No `text-xs/sm`, no `text-[13px]` ·
 sentence case, no ALL CAPS. The one exception is `text-overline` (uppercase, tracked) for section labels: a sidebar or drawer group, a palette group, a mega menu column (C-032); anywhere but a plain, non-clickable label element it warns (`overline-place`).
 
 **Status, layers, elevation:** callouts / badges `bg-{danger,success,warning,info}-bg border-*-border text-*-fg` (`Alert`) ·
@@ -461,12 +461,12 @@ and a few emphasised labels; 700 only in count badges. Tracking −0.01em on dis
 come from the type scale tokens, never `text-[13px]` and never Tailwind's `text-xs` / `text-sm` / `text-base`. The 14px
 size is `text-copy` because `text-body` is the body text colour.
 
-**Fields on a phone:** text you type in is 16px (`text-lead`) below `sm`, whatever the field's desktop size. iOS Safari
+**Fields on a phone:** text you type in is 16px (`text-input`) below `sm`, whatever the field's desktop size. iOS Safari
 zooms the page into a focused field under 16px and never zooms back; the fix is the text size, never `maximum-scale` /
 `user-scalable=no` in the viewport (it blocks pinch zoom, an a11y failure). `FIELD_INPUT`, `FIELD_TEXTAREA` and every
 Semi text-entry control (Input, SearchInput, NumberInput with `FIELD_INPUT`, InputGroup, InputOTP, Textarea, CustomCombobox,
 Command, the Chat composer) already do it; a field of your own, or a NumberInput whose caller passes its own `text-ui`,
-adds `max-sm:text-lead`. `base.css` does the same for a bare
+adds `max-sm:text-input`. `base.css` does the same for a bare
 `<input>` / `<textarea>` / `<select>`; the height stays `h-control` / `h-field`.
 
 Minimum `text-tag` / `text-badge` (10px, marks only). Running text (a sentence, a description) is `text-copy`; UI text
@@ -1309,7 +1309,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Small interactive panel under a trigger | `Popover` (non-modal dialog); a hover preview of a link → `HoverCard` |
 | Actions at the pointer | `ContextMenu` (right-click, long-press, Menu key); the same actions must exist in a visible `Menu` |
 | Jump / run anything from the keyboard | `CommandPalette` once in the root layout (⌘K, pages add items with `useRegisterCommands`, `openCommandPalette()`); `CommandDialog` + `useHotkey` for a palette of your own, `Command` inline; matching ignores Vietnamese marks |
-| Sort / filter / select / page rows | `DataTable` (`columns`, `search`, `selectable` + `bulkActions`, `pageSize`, `loading`). Many columns (a tablet beside the rail, a split view): give the less important ones `priority` 1–3; they fold into the first column's second line when the table's **own box** is too narrow (3 first; the first column and columns without a priority never fold). The sorted column never folds (its header is the sort control). Folding is measured after hydration, so such a table may shift once on first load. What still does not fit scrolls sideways with a 2px accent line on each edge that has columns past it and the scroll box focusable; `stickyFirstColumn` keeps the names in place. The order it shows is `sortRows(searchRows(rows, columns, search), columns, sort)` (pure, also for a DetailOverlay's ‹ ›) |
+| Sort / filter / select / page rows | `DataTable` (`columns`, `search`, `selectable` + `bulkActions`, `pageSize`, `loading`). Many columns (a tablet beside the rail, a split view): give the less important ones `priority` 1–3; they fold into the first column's second line when the table's **own box** is too narrow (3 first; the first column and columns without a priority never fold). The sorted column never folds (its header is the sort control). Folding is measured after hydration, so such a table may shift once on first load. What still does not fit scrolls sideways with a 2px strong line (outline-line) on each edge that has columns past it and the scroll box focusable; `stickyFirstColumn` keeps the names in place. The order it shows is `sortRows(searchRows(rows, columns, search), columns, sort)` (pure, also for a DetailOverlay's ‹ ›) |
 | Fixed-height scrolling list | `ScrollArea` (edge lines, optional thin scrollbar, keyboard focusable) |
 | Divider / key cap | `Separator` (horizontal, vertical, with a label); `Kbd` (`keys={["⌘", "K"]}`) |
 | Charts | `BarChart` (grouped / `stacked`), `LineChart` (`area`), `DonutChart` (≤ 5 parts), `Sparkline` (trend in a KPI tile). Series colours are the fixed `chart-1…8` tokens in order, a 9th series folds into “Khác”; one y axis only; legend for 2+ series, keyboard tooltip and table view built in |
@@ -1369,7 +1369,7 @@ installed. Without Playwright, `--snippet` prints an expression to evaluate with
 | `target-size` | A control is smaller than 24 × 24 px (its `::before` / `::after` hit area included) and a 24px circle on its centre touches another target or another small target's circle; links in a sentence are exempt |
 | `img-alt` | An `<img>` has no `alt`, or a `role="img"` has no name |
 | `lang` | `<html>` has no `lang` |
-| `field-size` | At a viewport under 640px, an input, textarea or select you type in has text under 16px (iOS Safari zooms the page on focus and never zooms back); read-only and disabled fields are exempt |
+| `field-size` | At a viewport under 640px, an input, textarea or select you type in has text under 16px (iOS Safari zooms the page on focus and never zooms back); read-only and disabled fields are exempt. Fix: `FIELD_INPUT`, or `max-sm:text-input` |
 | `zoom-lock` | The viewport meta has `user-scalable=no` or `maximum-scale` below 2 |
 
 `data-a11y-skip="<reason>"` marks a specimen that breaks a rule on purpose (a contrast sample in a brand book); never
@@ -2418,7 +2418,8 @@ There is no brand-derived colour anywhere: `accent`, `accent-hover`, `on-accent`
 
 Nothing else in Semi uses the brand colour. The brand kit sets the fills; the generator checks 4.5:1 for the text on
 each and picks the on-colour. Status colours (`*-fg`, `*-bg`, `*-border`, `*-solid` for danger, success, warning, info)
-and `text-tone-*` are one fixed palette for every brand.
+and `text-tone-*` are one fixed palette for every brand. Their text (light: the 800 shade; dark: 300 / 400) reaches
+4.5:1 on its own tint (`*-bg`, `bg-<hue>-500/10`) over every surface, a card and the field in a card included.
 
 ## Type scale
 
@@ -2433,6 +2434,7 @@ and `text-tone-*` are one fixed palette for every brand.
 | `text-figure` | 18 · lh 1.25 | numeric figures; the page title in a content card (400) |
 | `text-lead` | 15 · lh 24 | lead text, card titles |
 | `text-copy` | 14 · lh 22 | reading copy, secondary body, larger buttons |
+| `text-input` | 16 · lh 24 | text you type in, below `sm` only (`max-sm:text-input`): iOS zooms into a field under 16px |
 | `text-ui` | **12 · lh 18, the base UI size** | nav, breadcrumb, buttons, labels, meta, list rows |
 | `text-tag` | 10 · 500 · +0.02em | tags, chips |
 | `text-badge` | 10 · 700 · lh 1 | count badges only |
@@ -2442,7 +2444,7 @@ Naming: the 14px size is `text-copy`, not `text-body`, because `text-body` is th
 `text-*` name cannot be both a size and a colour). `text-ui` keeps its name and is now 12px (was 14).
 
 Weights: headings are not bold. 400 and 500 do almost everything (`font-title` is 500); 600 only for overlines and a
-few emphasised labels; 700 only in count badges. Phones: fields you type in stay 16px below `sm` (iOS zoom) and touch
+few emphasised labels; 700 only in count badges. Phones: fields you type in stay 16px below `sm` (`text-input`, iOS zoom) and touch
 targets stay 44px.
 
 Density and type scale (`data-density`, `data-type-scale` on `<html>`): compact sets `text-copy` 13 and `text-lead`
@@ -2450,7 +2452,7 @@ Density and type scale (`data-density`, `data-type-scale` on `<html>`): compact 
 down below sm).
 
 Removed sizes and their 1.0 names (the `1.0.0-foundation` migration rewrites them): `text-caption`, `text-label` →
-`text-ui`; `text-ui-lg`, `text-title`, `text-title-lg` → `text-lead`; `text-heading-sm`, `text-heading` →
+`text-ui`; `text-ui-lg`, `text-title`, `text-title-lg` → `text-lead` (`max-sm:text-title-lg`, the phone size of a field, → `max-sm:text-input`); `text-heading-sm`, `text-heading` →
 `text-section`; `text-heading-lg`, `text-display` → `text-tab-xl`; `text-kpi` → `text-figure`.
 
 ## Fonts
@@ -10519,7 +10521,7 @@ export default function DataTableOrders() {
 
 ### Many columns: priority folds, sticky first column
 
-Switch the width: at Máy tính bảng the priority 3 columns fold under the name; at Hẹp the priority 2 ones too, and the columns without a priority scroll sideways with the name kept in place and an accent line on the edge that has more columns.
+Switch the width: at Máy tính bảng the priority 3 columns fold under the name; at Hẹp the priority 2 ones too, and the columns without a priority scroll sideways with the name kept in place and a strong line on the edge that has more columns.
 
 ```tsx
 "use client";
@@ -10612,7 +10614,7 @@ Sort by a column header (click again to reverse; aria-sort on the header), filte
 column, case and Vietnamese marks ignored), select rows with a checkbox column (select-all on the page, bulk
 actions bar), page with Pagination. Shows skeleton rows while `loading` and an EmptyState when nothing is left.
 When the columns do not fit its own box, columns with a `priority` fold into the first column's second line; what
-still does not fit scrolls sideways, with an accent line on each edge that has columns past it and the table
+still does not fit scrolls sideways, with a strong line (outline-line) on each edge that has columns past it and the table
 focusable to scroll by keyboard. The sorted column never folds. Folding is measured after hydration, so a table
 with priorities may shift once on first load at a narrow width.
 The order it shows is `sortRows(searchRows(rows, columns, search), columns, sort)` (for DetailOverlay ‹ ›).
@@ -10647,7 +10649,7 @@ The order it shows is `sortRows(searchRows(rows, columns, search), columns, sort
 
 - Folding is measured on the table's own box (not the viewport), from each column's one-line width: a table in a split view or next to the rail folds as soon as it is too narrow. Folding happens after hydration: the server HTML shows every column, so a table with priorities may shift once on first load at tablet width.
 - The order the table shows is `sortRows(searchRows(rows, columns, search), columns, sort)`: use the same two helpers to step through the results in a DetailOverlay (‹ ›, “n / N”), see the detail-overlay docs.
-- A table wider than its box draws a 2px accent line on each edge that has columns past it (in every table; with `stickyFirstColumn` the left line is the pinned column's edge) and keeps the first column (and the checkbox column) in place with `stickyFirstColumn`; the table then sits on `bg-card`. The sorted column never folds: its header is the only sort control.
+- A table wider than its box draws a 2px strong line (outline-line) on each edge that has columns past it (in every table; with `stickyFirstColumn` the left line is the pinned column's edge) and keeps the first column (and the checkbox column) in place with `stickyFirstColumn`; the table then sits on `bg-card`. The sorted column never folds: its header is the only sort control.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/data-table/ and the types in src/ -->
 

@@ -138,7 +138,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </div>
         ${copy.items.length ? `<Card className="divide-y divide-divider">
           {${J(copy.items)}.map((item) => (
-            <div key={item} className="px-4 py-3 text-ui text-contrast truncate">
+            <div key={item} className="px-4 py-3 text-ui text-strong truncate">
               {item}
             </div>
           ))}
@@ -146,8 +146,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </div>`
       : `      <section className="rounded-panel border-card bg-panel">
         <div className="p-6 @2xl:p-10 space-y-4 @2xl:max-w-2xl">
-          <h2 className="font-display font-title text-heading-lg @2xl:text-display leading-tight text-contrast">{${J(copy.title)}}</h2>
-          <p className="text-ui-lg text-body">{${J(copy.lead)}}</p>
+          <h2 className="font-display font-title text-section @2xl:text-tab-xl leading-tight text-strong">{${J(copy.title)}}</h2>
+          <p className="text-lead text-body">{${J(copy.lead)}}</p>
           <Button variant="primary">{${J(copy.action)}}</Button>
         </div>
       </section>
@@ -244,12 +244,12 @@ ${main}
     const items = copy.items.length
       ? `
         <section className="space-y-4">
-          <h2 className="font-display font-title text-heading text-contrast">{${J(copy.list)}}</h2>
+          <h2 className="font-display font-title text-section text-strong">{${J(copy.list)}}</h2>
           <div className="grid gap-3 @lg:grid-cols-2 @3xl:grid-cols-3">
             {${J(copy.items)}.map((item) => (
               <Card key={item} interactive className="p-4 flex items-center gap-3">
-                <span className="text-title font-medium text-contrast min-w-0 truncate">{item}</span>
-                <span className="ml-auto text-label text-accent-fg font-medium shrink-0">Xem</span>
+                <span className="text-lead font-medium text-strong min-w-0 truncate">{item}</span>
+                <span className="ml-auto text-ui text-strong font-medium shrink-0">Xem</span>
               </Card>
             ))}
           </div>
@@ -257,9 +257,9 @@ ${main}
       : "";
     const proof = copy.proof
       ? `
-          <div className="rounded-panel bg-accent-subtle p-6 @3xl:p-8 flex flex-col justify-center gap-2 min-h-48">
-            <div className="font-figure font-title text-display tabular-nums leading-none text-contrast">{${J(copy.proof.value)}}</div>
-            <div className="text-ui-lg text-body">{${J(copy.proof.label)}}</div>
+          <div className="rounded-panel bg-item-selected p-6 @3xl:p-8 flex flex-col justify-center gap-2 min-h-48">
+            <div className="font-figure font-title text-tab-xl tabular-nums leading-none text-strong">{${J(copy.proof.value)}}</div>
+            <div className="text-lead text-body">{${J(copy.proof.label)}}</div>
           </div>`
       : "";
     page = `${logoImport}import { Button, Card, ThemeToggle } from "@semi/ui";
@@ -270,7 +270,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-canvas">
       <header className="border-b border-line bg-canvas">
         <div className="px-4 sm:px-8 h-14 flex items-center gap-3">
-          ${logoEl ?? `<span className="font-display font-title text-title-lg text-contrast">{${J(appName)}}</span>`}
+          ${logoEl ?? `<span className="font-display font-title text-lead text-strong">{${J(appName)}}</span>`}
           <div className="ml-auto flex items-center gap-2">
             <ThemeToggle />
             <Button variant="primary">{${J(copy.action)}}</Button>
@@ -280,8 +280,8 @@ export default function HomePage() {
       <main className="@container px-4 sm:px-8 py-10 space-y-12">
         <section className={\`grid gap-8 items-center ${copy.proof ? "@3xl:grid-cols-[3fr_2fr]" : ""}\`}>
           <div className="space-y-4">
-            <h1 className="font-display font-title text-heading-lg @3xl:text-display leading-tight text-contrast">{${J(copy.title)}}</h1>
-            <p className="text-ui-lg text-body max-w-xl">{${J(copy.lead)}}</p>
+            <h1 className="font-display font-title text-section @3xl:text-tab-xl leading-tight text-strong">{${J(copy.title)}}</h1>
+            <p className="text-lead text-body max-w-xl">{${J(copy.lead)}}</p>
             <Button variant="primary">{${J(copy.action)}}</Button>
           </div>${proof}
         </section>${items}

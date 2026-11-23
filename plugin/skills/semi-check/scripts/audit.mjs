@@ -476,7 +476,7 @@ export function auditSingleApp(cwd) {
       id: "semantic-tokens-codemod",
       question: `Found ${totalPhysical} literal colour classes (${topSample}) that break Dark/Light theme switching. Run automated codemod to migrate them to Semantic Tokens?`,
       options: [
-        "(Recommended) Automatically map to Semantic Tokens (bg-panel, bg-field, text-contrast, text-body, text-muted, border-line)",
+        "(Recommended) Automatically map to Semantic Tokens (bg-panel, bg-field, text-strong, text-body, text-muted, border-line)",
         "Keep literal classes and record in semi-lint-baseline.json",
       ],
     });

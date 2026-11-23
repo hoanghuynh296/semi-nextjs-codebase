@@ -316,7 +316,10 @@ export function densityAudit(opts) {
       if (!visible(el) || skipped(el) || el.matches("[data-split-menu]") || el.closest("[role=switch], [role=checkbox], [role=radio], [role=tab], [role=gridcell], [aria-pressed=true], [aria-selected=true], [aria-checked=true], [aria-current]")) continue;
       const bg = rgba(css(el).backgroundColor);
       if (bg[3] < 0.9 || !near(bg, accent, 12)) continue;
-      const view = el.closest("[role=dialog], [role=alertdialog], form, [data-density-view], main") || root;
+      // A nested data-theme scope (the same screen shown in light and in dark) is a view of its own: the brand fill
+      // is one colour in both themes, so the twin of a main button is not a second one.
+      let view = el.closest("[role=dialog], [role=alertdialog], form, [data-density-view], [data-theme]");
+      if (!view || view === document.documentElement || (view !== root && !root.contains(view))) view = el.closest("main") || root;
       views.set(view, [...(views.get(view) || []), el]);
     }
     for (const [view, btns] of views) if (btns.length > 1) hit("primary-actions", view, `${btns.length} filled brand buttons: ${btns.map(textOf).filter(Boolean).slice(0, 3).join(" · ")}`);

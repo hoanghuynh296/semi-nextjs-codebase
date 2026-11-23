@@ -241,6 +241,7 @@ test("1.0.0 foundation: removed colour and size tokens map to the 1.0 names, dat
     `cn("text-caption text-label text-ui text-ui-lg text-title text-title-lg text-heading-sm text-heading text-heading-lg text-display text-kpi font-title font-display")`,
     `.x { color: var(--color-text-contrast); background: var(--color-accent-subtle); font-size: var(--text-label); line-height: var(--text-heading--line-height); border-color: var(--semi-accent-line); }`,
     `cn("bg-primary-500 text-tone-rose my-text-label-x")`,
+    `cn("w-full text-label max-sm:text-title-lg sm:text-title-lg")`,
   ].join("\n");
   const out = migrateFoundation(src);
   assert.equal(
@@ -252,6 +253,7 @@ test("1.0.0 foundation: removed colour and size tokens map to the 1.0 names, dat
       `cn("text-ui text-ui text-ui text-lead text-lead text-lead text-section text-section text-tab-xl text-tab-xl text-figure font-title font-display")`,
       `.x { color: var(--color-text-strong); background: var(--color-item-selected); font-size: var(--text-ui); line-height: var(--text-section--line-height); border-color: var(--semi-outline-line); }`,
       `cn("bg-primary-500 text-tone-rose my-text-label-x")`,
+      `cn("w-full text-ui max-sm:text-input sm:text-lead")`,
     ].join("\n"),
   );
   assert.equal(migrateFoundation(out), out, "second run changes nothing");

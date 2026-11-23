@@ -167,7 +167,7 @@ export function SearchPill({
         placeholder={placeholder ?? label}
         aria-label={label}
         enterKeyHint="search"
-        className="flex-1 min-w-0 h-full bg-transparent outline-none text-ui max-sm:text-lead text-strong placeholder:text-muted [&::-webkit-search-cancel-button]:hidden"
+        className="flex-1 min-w-0 h-full bg-transparent outline-none text-ui max-sm:text-input text-strong placeholder:text-muted [&::-webkit-search-cancel-button]:hidden"
       />
       {text ? (
         <button

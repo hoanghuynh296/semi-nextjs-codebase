@@ -79,7 +79,7 @@ export function ShapePanel({ lab }: { lab: ReturnType<typeof useLabEditor> }) {
           <DemoLabel>Xem trước</DemoLabel>
           <Card className="space-y-3">
             <div className="flex items-center justify-between gap-2">
-              <span className="text-title font-semibold text-contrast">Máy in A1</span>
+              <span className="text-lead font-semibold text-strong">Máy in A1</span>
               <Badge tone="green" dot>
                 Sẵn sàng
               </Badge>

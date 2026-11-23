@@ -48,7 +48,7 @@ export interface DataTableSort {
  * column, case and Vietnamese marks ignored), select rows with a checkbox column (select-all on the page, bulk
  * actions bar), page with Pagination. Shows skeleton rows while `loading` and an EmptyState when nothing is left.
  * When the columns do not fit its own box, columns with a `priority` fold into the first column's second line; what
- * still does not fit scrolls sideways, with an accent line on each edge that has columns past it and the table
+ * still does not fit scrolls sideways, with a strong line (outline-line) on each edge that has columns past it and the table
  * focusable to scroll by keyboard. The sorted column never folds. Folding is measured after hydration, so a table
  * with priorities may shift once on first load at a narrow width.
  * The order it shows is `sortRows(searchRows(rows, columns, search), columns, sort)` (for DetailOverlay ‹ ›).
@@ -207,7 +207,7 @@ export function DataTable<T>({
   const shown = folded.length ? columns.filter((c) => !folded.includes(c.key)) : columns;
   const foldedCols = folded.length ? columns.filter((c) => folded.includes(c.key)) : [];
   const sticky = stickyFirstColumn && edges.scrolls;
-  // The scroll cue: a solid 2px accent line on each edge that has columns past it, on the scroll box's own border (so
+  // The scroll cue: a solid 2px outline-line on each edge that has columns past it, on the scroll box's own border (so
   // the focus ring, an inset ring, stays whole inside it). With a sticky column the left line is that column's edge.
   const edgeLines =
     edges.scrolls &&

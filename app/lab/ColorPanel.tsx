@@ -41,7 +41,7 @@ export function ColorPanel({ lab }: { lab: ReturnType<typeof useLabEditor> }) {
             return (
               <div key={k} className="space-y-1">
                 <Slider label={k} min={0} max={max} step={max / 60} showValue format={(x) => x.toFixed(3)} value={v} onChange={(x) => update(["params", k], +x.toFixed(4))} />
-                <p className="text-caption text-muted">{NOTES[k]}</p>
+                <p className="text-ui text-muted">{NOTES[k]}</p>
                 <Changed on={changed(["params", k])} />
               </div>
             );
@@ -65,7 +65,7 @@ export function ColorPanel({ lab }: { lab: ReturnType<typeof useLabEditor> }) {
                 <TD>
                   <span className="inline-flex items-center gap-2">
                     <span aria-hidden className="size-4 rounded-chip border border-line" style={{ background: r.primary }} />
-                    <code className="text-caption">{r.primary}</code>
+                    <code className="text-ui">{r.primary}</code>
                   </span>
                 </TD>
                 <TD>{outcome(r.before)}</TD>

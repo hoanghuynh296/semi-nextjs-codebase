@@ -6,7 +6,7 @@
 export const version = "1.0.0";
 export const id = "foundation";
 export const description =
-  "text-contrast → text-strong, accent/action → primary, accent-fg → text-strong, accent-subtle → item-selected, accent-line → outline-line, old type sizes → the 1.0 scale, data-style removed";
+  "text-contrast → text-strong, accent/action → primary, accent-fg → text-strong, accent-subtle → item-selected, accent-line → outline-line, old type sizes → the 1.0 scale (a field's max-sm:text-title-lg → max-sm:text-input), data-style removed";
 
 /** Colour names after a utility prefix (bg-, text-, border-, ring- …) and in CSS variables. */
 export const COLORS = {
@@ -46,9 +46,13 @@ const sizeRx = new RegExp(`(^|[^\\w-])text-(${names(SIZES)})(?![\\w-])`, "g");
 const colorVarRx = new RegExp(`--(color|semi)-(${names(COLORS)})(?![\\w-])`, "g");
 const sizeVarRx = new RegExp(`--text-(${names(SIZES)})(?=--|[^\\w-]|$)`, "g");
 
+// A field's phone size (16px below sm, iOS zoom) was max-sm:text-title-lg: it becomes the 16px text-input, not lead (15).
+const fieldPhoneRx = /(^|[^\w-])max-sm:text-title-lg(?![\w-])/g;
+
 /** One source text: classes (with any variants and /opacity) and CSS variables. */
 export function migrateFoundation(src) {
   return src
+    .replace(fieldPhoneRx, (m, pre) => `${pre}max-sm:text-input`)
     .replace(colorRx, (m, pre, util, name) => {
       // text-text-contrast never existed; "text-contrast" as a colour name is only reached through --color-text-contrast.
       if (name === "text-contrast") return m;

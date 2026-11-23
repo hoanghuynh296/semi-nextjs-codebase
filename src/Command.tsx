@@ -188,7 +188,7 @@ export function Command({
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={onKey}
           placeholder={placeholder ?? t.commandPlaceholder}
-          className={cn("flex-1 min-w-0 h-full bg-transparent text-strong placeholder:text-muted outline-none", lg ? "text-lead max-sm:text-lead" : "text-ui max-sm:text-lead")}
+          className={cn("flex-1 min-w-0 h-full bg-transparent text-strong placeholder:text-muted outline-none", lg ? "text-lead max-sm:text-input" : "text-ui max-sm:text-input")}
         />
         {inputEnd}
       </div>

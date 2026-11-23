@@ -127,9 +127,9 @@ test("a non-file drag leaves the highlight off, a file drag turns it on", async 
       el.dispatchEvent(new DragEvent("dragenter", { dataTransfer: dt, bubbles: true, cancelable: true }));
     }, files);
   await fire(false);
-  await expect(area).not.toHaveClass(/bg-accent-subtle/);
+  await expect(area).not.toHaveClass(/(^|\s)bg-item-selected(\s|$)/);
   await fire(true);
-  await expect(area).toHaveClass(/bg-accent-subtle/);
+  await expect(area).toHaveClass(/(^|\s)bg-item-selected(\s|$)/);
 });
 
 test("items already failed on mount are not announced", async ({ page }) => {

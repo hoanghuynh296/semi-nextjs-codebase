@@ -32,7 +32,7 @@ export default function LabPage() {
         <p className="text-ui text-muted max-w-3xl">
           Thử giá trị core của Semi trước khi nhờ agent sửa design system: thang chữ, font và hình khối, density, tham số bộ sinh màu của
           brand. Mỗi thay đổi áp dụng ngay trên mọi trang của docs (nút ở góc dưới để tạm tắt và so với bản gốc) và được kiểm tra trên các brand mẫu. Ưng ý thì
-          sang tab Thay đổi, copy lệnh cho agent: <code className="text-label">npm run lab:apply</code> ghi đúng file nguồn. Hướng dẫn: docs/LAB.md.
+          sang tab Thay đổi, copy lệnh cho agent: <code className="text-ui">npm run lab:apply</code> ghi đúng file nguồn. Hướng dẫn: docs/LAB.md.
         </p>
         {lab.paused && (
           <Button variant="secondary" icon="play" onClick={() => setLab({ draft: lab.draft, paused: false })}>
