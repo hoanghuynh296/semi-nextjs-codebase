@@ -109,7 +109,7 @@ export default function BrandPage() {
         </div>
         <div className="flex flex-wrap gap-2">
           <Button
-            variant={on ? "secondary" : "primary"}
+            variant={on ? "subtle" : "primary"}
             icon={on ? "close" : "eye"}
             disabled={Boolean(error)}
             onClick={() => {
