@@ -6,8 +6,9 @@ description: Create or change a brand on the Semi Design System - a brand kit re
 # Brand kit (`/semi-brand`)
 
 Semi core → **brand kit** (one repo per brand, e.g. `3dnoobs/brand`) → products. The person decides a few things once,
-here; Semi derives the rest (scales, accent / on-accent shades of both themes, neutrals of every allowed style) and
-checks WCAG AA. The user guide with the full step-by-step example is `node_modules/@semi/ui/docs/BRANDS.md` (in the
+here; Semi derives only the text colour on each brand fill and its hover, and checks WCAG AA. Since 1.0 there is one
+style, surfaces / text / selection / focus are Semi's own neutral greys for every brand, and the brand colour is only
+for the main button (page, dialog, nav), attention count badges, "New" tags and the active big-tab underline. The user guide with the full step-by-step example is `node_modules/@semi/ui/docs/BRANDS.md` (in the
 Semi repo: `docs/BRANDS.md`); point the user to it.
 
 Run this skill **in the brand kit repo**, never in a product. Products use the kit with `/semi-new-app --brand`,
@@ -34,28 +35,25 @@ and `/semi-sync`.
      them), put them in `assets/`. For an SVG run `brand.mjs colors assets/logo.svg` and offer its colours as the
      primary / secondary. A PNG: read the colour by eye and ask the user to confirm the exact hex.
    - Primary colour (hex). Never invent one: it is the brand's own decision.
-   - Secondary colour: none (Recommended unless the logo has a second colour) or a hex, and its role: highlight
-     (Recommended), badge or illustration.
-   - Neutrals: "tinted" (Recommended: the styles' greys lean towards the primary) or "preset" (each style's own
-     neutrals as they are).
-   - Style, from the brief (`docs/STYLES.md`): dashboards / tools → Flat; consumer apps → Soft; editorial / landing →
-     Sharp. If the user is unsure, allow all three at first so they can switch styles in the preview, and narrow
-     `allow` before releasing.
-   - Fonts: sans and display, from Geist, Inter, Plus Jakarta Sans, Space Grotesk, Manrope, DM Sans, Nunito, Lexend,
+   - Secondary colour: none (Recommended unless the brand needs a second main button) or a hex. It is only for a
+     second main button, never text or decoration.
+   - The text on each fill is picked (white, near-black or black, the first at 4.5:1); set `primaryOn` /
+     `secondaryOn` only when the user wants a specific one (it must reach 4.5:1).
+   - Fonts: sans (required) and display (optional: hero, reading-page title, big tabs; without it titles use the
+     sans; headings are 400 / 500, never bold), from Geist, Inter, Plus Jakarta Sans, Space Grotesk, Manrope, DM Sans, Nunito, Lexend,
      Montserrat, Montserrat Alternates, Be Vietnam Pro (or another Google font with Vietnamese). Recommend a pair from
      the personality words.
    - **Voice:** tone friendly / neutral / formal (recommend from the brief), how to address the user ("bạn",
      "anh/chị", "quý khách"), what the brand calls itself, emoji yes / no. Then draft, and let the user correct,
      2 do's, 2 don'ts and example texts for a button, an error and an empty state, in the brand's voice; write them
      into `brand.json` → `voice.do`, `voice.dont`, `voice.examples` (`{ "button": [...], "error": "…", "empty": "…" }`).
-   - **Colour use:** how much accent: restrained (Recommended for tools), balanced, expressive (consumer, marketing).
    - Imagery (optional): one or two sentences on photos / illustration.
    - Density and type scale are not brand choices: one brand has a dense dashboard and a roomy store, so each product
      picks them in `/semi-new-app` (the Ứng dụng page shows each sample screen with its usual pick).
 3. **Create:**
    ```bash
    node "<path-to-this-skill>/scripts/brand.mjs" create --cwd "<dir>" --name "<Name>" --package "@scope/brand" \
-     --primary "#hex" [--secondary "#hex"] --neutral tinted --style flat --allow flat,soft --sans "Geist" --display "Montserrat Alternates"
+     --primary "#hex" [--secondary "#hex"] --sans "Geist" [--display "Montserrat Alternates"]
    ```
    then the guideline with `set` (step 5 keys), and the voice lists / examples by editing `brand.json`, then
    `brand.mjs build`. It writes `package.json`, `brand.json`, `README.md`, `.gitignore` and the Pages workflow
@@ -67,23 +65,21 @@ and `/semi-sync`.
    ```
    It is a brand book rendered with real `@semi/ui` components, in one dashboard (the Semi docs shell: menu on the
    left, a tab bar on phones) with three pages: **Thương hiệu** (cover, brief, logo
-   with clear space and misuse examples, colours by role with the share of a screen, type, voice, imagery),
+   with clear space and misuse examples, colours by role against Semi's neutrals, type, voice, imagery),
    **Ứng dụng** (dashboard, phone app, landing page, email, light and dark, texts from the voice) and **UI kit**
-   (scales, contrast table, downloads, then every component page); theme and allowed styles switch at the foot of the menu. Open it in the browser when you can, read the contrast table and the warnings, and
-   tell the user in a few lines: always say when the button is not the exact brand colour in a theme (`fidelity`,
-   ΔE > 0.08, with the reason the warning gives) and any "lưu ý" row, since those are what a designer would notice. Keep the server running while they adjust: `set` rebuilds and the page updates.
+   (the fills with their text and hover, contrast table, downloads, then every component page); the theme switches at the foot of the menu. Open it in the browser when you can, read the contrast table and the warnings, and
+   tell the user in a few lines: always say any "lưu ý" row (a fill that blends into the page in a theme), since that is what a designer would notice. Keep the server running while they adjust: `set` rebuilds and the page updates.
    **Look before you hand it over** (a browser or Playwright, when you have one): open `/`, `/apps/` and `/kit/` at
    375px and 1280px wide in both themes, take a screenshot of each and run this in the page:
    `[...document.querySelectorAll("main *")].filter(e => { if (e.closest("aside, pre, [class*=overflow-x-auto]")) return false; const b = e.getBoundingClientRect(); return b.width && (b.right > innerWidth + 1 || (getComputedStyle(e).overflowX === "hidden" && e.scrollWidth > e.clientWidth + 2)); }).length`
    (0 = nothing spills; tables and code blocks scroll on their own and are left out). A long name, tagline or sample item that breaks
    a screen is fixed in `brand.json` (shorter text) or reported as a Semi bug with `/semi-propose`, never hidden.
-5. **Adjust** what the user asks ("darker primary", "use the preset neutrals"):
+5. **Adjust** what the user asks ("darker primary", "white text on the button"):
    ```bash
-   node "<path-to-this-skill>/scripts/brand.mjs" set --cwd "<dir>" primary=#008f36 neutral=preset
+   node "<path-to-this-skill>/scripts/brand.mjs" set --cwd "<dir>" primary=#008f36 primaryOn=#ffffff
    ```
-   Keys: `primary`, `secondary` (`none` to remove), `name`, `neutral`, `allow`, `style`, `sans`, `display`;
-   guideline: `tone`, `address`, `we`, `emoji`, `accent`, `secondaryRole`, `buttonText` (`auto` · `white` · `dark`: text on
-   the main button; `white` takes a deeper shade, e.g. for an orange brand that would get dark text), `product`, `audience`,
+   Keys: `primary`, `primaryOn` (`none` = picked), `secondary` (`none` to remove), `secondaryOn`, `name`, `sans`,
+   `display` (`none` = the sans); guideline: `tone`, `address`, `we`, `emoji`, `product`, `audience`,
    `personality` (comma list), `tagline`, `logo`, `logoDark`, `mark` (paths in the kit), `imagery`. Lists (`voice.do`,
    `voice.dont`) and `voice.examples` are edited in `brand.json` directly, then `brand.mjs build`. It rebuilds and says the change level.
 6. **Release** when the user approves: `npm run check`, `node brand.mjs bump --cwd "<dir>" 1.0.0`, commit, push to the
@@ -100,7 +96,7 @@ and `/semi-sync`.
 ## Change a brand (existing kit)
 
 Same as steps 5–6: `set …` for the change, preview, then bump by the level it prints (major when colours / fonts that
-people see change, minor for new options such as an allowed style, patch otherwise) and tag. Then tell the user to run
+people see change, minor for new options such as a secondary colour or a display face, patch otherwise) and tag. Then tell the user to run
 `/semi-sync` in each product (a major one asks first).
 
 ## `/semi-brand update` (new @semi/ui)
@@ -109,9 +105,11 @@ people see change, minor for new options such as an allowed style, patch otherwi
 node "<path-to-this-skill>/scripts/brand.mjs" update --cwd "<kit-dir>"
 ```
 
-Installs the newest `@semi/ui`, sets `"semi"` in `brand.json` to `>=X.Y.0 <1.0.0` for it (later 0.x minors stay allowed), adds what an older kit lacks (preview site deps
+Installs the newest `@semi/ui`, sets `"semi"` in `brand.json` to `>=X.Y.0 <(X+1).0.0` for it (later minors of that major stay allowed), adds what an older kit lacks (preview site deps
 and scripts, `.gitignore`, the Pages workflow with its pull-request check, the weekly `semi-update.yml` workflow), rebuilds,
-and prints the change level. Bump by that level, commit, tag, push; then products get it with `/semi-sync`. It never
+and prints the change level. Going to Semi 1.0 it also removes the brand.json keys 1.0 no longer reads (`neutral`,
+`primaryStyle`, `styles`, `accent`, `color.accent` / `buttonText` / `secondaryRole`) and the rebuild is always major
+(every kit must be re-released for 1.0: its old `brand.css` sets variables 1.0 ignores). Bump by that level, commit, tag, push; then products get it with `/semi-sync`. It never
 changes the brand's choices, so every change it brings comes from Semi: write it in CHANGELOG under **"Từ Semi"**,
 apart from **"Thương hiệu"** changes made with `set`, so people in the products know why their screens moved. The
 `semi-update.yml` workflow needs Settings → Actions → General → "Allow GitHub Actions to create and approve pull
