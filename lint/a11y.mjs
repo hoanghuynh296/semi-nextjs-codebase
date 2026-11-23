@@ -331,6 +331,12 @@ export function a11yAudit(opts) {
       for (let p = el.parentElement, i = 0; p && i < 3; p = p.parentElement, i++) watch.push(p);
       if (el.previousElementSibling) watch.push(el.previousElementSibling);
       if (el.nextElementSibling) watch.push(el.nextElementSibling);
+      // The baseline is the control without focus. A dialog's focus trap (DetailOverlay, Modal) has already put focus
+      // on its first control, ring and all: compared with itself, that ring would count as "nothing changes".
+      // (If something pulls focus back into what is watched, there is no unfocused baseline: skip, not report.)
+      const held = () => document.activeElement && document.activeElement !== document.body;
+      if (held() && document.activeElement.blur) document.activeElement.blur();
+      if (held() && watch.some((w) => w.contains(document.activeElement))) continue;
       const a = snap(watch);
       try {
         el.focus({ preventScroll: true, focusVisible: true });
