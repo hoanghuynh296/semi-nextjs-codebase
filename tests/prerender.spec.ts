@@ -116,6 +116,66 @@ test("DetailOverlay under Next's App Router: open by URL, Back closes it at the 
   await expect(page.getByRole("dialog", { name: "Item 3" })).toBeVisible();
 });
 
+test("SearchPill debounce under Next's App Router: a row opened while typing keeps the query on the list's entry (#128)", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(`${BASE}/items/a`);
+  const search = page.getByRole("searchbox", { name: "Search items" }).filter({ visible: true });
+  const list = page.getByRole("list", { name: "Items" }).filter({ visible: true });
+  // the open id is written by a hydrated list: wait for it before typing
+  await list.getByRole("button", { name: "Item 2", exact: true }).click();
+  await expect(page).toHaveURL(/\?open=r2$/);
+  await page.keyboard.press("Escape");
+  await expect(page).toHaveURL(/\/items\/a$/);
+  await search.fill("item");
+  await expect(page).not.toHaveURL(/q=/); // still inside the debounce
+  await list.getByRole("button", { name: "Item 3", exact: true }).click();
+  await expect(page).toHaveURL(/\/items\/a\?q=item&open=r3$/);
+  await expect(page.getByRole("dialog", { name: "Item 3" })).toBeVisible();
+  await page.goBack();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(page).toHaveURL(/\/items\/a\?q=item$/);
+  await expect(search).toHaveValue("item");
+  // no late write after the debounce would have run: the list's entry still has the query, nothing else
+  await page.waitForTimeout(2300);
+  await expect(page).toHaveURL(/\/items\/a\?q=item$/);
+});
+
+test("SearchPill debounce: a filter chip pushed while typing keeps the query on the entry before it (#128)", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(`${BASE}/filters/a`);
+  const bar = page.getByRole("search", { name: "Search orders" }).filter({ visible: true });
+  const search = bar.getByRole("searchbox", { name: "Search orders" });
+  const paid = bar.getByRole("button", { name: "Paid" });
+  // a hydrated chip row first
+  await paid.click();
+  await expect(page).toHaveURL(/\?f\.paid=1$/);
+  await page.goBack();
+  await expect(page).toHaveURL(/\/filters\/a$/);
+  await search.fill("tiêu");
+  await expect(page).not.toHaveURL(/q=/);
+  await paid.click();
+  await expect(page).toHaveURL(/\?q=ti%C3%AAu&f\.paid=1$/);
+  await page.goBack();
+  await expect(page).toHaveURL(/\/filters\/a\?q=ti%C3%AAu$/);
+  await expect(paid).toHaveAttribute("aria-pressed", "false");
+  await expect(search).toHaveValue("tiêu");
+  await page.waitForTimeout(2300);
+  await expect(page).toHaveURL(/\/filters\/a\?q=ti%C3%AAu$/);
+});
+
+test("SearchPill debounce: a Link to another route while typing drops the pending query (#128)", async ({ page }) => {
+  await page.goto(`${BASE}/items/a`);
+  const list = page.getByRole("list", { name: "Items" }).filter({ visible: true });
+  await list.getByRole("button", { name: "Item 2", exact: true }).click();
+  await expect(page).toHaveURL(/\?open=r2$/);
+  await page.keyboard.press("Escape");
+  await page.getByRole("searchbox", { name: "Search items" }).filter({ visible: true }).fill("item");
+  await page.getByRole("link", { name: "To filters" }).click();
+  await expect(page).toHaveURL(/\/filters\/a$/);
+  await page.waitForTimeout(2300);
+  await expect(page).toHaveURL(/\/filters\/a$/);
+});
+
 test("DetailOverlay without the Navigation API (Firefox, Safari < 26): close after leaving the list and coming back by a link stays on the list (#105)", async ({ page }) => {
   await page.addInitScript(() => Object.defineProperty(window, "navigation", { value: undefined, configurable: true }));
   await page.setViewportSize({ width: 1440, height: 900 });

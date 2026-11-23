@@ -21,7 +21,8 @@ export function FiltersBar() {
     <>
       <SubpageToolbar title="Orders" filters={{ filters: f.filters, onChange: f.onChange, onClear: f.onClear }} secondaryActions={[{ label: "Export", onSelect: () => {} }]} />
       <StickyContextBar label="Search orders">
-        <SearchPill value={q} onChange={(v) => f.setParams({ q: v }, "replace")} label="Search orders" focusKey="/" />
+        {/* a long debounce, so a test clicks a chip surely inside it (#128) */}
+        <SearchPill value={q} onChange={(v) => f.setParams({ q: v }, "replace")} label="Search orders" focusKey="/" debounce={2000} />
         <FilterChipRow filters={f.filters} onChange={f.onChange} onClear={f.onClear} trailing={<ViewSwitch view={view} onViewChange={setView} />} />
         <PhoneFilterBar activeCount={f.activeCount} onOpenFilters={() => setOpen(true)} />
         <ResultLine query={q} count={3} />

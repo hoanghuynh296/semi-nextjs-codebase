@@ -6,6 +6,8 @@ import { DetailOverlay, useDetailParam } from "../../../../src/DetailOverlay";
 import { SplitButton } from "../../../../src/SplitButton";
 import { CardActions } from "../../../../src/CardActions";
 import { useRegisterCommands, type CommandItem } from "../../../../src/Command";
+import { SearchPill } from "../../../../src/SearchPill";
+import { useFilterParams } from "../../../../src/FilterChipRow";
 
 const ROWS = Array.from({ length: 40 }, (_, i) => ({ id: `r${i + 1}`, name: `Item ${i + 1}` }));
 
@@ -14,6 +16,8 @@ const ROWS = Array.from({ length: 40 }, (_, i) => ({ id: `r${i + 1}`, name: `Ite
 // actions in the app-wide CommandPalette (root layout).
 export function ItemsList() {
   const { openId, open, show, close } = useDetailParam();
+  const f = useFilterParams([]);
+  const q = f.params.get("q") ?? "";
   const index = ROWS.findIndex((r) => r.id === openId);
   const item = index >= 0 ? ROWS[index] : null;
   const commands = useMemo<CommandItem[]>(
@@ -28,6 +32,8 @@ export function ItemsList() {
         <CardActions label="Actions for Item 1" actions={[{ icon: "pin", label: "Pin", onClick: () => {} }]} menu={[{ label: "Delete", icon: "trash", danger: true, onSelect: () => {} }]} />
       </div>
       <Link href="/filters/a">To filters</Link>
+      {/* the query in the URL; a row opened inside the (long, for the test) debounce keeps it on the list's entry (#128) */}
+      <SearchPill value={q} onChange={(v) => f.setParams({ q: v }, "replace")} label="Search items" debounce={2000} />
       <ul aria-label="Items">
         {ROWS.map((r) => (
           <li key={r.id}>
