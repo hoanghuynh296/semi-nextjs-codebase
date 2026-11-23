@@ -1,8 +1,8 @@
 "use client";
 
 // The brand book frame: the Semi docs shell (@semi/ui/site) around every page: Thương hiệu, Ứng dụng, the UI kit and
-// every component of Semi in this brand. The theme switch is at the foot of the menu.
-import { ThemeSwitcher, ThemeToggle } from "@semi/ui";
+// every component of Semi in this brand. The theme switch is in the route header.
+import { ThemeSwitcher } from "@semi/ui";
 import { DocsShell } from "@semi/ui/site";
 import brand from "../brand.json";
 
@@ -28,19 +28,14 @@ export default function KitLayout({ children }) {
           ],
         },
       ]}
-      footer={({ collapsed }) =>
-        collapsed ? (
-          <div className="flex justify-center">
-            <ThemeToggle />
-          </div>
-        ) : (
-          <div className="flex flex-col gap-2">
-            <ThemeSwitcher fullWidth />
-            <div className="text-ui text-muted px-1 tabular-nums">
-              {brand.package} · @semi/ui {brand.semiVersion}
-            </div>
-          </div>
-        )
+      // the route header's right side: the kit and Semi versions, then the theme (Light / Dark / System)
+      actions={
+        <>
+          <span className="hidden sm:inline mr-2 text-chrome text-muted tabular-nums">
+            {brand.package} · @semi/ui {brand.semiVersion}
+          </span>
+          <ThemeSwitcher variant="menu" />
+        </>
       }
     >
       {children}

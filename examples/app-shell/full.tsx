@@ -3,23 +3,22 @@
 import { useState } from "react";
 import {
   AppShell,
-  Avatar,
-  Breadcrumb,
   Button,
   Card,
-  MinimalHeader,
+  PageTitle,
   TextTabs,
-  useThemeUtility,
+  Tooltip,
   type ShellNavItem,
   type ShellNavSection,
 } from "@semi/ui";
 
-// The whole shell of the #94 study in one screen. A real app renders AppShell in layout.tsx and gives page items an
+// The whole 1.0 shell in one screen: main action, groups, sub-items, a mega menu, a pinned group, the bottom row of
+// tools, and the route header with an action and the account avatar menu (theme, account, sign-out). A real app renders AppShell in layout.tsx and gives page items an
 // `href` (shell-nav-href); this demo keeps everything on one page with onSelect so it can run anywhere.
 const SECTIONS: ShellNavSection[] = [
   {
     items: [
-      { id: "inbox", label: "Hộp thư", icon: "inbox", right: <span className="px-1 text-ui text-muted tabular-nums">3</span> },
+      { id: "inbox", label: "Hộp thư", icon: "inbox", right: <span className="px-1 text-chrome text-muted tabular-nums">3</span> },
       {
         id: "orders",
         label: "Đơn hàng",
@@ -76,16 +75,19 @@ const TABS = [
   { key: "all", label: "Tất cả" },
 ] as const;
 
+/** A header action with its own state: a slot is rendered as a component, so it may hold state and call hooks. */
+function StarAction() {
+  const [on, setOn] = useState(false);
+  return (
+    <Tooltip content={on ? "Bỏ ghim trang" : "Ghim trang"}>
+      <Button variant="ghost" iconOnly icon="star" aria-label="Ghim trang" aria-pressed={on} onClick={() => setOn(!on)} className="!w-8 !h-8" />
+    </Tooltip>
+  );
+}
+
 export default function FullShell() {
   const [active, setActive] = useState("orders-open");
   const [tab, setTab] = useState<(typeof TABS)[number]["key"]>("open");
-  // Sáng / Tối / Hệ thống in a Menu (a level of the phone drawer): keeps "system", unlike a toggleTheme item
-  const theme = useThemeUtility();
-  const utilities: ShellNavItem[] = [
-    { id: "help", label: "Trợ giúp", icon: "info", onClick: () => {} },
-    theme,
-    { id: "settings", label: "Cài đặt", icon: "settings" },
-  ];
 
   return (
     <AppShell
@@ -94,7 +96,7 @@ export default function FullShell() {
       sections={SECTIONS}
       activeId={active}
       onSelect={setActive}
-      create={{
+      mainAction={{
         label: "Tạo mới",
         items: [
           // not available on this plan: shown, but disabled (the phone drawer focuses the first enabled row)
@@ -106,23 +108,27 @@ export default function FullShell() {
         ],
       }}
       pinned={PINNED}
-      utilities={utilities}
-      account={({ rail }) => (
-        <div className={rail ? "flex justify-center py-1" : "flex items-center gap-2.5 px-1.5 py-1 min-w-0"}>
-          <Avatar name="Lan Phạm" size="sm" />
-          {!rail && (
-            <span className="min-w-0">
-              <span className="block truncate text-ui font-medium text-strong">Lan Phạm</span>
-              <span className="block truncate text-ui text-muted">Cửa hàng Quận 1</span>
-            </span>
-          )}
-        </div>
-      )}
+      tools={[
+        { id: "notifications", label: "Thông báo", icon: "bell", count: 12, onClick: () => {} },
+        { id: "help", label: "Trợ giúp", icon: "info", onClick: () => {} },
+      ]}
+      toolsMenu={[
+        { label: "Cài đặt", icon: "settings", onSelect: () => {} },
+        { label: "Phím tắt", icon: "layers", onSelect: () => {} },
+      ]}
+      header={{
+        actions: <StarAction />,
+        account: {
+          name: "Lan Phạm",
+          detail: "Cửa hàng Quận 1",
+          items: [{ label: "Tài khoản", icon: "user", onSelect: () => {} }],
+          onSignOut: () => {},
+        },
+      }}
     >
-      <MinimalHeader
-        left={<Breadcrumb items={[{ label: "Sales Hub", href: "#" }, { label: "Đơn hàng" }]} />}
-        link={<a href="#" className="text-strong hover:underline">Hướng dẫn</a>}
-        primary={
+      <PageTitle
+        title="Đơn hàng"
+        actions={
           <Button variant="primary" icon="plus">
             Tạo đơn
           </Button>

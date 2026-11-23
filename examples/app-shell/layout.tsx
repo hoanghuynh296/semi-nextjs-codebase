@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { AppShell, useThemeUtility, type ShellNavSection } from "@semi/ui";
+import { AppShell, type ShellNavSection } from "@semi/ui";
 
 const SECTIONS: ShellNavSection[] = [
   {
@@ -17,10 +17,17 @@ const SECTIONS: ShellNavSection[] = [
 
 export default function Shell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
-  const theme = useThemeUtility();
   const active = SECTIONS.flatMap((s) => s.items).find((i) => i.href !== "/" && path.startsWith(i.href ?? ""))?.id ?? "overview";
   return (
-    <AppShell productName="3D Noobs Manager" logoIcon="printer" sections={SECTIONS} activeId={active} utilities={[theme]}>
+    <AppShell
+      productName="3D Noobs Manager"
+      logoIcon="printer"
+      sections={SECTIONS}
+      activeId={active}
+      tools={[{ id: "help", label: "Trợ giúp", icon: "info", href: "/help" }]}
+      // the account avatar menu holds the theme (Light / Dark / System), the app's items and sign-out
+      header={{ account: { name: "Minh Trần", detail: "minh@example.com", items: [{ label: "Tài khoản", icon: "user", href: "/account" }], onSignOut: () => {} } }}
+    >
       {children}
     </AppShell>
   );

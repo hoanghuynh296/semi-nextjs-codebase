@@ -9,11 +9,22 @@ import { useEffect, useRef } from "react";
 export const isApple = () => typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
 export const isStandalone = () => typeof window !== "undefined" && window.matchMedia?.("(display-mode: standalone)").matches;
 
-/** The shortcut prefix shown in tooltips and the palette: "⌥" / "Alt+" in a browser, "⌘" / "Ctrl+" in an installed app. */
-export function shortcutPrefix() {
-  if (isStandalone()) return isApple() ? "⌘" : "Ctrl+";
-  return isApple() ? "⌥" : "Alt+";
+/** The working modifier: "⌥" / "Alt" in a browser, "⌘" / "Ctrl" in an installed app. Client only (reads the platform). */
+export function shortcutModifier() {
+  if (isStandalone()) return isApple() ? "⌘" : "Ctrl";
+  return isApple() ? "⌥" : "Alt";
 }
+
+/**
+ * The keys of nav item n (1–9) as a CommandPalette item's `shortcut` (["⌥", "2"], ["Alt", "2"]). Client only: call it
+ * after mount, or where the result is only shown after mount (a palette's items).
+ */
+export function navShortcutKeys(n: number): string[] {
+  return [shortcutModifier(), String(n)];
+}
+
+/** The keys as one short text: "⌥2" on Apple, "Alt+2" elsewhere. */
+export const shortcutText = (keys: string[]) => (isApple() ? keys.join("") : keys.join("+"));
 
 /** Is a working shortcut modifier, and only it, down? Shift never counts. */
 export function modifierDown(e: KeyboardEvent) {

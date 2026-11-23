@@ -349,3 +349,38 @@ test("1.0.0 foundation (review 2): focus rings go to ring-focus, JS declarations
   for (const v of ["--semi-accent", "--semi-panel", "--color-panel"]) assert.ok(flags.some((f) => f.includes(`sets ${v}:`)), `${v} flagged`);
   assert.ok(flags.some((f) => f.startsWith("accent-accent")), "accent-accent flagged");
 });
+
+test("1.0.0 app-shell: AppShell create → mainAction, utilities → tools; account / footer reported; twice-safe", async () => {
+  const shell = await import("../../migrations/1.0.0-app-shell.mjs");
+  assert.equal(shell.version, "1.0.0");
+  const src = [
+    'import { AppShell, DocsShell, useThemeUtility } from "@semi/ui";',
+    "const theme = useThemeUtility();",
+    "<AppShell productName=\"A\" create={{ label: \"Tạo mới\", items }} utilities={[theme]} account={({ rail }) => (rail ? <A /> : <B />)}>",
+    "  {children}",
+    "</AppShell>;",
+    '<DocsShell productName="D" utilities={tools} footer={() => <x create="1" />} />;',
+    "<Other create={x} utilities={y} />;",
+  ].join("\n");
+  const out = shell.migrateShell(src);
+  assert.match(out, /<AppShell productName="A" mainAction=\{\{ label: "Tạo mới", items \}\} tools=\{\[theme\]\} account=/);
+  assert.match(out, /<DocsShell productName="D" tools=\{tools\} footer=\{\(\) => <x create="1" \/>\} \/>/);
+  // other components and props inside an attribute's braces are untouched
+  assert.match(out, /<Other create=\{x\} utilities=\{y\} \/>/);
+  assert.equal(shell.migrateShell(out), out);
+  const flags = shell.shellFlags(src);
+  assert.ok(flags.some((m) => m.startsWith("AppShell account:")));
+  assert.ok(flags.some((m) => m.startsWith("DocsShell account / footer")));
+  assert.ok(flags.some((m) => m.startsWith("useThemeUtility()")));
+  // both the old and the new prop: left for a person, reported
+  const both = '<AppShell create={a} mainAction={b} sections={s} />';
+  assert.equal(shell.migrateShell(both), both);
+  assert.ok(shell.shellFlags(both).some((m) => m.includes("sets both create and mainAction")));
+  // through read / write / flag
+  const files = { "a.tsx": src, "b.css": "x" };
+  const flagged = [];
+  shell.default({ files: Object.keys(files), read: (f) => files[f], write: (f, v) => (files[f] = v), flag: (f, m) => flagged.push([f, m]) });
+  assert.match(files["a.tsx"], /mainAction=/);
+  assert.equal(files["b.css"], "x");
+  assert.ok(flagged.every(([f]) => f === "a.tsx") && flagged.length >= 3);
+});

@@ -22,7 +22,9 @@ import { Menu, Tooltip, type MenuItem } from "./Overlay";
 import { PageActionsProvider, PageActionsSlot } from "./PageActions";
 import { RecordCrumbProvider, RouteHeader, type RouteCrumb, type ShellAccount } from "./RouteHeader";
 import { useDialog } from "./a11y";
-import { shortcutPrefix, useNavShortcuts } from "./navShortcuts";
+import { navShortcutKeys, shortcutText, useNavShortcuts } from "./navShortcuts";
+
+export { navShortcutKeys };
 import { BTN_PRIMARY } from "../styles/buttons";
 import { SHELL_CARD, SHELL_COLUMN, SHELL_CONTAINER, SHELL_NAV, SHELL_OUTER } from "../styles/surfaces";
 import { cn, FOCUS_RING } from "../styles/utils";
@@ -137,8 +139,11 @@ interface AppShellState {
   submenuVisible: boolean;
   /** The nav is the rail (exact after mount). */
   rail: boolean;
-  /** The nav item shortcuts by item id ("⌥2", "Alt+2"), for the command palette's hints. Empty before mount or when off. */
-  shortcuts: Record<string, string>;
+  /**
+   * The nav item shortcuts by item id (["⌥", "2"], ["Alt", "2"]), ready for a CommandPalette item's `shortcut`. Empty
+   * before mount or when shortcuts are off. Outside the shell, `navShortcutKeys(n)` gives the keys of the nth item.
+   */
+  shortcuts: Record<string, string[]>;
 }
 
 const AppShellContext = createContext<AppShellState>({ submenuVisible: false, rail: false, shortcuts: {} });
@@ -293,7 +298,8 @@ export function AppShell({
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [megaId, setMegaId] = useState<string | null>(null);
   const [keysShown, setKeysShown] = useState(false);
-  const [prefix, setPrefix] = useState<string | null>(null);
+  // false on the server and in the first client render: the platform (⌥ or Alt) is known after mount
+  const [mounted, setMounted] = useState(false);
   const [record, setRecord] = useState<string | null>(null);
   const recordValue = useMemo(() => ({ label: record, set: setRecord }), [record]);
   const asideRef = useRef<HTMLElement>(null);
@@ -326,7 +332,7 @@ export function AppShell({
     const root = document.documentElement;
     if (value) root.setAttribute("data-semi-nav", value);
     else root.removeAttribute("data-semi-nav");
-    setPrefix(shortcutPrefix());
+    setMounted(true);
     return () => root.removeAttribute("data-semi-nav");
   }, [storageKey]);
 
@@ -360,10 +366,10 @@ export function AppShell({
     const i = numbered.findIndex((it) => it.id === id);
     return i < 0 ? 0 : i + 1;
   };
-  const shortcutMap = useMemo(
-    () => (shortcutsOn && prefix ? Object.fromEntries(numbered.map((it, i) => [it.id, `${prefix}${i + 1}`])) : {}),
+  const shortcutMap = useMemo<Record<string, string[]>>(
+    () => (shortcutsOn && mounted ? Object.fromEntries(numbered.map((it, i) => [it.id, navShortcutKeys(i + 1)])) : {}),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [shortcutsOn, prefix, numbered.map((i) => i.id).join(",")],
+    [shortcutsOn, mounted, numbered.map((i) => i.id).join(",")],
   );
   const activate = useCallback((n: number) => {
     const el = asideRef.current?.querySelector<HTMLElement>(`[data-nav-index="${n}"]`);
@@ -395,17 +401,17 @@ export function AppShell({
   // ─── Nav pieces ─────────────────────────────────────────────────────────────────────────────────────────────
   const tip = (label: string, id?: string) => {
     if (!rail) return null;
-    const key = id && shortcutMap[id];
-    return key ? (
+    const keys = id && shortcutMap[id];
+    return keys ? (
       <span className="inline-flex items-center gap-2">
         {label}
-        <span className="text-muted tabular-nums">{key}</span>
+        <span className="text-muted tabular-nums">{shortcutText(keys)}</span>
       </span>
     ) : (
       label
     );
   };
-  const titleOf = (label: string, id: string) => (rail ? undefined : shortcutMap[id] ? `${label} (${shortcutMap[id]})` : label);
+  const titleOf = (label: string, id: string) => (rail ? undefined : shortcutMap[id] ? `${label} (${shortcutText(shortcutMap[id])})` : label);
 
   const navItemClass = cn("relative w-full h-8 flex items-center gap-2 px-2 rounded-control text-chrome font-medium whitespace-nowrap cursor-pointer transition-nav", FOCUS_RING);
   const navLabelClass = cn("flex-1 min-w-0 truncate text-left", `@max-[120px]/nav:sr-only`);
