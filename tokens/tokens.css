@@ -2,51 +2,42 @@
    @semi/ui 0.36.1 · import after "tailwindcss": @import "@semi/ui/tokens.css"; */
 @theme {
 
-  /* Monospace font (font-sans / font-display come from the style: tokens/styles/*.json) */
+  /* Monospace font (font-sans / font-display are shape tokens, below) */
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
 
-  /* Type scale: text-caption 11 · label 12 · ui 14 · ui-lg 15 · title 15 · title-lg 16 · figure 18 · heading-sm 20 · heading 22 · heading-lg 24 · display 26 · overline 11 (section labels, uppercase) (compact density: ui 13 · ui-lg 14). Each size carries its line height (1.5 body, 1.25 titles); leading-* overrides it */
-  --text-caption: 0.6875rem;
-  --text-label: 0.75rem;
-  --text-ui: 0.875rem;
-  --text-ui-lg: 0.9375rem;
-  --text-title: 0.9375rem;
-  --text-title-lg: 1rem;
-  --text-figure: 1.125rem; /* Numeric figures: KPI values, keypad digits, totals (text-figure sm:text-heading in KpiCard) */
-  --text-heading-sm: 1.25rem;
-  --text-heading: 1.375rem;
-  --text-heading-lg: 1.5rem;
-  --text-display: 1.625rem;
-  --text-overline: 0.6875rem; /* Section labels only (C-032): a sidebar or drawer group, a command palette group, a mega menu column. Uppercase, tracked, semibold; never a button, field label or title */
-  --text-overline--letter-spacing: 0.06em;
-  --text-overline--font-weight: 600;
-  --text-caption--line-height: 1.5; /* Paired line height: text-* sets it, leading-* still overrides */
-  --text-label--line-height: 1.5;
-  --text-ui--line-height: 1.5;
-  --text-ui-lg--line-height: 1.5;
-  --text-title--line-height: 1.5;
-  --text-title-lg--line-height: 1.5;
+  /* Type scale (docs/TOKENS.md): text-hero 36 (32 below sm) · title-xl 44 · tab-xl 28 (24 below sm) · section 20 · figure 18 · lead 15 · copy 14 · ui 12 (the base UI size) · tag 10 · badge 10 · overline 11 (section labels, uppercase). Each size carries its line height; leading-* overrides it */
+  --text-hero: 2.25rem; /* Hero (font-display, 400). 32px below sm */
+  --text-hero--letter-spacing: -0.01em;
+  --text-hero--line-height: 1.1;
+  --text-title-xl: 2.75rem; /* Title of a one-column reading page (font-display, 500) */
+  --text-title-xl--letter-spacing: -0.01em;
+  --text-title-xl--line-height: 1.2;
+  --text-tab-xl: 1.75rem; /* Big text tabs (font-display). 24px below sm */
+  --text-tab-xl--letter-spacing: -0.01em;
+  --text-tab-xl--line-height: 1.2;
+  --text-section: 1.25rem; /* Section heading (500) */
+  --text-section--letter-spacing: -0.01em;
+  --text-section--font-weight: 500;
+  --text-section--line-height: 1.3;
+  --text-figure: 1.125rem; /* Numeric figures (KPI values, totals) and the page title in a content card (400) */
   --text-figure--line-height: 1.25;
-  --text-heading-sm--line-height: 1.25;
-  --text-heading--line-height: 1.25;
-  --text-heading-lg--line-height: 1.25;
-  --text-display--line-height: 1.25;
+  --text-lead: 0.9375rem; /* Lead text, card titles (15/24) */
+  --text-lead--line-height: 1.6;
+  --text-copy: 0.875rem; /* Reading copy: secondary body, prose, larger buttons (14/22). Named copy, not body: text-body is the body text colour */
+  --text-copy--line-height: 1.5715;
+  --text-ui: 0.75rem; /* The base UI size: nav, breadcrumb, buttons, labels, meta, list rows (12/18) */
+  --text-ui--line-height: 1.5;
+  --text-tag: 0.625rem; /* Tags and chips (500, +0.02em) */
+  --text-tag--letter-spacing: 0.02em;
+  --text-tag--font-weight: 500;
+  --text-tag--line-height: 1.4;
+  --text-badge: 0.625rem; /* Count badges only (700) */
+  --text-badge--font-weight: 700;
+  --text-badge--line-height: 1;
+  --text-overline: 0.6875rem; /* Section labels only (C-032): a sidebar or drawer group, a form section, a mega menu column. Uppercase, +0.1em, 600; never a button, field label or title */
+  --text-overline--letter-spacing: 0.1em;
+  --text-overline--font-weight: 600;
   --text-overline--line-height: 1.5;
-  --text-kpi: var(--text-figure); /* Deprecated (0.30.0): renamed text-figure; the migration rewrites it */
-  --text-kpi--line-height: var(--text-figure--line-height);
-
-  /* Brand: primary-* = the brand scale (charts, illustrations). Components use the themed accent / focus tokens below; a brand kit (docs/BRANDS.md) sets both */
-  --color-primary: #00AE42;
-  --color-primary-50: #E6F7EC;
-  --color-primary-100: #C2EBD1;
-  --color-primary-200: #8FDBAC;
-  --color-primary-300: #52C97F;
-  --color-primary-400: #1FBC5C;
-  --color-primary-500: #00AE42;
-  --color-primary-600: #009038;
-  --color-primary-700: #007230;
-  --color-primary-800: #005A27;
-  --color-primary-900: #00441D;
 
   /* Status green (emerald-*): online, ready, success. Never an accent */
   --color-emerald-50: #F0FAF4;
@@ -240,12 +231,12 @@
   --drop-shadow-sm: 0 1px 1px rgb(0 0 0 / 0.05);
   --drop-shadow: 0 1px 2px rgb(0 0 0 / 0.1);
   --default-ring-width: 3px;
-  --default-ring-color: color-mix(in oklab, var(--color-primary-500) 50%, transparent);
+  --default-ring-color: color-mix(in oklab, var(--semi-focus) 50%, transparent);
   --radius-lg: 0.5rem;
   --radius-xl: 0.75rem;
   --radius-2xl: 1rem;
 
-  /* Easing (ease-out-soft for entering, ease-in-soft for leaving) */
+  /* Easing (ease-out-soft for entering, ease-in-soft for leaving); the motion-* tokens are plain variables below */
   --ease-out-soft: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-in-soft: cubic-bezier(0.4, 0, 1, 1);
 
@@ -258,16 +249,80 @@
   --z-popover: 80;
   --z-toast: 90;
   --z-tooltip: 95;
-  --z-keypad: var(--z-sheet); /* Deprecated (0.30.0): renamed z-sheet */
+
+  /* Animations (motion tokens; opacity only under prefers-reduced-motion) */
+  --animate-crumb-in: crumb-in var(--motion-crumb-in) both;
+  --animate-enter: enter var(--motion-enter) both;
+  --animate-tooltip-in: tooltip-in var(--motion-tooltip) both;
+  --animate-pulse: pulse var(--motion-pulse) infinite;
+  @keyframes crumb-in {
+    from { opacity: 0; transform: translateX(var(--motion-crumb-distance)); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes enter {
+    from { opacity: 0; transform: translateY(var(--motion-enter-distance)); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes tooltip-in {
+    from { opacity: 0; transform: scale(var(--motion-tooltip-scale)); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+}
+
+/* Motion tokens (docs/TOKENS.md). Each is a duration + easing usable in a transition or animation shorthand: transition: background-color var(--motion-hover). Under prefers-reduced-motion the distances and scale go to zero, so every entrance is opacity only. T9 wires the components. */
+:root {
+  --motion-hover: 150ms ease-in-out; /* Colour changes on hover / active (buttons, links, rows) */
+  --motion-nav: 150ms cubic-bezier(0.4, 0, 0.2, 1); /* Nav item active background */
+  --motion-crumb-in: 220ms cubic-bezier(0.22, 1, 0.36, 1); /* Breadcrumb entering: opacity + translateX(var(--motion-crumb-distance) → 0) (animate-crumb-in) */
+  --motion-crumb-out: 160ms cubic-bezier(0.4, 0, 1, 1); /* Breadcrumb leaving */
+  --motion-enter: 400ms cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Page content entering once per route: opacity + translateY(var(--motion-enter-distance) → 0) (animate-enter) */
+  --motion-stagger: 35ms; /* Delay between staggered items (first ~10 only, once per route) */
+  --motion-pulse: 2.5s ease-in-out; /* Skeleton pulse, opacity 1 → 0.6 → 1 (animate-pulse) */
+  --motion-tooltip: 200ms cubic-bezier(0.16, 1, 0.3, 1); /* Tooltip / popover entering: opacity + scale(var(--motion-tooltip-scale) → 1) (animate-tooltip-in) */
+  --motion-disclosure: 300ms ease-out; /* Disclosure opening (closing: motion-disclosure-close) */
+  --motion-disclosure-close: 300ms ease-in; /* Disclosure closing */
+  --motion-slide: 300ms ease-out; /* Sliding active pill of a segmented control / pill tabs */
+  --motion-crumb-distance: -6px; /* Breadcrumb entrance offset (0 under reduced motion) */
+  --motion-enter-distance: 4px; /* Content entrance offset (0 under reduced motion) */
+  --motion-tooltip-scale: 0.96; /* Tooltip entrance scale (1 under reduced motion) */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-crumb-distance: 0px;
+    --motion-enter-distance: 0px;
+    --motion-tooltip-scale: 1;
+  }
+}
+
+/* Colour cross-fade on hover / active */
+@utility transition-hover {
+  transition: color var(--motion-hover), background-color var(--motion-hover), border-color var(--motion-hover), text-decoration-color var(--motion-hover), fill var(--motion-hover), stroke var(--motion-hover), opacity var(--motion-hover);
+}
+
+/* Nav item active background */
+@utility transition-nav {
+  transition: color var(--motion-nav), background-color var(--motion-nav);
+}
+
+/* Sliding active pill */
+@utility transition-slide {
+  transition: transform var(--motion-slide), left var(--motion-slide), width var(--motion-slide), background-color var(--motion-slide);
 }
 
 /* Semantic tokens (CSS variables mapped for Tailwind 4 @theme): auto-switches via data-theme="dark|light" */
 @theme inline {
-  --color-canvas: var(--semi-canvas); /* Nền ứng dụng ngoài cùng */
-  --color-app: var(--semi-app); /* Khung bề mặt màn hình chính */
-  --color-panel: var(--semi-panel); /* Thẻ Bento Card, Sidebar, Modal */
-  --color-field: var(--semi-field); /* Nền ô nhập liệu, header bảng */
-  --color-raised: var(--semi-raised); /* Hover / track fills on top of field */
+  --color-canvas: var(--semi-canvas); /* Page background, the frame around the panels */
+  --color-app: var(--semi-app); /* Content column, holds the route header */
+  --color-panel: var(--semi-panel); /* Nav panel, content card, sub-nav card, modal, popover */
+  --color-field: var(--semi-field); /* Input fill at rest */
+  --color-field-focus: var(--semi-field-focus); /* Input fill on focus (one step darker) */
+  --color-raised: var(--semi-raised); /* Segmented track, toolbar buttons, nav group dividers */
+  --color-raised-2: var(--semi-raised-2); /* Active pill of a segmented control (on the raised track) */
   --color-panel-0: var(--semi-panel-0); /* Surface step 0 (C-030): the outer canvas. Same value as canvas (canvas is its alias) */
   --color-panel-1: var(--semi-panel-1); /* Surface step 1: halfway between canvas and app */
   --color-panel-2: var(--semi-panel-2); /* Surface step 2: main content. Same value as app (app is its alias) */
@@ -275,28 +330,32 @@
   --color-panel-4: var(--semi-panel-4); /* Surface step 4: sidebar, modal, popover. Same value as panel (panel is its alias) */
   --color-tint: var(--semi-tint); /* Translucent fill of a secondary button (BTN_SECONDARY): reads on every surface, no border */
   --color-tint-hover: var(--semi-tint-hover); /* Hover of tint */
-  --color-inverted: var(--semi-inverted); /* Neutral solid fill, the opposite of the page (near-white in dark, near-black in light): the main button of a brand with primaryStyle inverted */
+  --color-inverted: var(--semi-inverted); /* Neutral solid fill, the opposite of the page (near-white in dark, near-black in light): checked controls, the inverse button. Pair with on-inverted */
   --color-inverted-hover: var(--semi-inverted-hover); /* Hover of inverted */
   --color-on-inverted: var(--semi-on-inverted); /* Text / icon on bg-inverted */
-  --color-contrast: var(--semi-text-contrast); /* Tiêu đề, chữ độ tương phản cao */
-  --color-body: var(--semi-text-body); /* Nội dung văn bản chính */
-  --color-muted: var(--semi-text-muted); /* Nhãn phụ, placeholder, gợi ý */
+  --color-strong: var(--semi-text-strong); /* Titles, active items, values (text-strong) */
+  --color-body: var(--semi-text-body); /* Card text, body (text-body) */
+  --color-muted: var(--semi-text-muted); /* Descriptions, inactive tabs / nav, breadcrumb, placeholders (text-muted) */
+  --color-faint: var(--semi-text-faint); /* Group labels, kbd hints, "Untitled" (text-faint). Light is #6a6a6a, not #737373: 4.5:1 on canvas */
+  --color-field-line: var(--semi-field-line); /* Input border at rest (border-field-line) */
+  --color-field-line-focus: var(--semi-field-line-focus); /* Input border on focus (border-field-line-focus) */
+  --color-outline-line: var(--semi-outline-line); /* Border of an outline button (border-outline-line) */
+  --color-item-hover: var(--semi-item-hover); /* Hover fill of rows, nav and sub-nav items (bg-item-hover) */
+  --color-item-selected: var(--semi-item-selected); /* Selected nav / sub-nav item, selected row = the open record, selected option (bg-item-selected) */
+  --color-item-checked: var(--semi-item-checked); /* Checked rows / cards in selection mode (bg-item-checked) */
+  --color-subtle-button: var(--semi-subtle-button); /* Fill of an ordinary content button (bg-subtle-button) */
   --color-line: var(--semi-line); /* Đường viền card, bảng, khung */
   --color-line-hover: var(--semi-line-hover); /* Đường viền khi hover */
   --color-control-line: var(--semi-control-line); /* Boundary of an input you type in or tick (text field, select field, checkbox, radio): ≥ 3:1 on every surface (WCAG 1.4.11). Cards and tables keep line */
   --color-control-line-hover: var(--semi-control-line-hover); /* Hover of control-line */
   --color-divider: var(--semi-divider); /* Đường phân cách nhẹ giữa các hàng */
-  --color-accent: var(--semi-accent); /* Solid primary fill (BTN_PRIMARY, active marks). Pair with on-accent */
-  --color-accent-hover: var(--semi-accent-hover); /* Hover of the solid primary fill */
-  --color-on-accent: var(--semi-on-accent); /* Text/icon on bg-accent (WCAG AA ≥ 4.5:1 in both themes) */
-  --color-action: var(--semi-action); /* Fill of the main button (BTN_PRIMARY). The accent by default; a brand with primaryStyle inverted points it at inverted */
-  --color-action-hover: var(--semi-action-hover); /* Hover of action */
-  --color-on-action: var(--semi-on-action); /* Text / icon on bg-action */
-  --color-accent-fg: var(--semi-accent-fg); /* Primary-coloured text/icons on surfaces (links, check marks, active tab); light 800 so it reads on accent-subtle over the recessed card (C-030) */
-  --color-focus: var(--semi-focus); /* Focus ring (ring-focus) and focused field border: follows accent-fg, so it reaches 3:1 on every surface */
-  --color-accent-subtle: var(--semi-accent-subtle); /* Selected / active tint behind text-accent-fg or text-contrast (selected option, active tab pill, IconTile). bg-accent-subtle re-points text-muted inside it (#123) */
-  --color-accent-subtle-hover: var(--semi-accent-subtle-hover); /* Hover of an accent-subtle surface. bg-accent-subtle-hover re-points text-muted and accent-fg inside it (#123) */
-  --color-accent-line: var(--semi-accent-line); /* Border of a selected / active item (selected card, today in a calendar); border-accent-fg for a focused field */
+  --color-primary: var(--semi-primary); /* Brand primary fill: the main button of a page / modal / nav, attention count badges, "New" tags, the active big-tab underline. Nothing else. A brand kit sets it */
+  --color-primary-hover: var(--semi-primary-hover); /* Hover of the primary fill */
+  --color-on-primary: var(--semi-on-primary); /* Text / icon on bg-primary (≥ 4.5:1, picked by the brand generator) */
+  --color-secondary: var(--semi-secondary); /* Brand secondary fill (optional; the primary when the brand has none): the secondary main button only */
+  --color-secondary-hover: var(--semi-secondary-hover); /* Hover of the secondary fill */
+  --color-on-secondary: var(--semi-on-secondary); /* Text / icon on bg-secondary */
+  --color-focus: var(--semi-focus); /* Keyboard focus ring (ring-focus) and focused-control border: the strong text colour, ≥ 3:1 on every surface. Neutral, never the brand */
   --color-danger-fg: var(--semi-danger-fg); /* Destructive / error text on surfaces */
   --color-success-fg: var(--semi-success-fg); /* Success / online text on surfaces */
   --color-warning-fg: var(--semi-warning-fg); /* Warning / pending text on surfaces (amber-700 was 4.35:1 on Soft / Sharp fields) */
@@ -344,45 +403,49 @@
 [data-theme="dark"],
 [data-theme="system"],
 .dark {
-  --semi-canvas: #0f1011;
-  --semi-app: #151619;
-  --semi-panel: #191b1f;
-  --semi-field: #202328;
-  --semi-raised: #2b2e34;
+  --semi-contrast: #ffffff;
+  --semi-canvas: #101010;
+  --semi-app: #161616;
+  --semi-panel: #1a1a1a;
+  --semi-field: #222222;
+  --semi-field-focus: #161616;
+  --semi-raised: #2b2b2b;
+  --semi-raised-2: #424242;
   --semi-panel-0: var(--semi-canvas);
   --semi-panel-1: color-mix(in oklab, var(--semi-canvas), var(--semi-app));
   --semi-panel-2: var(--semi-app);
   --semi-panel-3: color-mix(in oklab, var(--semi-app), var(--semi-panel));
   --semi-panel-4: var(--semi-panel);
-  --semi-card: color-mix(in oklab, var(--semi-panel) 95%, var(--semi-text-contrast));
-  --semi-card-field: color-mix(in oklab, var(--semi-card) 95%, var(--semi-text-contrast));
-  --semi-tint: color-mix(in oklab, var(--semi-text-contrast) 7%, transparent);
-  --semi-tint-hover: color-mix(in oklab, var(--semi-text-contrast) 11%, transparent);
-  --semi-inverted: color-mix(in oklab, var(--semi-text-contrast) 96%, var(--semi-canvas));
-  --semi-inverted-hover: var(--semi-text-contrast);
+  --semi-card: color-mix(in oklab, var(--semi-panel) 95%, var(--semi-contrast));
+  --semi-card-field: color-mix(in oklab, var(--semi-card) 95%, var(--semi-contrast));
+  --semi-tint: color-mix(in oklab, var(--semi-contrast) 7%, transparent);
+  --semi-tint-hover: color-mix(in oklab, var(--semi-contrast) 11%, transparent);
+  --semi-inverted: color-mix(in oklab, var(--semi-contrast) 96%, var(--semi-canvas));
+  --semi-inverted-hover: var(--semi-contrast);
   --semi-on-inverted: var(--semi-canvas);
-  --semi-text-contrast: #ffffff;
-  --semi-text-body: #d1d5db;
-  --semi-text-muted: #9ba1aa;
+  --semi-text-strong: #f5f5f5;
+  --semi-text-body: #e3e3e3;
+  --semi-text-muted: #ababab;
+  --semi-text-faint: #858585;
+  --semi-field-line: color-mix(in oklab, var(--semi-contrast) 10%, transparent);
+  --semi-field-line-focus: color-mix(in oklab, var(--semi-contrast) 25%, transparent);
+  --semi-outline-line: color-mix(in oklab, var(--semi-contrast) 20%, transparent);
+  --semi-item-hover: color-mix(in oklab, var(--semi-contrast) 5%, transparent);
+  --semi-item-selected: color-mix(in oklab, var(--semi-contrast) 15%, transparent);
+  --semi-item-checked: color-mix(in oklab, var(--semi-contrast) 9%, transparent);
+  --semi-subtle-button: color-mix(in oklab, var(--semi-contrast) 5%, transparent);
   --semi-line: rgba(255, 255, 255, 0.12);
   --semi-line-hover: rgba(255, 255, 255, 0.2);
   --semi-control-line: color-mix(in oklab, var(--semi-text-muted) 65%, transparent);
   --semi-control-line-hover: var(--semi-text-muted);
   --semi-divider: rgba(255, 255, 255, 0.05);
-  --semi-accent: var(--color-primary-500);
-  --semi-accent-hover: var(--color-primary-400);
-  --semi-on-accent: #0c0d0e;
-  --semi-action: var(--semi-accent);
-  --semi-action-hover: var(--semi-accent-hover);
-  --semi-on-action: var(--semi-on-accent);
-  --semi-accent-fg: var(--color-primary-400);
-  --semi-focus: var(--semi-accent-fg);
-  --semi-accent-subtle: color-mix(in oklab, var(--semi-accent-fg) 14%, transparent);
-  --semi-text-muted-on-subtle: var(--semi-text-muted);
-  --semi-accent-subtle-hover: color-mix(in oklab, var(--semi-accent-fg) 22%, transparent);
-  --semi-text-muted-on-subtle-hover: color-mix(in oklab, var(--semi-text-muted) 75%, var(--semi-text-body));
-  --semi-accent-fg-on-subtle-hover: color-mix(in oklab, var(--semi-accent-fg) 82%, var(--semi-text-contrast));
-  --semi-accent-line: color-mix(in oklab, var(--semi-accent-fg) 40%, transparent);
+  --semi-primary: #00ae42;
+  --semi-primary-hover: #33be68;
+  --semi-on-primary: #0c0d0e;
+  --semi-secondary: var(--semi-primary);
+  --semi-secondary-hover: var(--semi-primary-hover);
+  --semi-on-secondary: var(--semi-on-primary);
+  --semi-focus: var(--semi-text-strong);
   --semi-danger-fg: var(--color-rose-400);
   --semi-success-fg: var(--color-emerald-400);
   --semi-warning-fg: var(--color-amber-400);
@@ -429,45 +492,49 @@
 /* Semantic Tokens: Light Mode */
 [data-theme="light"],
 .light {
-  --semi-canvas: #eff3f7;
-  --semi-app: #f7f9fb;
+  --semi-contrast: #000000;
+  --semi-canvas: #ebebeb;
+  --semi-app: #f3f3f3;
   --semi-panel: #ffffff;
-  --semi-field: #eff3f7;
-  --semi-raised: #e1e7ef;
+  --semi-field: #ffffff;
+  --semi-field-focus: #f7f7f7;
+  --semi-raised: #e6e6e6;
+  --semi-raised-2: #ffffff;
   --semi-panel-0: var(--semi-canvas);
   --semi-panel-1: color-mix(in oklab, var(--semi-canvas), var(--semi-app));
   --semi-panel-2: var(--semi-app);
   --semi-panel-3: color-mix(in oklab, var(--semi-app), var(--semi-panel));
   --semi-panel-4: var(--semi-panel);
-  --semi-card: color-mix(in oklab, var(--semi-app) 95%, var(--semi-text-contrast));
-  --semi-card-field: color-mix(in oklab, var(--semi-card) 97%, var(--semi-text-contrast));
-  --semi-tint: color-mix(in oklab, var(--semi-text-contrast) 5%, transparent);
-  --semi-tint-hover: color-mix(in oklab, var(--semi-text-contrast) 9%, transparent);
-  --semi-inverted: var(--semi-text-contrast);
-  --semi-inverted-hover: color-mix(in oklab, var(--semi-text-contrast) 85%, var(--semi-panel));
+  --semi-card: color-mix(in oklab, var(--semi-app) 95%, var(--semi-contrast));
+  --semi-card-field: color-mix(in oklab, var(--semi-card) 97%, var(--semi-contrast));
+  --semi-tint: color-mix(in oklab, var(--semi-contrast) 5%, transparent);
+  --semi-tint-hover: color-mix(in oklab, var(--semi-contrast) 9%, transparent);
+  --semi-inverted: var(--semi-contrast);
+  --semi-inverted-hover: color-mix(in oklab, var(--semi-contrast) 85%, var(--semi-panel));
   --semi-on-inverted: var(--semi-panel);
-  --semi-text-contrast: #0f172a;
-  --semi-text-body: #334155;
-  --semi-text-muted: #5b6779;
+  --semi-text-strong: #111111;
+  --semi-text-body: #2b2b2b;
+  --semi-text-muted: #636363;
+  --semi-text-faint: #6a6a6a;
+  --semi-field-line: color-mix(in oklab, var(--semi-contrast) 10%, transparent);
+  --semi-field-line-focus: color-mix(in oklab, var(--semi-contrast) 25%, transparent);
+  --semi-outline-line: color-mix(in oklab, var(--semi-contrast) 20%, transparent);
+  --semi-item-hover: color-mix(in oklab, var(--semi-contrast) 4%, transparent);
+  --semi-item-selected: color-mix(in oklab, var(--semi-contrast) 6%, transparent);
+  --semi-item-checked: color-mix(in oklab, var(--semi-contrast) 5%, transparent);
+  --semi-subtle-button: color-mix(in oklab, var(--semi-contrast) 5%, transparent);
   --semi-line: rgba(0, 0, 0, 0.08);
   --semi-line-hover: rgba(0, 0, 0, 0.16);
   --semi-control-line: color-mix(in oklab, var(--semi-text-muted) 80%, transparent);
   --semi-control-line-hover: var(--semi-text-muted);
   --semi-divider: rgba(0, 0, 0, 0.05);
-  --semi-accent: var(--color-primary-700);
-  --semi-accent-hover: var(--color-primary-800);
-  --semi-on-accent: #ffffff;
-  --semi-action: var(--semi-accent);
-  --semi-action-hover: var(--semi-accent-hover);
-  --semi-on-action: var(--semi-on-accent);
-  --semi-accent-fg: var(--color-primary-800);
-  --semi-focus: var(--semi-accent-fg);
-  --semi-accent-subtle: color-mix(in oklab, var(--semi-accent-fg) 11%, transparent);
-  --semi-text-muted-on-subtle: color-mix(in oklab, var(--semi-text-muted) 75%, var(--semi-text-body));
-  --semi-accent-subtle-hover: color-mix(in oklab, var(--semi-accent-fg) 18%, transparent);
-  --semi-text-muted-on-subtle-hover: color-mix(in oklab, var(--semi-text-muted) 55%, var(--semi-text-body));
-  --semi-accent-fg-on-subtle-hover: color-mix(in oklab, var(--semi-accent-fg) 85%, var(--semi-text-contrast));
-  --semi-accent-line: color-mix(in oklab, var(--semi-accent-fg) 40%, transparent);
+  --semi-primary: #00ae42;
+  --semi-primary-hover: #33be68;
+  --semi-on-primary: #0c0d0e;
+  --semi-secondary: var(--semi-primary);
+  --semi-secondary-hover: var(--semi-primary-hover);
+  --semi-on-secondary: var(--semi-on-primary);
+  --semi-focus: var(--semi-text-strong);
   --semi-danger-fg: var(--color-rose-700);
   --semi-success-fg: var(--color-emerald-700);
   --semi-warning-fg: var(--color-amber-800);
@@ -497,10 +564,10 @@
   --semi-info-border: color-mix(in oklab, var(--color-sky-500) 30%, transparent);
   --semi-info-solid: var(--color-sky-600);
   --semi-on-solid: #ffffff;
-  --semi-overlay: rgba(15, 23, 42, 0.4);
-  --semi-shadow-overlay: 0 24px 48px -12px rgb(15 23 42 / 0.18);
-  --semi-shadow-float: 0 8px 24px -6px rgb(15 23 42 / 0.12);
-  --semi-shadow-tint: rgb(15 23 42 / 0.07);
+  --semi-overlay: rgba(0, 0, 0, 0.4);
+  --semi-shadow-overlay: 0 24px 48px -12px rgb(0 0 0 / 0.18);
+  --semi-shadow-float: 0 8px 24px -6px rgb(0 0 0 / 0.12);
+  --semi-shadow-tint: rgb(0 0 0 / 0.07);
   --semi-chart-1: #2a78d6;
   --semi-chart-2: #eb6834;
   --semi-chart-3: #1baf7a;
@@ -514,45 +581,49 @@
 /* data-theme="system": follows the OS without JS (ThemeScript resolves it to dark|light before paint) */
 @media (prefers-color-scheme: light) {
   [data-theme="system"] {
-    --semi-canvas: #eff3f7;
-    --semi-app: #f7f9fb;
+    --semi-contrast: #000000;
+    --semi-canvas: #ebebeb;
+    --semi-app: #f3f3f3;
     --semi-panel: #ffffff;
-    --semi-field: #eff3f7;
-    --semi-raised: #e1e7ef;
+    --semi-field: #ffffff;
+    --semi-field-focus: #f7f7f7;
+    --semi-raised: #e6e6e6;
+    --semi-raised-2: #ffffff;
     --semi-panel-0: var(--semi-canvas);
     --semi-panel-1: color-mix(in oklab, var(--semi-canvas), var(--semi-app));
     --semi-panel-2: var(--semi-app);
     --semi-panel-3: color-mix(in oklab, var(--semi-app), var(--semi-panel));
     --semi-panel-4: var(--semi-panel);
-    --semi-card: color-mix(in oklab, var(--semi-app) 95%, var(--semi-text-contrast));
-    --semi-card-field: color-mix(in oklab, var(--semi-card) 97%, var(--semi-text-contrast));
-    --semi-tint: color-mix(in oklab, var(--semi-text-contrast) 5%, transparent);
-    --semi-tint-hover: color-mix(in oklab, var(--semi-text-contrast) 9%, transparent);
-    --semi-inverted: var(--semi-text-contrast);
-    --semi-inverted-hover: color-mix(in oklab, var(--semi-text-contrast) 85%, var(--semi-panel));
+    --semi-card: color-mix(in oklab, var(--semi-app) 95%, var(--semi-contrast));
+    --semi-card-field: color-mix(in oklab, var(--semi-card) 97%, var(--semi-contrast));
+    --semi-tint: color-mix(in oklab, var(--semi-contrast) 5%, transparent);
+    --semi-tint-hover: color-mix(in oklab, var(--semi-contrast) 9%, transparent);
+    --semi-inverted: var(--semi-contrast);
+    --semi-inverted-hover: color-mix(in oklab, var(--semi-contrast) 85%, var(--semi-panel));
     --semi-on-inverted: var(--semi-panel);
-    --semi-text-contrast: #0f172a;
-    --semi-text-body: #334155;
-    --semi-text-muted: #5b6779;
+    --semi-text-strong: #111111;
+    --semi-text-body: #2b2b2b;
+    --semi-text-muted: #636363;
+    --semi-text-faint: #6a6a6a;
+    --semi-field-line: color-mix(in oklab, var(--semi-contrast) 10%, transparent);
+    --semi-field-line-focus: color-mix(in oklab, var(--semi-contrast) 25%, transparent);
+    --semi-outline-line: color-mix(in oklab, var(--semi-contrast) 20%, transparent);
+    --semi-item-hover: color-mix(in oklab, var(--semi-contrast) 4%, transparent);
+    --semi-item-selected: color-mix(in oklab, var(--semi-contrast) 6%, transparent);
+    --semi-item-checked: color-mix(in oklab, var(--semi-contrast) 5%, transparent);
+    --semi-subtle-button: color-mix(in oklab, var(--semi-contrast) 5%, transparent);
     --semi-line: rgba(0, 0, 0, 0.08);
     --semi-line-hover: rgba(0, 0, 0, 0.16);
     --semi-control-line: color-mix(in oklab, var(--semi-text-muted) 80%, transparent);
     --semi-control-line-hover: var(--semi-text-muted);
     --semi-divider: rgba(0, 0, 0, 0.05);
-    --semi-accent: var(--color-primary-700);
-    --semi-accent-hover: var(--color-primary-800);
-    --semi-on-accent: #ffffff;
-    --semi-action: var(--semi-accent);
-    --semi-action-hover: var(--semi-accent-hover);
-    --semi-on-action: var(--semi-on-accent);
-    --semi-accent-fg: var(--color-primary-800);
-    --semi-focus: var(--semi-accent-fg);
-    --semi-accent-subtle: color-mix(in oklab, var(--semi-accent-fg) 11%, transparent);
-    --semi-text-muted-on-subtle: color-mix(in oklab, var(--semi-text-muted) 75%, var(--semi-text-body));
-    --semi-accent-subtle-hover: color-mix(in oklab, var(--semi-accent-fg) 18%, transparent);
-    --semi-text-muted-on-subtle-hover: color-mix(in oklab, var(--semi-text-muted) 55%, var(--semi-text-body));
-    --semi-accent-fg-on-subtle-hover: color-mix(in oklab, var(--semi-accent-fg) 85%, var(--semi-text-contrast));
-    --semi-accent-line: color-mix(in oklab, var(--semi-accent-fg) 40%, transparent);
+    --semi-primary: #00ae42;
+    --semi-primary-hover: #33be68;
+    --semi-on-primary: #0c0d0e;
+    --semi-secondary: var(--semi-primary);
+    --semi-secondary-hover: var(--semi-primary-hover);
+    --semi-on-secondary: var(--semi-on-primary);
+    --semi-focus: var(--semi-text-strong);
     --semi-danger-fg: var(--color-rose-700);
     --semi-success-fg: var(--color-emerald-700);
     --semi-warning-fg: var(--color-amber-800);
@@ -582,10 +653,10 @@
     --semi-info-border: color-mix(in oklab, var(--color-sky-500) 30%, transparent);
     --semi-info-solid: var(--color-sky-600);
     --semi-on-solid: #ffffff;
-    --semi-overlay: rgba(15, 23, 42, 0.4);
-    --semi-shadow-overlay: 0 24px 48px -12px rgb(15 23 42 / 0.18);
-    --semi-shadow-float: 0 8px 24px -6px rgb(15 23 42 / 0.12);
-    --semi-shadow-tint: rgb(15 23 42 / 0.07);
+    --semi-overlay: rgba(0, 0, 0, 0.4);
+    --semi-shadow-overlay: 0 24px 48px -12px rgb(0 0 0 / 0.18);
+    --semi-shadow-float: 0 8px 24px -6px rgb(0 0 0 / 0.12);
+    --semi-shadow-tint: rgb(0 0 0 / 0.07);
     --semi-chart-1: #2a78d6;
     --semi-chart-2: #eb6834;
     --semi-chart-3: #1baf7a;
@@ -606,7 +677,9 @@
   --color-app: var(--semi-app);
   --color-panel: var(--semi-panel);
   --color-field: var(--semi-field);
+  --color-field-focus: var(--semi-field-focus);
   --color-raised: var(--semi-raised);
+  --color-raised-2: var(--semi-raised-2);
   --color-panel-0: var(--semi-panel-0);
   --color-panel-1: var(--semi-panel-1);
   --color-panel-2: var(--semi-panel-2);
@@ -619,28 +692,33 @@
   --color-inverted: var(--semi-inverted);
   --color-inverted-hover: var(--semi-inverted-hover);
   --color-on-inverted: var(--semi-on-inverted);
-  --color-text-contrast: var(--semi-text-contrast);
-  --color-contrast: var(--semi-text-contrast);
+  --color-text-strong: var(--semi-text-strong);
+  --color-strong: var(--semi-text-strong);
   --color-text-body: var(--semi-text-body);
   --color-body: var(--semi-text-body);
   --color-text-muted: var(--semi-text-muted);
   --color-muted: var(--semi-text-muted);
+  --color-text-faint: var(--semi-text-faint);
+  --color-faint: var(--semi-text-faint);
+  --color-field-line: var(--semi-field-line);
+  --color-field-line-focus: var(--semi-field-line-focus);
+  --color-outline-line: var(--semi-outline-line);
+  --color-item-hover: var(--semi-item-hover);
+  --color-item-selected: var(--semi-item-selected);
+  --color-item-checked: var(--semi-item-checked);
+  --color-subtle-button: var(--semi-subtle-button);
   --color-line: var(--semi-line);
   --color-line-hover: var(--semi-line-hover);
   --color-control-line: var(--semi-control-line);
   --color-control-line-hover: var(--semi-control-line-hover);
   --color-divider: var(--semi-divider);
-  --color-accent: var(--semi-accent);
-  --color-accent-hover: var(--semi-accent-hover);
-  --color-on-accent: var(--semi-on-accent);
-  --color-action: var(--semi-action);
-  --color-action-hover: var(--semi-action-hover);
-  --color-on-action: var(--semi-on-action);
-  --color-accent-fg: var(--semi-accent-fg);
+  --color-primary: var(--semi-primary);
+  --color-primary-hover: var(--semi-primary-hover);
+  --color-on-primary: var(--semi-on-primary);
+  --color-secondary: var(--semi-secondary);
+  --color-secondary-hover: var(--semi-secondary-hover);
+  --color-on-secondary: var(--semi-on-secondary);
   --color-focus: var(--semi-focus);
-  --color-accent-subtle: var(--semi-accent-subtle);
-  --color-accent-subtle-hover: var(--semi-accent-subtle-hover);
-  --color-accent-line: var(--semi-accent-line);
   --color-danger-fg: var(--semi-danger-fg);
   --color-success-fg: var(--semi-success-fg);
   --color-warning-fg: var(--semi-warning-fg);
@@ -683,19 +761,19 @@
   --color-chart-8: var(--semi-chart-8);
 }
 
-/* Styles (tokens/styles/*.json, docs/STYLES.md): set data-style="flat|sharp|soft" on <html> or a wrapper; default flat */
+/* Shape (tokens.json "shape"): radii, card shadow and border, fonts, control sizes, the spacing unit */
 @theme inline {
   --radius-chip: var(--semi-radius-chip); /* Small marks: checkboxes, inline code, count marks */
   --radius-control: var(--semi-radius-control); /* Buttons, inputs, selects, tiles, list rows */
   --radius-card: var(--semi-radius-card); /* Cards, popovers, menus, toasts */
   --radius-panel: var(--semi-radius-panel); /* Hero, modal, drawer, sheet, sidebar */
   --shadow-card: var(--semi-shadow-card); /* Resting card shadow */
-  --font-sans: var(--semi-font-sans); /* UI and body text */
-  --font-display: var(--semi-font-display); /* Page titles, KPI figures */
+  --font-sans: var(--semi-font-sans); /* The UI face: everything except the few display uses (font-sans). A brand kit sets --font-sans-family */
+  --font-display: var(--semi-font-display); /* The brand display face: hero, reading-page title, big tabs, editorial section heads (font-display). Without fonts.display in the brand kit it is the UI sans */
   --spacing-control: var(--semi-spacing-control); /* Toolbar controls: buttons, pills, chips, search (h-control, w-control) */
   --spacing-field: var(--semi-spacing-field); /* Form inputs and selects (h-field) */
   --font-figure: var(--semi-font-figure); /* Big numbers: KPI values (font-figure) */
-  --font-weight-title: var(--semi-font-weight-title); /* Weight of page titles and figures (font-title) */
+  --font-weight-title: var(--semi-font-weight-title); /* Weight of page and card titles (font-title). Headings are not bold: 400 and 500; 600 only for overlines and a few emphasised labels; 700 only in count badges */
   --spacing: var(--semi-spacing); /* Tailwind spacing unit (p-4 = 4 × it). The product's density (data-density on <html>) scales every padding and gap */
 }
 
@@ -709,32 +787,18 @@
   background-color: var(--semi-card-field);
 }
 
-/* bg-accent-subtle: the text on it (text-muted) */
-@utility bg-accent-subtle {
-  --semi-text-muted: var(--semi-text-muted-on-subtle);
-}
-
-/* bg-accent-subtle-hover: the text on it (text-muted, accent-fg) */
-@utility bg-accent-subtle-hover {
-  --semi-text-muted: var(--semi-text-muted-on-subtle-hover);
-  --semi-accent-fg: var(--semi-accent-fg-on-subtle-hover);
-}
-
-/* text-overline: Section labels only (C-032): a sidebar or drawer group, a command palette group, a mega menu column. Uppercase, tracked, semibold; never a button, field label or title */
+/* text-overline: Section labels only (C-032): a sidebar or drawer group, a form section, a mega menu column. Uppercase, +0.1em, 600; never a button, field label or title */
 @utility text-overline {
   text-transform: uppercase;
 }
 
-/* Card / hero / sidebar border (border-card): transparent since 0.36 (C-030), cards separate by tone (bg-card); the 1px box keeps hover and CARD_ACTIVE borders from shifting the layout */
+/* Card / hero / sidebar border (border-card): transparent, cards separate by tone (bg-card); the 1px box keeps hover borders from shifting the layout */
 @utility border-card {
   border: var(--semi-card-border);
 }
 
-/* Style: Flat. Cool neutral greys, thin borders, no card shadows, medium radii, compact 34px controls, Geist. Dense, information-first screens: dashboards, tools, admin. */
 :root,
-[data-theme],
-[data-style="flat"],
-[data-style="flat"] [data-theme] {
+[data-theme] {
   --semi-radius-chip: 0.25rem;
   --semi-radius-control: 0.5rem;
   --semi-radius-card: 0.75rem;
@@ -742,11 +806,11 @@
   --semi-shadow-card: 0 0 #0000;
   --semi-card-border: 1px solid transparent;
   --semi-font-sans: var(--font-sans-family, var(--font-geist)), Geist, Inter, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
-  --semi-font-display: var(--font-display-family, var(--font-montserrat-alternates)), "Montserrat Alternates", var(--font-geist), sans-serif;
+  --semi-font-display: var(--font-display-family, var(--semi-font-sans));
   --semi-spacing-control: 34px;
   --semi-spacing-field: 36px;
   --semi-font-figure: var(--semi-font-sans);
-  --semi-font-weight-title: 600;
+  --semi-font-weight-title: 500;
   --semi-spacing: var(--density-spacing, 0.25rem);
   --radius-chip: var(--semi-radius-chip);
   --radius-control: var(--semi-radius-control);
@@ -760,179 +824,14 @@
   --font-figure: var(--semi-font-figure);
   --font-weight-title: var(--semi-font-weight-title);
   --spacing: var(--semi-spacing);
-}
-
-/* Style: Sharp. Off-black ink and off-white, strong 2px borders, square corners, a hard offset shadow, Space Grotesk. Bold, editorial screens: landing pages, portfolios, creative tools. */
-[data-style="sharp"],
-[data-style="sharp"] [data-theme] {
-  --semi-radius-chip: 0.125rem;
-  --semi-radius-control: 0;
-  --semi-radius-card: 0;
-  --semi-radius-panel: 0;
-  --semi-shadow-card: 4px 4px 0 var(--semi-line-hover);
-  --semi-card-border: 2px solid var(--semi-line-hover);
-  --semi-font-sans: var(--font-sans-family, var(--font-space-grotesk)), "Space Grotesk", -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
-  --semi-font-display: var(--font-display-family, var(--font-space-grotesk)), "Space Grotesk", sans-serif;
-  --semi-spacing-control: 36px;
-  --semi-spacing-field: 40px;
-  --semi-font-figure: var(--semi-font-display);
-  --semi-font-weight-title: 700;
-  --semi-spacing: var(--density-spacing, 0.25rem);
-  --radius-chip: var(--semi-radius-chip);
-  --radius-control: var(--semi-radius-control);
-  --radius-card: var(--semi-radius-card);
-  --radius-panel: var(--semi-radius-panel);
-  --shadow-card: var(--semi-shadow-card);
-  --font-sans: var(--semi-font-sans);
-  --font-display: var(--semi-font-display);
-  --spacing-control: var(--semi-spacing-control);
-  --spacing-field: var(--semi-spacing-field);
-  --font-figure: var(--semi-font-figure);
-  --font-weight-title: var(--semi-font-weight-title);
-  --spacing: var(--semi-spacing);
-}
-
-/* Style: Sharp: neutrals, dark */
-[data-style="sharp"][data-theme="dark"],
-[data-style="sharp"] [data-theme="dark"],
-[data-style="sharp"][data-theme="system"],
-[data-style="sharp"] [data-theme="system"] {
-  --semi-canvas: #101010;
-  --semi-app: #161616;
-  --semi-panel: #1b1b1b;
-  --semi-field: #232323;
-  --semi-raised: #2e2e2e;
-  --semi-text-contrast: #f5f5f2;
-  --semi-text-body: #d6d6d2;
-  --semi-text-muted: #a4a4a0;
-  --semi-line: rgba(245, 245, 242, 0.2);
-  --semi-line-hover: rgba(245, 245, 242, 0.55);
-  --semi-divider: rgba(245, 245, 242, 0.1);
-}
-
-/* Style: Sharp: neutrals, light */
-[data-style="sharp"][data-theme="light"],
-[data-style="sharp"] [data-theme="light"] {
-  --semi-canvas: #f5f5f2;
-  --semi-app: #fafaf8;
-  --semi-panel: #ffffff;
-  --semi-field: #f2f2ee;
-  --semi-raised: #e6e6e1;
-  --semi-text-contrast: #141414;
-  --semi-text-body: #333331;
-  --semi-text-muted: #5c5c58;
-  --semi-line: rgba(20, 20, 20, 0.18);
-  --semi-line-hover: rgba(20, 20, 20, 0.7);
-  --semi-divider: rgba(20, 20, 20, 0.09);
-}
-
-@media (prefers-color-scheme: light) {
-  [data-style="sharp"][data-theme="system"],
-  [data-style="sharp"] [data-theme="system"] {
-    --semi-canvas: #f5f5f2;
-    --semi-app: #fafaf8;
-    --semi-panel: #ffffff;
-    --semi-field: #f2f2ee;
-    --semi-raised: #e6e6e1;
-    --semi-text-contrast: #141414;
-    --semi-text-body: #333331;
-    --semi-text-muted: #5c5c58;
-    --semi-line: rgba(20, 20, 20, 0.18);
-    --semi-line-hover: rgba(20, 20, 20, 0.7);
-    --semi-divider: rgba(20, 20, 20, 0.09);
-  }
-}
-
-/* Style: Soft. Warm, tinted neutrals, borderless cards lifted by a soft shadow, large radii, roomy 40px controls, Plus Jakarta Sans. Calm, friendly screens: consumer apps, storefronts, onboarding. */
-[data-style="soft"],
-[data-style="soft"] [data-theme] {
-  --semi-radius-chip: 0.375rem;
-  --semi-radius-control: 0.75rem;
-  --semi-radius-card: 1.25rem;
-  --semi-radius-panel: 1.5rem;
-  --semi-shadow-card: 0 1px 2px var(--semi-shadow-tint), 0 10px 28px -10px var(--semi-shadow-tint);
-  --semi-card-border: 1px solid transparent;
-  --semi-font-sans: var(--font-sans-family, var(--font-jakarta)), "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
-  --semi-font-display: var(--font-display-family, var(--font-jakarta)), "Plus Jakarta Sans", sans-serif;
-  --semi-spacing-control: 40px;
-  --semi-spacing-field: 44px;
-  --semi-font-figure: var(--semi-font-sans);
-  --semi-font-weight-title: 600;
-  --semi-spacing: var(--density-spacing, 0.25rem);
-  --radius-chip: var(--semi-radius-chip);
-  --radius-control: var(--semi-radius-control);
-  --radius-card: var(--semi-radius-card);
-  --radius-panel: var(--semi-radius-panel);
-  --shadow-card: var(--semi-shadow-card);
-  --font-sans: var(--semi-font-sans);
-  --font-display: var(--semi-font-display);
-  --spacing-control: var(--semi-spacing-control);
-  --spacing-field: var(--semi-spacing-field);
-  --font-figure: var(--semi-font-figure);
-  --font-weight-title: var(--semi-font-weight-title);
-  --spacing: var(--semi-spacing);
-}
-
-/* Style: Soft: neutrals, dark */
-[data-style="soft"][data-theme="dark"],
-[data-style="soft"] [data-theme="dark"],
-[data-style="soft"][data-theme="system"],
-[data-style="soft"] [data-theme="system"] {
-  --semi-canvas: #12100e;
-  --semi-app: #181512;
-  --semi-panel: #1f1a16;
-  --semi-field: #28221d;
-  --semi-raised: #342d27;
-  --semi-text-contrast: #fbf8f3;
-  --semi-text-body: #ded7cd;
-  --semi-text-muted: #aea59a;
-  --semi-line: rgba(255, 238, 214, 0.12);
-  --semi-line-hover: rgba(255, 238, 214, 0.22);
-  --semi-divider: rgba(255, 238, 214, 0.06);
-  --semi-shadow-tint: rgb(0 0 0 / 0.45);
-}
-
-/* Style: Soft: neutrals, light */
-[data-style="soft"][data-theme="light"],
-[data-style="soft"] [data-theme="light"] {
-  --semi-canvas: #f9f4ed;
-  --semi-app: #fdfaf5;
-  --semi-panel: #ffffff;
-  --semi-field: #f6f1ea;
-  --semi-raised: #ede5da;
-  --semi-text-contrast: #1f1a14;
-  --semi-text-body: #463d33;
-  --semi-text-muted: #665c51;
-  --semi-line: rgba(60, 40, 20, 0.09);
-  --semi-line-hover: rgba(60, 40, 20, 0.18);
-  --semi-divider: rgba(60, 40, 20, 0.06);
-  --semi-shadow-tint: rgb(60 40 20 / 0.12);
-}
-
-@media (prefers-color-scheme: light) {
-  [data-style="soft"][data-theme="system"],
-  [data-style="soft"] [data-theme="system"] {
-    --semi-canvas: #f9f4ed;
-    --semi-app: #fdfaf5;
-    --semi-panel: #ffffff;
-    --semi-field: #f6f1ea;
-    --semi-raised: #ede5da;
-    --semi-text-contrast: #1f1a14;
-    --semi-text-body: #463d33;
-    --semi-text-muted: #665c51;
-    --semi-line: rgba(60, 40, 20, 0.09);
-    --semi-line-hover: rgba(60, 40, 20, 0.18);
-    --semi-divider: rgba(60, 40, 20, 0.06);
-    --semi-shadow-tint: rgb(60 40 20 / 0.12);
-  }
 }
 
 /* Product: density (data-density="compact|regular|airy"), read by the style's spacing token */
-[data-density="compact"] { /* Tools used all day: more on a screen (body text 13px) */
+[data-density="compact"] { /* Tools used all day: more on a screen (reading copy 13px) */
   --density-spacing: 0.225rem;
   --semi-spacing: 0.225rem;
-  --text-ui: 0.8125rem;
-  --text-ui-lg: 0.875rem;
+  --text-copy: 0.8125rem;
+  --text-lead: 0.875rem;
 }
 
 [data-density="airy"] { /* Consumer, store, onboarding: one thing per screen, room around it */
@@ -952,10 +851,19 @@
 /* Product: type scale (data-type-scale="even|contrast") */
 [data-type-scale="contrast"] { /* Marketing, store, editorial: big titles and figures */
   --text-figure: 1.375rem;
-  --text-heading-sm: 1.375rem;
-  --text-heading: 1.625rem;
-  --text-heading-lg: 1.875rem;
-  --text-display: 2.125rem;
+  --text-section: 1.5rem;
+  --text-tab-xl: 2rem;
+  --text-title-xl: 3.25rem;
+  --text-hero: 2.75rem;
+}
+
+/* Type: below sm (40rem) */
+@media (width < 40rem) {
+  :root,
+  [data-type-scale] {
+    --text-hero: 2rem;
+    --text-tab-xl: 1.5rem;
+  }
 }
 
 @utility z-sticky {
@@ -981,8 +889,5 @@
 }
 @utility z-tooltip {
   z-index: var(--z-tooltip);
-}
-@utility z-keypad {
-  z-index: var(--z-keypad);
 }
 

@@ -1,52 +1,42 @@
 #!/usr/bin/env node
-// tokens/tokens.json + tokens/styles/*.json (single source) → tokens/tokens.css (Tailwind 4 @theme) and
-// tokens/styles.json (the style list read by Storybook, the manifest and the plugin).
-//   node scripts/build-tokens.mjs           write both
-//   node scripts/build-tokens.mjs --check   exit 1 when one is stale (CI / pre-tag)
+// tokens/tokens.json (single source) → tokens/tokens.css (Tailwind 4 @theme).
+//   node scripts/build-tokens.mjs           write it
+//   node scripts/build-tokens.mjs --check   exit 1 when it is stale or a text tier fails AA (CI / pre-tag)
 // Output is deterministic (same JSON → byte-identical CSS).
-import { readFileSync, readdirSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 // px → rem for font sizes, the style selectors and the utility-only keys are shared with the Design Lab (scripts/lab.mjs).
-import { styleSelectors, toRem, UTILITY_KEYS } from "./token-css.mjs";
+import { aaErrors, SHAPE_SELECTORS, toRem, UTILITY_KEYS } from "./token-css.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const src = join(root, "tokens", "tokens.json");
 const dst = join(root, "tokens", "tokens.css");
 const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
 const tokens = JSON.parse(readFileSync(src, "utf8"));
-const stylesDir = join(root, "tokens", "styles");
-const stylesDst = join(root, "tokens", "styles.json");
 
-// Styles: every file sets the same shape keys; exactly one is the default (what an app without data-style gets).
-const styles = readdirSync(stylesDir)
-  .filter((f) => f.endsWith(".json"))
-  .sort()
-  .map((f) => ({ id: f.replace(/\.json$/, ""), ...JSON.parse(readFileSync(join(stylesDir, f), "utf8")) }));
-const defaults = styles.filter((s) => s.default);
-if (defaults.length !== 1) throw new Error(`tokens/styles: exactly one style needs "default": true (found ${defaults.length})`);
-const styleKeys = Object.keys(defaults[0].tokens);
-for (const s of styles) {
-  const keys = Object.keys(s.tokens);
-  const missing = styleKeys.filter((k) => !keys.includes(k));
-  const extra = keys.filter((k) => !styleKeys.includes(k));
-  if (missing.length || extra.length) throw new Error(`tokens/styles/${s.id}.json: missing [${missing}] extra [${extra}]`);
-  for (const [k, v] of Object.entries(s.semantic ?? {}))
-    if (!tokens.semantic[k] || !v.dark || !v.light) throw new Error(`tokens/styles/${s.id}.json: semantic ${k} must be a tokens.json semantic key with dark + light`);
+// The one look (tokens.json "shape", 1.0: the Flat / Sharp / Soft styles are gone): utilities read --semi-<key>, set on
+// :root and every [data-theme] scope (so `spacing` re-reads a nested data-density).
+const shape = Object.fromEntries(Object.entries(tokens.shape).filter(([k]) => !k.startsWith("$")));
+const styleKeys = Object.keys(shape);
+
+// Text tiers must reach AA (4.5:1) on the page surfaces in their theme: a failing value fails the build and `npm run check`.
+const errors = aaErrors(tokens);
+if (errors.length) {
+  console.error(`tokens/tokens.json: text tiers below 4.5:1\n  ${errors.join("\n  ")}`);
+  process.exit(1);
 }
-styles.sort((a, b) => (b.default ? 1 : 0) - (a.default ? 1 : 0)); // default first: later blocks win on equal specificity
 
 const TITLES = {
-  font: "Monospace font (font-sans / font-display come from the style: tokens/styles/*.json)",
-  brand: "Brand: primary-* = the brand scale (charts, illustrations). Components use the themed accent / focus tokens below; a brand kit (docs/BRANDS.md) sets both",
+  font: "Monospace font (font-sans / font-display are shape tokens, below)",
   status: "Status green (emerald-*): online, ready, success. Never an accent",
   semantic: "Semantic tokens (CSS variables mapped for Tailwind 4 @theme): auto-switches via data-theme=\"dark|light\"",
   gray: "Neutral gray (exact hex, zero blue cast)",
   palette: "Tailwind palettes pinned to v3 hex (v4 OKLCH shifts hues)",
   scale: "v3 scale semantics for rounded / shadow / blur / ring; radius scale lg (controls) / xl (cards) / 2xl (panels)",
-  type: "Type scale: text-caption 11 · label 12 · ui 14 · ui-lg 15 · title 15 · title-lg 16 · figure 18 · heading-sm 20 · heading 22 · heading-lg 24 · display 26 · overline 11 (section labels, uppercase) (compact density: ui 13 · ui-lg 14). Each size carries its line height (1.5 body, 1.25 titles); leading-* overrides it",
-  motion: "Easing (ease-out-soft for entering, ease-in-soft for leaving)",
+  type: "Type scale (docs/TOKENS.md): text-hero 36 (32 below sm) · title-xl 44 · tab-xl 28 (24 below sm) · section 20 · figure 18 · lead 15 · copy 14 · ui 12 (the base UI size) · tag 10 · badge 10 · overline 11 (section labels, uppercase). Each size carries its line height; leading-* overrides it",
+  motion: "Easing (ease-out-soft for entering, ease-in-soft for leaving); the motion-* tokens are plain variables below",
   z: "Global layers (utilities z-sticky … z-tooltip); local stacking inside a component keeps z-10 / z-20",
 };
 
@@ -101,9 +91,12 @@ for (const [group, entries] of Object.entries(tokens)) {
   }
   if (group === "product") continue; // emitted after the styles: [data-density], [data-type-scale]
   if (group === "space") continue; // emitted as @theme inline after the styles: it reads the scoped --semi-spacing
+  if (group === "shape") continue; // emitted after the semantic tokens
   if (group === "z") zKeys.push(...Object.keys(entries));
   out += `\n  /* ${TITLES[group] ?? group} */\n`;
   for (const [key, raw] of Object.entries(entries)) {
+    if (key.startsWith("$")) continue;
+    if (group === "motion" && key.startsWith("motion-")) continue; // plain :root variables (emitted below), not theme keys
     const value = typeof raw === "string" ? raw : raw.value;
     const note = typeof raw === "string" ? "" : raw.note ? ` /* ${raw.note} */` : "";
     out += `  --${key}: ${toRem(key, value)};${note}\n`;
@@ -114,7 +107,18 @@ for (const [group, entries] of Object.entries(tokens)) {
     if (typeof raw === "object" && raw.transform) caseUtilities.push(`/* ${key}: ${raw.note ?? ""} */\n@utility ${key} {\n  text-transform: ${raw.transform};\n}\n\n`);
   }
 }
+// Keyframes and animations (tokens.json motion.$keyframes / $animate): theme keys, so animate-enter etc. are utilities.
+const mo = tokens.motion;
+out += `\n  /* Animations (motion tokens; opacity only under prefers-reduced-motion) */\n`;
+for (const [k, v] of Object.entries(mo.$animate)) out += `  --${k}: ${v};\n`;
+for (const [k, frames] of Object.entries(mo.$keyframes)) out += `  @keyframes ${k} {\n${frames.map((f) => `    ${f}\n`).join("")}  }\n`;
 out += "}\n\n";
+
+// Motion tokens: plain variables (always emitted, readable from app CSS: transition: color var(--motion-hover)).
+const motionVars = Object.entries(mo).filter(([k]) => k.startsWith("motion-"));
+out += `/* ${mo.$note} */\n:root {\n${motionVars.map(([k, raw]) => `  --${k}: ${raw.value};${raw.note ? ` /* ${raw.note} */` : ""}`).join("\n")}\n}\n\n`;
+out += `@media (prefers-reduced-motion: reduce) {\n  :root {\n${Object.entries(mo.$reduced).map(([k, v]) => `    --${k}: ${v};`).join("\n")}\n  }\n}\n\n`;
+out += Object.entries(mo.$transition).map(([k, [props, timing, note]]) => `/* ${note} */\n@utility ${k} {\n  transition: ${props.split(", ").map((p) => `${p} ${timing}`).join(", ")};\n}\n\n`).join("");
 
 if (darkVars.length > 0) {
   out += `/* ${TITLES.semantic} */\n@theme inline {\n${inlineVars.join("\n")}\n}\n\n`;
@@ -122,34 +126,19 @@ if (darkVars.length > 0) {
   out += `/* Semantic Tokens: Light Mode */\n[data-theme="light"],\n.light {\n${lightVars.join("\n")}\n}\n\n`;
   out += `/* data-theme="system": follows the OS without JS (ThemeScript resolves it to dark|light before paint) */\n@media (prefers-color-scheme: light) {\n  [data-theme="system"] {\n${lightVars.map((l) => "  " + l).join("\n")}\n  }\n}\n\n`;
   out += `/* --color-* runtime variables for app CSS (var(--color-panel)), re-resolved in every theme scope */\n:root,\n[data-theme],\n.dark,\n.light {\n${compatVars.join("\n")}\n}\n\n`;
-  // Styles: utilities read --semi-<key> (rounded-card → var(--semi-radius-card)); each style scope sets it, plus the
-  // public --<key> for app CSS. The [data-theme] descendants re-declare them so a value that uses a themed variable
-  // (shadow tint, line colour) follows a nested theme. card-border is a utility of its own (border-card).
-  const def = styles[0];
+  // Shape: utilities read --semi-<key> (rounded-card → var(--semi-radius-card)); :root and every [data-theme] scope set it,
+  // plus the public --<key> for app CSS, so a value that uses a themed variable or the density unit follows a nested scope.
+  // card-border is a utility of its own (border-card).
   const note = (raw) => (raw.note ? ` /* ${raw.note} */` : "");
   const themeKeys = styleKeys.filter((k) => !UTILITY_KEYS[k]);
-  out += `/* Styles (tokens/styles/*.json, docs/STYLES.md): set data-style="${styles.map((s) => s.id).join("|")}" on <html> or a wrapper; default ${def.id} */\n`;
-  out += `@theme inline {\n${themeKeys.map((k) => `  --${k}: var(--semi-${k});${note(def.tokens[k])}`).join("\n")}\n}\n\n`;
+  out += `/* Shape (tokens.json "shape"): radii, card shadow and border, fonts, control sizes, the spacing unit */\n`;
+  out += `@theme inline {\n${themeKeys.map((k) => `  --${k}: var(--semi-${k});${note(shape[k])}`).join("\n")}\n}\n\n`;
   out += bgUtilities.join("");
   out += caseUtilities.join("");
-  out += Object.entries(UTILITY_KEYS).map(([k, [name, prop]]) => `/* ${def.tokens[k].note ?? k} */\n@utility ${name} {\n  ${prop}: var(--semi-${k});\n}\n\n`).join("");
-  for (const s of styles) {
-    const sel = styleSelectors(s.id, s.default);
-    out += `/* Style: ${s.name}. ${s.description} */\n${sel.join(",\n")} {\n`;
-    out += styleKeys.map((k) => `  --semi-${k}: ${s.tokens[k].value};`).join("\n") + "\n";
-    out += themeKeys.map((k) => `  --${k}: var(--semi-${k});`).join("\n") + "\n}\n\n";
-    // The style's own neutrals (semantic): the same --semi-* sources the themes set, scoped to the style. A style
-    // without semantic keeps the shared neutrals of tokens.json.
-    const sem = Object.entries(s.semantic ?? {});
-    if (sem.length) {
-      const at = `[data-style="${s.id}"]`;
-      const scope = (themes) => themes.flatMap((t) => [`${at}[data-theme="${t}"]`, `${at} [data-theme="${t}"]`]);
-      const vars = (mode, pad = "") => sem.map(([k, v]) => `${pad}  ${srcVar(k)}: ${v[mode]};`).join("\n");
-      out += `/* Style: ${s.name}: neutrals, dark */\n${scope(["dark", "system"]).join(",\n")} {\n${vars("dark")}\n}\n\n`;
-      out += `/* Style: ${s.name}: neutrals, light */\n${scope(["light"]).join(",\n")} {\n${vars("light")}\n}\n\n`;
-      out += `@media (prefers-color-scheme: light) {\n  ${scope(["system"]).join(",\n  ")} {\n${vars("light", "  ")}\n  }\n}\n\n`;
-    }
-  }
+  out += Object.entries(UTILITY_KEYS).map(([k, [name, prop]]) => `/* ${shape[k].note ?? k} */\n@utility ${name} {\n  ${prop}: var(--semi-${k});\n}\n\n`).join("");
+  out += `${SHAPE_SELECTORS.join(",\n")} {\n`;
+  out += styleKeys.map((k) => `  --semi-${k}: ${shape[k].value};`).join("\n") + "\n";
+  out += themeKeys.map((k) => `  --${k}: var(--semi-${k});`).join("\n") + "\n}\n\n";
   // Product choices (tokens.json "product"): density scales Tailwind's spacing unit through the style tokens
   // (--density-spacing, read by [data-theme] scopes below) and sets --semi-spacing itself for the element it is on, so
   // it works on <html> and on any wrapper; the type scale overrides the large text sizes.
@@ -165,36 +154,20 @@ if (darkVars.length > 0) {
     out += `/* ${tokens.space.$note} */\n@theme inline {\n${space.map(([k, raw]) => `  --${k}: ${typeof raw === "string" ? raw : raw.value};${typeof raw === "string" || !raw.note ? "" : ` /* ${raw.note} */`}`).join("\n")}\n}\n\n`;
   out += `/* Product: type scale (data-type-scale="${Object.keys(prod.typeScale).join("|")}") */\n`;
   for (const [id, t] of Object.entries(prod.typeScale)) if (t.sizes) out += `[data-type-scale="${id}"] { /* ${t.note} */\n${Object.entries(t.sizes).map(([k, v]) => `  --${k}: ${toRem(k, v)};`).join("\n")}\n}\n\n`;
+  // Sizes that step down below sm (tokens.json type "below"): after the type scale, so they win on phones there too.
+  const below = Object.entries(tokens.type).filter(([, raw]) => typeof raw === "object" && raw.below?.sm);
+  if (below.length) out += `/* Type: below sm (40rem) */\n@media (width < 40rem) {\n  :root,\n  [data-type-scale] {\n${below.map(([k, raw]) => `    --${k}: ${toRem(k, raw.below.sm)};`).join("\n")}\n  }\n}\n\n`;
   out += zKeys.map((k) => `@utility ${k} {\n  z-index: var(--${k});\n}\n`).join("") + "\n";
 }
 
-const styleList =
-  JSON.stringify(
-    {
-      $note: "GENERATED by scripts/build-tokens.mjs from tokens/styles/*.json. An app picks one with <html data-style=\"id\">.",
-      default: styles[0].id,
-      styles: styles.map((s) => ({
-        id: s.id,
-        name: s.name,
-        description: s.description,
-        fonts: s.fonts ?? [],
-        tokens: Object.fromEntries(styleKeys.map((k) => [k, s.tokens[k].value])),
-        semantic: s.semantic ?? {},
-      })),
-    },
-    null,
-    2,
-  ) + "\n";
-
 if (process.argv.includes("--check")) {
   const read = (p) => (existsSync(p) ? readFileSync(p, "utf8") : "");
-  if (read(dst) !== out || read(stylesDst) !== styleList) {
-    console.error("tokens/tokens.css or tokens/styles.json is stale: run node scripts/build-tokens.mjs");
+  if (read(dst) !== out) {
+    console.error("tokens/tokens.css is stale: run npm run build:tokens");
     process.exit(1);
   }
-  console.log("tokens.css up to date");
+  console.log("tokens.css up to date · text tiers reach 4.5:1 on canvas, app and panel in both themes");
 } else {
   writeFileSync(dst, out);
-  writeFileSync(stylesDst, styleList);
   console.log(`wrote tokens/tokens.css (${out.split("\n").filter((l) => l.trim().startsWith("--")).length} tokens)`);
 }
