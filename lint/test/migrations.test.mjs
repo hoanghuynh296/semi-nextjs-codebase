@@ -263,6 +263,41 @@ test("1.0.0 foundation: removed colour and size tokens map to the 1.0 names, dat
   assert.ok(flags.some((f) => f.includes("accent-fg")), "accent-fg flagged");
 });
 
+test("1.0.0 foundation: brand colour never lands on text or lines; --semi-contrast stays; declarations are flagged, not renamed; text-ui flagged", async () => {
+  const { migrateFoundation, foundationFlags } = await import("../../migrations/1.0.0-foundation.mjs");
+  const cls = `cn("text-accent hover:text-action-hover border-accent border-t-accent ring-accent ring-offset-accent outline-accent divide-accent decoration-accent fill-accent stroke-action bg-accent hover:bg-accent-hover text-on-accent bg-contrast")`;
+  const out = migrateFoundation(cls);
+  assert.equal(
+    out,
+    `cn("text-strong hover:text-strong border-outline-line border-t-outline-line ring-outline-line ring-offset-outline-line outline-outline-line divide-outline-line decoration-primary fill-strong stroke-strong bg-primary hover:bg-primary-hover text-on-primary bg-strong")`,
+  );
+  assert.equal(migrateFoundation(out), out, "second run changes nothing");
+
+  // reads: --color-contrast → --color-strong, --semi-text-contrast / --semi-accent-fg → --semi-text-strong; --semi-contrast untouched
+  const css = `.a { color: var(--color-contrast); outline-color: var(--semi-text-contrast); fill: var(--semi-accent-fg); background: color-mix(in oklab, var(--semi-contrast) 5%, transparent); border-color: var(--semi-accent); }`;
+  const cssOut = migrateFoundation(css);
+  assert.equal(
+    cssOut,
+    `.a { color: var(--color-strong); outline-color: var(--semi-text-strong); fill: var(--semi-text-strong); background: color-mix(in oklab, var(--semi-contrast) 5%, transparent); border-color: var(--semi-primary); }`,
+  );
+  assert.equal(migrateFoundation(cssOut), cssOut);
+
+  // declarations are not renamed (a renamed --semi-accent: would override the brand kit's --semi-primary) but flagged
+  const decl = `:root{--semi-accent:#f00;--semi-panel:#123}\n@theme { --color-accent-subtle: red; --color-brandish: blue; }\n<div style={{ "--semi-text-contrast": "#000", "--semi-gap": "4px" }} />`;
+  assert.equal(migrateFoundation(decl), decl, "declarations stay as written");
+  const flags = foundationFlags(decl, migrateFoundation(decl));
+  for (const v of ["--semi-accent", "--semi-panel", "--color-accent-subtle", "--semi-text-contrast"])
+    assert.ok(flags.some((f) => f.startsWith(`app CSS sets ${v}: remove it (brand-override) or use the brand kit`)), `${v}: ${flags.join("; ")}`);
+  assert.ok(flags.some((f) => f.startsWith("app CSS sets --semi-accent:") && f.includes("not renamed")));
+  assert.ok(!flags.some((f) => /--semi-gap|--color-brandish/.test(f)), "an app's own variables are not flagged");
+
+  // text-ui (14 → 12px) is flagged; text-ui-lg (renamed) and a text-ui-free file are not
+  const ui = (s) => foundationFlags(s, migrateFoundation(s)).filter((f) => f.startsWith("text-ui is now 12px, was 14: reading copy"));
+  assert.equal(ui(`<p className="text-ui text-muted">x</p>`).length, 1);
+  assert.equal(ui(`.x { font-size: var(--text-ui); }`).length, 1);
+  assert.equal(ui(`<p className="text-ui-lg my-text-ui-x">x</p>`).length, 0);
+});
+
 test("the semi-sync runner collects a migration's flags", async () => {
   const dir = mkdtempSync(join(tmpdir(), "semi-flags-"));
   try {
