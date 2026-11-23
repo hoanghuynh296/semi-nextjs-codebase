@@ -1,7 +1,7 @@
 {
   "title": "Theme",
   "group": "Setup",
-  "description": "Light / dark / system: ThemeScript applies the stored theme before paint, ThemeProvider keeps it, ThemeSwitcher (three-way) and ThemeToggle switch it. data-theme on any element re-scopes every token inside it.",
+  "description": "Light / dark / system: ThemeScript applies the stored theme before paint, ThemeProvider keeps it, ThemeSwitcher (three-way: segmented, or variant=\"menu\" as one icon button) and ThemeToggle switch it, useThemeUtility() puts the three in AppShell's utilities. data-theme on any element re-scopes every token inside it.",
   "components": [
     "ThemeProvider",
     "ThemeScript",
@@ -10,13 +10,15 @@
   ],
   "imports": [
     "useTheme",
+    "useThemeUtility",
     "themeScript"
   ],
   "when": [
-    "Once in every app's root layout; the switcher in settings or the sidebar footer."
+    "Once in every app's root layout; the segmented switcher in settings, variant=\"menu\" in a header or toolbar, useThemeUtility() in AppShell's utilities (and its rail)."
   ],
   "a11y": [
-    "ThemeSwitcher is a radio group; nothing is marked selected until the stored theme is known (no flash)."
+    "ThemeSwitcher is a radio group; nothing is marked selected until the stored theme is known (no flash).",
+    "variant=\"menu\" is an icon button named after the theme (aria-haspopup=\"menu\"); its Menu lists the three choices with the current one checked: ↑/↓ move, Enter / Space pick, Escape closes and returns focus."
   ],
   "examples": [
     {

@@ -9,7 +9,7 @@ import {
   Card,
   MinimalHeader,
   TextTabs,
-  useTheme,
+  useThemeUtility,
   type ShellNavItem,
   type ShellNavSection,
 } from "@semi/ui";
@@ -79,10 +79,11 @@ const TABS = [
 export default function FullShell() {
   const [active, setActive] = useState("orders-open");
   const [tab, setTab] = useState<(typeof TABS)[number]["key"]>("open");
-  const { resolvedTheme, toggleTheme } = useTheme();
+  // Sáng / Tối / Hệ thống in a Menu (a level of the phone drawer): keeps "system", unlike a toggleTheme item
+  const theme = useThemeUtility();
   const utilities: ShellNavItem[] = [
     { id: "help", label: "Trợ giúp", icon: "info", onClick: () => {} },
-    { id: "theme", label: resolvedTheme === "dark" ? "Giao diện sáng" : "Giao diện tối", icon: resolvedTheme === "dark" ? "sun" : "moon", onClick: toggleTheme },
+    theme,
     { id: "settings", label: "Cài đặt", icon: "settings" },
   ];
 

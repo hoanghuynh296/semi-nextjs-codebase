@@ -8,6 +8,7 @@ export default function ThemeSwitchers() {
     <div className="flex flex-wrap items-center gap-3">
       <ThemeSwitcher showLabels />
       <ThemeSwitcher />
+      <ThemeSwitcher variant="menu" />
       <ThemeToggle />
       <span className="text-label text-muted tabular-nums">
         theme = {theme} · resolved = {resolvedTheme}

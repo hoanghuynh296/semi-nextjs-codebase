@@ -8,7 +8,8 @@
 //   show their name in a Tooltip on the right
 // - A nav item with `mega` opens a MegaMenu flyout beside the sidebar
 // - Phones (< md): a top bar with the menu button opens a full-screen drawer with the same groups, drill-down rows (›)
-//   for sub-items and mega menus, and the utilities at the bottom. `mobileNav="tabs"` keeps the old MobileTabBar
+//   for sub-items and mega menus, and the utilities at the bottom. `mobileNav="tabs"` keeps the MobileTabBar
+//   (`mobileTabIds` picks its items)
 // - Sub-items (`children`) open under their parent only while the parent or one of them is active
 import React, { createContext, useContext, useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
@@ -51,6 +52,12 @@ export interface ShellNavItem {
   mega?: MegaMenuContent;
   /** Acts in place (theme, help, sign out) instead of navigating: the usual kind of `utilities` item. */
   onClick?: () => void;
+  /**
+   * Opens a Menu of choices in place (theme, language, help links) instead of navigating: a `utilities` item with
+   * options, like `useThemeUtility()`. In the rail the name stays in the Tooltip; on phones the drawer opens the items
+   * as a level. `checked` items show the current choice.
+   */
+  menu?: MenuItem[];
 }
 
 /** The accent Create action at the top of the sidebar: a menu of things to create (`items`), or one link / action. */
@@ -137,9 +144,16 @@ export interface AppShellProps {
   account?: ShellSlot;
   /** @deprecated Since 0.36: split into `utilities` (actions) and `account`. Rendered like `account`. */
   footer?: ShellSlot;
-  /** Phone navigation: `drawer` (a full-screen menu from the top bar) or `tabs` (MobileTabBar). Default: `tabs` when `mobileTabIds` is set (as before 0.36), else `drawer`. */
+  /**
+   * Phone navigation: `drawer` (a full-screen menu from the top bar) or `tabs` (MobileTabBar, the items in
+   * `mobileTabIds`). Default: `tabs` when `mobileTabIds` is set (as before 0.36), else `drawer`.
+   */
   mobileNav?: "drawer" | "tabs";
-  /** @deprecated Since 0.36: up to 5 item ids on the tab bar. Without `mobileNav` it keeps the tab bar (as before); set `mobileNav="tabs"` explicitly, or remove both for the drawer. */
+  /**
+   * With `mobileNav="tabs"`: the ids of the items on the tab bar (up to 5; the rest go in its More sheet). Without
+   * it, tabs mode shows the first items. Set `mobileNav` too: `mobileTabIds` alone still keeps the tab bar (as before
+   * 0.36) but warns in development.
+   */
   mobileTabIds?: string[];
   /** localStorage key for persisting sidebar collapsed state. */
   storageKey?: string;
@@ -189,7 +203,8 @@ export function AppShell({
 
   useEffect(() => {
     if (warned || process.env.NODE_ENV === "production") return;
-    if (footer !== undefined || mobileTabIds) {
+    // mobileTabIds with mobileNav="tabs" is the supported way to pick the tabs (#113): only the implicit case warns
+    if (footer !== undefined || (mobileTabIds && mobileNav !== "tabs")) {
       warned = true;
       console.warn(
         "[@semi/ui] AppShell: " +
@@ -198,7 +213,7 @@ export function AppShell({
             mobileTabIds &&
               (mobileNav === "drawer"
                 ? '`mobileTabIds` is ignored with mobileNav="drawer": remove it.'
-                : '`mobileTabIds` is deprecated: set mobileNav="tabs" to keep the tab bar, or remove both for the phone drawer.'),
+                : '`mobileTabIds` without `mobileNav`: add mobileNav="tabs" to keep the tab bar on purpose, or remove mobileTabIds for the phone drawer.'),
           ]
             .filter(Boolean)
             .join(" "),
@@ -321,6 +336,31 @@ export function AppShell({
           {inner}
         </button>,
         item.id,
+      );
+    }
+
+    if (item.menu) {
+      const button = (
+        <button type="button" aria-label={item.label} title={title} className={cn(navItemClass, stateClass)}>
+          {inner}
+        </button>
+      );
+      return (
+        <Menu
+          key={item.id}
+          align="left"
+          label={item.label}
+          items={item.menu}
+          trigger={
+            rail ? (
+              <Tooltip content={item.label} side="right">
+                {button}
+              </Tooltip>
+            ) : (
+              button
+            )
+          }
+        />
       );
     }
 
@@ -739,7 +779,13 @@ export function AppShell({
   );
 }
 
-type DrillRow = { id: string; label: React.ReactNode; href?: string; icon?: IconName; external?: boolean; onSelect?: () => void; disabled?: boolean };
+type DrillRow = { id: string; label: React.ReactNode; href?: string; icon?: IconName; external?: boolean; onSelect?: () => void; disabled?: boolean; checked?: boolean };
+
+/** A `menu` as drawer rows (hidden items left out). */
+const menuRows = (id: string, items: MenuItem[], icon?: IconName): DrillRow[] =>
+  items
+    .filter((c) => !c.hidden)
+    .map((c, i) => ({ id: `${id}-${i}`, label: c.label, href: c.href, icon: c.icon ?? icon, onSelect: c.onSelect, disabled: Boolean(c.disabled), checked: c.checked }));
 type DrillLevel = { id: string; label: string; rows: DrillRow[]; seeAll?: { href: string; label?: string } };
 
 /** Phones: the full-screen menu. Same groups as the sidebar; sub-items and mega menus open as a level with a back row. */
@@ -797,7 +843,7 @@ function PhoneDrawer({
   );
   // A parent with its own page keeps it reachable: "Tất cả <label>" is the first row of its level.
   const levelOf = (it: ShellNavItem): DrillLevel | null => {
-    const rows: DrillRow[] | null = it.children?.length ? it.children : it.mega ? it.mega.columns.flatMap((c) => c.items) : null;
+    const rows: DrillRow[] | null = it.children?.length ? it.children : it.mega ? it.mega.columns.flatMap((c) => c.items) : it.menu ? menuRows(it.id, it.menu) : null;
     if (!rows) return null;
     const self: DrillRow[] = it.href ? [{ id: it.id, label: t.allOf(it.label), href: it.href, external: it.external }] : [];
     return { id: it.id, label: it.label, rows: [...self, ...rows], seeAll: it.mega?.seeAll };
@@ -884,6 +930,7 @@ function PhoneDrawer({
                 <>
                   {c.icon && <Icon name={c.icon} className="w-5 h-5 text-muted shrink-0" />}
                   <span className="flex-1 min-w-0 truncate text-left">{c.label}</span>
+                  {c.checked && <Icon name="check" className="w-4 h-4 text-contrast shrink-0" />}
                 </>
               );
               return (
@@ -896,6 +943,7 @@ function PhoneDrawer({
                     <button
                       type="button"
                       disabled={c.disabled}
+                      aria-pressed={c.checked}
                       onClick={() => {
                         if (!c.onSelect) return go(c.id);
                         onClose();
@@ -930,7 +978,7 @@ function PhoneDrawer({
                     open({
                       id: "__create",
                       label: create.label,
-                      rows: create.items!.filter((c) => !c.hidden).map((c, i) => ({ id: `__create-${i}`, label: c.label, href: c.href, icon: c.icon ?? "plus", onSelect: c.onSelect, disabled: Boolean(c.disabled) })),
+                      rows: menuRows("__create", create.items!, "plus"),
                     })
                   }
                   className={cn("mx-1 flex items-center gap-2 h-11 px-3 rounded-control bg-accent text-on-accent hover:bg-accent-hover text-ui font-semibold cursor-pointer", FOCUS_RING)}
@@ -993,6 +1041,15 @@ function PhoneDrawer({
                       <Link href={u.href} onClick={() => go(u.id)} className={cls}>
                         {body}
                       </Link>
+                    ) : u.menu ? (
+                      <button
+                        type="button"
+                        data-drawer-row={u.id}
+                        onClick={() => open({ id: u.id, label: u.label, rows: menuRows(u.id, u.menu!) })}
+                        className={cls}
+                      >
+                        {body}
+                      </button>
                     ) : (
                       <button type="button" onClick={() => (u.onClick ? u.onClick() : go(u.id))} className={cls}>
                         {body}
