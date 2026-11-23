@@ -99,7 +99,7 @@ export default function QRCodeTooLong() {
   return (
     <div className="space-y-2">
       <QRCode value={"A".repeat(4000)} size={140} label="Mã QR" onError={(e) => setError(e.message)} />
-      {error && <p className="text-label text-muted">onError: {error}</p>}
+      {error && <p className="text-ui text-muted">onError: {error}</p>}
     </div>
   );
 }

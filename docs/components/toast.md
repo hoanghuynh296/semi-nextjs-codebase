@@ -77,20 +77,20 @@ export default function ToastUndo() {
   return (
     <ul data-undo-list className="w-full max-w-sm flex flex-col gap-2">
       {rows.map((name, i) => (
-        <li key={name} className="flex items-center justify-between gap-2 rounded-control border border-line bg-panel px-3 py-2 text-ui text-contrast">
+        <li key={name} className="flex items-center justify-between gap-2 rounded-control border border-line bg-panel px-3 py-2 text-ui text-strong">
           {name}
           <Button size="sm" variant="ghost" icon="trash" onClick={() => archive(name, i)}>
             Lưu trữ
           </Button>
         </li>
       ))}
-      {rows.length === 0 && <li className="text-label text-muted">Đã lưu trữ hết, bấm Hoàn tác để khôi phục.</li>}
+      {rows.length === 0 && <li className="text-ui text-muted">Đã lưu trữ hết, bấm Hoàn tác để khôi phục.</li>}
       <li>
         <Button size="sm" variant="secondary" onClick={archiveAndLeave}>
           Lưu trữ rồi chuyển trang
         </Button>
       </li>
-      <li data-committed className="text-label text-muted">
+      <li data-committed className="text-ui text-muted">
         Đã chốt: {gone}
       </li>
     </ul>

@@ -38,8 +38,8 @@ export default function ContextMenuFile() {
       <div className="flex w-64 items-center gap-3 rounded-card border border-line bg-field p-3">
         <IconTile name="fileCode" tone="sky" />
         <div className="min-w-0">
-          <div className="text-ui font-medium text-contrast truncate">vo-hop-dieu-khien.gcode</div>
-          <div className="text-caption text-muted">Chuột phải (hoặc giữ) để mở menu</div>
+          <div className="text-ui font-medium text-strong truncate">vo-hop-dieu-khien.gcode</div>
+          <div className="text-ui text-muted">Chuột phải (hoặc giữ) để mở menu</div>
         </div>
       </div>
     </ContextMenu>

@@ -42,7 +42,7 @@ const ORDERS: Order[] = Array.from({ length: 23 }, (_, i) => ({
 }));
 
 const COLUMNS: DataTableColumn<Order>[] = [
-  { key: "id", header: "Mã đơn", sortable: true, cell: (o) => <span className="font-medium text-contrast">{o.id}</span> },
+  { key: "id", header: "Mã đơn", sortable: true, cell: (o) => <span className="font-medium text-strong">{o.id}</span> },
   { key: "customer", header: "Khách hàng", sortable: true },
   { key: "status", header: "Trạng thái", value: (o) => STATUS[o.status][1], cell: (o) => <Badge tone={STATUS[o.status][0]} dot>{STATUS[o.status][1]}</Badge> },
   { key: "date", header: "Ngày", sortable: true },
@@ -99,7 +99,7 @@ const CUSTOMERS: Customer[] = Array.from({ length: 6 }, (_, i) => ({
 
 // priority 3 folds first, then 2, then 1; the first column and columns without a priority always stay
 const COLUMNS: DataTableColumn<Customer>[] = [
-  { key: "name", header: "Khách hàng", sortable: true, cell: (c) => <span className="font-medium text-contrast">{c.name}</span> },
+  { key: "name", header: "Khách hàng", sortable: true, cell: (c) => <span className="font-medium text-strong">{c.name}</span> },
   { key: "phone", header: "Điện thoại", priority: 2 },
   { key: "city", header: "Tỉnh / thành", sortable: true },
   { key: "source", header: "Nguồn", priority: 3, cell: (c) => <Badge size="sm">{c.source}</Badge> },

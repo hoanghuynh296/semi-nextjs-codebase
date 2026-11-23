@@ -1,6 +1,6 @@
 # Typography
 
-The type scale (text-caption 11 … text-display 26, font-display for titles) and Prose, which styles long-form text — headings, paragraphs, lists, links, quotes, inline code — from that scale.
+The type scale (text-ui 11 … text-tab-xl 26, font-display for titles) and Prose, which styles long-form text — headings, paragraphs, lists, links, quotes, inline code — from that scale.
 
 ## When to use
 
@@ -11,7 +11,7 @@ The type scale (text-caption 11 … text-display 26, font-display for titles) an
 | Need | Use |
 |---|---|
 | Page title | PageTitle |
-| UI text in cards and forms | the type classes directly (text-ui, text-label…) |
+| UI text in cards and forms | the type classes directly (text-ui, text-ui…) |
 
 ## Import
 
@@ -27,14 +27,14 @@ import { Prose } from "@semi/ui";
 export default function TypographyScale() {
   return (
     <div className="space-y-1.5">
-      <div className="font-display text-display text-contrast">Hiển thị 26</div>
-      <div className="text-heading text-contrast font-semibold">Tiêu đề trang 22</div>
-      <div className="text-title-lg text-contrast font-semibold">Tiêu đề 16</div>
-      <div className="text-title text-contrast font-medium">Tiêu đề thẻ 15</div>
-      <div className="text-ui-lg text-body">Nội dung dài 14</div>
+      <div className="font-display text-tab-xl text-strong">Hiển thị 26</div>
+      <div className="text-section text-strong font-semibold">Tiêu đề trang 22</div>
+      <div className="text-lead text-strong font-semibold">Tiêu đề 16</div>
+      <div className="text-lead text-strong font-medium">Tiêu đề thẻ 15</div>
+      <div className="text-lead text-body">Nội dung dài 14</div>
       <div className="text-ui text-body">Giao diện 13</div>
-      <div className="text-label text-muted">Nhãn 12</div>
-      <div className="text-caption text-muted">Chú thích 11</div>
+      <div className="text-ui text-muted">Nhãn 12</div>
+      <div className="text-ui text-muted">Chú thích 11</div>
     </div>
   );
 }

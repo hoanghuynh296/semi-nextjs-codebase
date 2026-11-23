@@ -29,8 +29,8 @@ import { ResizablePanels } from "@semi/ui";
 export default function ResizableEditor() {
   return (
     <ResizablePanels defaultSizes={[35, 65]} className="h-64">
-      <div className="p-4 text-label text-muted">Danh sách đơn</div>
-      <div className="p-4 text-label text-muted">Chi tiết đơn đang chọn</div>
+      <div className="p-4 text-ui text-muted">Danh sách đơn</div>
+      <div className="p-4 text-ui text-muted">Chi tiết đơn đang chọn</div>
     </ResizablePanels>
   );
 }
@@ -44,9 +44,9 @@ import { ResizablePanels } from "@semi/ui";
 export default function ResizableVertical() {
   return (
     <ResizablePanels direction="vertical" defaultSizes={[50, 30, 20]} className="h-80">
-      <div className="p-4 text-label text-muted">Khung xem 3D</div>
-      <div className="p-4 text-label text-muted">Lớp</div>
-      <div className="p-4 text-label text-muted">Nhật ký</div>
+      <div className="p-4 text-ui text-muted">Khung xem 3D</div>
+      <div className="p-4 text-ui text-muted">Lớp</div>
+      <div className="p-4 text-ui text-muted">Nhật ký</div>
     </ResizablePanels>
   );
 }
