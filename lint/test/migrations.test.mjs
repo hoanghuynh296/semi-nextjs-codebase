@@ -269,7 +269,7 @@ test("1.0.0 foundation: brand colour never lands on text or lines; --semi-contra
   const out = migrateFoundation(cls);
   assert.equal(
     out,
-    `cn("text-strong hover:text-strong border-outline-line border-t-outline-line ring-outline-line ring-offset-outline-line outline-outline-line divide-outline-line decoration-primary fill-strong stroke-strong bg-primary hover:bg-primary-hover text-on-primary bg-strong")`,
+    `cn("text-strong hover:text-strong border-outline-line border-t-outline-line ring-focus ring-offset-outline-line outline-focus divide-outline-line decoration-primary fill-strong stroke-strong bg-primary hover:bg-primary-hover text-on-primary bg-strong")`,
   );
   assert.equal(migrateFoundation(out), out, "second run changes nothing");
 
@@ -310,4 +310,28 @@ test("the semi-sync runner collects a migration's flags", async () => {
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
+});
+
+test("1.0.0 foundation (review 2): focus rings go to ring-focus, JS declarations are flagged not renamed, accent-accent is flagged", async () => {
+  const { migrateFoundation, foundationFlags } = await import("../../migrations/1.0.0-foundation.mjs");
+  const src = [
+    `cn("focus-visible:ring-accent focus:outline-accent ring-accent/50 border-accent accent-accent")`,
+    `const s = { ["--semi-accent" as string]: x, "--semi-panel": y };`,
+    `el.style.setProperty("--semi-accent", c); el.style.setProperty('--color-panel', c);`,
+    `.a { color: var(--semi-accent); }`,
+  ].join("\n");
+  const out = migrateFoundation(src);
+  assert.equal(
+    out,
+    [
+      `cn("focus-visible:ring-focus focus:outline-focus ring-focus/50 border-outline-line accent-primary")`,
+      `const s = { ["--semi-accent" as string]: x, "--semi-panel": y };`,
+      `el.style.setProperty("--semi-accent", c); el.style.setProperty('--color-panel', c);`,
+      `.a { color: var(--semi-primary); }`,
+    ].join("\n"),
+  );
+  assert.equal(migrateFoundation(out), out, "second run changes nothing");
+  const flags = foundationFlags(src, out);
+  for (const v of ["--semi-accent", "--semi-panel", "--color-panel"]) assert.ok(flags.some((f) => f.includes(`sets ${v}:`)), `${v} flagged`);
+  assert.ok(flags.some((f) => f.startsWith("accent-accent")), "accent-accent flagged");
 });

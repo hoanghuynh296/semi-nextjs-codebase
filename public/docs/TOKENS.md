@@ -39,7 +39,8 @@ the panel and over the card (a checked or selected row in a card table). The tok
 failing value fails `npm run build:tokens` and `npm run check`. `text-faint` is for the page surfaces and the card
 only: on `bg-card-field`, `bg-raised` or an item fill use `text-muted` or stronger. The muted and faint values are the
 lightest (light) / darkest (dark) greys that pass all of these (worst pair about 4.55:1: muted on a selected row in a
-card, faint on the card).
+card, faint on the card). Known limit (not checked): an item fill is only checked over panel and card; `text-muted` on `bg-item-selected`
+over `bg-raised` or `bg-card-field` is about 4.0:1 in dark, so a selected row never sits on those two surfaces.
 
 `text-strong` replaces `text-contrast`. The contrast colour itself (pure white in dark, pure black in light) is the
 private `--semi-contrast`, which every line and fill below mixes; it has no utility.

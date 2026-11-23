@@ -166,7 +166,7 @@ if (process.argv.includes("--check")) {
     console.error("tokens/tokens.css is stale: run npm run build:tokens");
     process.exit(1);
   }
-  console.log("tokens.css up to date · text tiers reach 4.5:1 on canvas, app and panel in both themes");
+  console.log("tokens.css up to date · text tiers reach 4.5:1 on canvas, app, panel, card, card-field, raised and the item fills over panel and card (faint: canvas, app, panel, card) in both themes");
 } else {
   writeFileSync(dst, out);
   console.log(`wrote tokens/tokens.css (${out.split("\n").filter((l) => l.trim().startsWith("--")).length} tokens)`);

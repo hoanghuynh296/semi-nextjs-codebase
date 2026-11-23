@@ -52,19 +52,22 @@ export const SIZES = {
 const PREFIX = "(?:bg|text|border(?:-[xytrblse])?|ring(?:-offset)?|outline|fill|stroke|decoration|divide|placeholder|caret|from|via|to|shadow|inset-shadow|accent)";
 const names = (o) => Object.keys(o).sort((a, b) => b.length - a.length).join("|");
 const colorRx = new RegExp(`(^|[^\\w-])(${PREFIX})-(${names(COLORS)})(?![\\w-])`, "g");
-// A brand fill (accent / action and their hover) after a text or line utility: neutral, not the brand.
+// A brand fill (accent / action and their hover) after a text or line utility: neutral, not the brand. A ring or an
+// outline is a focus indicator: ring-focus / outline-focus (≥ 3:1), never the faint outline-line.
 const BRAND_FILLS = new Set(["accent", "accent-hover", "action", "action-hover"]);
 const brandOnNonFill = (util) =>
-  /^(?:text|placeholder|caret|fill|stroke)$/.test(util) ? "strong" : /^(?:border|ring|outline|divide)/.test(util) ? "outline-line" : null;
+  /^(?:text|placeholder|caret|fill|stroke)$/.test(util) ? "strong" : /^(?:ring|outline)$/.test(util) ? "focus" : /^(?:border|divide|ring-offset)/.test(util) ? "outline-line" : null;
 const sizeRx = new RegExp(`(^|[^\\w-])text-(${names(SIZES)})(?![\\w-])`, "g");
 // CSS variables: --color-<name> and --semi-<name> (colours), --text-<size> (sizes, with their --line-height etc.).
-// A name followed by `:` (optionally after a closing quote) is a declaration: left alone and flagged.
-const colorVarRx = new RegExp(`--(color|semi)-(${names(COLORS)})(?![\\w-])(?!["']?\\s*:)`, "g");
+// A declaration is left alone and flagged: a name followed by `:` (CSS, or a quoted / computed object key
+// `["--semi-x" as string]:`) or the name passed to style.setProperty("--semi-x", …).
+const DECL_AFTER = `["']?(?:\\s+as\\s+[\\w.<>]+)?\\s*\\]?\\s*:`;
+const colorVarRx = new RegExp(`(?<!setProperty\\(\\s*["'])--(color|semi)-(${names(COLORS)})(?![\\w-])(?!${DECL_AFTER})`, "g");
 /** --semi-* names apps must not set: removed in 1.0, or a Semi surface / text / line token (the brand kit sets the fills). */
 const REMOVED_VAR = /^(?:accent(?:-[\w-]+)?|action(?:-[\w-]+)?|on-accent|on-action|text-contrast|primary-\d{2,3})$/;
 const PROTECTED_VAR =
   /^(?:canvas|app|panel(?:-\d)?|field(?:-[\w-]+)?|raised(?:-2)?|card(?:-field)?|text-[\w-]+|strong|body|muted|faint|line(?:-[\w-]+)?|divider|focus|outline-line|control-line|item-[\w-]+|subtle-button|inverted(?:-[\w-]+)?|on-inverted|tint(?:-[\w-]+)?|contrast|overlay)$/;
-const declRx = /--(semi|color)-([\w-]+)["']?\s*:/g;
+const declRx = new RegExp(`setProperty\\(\\s*["']--(semi|color)-([\\w-]+)|--(semi|color)-([\\w-]+)(?=${DECL_AFTER})`, "g");
 const sizeVarRx = new RegExp(`--text-(${names(SIZES)})(?=--|[^\\w-]|$)`, "g");
 
 // A field's phone size (16px below sm, iOS zoom) was max-sm:text-title-lg: it becomes the 16px text-input, not lead (15).
@@ -99,6 +102,8 @@ export function foundationFlags(before, after) {
   const flags = [];
   if (/(^|[^\w-])(?:bg|text|border|ring|from|to|via|fill|stroke)-primary-\d{2,3}(?![\w-])/.test(after))
     flags.push("primary-50…900 brand scale removed: use bg-primary (main button / attention) or a neutral token");
+  if (/(^|[^\w-])accent-accent(?![\w-])/.test(before))
+    flags.push("accent-accent → accent-primary: a checkbox / range tinted with the brand; Semi's checked controls are neutral (bg-inverted)");
   if (/(^|[^\w-])bg-accent(?![\w-])/.test(before))
     flags.push("bg-accent → bg-primary: the brand fill is only for the main button, attention badges / tags and the active big-tab underline; a checked control or selection is bg-inverted / bg-item-selected");
   if (/(^|[^\w-])(?:text|border|decoration|fill|stroke)-accent-fg(?![\w-])/.test(before))
@@ -106,7 +111,7 @@ export function foundationFlags(before, after) {
   if (/data-style|\[data-style/.test(after)) flags.push("data-style left in an expression or a CSS selector: remove it (one look)");
   if (/(^|[^\w-])text-ui(?![\w-])|--text-ui(?![\w-])/.test(before))
     flags.push("text-ui is now 12px, was 14: reading copy (sentences, descriptions, table cells) → text-copy; UI text (labels, buttons, meta) stays text-ui");
-  const declared = new Set([...before.matchAll(declRx)].map((m) => `${m[1]}-${m[2]}`));
+  const declared = new Set([...before.matchAll(declRx)].map((m) => (m[1] ? `${m[1]}-${m[2]}` : `${m[3]}-${m[4]}`)));
   for (const v of declared) {
     const name = v.replace(/^(?:semi|color)-/, "");
     if (REMOVED_VAR.test(name) || PROTECTED_VAR.test(name))
