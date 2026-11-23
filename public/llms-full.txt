@@ -2380,7 +2380,7 @@ Kept from 0.x (neutral, derived from the above): `bg-panel-0…4`, `bg-card`, `b
 |---|---|---|---|
 | `text-strong` | titles, active items, values | #f5f5f5 | #111111 |
 | `text-body` | card text, body | #e3e3e3 | #2b2b2b |
-| `text-muted` | descriptions, inactive tabs / nav, breadcrumb, placeholders | #b1b1b1 | #5c5c5c |
+| `text-muted` | descriptions, inactive tabs / nav, breadcrumb, placeholders | #b1b1b1 | #4f4f4f |
 | `text-faint` | group labels, kbd hints, "Untitled" | #8a8a8a | #656565 |
 
 Every tier reaches 4.5:1 on `panel`, `app`, `canvas` and `bg-card` in its theme; `text-strong`, `text-body` and
@@ -2402,10 +2402,16 @@ private `--semi-contrast`, which every line and fill below mixes; it has no util
 | `border-field-line` | input border at rest | white 10% | black 10% |
 | `border-field-line-focus` | input border on focus | white 25% | black 25% |
 | `border-outline-line` | outline buttons, a selected card's border | white 20% | black 20% |
-| `bg-item-hover` | hover on rows, nav and sub-nav items | white 5% | black 4% |
-| `bg-item-selected` | selected nav / sub-nav item, selected row (the open record), selected option | white 15% | black 6% |
-| `bg-item-checked` | checked rows / cards in selection mode | white 9% | black 5% |
+| `bg-item-hover` | hover on rows, nav and sub-nav items | white 5% | black 9% |
+| `bg-item-selected` | selected nav / sub-nav item, selected row (the open record), selected option | white 15% | black 15% |
+| `bg-item-checked` | checked rows / cards in selection mode | white 9% | black 12% |
 | `bg-subtle-button` | ordinary content button fill | white 5% | black 5% |
+
+Light item fills step hover < checked < selected and each is visible on a card (composited black over `bg-card`
+#e3e3e3, ratio against the card; over the panel about the same): hover 9% #cfcfcf 1.21:1 · checked 12% #c8c8c8
+1.30:1 · selected 15% #c1c1c1 1.40:1. In 0.x / the first 1.0 draft they were 4% (1.09:1), 5% (1.11:1) and 6%
+(1.14:1), hard to tell from the card and from each other; the light `text-muted` went to #4f4f4f so it still reaches
+4.5:1 on a selected row in a card.
 
 Kept: `border-line`, `border-line-hover`, `border-divider`, `border-control-line` (checkboxes, radios; the 1.0 fields
 move to `field-line`). Focus is neutral: `ring-focus` / `border-focus` are the strong text colour (≥ 3:1 on every

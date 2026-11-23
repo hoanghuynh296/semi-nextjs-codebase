@@ -32,7 +32,7 @@ test("the 0.x muted / faint values fail on the card and on a selected row in a c
   Object.assign(old.semantic["color-text-faint"], { dark: "#858585", light: "#6a6a6a" });
   const errors = aaErrors(old);
   assert.ok(errors.some((e) => /^dark color-text-muted #ababab on color-item-selected over color-card #444444: 4\.24:1/.test(e)), errors.join("\n"));
-  assert.ok(errors.some((e) => /^light color-text-muted #636363 on color-item-selected over color-card #d5d5d5: 4\.09:1/.test(e)), errors.join("\n"));
+  assert.ok(errors.some((e) => /^light color-text-muted #636363 on color-item-selected over color-card #c1c1c1: 3\.34:1/.test(e)), errors.join("\n"));
   assert.ok(errors.some((e) => /^light color-text-muted #636363 on color-card-field #dadada/.test(e)));
   assert.ok(errors.some((e) => /^dark color-text-faint #858585 on color-card #232323: 4\.26:1/.test(e)));
   assert.ok(errors.some((e) => /^light color-text-faint #6a6a6a on color-card #e3e3e3: 4\.21:1/.test(e)));
@@ -46,6 +46,7 @@ test("resolveColor: hex, var(--semi-*), color-mix in oklab (with transparent →
   assert.deepEqual(resolveColor(tokens, "color-card", "dark"), ["#232323", 1]); // panel #1a1a1a 95% + white
   assert.deepEqual(resolveColor(tokens, "color-card", "light"), ["#e3e3e3", 1]); // app #f3f3f3 95% + black
   assert.deepEqual(resolveColor(tokens, "color-item-selected", "dark"), ["#ffffff", 0.15]);
+  assert.deepEqual(resolveColor(tokens, "color-item-selected", "light"), ["#000000", 0.15]);
   assert.equal(composite(["#000000", 0.5], "#ffffff"), "#808080");
   assert.equal(resolveColor({ semantic: { a: { dark: "oklch(0.5 0 0)" } } }, "a", "dark"), null);
   const t = { semantic: { "color-a": { x: "#000000" }, "color-b": { x: "#ffffff" }, m: { x: "color-mix(in oklab, var(--semi-a), var(--semi-b))" } } };
@@ -55,4 +56,11 @@ test("resolveColor: hex, var(--semi-*), color-mix in oklab (with transparent →
 test("contrastRatio is the WCAG ratio", () => {
   assert.equal(contrastRatio("#000000", "#ffffff").toFixed(1), "21.0");
   assert.equal(contrastRatio("#ffffff", "#ffffff"), 1);
+});
+
+test("light item fills are visible on the card and step hover < checked < selected", () => {
+  const card = resolveColor(tokens, "color-card", "light")[0];
+  const r = (f) => contrastRatio(composite(resolveColor(tokens, f, "light"), card), card);
+  const [hover, checked, selected] = ["color-item-hover", "color-item-checked", "color-item-selected"].map(r);
+  assert.ok(hover >= 1.2 && checked > hover + 0.05 && selected > checked + 0.05, `${hover} ${checked} ${selected}`);
 });

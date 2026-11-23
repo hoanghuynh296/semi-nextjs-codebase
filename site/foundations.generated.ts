@@ -71,7 +71,7 @@ export const FOUNDATIONS = {
       "cls": "text-muted",
       "note": "Mô tả, tab / nav chưa chọn, breadcrumb, placeholder",
       "dark": "#b1b1b1",
-      "light": "#5c5c5c"
+      "light": "#4f4f4f"
     },
     {
       "key": "color-text-faint",
@@ -106,21 +106,21 @@ export const FOUNDATIONS = {
       "cls": "bg-item-hover",
       "note": "Hover của dòng, mục nav và sub-nav",
       "dark": "contrast 5%",
-      "light": "contrast 4%"
+      "light": "contrast 9%"
     },
     {
       "key": "color-item-selected",
       "cls": "bg-item-selected",
       "note": "Mục nav đang chọn, dòng đang mở",
       "dark": "contrast 15%",
-      "light": "contrast 6%"
+      "light": "contrast 15%"
     },
     {
       "key": "color-item-checked",
       "cls": "bg-item-checked",
       "note": "Dòng / thẻ được tick khi chọn nhiều",
       "dark": "contrast 9%",
-      "light": "contrast 5%"
+      "light": "contrast 12%"
     },
     {
       "key": "color-subtle-button",
