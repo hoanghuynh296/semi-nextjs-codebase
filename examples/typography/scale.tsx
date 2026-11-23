@@ -8,7 +8,7 @@ export default function TypographyScale() {
       <div className="text-lead text-strong font-medium">Tiêu đề thẻ 15</div>
       <div className="text-copy text-body">Nội dung dài 14</div>
       <div className="text-ui text-body">Giao diện 12</div>
-      <div className="text-ui text-faint">Nhãn nhóm 12</div>
+      <div className="text-ui text-muted">Nhãn 12</div>
       <div className="text-tag text-muted">Thẻ 10</div>
     </div>
   );

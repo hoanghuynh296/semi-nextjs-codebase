@@ -34,7 +34,7 @@ Kept from 0.x (neutral, derived from the above): `bg-panel-0…4`, `bg-card`, `b
 
 Every tier reaches 4.5:1 on `panel`, `app` and `canvas` in its theme: the token build checks it
 (`scripts/token-css.mjs` `aaErrors`) and a failing value fails `npm run build:tokens` and `npm run check`. The light
-faint is #6a6a6a, not the measured #737373 (3.98:1 on the light canvas).
+faint is #6a6a6a, not the measured #737373 (3.98:1 on the light canvas). `text-faint` is for those three surfaces only: on `bg-card` / `bg-card-field` it is about 4.2:1, so text on a card uses `text-muted` or stronger.
 
 `text-strong` replaces `text-contrast`. The contrast colour itself (pure white in dark, pure black in light) is the
 private `--semi-contrast`, which every line and fill below mixes; it has no utility.
