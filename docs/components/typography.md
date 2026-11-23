@@ -11,7 +11,7 @@ The 1.0 type scale (text-tag 10 … text-hero 36, text-ui 12 the base UI size, f
 | Need | Use |
 |---|---|
 | Page title | PageTitle |
-| UI text in cards and forms | the type classes directly (text-ui, text-label…) |
+| UI text in cards and forms | the type classes directly (text-ui for labels, rows and meta; text-copy for reading copy) |
 
 ## Import
 

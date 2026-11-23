@@ -80,7 +80,7 @@ for (const [group, entries] of Object.entries(tokens)) {
         const decls = Object.entries(raw.sets).map(([k, v]) => `  --semi-${k}: ${v};`).join("\n");
         bgUtilities.push(`/* bg-${key.replace(/^color-/, "")}: the text on it (${Object.keys(raw.sets).join(", ")}) */\n@utility bg-${key.replace(/^color-/, "")} {\n${decls}\n}\n\n`);
       }
-      // An aliased key (color-text-contrast → color-contrast) only gets the alias as a utility (text-contrast).
+      // An aliased key (color-text-strong → color-strong) only gets the alias as a utility (text-strong).
       inlineVars.push(`  --${raw.alias ?? key}: var(${srcVar(key)});${note}`);
       darkVars.push(`  ${srcVar(key)}: ${raw.dark};`);
       lightVars.push(`  ${srcVar(key)}: ${raw.light};`);

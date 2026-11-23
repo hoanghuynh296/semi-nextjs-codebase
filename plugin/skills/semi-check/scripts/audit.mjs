@@ -260,7 +260,7 @@ export function auditSingleApp(cwd) {
   let totalSemantic = 0;
   // Literal colours come from the same class-token analysis semi-lint runs (vendor/classes.mjs), so they never disagree.
   const inventoryFiles = [];
-  const SEMANTIC_RX = /\b((?:bg|from|via|to)-(?:canvas|app|panel|field|raised|accent|accent-hover|overlay|(?:danger|success|warning|info)-(?:bg|border|solid))|text-(?:contrast|body|muted|on-accent|accent-fg|danger-fg|success-fg|warning-fg|info-fg|tone-[a-z]+)|(?:border|divide)-(?:line|divider|line-hover))\b/g;
+  const SEMANTIC_RX = /\b((?:bg|from|via|to)-(?:canvas|app|panel|field|raised|card|card-field|primary|primary-hover|item-hover|item-selected|item-checked|subtle-button|overlay|(?:danger|success|warning|info)-(?:bg|border|solid))|text-(?:strong|body|muted|faint|on-primary|danger-fg|success-fg|warning-fg|info-fg|tone-[a-z]+)|(?:border|divide)-(?:line|divider|line-hover|outline-line|field-line))\b/g;
 
   const CHROMATIC_TONAL_RX = /\b(?:(?:hover:|active:)?(?:bg|border)|divide|ring|text)-(amber|yellow|orange|red|rose|pink|fuchsia|purple|violet|indigo|blue|sky|cyan|teal|emerald|green)-(?:50|100|200|300|600|700|800|900)\b/g;
   const tonalCounts = new Map();

@@ -15,7 +15,7 @@
     },
     {
       "need": "UI text in cards and forms",
-      "use": "the type classes directly (text-ui, text-label…)"
+      "use": "the type classes directly (text-ui for labels, rows and meta; text-copy for reading copy)"
     }
   ],
   "a11y": [

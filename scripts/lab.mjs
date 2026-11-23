@@ -5,7 +5,7 @@
 //     "$semiLab": 1,
 //     "type":      { "text-ui": "15px", "text-ui--line-height": "1.5" },           → tokens/tokens.json "type"
 //     "density":   { "compact": { "spacing": "0.225rem", "sizes": { "text-ui": "13px" } } }, → "product.density"
-//     "typeScale": { "contrast": { "sizes": { "text-heading": "28px" } } },        → "product.typeScale"
+//     "typeScale": { "contrast": { "sizes": { "text-section": "24px" } } },        → "product.typeScale"
 //     "shape":     { "radius-card": "1rem" },                                       → tokens/tokens.json "shape"
 //     "params":    { "hoverStep": 0.08 }                                            → brand/params.mjs (brand generator)
 //   }

@@ -115,7 +115,7 @@ The check part changes **no source file**. Its only output is `semi-check.md` at
    `target-size`, `img-alt`, `lang`, `zoom-lock`, plus axe-core's serious WCAG findings (`axe/<id>`) when the app has
    `axe-core` installed (it says so when not; propose `npm i -D axe-core`). Without Playwright (exit 2), evaluate the
    output of `--snippet` in the browser tool, once per theme. Keep the hits in the report, show a line per page, and
-   fix them with the user's yes: the themed text tokens (`text-muted`, `text-*-fg`, `text-on-accent`) instead of
+   fix them with the user's yes: the themed text tokens (`text-muted`, `text-*-fg`, `text-on-primary`) instead of
    fixed shades, `border-control-line` on a field, `Field` or `aria-label` for a name, `FOCUS_RING` on a custom
    control, `HIT_AREA` (from `@semi/ui/styles`) on a control drawn smaller than 24px, or the Semi component that
    already does all of it. `data-a11y-skip="<reason>"` only on a specimen (a contrast sample), never to silence an
