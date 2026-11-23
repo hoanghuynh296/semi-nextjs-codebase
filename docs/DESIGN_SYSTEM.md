@@ -211,7 +211,7 @@ Themes are toggled via the `data-theme` attribute on `<html>` (with fallback `.d
 ```html
 <html lang="vi" data-theme="dark" class="dark">
 ```
-`data-theme="system"` follows the OS in pure CSS (no JS). Users pick a theme with `<ThemeSwitcher />` (Sáng · Tối · Hệ thống: settings pages, sidebar footer; `fullWidth` in a sidebar) or flip it with `<ThemeToggle />` (collapsed sidebar, header). Any element can pin a theme for its subtree with `data-theme="light|dark"` (plus the matching class): all semantic tokens re-resolve inside it. Apps render `<ThemeScript />` in `<head>` (sets the stored theme
+`data-theme="system"` follows the OS in pure CSS (no JS). Users pick a theme with `<ThemeSwitcher />` (Sáng · Tối · Hệ thống: settings pages, sidebar footer; `fullWidth` in a sidebar), `<ThemeSwitcher variant="menu" />` (one icon button whose `Menu` lists the three, the current one checked: headers, toolbars), `useThemeUtility()` (the same Menu as an AppShell `utilities` item, an icon in the rail, a level of the phone drawer: the shell's theme keeps "system") or flip it with `<ThemeToggle />` (one-tap dark/light). Any element can pin a theme for its subtree with `data-theme="light|dark"` (plus the matching class): all semantic tokens re-resolve inside it. Apps render `<ThemeScript />` in `<head>` (sets the stored theme
 before the first paint, so there is no flash of the wrong theme) and wrap the body in `<ThemeProvider>` with the **same options**:
 ```tsx
 import { ThemeProvider, ThemeScript, ThemeToggle } from "@semi/ui";
@@ -406,17 +406,23 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
 - **Sidebar order (C-031, #96):** brand + collapse toggle (the logo expands the rail) · one accent **Create** action
   (`create`: a `Menu` of things to create, or one link) · the main nav (`sections`) · a **pinned** group (saved views,
   frequent records) under a divider with a `text-overline` label · at the bottom the **utilities** (help, theme,
-  notifications: items with `onClick`) and the **account**. Rows are `h-9`, icons 18px; the active row is
+  notifications: items with `onClick`, or `menu` for a Menu of choices such as `useThemeUtility()`) and the **account**. Rows are `h-9`, icons 18px; the active row is
   `bg-tint-hover text-contrast`, others `text-body hover:bg-tint`.
 - **Rail:** `lg+` shows labels unless collapsed (remembered per app, `storageKey`); `md` (iPad) is always the rail. In
-  the rail every item has an `aria-label` and a `Tooltip` on the right.
+  the rail every item has an `aria-label` and a `Tooltip` on the right. An item without `icon` shows its initials
+  (`shortLabel` to choose them): give pinned items distinct icons, or none, never one shared icon (touch has no
+  Tooltip). The `account` render prop gets `{ collapsed, rail }`: hide its text by `rail`, not only `collapsed` (at `md`
+  the sidebar is a rail while `collapsed` is false). `rail` is exact in the server HTML: until the width is known
+  AppShell renders the account twice (the rail copy below `lg`, the full one from `lg`, CSS shows one), then only the
+  copy for the width, so keep app-wide effects out of the account and take ids from `useId`.
 - **Mega menu:** a nav item with `mega` opens a `MegaMenu` flyout beside the sidebar: 2–4 category columns headed by
   `text-overline`, links with a grey icon, a hint and a "Mới" badge, and a "Xem tất cả" link.
 - **Phones (`< md`):** a top bar (menu button, logo, product name) opens a full-screen drawer with the same groups:
   one accent Create row (its items open as a level), rows `min-h-12` with › for sub-items and mega menus (a
   drill-down level with a back row; a parent with its own page is the level's first row, "Tất cả …"), the pinned
   group, utilities and the account at the bottom. The drawer is the default when the app sets neither `mobileNav` nor
-  `mobileTabIds`; `mobileTabIds` (deprecated) keeps the old bottom tab bar (`MobileTabBar`), as does `mobileNav="tabs"`.
+  `mobileTabIds`; `mobileNav="tabs"` keeps the bottom tab bar (`MobileTabBar`) with the items named in `mobileTabIds`
+  (the first ones without it). `mobileTabIds` alone still keeps the tab bar (C-034) but warns in development.
 - **Shell lifecycle:** `AppShell` renders once in the root or a route-group `layout.tsx`, so it stays mounted while
   people navigate; a page renders only its content, never `AppShell` or a component that renders it
   (`app-shell-in-page`). Page items carry `href` and stay `next/link` links even when `onSelect` is set (`onSelect`
@@ -884,7 +890,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `FileDrop.tsx` | `FileDrop`, `DropZone` (compact FileDrop for a workspace panel), `DropZoneProps`, `FileDropItem`, `FileRejection`, `matchesAccept`, `formatFileSize`, `classifyFiles`, `FileRejectReason` (§13b uploads: `FileDrop` + `Progress`) |
 | `confirmDialog.tsx` | `confirmDialog()`, `confirmDelete()`, `ConfirmHost`, `ConfirmOptions`, `ConfirmDeleteOptions` (§14, §14c) |
 | `TaskHost.tsx` | `startTask()`, `TaskHost`, `TaskOptions`, `TaskHandle` (blocking task overlay, §13b) |
-| `ThemeProvider.tsx` | `ThemeProvider`, `useTheme`, `ThemeToggle` (§2) |
+| `ThemeProvider.tsx` | `ThemeProvider`, `useTheme`, `ThemeToggle`, `ThemeSwitcher` (segmented, or `variant="menu"`), `useThemeUtility` (§2) |
 | `Markdown.tsx` | `Markdown` (AI answers) |
 | `Chat.tsx` | `AIChat`, `ChatPanel`, `ChatView`, `ChatList`, `ChatComposer`, `UserMessage`, `AssistantMessage`, `ChatAnswer`, `ChatError`, `ChatThinking`, `ChatIntro`, `ChatSuggestion(s)`, `ChatAvatar`, `ChatCopyButton`, `ChatModelPicker`, `CHAT_ROW`, `CHAT_CHIP`, `CHAT_PICK_CHIP`, `ChatItem` (§14b) |
 | `ExternalLink.tsx` | `ExternalLink` |

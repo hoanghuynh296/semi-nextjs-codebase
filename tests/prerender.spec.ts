@@ -253,6 +253,42 @@ test("WorkspaceLayout and FeatureIntro under Next's App Router: prerendered with
   await expect(page.getByRole("button", { name: "Send (4)" }).filter({ visible: true })).toBeVisible();
 });
 
+test("AppShell theme utility under Next's App Router: prerendered, its Menu picks a mode by keyboard (#114)", async ({ page, request }) => {
+  const html = await (await request.get(`${BASE}/shell/a`)).text();
+  expect(html).toContain('aria-label="Theme"');
+  // its icon is hidden in the server HTML (the stored theme is not known yet), then shown: no swap after hydration
+  expect(html).toMatch(/aria-label="Theme"[^>]*>(?:(?!<\/button>).)*opacity-0/s);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(`${BASE}/shell/a`);
+  const trigger = page.locator("aside").getByRole("button", { name: "Theme" });
+  // the first key may land before hydration: retry until the Menu shows
+  await expect(async () => {
+    await trigger.focus();
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("menu", { name: "Theme" })).toBeVisible({ timeout: 1000 });
+  }).toPass({ timeout: 15_000 });
+  await expect(page.getByRole("menuitemradio", { name: "Light" })).toHaveAttribute("aria-checked", "true");
+  await expect(trigger.locator("svg")).not.toHaveClass(/opacity-0/);
+  await page.keyboard.press("ArrowDown");
+  await expect(page.getByRole("menuitemradio", { name: "Dark" })).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(trigger).toBeFocused();
+});
+
+test("AppShell account: `rail` is exact in the server HTML (a rail copy below lg, a full copy from lg), one copy after mount (#113)", async ({ page, request }) => {
+  // this app has no CSS: check the markup here; tests/storybook.spec.ts checks what shows at 1440 and 834
+  const html = await (await request.get(`${BASE}/shell/a`)).text();
+  expect(html).toContain('<div class="lg:hidden"><span>AC</span></div><div class="hidden lg:block"><span>Account</span></div>');
+  for (const [width, keep, drop] of [[1440, "Account", "AC"], [834, "AC", "Account"]] as const) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(`${BASE}/shell/a`);
+    // hydrated and measured: only the copy for the width stays
+    await expect(page.locator("aside").getByText(drop, { exact: true })).toHaveCount(0);
+    await expect(page.locator("aside").getByText(keep, { exact: true })).toHaveCount(1);
+  }
+});
+
 async function replayTwice(page: import("@playwright/test").Page) {
   const replayed = page.getByRole("dialog", { name: "Replayed intro" });
   for (let round = 0; round < 2; round++) {

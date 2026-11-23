@@ -2609,12 +2609,9 @@
       "kind": "component",
       "module": "src/ThemeProvider.tsx",
       "client": true,
-      "summary": "Three-way theme picker (Sáng · Tối · Hệ thống) for settings pages and sidebar footers. ThemeToggle is the one-tap dark/light flip.",
+      "summary": "Three-way theme picker (Sáng · Tối · Hệ thống): segmented for settings pages and sidebar footers, `variant=\"menu\"` as one icon button. ThemeToggle is the one-tap dark/light flip.",
       "props": [
-        "showLabels",
-        "fullWidth",
-        "labels",
-        "className"
+        "variant"
       ],
       "doc": "docs/components/theme.md"
     },
@@ -2846,6 +2843,13 @@
       "module": "src/ThemeProvider.tsx",
       "client": true,
       "summary": ""
+    },
+    {
+      "name": "useThemeUtility",
+      "kind": "hook",
+      "module": "src/ThemeProvider.tsx",
+      "client": true,
+      "summary": "The theme as an AppShell `utilities` item: a row (an icon in the rail) that opens a Menu of Light / Dark / System with the current one checked; a level of the phone drawer. Keeps \"system\", unlike a `toggleTheme` item. ```tsx const theme = useThemeUtility(); ```"
     },
     {
       "name": "useScrollLock",

@@ -2,9 +2,12 @@
 
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useSemiLocale } from "./locale";
-import { Icon } from "./Icon";
-import { SEGMENT_ON } from "../styles/utils";
+import { Icon, type IconName } from "./Icon";
+import { Menu, Tooltip, type MenuItem } from "./Overlay";
+import { BTN_ICON, BTN_SECONDARY } from "../styles/buttons";
+import { cn, SEGMENT_ON } from "../styles/utils";
 import type { Theme, ThemeOptions } from "./ThemeScript";
+import type { ShellNavItem } from "./AppShell";
 
 export type ResolvedTheme = "dark" | "light";
 
@@ -143,23 +146,71 @@ const THEME_OPTIONS = [
   { key: "system", icon: "monitor" },
 ] as const;
 
+/** The three choices as Menu radio items (`menuitemradio`; the menu opens on the current one), the current one `checked` (none until the stored theme is known). */
+function useThemeChoices(labelsProp?: Record<Theme, string>) {
+  const t = useSemiLocale();
+  const labels = labelsProp ?? { light: t.themeLight, dark: t.themeDark, system: t.themeSystem };
+  const { theme, mounted, setTheme } = useTheme();
+  const items: MenuItem[] = THEME_OPTIONS.map(({ key, icon }) => ({ label: labels[key], icon, radio: true, checked: mounted && theme === key, onSelect: () => setTheme(key) }));
+  // the chosen mode's icon; hidden until the stored theme is read, so it never swaps after hydration
+  const icon: IconName = THEME_OPTIONS.find((o) => o.key === theme)?.icon ?? "sun";
+  return { items, icon, label: t.theme, mounted };
+}
+
+/**
+ * The theme as an AppShell `utilities` item: a row (an icon in the rail) that opens a Menu of Light / Dark / System
+ * with the current one checked; a level of the phone drawer. Keeps "system", unlike a `toggleTheme` item.
+ *
+ * ```tsx
+ * const theme = useThemeUtility();
+ * <AppShell utilities={[theme, help]} … />
+ * ```
+ */
+export function useThemeUtility({ id = "theme", label, labels }: { id?: string; label?: string; labels?: Record<Theme, string> } = {}): ShellNavItem {
+  const choices = useThemeChoices(labels);
+  return { id, label: label ?? choices.label, icon: choices.icon, iconHidden: !choices.mounted, menu: choices.items };
+}
+
 export interface ThemeSwitcherProps {
-  /** Show the text label next to each icon (default: icons only, label in the tooltip). */
+  /**
+   * `segmented` (default): the three choices side by side, for settings pages and sidebar footers. `menu`: one icon
+   * button (the chosen mode's icon) whose Menu lists the three with the current one checked, for headers, toolbars
+   * and other tight spots; in AppShell's `utilities` use `useThemeUtility()` instead.
+   * @default "segmented"
+   */
+  variant?: "segmented" | "menu";
+  /** Show the text label next to each icon (default: icons only, label in the tooltip). `segmented` only. */
   showLabels?: boolean;
-  /** Stretch to the container width (sidebar footers, settings rows). */
+  /** Stretch to the container width (sidebar footers, settings rows). `segmented` only. */
   fullWidth?: boolean;
   /** Override the labels (default: the SemiLocaleProvider strings). */
   labels?: Record<Theme, string>;
   className?: string;
 }
 
-/** Three-way theme picker (Sáng · Tối · Hệ thống) for settings pages and sidebar footers. ThemeToggle is the one-tap dark/light flip. */
-export function ThemeSwitcher({
-  showLabels = false,
-  fullWidth = false,
-  labels: labelsProp,
-  className = "",
-}: ThemeSwitcherProps) {
+/** Three-way theme picker (Sáng · Tối · Hệ thống): segmented for settings pages and sidebar footers, `variant="menu"` as one icon button. ThemeToggle is the one-tap dark/light flip. */
+export function ThemeSwitcher({ variant = "segmented", ...props }: ThemeSwitcherProps) {
+  return variant === "menu" ? <ThemeMenuButton labels={props.labels} className={props.className} /> : <ThemeSegments {...props} />;
+}
+
+function ThemeMenuButton({ labels, className = "" }: { labels?: Record<Theme, string>; className?: string }) {
+  const { items, icon, label, mounted } = useThemeChoices(labels);
+  return (
+    <Menu
+      label={label}
+      items={items}
+      trigger={
+        <Tooltip content={label}>
+          <button type="button" aria-label={label} className={cn(BTN_SECONDARY, BTN_ICON, className)}>
+            <Icon name={icon} className={cn("w-4 h-4 transition-opacity", !mounted && "opacity-0")} />
+          </button>
+        </Tooltip>
+      }
+    />
+  );
+}
+
+function ThemeSegments({ showLabels = false, fullWidth = false, labels: labelsProp, className = "" }: Omit<ThemeSwitcherProps, "variant">) {
   const t = useSemiLocale();
   const labels = labelsProp ?? { light: t.themeLight, dark: t.themeDark, system: t.themeSystem };
   const { theme, mounted, setTheme } = useTheme();

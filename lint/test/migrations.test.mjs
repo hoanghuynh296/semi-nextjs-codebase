@@ -152,3 +152,81 @@ test("0.36.0 shell: footer → account on AppShell and DocsShell only; mobileTab
   // account inside another prop's braces does not count
   assert.match(migrateShell(`import { AppShell } from "@semi/ui";\n<AppShell x={{ account: 1 }} footer={f} />`), /x=\{\{ account: 1 \}\} account=\{f\}/);
 });
+
+test("0.36.0 shell / 0.37.0 account-rail: an account render prop's collapsed check becomes collapsed || rail; other shapes reported; twice-safe", async () => {
+  const { railAccount, migrateShell, deprecatedTabIds } = await import("../../migrations/0.36.0-shell.mjs");
+  const rail = await import("../../migrations/0.37.0-account-rail.mjs");
+  assert.equal(rail.version, "0.37.0");
+  const src = `import { AppShell } from "@semi/ui";\n<AppShell productName="A" footer={({ collapsed }) => (collapsed ? null : <Block wide={!collapsed} x={{ collapsed: 1 }} on={s.collapsed} />)}>\n`;
+  const { src: out, manual } = railAccount(migrateShell(src));
+  assert.match(out, /account=\{\(\{ collapsed, rail \}\) => \(\(collapsed \|\| rail\) \? null : <Block wide=\{!\(collapsed \|\| rail\)\}/);
+  assert.match(out, /x=\{\{ collapsed: 1 \}\} on=\{s\.collapsed\}/, "keys and properties named collapsed are left alone");
+  assert.deepEqual(manual, []);
+  assert.equal(railAccount(out).src, out, "twice-safe");
+  // a typed parameter and a block body
+  const typed = `import { AppShell } from "@semi/ui";\n<AppShell account={({ collapsed }: ShellSlotState) => { return collapsed ? <A /> : <B />; }} />`;
+  assert.match(railAccount(typed).src, /\(\{ collapsed, rail \}: ShellSlotState\) => \{ return \(collapsed \|\| rail\) \?/);
+  // already uses rail, or does not read collapsed: unchanged
+  for (const ok of [`<AppShell account={({ rail }) => (rail ? null : <B />)} />`, `<AppShell account={({ collapsed, rail }) => (collapsed || rail ? null : <B />)} />`, `<AppShell account={<B />} />`]) {
+    const f = `import { AppShell } from "@semi/ui";\n${ok}`;
+    assert.deepEqual(railAccount(f), { src: f, manual: [] });
+  }
+  // another shape that reads collapsed: left alone, reported with its line
+  const other = `import { AppShell } from "@semi/ui";\n\n<AppShell\n  account={(s) => (s.collapsed ? null : <B />)}\n/>`;
+  assert.deepEqual(railAccount(other), { src: other, manual: [{ line: 4, reason: "collapsed" }] });
+  // review of #134: only plain reads are rewritten; anything else is reported and left as is (never a syntax error)
+  const H = `import { AppShell } from "@semi/ui";\n`;
+  for (const body of [
+    "<LogoutButton collapsed={collapsed} />", // an attribute name
+    "<B {...{ collapsed }} />", // a spread shorthand
+    "<B c={{ collapsed }} />", // a shorthand property
+    "<p>collapsed</p>", // JSX text
+    "<p>{collapsed}</p>", // a JSX child
+    "<B t={`${collapsed}`} />", // a template literal
+    "collapsed === true ? null : <B />", // a comparison
+    "(collapsed ? null : <p>Mở (collapsed)</p>)", // a read, then the word in JSX text
+    "items.map((collapsed) => <B on={collapsed} />)", // a parameter that shadows it
+    "items.map((collapsed: boolean, i) => <B on={collapsed} />)", // a typed parameter
+    "f((x, collapsed) => collapsed)", // a later parameter
+    "items.map(function (collapsed) { return <B on={collapsed} />; })", // a function parameter
+    "items.map(function row(collapsed) { return collapsed; })", // a named function's parameter
+    "{ try { return <A />; } catch (collapsed) { return null; } }", // a catch binding
+  ]) {
+    const f = `${H}<AppShell account={({ collapsed }) => ${body}} />`;
+    assert.deepEqual(railAccount(f), { src: f, manual: [{ line: 2, reason: "collapsed" }] }, body);
+  }
+  // strings, comments, object keys and properties that mention the word are not reads: the reads around them are rewritten
+  const mixed = `${H}<AppShell account={({ collapsed }) => (collapsed /* collapsed */ ? null : <B c="collapsed" k={{ collapsed: 1 }} p={s.collapsed} on={!collapsed} />)} />`;
+  const fixed = railAccount(mixed);
+  assert.deepEqual(fixed.manual, []);
+  assert.equal(
+    fixed.src,
+    `${H}<AppShell account={({ collapsed, rail }) => ((collapsed || rail) /* collapsed */ ? null : <B c="collapsed" k={{ collapsed: 1 }} p={s.collapsed} on={!(collapsed || rail)} />)} />`,
+  );
+  assert.equal(railAccount(fixed.src).src, fixed.src, "twice-safe");
+  // review of #134 round 2: the most common shape, a body that starts with the read (no parentheses)
+  const bare = `${H}<AppShell\n  account={({ collapsed }) =>\n    collapsed ? null : (\n      <Account />\n    )\n  }\n/>`;
+  const bareOut = railAccount(bare);
+  assert.deepEqual(bareOut.manual, []);
+  assert.match(bareOut.src, /\(\{ collapsed, rail \}\) =>\n {4}\(collapsed \|\| rail\) \? null : \(/);
+  assert.equal(railAccount(bareOut.src).src, bareOut.src, "twice-safe");
+  assert.match(railAccount(`${H}<AppShell account={({ collapsed }) => collapsed && <A />} />`).src, /=> \(collapsed \|\| rail\) && <A \/>/);
+  // an `if (collapsed) {` in a block body is a read, not a parameter
+  assert.match(railAccount(`${H}<AppShell account={({ collapsed }) => { if (collapsed) { return null; } return <A />; }} />`).src, /\{ if \(\(collapsed \|\| rail\)\) \{ return null;/);
+  // a function or a component that reads neither collapsed nor rail is reported; a plain JSX node is not
+  for (const expr of ["AccountBlock", "(s) => <Account {...s} />", "() => <Account />", "function (s) { return <A />; }"]) {
+    const f = `${H}<AppShell account={${expr}} />`;
+    assert.deepEqual(railAccount(f), { src: f, manual: [{ line: 2, reason: "state" }] }, expr);
+  }
+  assert.deepEqual(railAccount(`${H}<AppShell account={<Avatar />} />`).manual, []);
+  // not an AppShell, or no @semi/ui import: left alone
+  const modal = `import { Modal } from "@semi/ui";\n<Modal account={({ collapsed }) => collapsed} />`;
+  assert.equal(railAccount(modal).src, modal);
+  // mobileTabIds with mobileNav="tabs" is the supported way to pick the tabs (#113): no warning
+  assert.equal(deprecatedTabIds(`<AppShell mobileNav="tabs" mobileTabIds={["a"]} />`), 0);
+  // the 0.37.0 migration runs the same step through read / write
+  const files = { "a.tsx": src.replace("footer=", "account="), "b.css": "x" };
+  rail.default({ files: Object.keys(files), read: (f) => files[f], write: (f, v) => (files[f] = v) });
+  assert.match(files["a.tsx"], /\(\{ collapsed, rail \}\)/);
+  assert.equal(files["b.css"], "x");
+});

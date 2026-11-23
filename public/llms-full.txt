@@ -159,7 +159,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 ### Setup
 
 - [Locale](./components/locale/) ([markdown](./docs/components/locale.md)): SemiLocaleProvider sets the UI strings of every Semi component (Vietnamese by default, English shipped, override any string). Components: SemiLocaleProvider.
-- [Theme](./components/theme/) ([markdown](./docs/components/theme.md)): Light / dark / system: ThemeScript applies the stored theme before paint, ThemeProvider keeps it, ThemeSwitcher (three-way) and ThemeToggle switch it. data-theme on any element re-scopes every token inside it. Components: ThemeProvider, ThemeScript, ThemeSwitcher, ThemeToggle.
+- [Theme](./components/theme/) ([markdown](./docs/components/theme.md)): Light / dark / system: ThemeScript applies the stored theme before paint, ThemeProvider keeps it, ThemeSwitcher (three-way: segmented, or variant="menu" as one icon button) and ThemeToggle switch it, useThemeUtility() puts the three in AppShell's utilities. data-theme on any element re-scopes every token inside it. Components: ThemeProvider, ThemeScript, ThemeSwitcher, ThemeToggle.
 
 
 ---
@@ -178,7 +178,7 @@ Style: restrained dark & light dual-theme (`data-theme="dark|light"`) + bento ca
 left panel menu (`w-52` / `w-14`) floating on `bg-canvas` (`md:p-2 md:gap-2`), full-width right content panel (`md:rounded-panel bg-app`),
 `font-display` page titles (`PageTitle` / `PageTabsTitle`, text only, no subtitle; either on their own row above the toolbar, or on the toolbar row via `SubpageToolbar title`),
 sticky sub-page toolbar row (`SubpageToolbar`: filters left, icon-only primary CTA + `SearchInput` + `RefreshButton` right).
-Phones (`< md`) get AppShell's top bar and its full-screen drawer (same groups, drill-down rows, utilities at the bottom); never a hand-made slide-over. `mobileNav="tabs"` (or the deprecated `mobileTabIds`) keeps `MobileTabBar`.
+Phones (`< md`) get AppShell's top bar and its full-screen drawer (same groups, drill-down rows, utilities at the bottom); never a hand-made slide-over. `mobileNav="tabs"` keeps `MobileTabBar`, with `mobileTabIds` naming its items (`mobileTabIds` alone also keeps it, with a dev warning).
 
 **Two-Tier Semantic Tokens (Dark & Light Mode):**
 | Semantic Token | Tailwind Class | Dark Mode (`[data-theme="dark"]`) | Light Mode (`[data-theme="light"]`) | Usage |
@@ -204,7 +204,7 @@ Phones (`< md`) get AppShell's top bar and its full-screen drawer (same groups, 
 
 *Accent & status (AA in both themes):* main button `bg-action` (`BTN_PRIMARY`) · accent fill for checked / "on" marks `bg-accent text-on-accent` · primary text/icon `text-accent-fg` · focus `ring-focus` / focused field `border-focus` · selected `bg-accent-subtle` (hover `bg-accent-subtle-hover`) + `border-accent-line` · status text `text-danger-fg` / `text-success-fg` / `text-warning-fg` / `text-info-fg` · tonal text `text-tone-<hue>`. Never `text-*-400` or `text-*-700 dark:text-*-300` in shared UI.
 
-*Theme:* `<html suppressHydrationWarning>` + `<ThemeScript />` in `<head>` (no flash) + `<ThemeProvider defaultTheme="dark">` (same options); `<ThemeSwitcher />` (Sáng · Tối · Hệ thống, settings / sidebar footer) or `<ThemeToggle />` (one-tap dark/light), or `const { theme, resolvedTheme, mounted, setTheme } = useTheme()`. `data-theme="system"` follows the OS.
+*Theme:* `<html suppressHydrationWarning>` + `<ThemeScript />` in `<head>` (no flash) + `<ThemeProvider defaultTheme="dark">` (same options); `<ThemeSwitcher />` (Sáng · Tối · Hệ thống, settings / sidebar footer), `<ThemeSwitcher variant="menu" />` (one icon button + Menu: headers), `useThemeUtility()` (the same in AppShell `utilities`) or `<ThemeToggle />` (one-tap dark/light), or `const { theme, resolvedTheme, mounted, setTheme } = useTheme()`. `data-theme="system"` follows the OS.
 
 **Colour:** accent (Semi default `#00AE42`; a product gets its own from its brand kit, never in its own CSS) = actions, focus, "on", through `bg-accent` / `text-accent-fg` tokens. Status tokens carry meaning only: success = online/done · warning = busy/paused · danger = error/destructive · info = news/cost. Category tints: `<Badge tone>`, `TONAL_SURFACE`, `text-tone-<hue>` (§3c). Nav menu: grey 16px icons, no count badges, active = `bg-raised text-contrast`.
 Chips (`Chip`, `chipClass(active)`): `rounded-full h-control px-3.5`, ghost when off, active uses semantic high-contrast background; colour only on a
@@ -240,7 +240,7 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
 **Use the shared blocks (`@semi/ui` and `@semi/ui/styles`) — never create a local `ui.tsx` wrapper barrel:**
 - **Layout & Structure (`@semi/ui`):**
   - `ThemeProvider`, `useTheme`, `ThemeToggle`: Zero-runtime-overhead dual-theme management via `data-theme` attribute and CSS variables.
-  - `AppShell` (+ `MobileTabBar`, `TAB_BAR_PAD` for `mobileNav="tabs"`): 2-panel floating Bento frame on `bg-canvas`; sidebar top to bottom: accent `create`, grouped `sections`, `pinned` (a `text-overline` label), `utilities` + `account` (`footer` is deprecated); `w-60` or the icon rail (always on `md`, Tooltips on the right); phones: top bar + full-screen drawer. A nav item with `mega` opens a `MegaMenu`. Detail pages open with `MinimalHeader`; sibling views as the heading are `TextTabs`. Items may carry `children` (one level, optional grey icon, no colour or count): closed by default, open only while the parent or a child is active; hidden in the rail / below `lg` / phones, so pages check `useAppShell().submenuVisible` and offer their own picker.
+  - `AppShell` (+ `MobileTabBar`, `TAB_BAR_PAD` for `mobileNav="tabs"`): 2-panel floating Bento frame on `bg-canvas`; sidebar top to bottom: accent `create`, grouped `sections`, `pinned` (a `text-overline` label), `utilities` (items with `onClick`, or `menu`: `useThemeUtility()`) + `account` (render prop `{ collapsed, rail }`: hide text by `rail`; `footer` is deprecated); `w-60` or the icon rail (always on `md`, Tooltips on the right); phones: top bar + full-screen drawer. A nav item with `mega` opens a `MegaMenu`. Detail pages open with `MinimalHeader`; sibling views as the heading are `TextTabs`. Items may carry `children` (one level, optional grey icon, no colour or count): closed by default, open only while the parent or a child is active; hidden in the rail / below `lg` / phones, so pages check `useAppShell().submenuVisible` and offer their own picker.
   - `PageTitle`, `PageTabsTitle`: text-only display heading or underline tab heading (`h-[2.5px] bg-primary`). `PageTitle actions` is a list page's title row: one primary (or secondary) + `RefreshButton` on the right, wrapping under the title below `sm`.
   - `SubpageToolbar`: sticky toolbar (`STICKY_TOOLBAR`) with `left` filters and `right` icon-only `BTN_PRIMARY BTN_ICON` + `SearchInput` + `RefreshButton`; `title` puts the page title on the same row (then no `PageTitle`).
     Phone layout (opt-in): `filters` (typed, `FilterDef[]`; more than two collapse into "Bộ lọc · N" + active chips) or `collapseFilters` (for `left`), and `secondaryActions` (a ⋯ menu below `sm`).
@@ -387,7 +387,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `formValidation`: `FormErrorSummary`
 - `locale`: `SemiLocaleProvider`
 
-**Hooks:** `useAppShell`, `useHotkey`, `useRegisterCommands`, `useDetailParam`, `useField`, `useFilterParams`, `useCoarsePointer`, `useTheme`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useFormValidation`, `useSemiLocale`, `useUnsavedGuard` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `openCommandPalette`, `openDetail`, `pageWindow`, `startTask`, `themeScript`, `updateToast`, `dismissToast`, `confirmDialog`, `confirmDelete`, `kindAttrs`, `readFilterValues`, `readFilters`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `composeRefs`, `cloneTrigger`, `cn`
+**Hooks:** `useAppShell`, `useHotkey`, `useRegisterCommands`, `useDetailParam`, `useField`, `useFilterParams`, `useCoarsePointer`, `useTheme`, `useThemeUtility`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useFormValidation`, `useSemiLocale`, `useUnsavedGuard` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `openCommandPalette`, `openDetail`, `pageWindow`, `startTask`, `themeScript`, `updateToast`, `dismissToast`, `confirmDialog`, `confirmDelete`, `kindAttrs`, `readFilterValues`, `readFilters`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `composeRefs`, `cloneTrigger`, `cn`
 <!-- generated:components:end -->
 
 
@@ -608,7 +608,7 @@ Themes are toggled via the `data-theme` attribute on `<html>` (with fallback `.d
 ```html
 <html lang="vi" data-theme="dark" class="dark">
 ```
-`data-theme="system"` follows the OS in pure CSS (no JS). Users pick a theme with `<ThemeSwitcher />` (Sáng · Tối · Hệ thống: settings pages, sidebar footer; `fullWidth` in a sidebar) or flip it with `<ThemeToggle />` (collapsed sidebar, header). Any element can pin a theme for its subtree with `data-theme="light|dark"` (plus the matching class): all semantic tokens re-resolve inside it. Apps render `<ThemeScript />` in `<head>` (sets the stored theme
+`data-theme="system"` follows the OS in pure CSS (no JS). Users pick a theme with `<ThemeSwitcher />` (Sáng · Tối · Hệ thống: settings pages, sidebar footer; `fullWidth` in a sidebar), `<ThemeSwitcher variant="menu" />` (one icon button whose `Menu` lists the three, the current one checked: headers, toolbars), `useThemeUtility()` (the same Menu as an AppShell `utilities` item, an icon in the rail, a level of the phone drawer: the shell's theme keeps "system") or flip it with `<ThemeToggle />` (one-tap dark/light). Any element can pin a theme for its subtree with `data-theme="light|dark"` (plus the matching class): all semantic tokens re-resolve inside it. Apps render `<ThemeScript />` in `<head>` (sets the stored theme
 before the first paint, so there is no flash of the wrong theme) and wrap the body in `<ThemeProvider>` with the **same options**:
 ```tsx
 import { ThemeProvider, ThemeScript, ThemeToggle } from "@semi/ui";
@@ -803,17 +803,23 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
 - **Sidebar order (C-031, #96):** brand + collapse toggle (the logo expands the rail) · one accent **Create** action
   (`create`: a `Menu` of things to create, or one link) · the main nav (`sections`) · a **pinned** group (saved views,
   frequent records) under a divider with a `text-overline` label · at the bottom the **utilities** (help, theme,
-  notifications: items with `onClick`) and the **account**. Rows are `h-9`, icons 18px; the active row is
+  notifications: items with `onClick`, or `menu` for a Menu of choices such as `useThemeUtility()`) and the **account**. Rows are `h-9`, icons 18px; the active row is
   `bg-tint-hover text-contrast`, others `text-body hover:bg-tint`.
 - **Rail:** `lg+` shows labels unless collapsed (remembered per app, `storageKey`); `md` (iPad) is always the rail. In
-  the rail every item has an `aria-label` and a `Tooltip` on the right.
+  the rail every item has an `aria-label` and a `Tooltip` on the right. An item without `icon` shows its initials
+  (`shortLabel` to choose them): give pinned items distinct icons, or none, never one shared icon (touch has no
+  Tooltip). The `account` render prop gets `{ collapsed, rail }`: hide its text by `rail`, not only `collapsed` (at `md`
+  the sidebar is a rail while `collapsed` is false). `rail` is exact in the server HTML: until the width is known
+  AppShell renders the account twice (the rail copy below `lg`, the full one from `lg`, CSS shows one), then only the
+  copy for the width, so keep app-wide effects out of the account and take ids from `useId`.
 - **Mega menu:** a nav item with `mega` opens a `MegaMenu` flyout beside the sidebar: 2–4 category columns headed by
   `text-overline`, links with a grey icon, a hint and a "Mới" badge, and a "Xem tất cả" link.
 - **Phones (`< md`):** a top bar (menu button, logo, product name) opens a full-screen drawer with the same groups:
   one accent Create row (its items open as a level), rows `min-h-12` with › for sub-items and mega menus (a
   drill-down level with a back row; a parent with its own page is the level's first row, "Tất cả …"), the pinned
   group, utilities and the account at the bottom. The drawer is the default when the app sets neither `mobileNav` nor
-  `mobileTabIds`; `mobileTabIds` (deprecated) keeps the old bottom tab bar (`MobileTabBar`), as does `mobileNav="tabs"`.
+  `mobileTabIds`; `mobileNav="tabs"` keeps the bottom tab bar (`MobileTabBar`) with the items named in `mobileTabIds`
+  (the first ones without it). `mobileTabIds` alone still keeps the tab bar (C-034) but warns in development.
 - **Shell lifecycle:** `AppShell` renders once in the root or a route-group `layout.tsx`, so it stays mounted while
   people navigate; a page renders only its content, never `AppShell` or a component that renders it
   (`app-shell-in-page`). Page items carry `href` and stay `next/link` links even when `onSelect` is set (`onSelect`
@@ -1281,7 +1287,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `FileDrop.tsx` | `FileDrop`, `DropZone` (compact FileDrop for a workspace panel), `DropZoneProps`, `FileDropItem`, `FileRejection`, `matchesAccept`, `formatFileSize`, `classifyFiles`, `FileRejectReason` (§13b uploads: `FileDrop` + `Progress`) |
 | `confirmDialog.tsx` | `confirmDialog()`, `confirmDelete()`, `ConfirmHost`, `ConfirmOptions`, `ConfirmDeleteOptions` (§14, §14c) |
 | `TaskHost.tsx` | `startTask()`, `TaskHost`, `TaskOptions`, `TaskHandle` (blocking task overlay, §13b) |
-| `ThemeProvider.tsx` | `ThemeProvider`, `useTheme`, `ThemeToggle` (§2) |
+| `ThemeProvider.tsx` | `ThemeProvider`, `useTheme`, `ThemeToggle`, `ThemeSwitcher` (segmented, or `variant="menu"`), `useThemeUtility` (§2) |
 | `Markdown.tsx` | `Markdown` (AI answers) |
 | `Chat.tsx` | `AIChat`, `ChatPanel`, `ChatView`, `ChatList`, `ChatComposer`, `UserMessage`, `AssistantMessage`, `ChatAnswer`, `ChatError`, `ChatThinking`, `ChatIntro`, `ChatSuggestion(s)`, `ChatAvatar`, `ChatCopyButton`, `ChatModelPicker`, `CHAT_ROW`, `CHAT_CHIP`, `CHAT_PICK_CHIP`, `ChatItem` (§14b) |
 | `ExternalLink.tsx` | `ExternalLink` |
@@ -7429,7 +7435,7 @@ import {
   Card,
   MinimalHeader,
   TextTabs,
-  useTheme,
+  useThemeUtility,
   type ShellNavItem,
   type ShellNavSection,
 } from "@semi/ui";
@@ -7499,10 +7505,11 @@ const TABS = [
 export default function FullShell() {
   const [active, setActive] = useState("orders-open");
   const [tab, setTab] = useState<(typeof TABS)[number]["key"]>("open");
-  const { resolvedTheme, toggleTheme } = useTheme();
+  // Sáng / Tối / Hệ thống in a Menu (a level of the phone drawer): keeps "system", unlike a toggleTheme item
+  const theme = useThemeUtility();
   const utilities: ShellNavItem[] = [
     { id: "help", label: "Trợ giúp", icon: "info", onClick: () => {} },
-    { id: "theme", label: resolvedTheme === "dark" ? "Giao diện sáng" : "Giao diện tối", icon: resolvedTheme === "dark" ? "sun" : "moon", onClick: toggleTheme },
+    theme,
     { id: "settings", label: "Cài đặt", icon: "settings" },
   ];
 
@@ -7575,7 +7582,7 @@ AppShell fills the viewport, so it is shown as code: this very page is the live 
 "use client";
 
 import { usePathname } from "next/navigation";
-import { AppShell, ThemeSwitcher, type ShellNavSection } from "@semi/ui";
+import { AppShell, useThemeUtility, type ShellNavSection } from "@semi/ui";
 
 const SECTIONS: ShellNavSection[] = [
   {
@@ -7591,9 +7598,10 @@ const SECTIONS: ShellNavSection[] = [
 
 export default function Shell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
+  const theme = useThemeUtility();
   const active = SECTIONS.flatMap((s) => s.items).find((i) => i.href !== "/" && path.startsWith(i.href ?? ""))?.id ?? "overview";
   return (
-    <AppShell productName="3D Noobs Manager" logoIcon="printer" sections={SECTIONS} activeId={active} footer={() => <ThemeSwitcher fullWidth />}>
+    <AppShell productName="3D Noobs Manager" logoIcon="printer" sections={SECTIONS} activeId={active} utilities={[theme]}>
       {children}
     </AppShell>
   );
@@ -7735,10 +7743,10 @@ export default function AppShellSubmenu() {
 | `primaryCta` | `{ label: string; icon: IconName; href?: string; external?: boolean; onClick?: () => void; }` |  | Optional highlighted launcher under Create (another app, a docs link). |
 | `pinned` | `ShellPinned` |  | A group under the main nav (saved views, frequent records) with a `text-overline` label. |
 | `utilities` | `ShellNavItem[]` | `[]` | Utilities at the bottom of the sidebar (help, theme, notifications): usually items with `onClick`. |
-| `account` | `ShellSlot` |  | The account at the very bottom (avatar, workspace switcher). Receives `{ collapsed, rail }`: hide text when `rail`. |
+| `account` | `ShellSlot` |  | The account at the very bottom (avatar, workspace switcher). Receives `{ collapsed, rail }`: hide text when `rail` (at `md` the sidebar is a rail while `collapsed` is false). `rail` is exact in the server HTML: until the width is known the slot renders twice (rail below `lg`, full from `lg`, CSS shows one), then once. So keep app-wide effects (hotkeys, intros) out of it, and let ids come from `useId`. |
 | `footer` | `ShellSlot` |  |  |
-| `mobileNav` | `'drawer' \| 'tabs'` |  | Phone navigation: `drawer` (a full-screen menu from the top bar) or `tabs` (MobileTabBar). Default: `tabs` when `mobileTabIds` is set (as before 0.36), else `drawer`. |
-| `mobileTabIds` | `string[]` |  |  |
+| `mobileNav` | `'drawer' \| 'tabs'` |  | Phone navigation: `drawer` (a full-screen menu from the top bar) or `tabs` (MobileTabBar, the items in `mobileTabIds`). Default: `tabs` when `mobileTabIds` is set (as before 0.36), else `drawer`. |
+| `mobileTabIds` | `string[]` |  | With `mobileNav="tabs"`: the ids of the items on the tab bar (up to 5; the rest go in its More sheet). Without it, tabs mode shows the first items. Set `mobileNav` too: `mobileTabIds` alone still keeps the tab bar (as before 0.36) but warns in development. |
 | `storageKey` | `string` | `"semi_sidebar_collapsed"` | localStorage key for persisting sidebar collapsed state. |
 | `children` * | `React.ReactNode` |  |  |
 | `containerClassName` | `string` | `""` |  |
@@ -7767,8 +7775,11 @@ export default function AppShellSubmenu() {
 - Page items take an href: they stay next/link links even when onSelect is set (onSelect then only reports the click). Never route with onSelect + router.push (shell-nav-href).
 - Never gate the shell behind a page skeleton (shell-gate): a route loading.tsx next to the layout shimmers the content only, and the boot / session check before the layout is known renders BootLoader once in the layout. A page never renders AppShell or imports a component that does (app-shell-in-page).
 - Top to bottom: create (one accent action, a Menu when it has items), primaryCta (an optional launcher), sections, pinned (a text-overline label), then utilities (items with onClick: help, theme) and account (avatar, workspace).
-- footer is deprecated: split it into utilities (actions) and account (who is signed in). The 0.36.0 migration renames footer to account.
-- Phones use the drawer (a top bar with the menu button) unless the app sets mobileNav="tabs" or the deprecated mobileTabIds (both keep MobileTabBar). In the drawer a parent with its own href is the first row of its level.
+- footer is deprecated: split it into utilities (actions) and account (who is signed in). The 0.36.0 migration renames footer to account and turns a render prop's collapsed check into collapsed || rail.
+- Phones use the drawer (a top bar with the menu button) unless the app sets mobileNav="tabs", with mobileTabIds naming the items on MobileTabBar (mobileTabIds alone still keeps the tab bar but warns). In the drawer a parent with its own href is the first row of its level.
+- The account render prop gets { collapsed, rail }: check rail, not only collapsed. At md the sidebar is a rail while collapsed is false. rail is exact in the server HTML: until the width is known AppShell renders the account twice (rail below lg, full from lg, CSS shows one), then once; keep app-wide effects out of it.
+- The theme in utilities: useThemeUtility() (Light / Dark / System in a Menu, a level of the phone drawer), not a toggleTheme item that drops system. Any utility with options can take menu (MenuItem[]).
+- Pinned items in the rail: give each a distinct icon, or none so the rail shows its initials (shortLabel to choose them); items sharing one icon look alike there and touch screens have no Tooltip.
 - Sub-items (children) are closed by default: they open under their parent while the parent or one of them is the activeId, and close when another item is chosen. One level only.
 - Sub-items take an optional grey icon (give every sub-item of a parent one, or none); no colour dot or count (the menu stays neutral, §4). Put counts and colours in the page.
 - The rail and widths below lg never show sub-items: read useAppShell().submenuVisible and give the page its own picker (a CustomSelect in the toolbar) when it is false. The phone drawer shows them as a drill-down level.
@@ -13916,16 +13927,16 @@ export default function LocaleEnglish() {
 
 # Theme
 
-Light / dark / system: ThemeScript applies the stored theme before paint, ThemeProvider keeps it, ThemeSwitcher (three-way) and ThemeToggle switch it. data-theme on any element re-scopes every token inside it.
+Light / dark / system: ThemeScript applies the stored theme before paint, ThemeProvider keeps it, ThemeSwitcher (three-way: segmented, or variant="menu" as one icon button) and ThemeToggle switch it, useThemeUtility() puts the three in AppShell's utilities. data-theme on any element re-scopes every token inside it.
 
 ## When to use
 
-- Once in every app's root layout; the switcher in settings or the sidebar footer.
+- Once in every app's root layout; the segmented switcher in settings, variant="menu" in a header or toolbar, useThemeUtility() in AppShell's utilities (and its rail).
 
 ## Import
 
 ```tsx
-import { ThemeProvider, ThemeScript, ThemeSwitcher, ThemeToggle, useTheme, themeScript } from "@semi/ui";
+import { ThemeProvider, ThemeScript, ThemeSwitcher, ThemeToggle, useTheme, useThemeUtility, themeScript } from "@semi/ui";
 ```
 
 ## Examples
@@ -13943,6 +13954,7 @@ export default function ThemeSwitchers() {
     <div className="flex flex-wrap items-center gap-3">
       <ThemeSwitcher showLabels />
       <ThemeSwitcher />
+      <ThemeSwitcher variant="menu" />
       <ThemeToggle />
       <span className="text-label text-muted tabular-nums">
         theme = {theme} · resolved = {resolvedTheme}
@@ -14030,14 +14042,15 @@ Render inside <head> of the root layout, with the same options as ThemeProvider:
 
 ### ThemeSwitcher
 
-Three-way theme picker (Sáng · Tối · Hệ thống) for settings pages and sidebar footers. ThemeToggle is the one-tap dark/light flip.
+Three-way theme picker (Sáng · Tối · Hệ thống): segmented for settings pages and sidebar footers, `variant="menu"` as one icon button. ThemeToggle is the one-tap dark/light flip.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `showLabels` | `boolean` | `false` | Show the text label next to each icon (default: icons only, label in the tooltip). |
-| `fullWidth` | `boolean` | `false` | Stretch to the container width (sidebar footers, settings rows). |
+| `variant` | `'menu' \| 'segmented'` | `"segmented"` | `segmented` (default): the three choices side by side, for settings pages and sidebar footers. `menu`: one icon button (the chosen mode's icon) whose Menu lists the three with the current one checked, for headers, toolbars and other tight spots; in AppShell's `utilities` use `useThemeUtility()` instead. |
+| `showLabels` | `boolean` |  | Show the text label next to each icon (default: icons only, label in the tooltip). `segmented` only. |
+| `fullWidth` | `boolean` |  | Stretch to the container width (sidebar footers, settings rows). `segmented` only. |
 | `labels` | `Record<Theme, string>` |  | Override the labels (default: the SemiLocaleProvider strings). |
-| `className` | `string` | `""` |  |
+| `className` | `string` |  |  |
 
 ### ThemeToggle
 
@@ -14051,5 +14064,6 @@ Theme toggle button: seamlessly switches between Dark and Light mode.
 ## Accessibility
 
 - ThemeSwitcher is a radio group; nothing is marked selected until the stored theme is known (no flash).
+- variant="menu" is an icon button named after the theme (aria-haspopup="menu"); its Menu lists the three choices as radio items (menuitemradio), opening on the current one: ↑/↓ move, Enter / Space pick, Escape closes and returns focus.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/theme/ and the types in src/ -->

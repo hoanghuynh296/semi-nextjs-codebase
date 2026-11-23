@@ -40,7 +40,7 @@ import {
   Card,
   MinimalHeader,
   TextTabs,
-  useTheme,
+  useThemeUtility,
   type ShellNavItem,
   type ShellNavSection,
 } from "@semi/ui";
@@ -110,10 +110,11 @@ const TABS = [
 export default function FullShell() {
   const [active, setActive] = useState("orders-open");
   const [tab, setTab] = useState<(typeof TABS)[number]["key"]>("open");
-  const { resolvedTheme, toggleTheme } = useTheme();
+  // Sáng / Tối / Hệ thống in a Menu (a level of the phone drawer): keeps "system", unlike a toggleTheme item
+  const theme = useThemeUtility();
   const utilities: ShellNavItem[] = [
     { id: "help", label: "Trợ giúp", icon: "info", onClick: () => {} },
-    { id: "theme", label: resolvedTheme === "dark" ? "Giao diện sáng" : "Giao diện tối", icon: resolvedTheme === "dark" ? "sun" : "moon", onClick: toggleTheme },
+    theme,
     { id: "settings", label: "Cài đặt", icon: "settings" },
   ];
 
@@ -186,7 +187,7 @@ AppShell fills the viewport, so it is shown as code: this very page is the live 
 "use client";
 
 import { usePathname } from "next/navigation";
-import { AppShell, ThemeSwitcher, type ShellNavSection } from "@semi/ui";
+import { AppShell, useThemeUtility, type ShellNavSection } from "@semi/ui";
 
 const SECTIONS: ShellNavSection[] = [
   {
@@ -202,9 +203,10 @@ const SECTIONS: ShellNavSection[] = [
 
 export default function Shell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
+  const theme = useThemeUtility();
   const active = SECTIONS.flatMap((s) => s.items).find((i) => i.href !== "/" && path.startsWith(i.href ?? ""))?.id ?? "overview";
   return (
-    <AppShell productName="3D Noobs Manager" logoIcon="printer" sections={SECTIONS} activeId={active} footer={() => <ThemeSwitcher fullWidth />}>
+    <AppShell productName="3D Noobs Manager" logoIcon="printer" sections={SECTIONS} activeId={active} utilities={[theme]}>
       {children}
     </AppShell>
   );
@@ -346,10 +348,10 @@ export default function AppShellSubmenu() {
 | `primaryCta` | `{ label: string; icon: IconName; href?: string; external?: boolean; onClick?: () => void; }` |  | Optional highlighted launcher under Create (another app, a docs link). |
 | `pinned` | `ShellPinned` |  | A group under the main nav (saved views, frequent records) with a `text-overline` label. |
 | `utilities` | `ShellNavItem[]` | `[]` | Utilities at the bottom of the sidebar (help, theme, notifications): usually items with `onClick`. |
-| `account` | `ShellSlot` |  | The account at the very bottom (avatar, workspace switcher). Receives `{ collapsed, rail }`: hide text when `rail`. |
+| `account` | `ShellSlot` |  | The account at the very bottom (avatar, workspace switcher). Receives `{ collapsed, rail }`: hide text when `rail` (at `md` the sidebar is a rail while `collapsed` is false). `rail` is exact in the server HTML: until the width is known the slot renders twice (rail below `lg`, full from `lg`, CSS shows one), then once. So keep app-wide effects (hotkeys, intros) out of it, and let ids come from `useId`. |
 | `footer` | `ShellSlot` |  |  |
-| `mobileNav` | `'drawer' \| 'tabs'` |  | Phone navigation: `drawer` (a full-screen menu from the top bar) or `tabs` (MobileTabBar). Default: `tabs` when `mobileTabIds` is set (as before 0.36), else `drawer`. |
-| `mobileTabIds` | `string[]` |  |  |
+| `mobileNav` | `'drawer' \| 'tabs'` |  | Phone navigation: `drawer` (a full-screen menu from the top bar) or `tabs` (MobileTabBar, the items in `mobileTabIds`). Default: `tabs` when `mobileTabIds` is set (as before 0.36), else `drawer`. |
+| `mobileTabIds` | `string[]` |  | With `mobileNav="tabs"`: the ids of the items on the tab bar (up to 5; the rest go in its More sheet). Without it, tabs mode shows the first items. Set `mobileNav` too: `mobileTabIds` alone still keeps the tab bar (as before 0.36) but warns in development. |
 | `storageKey` | `string` | `"semi_sidebar_collapsed"` | localStorage key for persisting sidebar collapsed state. |
 | `children` * | `React.ReactNode` |  |  |
 | `containerClassName` | `string` | `""` |  |
@@ -378,8 +380,11 @@ export default function AppShellSubmenu() {
 - Page items take an href: they stay next/link links even when onSelect is set (onSelect then only reports the click). Never route with onSelect + router.push (shell-nav-href).
 - Never gate the shell behind a page skeleton (shell-gate): a route loading.tsx next to the layout shimmers the content only, and the boot / session check before the layout is known renders BootLoader once in the layout. A page never renders AppShell or imports a component that does (app-shell-in-page).
 - Top to bottom: create (one accent action, a Menu when it has items), primaryCta (an optional launcher), sections, pinned (a text-overline label), then utilities (items with onClick: help, theme) and account (avatar, workspace).
-- footer is deprecated: split it into utilities (actions) and account (who is signed in). The 0.36.0 migration renames footer to account.
-- Phones use the drawer (a top bar with the menu button) unless the app sets mobileNav="tabs" or the deprecated mobileTabIds (both keep MobileTabBar). In the drawer a parent with its own href is the first row of its level.
+- footer is deprecated: split it into utilities (actions) and account (who is signed in). The 0.36.0 migration renames footer to account and turns a render prop's collapsed check into collapsed || rail.
+- Phones use the drawer (a top bar with the menu button) unless the app sets mobileNav="tabs", with mobileTabIds naming the items on MobileTabBar (mobileTabIds alone still keeps the tab bar but warns). In the drawer a parent with its own href is the first row of its level.
+- The account render prop gets { collapsed, rail }: check rail, not only collapsed. At md the sidebar is a rail while collapsed is false. rail is exact in the server HTML: until the width is known AppShell renders the account twice (rail below lg, full from lg, CSS shows one), then once; keep app-wide effects out of it.
+- The theme in utilities: useThemeUtility() (Light / Dark / System in a Menu, a level of the phone drawer), not a toggleTheme item that drops system. Any utility with options can take menu (MenuItem[]).
+- Pinned items in the rail: give each a distinct icon, or none so the rail shows its initials (shortLabel to choose them); items sharing one icon look alike there and touch screens have no Tooltip.
 - Sub-items (children) are closed by default: they open under their parent while the parent or one of them is the activeId, and close when another item is chosen. One level only.
 - Sub-items take an optional grey icon (give every sub-item of a parent one, or none); no colour dot or count (the menu stays neutral, §4). Put counts and colours in the page.
 - The rail and widths below lg never show sub-items: read useAppShell().submenuVisible and give the page its own picker (a CustomSelect in the toolbar) when it is false. The phone drawer shows them as a drill-down level.

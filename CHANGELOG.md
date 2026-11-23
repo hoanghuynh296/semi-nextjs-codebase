@@ -6,16 +6,34 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 List page anatomy (C-041, #115 / #119 / #120): where a 0.36 list page puts its own action, its views and its one-of-N filters, and the `list-page` block on that anatomy. Additive: pages that do not use the new props look and behave as before.
 
+Shell upgrade (C-041, #113, #114 a / c): gaps found adopting the 0.36 shell, a non-deprecated way to keep the phone tab bar, the account squeezed in the `md` rail, and the theme's "system" choice in the shell.
+
 ### Added
 - **`PageTitle actions` (#115, #120):** the page's own action at the right end of the title row (one `Button variant="primary"` or secondary with icon and text, optionally a `RefreshButton` before it; more in a ⋯ `Menu`). Below `sm` the actions wrap onto their own row under the title. Without `actions` PageTitle renders as before. New example `page-title/actions`.
 - **`FilterChipRow leading` (#115):** a slot before the chips for the page's views (`<Pills>`: Đang mở · Đã đóng · Tất cả), the md+ twin of `PhoneFilterBar typeItems`; it does not scroll with the chips and "Xoá lọc" leaves it alone. The default view may be other than "all". New example `filter-chip-row/views`.
 - **`FilterSpec.kind: "single"` and `clearValue` (#119):** a one-of-N filter (mailbox, folder, warehouse). In `FilterChipRow` / `SubpageToolbar filters` a chip that names its value ("Hộp thư: Tất cả") and opens a menu of radio items; in `FilterPanel` an accordion with a radio group (its heading shows the value); in the URL one value (`?f.box=sales`). `clearValue` is the default option: never written to the URL, `selected` is `[]` while it is in effect (read the value as `selected[0] ?? clearValue`), not counted as active, and "Xoá lọc" resets to it.
 - **`MenuItem.radio` (#119):** with `checked`, the item is `menuitemradio` (one choice of a set) and the menu opens on the checked item. Use it for `PhoneFilterBar typeItems` (the page's views). Items without `radio` are unchanged (`menuitemcheckbox`).
+- **`ShellNavItem.menu` (#114):** an AppShell item (usually a `utilities` item) can open a `Menu` of choices (`MenuItem[]`, `checked` marks the current one) instead of navigating: a row in the sidebar, an icon with its Tooltip in the rail, a level of the phone drawer (checked row marked, `aria-pressed`).
+- **`useThemeUtility()` (#114):** the theme as a ready `utilities` item: Light / Dark / System in that Menu (the chosen mode's icon, hidden until the stored theme is read so it never swaps after hydration; label "Giao diện" / locale `theme`; `id`, `label`, `labels` options). Use it in place of a `toggleTheme` item, which drops "system". The AppShell examples use it.
+- **`ShellNavItem.iconHidden`:** keeps an item's icon space but hides it (`opacity-0`), for an icon that reflects a value known only after mount (`useThemeUtility()` sets it until mounted).
+- **`ThemeSwitcher variant="menu"` (#114):** one icon button (`aria-haspopup="menu"`, Tooltip) whose Menu lists the three modes with the current one checked, for headers and toolbars. Default `variant="segmented"` is the switcher as before.
 
 ### Changed
 - **`list-page` block (`semi add list-page`, #115):** rebuilt on the 0.36 anatomy: `PageTitle actions` (refresh + "Tạo đơn"), `StickyContextBar` (SearchPill, views as Pills in `FilterChipRow leading` + channel, branch (single) and amount chips on md+, `PhoneFilterBar` + `FilterPanel` on phones, `ResultLine`), `DataTable`; views, query and filters in the URL (`useFilterParams`). Pages already copied from the old block keep working; nothing changes in them.
 - **Docs (#120):** the StickyContextBar, MinimalHeader, PageTitle and list-page docs now agree: a list page's action is on its title row (`PageTitle actions`), never in the bar; `MinimalHeader` is for detail and settings pages.
 - **`/semi-check`:** a list page with a `StickyContextBar` no longer counts as a page without a `SubpageToolbar`.
+- **AppShell `mobileTabIds` (#113):** no longer deprecated with `mobileNav="tabs"`: that pair is the supported way to keep the phone tab bar with chosen items, and it no longer warns. `mobileTabIds` without `mobileNav` keeps the tab bar as before (C-034) and still warns in development, now naming the fix (add `mobileNav="tabs"`). With `mobileNav="drawer"` it is still ignored with a warning.
+
+### Fixed
+- **AppShell `account` in the server HTML (#113):** `rail` was true in the server render and the first client render at every width (the width is measured after mount), so an account that hides its text by `rail` showed the rail block at `lg` and switched after hydration. Until the width is known the slot now renders twice, the rail copy below `lg` and the full copy from `lg` (CSS shows one; the other is `display: none`, out of the a11y tree), then only the copy for the width stays, in place. Keep app-wide effects (hotkeys, intros) out of the account and take ids from `useId`: both copies mount once on load.
+
+### Docs
+- AppShell: the `account` render prop should hide its text by `rail`, not only `collapsed` (at `md` the sidebar is a rail while `collapsed` is false); pinned items take distinct icons, or none so the rail shows initials (#114 c).
+
+### Migration
+- `migrations/0.36.0-shell.mjs` now also rewrites an AppShell / DocsShell `account={({ collapsed }) => …}` render prop to `({ collapsed, rail }) => …(collapsed || rail)…` when every `collapsed` in it is a plain read (a condition, `!collapsed`, an attribute value `x={collapsed}`; the attribute rewrite `x={(collapsed || rail)}` assumes the prop means "hide or compact", so check such props in the diff); `migrations/0.37.0-account-rail.mjs` runs that step for apps already on 0.36. Printed as `file:line` and left as is: an account that uses `collapsed` any other way (an attribute name `collapsed={collapsed}`, a parameter that shadows it `items.map((collapsed) => …)`, a shorthand `{ collapsed }`, a template literal, JSX text, a comparison, `(s) => s.collapsed`), and a render function or component reference that reads neither (`account={AccountBlock}`, `(s) => <Account {...s} />`): hide the text when `collapsed || rail` by hand. A plain JSX node (`account={<Avatar />}`) is not checked.
+- Apps that set `mobileNav="tabs"` + `mobileTabIds` need no change (the warning goes away). Apps with only `mobileTabIds`: add `mobileNav="tabs"` to keep the tab bar on purpose, or remove `mobileTabIds` for the phone drawer.
+- Optional: replace a theme `toggleTheme` utility with `useThemeUtility()` to give the "system" choice back.
 
 ## 0.36.1 — 2026-11-23
 

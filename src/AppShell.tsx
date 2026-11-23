@@ -8,7 +8,8 @@
 //   show their name in a Tooltip on the right
 // - A nav item with `mega` opens a MegaMenu flyout beside the sidebar
 // - Phones (< md): a top bar with the menu button opens a full-screen drawer with the same groups, drill-down rows (›)
-//   for sub-items and mega menus, and the utilities at the bottom. `mobileNav="tabs"` keeps the old MobileTabBar
+//   for sub-items and mega menus, and the utilities at the bottom. `mobileNav="tabs"` keeps the MobileTabBar
+//   (`mobileTabIds` picks its items)
 // - Sub-items (`children`) open under their parent only while the parent or one of them is active
 import React, { createContext, useContext, useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
@@ -37,6 +38,11 @@ export interface ShellNavItem {
   /** Short name for the rail when the item has no icon (MobileTabBar too). */
   shortLabel?: string;
   icon?: IconName;
+  /**
+   * Keep the icon's place but hide it (`opacity-0`): for an icon that shows a value only known after mount, so it
+   * does not swap after hydration (`useThemeUtility()` sets it until the stored theme is read).
+   */
+  iconHidden?: boolean;
   href?: string;
   external?: boolean;
   /** Small trailing content in the expanded sidebar (a count, a button). */
@@ -51,6 +57,12 @@ export interface ShellNavItem {
   mega?: MegaMenuContent;
   /** Acts in place (theme, help, sign out) instead of navigating: the usual kind of `utilities` item. */
   onClick?: () => void;
+  /**
+   * Opens a Menu of choices in place (theme, language, help links) instead of navigating: a `utilities` item with
+   * options, like `useThemeUtility()`. In the rail the name stays in the Tooltip; on phones the drawer opens the items
+   * as a level. `checked` items show the current choice.
+   */
+  menu?: MenuItem[];
 }
 
 /** The accent Create action at the top of the sidebar: a menu of things to create (`items`), or one link / action. */
@@ -133,13 +145,25 @@ export interface AppShellProps {
   pinned?: ShellPinned;
   /** Utilities at the bottom of the sidebar (help, theme, notifications): usually items with `onClick`. */
   utilities?: ShellNavItem[];
-  /** The account at the very bottom (avatar, workspace switcher). Receives `{ collapsed, rail }`: hide text when `rail`. */
+  /**
+   * The account at the very bottom (avatar, workspace switcher). Receives `{ collapsed, rail }`: hide text when `rail`
+   * (at `md` the sidebar is a rail while `collapsed` is false). `rail` is exact in the server HTML: until the width is
+   * known the slot renders twice (rail below `lg`, full from `lg`, CSS shows one), then once. So keep app-wide effects
+   * (hotkeys, intros) out of it, and let ids come from `useId`.
+   */
   account?: ShellSlot;
   /** @deprecated Since 0.36: split into `utilities` (actions) and `account`. Rendered like `account`. */
   footer?: ShellSlot;
-  /** Phone navigation: `drawer` (a full-screen menu from the top bar) or `tabs` (MobileTabBar). Default: `tabs` when `mobileTabIds` is set (as before 0.36), else `drawer`. */
+  /**
+   * Phone navigation: `drawer` (a full-screen menu from the top bar) or `tabs` (MobileTabBar, the items in
+   * `mobileTabIds`). Default: `tabs` when `mobileTabIds` is set (as before 0.36), else `drawer`.
+   */
   mobileNav?: "drawer" | "tabs";
-  /** @deprecated Since 0.36: up to 5 item ids on the tab bar. Without `mobileNav` it keeps the tab bar (as before); set `mobileNav="tabs"` explicitly, or remove both for the drawer. */
+  /**
+   * With `mobileNav="tabs"`: the ids of the items on the tab bar (up to 5; the rest go in its More sheet). Without
+   * it, tabs mode shows the first items. Set `mobileNav` too: `mobileTabIds` alone still keeps the tab bar (as before
+   * 0.36) but warns in development.
+   */
   mobileTabIds?: string[];
   /** localStorage key for persisting sidebar collapsed state. */
   storageKey?: string;
@@ -183,13 +207,16 @@ export function AppShell({
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [megaId, setMegaId] = useState<string | null>(null);
   const [wide, setWide] = useState(false);
+  // false on the server and in the first client render: the width is not known yet (see the account below)
+  const [measured, setMeasured] = useState(false);
   const asideRef = useRef<HTMLElement>(null);
   const megaTrigger = useRef<HTMLElement | null>(null);
   const asideId = useId();
 
   useEffect(() => {
     if (warned || process.env.NODE_ENV === "production") return;
-    if (footer !== undefined || mobileTabIds) {
+    // mobileTabIds with mobileNav="tabs" is the supported way to pick the tabs (#113): only the implicit case warns
+    if (footer !== undefined || (mobileTabIds && mobileNav !== "tabs")) {
       warned = true;
       console.warn(
         "[@semi/ui] AppShell: " +
@@ -198,7 +225,7 @@ export function AppShell({
             mobileTabIds &&
               (mobileNav === "drawer"
                 ? '`mobileTabIds` is ignored with mobileNav="drawer": remove it.'
-                : '`mobileTabIds` is deprecated: set mobileNav="tabs" to keep the tab bar, or remove both for the phone drawer.'),
+                : '`mobileTabIds` without `mobileNav`: add mobileNav="tabs" to keep the tab bar on purpose, or remove mobileTabIds for the phone drawer.'),
           ]
             .filter(Boolean)
             .join(" "),
@@ -211,6 +238,7 @@ export function AppShell({
     const md = window.matchMedia(MD_QUERY);
     const update = () => {
       setWide(lg.matches);
+      setMeasured(true);
       // the drawer belongs to phones: close it when the window grows past md
       if (md.matches) setDrawerOpen(false);
     };
@@ -289,7 +317,7 @@ export function AppShell({
     const inner = (
       <>
         {item.icon ? (
-          <Icon name={item.icon} className="w-[18px] h-[18px] shrink-0" />
+          <Icon name={item.icon} className={cn("w-[18px] h-[18px] shrink-0", item.iconHidden && "opacity-0")} />
         ) : (
           <span className={navShortClass} aria-hidden>
             {item.shortLabel ?? abbreviate(item.label)}
@@ -321,6 +349,31 @@ export function AppShell({
           {inner}
         </button>,
         item.id,
+      );
+    }
+
+    if (item.menu) {
+      const button = (
+        <button type="button" aria-label={item.label} title={title} className={cn(navItemClass, stateClass)}>
+          {inner}
+        </button>
+      );
+      return (
+        <Menu
+          key={item.id}
+          align="left"
+          label={item.label}
+          items={item.menu}
+          trigger={
+            rail ? (
+              <Tooltip content={item.label} side="right">
+                {button}
+              </Tooltip>
+            ) : (
+              button
+            )
+          }
+        />
       );
     }
 
@@ -618,7 +671,18 @@ export function AppShell({
             {(utilities.length > 0 || account) && (
               <div className="shrink-0 p-2 border-t border-divider flex flex-col gap-1">
                 {utilities.length > 0 && <div className="flex flex-col gap-0.5">{renderItems(utilities)}</div>}
-                {account && <div>{slot(account, { collapsed, rail })}</div>}
+                {/* `rail` must be exact in the server HTML, where the width is unknown: until it is measured the account
+                    renders twice, the rail copy below lg and the full copy from lg (CSS picks one, the other is
+                    display:none and out of the a11y tree); after mount only the copy for the width stays, in the same
+                    place, so it keeps its state and nothing moves */}
+                {account && (
+                  <>
+                    {(collapsed || !measured || !wide) && (
+                      <div className={collapsed ? undefined : "lg:hidden"}>{slot(account, { collapsed, rail: true })}</div>
+                    )}
+                    {!collapsed && (!measured || wide) && <div className="hidden lg:block">{slot(account, { collapsed: false, rail: false })}</div>}
+                  </>
+                )}
               </div>
             )}
           </aside>
@@ -739,7 +803,13 @@ export function AppShell({
   );
 }
 
-type DrillRow = { id: string; label: React.ReactNode; href?: string; icon?: IconName; external?: boolean; onSelect?: () => void; disabled?: boolean };
+type DrillRow = { id: string; label: React.ReactNode; href?: string; icon?: IconName; external?: boolean; onSelect?: () => void; disabled?: boolean; checked?: boolean };
+
+/** A `menu` as drawer rows (hidden items left out). */
+const menuRows = (id: string, items: MenuItem[], icon?: IconName): DrillRow[] =>
+  items
+    .filter((c) => !c.hidden)
+    .map((c, i) => ({ id: `${id}-${i}`, label: c.label, href: c.href, icon: c.icon ?? icon, onSelect: c.onSelect, disabled: Boolean(c.disabled), checked: c.checked }));
 type DrillLevel = { id: string; label: string; rows: DrillRow[]; seeAll?: { href: string; label?: string } };
 
 /** Phones: the full-screen menu. Same groups as the sidebar; sub-items and mega menus open as a level with a back row. */
@@ -797,7 +867,7 @@ function PhoneDrawer({
   );
   // A parent with its own page keeps it reachable: "Tất cả <label>" is the first row of its level.
   const levelOf = (it: ShellNavItem): DrillLevel | null => {
-    const rows: DrillRow[] | null = it.children?.length ? it.children : it.mega ? it.mega.columns.flatMap((c) => c.items) : null;
+    const rows: DrillRow[] | null = it.children?.length ? it.children : it.mega ? it.mega.columns.flatMap((c) => c.items) : it.menu ? menuRows(it.id, it.menu) : null;
     if (!rows) return null;
     const self: DrillRow[] = it.href ? [{ id: it.id, label: t.allOf(it.label), href: it.href, external: it.external }] : [];
     return { id: it.id, label: it.label, rows: [...self, ...rows], seeAll: it.mega?.seeAll };
@@ -810,7 +880,7 @@ function PhoneDrawer({
   const renderRow = (it: ShellNavItem) => {
     const on = activeTopId === it.id;
     const drill = levelOf(it);
-    const icon = it.icon && <Icon name={it.icon} className="w-5 h-5 text-muted shrink-0" />;
+    const icon = it.icon && <Icon name={it.icon} className={cn("w-5 h-5 text-muted shrink-0", it.iconHidden && "opacity-0")} />;
     return (
       <li key={it.id}>
         {drill ? (
@@ -884,6 +954,7 @@ function PhoneDrawer({
                 <>
                   {c.icon && <Icon name={c.icon} className="w-5 h-5 text-muted shrink-0" />}
                   <span className="flex-1 min-w-0 truncate text-left">{c.label}</span>
+                  {c.checked && <Icon name="check" className="w-4 h-4 text-contrast shrink-0" />}
                 </>
               );
               return (
@@ -896,6 +967,7 @@ function PhoneDrawer({
                     <button
                       type="button"
                       disabled={c.disabled}
+                      aria-pressed={c.checked}
                       onClick={() => {
                         if (!c.onSelect) return go(c.id);
                         onClose();
@@ -930,7 +1002,7 @@ function PhoneDrawer({
                     open({
                       id: "__create",
                       label: create.label,
-                      rows: create.items!.filter((c) => !c.hidden).map((c, i) => ({ id: `__create-${i}`, label: c.label, href: c.href, icon: c.icon ?? "plus", onSelect: c.onSelect, disabled: Boolean(c.disabled) })),
+                      rows: menuRows("__create", create.items!, "plus"),
                     })
                   }
                   className={cn("mx-1 flex items-center gap-2 h-11 px-3 rounded-control bg-accent text-on-accent hover:bg-accent-hover text-ui font-semibold cursor-pointer", FOCUS_RING)}
@@ -983,7 +1055,7 @@ function PhoneDrawer({
                 const cls = cn("w-full flex flex-col items-center gap-1 py-2 rounded-control text-caption text-muted hover:text-contrast hover:bg-tint transition cursor-pointer", FOCUS_RING);
                 const body = (
                   <>
-                    <Icon name={u.icon ?? "box"} className="w-5 h-5" />
+                    <Icon name={u.icon ?? "box"} className={cn("w-5 h-5", u.iconHidden && "opacity-0")} />
                     <span className="truncate max-w-full">{u.label}</span>
                   </>
                 );
@@ -993,6 +1065,15 @@ function PhoneDrawer({
                       <Link href={u.href} onClick={() => go(u.id)} className={cls}>
                         {body}
                       </Link>
+                    ) : u.menu ? (
+                      <button
+                        type="button"
+                        data-drawer-row={u.id}
+                        onClick={() => open({ id: u.id, label: u.label, rows: menuRows(u.id, u.menu!) })}
+                        className={cls}
+                      >
+                        {body}
+                      </button>
                     ) : (
                       <button type="button" onClick={() => (u.onClick ? u.onClick() : go(u.id))} className={cls}>
                         {body}

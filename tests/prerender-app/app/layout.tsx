@@ -1,4 +1,5 @@
 import { ToastHost } from "../../../src/Toast";
+import { ThemeProvider } from "../../../src/ThemeProvider";
 import { Palette } from "./Palette";
 
 // ToastHost is bare on purpose: no <Suspense> around it, as the docs show. If it calls a router hook outside a
@@ -7,9 +8,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="vi">
       <body>
-        <ToastHost />
-        <Palette />
-        {children}
+        <ThemeProvider defaultTheme="light">
+          <ToastHost />
+          <Palette />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

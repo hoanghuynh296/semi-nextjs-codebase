@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { AppShell, ThemeSwitcher, type ShellNavSection } from "@semi/ui";
+import { AppShell, useThemeUtility, type ShellNavSection } from "@semi/ui";
 
 const SECTIONS: ShellNavSection[] = [
   {
@@ -17,9 +17,10 @@ const SECTIONS: ShellNavSection[] = [
 
 export default function Shell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
+  const theme = useThemeUtility();
   const active = SECTIONS.flatMap((s) => s.items).find((i) => i.href !== "/" && path.startsWith(i.href ?? ""))?.id ?? "overview";
   return (
-    <AppShell productName="3D Noobs Manager" logoIcon="printer" sections={SECTIONS} activeId={active} footer={() => <ThemeSwitcher fullWidth />}>
+    <AppShell productName="3D Noobs Manager" logoIcon="printer" sections={SECTIONS} activeId={active} utilities={[theme]}>
       {children}
     </AppShell>
   );
