@@ -411,4 +411,33 @@ test("1.0.0 app-shell: comments inside a tag are not props, a > in a comment or 
   // a later, readable tag in the same file is still migrated
   assert.match(shell.migrateShell(apostrophe + "\n<AppShell create={b} />"), /<AppShell header=\{<span>Don't<\/span>\} create=\{a\} \/>/);
   assert.match(shell.migrateShell(apostrophe + "\n<AppShell create={b} />"), /\n<AppShell mainAction=\{b\} \/>$/);
+test("1.0.0 buttons: variant=\"secondary\" → \"subtle\" on Semi Button / SplitButton, BTN_SECONDARY → BTN_SUBTLE; twice-safe; outline and expressions flagged", async () => {
+  const { migrateButtons, buttonFlags } = await import("../../migrations/1.0.0-buttons.mjs");
+  const src = [
+    `import { Button, SplitButton, BTN_SECONDARY, MODAL_BTN_SECONDARY } from "@semi/ui";`,
+    `<Button variant="secondary" onClick={() => a > b}>x</Button>`,
+    `<Button onClick={() => go()} variant={"secondary"} size="sm" />`,
+    `<SplitButton label="x" variant='secondary' items={[]} />`,
+    `<Card variant="secondary" />`,
+    `<button className={cn(BTN_SECONDARY, "x")} /><button className={MODAL_BTN_SECONDARY} />`,
+  ].join("\n");
+  const out = migrateButtons(src);
+  assert.equal(
+    out,
+    [
+      `import { Button, SplitButton, BTN_SUBTLE, MODAL_BTN_SUBTLE } from "@semi/ui";`,
+      `<Button variant="subtle" onClick={() => a > b}>x</Button>`,
+      `<Button onClick={() => go()} variant="subtle" size="sm" />`,
+      `<SplitButton label="x" variant="subtle" items={[]} />`,
+      `<Card variant="secondary" />`,
+      `<button className={cn(BTN_SUBTLE, "x")} /><button className={MODAL_BTN_SUBTLE} />`,
+    ].join("\n"),
+  );
+  assert.equal(migrateButtons(out), out, "second run changes nothing");
+  // a Button that is not Semi's is left alone
+  const local = `import { Button } from "./ui";\n<Button variant="secondary" />`;
+  assert.equal(migrateButtons(local), local);
+  const flags = buttonFlags(`import { Button } from "@semi/ui";\nconst v = ok ? "primary" : "secondary";\n<Button variant={v} /><Button variant="outline" />`);
+  assert.equal(flags.length, 2, flags.join("; "));
+  assert.deepEqual(buttonFlags(out), []);
 });

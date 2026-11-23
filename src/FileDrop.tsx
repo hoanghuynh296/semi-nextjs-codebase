@@ -251,7 +251,7 @@ export function FileDrop({
               </div>
               {item.status === "done" && <Icon name="check" className="w-4 h-4 shrink-0 text-success-fg" title={t.fileDone} />}
               {item.status === "error" && onRetry && (
-                <Button variant="secondary" size="sm" icon="refresh" onClick={() => onRetry(item.id)}>
+                <Button variant="subtle" size="sm" icon="refresh" onClick={() => onRetry(item.id)}>
                   {t.fileRetry}
                 </Button>
               )}

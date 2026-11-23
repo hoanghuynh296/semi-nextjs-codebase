@@ -165,7 +165,7 @@ export function EmptyState({
   const noResults = variant === "no-results";
   const [ref, over] = useOverflowing<HTMLDivElement>();
   const heading = title ?? (noResults ? t.noResults : t.noData);
-  const shownAction = noResults && onClearFilters ? <Button variant="secondary" icon="close" onClick={onClearFilters}>{t.clearFilters}</Button> : action;
+  const shownAction = noResults && onClearFilters ? <Button variant="subtle" icon="close" onClick={onClearFilters}>{t.clearFilters}</Button> : action;
   return (
     <div ref={ref} data-empty={variant ?? "default"} tabIndex={over ? 0 : undefined} aria-label={over && typeof heading === "string" ? heading : undefined} className={cn(EMPTY_STATIC, EMPTY_PHONE_CAP, "max-sm:justify-start", className)}>
       <span className="w-9 h-9 rounded-card bg-field border border-line flex items-center justify-center text-muted shrink-0">

@@ -182,7 +182,7 @@ export function FeatureIntro({
               </>
             )}
           </div>
-          <Button variant="secondary" onClick={skip}>
+          <Button variant="subtle" onClick={skip}>
             {skipLabel ?? t.introSkip}
           </Button>
           <Button variant="primary" data-autofocus onClick={() => (last ? close("finished") : setStep(at + 1))}>
