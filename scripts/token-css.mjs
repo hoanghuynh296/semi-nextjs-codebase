@@ -72,6 +72,13 @@ function resolveValue(tokens, v, theme, seen) {
   if (v === "transparent") return ["#000000", 0];
   const ref = /^var\(--semi-([a-z0-9-]+)\)$/.exec(v);
   if (ref) return resolveColor(tokens, `color-${ref[1]}`, theme, seen);
+  // a palette colour (var(--color-rose-500)): tokens.json palette / gray, plain hex
+  const pal = /^var\(--color-([a-z]+-\d{2,3})\)$/.exec(v);
+  if (pal) {
+    const hex = tokens.palette?.[`color-${pal[1]}`] ?? tokens.gray?.[`color-${pal[1]}`];
+    const h = typeof hex === "object" ? hex?.value : hex;
+    return /^#[0-9a-f]{6}$/i.test(h ?? "") ? [h.toLowerCase(), 1] : null;
+  }
   const mix = /^color-mix\(in oklab,\s*(.+?)(?:\s+([\d.]+)%)?\s*,\s*(.+?)(?:\s+([\d.]+)%)?\s*\)$/.exec(v);
   if (!mix) return null;
   const [A, B] = [resolveValue(tokens, mix[1], theme, seen), resolveValue(tokens, mix[3], theme, seen)];
@@ -116,6 +123,8 @@ export const BUTTON_PAIRS = [
   ["secondary", "color-on-secondary", "color-secondary"],
   ["secondary hover", "color-on-secondary", "color-secondary-hover"],
   ["disabled", "color-text-muted", "color-subtle-button"],
+  ["danger", "color-danger-fg", "color-danger-bg"],
+  ["danger hover", "color-danger-fg", "color-danger-bg-hover"],
   ["count badge", "color-on-primary", "color-primary"],
   ["new tag", "color-on-new-tag", "color-new-tag"],
 ];

@@ -72,6 +72,15 @@ export function buttonFlags(after) {
         flags.push(`${name} variant="outline" is now transparent with a 1px outline-line (no field fill): check it on its surface, or use "subtle" / "surface"`);
     }
   }
+  // What the rename cannot reach: an alias or namespace import, a wrapper passing a ButtonVariant through, and any
+  // variant="secondary" left on another component (a local wrapper of Button, or another library's).
+  const semiImport = /import\s*\{[^}]*\bButton\s+as\s+\w+[^}]*\}\s*from\s*["']@semi\/ui["']|import\s*\*\s*as\s+\w+\s+from\s*["']@semi\/ui["']/;
+  if (semiImport.test(after) && /["']secondary["']/.test(after))
+    flags.push('Button imported under another name (as / import * as) in a file that names "secondary": not rewritten; in 1.0 "secondary" is the brand secondary fill, the neutral button is "subtle"');
+  if (importsFromSemi(after, "ButtonVariant"))
+    flags.push('a wrapper typed with ButtonVariant passes the variant through: a "secondary" its callers pass is now the brand secondary fill; the neutral button is "subtle"');
+  for (const m of after.matchAll(/<([A-Za-z][\w.]*)(?=[\s>])[^<>]*?\bvariant=(?:"secondary"|'secondary'|\{\s*["']secondary["']\s*\})/g))
+    flags.push(`<${m[1]} variant="secondary"> is not a Semi Button / SplitButton imported from @semi/ui, so it was not rewritten: if it wraps Button, "secondary" is now the brand secondary fill (the neutral one is "subtle")`);
   return [...new Set(flags)];
 }
 

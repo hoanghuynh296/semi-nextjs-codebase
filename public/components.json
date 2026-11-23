@@ -76,6 +76,7 @@
       "tone-rose",
       "tone-pink",
       "danger-bg",
+      "danger-bg-hover",
       "danger-border",
       "danger-solid",
       "success-bg",
@@ -3177,6 +3178,13 @@
       "summary": "The app's main action at the right of the header (Slice, Phối màu, Xong)."
     },
     {
+      "name": "buttonClass",
+      "kind": "function",
+      "module": "styles/buttons.ts",
+      "client": false,
+      "summary": "Button's classes: variant × size, icon-only, round, full width, the hit area, and `relative` unless className positions it."
+    },
+    {
       "name": "cn",
       "kind": "function",
       "module": "styles/utils.ts",
@@ -3550,6 +3558,27 @@
       "summary": "Smallest (24px, 12px text): the inverse pill of a list title row, chips of actions. Add to any BTN_* constant."
     },
     {
+      "name": "MODAL_BTN_SURFACE",
+      "kind": "constant",
+      "module": "styles/buttons.ts",
+      "client": false,
+      "summary": "Surface / inverse / ghost at dialog size."
+    },
+    {
+      "name": "MODAL_BTN_INVERSE",
+      "kind": "constant",
+      "module": "styles/buttons.ts",
+      "client": false,
+      "summary": ""
+    },
+    {
+      "name": "MODAL_BTN_GHOST",
+      "kind": "constant",
+      "module": "styles/buttons.ts",
+      "client": false,
+      "summary": ""
+    },
+    {
       "name": "MODAL_BTN_PRIMARY",
       "kind": "constant",
       "module": "styles/buttons.ts",
@@ -3583,6 +3612,13 @@
       "module": "styles/buttons.ts",
       "client": false,
       "summary": "Destructive confirm in a dialog (Xoá, Dừng in): the danger status fill (tint + line, danger text: AA in both themes)."
+    },
+    {
+      "name": "BTN_HIT",
+      "kind": "constant",
+      "module": "styles/buttons.ts",
+      "client": false,
+      "summary": "The hit area (HIT_AREA of styles/utils, repeated here so this file has no imports): a 24px pseudo-element on a fine pointer, 44px on a touch screen (any-pointer-coarse), centred, never smaller than the button. Needs a positioned button."
     },
     {
       "name": "CARD",

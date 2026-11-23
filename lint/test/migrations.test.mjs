@@ -439,5 +439,15 @@ test("1.0.0 buttons: variant=\"secondary\" → \"subtle\" on Semi Button / Split
   assert.equal(migrateButtons(local), local);
   const flags = buttonFlags(`import { Button } from "@semi/ui";\nconst v = ok ? "primary" : "secondary";\n<Button variant={v} /><Button variant="outline" />`);
   assert.equal(flags.length, 2, flags.join("; "));
-  assert.deepEqual(buttonFlags(out), []);
+  assert.deepEqual(buttonFlags(out.replace(`<Card variant="secondary" />`, "")), []);
+  // what the rename cannot reach is flagged: an alias, a namespace import, a ButtonVariant wrapper, a non-Semi component
+  const alias = `import { Button as B } from "@semi/ui";\n<B variant="secondary" />`;
+  assert.equal(migrateButtons(alias), alias);
+  assert.ok(buttonFlags(alias).some((f) => f.startsWith("Button imported under another name")), "alias");
+  const ns = `import * as S from "@semi/ui";\n<S.Button variant="secondary" />`;
+  assert.ok(buttonFlags(ns).some((f) => f.startsWith("Button imported under another name")), "namespace");
+  assert.ok(buttonFlags(ns).some((f) => f.startsWith("<S.Button variant")), "namespace tag");
+  const wrapper = `import { Button, type ButtonVariant } from "@semi/ui";\nexport const Act = ({ v }: { v: ButtonVariant }) => <Button variant={v} />;`;
+  assert.ok(buttonFlags(wrapper).some((f) => f.startsWith("a wrapper typed with ButtonVariant")), "wrapper");
+  assert.ok(buttonFlags(`<Card variant="secondary" />`).some((f) => f.startsWith("<Card variant")), "non-Semi component");
 });
