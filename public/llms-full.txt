@@ -532,8 +532,8 @@ Semi architecture separates tokens into two tiers:
 | `--color-on-accent` | `text-on-accent` | Chữ / icon trên `bg-accent` (≥ 4.5:1) | `#0c0d0e` | `#ffffff` |
 | `--color-accent-fg` | `text-accent-fg` | Chữ / icon màu primary trên surface (link, check, tab active), cả trên nền chọn trong thẻ lõm | `primary-400` | `primary-800` (brand kit: bộ sinh chọn, kiểm cả trên `card`) |
 | `--color-focus` | `ring-focus`, `border-focus` | Viền focus (`FOCUS_RING`), viền ô nhập đang gõ (≥ 3:1 trên mọi surface) | = `accent-fg` | = `accent-fg` |
-| `--color-accent-subtle` | `bg-accent-subtle` | Nền nhạt của mục đang chọn (option, trang hiện tại, pill active, IconTile); `text-accent-fg`, `text-body` và `text-muted` trên nó đều ≥ 4.5:1 | `accent-fg` 14% (trong suốt) | `accent-fg` 11% pha vào `panel` (đục). Trong thẻ (`bg-card`): 2% pha vào `panel`, nâng mục chọn lên tông panel (#123) |
-| `--color-accent-subtle-hover` | `hover:bg-accent-subtle-hover` | Hover của nền nhạt accent (`text-muted` vẫn ≥ 4.5:1) | `accent-fg` 19% (trong suốt); trong thẻ 20% pha vào `panel` | `accent-fg` 13.5% pha vào `panel`; trong thẻ 6% |
+| `--color-accent-subtle` | `bg-accent-subtle` | Nền nhạt của mục đang chọn (option, trang hiện tại, pill active, IconTile) | `accent-fg` 14% | `accent-fg` 11% |
+| `--color-accent-subtle-hover` | `hover:bg-accent-subtle-hover` | Hover của nền nhạt accent | `accent-fg` 22% | `accent-fg` 18% |
 | `--color-accent-line` | `border-accent-line` | Viền của mục đang chọn (card được chọn, ngày hôm nay) | `accent-fg` 40% | `accent-fg` 40% |
 | `--color-danger-fg` · `success-fg` · `warning-fg` · `info-fg` | `text-danger-fg` … | Chữ trạng thái trên surface | `rose/emerald/amber/sky-400` | `-700` (`warning`: `amber-800`, ≥ 4.5:1 cả trên ô nhập Soft / Sharp) |
 | `--color-tone-<hue>` | `text-tone-<hue>` | Chữ tonal 12 hue (purple, violet, indigo, blue, sky, cyan, teal, emerald, amber, orange, rose, pink) | `<hue>-300` | `<hue>-700` (amber, orange, cyan, teal, pink: `-800`, ≥ 4.5:1 trên badge trong thẻ lõm, #50) |
@@ -838,7 +838,8 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   `title` + `aria-label` carrying the label.
 - **Search and filters (C-032, #99):** a list page that people search and filter opens, under its heading, with one
   `StickyContextBar` (in place of a `SubpageToolbar`): a `SearchPill` (one per page, it feeds the list or `DataTable`;
-  250 ms debounce, Escape clears, `focusKey="/"`), then the filters, then a `ResultLine` ("“query” · N kết quả", the
+  250 ms debounce, Escape clears, `focusKey="/"`; a history push of `useFilterParams` / `useDetailParam` / `openDetail`
+  during the debounce sends the pending text first, onto the current entry, so Back keeps the query), then the filters, then a `ResultLine` ("“query” · N kết quả", the
   sort on the right). On `md+` the filters are a `FilterChipRow`: one line of chips (`h-8 rounded-full`, `bg-tint`,
   solid `bg-inverted` with the value or "Nhãn · N" when on), each a multi-select `Popover` or a switch chip; the row
   scrolls sideways with ‹ › and never wraps; "Xoá lọc" shows while one is on; a `ViewSwitch` (list ↔ grid, density)
@@ -2367,8 +2368,7 @@ tắc bố cục đi kèm (tránh giao diện "AI" chung chung): `DESIGN_SYSTEM.
   theme sáng lấy bậc 600 (700 chỉ khi 600 không đạt), theme tối lấy bậc sáng và rực hơn (400-500), như cách Apple làm với màu hệ thống.
   Hai theme không trùng nhau trừ khi thương hiệu tự chọn như vậy.
 - **Chữ màu chính (`text-accent-fg`):** sắc độ gần màu thương hiệu nhất đọc được 4.5:1 trên mọi nền và trên nền chọn
-  (`bg-accent-subtle`). Chữ phụ (`text-muted`) và chữ thường (`text-body`) cũng phải đạt 4.5:1 trên nền chọn: bộ sinh chỉnh
-  chúng đậm hơn một chút khi thiếu (báo cáo: "chữ mờ trên nền chọn"). Viền focus (`ring-focus`) và viền mục chọn (`border-accent-line`) đi theo nó.
+  (`bg-accent-subtle`). Viền focus (`ring-focus`) và viền mục chọn (`border-accent-line`) đi theo nó.
 - **Màu phụ:** `secondary-*`, chữ `text-secondary-fg`, và nền đặc `bg-secondary-solid` + `text-on-secondary` (badge, điểm
   nhấn), chọn theo cùng cách.
 - **Báo cáo** (`dist/brand.json` → `report`, BRAND.md, trang preview): chữ ≥ 4.5:1, viền focus ≥ 3:1, hover vẫn đọc được;
@@ -5222,13 +5222,14 @@ export default function SearchPillResultLine() {
 ### SearchPill
 
 The wide pill search of a list page: one per page, it feeds the list (or DataTable). Typing calls `onChange` after
-`debounce` ms; the clear button and Escape clear at once. `focusKey` ("/") focuses it from anywhere on the page
+`debounce` ms; the clear button and Escape clear at once. A history push of useFilterParams / useDetailParam /
+openDetail during the debounce sends the pending text first, so the query stays on the entry it was typed on. `focusKey` ("/") focuses it from anywhere on the page
 (not while typing in another field).
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `value` * | `string` |  |  |
-| `onChange` * | `(value: string) => void` |  |  |
+| `onChange` * | `(value: string) => void` |  | Gets the text after the debounce. For a query in the URL write it at once with `useFilterParams().setParams({ q: v }, "replace")`: a push during the debounce (opening a row, a filter chip) then keeps it on the list's entry. `router.replace`, nuqs or state + an effect land after that push. |
 | `label` * | `string` |  | Accessible name ("Tìm khách hàng"); also the placeholder when none is given. |
 | `placeholder` | `string` |  |  |
 | `debounce` | `number` | `250` | Milliseconds to wait after the last key before `onChange` (0: every key). |
@@ -5262,6 +5263,7 @@ the right. Leave out `query` for a plain count.
 - Controlled: keep the query in the URL (?q=) so a reload or a shared link keeps it; the field shows a value changed from outside (Back, Xoá lọc).
 - One search per page, feeding the list or DataTable (C-021 D5): never a second search in the table header.
 - debounce={0} sends every key (a small local list).
+- Opening a row (useDetailParam().open, openDetail) or a filter chip inside the debounce sends the pending text first, onto the list's history entry: Back keeps the query, no need for debounce={0}. Text typed before a navigation to another route is dropped. This needs an onChange that writes the URL at once: useFilterParams().setParams({ q: v }, "replace"). router.replace, nuqs or state + an effect still land after the push.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/search-pill/ and the types in src/ -->
 
