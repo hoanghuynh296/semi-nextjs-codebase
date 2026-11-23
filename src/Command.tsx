@@ -10,6 +10,7 @@ import { Icon, IconTile, type IconName, type TileTone } from "./Icon";
 import { Kbd } from "./Kbd";
 import { useDialog } from "./a11y";
 import { useSemiLocale } from "./locale";
+import { normalizeSearch } from "./listQuery";
 import { cn } from "../styles/utils";
 
 export interface CommandItem {
@@ -31,15 +32,6 @@ export interface CommandItem {
   /** The address the item opens: ⌘↵ / Ctrl+↵ (and a middle or ⌘-click) open it in a new tab. Enter still runs `onSelect`. */
   href?: string;
 }
-
-/** Lowercase, no Vietnamese marks (đ → d): "Đơn hàng" matches "don hang". */
-export const normalizeSearch = (s: string) =>
-  s
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/đ/g, "d")
-    .replace(/Đ/g, "d")
-    .toLowerCase();
 
 /** Items whose label, group or keywords contain every word of the query; label prefix matches first. */
 export function filterCommands(items: CommandItem[], query: string): CommandItem[] {

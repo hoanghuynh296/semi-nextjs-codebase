@@ -1065,6 +1065,95 @@ test("DataTable: sorts with aria-sort, searches without marks, selects a page an
   await expect(table.getByRole("checkbox", { name: "Chọn tất cả" })).not.toBeChecked();
 });
 
+test("DataTable: priority columns fold by the table's own width, the rest scrolls with a sticky first column and edge lines (#130)", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await open(page, "/components/data-table/", "dark");
+  const ex = example(page, "data-table/columns");
+  const table = ex.getByRole("table", { name: "Khách hàng" });
+  const headers = table.locator("thead th");
+  const width = (name: string) => ex.getByRole("radio", { name }).click();
+  await width("Đầy đủ");
+  await expect(headers).toHaveText([/Khách hàng/, "Điện thoại", /Tỉnh/, "Nguồn", "Người phụ trách", /Liên lạc/, /Đơn/, /Doanh số/]);
+  await expect(table.locator("[data-folded]")).toHaveCount(0);
+  // the same viewport, a narrower box: priority 3 folds first (into the first cell, header read to screen readers)
+  await width("Máy tính bảng");
+  await expect(headers).toHaveText([/Khách hàng/, "Điện thoại", /Tỉnh/, /Liên lạc/, /Đơn/, /Doanh số/]);
+  const firstRow = table.getByRole("row").nth(1);
+  await expect(firstRow.getByRole("cell").first()).toContainText("Siêu thị mini Thảo Điền");
+  await expect(firstRow.locator("[data-folded]")).toHaveText(/Nguồn: Hội chợ.*Người phụ trách: Tú/);
+  const box = table.locator("xpath=..");
+  await expect(box).not.toHaveAttribute("tabindex"); // fits: not a scroll region
+  // narrower still: priority 2 folds too; the columns without a priority scroll sideways
+  await width("Hẹp");
+  await expect(headers).toHaveText([/Khách hàng/, /Tỉnh/, /Đơn/, /Doanh số/]);
+  await expect(firstRow.locator("[data-folded]")).toHaveText(/Điện thoại: 090.*Nguồn: Hội chợ.*Liên lạc: 2026-11-05/);
+  await expect(box).toHaveAttribute("role", "region");
+  await expect(box).toHaveAttribute("aria-label", "Khách hàng");
+  // the cue: an accent line on the edge with columns past it (no lint skip, no gradient)
+  await expect(box).toHaveAttribute("data-edges", "right");
+  const accent = await box.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--color-accent-line").trim());
+  expect(accent).not.toBe("");
+  await expect(box).toHaveCSS("border-right-width", "2px");
+  // axe on the overflowing region (scrollable-region-focusable, names, contrast of the folded line)
+  const { violations } = await new AxeBuilder({ page }).include('[data-example="data-table/columns"]').withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
+  expect(violations.filter((v) => v.impact === "serious" || v.impact === "critical").map((v) => v.id)).toEqual([]);
+  // keyboard: the scroll box is a tab stop and the arrow keys scroll it; the first column stays in place
+  const name = headers.first();
+  const x0 = (await name.boundingBox())!.x;
+  await box.focus();
+  await expect(box).toBeFocused();
+  await page.keyboard.press("ArrowRight");
+  await expect.poll(() => box.evaluate((el) => el.scrollLeft)).toBeGreaterThan(0);
+  expect((await name.boundingBox())!.x).toBeCloseTo(x0, 0);
+  await expect(name).toHaveCSS("position", "sticky");
+  await expect(box).toHaveAttribute("data-edges", "left right"); // columns past both edges now
+  await box.evaluate((el) => (el.scrollLeft = el.scrollWidth));
+  await expect(box).toHaveAttribute("data-edges", "left"); // scrolled to the end: the line moves to the sticky column's edge
+  expect(await name.evaluate((el) => getComputedStyle(el, "::before").width)).toBe("2px");
+  await box.focus();
+  const ring = await box.evaluate((el) => getComputedStyle(el).boxShadow);
+  expect(ring).toContain("inset"); // the focus ring is inside the box, whole, next to the edge lines
+  // wide again: everything unfolds
+  await width("Đầy đủ");
+  await expect(headers).toHaveCount(8);
+  await expect(box).not.toHaveAttribute("tabindex");
+  // the sorted column never folds: sort by Liên lạc (priority 2), then narrow: its header (and the sort control) stays
+  await headers.filter({ hasText: "Liên lạc" }).getByRole("button").click();
+  await width("Hẹp");
+  const contact = headers.filter({ hasText: "Liên lạc" });
+  await expect(contact).toHaveAttribute("aria-sort", "ascending");
+  await expect(headers).toHaveText([/Khách hàng/, /Tỉnh/, /Liên lạc/, /Đơn/, /Doanh số/]);
+  await expect(firstRow.locator("[data-folded]")).not.toContainText("Liên lạc");
+  await contact.getByRole("button").click();
+  await expect(contact).toHaveAttribute("aria-sort", "descending");
+});
+
+test("DetailOverlay over a sorted, paged DataTable: ‹ › follow the table's order (sortRows / searchRows, #124)", async ({ page }) => {
+  await open(page, "/components/detail-overlay/", "dark");
+  const ex = example(page, "detail-overlay/table");
+  const table = ex.getByRole("table", { name: "Đơn hàng" });
+  await expect(table.getByRole("row").nth(1)).toContainText("DH-1051"); // Tổng, highest first
+  const opener = table.getByRole("button", { name: "DH-1051" });
+  await opener.focus();
+  await page.keyboard.press("Enter");
+  const dialog = page.getByRole("dialog", { name: "Đơn DH-1051" });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByText("1 / 12")).toBeVisible();
+  await page.keyboard.press("ArrowRight");
+  await expect(page.getByRole("dialog", { name: "Đơn DH-1045" })).toBeVisible(); // 2nd by Tổng, not DH-1052
+  await expect(page.getByText("2 / 12")).toBeVisible();
+  for (let i = 0; i < 4; i++) await page.keyboard.press("ArrowRight");
+  await expect(page.getByRole("dialog", { name: "Đơn DH-1043" })).toBeVisible();
+  await expect(page.getByText("6 / 12")).toBeVisible();
+  // past the table's first page (6 rows): the 7th row of the sorted results
+  await page.keyboard.press("ArrowRight");
+  await expect(page.getByRole("dialog", { name: "Đơn DH-1048" })).toBeVisible();
+  await expect(page.getByText("7 / 12")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(opener).toBeFocused();
+});
+
 test("Accordion and ToggleGroup move with the arrow keys", async ({ page }) => {
   await open(page, "/components/accordion/", "dark");
   const faq = example(page, "accordion/faq");

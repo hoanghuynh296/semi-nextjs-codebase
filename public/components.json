@@ -1173,7 +1173,7 @@
       "kind": "component",
       "module": "src/DataTable.tsx",
       "client": true,
-      "summary": "Sort by a column header (click again to reverse; aria-sort on the header), filter with `search` (every searchable column, case and Vietnamese marks ignored), select rows with a checkbox column (select-all on the page, bulk actions bar), page with Pagination. Shows skeleton rows while `loading` and an EmptyState when nothing is left.",
+      "summary": "Sort by a column header (click again to reverse; aria-sort on the header), filter with `search` (every searchable column, case and Vietnamese marks ignored), select rows with a checkbox column (select-all on the page, bulk actions bar), page with Pagination. Shows skeleton rows while `loading` and an EmptyState when nothing is left. When the columns do not fit its own box, columns with a `priority` fold into the first column's second line; what still does not fit scrolls sideways, with an accent line on each edge that has columns past it and the table focusable to scroll by keyboard. The sorted column never folds. Folding is measured after hydration, so a table with priorities may shift once on first load at a narrow width. The order it shows is `sortRows(searchRows(rows, columns, search), columns, sort)` (for DetailOverlay ‹ ›).",
       "props": [
         "rows",
         "columns",
@@ -1191,6 +1191,7 @@
         "loading",
         "empty",
         "onRowClick",
+        "stickyFirstColumn",
         "className"
       ],
       "doc": "docs/components/data-table.md"
@@ -2938,13 +2939,6 @@
       "summary": "Text colour of a chip's leading icon: the item's tone (kept when selected, the background is what changes)."
     },
     {
-      "name": "normalizeSearch",
-      "kind": "function",
-      "module": "src/Command.tsx",
-      "client": true,
-      "summary": "Lowercase, no Vietnamese marks (đ → d): \"Đơn hàng\" matches \"don hang\"."
-    },
-    {
       "name": "filterCommands",
       "kind": "function",
       "module": "src/Command.tsx",
@@ -3076,6 +3070,27 @@
       "module": "src/floating.ts",
       "client": true,
       "summary": "Clone a trigger element with our props without losing its own: event handlers run theirs first, then ours unless theirs called `preventDefault()`; refs are composed; `aria-describedby` ids are joined. Used by Popover, HoverCard, Tooltip and Menu, whose `trigger` is the app's own Button."
+    },
+    {
+      "name": "normalizeSearch",
+      "kind": "function",
+      "module": "src/listQuery.ts",
+      "client": false,
+      "summary": "Lowercase, no Vietnamese marks (đ → d): \"Đơn hàng\" matches \"don hang\"."
+    },
+    {
+      "name": "searchRows",
+      "kind": "function",
+      "module": "src/listQuery.ts",
+      "client": false,
+      "summary": "The rows DataTable keeps for `search`: every word of the query (case and Vietnamese marks ignored) must appear in the searchable columns' values (`value`, else `row[key]`; `searchable: false` columns are left out). An empty query returns `rows` itself."
+    },
+    {
+      "name": "sortRows",
+      "kind": "function",
+      "module": "src/listQuery.ts",
+      "client": false,
+      "summary": "The rows in DataTable's order for `sort`: numbers by value, text in Vietnamese order with numbers inside compared as numbers (\"SO-9\" before \"SO-10\"), empty values (`null` / `undefined`) last in both directions, ties in their input order. No sort, or a key no column has, returns `rows` itself."
     },
     {
       "name": "headerPrimary",

@@ -10,7 +10,8 @@
     "type DataTableSort"
   ],
   "when": [
-    "Admin lists: orders, customers, inventory, logs — sort by a column, search, act on several rows."
+    "Admin lists: orders, customers, inventory, logs — sort by a column, search, act on several rows.",
+    "Many columns on a tablet or beside a rail: give the less important ones a `priority`, they fold into the first column instead of being cut."
   ],
   "instead": [
     {
@@ -27,7 +28,8 @@
     }
   ],
   "a11y": [
-    "Sortable headers are buttons with aria-sort on the header cell; the caption names the table; row checkboxes and select-all are labelled; aria-busy while loading."
+    "Sortable headers are buttons with aria-sort on the header cell; the caption names the table; row checkboxes and select-all are labelled; aria-busy while loading.",
+    "A folded value keeps its header for screen readers (“Nguồn: Facebook”) on the first cell's second line; when the table still scrolls sideways its scroll box is a named, focusable region, so the arrow keys scroll it."
   ],
   "examples": [
     {
@@ -35,8 +37,18 @@
       "title": "Orders: search, sort, select, page"
     },
     {
+      "file": "columns",
+      "title": "Many columns: priority folds, sticky first column",
+      "description": "Switch the width: at Máy tính bảng the priority 3 columns fold under the name; at Hẹp the priority 2 ones too, and the columns without a priority scroll sideways with the name kept in place and an accent line on the edge that has more columns."
+    },
+    {
       "file": "states",
       "title": "Loading and empty"
     }
+  ],
+  "notes": [
+    "Folding is measured on the table's own box (not the viewport), from each column's one-line width: a table in a split view or next to the rail folds as soon as it is too narrow. Folding happens after hydration: the server HTML shows every column, so a table with priorities may shift once on first load at tablet width.",
+    "The order the table shows is `sortRows(searchRows(rows, columns, search), columns, sort)`: use the same two helpers to step through the results in a DetailOverlay (‹ ›, “n / N”), see the detail-overlay docs.",
+    "A table wider than its box draws a 2px accent line on each edge that has columns past it (in every table; with `stickyFirstColumn` the left line is the pinned column's edge) and keeps the first column (and the checkbox column) in place with `stickyFirstColumn`; the table then sits on `bg-card`. The sorted column never folds: its header is the only sort control."
   ]
 }

@@ -76,6 +76,7 @@ export * from "./Slider";
 export * from "./Calendar";
 export * from "./ScrollArea";
 export * from "./DataTable";
+export * from "./listQuery";
 export * from "./Chart";
 export * from "./InputOTP";
 export * from "./Carousel";

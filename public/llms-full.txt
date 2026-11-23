@@ -244,7 +244,7 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `
   - `PageTitle`, `PageTabsTitle`: text-only display heading or underline tab heading (`h-[2.5px] bg-primary`). `PageTitle actions` is a list page's title row: one primary (or secondary) + `RefreshButton` on the right, wrapping under the title below `sm`.
   - `SubpageToolbar`: sticky toolbar (`STICKY_TOOLBAR`) with `left` filters and `right` icon-only `BTN_PRIMARY BTN_ICON` + `SearchInput` + `RefreshButton`; `title` puts the page title on the same row (then no `PageTitle`).
     Phone layout (opt-in): `filters` (typed, `FilterDef[]`; more than two collapse into "Bộ lọc · N" + active chips) or `collapseFilters` (for `left`), and `secondaryActions` (a ⋯ menu below `sm`).
-  - Overlay and actions (§4, §9, #102): a list record opens in `<DetailOverlay open onClose index total onPrev onNext side related>` driven by `useDetailParam()` (`?open=`, Back closes, ‹ › replace); cards get `<CardActions label actions menu>` inside a `group relative` card (`label` is required: lint `card-hover-actions-touch`, hard); round icon buttons are `<Button iconOnly shape="round">` (`raw-pill-button`); a `DetailOverlay` without `useDetailParam` warns (`detail-overlay-url`); one `<CommandPalette items>` in the root layout (⌘K; pages add `useRegisterCommands(items)`, a button calls `openCommandPalette()`). Grouping (G1–G12): alternatives of the main action → `<SplitButton label onClick items menuLabel>`; secondary page / row actions → ⋯ `Menu` (items: `group`, `description`, `checked`, `loading`, `href`, `hidden`, `disabled: "reason"`; danger always last; bottom sheet below `sm`); `ButtonGroup` only for toggles / steps of one control; one filled primary per view.
+  - Overlay and actions (§4, §9, #102): a list record opens in `<DetailOverlay open onClose index total onPrev onNext side related>` driven by `useDetailParam()` (`?open=`, Back closes, ‹ › replace; over a `DataTable` its results are `sortRows(searchRows(rows, columns, q), columns, sort)`, never a copied comparator); a `DataTable` with many columns gives the minor ones `priority` 1–3 (they fold into the first column when the table's own box is narrow, e.g. 834 px beside the rail) and `stickyFirstColumn` when it can still scroll; cards get `<CardActions label actions menu>` inside a `group relative` card (`label` is required: lint `card-hover-actions-touch`, hard); round icon buttons are `<Button iconOnly shape="round">` (`raw-pill-button`); a `DetailOverlay` without `useDetailParam` warns (`detail-overlay-url`); one `<CommandPalette items>` in the root layout (⌘K; pages add `useRegisterCommands(items)`, a button calls `openCommandPalette()`). Grouping (G1–G12): alternatives of the main action → `<SplitButton label onClick items menuLabel>`; secondary page / row actions → ⋯ `Menu` (items: `group`, `description`, `checked`, `loading`, `href`, `hidden`, `disabled: "reason"`; danger always last; bottom sheet below `sm`); `ButtonGroup` only for toggles / steps of one control; one filled primary per view.
   - Search and filters (§4, #99): `<StickyContextBar>` with `<SearchPill>`, `<FilterChipRow className="max-md:hidden" leading={<Pills/>} trailing={<ViewSwitch/>}>` (views in `leading`; `FilterSpec kind: "single"` + `clearValue` for one-of-N facets), `<PhoneFilterBar className="md:hidden">` (opens `<FilterPanel>`) and `<ResultLine count query sort>`. One line of chips, never wrapped rows; state in the URL with `useFilterParams(specs)` or `readFilters` / `writeFilters` / `clearFilters`.
   - `KpiCard`: metric card with a `tabular-nums` value in the style's figure font (`font-figure`), optional neutral icon (`iconTone` only for a status), `featured` for the screen's main number, shimmer `loading` state.
   - `Modal`: portal dialog with `MODAL_BACKDROP`, `MODAL_PANEL`, `MODAL_HEAD`, `MODAL_CLOSE`, and `footer` (`MODAL_FOOT`).
@@ -387,7 +387,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `formValidation`: `FormErrorSummary`
 - `locale`: `SemiLocaleProvider`
 
-**Hooks:** `useAppShell`, `useHotkey`, `useRegisterCommands`, `useDetailParam`, `useField`, `useFilterParams`, `useCoarsePointer`, `useTheme`, `useThemeUtility`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useFormValidation`, `useSemiLocale`, `useUnsavedGuard` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `normalizeSearch`, `filterCommands`, `openCommandPalette`, `openDetail`, `pageWindow`, `startTask`, `themeScript`, `updateToast`, `dismissToast`, `confirmDialog`, `confirmDelete`, `kindAttrs`, `readFilterValues`, `readFilters`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `composeRefs`, `cloneTrigger`, `cn`
+**Hooks:** `useAppShell`, `useHotkey`, `useRegisterCommands`, `useDetailParam`, `useField`, `useFilterParams`, `useCoarsePointer`, `useTheme`, `useThemeUtility`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useFormValidation`, `useSemiLocale`, `useUnsavedGuard` · **Functions:** `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `filterCommands`, `openCommandPalette`, `openDetail`, `pageWindow`, `startTask`, `themeScript`, `updateToast`, `dismissToast`, `confirmDialog`, `confirmDelete`, `kindAttrs`, `readFilterValues`, `readFilters`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `composeRefs`, `cloneTrigger`, `normalizeSearch`, `searchRows`, `sortRows`, `cn`
 <!-- generated:components:end -->
 
 
@@ -869,8 +869,9 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
 - **Overlay and actions (C-032, #102):** a record of a list opens in a `DetailOverlay` over the list, not on its own
   page: its id lives in the URL (`useDetailParam()` → `?open=<id>`; opening is a history entry, so Back closes it, ‹ ›
   replace it), the list stays mounted under it, so close / Esc / Back land at the same scroll position. The header has
-  close, the title, "n / N" and ‹ › (← →) through the **current** results (the filtered, sorted list), the side
-  panel the actions: one `SplitButton` (the main action and its variants), a row of icon buttons, a ⋯ `Menu`, then the
+  close, the title, "n / N" and ‹ › (← →) through the **current** results (the filtered, sorted list; over a
+  `DataTable` build them with its own `sortRows(searchRows(rows, columns, search), columns, sort)`, all pages, never a
+  copy of its comparator), the side panel the actions: one `SplitButton` (the main action and its variants), a row of icon buttons, a ⋯ `Menu`, then the
   facts. Keep the filters in the URL too, so a shared link opens the record over the same results; existing detail
   routes stay for deep links and long workflows. A palette item or notification opens a record of the current route with
   `openDetail(id)` (not a same-route `router.push`, which Firefox and Safari < 26 do not report to the list). Cards and media tiles in a grid get `CardActions` (one or two round
@@ -1359,7 +1360,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Small interactive panel under a trigger | `Popover` (non-modal dialog); a hover preview of a link → `HoverCard` |
 | Actions at the pointer | `ContextMenu` (right-click, long-press, Menu key); the same actions must exist in a visible `Menu` |
 | Jump / run anything from the keyboard | `CommandPalette` once in the root layout (⌘K, pages add items with `useRegisterCommands`, `openCommandPalette()`); `CommandDialog` + `useHotkey` for a palette of your own, `Command` inline; matching ignores Vietnamese marks |
-| Sort / filter / select / page rows | `DataTable` (`columns`, `search`, `selectable` + `bulkActions`, `pageSize`, `loading`) |
+| Sort / filter / select / page rows | `DataTable` (`columns`, `search`, `selectable` + `bulkActions`, `pageSize`, `loading`). Many columns (a tablet beside the rail, a split view): give the less important ones `priority` 1–3; they fold into the first column's second line when the table's **own box** is too narrow (3 first; the first column and columns without a priority never fold). The sorted column never folds (its header is the sort control). Folding is measured after hydration, so such a table may shift once on first load. What still does not fit scrolls sideways with a 2px accent line on each edge that has columns past it and the scroll box focusable; `stickyFirstColumn` keeps the names in place. The order it shows is `sortRows(searchRows(rows, columns, search), columns, sort)` (pure, also for a DetailOverlay's ‹ ›) |
 | Fixed-height scrolling list | `ScrollArea` (edge lines, optional thin scrollbar, keyboard focusable) |
 | Divider / key cap | `Separator` (horizontal, vertical, with a label); `Kbd` (`keys={["⌘", "K"]}`) |
 | Charts | `BarChart` (grouped / `stacked`), `LineChart` (`area`), `DonutChart` (≤ 5 parts), `Sparkline` (trend in a KPI tile). Series colours are the fixed `chart-1…8` tokens in order, a 9th series folds into “Khác”; one y axis only; legend for 2+ series, keyboard tooltip and table view built in |
@@ -6272,7 +6273,7 @@ An item of a list opens over the list instead of on its own page: its own URL (?
 ## Import
 
 ```tsx
-import { DetailOverlay, useDetailParam, openDetail, type DetailParamState } from "@semi/ui";
+import { DetailOverlay, useDetailParam, openDetail, type DetailParamState, searchRows, sortRows } from "@semi/ui";
 ```
 
 ## Examples
@@ -6372,6 +6373,69 @@ export default function DetailOverlayList() {
 }
 ```
 
+### A sorted DataTable: ‹ › follow its order
+
+Sort by a column or search, open a row: ‹ › and “n / N” walk the rows in the order the table shows them (sortRows / searchRows, all pages).
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Button, DataTable, DetailOverlay, SearchInput, openDetail, searchRows, sortRows, useDetailParam, type DataTableColumn, type DataTableSort } from "@semi/ui";
+
+type Order = { id: string; customer: string; total: number };
+const ORDERS: Order[] = Array.from({ length: 12 }, (_, i) => ({
+  id: `DH-${1040 + i}`,
+  customer: ["Cửa hàng Minh An", "Nhà sách Phú Lợi", "Quán Bếp Nhà"][i % 3],
+  total: 185_000 + ((i * 410_000) % 2_300_000),
+}));
+const vnd = (n: number) => `${n.toLocaleString("vi-VN")} ₫`;
+const COLUMNS: DataTableColumn<Order>[] = [
+  {
+    key: "id",
+    header: "Mã đơn",
+    sortable: true,
+    // the row opens on click; the button is the keyboard way in (and where focus returns on close)
+    cell: (o) => (
+      <Button size="sm" variant="ghost" onClick={(e) => (e.stopPropagation(), openDetail(o.id, "order"))}>
+        {o.id}
+      </Button>
+    ),
+  },
+  { key: "customer", header: "Khách hàng", sortable: true },
+  { key: "total", header: "Tổng", sortable: true, numeric: true, cell: (o) => vnd(o.total) },
+];
+
+// The overlay steps through the rows in the order the table shows them: the same search and sort, through the
+// table's own helpers (sortRows / searchRows), all pages. Sort by Tổng, open a row, press → .
+export default function DetailOverlayTable() {
+  const { openId, open, show, close } = useDetailParam("order");
+  const [q, setQ] = useState("");
+  const [sort, setSort] = useState<DataTableSort | null>({ key: "total", dir: "desc" });
+  const results = sortRows(searchRows(ORDERS, COLUMNS, q), COLUMNS, sort);
+  const index = results.findIndex((o) => o.id === openId);
+  const order = index >= 0 ? results[index] : (ORDERS.find((o) => o.id === openId) ?? null);
+  return (
+    <div className="space-y-3">
+      <SearchInput value={q} onChange={setQ} placeholder="Tìm mã đơn, khách hàng…" className="w-64" />
+      <DataTable label="Đơn hàng" rows={ORDERS} columns={COLUMNS} getRowId={(o) => o.id} search={q} sort={sort} onSortChange={setSort} onRowClick={(o) => open(o.id)} pageSize={6} />
+      <DetailOverlay
+        open={order !== null}
+        onClose={close}
+        title={order ? `Đơn ${order.id}` : ""}
+        subtitle={order?.customer}
+        index={index >= 0 ? index : undefined}
+        total={index >= 0 ? results.length : undefined}
+        onPrev={index > 0 ? () => show(results[index - 1].id) : undefined}
+        onNext={index >= 0 && index < results.length - 1 ? () => show(results[index + 1].id) : undefined}
+      >
+        {order && <p className="text-ui text-body tabular-nums">Tổng tiền {vnd(order.total)}</p>}
+      </DetailOverlay>
+    </div>
+  );
+}
+```
+
 ## API
 
 ### DetailOverlay
@@ -6401,7 +6465,7 @@ export default function DetailOverlayList() {
 
 - Open a record from elsewhere on the same route (a CommandPalette item, a notification) with the hook's `open(id)` or `openDetail(id)`, not `router.push("?open=…")`: browsers without the Navigation API (Firefox, Safari < 26) do not tell the hook about Next's own same-route navigation, so the overlay would not open unless the list re-renders. To another route, navigate with the param in the URL; the hook reads it when the list mounts.
 - Close goes back when the entry is one this page opened (also after Back then Forward where the Navigation API exists), else it removes the param, so the list never gets a second history entry. Without the Navigation API only the entry the mounted list opened last, at that exact address, counts as its own.
-- Keep filters, query and sort in the URL too (useFilterParams), so ‹ › and a shared link walk the same results.
+- Walk the results the list shows: for a DataTable build them with its own helpers, `sortRows(searchRows(rows, columns, search), columns, sort)` (all pages, the table's comparator), never a copy of the comparator. Keep filters and the query in the URL too (useFilterParams), so ‹ › and a shared link walk the same results.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/detail-overlay/ and the types in src/ -->
 
@@ -10431,6 +10495,7 @@ A table that sorts, filters, selects and pages rows on the client, built on Tabl
 ## When to use
 
 - Admin lists: orders, customers, inventory, logs — sort by a column, search, act on several rows.
+- Many columns on a tablet or beside a rail: give the less important ones a `priority`, they fold into the first column instead of being cut.
 
 ## Use something else when
 
@@ -10499,6 +10564,65 @@ export default function DataTableOrders() {
 }
 ```
 
+### Many columns: priority folds, sticky first column
+
+Switch the width: at Máy tính bảng the priority 3 columns fold under the name; at Hẹp the priority 2 ones too, and the columns without a priority scroll sideways with the name kept in place and an accent line on the edge that has more columns.
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Badge, DataTable, ToggleGroup, type DataTableColumn } from "@semi/ui";
+
+type Customer = { id: string; name: string; phone: string; city: string; source: string; owner: string; lastContact: string; orders: number; spent: number };
+const CUSTOMERS: Customer[] = Array.from({ length: 6 }, (_, i) => ({
+  id: `KH-${2031 + i}`,
+  name: ["Cửa hàng Minh An", "Nhà sách Phú Lợi", "Quán Bếp Nhà", "Tiệm bánh Hồng Phúc", "Văn phòng phẩm Sao Mai", "Siêu thị mini Thảo Điền"][i],
+  phone: `090 ${String(1234567 + i * 1111).replace(/(\d{3})(\d{4})/, "$1 $2")}`,
+  city: ["TP.HCM", "Hà Nội", "Đà Nẵng", "Cần Thơ", "Huế", "TP.HCM"][i],
+  source: ["Facebook", "Giới thiệu", "Zalo", "Website", "Facebook", "Hội chợ"][i],
+  owner: ["Lan", "Minh", "Lan", "Tú", "Minh", "Tú"][i],
+  lastContact: `2026-11-${String(20 - i * 3).padStart(2, "0")}`,
+  orders: 3 + ((i * 7) % 19),
+  spent: 2_400_000 + ((i * 3_150_000) % 18_000_000),
+}));
+
+// priority 3 folds first, then 2, then 1; the first column and columns without a priority always stay
+const COLUMNS: DataTableColumn<Customer>[] = [
+  { key: "name", header: "Khách hàng", sortable: true, cell: (c) => <span className="font-medium text-contrast">{c.name}</span> },
+  { key: "phone", header: "Điện thoại", priority: 2 },
+  { key: "city", header: "Tỉnh / thành", sortable: true },
+  { key: "source", header: "Nguồn", priority: 3, cell: (c) => <Badge size="sm">{c.source}</Badge> },
+  { key: "owner", header: "Người phụ trách", priority: 3 },
+  { key: "lastContact", header: "Liên lạc", sortable: true, priority: 2 },
+  { key: "orders", header: "Đơn", sortable: true, numeric: true },
+  { key: "spent", header: "Doanh số", sortable: true, numeric: true, cell: (c) => `${c.spent.toLocaleString("vi-VN")} ₫` },
+];
+
+const WIDTHS = { full: "", tablet: "max-w-[700px]", narrow: "max-w-[400px]" } as const;
+
+export default function DataTableColumns() {
+  const [width, setWidth] = useState<(keyof typeof WIDTHS)[]>(["tablet"]);
+  return (
+    <div className="space-y-3">
+      <ToggleGroup
+        label="Độ rộng bảng"
+        value={width}
+        onChange={setWidth}
+        options={[
+          { key: "full", label: "Đầy đủ" },
+          { key: "tablet", label: "Máy tính bảng" },
+          { key: "narrow", label: "Hẹp" },
+        ]}
+      />
+      <div className={WIDTHS[width[0]]}>
+        <DataTable label="Khách hàng" rows={CUSTOMERS} columns={COLUMNS} getRowId={(c) => c.id} defaultSort={{ key: "spent", dir: "desc" }} stickyFirstColumn />
+      </div>
+    </div>
+  );
+}
+```
+
 ### Loading and empty
 
 ```tsx
@@ -10534,6 +10658,11 @@ export default function DataTableStates() {
 Sort by a column header (click again to reverse; aria-sort on the header), filter with `search` (every searchable
 column, case and Vietnamese marks ignored), select rows with a checkbox column (select-all on the page, bulk
 actions bar), page with Pagination. Shows skeleton rows while `loading` and an EmptyState when nothing is left.
+When the columns do not fit its own box, columns with a `priority` fold into the first column's second line; what
+still does not fit scrolls sideways, with an accent line on each edge that has columns past it and the table
+focusable to scroll by keyboard. The sorted column never folds. Folding is measured after hydration, so a table
+with priorities may shift once on first load at a narrow width.
+The order it shows is `sortRows(searchRows(rows, columns, search), columns, sort)` (for DetailOverlay ‹ ›).
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
@@ -10553,11 +10682,19 @@ actions bar), page with Pagination. Shows skeleton rows while `loading` and an E
 | `loading` | `boolean` | `false` |  |
 | `empty` | `React.ReactNode` |  | Shown when there are no rows (or none match the search). |
 | `onRowClick` | `(row: T) => void` |  | Make rows clickable (open the record). Keep a link or button in the row for keyboard users. |
+| `stickyFirstColumn` | `boolean` | `false` | Keep the first column (and the checkbox column) in place while the table scrolls sideways, so every row stays named. The table then sits on `bg-card`. |
 | `className` | `string` |  |  |
 
 ## Accessibility
 
 - Sortable headers are buttons with aria-sort on the header cell; the caption names the table; row checkboxes and select-all are labelled; aria-busy while loading.
+- A folded value keeps its header for screen readers (“Nguồn: Facebook”) on the first cell's second line; when the table still scrolls sideways its scroll box is a named, focusable region, so the arrow keys scroll it.
+
+## Notes
+
+- Folding is measured on the table's own box (not the viewport), from each column's one-line width: a table in a split view or next to the rail folds as soon as it is too narrow. Folding happens after hydration: the server HTML shows every column, so a table with priorities may shift once on first load at tablet width.
+- The order the table shows is `sortRows(searchRows(rows, columns, search), columns, sort)`: use the same two helpers to step through the results in a DetailOverlay (‹ ›, “n / N”), see the detail-overlay docs.
+- A table wider than its box draws a 2px accent line on each edge that has columns past it (in every table; with `stickyFirstColumn` the left line is the pinned column's edge) and keeps the first column (and the checkbox column) in place with `stickyFirstColumn`; the table then sits on `bg-card`. The sorted column never folds: its header is the only sort control.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/data-table/ and the types in src/ -->
 
