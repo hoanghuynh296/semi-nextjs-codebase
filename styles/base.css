@@ -88,6 +88,10 @@
 .slide-panel-out { animation: slide-panel-out 0.25s var(--ease-in-soft, cubic-bezier(0.4, 0, 1, 1)) both; }
 @media (prefers-reduced-motion: reduce) { .slide-panel-in, .slide-panel-out { animation-duration: 1ms; } }
 
+/* AppShell route header: the leaving breadcrumb fades out (motion-crumb-out, opacity only) while the new one enters. */
+@keyframes semi-crumb-out { to { opacity: 0; } }
+.semi-crumb-out { animation: semi-crumb-out var(--motion-crumb-out) both; }
+
 /* Visually hidden text (sr-only) is absolutely positioned: with no positioned ancestor its static position deep in a
    scrolling panel would stretch the document and let the whole page scroll past the shell. Pin it to the corner of
    its containing block instead (it stays invisible and is still read). */

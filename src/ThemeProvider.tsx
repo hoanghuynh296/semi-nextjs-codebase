@@ -147,7 +147,7 @@ const THEME_OPTIONS = [
 ] as const;
 
 /** The three choices as Menu radio items (`menuitemradio`; the menu opens on the current one), the current one `checked` (none until the stored theme is known). */
-function useThemeChoices(labelsProp?: Record<Theme, string>) {
+export function useThemeChoices(labelsProp?: Record<Theme, string>) {
   const t = useSemiLocale();
   const labels = labelsProp ?? { light: t.themeLight, dark: t.themeDark, system: t.themeSystem };
   const { theme, mounted, setTheme } = useTheme();
