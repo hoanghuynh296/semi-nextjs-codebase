@@ -37,9 +37,32 @@ export function subscribeUrl(onChange: () => void) {
   };
 }
 
-/** Write the search part of the current URL (path and hash kept) and tell the readers. */
-export function writeSearch(next: URLSearchParams, mode: "push" | "replace") {
-  const url = `${window.location.pathname}${toQueryString(next)}${window.location.hash}`;
+// Debounced writes still waiting (a SearchPill's query). A push flushes them first, so the text reaches the entry it
+// was typed on instead of landing, late, on the entry the push created (#128).
+const pending = new Set<() => void>();
+
+/** Hold a pending write until it is sent or cancelled; a push runs it first. Returns the release. */
+export function holdPending(flush: () => void) {
+  pending.add(flush);
+  return () => void pending.delete(flush);
+}
+
+/** Send every pending write now (each released before it runs, so a flush that pushes does not loop). */
+export function flushPending() {
+  for (const flush of [...pending]) {
+    pending.delete(flush);
+    flush();
+  }
+}
+
+/**
+ * Write the search part of the current URL (path and hash kept) and tell the readers. A push first flushes the
+ * pending writes onto the current entry; pass a function of the current search to build on what they wrote.
+ */
+export function writeSearch(next: URLSearchParams | ((current: string) => URLSearchParams), mode: "push" | "replace") {
+  if (mode === "push") flushPending();
+  const params = typeof next === "function" ? next(currentSearch()) : next;
+  const url = `${window.location.pathname}${toQueryString(params)}${window.location.hash}`;
   // state null, as Next documents: it keeps its own history state and syncs useSearchParams
   if (mode === "push") window.history.pushState(null, "", url);
   else window.history.replaceState(null, "", url);
@@ -48,10 +71,12 @@ export function writeSearch(next: URLSearchParams, mode: "push" | "replace") {
 
 /** Set or remove (`null` / "") params of the current URL. */
 export function patchSearch(patch: Record<string, string | null>, mode: "push" | "replace") {
-  const next = new URLSearchParams(currentSearch());
-  for (const [k, v] of Object.entries(patch)) {
-    if (v === null || v === "") next.delete(k);
-    else next.set(k, v);
-  }
-  writeSearch(next, mode);
+  writeSearch((current) => {
+    const next = new URLSearchParams(current);
+    for (const [k, v] of Object.entries(patch)) {
+      if (v === null || v === "") next.delete(k);
+      else next.set(k, v);
+    }
+    return next;
+  }, mode);
 }

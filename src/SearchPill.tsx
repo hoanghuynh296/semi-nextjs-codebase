@@ -8,6 +8,7 @@ import { Menu } from "./Overlay";
 import { useSemiLocale } from "./locale";
 import { STICKY_TOOLBAR } from "../styles/surfaces";
 import { cn } from "../styles/utils";
+import { holdPending, subscribeUrl } from "./urlState";
 
 /** A sort choice shown by ResultLine (a menu) and FilterPanel (a row of chips). */
 export interface SortDef {
@@ -41,7 +42,8 @@ export function StickyContextBar({
 
 /**
  * The wide pill search of a list page: one per page, it feeds the list (or DataTable). Typing calls `onChange` after
- * `debounce` ms; the clear button and Escape clear at once. `focusKey` ("/") focuses it from anywhere on the page
+ * `debounce` ms; the clear button and Escape clear at once. A history push of useFilterParams / useDetailParam /
+ * openDetail during the debounce sends the pending text first, so the query stays on the entry it was typed on. `focusKey` ("/") focuses it from anywhere on the page
  * (not while typing in another field).
  */
 export function SearchPill({
@@ -74,26 +76,52 @@ export function SearchPill({
   const [text, setText] = useState(value);
   const inputRef = useRef<HTMLInputElement>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // the pending send: held by the shared URL state, so a push (opening a row, a filter chip) sends it first onto the
+  // current entry instead of it replacing the pushed one late (#128); the path it was typed on
+  const pending = useRef<{ release: () => void; path: string } | null>(null);
   const sent = useRef(value);
+  const onChangeRef = useRef(onChange);
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  });
+  const cancel = () => {
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = null;
+    pending.current?.release();
+    pending.current = null;
+  };
   // the value changed from outside (back / forward, a "Xoá lọc" that also clears the query): show it
   useEffect(() => {
     if (value !== sent.current) {
       // a pending debounced send would overwrite what came from outside (Back / Forward restoring the URL)
-      if (timer.current) clearTimeout(timer.current);
-      timer.current = null;
+      cancel();
       sent.current = value;
       setText(value);
     }
   }, [value]);
-  useEffect(() => () => void (timer.current && clearTimeout(timer.current)), []);
+  // another route (a search in a layout, a Link clicked while typing): the text belongs to the page it was typed on
+  useEffect(
+    () =>
+      subscribeUrl(() => {
+        if (pending.current && pending.current.path !== window.location.pathname) cancel();
+      }),
+    [],
+  );
+  useEffect(() => cancel, []);
   const emit = (next: string, now = false) => {
-    if (timer.current) clearTimeout(timer.current);
+    cancel();
+    const path = window.location.pathname;
     const send = () => {
+      cancel();
+      if (window.location.pathname !== path) return;
       sent.current = next;
-      onChange(next);
+      onChangeRef.current(next);
     };
     if (now || debounce <= 0) send();
-    else timer.current = setTimeout(send, debounce);
+    else {
+      timer.current = setTimeout(send, debounce);
+      pending.current = { release: holdPending(send), path };
+    }
   };
   useEffect(() => {
     if (!focusKey) return;
