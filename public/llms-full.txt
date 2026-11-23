@@ -809,9 +809,9 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   the rail every item has an `aria-label` and a `Tooltip` on the right. An item without `icon` shows its initials
   (`shortLabel` to choose them): give pinned items distinct icons, or none, never one shared icon (touch has no
   Tooltip). The `account` render prop gets `{ collapsed, rail }`: hide its text by `rail`, not only `collapsed` (at `md`
-  the sidebar is a rail while `collapsed` is false). `rail` is known after mount (the server renders the rail); to show
-  the full block in the server HTML at `lg`, hide the text by CSS like the nav labels (`collapsed ? "hidden" : "hidden
-  lg:block"`), as the docs site does.
+  the sidebar is a rail while `collapsed` is false). `rail` is exact in the server HTML: until the width is known
+  AppShell renders the account twice (the rail copy below `lg`, the full one from `lg`, CSS shows one), then only the
+  copy for the width, so keep app-wide effects out of the account and take ids from `useId`.
 - **Mega menu:** a nav item with `mega` opens a `MegaMenu` flyout beside the sidebar: 2–4 category columns headed by
   `text-overline`, links with a grey icon, a hint and a "Mới" badge, and a "Xem tất cả" link.
 - **Phones (`< md`):** a top bar (menu button, logo, product name) opens a full-screen drawer with the same groups:
@@ -7656,7 +7656,7 @@ export default function AppShellSubmenu() {
 | `primaryCta` | `{ label: string; icon: IconName; href?: string; external?: boolean; onClick?: () => void; }` |  | Optional highlighted launcher under Create (another app, a docs link). |
 | `pinned` | `ShellPinned` |  | A group under the main nav (saved views, frequent records) with a `text-overline` label. |
 | `utilities` | `ShellNavItem[]` | `[]` | Utilities at the bottom of the sidebar (help, theme, notifications): usually items with `onClick`. |
-| `account` | `ShellSlot` |  | The account at the very bottom (avatar, workspace switcher). Receives `{ collapsed, rail }`: hide text when `rail`. `rail` is known after mount (the server and the first render show the rail); for the full block in the server HTML at `lg`, hide the text by CSS like the nav labels: `collapsed ? "hidden" : "hidden lg:block"`. |
+| `account` | `ShellSlot` |  | The account at the very bottom (avatar, workspace switcher). Receives `{ collapsed, rail }`: hide text when `rail` (at `md` the sidebar is a rail while `collapsed` is false). `rail` is exact in the server HTML: until the width is known the slot renders twice (rail below `lg`, full from `lg`, CSS shows one), then once. So keep app-wide effects (hotkeys, intros) out of it, and let ids come from `useId`. |
 | `footer` | `ShellSlot` |  |  |
 | `mobileNav` | `'drawer' \| 'tabs'` |  | Phone navigation: `drawer` (a full-screen menu from the top bar) or `tabs` (MobileTabBar, the items in `mobileTabIds`). Default: `tabs` when `mobileTabIds` is set (as before 0.36), else `drawer`. |
 | `mobileTabIds` | `string[]` |  | With `mobileNav="tabs"`: the ids of the items on the tab bar (up to 5; the rest go in its More sheet). Without it, tabs mode shows the first items. Set `mobileNav` too: `mobileTabIds` alone still keeps the tab bar (as before 0.36) but warns in development. |
@@ -7690,7 +7690,7 @@ export default function AppShellSubmenu() {
 - Top to bottom: create (one accent action, a Menu when it has items), primaryCta (an optional launcher), sections, pinned (a text-overline label), then utilities (items with onClick: help, theme) and account (avatar, workspace).
 - footer is deprecated: split it into utilities (actions) and account (who is signed in). The 0.36.0 migration renames footer to account and turns a render prop's collapsed check into collapsed || rail.
 - Phones use the drawer (a top bar with the menu button) unless the app sets mobileNav="tabs", with mobileTabIds naming the items on MobileTabBar (mobileTabIds alone still keeps the tab bar but warns). In the drawer a parent with its own href is the first row of its level.
-- The account render prop gets { collapsed, rail }: check rail, not only collapsed. At md the sidebar is a rail while collapsed is false. rail is known after mount (the first render is the rail); for a full block in the server HTML at lg, hide the text by CSS instead: collapsed ? "hidden" : "hidden lg:block".
+- The account render prop gets { collapsed, rail }: check rail, not only collapsed. At md the sidebar is a rail while collapsed is false. rail is exact in the server HTML: until the width is known AppShell renders the account twice (rail below lg, full from lg, CSS shows one), then once; keep app-wide effects out of it.
 - The theme in utilities: useThemeUtility() (Light / Dark / System in a Menu, a level of the phone drawer), not a toggleTheme item that drops system. Any utility with options can take menu (MenuItem[]).
 - Pinned items in the rail: give each a distinct icon, or none so the rail shows its initials (shortLabel to choose them); items sharing one icon look alike there and touch screens have no Tooltip.
 - Sub-items (children) are closed by default: they open under their parent while the parent or one of them is the activeId, and close when another item is chosen. One level only.

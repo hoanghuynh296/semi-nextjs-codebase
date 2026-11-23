@@ -146,9 +146,10 @@ export interface AppShellProps {
   /** Utilities at the bottom of the sidebar (help, theme, notifications): usually items with `onClick`. */
   utilities?: ShellNavItem[];
   /**
-   * The account at the very bottom (avatar, workspace switcher). Receives `{ collapsed, rail }`: hide text when `rail`.
-   * `rail` is known after mount (the server and the first render show the rail); for the full block in the server HTML
-   * at `lg`, hide the text by CSS like the nav labels: `collapsed ? "hidden" : "hidden lg:block"`.
+   * The account at the very bottom (avatar, workspace switcher). Receives `{ collapsed, rail }`: hide text when `rail`
+   * (at `md` the sidebar is a rail while `collapsed` is false). `rail` is exact in the server HTML: until the width is
+   * known the slot renders twice (rail below `lg`, full from `lg`, CSS shows one), then once. So keep app-wide effects
+   * (hotkeys, intros) out of it, and let ids come from `useId`.
    */
   account?: ShellSlot;
   /** @deprecated Since 0.36: split into `utilities` (actions) and `account`. Rendered like `account`. */
@@ -206,6 +207,8 @@ export function AppShell({
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [megaId, setMegaId] = useState<string | null>(null);
   const [wide, setWide] = useState(false);
+  // false on the server and in the first client render: the width is not known yet (see the account below)
+  const [measured, setMeasured] = useState(false);
   const asideRef = useRef<HTMLElement>(null);
   const megaTrigger = useRef<HTMLElement | null>(null);
   const asideId = useId();
@@ -235,6 +238,7 @@ export function AppShell({
     const md = window.matchMedia(MD_QUERY);
     const update = () => {
       setWide(lg.matches);
+      setMeasured(true);
       // the drawer belongs to phones: close it when the window grows past md
       if (md.matches) setDrawerOpen(false);
     };
@@ -667,7 +671,18 @@ export function AppShell({
             {(utilities.length > 0 || account) && (
               <div className="shrink-0 p-2 border-t border-divider flex flex-col gap-1">
                 {utilities.length > 0 && <div className="flex flex-col gap-0.5">{renderItems(utilities)}</div>}
-                {account && <div>{slot(account, { collapsed, rail })}</div>}
+                {/* `rail` must be exact in the server HTML, where the width is unknown: until it is measured the account
+                    renders twice, the rail copy below lg and the full copy from lg (CSS picks one, the other is
+                    display:none and out of the a11y tree); after mount only the copy for the width stays, in the same
+                    place, so it keeps its state and nothing moves */}
+                {account && (
+                  <>
+                    {(collapsed || !measured || !wide) && (
+                      <div className={collapsed ? undefined : "lg:hidden"}>{slot(account, { collapsed, rail: true })}</div>
+                    )}
+                    {!collapsed && (!measured || wide) && <div className="hidden lg:block">{slot(account, { collapsed: false, rail: false })}</div>}
+                  </>
+                )}
               </div>
             )}
           </aside>

@@ -276,6 +276,25 @@ test("AppShell theme utility under Next's App Router: prerendered, its Menu pick
   await expect(trigger).toBeFocused();
 });
 
+test("AppShell account: `rail` is exact in the server HTML, full at lg and compact at md, one copy after mount (#113)", async ({ browser }) => {
+  for (const [width, full] of [[1440, true], [834, false]] as const) {
+    // without JavaScript the page is the server HTML
+    const ssr = await browser.newPage({ viewport: { width, height: 900 }, javaScriptEnabled: false });
+    await ssr.goto(`${BASE}/shell/a`);
+    const aside = ssr.locator("aside");
+    await expect(aside.getByText("Account", { exact: true })).toBeVisible({ visible: full });
+    await expect(aside.getByText("AC", { exact: true })).toBeVisible({ visible: !full });
+    await ssr.close();
+    // hydrated: the same copy shows, and the other one is gone from the DOM
+    const page = await browser.newPage({ viewport: { width, height: 900 } });
+    await page.goto(`${BASE}/shell/a`);
+    const live = page.locator("aside");
+    await expect(live.getByText(full ? "AC" : "Account", { exact: true })).toHaveCount(0);
+    await expect(live.getByText(full ? "Account" : "AC", { exact: true })).toBeVisible();
+    await page.close();
+  }
+});
+
 async function replayTwice(page: import("@playwright/test").Page) {
   const replayed = page.getByRole("dialog", { name: "Replayed intro" });
   for (let round = 0; round < 2; round++) {

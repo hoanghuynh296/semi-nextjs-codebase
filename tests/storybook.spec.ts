@@ -758,6 +758,8 @@ test("AppShell theme utility: its icon is hidden before mount (no swap after hyd
   await ssr.goto("/demo/app-shell/");
   const before = ssr.locator("aside").getByRole("button", { name: "Giao diện" }).locator("svg");
   await expect(before).toHaveClass(/opacity-0/);
+  // the account is the full block in the server HTML at lg (its `rail` is exact before mount, #113)
+  await expect(ssr.locator("aside").getByText("Cửa hàng Quận 1")).toBeVisible();
   await ssr.close();
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   await open(page, "/demo/app-shell/", "dark");

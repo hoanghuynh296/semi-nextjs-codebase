@@ -135,6 +135,8 @@ const word = (name) => new RegExp(`(?<![\\w$])${name}(?![\\w$])`);
 const READ_BEFORE = /(?:^|\(|!|\?|&&|\|\||=>|(?<![\w$])return|(?<![=!<>])=\s*\{)\s*$/;
 // a parameter named collapsed (`(collapsed) =>`, `(collapsed: boolean, i) =>`) shadows the render prop's: never rewritten
 const PARAM_AFTER = /^\s*(?::\s*[^,()=]+)?\s*(?:,[^()]*)?\)\s*(?::\s*[^=()]+)?=>/;
+// …and the first parameter of a `function (collapsed)` / `function name(collapsed)` or a `catch (collapsed)`
+const PARAM_BEFORE = /(?:(?<![\w$])function(?![\w$])[\s\w$*]*|(?<![\w$])catch\s*)\(\s*$/;
 // …and what may follow it: ? && || ) } ; , : or the end
 const READ_AFTER = /^\s*(?:\?|&&|\|\||\)|\}|;|,|:(?!:)|$)/;
 
@@ -185,7 +187,8 @@ function rewriteReads(body) {
         continue;
       }
       const after = body.slice(i + 9).replace(/^\s*\/\*[\s\S]*?\*\//, "");
-      if (!READ_BEFORE.test(body.slice(0, i)) || !READ_AFTER.test(after) || PARAM_AFTER.test(after)) return null;
+      const before = body.slice(0, i);
+      if (!READ_BEFORE.test(before) || !READ_AFTER.test(after) || PARAM_AFTER.test(after) || PARAM_BEFORE.test(before)) return null;
       hits.push(i);
       i += 8;
     }

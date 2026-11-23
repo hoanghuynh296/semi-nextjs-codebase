@@ -32,7 +32,8 @@ export function Shell({ children }: { children: React.ReactNode }) {
       create={{ label: "Create", items: [{ label: "Order", onSelect: () => {} }] }}
       pinned={{ label: "Pinned", items: [{ id: "late", label: "Late", icon: "clock", href: "/shell/late" }] }}
       utilities={[{ id: "help", label: "Help", icon: "info", onClick: () => {} }, theme]}
-      account={({ rail }) => (rail ? null : <span>Account</span>)}
+      // the shape the 0.36.0-shell / 0.37.0-account-rail migration writes (#113)
+      account={({ collapsed, rail }) => ((collapsed || rail) ? <span>AC</span> : <span>Account</span>)}
     >
       <TextTabs label="Orders" value={tab} onChange={setTab} items={[{ key: "open", label: "Open" }, { key: "done", label: "Done" }]}>
         {children}

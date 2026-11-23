@@ -188,6 +188,9 @@ test("0.36.0 shell / 0.37.0 account-rail: an account render prop's collapsed che
     "items.map((collapsed) => <B on={collapsed} />)", // a parameter that shadows it
     "items.map((collapsed: boolean, i) => <B on={collapsed} />)", // a typed parameter
     "f((x, collapsed) => collapsed)", // a later parameter
+    "items.map(function (collapsed) { return <B on={collapsed} />; })", // a function parameter
+    "items.map(function row(collapsed) { return collapsed; })", // a named function's parameter
+    "{ try { return <A />; } catch (collapsed) { return null; } }", // a catch binding
   ]) {
     const f = `${H}<AppShell account={({ collapsed }) => ${body}} />`;
     assert.deepEqual(railAccount(f), { src: f, manual: [{ line: 2, reason: "collapsed" }] }, body);
@@ -208,6 +211,8 @@ test("0.36.0 shell / 0.37.0 account-rail: an account render prop's collapsed che
   assert.match(bareOut.src, /\(\{ collapsed, rail \}\) =>\n {4}\(collapsed \|\| rail\) \? null : \(/);
   assert.equal(railAccount(bareOut.src).src, bareOut.src, "twice-safe");
   assert.match(railAccount(`${H}<AppShell account={({ collapsed }) => collapsed && <A />} />`).src, /=> \(collapsed \|\| rail\) && <A \/>/);
+  // an `if (collapsed) {` in a block body is a read, not a parameter
+  assert.match(railAccount(`${H}<AppShell account={({ collapsed }) => { if (collapsed) { return null; } return <A />; }} />`).src, /\{ if \(\(collapsed \|\| rail\)\) \{ return null;/);
   // a function or a component that reads neither collapsed nor rail is reported; a plain JSX node is not
   for (const expr of ["AccountBlock", "(s) => <Account {...s} />", "() => <Account />", "function (s) { return <A />; }"]) {
     const f = `${H}<AppShell account={${expr}} />`;

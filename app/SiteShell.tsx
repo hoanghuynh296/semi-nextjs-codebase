@@ -41,15 +41,15 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       logoIcon="sparkles"
       sections={START}
       primaryCta={{ label: "GitHub Repository", icon: "external", href: "https://github.com/hoanghuynh296/semi-nextjs-codebase", external: true }}
-      // The rail (collapsed, or md) has 44px: the theme as one icon button that keeps "system" (#113, #114). Chosen by
-      // the same CSS as the nav labels, not by `rail`: the width is only known after mount, and the server HTML must
-      // already show the right block at lg (no swap after hydration)
-      account={({ collapsed }) => (
-        <>
-          <div className={collapsed ? "flex justify-center" : "flex justify-center lg:hidden"}>
+      // the rail (collapsed, or md) has 44px: the theme as one icon button that keeps "system" (#113, #114); `rail` is
+      // exact in the server HTML (AppShell renders both until the width is known)
+      account={({ rail }) =>
+        rail ? (
+          <div className="flex justify-center">
             <ThemeSwitcher variant="menu" />
           </div>
-          <div className={collapsed ? "hidden" : "hidden lg:flex flex-col gap-2"}>
+        ) : (
+          <div className="flex flex-col gap-2">
             <ThemeSwitcher fullWidth />
             <StyleSwitcher />
             <div className="flex items-center justify-between text-caption text-muted px-1">
@@ -60,8 +60,8 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
               <Badge size="sm">{ICON_COUNT} icon</Badge>
             </div>
           </div>
-        </>
-      )}
+        )
+      }
     >
       {children}
       {/* What is previewed on every page: a brand (Brand preview) and a draft of core values (Design Lab) */}
