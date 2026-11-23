@@ -6,7 +6,7 @@ export default function ScrollAreaLog() {
   return (
     <Card padding="none" className="max-w-md">
       <ScrollArea label="Nhật ký in" className="h-48">
-        <ul className="p-3 space-y-1 text-label text-body tabular-nums">
+        <ul className="p-3 space-y-1 text-ui text-body tabular-nums">
           {LINES.map((l) => (
             <li key={l}>{l}</li>
           ))}

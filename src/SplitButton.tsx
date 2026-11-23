@@ -49,7 +49,7 @@ export function SplitButton({
   const t = useSemiLocale();
   const more = menuLabel ?? t.moreActions;
   const visible = items.filter((it) => !it.hidden);
-  const divider = variant === "primary" ? "border-l border-on-action/25" : "border-l border-divider";
+  const divider = variant === "primary" ? "border-l border-on-primary/25" : "border-l border-divider";
   const wide = (
     <ButtonGroup label={label} className={cn(collapseOnPhone && "max-sm:hidden", className)}>
       <Button variant={variant} size={size} icon={icon} loading={loading} disabled={disabled} onClick={onClick}>

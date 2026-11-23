@@ -82,7 +82,7 @@ export function WorkspaceHeader({
   const t = useSemiLocale();
   const H = `h${headingLevel}` as const;
   const label = backLabel ?? t.back;
-  const round = cn("w-8 h-8 shrink-0 rounded-full bg-tint text-contrast hover:bg-tint-hover flex items-center justify-center", FOCUS_RING);
+  const round = cn("w-8 h-8 shrink-0 rounded-full bg-tint text-strong hover:bg-tint-hover flex items-center justify-center", FOCUS_RING);
   return (
     <div className="flex flex-col gap-3">
       {tabs}
@@ -97,8 +97,8 @@ export function WorkspaceHeader({
           </button>
         ) : null}
         <div className="min-w-0">
-          <H className="text-ui-lg font-semibold text-contrast truncate">{title}</H>
-          {description && <p className="text-caption text-muted truncate">{description}</p>}
+          <H className="text-lead font-semibold text-strong truncate">{title}</H>
+          {description && <p className="text-ui text-muted truncate">{description}</p>}
         </div>
       </div>
     </div>
@@ -133,7 +133,7 @@ export function WorkspaceSection({
           {label}
         </span>
         {count !== undefined && (
-          <span className="text-caption text-muted tabular-nums">
+          <span className="text-ui text-muted tabular-nums">
             {count}
             {max !== undefined ? `/${max}` : ""}
           </span>
@@ -195,7 +195,7 @@ export function Stepper({
     e.preventDefault();
     set(to);
   };
-  const btn = "w-9 h-9 shrink-0 rounded-control flex items-center justify-center text-contrast hover:bg-tint-hover disabled:opacity-40 disabled:hover:bg-transparent disabled:cursor-not-allowed";
+  const btn = "w-9 h-9 shrink-0 rounded-control flex items-center justify-center text-strong hover:bg-tint-hover disabled:opacity-40 disabled:hover:bg-transparent disabled:cursor-not-allowed";
   return (
     <div className={cn("flex items-center gap-1 h-11 px-1 rounded-control bg-tint", disabled && "opacity-60", className)}>
       <button type="button" tabIndex={-1} className={btn} onClick={() => set(value - step)} disabled={disabled || value <= min} aria-label={t.decrease(label)} title={t.decrease(label)}>
@@ -211,7 +211,7 @@ export function Stepper({
         aria-valuetext={text}
         aria-disabled={disabled || undefined}
         onKeyDown={onKey}
-        className={cn("flex-1 min-w-0 h-9 rounded-control flex items-center justify-center text-ui font-semibold text-contrast tabular-nums truncate", FOCUS_RING)}
+        className={cn("flex-1 min-w-0 h-9 rounded-control flex items-center justify-center text-ui font-semibold text-strong tabular-nums truncate", FOCUS_RING)}
       >
         {text}
       </span>

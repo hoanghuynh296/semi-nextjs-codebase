@@ -38,7 +38,7 @@ export function Breadcrumb({
   const shown: (BreadcrumbItem | "more")[] = collapse ? [items[0], "more", ...items.slice(-2)] : items;
   return (
     <nav aria-label={ariaLabel ?? t.breadcrumb} className={className}>
-      <ol className="flex flex-wrap items-center gap-1 text-label">
+      <ol className="flex flex-wrap items-center gap-1 text-ui">
         {shown.map((it, i) => {
           const last = i === shown.length - 1;
           return (
@@ -49,18 +49,18 @@ export function Breadcrumb({
                   align="left"
                   items={hidden.map((h) => ({ label: h.label, icon: h.icon, onSelect: () => h.href && router.push(h.href) }))}
                   trigger={
-                    <button type="button" aria-label={t.showHidden} className={cn("px-1 rounded-chip text-muted hover:text-contrast", FOCUS_RING)}>
+                    <button type="button" aria-label={t.showHidden} className={cn("px-1 rounded-chip text-muted hover:text-strong", FOCUS_RING)}>
                       …
                     </button>
                   }
                 />
               ) : last ? (
-                <span aria-current="page" className="inline-flex items-center gap-1 font-medium text-contrast truncate">
+                <span aria-current="page" className="inline-flex items-center gap-1 font-medium text-strong truncate">
                   {it.icon && <Icon name={it.icon} className="w-3.5 h-3.5 shrink-0" />}
                   {it.label}
                 </span>
               ) : it.href ? (
-                <Link href={it.href} className={cn("inline-flex items-center gap-1 text-muted hover:text-contrast rounded-chip truncate", FOCUS_RING)}>
+                <Link href={it.href} className={cn("inline-flex items-center gap-1 text-muted hover:text-strong rounded-chip truncate", FOCUS_RING)}>
                   {it.icon && <Icon name={it.icon} className="w-3.5 h-3.5 shrink-0" />}
                   {it.label}
                 </Link>

@@ -7,7 +7,7 @@ export default function ThemeScope() {
         <div key={t} data-theme={t} className="rounded-card border border-line bg-canvas p-3">
           <Card className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-ui font-semibold text-contrast">data-theme="{t}"</span>
+              <span className="text-ui font-semibold text-strong">data-theme="{t}"</span>
               <Badge tone="emerald" dot>
                 Online
               </Badge>

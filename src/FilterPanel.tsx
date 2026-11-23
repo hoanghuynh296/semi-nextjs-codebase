@@ -16,7 +16,7 @@ import type { SortDef } from "./SearchPill";
 import { cn } from "../styles/utils";
 
 const SEG =
-  "h-10 flex items-center justify-center gap-1.5 text-label font-medium text-contrast hover:bg-tint-hover outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus cursor-pointer";
+  "h-10 flex items-center justify-center gap-1.5 text-ui font-medium text-strong hover:bg-tint-hover outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus cursor-pointer";
 
 /**
  * The filter controls of a phone list page in one row: an optional type menu (the page's views), "Bộ lọc" with the
@@ -73,7 +73,7 @@ export function PhoneFilterBar({
         <Icon name="filter" className="w-4 h-4 shrink-0" />
         {t.filters}
         {activeCount > 0 && (
-          <span className="h-5 min-w-5 px-1 rounded-full bg-inverted text-on-inverted text-caption tabular-nums leading-5 text-center">
+          <span className="h-5 min-w-5 px-1 rounded-full bg-inverted text-on-inverted text-ui tabular-nums leading-5 text-center">
             {activeCount}
           </span>
         )}
@@ -146,17 +146,17 @@ export function FilterPanel({
             type="button"
             onClick={onClose}
             aria-label={t.close}
-            className="w-11 h-11 rounded-control flex items-center justify-center text-contrast hover:bg-tint outline-none focus-visible:ring-2 focus-visible:ring-focus cursor-pointer"
+            className="w-11 h-11 rounded-control flex items-center justify-center text-strong hover:bg-tint outline-none focus-visible:ring-2 focus-visible:ring-focus cursor-pointer"
           >
             <Icon name="close" className="w-5 h-5" />
           </button>
-          <h2 id={titleId} className="flex-1 text-center text-ui-lg font-semibold text-contrast truncate">
+          <h2 id={titleId} className="flex-1 text-center text-lead font-semibold text-strong truncate">
             {label}
           </h2>
           <button
             type="button"
             onClick={onClear}
-            className="h-11 px-3 rounded-control text-label font-medium text-muted hover:text-contrast outline-none focus-visible:ring-2 focus-visible:ring-focus cursor-pointer"
+            className="h-11 px-3 rounded-control text-ui font-medium text-muted hover:text-strong outline-none focus-visible:ring-2 focus-visible:ring-focus cursor-pointer"
           >
             {t.clearFilters}
           </button>
@@ -164,7 +164,7 @@ export function FilterPanel({
         <div className="flex-1 overflow-y-auto overscroll-contain">
           {sort && (
             <div className={cn(section, "px-4 py-3")} role="group" aria-labelledby={`${titleId}-sort`}>
-              <h3 id={`${titleId}-sort`} className="text-label font-semibold text-muted pb-2">
+              <h3 id={`${titleId}-sort`} className="text-ui font-semibold text-muted pb-2">
                 {t.sort}
               </h3>
               <div className="flex flex-wrap gap-2">
@@ -175,8 +175,8 @@ export function FilterPanel({
                     aria-pressed={o.value === sort.value}
                     onClick={() => sort.onChange(o.value)}
                     className={cn(
-                      "h-9 px-3 rounded-full text-label font-medium outline-none focus-visible:ring-2 focus-visible:ring-focus cursor-pointer",
-                      o.value === sort.value ? "bg-inverted text-on-inverted" : "bg-tint text-body hover:bg-tint-hover hover:text-contrast",
+                      "h-9 px-3 rounded-full text-ui font-medium outline-none focus-visible:ring-2 focus-visible:ring-focus cursor-pointer",
+                      o.value === sort.value ? "bg-inverted text-on-inverted" : "bg-tint text-body hover:bg-tint-hover hover:text-strong",
                     )}
                   >
                     {o.label}
@@ -211,8 +211,8 @@ export function FilterPanel({
                       className="w-full flex items-center gap-3 min-h-14 px-4 text-left outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus cursor-pointer hover:bg-tint"
                     >
                       {f.icon && <Icon name={f.icon} className="w-5 h-5 text-muted shrink-0" />}
-                      <span className="flex-1 min-w-0 truncate text-ui font-medium text-contrast">{f.label}</span>
-                      {summary !== undefined && <span className="max-w-40 truncate text-label text-muted tabular-nums">{summary}</span>}
+                      <span className="flex-1 min-w-0 truncate text-ui font-medium text-strong">{f.label}</span>
+                      {summary !== undefined && <span className="max-w-40 truncate text-ui text-muted tabular-nums">{summary}</span>}
                       <Icon name={isOpen ? "chevronUp" : "chevronDown"} className="w-4 h-4 text-muted shrink-0" />
                     </button>
                   </h3>
@@ -242,7 +242,7 @@ export function FilterPanel({
           <button
             type="button"
             onClick={onClose}
-            className="w-full h-12 rounded-control bg-action text-on-action text-ui font-semibold hover:bg-action-hover outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-focus cursor-pointer"
+            className="w-full h-12 rounded-control bg-primary text-on-primary text-ui font-semibold hover:bg-primary-hover outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-focus cursor-pointer"
           >
             {resultCount === undefined ? t.close : t.showResults(resultCount)}
           </button>

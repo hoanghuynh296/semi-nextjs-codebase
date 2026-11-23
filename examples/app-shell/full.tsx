@@ -19,7 +19,7 @@ import {
 const SECTIONS: ShellNavSection[] = [
   {
     items: [
-      { id: "inbox", label: "Hộp thư", icon: "inbox", right: <span className="px-1 text-caption text-muted tabular-nums">3</span> },
+      { id: "inbox", label: "Hộp thư", icon: "inbox", right: <span className="px-1 text-ui text-muted tabular-nums">3</span> },
       {
         id: "orders",
         label: "Đơn hàng",
@@ -112,8 +112,8 @@ export default function FullShell() {
           <Avatar name="Lan Phạm" size="sm" />
           {!rail && (
             <span className="min-w-0">
-              <span className="block truncate text-label font-medium text-contrast">Lan Phạm</span>
-              <span className="block truncate text-caption text-muted">Cửa hàng Quận 1</span>
+              <span className="block truncate text-ui font-medium text-strong">Lan Phạm</span>
+              <span className="block truncate text-ui text-muted">Cửa hàng Quận 1</span>
             </span>
           )}
         </div>
@@ -121,7 +121,7 @@ export default function FullShell() {
     >
       <MinimalHeader
         left={<Breadcrumb items={[{ label: "Sales Hub", href: "#" }, { label: "Đơn hàng" }]} />}
-        link={<a href="#" className="text-accent-fg hover:underline">Hướng dẫn</a>}
+        link={<a href="#" className="text-strong hover:underline">Hướng dẫn</a>}
         primary={
           <Button variant="primary" icon="plus">
             Tạo đơn
@@ -134,8 +134,8 @@ export default function FullShell() {
           {["DH-1042", "DH-1041", "DH-1039", "DH-1037", "DH-1036", "DH-1033"].map((id, i) => (
             <Card key={id} className="flex flex-col gap-stack">
               <div className="flex items-center justify-between gap-3 min-w-0">
-                <span className="text-ui font-semibold text-contrast truncate">{id}</span>
-                <span className="text-label text-muted tabular-nums shrink-0">{PRICE.format((i + 2) * 450_000)}</span>
+                <span className="text-ui font-semibold text-strong truncate">{id}</span>
+                <span className="text-ui text-muted tabular-nums shrink-0">{PRICE.format((i + 2) * 450_000)}</span>
               </div>
               <p className="text-ui text-body truncate">{["Bambu Lab A1 mini", "PLA Basic 1kg × 4", "Combo AMS Lite", "PETG HF 1kg × 2", "Bàn in PEI", "TPU 95A 1kg"][i]}</p>
             </Card>

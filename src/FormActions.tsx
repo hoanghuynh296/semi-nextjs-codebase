@@ -34,7 +34,7 @@ function useKeyboardInset(active: boolean): number {
 }
 
 // Cancel is a ghost button; phones get the 44px touch target (h-11) the modal buttons use.
-const CANCEL = "max-sm:h-11 max-sm:px-4 max-sm:text-ui-lg";
+const CANCEL = "max-sm:h-11 max-sm:px-4 max-sm:text-lead";
 
 export interface FormActionsProps {
   /** Huỷ: leaves the form (route back, close the modal). Omit for a form that cannot be cancelled. */

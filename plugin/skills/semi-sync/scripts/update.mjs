@@ -127,8 +127,10 @@ for (const appDir of apps) {
   else {
     const done = await runMigrations({ appDir, dir: join(appDir, "node_modules", "@semi", "ui", "migrations"), from, to });
     if (!done.length) console.log(`${name}: các bản ${from} → ${to} không có migration.`);
-    for (const m of done)
+    for (const m of done) {
       console.log(`${name}: migration ${m.version} ${m.id} (${m.description}): ${m.changed.length ? m.changed.join(", ") : "không có gì để đổi"}`);
+      for (const f of m.flags ?? []) console.log(`  cần sửa tay: ${f.file}: ${f.message}`);
+    }
   }
 
   // The app keeps its style; a release that renames or drops one ships a migration for it, so this only warns.

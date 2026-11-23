@@ -7,7 +7,7 @@ import { Icon } from "./Icon";
 import { cn, FOCUS_RING, HIT_AREA } from "../styles/utils";
 
 const LABEL = "text-ui text-body";
-const DESC = "text-label text-muted";
+const DESC = "text-ui text-muted";
 
 /** Dev-only console warning for a control screen readers cannot name (no label, aria-label or aria-labelledby). */
 function useNameWarning(component: string, named: boolean) {
@@ -67,13 +67,13 @@ export function Checkbox({
           onChange={(e) => onChange(e.target.checked)}
           className={cn(
             "peer relative appearance-none w-4 h-4 rounded-chip border transition cursor-pointer disabled:cursor-not-allowed",
-            on ? "bg-accent border-transparent" : "bg-field border-control-line hover:border-control-line-hover",
+            on ? "bg-inverted border-transparent" : "bg-field border-control-line hover:border-control-line-hover",
             FOCUS_RING,
           )}
         />
         <Icon
           name={indeterminate ? "minus" : "check"}
-          className={cn("absolute inset-0 m-auto w-3 h-3 text-on-accent pointer-events-none transition-opacity", on ? "opacity-100" : "opacity-0")}
+          className={cn("absolute inset-0 m-auto w-3 h-3 text-on-inverted pointer-events-none transition-opacity", on ? "opacity-100" : "opacity-0")}
         />
       </span>
       {(label || description) && (
@@ -138,12 +138,12 @@ export function Switch({
         "relative shrink-0 rounded-full border transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed p-px",
         track,
         HIT_AREA,
-        checked ? "bg-accent border-transparent" : "bg-raised border-line",
+        checked ? "bg-inverted border-transparent" : "bg-raised border-line",
         FOCUS_RING,
         !label && !description && className,
       )}
     >
-      <span className={cn("block rounded-full transition-transform", knob, checked ? `bg-on-accent ${shift}` : "bg-muted translate-x-0")} />
+      <span className={cn("block rounded-full transition-transform", knob, checked ? `bg-on-inverted ${shift}` : "bg-muted translate-x-0")} />
     </button>
   );
   if (!label && !description) return sw;
@@ -196,7 +196,7 @@ export function RadioGroup<T extends string>({
   return (
     <div role="radiogroup" aria-labelledby={label ? `${name}-label` : undefined} className={className}>
       {label && (
-        <div id={`${name}-label`} className="text-label font-medium text-muted mb-1.5">
+        <div id={`${name}-label`} className="text-ui font-medium text-muted mb-1.5">
           {label}
         </div>
       )}
@@ -216,7 +216,7 @@ export function RadioGroup<T extends string>({
                 onChange={() => onChange(o.value)}
                 className={cn(
                   "appearance-none mt-0.5 w-4 h-4 shrink-0 rounded-full bg-field transition cursor-pointer disabled:cursor-not-allowed",
-                  on ? "border-[5px] border-accent" : "border border-control-line",
+                  on ? "border-[5px] border-inverted" : "border border-control-line",
                   FOCUS_RING,
                 )}
               />

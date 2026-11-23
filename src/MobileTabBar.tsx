@@ -36,15 +36,15 @@ export function MobileTabBar({
   const t = useSemiLocale();
   const itemClass = (on: boolean) =>
     `flex-1 min-w-0 h-16 flex flex-col items-center justify-center gap-1 transition active:scale-95 cursor-pointer ${
-      on ? "text-accent-fg" : "text-muted"
+      on ? "text-strong" : "text-muted"
     }`;
 
   const renderInner = (icon: IconName, label: string, on: boolean) => (
     <>
-      <span className={`w-12 h-7 rounded-full flex items-center justify-center transition ${on ? "bg-accent-subtle" : ""}`}>
+      <span className={`w-12 h-7 rounded-full flex items-center justify-center transition ${on ? "bg-item-selected" : ""}`}>
         <Icon name={icon} className="w-5 h-5" />
       </span>
-      <span className={`text-caption font-medium truncate max-w-full px-1 ${on ? "text-accent-fg" : "text-muted"}`}>
+      <span className={`text-ui font-medium truncate max-w-full px-1 ${on ? "text-strong" : "text-muted"}`}>
         {label}
       </span>
     </>

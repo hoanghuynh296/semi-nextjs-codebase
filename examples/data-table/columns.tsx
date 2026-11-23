@@ -18,7 +18,7 @@ const CUSTOMERS: Customer[] = Array.from({ length: 6 }, (_, i) => ({
 
 // priority 3 folds first, then 2, then 1; the first column and columns without a priority always stay
 const COLUMNS: DataTableColumn<Customer>[] = [
-  { key: "name", header: "Khách hàng", sortable: true, cell: (c) => <span className="font-medium text-contrast">{c.name}</span> },
+  { key: "name", header: "Khách hàng", sortable: true, cell: (c) => <span className="font-medium text-strong">{c.name}</span> },
   { key: "phone", header: "Điện thoại", priority: 2 },
   { key: "city", header: "Tỉnh / thành", sortable: true },
   { key: "source", header: "Nguồn", priority: 3, cell: (c) => <Badge size="sm">{c.source}</Badge> },

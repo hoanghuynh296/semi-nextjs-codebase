@@ -53,7 +53,7 @@ const SPECS: (FilterSpec & { key: "channel" | "branch" | "big" })[] = [
 ];
 
 const COLUMNS: DataTableColumn<Order>[] = [
-  { key: "id", header: "Mã đơn", sortable: true, cell: (o) => <span className="font-medium text-contrast">{o.id}</span> },
+  { key: "id", header: "Mã đơn", sortable: true, cell: (o) => <span className="font-medium text-strong">{o.id}</span> },
   { key: "customer", header: "Khách hàng", sortable: true },
   { key: "status", header: "Trạng thái", value: (o) => STATUS[o.status][1], cell: (o) => <Badge tone={STATUS[o.status][0]} dot>{STATUS[o.status][1]}</Badge> },
   { key: "date", header: "Ngày", sortable: true },

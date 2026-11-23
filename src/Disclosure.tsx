@@ -38,7 +38,7 @@ export function Collapsible({
         aria-expanded={isOpen}
         aria-controls={id}
         onClick={() => setOpen(!isOpen)}
-        className={cn("w-full flex items-center gap-2 py-2 text-left text-ui font-medium text-contrast rounded-control", FOCUS_RING)}
+        className={cn("w-full flex items-center gap-2 py-2 text-left text-ui font-medium text-strong rounded-control", FOCUS_RING)}
       >
         <Icon name="chevronDown" className={cn("w-4 h-4 text-muted shrink-0 transition-transform", !isOpen && "-rotate-90")} />
         <span className="flex-1 min-w-0">{title}</span>
@@ -123,7 +123,7 @@ export function Accordion({
                 onClick={() => toggle(it.key)}
                 onKeyDown={(e) => onKey(e, i)}
                 className={cn(
-                  "w-full flex items-center gap-3 py-3 text-left text-ui font-medium text-contrast rounded-control disabled:opacity-40 disabled:cursor-not-allowed",
+                  "w-full flex items-center gap-3 py-3 text-left text-ui font-medium text-strong rounded-control disabled:opacity-40 disabled:cursor-not-allowed",
                   FOCUS_RING,
                 )}
               >

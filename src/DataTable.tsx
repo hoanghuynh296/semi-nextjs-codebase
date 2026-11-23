@@ -213,8 +213,8 @@ export function DataTable<T>({
     edges.scrolls &&
     cn(
       "border-r-2",
-      edges.right ? "border-r-accent-line" : "border-r-transparent",
-      !sticky && cn("border-l-2", edges.left ? "border-l-accent-line" : "border-l-transparent"),
+      edges.right ? "border-r-outline-line" : "border-r-transparent",
+      !sticky && cn("border-l-2", edges.left ? "border-l-outline-line" : "border-l-transparent"),
     );
   const pinned = (isFirst: boolean, left: number) =>
     sticky
@@ -222,7 +222,7 @@ export function DataTable<T>({
           // the pinned column's edge is a ::before line, not a border: a collapsed table's borders do not move with a sticky cell
           className: cn(
             "sticky z-sticky",
-            isFirst && cn("before:pointer-events-none before:absolute before:inset-y-0 before:right-0", edges.left ? "before:w-0.5 before:bg-accent-line" : "before:w-px before:bg-line"),
+            isFirst && cn("before:pointer-events-none before:absolute before:inset-y-0 before:right-0", edges.left ? "before:w-0.5 before:bg-outline-line" : "before:w-px before:bg-line"),
           ),
           style: { left },
         }
@@ -233,8 +233,8 @@ export function DataTable<T>({
     cn(
       "bg-card after:pointer-events-none after:absolute after:inset-0 after:-z-10",
       isSel
-        ? cn("after:bg-accent-subtle", onRowClick && "group-hover/row:after:bg-accent-subtle-hover")
-        : onRowClick && "group-hover/row:after:bg-field/60 light:group-hover/row:after:bg-field/80",
+        ? cn("after:bg-item-checked", onRowClick && "group-hover/row:after:bg-item-selected")
+        : onRowClick && "group-hover/row:after:bg-item-hover",
     );
 
   const toggleSort = (key: string) => {
@@ -249,7 +249,7 @@ export function DataTable<T>({
     <div className={cn("space-y-3", className)}>
       {selectable && selected.length > 0 && bulkActions && (
         <div role="region" aria-label={t.selectedCount(selected.length)} className="flex flex-wrap items-center gap-2 rounded-control border border-line bg-field px-3 py-2">
-          <span className="text-label font-medium text-contrast tabular-nums">{t.selectedCount(selected.length)}</span>
+          <span className="text-ui font-medium text-strong tabular-nums">{t.selectedCount(selected.length)}</span>
           <span className="ml-auto flex flex-wrap gap-2">{bulkActions(selected)}</span>
         </div>
       )}
@@ -295,7 +295,7 @@ export function DataTable<T>({
                         <button
                           type="button"
                           onClick={() => toggleSort(c.key)}
-                          className={cn("relative inline-flex items-center gap-1 rounded-chip hover:text-contrast", active && "text-contrast", c.numeric && "flex-row-reverse", HIT_AREA, FOCUS_RING)}
+                          className={cn("relative inline-flex items-center gap-1 rounded-chip hover:text-strong", active && "text-strong", c.numeric && "flex-row-reverse", HIT_AREA, FOCUS_RING)}
                         >
                           {c.header}
                           <Icon name={active && sort!.dir === "desc" ? "chevronDown" : "chevronUp"} className={cn("w-3.5 h-3.5", active ? "opacity-100" : "opacity-40")} />
@@ -337,8 +337,8 @@ export function DataTable<T>({
                         key={id}
                         onClick={onRowClick ? () => onRowClick(row) : undefined}
                         aria-selected={selectable ? isSel : undefined}
-                        // a selected row keeps its tint on hover (the hover tint of it), like its pinned cell
-                        className={cn("group/row", isSel && cn("bg-accent-subtle", onRowClick && "hover:!bg-accent-subtle-hover"))}
+                        // a checked row keeps its fill on hover (one step stronger), like its pinned cell
+                        className={cn("group/row", isSel && cn("bg-item-checked", onRowClick && "hover:!bg-item-selected"))}
                       >
                         {selectable && (
                           <TD onClick={(e) => e.stopPropagation()} {...pinned(false, 0)} className={cn(pinned(false, 0).className, pinnedBody(isSel))}>
@@ -355,7 +355,7 @@ export function DataTable<T>({
                                   <div>{content}</div>
                                   {/* the folded values: w-0 + min-w-full, so this line wraps in the column's width
                                       instead of widening it */}
-                                  <div className="w-0 min-w-full whitespace-normal text-caption text-muted mt-0.5" data-folded="">
+                                  <div className="w-0 min-w-full whitespace-normal text-ui text-muted mt-0.5" data-folded="">
                                     {foldedCols.map((f) => {
                                       // no value, no "Header: " (a cell() may draw an element even for an empty value)
                                       const raw = valueOf(f, row);

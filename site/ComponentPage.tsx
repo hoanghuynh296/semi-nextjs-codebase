@@ -34,19 +34,19 @@ export function ComponentPage({ id, markdownHref }: { id: string; markdownHref?:
   return (
     <article className="@container space-y-8" data-doc={doc.id}>
       <header className="space-y-3">
-        <div className="flex flex-wrap items-center gap-2 text-label text-muted">
+        <div className="flex flex-wrap items-center gap-2 text-ui text-muted">
           <span>{doc.group}</span>
           <span aria-hidden>/</span>
           <span className="text-body">{doc.title}</span>
         </div>
         <PageTitle title={doc.title} />
-        <p className="text-ui-lg text-body max-w-3xl">{doc.description}</p>
+        <p className="text-lead text-body max-w-3xl">{doc.description}</p>
         <div className="flex flex-wrap items-center gap-2">
           <Button size="sm" icon={copied ? "check" : "copy"} onClick={copyPage}>
             {copied ? "Đã copy" : "Copy page"}
           </Button>
           {markdownHref && (
-            <a href={markdownHref} className="inline-flex items-center gap-1 text-label font-medium text-accent-fg hover:text-contrast">
+            <a href={markdownHref} className="inline-flex items-center gap-1 text-ui font-medium text-strong hover:text-strong">
               {doc.id}.md
             </a>
           )}
@@ -80,7 +80,7 @@ export function ComponentPage({ id, markdownHref }: { id: string; markdownHref?:
                   <li key={i.need} className="flex flex-wrap gap-x-2">
                     <span className="text-body">{i.need}</span>
                     <span className="text-muted">→</span>
-                    <span className="text-accent-fg font-medium">{i.use}</span>
+                    <span className="text-strong font-medium">{i.use}</span>
                   </li>
                 ))}
               </ul>
@@ -107,8 +107,8 @@ export function ComponentPage({ id, markdownHref }: { id: string; markdownHref?:
         <Heading>API</Heading>
         {doc.api.map((a) => (
           <div key={a.name} className="space-y-2">
-            <h3 className="text-title font-semibold text-contrast font-mono">{a.name}</h3>
-            {a.description && <p className="text-label text-muted max-w-3xl">{a.description}</p>}
+            <h3 className="text-lead font-semibold text-strong font-mono">{a.name}</h3>
+            {a.description && <p className="text-ui text-muted max-w-3xl">{a.description}</p>}
             {a.props.length ? (
               <div className={`${CARD} overflow-hidden`}>
                 <Table>
@@ -123,15 +123,15 @@ export function ComponentPage({ id, markdownHref }: { id: string; markdownHref?:
                   <TBody>
                     {a.props.map((p) => (
                       <TR key={p.name}>
-                        <TD className="font-mono text-contrast">
+                        <TD className="font-mono text-strong">
                           {p.name}
                           {p.required && <span className="text-danger-fg"> *</span>}
                         </TD>
-                        <TD wrap className="font-mono text-label text-body min-w-48 max-w-md">
+                        <TD wrap className="font-mono text-ui text-body min-w-48 max-w-md">
                           {p.type}
                         </TD>
-                        <TD className="font-mono text-label text-muted">{p.default ?? ""}</TD>
-                        <TD wrap className="text-label text-body min-w-56">
+                        <TD className="font-mono text-ui text-muted">{p.default ?? ""}</TD>
+                        <TD wrap className="text-ui text-body min-w-56">
                           {p.description}
                         </TD>
                       </TR>
@@ -140,7 +140,7 @@ export function ComponentPage({ id, markdownHref }: { id: string; markdownHref?:
                 </Table>
               </div>
             ) : (
-              <p className="text-label text-muted">Không có prop riêng.</p>
+              <p className="text-ui text-muted">Không có prop riêng.</p>
             )}
           </div>
         ))}

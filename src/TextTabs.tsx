@@ -76,9 +76,9 @@ export function TextTabs<T extends string = string>({
           tabIndex: on ? 0 : -1,
           onClick: () => onChange?.(it.key),
           className: cn(
-            "shrink-0 whitespace-nowrap font-display text-heading sm:text-display leading-[1.15] font-title tracking-tight rounded-control transition cursor-pointer",
+            "shrink-0 whitespace-nowrap font-display text-section sm:text-tab-xl leading-[1.15] font-title tracking-tight rounded-control transition cursor-pointer",
             FOCUS_RING,
-            on ? "text-contrast" : "text-muted hover:text-body",
+            on ? "text-strong" : "text-muted hover:text-body",
           ),
         } as const;
         return it.href ? (

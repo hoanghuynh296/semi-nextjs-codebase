@@ -14,9 +14,9 @@ import { currentSearch, patchSearch, subscribeUrl, writeSearch } from "./urlStat
 import { cn } from "../styles/utils";
 
 const CHIP =
-  "shrink-0 inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-label font-medium whitespace-nowrap transition outline-none focus-visible:ring-2 focus-visible:ring-focus cursor-pointer";
+  "shrink-0 inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-ui font-medium whitespace-nowrap transition outline-none focus-visible:ring-2 focus-visible:ring-focus cursor-pointer";
 const CHIP_ON = "bg-inverted text-on-inverted hover:bg-inverted-hover";
-const CHIP_OFF = "bg-tint text-body hover:text-contrast hover:bg-tint-hover";
+const CHIP_OFF = "bg-tint text-body hover:text-strong hover:bg-tint-hover";
 
 /**
  * One filter facet as a chip. A `multi` filter opens a popover of checkboxes (aria-expanded on the chip); a `switch`
@@ -83,7 +83,7 @@ export function FilterChip({ def, onChange }: { def: FilterDef; onChange: (selec
           <button
             type="button"
             onClick={() => onChange([])}
-            className="w-full h-8 rounded-control text-label font-medium text-muted hover:text-contrast hover:bg-tint outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            className="w-full h-8 rounded-control text-ui font-medium text-muted hover:text-strong hover:bg-tint outline-none focus-visible:ring-2 focus-visible:ring-focus"
           >
             {t.clearSelection}
           </button>
@@ -112,7 +112,7 @@ export function FilterOptions({ def, onChange, className }: { def: FilterDef; on
             }
             className="flex-1 min-w-0 py-1.5"
           />
-          {o.count !== undefined && <span className="text-caption text-muted tabular-nums">{o.count}</span>}
+          {o.count !== undefined && <span className="text-ui text-muted tabular-nums">{o.count}</span>}
         </div>
       ))}
     </div>
@@ -168,7 +168,7 @@ export function FilterChipRow({
   const scroll = (dir: 1 | -1) => ref.current?.scrollBy({ left: dir * Math.max(160, (ref.current?.clientWidth ?? 480) * 0.6), behavior: "smooth" });
   const active = activeFilterCount(filters) > 0;
   const arrow =
-    "absolute top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-panel shadow-overlay flex items-center justify-center text-contrast hover:bg-raised cursor-pointer";
+    "absolute top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-panel shadow-overlay flex items-center justify-center text-strong hover:bg-raised cursor-pointer";
   return (
     <div className={cn("flex items-center gap-2 min-w-0", className)}>
       {leading && <div className="shrink-0 flex items-center gap-1 pr-2 border-r border-divider">{leading}</div>}
@@ -186,7 +186,7 @@ export function FilterChipRow({
             <button
               type="button"
               onClick={onClear}
-              className="shrink-0 h-8 px-2 rounded-control text-label font-medium text-muted hover:text-contrast outline-none focus-visible:ring-2 focus-visible:ring-focus cursor-pointer"
+              className="shrink-0 h-8 px-2 rounded-control text-ui font-medium text-muted hover:text-strong outline-none focus-visible:ring-2 focus-visible:ring-focus cursor-pointer"
             >
               {t.clearFilters}
             </button>

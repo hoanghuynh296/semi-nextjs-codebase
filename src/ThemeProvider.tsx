@@ -133,7 +133,7 @@ export function ThemeToggle({ className = "", size = "md" }: ThemeToggleProps) {
       onClick={toggleTheme}
       title={isDark ? t.toLight : t.toDark}
       aria-label={isDark ? t.toLight : t.toDark}
-      className={`${sizeClasses} rounded-control bg-field hover:bg-raised border border-line text-muted hover:text-contrast flex items-center justify-center transition active:scale-95 cursor-pointer shrink-0 ${className}`}
+      className={`${sizeClasses} rounded-control bg-field hover:bg-raised border border-line text-muted hover:text-strong flex items-center justify-center transition active:scale-95 cursor-pointer shrink-0 ${className}`}
     >
       <Icon name={isDark ? "sun" : "moon"} className={`${size === "sm" ? "w-3.5 h-3.5" : "w-4 h-4"} transition-opacity ${mounted ? "" : "opacity-0"}`} />
     </button>
@@ -232,8 +232,8 @@ function ThemeSegments({ showLabels = false, fullWidth = false, labels: labelsPr
             aria-label={labels[key]}
             title={labels[key]}
             onClick={() => setTheme(key)}
-            className={`${fullWidth ? "flex-1" : ""} ${showLabels ? "px-2.5" : "w-8"} h-full rounded-control inline-flex items-center justify-center gap-1.5 text-label font-medium whitespace-nowrap transition cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-focus ${
-              on ? SEGMENT_ON : "text-muted hover:text-contrast"
+            className={`${fullWidth ? "flex-1" : ""} ${showLabels ? "px-2.5" : "w-8"} h-full rounded-control inline-flex items-center justify-center gap-1.5 text-ui font-medium whitespace-nowrap transition cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-focus ${
+              on ? SEGMENT_ON : "text-muted hover:text-strong"
             }`}
           >
             <Icon name={icon} className="w-3.5 h-3.5 shrink-0" />

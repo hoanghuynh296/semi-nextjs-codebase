@@ -117,7 +117,7 @@ export function QRCode({
           <path d={result.path} fill="black" />
         </svg>
       ) : (
-        <div role="alert" style={{ width: edge, height: edge }} className="flex max-w-full items-center justify-center rounded-card border border-dashed border-line p-4 text-center text-label text-muted">
+        <div role="alert" style={{ width: edge, height: edge }} className="flex max-w-full items-center justify-center rounded-card border border-dashed border-line p-4 text-center text-ui text-muted">
           <span>
             <span className="block font-medium text-body">{label}</span>
             {t.qrFailed}
@@ -125,7 +125,7 @@ export function QRCode({
         </div>
       )}
       {(caption != null || (copyValue && !print && !error)) && (
-        <div className={cn("flex items-center gap-1 text-label tabular-nums", !print && "text-body")}>
+        <div className={cn("flex items-center gap-1 text-ui tabular-nums", !print && "text-body")}>
           {caption != null && <span>{caption}</span>}
           {copyValue && !print && !error && (
             <Button size="sm" variant="ghost" iconOnly icon={copied ? "check" : "copy"} aria-label={copied ? t.copied : t.copy} title={copied ? t.copied : t.copy} onClick={copy} />

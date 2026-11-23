@@ -24,11 +24,11 @@ import { cn, FOCUS_RING } from "../styles/utils";
 
 /** A tappable row in a chat (suggested request, follow-up choice, link): one look for all of them. */
 export const CHAT_ROW = cn(
-  "group w-full flex items-center gap-3 text-left text-ui text-body hover:text-contrast rounded-card bg-field hover:bg-raised border border-line hover:border-accent-line px-3 py-2.5 transition disabled:opacity-40 disabled:pointer-events-none",
+  "group w-full flex items-center gap-3 text-left text-ui text-body hover:text-strong rounded-card bg-field hover:bg-raised border border-line hover:border-outline-line px-3 py-2.5 transition disabled:opacity-40 disabled:pointer-events-none",
   FOCUS_RING,
 );
 /** A small label chip in a chat (events, tags the AI understands). */
-export const CHAT_CHIP = "text-label text-body rounded-control bg-field border border-line px-2 py-1";
+export const CHAT_CHIP = "text-ui text-body rounded-control bg-field border border-line px-2 py-1";
 /** The scrolling message list. */
 const CHAT_LIST = "flex-1 overflow-y-auto overscroll-contain px-4 py-4 flex flex-col gap-4 min-h-0";
 /** The bar that holds the composer at the bottom of a chat (clear of the home indicator on phones). */
@@ -37,15 +37,15 @@ const COMPOSER_BAR = "relative p-3 border-t border-divider shrink-0 max-sm:pb-[m
 const COMPOSER_BOX = "flex flex-col gap-1 bg-field border border-control-line rounded-card p-1.5 pl-2 focus-within:border-focus focus-within:ring-1 focus-within:ring-focus transition min-w-0";
 /** The question field: grows with the text up to 45% of the screen, then scrolls inside. */
 const COMPOSER_FIELD =
-  "flex-1 min-w-0 block resize-none max-h-[45dvh] overflow-y-auto bg-transparent px-1.5 py-1.5 text-ui max-sm:text-title-lg text-contrast placeholder:text-muted outline-none disabled:opacity-40";
-const SMALL_ACTION = cn("w-7 h-7 rounded-control text-muted hover:text-contrast hover:bg-raised flex items-center justify-center transition shrink-0", FOCUS_RING);
+  "flex-1 min-w-0 block resize-none max-h-[45dvh] overflow-y-auto bg-transparent px-1.5 py-1.5 text-ui max-sm:text-lead text-strong placeholder:text-muted outline-none disabled:opacity-40";
+const SMALL_ACTION = cn("w-7 h-7 rounded-control text-muted hover:text-strong hover:bg-raised flex items-center justify-center transition shrink-0", FOCUS_RING);
 
 // ─── Messages ────────────────────────────────────────────────────────────────────────────────────────────────────
 
 /** Small sparkles tile in front of every AI answer (pulses while it streams). */
 export function ChatAvatar({ busy = false, icon = "sparkles" }: { busy?: boolean; icon?: IconName }) {
   return (
-    <span className={cn("w-6 h-6 rounded-control bg-accent-subtle text-accent-fg flex items-center justify-center shrink-0", busy && "motion-safe:animate-pulse")}>
+    <span className={cn("w-6 h-6 rounded-control bg-item-selected text-strong flex items-center justify-center shrink-0", busy && "motion-safe:animate-pulse")}>
       <Icon name={icon} className="w-3.5 h-3.5" />
     </span>
   );
@@ -55,11 +55,11 @@ export function ChatAvatar({ busy = false, icon = "sparkles" }: { busy?: boolean
 export function ChatThinking({ label }: { label?: string }) {
   const t = useSemiLocale();
   return (
-    <span className="inline-flex items-center gap-1.5 text-label text-muted h-6">
+    <span className="inline-flex items-center gap-1.5 text-ui text-muted h-6">
       {(label ?? t.chatThinking).replace(/…$/, "")}
       <span className="inline-flex gap-0.5" aria-hidden>
         {[0, 150, 300].map((d) => (
-          <span key={d} className="w-1 h-1 rounded-full bg-accent motion-safe:animate-bounce" style={{ animationDelay: `${d}ms` }} />
+          <span key={d} className="w-1 h-1 rounded-full bg-muted motion-safe:animate-bounce" style={{ animationDelay: `${d}ms` }} />
         ))}
       </span>
     </span>
@@ -72,7 +72,7 @@ export function UserMessage({ failed = false, children }: { failed?: boolean; ch
     <div
       className={cn(
         "self-end max-w-[85%] rounded-panel rounded-br-chip px-3 py-2 text-ui whitespace-pre-wrap break-words border",
-        failed ? "bg-field border-line text-muted" : "bg-accent-subtle border-accent-line text-contrast",
+        failed ? "bg-field border-line text-muted" : "bg-item-selected border-outline-line text-strong",
       )}
     >
       {children}
@@ -164,8 +164,8 @@ export function ChatIntro({ icon = "sparkles", title, children }: { icon?: IconN
   return (
     <div className="flex flex-col items-center text-center gap-2.5 pt-2">
       <IconTile name={icon} tone="green" size="lg" />
-      <div className="text-title-lg font-semibold text-contrast tracking-tight">{title}</div>
-      {children && <p className="text-label text-muted max-w-[300px] leading-relaxed">{children}</p>}
+      <div className="text-lead font-semibold text-strong tracking-tight">{title}</div>
+      {children && <p className="text-ui text-muted max-w-[300px] leading-relaxed">{children}</p>}
     </div>
   );
 }
@@ -186,11 +186,11 @@ export function ChatSuggestion({
 }) {
   const body = (
     <>
-      <span className="w-7 h-7 rounded-control bg-accent-subtle text-accent-fg flex items-center justify-center shrink-0">
+      <span className="w-7 h-7 rounded-control bg-item-selected text-strong flex items-center justify-center shrink-0">
         <Icon name={icon} className="w-4 h-4" />
       </span>
       <span className="flex-1 min-w-0 leading-relaxed">{children}</span>
-      <Icon name={href ? "external" : "chevron"} className="w-4 h-4 text-muted group-hover:text-accent-fg transition shrink-0" />
+      <Icon name={href ? "external" : "chevron"} className="w-4 h-4 text-muted group-hover:text-strong transition shrink-0" />
     </>
   );
   if (href) {
@@ -211,7 +211,7 @@ export function ChatSuggestion({
 export function ChatSuggestions({ label, children }: { label?: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-2">
-      {label && <div className="text-label font-medium text-muted px-1">{label}</div>}
+      {label && <div className="text-ui font-medium text-muted px-1">{label}</div>}
       {children}
     </div>
   );
@@ -319,7 +319,7 @@ export function ChatList({
           aria-label={t.chatJumpToLatest}
           title={t.chatJumpToLatest}
           className={cn(
-            "absolute bottom-3 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-raised border border-line text-body hover:text-contrast shadow-float flex items-center justify-center transition",
+            "absolute bottom-3 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-raised border border-line text-body hover:text-strong shadow-float flex items-center justify-center transition",
             FOCUS_RING,
           )}
         >
@@ -448,7 +448,7 @@ export function ChatComposer({
             <Button type="submit" variant="primary" iconOnly icon="send" aria-label={t.chatSend} disabled={busy || disabled || !value.trim()} className="shrink-0" />
           )}
         </div>
-        {toolbar && <div className="pl-1 pb-0.5 flex items-center gap-1.5 min-w-0 text-caption text-muted">{toolbar}</div>}
+        {toolbar && <div className="pl-1 pb-0.5 flex items-center gap-1.5 min-w-0 text-ui text-muted">{toolbar}</div>}
       </div>
     </form>
   );
@@ -458,7 +458,7 @@ export function ChatComposer({
 
 /** A compact chip select under the composer field (provider, model, thinking effort). */
 export const CHAT_PICK_CHIP = cn(
-  "inline-flex items-center gap-1 h-6 px-2 rounded-full bg-field hover:bg-raised border border-line text-caption font-medium text-body hover:text-contrast transition min-w-0 max-w-[150px] truncate",
+  "inline-flex items-center gap-1 h-6 px-2 rounded-full bg-field hover:bg-raised border border-line text-ui font-medium text-body hover:text-strong transition min-w-0 max-w-[150px] truncate",
   FOCUS_RING,
 );
 
@@ -764,13 +764,13 @@ export function ChatPanel({
           aria-valuemax={MAX_WIDTH}
           aria-label={t.chatResize}
           title={t.chatResize}
-          className="max-sm:hidden absolute inset-y-0 left-0 w-1.5 z-10 cursor-col-resize touch-none select-none group outline-none hover:bg-accent focus-visible:bg-accent active:bg-accent-hover transition-colors duration-150"
+          className="max-sm:hidden absolute inset-y-0 left-0 w-1.5 z-10 cursor-col-resize touch-none select-none group outline-none hover:bg-outline-line focus-visible:bg-focus active:bg-field-line-focus transition-colors duration-150"
         >
           <div className="absolute inset-y-0 -right-1.5 left-0 cursor-col-resize" />
-          <div className="absolute top-1/2 left-0.5 -translate-y-1/2 w-3.5 h-9 rounded-full bg-field border border-line group-hover:border-accent-fg flex items-center justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity shadow-float">
+          <div className="absolute top-1/2 left-0.5 -translate-y-1/2 w-3.5 h-9 rounded-full bg-field border border-line group-hover:border-strong flex items-center justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity shadow-float">
             <div className="flex flex-col gap-0.5">
               {[0, 1, 2].map((i) => (
-                <div key={i} className="w-0.5 h-0.5 rounded-full bg-line-hover group-hover:bg-accent" />
+                <div key={i} className="w-0.5 h-0.5 rounded-full bg-line-hover group-hover:bg-strong" />
               ))}
             </div>
           </div>
@@ -778,7 +778,7 @@ export function ChatPanel({
       )}
       <div className="relative px-4 pt-3 pb-2.5 flex items-center gap-2.5 border-b border-divider shrink-0">
         <IconTile name={icon} tone="green" size="sm" />
-        <h2 id={titleId} className="min-w-0 flex-1 text-ui-lg font-semibold text-contrast tracking-tight truncate">
+        <h2 id={titleId} className="min-w-0 flex-1 text-lead font-semibold text-strong tracking-tight truncate">
           {title}
         </h2>
         {actions}

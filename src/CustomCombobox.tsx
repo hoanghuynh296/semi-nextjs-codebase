@@ -124,7 +124,7 @@ export function CustomCombobox({
           }}
           onKeyDown={onKeyDown}
           placeholder={placeholder}
-          className="w-full h-field bg-field border border-control-line hover:border-control-line-hover rounded-control pl-3 pr-8 text-ui max-sm:text-title-lg text-contrast placeholder:text-muted focus:border-focus focus:ring-1 focus:ring-focus transition outline-none disabled:opacity-40 aria-invalid:border-danger-fg"
+          className="w-full h-field bg-field border border-control-line hover:border-control-line-hover rounded-control pl-3 pr-8 text-ui max-sm:text-lead text-strong placeholder:text-muted focus:border-focus focus:ring-1 focus:ring-focus transition outline-none disabled:opacity-40 aria-invalid:border-danger-fg"
         />
         <button
           type="button"
@@ -132,7 +132,7 @@ export function CustomCombobox({
           aria-hidden
           disabled={disabled}
           onClick={() => setOpen((prev) => !prev)}
-          className="absolute right-2.5 p-1 text-muted hover:text-contrast transition cursor-pointer"
+          className="absolute right-2.5 p-1 text-muted hover:text-strong transition cursor-pointer"
         >
           <Icon name="chevronDown" className={`w-3.5 h-3.5 transition-transform duration-150 ${open ? "rotate-180" : ""}`} />
         </button>
@@ -149,7 +149,7 @@ export function CustomCombobox({
           className="fixed overflow-y-auto overscroll-contain bg-panel border border-line rounded-control shadow-overlay z-popover p-1 flex flex-col gap-0.5"
         >
           {filteredOptions.length === 0 ? (
-            <div role="status" className="px-3 py-2 text-label text-muted">
+            <div role="status" className="px-3 py-2 text-ui text-muted">
               {value ? t.notListed(value) : t.noOptions}
             </div>
           ) : (
@@ -164,16 +164,16 @@ export function CustomCombobox({
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => pick(opt)}
                   onPointerEnter={() => setActive(i)}
-                  className={`w-full text-left px-3 py-1.5 rounded-control text-label transition cursor-pointer flex items-center justify-between ${
+                  className={`w-full text-left px-3 py-1.5 rounded-control text-ui transition cursor-pointer flex items-center justify-between ${
                     isSelected
-                      ? "bg-accent-subtle text-accent-fg font-medium"
+                      ? "bg-item-selected text-strong font-medium"
                       : i === active
-                        ? "bg-raised text-contrast"
-                        : "text-body hover:bg-raised hover:text-contrast"
+                        ? "bg-raised text-strong"
+                        : "text-body hover:bg-raised hover:text-strong"
                   }`}
                 >
                   <span className="truncate">{opt.label || opt.value}</span>
-                  {isSelected && <Icon name="check" className="w-3.5 h-3.5 text-accent-fg shrink-0" />}
+                  {isSelected && <Icon name="check" className="w-3.5 h-3.5 text-strong shrink-0" />}
                 </div>
               );
             })

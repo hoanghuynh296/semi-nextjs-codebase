@@ -76,13 +76,13 @@ export function Field({
         </label>
         {children}
         {error ? (
-          <p id={errorId} role="alert" className="mt-1 text-label text-danger-fg flex items-center gap-1">
+          <p id={errorId} role="alert" className="mt-1 text-ui text-danger-fg flex items-center gap-1">
             <Icon name="alert" className="w-3.5 h-3.5 shrink-0" />
             {error}
           </p>
         ) : (
           hint && (
-            <p id={hintId} className="mt-1 text-label text-muted">
+            <p id={hintId} className="mt-1 text-ui text-muted">
               {hint}
             </p>
           )

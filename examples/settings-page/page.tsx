@@ -13,7 +13,7 @@ export default function SettingsPage() {
     <div className="space-y-4">
       <PageTitle title="Cài đặt" />
       <Card className="space-y-4">
-        <h2 className="text-title font-medium text-contrast">Không gian làm việc</h2>
+        <h2 className="text-lead font-medium text-strong">Không gian làm việc</h2>
         <div className="grid gap-4 @2xl:grid-cols-2">
           <Field label="Tên" required error={error}>
             <Input value={name} onChange={(e) => setName(e.target.value)} />
@@ -43,8 +43,8 @@ export default function SettingsPage() {
       </ItemGroup>
       <Card className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-title font-medium text-contrast">Xoá không gian làm việc</h2>
-          <p className="text-label text-muted">Xoá mọi máy in, đơn và lịch sử. Không thể khôi phục.</p>
+          <h2 className="text-lead font-medium text-strong">Xoá không gian làm việc</h2>
+          <p className="text-ui text-muted">Xoá mọi máy in, đơn và lịch sử. Không thể khôi phục.</p>
         </div>
         <Button
           variant="danger"

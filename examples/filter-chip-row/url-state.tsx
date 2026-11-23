@@ -44,7 +44,7 @@ export default function FilterChipRowUrlState() {
         trailing={<ViewSwitch view={view} onViewChange={(v) => f.setParams({ view: v === "list" ? null : v }, "replace")} />}
       />
       <ResultLine count={rows.length} unit="đơn hàng" />
-      <p className="text-label text-muted">{rows.map((o) => `#${o.id}`).join(" · ") || "—"}</p>
+      <p className="text-ui text-muted">{rows.map((o) => `#${o.id}`).join(" · ") || "—"}</p>
     </div>
   );
 }

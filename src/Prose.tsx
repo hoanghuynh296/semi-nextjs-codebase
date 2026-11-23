@@ -9,12 +9,12 @@ export function Prose({ className, children }: { className?: string; /** Plain H
   return (
     <div
       className={cn(
-        "max-w-prose text-ui-lg leading-relaxed text-body",
-        "[&>*+*]:mt-4 [&_h2]:text-heading-sm [&_h2]:font-semibold [&_h2]:text-contrast [&_h2]:mt-8 [&_h3]:text-title-lg [&_h3]:font-semibold [&_h3]:text-contrast [&_h3]:mt-6",
-        "[&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-5 [&_ol]:pl-5 [&_li+li]:mt-1.5 [&_strong]:font-semibold [&_strong]:text-contrast",
-        "[&_a]:text-accent-fg [&_a]:underline [&_a]:underline-offset-2 [&_a:hover]:text-contrast",
+        "max-w-prose text-lead leading-relaxed text-body",
+        "[&>*+*]:mt-4 [&_h2]:text-section [&_h2]:font-semibold [&_h2]:text-strong [&_h2]:mt-8 [&_h3]:text-lead [&_h3]:font-semibold [&_h3]:text-strong [&_h3]:mt-6",
+        "[&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-5 [&_ol]:pl-5 [&_li+li]:mt-1.5 [&_strong]:font-semibold [&_strong]:text-strong",
+        "[&_a]:text-strong [&_a]:underline [&_a]:underline-offset-2 [&_a:hover]:text-strong",
         "[&_blockquote]:border-l-2 [&_blockquote]:border-line-hover [&_blockquote]:pl-4 [&_blockquote]:text-muted",
-        "[&_code]:rounded-chip [&_code]:border [&_code]:border-line [&_code]:bg-field [&_code]:px-1 [&_code]:text-label [&_hr]:border-divider",
+        "[&_code]:rounded-chip [&_code]:border [&_code]:border-line [&_code]:bg-field [&_code]:px-1 [&_code]:text-ui [&_hr]:border-divider",
         className,
       )}
     >

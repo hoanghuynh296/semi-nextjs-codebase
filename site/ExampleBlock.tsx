@@ -16,8 +16,8 @@ export function ExampleBlock({ example, id }: { example: DocExample; id: string 
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div className="min-w-0 space-y-0.5">
           {/* h2, not h3: a preview may hold a page h1 (PageTitle), and the next example title must not skip a level */}
-          <h2 className="text-title font-semibold text-contrast">{example.title}</h2>
-          {example.description && <p className="text-label text-muted max-w-2xl">{example.description}</p>}
+          <h2 className="text-lead font-semibold text-strong">{example.title}</h2>
+          {example.description && <p className="text-ui text-muted max-w-2xl">{example.description}</p>}
         </div>
         {!codeOnly && (
         <Pills

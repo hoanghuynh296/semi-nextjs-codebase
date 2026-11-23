@@ -22,12 +22,12 @@ export function CodeBlock({ code, title, className }: { code: string; /** File n
     <div className={cn("relative rounded-control border border-line bg-field", className)}>
       {title && (
         <div className="flex items-center justify-between gap-2 border-b border-divider px-3 h-9">
-          <span className="text-caption font-medium text-muted truncate">{title}</span>
+          <span className="text-ui font-medium text-muted truncate">{title}</span>
           {button}
         </div>
       )}
       {!title && button}
-      <pre tabIndex={0} className={cn("overflow-x-auto p-3 text-label leading-relaxed text-body outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-control", !title && "pr-12")}>
+      <pre tabIndex={0} className={cn("overflow-x-auto p-3 text-ui leading-relaxed text-body outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-control", !title && "pr-12")}>
         <code className="font-mono">{code}</code>
       </pre>
     </div>

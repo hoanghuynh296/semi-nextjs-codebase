@@ -55,7 +55,7 @@ export function Carousel({
     return () => track.removeEventListener("scroll", onScroll);
   }, []);
 
-  const nav = cn("w-8 h-8 rounded-full bg-panel border border-line shadow-float flex items-center justify-center text-body hover:text-contrast disabled:opacity-0 transition", FOCUS_RING);
+  const nav = cn("w-8 h-8 rounded-full bg-panel border border-line shadow-float flex items-center justify-center text-body hover:text-strong disabled:opacity-0 transition", FOCUS_RING);
   return (
     <section aria-roledescription="carousel" aria-label={label} className={cn("relative", className)}>
       <div
@@ -102,7 +102,7 @@ export function Carousel({
                 aria-label={t.goToSlide(i + 1)}
                 aria-current={i === index || undefined}
                 onClick={() => go(i)}
-                className={cn("relative h-1.5 rounded-full transition-all", i === index ? "w-5 bg-accent" : "w-1.5 bg-line-hover hover:bg-muted", HIT_AREA, FOCUS_RING)}
+                className={cn("relative h-1.5 rounded-full transition-all", i === index ? "w-5 bg-inverted" : "w-1.5 bg-line-hover hover:bg-muted", HIT_AREA, FOCUS_RING)}
               />
             ))}
           </div>

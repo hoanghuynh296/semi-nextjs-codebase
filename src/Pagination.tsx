@@ -18,7 +18,7 @@ export function pageWindow(page: number, pages: number): (number | null)[] {
   return out;
 }
 
-const BTN = "min-w-[32px] h-8 px-2 rounded-control text-label font-medium tabular-nums inline-flex items-center justify-center transition";
+const BTN = "min-w-[32px] h-8 px-2 rounded-control text-ui font-medium tabular-nums inline-flex items-center justify-center transition";
 
 export function Pagination({
   page,
@@ -42,13 +42,13 @@ export function Pagination({
         aria-label={t.prevPage}
         disabled={page <= 1}
         onClick={() => go(page - 1)}
-        className={`${BTN} text-muted hover:text-contrast hover:bg-raised disabled:opacity-40 disabled:pointer-events-none`}
+        className={`${BTN} text-muted hover:text-strong hover:bg-raised disabled:opacity-40 disabled:pointer-events-none`}
       >
         <Icon name="back" className="w-4 h-4" />
       </button>
       {pageWindow(page, pages).map((p, i) =>
         p === null ? (
-          <span key={`gap-${i}`} className="min-w-[24px] text-center text-label text-muted" aria-hidden>
+          <span key={`gap-${i}`} className="min-w-[24px] text-center text-ui text-muted" aria-hidden>
             …
           </span>
         ) : (
@@ -58,7 +58,7 @@ export function Pagination({
             aria-label={t.pageN(p)}
             aria-current={p === page ? "page" : undefined}
             onClick={() => go(p)}
-            className={`${BTN} ${p === page ? "bg-accent-subtle text-accent-fg font-semibold" : "text-muted hover:text-contrast hover:bg-raised"}`}
+            className={`${BTN} ${p === page ? "bg-item-selected text-strong font-semibold" : "text-muted hover:text-strong hover:bg-raised"}`}
           >
             {p}
           </button>
@@ -69,7 +69,7 @@ export function Pagination({
         aria-label={t.nextPage}
         disabled={page >= pages}
         onClick={() => go(page + 1)}
-        className={`${BTN} text-muted hover:text-contrast hover:bg-raised disabled:opacity-40 disabled:pointer-events-none`}
+        className={`${BTN} text-muted hover:text-strong hover:bg-raised disabled:opacity-40 disabled:pointer-events-none`}
       >
         <Icon name="chevron" className="w-4 h-4" />
       </button>

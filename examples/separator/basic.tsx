@@ -10,7 +10,7 @@ export default function SeparatorBasic() {
       </Button>
       <Separator label="hoặc" />
       <Button fullWidth>Đăng nhập bằng Google</Button>
-      <div className="flex h-6 items-center gap-3 text-label text-muted">
+      <div className="flex h-6 items-center gap-3 text-ui text-muted">
         <span>Máy in</span>
         <Separator orientation="vertical" />
         <span>Vật liệu</span>

@@ -158,13 +158,13 @@ export function HintTextarea({
           onKeyDown={onKeyDown}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          className="block w-full resize-none bg-transparent outline-none px-4 pt-3 text-ui max-sm:text-title-lg text-contrast placeholder:text-muted disabled:cursor-not-allowed"
+          className="block w-full resize-none bg-transparent outline-none px-4 pt-3 text-ui max-sm:text-lead text-strong placeholder:text-muted disabled:cursor-not-allowed"
         />
-        <p id={`${auto}-hint`} className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 pb-2.5 pt-1 text-caption text-body">
+        <p id={`${auto}-hint`} className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 pb-2.5 pt-1 text-ui text-body">
           <Icon name="sparkles" className="w-3.5 h-3.5 shrink-0" />
           {triggers.map((tr) => (
             <span key={tr.char}>
-              {t.hintType} <kbd className="px-1 rounded-chip bg-tint-hover text-contrast font-sans">{tr.char}</kbd> {tr.hint}
+              {t.hintType} <kbd className="px-1 rounded-chip bg-tint-hover text-strong font-sans">{tr.char}</kbd> {tr.hint}
             </span>
           ))}
         </p>
@@ -193,10 +193,10 @@ export function HintTextarea({
             >
               {m.icon && <Icon name={m.icon} className="w-4 h-4 text-muted shrink-0" />}
               <span className="flex-1 min-w-0">
-                <span className="block text-label font-medium text-contrast truncate">{m.label}</span>
-                {m.hint && <span className="block text-caption text-muted truncate">{m.hint}</span>}
+                <span className="block text-ui font-medium text-strong truncate">{m.label}</span>
+                {m.hint && <span className="block text-ui text-muted truncate">{m.hint}</span>}
               </span>
-              <span className="text-caption text-muted shrink-0">{m.value}</span>
+              <span className="text-ui text-muted shrink-0">{m.value}</span>
             </div>
           ))}
         </div>

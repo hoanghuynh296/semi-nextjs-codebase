@@ -51,9 +51,9 @@ export function Terminal({
     <div className={cn("w-full rounded-card border border-line bg-field overflow-hidden", className)}>
       <div className="flex items-center gap-2 border-b border-divider px-3 h-9">
         <Icon name="terminal" className="w-4 h-4 text-muted shrink-0" />
-        <span className="flex-1 min-w-0 truncate text-caption font-medium text-muted">{name}</span>
+        <span className="flex-1 min-w-0 truncate text-ui font-medium text-muted">{name}</span>
         {status === "running" ? (
-          <Spinner className="w-3.5 h-3.5 text-accent-fg" label={t.toolStatus.running} />
+          <Spinner className="w-3.5 h-3.5 text-strong" label={t.toolStatus.running} />
         ) : (
           exitCode !== undefined && (
             <Badge tone={exitCode === 0 ? "emerald" : "rose"} size="sm">
@@ -73,12 +73,12 @@ export function Terminal({
           stuck.current = el.scrollHeight - el.scrollTop - el.clientHeight < 24;
         }}
         style={{ maxHeight }}
-        className="overflow-auto p-3 text-label leading-relaxed text-body font-mono outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus"
+        className="overflow-auto p-3 text-ui leading-relaxed text-body font-mono outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus"
       >
         {command && (
           <div>
             <span className="text-muted select-none">$ </span>
-            <span className="text-contrast">{command}</span>
+            <span className="text-strong">{command}</span>
           </div>
         )}
         {text}
