@@ -135,8 +135,8 @@ Semi architecture separates tokens into two tiers:
 | `--color-on-accent` | `text-on-accent` | Chữ / icon trên `bg-accent` (≥ 4.5:1) | `#0c0d0e` | `#ffffff` |
 | `--color-accent-fg` | `text-accent-fg` | Chữ / icon màu primary trên surface (link, check, tab active), cả trên nền chọn trong thẻ lõm | `primary-400` | `primary-800` (brand kit: bộ sinh chọn, kiểm cả trên `card`) |
 | `--color-focus` | `ring-focus`, `border-focus` | Viền focus (`FOCUS_RING`), viền ô nhập đang gõ (≥ 3:1 trên mọi surface) | = `accent-fg` | = `accent-fg` |
-| `--color-accent-subtle` | `bg-accent-subtle` | Nền nhạt của mục đang chọn (option, trang hiện tại, pill active, IconTile) | `accent-fg` 14% | `accent-fg` 11% |
-| `--color-accent-subtle-hover` | `hover:bg-accent-subtle-hover` | Hover của nền nhạt accent | `accent-fg` 22% | `accent-fg` 18% |
+| `--color-accent-subtle` | `bg-accent-subtle` | Nền nhạt của mục đang chọn (option, trang hiện tại, pill active, IconTile). Lớp này đổi `text-muted` bên trong sang `--semi-text-muted-on-subtle` (sáng: 25% về `text-body`) để chữ phụ đạt 4.5:1 (#123) | `accent-fg` 14% | `accent-fg` 11% |
+| `--color-accent-subtle-hover` | `hover:bg-accent-subtle-hover` | Hover của nền nhạt accent; đổi `text-muted` (tối 25%, sáng 45% về `text-body`) và `text-accent-fg` (tối 18%, sáng 15% về `text-contrast`) bên trong (#123) | `accent-fg` 22% | `accent-fg` 18% |
 | `--color-accent-line` | `border-accent-line` | Viền của mục đang chọn (card được chọn, ngày hôm nay) | `accent-fg` 40% | `accent-fg` 40% |
 | `--color-danger-fg` · `success-fg` · `warning-fg` · `info-fg` | `text-danger-fg` … | Chữ trạng thái trên surface | `rose/emerald/amber/sky-400` | `-700` (`warning`: `amber-800`, ≥ 4.5:1 cả trên ô nhập Soft / Sharp) |
 | `--color-tone-<hue>` | `text-tone-<hue>` | Chữ tonal 12 hue (purple, violet, indigo, blue, sky, cyan, teal, emerald, amber, orange, rose, pink) | `<hue>-300` | `<hue>-700` (amber, orange, cyan, teal, pink: `-800`, ≥ 4.5:1 trên badge trong thẻ lõm, #50) |
@@ -321,7 +321,7 @@ breaks under a brand kit or a style (`no-fixed-tone-text`, hard rule 10).
 | A category tint (card, tile, tag) | `TONAL_SURFACE[tone]` (= `TONAL_CONTAINER`), `<Badge tone>`, `TILE_TONES` | `bg-<color>-500/10 border-<color>-500/20 text-tone-<color>` |
 | Its hover | `TONAL_HOVER[tone]` | `hover:bg-<color>-500/15 hover:border-<color>-500/30` |
 | Coloured text or icon alone | `text-tone-<color>` (`TONE_TEXT`), `text-*-fg` for a status | Themed shade, 4.5:1 on panel |
-| A highlighted row | `bg-accent-subtle` (selected), a status `bg-*-bg` (a row that needs attention) | No hue picked per row |
+| A highlighted row | `bg-accent-subtle` (selected), a status `bg-*-bg` (a row that needs attention); its secondary text stays `text-muted` (the fill darkens it, #123) | No hue picked per row, no `active ? "text-body" : "text-muted"` swap |
 
 ### Examples Across Component Types
 
@@ -1012,7 +1012,7 @@ installed. Without Playwright, `--snippet` prints an expression to evaluate with
 | `contrast` | Text is under 4.5:1 against the surface under it, translucent tints blended in (3:1 from 24px, or bold from 18.66px); disabled controls are exempt |
 | `edge` | A field you type in or pick from (input, textarea, select, combobox) shows no edge, or an edge or fill under 3:1, against the surface around it; a wrapper hugging the field (an input group, a composer) counts as its edge; an open combobox (a command palette) is told apart by its list |
 | `name` | A button, link, field or ARIA control has no name (text, `aria-label`, `aria-labelledby`, a label, `title`), or only a placeholder |
-| `focus-ring` | Focusing a control from the keyboard changes nothing on it, its three wrappers or its siblings (outline, shadow, border, fill, colour) |
+| `focus-ring` | Focusing a control from the keyboard changes nothing on it, its three wrappers or its siblings (outline, shadow, border, fill, colour), compared with the control unfocused (the focus a dialog's trap already put on it is taken off first; a control that takes focus back on blur is reported as "could not be moved off", a control focus cannot land on while another element keeps it as "could not be moved onto"; the page behind an `aria-modal` dialog is left out) |
 | `target-size` | A control is smaller than 24 × 24 px (its `::before` / `::after` hit area included) and a 24px circle on its centre touches another target or another small target's circle; links in a sentence are exempt |
 | `img-alt` | An `<img>` has no `alt`, or a `role="img"` has no name |
 | `lang` | `<html>` has no `lang` |

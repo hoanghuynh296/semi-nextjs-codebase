@@ -2,6 +2,8 @@
 
 Newest first. Each entry is a user decision already reflected in `DESIGN_SYSTEM.md`, `QUICK_REF.md` and `lint/semi-lint.mjs`.
 
+- **2026-11-23 (text on the selection tint, #123, C-041):** `text-muted` on `bg-accent-subtle` was 4.08:1 in light (a selected mail row's time and snippet, sales-hub), 3.6:1 on its hover, and `text-accent-fg` on the hover 4.1:1 in both themes. Changing the fill cannot fix this. A darker tint lowers dark text's contrast further. A lighter one, or a fill chosen per surface (tried in PR #133), changes every other use of the token: IconTile, FileDrop, Chat, MegaMenu badges, Calendar range, Pagination. Darkening `text-muted` everywhere costs the muted / body hierarchy. Decision: the fill stays, and the text on it changes. `bg-accent-subtle` and `bg-accent-subtle-hover` are also static `@utility` blocks (Tailwind merges them into the theme colour's utility and its `hover:` / `aria-selected:` variants). They re-point `--semi-text-muted`, and on hover `--semi-accent-fg`, to private themed tokens mixed toward `text-body` / `text-contrast`, just enough for 4.5:1 on every style and kit. The fill, the focus ring and `border-accent-line` are resolved at the theme scope, so they do not follow. Apps keep writing `text-muted`. The brand generator checks the same scoped text and darkens a style's muted / body text only if it still falls short.
+
 - **2026-11-23 (list page anatomy, #115 / #119 / #120, C-041):** gaps sales-hub found integrating 0.36. Decisions: (1) a
   list page's own action goes on the title row, `PageTitle actions` (one primary or secondary + `RefreshButton`, wrapping
   under the title below `sm`), not in the `StickyContextBar` and not in a `MinimalHeader`: the bar is search and filters

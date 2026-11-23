@@ -498,6 +498,50 @@ test("DetailOverlay: opens by URL, ‹ › and ← → step with n / N, Back clo
   await expect(page).not.toHaveURL(/item=/);
 });
 
+// The doc pages are audited closed; these are the states an app's `semi a11y` run meets them in (#126): the overlay
+// open with its focus trap on the close button, a chip's popover open, the switch reached with Tab.
+for (const theme of THEMES)
+  for (const width of [1280, 375])
+    test(`a11y audit, open states: DetailOverlay, FilterChipRow, ViewSwitch · ${theme} · ${width}px (#126)`, async ({ browser }) => {
+      const page = await browser.newPage({ viewport: { width, height: 900 }, isMobile: width < 500, hasTouch: width < 500 });
+      await open(page, "/components/detail-overlay/?item=DH-1041", theme);
+      const dialog = page.getByRole("dialog", { name: "Đơn DH-1041" });
+      await expect(dialog).toBeVisible();
+      await expect(dialog.getByRole("button", { name: "Đóng", exact: true })).toBeFocused();
+      // ‹ › (the buttons #126 names) are in the audit: shown and enabled on item 2 of 12, with a ring under keyboard focus
+      for (const name of ["Mục trước", "Mục sau"]) {
+        const nav = dialog.getByRole("button", { name });
+        await expect(nav).toBeVisible();
+        await expect(nav).toBeEnabled();
+      }
+      expect(await a11yHits(page)).toEqual([]);
+      // reached with Tab, each draws a ring (box-shadow) it does not have unfocused
+      for (const name of ["Mục trước", "Mục sau"]) {
+        const nav = dialog.getByRole("button", { name });
+        const unfocused = await nav.evaluate((el) => getComputedStyle(el).boxShadow);
+        for (let i = 0; i < 8 && !(await nav.evaluate((el) => el === document.activeElement)); i++) await page.keyboard.press("Tab");
+        await expect(nav).toBeFocused();
+        expect(await nav.evaluate((el) => getComputedStyle(el).boxShadow)).not.toBe(unfocused);
+      }
+
+      await open(page, "/components/filter-chip-row/?o.status=new", theme);
+      const chip = example(page, "filter-chip-row/url-state").getByRole("button", { name: "Trạng thái: Mới" });
+      await expect(chip).toBeVisible();
+      await chip.focus();
+      await page.keyboard.press("Enter");
+      await expect(page.getByRole("dialog", { name: "Trạng thái" })).toBeVisible();
+      expect(await a11yHits(page)).toEqual([]);
+      // still open after the audit focused and blurred each control: its options were the ones checked
+      await expect(page.getByRole("dialog", { name: "Trạng thái" })).toBeVisible();
+
+      await open(page, "/components/view-switch/", theme);
+      const sw = example(page, "view-switch/default");
+      await expect(sw.getByRole("radio").first().or(sw.getByRole("button").first())).toBeVisible();
+      await sw.locator("button").first().focus();
+      expect(await a11yHits(page)).toEqual([]);
+      await page.close();
+    });
+
 test("CommandPalette hotkey: the platform's key opens it from a field, not the other modifier or a rich-text editor (#102)", async ({ page }) => {
   await open(page, "/components/command-palette/", "dark");
   const apple = await page.evaluate(() => /Mac|iPhone|iPad/i.test(navigator.platform || navigator.userAgent));
@@ -1721,3 +1765,51 @@ test("HintTextarea: @ and / open a listbox; arrows, Enter inserts at the caret, 
   await expect(text).toBeFocused();
   await expect(text).toHaveValue("Gửi @yenbai hôm nay /");
 });
+
+// #123: the selection fills re-point the text on them (text-muted, and accent-fg on hover) through a static @utility of
+// the same name as the theme colour; Tailwind merges it into bg-accent-subtle and its variants. The fill itself is
+// main's tint; text outside a fill keeps its colour; a hover: variant scopes the text only while hovered.
+for (const theme of THEMES) {
+  test(`selection fills darken the text on them, not the fill or the text around (#123) · ${theme}`, async ({ page }) => {
+    await open(page, "/", theme);
+    await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+    await page.evaluate(() => {
+      const d = document.createElement("div");
+      d.id = "t123";
+      d.className = "bg-card";
+      d.style.cssText = "position:fixed;top:0;left:0;z-index:99999;width:400px;padding:16px";
+      d.innerHTML =
+        '<p id="plain" class="text-muted">plain</p>' +
+        '<div id="sel" class="bg-accent-subtle"><span class="text-muted">sel</span><span class="text-accent-fg">a</span></div>' +
+        '<div id="hov" class="hover:bg-accent-subtle-hover" style="height:40px"><span class="text-muted">hov</span><span class="text-accent-fg">a</span></div>';
+      document.body.appendChild(d);
+    });
+    const read = () =>
+      page.evaluate(() => {
+        const c = (sel: string) => getComputedStyle(document.querySelector(sel)!).color;
+        const bg = (sel: string) => getComputedStyle(document.querySelector(sel)!).backgroundColor;
+        const v = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        return {
+          plain: c("#plain"), sel: c("#sel .text-muted"), selAccent: c("#sel .text-accent-fg"), hov: c("#hov .text-muted"), hovAccent: c("#hov .text-accent-fg"),
+          selBg: bg("#sel"), hovBg: bg("#hov"), subtle: v("--semi-accent-subtle"), hover: v("--semi-accent-subtle-hover"),
+        };
+      });
+    const before = await read();
+    // The fills are main's see-through tints (no per-surface scheme).
+    const tail = (k: string) => / \d+%, transparent\)$/.exec((tokens.semantic as Record<string, Record<string, string>>)[k][theme])![0];
+    expect(before.subtle.endsWith(tail("color-accent-subtle"))).toBe(true);
+    expect(before.hover.endsWith(tail("color-accent-subtle-hover"))).toBe(true);
+    expect(before.selBg).toMatch(/\/ 0\.1[14]\)$|rgba?\(.*, 0\.1[14]\)$/);
+    // Not hovered: the hover row's text is the plain text.
+    expect(before.hov).toBe(before.plain);
+    // Light darkens muted on the selected tint; dark already reads, so it keeps text-muted.
+    if (theme === "light") expect(before.sel).not.toBe(before.plain);
+    else expect(before.sel).toBe(before.plain);
+    await page.hover("#hov");
+    const after = await read();
+    expect(after.hov).not.toBe(before.plain);
+    expect(after.hovAccent).not.toBe(before.selAccent);
+    expect(after.hovBg).not.toBe("rgba(0, 0, 0, 0)");
+    expect(after.plain).toBe(before.plain);
+  });
+}
