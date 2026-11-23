@@ -2,7 +2,17 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
-## [Unreleased]
+## 0.36.0 — 2026-11-23
+
+**Summary.** One minor release with the whole C-030 / C-031 / C-032 UX round: tone-based surfaces (#95), the new shell and navigation (#97), search and filters (#100), overlays, actions, `CommandPalette` and `SplitButton` (#105), page types and states (#110), five new `semi-lint` warnings (#108) and a faster CI (#104). Existing tokens, class constants and props keep working.
+
+**What apps must do.** Run `/semi-sync` (it runs `migrations/0.36.0-shell.mjs` and `migrations/0.36.0-surfaces.mjs`), then review the "Migration" section below. Brand kits must be rebuilt and re-released after this version (the coordinator does it).
+
+**Changed, in short.**
+- AppShell compatibility rule (C-034): an app that sets `mobileTabIds` keeps `MobileTabBar` as before; an app that sets neither gets the phone drawer; `footer` and `mobileTabIds` are deprecated (development warning, `footer` renders as `account`).
+- `Menu` and `ContextMenu` open as a bottom sheet on phones (`sheet={false}` keeps the dropdown); danger items are listed last.
+- `DataTable` loading rows take the table's shape and are `aria-hidden`.
+- New `semi-lint` warnings (`no-spinner-in-list`, `filter-chip-wrap`, `raw-pill-button`, `detail-overlay-url`, `overline-place`) (warnings).
 
 Surfaces after magnific.com (C-030, #93): pages separate by **tone instead of borders**. Cards lose their border, secondary buttons become a translucent tint, and two brand-kit options arrive: `neutral: "pure"` (0% saturation greys) and `primaryStyle: "inverted"` (a neutral main button). Every existing token, class constant and prop keeps working. **Brand kits must be rebuilt and re-released** to get the new surface values (`/semi-brand update`); the new options default to today's choices (brand-tinted greys, brand-coloured primary).
 
