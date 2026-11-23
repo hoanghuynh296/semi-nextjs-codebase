@@ -2,6 +2,11 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
+## Unreleased
+
+### Fixed
+- `semi a11y` no longer reports `focus-ring` on the first control of an open dialog (#126): `DetailOverlay`'s close button (and the first control of `Modal`, `Drawer`, `CommandPalette`, … whose focus trap focuses it on open) was measured against itself, already focused, so its ring counted as "nothing changes". The audit now takes the focus off first and compares the control unfocused with keyboard focus; a control with no ring is still reported. The components were right; nothing to change in apps, the warning just goes away. The docs-site checks now audit `DetailOverlay` open, a `FilterChipRow` popover open and `ViewSwitch`, in both themes at 1280px and 375px.
+
 ## 0.36.0 — 2026-11-23
 
 **Summary.** One minor release with the whole C-030 / C-031 / C-032 UX round: tone-based surfaces (#95), the new shell and navigation (#97), search and filters (#100), overlays, actions, `CommandPalette` and `SplitButton` (#105), page types and states (#110), five new `semi-lint` warnings (#108) and a faster CI (#104). Existing tokens, class constants and props keep working.

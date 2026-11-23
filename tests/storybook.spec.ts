@@ -498,6 +498,34 @@ test("DetailOverlay: opens by URL, ‹ › and ← → step with n / N, Back clo
   await expect(page).not.toHaveURL(/item=/);
 });
 
+// The doc pages are audited closed; these are the states an app's `semi a11y` run meets them in (#126): the overlay
+// open with its focus trap on the close button, a chip's popover open, the switch reached with Tab.
+for (const theme of THEMES)
+  for (const width of [1280, 375])
+    test(`a11y audit, open states: DetailOverlay, FilterChipRow, ViewSwitch · ${theme} · ${width}px (#126)`, async ({ browser }) => {
+      const page = await browser.newPage({ viewport: { width, height: 900 }, isMobile: width < 500, hasTouch: width < 500 });
+      await open(page, "/components/detail-overlay/?item=DH-1041", theme);
+      const dialog = page.getByRole("dialog", { name: "Đơn DH-1041" });
+      await expect(dialog).toBeVisible();
+      await expect(dialog.getByRole("button", { name: "Đóng", exact: true })).toBeFocused();
+      expect(await a11yHits(page)).toEqual([]);
+
+      await open(page, "/components/filter-chip-row/?o.status=new", theme);
+      const chip = example(page, "filter-chip-row/url-state").getByRole("button", { name: "Trạng thái: Mới" });
+      await expect(chip).toBeVisible();
+      await chip.focus();
+      await page.keyboard.press("Enter");
+      await expect(page.getByRole("dialog", { name: "Trạng thái" })).toBeVisible();
+      expect(await a11yHits(page)).toEqual([]);
+
+      await open(page, "/components/view-switch/", theme);
+      const sw = example(page, "view-switch/default");
+      await expect(sw.getByRole("radio").first().or(sw.getByRole("button").first())).toBeVisible();
+      await sw.locator("button").first().focus();
+      expect(await a11yHits(page)).toEqual([]);
+      await page.close();
+    });
+
 test("CommandPalette hotkey: the platform's key opens it from a field, not the other modifier or a rich-text editor (#102)", async ({ page }) => {
   await open(page, "/components/command-palette/", "dark");
   const apple = await page.evaluate(() => /Mac|iPhone|iPad/i.test(navigator.platform || navigator.userAgent));
