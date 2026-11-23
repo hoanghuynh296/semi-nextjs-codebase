@@ -130,14 +130,18 @@ function propExpression(tag, name) {
 // `({ collapsed }) =>` or `({ collapsed }: ShellSlotState) =>`: the one shape that can be rewritten exactly
 const COLLAPSED_ONLY = /^(\s*(?:async\s+)?\(\s*\{\s*)collapsed(\s*\}\s*(?::\s*[\w.]+\s*)?\)\s*=>)/;
 const word = (name) => new RegExp(`(?<![\\w$])${name}(?![\\w$])`);
-// the code before a `collapsed` that makes it a plain expression read: ( ! ? && || => return ={ (an attribute value)
-const READ_BEFORE = /(?:\(|!|\?|&&|\|\||=>|(?<![\w$])return|(?<![=!<>])=\s*\{)\s*$/;
+// the code before a `collapsed` that makes it a plain expression read: the start of the body, ( ! ? && || => return
+// ={ (an attribute value)
+const READ_BEFORE = /(?:^|\(|!|\?|&&|\|\||=>|(?<![\w$])return|(?<![=!<>])=\s*\{)\s*$/;
+// a parameter named collapsed (`(collapsed) =>`, `(collapsed: boolean, i) =>`) shadows the render prop's: never rewritten
+const PARAM_AFTER = /^\s*(?::\s*[^,()=]+)?\s*(?:,[^()]*)?\)\s*(?::\s*[^=()]+)?=>/;
 // …and what may follow it: ? && || ) } ; , : or the end
 const READ_AFTER = /^\s*(?:\?|&&|\|\||\)|\}|;|,|:(?!:)|$)/;
 
 /**
  * The body of `({ collapsed }) => body` with each `collapsed` read as `(collapsed || rail)`, or null when one
- * occurrence is anything else or cannot be told apart: an attribute name (`collapsed={…}`), a shorthand property
+ * occurrence is anything else or cannot be told apart: a parameter that shadows it (`(collapsed) =>`), an attribute
+ * name (`collapsed={…}`), a shorthand property
  * (`{ collapsed }`, `{...{ collapsed }}`), a comparison, a template literal or JSX text. Strings and comments that
  * mention the word are skipped. Conservative: when in doubt the caller reports file:line instead of rewriting.
  */
@@ -180,7 +184,8 @@ function rewriteReads(body) {
         i += 8;
         continue;
       }
-      if (!READ_BEFORE.test(body.slice(0, i)) || !READ_AFTER.test(body.slice(i + 9).replace(/^\s*\/\*[\s\S]*?\*\//, ""))) return null;
+      const after = body.slice(i + 9).replace(/^\s*\/\*[\s\S]*?\*\//, "");
+      if (!READ_BEFORE.test(body.slice(0, i)) || !READ_AFTER.test(after) || PARAM_AFTER.test(after)) return null;
       hits.push(i);
       i += 8;
     }

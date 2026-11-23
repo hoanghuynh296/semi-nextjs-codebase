@@ -185,6 +185,9 @@ test("0.36.0 shell / 0.37.0 account-rail: an account render prop's collapsed che
     "<B t={`${collapsed}`} />", // a template literal
     "collapsed === true ? null : <B />", // a comparison
     "(collapsed ? null : <p>Mở (collapsed)</p>)", // a read, then the word in JSX text
+    "items.map((collapsed) => <B on={collapsed} />)", // a parameter that shadows it
+    "items.map((collapsed: boolean, i) => <B on={collapsed} />)", // a typed parameter
+    "f((x, collapsed) => collapsed)", // a later parameter
   ]) {
     const f = `${H}<AppShell account={({ collapsed }) => ${body}} />`;
     assert.deepEqual(railAccount(f), { src: f, manual: [{ line: 2, reason: "collapsed" }] }, body);
@@ -198,6 +201,13 @@ test("0.36.0 shell / 0.37.0 account-rail: an account render prop's collapsed che
     `${H}<AppShell account={({ collapsed, rail }) => ((collapsed || rail) /* collapsed */ ? null : <B c="collapsed" k={{ collapsed: 1 }} p={s.collapsed} on={!(collapsed || rail)} />)} />`,
   );
   assert.equal(railAccount(fixed.src).src, fixed.src, "twice-safe");
+  // review of #134 round 2: the most common shape, a body that starts with the read (no parentheses)
+  const bare = `${H}<AppShell\n  account={({ collapsed }) =>\n    collapsed ? null : (\n      <Account />\n    )\n  }\n/>`;
+  const bareOut = railAccount(bare);
+  assert.deepEqual(bareOut.manual, []);
+  assert.match(bareOut.src, /\(\{ collapsed, rail \}\) =>\n {4}\(collapsed \|\| rail\) \? null : \(/);
+  assert.equal(railAccount(bareOut.src).src, bareOut.src, "twice-safe");
+  assert.match(railAccount(`${H}<AppShell account={({ collapsed }) => collapsed && <A />} />`).src, /=> \(collapsed \|\| rail\) && <A \/>/);
   // a function or a component that reads neither collapsed nor rail is reported; a plain JSX node is not
   for (const expr of ["AccountBlock", "(s) => <Account {...s} />", "() => <Account />", "function (s) { return <A />; }"]) {
     const f = `${H}<AppShell account={${expr}} />`;

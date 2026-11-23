@@ -752,6 +752,21 @@ for (const theme of THEMES) {
   });
 }
 
+test("AppShell theme utility: its icon is hidden before mount (no swap after hydration) and shown after", async ({ browser }) => {
+  // without JavaScript the page is the server HTML: the stored theme is not known, so the icon keeps its place, hidden
+  const ssr = await browser.newPage({ viewport: { width: 1440, height: 900 }, javaScriptEnabled: false });
+  await ssr.goto("/demo/app-shell/");
+  const before = ssr.locator("aside").getByRole("button", { name: "Giao diện" }).locator("svg");
+  await expect(before).toHaveClass(/opacity-0/);
+  await ssr.close();
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await open(page, "/demo/app-shell/", "dark");
+  const icon = page.locator("aside").getByRole("button", { name: "Giao diện" }).locator("svg");
+  await expect(icon).not.toHaveClass(/opacity-0/);
+  await expect(icon).toBeVisible();
+  await page.close();
+});
+
 test("AppShell desktop: Create menu, collapse to the rail and back from the logo", async ({ browser }) => {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   await open(page, "/demo/app-shell/", "dark");
