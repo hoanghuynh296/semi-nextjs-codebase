@@ -14,22 +14,22 @@ test("issues #1–#4 map to semantic tokens", () => {
 });
 
 test("legacy light/dark pairs collapse into one token", () => {
-  assert.equal(m("bg-white dark:bg-slate-900 text-slate-900 dark:text-white"), "bg-panel text-contrast");
+  assert.equal(m("bg-white dark:bg-slate-900 text-slate-900 dark:text-white"), "bg-panel text-strong");
   assert.equal(m("text-amber-700 dark:text-amber-300"), "text-tone-amber");
   assert.equal(m("border-gray-200 dark:border-gray-800 md:hover:bg-gray-50 md:dark:hover:bg-gray-800"), "border-line md:hover:bg-field");
 });
 
 test("variants and important flags are kept", () => {
-  assert.equal(m("hover:bg-amber-100 active:bg-amber-200 group-hover:text-primary-300 !text-gray-500"), "hover:bg-amber-500/15 active:bg-amber-500/20 group-hover:text-accent-fg !text-muted");
+  assert.equal(m("hover:bg-amber-100 active:bg-amber-200 group-hover:text-primary-300 !text-gray-500"), "hover:bg-amber-500/15 active:bg-amber-500/20 group-hover:text-strong !text-muted");
 });
 
 test("dark-first apps map dark shades", () => {
   assert.equal(m("bg-slate-900 text-slate-300 border-slate-800", "dark"), "bg-app text-body border-line");
-  assert.equal(m("bg-slate-950 text-slate-100", "dark"), "bg-canvas text-contrast");
+  assert.equal(m("bg-slate-950 text-slate-100", "dark"), "bg-canvas text-strong");
 });
 
 test("sizes and shadows", () => {
-  assert.equal(m("text-[13px] sm:text-[22px] shadow-sm rounded-xl"), "text-ui sm:text-heading shadow-card rounded-card");
+  assert.equal(m("text-[13px] sm:text-[22px] shadow-sm rounded-xl"), "text-copy sm:text-section shadow-card rounded-card");
   assert.equal(m("rounded md:rounded-lg rounded-t-2xl hover:rounded-sm rounded-full"), "rounded-chip md:rounded-control rounded-t-panel hover:rounded-chip rounded-full");
   assert.deepEqual(migrateClassString("rounded-[10px]").unresolved, ["rounded-[10px]"]);
   assert.equal(m("h-[34px] sm:w-[34px] h-[36px]"), "h-control sm:w-control h-[36px]");
@@ -43,14 +43,14 @@ test("ambiguous or unsafe tokens are reported, not guessed", () => {
 });
 
 test("allowed classes are untouched", () => {
-  const v = "bg-panel border border-line bg-white/10 bg-emerald-400 bg-rose-500/10 bg-accent p-4";
+  const v = "bg-panel border border-line bg-white/10 bg-emerald-400 bg-rose-500/10 bg-primary p-4";
   assert.equal(m(v), v);
 });
 
-test("primary-fill (#15): a brand fill with white text becomes the accent, other brand fills are reported", () => {
-  assert.equal(m("bg-primary-500 hover:bg-primary-600 text-white px-4"), "bg-accent hover:bg-accent-hover text-on-accent px-4");
-  assert.equal(m("bg-primary-600 dark:bg-primary-500 text-on-accent", "dark"), "bg-accent text-on-accent");
-  assert.equal(m("md:bg-primary-400 text-white"), "md:bg-primary-400 text-contrast", "only a base fill decides");
+test("primary-fill (#15): a brand fill with white text becomes the primary fill, other brand fills are reported", () => {
+  assert.equal(m("bg-primary-500 hover:bg-primary-600 text-white px-4"), "bg-primary hover:bg-primary-hover text-on-primary px-4");
+  assert.equal(m("bg-primary-600 dark:bg-primary-500 text-on-primary", "dark"), "bg-primary text-on-primary");
+  assert.equal(m("md:bg-primary-400 text-white"), "md:bg-primary-400 text-strong", "only a base fill decides");
   for (const v of ["bg-primary-500 p-4", "bg-primary-700 text-white", "h-2 bg-primary-400 rounded-full"]) {
     const r = migrateClassString(v);
     assert.ok(r.unresolved.some((t) => t.includes("bg-primary")), v);
@@ -103,15 +103,15 @@ test("strings that are not class lists are never rewritten, and nothing is dedup
 
 test("token for token: whitespace and line breaks of a class string stay (issue #11)", () => {
   assert.equal(m("flex\n    bg-white\n    dark:bg-slate-900\n    p-4"), "flex\n    bg-panel\n    p-4");
-  assert.equal(m("  bg-white  dark:bg-slate-900  text-slate-900  "), "  bg-panel  text-contrast  ");
+  assert.equal(m("  bg-white  dark:bg-slate-900  text-slate-900  "), "  bg-panel  text-strong  ");
   assert.equal(m("dark:bg-slate-900 bg-white"), "bg-panel");
 });
 
 test("dark apps: solid white / black are left for a person (issue #12)", () => {
   const r = migrateClassString("bg-white bg-black text-black text-white", "dark");
-  assert.equal(r.value, "bg-white bg-black text-black text-contrast");
+  assert.equal(r.value, "bg-white bg-black text-black text-strong");
   assert.deepEqual(r.unresolved, ["bg-white", "bg-black", "text-black"]);
-  assert.equal(m("bg-white text-black"), "bg-panel text-contrast");
+  assert.equal(m("bg-white text-black"), "bg-panel text-strong");
 });
 
 test("detectTheme reads what the page paints (issue #12)", () => {

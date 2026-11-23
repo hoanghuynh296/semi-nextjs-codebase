@@ -15,10 +15,11 @@ test("every shipped migration has a version up to this release, a unique id, a d
   const ids = new Set();
   for (const m of list) {
     assert.match(String(m.version), /^\d+\.\d+\.\d+$/, m.file);
-    // Up to the next minor: an unreleased migration ([Unreleased] in the CHANGELOG) ships with the next release, and
-    // /semi-sync only runs migrations up to the version it installs.
+    // Up to the next minor, or the next major for a breaking release: an unreleased migration ([Unreleased] in the
+    // CHANGELOG) ships with the next release, and /semi-sync only runs migrations up to the version it installs.
     const [maj, min] = pkg.version.split(".").map(Number);
-    assert.ok(cmpVersion(m.version, `${maj}.${min + 1}.0`) <= 0, `${m.file}: version after the next minor of ${pkg.version}`);
+    const next = cmpVersion(m.version, `${maj}.${min + 1}.0`) <= 0 || m.version === `${maj + 1}.0.0`;
+    assert.ok(next, `${m.file}: version after the next minor (or major) of ${pkg.version}`);
     assert.ok(m.id && !ids.has(m.id), `${m.file}: id`);
     ids.add(m.id);
     assert.ok(m.description, `${m.file}: description`);
@@ -229,4 +230,47 @@ test("0.36.0 shell / 0.37.0 account-rail: an account render prop's collapsed che
   rail.default({ files: Object.keys(files), read: (f) => files[f], write: (f, v) => (files[f] = v) });
   assert.match(files["a.tsx"], /\(\{ collapsed, rail \}\)/);
   assert.equal(files["b.css"], "x");
+});
+
+test("1.0.0 foundation: removed colour and size tokens map to the 1.0 names, data-style goes, a second run changes nothing", async () => {
+  const { migrateFoundation, foundationFlags } = await import("../../migrations/1.0.0-foundation.mjs");
+  const src = [
+    `<html lang="vi" data-theme="dark" data-style="soft">`,
+    `cn("text-contrast hover:text-contrast/80 bg-accent hover:bg-accent-hover text-on-accent", "bg-action text-on-action")`,
+    `cn("text-accent-fg aria-selected:bg-accent-subtle hover:bg-accent-subtle-hover border-accent-line decoration-accent")`,
+    `cn("text-caption text-label text-ui text-ui-lg text-title text-title-lg text-heading-sm text-heading text-heading-lg text-display text-kpi font-title font-display")`,
+    `.x { color: var(--color-text-contrast); background: var(--color-accent-subtle); font-size: var(--text-label); line-height: var(--text-heading--line-height); border-color: var(--semi-accent-line); }`,
+    `cn("bg-primary-500 text-tone-rose my-text-label-x")`,
+  ].join("\n");
+  const out = migrateFoundation(src);
+  assert.equal(
+    out,
+    [
+      `<html lang="vi" data-theme="dark">`,
+      `cn("text-strong hover:text-strong/80 bg-primary hover:bg-primary-hover text-on-primary", "bg-primary text-on-primary")`,
+      `cn("text-strong aria-selected:bg-item-selected hover:bg-item-selected border-outline-line decoration-primary")`,
+      `cn("text-ui text-ui text-ui text-lead text-lead text-lead text-section text-section text-tab-xl text-tab-xl text-figure font-title font-display")`,
+      `.x { color: var(--color-text-strong); background: var(--color-item-selected); font-size: var(--text-ui); line-height: var(--text-section--line-height); border-color: var(--semi-outline-line); }`,
+      `cn("bg-primary-500 text-tone-rose my-text-label-x")`,
+    ].join("\n"),
+  );
+  assert.equal(migrateFoundation(out), out, "second run changes nothing");
+  const flags = foundationFlags(src, out);
+  assert.ok(flags.some((f) => f.includes("primary-50")), "brand scale flagged");
+  assert.ok(flags.some((f) => f.includes("bg-accent")), "bg-accent → bg-primary flagged");
+  assert.ok(flags.some((f) => f.includes("accent-fg")), "accent-fg flagged");
+});
+
+test("the semi-sync runner collects a migration's flags", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "semi-flags-"));
+  try {
+    mkdirSync(join(dir, "mig"));
+    writeFileSync(join(dir, "mig", "9.9.9-x.mjs"), `export const version = "9.9.9"; export const id = "x"; export const description = "x";\nexport default ({ files, flag }) => { for (const f of files) flag(f, "check me"); };\n`);
+    mkdirSync(join(dir, "app", "app"), { recursive: true });
+    writeFileSync(join(dir, "app", "app", "page.tsx"), "export default function P() { return null; }\n");
+    const [r] = await runMigrations({ appDir: join(dir, "app"), dir: join(dir, "mig"), from: "9.0.0", to: "9.9.9" });
+    assert.ok(r.flags.length >= 1 && r.flags.every((f) => f.message === "check me" && !f.file.startsWith("/")));
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 });

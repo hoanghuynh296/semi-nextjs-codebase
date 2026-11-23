@@ -1,272 +1,45 @@
-// node --test lint/test — the surface ladder of every style x theme (#88): the content panel must read as a card on the app.
+// node --test lint/test — the 1.0 neutral surfaces (#141): one ladder for every brand, and AA of every text tier on the
+// page surfaces (the token build runs the same check, scripts/token-css.mjs aaErrors, so a failing value fails `npm run check`).
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { hexToOklch } from "../../brand/color.mjs";
-import { generateBrand } from "../../brand/generate.mjs";
+import { aaErrors } from "../../scripts/token-css.mjs";
 
-const read = (p) => JSON.parse(readFileSync(new URL(`../../${p}`, import.meta.url), "utf8"));
-const tokens = read("tokens/tokens.json");
-const styles = read("tokens/styles.json");
-const kits = { semi: read("lint/test/fixtures/brand-semi.json"), "3dnoobs": read("lint/test/fixtures/brand-3dnoobs.json") };
-
+const tokens = JSON.parse(readFileSync(new URL("../../tokens/tokens.json", import.meta.url), "utf8"));
 const MIN_STEP = 0.01; // OKLCH L
-const KEYS = ["color-canvas", "color-app", "color-panel", "color-field", "color-raised"];
 const L = (hex) => hexToOklch(hex).l;
-const ids = styles.styles.map((s) => s.id);
-const coreSurfaces = (st, theme) => Object.fromEntries(KEYS.map((k) => [k, (st.semantic?.[k] ?? tokens.semantic[k])[theme]]));
-const kitNeutrals = (b) => generateBrand({ ...b, styles: { default: "flat", allowed: ids } }, { tokens, styles }).tokens.neutrals;
-
-/**
- * Dark climbs canvas < app < panel < field < raised. Light: canvas < app < panel, and the field / raised fills sit
- * below the panel (field may equal canvas: it is the same tone by design).
- */
-function checkLadder(label, theme, s) {
-  const step = (lo, hi, what) => {
-    const d = L(s[hi]) - L(s[lo]);
-    assert.ok(d >= MIN_STEP, `${label} ${theme}: ${what} needs an OKLCH L step >= ${MIN_STEP} (${lo} ${s[lo]} -> ${hi} ${s[hi]}: ${d.toFixed(4)})`);
-  };
-  step("color-canvas", "color-app", "canvas < app");
-  step("color-app", "color-panel", "app < panel");
-  if (theme === "light") {
-    step("color-field", "color-app", "field < app");
-    step("color-canvas", "color-app", "canvas < app");
-  }
-  if (theme === "dark") {
-    step("color-panel", "color-field", "panel < field");
-    step("color-field", "color-raised", "field < raised");
-  } else {
-    step("color-field", "color-panel", "field < panel");
-    step("color-raised", "color-field", "raised < field");
-  }
-}
-
-test("core tokens: every style x theme has strictly ordered, distinct surfaces", () => {
-  for (const st of styles.styles) for (const theme of ["light", "dark"]) checkLadder(`core ${st.id}`, theme, coreSurfaces(st, theme));
-});
-
-test("built kits: every allowed style x theme has strictly ordered, distinct surfaces", () => {
-  for (const [id, b] of Object.entries(kits)) {
-    for (const [sid, themes] of Object.entries(kitNeutrals(b))) {
-      for (const theme of ["light", "dark"]) checkLadder(`kit ${id} ${sid}`, theme, themes[theme]);
-    }
-  }
-});
-
-test("Flat light steps (canvas to app, app to panel) are at least Sharp's, in core and in kits", () => {
-  const gaps = (n) => ({ low: L(n["color-app"]) - L(n["color-canvas"]), high: L(n["color-panel"]) - L(n["color-app"]) });
-  const check = (label, flat, sharp) => {
-    const f = gaps(flat), r = gaps(sharp);
-    for (const k of ["low", "high"]) assert.ok(f[k] >= r[k] - 1e-6, `${label} flat ${k} ${f[k].toFixed(4)} vs sharp ${r[k].toFixed(4)}`);
-  };
-  const core = (id) => coreSurfaces(styles.styles.find((s) => s.id === id), "light");
-  check("core", core("flat"), core("sharp"));
-  for (const [id, b] of Object.entries(kits)) {
-    const n = kitNeutrals(b);
-    check(`kit ${id}`, n.flat.light, n.sharp.light);
-  }
-});
-
-// ── C-030 surfaces (#93): panel scale, borderless cards, tint, inverted ─────────────────────────────────────────────
-import { contrast, blend, oklchToHex } from "../../brand/color.mjs";
-import { accentSubtleText, derivedSurfaces, mixOklab } from "../../brand/generate.mjs";
-
-const TEXT_KEYS = ["color-text-contrast", "color-text-body", "color-text-muted"];
-const neutralsOf = (st, theme) => Object.fromEntries([...KEYS, ...TEXT_KEYS].map((k) => [k, (st.semantic?.[k] ?? tokens.semantic[k])[theme]]));
-const palette = (name) => {
-  for (const g of Object.values(tokens)) if (g && typeof g === "object" && g[name]) return typeof g[name] === "string" ? g[name] : g[name].value;
-};
-/** A palette value as hex: v3 hex as is; violet is pinned to Tailwind 4's own OKLCH (no visual change), mapped into sRGB. */
-const toHex = (v) => {
-  const m = /^oklch\(([\d.]+)% ([\d.]+) ([\d.]+)\)$/.exec(String(v ?? ""));
-  return m ? oklchToHex({ l: +m[1] / 100, c: +m[2], h: +m[3] }) : v;
-};
-const hexOf = (v) => toHex(/^var\(--([\w-]+)\)$/.exec(v) ? palette(/^var\(--([\w-]+)\)$/.exec(v)[1]) : v);
-const kitSets = () => {
-  const out = {};
-  for (const [id, b] of Object.entries(kits))
-    for (const neutral of [undefined, "pure"]) {
-      const n = generateBrand({ ...b, neutral, styles: { default: "flat", allowed: ids } }, { tokens, styles }).tokens.neutrals;
-      for (const [sid, t] of Object.entries(n)) for (const theme of ["light", "dark"]) out[`kit ${id}${neutral ? "/pure" : ""} ${sid} ${theme}`] = [theme, t[theme]];
-    }
-  return out;
-};
-const allSets = () => ({
-  ...Object.fromEntries(styles.styles.flatMap((st) => ["light", "dark"].map((th) => [`core ${st.id} ${th}`, [th, neutralsOf(st, th)]]))),
-  ...kitSets(),
-});
-
-test("the derived surfaces in the report mix what tokens.json mixes (same percentages)", () => {
-  const sem = tokens.semantic;
-  assert.match(sem["color-card"].light, /var\(--semi-app\) 95%, var\(--semi-text-contrast\)/);
-  assert.match(sem["color-card"].dark, /var\(--semi-panel\) 95%, var\(--semi-text-contrast\)/);
-  assert.match(sem["color-card-field"].light, /var\(--semi-card\) 97%, var\(--semi-text-contrast\)/);
-  assert.match(sem["color-card-field"].dark, /var\(--semi-card\) 95%, var\(--semi-text-contrast\)/);
-  assert.match(sem["color-inverted"].dark, /var\(--semi-text-contrast\) 96%, var\(--semi-canvas\)/);
-  assert.match(sem["color-inverted-hover"].light, /var\(--semi-text-contrast\) 85%, var\(--semi-panel\)/);
-  for (const k of ["color-panel-0", "color-panel-2", "color-panel-4"]) assert.match(sem[k].light, /^var\(--semi-(canvas|app|panel)\)$/, k);
-  assert.equal(mixOklab("#000000", "#ffffff", 0), "#000000");
-});
-
-test("text reads AA on every panel step, the card and the field in a card; the card stands out from the app", () => {
-  for (const [label, [theme, n]] of Object.entries(allSets())) {
-    const s = derivedSurfaces(n, theme);
-    const steps = {
-      "panel-0": n["color-canvas"],
-      "panel-1": mixOklab(n["color-canvas"], n["color-app"], 0.5),
-      "panel-2": n["color-app"],
-      "panel-3": mixOklab(n["color-app"], n["color-panel"], 0.5),
-      "panel-4": n["color-panel"],
-      card: s.card,
-      "card-field": s.cardField,
-    };
-    for (const [step, bg] of Object.entries(steps)) {
-      const r = contrast(n["color-text-muted"], bg);
-      assert.ok(r >= 4.5, `${label}: text-muted on ${step} ${bg} ${r.toFixed(2)}`);
-    }
-    // order of the scale: canvas <= panel-1 <= app <= panel-3 <= panel (OKLCH L)
-    const ls = ["panel-0", "panel-1", "panel-2", "panel-3", "panel-4"].map((k) => L(steps[k]));
-    for (let i = 1; i < ls.length; i++) assert.ok(ls[i] >= ls[i - 1], `${label}: panel scale ascends at step ${i}`);
-    const sep = contrast(s.card, n["color-app"]);
-    assert.ok(sep >= 1.1, `${label}: card vs app ${sep.toFixed(3)} (#10: a borderless card must still read as one)`);
-    if (theme === "light") assert.ok(L(s.card) < L(n["color-app"]), `${label}: the light card is recessed below the app`);
-    else assert.ok(L(s.card) > L(n["color-panel"]), `${label}: the dark card sits above the panel`);
-    assert.ok(contrast(s.onInverted, s.inverted) >= 4.5, `${label}: on-inverted / inverted`);
-    assert.ok(contrast(s.onInverted, s.invertedHover) >= 4.5, `${label}: on-inverted / inverted-hover`);
-    // a secondary button (tint) on the card: body text still reads
-    const tintA = +/(\d+)%/.exec(tokens.semantic["color-tint-hover"][theme])[1] / 100;
-    assert.ok(contrast(n["color-text-body"], blend(n["color-text-contrast"], s.cardField, tintA)) >= 4.5, `${label}: body on tint-hover over card-field`);
-  }
-});
-
-test("status and tone text (badges: the 500 tint at 10%) read AA on the card in both themes (#50 amber)", () => {
-  for (const [label, [theme, n]] of Object.entries(allSets())) {
-    const { card } = derivedSurfaces(n, theme);
-    for (const [k, v] of Object.entries(tokens.semantic)) {
-      const m = /^color-(?:tone-(\w+)|(danger|success|warning|info)-fg)$/.exec(k);
-      if (!m) continue;
-      const family = m[1] ?? { danger: "rose", success: "emerald", warning: "amber", info: "sky" }[m[2]];
-      const fg = hexOf(v[theme]);
-      assert.ok(fg?.startsWith("#") && palette(`color-${family}-500`), `${k}: its palette is pinned in tokens.json`);
-      const badge = blend(toHex(palette(`color-${family}-500`)), card, 0.1);
-      const r = contrast(fg, badge);
-      assert.ok(r >= 4.5, `${label}: ${k} ${fg} on a ${family} badge over the card ${r.toFixed(2)}`);
-    }
-  }
-});
-
-test("tokens.css has no plain .bg-* fallbacks that beat responsive variants (SHELL_OUTER md:bg-canvas)", () => {
-  const css = readFileSync(new URL("../../tokens/tokens.css", import.meta.url), "utf8");
-  assert.doesNotMatch(css, /^\s*\.bg-(app|canvas|panel)\s*\{/m);
-  assert.match(css, /@utility bg-card \{/);
-  const theme = [...css.matchAll(/@theme(?: inline)? \{([^}]*)\}/g)].map((m) => m[1]).join("\n");
-  assert.doesNotMatch(theme, /--color-card(-field)?:/, "no --color-card theme variable (it would also make a border-card colour utility)");
-});
-
-test("accent text reads AA on the card and on the selected tint over it (Pagination current page, active row in a card)", () => {
-  const alpha = (theme) => +/(\d+)%/.exec(tokens.semantic["color-accent-subtle"][theme])[1] / 100;
-  const check = (label, theme, fg, card) => {
-    for (const [what, bg] of [["card", card], ["accent-subtle over card", blend(fg, card, alpha(theme))]]) {
-      const r = contrast(fg, bg);
-      assert.ok(r >= 4.5, `${label} ${theme}: accent-fg ${fg} on ${what} ${r.toFixed(2)}`);
-    }
-  };
-  for (const st of styles.styles)
-    for (const theme of ["light", "dark"]) check(`core ${st.id}`, theme, hexOf(tokens.semantic["color-accent-fg"][theme]), derivedSurfaces(neutralsOf(st, theme), theme).card);
-  for (const [id, b] of Object.entries(kits)) {
-    const r = generateBrand({ ...b, styles: { default: "flat", allowed: ids } }, { tokens, styles }).tokens;
-    for (const [sid, t] of Object.entries(r.neutrals))
-      for (const theme of ["light", "dark"]) check(`kit ${id} ${sid}`, theme, r.themes[theme]["color-accent-fg"], derivedSurfaces(t[theme], theme).card);
-  }
-});
-
-// #123: text on the selection fills. The fills stay main's see-through tints; bg-accent-subtle and
-// bg-accent-subtle-hover re-point text-muted (and accent-fg on hover) for the text on them.
-const subtleSets = () => {
-  const out = [];
-  for (const st of styles.styles)
-    for (const theme of ["light", "dark"]) out.push([`core ${st.id}`, theme, neutralsOf(st, theme), hexOf(tokens.semantic["color-accent-fg"][theme])]);
-  for (const [id, b] of Object.entries({ ...kits, fixture: read("tests/fixtures/brand.json") }))
-    for (const neutral of [undefined, "pure"]) {
-      const r = generateBrand({ ...b, neutral, styles: { default: "flat", allowed: ids } }, { tokens, styles }).tokens;
-      for (const [sid, t] of Object.entries(r.neutrals))
-        for (const theme of ["light", "dark"]) out.push([`kit ${id}${neutral ? "/pure" : ""} ${sid}`, theme, t[theme], r.themes[theme]["color-accent-fg"]]);
-    }
-  return out;
+const v = (k, theme) => tokens.semantic[k][theme];
+const step = (theme, lo, hi) => {
+  const d = L(v(hi, theme)) - L(v(lo, theme));
+  assert.ok(d >= MIN_STEP, `${theme}: ${lo} ${v(lo, theme)} -> ${hi} ${v(hi, theme)} needs an OKLCH L step >= ${MIN_STEP} (${d.toFixed(4)})`);
 };
 
-test("non-selection uses of the selection tint are unchanged (#123): same fills as 0.36.0, the utilities only re-point text", () => {
-  // The fills of 0.36.0: IconTile, FileDrop, Chat, MegaMenu badges, Calendar range, Pagination look the same.
-  assert.deepEqual(
-    Object.fromEntries(["color-accent-subtle", "color-accent-subtle-hover"].map((k) => [k, { dark: tokens.semantic[k].dark, light: tokens.semantic[k].light }])),
-    {
-      "color-accent-subtle": { dark: "color-mix(in oklab, var(--semi-accent-fg) 14%, transparent)", light: "color-mix(in oklab, var(--semi-accent-fg) 11%, transparent)" },
-      "color-accent-subtle-hover": { dark: "color-mix(in oklab, var(--semi-accent-fg) 22%, transparent)", light: "color-mix(in oklab, var(--semi-accent-fg) 18%, transparent)" },
-    },
-  );
-  const css = readFileSync(new URL("../../tokens/tokens.css", import.meta.url), "utf8");
-  for (const [name, keys] of [["bg-accent-subtle", ["text-muted"]], ["bg-accent-subtle-hover", ["text-muted", "accent-fg"]]]) {
-    const body = new RegExp(`@utility ${name} \\{([^}]*)\\}`).exec(css)?.[1];
-    assert.ok(body, `@utility ${name}`);
-    const props = [...body.matchAll(/(--[\w-]+|[a-z-]+):/g)].map((m) => m[1]);
-    assert.deepEqual(props, keys.map((k) => `--semi-${k}`), `${name} re-points only the text on it`);
-  }
-  for (const k of ["accent-subtle", "accent-subtle-hover", "accent-line", "focus"]) assert.doesNotMatch(css, new RegExp(`@utility bg-accent-subtle[^}]*--semi-${k}:`), `the fill tokens are not re-pointed (${k})`);
+test("dark climbs canvas < app < panel < field < raised < raised-2; the focused field is one step below the field", () => {
+  const ladder = ["color-canvas", "color-app", "color-panel", "color-field", "color-raised", "color-raised-2"];
+  for (let i = 1; i < ladder.length; i++) step("dark", ladder[i - 1], ladder[i]);
+  step("dark", "color-field-focus", "color-field");
 });
 
-test("text-muted, text-body and accent-fg read AA on bg-accent-subtle and its hover, every style x theme, core and kits (#123)", () => {
-  for (const [label, theme, n, fg] of subtleSets())
-    for (const { key, on, fill, muted, body, accent } of accentSubtleText(tokens, theme, fg, n))
-      for (const [what, c] of [["text-muted", muted], ["text-body", body], ["accent-fg", accent]]) {
-        const r = contrast(c, fill);
-        assert.ok(r >= 4.5, `${label} ${theme}: ${what} ${c} on ${key} over ${on} ${fill} ${r.toFixed(2)}`);
-      }
+test("light: canvas < app < panel, the raised track sits below the canvas, the focused field one step below the field", () => {
+  step("light", "color-canvas", "color-app");
+  step("light", "color-app", "color-panel");
+  step("light", "color-raised", "color-canvas");
+  step("light", "color-field-focus", "color-field");
 });
 
-test("the scoped text tokens mix what tokens.json mixes, and plain text-muted alone does not reach AA on the light tint (why they exist)", () => {
-  const st = styles.styles.find((x) => x.id === "flat");
-  const n = neutralsOf(st, "light");
-  const e = accentSubtleText(tokens, "light", hexOf(tokens.semantic["color-accent-fg"].light), n).find((x) => x.key === "color-accent-subtle" && x.on === "card");
-  assert.ok(contrast(n["color-text-muted"], e.fill) < 4.5, "plain text-muted on the tint over the card is short (the #123 bug)");
-  assert.equal(e.muted, mixOklab(n["color-text-muted"], n["color-text-body"], 0.25));
+test("surfaces are pure neutral greys (no brand tint)", () => {
+  for (const k of ["color-canvas", "color-app", "color-panel", "color-field", "color-field-focus", "color-raised", "color-raised-2"])
+    for (const theme of ["dark", "light"]) assert.ok(hexToOklch(v(k, theme)).c < 0.001, `${theme} ${k} ${v(k, theme)} is tinted`);
 });
 
-test("the generator nudges a style's text when even the scoped text falls short on accent-subtle (#123)", () => {
-  // Without the tints (0%), nothing sits on them and fixTextOnSubtle has nothing to do: the un-nudged neutrals.
-  const noTint = structuredClone(tokens);
-  for (const k of ["color-accent-subtle", "color-accent-subtle-hover"])
-    for (const th of ["light", "dark"]) noTint.semantic[k][th] = noTint.semantic[k][th].replace(/\d+(\.\d+)?%, transparent/, "0%, transparent");
-  // #ca8a04 (amber) and #e11d48 (rose): their tints need the nudge loop (fixTextOnSubtle) to run.
-  for (const primary of ["#ca8a04", "#e11d48"]) {
-    const b = { ...kits.semi, primary, secondary: undefined, styles: { default: "flat", allowed: ids } };
-    const r = generateBrand(b, { tokens, styles });
-    const plain = generateBrand(b, { tokens: noTint, styles }).tokens.neutrals;
-    let nudged = 0;
-    for (const [sid, t] of Object.entries(r.tokens.neutrals))
-      for (const theme of ["light", "dark"]) {
-        if (t[theme]["color-text-muted"] !== plain[sid][theme]["color-text-muted"]) nudged++;
-        for (const e of accentSubtleText(tokens, theme, r.tokens.themes[theme]["color-accent-fg"], t[theme]))
-          for (const c of [e.muted, e.body, e.accent]) assert.ok(contrast(c, e.fill) >= 4.5, `${primary} ${sid} ${theme} ${e.key} ${e.on} ${contrast(c, e.fill).toFixed(2)}`);
-      }
-    assert.ok(nudged > 0, `${primary}: fixTextOnSubtle nudged text-muted in at least one style x theme`);
-    assert.ok(r.report.some((x) => /nền chọn/.test(x.check)), "the report lists it");
-  }
-});
-
-// WCAG 1.4.11 asks the field's boundary to stand out from what is around it (the surface), as lint/a11y.mjs measures it;
-// the line against the field's own fill is not a boundary (2.7-3:1 there is fine).
-test("a field drawn on a tint fill (SearchPill, #99): control-line reads 3:1 against the surface around it, in both themes", () => {
-  const pct = (key, theme) => +/(\d+)%/.exec(tokens.semantic[key][theme])[1] / 100;
-  for (const [label, [theme, n]] of Object.entries(allSets())) {
-    const s = derivedSurfaces(n, theme);
-    for (const [where, under] of Object.entries({ app: n["color-app"], panel: n["color-panel"], card: s.card })) {
-      for (const tintKey of ["color-tint", "color-tint-hover"]) {
-        const fill = blend(n["color-text-contrast"], under, pct(tintKey, theme));
-        // the border paints over the element's own fill (background-clip: border-box)
-        const edge = blend(n["color-text-muted"], fill, pct("color-control-line", theme));
-        const out = contrast(edge, under);
-        assert.ok(out >= 3, `${label}: control-line on ${tintKey} over ${where} vs the surface ${out.toFixed(2)}`);
-      }
-    }
-  }
+test("every text tier reaches 4.5:1 on panel, app and canvas in its theme; a failing value is reported", () => {
+  assert.deepEqual(aaErrors(tokens), []);
+  const bad = structuredClone(tokens);
+  bad.semantic["color-text-faint"].light = "#737373"; // 3.98:1 on the light canvas, 4.27:1 on app, 4.74:1 on panel
+  const errors = aaErrors(bad);
+  assert.equal(errors.length, 2);
+  assert.ok(errors.some((e) => /light color-text-faint #737373 on color-canvas #ebebeb: 3\.98:1/.test(e)), errors.join("; "));
+  bad.semantic["color-text-muted"].dark = "var(--semi-x)";
+  assert.ok(aaErrors(bad).some((e) => /must be #rrggbb/.test(e)), "a non-hex tier fails too");
 });
