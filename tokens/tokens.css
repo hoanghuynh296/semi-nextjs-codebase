@@ -440,7 +440,7 @@
   --semi-control-line-hover: var(--semi-text-muted);
   --semi-divider: rgba(255, 255, 255, 0.05);
   --semi-primary: #00ae42;
-  --semi-primary-hover: #33be68;
+  --semi-primary-hover: #2fc155;
   --semi-on-primary: #0c0d0e;
   --semi-secondary: var(--semi-primary);
   --semi-secondary-hover: var(--semi-primary-hover);
@@ -529,7 +529,7 @@
   --semi-control-line-hover: var(--semi-text-muted);
   --semi-divider: rgba(0, 0, 0, 0.05);
   --semi-primary: #00ae42;
-  --semi-primary-hover: #33be68;
+  --semi-primary-hover: #2fc155;
   --semi-on-primary: #0c0d0e;
   --semi-secondary: var(--semi-primary);
   --semi-secondary-hover: var(--semi-primary-hover);
@@ -618,7 +618,7 @@
     --semi-control-line-hover: var(--semi-text-muted);
     --semi-divider: rgba(0, 0, 0, 0.05);
     --semi-primary: #00ae42;
-    --semi-primary-hover: #33be68;
+    --semi-primary-hover: #2fc155;
     --semi-on-primary: #0c0d0e;
     --semi-secondary: var(--semi-primary);
     --semi-secondary-hover: var(--semi-primary-hover);
