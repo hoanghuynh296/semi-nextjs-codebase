@@ -231,14 +231,26 @@ test("the scoped text tokens mix what tokens.json mixes, and plain text-muted al
   assert.equal(e.muted, mixOklab(n["color-text-muted"], n["color-text-body"], 0.25));
 });
 
-test("the generator keeps the text on accent-subtle AA for a brand whose tint would fall short (#123)", () => {
-  const b = { ...kits.semi, primary: "#1d4ed8", secondary: undefined, styles: { default: "flat", allowed: ids } };
-  const r = generateBrand(b, { tokens, styles });
-  for (const [sid, t] of Object.entries(r.tokens.neutrals))
-    for (const theme of ["light", "dark"])
-      for (const e of accentSubtleText(tokens, theme, r.tokens.themes[theme]["color-accent-fg"], t[theme]))
-        for (const c of [e.muted, e.body, e.accent]) assert.ok(contrast(c, e.fill) >= 4.5, `${sid} ${theme} ${e.key} ${e.on}`);
-  assert.ok(r.report.some((x) => /nền chọn/.test(x.check)), "the report lists it");
+test("the generator nudges a style's text when even the scoped text falls short on accent-subtle (#123)", () => {
+  // Without the tints (0%), nothing sits on them and fixTextOnSubtle has nothing to do: the un-nudged neutrals.
+  const noTint = structuredClone(tokens);
+  for (const k of ["color-accent-subtle", "color-accent-subtle-hover"])
+    for (const th of ["light", "dark"]) noTint.semantic[k][th] = noTint.semantic[k][th].replace(/\d+(\.\d+)?%, transparent/, "0%, transparent");
+  // #ca8a04 (amber) and #e11d48 (rose): their tints need the nudge loop (fixTextOnSubtle) to run.
+  for (const primary of ["#ca8a04", "#e11d48"]) {
+    const b = { ...kits.semi, primary, secondary: undefined, styles: { default: "flat", allowed: ids } };
+    const r = generateBrand(b, { tokens, styles });
+    const plain = generateBrand(b, { tokens: noTint, styles }).tokens.neutrals;
+    let nudged = 0;
+    for (const [sid, t] of Object.entries(r.tokens.neutrals))
+      for (const theme of ["light", "dark"]) {
+        if (t[theme]["color-text-muted"] !== plain[sid][theme]["color-text-muted"]) nudged++;
+        for (const e of accentSubtleText(tokens, theme, r.tokens.themes[theme]["color-accent-fg"], t[theme]))
+          for (const c of [e.muted, e.body, e.accent]) assert.ok(contrast(c, e.fill) >= 4.5, `${primary} ${sid} ${theme} ${e.key} ${e.on} ${contrast(c, e.fill).toFixed(2)}`);
+      }
+    assert.ok(nudged > 0, `${primary}: fixTextOnSubtle nudged text-muted in at least one style x theme`);
+    assert.ok(r.report.some((x) => /nền chọn/.test(x.check)), "the report lists it");
+  }
 });
 
 // WCAG 1.4.11 asks the field's boundary to stand out from what is around it (the surface), as lint/a11y.mjs measures it;
