@@ -15,6 +15,9 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 ### Changed
 - **AppShell `mobileTabIds` (#113):** no longer deprecated with `mobileNav="tabs"`: that pair is the supported way to keep the phone tab bar with chosen items, and it no longer warns. `mobileTabIds` without `mobileNav` keeps the tab bar as before (C-034) and still warns in development, now naming the fix (add `mobileNav="tabs"`). With `mobileNav="drawer"` it is still ignored with a warning.
 
+### Fixed
+- `SearchPill`: a history push during its debounce (`useDetailParam().open`, `openDetail`, a filter chip, a `useFilterParams` push) no longer loses the query. The pending text is sent first, onto the current entry (with the app's `onChange`, usually `setParams({ q }, "replace")`), then the push is made, so Back lands on the list with its query; before, the late write replaced the pushed entry (#128). A pending text is dropped when the route changes and on unmount. Apps that set `debounce={0}` as a workaround can remove it. An `onChange` that pushes (for example `setParams({ q })` with no mode, which pushes by default) now gets its own entry before the pushed one. The flush only helps an `onChange` that writes the URL at once: `useFilterParams().setParams({ q }, "replace")`; `router.replace`, nuqs or state plus an effect still land after the push.
+
 ### Docs
 - AppShell: the `account` render prop should hide its text by `rail`, not only `collapsed` (at `md` the sidebar is a rail while `collapsed` is false); pinned items take distinct icons, or none so the rail shows initials (#114 c).
 
