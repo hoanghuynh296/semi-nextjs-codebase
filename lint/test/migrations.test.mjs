@@ -250,10 +250,10 @@ test("1.0.0 foundation: removed colour and size tokens map to the 1.0 names, dat
       `<html lang="vi" data-theme="dark">`,
       `cn("text-strong hover:text-strong/80 bg-primary hover:bg-primary-hover text-on-primary", "bg-primary text-on-primary")`,
       `cn("text-strong aria-selected:bg-item-selected hover:bg-item-selected border-outline-line decoration-primary")`,
-      `cn("text-ui text-ui text-ui text-lead text-lead text-lead text-section text-section text-tab-xl text-tab-xl text-figure font-title font-display")`,
-      `.x { color: var(--color-text-strong); background: var(--color-item-selected); font-size: var(--text-ui); line-height: var(--text-section--line-height); border-color: var(--semi-outline-line); }`,
+      `cn("text-chrome text-chrome text-ui text-lead text-lead text-lead text-section text-section text-tab-xl text-tab-xl text-figure font-title font-display")`,
+      `.x { color: var(--color-text-strong); background: var(--color-item-selected); font-size: var(--text-chrome); line-height: var(--text-section--line-height); border-color: var(--semi-outline-line); }`,
       `cn("bg-primary-500 text-tone-rose my-text-label-x")`,
-      `cn("w-full text-ui max-sm:text-input sm:text-lead")`,
+      `cn("w-full text-chrome max-sm:text-input sm:text-lead")`,
     ].join("\n"),
   );
   assert.equal(migrateFoundation(out), out, "second run changes nothing");
@@ -263,7 +263,7 @@ test("1.0.0 foundation: removed colour and size tokens map to the 1.0 names, dat
   assert.ok(flags.some((f) => f.includes("accent-fg")), "accent-fg flagged");
 });
 
-test("1.0.0 foundation: brand colour never lands on text or lines; --semi-contrast stays; declarations are flagged, not renamed; text-ui flagged", async () => {
+test("1.0.0 foundation: brand colour never lands on text or lines; --semi-contrast stays; declarations are flagged, not renamed; text-ui unchanged, text-label flagged", async () => {
   const { migrateFoundation, foundationFlags } = await import("../../migrations/1.0.0-foundation.mjs");
   const cls = `cn("text-accent hover:text-action-hover border-accent border-t-accent ring-accent ring-offset-accent outline-accent divide-accent decoration-accent fill-accent stroke-action bg-accent hover:bg-accent-hover text-on-accent bg-contrast")`;
   const out = migrateFoundation(cls);
@@ -291,11 +291,19 @@ test("1.0.0 foundation: brand colour never lands on text or lines; --semi-contra
   assert.ok(flags.some((f) => f.startsWith("app CSS sets --semi-accent:") && f.includes("not renamed")));
   assert.ok(!flags.some((f) => /--semi-gap|--color-brandish/.test(f)), "an app's own variables are not flagged");
 
-  // text-ui (14 → 12px) is flagged; text-ui-lg (renamed) and a text-ui-free file are not
-  const ui = (s) => foundationFlags(s, migrateFoundation(s)).filter((f) => f.startsWith("text-ui is now 12px, was 14: reading copy"));
-  assert.equal(ui(`<p className="text-ui text-muted">x</p>`).length, 1);
-  assert.equal(ui(`.x { font-size: var(--text-ui); }`).length, 1);
-  assert.equal(ui(`<p className="text-ui-lg my-text-ui-x">x</p>`).length, 0);
+  // text-ui keeps its name and its 14px (the content size): not rewritten, not flagged. text-caption / text-label → text-chrome
+  // (12px shell chrome); a label that was a form label, help text or row text is content: flagged, not decided.
+  const chromeFlag = "text-label → text-chrome (12px, shell chrome and meta only)";
+  const flagsOf = (s) => foundationFlags(s, migrateFoundation(s));
+  for (const s of [`<p className="text-ui text-muted">x</p>`, `.x { font-size: var(--text-ui); }`]) {
+    assert.equal(migrateFoundation(s), s, "text-ui stays");
+    assert.deepEqual(flagsOf(s), []);
+  }
+  assert.equal(flagsOf(`<label className="text-label">x</label>`).filter((f) => f.startsWith(chromeFlag)).length, 1);
+  assert.equal(flagsOf(`.x { font-size: var(--text-label); }`).filter((f) => f.startsWith(chromeFlag)).length, 1);
+  assert.equal(flagsOf(`<span className="text-caption my-text-label-x">x</span>`).filter((f) => f.startsWith(chromeFlag)).length, 0);
+  const chrome = migrateFoundation(`<label className="text-label">x</label>`);
+  assert.deepEqual(flagsOf(chrome), [], "a second run flags nothing");
 });
 
 test("the semi-sync runner collects a migration's flags", async () => {

@@ -214,17 +214,17 @@ test("Design Lab: every value it edits reaches the utility apps use (no value is
 });
 
 test("Design Lab: a draft follows every page, keeps each density its own values, pauses, and its tabs pass AA", async ({ page }) => {
-  const draft = { type: { "text-ui": "17px", "text-copy": "18px" }, density: { compact: { spacing: "0.3rem" } }, shape: { "radius-card": "1.5rem" } };
+  const draft = { type: { "text-ui": "17px", "text-chrome": "11px" }, density: { compact: { spacing: "0.3rem" } }, shape: { "radius-card": "1.5rem" } };
   await open(page, `/components/button/#lab=${labHash(draft)}`, "dark");
   await expect.poll(() => probe(page, {}, "text-ui", "font-size")).toBe("17px");
   expect(await probe(page, {}, "rounded-card", "border-top-left-radius")).toBe("24px");
   expect(await probe(page, { "data-theme": "light" }, "rounded-card", "border-top-left-radius")).toBe("24px"); // nested theme scopes too
-  expect(await probe(page, { "data-density": "compact" }, "text-copy", "font-size")).toBe("13px"); // compact keeps its own size
+  expect(await probe(page, { "data-density": "compact" }, "text-ui", "font-size")).toBe("13px"); // compact keeps its own size
   expect(await probe(page, { "data-density": "compact" }, "p-4", "padding-top")).toBe("19.2px");
   await page.goto("/components/"); // stored: stays on across pages
   await expect.poll(() => probe(page, {}, "text-ui", "font-size")).toBe("17px");
   await page.getByRole("button", { name: "Tạm tắt bản nháp Lab (xem bản gốc)" }).click();
-  await expect.poll(() => probe(page, {}, "text-ui", "font-size")).toBe("12px");
+  await expect.poll(() => probe(page, {}, "text-ui", "font-size")).toBe("14px");
   await page.getByRole("button", { name: "Bật lại bản nháp Lab" }).click();
   await expect.poll(() => probe(page, {}, "text-ui", "font-size")).toBe("17px");
 
@@ -244,7 +244,7 @@ test("Design Lab: a draft follows every page, keeps each density its own values,
   await page.getByRole("button", { name: "Bỏ bản nháp" }).click();
   await page.getByRole("alertdialog").getByRole("button", { name: "Bỏ bản nháp" }).click();
   await expect(page.getByText("Bản nháp đang trống")).toBeVisible();
-  expect(await probe(page, {}, "text-ui", "font-size")).toBe("12px");
+  expect(await probe(page, {}, "text-ui", "font-size")).toBe("14px");
 });
 
 test("system theme follows prefers-color-scheme", async ({ browser }) => {

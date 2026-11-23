@@ -35,7 +35,7 @@ const TITLES = {
   gray: "Neutral gray (exact hex, zero blue cast)",
   palette: "Tailwind palettes pinned to v3 hex (v4 OKLCH shifts hues)",
   scale: "v3 scale semantics for rounded / shadow / blur / ring; radius scale lg (controls) / xl (cards) / 2xl (panels)",
-  type: "Type scale (docs/TOKENS.md): text-hero 36 (32 below sm) · title-xl 44 · tab-xl 28 (24 below sm) · section 20 · figure 18 · lead 15 · copy 14 · input 16 (typed text below sm) · ui 12 (the base UI size) · tag 10 · badge 10 · overline 11 (section labels, uppercase). Each size carries its line height; leading-* overrides it",
+  type: "Type scale (docs/TOKENS.md): text-hero 36 (32 below sm) · title-xl 44 · tab-xl 28 (24 below sm) · section 20 · figure 18 · lead 15 · ui 14 (content: rows, labels, fields, buttons, menus, body) · input 16 (typed text below sm) · chrome 12 (shell chrome: nav, breadcrumb, toolbar, meta) · tag 10 · badge 10 · overline 11 (section labels, uppercase). Each size carries its line height; leading-* overrides it",
   motion: "Easing (ease-out-soft for entering, ease-in-soft for leaving); the motion-* tokens are plain variables below",
   z: "Global layers (utilities z-sticky … z-tooltip); local stacking inside a component keeps z-10 / z-20",
 };
