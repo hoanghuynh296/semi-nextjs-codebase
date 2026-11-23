@@ -176,6 +176,25 @@ test("SearchPill debounce: a Link to another route while typing drops the pendin
   await expect(page).toHaveURL(/\/filters\/a$/);
 });
 
+for (const nav of [true, false]) {
+  test(`SearchPill in a persisting layout: a Link to another route while typing drops the pending query, ${nav ? "with" : "without"} the Navigation API (#128)`, async ({ page }) => {
+    // with it the URL listener cancels the send; without it (Firefox, Safari < 26) the send checks the path
+    if (!nav) await page.addInitScript(() => Object.defineProperty(window, "navigation", { value: undefined, configurable: true }));
+    await page.goto(`${BASE}/layout-search/a`);
+    const search = page.getByRole("searchbox", { name: "Search everything" });
+    // Enter sends at once: the layout is hydrated
+    await search.fill("h");
+    await search.press("Enter");
+    await expect(page).toHaveURL(/\/layout-search\/a\?q=h$/);
+    await search.fill("late");
+    await page.getByRole("link", { name: "Page B" }).click();
+    await expect(page.getByRole("heading", { name: "Page B" })).toBeVisible();
+    await expect(page).toHaveURL(/\/layout-search\/b$/);
+    await page.waitForTimeout(2300);
+    await expect(page).toHaveURL(/\/layout-search\/b$/);
+  });
+}
+
 test("DetailOverlay without the Navigation API (Firefox, Safari < 26): close after leaving the list and coming back by a link stays on the list (#105)", async ({ page }) => {
   await page.addInitScript(() => Object.defineProperty(window, "navigation", { value: undefined, configurable: true }));
   await page.setViewportSize({ width: 1440, height: 900 });

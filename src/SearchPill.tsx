@@ -58,6 +58,11 @@ export function SearchPill({
   className,
 }: {
   value: string;
+  /**
+   * Gets the text after the debounce. For a query in the URL write it at once with
+   * `useFilterParams().setParams({ q: v }, "replace")`: a push during the debounce (opening a row, a filter chip) then
+   * keeps it on the list's entry. `router.replace`, nuqs or state + an effect land after that push.
+   */
   onChange: (value: string) => void;
   /** Accessible name ("Tìm khách hàng"); also the placeholder when none is given. */
   label: string;
