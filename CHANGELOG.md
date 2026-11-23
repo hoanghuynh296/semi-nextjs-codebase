@@ -4,8 +4,15 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## Unreleased
 
-### Fixed
-- **`text-muted` on `bg-accent-subtle` reads AA in light (#123).** The light selected tint (`--semi-accent-subtle`, and `--semi-accent-subtle-hover`) is now mixed into the panel instead of being see-through: `color-mix(in oklab, var(--semi-accent-fg) 11%, var(--semi-panel))` (hover 18%). Worst case text-muted on it, light: core 4.08 → 4.76, Semi brand 4.10 → 4.82, 3D Noobs brand 4.11 → 4.86; text-body and text-accent-fg rise too; dark is unchanged (14% see-through, 4.64-4.76). Visible: on the panel the tint is the same as before; a selected row on the app, the canvas or a recessed card is now a step lighter than its surroundings instead of darker. Brand kits need no rebuild (no generated value changes for the current kits); the generator now also checks muted / body text on the tint ("chữ mờ trên nền chọn" in the report) and darkens them when a new brand would fall short. Apps can drop `active ? "text-body" : "text-muted"` workarounds.
+### Changed
+- **The selected tint (`bg-accent-subtle`) reads AA for `text-muted` and stays visible on every surface (#123).** In light the tint was see-through (`accent-fg` 11% over whatever is below), so on the recessed card the time and snippet of a selected row (`text-muted`) fell to 4.08:1. Now (both themes checked by `lint/test/surfaces.test.mjs`, core and kits):
+  - *Light, on the panel and the app:* `color-mix(in oklab, var(--semi-accent-fg) 11%, var(--semi-panel))`, one opaque colour. On the panel it looks as before (1.18-1.21:1 against it); on the app it is the panel's tone with the tint (1.11-1.14:1). Over the bare canvas (the shell frame, where no selected item sits) it is 1.06-1.08:1.
+  - *Light, inside a card (`bg-card`):* `bg-card` re-points the tint to `--semi-accent-subtle-card` (`accent-fg` 2% in the panel). A selected row in a card is lifted to the panel's tone, 1.13:1 lighter than the card, and only faintly tinted. Before, it was a darker tint, 1.18:1. No darker fill can keep `text-muted` at 4.5:1 on the recessed card.
+  - *Light hover (`bg-accent-subtle-hover`):* 18% → 13.5% in the panel; inside a card 6%.
+  - *Dark:* the selected tint is unchanged (14% see-through). Hover goes 22% → 19%, and inside a card it is a tinted step below the card (`accent-fg` 20% in the panel), so `text-muted` keeps 4.5:1. That was already short on `main`.
+  - *Worst-case `text-muted` on the selected tint, light:* core 4.08 → 4.76; Semi brand 4.10 → 4.82; 3D Noobs brand 4.11 → 4.86. On the hover tint it is at least 4.57. Dark is at least 4.64 on both.
+  - *Brand kits:* no rebuild needed (no generated value changes for the current kits). The generator now checks muted / body text on the tint and its hover ("chữ mờ trên nền chọn" in the report), and darkens them when a new brand would fall short.
+  - *Apps:* no code change. A non-portalled popover (`bg-panel`) rendered inside a card inherits the card's tint, which is lighter. Apps can drop `active ? "text-body" : "text-muted"` workarounds.
 
 ## 0.36.0 — 2026-11-23
 

@@ -106,19 +106,28 @@ function resolveToken(value, tokens) {
   for (const g of Object.values(tokens)) if (g && typeof g === "object" && m[1] in g) return resolveToken(typeof g[m[1]] === "string" ? g[m[1]] : g[m[1]].value, tokens);
   return value;
 }
-/**
- * The accent-subtle fill (selected rows, active pills) as the browser paints it from tokens.json, given the coloured
- * text `fg` it is mixed from and the neutrals of one style x theme. "color-mix(… fg N%, transparent)" is see-through:
- * one colour per surface it sits on (the pages and the card). "color-mix(… fg N%, var(--semi-panel))" is opaque: one
- * colour wherever it sits (#123: light, so the recessed card does not darken it below text-muted's 4.5:1).
- */
-export function accentSubtleFills(tokens, theme, fg, n, key = "color-accent-subtle") {
-  const v = String(tokens.semantic?.[key]?.[theme] ?? "");
-  const m = /(\d+(?:\.\d+)?)%,\s*(transparent|var\(--semi-([\w-]+)\))\s*\)\s*$/.exec(v);
-  const a = m ? +m[1] / 100 : theme === "dark" ? 0.14 : 0.11;
-  if (m?.[3]) return [mixOklab(n[`color-${m[3]}`], fg, a)];
-  return [...PAGES.map((k) => n[k]), derivedSurfaces(n, theme).card].map((bg) => blend(fg, bg, a));
+/** One accent-subtle token as the browser paints it over `under`: "color-mix(… fg N%, transparent)" is see-through,
+ * "color-mix(… fg N%, var(--semi-panel))" is opaque (the same colour over anything). */
+function paintSubtle(expr, fg, n, under) {
+  const m = /(\d+(?:\.\d+)?)%,\s*(transparent|var\(--semi-([\w-]+)\))\s*\)\s*$/.exec(String(expr ?? ""));
+  if (!m) return blend(fg, under, 0.12);
+  return m[3] ? mixOklab(n[`color-${m[3]}`], fg, +m[1] / 100) : blend(fg, under, +m[1] / 100);
 }
+
+/**
+ * The accent-subtle fills (selected rows, active pills; `hover` for their hover) as tokens.json paints them, given
+ * the coloured text `fg` they are mixed from and the neutrals of one style x theme: one per surface a selected item
+ * sits on, as { on, under, fill }. The pages (canvas, app, panel) use color-accent-subtle; a card (bg-card re-points
+ * it) uses color-accent-subtle-card (#123: light lifts the selection to the panel's tone inside the recessed card).
+ */
+export function accentSubtleFills(tokens, theme, fg, n, { hover = false } = {}) {
+  const key = hover ? "color-accent-subtle-hover" : "color-accent-subtle";
+  const sem = tokens.semantic ?? {};
+  const card = derivedSurfaces(n, theme).card;
+  const pages = PAGES.map((k) => ({ on: k.replace(/^color-/, ""), under: n[k], fill: paintSubtle(sem[key]?.[theme], fg, n, n[k]) }));
+  return [...pages, { on: "card", under: card, fill: paintSubtle((sem[`${key}-card`] ?? sem[key])?.[theme], fg, n, card) }];
+}
+
 /** Opacity of text-muted in Semi's control-line token per theme ("color-mix(… text-muted 80%, transparent)"), or null. */
 function controlLineAlpha(tokens, theme) {
   const m = /(\d+(?:\.\d+)?)%/.exec(tokens.semantic?.["color-control-line"]?.[theme] ?? "");
@@ -634,7 +643,7 @@ export function generateBrand(brand, { tokens, styles, version = "", params }) {
   for (const theme of THEMES) {
     const surfaces = allowed.flatMap((st) => SURFACES.map((k) => neutrals[st.id][theme][k]));
     const pages = pagesBy[theme];
-    const fillsOf = (fgHex) => allowed.flatMap((st) => accentSubtleFills(tokens, theme, fgHex, neutrals[st.id][theme]));
+    const fillsOf = (fgHex) => allowed.flatMap((st) => accentSubtleFills(tokens, theme, fgHex, neutrals[st.id][theme]).map((f) => f.fill));
     const fill = accent[theme];
     const label = (shade, hex) => (shade === null ? hex : `primary-${shade}`);
     const fillName = label(fill.shade, fill.fill);
@@ -643,7 +652,11 @@ export function generateBrand(brand, { tokens, styles, version = "", params }) {
     const cards = allowed.map((st) => derivedSurfaces(neutrals[st.id][theme], theme).card);
     const fg = pickText(primary, brand.primary, theme, [...surfaces, ...cards], fillsOf);
     // Secondary text (time, snippet) of a selected row sits on the same fill: muted / body are nudged where it is short.
-    for (const st of allowed) fixTextOnFills(neutrals[st.id][theme], theme, accentSubtleFills(tokens, theme, primary[fg.shade], neutrals[st.id][theme]));
+    for (const st of allowed) {
+      const n = neutrals[st.id][theme];
+      const fills = [false, true].flatMap((hover) => accentSubtleFills(tokens, theme, primary[fg.shade], n, { hover }).map((f) => f.fill));
+      fixTextOnFills(n, theme, fills);
+    }
     themes[theme] = {
       "color-accent": fill.fill,
       "color-accent-hover": fill.hover,
@@ -687,8 +700,8 @@ export function generateBrand(brand, { tokens, styles, version = "", params }) {
     for (const st of allowed) {
       const n = neutrals[st.id][theme];
       const s = derivedSurfaces(n, theme);
-      const fills = accentSubtleFills(tokens, theme, themes[theme]["color-accent-fg"], n);
-      report.push({ check: `chữ mờ trên nền chọn ${st.name} (${t})`, pair: `text-muted / accent-subtle`, ratio: minContrast(n["color-text-muted"], fills), min: AA });
+      const fills = [false, true].flatMap((hover) => accentSubtleFills(tokens, theme, themes[theme]["color-accent-fg"], n, { hover }).map((f) => f.fill));
+      report.push({ check: `chữ mờ trên nền chọn ${st.name} (${t})`, pair: `text-muted / accent-subtle (+ hover)`, ratio: minContrast(n["color-text-muted"], fills), min: AA });
       report.push({ check: `chữ mờ trên thẻ ${st.name} (${t})`, pair: `text-muted / card + card-field`, ratio: Math.min(contrast(n["color-text-muted"], s.card), contrast(n["color-text-muted"], s.cardField)), min: AA });
       report.push({ check: `thẻ tách khỏi nền ${st.name} (${t})`, pair: `card / app`, ratio: contrast(s.card, n["color-app"]), min: 1.1, soft: true });
       if (brand.primaryStyle === "inverted") {

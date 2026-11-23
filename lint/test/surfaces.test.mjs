@@ -190,18 +190,30 @@ test("accent text reads AA on the card and on the selected tint (Pagination curr
   }
 });
 
-test("text-muted, text-body and accent-fg read AA on bg-accent-subtle in every style x theme, core and kits (#123)", () => {
-  assert.match(tokens.semantic["color-accent-subtle"].light, /var\(--semi-accent-fg\) \d+%, var\(--semi-panel\)\)$/, "light accent-subtle is mixed into the panel");
+test("text-muted, text-body and accent-fg read AA on bg-accent-subtle and its hover, every style x theme, core and kits (#123)", () => {
+  assert.match(tokens.semantic["color-accent-subtle"].light, /var\(--semi-accent-fg\) [\d.]+%, var\(--semi-panel\)\)$/, "light accent-subtle is mixed into the panel");
   assert.match(tokens.semantic["color-accent-subtle-hover"].light, /var\(--semi-panel\)\)$/, "its hover is mixed the same way");
-  const fills = (n, theme, fg) => accentSubtleFills(tokens, theme, fg, n);
-  assert.equal(fills(neutralsOf(styles.styles[0], "light"), "light", "#000000").length, 1, "opaque in light: one fill wherever it sits");
-  assert.equal(fills(neutralsOf(styles.styles[0], "dark"), "dark", "#ffffff").length, 4, "see-through in dark: one per page and the card");
+  const css = readFileSync(new URL("../../tokens/tokens.css", import.meta.url), "utf8");
+  assert.match(css, /@utility bg-card \{[^}]*--semi-accent-subtle: var\(--semi-accent-subtle-card\);[^}]*--semi-accent-subtle-hover: var\(--semi-accent-subtle-hover-card\);/, "bg-card re-points the tint for what sits on it");
   for (const [label, theme, n, fg] of subtleSets())
-    for (const bg of fills(n, theme, fg))
-      for (const [what, c] of [["text-muted", n["color-text-muted"]], ["text-body", n["color-text-body"]], ["accent-fg", fg]]) {
-        const r = contrast(c, bg);
-        assert.ok(r >= 4.5, `${label} ${theme}: ${what} ${c} on accent-subtle ${bg} ${r.toFixed(2)}`);
-      }
+    for (const hover of [false, true])
+      for (const { on, fill } of accentSubtleFills(tokens, theme, fg, n, { hover }))
+        for (const [what, c] of [["text-muted", n["color-text-muted"]], ["text-body", n["color-text-body"]], ["accent-fg", fg]]) {
+          const r = contrast(c, fill);
+          assert.ok(r >= 4.5, `${label} ${theme}: ${what} ${c} on accent-subtle${hover ? "-hover" : ""} over ${on} ${fill} ${r.toFixed(2)}`);
+        }
+});
+
+// A selected item must still stand out from what it sits on (the tint alone, before any border or check mark). The
+// light canvas is the shell's frame (no selected item sits on it: the sidebar is the panel, the content the app), and
+// with the panel-mixed fill it sits near 1.07:1; it is held to 1.05 so it cannot quietly vanish.
+test("bg-accent-subtle separates from the app, the panel and the card by 1.1:1 in both themes (canvas 1.05) (#123)", () => {
+  for (const [label, theme, n, fg] of subtleSets())
+    for (const { on, under, fill } of accentSubtleFills(tokens, theme, fg, n)) {
+      const min = on === "canvas" ? 1.05 : 1.1;
+      const r = contrast(fill, under);
+      assert.ok(r >= min, `${label} ${theme}: accent-subtle ${fill} vs ${on} ${under} ${r.toFixed(3)} (< ${min})`);
+    }
 });
 
 test("the generator keeps muted text AA on accent-subtle for a brand whose tint would fall short", () => {
@@ -210,9 +222,10 @@ test("the generator keeps muted text AA on accent-subtle for a brand whose tint 
   const r = generateBrand(b, { tokens, styles });
   for (const [sid, t] of Object.entries(r.tokens.neutrals))
     for (const theme of ["light", "dark"])
-      for (const bg of accentSubtleFills(tokens, theme, r.tokens.themes[theme]["color-accent-fg"], t[theme]))
-        assert.ok(contrast(t[theme]["color-text-muted"], bg) >= 4.5, `${sid} ${theme}`);
-  assert.ok(r.report.some((x) => /nền chọn/.test(x.check) && x.pair === "text-muted / accent-subtle"), "the report lists it");
+      for (const hover of [false, true])
+        for (const { fill } of accentSubtleFills(tokens, theme, r.tokens.themes[theme]["color-accent-fg"], t[theme], { hover }))
+          assert.ok(contrast(t[theme]["color-text-muted"], fill) >= 4.5, `${sid} ${theme}${hover ? " hover" : ""}`);
+  assert.ok(r.report.some((x) => /nền chọn/.test(x.check) && /^text-muted \/ accent-subtle/.test(x.pair)), "the report lists it");
 });
 
 // WCAG 1.4.11 asks the field's boundary to stand out from what is around it (the surface), as lint/a11y.mjs measures it;

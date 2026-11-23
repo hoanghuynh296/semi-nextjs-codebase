@@ -78,7 +78,9 @@ for (const [group, entries] of Object.entries(tokens)) {
       if (raw.utility === "bg") {
         // Background only (bg-card): a --color-card theme variable would also make Tailwind generate a border-card
         // colour utility, which collides with the style's own border-card.
-        bgUtilities.push(`/* ${raw.note} */\n@utility bg-${key.replace(/^color-/, "")} {\n  background-color: var(${srcVar(key)});\n}\n\n`);
+        // "sets": tokens the surface re-points for what sits on it (bg-card: the selected tint inside a card, #123).
+        const sets = Object.entries(raw.sets ?? {}).map(([k, v]) => `\n  --semi-${k}: ${v};`).join("");
+        bgUtilities.push(`/* ${raw.note} */\n@utility bg-${key.replace(/^color-/, "")} {\n  background-color: var(${srcVar(key)});${sets}\n}\n\n`);
         darkVars.push(`  ${srcVar(key)}: ${raw.dark};`);
         lightVars.push(`  ${srcVar(key)}: ${raw.light};`);
         compatVars.push(`  --${key}: var(${srcVar(key)});`);
