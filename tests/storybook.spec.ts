@@ -728,10 +728,10 @@ test("AppShell rail (iPad): every item is named and shows a tooltip on the right
   expect(tb!.width).toBeLessThanOrEqual(44);
   await page.keyboard.press("Enter");
   const themeMenu = page.getByRole("menu", { name: "Giao diện" });
-  await expect(themeMenu.getByRole("menuitemcheckbox")).toHaveText(["Sáng", "Tối", "Hệ thống"]);
-  await expect(themeMenu.getByRole("menuitemcheckbox", { name: "Sáng" })).toHaveAttribute("aria-checked", "true");
+  await expect(themeMenu.getByRole("menuitemradio")).toHaveText(["Sáng", "Tối", "Hệ thống"]);
+  await expect(themeMenu.getByRole("menuitemradio", { name: "Sáng" })).toHaveAttribute("aria-checked", "true");
   await page.keyboard.press("End");
-  await expect(themeMenu.getByRole("menuitemcheckbox", { name: "Hệ thống" })).toBeFocused();
+  await expect(themeMenu.getByRole("menuitemradio", { name: "Hệ thống" })).toBeFocused();
   // opened from the bottom utilities, the Menu stays on screen (it flips above the trigger)
   const [mb, ub] = [await themeMenu.boundingBox(), await themeUtil.boundingBox()];
   expect(mb!.y + mb!.height).toBeLessThanOrEqual(1194);
@@ -741,7 +741,7 @@ test("AppShell rail (iPad): every item is named and shows a tooltip on the right
   await expect(themeUtil).toBeFocused();
   expect(await page.evaluate(() => localStorage.getItem("semi-theme"))).toBe("system");
   await page.keyboard.press("ArrowDown");
-  await expect(page.getByRole("menuitemcheckbox", { name: "Hệ thống" })).toHaveAttribute("aria-checked", "true");
+  await expect(page.getByRole("menuitemradio", { name: "Hệ thống" })).toHaveAttribute("aria-checked", "true");
   await page.keyboard.press("Escape");
   await expect(themeUtil).toBeFocused();
   // mega menu: opens beside the sidebar, focus on the first link, ↓ moves, Escape returns focus
@@ -778,11 +778,13 @@ for (const theme of THEMES) {
       await page.keyboard.press("ArrowDown");
       await expect(menu).toBeVisible({ timeout: 1000 });
     }).toPass({ timeout: 15_000 });
-    await expect(menu.getByRole("menuitemcheckbox", { name: "Sáng" })).toBeFocused();
-    await expect(menu.getByRole("menuitemcheckbox", { name: theme === "dark" ? "Tối" : "Sáng" })).toHaveAttribute("aria-checked", "true");
+    // a set of choices opens on the current one
+    const current = menu.getByRole("menuitemradio", { name: theme === "dark" ? "Tối" : "Sáng" });
+    await expect(current).toBeFocused();
+    await expect(current).toHaveAttribute("aria-checked", "true");
     expect(await lowContrast(page)).toEqual([]);
     const other = theme === "dark" ? "Sáng" : "Tối";
-    await menu.getByRole("menuitemcheckbox", { name: other }).focus();
+    await menu.getByRole("menuitemradio", { name: other }).focus();
     await page.keyboard.press(" ");
     await expect(menu).toBeHidden();
     await expect(button).toBeFocused();
@@ -842,7 +844,8 @@ test("AppShell desktop: Create menu, collapse to the rail and back from the logo
   await expect(page.getByRole("tooltip")).toHaveText("Giao diện");
   await page.keyboard.press("ArrowUp");
   const themeMenu = page.getByRole("menu", { name: "Giao diện" });
-  await expect(themeMenu.getByRole("menuitemcheckbox", { name: "Hệ thống" })).toBeFocused();
+  // ↑ opens on the last choice
+  await expect(themeMenu.getByRole("menuitemradio", { name: "Hệ thống" })).toBeFocused();
   const [mb, ub] = [await themeMenu.boundingBox(), await themeUtil.boundingBox()];
   expect(mb!.y + mb!.height).toBeLessThanOrEqual(ub!.y + 1);
   expect(mb!.x).toBeGreaterThanOrEqual(0);
@@ -1187,6 +1190,120 @@ test("FilterChipRow: ‹ › scroll a row that overflows and stay out of the tab
   // the last chip is reachable by Tab (it scrolls into view)
   await ex.getByRole("button", { name: "Từ 100 tấn/năm" }).focus();
   await expect(ex.getByRole("button", { name: "Từ 100 tấn/năm" })).toBeInViewport();
+});
+
+test("FilterChipRow: leading views and a single chip by keyboard: radio menu, clearValue, Xoá lọc keeps the view (#115, #119)", async ({ page }) => {
+  await open(page, "/components/filter-chip-row/", "dark");
+  const ex = example(page, "filter-chip-row/views");
+  // the default view is not "all"
+  const open1 = ex.getByRole("button", { name: "Chưa xử lý" });
+  await expect(open1).toHaveAttribute("aria-pressed", "true");
+  await expect(ex.getByText("2 thư")).toBeVisible();
+  await open1.focus();
+  await page.keyboard.press("Tab");
+  await expect(ex.getByRole("button", { name: "Tất cả", exact: true })).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(ex.getByRole("button", { name: "Tất cả", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await expect(ex.getByText("4 thư")).toBeVisible();
+  // the next Tab stop is the single chip, named for the filter and its default value
+  await page.keyboard.press("Tab");
+  const chip = ex.getByRole("button", { name: "Hộp thư: Tất cả" });
+  await expect(chip).toBeFocused();
+  await expect(chip).toHaveAttribute("aria-haspopup", "menu");
+  await page.keyboard.press("Enter");
+  const menu = page.getByRole("menu", { name: "Hộp thư" });
+  await expect(menu).toBeVisible();
+  const all = menu.getByRole("menuitemradio", { name: "Tất cả" });
+  await expect(all).toBeFocused();
+  await expect(all).toHaveAttribute("aria-checked", "true");
+  await page.keyboard.press("ArrowDown");
+  await expect(menu.getByRole("menuitemradio", { name: /^Bán hàng/ })).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(menu).toBeHidden();
+  const on = ex.getByRole("button", { name: "Hộp thư: Bán hàng" });
+  await expect(on).toBeFocused();
+  await expect(ex.getByText("2 thư")).toBeVisible();
+  // it opens on the checked item; Escape returns to the chip
+  await page.keyboard.press("Enter");
+  await expect(menu.getByRole("menuitemradio", { name: /^Bán hàng/ })).toBeFocused();
+  await expect(menu.getByRole("menuitemradio", { name: /^Bán hàng/ })).toHaveAttribute("aria-checked", "true");
+  await page.keyboard.press("Escape");
+  await expect(on).toBeFocused();
+  // picking the default clears the filter
+  await page.keyboard.press("Enter");
+  await expect(menu.getByRole("menuitemradio", { name: /^Bán hàng/ })).toBeFocused();
+  await page.keyboard.press("Home");
+  await expect(all).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(ex.getByRole("button", { name: "Hộp thư: Tất cả" })).toBeFocused();
+  await expect(ex.getByRole("button", { name: "Xoá lọc" })).toHaveCount(0);
+  // a single filter without clearValue: nothing checked until a value is picked; Xoá lọc leaves the view
+  await ex.getByRole("button", { name: "Thư mục" }).click();
+  await page.getByRole("menu", { name: "Thư mục" }).getByRole("menuitemradio", { name: "Lưu trữ" }).click();
+  await expect(ex.getByRole("button", { name: "Thư mục: Lưu trữ" })).toBeVisible();
+  await ex.getByRole("button", { name: "Xoá lọc" }).click();
+  await expect(ex.getByRole("button", { name: "Thư mục" })).toBeVisible();
+  await expect(ex.getByRole("button", { name: "Tất cả", exact: true })).toHaveAttribute("aria-pressed", "true");
+});
+
+test("List page block: title row with its action, views and filters in the URL; phone: actions under the title, radio views, radio group in the panel (#115, #119, #120)", async ({ browser }) => {
+  for (const [width, phone] of [[1440, false], [430, true]] as const) {
+    const page = await browser.newPage({ viewport: { width, height: 932 }, ...(phone ? { isMobile: true, hasTouch: true } : {}) });
+    await open(page, "/components/list-page/", phone ? "light" : "dark");
+    const ex = example(page, "list-page/page");
+    const title = ex.getByRole("heading", { level: 1, name: "Đơn hàng" });
+    const create = ex.getByRole("button", { name: "Tạo đơn" });
+    await expect(create).toBeVisible();
+    const [t, c] = [await title.boundingBox(), await create.boundingBox()];
+    if (phone) expect(c!.y).toBeGreaterThanOrEqual(t!.y + t!.height - 1);
+    else expect(Math.abs(c!.y + c!.height / 2 - (t!.y + t!.height / 2))).toBeLessThan(t!.height / 2);
+    await expect(ex.getByRole("search", { name: "Tìm và lọc đơn hàng" })).toBeVisible();
+    if (!phone) {
+      await expect(ex.getByRole("button", { name: "Đang xử lý" })).toHaveAttribute("aria-pressed", "true");
+      await ex.getByRole("button", { name: "Đã xong" }).click();
+      await expect(page).toHaveURL(/[?&]view=done(&|$)/);
+      await ex.getByRole("button", { name: "Chi nhánh: Tất cả" }).click();
+      await page.getByRole("menu", { name: "Chi nhánh" }).getByRole("menuitemradio", { name: "Hà Nội" }).click();
+      await expect(page).toHaveURL(/[?&]f\.branch=hn(&|$)/);
+      // Xoá lọc clears the filters, not the view
+      await ex.getByRole("button", { name: "Xoá lọc" }).click();
+      await expect(page).not.toHaveURL(/f\.branch/);
+      await expect(page).toHaveURL(/[?&]view=done(&|$)/);
+    } else {
+      // from the keyboard (a mouse click would leave the pointer over the bottom sheet that opens under it)
+      const type = ex.getByRole("button", { name: "Đang xử lý" });
+      await type.focus();
+      await page.keyboard.press("Enter");
+      const views = page.getByRole("menu", { name: "Đang xử lý" });
+      await expect(views.getByRole("menuitemradio", { name: "Đang xử lý" })).toBeFocused();
+      await expect(views.getByRole("menuitemradio", { name: "Đang xử lý" })).toHaveAttribute("aria-checked", "true");
+      await page.keyboard.press("ArrowDown");
+      await expect(views.getByRole("menuitemradio", { name: "Đã xong" })).toBeFocused();
+      await page.keyboard.press("Enter");
+      await expect(page).toHaveURL(/[?&]view=done(&|$)/);
+      await ex.getByRole("button", { name: /^Bộ lọc/ }).click();
+      const panel = page.getByRole("dialog", { name: "Bộ lọc" });
+      await panel.getByRole("button", { name: /^Chi nhánh/ }).click();
+      const radio = panel.getByRole("radio", { name: "Hồ Chí Minh" });
+      await radio.focus();
+      await page.keyboard.press("Space");
+      await expect(page).toHaveURL(/[?&]f\.branch=hcm(&|$)/);
+      await expect(panel.getByRole("button", { name: /^Chi nhánh\s*Hồ Chí Minh/ })).toBeVisible();
+      await page.keyboard.press("ArrowDown");
+      await expect(panel.getByRole("radio", { name: "Hà Nội" })).toBeChecked();
+      await expect(page).toHaveURL(/[?&]f\.branch=hn(&|$)/);
+      await page.keyboard.press("ArrowUp");
+      await expect(panel.getByRole("radio", { name: "Hồ Chí Minh" })).toBeChecked();
+      await page.keyboard.press("ArrowUp");
+      await expect(panel.getByRole("radio", { name: "Tất cả" })).toBeChecked();
+      await expect(page).not.toHaveURL(/f\.branch/);
+      expect(await lowContrast(page)).toEqual([]);
+      await page.keyboard.press("Escape");
+      await expect(panel).toBeHidden();
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    await page.close();
+  }
 });
 
 test("SearchPill: debounced, Escape clears, / focuses it from the page", async ({ page }) => {
@@ -1768,3 +1885,51 @@ test("HintTextarea: @ and / open a listbox; arrows, Enter inserts at the caret, 
   await expect(text).toBeFocused();
   await expect(text).toHaveValue("Gửi @yenbai hôm nay /");
 });
+
+// #123: the selection fills re-point the text on them (text-muted, and accent-fg on hover) through a static @utility of
+// the same name as the theme colour; Tailwind merges it into bg-accent-subtle and its variants. The fill itself is
+// main's tint; text outside a fill keeps its colour; a hover: variant scopes the text only while hovered.
+for (const theme of THEMES) {
+  test(`selection fills darken the text on them, not the fill or the text around (#123) · ${theme}`, async ({ page }) => {
+    await open(page, "/", theme);
+    await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+    await page.evaluate(() => {
+      const d = document.createElement("div");
+      d.id = "t123";
+      d.className = "bg-card";
+      d.style.cssText = "position:fixed;top:0;left:0;z-index:99999;width:400px;padding:16px";
+      d.innerHTML =
+        '<p id="plain" class="text-muted">plain</p>' +
+        '<div id="sel" class="bg-accent-subtle"><span class="text-muted">sel</span><span class="text-accent-fg">a</span></div>' +
+        '<div id="hov" class="hover:bg-accent-subtle-hover" style="height:40px"><span class="text-muted">hov</span><span class="text-accent-fg">a</span></div>';
+      document.body.appendChild(d);
+    });
+    const read = () =>
+      page.evaluate(() => {
+        const c = (sel: string) => getComputedStyle(document.querySelector(sel)!).color;
+        const bg = (sel: string) => getComputedStyle(document.querySelector(sel)!).backgroundColor;
+        const v = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        return {
+          plain: c("#plain"), sel: c("#sel .text-muted"), selAccent: c("#sel .text-accent-fg"), hov: c("#hov .text-muted"), hovAccent: c("#hov .text-accent-fg"),
+          selBg: bg("#sel"), hovBg: bg("#hov"), subtle: v("--semi-accent-subtle"), hover: v("--semi-accent-subtle-hover"),
+        };
+      });
+    const before = await read();
+    // The fills are main's see-through tints (no per-surface scheme).
+    const tail = (k: string) => / \d+%, transparent\)$/.exec((tokens.semantic as Record<string, Record<string, string>>)[k][theme])![0];
+    expect(before.subtle.endsWith(tail("color-accent-subtle"))).toBe(true);
+    expect(before.hover.endsWith(tail("color-accent-subtle-hover"))).toBe(true);
+    expect(before.selBg).toMatch(/\/ 0\.1[14]\)$|rgba?\(.*, 0\.1[14]\)$/);
+    // Not hovered: the hover row's text is the plain text.
+    expect(before.hov).toBe(before.plain);
+    // Light darkens muted on the selected tint; dark already reads, so it keeps text-muted.
+    if (theme === "light") expect(before.sel).not.toBe(before.plain);
+    else expect(before.sel).toBe(before.plain);
+    await page.hover("#hov");
+    const after = await read();
+    expect(after.hov).not.toBe(before.plain);
+    expect(after.hovAccent).not.toBe(before.selAccent);
+    expect(after.hovBg).not.toBe("rgba(0, 0, 0, 0)");
+    expect(after.plain).toBe(before.plain);
+  });
+}

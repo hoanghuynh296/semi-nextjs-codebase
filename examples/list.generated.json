@@ -142,7 +142,7 @@
     "id": "filter-chip-row",
     "title": "Filter chip row",
     "group": "Forms",
-    "description": "A list page's filters as one line of chips (icon, label, chevron; solid with the value or count when on). Each chip opens a small multi-select popover, a switch chip toggles; the row scrolls sideways with ‹ › when it overflows, shows “Xoá lọc” while a filter is on and ends with the view tools. State in the URL with useFilterParams or the filterParams helpers.",
+    "description": "A list page's filters as one line of chips (icon, label, chevron; solid with the value or count when on). Each chip opens a small multi-select popover, a single-choice chip a radio menu (“Hộp thư: Tất cả”), a switch chip toggles; the page's views (Pills) can lead the row; the row scrolls sideways with ‹ › when it overflows, shows “Xoá lọc” while a filter is on and ends with the view tools. State in the URL with useFilterParams or the filterParams helpers.",
     "components": [
       "FilterChipRow",
       "FilterChip",
@@ -153,7 +153,7 @@
     "id": "filter-panel",
     "title": "Filter panel",
     "group": "Forms",
-    "description": "Filters on phones: one segmented pill (the page's views · Bộ lọc with the count · sort and view settings) that opens a full-screen panel: sort first, booleans as switches, one accordion per filter, “Xem N kết quả” at the bottom. From sm the panel is a side sheet, also the “Bộ lọc” panel of a page with more filters than its chip row shows.",
+    "description": "Filters on phones: one segmented pill (the page's views · Bộ lọc with the count · sort and view settings) that opens a full-screen panel: sort first, booleans as switches, one accordion per filter (a radio group for a single-choice one), “Xem N kết quả” at the bottom. From sm the panel is a side sheet, also the “Bộ lọc” panel of a page with more filters than its chip row shows.",
     "components": [
       "PhoneFilterBar",
       "FilterPanel"
@@ -478,7 +478,7 @@
     "id": "page-title",
     "title": "Page title",
     "group": "Navigation & layout",
-    "description": "PageTitle is the large display title of a page (text only). PageTabsTitle turns it into 2–4 underline tabs for sibling pages.",
+    "description": "PageTitle is the large display title of a page (text only), with the page's own action on its row (`actions`). PageTabsTitle turns it into 2–4 underline tabs for sibling pages.",
     "components": [
       "PageTitle",
       "PageTabsTitle"
@@ -525,7 +525,7 @@
     "id": "sticky-context-bar",
     "title": "Sticky context bar",
     "group": "Navigation & layout",
-    "description": "The top of a list page that stays while the rows scroll under it: SearchPill, then FilterChipRow (PhoneFilterBar on phones), then ResultLine. An opaque STICKY_TOOLBAR strip, below the safe area on phones.",
+    "description": "The top of a list page that stays while the rows scroll under it: SearchPill, then FilterChipRow (PhoneFilterBar on phones), then ResultLine. An opaque STICKY_TOOLBAR strip, below the safe area on phones. The title row with the page's action (PageTitle actions) sits above it and scrolls away.",
     "components": [
       "StickyContextBar"
     ]
@@ -955,7 +955,7 @@
     "id": "list-page",
     "title": "List page",
     "group": "Blocks",
-    "description": "A records page: title, toolbar (status pills, search, refresh, add), a data table that sorts, selects and pages, bulk actions. Copy it with `semi add list-page`.",
+    "description": "A records page on the StickyContextBar anatomy: the title row with refresh and the create action (PageTitle actions), then the sticky bar (SearchPill, views as Pills + filter chips on md+, PhoneFilterBar + FilterPanel on phones, ResultLine), then a data table that sorts, selects and pages, with bulk actions. State in the URL. Copy it with `semi add list-page`.",
     "components": []
   },
   {

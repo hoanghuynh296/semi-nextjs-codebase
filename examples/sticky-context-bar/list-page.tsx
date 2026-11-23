@@ -2,14 +2,17 @@
 
 import { useMemo, useState } from "react";
 import {
+  Button,
   FilterChipRow,
   FilterPanel,
   Item,
+  PageTitle,
   PhoneFilterBar,
   ResultLine,
   SearchPill,
   StickyContextBar,
   ViewSwitch,
+  toast,
   type FilterDef,
   type ViewMode,
 } from "@semi/ui";
@@ -55,6 +58,15 @@ export default function StickyContextBarListPage() {
   return (
     // the scrolling content panel of the page: STICKY_TOOLBAR bleeds into its side padding (px-4 sm:px-6, as AppShell's)
     <div className="w-full min-w-0 h-96 overflow-y-auto overscroll-contain rounded-card bg-app px-4 sm:px-6 pt-2.5 pb-4">
+      {/* the title row scrolls away with the page's action; the bar under it stays */}
+      <PageTitle
+        title="Nhà cung cấp"
+        actions={
+          <Button variant="primary" icon="plus" onClick={() => toast({ title: "Thêm nhà cung cấp" })}>
+            Thêm nhà cung cấp
+          </Button>
+        }
+      />
       <StickyContextBar label="Tìm và lọc nhà cung cấp">
         <SearchPill value={q} onChange={setQ} label="Tìm nhà cung cấp" placeholder="Tìm tên nhà cung cấp…" focusKey="/" />
         <FilterChipRow

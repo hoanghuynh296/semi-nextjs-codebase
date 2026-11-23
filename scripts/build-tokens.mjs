@@ -84,6 +84,12 @@ for (const [group, entries] of Object.entries(tokens)) {
         compatVars.push(`  --${key}: var(${srcVar(key)});`);
         continue;
       }
+      // "sets": the tokens a fill re-points for the text on it (#123: bg-accent-subtle darkens text-muted). A static
+      // @utility of the same name as the theme colour: Tailwind merges it into bg-<key> and its variants (hover:, aria-selected:).
+      if (raw.sets) {
+        const decls = Object.entries(raw.sets).map(([k, v]) => `  --semi-${k}: ${v};`).join("\n");
+        bgUtilities.push(`/* bg-${key.replace(/^color-/, "")}: the text on it (${Object.keys(raw.sets).join(", ")}) */\n@utility bg-${key.replace(/^color-/, "")} {\n${decls}\n}\n\n`);
+      }
       // An aliased key (color-text-contrast → color-contrast) only gets the alias as a utility (text-contrast).
       inlineVars.push(`  --${raw.alias ?? key}: var(${srcVar(key)});${note}`);
       darkVars.push(`  ${srcVar(key)}: ${raw.dark};`);

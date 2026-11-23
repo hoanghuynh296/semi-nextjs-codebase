@@ -4,15 +4,24 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## Unreleased
 
-**Summary.** Gaps found adopting the 0.36 shell (#113, #114 a / c): a non-deprecated way to keep the phone tab bar, the account squeezed in the `md` rail, and the theme's "system" choice in the shell.
+List page anatomy (C-041, #115 / #119 / #120): where a 0.36 list page puts its own action, its views and its one-of-N filters, and the `list-page` block on that anatomy. Additive: pages that do not use the new props look and behave as before.
+
+Shell upgrade (C-041, #113, #114 a / c): gaps found adopting the 0.36 shell, a non-deprecated way to keep the phone tab bar, the account squeezed in the `md` rail, and the theme's "system" choice in the shell.
 
 ### Added
+- **`PageTitle actions` (#115, #120):** the page's own action at the right end of the title row (one `Button variant="primary"` or secondary with icon and text, optionally a `RefreshButton` before it; more in a ⋯ `Menu`). Below `sm` the actions wrap onto their own row under the title. Without `actions` PageTitle renders as before. New example `page-title/actions`.
+- **`FilterChipRow leading` (#115):** a slot before the chips for the page's views (`<Pills>`: Đang mở · Đã đóng · Tất cả), the md+ twin of `PhoneFilterBar typeItems`; it does not scroll with the chips and "Xoá lọc" leaves it alone. The default view may be other than "all". New example `filter-chip-row/views`.
+- **`FilterSpec.kind: "single"` and `clearValue` (#119):** a one-of-N filter (mailbox, folder, warehouse). In `FilterChipRow` / `SubpageToolbar filters` a chip that names its value ("Hộp thư: Tất cả") and opens a menu of radio items; in `FilterPanel` an accordion with a radio group (its heading shows the value); in the URL one value (`?f.box=sales`). `clearValue` is the default option: never written to the URL, `selected` is `[]` while it is in effect (read the value as `selected[0] ?? clearValue`), not counted as active, and "Xoá lọc" resets to it.
+- **`MenuItem.radio` (#119):** with `checked`, the item is `menuitemradio` (one choice of a set) and the menu opens on the checked item. Use it for `PhoneFilterBar typeItems` (the page's views). Items without `radio` are unchanged (`menuitemcheckbox`).
 - **`ShellNavItem.menu` (#114):** an AppShell item (usually a `utilities` item) can open a `Menu` of choices (`MenuItem[]`, `checked` marks the current one) instead of navigating: a row in the sidebar, an icon with its Tooltip in the rail, a level of the phone drawer (checked row marked, `aria-pressed`).
 - **`useThemeUtility()` (#114):** the theme as a ready `utilities` item: Light / Dark / System in that Menu (the chosen mode's icon, hidden until the stored theme is read so it never swaps after hydration; label "Giao diện" / locale `theme`; `id`, `label`, `labels` options). Use it in place of a `toggleTheme` item, which drops "system". The AppShell examples use it.
 - **`ShellNavItem.iconHidden`:** keeps an item's icon space but hides it (`opacity-0`), for an icon that reflects a value known only after mount (`useThemeUtility()` sets it until mounted).
 - **`ThemeSwitcher variant="menu"` (#114):** one icon button (`aria-haspopup="menu"`, Tooltip) whose Menu lists the three modes with the current one checked, for headers and toolbars. Default `variant="segmented"` is the switcher as before.
 
 ### Changed
+- **`list-page` block (`semi add list-page`, #115):** rebuilt on the 0.36 anatomy: `PageTitle actions` (refresh + "Tạo đơn"), `StickyContextBar` (SearchPill, views as Pills in `FilterChipRow leading` + channel, branch (single) and amount chips on md+, `PhoneFilterBar` + `FilterPanel` on phones, `ResultLine`), `DataTable`; views, query and filters in the URL (`useFilterParams`). Pages already copied from the old block keep working; nothing changes in them.
+- **Docs (#120):** the StickyContextBar, MinimalHeader, PageTitle and list-page docs now agree: a list page's action is on its title row (`PageTitle actions`), never in the bar; `MinimalHeader` is for detail and settings pages.
+- **`/semi-check`:** a list page with a `StickyContextBar` no longer counts as a page without a `SubpageToolbar`.
 - **AppShell `mobileTabIds` (#113):** no longer deprecated with `mobileNav="tabs"`: that pair is the supported way to keep the phone tab bar with chosen items, and it no longer warns. `mobileTabIds` without `mobileNav` keeps the tab bar as before (C-034) and still warns in development, now naming the fix (add `mobileNav="tabs"`). With `mobileNav="drawer"` it is still ignored with a warning.
 
 ### Fixed

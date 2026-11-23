@@ -329,7 +329,8 @@ export function auditSingleApp(cwd) {
 
     if (/\b(AppShell|AppHeader)\b/.test(text)) usesAppShell = true; // AppHeader: the Semi frame of tool apps
     if (/<aside[^>]*\b(border-r|-translate-x-full)\b/.test(text)) legacySidebarFile = rel;
-    if (/\b(SubpageToolbar|STICKY_TOOLBAR)\b/.test(text)) toolbarPagesCount++;
+    // a 0.36 list page has a StickyContextBar in place of a SubpageToolbar (#115)
+    if (/\b(SubpageToolbar|StickyContextBar|STICKY_TOOLBAR)\b/.test(text)) toolbarPagesCount++;
     else if (/(?:^|\/)page\.tsx$/.test(rel) && isListPage(text)) pagesWithoutToolbar.push(rel);
     if (/\bPagination\b/.test(text)) paginationPagesCount++;
     if (/\bKpiCard\b/.test(text)) usesKpiCard = true;
@@ -609,7 +610,7 @@ export function auditSingleApp(cwd) {
     decide("app-shell", legacySidebarFile || layout || "layout.tsx", legacySidebarFile ? "sidebar cũ (aside border-r / drawer)" : "chưa có khung AppShell / AppHeader", "AppShell + MobileTabBar (app nhiều trang) hoặc AppHeader (app công cụ)");
   for (const f of wrapperFiles) decide("ui-wrappers", f, "file wrapper UI riêng che @semi/ui", "import thẳng từ @semi/ui, xoá wrapper");
   if (customKpiCardFile) decide("kpi-card", customKpiCardFile, "KPICard tự viết", "KpiCard");
-  for (const f of pagesWithoutToolbar) decide("subpage-toolbar", f, "trang danh sách không có SubpageToolbar", "PageTitle + SubpageToolbar");
+  for (const f of pagesWithoutToolbar) decide("subpage-toolbar", f, "trang danh sách không có SubpageToolbar / StickyContextBar", "PageTitle + SubpageToolbar, hoặc PageTitle actions + StickyContextBar (semi add list-page)");
   for (const f of tablePages) decide("tables", f, "bảng `<table>` HTML", "Table của @semi/ui, hoặc lưới Card cho danh sách thực thể");
   for (const d of duplicateComponents) if (!wrapperFiles.includes(d.file)) decide("duplicates", d.file, `component riêng ${d.name} (${d.importsCount} chỗ import)`, d.semiEquivalent);
   for (const l of detectedLibs) decide("third-party-ui", "package.json", `thư viện UI ${l.label}`, "thay bằng @semi/ui rồi gỡ thư viện");

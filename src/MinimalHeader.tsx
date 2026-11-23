@@ -2,7 +2,8 @@
 
 // Minimal page header (#96, L18 of the #94 study): where the page sits on the left (a Breadcrumb, or a title), and at
 // most one text link plus one primary action on the right. It opens a detail or settings page inside AppShell, above
-// the page's own heading (PageTitle / TextTabs); list pages keep SubpageToolbar.
+// the page's own heading (PageTitle / TextTabs). A list page has no MinimalHeader: its action sits on the title row
+// (PageTitle `actions`) above a StickyContextBar, or in its SubpageToolbar.
 import React from "react";
 import { cn } from "../styles/utils";
 

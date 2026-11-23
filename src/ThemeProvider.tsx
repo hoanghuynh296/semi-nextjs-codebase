@@ -146,12 +146,12 @@ const THEME_OPTIONS = [
   { key: "system", icon: "monitor" },
 ] as const;
 
-/** The three choices as Menu items, the current one `checked` (none until the stored theme is known). */
+/** The three choices as Menu radio items (`menuitemradio`; the menu opens on the current one), the current one `checked` (none until the stored theme is known). */
 function useThemeChoices(labelsProp?: Record<Theme, string>) {
   const t = useSemiLocale();
   const labels = labelsProp ?? { light: t.themeLight, dark: t.themeDark, system: t.themeSystem };
   const { theme, mounted, setTheme } = useTheme();
-  const items: MenuItem[] = THEME_OPTIONS.map(({ key, icon }) => ({ label: labels[key], icon, checked: mounted && theme === key, onSelect: () => setTheme(key) }));
+  const items: MenuItem[] = THEME_OPTIONS.map(({ key, icon }) => ({ label: labels[key], icon, radio: true, checked: mounted && theme === key, onSelect: () => setTheme(key) }));
   // the chosen mode's icon; hidden until the stored theme is read, so it never swaps after hydration
   const icon: IconName = THEME_OPTIONS.find((o) => o.key === theme)?.icon ?? "sun";
   return { items, icon, label: t.theme, mounted };

@@ -69,7 +69,7 @@ test("Flat light steps (canvas to app, app to panel) are at least Sharp's, in co
 
 // ── C-030 surfaces (#93): panel scale, borderless cards, tint, inverted ─────────────────────────────────────────────
 import { contrast, blend, oklchToHex } from "../../brand/color.mjs";
-import { derivedSurfaces, mixOklab } from "../../brand/generate.mjs";
+import { accentSubtleText, derivedSurfaces, mixOklab } from "../../brand/generate.mjs";
 
 const TEXT_KEYS = ["color-text-contrast", "color-text-body", "color-text-muted"];
 const neutralsOf = (st, theme) => Object.fromEntries([...KEYS, ...TEXT_KEYS].map((k) => [k, (st.semantic?.[k] ?? tokens.semantic[k])[theme]]));
@@ -177,6 +177,79 @@ test("accent text reads AA on the card and on the selected tint over it (Paginat
     const r = generateBrand({ ...b, styles: { default: "flat", allowed: ids } }, { tokens, styles }).tokens;
     for (const [sid, t] of Object.entries(r.neutrals))
       for (const theme of ["light", "dark"]) check(`kit ${id} ${sid}`, theme, r.themes[theme]["color-accent-fg"], derivedSurfaces(t[theme], theme).card);
+  }
+});
+
+// #123: text on the selection fills. The fills stay main's see-through tints; bg-accent-subtle and
+// bg-accent-subtle-hover re-point text-muted (and accent-fg on hover) for the text on them.
+const subtleSets = () => {
+  const out = [];
+  for (const st of styles.styles)
+    for (const theme of ["light", "dark"]) out.push([`core ${st.id}`, theme, neutralsOf(st, theme), hexOf(tokens.semantic["color-accent-fg"][theme])]);
+  for (const [id, b] of Object.entries({ ...kits, fixture: read("tests/fixtures/brand.json") }))
+    for (const neutral of [undefined, "pure"]) {
+      const r = generateBrand({ ...b, neutral, styles: { default: "flat", allowed: ids } }, { tokens, styles }).tokens;
+      for (const [sid, t] of Object.entries(r.neutrals))
+        for (const theme of ["light", "dark"]) out.push([`kit ${id}${neutral ? "/pure" : ""} ${sid}`, theme, t[theme], r.themes[theme]["color-accent-fg"]]);
+    }
+  return out;
+};
+
+test("non-selection uses of the selection tint are unchanged (#123): same fills as 0.36.0, the utilities only re-point text", () => {
+  // The fills of 0.36.0: IconTile, FileDrop, Chat, MegaMenu badges, Calendar range, Pagination look the same.
+  assert.deepEqual(
+    Object.fromEntries(["color-accent-subtle", "color-accent-subtle-hover"].map((k) => [k, { dark: tokens.semantic[k].dark, light: tokens.semantic[k].light }])),
+    {
+      "color-accent-subtle": { dark: "color-mix(in oklab, var(--semi-accent-fg) 14%, transparent)", light: "color-mix(in oklab, var(--semi-accent-fg) 11%, transparent)" },
+      "color-accent-subtle-hover": { dark: "color-mix(in oklab, var(--semi-accent-fg) 22%, transparent)", light: "color-mix(in oklab, var(--semi-accent-fg) 18%, transparent)" },
+    },
+  );
+  const css = readFileSync(new URL("../../tokens/tokens.css", import.meta.url), "utf8");
+  for (const [name, keys] of [["bg-accent-subtle", ["text-muted"]], ["bg-accent-subtle-hover", ["text-muted", "accent-fg"]]]) {
+    const body = new RegExp(`@utility ${name} \\{([^}]*)\\}`).exec(css)?.[1];
+    assert.ok(body, `@utility ${name}`);
+    const props = [...body.matchAll(/(--[\w-]+|[a-z-]+):/g)].map((m) => m[1]);
+    assert.deepEqual(props, keys.map((k) => `--semi-${k}`), `${name} re-points only the text on it`);
+  }
+  for (const k of ["accent-subtle", "accent-subtle-hover", "accent-line", "focus"]) assert.doesNotMatch(css, new RegExp(`@utility bg-accent-subtle[^}]*--semi-${k}:`), `the fill tokens are not re-pointed (${k})`);
+});
+
+test("text-muted, text-body and accent-fg read AA on bg-accent-subtle and its hover, every style x theme, core and kits (#123)", () => {
+  for (const [label, theme, n, fg] of subtleSets())
+    for (const { key, on, fill, muted, body, accent } of accentSubtleText(tokens, theme, fg, n))
+      for (const [what, c] of [["text-muted", muted], ["text-body", body], ["accent-fg", accent]]) {
+        const r = contrast(c, fill);
+        assert.ok(r >= 4.5, `${label} ${theme}: ${what} ${c} on ${key} over ${on} ${fill} ${r.toFixed(2)}`);
+      }
+});
+
+test("the scoped text tokens mix what tokens.json mixes, and plain text-muted alone does not reach AA on the light tint (why they exist)", () => {
+  const st = styles.styles.find((x) => x.id === "flat");
+  const n = neutralsOf(st, "light");
+  const e = accentSubtleText(tokens, "light", hexOf(tokens.semantic["color-accent-fg"].light), n).find((x) => x.key === "color-accent-subtle" && x.on === "card");
+  assert.ok(contrast(n["color-text-muted"], e.fill) < 4.5, "plain text-muted on the tint over the card is short (the #123 bug)");
+  assert.equal(e.muted, mixOklab(n["color-text-muted"], n["color-text-body"], 0.25));
+});
+
+test("the generator nudges a style's text when even the scoped text falls short on accent-subtle (#123)", () => {
+  // Without the tints (0%), nothing sits on them and fixTextOnSubtle has nothing to do: the un-nudged neutrals.
+  const noTint = structuredClone(tokens);
+  for (const k of ["color-accent-subtle", "color-accent-subtle-hover"])
+    for (const th of ["light", "dark"]) noTint.semantic[k][th] = noTint.semantic[k][th].replace(/\d+(\.\d+)?%, transparent/, "0%, transparent");
+  // #ca8a04 (amber) and #e11d48 (rose): their tints need the nudge loop (fixTextOnSubtle) to run.
+  for (const primary of ["#ca8a04", "#e11d48"]) {
+    const b = { ...kits.semi, primary, secondary: undefined, styles: { default: "flat", allowed: ids } };
+    const r = generateBrand(b, { tokens, styles });
+    const plain = generateBrand(b, { tokens: noTint, styles }).tokens.neutrals;
+    let nudged = 0;
+    for (const [sid, t] of Object.entries(r.tokens.neutrals))
+      for (const theme of ["light", "dark"]) {
+        if (t[theme]["color-text-muted"] !== plain[sid][theme]["color-text-muted"]) nudged++;
+        for (const e of accentSubtleText(tokens, theme, r.tokens.themes[theme]["color-accent-fg"], t[theme]))
+          for (const c of [e.muted, e.body, e.accent]) assert.ok(contrast(c, e.fill) >= 4.5, `${primary} ${sid} ${theme} ${e.key} ${e.on} ${contrast(c, e.fill).toFixed(2)}`);
+      }
+    assert.ok(nudged > 0, `${primary}: fixTextOnSubtle nudged text-muted in at least one style x theme`);
+    assert.ok(r.report.some((x) => /nền chọn/.test(x.check)), "the report lists it");
   }
 });
 

@@ -267,10 +267,10 @@ test("AppShell theme utility under Next's App Router: prerendered, its Menu pick
     await page.keyboard.press("Enter");
     await expect(page.getByRole("menu", { name: "Theme" })).toBeVisible({ timeout: 1000 });
   }).toPass({ timeout: 15_000 });
-  await expect(page.getByRole("menuitemcheckbox", { name: "Light" })).toHaveAttribute("aria-checked", "true");
+  await expect(page.getByRole("menuitemradio", { name: "Light" })).toHaveAttribute("aria-checked", "true");
   await expect(trigger.locator("svg")).not.toHaveClass(/opacity-0/);
   await page.keyboard.press("ArrowDown");
-  await expect(page.getByRole("menuitemcheckbox", { name: "Dark" })).toBeFocused();
+  await expect(page.getByRole("menuitemradio", { name: "Dark" })).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect(trigger).toBeFocused();

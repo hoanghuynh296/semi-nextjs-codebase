@@ -2,12 +2,12 @@
 
 // Search and filters (#99, C-032 L4; closes #57): the phone filter bar (type · Bộ lọc · settings as one segmented
 // pill) and the filter panel it opens: full screen on phones, a side sheet from `sm`, with the sort first, booleans as
-// switches, one accordion per multi filter, and "Xem N kết quả" at the bottom.
+// switches, one accordion per multi filter (a radio group for a single one), and "Xem N kết quả" at the bottom.
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Icon } from "./Icon";
 import { Menu, type MenuItem } from "./Overlay";
-import { Switch } from "./Choice";
+import { RadioGroup, Switch } from "./Choice";
 import { FilterOptions } from "./FilterChipRow";
 import { useDialog } from "./a11y";
 import { useSemiLocale } from "./locale";
@@ -197,6 +197,9 @@ export function FilterPanel({
             .map((f) => {
               const isOpen = openKeys.includes(f.key);
               const bodyId = `${titleId}-${f.key}`;
+              const single = f.kind === "single";
+              const current = single ? (f.selected[0] ?? f.clearValue) : undefined;
+              const summary = single ? f.options?.find((o) => o.value === current)?.label : f.selected.length > 0 ? f.selected.length : undefined;
               return (
                 <div key={f.key} className={section}>
                   <h3>
@@ -209,13 +212,25 @@ export function FilterPanel({
                     >
                       {f.icon && <Icon name={f.icon} className="w-5 h-5 text-muted shrink-0" />}
                       <span className="flex-1 min-w-0 truncate text-ui font-medium text-contrast">{f.label}</span>
-                      {f.selected.length > 0 && <span className="text-label text-muted tabular-nums">{f.selected.length}</span>}
+                      {summary !== undefined && <span className="max-w-40 truncate text-label text-muted tabular-nums">{summary}</span>}
                       <Icon name={isOpen ? "chevronUp" : "chevronDown"} className="w-4 h-4 text-muted shrink-0" />
                     </button>
                   </h3>
                   {isOpen && (
                     <div id={bodyId}>
-                      <FilterOptions def={f} onChange={(s) => onChange(f.key, s)} className="max-h-none px-2.5 pb-3 pt-0" />
+                      {single ? (
+                        <div role="group" aria-label={f.label} className="px-4 pb-4 pt-1">
+                          <RadioGroup
+                            name={bodyId}
+                            value={current ?? ""}
+                            onChange={(v) => onChange(f.key, v === f.clearValue ? [] : [v])}
+                            options={(f.options ?? []).map((o) => ({ value: o.value, label: o.label }))}
+                            className="[&>div]:gap-4"
+                          />
+                        </div>
+                      ) : (
+                        <FilterOptions def={f} onChange={(s) => onChange(f.key, s)} className="max-h-none px-2.5 pb-3 pt-0" />
+                      )}
                     </div>
                   )}
                 </div>

@@ -1,7 +1,7 @@
 {
   "title": "List page",
   "group": "Blocks",
-  "description": "A records page: title, toolbar (status pills, search, refresh, add), a data table that sorts, selects and pages, bulk actions. Copy it with `semi add list-page`.",
+  "description": "A records page on the StickyContextBar anatomy: the title row with refresh and the create action (PageTitle actions), then the sticky bar (SearchPill, views as Pills + filter chips on md+, PhoneFilterBar + FilterPanel on phones, ResultLine), then a data table that sorts, selects and pages, with bulk actions. State in the URL. Copy it with `semi add list-page`.",
   "components": [],
   "when": [
     "Orders, customers, products, jobs: any page whose job is to find and act on records."
@@ -10,10 +10,15 @@
     {
       "need": "Entities people recognise by image and status",
       "use": "a grid of Card"
+    },
+    {
+      "need": "A page with one or two filters and no search",
+      "use": "PageTitle + SubpageToolbar"
     }
   ],
   "a11y": [
-    "Filters and search sit above the table they filter; the table has a caption; bulk actions appear as a labelled region."
+    "The title row is the page h1 with its action; the bar under it is a search landmark named for the page; the table has a caption; bulk actions appear as a labelled region.",
+    "Views are toggle buttons (Pills) on md+ and radio items of a menu on phones; a single-choice filter chip opens a menu of radio items."
   ],
   "examples": [
     {
