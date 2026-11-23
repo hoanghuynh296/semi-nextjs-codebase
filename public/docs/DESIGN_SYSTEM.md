@@ -472,8 +472,9 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
 - **Overlay and actions (C-032, #102):** a record of a list opens in a `DetailOverlay` over the list, not on its own
   page: its id lives in the URL (`useDetailParam()` → `?open=<id>`; opening is a history entry, so Back closes it, ‹ ›
   replace it), the list stays mounted under it, so close / Esc / Back land at the same scroll position. The header has
-  close, the title, "n / N" and ‹ › (← →) through the **current** results (the filtered, sorted list), the side
-  panel the actions: one `SplitButton` (the main action and its variants), a row of icon buttons, a ⋯ `Menu`, then the
+  close, the title, "n / N" and ‹ › (← →) through the **current** results (the filtered, sorted list; over a
+  `DataTable` build them with its own `sortRows(searchRows(rows, columns, search), columns, sort)`, all pages, never a
+  copy of its comparator), the side panel the actions: one `SplitButton` (the main action and its variants), a row of icon buttons, a ⋯ `Menu`, then the
   facts. Keep the filters in the URL too, so a shared link opens the record over the same results; existing detail
   routes stay for deep links and long workflows. A palette item or notification opens a record of the current route with
   `openDetail(id)` (not a same-route `router.push`, which Firefox and Safari < 26 do not report to the list). Cards and media tiles in a grid get `CardActions` (one or two round
@@ -962,7 +963,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Small interactive panel under a trigger | `Popover` (non-modal dialog); a hover preview of a link → `HoverCard` |
 | Actions at the pointer | `ContextMenu` (right-click, long-press, Menu key); the same actions must exist in a visible `Menu` |
 | Jump / run anything from the keyboard | `CommandPalette` once in the root layout (⌘K, pages add items with `useRegisterCommands`, `openCommandPalette()`); `CommandDialog` + `useHotkey` for a palette of your own, `Command` inline; matching ignores Vietnamese marks |
-| Sort / filter / select / page rows | `DataTable` (`columns`, `search`, `selectable` + `bulkActions`, `pageSize`, `loading`) |
+| Sort / filter / select / page rows | `DataTable` (`columns`, `search`, `selectable` + `bulkActions`, `pageSize`, `loading`). Many columns (a tablet beside the rail, a split view): give the less important ones `priority` 1–3; they fold into the first column's second line when the table's **own box** is too narrow (3 first; the first column and columns without a priority never fold). The sorted column never folds (its header is the sort control). Folding is measured after hydration, so such a table may shift once on first load. What still does not fit scrolls sideways with a 2px accent line on each edge that has columns past it and the scroll box focusable; `stickyFirstColumn` keeps the names in place. The order it shows is `sortRows(searchRows(rows, columns, search), columns, sort)` (pure, also for a DetailOverlay's ‹ ›) |
 | Fixed-height scrolling list | `ScrollArea` (edge lines, optional thin scrollbar, keyboard focusable) |
 | Divider / key cap | `Separator` (horizontal, vertical, with a label); `Kbd` (`keys={["⌘", "K"]}`) |
 | Charts | `BarChart` (grouped / `stacked`), `LineChart` (`area`), `DonutChart` (≤ 5 parts), `Sparkline` (trend in a KPI tile). Series colours are the fixed `chart-1…8` tokens in order, a 9th series folds into “Khác”; one y axis only; legend for 2+ series, keyboard tooltip and table view built in |

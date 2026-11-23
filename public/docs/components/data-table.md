@@ -5,6 +5,7 @@ A table that sorts, filters, selects and pages rows on the client, built on Tabl
 ## When to use
 
 - Admin lists: orders, customers, inventory, logs — sort by a column, search, act on several rows.
+- Many columns on a tablet or beside a rail: give the less important ones a `priority`, they fold into the first column instead of being cut.
 
 ## Use something else when
 
@@ -73,6 +74,65 @@ export default function DataTableOrders() {
 }
 ```
 
+### Many columns: priority folds, sticky first column
+
+Switch the width: at Máy tính bảng the priority 3 columns fold under the name; at Hẹp the priority 2 ones too, and the columns without a priority scroll sideways with the name kept in place and an accent line on the edge that has more columns.
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Badge, DataTable, ToggleGroup, type DataTableColumn } from "@semi/ui";
+
+type Customer = { id: string; name: string; phone: string; city: string; source: string; owner: string; lastContact: string; orders: number; spent: number };
+const CUSTOMERS: Customer[] = Array.from({ length: 6 }, (_, i) => ({
+  id: `KH-${2031 + i}`,
+  name: ["Cửa hàng Minh An", "Nhà sách Phú Lợi", "Quán Bếp Nhà", "Tiệm bánh Hồng Phúc", "Văn phòng phẩm Sao Mai", "Siêu thị mini Thảo Điền"][i],
+  phone: `090 ${String(1234567 + i * 1111).replace(/(\d{3})(\d{4})/, "$1 $2")}`,
+  city: ["TP.HCM", "Hà Nội", "Đà Nẵng", "Cần Thơ", "Huế", "TP.HCM"][i],
+  source: ["Facebook", "Giới thiệu", "Zalo", "Website", "Facebook", "Hội chợ"][i],
+  owner: ["Lan", "Minh", "Lan", "Tú", "Minh", "Tú"][i],
+  lastContact: `2026-11-${String(20 - i * 3).padStart(2, "0")}`,
+  orders: 3 + ((i * 7) % 19),
+  spent: 2_400_000 + ((i * 3_150_000) % 18_000_000),
+}));
+
+// priority 3 folds first, then 2, then 1; the first column and columns without a priority always stay
+const COLUMNS: DataTableColumn<Customer>[] = [
+  { key: "name", header: "Khách hàng", sortable: true, cell: (c) => <span className="font-medium text-contrast">{c.name}</span> },
+  { key: "phone", header: "Điện thoại", priority: 2 },
+  { key: "city", header: "Tỉnh / thành", sortable: true },
+  { key: "source", header: "Nguồn", priority: 3, cell: (c) => <Badge size="sm">{c.source}</Badge> },
+  { key: "owner", header: "Người phụ trách", priority: 3 },
+  { key: "lastContact", header: "Liên lạc", sortable: true, priority: 2 },
+  { key: "orders", header: "Đơn", sortable: true, numeric: true },
+  { key: "spent", header: "Doanh số", sortable: true, numeric: true, cell: (c) => `${c.spent.toLocaleString("vi-VN")} ₫` },
+];
+
+const WIDTHS = { full: "", tablet: "max-w-[700px]", narrow: "max-w-[400px]" } as const;
+
+export default function DataTableColumns() {
+  const [width, setWidth] = useState<(keyof typeof WIDTHS)[]>(["tablet"]);
+  return (
+    <div className="space-y-3">
+      <ToggleGroup
+        label="Độ rộng bảng"
+        value={width}
+        onChange={setWidth}
+        options={[
+          { key: "full", label: "Đầy đủ" },
+          { key: "tablet", label: "Máy tính bảng" },
+          { key: "narrow", label: "Hẹp" },
+        ]}
+      />
+      <div className={WIDTHS[width[0]]}>
+        <DataTable label="Khách hàng" rows={CUSTOMERS} columns={COLUMNS} getRowId={(c) => c.id} defaultSort={{ key: "spent", dir: "desc" }} stickyFirstColumn />
+      </div>
+    </div>
+  );
+}
+```
+
 ### Loading and empty
 
 ```tsx
@@ -108,6 +168,11 @@ export default function DataTableStates() {
 Sort by a column header (click again to reverse; aria-sort on the header), filter with `search` (every searchable
 column, case and Vietnamese marks ignored), select rows with a checkbox column (select-all on the page, bulk
 actions bar), page with Pagination. Shows skeleton rows while `loading` and an EmptyState when nothing is left.
+When the columns do not fit its own box, columns with a `priority` fold into the first column's second line; what
+still does not fit scrolls sideways, with an accent line on each edge that has columns past it and the table
+focusable to scroll by keyboard. The sorted column never folds. Folding is measured after hydration, so a table
+with priorities may shift once on first load at a narrow width.
+The order it shows is `sortRows(searchRows(rows, columns, search), columns, sort)` (for DetailOverlay ‹ ›).
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
@@ -127,10 +192,18 @@ actions bar), page with Pagination. Shows skeleton rows while `loading` and an E
 | `loading` | `boolean` | `false` |  |
 | `empty` | `React.ReactNode` |  | Shown when there are no rows (or none match the search). |
 | `onRowClick` | `(row: T) => void` |  | Make rows clickable (open the record). Keep a link or button in the row for keyboard users. |
+| `stickyFirstColumn` | `boolean` | `false` | Keep the first column (and the checkbox column) in place while the table scrolls sideways, so every row stays named. The table then sits on `bg-card`. |
 | `className` | `string` |  |  |
 
 ## Accessibility
 
 - Sortable headers are buttons with aria-sort on the header cell; the caption names the table; row checkboxes and select-all are labelled; aria-busy while loading.
+- A folded value keeps its header for screen readers (“Nguồn: Facebook”) on the first cell's second line; when the table still scrolls sideways its scroll box is a named, focusable region, so the arrow keys scroll it.
+
+## Notes
+
+- Folding is measured on the table's own box (not the viewport), from each column's one-line width: a table in a split view or next to the rail folds as soon as it is too narrow. Folding happens after hydration: the server HTML shows every column, so a table with priorities may shift once on first load at tablet width.
+- The order the table shows is `sortRows(searchRows(rows, columns, search), columns, sort)`: use the same two helpers to step through the results in a DetailOverlay (‹ ›, “n / N”), see the detail-overlay docs.
+- A table wider than its box draws a 2px accent line on each edge that has columns past it (in every table; with `stickyFirstColumn` the left line is the pinned column's edge) and keeps the first column (and the checkbox column) in place with `stickyFirstColumn`; the table then sits on `bg-card`. The sorted column never folds: its header is the only sort control.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/data-table/ and the types in src/ -->
