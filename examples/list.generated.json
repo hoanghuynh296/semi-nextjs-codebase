@@ -3,7 +3,7 @@
     "id": "button",
     "title": "Button",
     "group": "Actions",
-    "description": "The action control: one primary per area (the action fill: the accent, or a neutral inverted fill in a brand with primaryStyle inverted), secondary (a translucent tint, no border) for the rest, outline (field fill + line) for framed toolbars, danger for destructive actions, ghost for quiet ones. Spinner shows work in progress inside the control that runs it.",
+    "description": "The action control, 1.0 variants: subtle (default) for ordinary actions, surface for toolbar actions, inverse for the main action of a card or a list title row, outline beside an inverse one, ghost for icon buttons, primary / secondary (the brand fills) only for the one main button of a page, a dialog or the nav, danger for destructive actions. Spinner shows work in progress inside the control that runs it.",
     "components": [
       "Button",
       "Spinner"
@@ -602,9 +602,11 @@
     "id": "badge",
     "title": "Badge",
     "group": "Data display",
-    "description": "A read-only status or tag in a tone (10% fill, 20% border, theme-safe text), with an optional dot or icon.",
+    "description": "A read-only status or tag in a tone (10% fill, 20% border, theme-safe text; one fixed palette for every brand), and the attention marks in the brand colour: CountBadge (unread, to approve; 99+ cap) and NewTag (\"Mới\").",
     "components": [
-      "Badge"
+      "Badge",
+      "CountBadge",
+      "NewTag"
     ]
   },
   {

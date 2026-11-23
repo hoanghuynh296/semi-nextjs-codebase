@@ -1,30 +1,66 @@
 {
   "title": "Button",
   "group": "Actions",
-  "description": "The action control: one primary per area (the action fill: the accent, or a neutral inverted fill in a brand with primaryStyle inverted), secondary (a translucent tint, no border) for the rest, outline (field fill + line) for framed toolbars, danger for destructive actions, ghost for quiet ones. Spinner shows work in progress inside the control that runs it.",
-  "components": ["Button", "Spinner"],
+  "description": "The action control, 1.0 variants: subtle (default) for ordinary actions, surface for toolbar actions, inverse for the main action of a card or a list title row, outline beside an inverse one, ghost for icon buttons, primary / secondary (the brand fills) only for the one main button of a page, a dialog or the nav, danger for destructive actions. Spinner shows work in progress inside the control that runs it.",
+  "components": [
+    "Button",
+    "Spinner"
+  ],
   "when": [
     "Any action: save, create, refresh, delete, open a dialog.",
-    "Icon-only toolbar actions (iconOnly + aria-label).",
-    "Dialog footers (size=\"modal\": 44px touch target on phones).",
-    "Round icon buttons over media, in an overlay header or beside a carousel (iconOnly + shape=\"round\")."
+    "Icon-only toolbar actions (iconOnly + aria-label); an attention count on one with badge.",
+    "Dialog footers (size=\"modal\": 44px touch target on phones): commit primary, cancel subtle, a destructive confirm danger.",
+    "Round icon buttons over media, in an overlay header or beside a carousel (iconOnly + shape=\"round\"); the inverse pill of a list title row (size=\"xs\" shape=\"round\")."
   ],
   "instead": [
-    { "need": "Go to another page", "use": "next/link (styled with BTN_* from @semi/ui/styles when it must look like a button)" },
-    { "need": "Link to another site", "use": "ExternalLink" },
-    { "need": "Pick one of 2–5 filters", "use": "Pills" },
-    { "need": "Turn a setting on / off", "use": "Switch" }
+    {
+      "need": "Go to another page",
+      "use": "next/link (styled with BTN_* from @semi/ui/styles when it must look like a button)"
+    },
+    {
+      "need": "Link to another site",
+      "use": "ExternalLink"
+    },
+    {
+      "need": "Pick one of 2–5 filters",
+      "use": "Pills"
+    },
+    {
+      "need": "Turn a setting on / off",
+      "use": "Switch"
+    }
   ],
   "a11y": [
     "Renders a real <button type=\"button\"> (pass type=\"submit\" in forms).",
-    "iconOnly requires aria-label (the types enforce it); keep a title for the tooltip.",
-    "loading sets aria-busy and blocks clicks; the visible focus ring stays."
+    "iconOnly requires aria-label (the types enforce it); keep a title for the tooltip. With badge, say the count in the aria-label (\"Thông báo, 3 chưa đọc\").",
+    "loading sets aria-busy and blocks clicks. Keyboard focus is a 2px outline in the strong text colour on every variant; disabled is neutral for every variant.",
+    "Phones get a 44px hit area at every size without a bigger drawn button."
   ],
   "examples": [
-    { "file": "variants", "title": "Variants", "description": "primary for the main action of an area, secondary (default, tint fill without border) for the rest, outline where a framed control is needed, danger for destructive, ghost for quiet actions." },
-    { "file": "icons", "title": "Icon and icon-only", "description": "icon adds a leading icon; iconOnly needs an aria-label." },
-    { "file": "round", "title": "Round", "description": "shape=\"round\" makes an icon-only button a circle (media tiles, overlay headers, carousel arrows); the fill, focus ring and size stay the variant's." },
-    { "file": "loading", "title": "Loading", "description": "loading swaps the icon for a spinner and blocks clicks." },
-    { "file": "sizes", "title": "Sizes", "description": "sm for dense rows, md (default) for toolbars and forms, modal for dialog footers." }
+    {
+      "file": "variants",
+      "title": "Variants",
+      "description": "subtle (default) for ordinary actions, surface for toolbar actions, inverse for a card's or a list title row's main action, outline beside it, ghost for quiet and icon actions, primary / secondary (brand) for the one main button of the page or dialog, danger for destructive. The second row is disabled: neutral for every variant."
+    },
+    {
+      "file": "icons",
+      "title": "Icon and icon-only",
+      "description": "icon adds a leading icon; iconOnly needs an aria-label."
+    },
+    {
+      "file": "round",
+      "title": "Round",
+      "description": "shape=\"round\" makes an icon-only button a circle (media tiles, overlay headers, carousel arrows) and a labelled one a pill; the fill, focus and size stay the variant's."
+    },
+    {
+      "file": "loading",
+      "title": "Loading",
+      "description": "loading swaps the icon for a spinner and blocks clicks."
+    },
+    {
+      "file": "sizes",
+      "title": "Sizes",
+      "description": "xs (24px) for the inverse pill of a list title row, sm (28px, 12px text) for dense rows and toolbars, md (default, 14px text) for content, modal for dialog footers and a full-width commit; badge pins an attention count to an icon button."
+    }
   ]
 }

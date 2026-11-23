@@ -99,7 +99,7 @@ const themed = (css) => themedScopes(css).plain;
  * themes, a kit sets them), and tokens whose value only points at themed ones (a mix of the contrast colour, a
  * reference), so they still change with the theme.
  */
-const BRAND = ["--semi-primary", "--semi-primary-hover", "--semi-on-primary", "--semi-secondary", "--semi-secondary-hover", "--semi-on-secondary"];
+const BRAND = ["--semi-primary", "--semi-primary-hover", "--semi-on-primary", "--semi-secondary", "--semi-secondary-hover", "--semi-on-secondary", "--semi-new-tag-text-dark", "--semi-new-tag-text-light"];
 const SAME_OK = new Set(["--semi-on-solid", ...BRAND]);
 function sameTokens({ dark, light }) {
   return Object.keys(light)

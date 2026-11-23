@@ -3,6 +3,7 @@ export * from "./Icon";
 export * from "./iconCatalog";
 export * from "./Chip";
 export * from "./Badge";
+export * from "./CountBadge";
 export * from "./Pills";
 export * from "./CustomSelect";
 export * from "./CustomCombobox";

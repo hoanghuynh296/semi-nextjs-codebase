@@ -361,6 +361,10 @@
   --color-secondary: var(--semi-secondary); /* Brand secondary fill (optional; the primary when the brand has none): the secondary main button only */
   --color-secondary-hover: var(--semi-secondary-hover); /* Hover of the secondary fill */
   --color-on-secondary: var(--semi-on-secondary); /* Text / icon on bg-secondary */
+  --color-new-tag: var(--semi-new-tag); /* "Mới" / "New" tag fill: the brand primary at 18% (bg-new-tag, NEW_TAG / NewTag) */
+  --color-new-tag-text-dark: var(--semi-new-tag-text-dark); /* Text of the New tag in the dark theme, picked by the token build (Semi's default) or the brand generator (a kit): the brand when it reaches 4.5:1 on the tag over canvas, app, panel and card, else the strong text. Use text-on-new-tag */
+  --color-new-tag-text-light: var(--semi-new-tag-text-light); /* Text of the New tag in the light theme (same rule as new-tag-text-dark). Use text-on-new-tag */
+  --color-on-new-tag: var(--semi-on-new-tag); /* Text on bg-new-tag: the brand where it is AA on that tint, else the strong text (the token build checks it) */
   --color-focus: var(--semi-focus); /* Keyboard focus ring (ring-focus) and focused-control border: the strong text colour, ≥ 3:1 on every surface. Neutral, never the brand */
   --color-danger-fg: var(--semi-danger-fg); /* Destructive / error text on surfaces and on its tint (≥ 4.5:1 over every surface) */
   --color-success-fg: var(--semi-success-fg); /* Success / online text on surfaces */
@@ -451,6 +455,10 @@
   --semi-secondary: var(--semi-primary);
   --semi-secondary-hover: var(--semi-primary-hover);
   --semi-on-secondary: var(--semi-on-primary);
+  --semi-new-tag: color-mix(in oklab, var(--semi-primary) 18%, transparent);
+  --semi-new-tag-text-dark: #f5f5f5;
+  --semi-new-tag-text-light: #111111;
+  --semi-on-new-tag: var(--semi-new-tag-text-dark);
   --semi-focus: var(--semi-text-strong);
   --semi-danger-fg: var(--color-rose-300);
   --semi-success-fg: var(--color-emerald-400);
@@ -540,6 +548,10 @@
   --semi-secondary: var(--semi-primary);
   --semi-secondary-hover: var(--semi-primary-hover);
   --semi-on-secondary: var(--semi-on-primary);
+  --semi-new-tag: color-mix(in oklab, var(--semi-primary) 18%, transparent);
+  --semi-new-tag-text-dark: #f5f5f5;
+  --semi-new-tag-text-light: #111111;
+  --semi-on-new-tag: var(--semi-new-tag-text-light);
   --semi-focus: var(--semi-text-strong);
   --semi-danger-fg: var(--color-rose-800);
   --semi-success-fg: var(--color-emerald-800);
@@ -629,6 +641,10 @@
     --semi-secondary: var(--semi-primary);
     --semi-secondary-hover: var(--semi-primary-hover);
     --semi-on-secondary: var(--semi-on-primary);
+    --semi-new-tag: color-mix(in oklab, var(--semi-primary) 18%, transparent);
+    --semi-new-tag-text-dark: #f5f5f5;
+    --semi-new-tag-text-light: #111111;
+    --semi-on-new-tag: var(--semi-new-tag-text-light);
     --semi-focus: var(--semi-text-strong);
     --semi-danger-fg: var(--color-rose-800);
     --semi-success-fg: var(--color-emerald-800);
@@ -724,6 +740,10 @@
   --color-secondary: var(--semi-secondary);
   --color-secondary-hover: var(--semi-secondary-hover);
   --color-on-secondary: var(--semi-on-secondary);
+  --color-new-tag: var(--semi-new-tag);
+  --color-new-tag-text-dark: var(--semi-new-tag-text-dark);
+  --color-new-tag-text-light: var(--semi-new-tag-text-light);
+  --color-on-new-tag: var(--semi-on-new-tag);
   --color-focus: var(--semi-focus);
   --color-danger-fg: var(--semi-danger-fg);
   --color-success-fg: var(--semi-success-fg);

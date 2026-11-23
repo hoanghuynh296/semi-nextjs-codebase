@@ -40,7 +40,7 @@ test("fills: the text on each fill reaches 4.5:1, the hover keeps it, an explici
     assert.ok(contrast(f.on, f.hover) >= 4.5);
   }
   assert.equal(secondary.on, "#ffffff");
-  assert.deepEqual(Object.keys(r.tokens).sort(), ["fonts", "guide", "name", "package", "primary", "secondary", "semi"]);
+  assert.deepEqual(Object.keys(r.tokens).sort(), ["fonts", "guide", "name", "newTag", "package", "primary", "secondary", "semi"]);
   assert.doesNotMatch(r.css, /accent|neutral|data-style|--color-primary-\d|--semi-(canvas|panel|text-|focus|danger|success)/);
   // Every pair of the report is a text pair (hard) or a fill-against-page note (soft).
   assert.ok(r.report.filter((x) => !x.soft).every((x) => x.ok && x.min === 4.5));
@@ -236,4 +236,12 @@ test("semi-brand check ignores the @semi/ui version stamp, not a real change", (
   writeFileSync(css, readFileSync(css, "utf8").replace("--semi-primary:", "--semi-primary: #000; --x:"));
   assert.throws(() => execFileSync("node", [CLI, "check"], { cwd: dir, stdio: "pipe" }));
   rmSync(dir, { recursive: true });
+});
+
+test("1.0 New tag (#146): the generator writes the New tag text per theme by the AA rule", () => {
+  const { css, tokens: t } = gen(brand({ name: "Vàng", package: "@x/brand", primary: "#ffd400" }));
+  assert.equal(t.newTag.dark, "#ffd400");
+  assert.equal(t.newTag.light, tokens.semantic["color-text-strong"].light.toLowerCase());
+  assert.match(css, /--semi-new-tag-text-dark: #ffd400;/);
+  assert.match(css, /--semi-new-tag-text-light: #111111;/);
 });

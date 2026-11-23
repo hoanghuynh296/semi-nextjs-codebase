@@ -32,7 +32,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 ### Actions
 
-- [Button](./components/button/) ([markdown](./docs/components/button.md)): The action control: one primary per area (the action fill: the accent, or a neutral inverted fill in a brand with primaryStyle inverted), secondary (a translucent tint, no border) for the rest, outline (field fill + line) for framed toolbars, danger for destructive actions, ghost for quiet ones. Spinner shows work in progress inside the control that runs it. Components: Button, Spinner.
+- [Button](./components/button/) ([markdown](./docs/components/button.md)): The action control, 1.0 variants: subtle (default) for ordinary actions, surface for toolbar actions, inverse for the main action of a card or a list title row, outline beside an inverse one, ghost for icon buttons, primary / secondary (the brand fills) only for the one main button of a page, a dialog or the nav, danger for destructive actions. Spinner shows work in progress inside the control that runs it. Components: Button, Spinner.
 - [Button group](./components/button-group/) ([markdown](./docs/components/button-group.md)): Joins related buttons into one segmented control: shared borders, outer corners only (‹ Hôm nay ›, Lưu | ▾). Components: ButtonGroup.
 - [Card actions](./components/card-actions/) ([markdown](./docs/components/card-actions.md)): Quick actions on a card or media tile: round icon buttons in the top right corner that show on hover or keyboard focus where the device can hover, and one always-visible ⋯ with every action on touch screens. Goes inside a `group relative` card. Components: CardActions.
 - [Chip](./components/chip/) ([markdown](./docs/components/chip.md)): A pill-shaped toggle for filters and tags. Neutral when off; active uses the high-contrast surface, with colour only on its dot or icon (tone). Components: Chip.
@@ -108,7 +108,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Accordion](./components/accordion/) ([markdown](./docs/components/accordion.md)): A list of sections where one (or several) open at a time: FAQs, settings groups, help. Components: Accordion.
 - [Aspect ratio](./components/aspect-ratio/) ([markdown](./docs/components/aspect-ratio.md)): Keeps media at a fixed ratio while its width follows the layout (images, video, maps, 3D previews). Components: AspectRatio.
 - [Avatar](./components/avatar/) ([markdown](./docs/components/avatar.md)): A person or team: their image, or initials on a tone picked from the name. Components: Avatar.
-- [Badge](./components/badge/) ([markdown](./docs/components/badge.md)): A read-only status or tag in a tone (10% fill, 20% border, theme-safe text), with an optional dot or icon. Components: Badge.
+- [Badge](./components/badge/) ([markdown](./docs/components/badge.md)): A read-only status or tag in a tone (10% fill, 20% border, theme-safe text; one fixed palette for every brand), and the attention marks in the brand colour: CountBadge (unread, to approve; 99+ cap) and NewTag ("Mới"). Components: Badge, CountBadge, NewTag.
 - [Card](./components/card/) ([markdown](./docs/components/card.md)): The bento content card: the card surface (bg-card, separated from the page by tone, no visible border in Flat and Soft) with the style's radius and resting shadow. bordered frames a dense data view; interactive adds hover / press, active marks the selected or running item. Components: Card.
 - [Carousel](./components/carousel/) ([markdown](./docs/components/carousel.md)): Slides in a row that scroll by swipe, trackpad, arrow keys, buttons or dots (CSS scroll-snap, no library). Phones show one slide and a peek of the next. Components: Carousel.
 - [Chart](./components/chart/) ([markdown](./docs/components/chart.md)): Charts in SVG on Semi tokens, no library: BarChart (grouped or stacked columns), LineChart (optional area wash), DonutChart (parts of a whole) and Sparkline (a trend in a tile). Series use the fixed chart-1…8 colours (validated for colour-blind readers in both themes); every chart has a legend for 2+ series, a hover / keyboard tooltip and a table view. Components: BarChart, LineChart, DonutChart, Sparkline.
@@ -226,7 +226,7 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (none
 - **Layout & Structure (`@semi/ui`):**
   - `ThemeProvider`, `useTheme`, `ThemeToggle`: Zero-runtime-overhead dual-theme management via `data-theme` attribute and CSS variables.
   - `AppShell` (+ `MobileTabBar`, `TAB_BAR_PAD` for `mobileNav="tabs"`): 2-panel floating Bento frame on `bg-canvas`; sidebar top to bottom: accent `create`, grouped `sections`, `pinned` (a `text-overline` label), `utilities` (items with `onClick`, or `menu`: `useThemeUtility()`) + `account` (render prop `{ collapsed, rail }`: hide text by `rail`; `footer` is deprecated); `w-60` or the icon rail (always on `md`, Tooltips on the right); phones: top bar + full-screen drawer. A nav item with `mega` opens a `MegaMenu`. Detail pages open with `MinimalHeader`; sibling views as the heading are `TextTabs`. Items may carry `children` (one level, optional grey icon, no colour or count): closed by default, open only while the parent or a child is active; hidden in the rail / below `lg` / phones, so pages check `useAppShell().submenuVisible` and offer their own picker.
-  - `PageTitle`, `PageTabsTitle`: text-only display heading or underline tab heading (`h-[2.5px] bg-primary`). `PageTitle actions` is a list page's title row: one primary (or secondary) + `RefreshButton` on the right, wrapping under the title below `sm`.
+  - `PageTitle`, `PageTabsTitle`: text-only display heading or underline tab heading (`h-[2.5px] bg-primary`). `PageTitle actions` is a list page's title row: one primary (or `inverse`) + `RefreshButton` on the right, wrapping under the title below `sm`.
   - `SubpageToolbar`: sticky toolbar (`STICKY_TOOLBAR`) with `left` filters and `right` icon-only `BTN_PRIMARY BTN_ICON` + `SearchInput` + `RefreshButton`; `title` puts the page title on the same row (then no `PageTitle`).
     Phone layout (opt-in): `filters` (typed, `FilterDef[]`; more than two collapse into "Bộ lọc · N" + active chips) or `collapseFilters` (for `left`), and `secondaryActions` (a ⋯ menu below `sm`).
   - Overlay and actions (§4, §9, #102): a list record opens in `<DetailOverlay open onClose index total onPrev onNext side related>` driven by `useDetailParam()` (`?open=`, Back closes, ‹ › replace; over a `DataTable` its results are `sortRows(searchRows(rows, columns, q), columns, sort)`, never a copied comparator); a `DataTable` with many columns gives the minor ones `priority` 1–3 (they fold into the first column when the table's own box is narrow, e.g. 834 px beside the rail) and `stickyFirstColumn` when it can still scroll; cards get `<CardActions label actions menu>` inside a `group relative` card (`label` is required: lint `card-hover-actions-touch`, hard); round icon buttons are `<Button iconOnly shape="round">` (`raw-pill-button`); a `DetailOverlay` without `useDetailParam` warns (`detail-overlay-url`); one `<CommandPalette items>` in the root layout (⌘K; pages add `useRegisterCommands(items)`, a button calls `openCommandPalette()`). Grouping (G1–G12): alternatives of the main action → `<SplitButton label onClick items menuLabel>`; secondary page / row actions → ⋯ `Menu` (items: `group`, `description`, `checked`, `loading`, `href`, `hidden`, `disabled: "reason"`; danger always last; bottom sheet below `sm`); `ButtonGroup` only for toggles / steps of one control; one filled primary per view.
@@ -246,7 +246,7 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (none
   - AI chat (§14b): `<AIChat messages busy onSend onStop onRetry onNewChat empty toolbar />` (or `ChatPanel` > `ChatView` > `ChatList` + `ChatComposer` with `UserMessage` / `AssistantMessage` / `ChatError` / `ChatThinking` / `ChatIntro` / `ChatSuggestion`). UI only: the app keeps messages and streaming; the provider → model → effort chips are `toolbar={<ChatModelPicker providers models efforts … />}`. Never a local composer or bubbles.
 - **Style Constants (`@semi/ui/styles`):**
   - `surfaces.ts`: `SHELL_OUTER`, `SHELL_ASIDE`, `SHELL_MAIN`, `SHELL_CONTAINER`, `CARD`, `CARD_HOVER`, `CARD_BORDERED`, `CARD_BORDERED_HOVER`, `CARD_ACTIVE`, `HERO`, `TILE`, `SECTION_*`, `COUNT_PILL`, `EMPTY`, `ICON_BTN*`, `STATUS_PILL`, `STATUS_DOT`, `TONAL_SURFACE`, `TONAL_CONTAINER`, `TONAL_HOVER`, `BADGE_BASE`, `STICKY_TOOLBAR`, `MODAL_*`, `FIELD_LABEL`, `FIELD_INPUT`, `FIELD_TEXTAREA`.
-  - `buttons.ts`: `BTN_PRIMARY`, `BTN_SECONDARY`, `BTN_OUTLINE`, `BTN_DANGER`, `BTN_ICON`, `MODAL_BTN_*`.
+  - `buttons.ts` (1.0 variants): `BTN_SUBTLE` (default), `BTN_SURFACE`, `BTN_INVERSE` (a card's / list title row's main action), `BTN_OUTLINE`, `BTN_GHOST`, `BTN_PRIMARY` / `BTN_SECONDARY` (brand: the one main button of a page, dialog or nav), `BTN_DANGER`, `BTN_ICON`, `BTN_SM`, `BTN_XS`, `MODAL_BTN_*` (`MODAL_BTN_SUBTLE` for cancel). Attention: `CountBadge` / Button `badge` (brand fill, 99+), `NewTag` ("Mới").
   - `appChrome.ts`: `HEADER_ICON_*`, `headerPrimary`, `HEADER_PILL`, `VIEWPORT_*`.
 
 **Not the generic AI screen (§19):** one main block per screen (`KpiCard featured`, not four equal cards) · KPI icons
@@ -306,6 +306,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `Choice`: `Checkbox`, `Switch`, `RadioGroup`
 - `CodeBlock`: `CodeBlock`
 - `Command`: `Command`, `CommandDialog`, `CommandPalette`
+- `CountBadge`: `CountBadge`, `NewTag`
 - `CustomCombobox`: `CustomCombobox`
 - `CustomSelect`: `CustomSelect`
 - `DataTable`: `DataTable`
@@ -513,7 +514,7 @@ outermost frame to the brightest step, plus the card and two fills:
 | `panel-4` | `bg-panel-4` = `bg-panel` | panel | Sidebar (`SHELL_ASIDE`), modal, popover, menu, toast |
 | card | `bg-card` | dark: panel + 5% text-strong (above the panel); light: app + 5% text-strong (recessed) | Content cards: `CARD`, `<Card>`, `HERO` |
 | card-field | `bg-card-field` | card + 5% (dark) / 3% (light) text-strong | Tiles, readings, table heads inside a card (`TILE`) |
-| tint / tint-hover | `bg-tint`, `hover:bg-tint-hover` | text-strong at 7% / 11% (dark), 5% / 9% (light) | Secondary buttons (`BTN_SECONDARY`, `MODAL_BTN_SECONDARY`, `ICON_BTN`, `MODAL_CLOSE`): no border |
+| tint / tint-hover | `bg-tint`, `hover:bg-tint-hover` | text-strong at 7% / 11% (dark), 5% / 9% (light) | `ICON_BTN`, `MODAL_CLOSE`; `tint-hover` is the hover of a subtle button (`BTN_SUBTLE`): no border |
 | inverted | `bg-inverted` + `text-on-inverted` | near-white on dark, near-black on light | Checked controls (checkbox, switch, radio, slider), the selected day, the inverse button |
 
 - `canvas`, `app` and `panel` are `panel-0`, `panel-2`, `panel-4` (one value, two names). Since 1.0 they are pure
@@ -816,7 +817,7 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   title is still the page `h1` in display type and text only; filters follow it, actions sit at the right end; narrow
   screens wrap filters and actions below the title. Text buttons stay in the toolbar's `right` slot in both layouts.
 - **List page header (#115, #120):** a list page with a `StickyContextBar` opens with its title row, `PageTitle` with
-  `actions`: the title on the left, the page's one action on the right (one `Button variant="primary"` or secondary,
+  `actions`: the title on the left, the page's one action on the right (one `Button variant="primary"` or `inverse`,
   icon + text, optionally a `RefreshButton` before it; more actions in a ⋯ `Menu`); below `sm` the actions wrap onto
   their own row under the title. The title row scrolls away, the bar under it stays. `MinimalHeader` is the top row of
   a detail or settings page (a `Breadcrumb` and one action), not of a list page; a `SubpageToolbar` page keeps its
@@ -824,7 +825,7 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
 - Each sub-page opens with a large display title (text only), followed by the toolbar row (or sharing it, above): pill filter tabs
   (`CHIP_BASE` + `chipClass(active)`) on the left, icon-only primary CTA + secondary controls on the right. The row
   carries `STICKY_TOOLBAR` so the filters stay on top of the scrolling content (below the safe area on phones).
-  "Thêm …" and "Làm mới" buttons are icon-only (`BTN_PRIMARY`/`BTN_SECONDARY` + `BTN_ICON`, `RefreshButton`) with
+  "Thêm …" and "Làm mới" buttons are icon-only (`BTN_PRIMARY`/`BTN_SUBTLE` + `BTN_ICON`, `RefreshButton`) with
   `title` + `aria-label` carrying the label.
 - **Search and filters (C-032, #99):** a list page that people search and filter opens, under its heading, with one
   `StickyContextBar` (in place of a `SubpageToolbar`): a `SearchPill` (one per page, it feeds the list or `DataTable`;
@@ -885,7 +886,7 @@ the right. Props: `title`, `productName` (home bar), `logo` / `logoIcon`, `homeH
 - Title = the app's name only (the product's name is never put in front of a module's name).
 - On the right: icon buttons (`HEADER_ICON_BTN` + `HEADER_ICON_OFF|ON`), "Huỷ" when opened from another app, and ONE
   green main action (`headerPrimary(enabled)`), disabled until it can run; never a second green button elsewhere on the
-  screen (a panel's own action is `BTN_SECONDARY`).
+  screen (a panel's own action is `BTN_SUBTLE`).
 - **There is no Home button.** Clicking the logo + title returns home in the same tab; pass `onHome` when leaving needs
   a confirmation. The bar is full width, `h-13`, `bg-app/95 backdrop-blur-xl border-b border-divider`, sticky.
 - Tool apps (an editor around a canvas / 3D view): left `SidePanel` (320 px, collapses to a rail with the sidebar
@@ -911,7 +912,7 @@ padding that comes from three files.
 | At most three frames inside each other (page panel › card › tile) | `box-nesting` | white space, a divider or plain text instead of the fourth frame |
 | At most four text sizes in one box (title, body, label, caption) | `type-mix` | weight and colour (`font-medium`, `text-muted`) for the rest |
 | At most three colours in one box (brand and status; greys do not count) | `colour-noise` | neutral icons, a tone only where it means a state (§3) |
-| One filled brand button per view (page, dialog, form) | `primary-actions` | `Button` (secondary) or `ghost` for the rest |
+| One filled brand button per view (page, dialog, form) | `primary-actions` | `Button` (`subtle`, `inverse` for a card's main action) or `ghost` for the rest |
 | Boxes side by side keep ≥ 2 units (8px) apart, or share an edge on purpose | `cramped-boxes` | `gap-group` between cards, `gap-stack` between tiles |
 | One line between two things | `double-line` | no `border-b` on the last row of a card (`TBody`, `ItemGroup` do it), no border next to a `divide-y` |
 
@@ -969,8 +970,24 @@ tiles use `w-11 h-11 rounded-card` with their area's `TILE_TONES`.
 
 ## 9. Buttons
 
-`BTN_PRIMARY` / `BTN_SECONDARY` / `BTN_OUTLINE` / `BTN_DANGER` from `@semi/ui/styles` (`rounded-control`, `h-control`,
-`text-ui font-medium`, flat). Primary fills with `bg-primary` (the brand fill, one per view); secondary is a translucent `bg-tint` with no border; outline is the framed field look. Icon-only: add `BTN_ICON`, or `ICON_BTN` (`w-7 h-7 rounded-control`) inside cards. Big
+1.0 variants (#146), `Button variant` or the `BTN_*` constants from `@semi/ui/styles` (`rounded-control`, `h-control`,
+`text-ui` 14px `font-medium`, flat, hover in 150ms `transition-hover`, a 2px `outline-focus` focus outline, disabled
+neutral for every variant, a 44px hit area on phones):
+
+| Variant | Constant | Look | When |
+|---|---|---|---|
+| `subtle` (default) | `BTN_SUBTLE` | `bg-subtle-button`, strong text | ordinary actions |
+| `surface` | `BTN_SURFACE` | `bg-raised` | toolbar actions (Mời, Tuỳ chỉnh) |
+| `inverse` | `BTN_INVERSE` | `bg-inverted` + `text-on-inverted` | the main action of a card or a list title row (Thêm, Xem); `size="xs" shape="round"` is the pill |
+| `outline` | `BTN_OUTLINE` | transparent, 1px `outline-line` | beside an inverse one (Chia sẻ) |
+| `ghost` | `BTN_GHOST` | no fill, `item-hover` on hover | icon buttons, the nav bottom row, quiet row actions |
+| `primary` / `secondary` | `BTN_PRIMARY` / `BTN_SECONDARY` | the brand fills with their on-colours | only the one main button of a page, a dialog (its commit: Gửi, Lưu) or the nav, or a case the app's owner asks for; `secondary` is the brand secondary (the primary when the brand has none) |
+| `danger` | `BTN_DANGER` | the danger status fill (tint, line, danger text) | destructive actions; the destructive confirm of a dialog |
+
+Sizes: `md` (h-control, 14px), `sm` (`BTN_SM`, 28px, 12px `text-chrome`: dense rows, toolbars), `xs` (`BTN_XS`, 24px,
+12px), `modal` (`MODAL_BTN_*`: 44px / 15px on phones, h-control from sm: dialog footers, a full-width commit; commit
+`primary`, cancel `subtle`, destructive `danger`). `badge` pins an attention `CountBadge` to an icon button's corner.
+Every variant's text reaches 4.5:1 on its fill and on its hover fill in both themes (the token build checks it). Icon-only: add `BTN_ICON`, or `ICON_BTN` (`w-7 h-7 rounded-control`) inside cards. Big
 state toggles (power) are round: `w-20 h-20 sm:w-24 sm:h-24 rounded-full`, flat `bg-primary text-on-primary` when on,
 `bg-field` when off. A running action shows a spinner inside its own button only.
 
@@ -1307,7 +1324,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 
 | Need | Use |
 |---|---|
-| Any action | `Button` (`variant` primary / secondary / outline / danger / ghost, `size` md / sm / modal, `icon`, `iconOnly` + `aria-label`, `shape="round"` for a round icon button, `loading`); `Spinner` only inside a button or field running its own action, never for a page) |
+| Any action | `Button` (`variant` subtle (default) / surface / inverse / outline / ghost / primary / secondary (brand) / danger, `size` xs / sm / md / modal, `badge` (attention count on an icon button), `icon`, `iconOnly` + `aria-label`, `shape="round"` for a round icon button, `loading`); `Spinner` only inside a button or field running its own action, never for a page) |
 | Overflow actions of a row / card / page | `Menu` (icon-only "more" trigger or your own; `danger` items always last; `group`, `description`, `checked`, `loading`, `href`, `hidden`; a bottom sheet below `sm`) (§9 G2, G4, G5) |
 | Other ways to start the main action | `SplitButton` (Thêm khách hàng \| ▾ Nhập từ file, Tìm trong Data Hub) (§9 G1) |
 | Quick actions on a card or media tile | `CardActions` (inside a `group relative` card; `label` names the item) |
@@ -1315,6 +1332,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Hint for an icon-only control | `Tooltip` (never essential text: touch screens do not show it) |
 | Feedback after an action | `toast.success|error|warning|info(title)`, `toast.undo(title, restore)` after a reversible destructive action, `toast.promise(p, { loading, success, error })` (§14c) + `<ToastHost />` in the layout (`label` when a page section is also called "Thông báo"). Irreversible: `confirmDelete({ name })` first |
 | A job the user must wait for | `startTask({ label, onCancel, timer })` + `<TaskHost />` in the layout |
+| Something waits for the user (unread, to approve); a new item | `CountBadge` (brand fill, 99+; `tone="neutral"` for a plain count) or Button `badge`; `NewTag` ("Mới": brand at 18%, AA-picked text) |
 | Persistent message in a page | `Alert` (tone, title, action, `onDismiss`) |
 | Save / Cancel under a form; losing typed work; field errors | `FormActions`, `useUnsavedGuard`, `useFormValidation` + `FormErrorSummary` (§9b) |
 | Secondary task beside the page | `Drawer` (right / left / bottom / top sheet) |
@@ -2348,9 +2366,11 @@ Từ 1.0 bộ sinh **chỉ** làm hai việc cho mỗi màu (`primary`, `seconda
   không thì chữ trắng, rồi gần đen `#0c0d0e`, rồi đen: cái đầu tiên đạt 4.5:1 (luôn có một cái đạt).
 - **Hover** (`primary-hover`, `secondary-hover`): cùng sắc, độ sáng OKLCH lệch `hoverStep` (0.06, `brand/params.mjs`)
   ra xa chữ trên nút (tối hơn dưới chữ trắng, sáng hơn dưới chữ tối), nên chữ vẫn đạt 4.5:1.
+- **Chữ của nhãn “Mới”** (`new-tag-text-dark`, `new-tag-text-light`, 1.0 #146): nhãn là màu chính 18%; chữ là màu chính nếu
+  đạt 4.5:1 trên nền đó (trên canvas, app, panel và card của theme), không thì màu chữ đậm của theme.
 
 `dist/brand.css` chỉ đặt `--semi-primary`, `--semi-primary-hover`, `--semi-on-primary`, `--semi-secondary`,
-`--semi-secondary-hover`, `--semi-on-secondary` (trên `:root`, `[data-theme]`, `.dark`, `.light`) và
+`--semi-secondary-hover`, `--semi-on-secondary`, `--semi-new-tag-text-dark`, `--semi-new-tag-text-light` (trên `:root`, `[data-theme]`, `.dark`, `.light`) và
 `--font-sans-family`, `--font-display-family` (chỉ khi có `fonts.display`). Không sinh thang màu, màu trung tính, chữ màu
 chính, nền chọn, focus hay màu trạng thái: đó là của Semi, giống nhau cho mọi thương hiệu (`docs/TOKENS.md`).
 
@@ -2455,6 +2475,10 @@ There is no brand-derived colour anywhere: `accent`, `accent-hover`, `on-accent`
 |---|---|
 | `bg-primary` / `hover:bg-primary-hover` / `text-on-primary` | the one main button of a page, a modal or the nav; attention count badges, "New" tags, the active big-tab underline (`decoration-primary`) |
 | `bg-secondary` / `hover:bg-secondary-hover` / `text-on-secondary` | the secondary main button, only when the brand has a secondary (otherwise it equals primary) |
+| `bg-new-tag` / `text-on-new-tag` | the "Mới" / "New" tag (`NewTag`, `NEW_TAG`): the primary at 18%; its text is the primary where that reaches 4.5:1 on the tag over canvas, app, panel and card, else the strong text, per theme (`new-tag-text-dark` / `-light`: the token build checks Semi's default, the brand generator picks a kit's). Semi's default green is not AA on its tint over the dark card, so the default text is the strong text in both themes |
+| `COUNT_BADGE` (`CountBadge`, Button `badge`) | an attention count: `bg-primary` + `text-on-primary`, `text-badge`, "99+" cap; a plain count is `tone="neutral"` (`bg-raised` + strong text) |
+
+Buttons (1.0, #146): `subtle` = `bg-subtle-button` (hover `tint-hover`), `surface` = `bg-raised` (hover `raised-2`), `inverse` = `bg-inverted` + `text-on-inverted`, `outline` = transparent + `border-outline-line`, `ghost` = `item-hover` on hover, `primary` / `secondary` = the brand fills, `danger` = the danger status fill; disabled = `bg-subtle-button` + `text-muted` for every variant. The token build checks each variant's text on its fill and hover fill (and the count badge and New tag) at 4.5:1 over canvas, app, panel and card in both themes (`buttonAaErrors`).
 
 Nothing else in Semi uses the brand colour. The brand kit sets the fills; the generator checks 4.5:1 for the text on
 each and picks the on-colour. Status colours (`*-fg`, `*-bg`, `*-border`, `*-solid` for danger, success, warning, info)
@@ -2572,6 +2596,7 @@ All web UI here follows the **Semi Design System** (`@semi/ui`, repo `https://gi
    **Density budgets** (`DESIGN_SYSTEM.md` §4c, measured on the page by `npx semi density <url>`): at most three frames inside each other (page panel › card › tile); at most four text sizes and three colours (accent + status) in one box; one filled accent button per view; text 12px from a box's sides and 8px from its top and bottom; a list row at least `h-control` tall (`Item`, `Menu`, `DataTable`); 8px or more between boxes; one line between two things (no `border-b` on a card's last row). `px-2` / `py-1` are for the inside of a control, never a row's or a box's padding.
    **Every state** (`DESIGN_SYSTEM.md` §19b, §13c): use `EmptyState` (`first-use` / `no-results`), `ErrorState`, `NotFound`, `Forbidden`, and give each route group `loading.tsx` / `error.tsx` / `not-found.tsx` (`npx semi example states`); each screen has its loading (skeleton of the real shape), empty (with the action that fills it), "no result", error (what failed + retry, loaded data kept), no-permission and too-much-data states; a destructive action is undoable (`toast.undo`) or, when irreversible, confirmed (`confirmDelete`); Escape closes, Enter submits, back works.
    **Feedback** (`DESIGN_SYSTEM.md` §14c): one toast API from `@semi/ui` (`toast.success|error|warning|info`, `toast.undo`, `toast.promise`), never a toast library or a local wrapper (`local-toast`, warning); a reversible destructive action is done at once with `toast.undo(title, restore)` (Hoàn tác, 8 s); an irreversible one asks first with `confirmDelete({ name })` (names the object, red Xoá, Huỷ); success is one toast, never a modal (`npx semi example toast`).
+   **Buttons** (`DESIGN_SYSTEM.md` §9, 1.0): `Button` is `subtle` by default; `surface` for toolbar actions; `inverse` for the main action of a card or a list title row (`size="xs" shape="round"` for the pill), `outline` beside it; `ghost` for icon buttons; `primary` / `secondary` (the brand fills) only for the one main button of a page, a dialog's commit or the nav; `danger` for destructive. Attention counts are `CountBadge` / Button `badge`, a new item is `NewTag`.
    **Grouped actions** (`DESIGN_SYSTEM.md` §9, G1–G12): one way to start one job (other ways to create the same thing go under the primary in a `SplitButton`, never as extra toolbar buttons); secondary page actions in the ⋯ `Menu` (at most one secondary button visible); `ButtonGroup` only for toggles or steps of one control; a table row has one inline action + ⋯, a card `CardActions` (always with `label`: `card-hover-actions-touch` is a hard error); a round icon button is `<Button iconOnly shape="round">`, never a hand-made `rounded-full` button (`raw-pill-button`, warning); danger last; one filled primary per view; 3+ icon-only buttons in a row go into ⋯. A list record opens in a `DetailOverlay` with `useDetailParam` (`?open=`), not a new page (`detail-overlay-url`, warning); the ⌘K box is one `CommandPalette` in the root layout (pages add items with `useRegisterCommands`).
    **Forms** (`DESIGN_SYSTEM.md` §9b): the action row is `FormActions` (Huỷ ghost, then Lưu / Tạo, destructive on the left, sticky on a page); `useUnsavedGuard(dirty)` so typed work is never lost; `Field kind` for email / phone / number / money / URL / search / password; errors under the field (`useFormValidation`, `FormErrorSummary`), never in a toast; page forms `max-w-2xl` (`npx semi example form-actions`).
 5. **Brand** (when `semi-lint.json` has `"brand"`): ask `semi_brand` (or `npx semi brand voice|color|logo|brief`) before writing UI text or placing colour. Write in the brand's voice, use colour as its colour-use rule says, import the logo from the kit, use only its allowed styles; never define colours, fonts or Semi tokens in the app (`brand-override`). Brand changes happen in the brand repo with `/semi-brand`, then `/semi-sync` here.
@@ -2587,14 +2612,14 @@ All web UI here follows the **Semi Design System** (`@semi/ui`, repo `https://gi
 
 # Button
 
-The action control: one primary per area (the action fill: the accent, or a neutral inverted fill in a brand with primaryStyle inverted), secondary (a translucent tint, no border) for the rest, outline (field fill + line) for framed toolbars, danger for destructive actions, ghost for quiet ones. Spinner shows work in progress inside the control that runs it.
+The action control, 1.0 variants: subtle (default) for ordinary actions, surface for toolbar actions, inverse for the main action of a card or a list title row, outline beside an inverse one, ghost for icon buttons, primary / secondary (the brand fills) only for the one main button of a page, a dialog or the nav, danger for destructive actions. Spinner shows work in progress inside the control that runs it.
 
 ## When to use
 
 - Any action: save, create, refresh, delete, open a dialog.
-- Icon-only toolbar actions (iconOnly + aria-label).
-- Dialog footers (size="modal": 44px touch target on phones).
-- Round icon buttons over media, in an overlay header or beside a carousel (iconOnly + shape="round").
+- Icon-only toolbar actions (iconOnly + aria-label); an attention count on one with badge.
+- Dialog footers (size="modal": 44px touch target on phones): commit primary, cancel subtle, a destructive confirm danger.
+- Round icon buttons over media, in an overlay header or beside a carousel (iconOnly + shape="round"); the inverse pill of a list title row (size="xs" shape="round").
 
 ## Use something else when
 
@@ -2615,20 +2640,31 @@ import { Button, Spinner } from "@semi/ui";
 
 ### Variants
 
-primary for the main action of an area, secondary (default, tint fill without border) for the rest, outline where a framed control is needed, danger for destructive, ghost for quiet actions.
+subtle (default) for ordinary actions, surface for toolbar actions, inverse for a card's or a list title row's main action, outline beside it, ghost for quiet and icon actions, primary / secondary (brand) for the one main button of the page or dialog, danger for destructive. The second row is disabled: neutral for every variant.
 
 ```tsx
 import { Button } from "@semi/ui";
 
+const VARIANTS = ["subtle", "surface", "inverse", "outline", "ghost", "primary", "secondary", "danger"] as const;
+const LABEL = { subtle: "Làm mới", surface: "Mời", inverse: "Thêm", outline: "Chia sẻ", ghost: "Xem thêm", primary: "Lưu", secondary: "Gửi", danger: "Xoá" };
+
 export default function ButtonVariants() {
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <Button>Huỷ</Button>
-      <Button variant="primary">Lưu</Button>
-      <Button variant="outline">Xuất file</Button>
-      <Button variant="danger">Xoá</Button>
-      <Button variant="ghost">Xem thêm</Button>
-      <Button disabled>Không khả dụng</Button>
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center gap-2">
+        {VARIANTS.map((v) => (
+          <Button key={v} variant={v}>
+            {LABEL[v]}
+          </Button>
+        ))}
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
+        {VARIANTS.map((v) => (
+          <Button key={v} variant={v} disabled>
+            {LABEL[v]}
+          </Button>
+        ))}
+      </div>
     </div>
   );
 }
@@ -2660,7 +2696,7 @@ export default function ButtonIcons() {
 
 ### Round
 
-shape="round" makes an icon-only button a circle (media tiles, overlay headers, carousel arrows); the fill, focus ring and size stay the variant's.
+shape="round" makes an icon-only button a circle (media tiles, overlay headers, carousel arrows) and a labelled one a pill; the fill, focus and size stay the variant's.
 
 ```tsx
 import { Button } from "@semi/ui";
@@ -2708,7 +2744,7 @@ export default function ButtonLoading() {
 
 ### Sizes
 
-sm for dense rows, md (default) for toolbars and forms, modal for dialog footers.
+xs (24px) for the inverse pill of a list title row, sm (28px, 12px text) for dense rows and toolbars, md (default, 14px text) for content, modal for dialog footers and a full-width commit; badge pins an attention count to an icon button.
 
 ```tsx
 import { Button } from "@semi/ui";
@@ -2717,10 +2753,14 @@ export default function ButtonSizes() {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
+        <Button size="xs" variant="inverse" shape="round" icon="plus">
+          Thêm (xs)
+        </Button>
         <Button size="sm" icon="edit">
           Sửa (sm)
         </Button>
         <Button icon="edit">Sửa (md)</Button>
+        <Button variant="ghost" iconOnly icon="bell" aria-label="Thông báo" badge={12} />
       </div>
       <div className="flex gap-2 max-w-sm">
         <Button size="modal" className="flex-1">
@@ -2742,12 +2782,13 @@ export default function ButtonSizes() {
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `ref` | `React.Ref<HTMLButtonElement>` |  |  |
-| `variant` | `'primary' \| 'secondary' \| 'outline' \| 'danger' \| 'ghost'` | `"secondary"` | Look of the button (default `secondary`): `primary` main action, `secondary` tint fill without border (since 0.36), `outline` field fill with a 1px line (the pre-0.36 secondary), `danger`, `ghost`. |
-| `size` | `'sm' \| 'md' \| 'modal'` | `"md"` | md = h-control toolbar / form (34px in Flat) · sm = 28px dense rows · modal = 44px on phones, 34px from sm (dialog footers). |
+| `variant` | `ButtonVariant` | `"subtle"` | Look of the button. `subtle` ordinary action · `surface` toolbar action · `inverse` the main action of a card or a list title row · `outline` beside an inverse one · `ghost` icon buttons, the nav bottom row · `primary` / `secondary` the brand fill, only for the one main button of a page, a dialog (its commit) or the nav, or a case the app's owner asks for (`secondary` is the brand secondary; the primary when the brand has none) · `danger`. Disabled is neutral for every variant. |
+| `size` | `'xs' \| 'sm' \| 'md' \| 'modal'` | `"md"` | md = h-control (34px, 14px text) · sm = 28px, 12px text (dense rows, toolbars) · xs = 24px, 12px text (the inverse pill of a list title row) · modal = 44px and 15px text on phones, h-control from sm (dialog footers, a full-width commit). Phones get a 44px hit area at every size without a bigger drawn button. |
+| `badge` | `number` |  | Attention count at the top-right corner (brand fill, "99+" cap), for an icon button: unread, waiting jobs. 0 hides it. |
 | `icon` | `IconName` |  | Leading icon from the Semi registry. |
 | `loading` | `boolean` | `false` | Shows a spinner in place of the icon and blocks clicks (aria-busy). |
 | `fullWidth` | `boolean` | `false` |  |
-| `shape` | `'default' \| 'round'` | `"default"` | `round`: a circle instead of the style's control radius, for round icon buttons (media tiles, overlay headers, carousel arrows). Use it with `iconOnly`; lint `raw-pill-button` flags hand-made ones. |
+| `shape` | `'default' \| 'round'` | `"default"` | `round`: fully round instead of the control radius: a circle with `iconOnly` (media tiles, overlay headers, carousel arrows), a pill otherwise (the inverse pill of a list title row, `size="xs"`). Lint `raw-pill-button` flags hand-made ones. |
 | `iconOnly` | `boolean` | `false` |  |
 | `children` | `React.ReactNode \| undefined` |  |  |
 | `aria-label` | `string` |  | Defines a string value that labels the current element. |
@@ -2764,8 +2805,9 @@ Indeterminate activity mark for a button or field running its own action (§13b:
 ## Accessibility
 
 - Renders a real <button type="button"> (pass type="submit" in forms).
-- iconOnly requires aria-label (the types enforce it); keep a title for the tooltip.
-- loading sets aria-busy and blocks clicks; the visible focus ring stays.
+- iconOnly requires aria-label (the types enforce it); keep a title for the tooltip. With badge, say the count in the aria-label ("Thông báo, 3 chưa đọc").
+- loading sets aria-busy and blocks clicks. Keyboard focus is a 2px outline in the strong text colour on every variant; disabled is neutral for every variant.
+- Phones get a 44px hit area at every size without a bigger drawn button.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/button/ and the types in src/ -->
 
@@ -3241,7 +3283,7 @@ export default function SplitButtonSecondary() {
 | `onClick` * | `() => void` |  |  |
 | `items` * | `MenuItem[]` |  | The other ways to do the same job (manual, import, copy from another system). Danger items go last. |
 | `menuLabel` | `string` |  | Accessible name of the ▾ button and of its menu (default "Thao tác khác"). |
-| `variant` | `'primary' \| 'secondary'` | `"primary"` | `primary` for the view's main action (G7: one filled primary per view), `secondary` elsewhere. |
+| `variant` | `'subtle' \| 'surface' \| 'inverse' \| 'primary' \| 'secondary'` | `"primary"` | `primary` (brand) for the view's one main action (G7), `inverse` for the main action of a card or a list title row, `subtle` elsewhere; `secondary` is the brand secondary. |
 | `size` | `'sm' \| 'md'` | `"md"` |  |
 | `loading` | `boolean` | `false` | The main action is running: spinner and no clicks on the main half; the ▾ stays usable. |
 | `disabled` | `boolean` | `false` | Disables both halves. |
@@ -8534,7 +8576,7 @@ page's action on the right; below `sm` the actions wrap onto their own row under
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `title` * | `React.ReactNode` |  |  |
-| `actions` | `React.ReactNode` |  | The page's own action at the right end of the title row: one `<Button variant="primary">` (or secondary) with an icon and text, optionally a `RefreshButton` before it. More actions go in a ⋯ `Menu` as the last item. Below `sm` they wrap under the title. Leave it out on a page whose `SubpageToolbar` carries the actions. |
+| `actions` | `React.ReactNode` |  | The page's own action at the right end of the title row: one `<Button variant="primary">` (or `inverse`) with an icon and text, optionally a `RefreshButton` before it. More actions go in a ⋯ `Menu` as the last item. Below `sm` they wrap under the title. Leave it out on a page whose `SubpageToolbar` carries the actions. |
 | `className` | `string` | `""` |  |
 
 ### PageTabsTitle
@@ -9919,23 +9961,25 @@ Person or team mark: photo, else initials on a tone picked from the name (stable
 
 # Badge
 
-A read-only status or tag in a tone (10% fill, 20% border, theme-safe text), with an optional dot or icon.
+A read-only status or tag in a tone (10% fill, 20% border, theme-safe text; one fixed palette for every brand), and the attention marks in the brand colour: CountBadge (unread, to approve; 99+ cap) and NewTag ("Mới").
 
 ## When to use
 
 - Status of a row or card (Đã thanh toán, Lỗi), a plan or role tag.
+- Something waits for the user (unread, to approve): CountBadge, or Button badge on an icon button.
+- A new feature or item in a menu: NewTag.
 
 ## Use something else when
 
 | Need | Use |
 |---|---|
 | Something clickable | Chip |
-| A count next to a title | COUNT_PILL |
+| A count next to a title that is not an alert | COUNT_PILL or CountBadge tone="neutral" |
 
 ## Import
 
 ```tsx
-import { Badge } from "@semi/ui";
+import { Badge, CountBadge, NewTag } from "@semi/ui";
 ```
 
 ## Examples
@@ -9971,6 +10015,32 @@ export default function BadgeTones() {
 }
 ```
 
+### Attention marks
+
+CountBadge in the brand fill (99+ cap; tone="neutral" for a plain count), Button badge at an icon button's corner, NewTag: the brand at 18% behind brand text, or the strong text where the brand is not AA on it.
+
+```tsx
+import { Button, CountBadge, NewTag } from "@semi/ui";
+
+export default function BadgeAttention() {
+  return (
+    <div className="flex flex-wrap items-center gap-4">
+      <Button variant="ghost" iconOnly icon="bell" aria-label="Thông báo, 3 chưa đọc" badge={3} />
+      <Button variant="ghost" iconOnly icon="mail" aria-label="Hộp thư, hơn 99 chưa đọc" badge={240} />
+      <span className="inline-flex items-center gap-2 text-ui text-body">
+        Chờ duyệt <CountBadge count={5} />
+      </span>
+      <span className="inline-flex items-center gap-2 text-ui text-body">
+        Tất cả <CountBadge count={128} tone="neutral" max={999} />
+      </span>
+      <span className="inline-flex items-center gap-2 text-ui text-strong">
+        Báo cáo tồn kho <NewTag />
+      </span>
+    </div>
+  );
+}
+```
+
 ## API
 
 ### Badge
@@ -9987,9 +10057,29 @@ Uses 10% alpha fill + 20% alpha border + high-contrast text adapted for dark and
 | `className` | `string` | `""` |  |
 | `size` | `'sm' \| 'md'` | `"md"` |  |
 
+### CountBadge
+
+A count in the brand colour (text-badge, 700), "99+" cap. A plain count that is not an alert passes tone="neutral".
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `count` * | `number` |  | The count. 0 or less renders nothing. |
+| `max` | `number` | `99` | Above it the badge shows `max+` (99+). |
+| `tone` | `'attention' \| 'neutral'` | `"attention"` | `attention` (default): the brand fill, for something that waits for the user (unread, to approve). `neutral`: a plain count that is not an alert. |
+| `corner` | `boolean` | `false` | Pinned to the top-right corner of a `relative` parent (an icon button). Button's `badge` prop uses it. |
+
+### NewTag
+
+"Mới" / "New" tag: the brand colour at 18% behind brand text (or the strong text where the brand text is not AA on it).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `children` | `React.ReactNode` | `the locale's "Mới" / "New"` | The text. |
+
 ## Accessibility
 
 - Text, not colour alone, carries the meaning; it never wraps.
+- A count on an icon button is said in the button's aria-label.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/badge/ and the types in src/ -->
 

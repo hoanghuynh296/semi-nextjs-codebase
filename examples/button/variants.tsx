@@ -1,14 +1,25 @@
 import { Button } from "@semi/ui";
 
+const VARIANTS = ["subtle", "surface", "inverse", "outline", "ghost", "primary", "secondary", "danger"] as const;
+const LABEL = { subtle: "Làm mới", surface: "Mời", inverse: "Thêm", outline: "Chia sẻ", ghost: "Xem thêm", primary: "Lưu", secondary: "Gửi", danger: "Xoá" };
+
 export default function ButtonVariants() {
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <Button>Huỷ</Button>
-      <Button variant="primary">Lưu</Button>
-      <Button variant="outline">Xuất file</Button>
-      <Button variant="danger">Xoá</Button>
-      <Button variant="ghost">Xem thêm</Button>
-      <Button disabled>Không khả dụng</Button>
+    <div className="space-y-3">
+      <div className="flex flex-wrap items-center gap-2">
+        {VARIANTS.map((v) => (
+          <Button key={v} variant={v}>
+            {LABEL[v]}
+          </Button>
+        ))}
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
+        {VARIANTS.map((v) => (
+          <Button key={v} variant={v} disabled>
+            {LABEL[v]}
+          </Button>
+        ))}
+      </div>
     </div>
   );
 }

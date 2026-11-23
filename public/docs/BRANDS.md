@@ -260,9 +260,11 @@ Từ 1.0 bộ sinh **chỉ** làm hai việc cho mỗi màu (`primary`, `seconda
   không thì chữ trắng, rồi gần đen `#0c0d0e`, rồi đen: cái đầu tiên đạt 4.5:1 (luôn có một cái đạt).
 - **Hover** (`primary-hover`, `secondary-hover`): cùng sắc, độ sáng OKLCH lệch `hoverStep` (0.06, `brand/params.mjs`)
   ra xa chữ trên nút (tối hơn dưới chữ trắng, sáng hơn dưới chữ tối), nên chữ vẫn đạt 4.5:1.
+- **Chữ của nhãn “Mới”** (`new-tag-text-dark`, `new-tag-text-light`, 1.0 #146): nhãn là màu chính 18%; chữ là màu chính nếu
+  đạt 4.5:1 trên nền đó (trên canvas, app, panel và card của theme), không thì màu chữ đậm của theme.
 
 `dist/brand.css` chỉ đặt `--semi-primary`, `--semi-primary-hover`, `--semi-on-primary`, `--semi-secondary`,
-`--semi-secondary-hover`, `--semi-on-secondary` (trên `:root`, `[data-theme]`, `.dark`, `.light`) và
+`--semi-secondary-hover`, `--semi-on-secondary`, `--semi-new-tag-text-dark`, `--semi-new-tag-text-light` (trên `:root`, `[data-theme]`, `.dark`, `.light`) và
 `--font-sans-family`, `--font-display-family` (chỉ khi có `fonts.display`). Không sinh thang màu, màu trung tính, chữ màu
 chính, nền chọn, focus hay màu trạng thái: đó là của Semi, giống nhau cho mọi thương hiệu (`docs/TOKENS.md`).
 

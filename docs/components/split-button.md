@@ -95,7 +95,7 @@ export default function SplitButtonSecondary() {
 | `onClick` * | `() => void` |  |  |
 | `items` * | `MenuItem[]` |  | The other ways to do the same job (manual, import, copy from another system). Danger items go last. |
 | `menuLabel` | `string` |  | Accessible name of the ▾ button and of its menu (default "Thao tác khác"). |
-| `variant` | `'primary' \| 'secondary'` | `"primary"` | `primary` for the view's main action (G7: one filled primary per view), `secondary` elsewhere. |
+| `variant` | `'subtle' \| 'surface' \| 'inverse' \| 'primary' \| 'secondary'` | `"primary"` | `primary` (brand) for the view's one main action (G7), `inverse` for the main action of a card or a list title row, `subtle` elsewhere; `secondary` is the brand secondary. |
 | `size` | `'sm' \| 'md'` | `"md"` |  |
 | `loading` | `boolean` | `false` | The main action is running: spinner and no clicks on the main half; the ▾ stays usable. |
 | `disabled` | `boolean` | `false` | Disables both halves. |
