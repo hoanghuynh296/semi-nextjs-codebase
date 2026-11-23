@@ -2,6 +2,11 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
+## Unreleased
+
+### Fixed
+- `SearchPill`: a history push during its debounce (`useDetailParam().open`, `openDetail`, a filter chip, a `useFilterParams` push) no longer loses the query. The pending text is sent first, onto the current entry (with the app's `onChange`, usually `setParams({ q }, "replace")`), then the push is made, so Back lands on the list with its query; before, the late write replaced the pushed entry (#128). A pending text is dropped when the route changes and on unmount. Apps that set `debounce={0}` as a workaround can remove it. An `onChange` that pushes (for example `setParams({ q })` with no mode, which pushes by default) now gets its own entry before the pushed one. The flush only helps an `onChange` that writes the URL at once: `useFilterParams().setParams({ q }, "replace")`; `router.replace`, nuqs or state plus an effect still land after the push.
+
 ## 0.36.0 — 2026-11-23
 
 **Summary.** One minor release with the whole C-030 / C-031 / C-032 UX round: tone-based surfaces (#95), the new shell and navigation (#97), search and filters (#100), overlays, actions, `CommandPalette` and `SplitButton` (#105), page types and states (#110), five new `semi-lint` warnings (#108) and a faster CI (#104). Existing tokens, class constants and props keep working.
