@@ -189,9 +189,9 @@ for (const nav of [true, false]) {
     await search.fill("late");
     await page.getByRole("link", { name: "Page B" }).click();
     await expect(page.getByRole("heading", { name: "Page B" })).toBeVisible();
-    await expect(page).toHaveURL(/\/layout-search\/b$/);
+    await expect(page).toHaveURL(/\/layout-search\/b\?q=h$/);
     await page.waitForTimeout(2300);
-    await expect(page).toHaveURL(/\/layout-search\/b$/);
+    await expect(page).toHaveURL(/\/layout-search\/b\?q=h$/);
   });
 }
 
