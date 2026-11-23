@@ -152,3 +152,36 @@ test("0.36.0 shell: footer → account on AppShell and DocsShell only; mobileTab
   // account inside another prop's braces does not count
   assert.match(migrateShell(`import { AppShell } from "@semi/ui";\n<AppShell x={{ account: 1 }} footer={f} />`), /x=\{\{ account: 1 \}\} account=\{f\}/);
 });
+
+test("0.36.0 shell / 0.37.0 account-rail: an account render prop's collapsed check becomes collapsed || rail; other shapes reported; twice-safe", async () => {
+  const { railAccount, migrateShell, deprecatedTabIds } = await import("../../migrations/0.36.0-shell.mjs");
+  const rail = await import("../../migrations/0.37.0-account-rail.mjs");
+  assert.equal(rail.version, "0.37.0");
+  const src = `import { AppShell } from "@semi/ui";\n<AppShell productName="A" footer={({ collapsed }) => (collapsed ? null : <Block wide={!collapsed} x={{ collapsed: 1 }} on={s.collapsed} />)}>\n`;
+  const { src: out, manual } = railAccount(migrateShell(src));
+  assert.match(out, /account=\{\(\{ collapsed, rail \}\) => \(\(collapsed \|\| rail\) \? null : <Block wide=\{!\(collapsed \|\| rail\)\}/);
+  assert.match(out, /x=\{\{ collapsed: 1 \}\} on=\{s\.collapsed\}/, "keys and properties named collapsed are left alone");
+  assert.deepEqual(manual, []);
+  assert.equal(railAccount(out).src, out, "twice-safe");
+  // a typed parameter and a block body
+  const typed = `import { AppShell } from "@semi/ui";\n<AppShell account={({ collapsed }: ShellSlotState) => { return collapsed ? <A /> : <B />; }} />`;
+  assert.match(railAccount(typed).src, /\(\{ collapsed, rail \}: ShellSlotState\) => \{ return \(collapsed \|\| rail\) \?/);
+  // already uses rail, or does not read collapsed: unchanged
+  for (const ok of [`<AppShell account={({ rail }) => (rail ? null : <B />)} />`, `<AppShell account={({ collapsed, rail }) => (collapsed || rail ? null : <B />)} />`, `<AppShell account={<B />} />`]) {
+    const f = `import { AppShell } from "@semi/ui";\n${ok}`;
+    assert.deepEqual(railAccount(f), { src: f, manual: [] });
+  }
+  // another shape that reads collapsed: left alone, reported with its line
+  const other = `import { AppShell } from "@semi/ui";\n\n<AppShell\n  account={(s) => (s.collapsed ? null : <B />)}\n/>`;
+  assert.deepEqual(railAccount(other), { src: other, manual: [4] });
+  // not an AppShell, or no @semi/ui import: left alone
+  const modal = `import { Modal } from "@semi/ui";\n<Modal account={({ collapsed }) => collapsed} />`;
+  assert.equal(railAccount(modal).src, modal);
+  // mobileTabIds with mobileNav="tabs" is the supported way to pick the tabs (#113): no warning
+  assert.equal(deprecatedTabIds(`<AppShell mobileNav="tabs" mobileTabIds={["a"]} />`), 0);
+  // the 0.37.0 migration runs the same step through read / write
+  const files = { "a.tsx": src.replace("footer=", "account="), "b.css": "x" };
+  rail.default({ files: Object.keys(files), read: (f) => files[f], write: (f, v) => (files[f] = v) });
+  assert.match(files["a.tsx"], /\(\{ collapsed, rail \}\)/);
+  assert.equal(files["b.css"], "x");
+});
