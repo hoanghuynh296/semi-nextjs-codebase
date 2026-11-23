@@ -806,7 +806,8 @@ test("AppShell server HTML: the theme utility's icon is hidden before mount and 
   await expect(ssr.locator("aside").getByText("Cửa hàng Quận 1")).toBeVisible();
   await ssr.setViewportSize({ width: 834, height: 1194 });
   await expect(ssr.locator("aside").getByText("Cửa hàng Quận 1")).toBeHidden();
-  await expect(ssr.locator("aside").getByText("LP", { exact: true })).toBeVisible();
+  // both copies are in the server HTML; CSS shows only the rail one at md
+  await expect(ssr.locator("aside").getByText("LP", { exact: true }).filter({ visible: true })).toHaveCount(1);
   await ssr.close();
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   await open(page, "/demo/app-shell/", "dark");
