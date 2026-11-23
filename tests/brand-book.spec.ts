@@ -6,8 +6,9 @@ import AxeBuilder from "@axe-core/playwright";
 import kit from "./fixtures/brand.json" with { type: "json" };
 import { a11yHits } from "./contrast";
 import { densityAudit } from "../lint/density.mjs";
+import { BOOK_PORT } from "../playwright.config";
 
-const BOOK = "http://127.0.0.1:4320";
+const BOOK = `http://127.0.0.1:${BOOK_PORT}`;
 const PAGES = ["/", "/apps/", "/kit/", "/components/"];
 const THEMES = ["dark", "light"] as const;
 const WIDTHS = [320, 375, 768, 1280];

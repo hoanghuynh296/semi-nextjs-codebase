@@ -3,9 +3,11 @@
 // browser download is needed; PW_CHROMIUM=<path to a chromium binary> uses that one instead (cloud sandboxes).
 import { defineConfig } from "@playwright/test";
 
-const PORT = 4319;
-export const BOOK_PORT = 4320;
-export const PRERENDER_PORT = 4321;
+// SEMI_UI_PORT moves the three servers (port, +1, +2), so two worktrees can run test:ui at once (ds#111).
+const BASE_PORT = Number(process.env.SEMI_UI_PORT ?? 4319);
+const PORT = BASE_PORT;
+export const BOOK_PORT = BASE_PORT + 1;
+export const PRERENDER_PORT = BASE_PORT + 2;
 
 export default defineConfig({
   testDir: "tests",
