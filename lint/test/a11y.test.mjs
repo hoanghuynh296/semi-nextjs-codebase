@@ -41,7 +41,10 @@ test("a11y: focus-ring compares a control with itself unfocused, so a dialog's f
   const page = (hash) => `file://${join(root, "lint/test/fixtures/a11y-focus-ring.html")}#${hash}`;
   const run = (url) => {
     const r = spawnSync(process.execPath, [join(root, "cli/semi.mjs"), "a11y", url, "--json", "--no-axe", "--theme", "light", "--width", "1280"], { encoding: "utf8" });
-    return JSON.parse(r.stdout)[0].hits.map((h) => `${h.rule} ${h.where}`);
+    return JSON.parse(r.stdout)[0].hits.map((h) => `${h.rule} ${h.where}: ${h.value}`);
   };
-  for (const focused of ["close", "no-ring"]) assert.deepEqual(run(page(focused)), ["focus-ring button#no-ring"], `focus on #${focused} when the audit starts`);
+  for (const focused of ["close", "no-ring"])
+    assert.deepEqual(run(page(focused)), ["focus-ring button#no-ring: nothing changes when it takes keyboard focus"], `focus on #${focused} when the audit starts`);
+  // a control that takes focus back on blur has no unfocused baseline: it is reported, never left out
+  assert.ok(run(page("trap")).some((h) => /^focus-ring button#close: focus could not be moved off it/.test(h)), "the refocusing button is reported");
 });

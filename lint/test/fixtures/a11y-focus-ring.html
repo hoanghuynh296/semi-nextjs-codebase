@@ -16,6 +16,12 @@
     <button id="next" class="ring">Mục sau</button>
     <button id="no-ring">Không có viền</button>
   </div>
-  <script>document.getElementById(location.hash.slice(1) || "close").focus();</script>
+  <script>
+    // #trap: the close button takes focus back whenever it loses it, so the audit cannot compare it unfocused.
+    const mode = location.hash.slice(1) || "close";
+    const close = document.getElementById("close");
+    if (mode === "trap") close.addEventListener("blur", () => close.focus());
+    document.getElementById(mode === "trap" ? "close" : mode).focus();
+  </script>
 </body>
 </html>

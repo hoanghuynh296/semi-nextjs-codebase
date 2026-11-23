@@ -5,7 +5,7 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 ## Unreleased
 
 ### Fixed
-- `semi a11y` no longer reports `focus-ring` on the first control of an open dialog (#126): `DetailOverlay`'s close button (and the first control of `Modal`, `Drawer`, `CommandPalette`, … whose focus trap focuses it on open) was measured against itself, already focused, so its ring counted as "nothing changes". The audit now takes the focus off first and compares the control unfocused with keyboard focus; a control with no ring is still reported. The components were right; nothing to change in apps, the warning just goes away. The docs-site checks now audit `DetailOverlay` open, a `FilterChipRow` popover open and `ViewSwitch`, in both themes at 1280px and 375px.
+- `semi a11y` no longer reports `focus-ring` on the first control of an open dialog (#126): `DetailOverlay`'s close button (and the first control of `Modal`, `Drawer`, `CommandPalette`, … whose focus trap focuses it on open) was measured against itself, already focused, so its ring counted as "nothing changes". The audit now takes the focus off first and compares the control unfocused with keyboard focus; a control with no ring is still reported, and one that takes focus back when it loses it (so it cannot be compared unfocused) is reported as "focus could not be moved off it to compare" instead of being left out. The components were right; nothing to change in apps, the warning just goes away. The docs-site checks now audit `DetailOverlay` open, a `FilterChipRow` popover open and `ViewSwitch`, in both themes at 1280px and 375px.
 
 ## 0.36.0 — 2026-11-23
 

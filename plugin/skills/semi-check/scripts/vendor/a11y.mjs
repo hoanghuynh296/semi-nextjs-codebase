@@ -333,10 +333,11 @@ export function a11yAudit(opts) {
       if (el.nextElementSibling) watch.push(el.nextElementSibling);
       // The baseline is the control without focus. A dialog's focus trap (DetailOverlay, Modal) has already put focus
       // on its first control, ring and all: compared with itself, that ring would count as "nothing changes".
-      // (If something pulls focus back into what is watched, there is no unfocused baseline: skip, not report.)
-      const held = () => document.activeElement && document.activeElement !== document.body;
-      if (held() && document.activeElement.blur) document.activeElement.blur();
-      if (held() && watch.some((w) => w.contains(document.activeElement))) continue;
+      // A control that takes focus back when it loses it (an onblur that refocuses) has no unfocused baseline: it is
+      // reported with its own text, never left out, so a missing ring cannot hide behind it.
+      const held = document.activeElement;
+      if (held && held !== document.body && held.blur) held.blur();
+      const stuck = document.activeElement === el;
       const a = snap(watch);
       try {
         el.focus({ preventScroll: true, focusVisible: true });
@@ -347,7 +348,7 @@ export function a11yAudit(opts) {
       n++;
       const b = snap(watch);
       el.blur();
-      if (a.every((v, i) => v === b[i])) hit("focus-ring", el, "nothing changes when it takes keyboard focus");
+      if (a.every((v, i) => v === b[i])) hit("focus-ring", el, stuck ? "focus could not be moved off it to compare (it takes focus back on blur): check its ring with Tab by hand" : "nothing changes when it takes keyboard focus");
     }
     freeze.remove();
     if (before && before !== document.body && before.focus) before.focus({ preventScroll: true });

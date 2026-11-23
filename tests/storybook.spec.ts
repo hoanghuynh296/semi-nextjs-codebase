@@ -508,7 +508,21 @@ for (const theme of THEMES)
       const dialog = page.getByRole("dialog", { name: "Đơn DH-1041" });
       await expect(dialog).toBeVisible();
       await expect(dialog.getByRole("button", { name: "Đóng", exact: true })).toBeFocused();
+      // ‹ › (the buttons #126 names) are in the audit: shown and enabled on item 2 of 12, with a ring under keyboard focus
+      for (const name of ["Mục trước", "Mục sau"]) {
+        const nav = dialog.getByRole("button", { name });
+        await expect(nav).toBeVisible();
+        await expect(nav).toBeEnabled();
+      }
       expect(await a11yHits(page)).toEqual([]);
+      // reached with Tab, each draws a ring (box-shadow) it does not have unfocused
+      for (const name of ["Mục trước", "Mục sau"]) {
+        const nav = dialog.getByRole("button", { name });
+        const unfocused = await nav.evaluate((el) => getComputedStyle(el).boxShadow);
+        for (let i = 0; i < 8 && !(await nav.evaluate((el) => el === document.activeElement)); i++) await page.keyboard.press("Tab");
+        await expect(nav).toBeFocused();
+        expect(await nav.evaluate((el) => getComputedStyle(el).boxShadow)).not.toBe(unfocused);
+      }
 
       await open(page, "/components/filter-chip-row/?o.status=new", theme);
       const chip = example(page, "filter-chip-row/url-state").getByRole("button", { name: "Trạng thái: Mới" });
@@ -517,6 +531,8 @@ for (const theme of THEMES)
       await page.keyboard.press("Enter");
       await expect(page.getByRole("dialog", { name: "Trạng thái" })).toBeVisible();
       expect(await a11yHits(page)).toEqual([]);
+      // still open after the audit focused and blurred each control: its options were the ones checked
+      await expect(page.getByRole("dialog", { name: "Trạng thái" })).toBeVisible();
 
       await open(page, "/components/view-switch/", theme);
       const sw = example(page, "view-switch/default");
