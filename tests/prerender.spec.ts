@@ -279,6 +279,13 @@ test("AppShell under Next's App Router (#144): prerendered with its header; a sl
     await page.setViewportSize({ width, height: 900 });
     await page.waitForTimeout(100);
   }
+  // the phone drawer open and closed: no second instance
+  await page.setViewportSize({ width: 430, height: 900 });
+  await page.locator("header").getByRole("button", { name: "Mở menu" }).click();
+  await expect(page.getByRole("dialog", { name: "Prerender" })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog", { name: "Prerender" })).toBeHidden();
+  await page.setViewportSize({ width: 1440, height: 900 });
   await expect(count).toHaveText(n!);
   expect(await mounts()).toBe(1);
   // a route change (a nav link): the shell and the slot stay

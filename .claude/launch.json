@@ -1,6 +1,0 @@
-{
-  "version": "0.0.1",
-  "configurations": [
-    { "name": "docs-out", "runtimeExecutable": "node", "runtimeArgs": ["scripts/serve-static.mjs", "out", "4419"], "port": 4419 }
-  ]
-}

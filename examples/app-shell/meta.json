@@ -49,7 +49,8 @@
     "Phones use the drawer (the header's menu button) unless the app sets mobileNav=\"tabs\", with mobileTabIds naming the items on MobileTabBar. In the drawer a parent with its own href is the first row of its level.",
     "Sub-items (children) open under their parent while the parent or one of them is the activeId. The rail and widths below lg never show them: read useAppShell().submenuVisible and give the page its own picker when it is false.",
     "Pinned items in the rail: give each a distinct icon, or none so the rail shows its initials (shortLabel to choose them).",
-    "Shortcut hints in a CommandPalette: shortcut: useAppShell().shortcuts[id] inside the shell, or navShortcutKeys(n) outside it."
+    "Shortcut hints in a CommandPalette: shortcut: useAppShell().shortcuts[id] inside the shell, or navShortcutKeys(n) outside it.",
+    "The nav's stored choice is set on <html> (data-semi-nav) by an inline script before paint: give <html> suppressHydrationWarning, as ThemeScript already asks. A slot main action is not repeated in the phone drawer (one instance): give phones its action elsewhere, or pass the data form."
   ],
   "examples": [
     {

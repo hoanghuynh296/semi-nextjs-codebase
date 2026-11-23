@@ -158,12 +158,13 @@ export function useThemeChoices(labelsProp?: Record<Theme, string>) {
 }
 
 /**
- * The theme as an AppShell `utilities` item: a row (an icon in the rail) that opens a Menu of Light / Dark / System
- * with the current one checked; a level of the phone drawer. Keeps "system", unlike a `toggleTheme` item.
+ * The theme as an AppShell `tools` item (for an app without an account; otherwise the route header's account menu
+ * holds the theme): an icon that opens a Menu of Light / Dark / System with the current one checked; a level of the
+ * phone drawer. Keeps "system", unlike a `toggleTheme` item.
  *
  * ```tsx
  * const theme = useThemeUtility();
- * <AppShell utilities={[theme, help]} … />
+ * <AppShell tools={[theme, help]} … />
  * ```
  */
 export function useThemeUtility({ id = "theme", label, labels }: { id?: string; label?: string; labels?: Record<Theme, string> } = {}): ShellNavItem {
@@ -175,7 +176,7 @@ export interface ThemeSwitcherProps {
   /**
    * `segmented` (default): the three choices side by side, for settings pages and sidebar footers. `menu`: one icon
    * button (the chosen mode's icon) whose Menu lists the three with the current one checked, for headers, toolbars
-   * and other tight spots; in AppShell's `utilities` use `useThemeUtility()` instead.
+   * and other tight spots; in AppShell the account avatar menu already holds the theme (`useThemeUtility()` for `tools` when there is no account).
    * @default "segmented"
    */
   variant?: "segmented" | "menu";

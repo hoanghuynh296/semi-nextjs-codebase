@@ -80,6 +80,9 @@ export interface ShellAction {
   onClick?: () => void;
 }
 
+/** @deprecated Since 1.0: the nav's main action is `ShellAction` (AppShell `mainAction`). */
+export type ShellCreate = ShellAction;
+
 /** A 32×32 icon button of the nav's bottom row: a Tooltip with its label and an optional count badge ("99+" cap). */
 export interface ShellTool {
   id: string;
@@ -184,7 +187,8 @@ export interface AppShellProps {
   onSelect?: (id: string) => void;
   /**
    * The nav's one main action, the only brand-filled control in the nav: data (label + icon, a menu, a link or an
-   * action) drawn as an ordinary primary button, or your own slot. In the rail: the icon with a Tooltip.
+   * action) drawn as an ordinary primary button, or your own slot. In the rail: the icon with a Tooltip. The phone
+   * drawer shows the data form as a row; a slot keeps its one instance in the nav, so give phones its action elsewhere.
    */
   mainAction?: ShellAction | ShellSlot;
   /** Optional quiet launcher under the main action (another app, a docs link). */
@@ -361,7 +365,8 @@ export function AppShell({
   const megaItem = allItems.find((i) => i.id === megaId && i.mega);
 
   // ─── Shortcuts: the first nine items in visual order ─────────────────────────────────────────────────────────
-  const numbered = allItems.slice(0, 9);
+  // only what is drawn: a section still loading shows skeletons, not its items
+  const numbered = [...sections.filter((sec) => !sec.loading).flatMap((sec) => sec.items), ...(pinned?.items ?? [])].slice(0, 9);
   const numberOf = (id: string) => {
     const i = numbered.findIndex((it) => it.id === id);
     return i < 0 ? 0 : i + 1;
@@ -938,7 +943,6 @@ export function AppShell({
                 productName={productName}
                 logoTile={logoTile}
                 action={action}
-                actionSlot={!action && mainAction != null ? <SlotHost slot={mainAction as ShellSlot} state={slotState} /> : null}
                 sections={sections}
                 pinned={pinned}
                 tools={tools}
@@ -1022,7 +1026,6 @@ function PhoneDrawer({
   productName,
   logoTile,
   action: create,
-  actionSlot,
   sections,
   pinned,
   tools: utilities,
@@ -1035,7 +1038,6 @@ function PhoneDrawer({
   productName: string;
   logoTile: React.ReactNode;
   action: ShellAction | null;
-  actionSlot: React.ReactNode;
   sections: ShellNavSection[];
   pinned?: ShellPinned;
   tools: ShellTool[];
@@ -1201,7 +1203,6 @@ function PhoneDrawer({
           </ul>
         ) : (
           <>
-            {actionSlot && <div className="mx-1">{actionSlot}</div>}
             {create &&
               (create.items?.length ? (
                 // one accent row that opens what can be created as a level (tiles repeated the nav's own names)
