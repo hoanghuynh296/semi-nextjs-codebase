@@ -8,7 +8,8 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ### Added
 - **`ShellNavItem.menu` (#114):** an AppShell item (usually a `utilities` item) can open a `Menu` of choices (`MenuItem[]`, `checked` marks the current one) instead of navigating: a row in the sidebar, an icon with its Tooltip in the rail, a level of the phone drawer (checked row marked, `aria-pressed`).
-- **`useThemeUtility()` (#114):** the theme as a ready `utilities` item: Light / Dark / System in that Menu (the chosen mode's icon, label "Giao diện" / locale `theme`; `id`, `label`, `labels` options). Use it in place of a `toggleTheme` item, which drops "system". The AppShell examples use it.
+- **`useThemeUtility()` (#114):** the theme as a ready `utilities` item: Light / Dark / System in that Menu (the chosen mode's icon, hidden until the stored theme is read so it never swaps after hydration; label "Giao diện" / locale `theme`; `id`, `label`, `labels` options).
+- **`ShellNavItem.iconHidden`:** keeps an item's icon space but hides it (`opacity-0`), for an icon that reflects a value known only after mount (`useThemeUtility()` sets it until mounted). Use it in place of a `toggleTheme` item, which drops "system". The AppShell examples use it.
 - **`ThemeSwitcher variant="menu"` (#114):** one icon button (`aria-haspopup="menu"`, Tooltip) whose Menu lists the three modes with the current one checked, for headers and toolbars. Default `variant="segmented"` is the switcher as before.
 
 ### Changed
@@ -18,7 +19,7 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 - AppShell: the `account` render prop should hide its text by `rail`, not only `collapsed` (at `md` the sidebar is a rail while `collapsed` is false); pinned items take distinct icons, or none so the rail shows initials (#114 c).
 
 ### Migration
-- `migrations/0.36.0-shell.mjs` now also rewrites an AppShell / DocsShell `account={({ collapsed }) => …}` render prop to `({ collapsed, rail }) => …(collapsed || rail)…`, and `migrations/0.37.0-account-rail.mjs` runs that step for apps already on 0.36. Other shapes that read `collapsed` (`(s) => s.collapsed`, a component) are left alone and printed as `file:line`: hide the text when `collapsed || rail` by hand.
+- `migrations/0.36.0-shell.mjs` now also rewrites an AppShell / DocsShell `account={({ collapsed }) => …}` render prop to `({ collapsed, rail }) => …(collapsed || rail)…` when every `collapsed` in it is a plain read (a condition, `!collapsed`, an attribute value `x={collapsed}`); `migrations/0.37.0-account-rail.mjs` runs that step for apps already on 0.36. Printed as `file:line` and left as is: an account that uses `collapsed` any other way (an attribute name `collapsed={collapsed}`, a shorthand `{ collapsed }`, a template literal, JSX text, a comparison, `(s) => s.collapsed`), and a render function or component reference that reads neither (`account={AccountBlock}`, `(s) => <Account {...s} />`): hide the text when `collapsed || rail` by hand. A plain JSX node (`account={<Avatar />}`) is not checked.
 - Apps that set `mobileNav="tabs"` + `mobileTabIds` need no change (the warning goes away). Apps with only `mobileTabIds`: add `mobileNav="tabs"` to keep the tab bar on purpose, or remove `mobileTabIds` for the phone drawer.
 - Optional: replace a theme `toggleTheme` utility with `useThemeUtility()` to give the "system" choice back.
 
