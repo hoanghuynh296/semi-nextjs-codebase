@@ -150,5 +150,5 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | Doc | Components | When to use |
 |---|---|---|
 | [Locale](locale.md) | `SemiLocaleProvider` | An app in English, or one that renames a built-in label. |
-| [Theme](theme.md) | `ThemeProvider`, `ThemeScript`, `ThemeSwitcher`, `ThemeToggle` | Once in every app's root layout; the switcher in settings or the sidebar footer. |
+| [Theme](theme.md) | `ThemeProvider`, `ThemeScript`, `ThemeSwitcher`, `ThemeToggle` | Once in every app's root layout; the segmented switcher in settings, variant="menu" in a header or toolbar, useThemeUtility() in AppShell's utilities (and its rail). |
 

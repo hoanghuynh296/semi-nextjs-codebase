@@ -2,6 +2,26 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
+## Unreleased
+
+**Summary.** Gaps found adopting the 0.36 shell (#113, #114 a / c): a non-deprecated way to keep the phone tab bar, the account squeezed in the `md` rail, and the theme's "system" choice in the shell.
+
+### Added
+- **`ShellNavItem.menu` (#114):** an AppShell item (usually a `utilities` item) can open a `Menu` of choices (`MenuItem[]`, `checked` marks the current one) instead of navigating: a row in the sidebar, an icon with its Tooltip in the rail, a level of the phone drawer (checked row marked, `aria-pressed`).
+- **`useThemeUtility()` (#114):** the theme as a ready `utilities` item: Light / Dark / System in that Menu (the chosen mode's icon, label "Giao diện" / locale `theme`; `id`, `label`, `labels` options). Use it in place of a `toggleTheme` item, which drops "system". The AppShell examples use it.
+- **`ThemeSwitcher variant="menu"` (#114):** one icon button (`aria-haspopup="menu"`, Tooltip) whose Menu lists the three modes with the current one checked, for headers and toolbars. Default `variant="segmented"` is the switcher as before.
+
+### Changed
+- **AppShell `mobileTabIds` (#113):** no longer deprecated with `mobileNav="tabs"`: that pair is the supported way to keep the phone tab bar with chosen items, and it no longer warns. `mobileTabIds` without `mobileNav` keeps the tab bar as before (C-034) and still warns in development, now naming the fix (add `mobileNav="tabs"`). With `mobileNav="drawer"` it is still ignored with a warning.
+
+### Docs
+- AppShell: the `account` render prop should hide its text by `rail`, not only `collapsed` (at `md` the sidebar is a rail while `collapsed` is false); pinned items take distinct icons, or none so the rail shows initials (#114 c).
+
+### Migration
+- `migrations/0.36.0-shell.mjs` now also rewrites an AppShell / DocsShell `account={({ collapsed }) => …}` render prop to `({ collapsed, rail }) => …(collapsed || rail)…`, and `migrations/0.37.0-account-rail.mjs` runs that step for apps already on 0.36. Other shapes that read `collapsed` (`(s) => s.collapsed`, a component) are left alone and printed as `file:line`: hide the text when `collapsed || rail` by hand.
+- Apps that set `mobileNav="tabs"` + `mobileTabIds` need no change (the warning goes away). Apps with only `mobileTabIds`: add `mobileNav="tabs"` to keep the tab bar on purpose, or remove `mobileTabIds` for the phone drawer.
+- Optional: replace a theme `toggleTheme` utility with `useThemeUtility()` to give the "system" choice back.
+
 ## 0.36.0 — 2026-11-23
 
 **Summary.** One minor release with the whole C-030 / C-031 / C-032 UX round: tone-based surfaces (#95), the new shell and navigation (#97), search and filters (#100), overlays, actions, `CommandPalette` and `SplitButton` (#105), page types and states (#110), five new `semi-lint` warnings (#108) and a faster CI (#104). Existing tokens, class constants and props keep working.

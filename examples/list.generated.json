@@ -978,7 +978,7 @@
     "id": "theme",
     "title": "Theme",
     "group": "Setup",
-    "description": "Light / dark / system: ThemeScript applies the stored theme before paint, ThemeProvider keeps it, ThemeSwitcher (three-way) and ThemeToggle switch it. data-theme on any element re-scopes every token inside it.",
+    "description": "Light / dark / system: ThemeScript applies the stored theme before paint, ThemeProvider keeps it, ThemeSwitcher (three-way: segmented, or variant=\"menu\" as one icon button) and ThemeToggle switch it, useThemeUtility() puts the three in AppShell's utilities. data-theme on any element re-scopes every token inside it.",
     "components": [
       "ThemeProvider",
       "ThemeScript",

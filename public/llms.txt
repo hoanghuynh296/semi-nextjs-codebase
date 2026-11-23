@@ -159,4 +159,4 @@ In a project with the package installed, ask the docs instead of reading files: 
 ### Setup
 
 - [Locale](./components/locale/) ([markdown](./docs/components/locale.md)): SemiLocaleProvider sets the UI strings of every Semi component (Vietnamese by default, English shipped, override any string). Components: SemiLocaleProvider.
-- [Theme](./components/theme/) ([markdown](./docs/components/theme.md)): Light / dark / system: ThemeScript applies the stored theme before paint, ThemeProvider keeps it, ThemeSwitcher (three-way) and ThemeToggle switch it. data-theme on any element re-scopes every token inside it. Components: ThemeProvider, ThemeScript, ThemeSwitcher, ThemeToggle.
+- [Theme](./components/theme/) ([markdown](./docs/components/theme.md)): Light / dark / system: ThemeScript applies the stored theme before paint, ThemeProvider keeps it, ThemeSwitcher (three-way: segmented, or variant="menu" as one icon button) and ThemeToggle switch it, useThemeUtility() puts the three in AppShell's utilities. data-theme on any element re-scopes every token inside it. Components: ThemeProvider, ThemeScript, ThemeSwitcher, ThemeToggle.
