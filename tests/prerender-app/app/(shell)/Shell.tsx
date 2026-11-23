@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { AppShell } from "../../../../src/AppShell";
 import { TextTabs } from "../../../../src/TextTabs";
 
@@ -36,8 +36,6 @@ function QueryMiddle() {
 
 export function Shell({ children }: { children: React.ReactNode }) {
   const [tab, setTab] = useState<"open" | "done">("open");
-  const path = usePathname();
-  const active = path.startsWith("/shell-guard") ? "guard" : path === "/shell/open" ? "open" : path.startsWith("/shell/") ? "orders" : "home";
   return (
     <AppShell
       productName="Prerender"
@@ -56,7 +54,8 @@ export function Shell({ children }: { children: React.ReactNode }) {
         },
         { label: "Forms", items: [{ id: "guard", label: "Guarded form", icon: "edit", href: "/shell-guard" }] },
       ]}
-      activeId={active}
+      // usePathname in this layout would suspend above the dynamic route: a fixed active item (a sub-item, for the crumbs)
+      activeId="open"
       mainAction={{ label: "Create", items: [{ label: "Order", onSelect: () => {} }] }}
       pinned={{ label: "Pinned", items: [{ id: "late", label: "Late", icon: "clock", href: "/shell/late" }] }}
       tools={[
