@@ -119,10 +119,10 @@ export default function BrandPage() {
           >
             {on ? "Tắt xem trước" : "Xem trước trên mọi trang"}
           </Button>
-          <Button variant="secondary" icon="copy" onClick={() => copy(brandJson, "brand.json")}>
+          <Button variant="subtle" icon="copy" onClick={() => copy(brandJson, "brand.json")}>
             Copy brand.json
           </Button>
-          <Button variant="secondary" icon="code" onClick={() => copy(prompt, "lệnh cho agent")}>
+          <Button variant="subtle" icon="code" onClick={() => copy(prompt, "lệnh cho agent")}>
             Copy lệnh cho agent
           </Button>
         </div>

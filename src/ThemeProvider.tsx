@@ -4,7 +4,7 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useS
 import { useSemiLocale } from "./locale";
 import { Icon, type IconName } from "./Icon";
 import { Menu, Tooltip, type MenuItem } from "./Overlay";
-import { BTN_ICON, BTN_SECONDARY } from "../styles/buttons";
+import { BTN_ICON, BTN_SUBTLE } from "../styles/buttons";
 import { cn, SEGMENT_ON } from "../styles/utils";
 import type { Theme, ThemeOptions } from "./ThemeScript";
 import type { ShellNavItem } from "./AppShell";
@@ -202,7 +202,7 @@ function ThemeMenuButton({ labels, className = "" }: { labels?: Record<Theme, st
       items={items}
       trigger={
         <Tooltip content={label}>
-          <button type="button" aria-label={label} className={cn(BTN_SECONDARY, BTN_ICON, className)}>
+          <button type="button" aria-label={label} className={cn(BTN_SUBTLE, BTN_ICON, className)}>
             <Icon name={icon} className={cn("w-4 h-4 transition-opacity", !mounted && "opacity-0")} />
           </button>
         </Tooltip>

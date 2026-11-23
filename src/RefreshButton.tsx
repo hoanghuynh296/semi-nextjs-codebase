@@ -5,7 +5,7 @@
 import React, { useState } from "react";
 import { useSemiLocale } from "./locale";
 import { Icon } from "./Icon";
-import { BTN_ICON, BTN_SECONDARY } from "../styles/buttons";
+import { BTN_ICON, BTN_SUBTLE } from "../styles/buttons";
 
 export function RefreshButton({ onRefresh, className = "", label: labelProp }: { onRefresh: () => unknown; className?: string; label?: string }) {
   const t = useSemiLocale();
@@ -27,7 +27,7 @@ export function RefreshButton({ onRefresh, className = "", label: labelProp }: {
       aria-label={label}
       title={label}
       aria-busy={busy}
-      className={`${BTN_SECONDARY} ${BTN_ICON} ${className}`}
+      className={`${BTN_SUBTLE} ${BTN_ICON} ${className}`}
     >
       <Icon name="refresh" className={`w-4 h-4 ${busy ? "animate-spin" : ""}`} />
     </button>

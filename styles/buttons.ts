@@ -5,12 +5,11 @@
 /**
  * What every variant shares: content text (text-ui, 14px), hover in 150ms (transition-hover = --motion-hover), a 2px
  * focus outline (outline-focus, the strong text colour, as on fields), a neutral disabled look for every variant
- * (brand ones too), and on phones a 44px hit area from a pseudo-element without changing the drawn size.
+ * (brand ones too).
  */
 const CORE =
   "relative inline-flex items-center justify-center gap-1.5 rounded-control font-medium transition-hover outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus cursor-pointer shrink-0 whitespace-nowrap " +
-  "disabled:cursor-not-allowed disabled:!bg-subtle-button disabled:!text-muted disabled:!border-transparent disabled:active:!scale-100 " +
-  "max-sm:after:absolute max-sm:after:left-1/2 max-sm:after:top-1/2 max-sm:after:-translate-x-1/2 max-sm:after:-translate-y-1/2 max-sm:after:w-full max-sm:after:min-w-11 max-sm:after:h-11";
+  "disabled:cursor-not-allowed disabled:!bg-subtle-button disabled:!text-muted disabled:!border-transparent disabled:active:!scale-100";
 const BASE = `${CORE} h-control text-ui`;
 
 /** Ordinary action (the default): translucent neutral fill (subtle-button), strong text. */

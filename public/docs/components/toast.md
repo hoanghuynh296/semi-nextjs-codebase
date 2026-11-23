@@ -86,7 +86,7 @@ export default function ToastUndo() {
       ))}
       {rows.length === 0 && <li className="text-ui text-muted">Đã lưu trữ hết, bấm Hoàn tác để khôi phục.</li>}
       <li>
-        <Button size="sm" variant="secondary" onClick={archiveAndLeave}>
+        <Button size="sm" variant="subtle" onClick={archiveAndLeave}>
           Lưu trữ rồi chuyển trang
         </Button>
       </li>
@@ -121,13 +121,13 @@ export default function ToastPromise() {
   return (
     <div className="flex flex-wrap gap-2">
       <Button onClick={() => toast.promise(save(false), { loading: "Đang lưu…", success: (n) => `Đã lưu ${n} dòng`, error: "Không lưu được" })}>Lưu</Button>
-      <Button variant="secondary" onClick={() => toast.promise(save(true), { loading: "Đang lưu…", success: "Đã lưu", error: (e) => `Không lưu được: ${e instanceof Error ? e.message : "lỗi"}` }).catch(() => {})}>
+      <Button variant="subtle" onClick={() => toast.promise(save(true), { loading: "Đang lưu…", success: "Đã lưu", error: (e) => `Không lưu được: ${e instanceof Error ? e.message : "lỗi"}` }).catch(() => {})}>
         Lưu (lỗi)
       </Button>
-      <Button variant="secondary" onClick={() => toast.promise(forever(), { timeout: 1500, loading: "Đang kết nối…", success: "Đã kết nối", error: "Quá thời gian chờ" })}>
+      <Button variant="subtle" onClick={() => toast.promise(forever(), { timeout: 1500, loading: "Đang kết nối…", success: "Đã kết nối", error: "Quá thời gian chờ" })}>
         Kết nối (treo)
       </Button>
-      <Button variant="secondary" onClick={progress}>
+      <Button variant="subtle" onClick={progress}>
         Tiến độ
       </Button>
     </div>

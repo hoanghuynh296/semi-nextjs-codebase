@@ -10,7 +10,7 @@ import { toast } from "./Toast";
 import { useSemiLocale } from "./locale";
 import { cn } from "../styles/utils";
 import { MODAL_BACKDROP, MODAL_PANEL } from "../styles/surfaces";
-import { MODAL_BTN_SECONDARY } from "../styles/buttons";
+import { MODAL_BTN_SUBTLE } from "../styles/buttons";
 
 export interface TaskOptions {
   /** What is running, e.g. "Tải file lên máy chủ". Names the dialog and is announced. */
@@ -130,7 +130,7 @@ export function TaskHost() {
             <div className="flex items-center justify-between gap-3 max-sm:pb-[env(safe-area-inset-bottom)]">
               {c.timer ? <span className="text-chrome text-muted tabular-nums">{t.elapsed(clock(Math.max(0, now - c.startedAt)))}</span> : <span />}
               {c.onCancel && (
-                <button type="button" onClick={cancelTask} className={MODAL_BTN_SECONDARY}>
+                <button type="button" onClick={cancelTask} className={MODAL_BTN_SUBTLE}>
                   {c.cancelLabel || t.cancel}
                 </button>
               )}

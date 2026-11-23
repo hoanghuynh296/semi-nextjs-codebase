@@ -123,7 +123,7 @@ export default function ModalLayers() {
 | `onClose` * | `() => void` |  |  |
 | `title` * | `React.ReactNode` |  |  |
 | `description` | `React.ReactNode` |  | Optional one-line description under the title (announced with the dialog). |
-| `footer` | `React.ReactNode` |  | Action buttons rendered inside MODAL_FOOT (use MODAL_BTN_PRIMARY / MODAL_BTN_SECONDARY / MODAL_BTN_DANGER or <Button size="modal">). |
+| `footer` | `React.ReactNode` |  | Action buttons rendered inside MODAL_FOOT (use MODAL_BTN_PRIMARY / MODAL_BTN_SUBTLE / MODAL_BTN_DANGER or <Button size="modal">). |
 | `maxWidth` | `string` | `"max-w-lg"` | Width class on >= sm screens (e.g. "max-w-md", "max-w-lg", "max-w-2xl"). |
 | `closeOnBackdrop` | `boolean` | `true` | Close when the backdrop is clicked (turn off for forms that would lose input). |
 | `children` * | `React.ReactNode` |  |  |

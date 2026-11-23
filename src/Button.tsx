@@ -87,7 +87,7 @@ type Base = Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "children"> & {
   /**
    * md = h-control (34px, 14px text) · sm = 28px, 12px text (dense rows, toolbars) · xs = 24px, 12px text (the inverse
    * pill of a list title row) · modal = 44px and 15px text on phones, h-control from sm (dialog footers, a full-width
-   * commit). Phones get a 44px hit area at every size without a bigger drawn button.
+   * commit).
    * @default "md"
    */
   size?: ButtonSize;

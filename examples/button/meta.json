@@ -33,8 +33,7 @@
   "a11y": [
     "Renders a real <button type=\"button\"> (pass type=\"submit\" in forms).",
     "iconOnly requires aria-label (the types enforce it); keep a title for the tooltip. With badge, say the count in the aria-label (\"Thông báo, 3 chưa đọc\").",
-    "loading sets aria-busy and blocks clicks. Keyboard focus is a 2px outline in the strong text colour on every variant; disabled is neutral for every variant.",
-    "Phones get a 44px hit area at every size without a bigger drawn button."
+    "loading sets aria-busy and blocks clicks. Keyboard focus is a 2px outline in the strong text colour on every variant; disabled is neutral for every variant."
   ],
   "examples": [
     {

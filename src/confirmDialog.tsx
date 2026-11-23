@@ -6,7 +6,7 @@ import React, { useRef, useSyncExternalStore } from "react";
 import { useDialog } from "./a11y";
 import { useSemiLocale } from "./locale";
 import type { ReactNode } from "react";
-import { MODAL_BTN_DANGER, MODAL_BTN_PRIMARY, MODAL_BTN_SECONDARY } from "../styles/buttons";
+import { MODAL_BTN_DANGER, MODAL_BTN_PRIMARY, MODAL_BTN_SUBTLE } from "../styles/buttons";
 
 export interface ConfirmOptions {
   title: string;
@@ -114,7 +114,7 @@ export function ConfirmHost() {
         <div
           className={`px-5 pb-5 max-sm:pb-[max(1rem,env(safe-area-inset-bottom))] flex items-center gap-2 ${c.icon ? "*:flex-1" : "justify-end max-sm:*:flex-1"}`}
         >
-          <button type="button" data-autofocus={danger ? "" : undefined} onClick={() => resolveConfirm(false)} className={MODAL_BTN_SECONDARY}>
+          <button type="button" data-autofocus={danger ? "" : undefined} onClick={() => resolveConfirm(false)} className={MODAL_BTN_SUBTLE}>
             {c.cancelLabel || t.cancel}
           </button>
           <button

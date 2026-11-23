@@ -45,7 +45,7 @@ export default function ReasoningStreaming() {
       </Reasoning>
       {!busy && <AssistantMessage>In PETG ở 240°C, bàn nhiệt 75°C và quạt khoảng 30–50%.</AssistantMessage>}
       <div>
-        <Button size="sm" variant="secondary" icon="refresh" onClick={() => setShown(0)}>
+        <Button size="sm" variant="subtle" icon="refresh" onClick={() => setShown(0)}>
           Chạy lại
         </Button>
       </div>

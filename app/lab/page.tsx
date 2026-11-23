@@ -35,7 +35,7 @@ export default function LabPage() {
           sang tab Thay đổi, copy lệnh cho agent: <code className="text-ui">npm run lab:apply</code> ghi đúng file nguồn. Hướng dẫn: docs/LAB.md.
         </p>
         {lab.paused && (
-          <Button variant="secondary" icon="play" onClick={() => setLab({ draft: lab.draft, paused: false })}>
+          <Button variant="subtle" icon="play" onClick={() => setLab({ draft: lab.draft, paused: false })}>
             Bản nháp đang tạm tắt: bật lại
           </Button>
         )}

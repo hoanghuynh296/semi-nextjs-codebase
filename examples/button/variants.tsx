@@ -5,7 +5,8 @@ const LABEL = { subtle: "Làm mới", surface: "Mời", inverse: "Thêm", outlin
 
 export default function ButtonVariants() {
   return (
-    <div className="space-y-3">
+    // A specimen shows both brand fills on purpose: data-density-skip keeps it out of the one-brand-button budget.
+    <div data-density-skip className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
         {VARIANTS.map((v) => (
           <Button key={v} variant={v}>

@@ -7,7 +7,7 @@ const FORM = '[data-example="form-actions/page-form"] form';
 
 const names = (page: Page, sel: string) => page.locator(`${sel} [data-form-actions] button`).allInnerTexts();
 
-test("FormActions: Huỷ (ghost) then Tạo (primary), right-aligned; the destructive action alone on the left", async ({ page }) => {
+test("FormActions: Huỷ (subtle) then Tạo (primary), right-aligned; the destructive action alone on the left", async ({ page }) => {
   await page.goto(PAGE);
   expect((await names(page, FORM)).map((s) => s.trim())).toEqual(["Huỷ", "Tạo"]);
   const bar = page.locator(`${FORM} [data-form-actions]`);
@@ -18,7 +18,7 @@ test("FormActions: Huỷ (ghost) then Tạo (primary), right-aligned; the destru
   expect(Math.abs(p!.x + p!.width - (b!.x + b!.width))).toBeLessThanOrEqual(2); // right edge of the row
   await expect(create).toHaveAttribute("type", "submit");
   await expect(cancel).toHaveAttribute("type", "button");
-  expect(await cancel.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe("rgba(0, 0, 0, 0)"); // ghost
+  expect(await cancel.evaluate((el) => getComputedStyle(el).backgroundColor)).not.toBe("rgba(0, 0, 0, 0)"); // subtle: a neutral fill
   expect(await create.evaluate((el) => getComputedStyle(el).backgroundColor)).not.toBe("rgba(0, 0, 0, 0)"); // filled
 
   const sel = '[data-example="form-actions/destructive"] form';
