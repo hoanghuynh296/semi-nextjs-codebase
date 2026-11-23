@@ -4,7 +4,7 @@ import React from "react";
 import { usePathname } from "next/navigation";
 import { type ShellNavSection } from "../src/AppShell";
 import { ICONS } from "../src/Icon";
-import { ThemeSwitcher, ThemeToggle } from "../src/ThemeProvider";
+import { ThemeSwitcher } from "../src/ThemeProvider";
 import { DocsShell } from "../site/DocsShell";
 import pkg from "../package.json";
 import { Badge } from "../src/Badge";
@@ -41,10 +41,11 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       logoIcon="sparkles"
       sections={START}
       primaryCta={{ label: "GitHub Repository", icon: "external", href: "https://github.com/hoanghuynh296/semi-nextjs-codebase", external: true }}
-      account={({ collapsed }) =>
-        collapsed ? (
+      // the rail (collapsed, or md) has 44px: the theme as one icon button that keeps "system" (#113, #114)
+      account={({ rail }) =>
+        rail ? (
           <div className="flex justify-center">
-            <ThemeToggle />
+            <ThemeSwitcher variant="menu" />
           </div>
         ) : (
           <div className="flex flex-col gap-2">

@@ -174,6 +174,26 @@ test("WorkspaceLayout and FeatureIntro under Next's App Router: prerendered with
   await expect(page.getByRole("button", { name: "Send (4)" }).filter({ visible: true })).toBeVisible();
 });
 
+test("AppShell theme utility under Next's App Router: prerendered, its Menu picks a mode by keyboard (#114)", async ({ page, request }) => {
+  const html = await (await request.get(`${BASE}/shell/a`)).text();
+  expect(html).toContain('aria-label="Theme"');
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(`${BASE}/shell/a`);
+  const trigger = page.locator("aside").getByRole("button", { name: "Theme" });
+  // the first key may land before hydration: retry until the Menu shows
+  await expect(async () => {
+    await trigger.focus();
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("menu", { name: "Theme" })).toBeVisible({ timeout: 1000 });
+  }).toPass({ timeout: 15_000 });
+  await expect(page.getByRole("menuitemcheckbox", { name: "Light" })).toHaveAttribute("aria-checked", "true");
+  await page.keyboard.press("ArrowDown");
+  await expect(page.getByRole("menuitemcheckbox", { name: "Dark" })).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(trigger).toBeFocused();
+});
+
 async function replayTwice(page: import("@playwright/test").Page) {
   const replayed = page.getByRole("dialog", { name: "Replayed intro" });
   for (let round = 0; round < 2; round++) {

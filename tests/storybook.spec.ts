@@ -625,10 +625,24 @@ test("phones get the drawer: focus moves in, stays in, drills down and returns t
   await expect(createLevel.getByRole("button", { name: "Báo giá" })).toBeDisabled();
   await expect(createLevel.getByRole("button", { name: "Đơn hàng" })).toBeFocused();
   await page.keyboard.press("Escape");
+  // the theme utility (a `menu` item) opens its choices as a level: the current one is pressed, the first row focused
+  const themeRow = drawer.getByRole("button", { name: "Giao diện" });
+  await themeRow.click();
+  const themeLevel = page.getByRole("dialog", { name: "Giao diện" });
+  await expect(themeLevel.getByRole("button", { name: "Sáng" })).toBeFocused();
+  await expect(themeLevel.getByRole("button", { name: "Tối" })).toHaveAttribute("aria-pressed", "true");
+  await page.keyboard.press("Escape");
+  await expect(themeRow).toBeFocused();
   expect(await lowContrast(page)).toEqual([]);
   await page.keyboard.press("Escape");
   await expect(drawer).toBeHidden();
   await expect(menuButton).toBeFocused();
+  // picking a mode in the level applies it and closes the drawer
+  await menuButton.click();
+  await drawer.getByRole("button", { name: "Giao diện" }).click();
+  await page.getByRole("dialog", { name: "Giao diện" }).getByRole("button", { name: "Hệ thống" }).click();
+  await expect(drawer).toBeHidden();
+  expect(await page.evaluate(() => localStorage.getItem("semi-theme"))).toBe("system");
   await page.close();
 });
 
@@ -651,6 +665,26 @@ test("AppShell rail (iPad): every item is named and shows a tooltip on the right
   await expect(page.getByRole("menu")).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(create).toBeFocused();
+  // the theme utility in the 60px rail: named, tooltip, a Menu of the three modes by keyboard (#114)
+  const themeUtil = aside.getByRole("button", { name: "Giao diện" });
+  await themeUtil.focus();
+  await expect(tip).toHaveText("Giao diện");
+  const tb = await themeUtil.boundingBox();
+  expect(tb!.width).toBeLessThanOrEqual(44);
+  await page.keyboard.press("Enter");
+  const themeMenu = page.getByRole("menu", { name: "Giao diện" });
+  await expect(themeMenu.getByRole("menuitemcheckbox")).toHaveText(["Sáng", "Tối", "Hệ thống"]);
+  await expect(themeMenu.getByRole("menuitemcheckbox", { name: "Sáng" })).toHaveAttribute("aria-checked", "true");
+  await page.keyboard.press("End");
+  await expect(themeMenu.getByRole("menuitemcheckbox", { name: "Hệ thống" })).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(themeMenu).toBeHidden();
+  await expect(themeUtil).toBeFocused();
+  expect(await page.evaluate(() => localStorage.getItem("semi-theme"))).toBe("system");
+  await page.keyboard.press("ArrowDown");
+  await expect(page.getByRole("menuitemcheckbox", { name: "Hệ thống" })).toHaveAttribute("aria-checked", "true");
+  await page.keyboard.press("Escape");
+  await expect(themeUtil).toBeFocused();
   // mega menu: opens beside the sidebar, focus on the first link, ↓ moves, Escape returns focus
   const catalog = aside.getByRole("button", { name: "Sản phẩm" });
   await catalog.click();
@@ -673,6 +707,36 @@ test("AppShell rail (iPad): every item is named and shows a tooltip on the right
   await page.close();
 });
 
+for (const theme of THEMES) {
+  test(`ThemeSwitcher variant="menu": one named button, its Menu picks a mode by keyboard and returns focus · ${theme}`, async ({ page }) => {
+    await open(page, "/components/theme/", theme);
+    const button = page.locator("main").getByRole("button", { name: "Giao diện", exact: true }).first();
+    await expect(button).toHaveAttribute("aria-haspopup", "menu");
+    const menu = page.getByRole("menu", { name: "Giao diện" });
+    // a key pressed before hydration does nothing: retry until the Menu opens
+    await expect(async () => {
+      await button.focus();
+      await page.keyboard.press("ArrowDown");
+      await expect(menu).toBeVisible({ timeout: 1000 });
+    }).toPass({ timeout: 15_000 });
+    await expect(menu.getByRole("menuitemcheckbox", { name: "Sáng" })).toBeFocused();
+    await expect(menu.getByRole("menuitemcheckbox", { name: theme === "dark" ? "Tối" : "Sáng" })).toHaveAttribute("aria-checked", "true");
+    expect(await lowContrast(page)).toEqual([]);
+    const other = theme === "dark" ? "Sáng" : "Tối";
+    await menu.getByRole("menuitemcheckbox", { name: other }).focus();
+    await page.keyboard.press(" ");
+    await expect(menu).toBeHidden();
+    await expect(button).toBeFocused();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", theme === "dark" ? "light" : "dark");
+    // Escape closes without a change
+    await page.keyboard.press("Enter");
+    await expect(menu).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(menu).toBeHidden();
+    await expect(button).toBeFocused();
+  });
+}
+
 test("AppShell desktop: Create menu, collapse to the rail and back from the logo", async ({ browser }) => {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   await open(page, "/demo/app-shell/", "dark");
@@ -680,6 +744,11 @@ test("AppShell desktop: Create menu, collapse to the rail and back from the logo
   await expect(aside).toHaveCSS("width", "240px");
   await aside.getByRole("button", { name: "Tạo mới" }).click();
   await expect(page.getByRole("menu")).toBeVisible();
+  await page.keyboard.press("Escape");
+  // the theme utility is a row with its label; its Menu opens on click
+  await aside.getByRole("button", { name: "Giao diện" }).click();
+  await expect(page.getByRole("menu", { name: "Giao diện" })).toBeVisible();
+  expect(await lowContrast(page)).toEqual([]);
   await page.keyboard.press("Escape");
   const collapse = aside.getByRole("button", { name: "Thu gọn menu" });
   await expect(collapse).toHaveAttribute("aria-expanded", "true");
