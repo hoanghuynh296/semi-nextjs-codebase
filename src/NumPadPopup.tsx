@@ -197,7 +197,7 @@ export function NumPadPopup({ label, unit, initial, integer, allowPercent, onCom
           <button
             type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-control text-muted hover:text-contrast flex items-center justify-center cursor-pointer"
+            className="w-8 h-8 rounded-control text-muted hover:text-strong flex items-center justify-center cursor-pointer"
             aria-label={strings.close}
           >
             <Icon name="close" className="w-4 h-4" />
@@ -210,8 +210,8 @@ export function NumPadPopup({ label, unit, initial, integer, allowPercent, onCom
           }`}
         >
           <span
-            className={`text-heading-sm tabular-nums truncate flex-1 text-right text-contrast ${
-              fresh && text ? "bg-accent-subtle-hover rounded-chip px-1" : ""
+            className={`text-section tabular-nums truncate flex-1 text-right text-strong ${
+              fresh && text ? "bg-item-selected rounded-chip px-1" : ""
             }`}
           >
             {text || <span className="text-muted">0</span>}
@@ -250,7 +250,7 @@ export function NumPadPopup({ label, unit, initial, integer, allowPercent, onCom
         <button
           type="button"
           onClick={confirm}
-          className="mt-2 w-full h-12 rounded-control bg-action hover:bg-action-hover text-on-action flex items-center justify-center cursor-pointer touch-manipulation"
+          className="mt-2 w-full h-12 rounded-control bg-primary hover:bg-primary-hover text-on-primary flex items-center justify-center cursor-pointer touch-manipulation"
           aria-label={strings.confirm}
         >
           <Icon name="check" className="w-6 h-6" />

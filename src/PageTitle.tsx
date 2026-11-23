@@ -82,8 +82,8 @@ export function PageTabsTitle<T extends string = string>({
               role="tab"
               aria-selected={isOn}
               onClick={() => onChange(tab.key)}
-              className={`relative pb-2 font-display text-heading sm:text-display leading-[1.15] font-title tracking-tight whitespace-nowrap transition cursor-pointer shrink-0 ${
-                isOn ? "text-contrast" : "text-muted hover:text-contrast"
+              className={`relative pb-2 font-display text-section sm:text-tab-xl leading-[1.15] font-title tracking-tight whitespace-nowrap transition cursor-pointer shrink-0 ${
+                isOn ? "text-strong" : "text-muted hover:text-strong"
               }`}
             >
               {tab.label}

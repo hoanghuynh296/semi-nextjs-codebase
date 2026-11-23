@@ -60,11 +60,11 @@ export default function DetailOverlayList() {
               </div>
               <dl className="grid grid-cols-2 gap-3">
                 <div>
-                  <dt className="text-caption text-muted">Tổng tiền</dt>
-                  <dd className="text-ui text-contrast tabular-nums">{vnd(order.total)}</dd>
+                  <dt className="text-ui text-muted">Tổng tiền</dt>
+                  <dd className="text-ui text-strong tabular-nums">{vnd(order.total)}</dd>
                 </div>
                 <div>
-                  <dt className="text-caption text-muted">Thanh toán</dt>
+                  <dt className="text-ui text-muted">Thanh toán</dt>
                   <dd>
                     <Badge tone={order.paid ? "emerald" : "amber"} dot size="sm">
                       {order.paid ? "Đã trả" : "Chưa trả"}
@@ -78,7 +78,7 @@ export default function DetailOverlayList() {
       >
         {order && (
           <section className="flex flex-col gap-2">
-            <h3 className="text-label font-semibold text-contrast">Sản phẩm</h3>
+            <h3 className="text-ui font-semibold text-strong">Sản phẩm</h3>
             <p className="text-ui text-body">3 mặt hàng · giao trong 2 ngày.</p>
           </section>
         )}

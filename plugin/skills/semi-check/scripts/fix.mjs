@@ -2,11 +2,11 @@
 // /semi-check helper: works from semi-check.md (written by /semi-check), one phase at a time. Zero external deps.
 //   node fix.mjs --cwd <root>                      plan: re-audits when semi-check.md is missing or older than the code,
 //                                                  then prints the summary (the agent reads semi-check.md for details)
-//   node fix.mjs --cwd <root> foundation [--brand <spec>] [--style <id>]
+//   node fix.mjs --cwd <root> foundation [--brand <spec>]
 //                                                  phase 1: install @semi/ui (Next / Tailwind untouched),
 //                                                  transpilePackages, Semi CSS, semi-lint.json + baseline, AGENTS.md,
-//                                                  the style the user chose (<html data-style>); prints the layout
-//                                                  providers to add by hand
+//                                                  removes a style / palette left from before 1.0; prints the layout
+//                                                  providers and fonts to add by hand
 //   node fix.mjs --cwd <root> tokens [--only dir] [--dry-run]
 //                                                  phase 2: token codemod (colour / size classes), all apps or one dir;
 //                                                  --dry-run prints what would change and writes nothing
@@ -25,27 +25,25 @@ import {
   appFonts,
   installPackage,
   installedSemiVersion,
-  missingStyleFonts,
+  clearLegacyLook,
+  fontHint,
+  missingFonts,
   readBrand,
-  readStyleState,
+  readLookState,
   resolveTargetSpec,
   runLocal,
-  semiStyles,
-  styleFontHint,
   wireAgentsMd,
   wireBrand,
   wireGlobalsCss,
   wireNextConfig,
   wireSemiLintConfig,
   wireLintGate,
-  wireStyle,
 } from "../../semi-new-app/scripts/setup.mjs";
 
 const argv = process.argv.slice(2);
 let root = process.cwd();
 let mode = "plan";
 let only = null;
-let styleArg = null;
 let brandArg = null;
 let themeArg = null;
 let dryRun = false;
@@ -53,7 +51,7 @@ const include = [];
 for (let i = 0; i < argv.length; i++) {
   if (argv[i] === "--cwd" && argv[i + 1]) root = argv[++i];
   else if (argv[i] === "--only" && argv[i + 1]) only = argv[++i];
-  else if (argv[i] === "--style" && argv[i + 1]) styleArg = argv[++i];
+  else if (argv[i] === "--style" && argv[i + 1]) (++i, console.warn("--style: bỏ qua (từ 1.0 Semi chỉ có một diện mạo)"));
   else if (argv[i] === "--brand" && argv[i + 1]) brandArg = argv[++i];
   else if (argv[i] === "--theme" && argv[i + 1]) themeArg = argv[++i];
   else if (argv[i] === "--dry-run") dryRun = true;
@@ -158,8 +156,7 @@ if (mode === "foundation") {
       } else console.log(`${name}: semi-lint-baseline.json`);
     }
     if (todo.has("semi-gate")) for (const c of wireLintGate(app.cwd)) console.log(`${name}: ${c}`);
-    // Brand kit: install it (--brand, or the declared one missing from node_modules) and wire it before the style,
-    // which must be one the brand allows.
+    // Brand kit: install it (--brand, or the declared one missing from node_modules) and wire it.
     if (brandArg || todo.has("brand")) {
       let pkg = readBrand(app.cwd)?.pkg ?? null;
       if (brandArg) {
@@ -177,36 +174,15 @@ if (mode === "foundation") {
         process.exitCode = 1;
         continue;
       }
-      const kit = readBrand(app.cwd).kit;
-      const st = readStyleState(app.cwd);
-      if (!styleArg && (!st.declared || !kit.styles.allowed.includes(st.declared))) styleArg = kit.styles.default;
-      if (styleArg) todo.add("style");
     }
-    if (todo.has("style")) {
-      const brandKit = readBrand(app.cwd)?.kit;
-      const list = semiStyles(app.cwd) || semiStyles();
-      const state = readStyleState(app.cwd);
-      const declared = state.declared;
-      const valid = (sid) => list.styles.some((s) => s.id === sid) && (!brandKit || brandKit.styles.allowed.includes(sid));
-      // With a brand, its default style is already a decision; without one, the user picks.
-      const id = styleArg || (valid(declared) ? declared : null) || brandKit?.styles.default || null;
-      if (!id) {
-        console.log(`${name}: chưa chọn style. Hỏi người dùng, rồi chạy lại foundation --style <id>:`);
-        for (const s of list.styles) {
-          if (brandKit && !brandKit.styles.allowed.includes(s.id)) continue;
-          console.log(`  ${s.id}${s.id === list.default ? " (mặc định, gần giao diện app cũ nhất)" : ""}: ${s.description}`);
-        }
-        process.exitCode = 1;
-      } else {
-        const r = wireStyle(app.cwd, id);
-        console.log(`${name}: ${r.message}`);
-        if (!r.ok) process.exitCode = 1;
-      }
+    if (todo.has("legacy-look")) {
+      const changed = clearLegacyLook(app.cwd);
+      if (changed.length) console.log(`${name}: ${changed.join(", ")} ← bỏ style / palette cũ (Semi 1.0 chỉ có một diện mạo)`);
     }
-    // The style's fonts go into the layout by hand, like the providers (the layout is the app's own code).
-    const st = readStyleState(app.cwd);
-    const chosen = (semiStyles(app.cwd) || semiStyles()).styles.find((s) => s.id === (styleArg || st.declared));
-    if (chosen && st.layout && missingStyleFonts(app.cwd, chosen).length) console.log(`${name}: ${styleFontHint(st.layout, chosen, appFonts(app.cwd, chosen))}`);
+    // The fonts go into the layout by hand, like the providers (the layout is the app's own code).
+    const look = readLookState(app.cwd);
+    const missing = missingFonts(app.cwd);
+    if (look.layout && missing.length) console.log(`${name}: ${fontHint(look.layout, appFonts(app.cwd))}`);
     wireAgentsMd(root, installedSemiVersion(app.cwd) || "latest");
     if (todo.has("providers")) {
       const layout = app.issues.find((i) => i.check === "providers").file;

@@ -63,7 +63,7 @@ export function InputOTP({
         disabled={disabled}
         autoFocus={autoFocus}
         spellCheck={false}
-        className="absolute inset-0 w-full h-full opacity-0 max-sm:text-title-lg cursor-text disabled:cursor-not-allowed"
+        className="absolute inset-0 w-full h-full opacity-0 max-sm:text-input cursor-text disabled:cursor-not-allowed"
       />
       <div aria-hidden className="flex items-center gap-2">
         {Array.from({ length }, (_, i) => (
@@ -71,12 +71,12 @@ export function InputOTP({
             {groupSize > 0 && i > 0 && i % groupSize === 0 && <span className="w-2 h-px bg-line-hover" />}
             <span
               className={cn(
-                "flex items-center justify-center w-10 h-12 rounded-control border bg-field text-title-lg font-semibold text-contrast tabular-nums transition",
-                invalid ? "border-danger-fg" : focused && i === caret ? "border-accent-line bg-raised" : "border-control-line",
+                "flex items-center justify-center w-10 h-12 rounded-control border bg-field text-lead font-semibold text-strong tabular-nums transition",
+                invalid ? "border-danger-fg" : focused && i === caret ? "border-outline-line bg-raised" : "border-control-line",
                 disabled && "opacity-40",
               )}
             >
-              {value[i] ?? (focused && i === caret ? <span className="w-px h-5 bg-contrast animate-pulse" /> : "")}
+              {value[i] ?? (focused && i === caret ? <span className="w-px h-5 bg-strong animate-pulse" /> : "")}
             </span>
           </React.Fragment>
         ))}

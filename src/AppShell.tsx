@@ -285,13 +285,13 @@ export function AppShell({
   const labelHidden = collapsed ? "hidden" : "hidden lg:block";
   const rowLayout = collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2.5 lg:px-2.5";
   const navItemClass = cn(
-    "w-full h-9 flex items-center rounded-control text-label font-medium transition whitespace-nowrap cursor-pointer",
+    "w-full h-9 flex items-center rounded-control text-ui font-medium transition whitespace-nowrap cursor-pointer",
     FOCUS_RING,
     rowLayout,
   );
   const navLabelClass = cn(labelHidden, "flex-1 min-w-0 truncate text-left");
   // the narrow rail (collapsed, or below lg) shows a short name in place of the label when an item has no icon
-  const navShortClass = `${collapsed ? "block" : "block lg:hidden"} text-caption font-semibold leading-none truncate max-w-full`;
+  const navShortClass = `${collapsed ? "block" : "block lg:hidden"} text-ui font-semibold leading-none truncate max-w-full`;
 
   const withTip = (label: string, node: React.ReactElement, key: string) =>
     rail ? (
@@ -308,10 +308,10 @@ export function AppShell({
     // A parent whose sub-item is active reads as current but keeps the fill for the sub-item (rail: the parent is all there is).
     const active = activeId === item.id || (open && !submenuVisible) || megaId === item.id;
     const stateClass = active
-      ? "bg-tint-hover text-contrast"
+      ? "bg-tint-hover text-strong"
       : open
-        ? "text-contrast hover:bg-tint"
-        : "text-body hover:text-contrast hover:bg-tint";
+        ? "text-strong hover:bg-tint"
+        : "text-body hover:text-strong hover:bg-tint";
     const expanded = hasChildren ? { "aria-expanded": open && submenuVisible } : {};
     const title = rail ? undefined : item.label;
     const inner = (
@@ -444,9 +444,9 @@ export function AppShell({
         {item.children.map((child) => {
           const active = activeId === child.id;
           const cls = cn(
-            "w-full h-8 flex items-center gap-2 px-2.5 rounded-control text-label transition whitespace-nowrap cursor-pointer",
+            "w-full h-8 flex items-center gap-2 px-2.5 rounded-control text-ui transition whitespace-nowrap cursor-pointer",
             FOCUS_RING,
-            active ? "bg-tint-hover text-contrast font-medium" : "text-muted hover:text-contrast hover:bg-tint",
+            active ? "bg-tint-hover text-strong font-medium" : "text-muted hover:text-strong hover:bg-tint",
           );
           return (
             <li key={child.id}>
@@ -484,13 +484,13 @@ export function AppShell({
   const brandNode = (
     <>
       {logoTile}
-      <span className="hidden lg:block truncate text-ui font-semibold text-contrast tracking-tight">{productName}</span>
+      <span className="hidden lg:block truncate text-ui font-semibold text-strong tracking-tight">{productName}</span>
     </>
   );
   const brandClass = cn("min-w-0 flex items-center gap-2 text-left rounded-control", FOCUS_RING);
 
   const createClass = cn(
-    "shrink-0 h-9 rounded-control bg-accent text-on-accent hover:bg-accent-hover flex items-center justify-center gap-2 text-label font-semibold transition active:scale-[0.99] cursor-pointer",
+    "shrink-0 h-9 rounded-control bg-primary text-on-primary hover:bg-primary-hover flex items-center justify-center gap-2 text-ui font-semibold transition active:scale-[0.99] cursor-pointer",
     FOCUS_RING,
     collapsed ? "w-9 mx-auto" : "w-9 mx-auto lg:w-full lg:mx-0",
   );
@@ -540,13 +540,13 @@ export function AppShell({
     ));
 
   const ctaClass = cn(
-    "shrink-0 w-full h-9 rounded-control bg-accent-subtle hover:bg-accent-subtle-hover border border-accent-line hover:border-accent-line text-contrast flex items-center text-label font-semibold transition active:scale-[0.99] cursor-pointer",
+    "shrink-0 w-full h-9 rounded-control bg-subtle-button hover:bg-item-hover border border-outline-line text-strong flex items-center text-ui font-semibold transition active:scale-[0.99] cursor-pointer",
     FOCUS_RING,
     collapsed ? "justify-center" : "justify-center lg:justify-start lg:gap-2 lg:px-2.5",
   );
   const ctaInner = primaryCta && (
     <>
-      <span className="w-5 h-5 rounded-chip bg-accent text-on-accent flex items-center justify-center shrink-0">
+      <span className="w-5 h-5 rounded-chip bg-inverted text-on-inverted flex items-center justify-center shrink-0">
         <Icon name={primaryCta.icon} className="w-3.5 h-3.5" />
       </span>
       <span className={navLabelClass}>{primaryCta.label}</span>
@@ -595,7 +595,7 @@ export function AppShell({
                     aria-expanded
                     aria-controls={asideId}
                     title={t.collapseMenu}
-                    className={cn("hidden lg:flex w-7 h-7 rounded-control items-center justify-center text-muted hover:text-contrast hover:bg-tint transition shrink-0 cursor-pointer", FOCUS_RING)}
+                    className={cn("hidden lg:flex w-7 h-7 rounded-control items-center justify-center text-muted hover:text-strong hover:bg-tint transition shrink-0 cursor-pointer", FOCUS_RING)}
                   >
                     <Icon name="sidebar" className="w-4 h-4" />
                   </button>
@@ -635,7 +635,7 @@ export function AppShell({
                   <React.Fragment key={section.label ?? idx}>
                     {idx > 0 && <div className="my-1 mx-1.5 border-t border-divider" />}
                     {section.label && !section.hideLabel && (
-                      <div className={cn(collapsed ? "hidden" : "hidden lg:flex", "group shrink-0 items-center justify-between gap-1.5 px-2.5 py-0.5 text-caption font-medium text-muted select-none")}>
+                      <div className={cn(collapsed ? "hidden" : "hidden lg:flex", "group shrink-0 items-center justify-between gap-1.5 px-2.5 py-0.5 text-ui font-medium text-muted select-none")}>
                         <div className="flex items-center gap-1.5 min-w-0 truncate">
                           {section.icon && <Icon name={section.icon} className="w-3.5 h-3.5 text-muted shrink-0" />}
                           <span className="truncate leading-normal">{section.label}</span>
@@ -696,12 +696,12 @@ export function AppShell({
                 aria-label={t.openMenu}
                 aria-haspopup="dialog"
                 aria-expanded={drawerOpen}
-                className={cn("w-11 h-11 rounded-control flex items-center justify-center text-contrast hover:bg-tint transition cursor-pointer", FOCUS_RING)}
+                className={cn("w-11 h-11 rounded-control flex items-center justify-center text-strong hover:bg-tint transition cursor-pointer", FOCUS_RING)}
               >
                 <Icon name="menu" className="w-5 h-5" />
               </button>
               {logoTile}
-              <span className="flex-1 min-w-0 truncate text-ui font-semibold text-contrast tracking-tight">{productName}</span>
+              <span className="flex-1 min-w-0 truncate text-ui font-semibold text-strong tracking-tight">{productName}</span>
             </div>
           )}
 
@@ -750,12 +750,12 @@ export function AppShell({
             <div className="md:hidden fixed inset-0 z-sticky bg-overlay backdrop-blur-sm flex flex-col justify-end pb-16" role="presentation" onClick={() => setMoreOpen(false)}>
               <div className="bg-panel border-t border-line rounded-t-panel p-4 max-h-[75dvh] overflow-y-auto space-y-3" role="presentation" onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-center justify-between px-1">
-                  <span className="font-display text-title font-semibold text-contrast">{productName}</span>
+                  <span className="font-display text-lead font-semibold text-strong">{productName}</span>
                   <button
                     type="button"
                     onClick={() => setMoreOpen(false)}
                     aria-label={t.close}
-                    className="w-8 h-8 rounded-full bg-tint hover:bg-tint-hover flex items-center justify-center text-muted hover:text-contrast transition"
+                    className="w-8 h-8 rounded-full bg-tint hover:bg-tint-hover flex items-center justify-center text-muted hover:text-strong transition"
                   >
                     <Icon name="close" className="w-4 h-4" />
                   </button>
@@ -763,8 +763,8 @@ export function AppShell({
                 <div className="grid grid-cols-2 gap-1.5">
                   {navItems.map((item) => {
                     const cls = cn(
-                      "flex items-center gap-2.5 h-10 px-3 rounded-card text-label font-medium transition",
-                      activeTopId === item.id ? "bg-tint-hover text-contrast" : "bg-tint text-body hover:bg-tint-hover hover:text-contrast",
+                      "flex items-center gap-2.5 h-10 px-3 rounded-card text-ui font-medium transition",
+                      activeTopId === item.id ? "bg-tint-hover text-strong" : "bg-tint text-body hover:bg-tint-hover hover:text-strong",
                     );
                     const pick = () => {
                       onSelect?.(item.id);
@@ -862,7 +862,7 @@ function PhoneDrawer({
   };
 
   const row = cn(
-    "w-full flex items-center gap-3 min-h-12 px-3 rounded-control text-ui font-medium text-contrast hover:bg-tint transition cursor-pointer",
+    "w-full flex items-center gap-3 min-h-12 px-3 rounded-control text-ui font-medium text-strong hover:bg-tint transition cursor-pointer",
     FOCUS_RING,
   );
   // A parent with its own page keeps it reachable: "Tất cả <label>" is the first row of its level.
@@ -920,7 +920,7 @@ function PhoneDrawer({
     <div ref={ref} role="dialog" aria-modal="true" aria-labelledby={titleId} className="md:hidden fixed inset-0 z-drawer bg-panel flex flex-col pt-[env(safe-area-inset-top)]">
       <div className="flex items-center gap-2 h-14 px-2 shrink-0">
         {level ? (
-          <button type="button" data-drawer-back="" onClick={back} className={cn("flex items-center gap-2 h-11 px-2 rounded-control text-ui font-semibold text-contrast hover:bg-tint cursor-pointer min-w-0", FOCUS_RING)}>
+          <button type="button" data-drawer-back="" onClick={back} className={cn("flex items-center gap-2 h-11 px-2 rounded-control text-ui font-semibold text-strong hover:bg-tint cursor-pointer min-w-0", FOCUS_RING)}>
             <Icon name="back" className="w-5 h-5 shrink-0" />
             <span id={titleId} className="truncate">
               {level.label}
@@ -930,12 +930,12 @@ function PhoneDrawer({
         ) : (
           <span className="flex items-center gap-2 px-2 min-w-0">
             {logoTile}
-            <span id={titleId} className="truncate text-ui font-semibold text-contrast tracking-tight">
+            <span id={titleId} className="truncate text-ui font-semibold text-strong tracking-tight">
               {productName}
             </span>
           </span>
         )}
-        <button type="button" onClick={onClose} aria-label={t.closeMenu} className={cn("ml-auto w-11 h-11 shrink-0 rounded-control flex items-center justify-center text-contrast hover:bg-tint cursor-pointer", FOCUS_RING)}>
+        <button type="button" onClick={onClose} aria-label={t.closeMenu} className={cn("ml-auto w-11 h-11 shrink-0 rounded-control flex items-center justify-center text-strong hover:bg-tint cursor-pointer", FOCUS_RING)}>
           <Icon name="close" className="w-5 h-5" />
         </button>
       </div>
@@ -954,7 +954,7 @@ function PhoneDrawer({
                 <>
                   {c.icon && <Icon name={c.icon} className="w-5 h-5 text-muted shrink-0" />}
                   <span className="flex-1 min-w-0 truncate text-left">{c.label}</span>
-                  {c.checked && <Icon name="check" className="w-4 h-4 text-contrast shrink-0" />}
+                  {c.checked && <Icon name="check" className="w-4 h-4 text-strong shrink-0" />}
                 </>
               );
               return (
@@ -983,7 +983,7 @@ function PhoneDrawer({
             })}
             {level.seeAll && (
               <li>
-                <Link href={level.seeAll.href} onClick={onClose} className={cn(row, "text-accent-fg")}>
+                <Link href={level.seeAll.href} onClick={onClose} className={cn(row, "text-strong")}>
                   <span className="flex-1">{level.seeAll.label ?? t.seeAll}</span>
                   <Icon name="arrowRight" className="w-4 h-4 shrink-0" />
                 </Link>
@@ -1005,14 +1005,14 @@ function PhoneDrawer({
                       rows: menuRows("__create", create.items!, "plus"),
                     })
                   }
-                  className={cn("mx-1 flex items-center gap-2 h-11 px-3 rounded-control bg-accent text-on-accent hover:bg-accent-hover text-ui font-semibold cursor-pointer", FOCUS_RING)}
+                  className={cn("mx-1 flex items-center gap-2 h-11 px-3 rounded-control bg-primary text-on-primary hover:bg-primary-hover text-ui font-semibold cursor-pointer", FOCUS_RING)}
                 >
                   <Icon name={create.icon ?? "plus"} className="w-4 h-4 shrink-0" />
                   <span className="flex-1 text-left">{create.label}</span>
                   <Icon name="chevron" className="w-4 h-4 shrink-0" />
                 </button>
               ) : create.href ? (
-                <Link href={create.href} onClick={onClose} className={cn("mx-1 flex items-center justify-center gap-2 h-11 rounded-control bg-accent text-on-accent hover:bg-accent-hover text-ui font-semibold", FOCUS_RING)}>
+                <Link href={create.href} onClick={onClose} className={cn("mx-1 flex items-center justify-center gap-2 h-11 rounded-control bg-primary text-on-primary hover:bg-primary-hover text-ui font-semibold", FOCUS_RING)}>
                   <Icon name={create.icon ?? "plus"} className="w-4 h-4" />
                   {create.label}
                 </Link>
@@ -1023,7 +1023,7 @@ function PhoneDrawer({
                     onClose();
                     create.onClick?.();
                   }}
-                  className={cn("mx-1 flex items-center justify-center gap-2 h-11 rounded-control bg-accent text-on-accent hover:bg-accent-hover text-ui font-semibold cursor-pointer", FOCUS_RING)}
+                  className={cn("mx-1 flex items-center justify-center gap-2 h-11 rounded-control bg-primary text-on-primary hover:bg-primary-hover text-ui font-semibold cursor-pointer", FOCUS_RING)}
                 >
                   <Icon name={create.icon ?? "plus"} className="w-4 h-4" />
                   {create.label}
@@ -1032,7 +1032,7 @@ function PhoneDrawer({
             {sections.map((s, idx) =>
               s.items?.length ? (
                 <nav key={s.label ?? idx} aria-label={s.label ?? (idx === 0 ? t.mainMenu : `Menu ${idx + 1}`)}>
-                  {s.label && !s.hideLabel && idx > 0 && <div className="px-3 pb-1 text-caption font-medium text-muted">{s.label}</div>}
+                  {s.label && !s.hideLabel && idx > 0 && <div className="px-3 pb-1 text-ui font-medium text-muted">{s.label}</div>}
                   <ul className="flex flex-col gap-0.5">{s.items.map(renderRow)}</ul>
                 </nav>
               ) : null,
@@ -1052,7 +1052,7 @@ function PhoneDrawer({
           {utilities.length > 0 && (
             <ul className="grid grid-flow-col auto-cols-fr gap-1">
               {utilities.map((u) => {
-                const cls = cn("w-full flex flex-col items-center gap-1 py-2 rounded-control text-caption text-muted hover:text-contrast hover:bg-tint transition cursor-pointer", FOCUS_RING);
+                const cls = cn("w-full flex flex-col items-center gap-1 py-2 rounded-control text-ui text-muted hover:text-strong hover:bg-tint transition cursor-pointer", FOCUS_RING);
                 const body = (
                   <>
                     <Icon name={u.icon ?? "box"} className={cn("w-5 h-5", u.iconHidden && "opacity-0")} />

@@ -4,141 +4,183 @@ export const FOUNDATIONS = {
     {
       "key": "color-canvas",
       "cls": "bg-canvas",
-      "note": "Khung ngoài cùng AppShell, lớp bọc toàn trang",
-      "dark": "#0f1011",
-      "light": "#eff3f7"
+      "note": "Nền trang, khung quanh các panel",
+      "dark": "#101010",
+      "light": "#ebebeb"
     },
     {
       "key": "color-app",
       "cls": "bg-app",
-      "note": "Nền chính của content panel, trang nội dung",
-      "dark": "#151619",
-      "light": "#f7f9fb"
+      "note": "Cột nội dung, chứa header của route",
+      "dark": "#161616",
+      "light": "#f3f3f3"
     },
     {
       "key": "color-panel",
       "cls": "bg-panel",
-      "note": "Thẻ Card, sidebar, thanh công cụ",
-      "dark": "#191b1f",
+      "note": "Panel nav, thẻ nội dung, sub-nav, modal",
+      "dark": "#1a1a1a",
       "light": "#ffffff"
     },
     {
       "key": "color-field",
       "cls": "bg-field",
-      "note": "Ô nhập, nền của control và popup",
-      "dark": "#202328",
-      "light": "#eff3f7"
+      "note": "Nền ô nhập",
+      "dark": "#222222",
+      "light": "#ffffff"
+    },
+    {
+      "key": "color-field-focus",
+      "cls": "bg-field-focus",
+      "note": "Nền ô nhập khi focus (tối hơn một bậc)",
+      "dark": "#161616",
+      "light": "#f7f7f7"
     },
     {
       "key": "color-raised",
       "cls": "bg-raised",
-      "note": "Hover, track, dòng được chọn",
-      "dark": "#2b2e34",
-      "light": "#e1e7ef"
+      "note": "Track segmented, nút toolbar, vạch chia nhóm nav",
+      "dark": "#2b2b2b",
+      "light": "#e6e6e6"
+    },
+    {
+      "key": "color-raised-2",
+      "cls": "bg-raised-2",
+      "note": "Viên đang chọn của segmented (trên track raised)",
+      "dark": "#424242",
+      "light": "#ffffff"
     }
   ],
   "text": [
     {
-      "key": "color-text-contrast",
-      "cls": "text-contrast",
-      "note": "Tiêu đề, giá trị quan trọng",
-      "dark": "#ffffff",
-      "light": "#0f172a"
+      "key": "color-text-strong",
+      "cls": "text-strong",
+      "note": "Tiêu đề, mục đang chọn, giá trị",
+      "dark": "#f5f5f5",
+      "light": "#111111"
     },
     {
       "key": "color-text-body",
       "cls": "text-body",
-      "note": "Nội dung chính",
-      "dark": "#d1d5db",
-      "light": "#334155"
+      "note": "Chữ trong thẻ, nội dung",
+      "dark": "#e3e3e3",
+      "light": "#2b2b2b"
     },
     {
       "key": "color-text-muted",
       "cls": "text-muted",
-      "note": "Nhãn phụ, placeholder, gợi ý",
-      "dark": "#9ba1aa",
-      "light": "#5b6779"
+      "note": "Mô tả, tab / nav chưa chọn, breadcrumb, placeholder",
+      "dark": "#b1b1b1",
+      "light": "#4f4f4f"
     },
     {
-      "key": "color-line",
-      "cls": "border-line",
-      "note": "Viền card, bảng, khung",
-      "dark": "rgba(255, 255, 255, 0.12)",
-      "light": "rgba(0, 0, 0, 0.08)"
+      "key": "color-text-faint",
+      "cls": "text-faint",
+      "note": "Nhãn nhóm, gợi ý phím, \"Untitled\"",
+      "dark": "#8a8a8a",
+      "light": "#656565"
     },
     {
-      "key": "color-control-line",
-      "cls": "border-control-line",
-      "note": "Viền ô nhập, checkbox, radio (≥ 3:1)",
-      "dark": "text-muted 65%",
-      "light": "text-muted 80%"
+      "key": "color-field-line",
+      "cls": "border-field-line",
+      "note": "Viền ô nhập lúc nghỉ",
+      "dark": "contrast 10%",
+      "light": "contrast 10%"
     },
     {
-      "key": "color-divider",
-      "cls": "border-divider",
-      "note": "Đường ngăn trong một khối",
-      "dark": "rgba(255, 255, 255, 0.05)",
-      "light": "rgba(0, 0, 0, 0.05)"
+      "key": "color-field-line-focus",
+      "cls": "border-field-line-focus",
+      "note": "Viền ô nhập khi focus",
+      "dark": "contrast 25%",
+      "light": "contrast 25%"
     },
     {
-      "key": "color-accent",
-      "cls": "bg-accent",
-      "note": "Nền nút chính, dấu đang chọn",
-      "dark": "primary-500",
-      "light": "primary-700"
+      "key": "color-outline-line",
+      "cls": "border-outline-line",
+      "note": "Viền nút outline",
+      "dark": "contrast 20%",
+      "light": "contrast 20%"
     },
     {
-      "key": "color-accent-fg",
-      "cls": "text-accent-fg",
-      "note": "Chữ và icon nhấn trên nền tối/sáng",
-      "dark": "primary-400",
-      "light": "primary-800"
+      "key": "color-item-hover",
+      "cls": "bg-item-hover",
+      "note": "Hover của dòng, mục nav và sub-nav",
+      "dark": "contrast 5%",
+      "light": "contrast 9%"
+    },
+    {
+      "key": "color-item-selected",
+      "cls": "bg-item-selected",
+      "note": "Mục nav đang chọn, dòng đang mở",
+      "dark": "contrast 15%",
+      "light": "contrast 15%"
+    },
+    {
+      "key": "color-item-checked",
+      "cls": "bg-item-checked",
+      "note": "Dòng / thẻ được tick khi chọn nhiều",
+      "dark": "contrast 9%",
+      "light": "contrast 12%"
+    },
+    {
+      "key": "color-subtle-button",
+      "cls": "bg-subtle-button",
+      "note": "Nền nút thường trong nội dung",
+      "dark": "contrast 5%",
+      "light": "contrast 5%"
+    },
+    {
+      "key": "color-primary",
+      "cls": "bg-primary",
+      "note": "Màu brand: nút chính, badge đếm, gạch chân tab lớn đang chọn",
+      "dark": "#00ae42",
+      "light": "#00ae42"
     }
   ],
   "type": [
     {
-      "cls": "text-caption",
-      "size": "11px / 1.5"
+      "cls": "text-hero",
+      "size": "36px / 1.1"
     },
     {
-      "cls": "text-label",
-      "size": "12px / 1.5"
+      "cls": "text-title-xl",
+      "size": "44px / 1.2"
     },
     {
-      "cls": "text-ui",
-      "size": "14px / 1.5"
+      "cls": "text-tab-xl",
+      "size": "28px / 1.2"
     },
     {
-      "cls": "text-ui-lg",
-      "size": "15px / 1.5"
-    },
-    {
-      "cls": "text-title",
-      "size": "15px / 1.5"
-    },
-    {
-      "cls": "text-title-lg",
-      "size": "16px / 1.5"
+      "cls": "text-section",
+      "size": "20px / 1.3"
     },
     {
       "cls": "text-figure",
       "size": "18px / 1.25"
     },
     {
-      "cls": "text-heading-sm",
-      "size": "20px / 1.25"
+      "cls": "text-lead",
+      "size": "15px / 1.6"
     },
     {
-      "cls": "text-heading",
-      "size": "22px / 1.25"
+      "cls": "text-copy",
+      "size": "14px / 1.5715"
     },
     {
-      "cls": "text-heading-lg",
-      "size": "24px / 1.25"
+      "cls": "text-input",
+      "size": "16px / 1.5"
     },
     {
-      "cls": "text-display",
-      "size": "26px / 1.25"
+      "cls": "text-ui",
+      "size": "12px / 1.5"
+    },
+    {
+      "cls": "text-tag",
+      "size": "10px / 1.4"
+    },
+    {
+      "cls": "text-badge",
+      "size": "10px / 1"
     },
     {
       "cls": "text-overline",
@@ -187,63 +229,78 @@ export const FOUNDATIONS = {
     {
       "name": "ease-in-soft",
       "value": "cubic-bezier(0.4, 0, 1, 1)"
+    },
+    {
+      "name": "motion-hover",
+      "value": "150ms ease-in-out"
+    },
+    {
+      "name": "motion-nav",
+      "value": "150ms cubic-bezier(0.4, 0, 0.2, 1)"
+    },
+    {
+      "name": "motion-crumb-in",
+      "value": "220ms cubic-bezier(0.22, 1, 0.36, 1)"
+    },
+    {
+      "name": "motion-crumb-out",
+      "value": "160ms cubic-bezier(0.4, 0, 1, 1)"
+    },
+    {
+      "name": "motion-enter",
+      "value": "400ms cubic-bezier(0.25, 0.46, 0.45, 0.94)"
+    },
+    {
+      "name": "motion-stagger",
+      "value": "35ms"
+    },
+    {
+      "name": "motion-pulse",
+      "value": "2.5s ease-in-out"
+    },
+    {
+      "name": "motion-tooltip",
+      "value": "200ms cubic-bezier(0.16, 1, 0.3, 1)"
+    },
+    {
+      "name": "motion-disclosure",
+      "value": "300ms ease-out"
+    },
+    {
+      "name": "motion-disclosure-close",
+      "value": "300ms ease-in"
+    },
+    {
+      "name": "motion-slide",
+      "value": "300ms ease-out"
+    },
+    {
+      "name": "motion-crumb-distance",
+      "value": "-6px"
+    },
+    {
+      "name": "motion-enter-distance",
+      "value": "4px"
+    },
+    {
+      "name": "motion-tooltip-scale",
+      "value": "0.96"
     }
   ],
-  "styles": [
-    {
-      "id": "flat",
-      "name": "Flat",
-      "description": "Cool neutral greys, thin borders, no card shadows, medium radii, compact 34px controls, Geist. Dense, information-first screens: dashboards, tools, admin.",
-      "fonts": [
-        "Geist",
-        "Montserrat Alternates"
-      ],
-      "radius": {
-        "chip": "0.25rem",
-        "control": "0.5rem",
-        "card": "0.75rem",
-        "panel": "1rem"
-      },
-      "controlHeight": "34px",
-      "fieldHeight": "36px",
-      "cardBorder": "1px solid transparent",
-      "cardShadow": "0 0 #0000"
+  "shape": {
+    "fonts": [
+      "Geist"
+    ],
+    "radius": {
+      "chip": "0.25rem",
+      "control": "0.5rem",
+      "card": "0.75rem",
+      "panel": "1rem"
     },
-    {
-      "id": "sharp",
-      "name": "Sharp",
-      "description": "Off-black ink and off-white, strong 2px borders, square corners, a hard offset shadow, Space Grotesk. Bold, editorial screens: landing pages, portfolios, creative tools.",
-      "fonts": [
-        "Space Grotesk"
-      ],
-      "radius": {
-        "chip": "0.125rem",
-        "control": "0",
-        "card": "0",
-        "panel": "0"
-      },
-      "controlHeight": "36px",
-      "fieldHeight": "40px",
-      "cardBorder": "2px solid var(--semi-line-hover)",
-      "cardShadow": "4px 4px 0 var(--semi-line-hover)"
-    },
-    {
-      "id": "soft",
-      "name": "Soft",
-      "description": "Warm, tinted neutrals, borderless cards lifted by a soft shadow, large radii, roomy 40px controls, Plus Jakarta Sans. Calm, friendly screens: consumer apps, storefronts, onboarding.",
-      "fonts": [
-        "Plus Jakarta Sans"
-      ],
-      "radius": {
-        "chip": "0.375rem",
-        "control": "0.75rem",
-        "card": "1.25rem",
-        "panel": "1.5rem"
-      },
-      "controlHeight": "40px",
-      "fieldHeight": "44px",
-      "cardBorder": "1px solid transparent",
-      "cardShadow": "0 1px 2px var(--semi-shadow-tint), 0 10px 28px -10px var(--semi-shadow-tint)"
-    }
-  ]
+    "controlHeight": "34px",
+    "fieldHeight": "36px",
+    "cardBorder": "1px solid transparent",
+    "cardShadow": "0 0 #0000",
+    "titleWeight": "500"
+  }
 } as const;

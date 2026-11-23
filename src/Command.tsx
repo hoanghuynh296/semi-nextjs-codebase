@@ -188,7 +188,7 @@ export function Command({
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={onKey}
           placeholder={placeholder ?? t.commandPlaceholder}
-          className={cn("flex-1 min-w-0 h-full bg-transparent text-contrast placeholder:text-muted outline-none", lg ? "text-ui-lg max-sm:text-title-lg" : "text-ui max-sm:text-title-lg")}
+          className={cn("flex-1 min-w-0 h-full bg-transparent text-strong placeholder:text-muted outline-none", lg ? "text-lead max-sm:text-input" : "text-ui max-sm:text-input")}
         />
         {inputEnd}
       </div>
@@ -199,7 +199,7 @@ export function Command({
         {groups.map((g, gi) => (
           <div key={g.name || gi} role="group" aria-labelledby={g.name ? `${base}-g-${gi}` : undefined} className="py-1">
             {g.name && (
-              <div id={`${base}-g-${gi}`} role="presentation" className={lg ? "px-3 pt-2 pb-1 text-overline text-muted" : "px-2 pb-1 text-caption font-medium text-muted"}>
+              <div id={`${base}-g-${gi}`} role="presentation" className={lg ? "px-3 pt-2 pb-1 text-overline text-muted" : "px-2 pb-1 text-ui font-medium text-muted"}>
                 {g.name}
               </div>
             )}
@@ -217,7 +217,7 @@ export function Command({
                 className={cn(
                   "flex items-center rounded-control text-ui cursor-pointer",
                   lg ? "gap-3 px-2.5 py-2" : cn("gap-2.5 px-2.5", it.hint ? "py-1.5" : "h-9"),
-                  it.disabled ? "opacity-40 cursor-not-allowed" : index === active ? (lg ? "bg-tint-hover text-contrast" : "bg-raised text-contrast") : "text-body",
+                  it.disabled ? "opacity-40 cursor-not-allowed" : index === active ? (lg ? "bg-tint-hover text-strong" : "bg-raised text-strong") : "text-body",
                 )}
               >
                 {it.icon &&
@@ -232,11 +232,11 @@ export function Command({
                   ))}
                 {it.hint ? (
                   <span className="flex-1 min-w-0">
-                    <span className={cn("block truncate", lg && "text-label font-medium text-contrast")}>{it.label}</span>
-                    <span className="block text-caption text-muted truncate">{it.hint}</span>
+                    <span className={cn("block truncate", lg && "text-ui font-medium text-strong")}>{it.label}</span>
+                    <span className="block text-ui text-muted truncate">{it.hint}</span>
                   </span>
                 ) : (
-                  <span className={cn("flex-1 min-w-0 truncate", lg && "text-label font-medium text-contrast")}>{it.label}</span>
+                  <span className={cn("flex-1 min-w-0 truncate", lg && "text-ui font-medium text-strong")}>{it.label}</span>
                 )}
                 {it.shortcut && <Kbd keys={it.shortcut} />}
               </div>
@@ -428,7 +428,7 @@ export function CommandPalette({
           }
           inputEnd={<Kbd className="max-sm:hidden">Esc</Kbd>}
           footer={
-            <div className="max-sm:hidden flex items-center gap-4 h-10 px-4 border-t border-divider text-caption text-muted shrink-0">
+            <div className="max-sm:hidden flex items-center gap-4 h-10 px-4 border-t border-divider text-ui text-muted shrink-0">
               {legend(["↑", "↓"], t.paletteSelect)}
               {legend(["↵"], t.paletteOpen)}
               {legend(["⌘", "↵"], t.paletteNewTab)}

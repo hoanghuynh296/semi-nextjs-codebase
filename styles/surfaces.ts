@@ -18,12 +18,12 @@ export const CARD_BORDERED_HOVER = `${CARD_BORDERED} hover:border-line-hover act
 export const HERO = "relative overflow-hidden rounded-panel border-card bg-card shadow-card p-card sm:p-panel";
 
 /** Add to CARD for an active / "on" / printing card: primary border, no glow. */
-export const CARD_ACTIVE = "!border-accent-line";
+export const CARD_ACTIVE = "!border-outline-line";
 
 /** Flat status dot (add a size, e.g. `w-2 h-2 rounded-full`). */
 export const STATUS_DOT = {
   online: "bg-success-solid",
-  printing: "bg-accent animate-pulse",
+  printing: "bg-inverted animate-pulse",
   busy: "bg-warning-solid",
   error: "bg-danger-solid",
   offline: "bg-muted",
@@ -40,35 +40,35 @@ export const TILE = "rounded-control bg-card-field";
 
 /** Section heading row: <div className={SECTION_HEAD}><h2 className={SECTION_TITLE}>…</h2><span className={COUNT_PILL}>3</span></div> */
 export const SECTION_HEAD = "flex items-center gap-2 px-1";
-export const SECTION_TITLE = "text-ui font-semibold text-contrast tracking-tight";
-export const COUNT_PILL = "h-4 min-w-[18px] px-1.5 rounded-full bg-raised text-caption tabular-nums text-muted inline-flex items-center justify-center";
+export const SECTION_TITLE = "text-ui font-semibold text-strong tracking-tight";
+export const COUNT_PILL = "h-4 min-w-[18px] px-1.5 rounded-full bg-raised text-ui tabular-nums text-muted inline-flex items-center justify-center";
 
 /** Text link on the right of a section heading ("Quản lý ›"). */
-export const SECTION_LINK = "ml-auto inline-flex items-center gap-1 text-label font-medium text-muted hover:text-contrast transition";
+export const SECTION_LINK = "ml-auto inline-flex items-center gap-1 text-ui font-medium text-muted hover:text-strong transition";
 
 /** Empty state: dashed card, icon above one short line. Usually a <button> that adds the first item. */
 export const EMPTY =
-  "rounded-card border border-dashed border-line p-8 flex flex-col items-center gap-2.5 text-center text-label text-muted hover:text-contrast hover:border-line-hover transition outline-none focus-visible:ring-2 focus-visible:ring-focus";
+  "rounded-card border border-dashed border-line p-8 flex flex-col items-center gap-2.5 text-center text-ui text-muted hover:text-strong hover:border-line-hover transition outline-none focus-visible:ring-2 focus-visible:ring-focus";
 
 /** Non-interactive empty state (EmptyState): same dashed card as EMPTY without the hover. */
 export const EMPTY_STATIC =
-  "rounded-card border border-dashed border-line p-8 flex flex-col items-center gap-2.5 text-center text-label text-muted";
+  "rounded-card border border-dashed border-line p-8 flex flex-col items-center gap-2.5 text-center text-ui text-muted";
 
 /** Phone cap for an empty or error state (P13): compact padding, at most 40% of the viewport, scrolls inside if a long text still overflows. */
 export const EMPTY_PHONE_CAP = "max-sm:p-4 max-sm:gap-2 max-sm:max-h-[40svh] max-sm:overflow-y-auto";
 
 /** Square icon-only action button in a card header (edit, delete, more). */
 export const ICON_BTN =
-  "w-7 h-7 rounded-control flex items-center justify-center text-muted hover:text-contrast bg-tint hover:bg-tint-hover transition outline-none focus-visible:ring-2 focus-visible:ring-focus active:scale-95";
+  "w-7 h-7 rounded-control flex items-center justify-center text-muted hover:text-strong bg-tint hover:bg-tint-hover transition outline-none focus-visible:ring-2 focus-visible:ring-focus active:scale-95";
 export const ICON_BTN_DANGER =
   "w-7 h-7 rounded-control flex items-center justify-center text-muted hover:text-danger-fg bg-tint hover:bg-danger-bg active:bg-danger-border transition outline-none focus-visible:ring-2 focus-visible:ring-focus active:scale-95";
 
 /** Close button in modal headers: visible background pill with clear contrast, easily tappable on dark backgrounds. */
 export const MODAL_CLOSE =
-  "w-9 h-9 sm:w-8 sm:h-8 rounded-full bg-tint hover:bg-tint-hover text-muted hover:text-contrast flex items-center justify-center transition outline-none focus-visible:ring-2 focus-visible:ring-focus active:scale-95 shrink-0";
+  "w-9 h-9 sm:w-8 sm:h-8 rounded-full bg-tint hover:bg-tint-hover text-muted hover:text-strong flex items-center justify-center transition outline-none focus-visible:ring-2 focus-visible:ring-focus active:scale-95 shrink-0";
 
 /** Status pill (device state, job result): coloured 15% fill + 300 text. */
-export const STATUS_PILL = "inline-flex items-center gap-1.5 h-6 px-2 rounded-full text-caption font-medium whitespace-nowrap";
+export const STATUS_PILL = "inline-flex items-center gap-1.5 h-6 px-2 rounded-full text-ui font-medium whitespace-nowrap";
 
 /** Standard chromatic tones across the Semi ecosystem. */
 export type SemanticTone =
@@ -110,7 +110,7 @@ export const TONAL_SURFACE: Record<SemanticTone, string> = {
 };
 
 /** Tonal badge base class (11px or 12px pill). */
-export const BADGE_BASE = "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-caption font-medium border whitespace-nowrap";
+export const BADGE_BASE = "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-ui font-medium border whitespace-nowrap";
 
 /** Dual-theme tonal container (cards, callouts, alert banners): 10% alpha fill + 20% alpha border + dual-theme text. */
 export const TONAL_CONTAINER = TONAL_SURFACE;
@@ -148,7 +148,7 @@ export const MODAL_PANEL =
 /** Modal header row: icon/title left, close button right. Includes safe-area padding on mobile. */
 export const MODAL_HEAD = "px-5 pt-4 max-sm:pt-[max(1rem,env(safe-area-inset-top))] pb-3 flex items-center justify-between gap-3 shrink-0";
 /** Modal title. */
-export const MODAL_TITLE = "text-title font-semibold text-contrast tracking-tight truncate";
+export const MODAL_TITLE = "text-lead font-semibold text-strong tracking-tight truncate";
 /** Modal footer: buttons right-aligned; stretched on a phone with safe-area bottom padding. */
 export const MODAL_FOOT =
   "px-5 py-3 max-sm:pb-[max(1rem,env(safe-area-inset-bottom))] border-t border-divider flex items-center justify-end gap-2 shrink-0 max-sm:*:flex-1";
@@ -166,19 +166,19 @@ export const FORM_ACTIONS = "flex items-center justify-end gap-2 flex-wrap";
 export const FORM_ACTIONS_STICKY = "sticky bottom-0 z-sticky -mx-4 sm:-mx-6 px-4 sm:px-6 pt-3 bg-app border-t border-divider";
 
 /** Form field label above an input/select/textarea. */
-export const FIELD_LABEL = "block text-label font-medium text-muted mb-1";
+export const FIELD_LABEL = "block text-ui font-medium text-muted mb-1";
 
 /** Text size of a field you type in: 16px below `sm` (iOS Safari zooms the page on focus into a field under 16px and
  * never zooms back), the size of the component from `sm` up. Add it to every text-entry control. */
-export const FIELD_TEXT_PHONE = "max-sm:text-title-lg";
+export const FIELD_TEXT_PHONE = "max-sm:text-input";
 
 /** Form text input: semantic field surface with crisp border-line. */
 export const FIELD_INPUT =
-  "w-full h-field bg-field border border-control-line hover:border-control-line-hover rounded-control px-3 text-ui max-sm:text-title-lg text-contrast placeholder:text-muted focus:outline-none focus:border-focus focus:ring-1 focus:ring-focus focus:bg-raised transition-colors disabled:opacity-40";
+  "w-full h-field bg-field border border-control-line hover:border-control-line-hover rounded-control px-3 text-ui max-sm:text-input text-strong placeholder:text-muted focus:outline-none focus:border-focus focus:ring-1 focus:ring-focus focus:bg-raised transition-colors disabled:opacity-40";
 
 /** Form textarea: matches FIELD_INPUT contrast and focus border. */
 export const FIELD_TEXTAREA =
-  "w-full bg-field border border-control-line hover:border-control-line-hover rounded-control px-3 py-2 text-ui max-sm:text-title-lg text-contrast placeholder:text-muted focus:outline-none focus:border-focus focus:ring-1 focus:ring-focus focus:bg-raised transition-colors disabled:opacity-40";
+  "w-full bg-field border border-control-line hover:border-control-line-hover rounded-control px-3 py-2 text-ui max-sm:text-input text-strong placeholder:text-muted focus:outline-none focus:border-focus focus:ring-1 focus:ring-focus focus:bg-raised transition-colors disabled:opacity-40";
 
 /** 2-panel floating Bento shell classes (used by AppShell). */
 export const SHELL_OUTER =

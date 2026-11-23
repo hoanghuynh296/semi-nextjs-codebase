@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // The plugin ships on its own (marketplace source ./plugin), so /semi-check carries copies of the lint and tokens.
 // This keeps those copies byte-identical to the sources (/semi-new-app imports the codemod from the same folder).
-//   node scripts/sync-vendor.mjs           copy lint/*.mjs + tokens/tokens.json + tokens/styles.json into the plugin
+//   node scripts/sync-vendor.mjs           copy lint/*.mjs + tokens/tokens.json into the plugin
 //   node scripts/sync-vendor.mjs --check   exit 1 when a copy is stale (npm run check)
 import { copyFileSync, existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -16,7 +16,6 @@ const COPIES = [
   ["lint/density.mjs", `${VENDOR}/density.mjs`],
   ["lint/a11y.mjs", `${VENDOR}/a11y.mjs`],
   ["tokens/tokens.json", `${VENDOR}/tokens.json`],
-  ["tokens/styles.json", `${VENDOR}/styles.json`],
   // Antigravity loads every file in plugin/rules; semi-ui.md must stay identical to AGENTS.md.
   ["plugin/rules/AGENTS.md", "plugin/rules/semi-ui.md"],
   // Claude Code reads hooks/hooks.json, other hosts the copy at the plugin root.

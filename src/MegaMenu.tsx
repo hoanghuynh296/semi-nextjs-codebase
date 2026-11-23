@@ -174,15 +174,15 @@ export function MegaMenu({
                   >
                     {it.icon && <Icon name={it.icon} className="w-4 h-4 mt-0.5 text-muted shrink-0" />}
                     <span className="min-w-0 flex-1">
-                      <span className="flex items-center gap-1.5 text-label font-medium text-contrast">
+                      <span className="flex items-center gap-1.5 text-ui font-medium text-strong">
                         <span className="truncate">{it.label}</span>
                         {it.isNew && (
-                          <span className="shrink-0 h-4 px-1.5 rounded-full bg-accent-subtle text-accent-fg text-caption font-semibold leading-none inline-flex items-center">
+                          <span className="shrink-0 h-4 px-1.5 rounded-full bg-item-selected text-strong text-ui font-semibold leading-none inline-flex items-center">
                             {t.newBadge}
                           </span>
                         )}
                       </span>
-                      {it.hint && <span className="block text-caption text-muted truncate">{it.hint}</span>}
+                      {it.hint && <span className="block text-ui text-muted truncate">{it.hint}</span>}
                     </span>
                   </Link>
                 </li>
@@ -196,7 +196,7 @@ export function MegaMenu({
           <Link
             href={seeAll.href}
             onClick={onClose}
-            className={cn("inline-flex items-center gap-1 rounded-control px-2 py-1 text-label font-medium text-accent-fg hover:underline", FOCUS_RING)}
+            className={cn("inline-flex items-center gap-1 rounded-control px-2 py-1 text-ui font-medium text-strong hover:underline", FOCUS_RING)}
           >
             {seeAll.label ?? t.seeAll}
             <Icon name="arrowRight" className="w-3.5 h-3.5" />

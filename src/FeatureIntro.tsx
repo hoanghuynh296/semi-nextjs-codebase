@@ -164,7 +164,7 @@ export function FeatureIntro({
           {s.visual}
         </div>
         <div aria-live="polite" className="p-card sm:p-panel flex flex-col gap-2">
-          <h2 id={titleId} className="text-title font-title font-semibold text-contrast">
+          <h2 id={titleId} className="text-lead font-title font-semibold text-strong">
             {s.title}
           </h2>
           <p id={`${titleId}-body`} className="text-ui text-body">
@@ -177,7 +177,7 @@ export function FeatureIntro({
               <>
                 <span className="sr-only">{t.stepOf(at + 1, slides.length)}</span>
                 {slides.map((_, n) => (
-                  <span key={n} aria-hidden className={cn("h-1.5 rounded-full transition-all motion-reduce:transition-none", n === at ? "w-5 bg-contrast" : "w-1.5 bg-raised")} />
+                  <span key={n} aria-hidden className={cn("h-1.5 rounded-full transition-all motion-reduce:transition-none", n === at ? "w-5 bg-strong" : "w-1.5 bg-raised")} />
                 ))}
               </>
             )}

@@ -34,7 +34,7 @@ export default function ModalLayers() {
           />
         </Field>
         <Popover label="Nhiệt độ gợi ý" trigger={<Button>Nhiệt độ gợi ý</Button>}>
-          <p className="text-label text-body">PLA 200–220 °C, PETG 230–250 °C.</p>
+          <p className="text-ui text-body">PLA 200–220 °C, PETG 230–250 °C.</p>
           <Button>Áp dụng</Button>
         </Popover>
       </Modal>

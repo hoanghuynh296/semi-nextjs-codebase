@@ -116,14 +116,14 @@ export function Slider(props: SliderProps) {
   return (
     <div className={cn("space-y-2", disabled && "opacity-40", className)}>
       <div className="flex items-center justify-between gap-3">
-        <span id={`${id}-label`} className="text-label font-medium text-muted">
+        <span id={`${id}-label`} className="text-ui font-medium text-muted">
           {label}
         </span>
-        {showValue && <span className="text-label font-medium text-contrast tabular-nums">{values.map(format).join(" – ")}</span>}
+        {showValue && <span className="text-ui font-medium text-strong tabular-nums">{values.map(format).join(" – ")}</span>}
       </div>
       <div ref={trackRef} onPointerDown={onPointerDown} className={cn("relative h-5 touch-none select-none", disabled ? "cursor-not-allowed" : "cursor-pointer")}>
         <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-1.5 rounded-full bg-raised" />
-        <div className="absolute top-1/2 -translate-y-1/2 h-1.5 rounded-full bg-accent" style={{ left: `${lo}%`, width: `${hi - lo}%` }} />
+        <div className="absolute top-1/2 -translate-y-1/2 h-1.5 rounded-full bg-inverted" style={{ left: `${lo}%`, width: `${hi - lo}%` }} />
         {values.map((v, i) => (
           <div
             key={i}
@@ -137,7 +137,7 @@ export function Slider(props: SliderProps) {
             aria-disabled={disabled || undefined}
             onKeyDown={(e) => !disabled && onKey(e, i)}
             style={{ left: `${pct(v)}%` }}
-            className={cn("absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-panel border-2 border-accent shadow-float outline-none focus-visible:ring-4 focus-visible:ring-focus", HIT_AREA)}
+            className={cn("absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-panel border-2 border-inverted shadow-float outline-none focus-visible:ring-4 focus-visible:ring-focus", HIT_AREA)}
           >
             {range && (
               <span id={`${id}-thumb-${i}`} className="sr-only">

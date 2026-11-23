@@ -3,13 +3,12 @@
 import React from "react";
 import Link from "next/link";
 import tokens from "../tokens/tokens.json";
-import styleList from "../tokens/styles.json";
 import { PARAMS } from "../brand/params.mjs";
 import { decodeDraft, diffDraft, emptyDraft, isEmptyDraft, labCss } from "../scripts/lab.mjs";
 import { Button } from "../src/Button";
 import { Icon } from "../src/Icon";
 
-// Docs site only: the Design Lab (docs/LAB.md). A draft of core values (type, styles, densities, generator params) is
+// Docs site only: the Design Lab (docs/LAB.md). A draft of core values (type, shape, densities, generator params) is
 // applied on every page until it is reset; it comes from the Lab page or a shared link (#lab=<base64url draft>).
 export const LAB_STORAGE_KEY = "semi-lab-draft";
 const LAB_EVENT = "semi-lab-draft";
@@ -19,13 +18,13 @@ export type LabDraft = {
   type: Record<string, string>;
   density: Record<string, { spacing?: string; sizes?: Record<string, string> }>;
   typeScale: Record<string, { sizes?: Record<string, string> }>;
-  styles: Record<string, Record<string, string>>;
+  shape: Record<string, string>;
   params: Record<string, number | Record<string, number>>;
 };
 type Stored = { draft: LabDraft; paused?: boolean };
 
 /** What the Lab reads its current values from (and lab-apply writes to). */
-export const LAB_SOURCES = { tokens, styles: styleList, params: PARAMS };
+export const LAB_SOURCES = { tokens, params: PARAMS };
 
 const read = (): Stored => {
   try {
@@ -98,12 +97,12 @@ export function LabHost() {
   if (isEmptyDraft(draft)) return null;
   const count = diffDraft(draft, LAB_SOURCES).length;
   return (
-    <div className="flex items-center gap-2 pl-3 pr-1 h-control rounded-full bg-panel border border-line shadow-overlay text-label text-body">
-      <Icon name="sliders" className="w-3.5 h-3.5 text-accent-fg" />
+    <div className="flex items-center gap-2 pl-3 pr-1 h-control rounded-full bg-panel border border-line shadow-overlay text-ui text-body">
+      <Icon name="sliders" className="w-3.5 h-3.5 text-strong" />
       <span>
-        Design Lab <strong className="font-semibold text-contrast tabular-nums">{count}</strong> thay đổi{paused && " · đang tắt"}
+        Design Lab <strong className="font-semibold text-strong tabular-nums">{count}</strong> thay đổi{paused && " · đang tắt"}
       </span>
-      <Link href="/lab/" className="text-accent-fg hover:text-contrast font-medium">
+      <Link href="/lab/" className="text-strong hover:underline font-medium">
         Sửa
       </Link>
       <Button

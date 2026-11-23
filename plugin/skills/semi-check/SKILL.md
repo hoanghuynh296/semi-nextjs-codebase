@@ -1,6 +1,6 @@
 ---
 name: semi-check
-description: Check an existing app against its brand and the Semi Design System (@semi/ui), then fix it after the user agrees - the first adoption of Semi in an app (with or without @semi/ui) and the periodic check after. Audits every frontend app (foundation, brand kit, style, lint rules, colour / size tokens, structure, density and accessibility of the rendered screens), writes every issue with file:line by phase to semi-check.md, shows a short summary, asks, then fixes phase by phase (foundation, token codemod, hand fixes, structure) and verifies until clean. Triggered by /semi-check.
+description: Check an existing app against its brand and the Semi Design System (@semi/ui), then fix it after the user agrees - the first adoption of Semi in an app (with or without @semi/ui) and the periodic check after. Audits every frontend app (foundation, brand kit, lint rules, colour / size tokens, structure, density and accessibility of the rendered screens), writes every issue with file:line by phase to semi-check.md, shows a short summary, asks, then fixes phase by phase (foundation, token codemod, hand fixes, structure) and verifies until clean. Triggered by /semi-check.
 ---
 
 # Check and fix an app (`/semi-check`)
@@ -14,7 +14,7 @@ The Semi commands, one per place:
 | Existing app: check it against the brand and Semi, then fix | **`/semi-check`** |
 | Existing app: the brand kit or Semi has a new release | **`/semi-sync`** |
 
-Building screens needs no command (the `semi-ui` skill runs on its own); a style switch is asked in words.
+Building screens needs no command (the `semi-ui` skill runs on its own); density and type scale are asked in words.
 
 The check part changes **no source file**. Its only output is `semi-check.md` at the folder it checks: every issue with
 `file:line` and what to do. Nothing is fixed until the user says so. When nothing is left, `semi-check.md` is deleted.
@@ -33,8 +33,6 @@ The check part changes **no source file**. Its only output is `semi-check.md` at
 3. **Ask** (`AskUserQuestion`) whether to fix now: "Sửa hết theo thứ tự (Recommended)", "Chỉ phase 1–2 (nền móng,
    token)", "Chưa sửa". A periodic check in CI uses `--ci` and stops here.
 4. **Ask the decisions now**, so the answers are known before you start (`AskUserQuestion`, up to 4 per call):
-   - **Style**, when phase 1 has a `style` item: one option per style (`fix.mjs foundation` without `--style` lists
-     them with descriptions). `(Recommended)` on the default, Flat: it is the closest to an existing app's look.
    - **Theme**, when the `providers` item says the theme is not clear ("chưa rõ app sáng hay tối"): ask whether the app
      is light or dark today, and pass `--theme dark|light` to `fix.mjs` (foundation and tokens). Never guess light.
    - **Structure** (phase 4, ids `D…`): "fix as proposed (Recommended)" or "keep". For "keep", add the check to
@@ -43,13 +41,14 @@ The check part changes **no source file**. Its only output is `semi-check.md` at
 5. **Phase 1 — Foundation** (`F…`). It changes how the app looks, so first take screenshots of 3–5 key pages in the
    app's current theme (dev server + browser, when available). Then:
    ```bash
-   node "<path-to-this-skill>/scripts/fix.mjs" --cwd "<audited-dir>" foundation --style "<id>" [--brand "<github:owner/repo>"]
+   node "<path-to-this-skill>/scripts/fix.mjs" --cwd "<audited-dir>" foundation [--brand "<github:owner/repo>"]
    ```
-   With a brand (`--brand` to adopt one, or `"brand"` already in `semi-lint.json`) it installs and wires the kit, uses
-   the brand's default style unless you pass an allowed one, colours and fonts are the brand's.
+   With a brand (`--brand` to adopt one, or `"brand"` already in `semi-lint.json`) it installs and wires the kit; its
+   brand colours and fonts are the brand's (surfaces and text are Semi's neutrals, the same for every brand).
    It installs `@semi/ui` (Next.js and Tailwind stay as they are), adds `transpilePackages`, the Semi CSS block,
-   `semi-lint.json` + a baseline of today's lint debt, the chosen style (`"style"` in `semi-lint.json`,
-   `data-style` on `<html>`), and the Semi block in `AGENTS.md`. It prints the `next/font` lines for the style's fonts:
+   `semi-lint.json` + a baseline of today's lint debt, removes a style / palette left from before 1.0 (`"style"` in
+   `semi-lint.json`, `data-style` on `<html>`: Semi has one look), and the Semi block in `AGENTS.md`. It prints the
+   `next/font` lines for the fonts the layout lacks (the brand's, or Semi's Geist):
    add them to the layout with the providers. It prints only what it wrote; whatever it could not do goes in one
    **Làm tay** list at the end, and a failed install stops it with exit 1 (npm's error is printed above; fix the
    app's peer conflict, never add `--legacy-peer-deps` on your own, and run foundation again). Then do the `Làm tay` items:
@@ -116,7 +115,7 @@ The check part changes **no source file**. Its only output is `semi-check.md` at
    `target-size`, `img-alt`, `lang`, `zoom-lock`, plus axe-core's serious WCAG findings (`axe/<id>`) when the app has
    `axe-core` installed (it says so when not; propose `npm i -D axe-core`). Without Playwright (exit 2), evaluate the
    output of `--snippet` in the browser tool, once per theme. Keep the hits in the report, show a line per page, and
-   fix them with the user's yes: the themed text tokens (`text-muted`, `text-*-fg`, `text-on-accent`) instead of
+   fix them with the user's yes: the themed text tokens (`text-muted`, `text-*-fg`, `text-on-primary`) instead of
    fixed shades, `border-control-line` on a field, `Field` or `aria-label` for a name, `FOCUS_RING` on a custom
    control, `HIT_AREA` (from `@semi/ui/styles`) on a control drawn smaller than 24px, or the Semi component that
    already does all of it. `data-a11y-skip="<reason>"` only on a specimen (a contrast sample), never to silence an
@@ -138,7 +137,7 @@ The check part changes **no source file**. Its only output is `semi-check.md` at
 
 | Phase | Issues | How it is fixed |
 |---|---|---|
-| 1. Nền móng (`F…`) | `@semi/ui` not installed, `transpilePackages`, Semi CSS, `semi-lint.json`, layout providers, brand kit not installed / not wired (`brand`), no style chosen (or one the brand does not allow, or `<html data-style>` not matching it, or its fonts not loaded), Tailwind v3 | `fix.mjs foundation --style <id>` (installs, keeps Next / Tailwind) + the layout by hand, screenshots before / after |
+| 1. Nền móng (`F…`) | `@semi/ui` not installed, `transpilePackages`, Semi CSS, `semi-lint.json`, layout providers, brand kit not installed / not wired (`brand`), a style / palette left from before 1.0 (`legacy-look`), fonts not loaded (`fonts`), Tailwind v3 | `fix.mjs foundation` (installs, keeps Next / Tailwind) + the layout by hand, screenshots before / after |
 | 2. Token | colour / size / radius classes the codemod maps safely (`rounded-lg` → `rounded-control`, `shadow-sm` → `shadow-card`) | `fix.mjs tokens [--only dir] [--dry-run] [--theme dark\|light]` |
 | 3. Sửa tay (`L…`) | lint hits no codemod can fix safely | edits by hand |
 | 4. Cấu trúc (`D…`) | AppShell / AppHeader frame, local wrappers, list pages without `SubpageToolbar`, tables, components that duplicate `@semi/ui`, other UI libraries | asks: fix, or keep (`semi-lint.json` `keep`) |

@@ -16,7 +16,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [AGENT_TOOLS.md](./docs/AGENT_TOOLS.md): Agent tools: the semi CLI (search, docs, example, add) and the MCP server, and the page blocks
 - [ICONS.md](./docs/ICONS.md): Semantic icon guide: which icon means what
 - [BRANDS.md](./docs/BRANDS.md): Brands: brand kits (brand.json → brand.css), the step-by-step flow from a new brand to its first product, which command when
-- [STYLES.md](./docs/STYLES.md): Styles (Flat, Soft, Sharp): what each changes, how an app picks one
+- [TOKENS.md](./docs/TOKENS.md): Tokens: surfaces, text tiers, lines and fills, brand fills, type scale, fonts, shape, motion (final 1.0 names)
 - [agent-rules.md](./docs/agent-rules.md): Rules block for a consumer app's AGENTS.md / CLAUDE.md
 - [tokens.css](./docs/tokens.css): Generated design tokens (CSS variables for both themes)
 - [llms-full.txt](./llms-full.txt): this file followed by all the docs above and every component doc
@@ -123,7 +123,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [QR code](./components/qr-code/) ([markdown](./docs/components/qr-code.md)): A scannable QR code as one SVG: VietQR / EMVCo payment payloads, receipts (print variant), links. Fixed black modules on white with a 4-module quiet zone in both themes, four error-correction levels, optional caption and copy button. Components: QRCode.
 - [Separator](./components/separator/) ([markdown](./docs/components/separator.md)): A thin divider between groups of content: horizontal, vertical, or with a short label in the middle (“hoặc”). Components: Separator.
 - [Table](./components/table/) ([markdown](./docs/components/table.md)): A dense table for rows compared column by column. Cells stay on one line (the table scrolls sideways on phones); TD wrap for a long-text column, numeric for figures. Components: Table, THead, TBody, TR, TH, TD.
-- [Typography](./components/typography/) ([markdown](./docs/components/typography.md)): The type scale (text-caption 11 … text-display 26, font-display for titles) and Prose, which styles long-form text — headings, paragraphs, lists, links, quotes, inline code — from that scale. Components: Prose.
+- [Typography](./components/typography/) ([markdown](./docs/components/typography.md)): The 1.0 type scale (text-tag 10 … text-hero 36, text-ui 12 the base UI size, font-display for hero and big titles) and Prose, which styles long-form text — headings, paragraphs, lists, links, quotes, inline code — from that scale. Components: Prose.
 
 ### Feedback
 
@@ -180,42 +180,28 @@ left panel menu (`w-52` / `w-14`) floating on `bg-canvas` (`md:p-2 md:gap-2`), f
 sticky sub-page toolbar row (`SubpageToolbar`: filters left, icon-only primary CTA + `SearchInput` + `RefreshButton` right).
 Phones (`< md`) get AppShell's top bar and its full-screen drawer (same groups, drill-down rows, utilities at the bottom); never a hand-made slide-over. `mobileNav="tabs"` keeps `MobileTabBar`, with `mobileTabIds` naming its items (`mobileTabIds` alone also keeps it, with a dev warning).
 
-**Two-Tier Semantic Tokens (Dark & Light Mode):**
-| Semantic Token | Tailwind Class | Dark Mode (`[data-theme="dark"]`) | Light Mode (`[data-theme="light"]`) | Usage |
-|---|---|---|---|---|
-| `--color-canvas` | `bg-canvas` | `#0f1011` | `#eff3f7` | Outermost viewport frame |
-| `--color-app` | `bg-app` | `#151619` | `#f7f9fb` | Main workspace & content canvas |
-| `--color-panel` | `bg-panel` | `#191b1f` | `#ffffff` | Sidebar, Modals, Menus (= `panel-4`) |
-| `--color-panel-0…4` | `bg-panel-0` … `bg-panel-4` | canvas → panel | canvas → panel | Surface scale: 0 = canvas, 2 = app, 4 = panel, 1 / 3 halfway |
-| `--color-card` | `bg-card` | panel + 5% (`#222428`) | app + 5%, recessed (`#eaecef`) | Content cards (`CARD`, `<Card>`, `HERO`): no border, tone only |
-| `--color-card-field` | `bg-card-field` | `#2b2d31` | `#e2e5e8` | Tiles / table heads inside a card (`TILE`) |
-| `--color-tint` | `bg-tint` / `hover:bg-tint-hover` | contrast 7% / 11% | contrast 5% / 9% | Secondary buttons, no border |
-| `--color-field` | `bg-field` | `#202328` | `#eff3f7` | Form inputs (`FIELD_INPUT`), table headers |
-| `--color-raised` | `bg-raised` | `#2b2e34` | `#e1e7ef` | Hover surface, subtle elevation, skeleton shimmer |
-| `--color-text-contrast` | `text-contrast` | `#ffffff` | `#0f172a` (Slate-900) | Headings, active state, high-contrast text |
-| `--color-text-body` | `text-body` | `#d1d5db` (Gray-300) | `#334155` (Slate-700) | Primary UI labels, body text |
-| `--color-text-muted` | `text-muted` | `#9ba1aa` | `#5b6779` | Captions, placeholders, inactive hints |
-| `--color-line` | `border-line` | `rgba(255,255,255,0.12)` | `rgba(0,0,0,0.08)` (Slate-200) | Borders on cards, panels, dividers (inputs: `control-line`) |
-| `--color-line-hover` | `border-line-hover` | `rgba(255,255,255,0.2)` | `rgba(0,0,0,0.16)` (Slate-300) | Hover border state |
-| `--color-control-line` | `border-control-line` | `text-muted` 65% | `text-muted` 80% | Edge of inputs, checkboxes, radios (≥ 3:1); hover `border-control-line-hover` |
-| `--color-divider` | `border-divider` | `rgba(255,255,255,0.05)` | `rgba(0,0,0,0.05)` (Slate-100) | Subtle row & item separators |
+**Tokens (1.0, full list and values: `docs/TOKENS.md`):** one look, pure neutral surfaces the same for every brand.
+| Group | Classes |
+|---|---|
+| Surfaces | `bg-canvas` (#101010 / #ebebeb) · `bg-app` (#161616 / #f3f3f3) · `bg-panel` (#1a1a1a / #fff) · `bg-field` · `bg-field-focus` · `bg-raised` · `bg-raised-2` · `bg-card` · `bg-card-field` · `bg-panel-0…4` |
+| Text (AA on panel / app / canvas / card; faint never on card-field, raised or a row fill) | `text-strong` (titles, active, values) · `text-body` · `text-muted` (descriptions, inactive, placeholders) · `text-faint` (group labels, kbd hints) |
+| Lines | `border-line` · `border-divider` · `border-control-line` (checkbox, radio) · `border-field-line` / `border-field-line-focus` (fields) · `border-outline-line` (outline button, selected card) |
+| Neutral states | `bg-item-hover` · `bg-item-selected` (open record, selected nav item / option) · `bg-item-checked` (checked rows) · `bg-subtle-button` · `bg-tint` · `bg-inverted` + `text-on-inverted` (checked controls) · `ring-focus` / `border-focus` (neutral) |
+| Brand (main button, attention only) | `bg-primary hover:bg-primary-hover text-on-primary` · `bg-secondary hover:bg-secondary-hover text-on-secondary` |
+| Status (fixed for every brand) | `text-*-fg` · `bg-*-bg` + `border-*-border` · `bg-*-solid` + `text-on-solid` · `text-tone-*` |
 
-*Surfaces (C-030):* pages separate by tone, not borders: cards are `bg-card` (never `bg-panel`, the sidebar step), `<Card bordered>` / `CARD_BORDERED` only for a dense data view; secondary buttons `bg-tint` without border (`outline` keeps the frame); the main button is `bg-action hover:bg-action-hover text-on-action` (accent, or `inverted` in a brand with `primaryStyle: "inverted"`).
+*Surfaces (C-030):* pages separate by tone, not borders: cards are `bg-card` (never `bg-panel`, the sidebar step), `<Card bordered>` / `CARD_BORDERED` only for a dense data view; secondary buttons `bg-tint` without border (`outline` keeps the frame); the main button is `bg-primary hover:bg-primary-hover text-on-primary`.
 
-*Accent & status (AA in both themes):* main button `bg-action` (`BTN_PRIMARY`) · accent fill for checked / "on" marks `bg-accent text-on-accent` · primary text/icon `text-accent-fg` · focus `ring-focus` / focused field `border-focus` · selected `bg-accent-subtle` (hover `bg-accent-subtle-hover`) + `border-accent-line` · status text `text-danger-fg` / `text-success-fg` / `text-warning-fg` / `text-info-fg` · tonal text `text-tone-<hue>`. Never `text-*-400` or `text-*-700 dark:text-*-300` in shared UI.
+*Brand & status (AA in both themes):* the brand fill only on the one main button of a view, the nav's create button, attention count badges, "New" tags and the active big-tab underline · checked / "on" marks `bg-inverted text-on-inverted` · links, check marks, active tabs `text-strong` · focus `ring-focus` / focused field `border-focus` · selection `bg-item-selected` / `bg-item-checked`, hover `bg-item-hover` · status text `text-danger-fg` / `text-success-fg` / `text-warning-fg` / `text-info-fg`.
 
 *Theme:* `<html suppressHydrationWarning>` + `<ThemeScript />` in `<head>` (no flash) + `<ThemeProvider defaultTheme="dark">` (same options); `<ThemeSwitcher />` (Sáng · Tối · Hệ thống, settings / sidebar footer), `<ThemeSwitcher variant="menu" />` (one icon button + Menu: headers), `useThemeUtility()` (the same in AppShell `utilities`) or `<ThemeToggle />` (one-tap dark/light), or `const { theme, resolvedTheme, mounted, setTheme } = useTheme()`. `data-theme="system"` follows the OS.
 
-**Colour:** accent (Semi default `#00AE42`; a product gets its own from its brand kit, never in its own CSS) = actions, focus, "on", through `bg-accent` / `text-accent-fg` tokens. Status tokens carry meaning only: success = online/done · warning = busy/paused · danger = error/destructive · info = news/cost. Category tints: `<Badge tone>`, `TONAL_SURFACE`, `text-tone-<hue>` (§3c). Nav menu: grey 16px icons, no count badges, active = `bg-raised text-contrast`.
+**Colour:** neutral everywhere; the brand fill (Semi default `#00AE42`; a product gets its own from its brand kit, never in its own CSS) only on the main button and attention marks (`bg-primary`). Status tokens carry meaning only: success = online/done · warning = busy/paused · danger = error/destructive · info = news/cost. Category tints: `<Badge tone>`, `TONAL_SURFACE`, `text-tone-<hue>` (§3c). Nav menu: grey 16px icons, no count badges, active = `bg-raised text-strong`.
 Chips (`Chip`, `chipClass(active)`): `rounded-full h-control px-3.5`, ghost when off, active uses semantic high-contrast background; colour only on a
 leading dot or icon (`TONE_DOT`, `chipIconClass(tone)`). Card tiles keep their area tint. Flat: no gradients, no glow
-blobs, no `shadow-[0_0_…]` (status dots and power buttons too). Active card = `CARD_ACTIVE` (primary border).
+blobs, no `shadow-[0_0_…]` (status dots and power buttons too). Active card = `CARD_ACTIVE` (`border-outline-line`).
 
-**Type:** page title (`PageTitle` / `PageTabsTitle`) `font-display text-heading sm:text-display font-title tracking-tight text-contrast` ·
-KPI figure (`KpiCard`) `font-figure font-title text-figure sm:text-heading tabular-nums text-contrast` · section `text-ui`–`text-title`
-font-semibold text-contrast` · UI `text-label font-medium text-body` · label `text-label font-medium text-muted` ·
-caption `text-caption`–`text-label` text-muted` · numbers `tabular-nums` (Geist; `font-mono` only for code) · Geist +
-Montserrat Alternates (`font-display`) · weights medium/semibold · type scale only: `text-caption` 11 · `label` 12 · `ui` 14 (compact 13) · `ui-lg` 15 (compact 14) · `title` 15 · `title-lg` 16 · `figure` 18 · `heading-sm` 20 · `heading` 22 · `heading-lg` 24 · `display` 26 (no `text-xs/sm`, no `text-[13px]`) ·
+**Type (`docs/TOKENS.md`):** `text-hero` 36 (32 below sm) · `text-title-xl` 44 · `text-tab-xl` 28 (24 below sm) · `text-section` 20 · `text-figure` 18 · `text-lead` 15 · `text-copy` 14 (reading copy; compact 13) · `text-input` 16 (typed text below sm: `max-sm:text-input`) · **`text-ui` 12, the base UI size** (nav, buttons, labels, meta, rows) · `text-tag` 10 · `text-badge` 10 · `text-overline` 11. `font-sans` (Geist or the brand's) everywhere; `font-display` (the brand's display face, else the sans) only for hero, reading-page titles, big tabs, editorial heads. Headings are not bold: 400 / 500 (`font-title` 500), 600 only overlines, 700 only count badges. `tabular-nums` for numbers, `font-mono` only for code. No `text-xs/sm`, no `text-[13px]` ·
 sentence case, no ALL CAPS. The one exception is `text-overline` (uppercase, tracked) for section labels: a sidebar or drawer group, a palette group, a mega menu column (C-032); anywhere but a plain, non-clickable label element it warns (`overline-place`).
 
 **Status, layers, elevation:** callouts / badges `bg-{danger,success,warning,info}-bg border-*-border text-*-fg` (`Alert`) ·
@@ -232,10 +218,9 @@ control drawn under 24px gets `HIT_AREA` · UI text in shared components comes f
 (`font-sans`, `font-display`), control sizes `h-control` (toolbar buttons, pills, chips, search) / `h-field` (inputs,
 selects), the card border (`border-card`, in `CARD`) and the shape below. Never `h-[34px]` or a per-style class.
 
-**Shape (style tokens):** marks / checkboxes / inline code `rounded-chip` · controls / tiles / rows
+**Shape (shape tokens):** marks / checkboxes / inline code `rounded-chip` · controls / tiles / rows
 `rounded-control` · cards / popovers / menus / toasts `rounded-card` · panels / hero / modal / sidebar `rounded-panel` ·
-pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `CARD`; none in Flat). The app's style
-(`<html data-style>`: Flat by default, Soft or Sharp) sets the values. Never `rounded`, `rounded-lg/xl/2xl` or `rounded-[Npx]`.
+pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (none). One look for every app (no styles, no `data-style`). Never `rounded`, `rounded-lg/xl/2xl` or `rounded-[Npx]`.
 
 **Use the shared blocks (`@semi/ui` and `@semi/ui/styles`) — never create a local `ui.tsx` wrapper barrel:**
 - **Layout & Structure (`@semi/ui`):**
@@ -273,7 +258,7 @@ type scale are the product's (`data-density`, `data-type-scale` on `<html>`, `se
 **Density budgets (§4c, measured on the rendered page: `npx semi density <url>`, `test:ui`):** text ≥ 12px from a
 box's sides, ≥ 8px from top / bottom (`tight-box`) · list rows ≥ `h-control` when clickable, 6px around their text
 (`tight-row`: `Item`, `Menu`, `DataTable`) · ≤ 3 frames deep (`box-nesting`) · ≤ 4 text sizes (`type-mix`) and ≤ 3
-colours (`colour-noise`) per box · 1 filled accent button per view (`primary-actions`) · ≥ 8px between boxes
+colours (`colour-noise`) per box · 1 filled brand button per view (`primary-actions`) · ≥ 8px between boxes
 (`cramped-boxes`) · one line between two things (`double-line`). Lengths scale with density. `data-density-view` on a
 frame that stands for a whole screen (preview, sample app); `data-density-skip="<reason>"` only on a specimen.
 
@@ -282,10 +267,10 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - **Compose, never re-create (0.30.0):** no raw `<button>/<input>/<textarea>/<table>` (`raw-control`), no other UI or icon kit (`foreign-ui`), no own `Card`/`Badge`/`Tooltip`… (`local-primitive`), no hand-made overlay or spinner (`custom-overlay`, `custom-spinner`), no `<div onClick>` (`click-target`: `<Card onClick>` is keyboard-ready) or bare `outline-none` (`focus-hidden`), no emoji icons (`emoji-icon`).
 - **No escape hatches:** `p-[13px]` / `z-[9999]` / `bg-panel/[0.05]` / `bg-[var(--semi-…)]` (`arbitrary-value`), `shadow-sm…2xl` (`tw-shadow`), `uppercase` (`text-case`), `leading-*` but tight/none (`leading-override`), colours or type in `style={{}}` (`inline-style-value`) or in `.css` (`css-raw-value`).
 - **The baseline only shrinks:** `--update-baseline` refuses new hits; `--accept-new` only after a Semi upgrade or with the user's OK; `semi-lint --ci` fails a PR whose baseline, skips or disabled rules grew.
-- **No literal palette colors (`no-literal-palette`):** Never use direct physical classes like `bg-white`, `text-slate-900`, `border-slate-200`, `divide-slate-100`, `bg-slate-50`, `bg-gray-800/900`. Always use Semantic Tokens (`bg-panel`, `bg-field`, `text-contrast`, `text-body`, `text-muted`, `border-line`, `divide-divider`).
-- **No fixed chromatic text (`no-fixed-tone-text`):** `text-emerald-400`, `text-rose-700 dark:text-rose-300`, `fill-sky-500` → `text-accent-fg`, `text-*-fg`, `text-tone-<hue>`.
-- **No brand scale for states (`accent-state-token`):** `ring-primary-500/50`, `bg-primary-500/15`, `border-primary-500/30` → `ring-focus`, `bg-accent-subtle`, `border-accent-line` (themed, checked in both themes).
-- **No brand-scale fills (`primary-fill`):** `bg-primary-500 text-white`, `border-primary-500` → `bg-accent hover:bg-accent-hover text-on-accent`, `border-accent-line` / `border-focus`. The brand colour is one step of `primary-*`, so `primary-500` turns pale with a brand kit; the scale is for charts and illustrations (`skip` those files).
+- **No literal palette colors (`no-literal-palette`):** Never use direct physical classes like `bg-white`, `text-slate-900`, `border-slate-200`, `divide-slate-100`, `bg-slate-50`, `bg-gray-800/900`. Always use Semantic Tokens (`bg-panel`, `bg-field`, `text-strong`, `text-body`, `text-muted`, `border-line`, `divide-divider`).
+- **No fixed chromatic text (`no-fixed-tone-text`):** `text-emerald-400`, `text-rose-700 dark:text-rose-300`, `fill-sky-500` → `text-strong`, `text-*-fg`, `text-tone-<hue>`.
+- **No brand scale for states (`accent-state-token`):** `ring-primary-500/50`, `bg-primary-500/15`, `border-primary-500/30` → `ring-focus`, `bg-item-selected`, `border-outline-line` (themed, checked in both themes).
+- **No brand-scale fills (`primary-fill`):** `bg-primary-500 text-white`, `border-primary-500` → `bg-primary hover:bg-primary-hover text-on-primary`, `border-outline-line` / `border-focus`. The brand colour is one step of `primary-*`, so `primary-500` turns pale with a brand kit; the scale is for charts and illustrations (`skip` those files).
 - **No arbitrary colours / sizes:** `bg-[#…]`, `text-[rgb(…)]` (`hex-colour-class`), `"#fff"` in style props or configs (`literal-colour-value`), `text-[13px]` (`arbitrary-text-size`).
 - **No solid pastel surfaces (`no-solid-pastel-surfaces`):** Never use solid pastels (`bg-*-50`, `border-*-200`) for cards, rows, or containers; in dark mode they turn into glaring light rectangles. Use the themed status surfaces (`bg-warning-bg border-warning-border text-warning-fg`, also danger / success / info) or standard `bg-panel`.
 - **Universal Tonal Theme-Matching:** Chromatic accents across ANY component (cards, alert banners, callouts, table rows, buttons, badges, chips) adapt seamlessly to both dark & light themes using alpha transparency: static fill `bg-<color>-500/10`, hover fill `hover:bg-<color>-500/15`, active fill `active:bg-<color>-500/20`, border `border-<color>-500/20`, hover border `hover:border-<color>-500/30`, and text `text-tone-<color>` (or `TONAL_CONTAINER` / `TONAL_HOVER` / `<Badge tone="...">`).
@@ -293,7 +278,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - **Surfaces & Shadows:** Gradients, glow, `shadow-[0_0_…]`, `shadow-sm/md/lg` are banned. Cards are separated by borders (`border-line`); their only resting shadow is `shadow-card`, which the style sets (none in Flat, soft in Soft, hard offset in Sharp).
 - **Typography:** `font-bold`, `text-[9|10px]`, `text-xs/sm`, uppercase labels, ALL CAPS buttons.
 - **Shell structure (`app-shell-in-page`, `shell-gate`, `shell-nav-href`, `boot-loader-place`):** AppShell only from a layout; no `if (!ready) return <PageSkeleton />` before it; `href` on page items, not `onSelect` + `router.push`; `BootLoader` only as the layout's boot gate.
-- **Radii (`radius-token`):** `rounded`, `rounded-sm/md/lg/xl/2xl`, `rounded-[Npx]` (they ignore the app's style); per-style classes or `[data-style=…]` selectors in an app.
+- **Radii (`radius-token`):** `rounded`, `rounded-sm/md/lg/xl/2xl`, `rounded-[Npx]` (they ignore the shape tokens); per-style classes or `[data-style=…]` selectors in an app.
 - **Navigation & Layout:** fixed `border-r` sidebars or `-translate-x-full` hamburger drawers (use `AppShell`: its phone drawer) · local `ui.tsx` wrapper barrels (`PageHeader`, `Select`, `Input`, `Button`, `Modal`): use `Button`, `Field` + `Input`, `CustomSelect`, `Modal`, `EmptyState` from `@semi/ui`.
 - **Icons & Controls:** emoji / ✕ ✓ glyphs, stroke 2+, inline `<path>` · native `<select>` / date / number inputs, `window.confirm` · "Đang tải…" text (a progress step label or a `role="status"` line is fine) · Home button in app headers, page subtitles, text buttons on the page title row.
 - **Content colours:** illustrations and data palettes go under `skip` with a reason per file (`"skip": { "literal-colour-value": { "lib/scenePalette.ts": "data colours: 3D scene" } }`; `literal-colour-value`, `inline-svg-path`, `no-literal-palette` only), not in the baseline. `font-mono` only on code (`<code>`, `<pre>`, `CodeBlock`, `Terminal`, code editors); `max-w-4xl…6xl` only on dialogs and drawers.
@@ -406,8 +391,9 @@ skills, AGENTS.md and plan docs only point here. A rule that lives in two places
 Apps read this file from `node_modules/@semi/ui/docs/DESIGN_SYSTEM.md` (the version they installed).
 
 The UI is a **restrained product theme, dark and light,** with a **bento card layout**: neutral page, rounded cards with thin
-borders, a neutral icon menu, uniform chips and tags with coloured dots, one accent (the brand's primary colour, Semi green
-without a brand kit) for actions, few words. A brand kit (`BRANDS.md`) sets the colours, fonts, voice and allowed styles.
+borders, a neutral icon menu, uniform chips and tags with coloured dots, pure neutral greys, the brand's primary colour
+(Semi green without a brand kit) only on the main button and a few attention marks, few words. A brand kit (`BRANDS.md`)
+sets the primary (and an optional secondary) fill, fonts, logo and voice. Token names: `docs/TOKENS.md`.
 
 Quick cheatsheet: `QUICK_REF.md`. Tokens: `@semi/ui/tokens.css` (generated from `tokens/tokens.json`). Base layer:
 `@semi/ui/base.css`. Shared building blocks: `@semi/ui` (components) and `@semi/ui/styles` (class constants), see §16;
@@ -421,25 +407,24 @@ hook of the `semi-design` plugin).
   that repeat what an icon already says.
 - **Flat, no glow, no gradients.** No gradient fills, no blurred colour blobs, no coloured `shadow-[0_0_…]` glows
   (buttons, cards, status dots, power buttons). Depth comes from the surface tokens and translucent white overlays
-  (plus the style's neutral resting card shadow `shadow-card`: none in Flat, soft in Soft, a hard offset in Sharp);
-  emphasis ("on", active, running) comes from a flat accent fill (`bg-accent`), a tint (`bg-accent-subtle`) or a
-  `border-accent-line` border.
+  (`shadow-card` is none); emphasis ("on", active, selected) comes from a neutral fill (`bg-inverted`,
+  `bg-item-selected`) or a `border-outline-line` border.
   The only gradient is the skeleton shimmer sweep in `base.css`.
 - **Colour on content, not on chrome.** The nav menu is neutral (grey icons, no count badges; active item =
-  `bg-raised text-contrast`). Colour goes where it helps reading the content: a coloured dot or icon on filter chips
+  `bg-raised text-strong`). Colour goes where it helps reading the content: a coloured dot or icon on filter chips
   and tags, card icon tiles use their area's soft tint, primary marks the main action and "on". Status colours (§3)
   appear only where they carry a state.
 - **Unified sub-page toolbar.** Sub-pages open with a large `font-display` title (text only), followed by a single
   sticky toolbar row: pill filter tabs on the left, the icon-only primary CTA (`BTN_PRIMARY` + `BTN_ICON`) + secondary
-  filter/search/refresh controls on the right (§4). All toolbar controls share `h-control` and `text-label font-medium`.
+  filter/search/refresh controls on the right (§4). All toolbar controls share `h-control` and `text-ui font-medium`.
 - **Space first, then frames.** Group with white space; put a group in a card (`rounded-card`) when it is one thing
   people act on, and nested facts in tiles. At most three frames inside each other, one line between two things
   (§4c): a screen of boxes in boxes reads as noise.
-- **One style per app.** The look is a style (`docs/STYLES.md`): neutral colours, fonts, radii, card border and shadow,
-  control sizes. An app picks Flat (default), Soft or Sharp once, with `<html data-style>`, and every component follows.
-  Components, layout, the type scale, the accent and status colours are shared by every style.
-- **One accent.** `primary-*` (Semi default green `#00AE42`; a product gets its own from its brand kit, see §2b) for actions,
-  selection and focus. Status colours carry meaning only (§3).
+- **One look.** Every brand and app shares the same neutrals, radii, control sizes and type scale (`docs/TOKENS.md`);
+  there are no styles and no `data-style` since 1.0.
+- **Brand colour for the main button only.** `bg-primary` (Semi default green `#00AE42`; a product gets its own from its
+  brand kit, see §2b) for the one main button of a page, modal or nav, attention badges / "New" tags and the active
+  big-tab underline. Selection, links and focus are neutral; status colours carry meaning only (§3).
 - **Phone first.** Used from iPhone and iPad: no horizontal page scroll at 375px, touch targets ≥ 36px (44px for nav),
   the home logo header is hidden under 768px (`md`).
 - **No scrollbars.** Scrollbars are hidden on every page and screen size (`base.css`); areas still scroll. Don't add
@@ -449,52 +434,44 @@ hook of the `semi-design` plugin).
 
 ## 1. Typography
 
+1.0 scale and names: **`docs/TOKENS.md`** (the contract; values in `tokens/tokens.json`).
+
 | Role | Classes |
 |---|---|
-| Page title (sub-page) | `font-display text-heading sm:text-display leading-[1.15] font-semibold text-contrast tracking-tight`, text only, no subtitle |
-| Section / card title | `text-ui–text-title font-semibold text-contrast tracking-tight` |
-| UI / nav text | `text-label font-medium text-body` |
-| Label | `text-label font-medium text-muted` (sentence case, never uppercase) |
-| Section label (sidebar pinned group, drawer group, command palette group, mega menu column) | `text-overline text-muted`: the only uppercase text (C-032); written in sentence case in code |
-| Caption | `text-caption–text-label text-muted` |
-| Big number (KPI) | `text-heading leading-tight font-semibold tracking-tight tabular-nums text-contrast` |
-| Numbers (temperatures, %, times, money, counts) | add `tabular-nums` (Geist, digits line up) |
+| Hero | `font-display text-hero font-normal text-strong` |
+| Reading-page title (one column) | `font-display text-title-xl font-medium text-strong` |
+| Page title in a content card | `text-figure font-normal text-strong`, on the row of the page's main action |
+| Big text tabs | `font-display text-tab-xl` (T5) |
+| Section heading | `text-section text-strong` (500 from the token) |
+| Card title, lead text | `text-lead font-medium text-strong` |
+| Reading copy, secondary body | `text-copy text-body` |
+| UI text: nav, breadcrumb, buttons, labels, meta, list rows | `text-ui` (12px, the base UI size) `text-body` / `text-muted` |
+| Group label, kbd hint, "Untitled" | `text-ui text-faint` |
+| Tag, chip | `text-tag` (10 / 500 / +0.02em) |
+| Count badge | `text-badge` (10 / 700) |
+| Section label (overline) | `text-overline text-muted`: 11 / 600 / +0.1em, the only uppercase text (C-032) |
+| Numbers (temperatures, %, times, money, counts) | add `tabular-nums` |
 | Code (code editors, parameter keys, error codes) | `font-mono`, only there |
 
-Geist (`--font-sans` with `font-feature-settings: "ss02" on`) for UI and body text, and Montserrat Alternates
-(`--font-display`, class `font-display`) for large page titles, both loaded with `next/font/google` (Latin + Vietnamese
-subsets) in `app/layout.tsx` as the CSS variables `--font-geist` / `--font-montserrat-alternates` (or set
-`--font-sans-family` / `--font-display-family`). ui-monospace only for code. Numbers stay in Geist with `tabular-nums`:
-a monospace font for prices and readings looks like a terminal, not a product. Weights: only `font-medium` and
-`font-semibold`. Sizes come from the **type scale** tokens (`--text-*` in `tokens.json`), never `text-[13px]` and never
-Tailwind's `text-xs` / `text-sm` / `text-base`:
+Two families: `font-sans` (the UI face, brand `fonts.sans`, default Geist, loaded with `next/font` as `--font-geist` or
+set through `--font-sans-family`) for everything, and `font-display` (brand `fonts.display`, `--font-display-family`;
+without one it is the UI sans) only for hero, reading-page titles, big tabs and editorial section heads. ui-monospace
+only for code. **Headings are not bold:** 400 and 500 do almost everything (`font-title` is 500); 600 only for overlines
+and a few emphasised labels; 700 only in count badges. Tracking −0.01em on display sizes ≥ 20px (in the tokens). Sizes
+come from the type scale tokens, never `text-[13px]` and never Tailwind's `text-xs` / `text-sm` / `text-base`. The 14px
+size is `text-copy` because `text-body` is the body text colour.
 
-| Token | px | Use |
-|---|---:|---|
-| `text-caption` | 11 | captions, counts, badges (minimum size) |
-| `text-label` | 12 | field labels, buttons, chips, meta lines (a time, a count beside a title) |
-| `text-ui` | 14 (13 in compact density) | body and UI text: card content, table cells, list rows, inputs, card titles |
-| `text-ui-lg` | 15 (14 in compact) | phone dialog buttons, a lead paragraph |
-| `text-title` | 15 | section / modal titles |
-| `text-title-lg` | 16 | large section titles |
-| `text-figure` | 18 | Con số nổi bật: giá trị KPI, phím số, tổng tiền (`KpiCard`: `text-figure sm:text-heading`) |
-| `text-heading-sm` | 20 | sub-headings |
-| `text-heading` | 22 | page titles on phones, KPI figures from sm |
-| `text-heading-lg` | 24 | display numbers |
-| `text-display` | 26 | page titles from sm (`text-heading sm:text-display`) |
-| `text-overline` | 11 | section labels only: uppercase, `0.06em` tracking, semibold (C-032). Never a button, field label, title or badge |
-
-**Fields on a phone:** text you type in is 16px (`text-title-lg`) below `sm`, whatever the field's desktop size. iOS Safari
+**Fields on a phone:** text you type in is 16px (`text-input`) below `sm`, whatever the field's desktop size. iOS Safari
 zooms the page into a focused field under 16px and never zooms back; the fix is the text size, never `maximum-scale` /
 `user-scalable=no` in the viewport (it blocks pinch zoom, an a11y failure). `FIELD_INPUT`, `FIELD_TEXTAREA` and every
 Semi text-entry control (Input, SearchInput, NumberInput with `FIELD_INPUT`, InputGroup, InputOTP, Textarea, CustomCombobox,
 Command, the Chat composer) already do it; a field of your own, or a NumberInput whose caller passes its own `text-ui`,
-adds `max-sm:text-title-lg`. `base.css` does the same for a bare
+adds `max-sm:text-input`. `base.css` does the same for a bare
 `<input>` / `<textarea>` / `<select>`; the height stays `h-control` / `h-field`.
 
-Minimum `text-caption`. Running text (a sentence, a description, a cell) is `text-ui`, never `text-label` or
-`text-caption`: those are for short marks beside it. Every size carries its line height (1.5 for 11–16px, 1.25 for
-18px and up), so text never needs `leading-*`; use `leading-tight` only on a title of more than one line. Button and
+Minimum `text-tag` / `text-badge` (10px, marks only). Running text (a sentence, a description) is `text-copy`; UI text
+(rows, labels, meta) is `text-ui`. Every size carries its line height (about 1.5 for UI and body: 12/18, 14/22, 15/24;
+1.1–1.3 for display sizes), so text rarely needs `leading-*`. Button and
 label text is sentence case ("Lưu", "Xem lại"), never ALL CAPS. Sizes are written in px here and in `tokens.json`
 but `tokens.css` emits them in rem (14px = 0.875rem), so text grows with the browser's default font size (WCAG 1.4.4).
 
@@ -502,49 +479,24 @@ but `tokens.css` emits them in rem (14px = 0.875rem), so text grows with the bro
 
 Semi architecture separates tokens into two tiers:
 - **Tier 1 (Primitives & Brand):** Fixed raw hex palettes (`primary-*`, `emerald-*`, `gray-*`, `rose-*`, `amber-*`, `sky-*`) defined in `tokens/tokens.json`.
-- **Tier 2 (Semantic Tokens):** Dynamic CSS variables that automatically adapt according to the active theme (`data-theme="dark"` or `data-theme="light"`). Developers build UI exclusively with Semantic Tokens (`bg-panel`, `bg-field`, `text-contrast`, `text-body`, `text-muted`, `border-line`), eliminating hard-coded physical colors and manual `dark:bg-...` / `light:bg-...` conditional classes.
+- **Tier 2 (Semantic Tokens):** Dynamic CSS variables that automatically adapt according to the active theme (`data-theme="dark"` or `data-theme="light"`). Developers build UI exclusively with Semantic Tokens (`bg-panel`, `bg-field`, `text-strong`, `text-body`, `text-muted`, `border-line`), eliminating hard-coded physical colors and manual `dark:bg-...` / `light:bg-...` conditional classes.
 
 ### Semantic Tokens Mapping Table
 
-| Semantic Token | Tailwind Utility | Purpose | Dark Mode (`[data-theme="dark"]`) | Light Mode (`[data-theme="light"]`) |
-|---|---|---|---|---|
-| `--color-canvas` | `bg-canvas` | Nền ứng dụng ngoài cùng (outer bento shell) = `panel-0` | `#0f1011` | `#eff3f7` |
-| `--color-app` | `bg-app` | Khung bề mặt màn hình chính (content panel) = `panel-2` | `#151619` | `#f7f9fb` |
-| `--color-panel` | `bg-panel` | Sidebar, Modal shell, popover = `panel-4` (thẻ nội dung: `bg-card`) | `#191b1f` | `#ffffff` |
-| `--color-panel-0` … `-4` | `bg-panel-0` … `bg-panel-4` | Thang bề mặt (Surfaces bên dưới) | canvas → panel | canvas → panel |
-| `--color-card` | `bg-card` | Thẻ nội dung (`CARD`, `HERO`): không viền, tách bằng tông | `panel` + 5% `text-contrast` (`#222428`) | `app` + 5% `text-contrast`, lõm (`#eaecef`) |
-| `--color-card-field` | `bg-card-field` | Ô, tile, header bảng nằm trong thẻ (`TILE`) | `card` + 5% (`#2b2d31`) | `card` + 3% (`#e2e5e8`) |
-| `--color-tint` | `bg-tint`, `hover:bg-tint-hover` | Nền trong suốt của nút phụ (`BTN_SECONDARY`, `ICON_BTN`), không viền | `text-contrast` 7% / 11% | `text-contrast` 5% / 9% |
-| `--color-inverted` | `bg-inverted` + `text-on-inverted` | Nền đặc trung tính ngược với trang (nút chính của brand `primaryStyle: inverted`) | `#f4f4f4` / chữ `canvas` | `text-contrast` / chữ `panel` |
-| `--color-action` | `bg-action`, `hover:bg-action-hover`, `text-on-action` | Nền nút chính (`BTN_PRIMARY`, `MODAL_BTN_PRIMARY`, `headerPrimary`) | = `accent` | = `accent` (brand inverted: = `inverted`) |
-| `--color-field` | `bg-field` | Nền ô nhập liệu, header bảng | `#202328` | `#eff3f7` |
-| `--color-raised` | `bg-raised` | Hover / track fills trên nền field hoặc panel | `#2b2e34` | `#e1e7ef` |
-| `--color-text-contrast` | `text-contrast` | Tiêu đề, chữ độ tương phản cao | `#ffffff` | `#0f172a` (Slate-900) |
-| `--color-text-body` | `text-body` | Nội dung văn bản chính | `#d1d5db` (Gray-300) | `#334155` (Slate-700) |
-| `--color-text-muted` | `text-muted` | Nhãn phụ, placeholder, gợi ý | `#9ba1aa` | `#5b6779` |
-| `--color-line` | `border-line` | Đường viền card, bảng, khung | `rgba(255, 255, 255, 0.12)` | `rgba(0, 0, 0, 0.08)` (Slate-200) |
-| `--color-line-hover` | `border-line-hover` | Đường viền khi hover | `rgba(255, 255, 255, 0.2)` | `rgba(0, 0, 0, 0.16)` |
-| `--color-control-line` | `border-control-line` | Viền ô nhập liệu, select field, checkbox, radio (≥ 3:1 trên mọi surface, WCAG 1.4.11). Card, bảng vẫn dùng `line` | `text-muted` 65% | `text-muted` 80% |
-| `--color-control-line-hover` | `hover:border-control-line-hover` | Hover của `control-line` | = `text-muted` | = `text-muted` |
-| `--color-divider` | `border-divider` | Đường phân cách nhẹ giữa các hàng | `rgba(255, 255, 255, 0.05)` | `rgba(0, 0, 0, 0.05)` (Slate-100) |
-| `--color-accent` | `bg-accent` | Nền nút chính / mark "on" (BTN_PRIMARY, headerPrimary) | `primary-500` | `primary-700` |
-| `--color-accent-hover` | `hover:bg-accent-hover` | Hover của nền accent | `primary-400` | `primary-800` |
-| `--color-on-accent` | `text-on-accent` | Chữ / icon trên `bg-accent` (≥ 4.5:1) | `#0c0d0e` | `#ffffff` |
-| `--color-accent-fg` | `text-accent-fg` | Chữ / icon màu primary trên surface (link, check, tab active), cả trên nền chọn trong thẻ lõm | `primary-400` | `primary-800` (brand kit: bộ sinh chọn, kiểm cả trên `card`) |
-| `--color-focus` | `ring-focus`, `border-focus` | Viền focus (`FOCUS_RING`), viền ô nhập đang gõ (≥ 3:1 trên mọi surface) | = `accent-fg` | = `accent-fg` |
-| `--color-accent-subtle` | `bg-accent-subtle` | Nền nhạt của mục đang chọn (option, trang hiện tại, pill active, IconTile). Lớp này đổi `text-muted` bên trong sang `--semi-text-muted-on-subtle` (sáng: 25% về `text-body`) để chữ phụ đạt 4.5:1 (#123) | `accent-fg` 14% | `accent-fg` 11% |
-| `--color-accent-subtle-hover` | `hover:bg-accent-subtle-hover` | Hover của nền nhạt accent; đổi `text-muted` (tối 25%, sáng 45% về `text-body`) và `text-accent-fg` (tối 18%, sáng 15% về `text-contrast`) bên trong (#123) | `accent-fg` 22% | `accent-fg` 18% |
-| `--color-accent-line` | `border-accent-line` | Viền của mục đang chọn (card được chọn, ngày hôm nay) | `accent-fg` 40% | `accent-fg` 40% |
-| `--color-danger-fg` · `success-fg` · `warning-fg` · `info-fg` | `text-danger-fg` … | Chữ trạng thái trên surface | `rose/emerald/amber/sky-400` | `-700` (`warning`: `amber-800`, ≥ 4.5:1 cả trên ô nhập Soft / Sharp) |
-| `--color-tone-<hue>` | `text-tone-<hue>` | Chữ tonal 12 hue (purple, violet, indigo, blue, sky, cyan, teal, emerald, amber, orange, rose, pink) | `<hue>-300` | `<hue>-700` (amber, orange, cyan, teal, pink: `-800`, ≥ 4.5:1 trên badge trong thẻ lõm, #50) |
+The full list with values and roles is **`docs/TOKENS.md`**. In short:
 
-Mọi cặp chữ / nền ở trên đạt WCAG AA (≥ 4.5:1) ở cả hai theme. Không viết `text-*-400` hay `text-*-700 dark:text-*-300` trong component: dùng `text-accent-fg`, `text-*-fg` hoặc `text-tone-*`.
-Trạng thái (focus, chọn, hover) không dùng thang `primary-*` với alpha (`ring-primary-500/50`, `bg-primary-500/15`): thang đó
-không đổi theo theme nên biến mất với brand sáng trên nền sáng (`accent-state-token`). Nền và viền đặc cũng vậy
-(`bg-primary-500`, `border-primary-500`): màu thương hiệu chỉ nằm ở một sắc độ của thang (vàng ở `200`, navy ở `900`),
-nên `primary-500` có thể nhạt hay lệch hẳn; nền nút / mark "on" là `bg-accent` + `text-on-accent` (`primary-fill`).
-Thang `primary-*` chỉ dùng cho biểu đồ và hình minh hoạ. Brand: dùng brand kit
-(`docs/BRANDS.md`); bộ sinh màu đặt `accent`, `on-accent`, `accent-fg` cho từng theme, các token trạng thái đi theo `accent-fg`.
+| Group | Utilities |
+|---|---|
+| Surfaces (pure neutral) | `bg-canvas`, `bg-app`, `bg-panel`, `bg-field`, `bg-field-focus`, `bg-raised`, `bg-raised-2`; `bg-card`, `bg-card-field`, `bg-panel-0…4` |
+| Text tiers (≥ 4.5:1 on panel, app, canvas, card; all but faint also on card-field, raised and item fills: `docs/TOKENS.md`) | `text-strong`, `text-body`, `text-muted`, `text-faint` |
+| Lines | `border-line`, `border-line-hover`, `border-divider`, `border-control-line`, `border-field-line`, `border-field-line-focus`, `border-outline-line` |
+| Neutral states | `bg-item-hover`, `bg-item-selected`, `bg-item-checked`, `bg-subtle-button`, `bg-tint`, `bg-inverted` + `text-on-inverted`, `ring-focus` / `border-focus` |
+| Brand fills (main buttons, attention) | `bg-primary` / `hover:bg-primary-hover` + `text-on-primary`; `bg-secondary` / `hover:bg-secondary-hover` + `text-on-secondary` |
+| Status (same for every brand) | `text-*-fg`, `bg-*-bg`, `border-*-border`, `bg-*-solid` + `text-on-solid`; `text-tone-*` |
+
+States never use a fixed palette shade with alpha (`ring-primary-500/50`, `bg-primary-500/15`): use `ring-focus`,
+`bg-item-selected` / `bg-item-checked`, `border-outline-line` (`accent-state-token`). The `primary-*` scale is gone
+since 1.0.
 
 ### Surfaces (C-030, #93)
 
@@ -558,18 +510,17 @@ outermost frame to the brightest step, plus the card and two fills:
 | `panel-2` | `bg-panel-2` = `bg-app` | app | Main content (`SHELL_MAIN`, page background) |
 | `panel-3` | `bg-panel-3` | halfway app → panel | A calm block inside the content (sticky bars, inset areas) |
 | `panel-4` | `bg-panel-4` = `bg-panel` | panel | Sidebar (`SHELL_ASIDE`), modal, popover, menu, toast |
-| card | `bg-card` | dark: panel + 5% text-contrast (above the panel); light: app + 5% text-contrast (recessed) | Content cards: `CARD`, `<Card>`, `HERO` |
-| card-field | `bg-card-field` | card + 5% (dark) / 3% (light) text-contrast | Tiles, readings, table heads inside a card (`TILE`) |
-| tint / tint-hover | `bg-tint`, `hover:bg-tint-hover` | text-contrast at 7% / 11% (dark), 5% / 9% (light) | Secondary buttons (`BTN_SECONDARY`, `MODAL_BTN_SECONDARY`, `ICON_BTN`, `MODAL_CLOSE`): no border |
-| inverted | `bg-inverted` + `text-on-inverted` | near-white on dark, near-black on light | The main button of a brand with `primaryStyle: "inverted"` |
+| card | `bg-card` | dark: panel + 5% text-strong (above the panel); light: app + 5% text-strong (recessed) | Content cards: `CARD`, `<Card>`, `HERO` |
+| card-field | `bg-card-field` | card + 5% (dark) / 3% (light) text-strong | Tiles, readings, table heads inside a card (`TILE`) |
+| tint / tint-hover | `bg-tint`, `hover:bg-tint-hover` | text-strong at 7% / 11% (dark), 5% / 9% (light) | Secondary buttons (`BTN_SECONDARY`, `MODAL_BTN_SECONDARY`, `ICON_BTN`, `MODAL_CLOSE`): no border |
+| inverted | `bg-inverted` + `text-on-inverted` | near-white on dark, near-black on light | Checked controls (checkbox, switch, radio, slider), the selected day, the inverse button |
 
-- `canvas`, `app` and `panel` are `panel-0`, `panel-2`, `panel-4` (one value, two names). Since 0.36 every style takes
-  the preview's lightness steps (OKLCH L, dark 0.173 / 0.200 / 0.222, field 0.256, raised 0.301; light ≈ 0.96 / 0.98 /
-  1.0) with its own hue: small, even steps, the sidebar barely above the main block. The steps between, the card, the
-  fills and inverted are mixed from them in CSS (`color-mix(in oklab, …)`), so every style and every brand kit (tinted,
-  `pure` or `preset` neutrals) gets them with no extra values.
-- **Cards have no border** in Flat and Soft (`card-border` is `1px solid transparent`: the box stays, so hover and
-  `CARD_ACTIVE` borders do not move the layout); Sharp keeps its 2px line. A dense data view that needs an edge uses
+- `canvas`, `app` and `panel` are `panel-0`, `panel-2`, `panel-4` (one value, two names). Since 1.0 they are pure
+  neutral greys, the same for every brand (dark #101010 / #161616 / #1a1a1a, light #ebebeb / #f3f3f3 / #ffffff); the
+  steps between, the card, the fills and inverted are mixed from them and the contrast colour in CSS
+  (`color-mix(in oklab, …)`).
+- **Cards have no border** (`card-border` is `1px solid transparent`: the box stays, so hover and `CARD_ACTIVE`
+  borders do not move the layout). A dense data view that needs an edge uses
   `<Card bordered>` / `CARD_BORDERED` (panel fill + `border-line`, the pre-0.36 card).
 - `bg-card` and `bg-card-field` are `@utility` rules, not theme colours (a `--color-card` theme colour would also
   generate a `border-card` colour utility that collides with the style's `border-card`), so opacity modifiers
@@ -578,12 +529,9 @@ outermost frame to the brightest step, plus the card and two fills:
   now reads as a raised white block, not a card).
 - **Secondary buttons are a tint fill** with no border; `outline` (`BTN_OUTLINE`, `<Button variant="outline">`) keeps
   the framed look for a toolbar of framed controls. Focus rings are unchanged.
-- **Main buttons read `action`**, not `accent`: the accent by default, the inverted neutral when the brand kit sets
-  `primaryStyle: "inverted"`. Checked controls, selection, links, focus, badges stay on the accent tokens.
-- Measured (core Flat / Soft / Sharp and the Semi and 3D Noobs kits, tinted and pure, both themes): `text-muted` ≥ 4.53:1
-  on every panel step, the card and card-field (worst: 3D Noobs Flat light card-field); card vs app 1.12:1 light, ≥ 1.16:1
-  dark (#10 asks ≥ 1.15 dark); app vs panel 1.04–1.06:1 (deliberately subtle); inverted text ≥ 15:1; every status and tone text ≥ 4.5:1 on its badge inside a card
-  (`lint/test/surfaces.test.mjs`).
+- **Main buttons read the brand fill** (`bg-primary`); checked controls, selection, links, focus are neutral.
+- Text tiers reach 4.5:1 on canvas, app and panel in both themes (checked by the token build); status and tone text
+  reach 4.5:1 on their badges (`lint/test/surfaces.test.mjs`, the docs-site contrast tests).
 
 **Cách sinh CSS:** giá trị theo theme nằm ở biến nguồn `--semi-*` (đặt trong `:root/[data-theme=dark]` và `[data-theme=light]`); utility đọc qua `@theme inline` (`bg-panel` → `var(--semi-panel)`), còn `--color-*` được khai báo lại ở mỗi theme scope cho CSS của app (`var(--color-panel)`).
 
@@ -633,33 +581,36 @@ export default function RootLayout({ children }) {
 Hardcoding physical palette classes such as `bg-white`, `text-slate-900`, `border-slate-200`, or `bg-slate-50` creates the "Dark Shell, Light Core" conflict:
 - In Dark Mode, a card with `bg-white` creates a blinding white rectangle inside a dark Bento frame.
 - In Light Mode, text with `text-white` disappears completely on the white page background.
-By using `bg-panel` and `text-contrast`, your UI seamlessly flips from dark obsidian to crisp slate without writing a single media query.
+By using `bg-panel` and `text-strong`, your UI seamlessly flips from dark obsidian to crisp slate without writing a single media query.
 
 ## 2b. Brand per product
 
 A product's brand comes from its **brand kit** (`docs/BRANDS.md`), never from its own CSS: the kit's `dist/brand.css`
-(imported after `@semi/ui/tokens.css`) sets the primary / secondary scales, the themed accent tokens, the neutrals per
-style and the fonts. With
-`"brand"` in `semi-lint.json`, the app may not set any of them (`brand-override`: `--color-primary-*`, `--semi-*`,
-`--brand-*`, `--spacing`, `--density-spacing`, the font variables). Density and type scale are the product's own
-choice, not the brand's (§19). An app without a kit uses Semi's own green and Flat. A brand change is
-made in the brand repo (`/semi-brand`) and reaches products with `/semi-sync`.
+(imported after `@semi/ui/tokens.css`) sets only the primary fill (and an optional secondary), the text colour on each,
+and the fonts. Surfaces, text, lines, focus and status are the same for every brand. With `"brand"` in
+`semi-lint.json`, the app may not set any of them (`brand-override`: `--color-primary*`, `--color-on-primary`,
+`--semi-*`, `--brand-*`, `--spacing`, `--density-spacing`, the font variables). Density and type scale are the
+product's own choice, not the brand's (§19). An app without a kit uses Semi's own green. A brand change is made in the
+brand repo (`/semi-brand`) and reaches products with `/semi-sync`. There is one look: no styles, no `data-style`.
 
 ## 3. Colour meaning
 
-- **Accent** (the brand's primary; Semi default `#00AE42`): the main action, focus ring, "on" and selection, through
-  `bg-accent` + `text-on-accent` (`BTN_PRIMARY`), `bg-accent-hover`, `text-accent-fg`, `bg-accent-subtle`,
-  `border-accent-line`, `ring-focus`. Never `primary-*` shades or `primary-N/alpha` in an app.
-- **Status** carries meaning only, never decoration or an accent: success (online, ready, done), warning (busy,
+- **Brand** (primary, optional secondary; Semi default `#00AE42`): only the one main button of a page, a modal or the
+  nav (`BTN_PRIMARY`: `bg-primary hover:bg-primary-hover text-on-primary`), attention count badges, "New" tags and the
+  active big-tab underline. Nothing else: links, check marks, active tabs, selection and the focus ring are neutral.
+- **Selection** is neutral: `bg-item-hover` (hover), `bg-item-selected` (the open record, the selected nav item or
+  option), `bg-item-checked` (checked rows / cards in selection mode); a checked control is `bg-inverted` +
+  `text-on-inverted`; the focus ring is `ring-focus` (the strong text colour).
+- **Status** carries meaning only, never decoration or a brand mark: success (online, ready, done), warning (busy,
   paused, connecting), danger (error, destructive), info (neutral news, cost). Tokens `bg-*-bg` + `border-*-border` +
   `text-*-fg`, `bg-*-solid` for a dot or a fill (table in §2); `<Alert tone>`, `<Badge tone>`, `StatusDot`.
 - **Tile tones** (`TILE_TONES` in `Icon.tsx`: a soft tint + `text-tone-*`; `TONE_TEXT` for a bare icon): green ·
   pink · sky · amber · violet (indigo) · gray (advanced / unknown). Each app maps its areas to tones once (in its own
   extension doc) and keeps the mapping everywhere. The nav menu uses neutral `w-4 h-4` (16px) icons in `text-muted`;
   the active item is drawn by `AppShell`.
-- **Chips and tags** (`Chip.tsx`) share one pill style (`rounded-full h-control px-3.5 text-label font-medium`):
-  `chipClass(active)` gives borderless ghost pills when off (`bg-transparent text-muted hover:text-contrast
-  hover:bg-field`) and a raised pill when on (`bg-raised border-line text-contrast`); static tags use `TAG`
+- **Chips and tags** (`Chip.tsx`) share one pill style (`rounded-full h-control px-3.5 text-ui font-medium`):
+  `chipClass(active)` gives borderless ghost pills when off (`bg-transparent text-muted hover:text-strong
+  hover:bg-field`) and a raised pill when on (`bg-raised border-line text-strong`); static tags use `TAG`
   (neutral). Per-item colour appears only on a leading dot (`TONE_DOT`) or icon (`chipIconClass(tone)`). The chosen
   segment of `Pills`, `Toggle` and pill `Tabs` is `SEGMENT_ON`.
 - Data series in charts may use several hues; that is the one place extra colours belong. Syntax colours in code
@@ -679,9 +630,9 @@ Instead, follow the canonical Semi patterns:
        <span className={cn("p-1.5 rounded-control", TILE_TONES.violet)}>
          <Icon name="plug" className="w-4 h-4" />
        </span>
-       <span className="text-ui font-semibold text-contrast">{title}</span>
+       <span className="text-ui font-semibold text-strong">{title}</span>
      </div>
-     <p className="text-label text-muted mt-1">{description}</p>
+     <p className="text-ui text-muted mt-1">{description}</p>
    </Card>
    ```
 2. **Callout / Alert Banners:**
@@ -689,7 +640,7 @@ Instead, follow the canonical Semi patterns:
    themed status surface tokens, which are tinted fills and borders tuned for AA text in both themes:
    ```tsx
    {/* Warning callout */}
-   <div className="flex items-center gap-2 px-3 py-2.5 rounded-control bg-warning-bg text-warning-fg border border-warning-border text-label">
+   <div className="flex items-center gap-2 px-3 py-2.5 rounded-control bg-warning-bg text-warning-fg border border-warning-border text-ui">
      <Icon name="alertTriangle" className="w-4 h-4 shrink-0" />
      <span>{warningMessage}</span>
    </div>
@@ -718,7 +669,7 @@ breaks under a brand kit or a style (`no-fixed-tone-text`, hard rule 10).
 | A category tint (card, tile, tag) | `TONAL_SURFACE[tone]` (= `TONAL_CONTAINER`), `<Badge tone>`, `TILE_TONES` | `bg-<color>-500/10 border-<color>-500/20 text-tone-<color>` |
 | Its hover | `TONAL_HOVER[tone]` | `hover:bg-<color>-500/15 hover:border-<color>-500/30` |
 | Coloured text or icon alone | `text-tone-<color>` (`TONE_TEXT`), `text-*-fg` for a status | Themed shade, 4.5:1 on panel |
-| A highlighted row | `bg-accent-subtle` (selected), a status `bg-*-bg` (a row that needs attention); its secondary text stays `text-muted` (the fill darkens it, #123) | No hue picked per row, no `active ? "text-body" : "text-muted"` swap |
+| A highlighted row | `bg-item-selected` (selected), a status `bg-*-bg` (a row that needs attention); its secondary text stays `text-muted` (the fill darkens it, #123) | No hue picked per row, no `active ? "text-body" : "text-muted"` swap |
 
 ### Examples Across Component Types
 
@@ -731,7 +682,7 @@ breaks under a brand kit or a style (`no-fixed-tone-text`, hard rule 10).
 
 // After:
 <div className={cn("rounded-card border p-card", TONAL_SURFACE.purple, TONAL_HOVER.purple)}>
-  <p className="text-ui-lg font-semibold">Pro Subscription</p>
+  <p className="text-lead font-semibold">Pro Subscription</p>
 </div>
 ```
 
@@ -750,8 +701,8 @@ breaks under a brand kit or a style (`no-fixed-tone-text`, hard rule 10).
 // Before:
 <tr className="bg-blue-50 border-b border-blue-100 text-blue-700">…</tr>
 
-// After: the row stays neutral; the status sits on its badge, a selected row takes the accent tint.
-<TR className={selected ? "bg-accent-subtle" : undefined}>… <TD><Badge tone="sky">Chờ duyệt</Badge></TD></TR>
+// After: the row stays neutral; the status sits on its badge, a selected row takes the neutral `bg-item-selected`.
+<TR className={selected ? "bg-item-selected" : undefined}>… <TD><Badge tone="sky">Chờ duyệt</Badge></TD></TR>
 ```
 
 #### 4. Badges & chips
@@ -774,14 +725,13 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
 
 ## 4. Layout
 
-- **Radius scale (style tokens):** tiny marks (checkbox, colour swatch, key cap, inline code) `rounded-chip` · controls,
+- **Radius scale (shape tokens):** tiny marks (checkbox, colour swatch, key cap, inline code) `rounded-chip` · controls,
   inputs, buttons, inner tiles and list rows `rounded-control` · cards, popovers, menus, toasts `rounded-card` · panels,
-  hero, modals, drawers, sidebar `rounded-panel` · filter chips, pills, avatars, badges, dots `rounded-full`. Values per
-  style (Flat 4 · 8 · 12 · 16px, Soft 6 · 12 · 20 · 24px, Sharp 2 · 0 · 0 · 0): `docs/STYLES.md`. Never the raw scale (`rounded`,
-  `rounded-lg/xl/2xl`) or `rounded-[Npx]`: they would not follow the style (`radius-token`).
+  hero, modals, drawers, sidebar `rounded-panel` · filter chips, pills, avatars, badges, dots `rounded-full`. Values 4 · 8 ·
+  12 · 16px (`docs/TOKENS.md`). Never the raw scale (`rounded`, `rounded-lg/xl/2xl`) or `rounded-[Npx]` (`radius-token`).
 - **Control height:** all toolbar buttons, filter chips, pills, search inputs, custom selects and date pickers use
-  `h-control` (34px in Flat, set by the style) and `text-label font-medium` so toolbar rows align evenly. Form inputs and
-  selects use `h-field` (36px in Flat). Never `h-[34px]`: it would not follow the style.
+  `h-control` (34px, a shape token) and `text-ui font-medium` so toolbar rows align evenly. Form inputs and
+  selects use `h-field` (36px). Never `h-[34px]`: it would not follow the shape token.
 - **Spacing (semantic tokens, scaled by density):** pick by role, not by number. They come from `tokens.json` "space"
   and multiply the density unit, so a compact product gets 90% and an airy one 115% without any change in code:
 
@@ -800,11 +750,11 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
 - **Home shell (`md+`):** two inset `rounded-panel` panels inside a `bg-canvas` frame (`md:p-2 md:gap-2`), separated by
   tone (no border): a collapsible left **Panel Menu** (`bg-panel`, `w-60` on `lg+`, or the `w-[60px]` icon rail) and a
   right **Panel Content** (`bg-app`) holding a full-width content container (`max-w-[1440px] px-4 sm:px-6`).
-- **Sidebar order (C-031, #96):** brand + collapse toggle (the logo expands the rail) · one accent **Create** action
+- **Sidebar order (C-031, #96):** brand + collapse toggle (the logo expands the rail) · one brand-filled **Create** action
   (`create`: a `Menu` of things to create, or one link) · the main nav (`sections`) · a **pinned** group (saved views,
   frequent records) under a divider with a `text-overline` label · at the bottom the **utilities** (help, theme,
   notifications: items with `onClick`, or `menu` for a Menu of choices such as `useThemeUtility()`) and the **account**. Rows are `h-9`, icons 18px; the active row is
-  `bg-tint-hover text-contrast`, others `text-body hover:bg-tint`.
+  `bg-tint-hover text-strong`, others `text-body hover:bg-tint`.
 - **Rail:** `lg+` shows labels unless collapsed (remembered per app, `storageKey`); `md` (iPad) is always the rail. In
   the rail every item has an `aria-label` and a `Tooltip` on the right. An item without `icon` shows its initials
   (`shortLabel` to choose them): give pinned items distinct icons, or none, never one shared icon (touch has no
@@ -815,7 +765,7 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
 - **Mega menu:** a nav item with `mega` opens a `MegaMenu` flyout beside the sidebar: 2–4 category columns headed by
   `text-overline`, links with a grey icon, a hint and a "Mới" badge, and a "Xem tất cả" link.
 - **Phones (`< md`):** a top bar (menu button, logo, product name) opens a full-screen drawer with the same groups:
-  one accent Create row (its items open as a level), rows `min-h-12` with › for sub-items and mega menus (a
+  one brand-filled Create row (its items open as a level), rows `min-h-12` with › for sub-items and mega menus (a
   drill-down level with a back row; a parent with its own page is the level's first row, "Tất cả …"), the pinned
   group, utilities and the account at the bottom. The drawer is the default when the app sets neither `mobileNav` nor
   `mobileTabIds`; `mobileNav="tabs"` keeps the bottom tab bar (`MobileTabBar`) with the items named in `mobileTabIds`
@@ -829,7 +779,7 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   **closed by default** and open under their parent only while the parent or one of its sub-items is active; choosing
   another item closes them (no manual toggle, no state to remember). Sub-items are indented on a thin
   `border-divider` guide, `h-7`, with an optional grey `w-3.5` icon (all sub-items of a parent get one, or none): no
-  colour dot, no count (the menu stays neutral; counts and colours live in the page). The parent shows a chevron and keeps `text-contrast` while a sub-item holds the active fill. The `w-14` rail,
+  colour dot, no count (the menu stays neutral; counts and colours live in the page). The parent shows a chevron and keeps `text-strong` while a sub-item holds the active fill. The `w-14` rail,
   widths below `lg` and phones never show sub-items: pages read `useAppShell().submenuVisible` and offer the same choice
   in their toolbar (a `CustomSelect`) when it is false.
 - **Title and toolbar: two layouts, pick one per page.** (a) Title on its own row, toolbar below (`PageTitle` +
@@ -911,7 +861,7 @@ the right. Props: `title`, `productName` (home bar), `logo` / `logoIcon`, `homeH
 - **There is no Home button.** Clicking the logo + title returns home in the same tab; pass `onHome` when leaving needs
   a confirmation. The bar is full width, `h-13`, `bg-app/95 backdrop-blur-xl border-b border-divider`, sticky.
 - Tool apps (an editor around a canvas / 3D view): left `SidePanel` (320 px, collapses to a rail with the sidebar
-  icon), sections `p-3 sm:p-3.5 border-b border-divider`, labels `text-label font-medium text-muted`, rarely used
+  icon), sections `p-3 sm:p-3.5 border-b border-divider`, labels `text-ui font-medium text-muted`, rarely used
   options under a collapsed "Tuỳ chọn khác". Floating canvas controls come from `@semi/ui/styles` (`VIEWPORT_TOOLBAR`
   top centre, `VIEWPORT_PILL` undo/redo bottom centre, `VIEWPORT_ROUND_BTN` bottom left, `VIEWPORT_BADGE` bottom
   right). Phones: canvas on top, settings in a bottom sheet titled with the app name. No file open: a start screen
@@ -932,8 +882,8 @@ padding that comes from three files.
 | A row of a list or menu (three or more stacked alike, clickable or split by lines) is at least a control tall (`h-control`) when clickable, and keeps ≥ 1.5 units (6px) above and below its text | `tight-row` | `Item` / `ItemGroup`, `Menu`, `DataTable` |
 | At most three frames inside each other (page panel › card › tile) | `box-nesting` | white space, a divider or plain text instead of the fourth frame |
 | At most four text sizes in one box (title, body, label, caption) | `type-mix` | weight and colour (`font-medium`, `text-muted`) for the rest |
-| At most three colours in one box (accent and status; greys do not count) | `colour-noise` | neutral icons, a tone only where it means a state (§3) |
-| One filled accent button per view (page, dialog, form) | `primary-actions` | `Button` (secondary) or `ghost` for the rest |
+| At most three colours in one box (brand and status; greys do not count) | `colour-noise` | neutral icons, a tone only where it means a state (§3) |
+| One filled brand button per view (page, dialog, form) | `primary-actions` | `Button` (secondary) or `ghost` for the rest |
 | Boxes side by side keep ≥ 2 units (8px) apart, or share an edge on purpose | `cramped-boxes` | `gap-group` between cards, `gap-stack` between tiles |
 | One line between two things | `double-line` | no `border-b` on the last row of a card (`TBody`, `ItemGroup` do it), no border next to a `divide-y` |
 
@@ -949,7 +899,7 @@ What no number catches stays a review by eye (§19): one main block per screen, 
 
 ## 5. Card
 
-Cards separate from the page by tone (`bg-card`, Surfaces in §2), with no visible border in Flat and Soft.
+Cards separate from the page by tone (`bg-card`, Surfaces in §2), with no visible border.
 `<Card>` (`@semi/ui`) wraps the same classes and pads itself (`padding`: `"card"` = `p-card` by default, `"panel"` =
 `p-card sm:p-panel`, `"none"` for media that runs to the edge; a `p-*` in `className` replaces it): `<Card>`, `<Card interactive>` (CARD_HOVER, the border shows on hover), `<Card active>`
 (CARD_ACTIVE), `<Card bordered>` (CARD_BORDERED: panel fill + 1px line, for a dense table or list that needs an edge). It owns its surface: pass padding / layout only, never `bg-*` or `shadow-*`. With `onClick` it is a
@@ -965,7 +915,7 @@ import { CARD, CARD_BORDERED, CARD_HOVER, CARD_ACTIVE } from "@semi/ui/styles";
 <div className={`${CARD_BORDERED} overflow-hidden`}>…table…</div>        // dense data view that needs an edge
 ```
 
-Card header row: `IconTile` (or the item's image) · name (`text-ui-lg font-semibold`) + caption · icon actions
+Card header row: `IconTile` (or the item's image) · name (`text-lead font-semibold`) + caption · icon actions
 (`ICON_BTN`, `ICON_BTN_DANGER`) on the right.
 
 ## 6. Hero card
@@ -976,7 +926,7 @@ Card header row: `IconTile` (or the item's image) · name (`text-ui-lg font-semi
 
 `<IconTile name="box" tone="green" size="sm|md|lg" />`: rounded square with a soft tint of the area's tone.
 `sm` 28px (list rows) · `md` 36px (card headers) · `lg` 44px (dialogs, empty states). Nav items use a grey `w-4 h-4`
-icon in a `h-8` row; the active item uses a neutral raised fill (`bg-raised text-contrast`). Dashboard quick feature
+icon in a `h-8` row; the active item uses a neutral raised fill (`bg-raised text-strong`). Dashboard quick feature
 tiles use `w-11 h-11 rounded-card` with their area's `TILE_TONES`.
 
 ## 8. Section heading
@@ -992,9 +942,8 @@ tiles use `w-11 h-11 rounded-card` with their area's `TILE_TONES`.
 ## 9. Buttons
 
 `BTN_PRIMARY` / `BTN_SECONDARY` / `BTN_OUTLINE` / `BTN_DANGER` from `@semi/ui/styles` (`rounded-control`, `h-control`,
-`text-label font-medium`, flat). Primary fills with `bg-action` (the accent, or inverted in a brand with
-`primaryStyle: "inverted"`); secondary is a translucent `bg-tint` with no border; outline is the framed field look. Icon-only: add `BTN_ICON`, or `ICON_BTN` (`w-7 h-7 rounded-control`) inside cards. Big
-state toggles (power) are round: `w-20 h-20 sm:w-24 sm:h-24 rounded-full`, flat `bg-accent text-on-accent` when on,
+`text-ui font-medium`, flat). Primary fills with `bg-primary` (the brand fill, one per view); secondary is a translucent `bg-tint` with no border; outline is the framed field look. Icon-only: add `BTN_ICON`, or `ICON_BTN` (`w-7 h-7 rounded-control`) inside cards. Big
+state toggles (power) are round: `w-20 h-20 sm:w-24 sm:h-24 rounded-full`, flat `bg-primary text-on-primary` when on,
 `bg-field` when off. A running action shows a spinner inside its own button only.
 
 ### Grouping actions (G1–G12, C-025 / C-026)
@@ -1064,11 +1013,11 @@ it form by form; the four lint rules below are warnings until 1.0.
 - Sub-page filter tabs / chips: `Chip` (see §3 Chips). Static labels: `TAG`.
 - Filter chips may carry an icon and a count: icon `w-3.5 h-3.5` + label + `COUNT_PILL`.
 - Status pill: `STATUS_PILL` + `bg-*-bg text-*-fg` (danger, success, warning, info) with a status dot (§11), or `<Badge tone>`.
-- Tag / meta chip: `TAG` (`h-6 px-2 rounded-full bg-field border-line text-caption text-muted`) with an icon.
+- Tag / meta chip: `TAG` (`h-6 px-2 rounded-full bg-field border-line text-ui text-muted`) with an icon.
 
 ## 11. Status dot
 
-Flat dot next to state text, no glow: online `bg-success-solid`, running `bg-accent animate-pulse`,
+Flat dot next to state text, no glow: online `bg-success-solid`, running `bg-inverted animate-pulse`,
 busy/paused/connecting `bg-warning-solid`, error `bg-danger-solid`, offline `bg-muted`. Use `STATUS_DOT`.
 Size `w-2 h-2` (`w-1.5 h-1.5` inline in a caption).
 
@@ -1076,7 +1025,7 @@ Size `w-2 h-2` (`w-1.5 h-1.5` inline in a caption).
 
 Nested facts (readings, KPIs, sensor values) sit in `TILE` (`rounded-control bg-card-field`, no border)
 with an icon above or before a `tabular-nums` value. Progress is a ring or a `h-1.5 rounded-full` bar in
-`bg-accent` on `bg-raised` (`Progress`).
+`bg-primary` on `bg-raised` (`Progress`).
 
 ## 13. Empty state
 
@@ -1147,7 +1096,7 @@ A list, grid or table never swaps its rows for a `Spinner` or loading text (`no-
 `List` take `loading`, other lists render a skeleton of their shape: `SkeletonList` (divided rows), `SkeletonTable` (a
 hand-made table), `SkeletonDetail` (a record), `SkeletonRows` / `SkeletonGrid` (cards).
 Another exception: a list a form field fetches by itself in the background shows one small `role="status"` line under that
-field while it loads: a `w-3 h-3` spinner + "Đang tải …" in `text-label text-muted` (the text sits in the
+field while it loads: a `w-3 h-3` spinner + "Đang tải …" in `text-ui text-muted` (the text sits in the
 `role="status"` element, which the lint allows), gone when done; a failed fetch stays silent.
 
 ## 14. Modal & dialog
@@ -1237,7 +1186,7 @@ are the app's); the parts draw it and report `onSend` / `onStop` / `onRetry` / `
   `sm` by dragging or ←/→ on the edge (320–900px, double click = 380px, remembered per `widthKey`). Header = `IconTile`
   + title + "new chat" (only once there is a message) + close. Keep it mounted with `shown={false}` while it slides out.
 - **Inside:** `ChatView` (skeleton while settings load, `setup` in place of the chat, e.g. an `EmptyState` "AI is not
-  set up" + settings button) > `ChatList` + `ChatComposer`. Messages: `UserMessage` (right, accent tint; `failed`
+  set up" + settings button) > `ChatList` + `ChatComposer`. Messages: `UserMessage` (right, neutral tint; `failed`
   dimmed), `AssistantMessage` (left behind `ChatAvatar`, actions such as `ChatCopyButton` once done), `ChatThinking`
   (label + three dots, before the first token), `ChatError` (status tint, optional retry). Empty conversation:
   `ChatIntro` + `ChatSuggestions` of `ChatSuggestion` rows (`href` = external link). `CHAT_ROW` / `CHAT_CHIP` for
@@ -1360,7 +1309,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Small interactive panel under a trigger | `Popover` (non-modal dialog); a hover preview of a link → `HoverCard` |
 | Actions at the pointer | `ContextMenu` (right-click, long-press, Menu key); the same actions must exist in a visible `Menu` |
 | Jump / run anything from the keyboard | `CommandPalette` once in the root layout (⌘K, pages add items with `useRegisterCommands`, `openCommandPalette()`); `CommandDialog` + `useHotkey` for a palette of your own, `Command` inline; matching ignores Vietnamese marks |
-| Sort / filter / select / page rows | `DataTable` (`columns`, `search`, `selectable` + `bulkActions`, `pageSize`, `loading`). Many columns (a tablet beside the rail, a split view): give the less important ones `priority` 1–3; they fold into the first column's second line when the table's **own box** is too narrow (3 first; the first column and columns without a priority never fold). The sorted column never folds (its header is the sort control). Folding is measured after hydration, so such a table may shift once on first load. What still does not fit scrolls sideways with a 2px accent line on each edge that has columns past it and the scroll box focusable; `stickyFirstColumn` keeps the names in place. The order it shows is `sortRows(searchRows(rows, columns, search), columns, sort)` (pure, also for a DetailOverlay's ‹ ›) |
+| Sort / filter / select / page rows | `DataTable` (`columns`, `search`, `selectable` + `bulkActions`, `pageSize`, `loading`). Many columns (a tablet beside the rail, a split view): give the less important ones `priority` 1–3; they fold into the first column's second line when the table's **own box** is too narrow (3 first; the first column and columns without a priority never fold). The sorted column never folds (its header is the sort control). Folding is measured after hydration, so such a table may shift once on first load. What still does not fit scrolls sideways with a 2px strong line (outline-line) on each edge that has columns past it and the scroll box focusable; `stickyFirstColumn` keeps the names in place. The order it shows is `sortRows(searchRows(rows, columns, search), columns, sort)` (pure, also for a DetailOverlay's ‹ ›) |
 | Fixed-height scrolling list | `ScrollArea` (edge lines, optional thin scrollbar, keyboard focusable) |
 | Divider / key cap | `Separator` (horizontal, vertical, with a label); `Kbd` (`keys={["⌘", "K"]}`) |
 | Charts | `BarChart` (grouped / `stacked`), `LineChart` (`area`), `DonutChart` (≤ 5 parts), `Sparkline` (trend in a KPI tile). Series colours are the fixed `chart-1…8` tokens in order, a 9th series folds into “Khác”; one y axis only; legend for 2+ series, keyboard tooltip and table view built in |
@@ -1420,7 +1369,7 @@ installed. Without Playwright, `--snippet` prints an expression to evaluate with
 | `target-size` | A control is smaller than 24 × 24 px (its `::before` / `::after` hit area included) and a 24px circle on its centre touches another target or another small target's circle; links in a sentence are exempt |
 | `img-alt` | An `<img>` has no `alt`, or a `role="img"` has no name |
 | `lang` | `<html>` has no `lang` |
-| `field-size` | At a viewport under 640px, an input, textarea or select you type in has text under 16px (iOS Safari zooms the page on focus and never zooms back); read-only and disabled fields are exempt |
+| `field-size` | At a viewport under 640px, an input, textarea or select you type in has text under 16px (iOS Safari zooms the page on focus and never zooms back); read-only and disabled fields are exempt. Fix: `FIELD_INPUT`, or `max-sm:text-input` |
 | `zoom-lock` | The viewport meta has `user-scalable=no` or `maximum-scale` below 2 |
 
 `data-a11y-skip="<reason>"` marks a specimen that breaks a rule on purpose (a contrast sample in a brand book); never
@@ -1442,11 +1391,11 @@ roomy store: `data-density` / `data-type-scale` on `<html>` (or any wrapper), mi
 | Choice | Set by | Token | Read by |
 |---|---|---|---|
 | Density compact / regular / airy | product | `--spacing` (Tailwind's unit: every `p-*`, `gap-*`, `space-*`) | everything |
-| Type scale even / contrast | product | `--text-figure` … `--text-display` | `PageTitle`, `KpiCard`, headings |
-| Title weight | style | `font-title` (`--font-weight-title`) | `PageTitle`, `PageTabsTitle`, `KpiCard` |
-| Font of big numbers | style | `font-figure` | `KpiCard` |
+| Type scale even / contrast | product | `--text-figure` … `--text-tab-xl` | `PageTitle`, `KpiCard`, headings |
+| Title weight | shape | `font-title` (`--font-weight-title`) | `PageTitle`, `PageTabsTitle`, `KpiCard` |
+| Font of big numbers | shape | `font-figure` | `KpiCard` |
 
-Sharp has bold titles and figures in the display font; Flat and Soft semibold in the sans. Apps use `font-title`
+Titles are 500 (`font-title`, headings are not bold) and figures use the sans. Apps use `font-title`
 and `font-figure` for their own titles and big numbers, change density and type scale only through the attributes,
 and never override the variables (`brand-override`).
 
@@ -1527,10 +1476,10 @@ catches and what it must not:
 `skip` or a disabled rule grew against the base branch. The edit hook lints `.css` too and flags any edit of
 `semi-lint.json` or the baseline.
 
-- **Physical / literal colors (`no-literal-palette`):** Never use neutral / white / black colour classes on any prefix or variant (`bg-white`, `text-slate-900`, `border-b-gray-200`, `divide-zinc-100`, `ring-slate-300`, `from-white`, `dark:bg-slate-800`). Always use Semantic Tokens (`bg-panel`, `bg-field`, `text-contrast`, `text-body`, `text-muted`, `border-line`, `divide-divider`).
-- **Fixed chromatic text (`no-fixed-tone-text`):** `text-emerald-400`, `text-rose-700 dark:text-rose-300`, `fill-amber-500` cannot pass contrast in both themes: use `text-accent-fg`, `text-*-fg` or `text-tone-<hue>`.
-- **Brand scale as a state colour (`accent-state-token`):** `ring-primary-500/50`, `bg-primary-500/15`, `border-primary-500/30` are not themed and vanish for light brands on light surfaces (a yellow ring is ≈ 1.3:1 on white): use `ring-focus`, `border-focus`, `bg-accent-subtle` / `bg-accent-subtle-hover`, `border-accent-line`. `/semi-check` rewrites them.
-- **Brand scale as a fill or border (`primary-fill`):** `bg-primary-500`, `hover:bg-primary-600`, `border-primary-500`. The brand colour sits on one step of the scale (yellow on `200`, navy on `900`), so a `primary-500` fill turns pale or off-brand with a brand kit. Main actions and "on" marks are `bg-accent hover:bg-accent-hover text-on-accent` (`BTN_PRIMARY`), selected borders `border-accent-line`, focused ones `border-focus`. `primary-*` is the scale for charts and illustrations: list those files under `skip`. The `/semi-check` codemod rewrites `bg-primary-400…600` to `bg-accent` when the same class list has `text-white` / `text-on-accent`, and reports the rest.
+- **Physical / literal colors (`no-literal-palette`):** Never use neutral / white / black colour classes on any prefix or variant (`bg-white`, `text-slate-900`, `border-b-gray-200`, `divide-zinc-100`, `ring-slate-300`, `from-white`, `dark:bg-slate-800`). Always use Semantic Tokens (`bg-panel`, `bg-field`, `text-strong`, `text-body`, `text-muted`, `border-line`, `divide-divider`).
+- **Fixed chromatic text (`no-fixed-tone-text`):** `text-emerald-400`, `text-rose-700 dark:text-rose-300`, `fill-amber-500` cannot pass contrast in both themes: use `text-strong`, `text-*-fg` or `text-tone-<hue>`.
+- **Brand scale as a state colour (`accent-state-token`):** `ring-primary-500/50`, `bg-primary-500/15`, `border-primary-500/30` are not themed and vanish for light brands on light surfaces (a yellow ring is ≈ 1.3:1 on white): use `ring-focus`, `border-focus`, `bg-item-selected` / `bg-item-selected`, `border-outline-line`. `/semi-check` rewrites them.
+- **Brand scale as a fill or border (`primary-fill`):** `bg-primary-500`, `hover:bg-primary-600`, `border-primary-500`. The brand colour sits on one step of the scale (yellow on `200`, navy on `900`), so a `primary-500` fill turns pale or off-brand with a brand kit. Main actions and "on" marks are `bg-primary hover:bg-primary-hover text-on-primary` (`BTN_PRIMARY`), selected borders `border-outline-line`, focused ones `border-focus`. `primary-*` is the scale for charts and illustrations: list those files under `skip`. The `/semi-check` codemod rewrites `bg-primary-400…600` to `bg-primary` when the same class list has `text-white` / `text-on-primary`, and reports the rest.
 - **Solid pastel surfaces (`no-solid-pastel-surfaces`), arbitrary colours (`hex-colour-class`), literal colours in code (`literal-colour-value`), off-scale sizes (`arbitrary-text-size`).**
 - The colour / size rules read class tokens from every string literal (className, `cn()`, constants, template parts, `@apply`), not lines, so any spelling of a colour is caught.
 - **Illustrations and data colours** (a device drawing, a 3D scene palette, other companies' logos) are content, not UI chrome: name each file under `skip` in `semi-lint.json` with a reason, for `literal-colour-value`, `inline-svg-path` or `no-literal-palette` only: `"skip": { "literal-colour-value": { "lib/scenePalette.ts": "data colours: 3D scene" } }`. The `/semi-check` audit lists each one ("Minh hoạ / màu dữ liệu") and its codemod leaves them; never a whole folder, never the baseline.
@@ -1542,7 +1491,7 @@ catches and what it must not:
 - Emoji or unicode pictograms as icons; filled glyphs mixed with stroke icons; stroke 2+; new inline `<svg>` paths.
 - Native `<select>`, `type="date"`, `type="number"`, `window.confirm` / `alert`.
 - Tokens are named by role, like the large design systems (Material, Carbon, Primer: a type role, a layer), never by
-  one component: `text-figure` (was `text-kpi`), `z-sheet` (was `z-keypad`). The old names stay as deprecated aliases
+  one component: `text-figure` (was `text-figure`), `z-sheet` (was `z-keypad`). The old names stay as deprecated aliases
   until 1.0; the 0.30.0 migration rewrites them.
 - `AppShell` in a page or in a component a page imports (`app-shell-in-page`); a shell gated behind a page skeleton (`shell-gate`); sidebar routing through `onSelect` + `router.push` instead of item `href` (`shell-nav-href`); `BootLoader` in a page, a `loading.tsx` or shell content (`boot-loader-place`).
 - "Đang tải…" text or a page spinner instead of a skeleton (`loading-text`). A step label of a progress bar (`Progress label`, a call with a `fraction` / `value`), text in a `role="status"` / `role="progressbar"` element and a `TaskHost` label are fine.
@@ -1965,9 +1914,9 @@ Khi cần hiển thị biểu tượng cho một hành động hoặc trạng th
 | **Thế Giới Di Động (MWG)** | `tgdd` | `<Icon name="tgdd" />` | Chuỗi bán lẻ công nghệ Thế Giới Di Động / Điện Máy Xanh |
 
 > [!TIP] **Cơ chế màu sắc đặc trưng của Brand Icons (Semi Calibrated Brand Styling)**:
-> - **Giữ màu sắc nhận diện thương hiệu nhưng chuẩn hoá theo Semi Design System**: Các icon Brand & TMĐT VN mặc định hiển thị theo màu sắc nhận diện đặc trưng (Shopee cam `text-tone-orange`, Tiki xanh dương nhạt `text-tone-sky`, MoMo hồng `text-tone-pink`, GHTK/Grab xanh lá `text-tone-emerald`, Lazada xanh tím `text-tone-indigo` & hồng đỏ `text-tone-rose`, v.v.) thông qua hệ thống token `text-tone-*` và `text-contrast`. Hệ màu này tự động tương thích và đạt chuẩn tương phản WCAG AA trên cả hai giao diện Dark và Light mà không gây chói mắt.
+> - **Giữ màu sắc nhận diện thương hiệu nhưng chuẩn hoá theo Semi Design System**: Các icon Brand & TMĐT VN mặc định hiển thị theo màu sắc nhận diện đặc trưng (Shopee cam `text-tone-orange`, Tiki xanh dương nhạt `text-tone-sky`, MoMo hồng `text-tone-pink`, GHTK/Grab xanh lá `text-tone-emerald`, Lazada xanh tím `text-tone-indigo` & hồng đỏ `text-tone-rose`, v.v.) thông qua hệ thống token `text-tone-*` và `text-strong`. Hệ màu này tự động tương thích và đạt chuẩn tương phản WCAG AA trên cả hai giao diện Dark và Light mà không gây chói mắt.
 > - **Tự động áp dụng màu nền trong `IconTile`**: Khi dùng `<IconTile name="shopee" />`, component sẽ tự động lấy tone màu thương hiệu tương ứng (`BRAND_TONES`) mà lập trình viên không cần truyền thuộc tính `tone` thủ công.
-> - **Chế độ đơn sắc (Monochrome Override)**: Khi cần đặt icon brand trong danh sách menu phụ hoặc trạng thái vô hiệu hoá/trung tính, chỉ cần truyền class màu chữ cụ thể (ví dụ `<Icon name="shopee" className="w-4 h-4 text-muted" />` hoặc `text-contrast`). Icon sẽ tự động chuyển sang chế độ đơn sắc đồng bộ với text của bạn.
+> - **Chế độ đơn sắc (Monochrome Override)**: Khi cần đặt icon brand trong danh sách menu phụ hoặc trạng thái vô hiệu hoá/trung tính, chỉ cần truyền class màu chữ cụ thể (ví dụ `<Icon name="shopee" className="w-4 h-4 text-muted" />` hoặc `text-strong`). Icon sẽ tự động chuyển sang chế độ đơn sắc đồng bộ với text của bạn.
 
 ---
 
@@ -2112,8 +2061,8 @@ Nếu một dự án mới thực sự cần một icon mới chưa có trong da
 # Thương hiệu trên Semi (brand kit)
 
 **Bắt đầu từ đây.** Semi là brand builder: bạn định nghĩa thương hiệu một lần, mọi sản phẩm và mọi agent làm theo.
-Mỗi thương hiệu (công ty con, khách hàng) có **một brand kit riêng** sinh ra từ Semi: logo, màu, font, giọng văn, style
-được phép, kèm một brand book để xem. Mọi sản phẩm của thương hiệu cài brand kit, nên luôn cùng nhận diện, cùng luật.
+Mỗi thương hiệu (công ty con, khách hàng) có **một brand kit riêng** sinh ra từ Semi: logo, màu nút chính, font, giọng
+văn, kèm một brand book để xem. Mọi sản phẩm của thương hiệu cài brand kit, nên luôn cùng nhận diện, cùng luật.
 
 | Bạn đang ở | Gõ | Để làm gì |
 |---|---|---|
@@ -2124,7 +2073,7 @@ Mỗi thương hiệu (công ty con, khách hàng) có **một brand kit riêng*
 
 ```
 Semi core (@semi/ui)              cố định cho mọi thương hiệu
-  component, luật, lint, template style (Flat / Soft / Sharp), bộ sinh màu
+  component, luật, lint, một style chung, mặt nền và chữ xám trung tính, bộ chọn chữ trên nút
         │  /semi-brand
         ▼
 Brand kit (vd. @3dnoobs/brand)    lựa chọn của một thương hiệu, repo GitHub riêng
@@ -2135,11 +2084,13 @@ Sản phẩm (Manager, Store, …)       chỉ dùng: không tự chọn màu / 
 ```
 
 - **Bạn chỉ quyết định vài thứ**, một lần, trong repo brand: brief (sản phẩm, người dùng, tính cách), logo, màu chính,
-  màu phụ (tuỳ chọn), màu trung tính, các style được dùng, font, giọng văn và mức dùng màu. Phần còn lại (thang màu, màu cho nền tối / sáng, chữ trên nút, đảm bảo đọc rõ) do Semi tự sinh.
-- **Mọi màu đều đạt chuẩn đọc rõ (WCAG AA)** ở cả theme sáng và tối: bộ sinh tự chỉnh, và báo lỗi nếu một màu không
-  thể dùng được.
+  màu phụ (tuỳ chọn), font, giọng văn. Chữ trên nút và màu hover do Semi tự chọn. Từ 1.0 màu thương hiệu **chỉ** cho nút
+  chính (của trang, hộp thoại, thanh điều hướng), badge đếm cần chú ý, nhãn "Mới" và gạch chân tab lớn đang chọn; mặt
+  nền, chữ, đường viền, mục đang chọn và focus là xám trung tính của Semi, giống nhau cho mọi thương hiệu (`docs/TOKENS.md`).
+- **Chữ trên nút luôn đạt chuẩn đọc rõ (WCAG AA, 4.5:1):** bộ sinh chọn chữ trắng, gần đen hoặc đen, và báo lỗi nếu chữ
+  bạn tự chọn (`"on"`) không đạt.
 - **Sản phẩm không thể đi lệch:** `semi-lint` chặn việc ghi đè màu thương hiệu trong sản phẩm (`brand-override`),
-  `/semi-check` kiểm tra sản phẩm đang dùng đúng brand kit, đúng style được phép.
+  `/semi-check` kiểm tra sản phẩm đang dùng đúng brand kit.
 - **Agent viết đúng giọng thương hiệu:** trong sản phẩm, agent hỏi `semi_brand` trước khi viết chữ, đặt màu hay logo.
 
 ---
@@ -2165,12 +2116,9 @@ Mở thư mục đó bằng Claude Code (hoặc agent có plugin `semi-design`).
 | Tên thương hiệu, tên package | 3D Noobs · `@3dnoobs/brand` | Package là tên sản phẩm sẽ cài |
 | Logo | `assets/logo.svg` (+ bản nền tối, biểu tượng vuông nếu có) | SVG: agent đọc màu từ file (`brand.mjs colors`); kit copy logo vào `dist/logo/` |
 | Màu chính | `#00AE42` | Mã hex, hoặc lấy từ logo |
-| Màu phụ, vai trò | (bỏ qua) | Tuỳ chọn; vai trò: điểm nhấn, badge hoặc minh hoạ |
-| Màu trung tính | Phủ theo màu chính | Hoặc giữ màu trung tính có sẵn của từng style |
-| Style mặc định, style được phép | Flat · Flat + Soft | Chưa chắc: cho phép cả ba để so trong preview, rồi thu lại |
-| Font | Geist + Montserrat Alternates | Chọn trong danh sách, hoặc tên một Google Font có tiếng Việt |
+| Màu phụ | (bỏ qua) | Tuỳ chọn: nút chính thứ hai |
+| Font | Geist (+ Montserrat Alternates cho hero, tab lớn) | Font giao diện bắt buộc; font hiển thị tuỳ chọn (không có thì dùng font giao diện). Chọn trong danh sách, hoặc tên một Google Font có tiếng Việt |
 | Giọng văn | Thân thiện · gọi "bạn" · không emoji | Agent soạn nháp 2 nên / 2 không nên và câu mẫu cho nút, lỗi, trạng thái trống để bạn sửa |
-| Mức dùng màu chính | Tiết chế | Tiết chế (công cụ) · cân bằng · phóng khoáng (tiêu dùng, marketing) |
 
 Đã có `brand.json` (vd. copy từ trang Brand preview của docs bằng "Copy lệnh cho agent")? Dán vào `/semi-brand`: agent
 lấy mọi lựa chọn trong đó và chỉ hỏi phần còn thiếu.
@@ -2188,25 +2136,25 @@ Agent chạy trang preview **của chính repo brand** (`npm run preview`) và g
   nền rối), màu theo vai trò kèm **tỉ lệ màu trên một màn hình**, chữ (mẫu font có dấu tiếng Việt, câu tagline), giọng
   văn (nên / không nên, nút, lỗi, trạng thái trống ở sáng và tối), hình ảnh.
 - **Ứng dụng:** dashboard, ứng dụng điện thoại, trang giới thiệu, email, mỗi màn ở sáng và tối, chữ theo giọng văn.
-- **UI kit** (cho developer): thang màu, sắc của nút và chữ ở từng theme và độ lệch với màu thương hiệu, cỡ chữ, bảng
+- **UI kit** (cho developer): màu nút chính, chữ trên nó và màu hover, cỡ chữ, bảng
   điểm đọc rõ, tải `brand.css`, `brand.json` và logo, cùng **toàn bộ component của Semi** (ví dụ, code, API).
 
 Cả ba phần nằm chung một dashboard (menu bên trái, thanh tab dưới trên điện thoại), như trang component. Đổi sáng / tối
-và giữa các style được phép ở chân menu.
+ở chân menu.
 
-👉 *Bạn làm:* mở link, nhìn và nói điều muốn đổi ("màu chính đậm hơn", "dùng màu trung tính có sẵn"). *Agent làm:* sửa
+👉 *Bạn làm:* mở link, nhìn và nói điều muốn đổi ("màu chính đậm hơn", "bỏ font hiển thị"). *Agent làm:* sửa
 `brand.json`, sinh lại; trang đang mở tự cập nhật.
 
 Repo kit sau bước này:
 
 ```
 brand.json          lựa chọn của bạn (file duy nhất người sửa)
-dist/brand.css      sinh ra: màu, font, màu trung tính cho từng style (đã kiểm tra đọc rõ)
+dist/brand.css      sinh ra: màu nút chính / phụ, chữ trên nút, hover, font (đã kiểm tra đọc rõ)
 dist/brand.json     sinh ra: toàn bộ giá trị + font để sản phẩm nạp
 assets/             logo (bạn đưa vào)
 dist/logo/          sinh ra: logo để sản phẩm import (@3dnoobs/brand/dist/logo/full.svg)
 BRAND.md            sinh ra: guideline thương hiệu (brief, logo, cách dùng màu, giọng văn, hình ảnh, màu, đọc rõ)
-AGENTS.brand.md     sinh ra: luật cho agent ở mọi sản phẩm (màu, style, logo, giọng văn, câu mẫu)
+AGENTS.brand.md     sinh ra: luật cho agent ở mọi sản phẩm (màu, font, logo, giọng văn, câu mẫu)
 package.json        "@3dnoobs/brand", phụ thuộc "@semi/ui" (+ Next.js cho trang preview)
 .github/workflows/brand-pages.yml   kiểm tra mỗi pull request; build trang preview và đăng lên GitHub Pages mỗi lần push lên main
 .github/workflows/semi-update.yml   mỗi thứ Hai build lại kit với @semi/ui mới nhất; mở pull request khi màu, guideline hay luật đổi
@@ -2231,7 +2179,7 @@ mỗi lần push lên main nó build lại. Từ đây 3D Noobs có bộ nhận 
 /semi-new-app --brand github:3dnoobs/brand
 ```
 
-Agent hỏi tên app ("3D Noobs Manager"), style (trong danh sách brand cho phép: app quản lý chọn Flat), loại sản phẩm
+Agent hỏi tên app ("3D Noobs Manager"), loại sản phẩm
 (công cụ dùng cả ngày · ứng dụng thường · web bán hàng · trang giới thiệu: quyết định màn đầu, mật độ, cỡ chữ và theme
 mặc định), cùng phiên bản Next.js và kiểu export (thường để mặc định). Không hỏi màu, font: đã có trong brand.
 👉 *Bạn làm:* trả lời vài câu.
@@ -2251,16 +2199,15 @@ Next.js + `@semi/ui` + `@3dnoobs/brand`, rồi nối sẵn:
 ```
 
 Thứ tự import là bắt buộc: `brand.css` **sau** `@semi/ui/tokens.css`. Kit ghi đè biến của Semi ở cùng độ ưu tiên
-(specificity), nên file nhập sau mới thắng; nhập ngược thì màu, màu trung tính và `primaryStyle: "inverted"` (khối trỏ
-`--semi-action` sang `inverted`) đều không có tác dụng.
+(specificity), nên file nhập sau mới thắng; nhập ngược thì màu nút chính và font của brand không có tác dụng.
 
 ```tsx
-// app/layout.tsx: font của brand, style và mật độ đã chọn, theme mặc định theo loại sản phẩm
-<html data-style="flat" data-density="compact" className={`dark ${beVietnamPro.variable} ${montserratAlternates.variable}`}>
+// app/layout.tsx: font của brand, mật độ đã chọn, theme mặc định theo loại sản phẩm
+<html data-density="compact" className={`dark ${beVietnamPro.variable} ${montserratAlternates.variable}`}>
   <ThemeScript defaultTheme="system" />
 ```
 
-Cùng với `semi-lint.json` (`"brand": "@3dnoobs/brand"`, `"style": "flat"`), luật Semi và luật của brand trong
+Cùng với `semi-lint.json` (`"brand": "@3dnoobs/brand"`), luật Semi và luật của brand trong
 `AGENTS.md`, `CLAUDE.md` trỏ tới nó (`@AGENTS.md`, để Claude Code đọc), màn đầu theo loại sản phẩm (app quản lý:
 AppShell có logo của brand, con số chính và các mục mẫu từ `brief.sample`; web bán hàng: thanh trên, hero, bằng chứng),
 rồi kiểm tra `semi-lint` + `tsc` + build.
@@ -2268,20 +2215,18 @@ rồi kiểm tra `semi-lint` + `tsc` + build.
 
 **Bước 7. Phát triển như bình thường**
 
-Bạn nói "làm trang quản lý đơn hàng"; agent dùng component Semi, màu 3D Noobs tự áp. Nếu ai đó viết `--color-primary-500`
+Bạn nói "làm trang quản lý đơn hàng"; agent dùng component Semi, màu 3D Noobs tự áp. Nếu ai đó viết `--semi-primary`
 hay `--semi-…` trong CSS của app, `semi-lint` chặn (`brand-override`): màu chỉ đến từ brand.
 
 ### Phần C — Về sau
 
 | Chuyện | Bạn làm | Ở đâu |
 |---|---|---|
-| Làm thêm app **Store** | `/semi-new-app --brand github:3dnoobs/brand`, chọn Soft | Thư mục mới |
+| Làm thêm app **Store** | `/semi-new-app --brand github:3dnoobs/brand` | Thư mục mới |
 | 3D Noobs **đổi màu chính** | `/semi-brand` → "đổi primary sang `#00C853`" → xem trước → tag mới | Repo brand |
 | … rồi đưa vào các app | `/semi-sync` (đổi màu thấy rõ: agent hỏi trước) | Từng app |
 | **Semi** ra bản mới | Workflow `semi-update.yml` mở pull request nếu kit đổi (chỉ đổi số phiên bản thì không); duyệt rồi `/semi-brand update` để phát hành. Không có PR nghĩa là kit vẫn đúng, không cần phát hành | Repo brand |
 | … rồi đưa vào các app | `/semi-sync` | Từng app |
-| App đổi sang style khác **đã được cho phép** | Nói với agent ("đổi sang Soft") | Repo app |
-| Style **chưa được cho phép** | `/semi-brand` (thêm vào danh sách) → `/semi-sync` → nói với agent | Repo brand → app |
 | Kiểm tra định kỳ | `/semi-check` | Từng app |
 
 ---
@@ -2303,7 +2248,7 @@ Luôn đi **từ trên xuống**: Semi → brand kit → sản phẩm.
 | Mức | Khi nào | `/semi-sync` ở sản phẩm |
 |---|---|---|
 | patch | Sinh lại, giao diện không đổi | Tự cập nhật |
-| minor | Thêm lựa chọn (style được phép, màu phụ, token mới) | Tự cập nhật |
+| minor | Thêm lựa chọn (màu phụ, font hiển thị, token mới) | Tự cập nhật |
 | major | Màu / font thương hiệu đổi, thấy rõ | Hỏi trước (`--accept-major`) |
 
 Brand kit ghi nó chạy với `@semi/ui` nào (`"semi"` trong `brand.json`). `semi-brand` (create / update) ghi dải
@@ -2325,8 +2270,6 @@ dải của brand cùng cách sửa: chạy `/semi-brand update` trong repo bran
   "package": "@3dnoobs/brand",
   "primary": "#00AE42",
   "secondary": null,
-  "neutral": "brand",
-  "styles": { "default": "flat", "allowed": ["flat", "soft"] },
   "fonts": { "sans": "Geist", "display": "Montserrat Alternates" },
   "brief": {
     "product": "Phần mềm quản lý máy in 3D", "audience": "Maker 18–35 tuổi, dùng cả ngày trên máy tính",
@@ -2343,26 +2286,22 @@ dải của brand cùng cách sửa: chạy `/semi-brand update` trong repo bran
     "do": ["Gọi đúng tên máy in và vật liệu"], "dont": ["Dùng thuật ngữ G-code trong thông báo cho người mới"],
     "examples": { "button": ["In ngay", "Thêm máy in"], "error": "Máy in mất kết nối. Kiểm tra Wi‑Fi rồi thử lại.", "empty": "Chưa có máy in nào. Thêm máy in đầu tiên để bắt đầu." }
   },
-  "color": { "accent": "restrained" },
   "imagery": "Ảnh bản in thật trên nền tối, chụp gần; không ảnh stock.",
-  "semi": ">=0.18.0 <1.0.0"
+  "semi": ">=1.0.0 <2.0.0"
 }
 ```
 
 | Khoá | Giá trị | Quy chuẩn |
 |---|---|---|
 | `name`, `package` | Tên hiển thị, tên npm (`@scope/brand`) | Bắt buộc |
-| `primary` | Hex | Bắt buộc. Không quá xám (độ đậm tối thiểu), bộ sinh tự chọn sắc độ đọc rõ (xem dưới) |
-| `secondary` | Hex hoặc `null` | Tuỳ chọn; sinh `secondary-50 … 900` (`bg-secondary-500`, `text-secondary-fg`) |
-| `neutral` | `"brand"` (mặc định) / `"pure"` / `"preset"` | `brand` (tên cũ `tinted`, vẫn nhận): màu trung tính của mỗi style phủ nhẹ tông màu chính (bề mặt gần như trung tính, chữ và viền có tông rõ hơn). `pure`: xám trung tính 0% sắc (kiểu magnific.com), cả chữ và viền. `preset`: giữ màu trung tính có sẵn của style. Thẻ, bậc bề mặt và nút phụ (C-030) tự đi theo lựa chọn này |
-| `primaryStyle` | `"brand"` (mặc định) / `"inverted"` | `brand`: nút chính tô màu thương hiệu (`accent`). `inverted`: nút chính trung tính, gần đen trên nền sáng và gần trắng trên nền tối (`bg-inverted`, ≥ 15:1); màu thương hiệu vẫn dùng cho link, mục đang chọn, focus, badge, công tắc. `brand.css` thêm một khối trỏ `--semi-action` sang `inverted` (chỉ thắng khi `brand.css` được nhập sau `tokens.css`); bỏ khoá này thì `brand.css` giữ nguyên từng byte |
-| `styles.default`, `styles.allowed` | `flat` · `soft` · `sharp` | Ít nhất một; `default` phải nằm trong `allowed` |
-| `fonts.sans`, `fonts.display` | Tên Google Font | `next/font/google` phải có font đó |
+| `primary` | Hex, hoặc `{ "color": "#hex", "on": "#hex" }` | Bắt buộc. Màu của nút chính, badge đếm cần chú ý, nhãn "Mới", gạch chân tab lớn đang chọn. Cùng một màu ở cả hai theme. `on` (tuỳ chọn) là chữ trên nút, phải đạt 4.5:1; bỏ qua thì bộ sinh chọn |
+| `secondary` | Như `primary`, hoặc `null` | Tuỳ chọn: chỉ cho nút chính thứ hai (`bg-secondary` + `text-on-secondary`). Không có thì các token `secondary` lấy giá trị của `primary` |
+| `fonts.sans` | Tên Google Font | Bắt buộc: font giao diện (`font-sans`) |
+| `fonts.display` | Tên Google Font | Tuỳ chọn: font hiển thị (`font-display`) cho hero, tiêu đề trang đọc, tab lớn, tiêu đề mục kiểu tạp chí. Không có thì dùng font giao diện. Tiêu đề không đậm (400 / 500): font không có bản variable cần `"weight": ["400", "500"]` |
 | `semi` | Dải phiên bản `@semi/ui` | `/semi-brand update` cập nhật |
 | `brief` | `product`, `audience`, `personality` (1–5 tính từ), `tagline` (một câu, ≤ 90 ký tự); `sample`: `list` (tên danh sách chính), `items` (2–5 mục thật), `metric` (`{ label, value, sub? }`, con số người dùng mở app để xem), `proof` (`{ label, value }`, bằng chứng cho trang giới thiệu) | Tuỳ chọn; vào BRAND.md và luật cho agent ("chọn chữ, hình ảnh cho họ"). Thiếu `sample` thì build nhắc: màn mẫu của brand book và trang đầu của app mới dùng chữ của sản phẩm thay cho dữ liệu cửa hàng chung chung |
 | `logo` | `full` (bắt buộc khi có logo), `fullDark`, `mark`: đường dẫn trong repo kit (.svg nên dùng, .png, .webp); `clearspace` (× chiều cao, mặc định 0.5), `minWidth` (px, mặc định 80) | Build copy vào `dist/logo/full.svg` … để sản phẩm import; thiếu file là lỗi |
 | `voice` | `tone`: `friendly` · `neutral` · `formal`; `address` (gọi người dùng), `we` (tự xưng), `emoji`, `do`, `dont`, `examples` (`button`, `success`, `error`, `empty`, `confirm`) | Tuỳ chọn, mặc định trung tính, gọi "bạn". Luật viết chung của Semi (nút, lỗi, trạng thái trống) luôn kèm theo |
-| `color` | `accent`: `restrained` · `balanced` · `expressive`; `secondaryRole`: `highlight` · `badge` · `illustration`; `buttonText`: `auto` · `white` · `dark` | Mặc định tiết chế, màu phụ là điểm nhấn. `buttonText` chọn chữ trên nút chính: `auto` lấy sắc độ đọc được gần màu thương hiệu nhất (màu cam, vàng thường ra chữ tối), `white` / `dark` ép màu chữ và lấy sắc độ đậm / nhạt hơn cho đủ 4.5:1. Mức dùng màu quyết định tỉ lệ màu trên một màn hình (tiết chế 80 / 15 / 5 %, cân bằng 70 / 20 / 10, phóng khoáng 55 / 25 / 20: trung tính / bề mặt / màu chính; màu phụ lấy khoảng 30 % phần màu chính) |
 | `imagery` | Một đoạn mô tả ảnh / minh hoạ | Tuỳ chọn |
 
 ### Mật độ và cỡ chữ
@@ -2373,167 +2312,195 @@ phẩm), lưu ở `semi-lint.json` (`"density"`, `"typeScale"`) và `<html data-
 ("gọn hơn", "chữ tiêu đề to hơn"). Tab Ứng dụng của brand book cho thấy mỗi màn với lựa chọn thường gặp của nó. Quy
 tắc bố cục đi kèm (tránh giao diện "AI" chung chung): `DESIGN_SYSTEM.md` §19.
 
-### Semi sinh màu thế nào
+### Semi sinh gì (1.0)
 
-- **Thang `primary-50 … 900`:** mỗi sắc độ có độ sáng cố định (OKLCH, giống nhau cho mọi thương hiệu), cùng tông với màu
-  chính. Màu chính nằm nguyên vẹn ở sắc độ gần nó nhất (`brandStep`: navy đậm ở `900`, vàng ở `200`, xanh lá Semi ở `500`);
-  `--color-primary` luôn là đúng mã đó. Vì vậy màu rất đậm hay rất nhạt không còn làm nửa thang trùng nhau.
-  BRAND.md ghi sắc độ đó ("nằm ở `primary-…`"). Giao diện không bao giờ tô bằng thang (`bg-primary-500`): nút chính và mark
-  "on" là `bg-accent` + `text-on-accent`, chữ `text-accent-fg`, viền chọn `border-accent-line`; thang chỉ dành cho biểu
-  đồ và hình minh hoạ (`semi-lint`: `primary-fill`).
-- **Nút chính (`bg-accent` + `text-on-accent`) riêng cho từng theme** (xem [Accent theo theme](#accent-theo-theme)):
-  theme sáng lấy bậc 600 (700 chỉ khi 600 không đạt), theme tối lấy bậc sáng và rực hơn (400-500), như cách Apple làm với màu hệ thống.
-  Hai theme không trùng nhau trừ khi thương hiệu tự chọn như vậy.
-- **Chữ màu chính (`text-accent-fg`):** sắc độ gần màu thương hiệu nhất đọc được 4.5:1 trên mọi nền và trên nền chọn
-  (`bg-accent-subtle`) và khi hover trên nền đó. Chữ phụ (`text-muted`) trên nền chọn được Semi làm đậm hơn trong phạm vi nền đó;
-  nếu vẫn thiếu 4.5:1, bộ sinh chỉnh chữ phụ / chữ thường của style đậm hơn (báo cáo: "chữ mờ trên nền chọn"). Viền focus (`ring-focus`) và viền mục chọn (`border-accent-line`) đi theo nó.
-- **Màu phụ:** `secondary-*`, chữ `text-secondary-fg`, và nền đặc `bg-secondary-solid` + `text-on-secondary` (badge, điểm
-  nhấn), chọn theo cùng cách.
-- **Báo cáo** (`dist/brand.json` → `report`, BRAND.md, trang preview): chữ ≥ 4.5:1, viền focus ≥ 3:1, hover vẫn đọc được;
-  viền ô nhập (`control-line`, pha từ `text-muted`) ≥ 3:1 ở mọi style (bộ sinh tự đậm `text-muted` thêm cho đủ); chữ
-  trạng thái của Semi (`danger-fg`, `success-fg`, `warning-fg`, `info-fg`) ≥ 4.5:1 trên nền đã phủ màu thương hiệu;
-  "nút tách khỏi nền" ≥ 3:1 là mục *lưu ý* (không chặn build). Kit chưa có logo có cảnh báo.
-- **Màu trạng thái không lẫn với màu chính:** màu trạng thái vẫn là của Semi (đỏ là lỗi ở mọi thương hiệu). Khi màu chính
-  cách một màu trạng thái dưới 30° sắc độ (cam cạnh đỏ lỗi, xanh lá cạnh xanh thành công), bộ sinh xoay sắc độ của màu
-  trạng thái đó ra xa màu chính, giữ độ sáng và độ đậm (nên contrast không đổi), trong giới hạn vẫn giữ nghĩa: lỗi 12°,
-  cảnh báo 12°, thành công 20°, thông tin 20°. `brand.css` ghi đè `--semi-<trạng thái>-fg | bg | border | solid`; lưu ý
-  trong BRAND.md ghi xoay bao nhiêu độ. Đổi theo bản Semi mới thì `/semi-brand update` báo mức minor. `fidelity` cho biết nút mỗi theme ở sắc độ nào và lệch màu
-  thương hiệu bao nhiêu (ΔE OKLab, 0 = đúng màu).
+Từ 1.0 bộ sinh **chỉ** làm hai việc cho mỗi màu (`primary`, `secondary`), cùng một giá trị cho theme sáng và tối:
 
-### Accent theo theme
+- **Chữ trên nút** (`on-primary`, `on-secondary`): `on` của `brand.json` nếu có (phải đạt 4.5:1, không thì báo lỗi), nếu
+  không thì chữ trắng, rồi gần đen `#0c0d0e`, rồi đen: cái đầu tiên đạt 4.5:1 (luôn có một cái đạt).
+- **Hover** (`primary-hover`, `secondary-hover`): cùng sắc, độ sáng OKLCH lệch `hoverStep` (0.06, `brand/params.mjs`)
+  ra xa chữ trên nút (tối hơn dưới chữ trắng, sáng hơn dưới chữ tối), nên chữ vẫn đạt 4.5:1.
 
-`--semi-accent`, `--semi-accent-hover` và `--semi-on-accent` được sinh **riêng cho theme sáng và theme tối** (trước đây hai
-theme dùng chung một giá trị, chỉ `accent-fg` đổi, trong khi Semi tự dùng `primary-500` ở tối và `primary-700` ở sáng):
+`dist/brand.css` chỉ đặt `--semi-primary`, `--semi-primary-hover`, `--semi-on-primary`, `--semi-secondary`,
+`--semi-secondary-hover`, `--semi-on-secondary` (trên `:root`, `[data-theme]`, `.dark`, `.light`) và
+`--font-sans-family`, `--font-display-family` (chỉ khi có `fonts.display`). Không sinh thang màu, màu trung tính, chữ màu
+chính, nền chọn, focus hay màu trạng thái: đó là của Semi, giống nhau cho mọi thương hiệu (`docs/TOKENS.md`).
 
-| | Theme sáng | Theme tối |
-|---|---|---|
-| Nút (`accent`) | bậc **600** (gần màu thương hiệu nhất); chỉ khi 600 không đạt (chữ trắng ≥ 4.5:1 và nút tách khỏi nền trang ≥ 3:1) thì lấy 700 | trong 400-500, bậc gần màu thương hiệu nhất, cùng hai điều kiện (hoà thì 500, mặc định của Semi) |
-| Hover | một bậc sâu hơn (600 → 700) | một bậc sáng hơn |
-| Chữ trên nút (`on-accent`) | trắng khi đọc được | chữ tối khi đọc được, ngược lại màu kia |
+**Báo cáo** (`dist/brand.json` → `report`, BRAND.md, trang preview): chữ trên nút và khi hover ≥ 4.5:1 (chặn build nếu
+không đạt); "nút tách khỏi nền" (canvas, app, panel của cả hai theme) ≥ 3:1 là mục *lưu ý*, không chặn build. Kit chưa
+có logo có cảnh báo.
 
-Không có bậc nào trong dải đạt hai điều kiện (màu rất nhạt hoặc rất đậm): thử các bậc còn lại, gần dải nhất trước, và có
-cảnh báo. `color.buttonText` vẫn ép màu chữ. Báo cáo kiểm từng theme: chữ 4.5:1, hover 4.5:1, nút tách khỏi nền 3:1.
+**Khoá cũ trước 1.0** (`neutral`, `primaryStyle`, `styles`, `accent`, `palettes`, `color.accent`, `color.buttonText`,
+`color.secondaryRole`, `fonts.figure`) không còn tác dụng: build vẫn chạy, mỗi khoá có một cảnh báo nói nó từng làm gì;
+xoá chúng khỏi `brand.json`. **Mọi brand kit phải build lại và phát hành lại cho Semi 1.0** (`/semi-brand update`, rồi
+tag mới): `brand.css` cũ đặt các biến mà 1.0 không còn đọc (`--semi-accent`, thang `--color-primary-*`, màu trung tính
+theo style).
 
-`brand.json` có thể ghim giá trị từng theme:
-
-```json
-"accent": {
-  "light": { "fill": 700, "hover": 800, "on": "white" },
-  "dark":  { "fill": "#3DDC84", "hover": "#6BE8A3", "on": "dark" }
-}
-```
-
-`fill` / `hover` là bậc của `primary` (50…900) hoặc mã hex (`hover` bắt buộc khi `fill` là hex); `on` là `white`, `dark` hoặc
-hex; bỏ qua thì bộ sinh chọn. Ghim mà không đạt AA vẫn hiện trong báo cáo và `semi-brand check` thất bại.
-
-```json
-"accent": { "sameInBothThemes": true }
-```
-
-là lựa chọn **có chủ ý** của thương hiệu: một nút, hover và chữ cho cả hai theme (một giá trị đọc được và tách khỏi nền ở
-cả hai). **Không có khai báo này mà theme sáng và tối ra cùng một màu nút thì `semi-brand build` và `check` báo lỗi.**
-`sameInBothThemes` không đi cùng `accent.light` / `accent.dark`.
-
-Quy tắc tóm lại: **sáng dùng bậc 600, tối dùng bậc 400-500**. Thương hiệu muốn đúng một màu nút ở cả hai theme (như Radix và
-Carbon, vốn dùng một màu nhấn cho cả hai) đặt `accent.sameInBothThemes: true`. Hệ quả nhìn thấy: màu chính xanh lá của 3D Noobs
-(`#008509`) giờ chỉ còn ở theme sáng; theme tối dùng `#539f50` với chữ tối thay cho `#008509` với chữ trắng.
-
-**Kit đã phát hành cần build lại và phát hành lại** (`/semi-brand update`, rồi tag mới) để nút đổi màu theo theme; phát hành
-kit là việc của chủ sở hữu thương hiệu. Brand book (`semi-brand preview`, trang *UI kit*) và trang Brand preview của docs
-hiện cả hai theme cạnh nhau: màu nút, hover, chữ trên nút và tỉ lệ tương phản.
-
-Các con số của cách sinh (độ sáng từng sắc độ, nút được lệch bao xa, độ phủ màu của màu trung tính, giới hạn xoay màu
-trạng thái) nằm ở `brand/params.mjs`, giống nhau cho mọi thương hiệu. Người bảo trì Semi thử chúng trên trang **Design
-Lab** của docs, kèm so sánh trên các brand mẫu, trước khi đổi ([LAB.md](LAB.md)); đổi chúng là thay đổi core: mọi kit
-đổi màu khi build lại.
+Con số duy nhất của cách sinh (`hoverStep`) nằm ở `brand/params.mjs`, giống nhau cho mọi thương hiệu. Người bảo trì Semi
+thử nó trên trang **Design Lab** của docs, kèm so sánh trên các brand mẫu, trước khi đổi ([LAB.md](LAB.md)); đổi nó là
+thay đổi core: mọi kit đổi màu hover khi build lại.
 
 Chi tiết kỹ thuật: bộ sinh màu nằm ở `@semi/ui/brand` (`generateBrand`), lệnh trong kit là `semi-brand build | check`
 (bin của `@semi/ui`). `check` bỏ qua dòng ghi phiên bản `@semi/ui` trong file sinh ra: bản Semi mới sinh cùng màu thì
-kit không cần build lại hay phát hành. Style có sẵn: [STYLES.md](STYLES.md).
+kit không cần build lại hay phát hành.
 
 
 ---
 
-<!-- docs/STYLES.md -->
+<!-- docs/TOKENS.md -->
 
-# Semi styles
+# Tokens (1.0 foundation)
 
-A **style** is the look of the whole UI: neutral colours, fonts, radii, card border and shadow, control sizes. An app
-picks one style, once (Flat, Soft or Sharp); every `@semi/ui` component and class constant follows it. Shared by all
-styles: components and their API, layout (AppShell, PageTitle, SubpageToolbar …), the type scale, the accent (brand,
-per app: §2b), status and tone colours, both themes (light / dark), icons, accessibility and lint rules.
+The names every component and app uses from 1.0. Values live in `tokens/tokens.json` (edit there, then
+`npm run build:tokens`); this page is the contract the 1.0 tickets build on. Components and apps use the semantic
+utilities only, never a hex.
 
-| | Flat (default) | Soft | Sharp |
+One look for every brand: the Flat / Sharp / Soft styles and `data-style` are gone. A brand changes only its two fills,
+its fonts, its logo and its voice (`docs/BRANDS.md`).
+
+## Surfaces: pure neutral, the same for every brand
+
+| Utility | Role | Dark | Light |
 |---|---|---|---|
-| For | Dense, information-first screens: dashboards, tools, admin | Calm, friendly screens: consumer apps, storefronts, onboarding | Bold, editorial screens: landing pages, portfolios, creative tools |
-| Fonts | Geist + Montserrat Alternates (titles) | Plus Jakarta Sans | Space Grotesk |
-| Card (`bg-card`, `border-card`, `shadow-card`) | No visible border (`1px solid transparent`, since 0.36), no shadow: tone only | No visible border, soft lifted shadow | 2px solid border, hard 4px offset shadow |
-| Lines (`border-line`) | 8–9% | 9%, tinted | 18–32%, strong |
-| `rounded-chip` / `control` / `card` / `panel` | 4 · 8 · 12 · 16px | 6 · 12 · 20 · 24px | 2 · 0 · 0 · 0 |
-| `h-control` / `h-field` | 34 / 36px | 40 / 44px | 36 / 40px |
-| Titles and figures (`font-title`, `font-figure`) | Semibold, figures in the sans | Semibold, figures in the sans | Bold, figures in the display font |
-| Spacing unit (`--spacing`) | 0.25rem | 0.25rem | 0.25rem |
+| `bg-canvas` | page background, frame around the panels | #101010 | #ebebeb |
+| `bg-app` | content column, holds the route header | #161616 | #f3f3f3 |
+| `bg-panel` | nav panel, content card, sub-nav card, modal, popover | #1a1a1a | #ffffff |
+| `bg-field` | input fill at rest | #222222 | #ffffff |
+| `bg-field-focus` | input fill on focus (one step darker) | #161616 | #f7f7f7 |
+| `bg-raised` | segmented track, toolbar buttons, nav group dividers | #2b2b2b | #e6e6e6 |
+| `bg-raised-2` | active pill of a segmented control (on `raised`) | #424242 | #ffffff |
 
-Every style passes WCAG AA on every Storybook page in both themes (Playwright, `npm run test:ui`).
+Kept from 0.x (neutral, derived from the above): `bg-panel-0…4`, `bg-card`, `bg-card-field`, `bg-tint` /
+`bg-tint-hover` (until the 1.0 buttons replace them with `subtle-button`), `bg-inverted` / `bg-inverted-hover` /
+`text-on-inverted` (the opposite of the page: checked controls, the inverse button).
 
-Each style sets its own neutral colours (`semantic` in `tokens/styles/<id>.json`, both themes): Flat uses the shared
-neutrals of `tokens/tokens.json`, Soft a warm sand, Sharp off-black and off-white. The accent stays the product's brand
-and the status colours keep their meaning.
+## Text tiers
 
-Source: `tokens/styles/<id>.json` (`tokens`: shape, card border, fonts, sizes; `semantic`: neutral colours per theme;
-`fonts`: what the app loads) → `npm run build:tokens` → `[data-style="<id>"]` blocks in `tokens.css` and the list in
-`tokens/styles.json` (`@semi/ui/styles.json`). Preview: the Flat / Sharp / Soft switch at the bottom of the Storybook
-sidebar.
+| Utility | Use | Dark | Light |
+|---|---|---|---|
+| `text-strong` | titles, active items, values | #f5f5f5 | #111111 |
+| `text-body` | card text, body | #e3e3e3 | #2b2b2b |
+| `text-muted` | descriptions, inactive tabs / nav, breadcrumb, placeholders | #b1b1b1 | #4f4f4f |
+| `text-faint` | group labels, kbd hints, "Untitled" | #8a8a8a | #656565 |
 
-The C-030 surfaces (`panel-0…4`, `card`, `card-field`, `tint`, `inverted`; DESIGN_SYSTEM.md §2 "Surfaces") are mixed
-from each style's `canvas` / `app` / `panel` and text in CSS, so a style sets no extra values for them.
+Every tier reaches 4.5:1 on `panel`, `app`, `canvas` and `bg-card` in its theme; `text-strong`, `text-body` and
+`text-muted` also on `bg-card-field`, `bg-raised` and on `bg-item-hover` / `bg-item-selected` / `bg-item-checked` over
+the panel and over the card (a checked or selected row in a card table). The token build checks every pair
+(`scripts/token-css.mjs` `aaErrors` resolves the `color-mix()` surfaces and composites the translucent fills) and a
+failing value fails `npm run build:tokens` and `npm run check`. `text-faint` is for the page surfaces and the card
+only: on `bg-card-field`, `bg-raised` or an item fill use `text-muted` or stronger. The muted and faint values are the
+lightest (light) / darkest (dark) greys that pass all of these (worst pair about 4.55:1: muted on a selected row in a
+card, faint on the card). Known limit (not checked): an item fill is only checked over panel and card; `text-muted` on `bg-item-selected`
+over `bg-raised` or `bg-card-field` is about 4.0:1 in dark, so a selected row never sits on those two surfaces.
 
-A brand kit (docs/BRANDS.md) builds on these: it picks the allowed styles and either tints their neutrals with its
-primary (`"neutral": "brand"`, the default), takes the hue out (`"pure"`) or keeps the style's own neutrals
-(`"preset"`), so products of a brand never set neutral colours.
-The spacing unit follows the product's density (`data-density` on `<html>`; DESIGN_SYSTEM.md §19), not the style
-or the brand.
+`text-strong` replaces `text-contrast`. The contrast colour itself (pure white in dark, pure black in light) is the
+private `--semi-contrast`, which every line and fill below mixes; it has no utility.
 
-## Picking a style in an app
+## Lines and fills (from the contrast colour)
 
-```tsx
-// app/layout.tsx: data-style on <html> (off = Flat)
-<html lang="vi" data-style="soft" suppressHydrationWarning>
-```
+| Utility | Use | Dark | Light |
+|---|---|---|---|
+| `border-field-line` | input border at rest | white 10% | black 10% |
+| `border-field-line-focus` | input border on focus | white 25% | black 25% |
+| `border-outline-line` | outline buttons, a selected card's border | white 20% | black 20% |
+| `bg-item-hover` | hover on rows, nav and sub-nav items | white 5% | black 9% |
+| `bg-item-selected` | selected nav / sub-nav item, selected row (the open record), selected option | white 15% | black 15% |
+| `bg-item-checked` | checked rows / cards in selection mode | white 9% | black 12% |
+| `bg-subtle-button` | ordinary content button fill | white 5% | black 5% |
 
-plus the style's fonts with `next/font` (the `fonts` list in `@semi/ui/styles.json`; Soft: `Plus_Jakarta_Sans` with
-`variable: "--font-jakarta"` on `<html className>`), and the same id in `semi-lint.json` (`"style": "soft"`).
-`/semi-check` checks all three against each other. `/semi-new-app`
-asks for the style of a new app, `/semi-check` foundation for an existing one, the agent switches it later when asked (the `semi-ui` skill). A wrapper
-with `data-style` re-styles only its subtree (used by Storybook previews), not something an app needs.
+Light item fills step hover < checked < selected and each is visible on a card (composited black over `bg-card`
+#e3e3e3, ratio against the card; over the panel about the same): hover 9% #cfcfcf 1.21:1 · checked 12% #c8c8c8
+1.30:1 · selected 15% #c1c1c1 1.40:1. In 0.x / the first 1.0 draft they were 4% (1.09:1), 5% (1.11:1) and 6%
+(1.14:1), hard to tell from the card and from each other; the light `text-muted` went to #4f4f4f so it still reaches
+4.5:1 on a selected row in a card.
 
-## Rules
+Kept: `border-line`, `border-line-hover`, `border-divider`, `border-control-line` (checkboxes, radios; the 1.0 fields
+move to `field-line`). Focus is neutral: `ring-focus` / `border-focus` are the strong text colour (≥ 3:1 on every
+surface), never the brand.
 
-- Use the style tokens only: `rounded-chip` (marks, checkboxes, inline code) · `rounded-control` (buttons, inputs,
-  selects, tiles, list rows) · `rounded-card` (cards, popovers, menus, toasts) · `rounded-panel` (hero, modal, drawer,
-  sheet, sidebar) · `rounded-full` / `rounded-none` (the same in every style) · `shadow-card` (resting cards, in `CARD`).
-  `semi-lint` (`radius-token`) flags `rounded`, `rounded-sm/md/lg/xl/2xl` and `rounded-[Npx]`; the `/semi-check` token
-  codemod maps them (`lg` → `control`, `xl` → `card`, `2xl` → `panel`, `sm` / `md` / bare → `chip`; `shadow-sm` → `shadow-card`).
-- An app never writes per-style CSS or `[data-style=…]` selectors: when one screen needs another shape, the style is
-  missing a token, so propose it upstream (`/semi-propose`).
-- Sizes: toolbar controls `h-control` / `w-control`, form inputs and selects `h-field`; never `h-[34px]` (the codemod maps it).
-- Colours: the semantic tokens only (`bg-panel`, `text-muted`, `border-line` …): their values change per style. The
-  accent is the product's brand, not the style's.
-- Fonts: `font-sans` / `font-display` only. An app with its own brand fonts sets `--font-sans-family` /
-  `--font-display-family`, which every style then uses.
-- Floating layers keep `shadow-overlay` / `shadow-float` in every style.
+There is no brand-derived colour anywhere: `accent`, `accent-hover`, `on-accent`, `action*`, `accent-fg`,
+`accent-subtle(-hover)`, `accent-line` and the `primary-50…900` brand scale are removed.
 
-## Adding a style (maintainers)
+## Brand fills: main buttons and attention only
 
-1. Copy `tokens/styles/flat.json` to `tokens/styles/<id>.json`; set `name`, `description`, `fonts` (Google fonts
-   `next/font` can load, with their CSS variable), every token (the build fails when a key is missing or extra) and,
-   when it has its own neutrals, `semantic` (dark + light). Exactly one file has `"default": true`. Load its fonts in
-   `app/layout.tsx` of the Storybook.
-2. `npm run build:tokens`, then add its column above. `check:manifest` fails while a style has no column here.
-3. `npm run build:storybook && npm run test:ui`: contrast and phone layout run for every style in both themes.
-4. CHANGELOG (a new style is a minor release). Changing a value of an existing style changes every app on it: note it
-   under "Changed". Renaming or removing a style needs a release migration (`migrations/`) that rewrites
-   `semi-lint.json` and the `<html data-style>` of apps that used it.
+| Utility | Use |
+|---|---|
+| `bg-primary` / `hover:bg-primary-hover` / `text-on-primary` | the one main button of a page, a modal or the nav; attention count badges, "New" tags, the active big-tab underline (`decoration-primary`) |
+| `bg-secondary` / `hover:bg-secondary-hover` / `text-on-secondary` | the secondary main button, only when the brand has a secondary (otherwise it equals primary) |
+
+Nothing else in Semi uses the brand colour. The brand kit sets the fills; the generator checks 4.5:1 for the text on
+each and picks the on-colour. Status colours (`*-fg`, `*-bg`, `*-border`, `*-solid` for danger, success, warning, info)
+and `text-tone-*` are one fixed palette for every brand. Their text (light: the 800 shade; dark: 300 / 400) reaches
+4.5:1 on its own tint (`*-bg`, `bg-<hue>-500/10`) over every surface, a card and the field in a card included.
+
+## Type scale
+
+`text-*` sizes carry their line height (and, where noted, weight and tracking); `leading-*` / `font-*` override.
+
+| Utility | Size | Use |
+|---|---|---|
+| `text-hero` | 36, 32 below sm · lh 1.1 · −0.01em | hero (`font-display`, 400) |
+| `text-title-xl` | 44 · lh 1.2 · −0.01em | title of a one-column reading page (`font-display`, 500) |
+| `text-tab-xl` | 28, 24 below sm · lh 1.2 · −0.01em | big text tabs (`font-display`) |
+| `text-section` | 20 · 500 · lh 1.3 · −0.01em | section heading |
+| `text-figure` | 18 · lh 1.25 | numeric figures; the page title in a content card (400) |
+| `text-lead` | 15 · lh 24 | lead text, card titles |
+| `text-copy` | 14 · lh 22 | reading copy, secondary body, larger buttons |
+| `text-input` | 16 · lh 24 | text you type in, below `sm` only (`max-sm:text-input`): iOS zooms into a field under 16px |
+| `text-ui` | **12 · lh 18, the base UI size** | nav, breadcrumb, buttons, labels, meta, list rows |
+| `text-tag` | 10 · 500 · +0.02em | tags, chips |
+| `text-badge` | 10 · 700 · lh 1 | count badges only |
+| `text-overline` | 11 · 600 · +0.1em · uppercase | section labels |
+
+Naming: the 14px size is `text-copy`, not `text-body`, because `text-body` is the body text colour (one Tailwind
+`text-*` name cannot be both a size and a colour). `text-ui` keeps its name and is now 12px (was 14).
+
+Weights: headings are not bold. 400 and 500 do almost everything (`font-title` is 500); 600 only for overlines and a
+few emphasised labels; 700 only in count badges. Phones: fields you type in stay 16px below `sm` (`text-input`, iOS zoom) and touch
+targets stay 44px.
+
+Density and type scale (`data-density`, `data-type-scale` on `<html>`): compact sets `text-copy` 13 and `text-lead`
+14; the contrast type scale raises figure 22, section 24, tab-xl 32, title-xl 52, hero 44 (hero and tab-xl still step
+down below sm).
+
+Removed sizes and their 1.0 names (the `1.0.0-foundation` migration rewrites them): `text-caption`, `text-label` →
+`text-ui`; `text-ui-lg`, `text-title`, `text-title-lg` → `text-lead` (`max-sm:text-title-lg`, the phone size of a field, → `max-sm:text-input`); `text-heading-sm`, `text-heading` →
+`text-section`; `text-heading-lg`, `text-display` → `text-tab-xl`; `text-kpi` → `text-figure`.
+
+## Fonts
+
+| Utility | Face |
+|---|---|
+| `font-sans` | the UI face (brand `fonts.sans`, default Geist) |
+| `font-display` | the brand display face (`fonts.display`); without one it is the UI sans |
+| `font-mono` | code |
+
+## Shape
+
+The one look's radii, card shadow and border, control sizes and spacing unit are the `shape` group of
+`tokens/tokens.json`: `rounded-chip` 4 · `rounded-control` 8 · `rounded-card` 12 · `rounded-panel` 16, `shadow-card`
+(none), `border-card` (transparent 1px), `h-control` 34, `h-field` 36, `font-title` 500, `font-figure` (big numbers, the sans), the density unit `--spacing`.
+
+## Motion
+
+Each token is a duration and an easing, usable in a `transition` or `animation` shorthand
+(`transition: background-color var(--motion-hover)`). T9 wires the components; T1 defines them.
+
+| Token | Value | Use |
+|---|---|---|
+| `--motion-hover` | 150ms ease-in-out | colours on hover / active (`transition-hover`) |
+| `--motion-nav` | 150ms cubic-bezier(0.4,0,0.2,1) | nav active background (`transition-nav`) |
+| `--motion-crumb-in` | 220ms cubic-bezier(0.22,1,0.36,1) | breadcrumb entering: opacity + translateX(−6px → 0) (`animate-crumb-in`) |
+| `--motion-crumb-out` | 160ms cubic-bezier(0.4,0,1,1) | breadcrumb leaving |
+| `--motion-enter` | 400ms cubic-bezier(0.25,0.46,0.45,0.94) | content entering: opacity + translateY(4px → 0) (`animate-enter`) |
+| `--motion-stagger` | 35ms | per item, first ~10 items, once per route |
+| `--motion-pulse` | 2.5s ease-in-out | skeleton opacity 1 → 0.6 → 1 (`animate-pulse`) |
+| `--motion-tooltip` | 200ms cubic-bezier(0.16,1,0.3,1) | opacity + scale(0.96 → 1) (`animate-tooltip-in`) |
+| `--motion-disclosure` / `--motion-disclosure-close` | 300ms ease-out / ease-in | disclosure open / close |
+| `--motion-slide` | 300ms ease-out | sliding active pill (`transition-slide`) |
+
+Under `prefers-reduced-motion: reduce` the distances (`--motion-crumb-distance`, `--motion-enter-distance`) are 0 and
+`--motion-tooltip-scale` is 1, so every entrance is opacity only.
 
 
 ---
@@ -2547,11 +2514,11 @@ All web UI here follows the **Semi Design System** (`@semi/ui`, repo `https://gi
 
 1. **Ask Semi before writing UI.** Find the component for each need with the `semi` MCP tools (`semi_search` → `semi_docs` → `semi_example`; `semi_block` for whole pages; `semi_props` for props) or the terminal (`npx semi search "bảng có sắp xếp"`, `npx semi docs DataTable`, `npx semi example data-table`, `npx semi add dashboard`). They answer from the installed `@semi/ui`. Read *When to use*, *Use something else when* and *Accessibility*, then start from an example.
 2. **Compose, never re-create.** Import from `@semi/ui` and `@semi/ui/styles` directly. No local wrappers (`components/ui.tsx`), no raw `<select>`, `<table>`, `<dialog>`, `type="date"`, `type="number"`, `window.confirm` / `alert`, no inline `<svg>` or glyph icons (`<Icon name>`, mapping in `docs/ICONS.md`). Every AI conversation is `AIChat`; agent work uses `Reasoning`, `ToolCall`, `TaskList`, `Terminal`, `Sources`; an outward-facing, paid or irreversible agent action waits for `ActionConfirmation`. Pages sit in `AppShell` (or `AppHeader` for a one-screen tool) with `PageTitle` (or the title on the toolbar row: `SubpageToolbar title`, or `TextTabs` for 2–4 sibling views; a detail page opens with `MinimalHeader`); the shell's accent action is `create`, its bottom is `utilities` + `account` (never `footer`), and phones use its drawer; sub-views of one area go in nav `children` (closed until the parent is chosen, optional grey icon, no colour or count; check `useAppShell().submenuVisible` and add a page picker when false); a list page that people search and filter opens with `StickyContextBar` (`SearchPill`, `FilterChipRow` on `md+` / `PhoneFilterBar` + `FilterPanel` on phones, `ResultLine`), filter state in the URL (`useFilterParams`), chips on one line, never wrapped rows (`filter-chip-wrap`, warning); dialogs are `Modal` / `Drawer` / `confirmDialog`; loading is `Skeleton`, never "Đang tải…" text, and a list, grid or table never swaps its rows for a `Spinner` (`no-spinner-in-list`, warning). `AppShell` renders once in a `layout.tsx` (never from a page), its items route by `href` (not `onSelect` + `router.push`), the session check runs once in that layout (best on the server) with `BootLoader` as the only centred spinner, and content loading is a `loading.tsx` with `PageSkeleton` inside the shell, never a skeleton gate around it. No other UI or icon library (`lucide-react`, `react-icons`, `@radix-ui`, `@mui`, a shadcn `components/ui` copy: `foreign-ui`), no own `Card` / `Badge` / `Tooltip`… (`local-primitive`), no raw `<button>`, `<input>`, `<textarea>`, `<table>` (`raw-control`), no hand-made overlay or spinner (`custom-overlay`, `custom-spinner`); a clickable card is `<Card onClick>` (keyboard-ready), never `<div onClick>` (`click-target`).
-3. **Tokens only** (dual theme, any brand, any style):
-   - Surfaces and text: `bg-canvas|app|panel|field|raised` (the scale `bg-panel-0…4`: 0 = canvas, 2 = app, 4 = panel), `text-contrast|body|muted`, `border-line|divider` (an input's own edge: `border-control-line`, ≥ 3:1); status `bg-*-bg border-*-border text-*-fg` (danger, success, warning, info). Pages separate by tone, not borders: a block that is a card is `<Card>` / `bg-card` (no border; `<Card bordered>` only for a dense data view), never `bg-panel` (the sidebar / modal step); a secondary button is `<Button>` (tint fill `bg-tint`, no border). Main button: `BTN_PRIMARY` / `bg-action text-on-action` (the brand may make it inverted). Accent: `bg-accent text-on-accent` for checked / "on" marks, `text-accent-fg`, `bg-accent-subtle`, `border-accent-line`, `ring-focus`. Never physical colours (`bg-white`, `text-slate-900`, `text-amber-600 dark:text-amber-400`), arbitrary colours (`bg-[#…]`), `primary-N/alpha` or `bg-primary-N` fills (`primary-fill`), gradients or glow shadows.
-   - Type scale only: `text-caption|label|ui|ui-lg|title|title-lg`, `text-figure`, `text-heading`, `text-display`; `font-medium` / `font-semibold`, titles and big numbers `font-title` / `font-figure`; `tabular-nums` for numbers; sentence case (the one uppercase style is `text-overline`, for section labels only: a sidebar / drawer group, a palette group, a mega menu column; on any other element it warns: `overline-place`). Running text (sentences, descriptions, table cells, list rows) is `text-ui`; `text-label` / `text-caption` only for short marks beside it (a field label, a button, a time, a count). Each size sets its own line height: no `leading-*` on body text.
+3. **Tokens only** (dual theme, any brand):
+   - Surfaces and text: `bg-canvas|app|panel|field|raised` (the scale `bg-panel-0…4`: 0 = canvas, 2 = app, 4 = panel), `text-strong|body|muted`, `border-line|divider` (an input's own edge: `border-control-line`, ≥ 3:1); status `bg-*-bg border-*-border text-*-fg` (danger, success, warning, info). Pages separate by tone, not borders: a block that is a card is `<Card>` / `bg-card` (no border; `<Card bordered>` only for a dense data view), never `bg-panel` (the sidebar / modal step); a secondary button is `<Button>` (tint fill `bg-tint`, no border). Main button: `BTN_PRIMARY` / `bg-primary text-on-primary` (the brand may make it inverted). Accent: `bg-primary text-on-primary` for checked / "on" marks, `text-strong`, `bg-item-selected`, `border-outline-line`, `ring-focus`. Never physical colours (`bg-white`, `text-slate-900`, `text-amber-600 dark:text-amber-400`), arbitrary colours (`bg-[#…]`), `primary-N/alpha` or `bg-primary-N` fills (`primary-fill`), gradients or glow shadows.
+   - Type scale only (`docs/TOKENS.md`): `text-ui` (12, the base UI size) · `text-copy` 14 · `text-lead` 15 · `text-figure` 18 · `text-section` 20 · `text-tab-xl` · `text-title-xl` · `text-hero` · `text-tag` / `text-badge` 10 · `text-overline` · `max-sm:text-input` 16 for fields; text colours `text-strong|body|muted|faint`; headings not bold (400 / 500, `font-title` 500), titles and big numbers `font-title` / `font-figure`; `tabular-nums` for numbers; sentence case (the one uppercase style is `text-overline`, for section labels only: a sidebar / drawer group, a palette group, a mega menu column; on any other element it warns: `overline-place`). Running text (a sentence, a description) is `text-copy`; UI text (list rows, table cells, field labels, buttons, a time, a count) is `text-ui`. Each size sets its own line height: no `leading-*` on body text.
    - Spacing by role (scaled by density): `p-card` inside every card, popover and panel section (`<Card>` sets it; `p-card sm:p-panel` for a roomy one), `gap-stack` between items in a card or form, `gap-group` between cards, `gap-section` between page sections. `gap-1`–`gap-2`, `px-2`, `py-1` only inside one control or row. A card is never tighter than `p-card` (`card-padding`). No arbitrary spacing, z-index or opacity (`p-[13px]`, `z-[9999]`, `bg-panel/[0.05]`: `arbitrary-value`); no `shadow-sm…2xl` (`tw-shadow`), `uppercase` (`text-case`) or `leading-*` other than `leading-tight` (`leading-override`); no colours, sizes or radii in `style={{}}` (`inline-style-value`) or in `.css` (`css-raw-value`).
-   - Shape and size come from the app's style (`"style"` in `semi-lint.json`, `data-style` on `<html>`): `rounded-chip|control|card|panel|full`, `shadow-card`, `h-control`, `h-field`. Never `rounded-lg`, `rounded-[Npx]`, `h-[34px]` or `[data-style]` selectors. Density and type scale are this product's (`data-density`, `data-type-scale`): never tune paddings or text sizes by hand for that.
+   - Shape and size are Semi's one look (no styles since 1.0; a leftover `data-style` does nothing): `rounded-chip|control|card|panel|full`, `shadow-card`, `h-control`, `h-field`. Never `rounded-lg`, `rounded-[Npx]`, `h-[34px]` or `[data-style]` selectors. Density and type scale are this product's (`data-density`, `data-type-scale`): never tune paddings or text sizes by hand for that.
    - Layers: `z-sticky` < `z-drawer` < `z-modal` < `z-dialog` < `z-popover` < `z-toast` < `z-tooltip`; never `z-[9999]`.
 4. **Not the generic AI screen** (`DESIGN_SYSTEM.md` §19): one main block per screen (`KpiCard featured`, not four equal cards); icons neutral unless they mean a status; proof (a real number, a quote, a product shot) instead of three icon feature cards; icons only where they help scanning; sample data and empty states from this product, never "Lorem", "John Doe" or another domain.
    **Density budgets** (`DESIGN_SYSTEM.md` §4c, measured on the page by `npx semi density <url>`): at most three frames inside each other (page panel › card › tile); at most four text sizes and three colours (accent + status) in one box; one filled accent button per view; text 12px from a box's sides and 8px from its top and bottom; a list row at least `h-control` tall (`Item`, `Menu`, `DataTable`); 8px or more between boxes; one line between two things (no `border-b` on a card's last row). `px-2` / `py-1` are for the inside of a control, never a row's or a box's padding.
@@ -3416,7 +3383,7 @@ export default function CalendarRange() {
   return (
     <div className="space-y-2">
       <Calendar mode="range" value={range} onChange={setRange} />
-      <p className="text-label text-muted tabular-nums">
+      <p className="text-ui text-muted tabular-nums">
         {range.start ?? "…"} → {range.end ?? "…"}
       </p>
     </div>
@@ -4218,7 +4185,7 @@ export default function FilterChipRowUrlState() {
         trailing={<ViewSwitch view={view} onViewChange={(v) => f.setParams({ view: v === "list" ? null : v }, "replace")} />}
       />
       <ResultLine count={rows.length} unit="đơn hàng" />
-      <p className="text-label text-muted">{rows.map((o) => `#${o.id}`).join(" · ") || "—"}</p>
+      <p className="text-ui text-muted">{rows.map((o) => `#${o.id}`).join(" · ") || "—"}</p>
     </div>
   );
 }
@@ -4285,7 +4252,7 @@ export default function FilterChipRowViews() {
         onClear={() => setSel({})}
       />
       <ResultLine count={rows.length} unit="thư" />
-      <p className="text-label text-muted">{rows.map((m) => m.id).join(" · ") || "—"}</p>
+      <p className="text-ui text-muted">{rows.map((m) => m.id).join(" · ") || "—"}</p>
     </div>
   );
 }
@@ -5277,8 +5244,8 @@ export default function SearchPillDefault() {
   return (
     <div className="flex flex-col gap-2 w-full">
       <SearchPill value={q} onChange={setQ} label="Tìm khách hàng" placeholder="Tìm khách, quốc gia, mặt hàng…" focusKey="/" />
-      <p className="text-label text-muted">
-        Đang tìm: <span className="text-contrast">{q || "—"}</span> (gõ xong 250 ms mới gửi; Esc để xoá; phím / để vào ô tìm)
+      <p className="text-ui text-muted">
+        Đang tìm: <span className="text-strong">{q || "—"}</span> (gõ xong 250 ms mới gửi; Esc để xoá; phím / để vào ô tìm)
       </p>
     </div>
   );
@@ -5725,12 +5692,12 @@ export default function SwitchCardHeader() {
       {RULES.map((r) => (
         <Card key={r.id} className="space-y-2">
           <div className="flex items-center justify-between gap-3">
-            <span id={`rule-${r.id}`} className="text-ui font-semibold text-contrast">
+            <span id={`rule-${r.id}`} className="text-ui font-semibold text-strong">
               {r.name}
             </span>
             <Switch checked={on[r.id]} onChange={(v) => setOn({ ...on, [r.id]: v })} aria-labelledby={`rule-${r.id}`} />
           </div>
-          <p className="text-label text-muted">{r.detail}</p>
+          <p className="text-ui text-muted">{r.detail}</p>
           <Badge tone={on[r.id] ? "emerald" : "gray"}>{on[r.id] ? "Đang bật" : "Đang tắt"}</Badge>
         </Card>
       ))}
@@ -5807,7 +5774,7 @@ export default function ViewSwitchDefault() {
   return (
     <div className="flex items-center gap-4">
       <ViewSwitch view={view} onViewChange={setView} density={density} onDensityChange={setDensity} />
-      <span className="text-label text-muted">
+      <span className="text-ui text-muted">
         {view === "grid" ? "Lưới" : "Danh sách"} · {density === "compact" ? "Gọn" : "Thoáng"}
       </span>
     </div>
@@ -6121,7 +6088,7 @@ export default function ConfirmDanger() {
       <Button variant="danger" icon="trash" onClick={remove}>
         Xoá bản in
       </Button>
-      {result && <span className="text-label text-muted">{result}</span>}
+      {result && <span className="text-ui text-muted">{result}</span>}
     </div>
   );
 }
@@ -6214,8 +6181,8 @@ export default function ContextMenuFile() {
       <div className="flex w-64 items-center gap-3 rounded-card border border-line bg-field p-3">
         <IconTile name="fileCode" tone="sky" />
         <div className="min-w-0">
-          <div className="text-ui font-medium text-contrast truncate">vo-hop-dieu-khien.gcode</div>
-          <div className="text-caption text-muted">Chuột phải (hoặc giữ) để mở menu</div>
+          <div className="text-ui font-medium text-strong truncate">vo-hop-dieu-khien.gcode</div>
+          <div className="text-ui text-muted">Chuột phải (hoặc giữ) để mở menu</div>
         </div>
       </div>
     </ContextMenu>
@@ -6345,11 +6312,11 @@ export default function DetailOverlayList() {
               </div>
               <dl className="grid grid-cols-2 gap-3">
                 <div>
-                  <dt className="text-caption text-muted">Tổng tiền</dt>
-                  <dd className="text-ui text-contrast tabular-nums">{vnd(order.total)}</dd>
+                  <dt className="text-ui text-muted">Tổng tiền</dt>
+                  <dd className="text-ui text-strong tabular-nums">{vnd(order.total)}</dd>
                 </div>
                 <div>
-                  <dt className="text-caption text-muted">Thanh toán</dt>
+                  <dt className="text-ui text-muted">Thanh toán</dt>
                   <dd>
                     <Badge tone={order.paid ? "emerald" : "amber"} dot size="sm">
                       {order.paid ? "Đã trả" : "Chưa trả"}
@@ -6363,7 +6330,7 @@ export default function DetailOverlayList() {
       >
         {order && (
           <section className="flex flex-col gap-2">
-            <h3 className="text-label font-semibold text-contrast">Sản phẩm</h3>
+            <h3 className="text-ui font-semibold text-strong">Sản phẩm</h3>
             <p className="text-ui text-body">3 mặt hàng · giao trong 2 ngày.</p>
           </section>
         )}
@@ -6745,7 +6712,7 @@ export default function HoverCardUser() {
       Đơn được duyệt bởi{" "}
       <HoverCard
         trigger={
-          <a href="#minh-anh" className="font-medium text-accent-fg underline-offset-2 hover:underline">
+          <a href="#minh-anh" className="font-medium text-strong underline-offset-2 hover:underline">
             Minh Anh
           </a>
         }
@@ -6753,8 +6720,8 @@ export default function HoverCardUser() {
         <div className="flex items-start gap-3">
           <Avatar name="Minh Anh" />
           <div className="space-y-1">
-            <div className="text-ui font-semibold text-contrast">Minh Anh</div>
-            <div className="text-label text-muted">Quản lý xưởng · Khu A</div>
+            <div className="text-ui font-semibold text-strong">Minh Anh</div>
+            <div className="text-ui text-muted">Quản lý xưởng · Khu A</div>
             <Badge tone="emerald" dot size="sm">
               Đang trực
             </Badge>
@@ -7011,7 +6978,7 @@ export default function ModalLayers() {
           />
         </Field>
         <Popover label="Nhiệt độ gợi ý" trigger={<Button>Nhiệt độ gợi ý</Button>}>
-          <p className="text-label text-body">PLA 200–220 °C, PETG 230–250 °C.</p>
+          <p className="text-ui text-body">PLA 200–220 °C, PETG 230–250 °C.</p>
           <Button>Áp dụng</Button>
         </Popover>
       </Modal>
@@ -7086,7 +7053,7 @@ export default function PopoverQuickEdit() {
   const [draft, setDraft] = useState(name);
   return (
     <div className="flex items-center gap-3">
-      <span className="text-ui font-medium text-contrast">{name}</span>
+      <span className="text-ui font-medium text-strong">{name}</span>
       <Popover
         label="Đổi tên máy in"
         open={open}
@@ -7230,20 +7197,20 @@ export default function ToastUndo() {
   return (
     <ul data-undo-list className="w-full max-w-sm flex flex-col gap-2">
       {rows.map((name, i) => (
-        <li key={name} className="flex items-center justify-between gap-2 rounded-control border border-line bg-panel px-3 py-2 text-ui text-contrast">
+        <li key={name} className="flex items-center justify-between gap-2 rounded-control border border-line bg-panel px-3 py-2 text-ui text-strong">
           {name}
           <Button size="sm" variant="ghost" icon="trash" onClick={() => archive(name, i)}>
             Lưu trữ
           </Button>
         </li>
       ))}
-      {rows.length === 0 && <li className="text-label text-muted">Đã lưu trữ hết, bấm Hoàn tác để khôi phục.</li>}
+      {rows.length === 0 && <li className="text-ui text-muted">Đã lưu trữ hết, bấm Hoàn tác để khôi phục.</li>}
       <li>
         <Button size="sm" variant="secondary" onClick={archiveAndLeave}>
           Lưu trữ rồi chuyển trang
         </Button>
       </li>
-      <li data-committed className="text-label text-muted">
+      <li data-committed className="text-ui text-muted">
         Đã chốt: {gone}
       </li>
     </ul>
@@ -7423,7 +7390,7 @@ export default function AppHeaderTool() {
           Xong
         </button>
       </AppHeader>
-      <div className="h-32 bg-canvas flex items-center justify-center text-label text-muted">Canvas</div>
+      <div className="h-32 bg-canvas flex items-center justify-center text-ui text-muted">Canvas</div>
     </div>
   );
 }
@@ -7509,7 +7476,7 @@ import {
 const SECTIONS: ShellNavSection[] = [
   {
     items: [
-      { id: "inbox", label: "Hộp thư", icon: "inbox", right: <span className="px-1 text-caption text-muted tabular-nums">3</span> },
+      { id: "inbox", label: "Hộp thư", icon: "inbox", right: <span className="px-1 text-ui text-muted tabular-nums">3</span> },
       {
         id: "orders",
         label: "Đơn hàng",
@@ -7602,8 +7569,8 @@ export default function FullShell() {
           <Avatar name="Lan Phạm" size="sm" />
           {!rail && (
             <span className="min-w-0">
-              <span className="block truncate text-label font-medium text-contrast">Lan Phạm</span>
-              <span className="block truncate text-caption text-muted">Cửa hàng Quận 1</span>
+              <span className="block truncate text-ui font-medium text-strong">Lan Phạm</span>
+              <span className="block truncate text-ui text-muted">Cửa hàng Quận 1</span>
             </span>
           )}
         </div>
@@ -7611,7 +7578,7 @@ export default function FullShell() {
     >
       <MinimalHeader
         left={<Breadcrumb items={[{ label: "Sales Hub", href: "#" }, { label: "Đơn hàng" }]} />}
-        link={<a href="#" className="text-accent-fg hover:underline">Hướng dẫn</a>}
+        link={<a href="#" className="text-strong hover:underline">Hướng dẫn</a>}
         primary={
           <Button variant="primary" icon="plus">
             Tạo đơn
@@ -7624,8 +7591,8 @@ export default function FullShell() {
           {["DH-1042", "DH-1041", "DH-1039", "DH-1037", "DH-1036", "DH-1033"].map((id, i) => (
             <Card key={id} className="flex flex-col gap-stack">
               <div className="flex items-center justify-between gap-3 min-w-0">
-                <span className="text-ui font-semibold text-contrast truncate">{id}</span>
-                <span className="text-label text-muted tabular-nums shrink-0">{PRICE.format((i + 2) * 450_000)}</span>
+                <span className="text-ui font-semibold text-strong truncate">{id}</span>
+                <span className="text-ui text-muted tabular-nums shrink-0">{PRICE.format((i + 2) * 450_000)}</span>
               </div>
               <p className="text-ui text-body truncate">{["Bambu Lab A1 mini", "PLA Basic 1kg × 4", "Combo AMS Lite", "PETG HF 1kg × 2", "Bàn in PEI", "TPU 95A 1kg"][i]}</p>
             </Card>
@@ -8173,7 +8140,7 @@ export default function MinimalHeaderDetail() {
   return (
     <MinimalHeader
       left={<Breadcrumb items={[{ label: "Đơn hàng", href: "#" }, { label: "DH-1042" }]} />}
-      link={<a href="#" className="text-accent-fg hover:underline">Xem lịch sử</a>}
+      link={<a href="#" className="text-strong hover:underline">Xem lịch sử</a>}
       primary={
         <Button variant="primary" icon="check">
           Xác nhận đơn
@@ -8243,7 +8210,7 @@ import { NavigationMenu } from "@semi/ui";
 export default function NavigationMenuSite() {
   return (
     <div className="flex items-center justify-between rounded-card border border-line bg-panel px-3 py-2">
-      <span className="text-ui font-semibold text-contrast">3D Noobs</span>
+      <span className="text-ui font-semibold text-strong">3D Noobs</span>
       <NavigationMenu
         label="Điều hướng chính"
         current="/pricing"
@@ -8589,8 +8556,8 @@ import { ResizablePanels } from "@semi/ui";
 export default function ResizableEditor() {
   return (
     <ResizablePanels defaultSizes={[35, 65]} className="h-64">
-      <div className="p-4 text-label text-muted">Danh sách đơn</div>
-      <div className="p-4 text-label text-muted">Chi tiết đơn đang chọn</div>
+      <div className="p-4 text-ui text-muted">Danh sách đơn</div>
+      <div className="p-4 text-ui text-muted">Chi tiết đơn đang chọn</div>
     </ResizablePanels>
   );
 }
@@ -8604,9 +8571,9 @@ import { ResizablePanels } from "@semi/ui";
 export default function ResizableVertical() {
   return (
     <ResizablePanels direction="vertical" defaultSizes={[50, 30, 20]} className="h-80">
-      <div className="p-4 text-label text-muted">Khung xem 3D</div>
-      <div className="p-4 text-label text-muted">Lớp</div>
-      <div className="p-4 text-label text-muted">Nhật ký</div>
+      <div className="p-4 text-ui text-muted">Khung xem 3D</div>
+      <div className="p-4 text-ui text-muted">Lớp</div>
+      <div className="p-4 text-ui text-muted">Nhật ký</div>
     </ResizablePanels>
   );
 }
@@ -8669,7 +8636,7 @@ export default function ScrollAreaLog() {
   return (
     <Card padding="none" className="max-w-md">
       <ScrollArea label="Nhật ký in" className="h-48">
-        <ul className="p-3 space-y-1 text-label text-body tabular-nums">
+        <ul className="p-3 space-y-1 text-ui text-body tabular-nums">
           {LINES.map((l) => (
             <li key={l}>{l}</li>
           ))}
@@ -8740,14 +8707,14 @@ export default function SidePanelCanvas() {
       <SidePanel collapsed={collapsed} onToggleCollapse={() => setCollapsed((v) => !v)}>
         <div className="p-3 space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-label font-medium text-muted">Cài đặt lát cắt</span>
+            <span className="text-ui font-medium text-muted">Cài đặt lát cắt</span>
             <SidePanelToggle onClick={() => setCollapsed(true)} />
           </div>
           <Skeleton className="h-8" />
           <Skeleton className="h-8" />
         </div>
       </SidePanel>
-      <div className="flex-1 flex items-center justify-center text-label text-muted">Canvas / 3D view</div>
+      <div className="flex-1 flex items-center justify-center text-ui text-muted">Canvas / 3D view</div>
     </div>
   );
 }
@@ -9432,8 +9399,8 @@ export default function WorkspaceRequest() {
             {LINES.map((l, i) => (
               <div key={l.id} className="rounded-card bg-card p-3 flex flex-col gap-2">
                 <div className="min-w-0">
-                  <div className="text-label font-semibold text-contrast">{l.name}</div>
-                  <div className="text-caption text-muted truncate">{l.spec}</div>
+                  <div className="text-ui font-semibold text-strong">{l.name}</div>
+                  <div className="text-ui text-muted truncate">{l.spec}</div>
                 </div>
                 <Stepper label={`số tấn ${l.name}`} unit="tấn" min={1} value={qty[i]} onChange={(v) => setQty(qty.map((q, j) => (j === i ? v : q)))} />
               </div>
@@ -9467,32 +9434,32 @@ export default function WorkspaceRequest() {
       result={
         <>
           <div className="flex flex-wrap items-center gap-3">
-            <h3 className="flex-1 text-title font-title font-semibold text-contrast">So sánh báo giá</h3>
-            <span className="text-label text-muted">2/2 nhà cung cấp đã trả lời</span>
+            <h3 className="flex-1 text-lead font-title font-semibold text-strong">So sánh báo giá</h3>
+            <span className="text-ui text-muted">2/2 nhà cung cấp đã trả lời</span>
           </div>
           <div className="grid md:grid-cols-2 gap-group">
             {QUOTES.map((q) => (
               <article key={q.supplier} className="rounded-card bg-card p-card flex flex-col gap-3">
                 <div className="min-w-0">
-                  <div className="text-ui font-semibold text-contrast truncate">{q.supplier}</div>
-                  <div className="text-caption text-muted">FOB · {q.days} ngày</div>
+                  <div className="text-ui font-semibold text-strong truncate">{q.supplier}</div>
+                  <div className="text-ui text-muted">FOB · {q.days} ngày</div>
                 </div>
                 <div className="flex flex-col divide-y divide-divider">
                   {LINES.map((l, i) => (
                     <div key={l.id} className="flex items-center gap-2 py-2">
-                      <span className="flex-1 text-label text-body">{l.name}</span>
+                      <span className="flex-1 text-ui text-body">{l.name}</span>
                       {q.best[i] && (
                         <Badge tone="emerald" size="sm">
                           Tốt nhất
                         </Badge>
                       )}
-                      <span className="text-label tabular-nums text-contrast">{usd(q.prices[i])}</span>
+                      <span className="text-ui tabular-nums text-strong">{usd(q.prices[i])}</span>
                     </div>
                   ))}
                 </div>
                 <div className="flex items-center justify-between pt-1">
-                  <span className="text-caption text-muted">Tổng ({qty[0] + qty[1]} tấn)</span>
-                  <span className="text-ui-lg font-figure font-semibold text-contrast tabular-nums">{usd(q.prices[0] * qty[0] + q.prices[1] * qty[1])}</span>
+                  <span className="text-ui text-muted">Tổng ({qty[0] + qty[1]} tấn)</span>
+                  <span className="text-lead font-figure font-semibold text-strong tabular-nums">{usd(q.prices[0] * qty[0] + q.prices[1] * qty[1])}</span>
                 </div>
               </article>
             ))}
@@ -9543,7 +9510,7 @@ export default function WorkspaceInShell() {
           <WorkspaceSection label="Mặt hàng" count={LINES.length} max={8}>
             {LINES.map((name, i) => (
               <div key={name} className="rounded-card bg-card p-3 flex flex-col gap-2">
-                <div className="text-label font-semibold text-contrast">{name}</div>
+                <div className="text-ui font-semibold text-strong">{name}</div>
                 <Stepper label={`số tấn ${name}`} unit="tấn" min={1} value={qty[i]} onChange={(v) => setQty(qty.map((q, j) => (j === i ? v : q)))} />
               </div>
             ))}
@@ -9763,10 +9730,10 @@ export default function AspectRatioBasic() {
   return (
     <div className="grid gap-3 grid-cols-2 max-w-md">
       <AspectRatio className="rounded-card border border-line bg-field">
-        <div className="flex h-full items-center justify-center text-label text-muted">16 : 9</div>
+        <div className="flex h-full items-center justify-center text-ui text-muted">16 : 9</div>
       </AspectRatio>
       <AspectRatio ratio={1} className="rounded-card border border-line bg-field">
-        <div className="flex h-full items-center justify-center text-label text-muted">1 : 1</div>
+        <div className="flex h-full items-center justify-center text-ui text-muted">1 : 1</div>
       </AspectRatio>
     </div>
   );
@@ -9964,12 +9931,12 @@ export default function CardBasic() {
   return (
     <Card className="space-y-2 max-w-sm">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-ui font-semibold text-contrast">X1 Carbon · Xưởng A</span>
+        <span className="text-ui font-semibold text-strong">X1 Carbon · Xưởng A</span>
         <Badge tone="emerald" dot>
           Online
         </Badge>
       </div>
-      <p className="text-label text-muted">Đang in: vỏ hộp điều khiển · còn 42 phút</p>
+      <p className="text-ui text-muted">Đang in: vỏ hộp điều khiển · còn 42 phút</p>
     </Card>
   );
 }
@@ -9984,12 +9951,12 @@ export default function CardStates() {
   return (
     <div className="grid gap-3 sm:grid-cols-2 max-w-xl">
       <Card interactive className="space-y-2">
-        <div className="text-ui font-semibold text-contrast">P1S · Xưởng B</div>
-        <div className={`${TILE} p-2 text-label text-body tabular-nums`}>Đầu phun 220°C · Bàn 60°C</div>
+        <div className="text-ui font-semibold text-strong">P1S · Xưởng B</div>
+        <div className={`${TILE} p-2 text-ui text-body tabular-nums`}>Đầu phun 220°C · Bàn 60°C</div>
       </Card>
       <Card interactive active className="space-y-2">
-        <div className="text-ui font-semibold text-contrast">A1 Mini · đang in</div>
-        <div className={`${TILE} p-2 text-label text-body tabular-nums`}>Tiến độ 64%</div>
+        <div className="text-ui font-semibold text-strong">A1 Mini · đang in</div>
+        <div className={`${TILE} p-2 text-ui text-body tabular-nums`}>Tiến độ 64%</div>
       </Card>
     </div>
   );
@@ -10004,9 +9971,9 @@ import { Card } from "@semi/ui";
 export default function CardBordered() {
   return (
     <Card bordered padding="none" className="max-w-xl overflow-hidden">
-      <div className="px-card py-2.5 border-b border-divider text-ui font-semibold text-contrast">Đơn mua gần đây</div>
+      <div className="px-card py-2.5 border-b border-divider text-ui font-semibold text-strong">Đơn mua gần đây</div>
       {["PO-1042 · Nhựa PLA 1kg", "PO-1041 · Đầu phun 0.4", "PO-1040 · Bàn in PEI"].map((row) => (
-        <div key={row} className="px-card py-2.5 border-b border-divider last:border-0 text-label text-body">
+        <div key={row} className="px-card py-2.5 border-b border-divider last:border-0 text-ui text-body">
           {row}
         </div>
       ))}
@@ -10085,10 +10052,10 @@ export default function CarouselProducts() {
       {ITEMS.map((name, i) => (
         <Card key={name} className="space-y-2">
           <AspectRatio ratio={4 / 3} className="rounded-control bg-field">
-            <div className="flex h-full items-center justify-center text-display font-semibold text-muted">{i + 1}</div>
+            <div className="flex h-full items-center justify-center text-tab-xl font-semibold text-muted">{i + 1}</div>
           </AspectRatio>
-          <div className="text-ui font-medium text-contrast">{name}</div>
-          <div className="text-label text-muted tabular-nums">{(89 + i * 30).toLocaleString("vi-VN")}k ₫</div>
+          <div className="text-ui font-medium text-strong">{name}</div>
+          <div className="text-ui text-muted tabular-nums">{(89 + i * 30).toLocaleString("vi-VN")}k ₫</div>
         </Card>
       ))}
     </Carousel>
@@ -10532,7 +10499,7 @@ const ORDERS: Order[] = Array.from({ length: 23 }, (_, i) => ({
 }));
 
 const COLUMNS: DataTableColumn<Order>[] = [
-  { key: "id", header: "Mã đơn", sortable: true, cell: (o) => <span className="font-medium text-contrast">{o.id}</span> },
+  { key: "id", header: "Mã đơn", sortable: true, cell: (o) => <span className="font-medium text-strong">{o.id}</span> },
   { key: "customer", header: "Khách hàng", sortable: true },
   { key: "status", header: "Trạng thái", value: (o) => STATUS[o.status][1], cell: (o) => <Badge tone={STATUS[o.status][0]} dot>{STATUS[o.status][1]}</Badge> },
   { key: "date", header: "Ngày", sortable: true },
@@ -10566,7 +10533,7 @@ export default function DataTableOrders() {
 
 ### Many columns: priority folds, sticky first column
 
-Switch the width: at Máy tính bảng the priority 3 columns fold under the name; at Hẹp the priority 2 ones too, and the columns without a priority scroll sideways with the name kept in place and an accent line on the edge that has more columns.
+Switch the width: at Máy tính bảng the priority 3 columns fold under the name; at Hẹp the priority 2 ones too, and the columns without a priority scroll sideways with the name kept in place and a strong line on the edge that has more columns.
 
 ```tsx
 "use client";
@@ -10589,7 +10556,7 @@ const CUSTOMERS: Customer[] = Array.from({ length: 6 }, (_, i) => ({
 
 // priority 3 folds first, then 2, then 1; the first column and columns without a priority always stay
 const COLUMNS: DataTableColumn<Customer>[] = [
-  { key: "name", header: "Khách hàng", sortable: true, cell: (c) => <span className="font-medium text-contrast">{c.name}</span> },
+  { key: "name", header: "Khách hàng", sortable: true, cell: (c) => <span className="font-medium text-strong">{c.name}</span> },
   { key: "phone", header: "Điện thoại", priority: 2 },
   { key: "city", header: "Tỉnh / thành", sortable: true },
   { key: "source", header: "Nguồn", priority: 3, cell: (c) => <Badge size="sm">{c.source}</Badge> },
@@ -10659,7 +10626,7 @@ Sort by a column header (click again to reverse; aria-sort on the header), filte
 column, case and Vietnamese marks ignored), select rows with a checkbox column (select-all on the page, bulk
 actions bar), page with Pagination. Shows skeleton rows while `loading` and an EmptyState when nothing is left.
 When the columns do not fit its own box, columns with a `priority` fold into the first column's second line; what
-still does not fit scrolls sideways, with an accent line on each edge that has columns past it and the table
+still does not fit scrolls sideways, with a strong line (outline-line) on each edge that has columns past it and the table
 focusable to scroll by keyboard. The sorted column never folds. Folding is measured after hydration, so a table
 with priorities may shift once on first load at a narrow width.
 The order it shows is `sortRows(searchRows(rows, columns, search), columns, sort)` (for DetailOverlay ‹ ›).
@@ -10694,7 +10661,7 @@ The order it shows is `sortRows(searchRows(rows, columns, search), columns, sort
 
 - Folding is measured on the table's own box (not the viewport), from each column's one-line width: a table in a split view or next to the rail folds as soon as it is too narrow. Folding happens after hydration: the server HTML shows every column, so a table with priorities may shift once on first load at tablet width.
 - The order the table shows is `sortRows(searchRows(rows, columns, search), columns, sort)`: use the same two helpers to step through the results in a DetailOverlay (‹ ›, “n / N”), see the detail-overlay docs.
-- A table wider than its box draws a 2px accent line on each edge that has columns past it (in every table; with `stickyFirstColumn` the left line is the pinned column's edge) and keeps the first column (and the checkbox column) in place with `stickyFirstColumn`; the table then sits on `bg-card`. The sorted column never folds: its header is the only sort control.
+- A table wider than its box draws a 2px strong line (outline-line) on each edge that has columns past it (in every table; with `stickyFirstColumn` the left line is the pinned column's edge) and keeps the first column (and the checkbox column) in place with `stickyFirstColumn`; the table then sits on `bg-card`. The sorted column never folds: its header is the only sort control.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/data-table/ and the types in src/ -->
 
@@ -10735,7 +10702,7 @@ export default function IconBasic() {
     <div className="flex flex-wrap items-center gap-4">
       <Icon name="printer" className="w-5 h-5 text-body" />
       <Icon name="trash" className="w-5 h-5 text-danger-fg" title="Xoá" />
-      <Icon name="refresh" className="w-5 h-5 text-accent-fg" />
+      <Icon name="refresh" className="w-5 h-5 text-strong" />
       <IconTile name="box" tone="green" />
       <IconTile name="camera" tone="sky" size="lg" />
     </div>
@@ -11124,7 +11091,7 @@ export default function QRCodeTooLong() {
   return (
     <div className="space-y-2">
       <QRCode value={"A".repeat(4000)} size={140} label="Mã QR" onError={(e) => setError(e.message)} />
-      {error && <p className="text-label text-muted">onError: {error}</p>}
+      {error && <p className="text-ui text-muted">onError: {error}</p>}
     </div>
   );
 }
@@ -11202,7 +11169,7 @@ export default function SeparatorBasic() {
       </Button>
       <Separator label="hoặc" />
       <Button fullWidth>Đăng nhập bằng Google</Button>
-      <div className="flex h-6 items-center gap-3 text-label text-muted">
+      <div className="flex h-6 items-center gap-3 text-ui text-muted">
         <span>Máy in</span>
         <Separator orientation="vertical" />
         <span>Vật liệu</span>
@@ -11282,7 +11249,7 @@ export default function TableOrders() {
         <TBody>
           {ORDERS.map((o) => (
             <TR key={o.id}>
-              <TD className="font-medium text-contrast">{o.id}</TD>
+              <TD className="font-medium text-strong">{o.id}</TD>
               <TD>
                 <span className="inline-flex items-center gap-2">
                   <Avatar name={o.customer} size="sm" />
@@ -11353,7 +11320,7 @@ No props of its own.
 
 # Typography
 
-The type scale (text-caption 11 … text-display 26, font-display for titles) and Prose, which styles long-form text — headings, paragraphs, lists, links, quotes, inline code — from that scale.
+The 1.0 type scale (text-tag 10 … text-hero 36, text-ui 12 the base UI size, font-display for hero and big titles) and Prose, which styles long-form text — headings, paragraphs, lists, links, quotes, inline code — from that scale.
 
 ## When to use
 
@@ -11364,7 +11331,7 @@ The type scale (text-caption 11 … text-display 26, font-display for titles) an
 | Need | Use |
 |---|---|
 | Page title | PageTitle |
-| UI text in cards and forms | the type classes directly (text-ui, text-label…) |
+| UI text in cards and forms | the type classes directly (text-ui for labels, rows and meta; text-copy for reading copy) |
 
 ## Import
 
@@ -11378,16 +11345,17 @@ import { Prose } from "@semi/ui";
 
 ```tsx
 export default function TypographyScale() {
+  // A type specimen shows every size on purpose: data-density-skip keeps it out of the type-mix budget.
   return (
-    <div className="space-y-1.5">
-      <div className="font-display text-display text-contrast">Hiển thị 26</div>
-      <div className="text-heading text-contrast font-semibold">Tiêu đề trang 22</div>
-      <div className="text-title-lg text-contrast font-semibold">Tiêu đề 16</div>
-      <div className="text-title text-contrast font-medium">Tiêu đề thẻ 15</div>
-      <div className="text-ui-lg text-body">Nội dung dài 14</div>
-      <div className="text-ui text-body">Giao diện 13</div>
-      <div className="text-label text-muted">Nhãn 12</div>
-      <div className="text-caption text-muted">Chú thích 11</div>
+    <div data-density-skip className="space-y-1.5">
+      <div className="font-display text-tab-xl text-strong">Tab lớn 28</div>
+      <div className="text-section text-strong">Tiêu đề mục 20</div>
+      <div className="text-figure text-strong">Tiêu đề trang trong thẻ 18</div>
+      <div className="text-lead text-strong font-medium">Tiêu đề thẻ 15</div>
+      <div className="text-copy text-body">Nội dung dài 14</div>
+      <div className="text-ui text-body">Giao diện 12</div>
+      <div className="text-ui text-muted">Nhãn 12</div>
+      <div className="text-tag text-muted">Thẻ 10</div>
     </div>
   );
 }
@@ -12564,7 +12532,7 @@ export default function AIChatWorkspace() {
   };
   return (
     <div className="relative h-[480px] rounded-card bg-canvas border border-line overflow-hidden">
-      <div className="absolute inset-0 flex items-center justify-center text-label text-muted">Canvas / workspace</div>
+      <div className="absolute inset-0 flex items-center justify-center text-ui text-muted">Canvas / workspace</div>
       <AIChat
         title="Trợ lý AI"
         placement="workspace"
@@ -13154,7 +13122,7 @@ export default function FileTreeChanges() {
   return (
     <div className="grid gap-3 @xl:grid-cols-[240px_1fr]">
       <FileTree label="Tệp đã thay đổi" files={FILES} selected={file} onSelect={setFile} className="rounded-card border border-line bg-panel p-1.5" />
-      <div className="rounded-card border border-line p-3 text-label text-muted break-all">{file}</div>
+      <div className="rounded-card border border-line p-3 text-ui text-muted break-all">{file}</div>
     </div>
   );
 }
@@ -13688,7 +13656,7 @@ export default function DashboardPage() {
       <div className="grid gap-3 @4xl:grid-cols-[2fr_1fr]">
         <Card className="space-y-3">
           <div className="flex items-center justify-between gap-3">
-            <h2 className="text-title font-medium text-contrast">Doanh thu theo kênh</h2>
+            <h2 className="text-lead font-medium text-strong">Doanh thu theo kênh</h2>
             <Sparkline label="Tổng doanh thu 8 tuần" values={WEEKS.map((w) => w.online + w.store)} />
           </div>
           <BarChart
@@ -13704,7 +13672,7 @@ export default function DashboardPage() {
           />
         </Card>
         <Card className="space-y-3">
-          <h2 className="text-title font-medium text-contrast">Đơn theo trạng thái</h2>
+          <h2 className="text-lead font-medium text-strong">Đơn theo trạng thái</h2>
           <DonutChart
             label="Đơn theo trạng thái"
             centerLabel="Tổng đơn"
@@ -13814,7 +13782,7 @@ const SPECS: (FilterSpec & { key: "channel" | "branch" | "big" })[] = [
 ];
 
 const COLUMNS: DataTableColumn<Order>[] = [
-  { key: "id", header: "Mã đơn", sortable: true, cell: (o) => <span className="font-medium text-contrast">{o.id}</span> },
+  { key: "id", header: "Mã đơn", sortable: true, cell: (o) => <span className="font-medium text-strong">{o.id}</span> },
   { key: "customer", header: "Khách hàng", sortable: true },
   { key: "status", header: "Trạng thái", value: (o) => STATUS[o.status][1], cell: (o) => <Badge tone={STATUS[o.status][0]} dot>{STATUS[o.status][1]}</Badge> },
   { key: "date", header: "Ngày", sortable: true },
@@ -13934,7 +13902,7 @@ export default function SettingsPage() {
     <div className="space-y-4">
       <PageTitle title="Cài đặt" />
       <Card className="space-y-4">
-        <h2 className="text-title font-medium text-contrast">Không gian làm việc</h2>
+        <h2 className="text-lead font-medium text-strong">Không gian làm việc</h2>
         <div className="grid gap-4 @2xl:grid-cols-2">
           <Field label="Tên" required error={error}>
             <Input value={name} onChange={(e) => setName(e.target.value)} />
@@ -13964,8 +13932,8 @@ export default function SettingsPage() {
       </ItemGroup>
       <Card className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-title font-medium text-contrast">Xoá không gian làm việc</h2>
-          <p className="text-label text-muted">Xoá mọi máy in, đơn và lịch sử. Không thể khôi phục.</p>
+          <h2 className="text-lead font-medium text-strong">Xoá không gian làm việc</h2>
+          <p className="text-ui text-muted">Xoá mọi máy in, đơn và lịch sử. Không thể khôi phục.</p>
         </div>
         <Button
           variant="danger"
@@ -14021,8 +13989,8 @@ import { Menu, SemiLocaleProvider, en, useSemiLocale } from "@semi/ui";
 function Probe() {
   const t = useSemiLocale();
   return (
-    <span className="text-label text-muted">
-      close = <span className="text-contrast">{t.close}</span> · search = <span className="text-contrast">{t.search}</span>
+    <span className="text-ui text-muted">
+      close = <span className="text-strong">{t.close}</span> · search = <span className="text-strong">{t.search}</span>
     </span>
   );
 }
@@ -14093,7 +14061,7 @@ export default function ThemeSwitchers() {
       <ThemeSwitcher />
       <ThemeSwitcher variant="menu" />
       <ThemeToggle />
-      <span className="text-label text-muted tabular-nums">
+      <span className="text-ui text-muted tabular-nums">
         theme = {theme} · resolved = {resolvedTheme}
       </span>
     </div>
@@ -14115,7 +14083,7 @@ export default function ThemeScope() {
         <div key={t} data-theme={t} className="rounded-card border border-line bg-canvas p-3">
           <Card className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-ui font-semibold text-contrast">data-theme="{t}"</span>
+              <span className="text-ui font-semibold text-strong">data-theme="{t}"</span>
               <Badge tone="emerald" dot>
                 Online
               </Badge>

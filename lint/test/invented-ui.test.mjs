@@ -18,7 +18,7 @@ function rules(code, { css = false } = {}) {
 }
 
 const CAUGHT = {
-  "raw button": ['<button className="px-4 py-2 rounded-control bg-accent text-on-accent">Lưu</button>', "raw-control"],
+  "raw button": ['<button className="px-4 py-2 rounded-control bg-primary text-on-primary">Lưu</button>', "raw-control"],
   "raw input": ['<input className="w-full border border-line rounded-control px-3 h-9" />', "raw-control"],
   "raw textarea": ['<textarea className="w-full" />', "raw-control"],
   "raw table": ["<table><tbody><tr><td>a</td></tr></tbody></table>", "raw-control"],
@@ -41,7 +41,7 @@ const CAUGHT = {
   "div onClick mid-line": ['<><div onClick={() => go()} className="cursor-pointer">x</div></>', "click-target"],
   "chromatic focus ring": ['<div className="ring-2 ring-blue-500">x</div>', "accent-state-token"],
   "leading override": ['<p className="text-ui leading-relaxed">x</p>', "leading-override"],
-  "uppercase label": ['<span className="uppercase text-caption">nhãn</span>', "text-case"],
+  "uppercase label": ['<span className="uppercase text-ui">nhãn</span>', "text-case"],
   "physical white": ['<span className="text-white">x</span>', "no-literal-palette"],
   "hand-made overlay": ['<div className="fixed inset-0 bg-overlay" />', "custom-overlay"],
   "emoji icon": ["<span>🗑️</span>", "emoji-icon"],
@@ -82,7 +82,7 @@ const CLEAN = {
   "layout widths and grids": '<div className="w-[312px] grid-cols-[180px_1fr] max-h-[75dvh] top-[12vh]">x</div>',
   "style tokens": '<div className="shadow-card rounded-card bg-panel border border-line p-card">x</div>',
   "popover list p-1": '<div role="listbox" className="rounded-card border border-line shadow-overlay p-1">x</div>',
-  "leading-tight title": '<h2 className="text-heading leading-tight">x</h2>',
+  "leading-tight title": '<h2 className="text-section leading-tight">x</h2>',
   "acronyms in caps": "<span>JSON · HTTPS</span>",
   "spinning refresh icon": '<Icon name="refresh" className="w-4 h-4 animate-spin" />',
   "data width from a value": "<div style={{ width: `${pct}%` }} />",

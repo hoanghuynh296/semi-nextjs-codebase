@@ -5,7 +5,7 @@ import { deltaE } from "./color.mjs";
 import { generateBrand } from "./generate.mjs";
 import { SAMPLES } from "./samples.mjs";
 
-/** One generated brand, summed up: failing pairs (soft ones apart), button and text shades per theme, the scale. */
+/** One generated brand, summed up: failing pairs (soft ones apart), the fills. */
 export function summarize(result) {
   if ("error" in result) return { error: result.error };
   const { tokens, report } = result;
@@ -14,17 +14,13 @@ export function summarize(result) {
     soft: report.filter((r) => !r.ok && r.soft).length,
     pairs: report.length,
     primary: tokens.primary,
-    brandStep: tokens.brandStep,
-    themes: tokens.themes,
-    fidelity: tokens.fidelity,
-    neutrals: tokens.neutrals,
-    status: tokens.status ?? {},
+    secondary: tokens.secondary,
   };
 }
 
 const run = (brand, sources, params) => {
   try {
-    return summarize(generateBrand(brand, { tokens: sources.tokens, styles: sources.styles, params }));
+    return summarize(generateBrand(brand, { tokens: sources.tokens, params }));
   } catch (e) {
     return { error: e.message };
   }
@@ -32,15 +28,16 @@ const run = (brand, sources, params) => {
 
 /**
  * Each sample with `before` (default: the current params) and `after` params:
- * [{ id, name, why, before, after, moved }] where moved = the largest OKLab ΔE of a shade between the two.
- * @param {{ tokens: any, styles: any }} sources
+ * [{ id, name, why, before, after, moved }] where moved = the largest OKLab ΔE of a derived colour between the two.
+ * @param {{ tokens: any }} sources
  * @param {{ before?: any, after?: any, samples?: typeof SAMPLES }} [options]
  */
-export function compareSamples({ tokens, styles }, { before, after, samples = SAMPLES } = {}) {
+export function compareSamples({ tokens }, { before, after, samples = SAMPLES } = {}) {
   return samples.map((s) => {
-    const b = run(s.brand, { tokens, styles }, before);
-    const a = run(s.brand, { tokens, styles }, after);
-    const moved = b.primary && a.primary ? Math.max(...Object.keys(b.primary).map((k) => deltaE(b.primary[k], a.primary[k]))) : 0;
+    const b = run(s.brand, { tokens }, before);
+    const a = run(s.brand, { tokens }, after);
+    const parts = (x) => [x.primary, x.secondary].filter(Boolean).flatMap((f) => [f.hover, f.on]);
+    const moved = b.primary && a.primary ? Math.max(0, ...parts(b).map((c, i) => deltaE(c, parts(a)[i]))) : 0;
     return { id: s.id, name: s.name, why: s.why, primary: s.brand.primary, before: b, after: a, moved: +moved.toFixed(3) };
   });
 }
@@ -48,11 +45,11 @@ export function compareSamples({ tokens, styles }, { before, after, samples = SA
 /** Rows of the comparison as text (the CLI and lab-apply print it). */
 export function formatComparison(rows) {
   const pad = (s, n) => String(s).padEnd(n);
-  const fill = (x) => (x.error ? "lỗi" : `${x.fidelity.dark.fill}/${x.fidelity.light.fill} ΔE ${x.fidelity.dark.deltaE.toFixed(2)}/${x.fidelity.light.deltaE.toFixed(2)}`);
-  const lines = [`${pad("Brand", 16)}${pad("Màu", 9)}${pad("Nút tối/sáng trước", 26)}${pad("Nút tối/sáng sau", 26)}${pad("Lệch thang", 11)}Chưa đạt (trước → sau)`];
+  const fill = (x) => (x.error ? "lỗi" : `${x.primary.on} · hover ${x.primary.hover}`);
+  const lines = [`${pad("Brand", 16)}${pad("Màu", 9)}${pad("Chữ · hover trước", 30)}${pad("Chữ · hover sau", 30)}${pad("Lệch", 11)}Chưa đạt (trước → sau)`];
   for (const r of rows)
     lines.push(
-      `${pad(r.name, 16)}${pad(r.primary, 9)}${pad(fill(r.before), 26)}${pad(fill(r.after), 26)}${pad(`ΔE ${r.moved.toFixed(2)}`, 11)}${r.before.error ? "lỗi" : r.before.fails.length} → ${r.after.error ? "lỗi" : r.after.fails.length}`,
+      `${pad(r.name, 16)}${pad(r.primary, 9)}${pad(fill(r.before), 30)}${pad(fill(r.after), 30)}${pad(`ΔE ${r.moved.toFixed(2)}`, 11)}${r.before.error ? "lỗi" : r.before.fails.length} → ${r.after.error ? "lỗi" : r.after.fails.length}`,
     );
   for (const r of rows) {
     const newFails = r.after.error ? [r.after.error] : r.after.fails.filter((f) => !(r.before.fails ?? []).some((b) => b.split(":")[0] === f.split(":")[0]));

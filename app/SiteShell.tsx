@@ -8,7 +8,6 @@ import { ThemeSwitcher } from "../src/ThemeProvider";
 import { DocsShell } from "../site/DocsShell";
 import pkg from "../package.json";
 import { Badge } from "../src/Badge";
-import { StyleSwitcher } from "./StyleSwitcher";
 import { BrandPreviewHost } from "./BrandPreview";
 import { LabHost } from "./LabPreview";
 
@@ -51,8 +50,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
         ) : (
           <div className="flex flex-col gap-2">
             <ThemeSwitcher fullWidth />
-            <StyleSwitcher />
-            <div className="flex items-center justify-between text-caption text-muted px-1">
+            <div className="flex items-center justify-between text-ui text-muted px-1">
               <span className="tabular-nums" title={UNRELEASED ? "Build từ main: có thay đổi chưa phát hành" : undefined}>
                 @semi/ui v{pkg.version}
                 {UNRELEASED && " · main"}

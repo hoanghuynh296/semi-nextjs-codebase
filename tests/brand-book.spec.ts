@@ -1,22 +1,20 @@
 // Browser checks of the brand book a kit shows (/semi-brand preview, its GitHub Pages site), built from the sample kit
-// tests/fixtures/brand.json by npm run build:brand-book: every page reaches AA in both themes and every allowed
-// style, axe finds no serious issue, and nothing spills out of its frame from a 320px phone to a desktop.
+// tests/fixtures/brand.json by npm run build:brand-book: every page reaches AA in both themes (1.0: one style), axe
+// finds no serious issue, and nothing spills out of its frame from a 320px phone to a desktop.
 import { expect, test, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import kit from "./fixtures/brand.json" with { type: "json" };
 import { a11yHits } from "./contrast";
 import { densityAudit } from "../lint/density.mjs";
+import { BOOK_PORT } from "../playwright.config";
 
-const BOOK = "http://127.0.0.1:4320";
+const BOOK = `http://127.0.0.1:${BOOK_PORT}`;
 const PAGES = ["/", "/apps/", "/kit/", "/components/"];
 const THEMES = ["dark", "light"] as const;
 const WIDTHS = [320, 375, 768, 1280];
 
-async function open(page: Page, path: string, theme: "dark" | "light", style = kit.styles.default) {
-  await page.addInitScript(([t, s]) => {
-    localStorage.setItem("semi-theme", t);
-    localStorage.setItem("brand-preview-style", s);
-  }, [theme, style] as const);
+async function open(page: Page, path: string, theme: "dark" | "light") {
+  await page.addInitScript((t) => localStorage.setItem("semi-theme", t), theme);
   await page.goto(BOOK + path);
   await page.addStyleTag({ content: "*,*::before,*::after{transition:none!important;animation:none!important}" });
 }
@@ -48,11 +46,10 @@ function spills(page: Page) {
 
 for (const path of PAGES) {
   for (const theme of THEMES) {
-    for (const style of kit.styles.allowed)
-      test(`brand book · a11y audit · ${style} · ${theme} · ${path}`, async ({ page }) => {
-        await open(page, path, theme, style);
-        expect(await a11yHits(page)).toEqual([]);
-      });
+    test(`brand book · a11y audit · ${theme} · ${path}`, async ({ page }) => {
+      await open(page, path, theme);
+      expect(await a11yHits(page)).toEqual([]);
+    });
     test(`brand book · axe · ${theme} · ${path}`, async ({ page }) => {
       await open(page, path, theme);
       const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
@@ -83,4 +80,12 @@ test("brand book · one dashboard: Thương hiệu, Ứng dụng and UI kit shar
   for (const label of ["Thương hiệu", "Ứng dụng", "UI kit"]) await expect(menu.getByRole("link", { name: label, exact: true })).toBeVisible();
   await menu.getByRole("link", { name: "Ứng dụng", exact: true }).click();
   await expect(page).toHaveURL(/\/apps\/$/);
+});
+
+test("brand book · no style switcher and no data-style (1.0: one style); the UI kit shows the brand fills", async ({ page }) => {
+  await open(page, "/kit/", "light");
+  await expect(page.locator("html")).not.toHaveAttribute("data-style", /.+/);
+  await expect(page.getByText("Màu chính (bg-primary + text-on-primary)")).toBeVisible();
+  const fill = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--semi-primary").trim().toLowerCase());
+  expect(fill).toBe(kit.primary.toLowerCase());
 });

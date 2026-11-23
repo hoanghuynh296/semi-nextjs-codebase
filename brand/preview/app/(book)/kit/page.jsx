@@ -1,7 +1,6 @@
 "use client";
 
-// UI kit (for developers): the brand's scales, the button and text shades per theme with their distance from the brand
-// colour, the type scale, the contrast report and the files to download. Every component of Semi in these colours is
+// UI kit (for developers): the brand fills (main buttons) with the text on them and their hover, the type scale, the contrast report and the files to download. Every component of Semi in these colours is
 // one click away (/components/). The brand book pages (/, /apps/) share the same frame. Copied into a brand kit's .preview/ by semi-brand.
 import Link from "next/link";
 import { Alert, Badge, Button, Icon, PageTitle, Table, TBody, TD, TH, THead, TR } from "@semi/ui";
@@ -10,108 +9,92 @@ import list from "@semi/ui/examples/list.json";
 import brand from "../../brand.json";
 import { BASE, guide, Section } from "../../parts";
 
-function Swatches({ label, scale }) {
+/** One brand fill: the colour, its hover and the text on it, with the contrast of each pair. */
+function Fill({ label, name, f }) {
+  const ratio = (check) => brand.report.find((x) => x.check === check)?.ratio.toFixed(2);
   return (
-    <div className="space-y-1.5">
-      <div className="text-label font-medium text-muted">{label}</div>
-      <div className="grid grid-cols-5 @2xl:grid-cols-10 gap-1.5">
-        {Object.entries(scale).map(([shade, hex]) => (
-          <div key={shade} className="space-y-1 min-w-0">
-            <div className="h-10 rounded-control border border-line" style={{ background: hex }} />
-            <div className="text-caption text-muted tabular-nums truncate">
-              {shade} · {hex}
-            </div>
-          </div>
-        ))}
-      </div>
+    <div className="space-y-1.5 text-ui text-muted tabular-nums">
+      <div className="font-medium">{label}</div>
+      {[
+        ["Nền", f.fill, `chữ trên nút ${name}`],
+        ["Hover", f.hover, `chữ trên nút ${name} khi hover`],
+      ].map(([k, hex, check]) => (
+        <div key={k} className="flex items-center gap-2">
+          <span className="h-3.5 w-3.5 rounded-control border border-line shrink-0" style={{ background: hex }} />
+          <span>
+            {k} {hex} · chữ {f.on}
+            {ratio(check) ? ` · ${ratio(check)}:1` : ""}
+          </span>
+        </div>
+      ))}
     </div>
   );
 }
 
 export default function UiKit() {
-  const font = (role) => brand.fonts.find((f) => f.roles.includes(role))?.family;
+  const font = (role) => (brand.fonts.find((f) => f.roles.includes(role)) ?? brand.fonts.find((f) => f.roles.includes("sans")))?.family;
   const ok = brand.report.filter((r) => r.ok).length;
-  const fid = brand.fidelity ?? {};
   return (
     <>
       <div className="space-y-3">
         <PageTitle title="UI kit" />
-        <p className="text-ui-lg text-body max-w-3xl leading-relaxed">
-          {brand.name} trên Semi Design System, cho developer: thang màu, sắc của nút và chữ ở từng theme, cỡ chữ, bảng tương phản và file để tải.
-          Mọi sản phẩm cài <code className="text-accent-fg">{brand.package}</code> dùng đúng những giá trị này. Đổi sáng / tối{brand.styles.allowed.length > 1 ? " và style" : ""} ở chân menu.
+        <p className="text-lead text-body max-w-3xl leading-relaxed">
+          {brand.name} trên Semi Design System, cho developer: màu của nút chính, chữ trên nó, cỡ chữ, bảng tương phản và file để tải.
+          Mọi sản phẩm cài <code className="text-strong">{brand.package}</code> dùng đúng những giá trị này. Đổi sáng / tối ở chân menu.
         </p>
       </div>
 
       <Link href="/components/" className={`${CARD_HOVER} p-4 flex items-center gap-3 outline-none focus-visible:ring-2 focus-visible:ring-focus`}>
-        <Icon name="grid" className="w-5 h-5 text-accent-fg" />
+        <Icon name="grid" className="w-5 h-5 text-strong" />
         <div className="min-w-0">
-          <div className="text-title font-semibold text-contrast">Tất cả component</div>
-          <div className="text-label text-muted">
+          <div className="text-lead font-semibold text-strong">Tất cả component</div>
+          <div className="text-ui text-muted">
             {list.length} trang: mọi component của Semi trong màu {brand.name}, có ví dụ và API.
           </div>
         </div>
         <Icon name="chevron" className="w-4 h-4 text-muted ml-auto" />
       </Link>
 
-      <Section title="Thang màu và sắc theo theme" icon="palette">
-        <Swatches label="Màu chính (primary-*)" scale={brand.primary} />
-        {brand.secondary && <Swatches label="Màu phụ (secondary-*)" scale={brand.secondary} />}
+      <Section title="Màu của nút chính" icon="palette">
+        <div className="grid gap-3 @xl:grid-cols-2">
+          <Fill label="Màu chính (bg-primary + text-on-primary)" name="màu chính" f={brand.primary} />
+          {brand.secondary && <Fill label="Màu phụ (bg-secondary + text-on-secondary)" name="màu phụ" f={brand.secondary} />}
+        </div>
         <div className="grid gap-3 @xl:grid-cols-2">
           {["dark", "light"].map((t) => (
             <div key={t} data-theme={t} className="rounded-card border border-line bg-panel p-4 space-y-3">
-              <div className="text-label font-medium text-muted">{t === "dark" ? "Nền tối" : "Nền sáng"}</div>
+              <div className="text-ui font-medium text-muted">{t === "dark" ? "Nền tối" : "Nền sáng"}</div>
               <div className="flex flex-wrap items-center gap-2">
                 <Button variant="primary" icon="check">
                   Lưu
                 </Button>
                 <Button>Huỷ</Button>
-                <span className="text-ui text-accent-fg font-medium">Chữ màu chính</span>
-              </div>
-              <div className="space-y-1 text-caption text-muted tabular-nums">
-                {[
-                  ["Nút", "color-accent", fid[t]?.fill ? `primary-${fid[t].fill}` : "", `nút chính (${t === "dark" ? "tối" : "sáng"})`],
-                  ["Hover", "color-accent-hover", "", `nút chính khi hover (${t === "dark" ? "tối" : "sáng"})`],
-                ].map(([name, key, shade, check]) => (
-                  <div key={key} className="flex items-center gap-2">
-                    <span className="h-3.5 w-3.5 rounded-control border border-line shrink-0" style={{ background: brand.themes[t][key] }} />
-                    <span>
-                      {name} {brand.themes[t][key]}
-                      {shade ? ` (${shade})` : ""} · chữ trên nút {brand.themes[t]["color-on-accent"]}
-                      {(() => {
-                        const r = brand.report.find((x) => x.check === check);
-                        return r ? ` · ${r.ratio.toFixed(2)}:1` : "";
-                      })()}
-                    </span>
-                  </div>
-                ))}
-                <div>Chữ màu chính {brand.themes[t]["color-accent-fg"]}</div>
               </div>
             </div>
           ))}
         </div>
-        <p className="text-caption text-muted">
-          Hai theme có sắc khác nhau: theme tối dùng bậc sáng và rực hơn (400-500), theme sáng dùng bậc 600, hover đi thêm một bậc theo hướng của theme.
-          {brand.accent?.sameInBothThemes ? " Thương hiệu này chọn một màu chung cho cả hai theme (accent.sameInBothThemes)." : ""}
+        <p className="text-ui text-muted">
+          Cùng một màu ở cả hai theme. Màu thương hiệu chỉ cho nút chính, badge cần chú ý, nhãn “Mới” và gạch chân tab lớn; mặt nền, chữ, mục đang chọn và focus là màu trung tính của Semi.
         </p>
       </Section>
 
       <Section title="Cỡ chữ" icon="fileText">
-        <div className="space-y-1">
-          <div className="font-display text-display text-contrast">{brand.name}</div>
-          <div className="text-caption text-muted">
-            Tiêu đề, số KPI: {font("display")} · Giao diện, nội dung: {font("sans")}
+        <div className="space-y-1" data-density-skip="type scale specimen">
+          <div className="font-display text-tab-xl text-strong">{brand.name}</div>
+          <div className="text-ui text-muted">
+            Hero, tiêu đề trang đọc, tab lớn: {font("display")} · Giao diện, nội dung: {font("sans")}
           </div>
         </div>
-        <div className="space-y-1.5">
+        <div className="space-y-1.5" data-density-skip="type scale specimen">
           {[
-            ["text-heading", "Tiêu đề trang 22"],
-            ["text-title", "Tiêu đề thẻ 15"],
-            ["text-ui", "Nội dung giao diện 13: thông tin rõ ràng, ngắn gọn"],
-            ["text-label", "Nhãn 12"],
-            ["text-caption", "Chú thích 11"],
+            ["text-section", "Tiêu đề mục 20"],
+            ["text-lead", "Tiêu đề thẻ 15"],
+            ["text-copy", "Nội dung đọc 14: thông tin rõ ràng, ngắn gọn"],
+            ["text-ui", "Giao diện 12: nhãn, nút, dòng danh sách"],
+            ["text-tag", "Nhãn nhỏ 10"],
           ].map(([cls, text]) => (
             <div key={cls} className="flex items-baseline gap-3">
-              <code className="w-28 shrink-0 text-caption text-muted">{cls}</code>
+              <code className="w-28 shrink-0 text-ui text-muted">{cls}</code>
               <span className={`${cls} text-body`}>{text}</span>
             </div>
           ))}
@@ -157,8 +140,8 @@ export default function UiKit() {
       </Section>
       <Section title="Tải về và cài đặt" icon="download">
         <p className="text-ui text-body">
-          Trong một sản phẩm Next.js: <code className="text-accent-fg">/semi-new-app --brand {brand.package}</code> (hoặc <code className="text-accent-fg">/semi-sync</code> khi
-          kit có bản mới). Agent tra luật của thương hiệu bằng <code className="text-accent-fg">npx semi brand</code> hoặc tool <code className="text-accent-fg">semi_brand</code>.
+          Trong một sản phẩm Next.js: <code className="text-strong">/semi-new-app --brand {brand.package}</code> (hoặc <code className="text-strong">/semi-sync</code> khi
+          kit có bản mới). Agent tra luật của thương hiệu bằng <code className="text-strong">npx semi brand</code> hoặc tool <code className="text-strong">semi_brand</code>.
         </p>
         <div className="flex flex-wrap gap-2">
           {[
@@ -167,7 +150,7 @@ export default function UiKit() {
             ...["fullDist", "fullDarkDist", "markDist"].filter((k) => guide?.logo?.[k]).map((k) => [guide.logo[k].split("/").pop(), `${BASE}/logo/${guide.logo[k].split("/").pop()}`]),
           ].map(([label, href]) => (
             <a key={href} href={href} download className={`${CARD_HOVER} px-3 h-9 inline-flex items-center gap-2 text-ui font-medium text-body outline-none focus-visible:ring-2 focus-visible:ring-focus`}>
-              <Icon name="download" className="w-4 h-4 text-accent-fg" />
+              <Icon name="download" className="w-4 h-4 text-strong" />
               {label}
             </a>
           ))}

@@ -6,7 +6,6 @@ import { PageTitle } from "../../src/PageTitle";
 import { Button } from "../../src/Button";
 import { Field, Input } from "../../src/Field";
 import { Checkbox } from "../../src/Choice";
-import { Pills } from "../../src/Pills";
 import { CustomSelect } from "../../src/CustomSelect";
 import { Alert } from "../../src/Feedback";
 import { Table, THead, TBody, TR, TH, TD } from "../../src/Table";
@@ -14,8 +13,8 @@ import { Badge } from "../../src/Badge";
 import { toast } from "../../src/Toast";
 import { KpiCard } from "../../src/KpiCard";
 import { CARD } from "../../styles/surfaces";
-import styleList from "../../tokens/styles.json";
 import sample from "./sample.json";
+import type { BrandColor } from "../BrandPreview";
 import { FONTS } from "../../brand/generate.mjs";
 import { buildBrand, getPreviewBrand, setPreviewBrand, type Brand } from "../BrandPreview";
 
@@ -23,6 +22,9 @@ import { buildBrand, getPreviewBrand, setPreviewBrand, type Brand } from "../Bra
 const SAMPLE = sample.brand as Brand;
 const FONT_OPTIONS = Object.keys(FONTS).map((f) => ({ value: f, label: f }));
 const HEX = /^#[0-9a-fA-F]{6}$/;
+/** The colour of a brand.json colour field ("#hex" or { color, on }). */
+const hexOf = (v: BrandColor | null | undefined) => (typeof v === "string" ? v : (v?.color ?? ""));
+const NO_DISPLAY = "";
 
 function ColorField({ label, value, onChange, hint }: { label: string; value: string; onChange: (v: string) => void; hint?: string }) {
   return (
@@ -31,7 +33,7 @@ function ColorField({ label, value, onChange, hint }: { label: string; value: st
         <input
           type="color"
           aria-label={`${label}: bảng màu`}
-          value={HEX.test(value) ? value : SAMPLE.primary}
+          value={HEX.test(value) ? value : hexOf(SAMPLE.primary)}
           onChange={(e) => onChange(e.target.value)}
           className="h-field w-12 shrink-0 cursor-pointer rounded-control border border-control-line bg-field p-1"
         />
@@ -58,11 +60,6 @@ export default function BrandPage() {
     setBrand(b);
     if (on && !("error" in buildBrand(b))) setPreviewBrand(b);
   };
-  const toggleStyle = (id: string, checked: boolean) => {
-    const allowed = checked ? [...brand.styles.allowed, id] : brand.styles.allowed.filter((s) => s !== id);
-    if (!allowed.length) return;
-    update({ styles: { allowed, default: allowed.includes(brand.styles.default) ? brand.styles.default : allowed[0] } });
-  };
   const copy = (text: string, what: string) => {
     void navigator.clipboard?.writeText(text);
     toast({ title: `Đã copy ${what}`, tone: "success" });
@@ -76,8 +73,8 @@ export default function BrandPage() {
       <div className="space-y-3 pb-2 border-b border-line/60">
         <PageTitle title="Brand preview" />
         <p className="text-ui text-muted max-w-3xl">
-          Xem một thương hiệu trên toàn bộ Semi trước khi tạo brand kit. Chỉ chọn vài thứ (màu chính, màu phụ, màu trung tính, style, font); thang màu, màu
-          nút cho nền sáng / tối và màu trung tính của từng style do Semi tự sinh và kiểm tra đọc rõ. Bật xem trước để mọi trang của docs đổi theo. Ưng ý thì copy lệnh cho agent và dán vào
+          Xem một thương hiệu trên toàn bộ Semi trước khi tạo brand kit. Chỉ chọn vài thứ (màu chính, màu phụ, font); chữ trên nút và màu hover do Semi
+          tự chọn và kiểm tra đọc rõ. Màu thương hiệu chỉ cho nút chính và vài dấu hiệu chú ý; nền, chữ, mục đang chọn là xám trung tính của Semi. Bật xem trước để mọi trang của docs đổi theo. Ưng ý thì copy lệnh cho agent và dán vào
           /semi-brand trong repo brand trống. Hướng dẫn: docs/BRANDS.md.
         </p>
       </div>
@@ -90,51 +87,24 @@ export default function BrandPage() {
           <Field label="Package" hint="Tên sản phẩm cài, vd. @3dnoobs/brand">
             <Input value={brand.package} onChange={(e) => update({ package: e.target.value })} spellCheck={false} />
           </Field>
-          <ColorField label="Màu chính" value={brand.primary} onChange={(v) => update({ primary: v })} hint="Màu của thương hiệu (logo). Bắt buộc." />
+          <ColorField label="Màu chính" value={hexOf(brand.primary)} onChange={(v) => update({ primary: v })} hint="Màu của nút chính, badge cần chú ý, nhãn “Mới”. Bắt buộc." />
           <div className="space-y-2">
-            <Checkbox checked={Boolean(brand.secondary)} onChange={(c) => update({ secondary: c ? sample.secondary : null })} label="Có màu phụ" description="Tuỳ chọn: secondary-50 … 900, text-secondary-fg" />
-            {brand.secondary && <ColorField label="Màu phụ" value={brand.secondary} onChange={(v) => update({ secondary: v })} />}
+            <Checkbox checked={Boolean(brand.secondary)} onChange={(c) => update({ secondary: c ? sample.secondary : null })} label="Có màu phụ" description="Tuỳ chọn: nút chính thứ hai (bg-secondary)" />
+            {brand.secondary && <ColorField label="Màu phụ" value={hexOf(brand.secondary)} onChange={(v) => update({ secondary: v })} />}
           </div>
-          <Field label="Màu trung tính">
-            <Pills
-              value={!brand.neutral || brand.neutral === "tinted" ? "brand" : brand.neutral}
-              onChange={(v) => update({ neutral: v as Brand["neutral"] })}
-              options={[
-                { key: "brand", label: "Theo màu chính" },
-                { key: "pure", label: "Xám" },
-                { key: "preset", label: "Theo style" },
-              ]}
-            />
-          </Field>
-          <Field label="Nút chính" hint="Đảo màu: đen trên nền sáng, trắng trên nền tối; màu chính vẫn dùng cho link, mục chọn, focus">
-            <Pills
-              value={brand.primaryStyle ?? "brand"}
-              onChange={(v) => update({ primaryStyle: v as Brand["primaryStyle"] })}
-              options={[
-                { key: "brand", label: "Màu thương hiệu" },
-                { key: "inverted", label: "Đảo màu" },
-              ]}
-            />
-          </Field>
-          <Field label="Style được phép" hint="Mỗi sản phẩm chọn một trong số này">
-            <div className="flex flex-wrap gap-4 pt-1">
-              {styleList.styles.map((s) => (
-                <Checkbox key={s.id} checked={brand.styles.allowed.includes(s.id)} onChange={(c) => toggleStyle(s.id, c)} label={s.name} />
-              ))}
-            </div>
-          </Field>
-          <Field label="Style mặc định">
-            <Pills
-              value={brand.styles.default}
-              onChange={(v) => update({ styles: { ...brand.styles, default: v } })}
-              options={brand.styles.allowed.map((id) => ({ key: id, label: styleList.styles.find((s) => s.id === id)!.name }))}
-            />
-          </Field>
           <Field label="Font giao diện">
             <CustomSelect variant="field" value={brand.fonts.sans} onChange={(v) => update({ fonts: { ...brand.fonts, sans: v } })} options={FONT_OPTIONS} />
           </Field>
-          <Field label="Font tiêu đề">
-            <CustomSelect variant="field" value={brand.fonts.display} onChange={(v) => update({ fonts: { ...brand.fonts, display: v } })} options={FONT_OPTIONS} />
+          <Field label="Font hiển thị" hint="Tuỳ chọn: hero, tiêu đề trang đọc, tab lớn. Không chọn: dùng font giao diện">
+            <CustomSelect
+              variant="field"
+              value={brand.fonts.display ?? NO_DISPLAY}
+              onChange={(v) => {
+                const { display: _, ...rest } = brand.fonts;
+                update({ fonts: v === NO_DISPLAY ? rest : { ...rest, display: v } });
+              }}
+              options={[{ value: NO_DISPLAY, label: "Như font giao diện" }, ...FONT_OPTIONS]}
+            />
           </Field>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -158,7 +128,7 @@ export default function BrandPage() {
         </div>
       </ShowcaseSection>
 
-      <ShowcaseSection id="brand-result" title="Semi sinh ra" icon="sparkles" meta="thang màu · màu nút · kiểm tra đọc rõ (WCAG AA)">
+      <ShowcaseSection id="brand-result" title="Semi sinh ra" icon="sparkles" meta="chữ trên nút · hover · kiểm tra đọc rõ (WCAG AA)">
         {error ? (
           <Alert tone="danger" title="brand.json chưa hợp lệ">
             <span className="whitespace-pre-line">{error.replace(/^brand.json không hợp lệ:\n/, "")}</span>
@@ -166,21 +136,6 @@ export default function BrandPage() {
         ) : (
           !("error" in result) && (
             <>
-              {[["Màu chính", result.tokens.primary], ...(result.tokens.secondary ? [["Màu phụ", result.tokens.secondary] as const] : [])].map(([label, sc]) => (
-                <div key={label as string} className="space-y-1.5">
-                  <DemoLabel>{label as string}</DemoLabel>
-                  <div className="grid grid-cols-5 @xl:grid-cols-10 gap-1.5">
-                    {Object.entries(sc as Record<string, string>).map(([shade, hex]) => (
-                      <div key={shade} className="space-y-1">
-                        <div className="h-10 rounded-control border border-line" style={{ background: hex }} />
-                        <div className="text-caption text-muted tabular-nums">
-                          {shade} · {hex}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
               <div className="grid gap-3 @xl:grid-cols-3">
                 <KpiCard
                   label="Cặp màu đạt"
@@ -190,19 +145,16 @@ export default function BrandPage() {
                   tone={result.report.every((r) => r.ok || r.soft) ? "good" : "danger"}
                 />
                 <div className={`${CARD} p-card space-y-2 @xl:col-span-2`}>
-                  <DemoLabel>Nút chính theo theme (sáng sâu hơn, tối sáng hơn)</DemoLabel>
-                  <div className="flex flex-col gap-2 text-label">
-                    {(["dark", "light"] as const).map((t) => {
-                      const f = result.tokens.fidelity[t];
-                      const th = result.tokens.themes[t];
-                      const ratio = result.report.find((r) => r.check === `nút chính (${t === "dark" ? "tối" : "sáng"})`)?.ratio;
+                  <DemoLabel>Màu nút (cùng một màu ở cả hai theme)</DemoLabel>
+                  <div className="flex flex-col gap-2 text-ui">
+                    {[["Màu chính", "màu chính", result.tokens.primary] as const, ...(result.tokens.secondary ? [["Màu phụ", "màu phụ", result.tokens.secondary] as const] : [])].map(([label, name, f]) => {
+                      const ratio = result.report.find((r) => r.check === `chữ trên nút ${name}`)?.ratio;
                       return (
-                        <span key={t} className="inline-flex flex-wrap items-center gap-2">
-                          <Badge tone="gray">{t === "dark" ? "Tối" : "Sáng"}</Badge>
-                          <span className="inline-block h-3.5 w-3.5 rounded-control border border-line" style={{ background: th["color-accent"] }} />
+                        <span key={label} className="inline-flex flex-wrap items-center gap-2">
+                          <Badge tone="gray">{label}</Badge>
+                          <span className="inline-block h-3.5 w-3.5 rounded-control border border-line" style={{ background: f.fill }} />
                           <span className="tabular-nums text-body">
-                            {f.fill ? `primary-${f.fill} ` : ""}
-                            {th["color-accent"]} · hover {th["color-accent-hover"]} · chữ {th["color-on-accent"]}
+                            {f.fill} · hover {f.hover} · chữ {f.on}
                             {ratio ? ` · ${ratio.toFixed(2)}:1` : ""}
                           </span>
                         </span>

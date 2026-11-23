@@ -46,7 +46,7 @@ export default function TableOrders() {
         <TBody>
           {ORDERS.map((o) => (
             <TR key={o.id}>
-              <TD className="font-medium text-contrast">{o.id}</TD>
+              <TD className="font-medium text-strong">{o.id}</TD>
               <TD>
                 <span className="inline-flex items-center gap-2">
                   <Avatar name={o.customer} size="sm" />

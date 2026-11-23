@@ -70,7 +70,7 @@ export function Modal({
               {title}
             </h2>
             {description && (
-              <p id={descId} className="text-label text-muted mt-0.5">
+              <p id={descId} className="text-ui text-muted mt-0.5">
                 {description}
               </p>
             )}

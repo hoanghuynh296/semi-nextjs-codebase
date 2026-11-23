@@ -43,7 +43,7 @@ export interface GuideTemplateGroup {
 }
 
 const NAV = cn(
-  "w-8 h-8 rounded-full bg-tint text-contrast hover:bg-tint-hover flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-tint",
+  "w-8 h-8 rounded-full bg-tint text-strong hover:bg-tint-hover flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-tint",
   FOCUS_RING,
 );
 const TILE = cn("flex items-start gap-3 p-card rounded-card bg-card text-left hover:bg-tint-hover transition-colors min-w-0", FOCUS_RING);
@@ -99,9 +99,9 @@ export function GuidedEmptyState({
         className={cn("rounded-panel bg-card p-card sm:p-panel flex flex-col gap-group", EMPTY_PHONE_CAP, FOCUS_RING)}
       >
         <div className="flex items-start gap-3">
-          <H className="flex-1 min-w-0 text-title font-title font-semibold text-contrast">{title}</H>
+          <H className="flex-1 min-w-0 text-lead font-title font-semibold text-strong">{title}</H>
           {tutorial && (
-            <Link href={tutorial.href} className={cn("max-sm:hidden shrink-0 inline-flex items-center gap-1 text-label font-medium text-accent-fg hover:underline rounded-chip", FOCUS_RING)}>
+            <Link href={tutorial.href} className={cn("max-sm:hidden shrink-0 inline-flex items-center gap-1 text-ui font-medium text-strong hover:underline rounded-chip", FOCUS_RING)}>
               {tutorial.label}
               <Icon name="arrowRight" className="w-3.5 h-3.5" />
             </Link>
@@ -115,7 +115,7 @@ export function GuidedEmptyState({
             <div className="flex flex-col gap-3 min-w-0">
               <div aria-live="polite" className="flex flex-col gap-2">
                 <span className="text-overline text-muted tabular-nums">{t.stepOf(at + 1, steps.length)}</span>
-                <H2 className="text-ui-lg font-semibold text-contrast">{s.title}</H2>
+                <H2 className="text-lead font-semibold text-strong">{s.title}</H2>
                 <p className="text-ui text-body">{s.body}</p>
               </div>
               <div className="flex flex-wrap items-center gap-2 pt-1">
@@ -138,15 +138,15 @@ export function GuidedEmptyState({
             <ol className="grid sm:grid-cols-2 xl:grid-cols-4 gap-stack">
               {steps.map((st, n) => (
                 <li key={st.title} className="flex items-start gap-3 min-w-0">
-                  <span className="w-7 h-7 shrink-0 rounded-full bg-tint text-label font-semibold text-contrast tabular-nums flex items-center justify-center" aria-hidden>
+                  <span className="w-7 h-7 shrink-0 rounded-full bg-tint text-ui font-semibold text-strong tabular-nums flex items-center justify-center" aria-hidden>
                     {n + 1}
                   </span>
                   <div className="min-w-0 flex flex-col gap-0.5">
-                    <H2 className="text-ui font-semibold text-contrast">
+                    <H2 className="text-ui font-semibold text-strong">
                       <span className="sr-only">{t.stepOf(n + 1, steps.length)}: </span>
                       {st.title}
                     </H2>
-                    <p className="text-label text-muted">{st.body}</p>
+                    <p className="text-ui text-muted">{st.body}</p>
                   </div>
                 </li>
               ))}
@@ -158,15 +158,15 @@ export function GuidedEmptyState({
       {templates?.map((g) => (
         <section key={g.category} aria-label={g.category} className="flex flex-col gap-3">
           <div className="flex items-center gap-2 px-1">
-            <H2 className="flex-1 min-w-0 text-ui font-semibold text-contrast">{g.category}</H2>
+            <H2 className="flex-1 min-w-0 text-ui font-semibold text-strong">{g.category}</H2>
             {(g.seeAllHref || g.onSeeAll) &&
               (g.seeAllHref ? (
-                <Link href={g.seeAllHref} className={cn("text-label font-medium text-muted hover:text-contrast inline-flex items-center gap-1 rounded-chip", FOCUS_RING)}>
+                <Link href={g.seeAllHref} className={cn("text-ui font-medium text-muted hover:text-strong inline-flex items-center gap-1 rounded-chip", FOCUS_RING)}>
                   {g.seeAllLabel ?? t.seeAll}
                   <Icon name="chevron" className="w-3.5 h-3.5" />
                 </Link>
               ) : (
-                <button type="button" onClick={g.onSeeAll} className={cn("text-label font-medium text-muted hover:text-contrast inline-flex items-center gap-1 rounded-chip", FOCUS_RING)}>
+                <button type="button" onClick={g.onSeeAll} className={cn("text-ui font-medium text-muted hover:text-strong inline-flex items-center gap-1 rounded-chip", FOCUS_RING)}>
                   {g.seeAllLabel ?? t.seeAll}
                   <Icon name="chevron" className="w-3.5 h-3.5" />
                 </button>
@@ -179,8 +179,8 @@ export function GuidedEmptyState({
                 <>
                   <IconTile name={it.icon} tone={it.tone ?? "gray"} size="sm" />
                   <span className="min-w-0">
-                    <span className="block text-label font-semibold text-contrast">{it.title}</span>
-                    <span className="block text-caption text-muted">{it.hint}</span>
+                    <span className="block text-ui font-semibold text-strong">{it.title}</span>
+                    <span className="block text-ui text-muted">{it.hint}</span>
                   </span>
                 </>
               );

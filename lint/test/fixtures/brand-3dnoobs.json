@@ -3,19 +3,11 @@
   "package": "@3dnoobs/brand",
   "primary": "#008509",
   "secondary": null,
-  "neutral": "tinted",
-  "styles": {
-    "default": "flat",
-    "allowed": [
-      "flat",
-      "soft"
-    ]
-  },
   "fonts": {
     "sans": "Geist",
     "display": "Montserrat Alternates"
   },
-  "semi": ">=0.26.0 <1.0.0",
+  "semi": ">=1.0.0 <2.0.0",
   "brief": {
     "product": "Hệ sinh thái in 3D: cửa hàng máy in 3D và vật liệu, cộng đồng in 3D, và các phần mềm phục vụ ngành in 3D",
     "audience": "Mọi người quan tâm đến in 3D, từ người mới bắt đầu dùng điện thoại đến maker và kỹ sư làm việc trên máy tính",
@@ -65,9 +57,6 @@
       "error": "Chưa tải được file của bạn. Kiểm tra kết nối rồi thử lại nhé.",
       "empty": "Bạn chưa có mẫu nào. Tải lên mẫu đầu tiên hoặc xem thư viện của cộng đồng để lấy cảm hứng."
     }
-  },
-  "color": {
-    "accent": "balanced"
   },
   "imagery": "Ảnh chụp thật máy in, vật liệu và mô hình do cộng đồng in; ánh sáng tự nhiên, nền gọn.",
   "logo": {

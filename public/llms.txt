@@ -16,7 +16,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [AGENT_TOOLS.md](./docs/AGENT_TOOLS.md): Agent tools: the semi CLI (search, docs, example, add) and the MCP server, and the page blocks
 - [ICONS.md](./docs/ICONS.md): Semantic icon guide: which icon means what
 - [BRANDS.md](./docs/BRANDS.md): Brands: brand kits (brand.json → brand.css), the step-by-step flow from a new brand to its first product, which command when
-- [STYLES.md](./docs/STYLES.md): Styles (Flat, Soft, Sharp): what each changes, how an app picks one
+- [TOKENS.md](./docs/TOKENS.md): Tokens: surfaces, text tiers, lines and fills, brand fills, type scale, fonts, shape, motion (final 1.0 names)
 - [agent-rules.md](./docs/agent-rules.md): Rules block for a consumer app's AGENTS.md / CLAUDE.md
 - [tokens.css](./docs/tokens.css): Generated design tokens (CSS variables for both themes)
 - [llms-full.txt](./llms-full.txt): this file followed by all the docs above and every component doc
@@ -123,7 +123,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [QR code](./components/qr-code/) ([markdown](./docs/components/qr-code.md)): A scannable QR code as one SVG: VietQR / EMVCo payment payloads, receipts (print variant), links. Fixed black modules on white with a 4-module quiet zone in both themes, four error-correction levels, optional caption and copy button. Components: QRCode.
 - [Separator](./components/separator/) ([markdown](./docs/components/separator.md)): A thin divider between groups of content: horizontal, vertical, or with a short label in the middle (“hoặc”). Components: Separator.
 - [Table](./components/table/) ([markdown](./docs/components/table.md)): A dense table for rows compared column by column. Cells stay on one line (the table scrolls sideways on phones); TD wrap for a long-text column, numeric for figures. Components: Table, THead, TBody, TR, TH, TD.
-- [Typography](./components/typography/) ([markdown](./docs/components/typography.md)): The type scale (text-caption 11 … text-display 26, font-display for titles) and Prose, which styles long-form text — headings, paragraphs, lists, links, quotes, inline code — from that scale. Components: Prose.
+- [Typography](./components/typography/) ([markdown](./docs/components/typography.md)): The 1.0 type scale (text-tag 10 … text-hero 36, text-ui 12 the base UI size, font-display for hero and big titles) and Prose, which styles long-form text — headings, paragraphs, lists, links, quotes, inline code — from that scale. Components: Prose.
 
 ### Feedback
 

@@ -48,10 +48,10 @@ interface CustomSelectProps {
 
 const TRIGGER: Record<NonNullable<CustomSelectProps["variant"]>, string> = {
   toolbar:
-    "h-control px-3 bg-panel border border-line rounded-control text-label font-medium text-body hover:border-line-hover focus-visible:ring-2 focus-visible:ring-focus",
+    "h-control px-3 bg-panel border border-line rounded-control text-ui font-medium text-body hover:border-line-hover focus-visible:ring-2 focus-visible:ring-focus",
   field:
-    "w-full h-field px-3 bg-field border border-control-line rounded-control text-ui text-contrast hover:border-control-line-hover focus-visible:border-focus focus-visible:ring-1 focus-visible:ring-focus aria-invalid:border-danger-fg",
-  inline: "w-full h-7 px-0 bg-transparent text-label font-medium text-body hover:text-contrast rounded-chip focus-visible:ring-2 focus-visible:ring-focus",
+    "w-full h-field px-3 bg-field border border-control-line rounded-control text-ui text-strong hover:border-control-line-hover focus-visible:border-focus focus-visible:ring-1 focus-visible:ring-focus aria-invalid:border-danger-fg",
+  inline: "w-full h-7 px-0 bg-transparent text-ui font-medium text-body hover:text-strong rounded-chip focus-visible:ring-2 focus-visible:ring-focus",
   bare: "",
 };
 
@@ -223,13 +223,13 @@ export function CustomSelect({
             style={{ left: pos.left, top: pos.top, bottom: pos.bottom, minWidth: pos.minWidth, maxHeight: pos.maxHeight }}
             className="fixed z-popover max-w-[calc(100vw-16px)] overflow-y-auto overscroll-contain bg-panel border border-line rounded-card shadow-overlay p-1 flex flex-col gap-0.5"
           >
-            {options.length === 0 && <div className="px-3 py-2 text-label text-muted">{placeholder}</div>}
+            {options.length === 0 && <div className="px-3 py-2 text-ui text-muted">{placeholder}</div>}
             {options.map((opt, i) => {
               const isSelected = opt.value === value;
               const head = opt.group && opt.group !== options[i - 1]?.group;
               return (
                 <React.Fragment key={`${opt.group ?? ""}\u0000${opt.value}`}>
-                  {head && <div className="px-3 pt-2 pb-1 text-caption font-medium text-muted truncate">{opt.group}</div>}
+                  {head && <div className="px-3 pt-2 pb-1 text-ui font-medium text-muted truncate">{opt.group}</div>}
                   <button
                     type="button"
                     role="option"
@@ -241,19 +241,19 @@ export function CustomSelect({
                     title={opt.title}
                     onClick={() => pick(opt)}
                     onPointerEnter={() => setActive(i)}
-                    className={`w-full text-left px-3 py-2 rounded-control text-label transition cursor-pointer flex items-center justify-between gap-3 disabled:opacity-40 disabled:cursor-not-allowed ${
+                    className={`w-full text-left px-3 py-2 rounded-control text-ui transition cursor-pointer flex items-center justify-between gap-3 disabled:opacity-40 disabled:cursor-not-allowed ${
                       isSelected
-                        ? "bg-raised text-contrast font-medium"
+                        ? "bg-raised text-strong font-medium"
                         : i === active
-                        ? "bg-raised/70 text-contrast"
-                        : "text-body hover:bg-raised hover:text-contrast"
+                        ? "bg-raised/70 text-strong"
+                        : "text-body hover:bg-raised hover:text-strong"
                     }`}
                   >
                     <span className="flex items-center gap-1.5 min-w-0">
                       {iconsInList && opt.icon}
                       <span className="truncate">{opt.label}</span>
                     </span>
-                    {isSelected && <Icon name="check" className="w-3.5 h-3.5 text-accent-fg shrink-0" />}
+                    {isSelected && <Icon name="check" className="w-3.5 h-3.5 text-strong shrink-0" />}
                   </button>
                 </React.Fragment>
               );

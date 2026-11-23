@@ -15,10 +15,13 @@ import { knownFonts, fontOf, fontValue, typeKeys } from "../../scripts/lab.mjs";
 import { LAB_SOURCES } from "../LabPreview";
 import { Changed, CommitInput, isNumber, isPx, pxOf, rem, type useLabEditor } from "./shared";
 
-const { tokens, styles } = LAB_SOURCES;
+const { tokens } = LAB_SOURCES;
 const SIZE_KEYS = (typeKeys(tokens) as string[]).filter((k) => !k.endsWith("--line-height"));
-const FONTS = Object.values(knownFonts(styles) as Record<string, { family: string; variable: string }>);
+const FONTS = Object.values(knownFonts(tokens) as Record<string, { family: string; variable: string }>);
 const FONT_OPTIONS = FONTS.map((f) => ({ value: f.variable, label: f.family }));
+/** font-display without a brand display face: the UI sans. */
+const DISPLAY_DEFAULT = "var(--font-display-family, var(--semi-font-sans))";
+const DISPLAY_OPTIONS = [{ value: "", label: "Font giao diện (mặc định)" }, ...FONT_OPTIONS];
 const WEIGHTS = ["400", "500", "600", "700", "800"].map((w) => ({ value: w, label: w }));
 const FIGURE = [
   { value: "var(--semi-font-sans)", label: "Font giao diện" },
@@ -26,29 +29,29 @@ const FIGURE = [
 ];
 /** The real utility of each size (literal class names, so Tailwind generates them): the sample reads what apps read. */
 const SAMPLE_CLASS: Record<string, string> = {
-  "text-caption": "text-caption",
-  "text-label": "text-label",
-  "text-ui": "text-ui",
-  "text-ui-lg": "text-ui-lg",
-  "text-title": "text-title",
-  "text-title-lg": "text-title-lg",
+  "text-hero": "text-hero",
+  "text-title-xl": "text-title-xl",
+  "text-tab-xl": "text-tab-xl",
+  "text-section": "text-section",
   "text-figure": "text-figure",
-  "text-heading-sm": "text-heading-sm",
-  "text-heading": "text-heading",
-  "text-heading-lg": "text-heading-lg",
-  "text-display": "text-display",
+  "text-lead": "text-lead",
+  "text-copy": "text-copy",
+  "text-input": "text-input",
+  "text-ui": "text-ui",
+  "text-tag": "text-tag",
+  "text-badge": "text-badge",
+  "text-overline": "text-overline",
 };
 const DENSITIES = Object.keys(tokens.product.density);
 const SCALES = Object.keys(tokens.product.typeScale);
 
-/** Type scale, its overrides per density / type scale, and the fonts and title weight of every style. */
+/** Type scale, its overrides per density / type scale, and the fonts and title weight of the one look. */
 export function TypePanel({ lab }: { lab: ReturnType<typeof useLabEditor> }) {
   const { values, update, changed } = lab;
   const { resolvedTheme } = useTheme();
-  const [style, setStyle] = React.useState<string>(styles.default);
   const [density, setDensity] = React.useState("regular");
   const [scale, setScale] = React.useState("even");
-  const st = values.styles[style];
+  const st = values.shape;
 
   return (
     <>
@@ -58,9 +61,6 @@ export function TypePanel({ lab }: { lab: ReturnType<typeof useLabEditor> }) {
           (text-ui đọc var(--text-ui)), và khung xem trước bên dưới đặt density / type scale đang chọn.
         </p>
         <div className="grid gap-4 @xl:grid-cols-3">
-          <Field label="Xem với style">
-            <Pills value={style} onChange={setStyle} options={styles.styles.map((s) => ({ key: s.id, label: s.name }))} />
-          </Field>
           <Field label="Xem với density">
             <Pills value={density} onChange={setDensity} options={DENSITIES.map((d) => ({ key: d, label: d }))} />
           </Field>
@@ -68,7 +68,7 @@ export function TypePanel({ lab }: { lab: ReturnType<typeof useLabEditor> }) {
             <Pills value={scale} onChange={setScale} options={SCALES.map((d) => ({ key: d, label: d }))} />
           </Field>
         </div>
-        <div data-style={style} data-theme={resolvedTheme} data-density={density} data-type-scale={scale} className="space-y-4 bg-canvas text-body p-card rounded-card border border-line">
+        <div data-theme={resolvedTheme} data-density={density} data-type-scale={scale} className="space-y-4 bg-canvas text-body p-card rounded-card border border-line">
           <Table>
             <THead>
               <TR>
@@ -83,7 +83,7 @@ export function TypePanel({ lab }: { lab: ReturnType<typeof useLabEditor> }) {
                 <TR key={k}>
                   <TD>
                     <span className="inline-flex items-center gap-2">
-                      <code className="text-label text-contrast">{k}</code>
+                      <code className="text-ui text-strong">{k}</code>
                       <Changed on={changed(["type", k]) || changed(["type", `${k}--line-height`])} />
                     </span>
                   </TD>
@@ -100,7 +100,7 @@ export function TypePanel({ lab }: { lab: ReturnType<typeof useLabEditor> }) {
                     />
                   </TD>
                   <TD>
-                    <span className={`text-contrast ${SAMPLE_CLASS[k] ?? ""}`}>In 3D dễ như bấm nút</span>
+                    <span className={`text-strong ${SAMPLE_CLASS[k] ?? ""}`}>In 3D dễ như bấm nút</span>
                   </TD>
                 </TR>
               ))}
@@ -161,35 +161,32 @@ export function TypePanel({ lab }: { lab: ReturnType<typeof useLabEditor> }) {
         </div>
       </ShowcaseSection>
 
-      <ShowcaseSection id="lab-fonts" title="Font và độ đậm của style" icon="edit" meta={`tokens/styles/${style}.json`}>
+      <ShowcaseSection id="lab-fonts" title="Font và độ đậm" icon="edit" meta="tokens/tokens.json shape">
         <p className="text-ui text-muted max-w-3xl">
-          Font mặc định của một style (brand kit vẫn ghi đè bằng font của thương hiệu). Lab chỉ cho chọn những font docs đã tải; font khác cần thêm vào
-          “fonts” của style và app/layout.tsx. Độ đậm của chữ thường là luật (font-medium / font-semibold, semi-lint chặn bold), không phải token.
+          Font mặc định của Semi (brand kit vẫn ghi đè bằng font của thương hiệu; không có font tiêu đề thì font-display là font giao diện). Lab chỉ cho chọn những font docs đã tải; font khác cần thêm vào
+          “$fonts” của tokens.json shape và app/layout.tsx. Độ đậm của chữ thường là luật (font-medium / font-semibold, semi-lint chặn bold), không phải token.
         </p>
-        <Field label="Style">
-          <Pills value={style} onChange={setStyle} options={styles.styles.map((s) => ({ key: s.id, label: s.name }))} />
-        </Field>
         <div className="grid gap-4 @xl:grid-cols-2">
           {(["font-sans", "font-display"] as const).map((role) => (
-            <Field key={role} label={<span className="inline-flex items-center gap-2">{role === "font-sans" ? "Font giao diện (font-sans)" : "Font tiêu đề (font-display)"} <Changed on={changed(["styles", style, role])} /></span>}>
+            <Field key={role} label={<span className="inline-flex items-center gap-2">{role === "font-sans" ? "Font giao diện (font-sans)" : "Font tiêu đề (font-display)"} <Changed on={changed(["shape", role])} /></span>}>
               <CustomSelect
                 variant="field"
                 value={fontOf(st[role]) ?? ""}
-                onChange={(v) => update(["styles", style, role], fontValue(role, FONTS.find((f) => f.variable === v)!))}
-                options={FONT_OPTIONS}
+                onChange={(v) => update(["shape", role], role === "font-display" && !v ? DISPLAY_DEFAULT : fontValue(role, FONTS.find((f) => f.variable === v)!))}
+                options={role === "font-display" ? DISPLAY_OPTIONS : FONT_OPTIONS}
               />
             </Field>
           ))}
-          <Field label={<span className="inline-flex items-center gap-2">Độ đậm tiêu đề và số lớn (font-weight-title) <Changed on={changed(["styles", style, "font-weight-title"])} /></span>}>
-            <CustomSelect variant="field" value={st["font-weight-title"]} onChange={(v) => update(["styles", style, "font-weight-title"], v)} options={WEIGHTS} />
+          <Field label={<span className="inline-flex items-center gap-2">Độ đậm tiêu đề và số lớn (font-weight-title) <Changed on={changed(["shape", "font-weight-title"])} /></span>}>
+            <CustomSelect variant="field" value={st["font-weight-title"]} onChange={(v) => update(["shape", "font-weight-title"], v)} options={WEIGHTS} />
           </Field>
-          <Field label={<span className="inline-flex items-center gap-2">Font của số lớn (font-figure) <Changed on={changed(["styles", style, "font-figure"])} /></span>}>
-            <CustomSelect variant="field" value={st["font-figure"]} onChange={(v) => update(["styles", style, "font-figure"], v)} options={FIGURE} />
+          <Field label={<span className="inline-flex items-center gap-2">Font của số lớn (font-figure) <Changed on={changed(["shape", "font-figure"])} /></span>}>
+            <CustomSelect variant="field" value={st["font-figure"]} onChange={(v) => update(["shape", "font-figure"], v)} options={FIGURE} />
           </Field>
         </div>
-        <div data-style={style} data-theme={resolvedTheme} className="bg-canvas text-body p-card rounded-card border border-line space-y-2">
-          <p className="font-display font-title text-heading text-contrast">Tiêu đề trang · 1.234.567</p>
-          <p className="font-figure font-title text-figure text-contrast tabular-nums">98.765.432 ₫</p>
+        <div data-theme={resolvedTheme} className="bg-canvas text-body p-card rounded-card border border-line space-y-2">
+          <p className="font-display font-title text-section text-strong">Tiêu đề trang · 1.234.567</p>
+          <p className="font-figure font-title text-figure text-strong tabular-nums">98.765.432 ₫</p>
           <p className="font-sans text-ui">Chữ giao diện: nhãn, nút, bảng, đoạn văn ngắn. Aa Ăă Ââ Đđ Êê Ôô Ơơ Ưư 0123456789</p>
         </div>
       </ShowcaseSection>

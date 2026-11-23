@@ -21,7 +21,7 @@ export function Separator({
   if (orientation === "vertical") return <div {...a11y} className={cn("w-px self-stretch bg-divider shrink-0", className)} />;
   if (label)
     return (
-      <div {...a11y} className={cn("flex items-center gap-3 text-caption text-muted", className)}>
+      <div {...a11y} className={cn("flex items-center gap-3 text-ui text-muted", className)}>
         <span className="h-px flex-1 bg-divider" />
         <span className="shrink-0">{label}</span>
         <span className="h-px flex-1 bg-divider" />

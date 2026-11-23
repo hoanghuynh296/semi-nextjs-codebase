@@ -1,10 +1,8 @@
 "use client";
 
 // Pieces every page of the brand preview shares. Copied into a brand kit's .preview/ by semi-brand.
-import { useEffect, useState } from "react";
-import { Alert, Button, Icon, KpiCard, Pills } from "@semi/ui";
+import { Alert, Button, Icon, KpiCard } from "@semi/ui";
 import { CARD, SECTION_HEAD, SECTION_TITLE } from "@semi/ui/styles";
-import styleList from "@semi/ui/styles.json";
 import brand from "./brand.json";
 
 export const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
@@ -37,7 +35,7 @@ export function logoSrc(theme, kind = "full") {
 /** The logo, or the brand name in the display font when the brand has no logo yet. */
 export function Wordmark({ theme, className = "h-6" }) {
   const l = guide?.logo;
-  const name = <span className="font-display text-title font-semibold text-contrast">{brand.name}</span>;
+  const name = <span className="font-display text-lead font-semibold text-strong">{brand.name}</span>;
   // No version for dark backgrounds: the full logo may not read there, so use the mark (if any) next to the name.
   if (l && theme === "dark" && !l.fullDarkDist)
     return l.markDist ? (
@@ -59,37 +57,15 @@ export function Section({ title, icon, lead, card = true, children }) {
     <section className="space-y-3">
       {card ? (
         <div className={SECTION_HEAD}>
-          {icon && <Icon name={icon} className="w-4 h-4 text-accent-fg" />}
+          {icon && <Icon name={icon} className="w-4 h-4 text-strong" />}
           <h2 className={SECTION_TITLE}>{title}</h2>
         </div>
       ) : (
-        <h2 className="font-display text-heading-lg font-semibold text-contrast px-1">{title}</h2>
+        <h2 className="font-display text-tab-xl font-semibold text-strong px-1">{title}</h2>
       )}
       {lead && <p className="text-ui text-muted max-w-3xl px-1">{lead}</p>}
       {card ? <div className={`${CARD} p-4 space-y-4`}>{children}</div> : children}
     </section>
-  );
-}
-
-const styleName = (id) => styleList.styles.find((s) => s.id === id)?.name ?? id;
-
-/** Switch between the styles this brand allows (stored, applied before paint by the layout script). */
-export function StyleSwitch() {
-  const [style, setStyle] = useState(brand.styles.default);
-  useEffect(() => setStyle(document.documentElement.dataset.style || brand.styles.default), []);
-  if (brand.styles.allowed.length < 2) return null;
-  return (
-    <Pills
-      value={style}
-      onChange={(id) => {
-        document.documentElement.dataset.style = id;
-        try {
-          localStorage.setItem("brand-preview-style", id);
-        } catch {}
-        setStyle(id);
-      }}
-      options={brand.styles.allowed.map((id) => ({ key: id, label: styleName(id) }))}
-    />
   );
 }
 
@@ -102,7 +78,7 @@ export function BothThemes({ children, wide = false }) {
           <div data-theme={t} data-density-view className="bg-canvas text-body rounded-card border border-line overflow-hidden">
             {children(t)}
           </div>
-          <figcaption className="text-caption text-muted px-1">{THEME_NAME[t]}</figcaption>
+          <figcaption className="text-ui text-muted px-1">{THEME_NAME[t]}</figcaption>
         </figure>
       ))}
     </div>
@@ -121,13 +97,13 @@ export function MiniScreen({ theme }) {
         <KpiCard featured label={SAMPLE.metric.label} value={SAMPLE.metric.value} sub={SAMPLE.metric.sub} />
       </div>
       <div className="rounded-card border border-line bg-panel divide-y divide-divider">
-        <div className="flex items-center gap-2 px-3 py-2 bg-accent-subtle border-l-2 border-l-accent-fg">
-          <span className="text-ui text-contrast font-medium truncate">{SAMPLE.own ? SAMPLE.items[0] : "Mục đang chọn"}</span>
-          {brand.secondary && <span className="ml-auto inline-flex items-center px-2 h-5 rounded-chip text-caption font-medium bg-secondary-solid text-on-secondary">Mới</span>}
+        <div className="flex items-center gap-2 px-3 py-2 bg-item-selected border-l-2 border-l-strong">
+          <span className="text-ui text-strong font-medium truncate">{SAMPLE.own ? SAMPLE.items[0] : "Mục đang chọn"}</span>
+          {brand.secondary && <span className="ml-auto inline-flex items-center px-2 h-5 rounded-chip text-ui font-medium bg-secondary text-on-secondary">Mới</span>}
         </div>
         <div className="flex items-center gap-2 px-3 py-2">
           <span className="text-ui text-body truncate">{SAMPLE.own ? SAMPLE.items[1] : "Mục thường"}</span>
-          <a href="#" className="ml-auto text-label text-accent-fg font-medium">Xem</a>
+          <a href="#" className="ml-auto text-ui text-strong font-medium">Xem</a>
         </div>
       </div>
       <Alert tone="danger">{ex.error ?? "Chưa lưu được. Kiểm tra kết nối rồi thử lại."}</Alert>

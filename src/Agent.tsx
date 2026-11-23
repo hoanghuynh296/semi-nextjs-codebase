@@ -57,13 +57,13 @@ export function Reasoning({
           touched.current = true;
           setOpen(!open);
         }}
-        className={cn(DISCLOSURE_ROW, "w-auto py-1 text-label text-muted hover:text-contrast")}
+        className={cn(DISCLOSURE_ROW, "w-auto py-1 text-ui text-muted hover:text-strong")}
       >
-        <Icon name="sparkles" className={cn("w-3.5 h-3.5 shrink-0", busy && "text-accent-fg motion-safe:animate-pulse")} />
+        <Icon name="sparkles" className={cn("w-3.5 h-3.5 shrink-0", busy && "text-strong motion-safe:animate-pulse")} />
         <span>{busy ? t.reasoning : t.reasoned(duration)}</span>
         {chevron(open)}
       </button>
-      <div id={id} hidden={!open} className="mt-1 ml-1.5 border-l border-line pl-3 text-label text-muted leading-relaxed whitespace-pre-wrap break-words">
+      <div id={id} hidden={!open} className="mt-1 ml-1.5 border-l border-line pl-3 text-ui text-muted leading-relaxed whitespace-pre-wrap break-words">
         {children}
       </div>
     </div>
@@ -129,15 +129,15 @@ export function ToolCall({
     <div className={cn("w-full rounded-card border border-line bg-panel", className)}>
       <button type="button" aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)} className={cn(DISCLOSURE_ROW, "px-3 py-2 hover:bg-raised rounded-card")}>
         <Icon name={icon} className="w-4 h-4 text-muted shrink-0" />
-        <span className="flex-1 min-w-0 truncate text-ui font-medium text-contrast">{title ?? name}</span>
+        <span className="flex-1 min-w-0 truncate text-ui font-medium text-strong">{title ?? name}</span>
         <StatusBadge status={status} />
         {chevron(open)}
       </button>
       <div id={id} hidden={!open} className="border-t border-divider p-3 space-y-3">
-        {title && <div className="text-caption text-muted break-all">{name}</div>}
+        {title && <div className="text-ui text-muted break-all">{name}</div>}
         {input !== undefined && <CodeBlock title={t.toolInput} code={asText(input)} />}
         {status === "error" && error ? (
-          <div role="alert" className={cn("rounded-control border px-3 py-2 text-label text-body", STATUS_ICON.danger.surface)}>
+          <div role="alert" className={cn("rounded-control border px-3 py-2 text-ui text-body", STATUS_ICON.danger.surface)}>
             {error}
           </div>
         ) : (
@@ -174,7 +174,7 @@ export function Sources({ sources, defaultOpen = false, className }: { sources: 
   if (!sources.length) return null;
   return (
     <div className={className}>
-      <button type="button" aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)} className={cn(DISCLOSURE_ROW, "w-auto py-1 text-label text-muted hover:text-contrast")}>
+      <button type="button" aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)} className={cn(DISCLOSURE_ROW, "w-auto py-1 text-ui text-muted hover:text-strong")}>
         <Icon name="fileText" className="w-3.5 h-3.5 shrink-0" />
         <span>{t.sources(sources.length)}</span>
         {chevron(open)}
@@ -183,10 +183,10 @@ export function Sources({ sources, defaultOpen = false, className }: { sources: 
         {sources.map((s, i) => (
           <li key={s.href + i}>
             <ExternalLink href={s.href} className={cn("flex gap-2.5 rounded-control px-2 py-1.5 hover:bg-raised transition", FOCUS_RING)}>
-              <span className="w-5 h-5 shrink-0 rounded-chip bg-field border border-line text-caption text-muted tabular-nums flex items-center justify-center">{i + 1}</span>
+              <span className="w-5 h-5 shrink-0 rounded-chip bg-field border border-line text-ui text-muted tabular-nums flex items-center justify-center">{i + 1}</span>
               <span className="min-w-0">
-                <span className="block text-label font-medium text-contrast truncate">{s.title}</span>
-                <span className="block text-caption text-muted truncate">{s.description ?? host(s.href)}</span>
+                <span className="block text-ui font-medium text-strong truncate">{s.title}</span>
+                <span className="block text-ui text-muted truncate">{s.description ?? host(s.href)}</span>
               </span>
             </ExternalLink>
           </li>
@@ -204,7 +204,7 @@ export function Citation({ n, source }: { /** 1-based, matching the Sources list
       <ExternalLink
         href={source.href}
         aria-label={`${t.source(n)}: ${source.title}`}
-        className={cn("inline-flex items-center justify-center min-w-4 h-4 px-1 mx-0.5 align-[0.15em] rounded-chip bg-field border border-line text-caption leading-none text-muted hover:text-contrast tabular-nums no-underline", FOCUS_RING)}
+        className={cn("inline-flex items-center justify-center min-w-4 h-4 px-1 mx-0.5 align-[0.15em] rounded-chip bg-field border border-line text-ui leading-none text-muted hover:text-strong tabular-nums no-underline", FOCUS_RING)}
       >
         {n}
       </ExternalLink>
@@ -225,10 +225,10 @@ export interface TaskStep {
 
 function TaskMark({ status }: { status: TaskStatus }) {
   const box = "w-4 h-4 shrink-0 rounded-full flex items-center justify-center";
-  if (status === "running") return <Spinner className="w-4 h-4 text-accent-fg shrink-0" />;
+  if (status === "running") return <Spinner className="w-4 h-4 text-strong shrink-0" />;
   if (status === "done")
     return (
-      <span className={cn(box, "bg-accent text-on-accent")}>
+      <span className={cn(box, "bg-inverted text-on-inverted")}>
         <Icon name="check" className="w-2.5 h-2.5" />
       </span>
     );
@@ -256,11 +256,11 @@ export function TaskList({ title, steps, className }: { title?: React.ReactNode;
     <section aria-labelledby={title ? id : undefined} className={cn("w-full rounded-card border border-line bg-panel p-3", className)}>
       <div className="flex items-center gap-2 mb-2">
         {title && (
-          <h3 id={id} className="flex-1 min-w-0 truncate text-ui font-medium text-contrast">
+          <h3 id={id} className="flex-1 min-w-0 truncate text-ui font-medium text-strong">
             {title}
           </h3>
         )}
-        <span className="ml-auto text-caption text-muted tabular-nums">{t.taskProgress(done, steps.length)}</span>
+        <span className="ml-auto text-ui text-muted tabular-nums">{t.taskProgress(done, steps.length)}</span>
       </div>
       <ol className="space-y-1.5">
         {steps.map((s, i) => (
@@ -269,11 +269,11 @@ export function TaskList({ title, steps, className }: { title?: React.ReactNode;
               <TaskMark status={s.status} />
             </span>
             <span className="min-w-0 flex-1">
-              <span className={cn("block text-ui", s.status === "done" || s.status === "skipped" ? "text-muted" : "text-contrast", s.status === "skipped" && "line-through", s.status === "running" && "font-medium")}>
+              <span className={cn("block text-ui", s.status === "done" || s.status === "skipped" ? "text-muted" : "text-strong", s.status === "skipped" && "line-through", s.status === "running" && "font-medium")}>
                 {s.label}
                 <span className="sr-only"> · {t.taskStatus[s.status]}</span>
               </span>
-              {s.detail && <span className={cn("block text-label", s.status === "error" ? "text-body" : "text-muted")}>{s.detail}</span>}
+              {s.detail && <span className={cn("block text-ui", s.status === "error" ? "text-body" : "text-muted")}>{s.detail}</span>}
             </span>
           </li>
         ))}
@@ -322,10 +322,10 @@ export function ActionConfirmation({
       <div className="flex gap-2.5">
         <Icon name={icon} className={cn("w-4 h-4 mt-0.5 shrink-0", state === "pending" ? s.fg : "text-muted")} />
         <div className="min-w-0 flex-1 space-y-2">
-          <div id={id} className="text-ui font-medium text-contrast">
+          <div id={id} className="text-ui font-medium text-strong">
             {title}
           </div>
-          {children && <div className="text-label text-body">{children}</div>}
+          {children && <div className="text-ui text-body">{children}</div>}
           {state === "pending" ? (
             <div className="flex flex-wrap gap-2 pt-1">
               <Button size="sm" variant={danger ? "danger" : "primary"} onClick={onApprove}>
@@ -481,13 +481,13 @@ export function FileTree({
               activate(v);
             }}
             style={{ paddingLeft: `${(v.level - 1) * 16 + 8}px` }}
-            className={cn("flex items-center gap-1.5 h-7 pr-2 rounded-control cursor-pointer select-none", isSel ? "bg-raised text-contrast font-medium" : "text-body hover:bg-raised", FOCUS_RING)}
+            className={cn("flex items-center gap-1.5 h-7 pr-2 rounded-control cursor-pointer select-none", isSel ? "bg-raised text-strong font-medium" : "text-body hover:bg-raised", FOCUS_RING)}
           >
             {isFolder ? chevron(open) : <span className="w-3.5 shrink-0" />}
             <Icon name={isFolder ? (open ? "folderOpen" : "folder") : "file"} className="w-4 h-4 text-muted shrink-0" />
             <span className={cn("flex-1 min-w-0 truncate", v.node.change === "deleted" && "line-through text-muted")}>{v.node.name}</span>
             {mark && (
-              <span className="inline-flex items-center gap-1 text-caption font-semibold text-muted tabular-nums">
+              <span className="inline-flex items-center gap-1 text-ui font-semibold text-muted tabular-nums">
                 <span aria-hidden className={cn("w-1.5 h-1.5 rounded-full bg-current", mark[1])} />
                 <span aria-hidden>{mark[0]}</span>
                 <span className="sr-only">{t.fileChange[v.node.change!]}</span>
@@ -511,7 +511,7 @@ const compact = new Intl.NumberFormat("en", { notation: "compact", maximumFracti
 export function ContextMeter({ used, total, label, showValue = true, className }: { /** Tokens used. */ used: number; /** Context window size in tokens. */ total: number; label?: string; showValue?: boolean; className?: string }) {
   const t = useSemiLocale();
   const pct = total > 0 ? Math.min(100, Math.round((used / total) * 100)) : 0;
-  const tone = pct >= 95 ? "text-danger-fg" : pct >= 80 ? "text-warning-fg" : "text-accent-fg";
+  const tone = pct >= 95 ? "text-danger-fg" : pct >= 80 ? "text-warning-fg" : "text-strong";
   const r = 6;
   const c = 2 * Math.PI * r;
   const detail = t.contextDetail(compact.format(used), compact.format(total), pct);
@@ -525,7 +525,7 @@ export function ContextMeter({ used, total, label, showValue = true, className }
         aria-valuemax={total}
         aria-valuenow={Math.min(used, total)}
         aria-valuetext={detail}
-        className={cn("inline-flex items-center gap-1.5 rounded-control px-1 h-6 text-caption text-muted tabular-nums", FOCUS_RING, className)}
+        className={cn("inline-flex items-center gap-1.5 rounded-control px-1 h-6 text-ui text-muted tabular-nums", FOCUS_RING, className)}
       >
         <svg viewBox="0 0 16 16" className={cn("w-4 h-4 -rotate-90 shrink-0", tone)} aria-hidden>
           <circle cx="8" cy="8" r={r} fill="none" stroke="var(--color-line)" strokeWidth={2.5} />

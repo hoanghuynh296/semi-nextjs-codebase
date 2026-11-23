@@ -332,13 +332,13 @@ export function wireSemiLintConfig(webDir) {
 }
 
 /**
- * The Semi styles ({ default, styles: [{ id, name, description, tokens }] }): those of the @semi/ui installed in
- * appDir when given (null when that version predates styles), else the plugin's copy of tokens/styles.json.
+ * The fonts of Semi's one look (tokens.json shape "$fonts": [{ family, variable, nextFont, weight? }]): those of the
+ * @semi/ui installed in appDir when given (null when that version predates 1.0), else the plugin's copy of tokens.json.
  */
-export function semiStyles(appDir) {
-  const file = appDir ? join(appDir, "node_modules", "@semi", "ui", "tokens", "styles.json") : join(PLUGIN_ROOT, "skills", "semi-check", "scripts", "vendor", "styles.json");
-  if (appDir && !existsSync(file)) return existsSync(join(appDir, "node_modules", "@semi", "ui")) ? null : semiStyles();
-  return JSON.parse(readFileSync(file, "utf8"));
+export function semiFonts(appDir) {
+  const file = appDir ? join(appDir, "node_modules", "@semi", "ui", "tokens", "tokens.json") : join(PLUGIN_ROOT, "skills", "semi-check", "scripts", "vendor", "tokens.json");
+  if (appDir && !existsSync(file)) return existsSync(join(appDir, "node_modules", "@semi", "ui")) ? null : semiFonts();
+  return JSON.parse(readFileSync(file, "utf8")).shape?.$fonts ?? null;
 }
 
 /** The root layout of an App Router app (relative path), or null. */
@@ -382,8 +382,11 @@ export function findHtmlTag(src) {
 }
 const replaceHtmlTag = (src, html, tag) => src.slice(0, html.index) + tag + src.slice(html.index + html.tag.length);
 
-/** An app's style: what semi-lint.json declares ("style") and what <html data-style> in the root layout applies. */
-export function readStyleState(appDir) {
+/**
+ * The root layout and what is left of the styles removed in 1.0 (and the palettes of v0.13): "style" / "palette" in
+ * semi-lint.json, data-style / data-palette on <html>. Leftovers are harmless (Semi ignores them); clearLegacyLook removes them.
+ */
+export function readLookState(appDir) {
   let cfg = {};
   try {
     cfg = JSON.parse(readFileSync(join(appDir, "semi-lint.json"), "utf8"));
@@ -391,37 +394,33 @@ export function readStyleState(appDir) {
   const layout = findRootLayout(appDir);
   const html = layout ? findHtmlTag(readFileSync(join(appDir, layout), "utf8")) : null;
   const attr = (name) => (html ? (html.tag.match(new RegExp(`\\bdata-${name}=["']([\\w-]+)["']`))?.[1] ?? null) : null);
-  // palettes were removed in v0.14.0: a leftover "palette" or data-palette is cleaned up by /semi-check
-  return { declared: cfg.style ?? null, applied: attr("style"), legacyPalette: cfg.palette ?? attr("palette"), layout, hasHtml: Boolean(html) };
+  return { legacyStyle: cfg.style ?? attr("style"), legacyPalette: cfg.palette ?? attr("palette"), layout, hasHtml: Boolean(html) };
 }
 
-/** <html …> with data-style replaced by `attrs` (written right after <html). A data-palette left by v0.13 goes too. */
-const withStyleAttrs = (tag, attrs) => tag.replace(/\s+data-(?:style|palette)=["'][\w-]*["']/g, "").replace(/^<html\b/, `<html ${attrs}`);
-
-/**
- * Pick a style: "style" in semi-lint.json and data-style on <html> in the root layout (the one place an app sets it).
- * Returns { layout, ok, message }; ok is false for an unknown id or a layout without an <html> tag.
- */
-export function wireStyle(appDir, id) {
-  const list = semiStyles(appDir);
-  if (!list) return { ok: false, message: "@semi/ui đã cài chưa có style: chạy /semi-sync trước" };
-  const style = list.styles.find((s) => s.id === id);
-  if (!style) return { ok: false, message: `style "${id}" không có; chọn: ${list.styles.map((s) => s.id).join(", ")}` };
-  const brand = readBrand(appDir)?.kit;
-  if (brand && !brand.styles.allowed.includes(id))
-    return { ok: false, message: `brand ${brand.name} không cho phép style "${id}" (được phép: ${brand.styles.allowed.join(", ")}); thêm nó trong repo brand bằng /semi-brand` };
+/** Remove "style" / "palette" from semi-lint.json and data-style / data-palette from <html>. Returns what it changed. */
+export function clearLegacyLook(appDir) {
+  const changed = [];
   const cfgPath = join(appDir, "semi-lint.json");
-  const cfg = existsSync(cfgPath) ? JSON.parse(readFileSync(cfgPath, "utf8")) : {};
-  cfg.style = id;
-  delete cfg.palette; // removed in v0.14.0
-  writeFileSync(cfgPath, JSON.stringify(cfg, null, 2) + "\n");
+  if (existsSync(cfgPath)) {
+    const cfg = JSON.parse(readFileSync(cfgPath, "utf8"));
+    if ("style" in cfg || "palette" in cfg) {
+      delete cfg.style;
+      delete cfg.palette;
+      writeFileSync(cfgPath, JSON.stringify(cfg, null, 2) + "\n");
+      changed.push("semi-lint.json");
+    }
+  }
   const layout = findRootLayout(appDir);
   const src = layout ? readFileSync(join(appDir, layout), "utf8") : "";
   const html = findHtmlTag(src);
-  const attrs = `data-style="${id}"`;
-  if (!html) return { ok: false, layout, message: `không thấy thẻ <html> trong ${layout || "app/layout.tsx"}: thêm ${attrs} vào <html> bằng tay` };
-  writeFileSync(join(appDir, layout), replaceHtmlTag(src, html, withStyleAttrs(html.tag, attrs)));
-  return { ok: true, layout, message: `${layout} ← <html ${attrs}>, semi-lint.json ← "style": "${id}"` };
+  if (html) {
+    const tag = html.tag.replace(/\s+data-(?:style|palette)=(?:["'][\w-]*["']|\{[^}]*\})/g, "");
+    if (tag !== html.tag) {
+      writeFileSync(join(appDir, layout), replaceHtmlTag(src, html, tag));
+      changed.push(layout);
+    }
+  }
+  return changed;
 }
 
 export const DENSITIES = ["compact", "regular", "airy"];
@@ -451,9 +450,8 @@ export function wireProductLook(appDir, { density, typeScale } = {}) {
   return { ok: true, layout, message: `${layout} ← <html ${attrs || "(mật độ vừa, cỡ chữ đều)"}>, semi-lint.json ← density ${cfg.density ?? "regular"}, typeScale ${cfg.typeScale ?? "even"}` };
 }
 
-/** next/font code for a style's fonts: { importLine, decls, classNames } (classNames is a template-literal fragment). */
-export function nextFontCode(style) {
-  const fonts = style.fonts ?? [];
+/** next/font code for fonts: { importLine, decls, classNames } (classNames is a template-literal fragment). */
+export function nextFontCode(fonts = []) {
   const id = (f) => f.nextFont.replace(/_(\w)/g, (_, c) => c.toUpperCase()).replace(/^\w/, (c) => c.toLowerCase());
   return {
     importLine: `import { ${fonts.map((f) => f.nextFont).join(", ")} } from "next/font/google";`,
@@ -465,11 +463,11 @@ export function nextFontCode(style) {
 }
 
 /**
- * Fonts of a style that the root layout does not load (its CSS variable is never named). [] when the app sets its own
- * fonts (--font-sans-family / --font-display-family) or has no layout.
+ * Fonts the app needs (appFonts) that the root layout does not load (its CSS variable is never named). [] when the app
+ * sets its own fonts (--font-sans-family / --font-display-family) without a brand kit, or has no layout.
  */
-export function missingStyleFonts(appDir, style) {
-  const fonts = appFonts(appDir, style);
+export function missingFonts(appDir) {
+  const fonts = appFonts(appDir);
   const layout = findRootLayout(appDir);
   if (!layout) return [];
   const src = readFileSync(join(appDir, layout), "utf8");
@@ -478,14 +476,14 @@ export function missingStyleFonts(appDir, style) {
   return own && !readBrand(appDir) ? [] : fonts.filter((f) => !src.includes(f.variable));
 }
 
-/** Text telling a person how to load the fonts a style needs in the root layout. */
-export function styleFontHint(layout, style, fonts = style.fonts) {
-  const code = nextFontCode({ ...style, fonts });
+/** Text telling a person how to load fonts in the root layout. */
+export function fontHint(layout, fonts) {
+  const code = nextFontCode(fonts);
   return [
-    `sửa tay ${layout}: tải font của style ${style.name} (giữ nguyên phần còn lại):`,
+    `sửa tay ${layout}: tải font (giữ nguyên phần còn lại):`,
     `  ${code.importLine}`,
     ...code.decls.split("\n").map((l) => `  ${l}`),
-    `  <html className={\`… ${code.classNames}\`}>  (thêm biến font vào className của <html>; font cũ của style trước có thể bỏ)`,
+    `  <html className={\`… ${code.classNames}\`}>  (thêm biến font vào className của <html>)`,
   ].join("\n");
 }
 
@@ -504,10 +502,10 @@ export function readBrand(appDir) {
   return { pkg, dir, kit: existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) : null };
 }
 
-/** Fonts the app loads: the brand's when it has one, else the style's. */
-export function appFonts(appDir, style) {
+/** Fonts the app loads: the brand kit's when it has one, else those of Semi's one look. */
+export function appFonts(appDir) {
   const b = readBrand(appDir);
-  return b?.kit ? b.kit.fonts : style?.fonts ?? [];
+  return b?.kit ? b.kit.fonts : semiFonts(appDir) ?? semiFonts() ?? [];
 }
 
 /**
@@ -551,7 +549,7 @@ export function wireBrandAgents(rootDir, kitDir) {
 
 /**
  * Use an installed brand kit: "brand" in semi-lint.json, the kit's brand.css in the Semi CSS block, its rules in
- * AGENTS.md. The style must be one the brand allows (wireStyle checks it). Returns { ok, message }.
+ * AGENTS.md. Returns { ok, message }.
  */
 export function wireBrand(appDir, rootDir, pkg) {
   const dir = join(appDir, "node_modules", ...pkg.split("/"));

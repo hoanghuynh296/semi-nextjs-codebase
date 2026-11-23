@@ -36,7 +36,7 @@ export default function HomePage() {
     <>
       <div className="space-y-3">
         <PageTitle title="Semi Design System" />
-        <p className="text-ui-lg text-body max-w-3xl">
+        <p className="text-lead text-body max-w-3xl">
           Bộ kit gốc để làm phần mềm cho nhiều thương hiệu: component React (Next.js, Tailwind 4), token chạy cả sáng lẫn tối, ba style và brand kit cho từng
           thương hiệu. Mọi thứ viết cho agent dùng trước: mỗi component có ví dụ là file thật, bảng API sinh từ code và bản markdown để đọc không cần chạy trang.
         </p>
@@ -46,8 +46,8 @@ export default function HomePage() {
         {START.map((s) => (
           <Link key={s.href} href={s.href} className={`${CARD_HOVER} p-card space-y-2 outline-none focus-visible:ring-2 focus-visible:ring-focus`}>
             <Icon name={s.icon} className="w-5 h-5 text-muted" />
-            <div className="text-title font-semibold text-contrast">{s.title}</div>
-            <p className="text-label text-muted">{s.text}</p>
+            <div className="text-lead font-semibold text-strong">{s.title}</div>
+            <p className="text-ui text-muted">{s.text}</p>
           </Link>
         ))}
       </section>
@@ -65,15 +65,15 @@ export default function HomePage() {
         </div>
         <div className={`${CARD} p-card space-y-3`}>
           <p className="text-ui text-body max-w-3xl">
-            Agent đọc file, không cần mở trang: chọn component trong <code className="text-contrast">docs/components/README.md</code>, đọc trang của nó, copy một
-            ví dụ (import từ <code className="text-contrast">@semi/ui</code>), rồi chạy <code className="text-contrast">npx semi-lint</code>. Các file này cũng có
-            trong <code className="text-contrast">node_modules/@semi/ui</code> sau khi cài.
+            Agent đọc file, không cần mở trang: chọn component trong <code className="text-strong">docs/components/README.md</code>, đọc trang của nó, copy một
+            ví dụ (import từ <code className="text-strong">@semi/ui</code>), rồi chạy <code className="text-strong">npx semi-lint</code>. Các file này cũng có
+            trong <code className="text-strong">node_modules/@semi/ui</code> sau khi cài.
           </p>
           <div className="grid gap-2 @2xl:grid-cols-2">
             {AGENT_FILES.map((f) => (
               <a key={f.title} href={f.href} className={`rounded-control border border-line bg-field p-3 hover:border-line-hover transition ${FOCUS_RING}`}>
-                <div className="text-ui font-semibold text-accent-fg">{f.title}</div>
-                <div className="text-label text-muted">{f.text}</div>
+                <div className="text-ui font-semibold text-strong">{f.title}</div>
+                <div className="text-ui text-muted">{f.text}</div>
               </a>
             ))}
           </div>

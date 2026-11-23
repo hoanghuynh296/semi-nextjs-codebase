@@ -11,7 +11,7 @@ export default function AppHeaderTool() {
           Xong
         </button>
       </AppHeader>
-      <div className="h-32 bg-canvas flex items-center justify-center text-label text-muted">Canvas</div>
+      <div className="h-32 bg-canvas flex items-center justify-center text-ui text-muted">Canvas</div>
     </div>
   );
 }

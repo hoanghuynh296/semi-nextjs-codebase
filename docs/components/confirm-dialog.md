@@ -46,7 +46,7 @@ export default function ConfirmDanger() {
       <Button variant="danger" icon="trash" onClick={remove}>
         Xoá bản in
       </Button>
-      {result && <span className="text-label text-muted">{result}</span>}
+      {result && <span className="text-ui text-muted">{result}</span>}
     </div>
   );
 }

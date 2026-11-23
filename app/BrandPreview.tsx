@@ -4,7 +4,6 @@ import { Button } from "../src/Button";
 import React from "react";
 import Link from "next/link";
 import tokens from "../tokens/tokens.json";
-import styleList from "../tokens/styles.json";
 import { brandCss, generateBrand } from "../brand/generate.mjs";
 import { Icon } from "../src/Icon";
 import { labParams, onLabChange } from "./LabPreview";
@@ -13,33 +12,33 @@ import { labParams, onLabChange } from "./LabPreview";
 // prints (#brand=<base64url brand.json>) or from the Brand preview page, and stays in localStorage until turned off.
 export const BRAND_STORAGE_KEY = "semi-brand-preview";
 const BRAND_EVENT = "semi-brand-preview";
-/** Font variables the Storybook layout already loads with next/font. */
-const LOADED_FONTS = ["--font-geist", "--font-montserrat-alternates", "--font-jakarta", "--font-space-grotesk"];
+/** Font variables the Storybook layout already loads with next/font (Semi's UI face). */
+const LOADED_FONTS = ["--font-geist"];
+
+/** A brand colour: "#rrggbb" or { color, on? } (on: the text colour on it, else picked for 4.5:1). */
+export type BrandColor = string | { color: string; on?: string };
 
 export type Brand = {
   name: string;
   package: string;
-  primary: string;
-  secondary?: string | null;
-  neutral?: "brand" | "tinted" | "pure" | "preset";
-  primaryStyle?: "brand" | "inverted";
-  styles: { default: string; allowed: string[] };
-  fonts: { sans: string; display: string };
+  primary: BrandColor;
+  secondary?: BrandColor | null;
+  /** display is optional: without it titles use the UI sans. */
+  fonts: { sans: string; display?: string };
   semi?: string;
 };
 
+/** One brand fill as generated: the colour, its hover and the text on both. */
+export type BrandFill = { fill: string; hover: string; on: string };
+
 export type BrandResult = {
   tokens: {
-    primary: Record<string, string>;
-    secondary?: Record<string, string>;
-    brandStep: number;
-    themes: Record<string, Record<string, string>>;
-    /** Per theme: the shade of the button and of coloured text, and how far (OKLab ΔE) the button is from the brand colour. */
-    fidelity: Record<string, { fill: number; text: number; deltaE: number }>;
-    fonts: { family: string; variable: string }[];
+    primary: BrandFill;
+    secondary: BrandFill | null;
+    fonts: { family: string; variable: string; roles: string[] }[];
   };
   css: string;
-  /** min: 4.5 for text, 3 for focus rings and fills; soft: reported, never blocks the kit. */
+  /** min: 4.5 for text on a fill, 3 for a fill against the page; soft: reported, never blocks the kit. */
   report: { check: string; pair: string; ratio: number; min: number; ok: boolean; soft?: boolean }[];
   warnings: string[];
 };
@@ -47,7 +46,7 @@ export type BrandResult = {
 /** generateBrand with the Storybook's own tokens (and the Design Lab's generator params, when a draft is on); errors come back as { error }. */
 export function buildBrand(brand: Brand, params: Record<string, unknown> | undefined = labParams()): BrandResult | { error: string } {
   try {
-    return generateBrand(brand, { tokens, styles: styleList, params }) as unknown as BrandResult;
+    return generateBrand(brand, { tokens, params }) as unknown as BrandResult;
   } catch (e) {
     return { error: (e as Error).message };
   }
@@ -89,7 +88,7 @@ function apply(brand: Brand | null): string | null {
   if ("error" in r) return null;
   const style = document.createElement("style");
   style.id = "semi-brand-preview";
-  // The page is already built: plain :root variables instead of @theme, plus the fonts next/font has not loaded.
+  // The page is already built: the brand variables plus the fonts next/font has not loaded.
   style.textContent = brandCss(r.tokens, "", { runtime: true, loadedFonts: LOADED_FONTS });
   document.head.appendChild(style);
   const extra = r.tokens.fonts.filter((f) => !LOADED_FONTS.includes(f.variable));
@@ -118,12 +117,12 @@ export function BrandPreviewHost() {
   }, []);
   if (!name) return null;
   return (
-    <div className="flex items-center gap-2 pl-3 pr-1 h-control rounded-full bg-panel border border-line shadow-overlay text-label text-body">
-      <Icon name="palette" className="w-3.5 h-3.5 text-accent-fg" />
+    <div className="flex items-center gap-2 pl-3 pr-1 h-control rounded-full bg-panel border border-line shadow-overlay text-ui text-body">
+      <Icon name="palette" className="w-3.5 h-3.5 text-strong" />
       <span>
-        Brand <strong className="font-semibold text-contrast">{name}</strong>
+        Brand <strong className="font-semibold text-strong">{name}</strong>
       </span>
-      <Link href="/brand/" className="text-accent-fg hover:text-contrast font-medium">
+      <Link href="/brand/" className="text-strong hover:text-strong font-medium">
         Sửa
       </Link>
       <Button variant="ghost" size="sm" iconOnly icon="close" onClick={() => setPreviewBrand(null)} aria-label="Tắt xem trước brand" title="Tắt xem trước brand" />

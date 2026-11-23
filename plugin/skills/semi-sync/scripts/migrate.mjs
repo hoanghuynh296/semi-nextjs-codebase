@@ -27,11 +27,13 @@ export async function loadMigrations(dir) {
 /** Migrations of releases after `from`, up to and including `to`. */
 export const pending = (list, from, to) => list.filter((m) => cmpVersion(m.version, from) > 0 && cmpVersion(m.version, to) <= 0);
 
-/** Run the pending migrations on one app. Each gets { appDir, files, read, write }; returns what changed. */
+/** Run the pending migrations on one app. Each gets { appDir, files, read, write, flag }; returns what changed and what
+ * it flagged for a hand fix (flag(file, message): a change it cannot make exactly). */
 export async function runMigrations({ appDir, dir, from, to }) {
   const results = [];
   for (const m of pending(await loadMigrations(dir), from, to)) {
     const changed = new Set();
+    const flags = [];
     const files = scanTargets(appDir).files;
     await m.run({
       appDir,
@@ -42,8 +44,9 @@ export async function runMigrations({ appDir, dir, from, to }) {
         writeFileSync(p, text);
         changed.add(relative(appDir, p));
       },
+      flag: (p, message) => flags.push({ file: relative(appDir, p), message }),
     });
-    results.push({ id: m.id, version: m.version, description: m.description, changed: [...changed].sort() });
+    results.push({ id: m.id, version: m.version, description: m.description, changed: [...changed].sort(), flags });
   }
   return results;
 }

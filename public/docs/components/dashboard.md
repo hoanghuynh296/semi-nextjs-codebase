@@ -40,7 +40,7 @@ export default function DashboardPage() {
       <div className="grid gap-3 @4xl:grid-cols-[2fr_1fr]">
         <Card className="space-y-3">
           <div className="flex items-center justify-between gap-3">
-            <h2 className="text-title font-medium text-contrast">Doanh thu theo kênh</h2>
+            <h2 className="text-lead font-medium text-strong">Doanh thu theo kênh</h2>
             <Sparkline label="Tổng doanh thu 8 tuần" values={WEEKS.map((w) => w.online + w.store)} />
           </div>
           <BarChart
@@ -56,7 +56,7 @@ export default function DashboardPage() {
           />
         </Card>
         <Card className="space-y-3">
-          <h2 className="text-title font-medium text-contrast">Đơn theo trạng thái</h2>
+          <h2 className="text-lead font-medium text-strong">Đơn theo trạng thái</h2>
           <DonutChart
             label="Đơn theo trạng thái"
             centerLabel="Tổng đơn"

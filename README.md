@@ -4,7 +4,7 @@
 [![Latest release](https://img.shields.io/github/v/release/hoanghuynh296/semi-nextjs-codebase?label=%40semi%2Fui)](https://github.com/hoanghuynh296/semi-nextjs-codebase/releases)
 
 > **Định nghĩa thương hiệu một lần, mọi sản phẩm và mọi agent làm theo.** Semi dựng brand kit (logo, màu, font, giọng
-> văn, style) kèm brand book, rồi dựng sản phẩm Next.js + Tailwind 4 mang sẵn thương hiệu đó, với design system
+> văn) kèm brand book, rồi dựng sản phẩm Next.js + Tailwind 4 mang sẵn thương hiệu đó, với design system
 > `@semi/ui` làm động cơ bên dưới.
 > Docs: [hoanghuynh296.github.io/semi-nextjs-codebase](https://hoanghuynh296.github.io/semi-nextjs-codebase/) · cho
 > agent: [`llms.txt`](https://hoanghuynh296.github.io/semi-nextjs-codebase/llms.txt) · **bắt đầu từ
@@ -16,13 +16,13 @@
 
 | Bạn đang ở | Gõ | Để làm gì |
 |---|---|---|
-| Repo brand (thư mục trống hoặc có `brand.json`) | `/semi-brand` | Tạo hoặc sửa thương hiệu: brief, logo, màu, font, giọng văn, style. Xem brand book (Thương hiệu · Ứng dụng · UI kit), rồi ra bản |
+| Repo brand (thư mục trống hoặc có `brand.json`) | `/semi-brand` | Tạo hoặc sửa thương hiệu: brief, logo, màu, font, giọng văn. Xem brand book (Thương hiệu · Ứng dụng · UI kit), rồi ra bản |
 | Thư mục trống | `/semi-new-app` | Tạo sản phẩm mới của một brand (`--brand github:<owner>/<repo>`), sạch ngay, build được |
 | App có sẵn | `/semi-check` | Kiểm tra app theo brand và Semi, ghi `semi-check.md`, hỏi rồi sửa từng giai đoạn. Cũng là cách một app cũ chuyển sang Semi |
 | App có sẵn | `/semi-sync` | Brand kit hoặc Semi có bản mới: kéo về, chạy migration |
 
 Không cần lệnh để **dựng màn hình**: nhờ agent làm giao diện, skill `semi-ui` tự chạy (tìm component, viết chữ theo
-giọng văn của brand, chạy lint). Muốn **đổi style** (Flat, Soft, Sharp) trong các style brand cho phép: nói với agent.
+giọng văn của brand, chạy lint).
 Tên cũ `/semi-init`, `/semi-audit`, `/semi-fix`, `/semi-update` đã bỏ từ 0.19.0.
 
 Cho người bảo trì Semi: `/semi-propose` (gửi đề xuất từ dự án con lên repo lõi), `/semi-triage` (đánh giá issue,
@@ -71,8 +71,8 @@ Agent hỏi thương hiệu trước, rồi tự động:
 1. Khởi tạo Next.js 16 + React 19 + Tailwind 4 (`create-next-app`).
 2. Cài đặt `@semi/ui` từ tag mới nhất của `github:hoanghuynh296/semi-nextjs-codebase`.
 3. Cấu hình `transpilePackages: ["@semi/ui"]`, nối `@semi/ui/tokens.css` + `@semi/ui/base.css` + `@source` vào `app/globals.css`.
-4. Dựng sẵn `layout.tsx` (font của brand, hoặc của style khi chưa có brand; `ThemeProvider`, `ToastHost`, `ConfirmHost`) và một trang mẫu (`AppShell`, `PageTitle`, `SubpageToolbar`, `KpiCard`, `CARD`).
-5. Có brand: cài brand kit, nhập `brand.css`, ghi luật của brand vào `AGENTS.md`. Áp style đã chọn trong các style brand cho phép (`data-style` trên `<html>`, `"style"` trong `semi-lint.json`).
+4. Dựng sẵn `layout.tsx` (font của brand, hoặc Geist khi chưa có brand; `ThemeProvider`, `ToastHost`, `ConfirmHost`) và một trang mẫu (`AppShell`, `PageTitle`, `SubpageToolbar`, `KpiCard`, `CARD`).
+5. Có brand: cài brand kit, nhập `brand.css`, ghi luật của brand vào `AGENTS.md`.
 6. Tạo `semi-lint.json`, `AGENTS.md` và kiểm tra `semi-lint` + `tsc` + `npm run build`.
 
 ### Trường hợp 2: Dự án có sẵn (đã hay chưa có `@semi/ui`), và kiểm tra định kỳ
@@ -82,8 +82,7 @@ Agent hỏi thương hiệu trước, rồi tự động:
 Trước hết `/semi-check` chỉ kiểm tra, chưa sửa code: in tóm tắt ngắn và ghi mọi vấn đề kèm `file:dòng` vào
 `semi-check.md`, chia 4 giai đoạn. Bạn đồng ý thì nó sửa theo thứ tự đó, mỗi giai đoạn xong app vẫn build được:
 1. **Nền móng:** cài `@semi/ui` (giữ nguyên phiên bản Next.js / Tailwind), `transpilePackages`, CSS của Semi, provider
-   trong layout (theme mặc định giữ đúng sáng / tối như app đang có), `semi-lint.json` + baseline, style do bạn chọn
-   (mặc định Flat, gần app cũ nhất). Chụp vài trang trước và sau để so.
+   trong layout (theme mặc định giữ đúng sáng / tối như app đang có), `semi-lint.json` + baseline, xoá `data-style` / `"style"` còn từ trước 1.0. Chụp vài trang trước và sau để so.
 2. **Token:** codemod đổi class màu / cỡ chữ / bo góc sang token, có thể làm từng module (`--only`).
 3. **Sửa tay:** lỗi lint còn lại.
 4. **Cấu trúc:** AppShell / AppHeader, bảng, component trùng… theo quyết định của nhóm. Cái nào giữ nguyên thì ghi
@@ -108,14 +107,11 @@ vài thứ một lần trong repo brand; sản phẩm chỉ cài kit, không t�
 thương hiệu trước khi tạo kit: trang **Brand preview** của docs; sau khi tạo: brand book của kit (`npm run preview` trong repo brand). **Ví dụ từng bước 3D Noobs → app Manager và bảng "lệnh nào khi
 nào": [docs/BRANDS.md](docs/BRANDS.md).**
 
-### Style
-Style là diện mạo của cả giao diện: màu nền / chữ / viền, font, bo góc, viền và bóng thẻ, chiều cao control. Mọi style
-dùng chung component, bố cục, màu thương hiệu, màu trạng thái và cả hai theme sáng / tối. Hiện có **Flat** (mặc định:
-xám lạnh, Geist, viền mảnh, gọn 34px, cho dashboard / công cụ), **Soft** (xám ấm, Plus Jakarta Sans, thẻ không viền
-có bóng mềm, bo lớn, thoáng 40px, cho app người dùng cuối) và **Sharp** (đen trắng, Space Grotesk, viền 2px, góc
-vuông, bóng lệch cứng, cho landing page / portfolio / công cụ sáng tạo). Mỗi style có màu trung tính riêng. Style do
-thương hiệu chọn (`/semi-brand`) và app chọn một lần lúc `/semi-new-app`; muốn đổi sau, chỉ cần nói với agent ("đổi sang Soft"). Danh sách: `tokens/styles.json`, mô tả: `docs/STYLES.md`. Xem thử trên trang docs (nút chọn style
-ở chân sidebar).
+### Một diện mạo
+Từ 1.0 Semi chỉ có một diện mạo cho mọi brand (không còn Flat / Soft / Sharp): bề mặt xám trung tính thuần, giống nhau
+ở mọi brand; màu brand chỉ cho nút chính, badge đếm và gạch chân tab lớn đang chọn. Bo góc, bóng và viền thẻ, font và
+chiều cao control là nhóm `shape` của `tokens/tokens.json`; tên token và vai trò: [docs/TOKENS.md](docs/TOKENS.md).
+Mật độ (`data-density`) và thang chữ (`data-type-scale`) vẫn là lựa chọn của từng sản phẩm.
 
 ### Dựng màn hình với agent (CLI `semi`, MCP)
 Không cần gõ lệnh: khi bạn nhờ agent làm giao diện trong app có Semi, skill `semi-ui` tự chạy. Agent tìm đúng component hoặc block cho từng nhu cầu (gõ tiếng Việt hay tiếng Anh đều được), đọc trang docs của nó,
@@ -226,7 +222,7 @@ import { ConfirmHost, ThemeProvider, ThemeScript, ToastHost } from "@semi/ui";
    ```bash
    npm run check
    ```
-   (`check:tokens` + `check:vendor` + `check:version` + `check:manifest` + `typecheck` + `semi-lint` + `npm test`). Nếu đổi component / style:
+   (`check:tokens` + `check:vendor` + `check:version` + `check:manifest` + `typecheck` + `semi-lint` + `npm test`). Nếu đổi component / token:
    `npm run build:manifest`. Kiểm tra trên trình duyệt (contrast AA cả 2 theme, axe, theme, bàn phím):
    ```bash
    npm run build:storybook && npm run test:ui

@@ -14,14 +14,13 @@ import {
   installPackage,
   installSemiUi,
   installedSemiVersion,
-  missingStyleFonts,
+  fontHint,
+  missingFonts,
   parseGithubSpec,
   readBrand,
-  readStyleState,
+  readLookState,
   resolveTargetSpec,
   runLocal,
-  semiStyles,
-  styleFontHint,
   wireAgentsMd,
   wireBrand,
 } from "../../semi-new-app/scripts/setup.mjs";
@@ -127,24 +126,23 @@ for (const appDir of apps) {
   else {
     const done = await runMigrations({ appDir, dir: join(appDir, "node_modules", "@semi", "ui", "migrations"), from, to });
     if (!done.length) console.log(`${name}: các bản ${from} → ${to} không có migration.`);
-    for (const m of done)
+    for (const m of done) {
       console.log(`${name}: migration ${m.version} ${m.id} (${m.description}): ${m.changed.length ? m.changed.join(", ") : "không có gì để đổi"}`);
+      for (const f of m.flags ?? []) console.log(`  cần sửa tay: ${f.file}: ${f.message}`);
+    }
   }
 
-  // The app keeps its style; a release that renames or drops one ships a migration for it, so this only warns.
-  const style = readStyleState(appDir).declared;
-  const styles = semiStyles(appDir);
-  if (style && styles && !styles.styles.some((s) => s.id === style))
-    console.log(`${name}: style "${style}" không còn trong ${to} (${styles.styles.map((s) => s.id).join(", ")}): chọn style khác (nhờ agent đổi style).`);
+  // Since 1.0 Semi has one look: a style left in semi-lint.json (the 1.0.0 migration removes data-style) is ignored.
+  const look = readLookState(appDir);
+  if (look.legacyStyle) console.log(`${name}: semi-lint.json / <html> còn style "${look.legacyStyle}" (Semi 1.0 bỏ qua; /semi-check foundation xoá).`);
 
-  // Re-wire the brand (brand.css import, rules block) and say which fonts the layout still needs.
+  // Re-wire the brand (brand.css import, rules block) and say which fonts the layout still needs (the brand kit's, or
+  // the one look's: Geist, font-display falls back to it).
   if (kit) {
     const w = wireBrand(appDir, cwd, readBrand(appDir).pkg);
     if (!w.ok) exitCode = 1;
-    const st = readStyleState(appDir);
-    const chosen = semiStyles(appDir)?.styles.find((s) => s.id === st.declared);
-    if (chosen && st.layout && missingStyleFonts(appDir, chosen).length) console.log(`${name}: ${styleFontHint(st.layout, chosen, appFonts(appDir, chosen))}`);
   }
+  if (look.layout && missingFonts(appDir).length) console.log(`${name}: ${fontHint(look.layout, appFonts(appDir))}`);
 
   // Only checks the upgrade itself (an API the app uses changed and no migration covers it).
   // A newer Semi may bring new lint rules: what they find in code written before is recorded as debt (the baseline

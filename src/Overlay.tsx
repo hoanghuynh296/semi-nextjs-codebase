@@ -98,7 +98,7 @@ export function Tooltip(props: {
             onPointerLeave={hide}
             style={{ left: pos.left, top: pos.top, bottom: pos.bottom }}
             className={cn(
-              "fixed z-tooltip max-w-[260px] px-2 py-1 rounded-control bg-raised border border-line text-label text-contrast shadow-overlay",
+              "fixed z-tooltip max-w-[260px] px-2 py-1 rounded-control bg-raised border border-line text-ui text-strong shadow-overlay",
               side === "right" && "-translate-y-1/2",
             )}
           >
@@ -264,9 +264,9 @@ function MenuPanel({
   };
   const rowCls = (it: MenuItem) =>
     cn(
-      "w-full text-left px-3 py-2 max-sm:py-3 rounded-control text-label flex items-center gap-2 transition outline-none",
+      "w-full text-left px-3 py-2 max-sm:py-3 rounded-control text-ui flex items-center gap-2 transition outline-none",
       it.disabled ? "opacity-40 cursor-not-allowed" : it.loading ? "cursor-progress" : "cursor-pointer",
-      it.danger ? "text-danger-fg hover:bg-danger-bg focus-visible:bg-danger-bg" : "text-body hover:bg-raised hover:text-contrast focus-visible:bg-raised focus-visible:text-contrast",
+      it.danger ? "text-danger-fg hover:bg-danger-bg focus-visible:bg-danger-bg" : "text-body hover:bg-raised hover:text-strong focus-visible:bg-raised focus-visible:text-strong",
     );
   return createPortal(
     <>
@@ -316,12 +316,12 @@ function MenuPanel({
                     {it.label}
                   </span>
                   {(it.description || reason) && (
-                    <span id={descId} className="block text-caption text-muted truncate">
+                    <span id={descId} className="block text-ui text-muted truncate">
                       {reason ?? it.description}
                     </span>
                   )}
                 </span>
-                {it.shortcut && <span className="text-caption text-muted tabular-nums">{it.shortcut}</span>}
+                {it.shortcut && <span className="text-ui text-muted tabular-nums">{it.shortcut}</span>}
               </>
             );
             return (
@@ -581,7 +581,7 @@ export function Menubar({ menus, label, className }: { menus: MenubarMenu[]; /**
             e.preventDefault();
             keys[e.key]();
           }}
-          className={cn("h-7 px-2.5 rounded-control text-label font-medium transition outline-none focus-visible:ring-2 focus-visible:ring-focus", open === i ? "bg-raised text-contrast" : "text-body hover:bg-field hover:text-contrast")}
+          className={cn("h-7 px-2.5 rounded-control text-ui font-medium transition outline-none focus-visible:ring-2 focus-visible:ring-focus", open === i ? "bg-raised text-strong" : "text-body hover:bg-field hover:text-strong")}
         >
           {m.label}
         </button>

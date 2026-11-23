@@ -9,8 +9,9 @@ skills, AGENTS.md and plan docs only point here. A rule that lives in two places
 Apps read this file from `node_modules/@semi/ui/docs/DESIGN_SYSTEM.md` (the version they installed).
 
 The UI is a **restrained product theme, dark and light,** with a **bento card layout**: neutral page, rounded cards with thin
-borders, a neutral icon menu, uniform chips and tags with coloured dots, one accent (the brand's primary colour, Semi green
-without a brand kit) for actions, few words. A brand kit (`BRANDS.md`) sets the colours, fonts, voice and allowed styles.
+borders, a neutral icon menu, uniform chips and tags with coloured dots, pure neutral greys, the brand's primary colour
+(Semi green without a brand kit) only on the main button and a few attention marks, few words. A brand kit (`BRANDS.md`)
+sets the primary (and an optional secondary) fill, fonts, logo and voice. Token names: `docs/TOKENS.md`.
 
 Quick cheatsheet: `QUICK_REF.md`. Tokens: `@semi/ui/tokens.css` (generated from `tokens/tokens.json`). Base layer:
 `@semi/ui/base.css`. Shared building blocks: `@semi/ui` (components) and `@semi/ui/styles` (class constants), see §16;
@@ -24,25 +25,24 @@ hook of the `semi-design` plugin).
   that repeat what an icon already says.
 - **Flat, no glow, no gradients.** No gradient fills, no blurred colour blobs, no coloured `shadow-[0_0_…]` glows
   (buttons, cards, status dots, power buttons). Depth comes from the surface tokens and translucent white overlays
-  (plus the style's neutral resting card shadow `shadow-card`: none in Flat, soft in Soft, a hard offset in Sharp);
-  emphasis ("on", active, running) comes from a flat accent fill (`bg-accent`), a tint (`bg-accent-subtle`) or a
-  `border-accent-line` border.
+  (`shadow-card` is none); emphasis ("on", active, selected) comes from a neutral fill (`bg-inverted`,
+  `bg-item-selected`) or a `border-outline-line` border.
   The only gradient is the skeleton shimmer sweep in `base.css`.
 - **Colour on content, not on chrome.** The nav menu is neutral (grey icons, no count badges; active item =
-  `bg-raised text-contrast`). Colour goes where it helps reading the content: a coloured dot or icon on filter chips
+  `bg-raised text-strong`). Colour goes where it helps reading the content: a coloured dot or icon on filter chips
   and tags, card icon tiles use their area's soft tint, primary marks the main action and "on". Status colours (§3)
   appear only where they carry a state.
 - **Unified sub-page toolbar.** Sub-pages open with a large `font-display` title (text only), followed by a single
   sticky toolbar row: pill filter tabs on the left, the icon-only primary CTA (`BTN_PRIMARY` + `BTN_ICON`) + secondary
-  filter/search/refresh controls on the right (§4). All toolbar controls share `h-control` and `text-label font-medium`.
+  filter/search/refresh controls on the right (§4). All toolbar controls share `h-control` and `text-ui font-medium`.
 - **Space first, then frames.** Group with white space; put a group in a card (`rounded-card`) when it is one thing
   people act on, and nested facts in tiles. At most three frames inside each other, one line between two things
   (§4c): a screen of boxes in boxes reads as noise.
-- **One style per app.** The look is a style (`docs/STYLES.md`): neutral colours, fonts, radii, card border and shadow,
-  control sizes. An app picks Flat (default), Soft or Sharp once, with `<html data-style>`, and every component follows.
-  Components, layout, the type scale, the accent and status colours are shared by every style.
-- **One accent.** `primary-*` (Semi default green `#00AE42`; a product gets its own from its brand kit, see §2b) for actions,
-  selection and focus. Status colours carry meaning only (§3).
+- **One look.** Every brand and app shares the same neutrals, radii, control sizes and type scale (`docs/TOKENS.md`);
+  there are no styles and no `data-style` since 1.0.
+- **Brand colour for the main button only.** `bg-primary` (Semi default green `#00AE42`; a product gets its own from its
+  brand kit, see §2b) for the one main button of a page, modal or nav, attention badges / "New" tags and the active
+  big-tab underline. Selection, links and focus are neutral; status colours carry meaning only (§3).
 - **Phone first.** Used from iPhone and iPad: no horizontal page scroll at 375px, touch targets ≥ 36px (44px for nav),
   the home logo header is hidden under 768px (`md`).
 - **No scrollbars.** Scrollbars are hidden on every page and screen size (`base.css`); areas still scroll. Don't add
@@ -52,52 +52,44 @@ hook of the `semi-design` plugin).
 
 ## 1. Typography
 
+1.0 scale and names: **`docs/TOKENS.md`** (the contract; values in `tokens/tokens.json`).
+
 | Role | Classes |
 |---|---|
-| Page title (sub-page) | `font-display text-heading sm:text-display leading-[1.15] font-semibold text-contrast tracking-tight`, text only, no subtitle |
-| Section / card title | `text-ui–text-title font-semibold text-contrast tracking-tight` |
-| UI / nav text | `text-label font-medium text-body` |
-| Label | `text-label font-medium text-muted` (sentence case, never uppercase) |
-| Section label (sidebar pinned group, drawer group, command palette group, mega menu column) | `text-overline text-muted`: the only uppercase text (C-032); written in sentence case in code |
-| Caption | `text-caption–text-label text-muted` |
-| Big number (KPI) | `text-heading leading-tight font-semibold tracking-tight tabular-nums text-contrast` |
-| Numbers (temperatures, %, times, money, counts) | add `tabular-nums` (Geist, digits line up) |
+| Hero | `font-display text-hero font-normal text-strong` |
+| Reading-page title (one column) | `font-display text-title-xl font-medium text-strong` |
+| Page title in a content card | `text-figure font-normal text-strong`, on the row of the page's main action |
+| Big text tabs | `font-display text-tab-xl` (T5) |
+| Section heading | `text-section text-strong` (500 from the token) |
+| Card title, lead text | `text-lead font-medium text-strong` |
+| Reading copy, secondary body | `text-copy text-body` |
+| UI text: nav, breadcrumb, buttons, labels, meta, list rows | `text-ui` (12px, the base UI size) `text-body` / `text-muted` |
+| Group label, kbd hint, "Untitled" | `text-ui text-faint` |
+| Tag, chip | `text-tag` (10 / 500 / +0.02em) |
+| Count badge | `text-badge` (10 / 700) |
+| Section label (overline) | `text-overline text-muted`: 11 / 600 / +0.1em, the only uppercase text (C-032) |
+| Numbers (temperatures, %, times, money, counts) | add `tabular-nums` |
 | Code (code editors, parameter keys, error codes) | `font-mono`, only there |
 
-Geist (`--font-sans` with `font-feature-settings: "ss02" on`) for UI and body text, and Montserrat Alternates
-(`--font-display`, class `font-display`) for large page titles, both loaded with `next/font/google` (Latin + Vietnamese
-subsets) in `app/layout.tsx` as the CSS variables `--font-geist` / `--font-montserrat-alternates` (or set
-`--font-sans-family` / `--font-display-family`). ui-monospace only for code. Numbers stay in Geist with `tabular-nums`:
-a monospace font for prices and readings looks like a terminal, not a product. Weights: only `font-medium` and
-`font-semibold`. Sizes come from the **type scale** tokens (`--text-*` in `tokens.json`), never `text-[13px]` and never
-Tailwind's `text-xs` / `text-sm` / `text-base`:
+Two families: `font-sans` (the UI face, brand `fonts.sans`, default Geist, loaded with `next/font` as `--font-geist` or
+set through `--font-sans-family`) for everything, and `font-display` (brand `fonts.display`, `--font-display-family`;
+without one it is the UI sans) only for hero, reading-page titles, big tabs and editorial section heads. ui-monospace
+only for code. **Headings are not bold:** 400 and 500 do almost everything (`font-title` is 500); 600 only for overlines
+and a few emphasised labels; 700 only in count badges. Tracking −0.01em on display sizes ≥ 20px (in the tokens). Sizes
+come from the type scale tokens, never `text-[13px]` and never Tailwind's `text-xs` / `text-sm` / `text-base`. The 14px
+size is `text-copy` because `text-body` is the body text colour.
 
-| Token | px | Use |
-|---|---:|---|
-| `text-caption` | 11 | captions, counts, badges (minimum size) |
-| `text-label` | 12 | field labels, buttons, chips, meta lines (a time, a count beside a title) |
-| `text-ui` | 14 (13 in compact density) | body and UI text: card content, table cells, list rows, inputs, card titles |
-| `text-ui-lg` | 15 (14 in compact) | phone dialog buttons, a lead paragraph |
-| `text-title` | 15 | section / modal titles |
-| `text-title-lg` | 16 | large section titles |
-| `text-figure` | 18 | Con số nổi bật: giá trị KPI, phím số, tổng tiền (`KpiCard`: `text-figure sm:text-heading`) |
-| `text-heading-sm` | 20 | sub-headings |
-| `text-heading` | 22 | page titles on phones, KPI figures from sm |
-| `text-heading-lg` | 24 | display numbers |
-| `text-display` | 26 | page titles from sm (`text-heading sm:text-display`) |
-| `text-overline` | 11 | section labels only: uppercase, `0.06em` tracking, semibold (C-032). Never a button, field label, title or badge |
-
-**Fields on a phone:** text you type in is 16px (`text-title-lg`) below `sm`, whatever the field's desktop size. iOS Safari
+**Fields on a phone:** text you type in is 16px (`text-input`) below `sm`, whatever the field's desktop size. iOS Safari
 zooms the page into a focused field under 16px and never zooms back; the fix is the text size, never `maximum-scale` /
 `user-scalable=no` in the viewport (it blocks pinch zoom, an a11y failure). `FIELD_INPUT`, `FIELD_TEXTAREA` and every
 Semi text-entry control (Input, SearchInput, NumberInput with `FIELD_INPUT`, InputGroup, InputOTP, Textarea, CustomCombobox,
 Command, the Chat composer) already do it; a field of your own, or a NumberInput whose caller passes its own `text-ui`,
-adds `max-sm:text-title-lg`. `base.css` does the same for a bare
+adds `max-sm:text-input`. `base.css` does the same for a bare
 `<input>` / `<textarea>` / `<select>`; the height stays `h-control` / `h-field`.
 
-Minimum `text-caption`. Running text (a sentence, a description, a cell) is `text-ui`, never `text-label` or
-`text-caption`: those are for short marks beside it. Every size carries its line height (1.5 for 11–16px, 1.25 for
-18px and up), so text never needs `leading-*`; use `leading-tight` only on a title of more than one line. Button and
+Minimum `text-tag` / `text-badge` (10px, marks only). Running text (a sentence, a description) is `text-copy`; UI text
+(rows, labels, meta) is `text-ui`. Every size carries its line height (about 1.5 for UI and body: 12/18, 14/22, 15/24;
+1.1–1.3 for display sizes), so text rarely needs `leading-*`. Button and
 label text is sentence case ("Lưu", "Xem lại"), never ALL CAPS. Sizes are written in px here and in `tokens.json`
 but `tokens.css` emits them in rem (14px = 0.875rem), so text grows with the browser's default font size (WCAG 1.4.4).
 
@@ -105,49 +97,24 @@ but `tokens.css` emits them in rem (14px = 0.875rem), so text grows with the bro
 
 Semi architecture separates tokens into two tiers:
 - **Tier 1 (Primitives & Brand):** Fixed raw hex palettes (`primary-*`, `emerald-*`, `gray-*`, `rose-*`, `amber-*`, `sky-*`) defined in `tokens/tokens.json`.
-- **Tier 2 (Semantic Tokens):** Dynamic CSS variables that automatically adapt according to the active theme (`data-theme="dark"` or `data-theme="light"`). Developers build UI exclusively with Semantic Tokens (`bg-panel`, `bg-field`, `text-contrast`, `text-body`, `text-muted`, `border-line`), eliminating hard-coded physical colors and manual `dark:bg-...` / `light:bg-...` conditional classes.
+- **Tier 2 (Semantic Tokens):** Dynamic CSS variables that automatically adapt according to the active theme (`data-theme="dark"` or `data-theme="light"`). Developers build UI exclusively with Semantic Tokens (`bg-panel`, `bg-field`, `text-strong`, `text-body`, `text-muted`, `border-line`), eliminating hard-coded physical colors and manual `dark:bg-...` / `light:bg-...` conditional classes.
 
 ### Semantic Tokens Mapping Table
 
-| Semantic Token | Tailwind Utility | Purpose | Dark Mode (`[data-theme="dark"]`) | Light Mode (`[data-theme="light"]`) |
-|---|---|---|---|---|
-| `--color-canvas` | `bg-canvas` | Nền ứng dụng ngoài cùng (outer bento shell) = `panel-0` | `#0f1011` | `#eff3f7` |
-| `--color-app` | `bg-app` | Khung bề mặt màn hình chính (content panel) = `panel-2` | `#151619` | `#f7f9fb` |
-| `--color-panel` | `bg-panel` | Sidebar, Modal shell, popover = `panel-4` (thẻ nội dung: `bg-card`) | `#191b1f` | `#ffffff` |
-| `--color-panel-0` … `-4` | `bg-panel-0` … `bg-panel-4` | Thang bề mặt (Surfaces bên dưới) | canvas → panel | canvas → panel |
-| `--color-card` | `bg-card` | Thẻ nội dung (`CARD`, `HERO`): không viền, tách bằng tông | `panel` + 5% `text-contrast` (`#222428`) | `app` + 5% `text-contrast`, lõm (`#eaecef`) |
-| `--color-card-field` | `bg-card-field` | Ô, tile, header bảng nằm trong thẻ (`TILE`) | `card` + 5% (`#2b2d31`) | `card` + 3% (`#e2e5e8`) |
-| `--color-tint` | `bg-tint`, `hover:bg-tint-hover` | Nền trong suốt của nút phụ (`BTN_SECONDARY`, `ICON_BTN`), không viền | `text-contrast` 7% / 11% | `text-contrast` 5% / 9% |
-| `--color-inverted` | `bg-inverted` + `text-on-inverted` | Nền đặc trung tính ngược với trang (nút chính của brand `primaryStyle: inverted`) | `#f4f4f4` / chữ `canvas` | `text-contrast` / chữ `panel` |
-| `--color-action` | `bg-action`, `hover:bg-action-hover`, `text-on-action` | Nền nút chính (`BTN_PRIMARY`, `MODAL_BTN_PRIMARY`, `headerPrimary`) | = `accent` | = `accent` (brand inverted: = `inverted`) |
-| `--color-field` | `bg-field` | Nền ô nhập liệu, header bảng | `#202328` | `#eff3f7` |
-| `--color-raised` | `bg-raised` | Hover / track fills trên nền field hoặc panel | `#2b2e34` | `#e1e7ef` |
-| `--color-text-contrast` | `text-contrast` | Tiêu đề, chữ độ tương phản cao | `#ffffff` | `#0f172a` (Slate-900) |
-| `--color-text-body` | `text-body` | Nội dung văn bản chính | `#d1d5db` (Gray-300) | `#334155` (Slate-700) |
-| `--color-text-muted` | `text-muted` | Nhãn phụ, placeholder, gợi ý | `#9ba1aa` | `#5b6779` |
-| `--color-line` | `border-line` | Đường viền card, bảng, khung | `rgba(255, 255, 255, 0.12)` | `rgba(0, 0, 0, 0.08)` (Slate-200) |
-| `--color-line-hover` | `border-line-hover` | Đường viền khi hover | `rgba(255, 255, 255, 0.2)` | `rgba(0, 0, 0, 0.16)` |
-| `--color-control-line` | `border-control-line` | Viền ô nhập liệu, select field, checkbox, radio (≥ 3:1 trên mọi surface, WCAG 1.4.11). Card, bảng vẫn dùng `line` | `text-muted` 65% | `text-muted` 80% |
-| `--color-control-line-hover` | `hover:border-control-line-hover` | Hover của `control-line` | = `text-muted` | = `text-muted` |
-| `--color-divider` | `border-divider` | Đường phân cách nhẹ giữa các hàng | `rgba(255, 255, 255, 0.05)` | `rgba(0, 0, 0, 0.05)` (Slate-100) |
-| `--color-accent` | `bg-accent` | Nền nút chính / mark "on" (BTN_PRIMARY, headerPrimary) | `primary-500` | `primary-700` |
-| `--color-accent-hover` | `hover:bg-accent-hover` | Hover của nền accent | `primary-400` | `primary-800` |
-| `--color-on-accent` | `text-on-accent` | Chữ / icon trên `bg-accent` (≥ 4.5:1) | `#0c0d0e` | `#ffffff` |
-| `--color-accent-fg` | `text-accent-fg` | Chữ / icon màu primary trên surface (link, check, tab active), cả trên nền chọn trong thẻ lõm | `primary-400` | `primary-800` (brand kit: bộ sinh chọn, kiểm cả trên `card`) |
-| `--color-focus` | `ring-focus`, `border-focus` | Viền focus (`FOCUS_RING`), viền ô nhập đang gõ (≥ 3:1 trên mọi surface) | = `accent-fg` | = `accent-fg` |
-| `--color-accent-subtle` | `bg-accent-subtle` | Nền nhạt của mục đang chọn (option, trang hiện tại, pill active, IconTile). Lớp này đổi `text-muted` bên trong sang `--semi-text-muted-on-subtle` (sáng: 25% về `text-body`) để chữ phụ đạt 4.5:1 (#123) | `accent-fg` 14% | `accent-fg` 11% |
-| `--color-accent-subtle-hover` | `hover:bg-accent-subtle-hover` | Hover của nền nhạt accent; đổi `text-muted` (tối 25%, sáng 45% về `text-body`) và `text-accent-fg` (tối 18%, sáng 15% về `text-contrast`) bên trong (#123) | `accent-fg` 22% | `accent-fg` 18% |
-| `--color-accent-line` | `border-accent-line` | Viền của mục đang chọn (card được chọn, ngày hôm nay) | `accent-fg` 40% | `accent-fg` 40% |
-| `--color-danger-fg` · `success-fg` · `warning-fg` · `info-fg` | `text-danger-fg` … | Chữ trạng thái trên surface | `rose/emerald/amber/sky-400` | `-700` (`warning`: `amber-800`, ≥ 4.5:1 cả trên ô nhập Soft / Sharp) |
-| `--color-tone-<hue>` | `text-tone-<hue>` | Chữ tonal 12 hue (purple, violet, indigo, blue, sky, cyan, teal, emerald, amber, orange, rose, pink) | `<hue>-300` | `<hue>-700` (amber, orange, cyan, teal, pink: `-800`, ≥ 4.5:1 trên badge trong thẻ lõm, #50) |
+The full list with values and roles is **`docs/TOKENS.md`**. In short:
 
-Mọi cặp chữ / nền ở trên đạt WCAG AA (≥ 4.5:1) ở cả hai theme. Không viết `text-*-400` hay `text-*-700 dark:text-*-300` trong component: dùng `text-accent-fg`, `text-*-fg` hoặc `text-tone-*`.
-Trạng thái (focus, chọn, hover) không dùng thang `primary-*` với alpha (`ring-primary-500/50`, `bg-primary-500/15`): thang đó
-không đổi theo theme nên biến mất với brand sáng trên nền sáng (`accent-state-token`). Nền và viền đặc cũng vậy
-(`bg-primary-500`, `border-primary-500`): màu thương hiệu chỉ nằm ở một sắc độ của thang (vàng ở `200`, navy ở `900`),
-nên `primary-500` có thể nhạt hay lệch hẳn; nền nút / mark "on" là `bg-accent` + `text-on-accent` (`primary-fill`).
-Thang `primary-*` chỉ dùng cho biểu đồ và hình minh hoạ. Brand: dùng brand kit
-(`docs/BRANDS.md`); bộ sinh màu đặt `accent`, `on-accent`, `accent-fg` cho từng theme, các token trạng thái đi theo `accent-fg`.
+| Group | Utilities |
+|---|---|
+| Surfaces (pure neutral) | `bg-canvas`, `bg-app`, `bg-panel`, `bg-field`, `bg-field-focus`, `bg-raised`, `bg-raised-2`; `bg-card`, `bg-card-field`, `bg-panel-0…4` |
+| Text tiers (≥ 4.5:1 on panel, app, canvas, card; all but faint also on card-field, raised and item fills: `docs/TOKENS.md`) | `text-strong`, `text-body`, `text-muted`, `text-faint` |
+| Lines | `border-line`, `border-line-hover`, `border-divider`, `border-control-line`, `border-field-line`, `border-field-line-focus`, `border-outline-line` |
+| Neutral states | `bg-item-hover`, `bg-item-selected`, `bg-item-checked`, `bg-subtle-button`, `bg-tint`, `bg-inverted` + `text-on-inverted`, `ring-focus` / `border-focus` |
+| Brand fills (main buttons, attention) | `bg-primary` / `hover:bg-primary-hover` + `text-on-primary`; `bg-secondary` / `hover:bg-secondary-hover` + `text-on-secondary` |
+| Status (same for every brand) | `text-*-fg`, `bg-*-bg`, `border-*-border`, `bg-*-solid` + `text-on-solid`; `text-tone-*` |
+
+States never use a fixed palette shade with alpha (`ring-primary-500/50`, `bg-primary-500/15`): use `ring-focus`,
+`bg-item-selected` / `bg-item-checked`, `border-outline-line` (`accent-state-token`). The `primary-*` scale is gone
+since 1.0.
 
 ### Surfaces (C-030, #93)
 
@@ -161,18 +128,17 @@ outermost frame to the brightest step, plus the card and two fills:
 | `panel-2` | `bg-panel-2` = `bg-app` | app | Main content (`SHELL_MAIN`, page background) |
 | `panel-3` | `bg-panel-3` | halfway app → panel | A calm block inside the content (sticky bars, inset areas) |
 | `panel-4` | `bg-panel-4` = `bg-panel` | panel | Sidebar (`SHELL_ASIDE`), modal, popover, menu, toast |
-| card | `bg-card` | dark: panel + 5% text-contrast (above the panel); light: app + 5% text-contrast (recessed) | Content cards: `CARD`, `<Card>`, `HERO` |
-| card-field | `bg-card-field` | card + 5% (dark) / 3% (light) text-contrast | Tiles, readings, table heads inside a card (`TILE`) |
-| tint / tint-hover | `bg-tint`, `hover:bg-tint-hover` | text-contrast at 7% / 11% (dark), 5% / 9% (light) | Secondary buttons (`BTN_SECONDARY`, `MODAL_BTN_SECONDARY`, `ICON_BTN`, `MODAL_CLOSE`): no border |
-| inverted | `bg-inverted` + `text-on-inverted` | near-white on dark, near-black on light | The main button of a brand with `primaryStyle: "inverted"` |
+| card | `bg-card` | dark: panel + 5% text-strong (above the panel); light: app + 5% text-strong (recessed) | Content cards: `CARD`, `<Card>`, `HERO` |
+| card-field | `bg-card-field` | card + 5% (dark) / 3% (light) text-strong | Tiles, readings, table heads inside a card (`TILE`) |
+| tint / tint-hover | `bg-tint`, `hover:bg-tint-hover` | text-strong at 7% / 11% (dark), 5% / 9% (light) | Secondary buttons (`BTN_SECONDARY`, `MODAL_BTN_SECONDARY`, `ICON_BTN`, `MODAL_CLOSE`): no border |
+| inverted | `bg-inverted` + `text-on-inverted` | near-white on dark, near-black on light | Checked controls (checkbox, switch, radio, slider), the selected day, the inverse button |
 
-- `canvas`, `app` and `panel` are `panel-0`, `panel-2`, `panel-4` (one value, two names). Since 0.36 every style takes
-  the preview's lightness steps (OKLCH L, dark 0.173 / 0.200 / 0.222, field 0.256, raised 0.301; light ≈ 0.96 / 0.98 /
-  1.0) with its own hue: small, even steps, the sidebar barely above the main block. The steps between, the card, the
-  fills and inverted are mixed from them in CSS (`color-mix(in oklab, …)`), so every style and every brand kit (tinted,
-  `pure` or `preset` neutrals) gets them with no extra values.
-- **Cards have no border** in Flat and Soft (`card-border` is `1px solid transparent`: the box stays, so hover and
-  `CARD_ACTIVE` borders do not move the layout); Sharp keeps its 2px line. A dense data view that needs an edge uses
+- `canvas`, `app` and `panel` are `panel-0`, `panel-2`, `panel-4` (one value, two names). Since 1.0 they are pure
+  neutral greys, the same for every brand (dark #101010 / #161616 / #1a1a1a, light #ebebeb / #f3f3f3 / #ffffff); the
+  steps between, the card, the fills and inverted are mixed from them and the contrast colour in CSS
+  (`color-mix(in oklab, …)`).
+- **Cards have no border** (`card-border` is `1px solid transparent`: the box stays, so hover and `CARD_ACTIVE`
+  borders do not move the layout). A dense data view that needs an edge uses
   `<Card bordered>` / `CARD_BORDERED` (panel fill + `border-line`, the pre-0.36 card).
 - `bg-card` and `bg-card-field` are `@utility` rules, not theme colours (a `--color-card` theme colour would also
   generate a `border-card` colour utility that collides with the style's `border-card`), so opacity modifiers
@@ -181,12 +147,9 @@ outermost frame to the brightest step, plus the card and two fills:
   now reads as a raised white block, not a card).
 - **Secondary buttons are a tint fill** with no border; `outline` (`BTN_OUTLINE`, `<Button variant="outline">`) keeps
   the framed look for a toolbar of framed controls. Focus rings are unchanged.
-- **Main buttons read `action`**, not `accent`: the accent by default, the inverted neutral when the brand kit sets
-  `primaryStyle: "inverted"`. Checked controls, selection, links, focus, badges stay on the accent tokens.
-- Measured (core Flat / Soft / Sharp and the Semi and 3D Noobs kits, tinted and pure, both themes): `text-muted` ≥ 4.53:1
-  on every panel step, the card and card-field (worst: 3D Noobs Flat light card-field); card vs app 1.12:1 light, ≥ 1.16:1
-  dark (#10 asks ≥ 1.15 dark); app vs panel 1.04–1.06:1 (deliberately subtle); inverted text ≥ 15:1; every status and tone text ≥ 4.5:1 on its badge inside a card
-  (`lint/test/surfaces.test.mjs`).
+- **Main buttons read the brand fill** (`bg-primary`); checked controls, selection, links, focus are neutral.
+- Text tiers reach 4.5:1 on canvas, app and panel in both themes (checked by the token build); status and tone text
+  reach 4.5:1 on their badges (`lint/test/surfaces.test.mjs`, the docs-site contrast tests).
 
 **Cách sinh CSS:** giá trị theo theme nằm ở biến nguồn `--semi-*` (đặt trong `:root/[data-theme=dark]` và `[data-theme=light]`); utility đọc qua `@theme inline` (`bg-panel` → `var(--semi-panel)`), còn `--color-*` được khai báo lại ở mỗi theme scope cho CSS của app (`var(--color-panel)`).
 
@@ -236,33 +199,36 @@ export default function RootLayout({ children }) {
 Hardcoding physical palette classes such as `bg-white`, `text-slate-900`, `border-slate-200`, or `bg-slate-50` creates the "Dark Shell, Light Core" conflict:
 - In Dark Mode, a card with `bg-white` creates a blinding white rectangle inside a dark Bento frame.
 - In Light Mode, text with `text-white` disappears completely on the white page background.
-By using `bg-panel` and `text-contrast`, your UI seamlessly flips from dark obsidian to crisp slate without writing a single media query.
+By using `bg-panel` and `text-strong`, your UI seamlessly flips from dark obsidian to crisp slate without writing a single media query.
 
 ## 2b. Brand per product
 
 A product's brand comes from its **brand kit** (`docs/BRANDS.md`), never from its own CSS: the kit's `dist/brand.css`
-(imported after `@semi/ui/tokens.css`) sets the primary / secondary scales, the themed accent tokens, the neutrals per
-style and the fonts. With
-`"brand"` in `semi-lint.json`, the app may not set any of them (`brand-override`: `--color-primary-*`, `--semi-*`,
-`--brand-*`, `--spacing`, `--density-spacing`, the font variables). Density and type scale are the product's own
-choice, not the brand's (§19). An app without a kit uses Semi's own green and Flat. A brand change is
-made in the brand repo (`/semi-brand`) and reaches products with `/semi-sync`.
+(imported after `@semi/ui/tokens.css`) sets only the primary fill (and an optional secondary), the text colour on each,
+and the fonts. Surfaces, text, lines, focus and status are the same for every brand. With `"brand"` in
+`semi-lint.json`, the app may not set any of them (`brand-override`: `--color-primary*`, `--color-on-primary`,
+`--semi-*`, `--brand-*`, `--spacing`, `--density-spacing`, the font variables). Density and type scale are the
+product's own choice, not the brand's (§19). An app without a kit uses Semi's own green. A brand change is made in the
+brand repo (`/semi-brand`) and reaches products with `/semi-sync`. There is one look: no styles, no `data-style`.
 
 ## 3. Colour meaning
 
-- **Accent** (the brand's primary; Semi default `#00AE42`): the main action, focus ring, "on" and selection, through
-  `bg-accent` + `text-on-accent` (`BTN_PRIMARY`), `bg-accent-hover`, `text-accent-fg`, `bg-accent-subtle`,
-  `border-accent-line`, `ring-focus`. Never `primary-*` shades or `primary-N/alpha` in an app.
-- **Status** carries meaning only, never decoration or an accent: success (online, ready, done), warning (busy,
+- **Brand** (primary, optional secondary; Semi default `#00AE42`): only the one main button of a page, a modal or the
+  nav (`BTN_PRIMARY`: `bg-primary hover:bg-primary-hover text-on-primary`), attention count badges, "New" tags and the
+  active big-tab underline. Nothing else: links, check marks, active tabs, selection and the focus ring are neutral.
+- **Selection** is neutral: `bg-item-hover` (hover), `bg-item-selected` (the open record, the selected nav item or
+  option), `bg-item-checked` (checked rows / cards in selection mode); a checked control is `bg-inverted` +
+  `text-on-inverted`; the focus ring is `ring-focus` (the strong text colour).
+- **Status** carries meaning only, never decoration or a brand mark: success (online, ready, done), warning (busy,
   paused, connecting), danger (error, destructive), info (neutral news, cost). Tokens `bg-*-bg` + `border-*-border` +
   `text-*-fg`, `bg-*-solid` for a dot or a fill (table in §2); `<Alert tone>`, `<Badge tone>`, `StatusDot`.
 - **Tile tones** (`TILE_TONES` in `Icon.tsx`: a soft tint + `text-tone-*`; `TONE_TEXT` for a bare icon): green ·
   pink · sky · amber · violet (indigo) · gray (advanced / unknown). Each app maps its areas to tones once (in its own
   extension doc) and keeps the mapping everywhere. The nav menu uses neutral `w-4 h-4` (16px) icons in `text-muted`;
   the active item is drawn by `AppShell`.
-- **Chips and tags** (`Chip.tsx`) share one pill style (`rounded-full h-control px-3.5 text-label font-medium`):
-  `chipClass(active)` gives borderless ghost pills when off (`bg-transparent text-muted hover:text-contrast
-  hover:bg-field`) and a raised pill when on (`bg-raised border-line text-contrast`); static tags use `TAG`
+- **Chips and tags** (`Chip.tsx`) share one pill style (`rounded-full h-control px-3.5 text-ui font-medium`):
+  `chipClass(active)` gives borderless ghost pills when off (`bg-transparent text-muted hover:text-strong
+  hover:bg-field`) and a raised pill when on (`bg-raised border-line text-strong`); static tags use `TAG`
   (neutral). Per-item colour appears only on a leading dot (`TONE_DOT`) or icon (`chipIconClass(tone)`). The chosen
   segment of `Pills`, `Toggle` and pill `Tabs` is `SEGMENT_ON`.
 - Data series in charts may use several hues; that is the one place extra colours belong. Syntax colours in code
@@ -282,9 +248,9 @@ Instead, follow the canonical Semi patterns:
        <span className={cn("p-1.5 rounded-control", TILE_TONES.violet)}>
          <Icon name="plug" className="w-4 h-4" />
        </span>
-       <span className="text-ui font-semibold text-contrast">{title}</span>
+       <span className="text-ui font-semibold text-strong">{title}</span>
      </div>
-     <p className="text-label text-muted mt-1">{description}</p>
+     <p className="text-ui text-muted mt-1">{description}</p>
    </Card>
    ```
 2. **Callout / Alert Banners:**
@@ -292,7 +258,7 @@ Instead, follow the canonical Semi patterns:
    themed status surface tokens, which are tinted fills and borders tuned for AA text in both themes:
    ```tsx
    {/* Warning callout */}
-   <div className="flex items-center gap-2 px-3 py-2.5 rounded-control bg-warning-bg text-warning-fg border border-warning-border text-label">
+   <div className="flex items-center gap-2 px-3 py-2.5 rounded-control bg-warning-bg text-warning-fg border border-warning-border text-ui">
      <Icon name="alertTriangle" className="w-4 h-4 shrink-0" />
      <span>{warningMessage}</span>
    </div>
@@ -321,7 +287,7 @@ breaks under a brand kit or a style (`no-fixed-tone-text`, hard rule 10).
 | A category tint (card, tile, tag) | `TONAL_SURFACE[tone]` (= `TONAL_CONTAINER`), `<Badge tone>`, `TILE_TONES` | `bg-<color>-500/10 border-<color>-500/20 text-tone-<color>` |
 | Its hover | `TONAL_HOVER[tone]` | `hover:bg-<color>-500/15 hover:border-<color>-500/30` |
 | Coloured text or icon alone | `text-tone-<color>` (`TONE_TEXT`), `text-*-fg` for a status | Themed shade, 4.5:1 on panel |
-| A highlighted row | `bg-accent-subtle` (selected), a status `bg-*-bg` (a row that needs attention); its secondary text stays `text-muted` (the fill darkens it, #123) | No hue picked per row, no `active ? "text-body" : "text-muted"` swap |
+| A highlighted row | `bg-item-selected` (selected), a status `bg-*-bg` (a row that needs attention); its secondary text stays `text-muted` (the fill darkens it, #123) | No hue picked per row, no `active ? "text-body" : "text-muted"` swap |
 
 ### Examples Across Component Types
 
@@ -334,7 +300,7 @@ breaks under a brand kit or a style (`no-fixed-tone-text`, hard rule 10).
 
 // After:
 <div className={cn("rounded-card border p-card", TONAL_SURFACE.purple, TONAL_HOVER.purple)}>
-  <p className="text-ui-lg font-semibold">Pro Subscription</p>
+  <p className="text-lead font-semibold">Pro Subscription</p>
 </div>
 ```
 
@@ -353,8 +319,8 @@ breaks under a brand kit or a style (`no-fixed-tone-text`, hard rule 10).
 // Before:
 <tr className="bg-blue-50 border-b border-blue-100 text-blue-700">…</tr>
 
-// After: the row stays neutral; the status sits on its badge, a selected row takes the accent tint.
-<TR className={selected ? "bg-accent-subtle" : undefined}>… <TD><Badge tone="sky">Chờ duyệt</Badge></TD></TR>
+// After: the row stays neutral; the status sits on its badge, a selected row takes the neutral `bg-item-selected`.
+<TR className={selected ? "bg-item-selected" : undefined}>… <TD><Badge tone="sky">Chờ duyệt</Badge></TD></TR>
 ```
 
 #### 4. Badges & chips
@@ -377,14 +343,13 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
 
 ## 4. Layout
 
-- **Radius scale (style tokens):** tiny marks (checkbox, colour swatch, key cap, inline code) `rounded-chip` · controls,
+- **Radius scale (shape tokens):** tiny marks (checkbox, colour swatch, key cap, inline code) `rounded-chip` · controls,
   inputs, buttons, inner tiles and list rows `rounded-control` · cards, popovers, menus, toasts `rounded-card` · panels,
-  hero, modals, drawers, sidebar `rounded-panel` · filter chips, pills, avatars, badges, dots `rounded-full`. Values per
-  style (Flat 4 · 8 · 12 · 16px, Soft 6 · 12 · 20 · 24px, Sharp 2 · 0 · 0 · 0): `docs/STYLES.md`. Never the raw scale (`rounded`,
-  `rounded-lg/xl/2xl`) or `rounded-[Npx]`: they would not follow the style (`radius-token`).
+  hero, modals, drawers, sidebar `rounded-panel` · filter chips, pills, avatars, badges, dots `rounded-full`. Values 4 · 8 ·
+  12 · 16px (`docs/TOKENS.md`). Never the raw scale (`rounded`, `rounded-lg/xl/2xl`) or `rounded-[Npx]` (`radius-token`).
 - **Control height:** all toolbar buttons, filter chips, pills, search inputs, custom selects and date pickers use
-  `h-control` (34px in Flat, set by the style) and `text-label font-medium` so toolbar rows align evenly. Form inputs and
-  selects use `h-field` (36px in Flat). Never `h-[34px]`: it would not follow the style.
+  `h-control` (34px, a shape token) and `text-ui font-medium` so toolbar rows align evenly. Form inputs and
+  selects use `h-field` (36px). Never `h-[34px]`: it would not follow the shape token.
 - **Spacing (semantic tokens, scaled by density):** pick by role, not by number. They come from `tokens.json` "space"
   and multiply the density unit, so a compact product gets 90% and an airy one 115% without any change in code:
 
@@ -403,11 +368,11 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
 - **Home shell (`md+`):** two inset `rounded-panel` panels inside a `bg-canvas` frame (`md:p-2 md:gap-2`), separated by
   tone (no border): a collapsible left **Panel Menu** (`bg-panel`, `w-60` on `lg+`, or the `w-[60px]` icon rail) and a
   right **Panel Content** (`bg-app`) holding a full-width content container (`max-w-[1440px] px-4 sm:px-6`).
-- **Sidebar order (C-031, #96):** brand + collapse toggle (the logo expands the rail) · one accent **Create** action
+- **Sidebar order (C-031, #96):** brand + collapse toggle (the logo expands the rail) · one brand-filled **Create** action
   (`create`: a `Menu` of things to create, or one link) · the main nav (`sections`) · a **pinned** group (saved views,
   frequent records) under a divider with a `text-overline` label · at the bottom the **utilities** (help, theme,
   notifications: items with `onClick`, or `menu` for a Menu of choices such as `useThemeUtility()`) and the **account**. Rows are `h-9`, icons 18px; the active row is
-  `bg-tint-hover text-contrast`, others `text-body hover:bg-tint`.
+  `bg-tint-hover text-strong`, others `text-body hover:bg-tint`.
 - **Rail:** `lg+` shows labels unless collapsed (remembered per app, `storageKey`); `md` (iPad) is always the rail. In
   the rail every item has an `aria-label` and a `Tooltip` on the right. An item without `icon` shows its initials
   (`shortLabel` to choose them): give pinned items distinct icons, or none, never one shared icon (touch has no
@@ -418,7 +383,7 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
 - **Mega menu:** a nav item with `mega` opens a `MegaMenu` flyout beside the sidebar: 2–4 category columns headed by
   `text-overline`, links with a grey icon, a hint and a "Mới" badge, and a "Xem tất cả" link.
 - **Phones (`< md`):** a top bar (menu button, logo, product name) opens a full-screen drawer with the same groups:
-  one accent Create row (its items open as a level), rows `min-h-12` with › for sub-items and mega menus (a
+  one brand-filled Create row (its items open as a level), rows `min-h-12` with › for sub-items and mega menus (a
   drill-down level with a back row; a parent with its own page is the level's first row, "Tất cả …"), the pinned
   group, utilities and the account at the bottom. The drawer is the default when the app sets neither `mobileNav` nor
   `mobileTabIds`; `mobileNav="tabs"` keeps the bottom tab bar (`MobileTabBar`) with the items named in `mobileTabIds`
@@ -432,7 +397,7 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   **closed by default** and open under their parent only while the parent or one of its sub-items is active; choosing
   another item closes them (no manual toggle, no state to remember). Sub-items are indented on a thin
   `border-divider` guide, `h-7`, with an optional grey `w-3.5` icon (all sub-items of a parent get one, or none): no
-  colour dot, no count (the menu stays neutral; counts and colours live in the page). The parent shows a chevron and keeps `text-contrast` while a sub-item holds the active fill. The `w-14` rail,
+  colour dot, no count (the menu stays neutral; counts and colours live in the page). The parent shows a chevron and keeps `text-strong` while a sub-item holds the active fill. The `w-14` rail,
   widths below `lg` and phones never show sub-items: pages read `useAppShell().submenuVisible` and offer the same choice
   in their toolbar (a `CustomSelect`) when it is false.
 - **Title and toolbar: two layouts, pick one per page.** (a) Title on its own row, toolbar below (`PageTitle` +
@@ -514,7 +479,7 @@ the right. Props: `title`, `productName` (home bar), `logo` / `logoIcon`, `homeH
 - **There is no Home button.** Clicking the logo + title returns home in the same tab; pass `onHome` when leaving needs
   a confirmation. The bar is full width, `h-13`, `bg-app/95 backdrop-blur-xl border-b border-divider`, sticky.
 - Tool apps (an editor around a canvas / 3D view): left `SidePanel` (320 px, collapses to a rail with the sidebar
-  icon), sections `p-3 sm:p-3.5 border-b border-divider`, labels `text-label font-medium text-muted`, rarely used
+  icon), sections `p-3 sm:p-3.5 border-b border-divider`, labels `text-ui font-medium text-muted`, rarely used
   options under a collapsed "Tuỳ chọn khác". Floating canvas controls come from `@semi/ui/styles` (`VIEWPORT_TOOLBAR`
   top centre, `VIEWPORT_PILL` undo/redo bottom centre, `VIEWPORT_ROUND_BTN` bottom left, `VIEWPORT_BADGE` bottom
   right). Phones: canvas on top, settings in a bottom sheet titled with the app name. No file open: a start screen
@@ -535,8 +500,8 @@ padding that comes from three files.
 | A row of a list or menu (three or more stacked alike, clickable or split by lines) is at least a control tall (`h-control`) when clickable, and keeps ≥ 1.5 units (6px) above and below its text | `tight-row` | `Item` / `ItemGroup`, `Menu`, `DataTable` |
 | At most three frames inside each other (page panel › card › tile) | `box-nesting` | white space, a divider or plain text instead of the fourth frame |
 | At most four text sizes in one box (title, body, label, caption) | `type-mix` | weight and colour (`font-medium`, `text-muted`) for the rest |
-| At most three colours in one box (accent and status; greys do not count) | `colour-noise` | neutral icons, a tone only where it means a state (§3) |
-| One filled accent button per view (page, dialog, form) | `primary-actions` | `Button` (secondary) or `ghost` for the rest |
+| At most three colours in one box (brand and status; greys do not count) | `colour-noise` | neutral icons, a tone only where it means a state (§3) |
+| One filled brand button per view (page, dialog, form) | `primary-actions` | `Button` (secondary) or `ghost` for the rest |
 | Boxes side by side keep ≥ 2 units (8px) apart, or share an edge on purpose | `cramped-boxes` | `gap-group` between cards, `gap-stack` between tiles |
 | One line between two things | `double-line` | no `border-b` on the last row of a card (`TBody`, `ItemGroup` do it), no border next to a `divide-y` |
 
@@ -552,7 +517,7 @@ What no number catches stays a review by eye (§19): one main block per screen, 
 
 ## 5. Card
 
-Cards separate from the page by tone (`bg-card`, Surfaces in §2), with no visible border in Flat and Soft.
+Cards separate from the page by tone (`bg-card`, Surfaces in §2), with no visible border.
 `<Card>` (`@semi/ui`) wraps the same classes and pads itself (`padding`: `"card"` = `p-card` by default, `"panel"` =
 `p-card sm:p-panel`, `"none"` for media that runs to the edge; a `p-*` in `className` replaces it): `<Card>`, `<Card interactive>` (CARD_HOVER, the border shows on hover), `<Card active>`
 (CARD_ACTIVE), `<Card bordered>` (CARD_BORDERED: panel fill + 1px line, for a dense table or list that needs an edge). It owns its surface: pass padding / layout only, never `bg-*` or `shadow-*`. With `onClick` it is a
@@ -568,7 +533,7 @@ import { CARD, CARD_BORDERED, CARD_HOVER, CARD_ACTIVE } from "@semi/ui/styles";
 <div className={`${CARD_BORDERED} overflow-hidden`}>…table…</div>        // dense data view that needs an edge
 ```
 
-Card header row: `IconTile` (or the item's image) · name (`text-ui-lg font-semibold`) + caption · icon actions
+Card header row: `IconTile` (or the item's image) · name (`text-lead font-semibold`) + caption · icon actions
 (`ICON_BTN`, `ICON_BTN_DANGER`) on the right.
 
 ## 6. Hero card
@@ -579,7 +544,7 @@ Card header row: `IconTile` (or the item's image) · name (`text-ui-lg font-semi
 
 `<IconTile name="box" tone="green" size="sm|md|lg" />`: rounded square with a soft tint of the area's tone.
 `sm` 28px (list rows) · `md` 36px (card headers) · `lg` 44px (dialogs, empty states). Nav items use a grey `w-4 h-4`
-icon in a `h-8` row; the active item uses a neutral raised fill (`bg-raised text-contrast`). Dashboard quick feature
+icon in a `h-8` row; the active item uses a neutral raised fill (`bg-raised text-strong`). Dashboard quick feature
 tiles use `w-11 h-11 rounded-card` with their area's `TILE_TONES`.
 
 ## 8. Section heading
@@ -595,9 +560,8 @@ tiles use `w-11 h-11 rounded-card` with their area's `TILE_TONES`.
 ## 9. Buttons
 
 `BTN_PRIMARY` / `BTN_SECONDARY` / `BTN_OUTLINE` / `BTN_DANGER` from `@semi/ui/styles` (`rounded-control`, `h-control`,
-`text-label font-medium`, flat). Primary fills with `bg-action` (the accent, or inverted in a brand with
-`primaryStyle: "inverted"`); secondary is a translucent `bg-tint` with no border; outline is the framed field look. Icon-only: add `BTN_ICON`, or `ICON_BTN` (`w-7 h-7 rounded-control`) inside cards. Big
-state toggles (power) are round: `w-20 h-20 sm:w-24 sm:h-24 rounded-full`, flat `bg-accent text-on-accent` when on,
+`text-ui font-medium`, flat). Primary fills with `bg-primary` (the brand fill, one per view); secondary is a translucent `bg-tint` with no border; outline is the framed field look. Icon-only: add `BTN_ICON`, or `ICON_BTN` (`w-7 h-7 rounded-control`) inside cards. Big
+state toggles (power) are round: `w-20 h-20 sm:w-24 sm:h-24 rounded-full`, flat `bg-primary text-on-primary` when on,
 `bg-field` when off. A running action shows a spinner inside its own button only.
 
 ### Grouping actions (G1–G12, C-025 / C-026)
@@ -667,11 +631,11 @@ it form by form; the four lint rules below are warnings until 1.0.
 - Sub-page filter tabs / chips: `Chip` (see §3 Chips). Static labels: `TAG`.
 - Filter chips may carry an icon and a count: icon `w-3.5 h-3.5` + label + `COUNT_PILL`.
 - Status pill: `STATUS_PILL` + `bg-*-bg text-*-fg` (danger, success, warning, info) with a status dot (§11), or `<Badge tone>`.
-- Tag / meta chip: `TAG` (`h-6 px-2 rounded-full bg-field border-line text-caption text-muted`) with an icon.
+- Tag / meta chip: `TAG` (`h-6 px-2 rounded-full bg-field border-line text-ui text-muted`) with an icon.
 
 ## 11. Status dot
 
-Flat dot next to state text, no glow: online `bg-success-solid`, running `bg-accent animate-pulse`,
+Flat dot next to state text, no glow: online `bg-success-solid`, running `bg-inverted animate-pulse`,
 busy/paused/connecting `bg-warning-solid`, error `bg-danger-solid`, offline `bg-muted`. Use `STATUS_DOT`.
 Size `w-2 h-2` (`w-1.5 h-1.5` inline in a caption).
 
@@ -679,7 +643,7 @@ Size `w-2 h-2` (`w-1.5 h-1.5` inline in a caption).
 
 Nested facts (readings, KPIs, sensor values) sit in `TILE` (`rounded-control bg-card-field`, no border)
 with an icon above or before a `tabular-nums` value. Progress is a ring or a `h-1.5 rounded-full` bar in
-`bg-accent` on `bg-raised` (`Progress`).
+`bg-primary` on `bg-raised` (`Progress`).
 
 ## 13. Empty state
 
@@ -750,7 +714,7 @@ A list, grid or table never swaps its rows for a `Spinner` or loading text (`no-
 `List` take `loading`, other lists render a skeleton of their shape: `SkeletonList` (divided rows), `SkeletonTable` (a
 hand-made table), `SkeletonDetail` (a record), `SkeletonRows` / `SkeletonGrid` (cards).
 Another exception: a list a form field fetches by itself in the background shows one small `role="status"` line under that
-field while it loads: a `w-3 h-3` spinner + "Đang tải …" in `text-label text-muted` (the text sits in the
+field while it loads: a `w-3 h-3` spinner + "Đang tải …" in `text-ui text-muted` (the text sits in the
 `role="status"` element, which the lint allows), gone when done; a failed fetch stays silent.
 
 ## 14. Modal & dialog
@@ -840,7 +804,7 @@ are the app's); the parts draw it and report `onSend` / `onStop` / `onRetry` / `
   `sm` by dragging or ←/→ on the edge (320–900px, double click = 380px, remembered per `widthKey`). Header = `IconTile`
   + title + "new chat" (only once there is a message) + close. Keep it mounted with `shown={false}` while it slides out.
 - **Inside:** `ChatView` (skeleton while settings load, `setup` in place of the chat, e.g. an `EmptyState` "AI is not
-  set up" + settings button) > `ChatList` + `ChatComposer`. Messages: `UserMessage` (right, accent tint; `failed`
+  set up" + settings button) > `ChatList` + `ChatComposer`. Messages: `UserMessage` (right, neutral tint; `failed`
   dimmed), `AssistantMessage` (left behind `ChatAvatar`, actions such as `ChatCopyButton` once done), `ChatThinking`
   (label + three dots, before the first token), `ChatError` (status tint, optional retry). Empty conversation:
   `ChatIntro` + `ChatSuggestions` of `ChatSuggestion` rows (`href` = external link). `CHAT_ROW` / `CHAT_CHIP` for
@@ -963,7 +927,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Small interactive panel under a trigger | `Popover` (non-modal dialog); a hover preview of a link → `HoverCard` |
 | Actions at the pointer | `ContextMenu` (right-click, long-press, Menu key); the same actions must exist in a visible `Menu` |
 | Jump / run anything from the keyboard | `CommandPalette` once in the root layout (⌘K, pages add items with `useRegisterCommands`, `openCommandPalette()`); `CommandDialog` + `useHotkey` for a palette of your own, `Command` inline; matching ignores Vietnamese marks |
-| Sort / filter / select / page rows | `DataTable` (`columns`, `search`, `selectable` + `bulkActions`, `pageSize`, `loading`). Many columns (a tablet beside the rail, a split view): give the less important ones `priority` 1–3; they fold into the first column's second line when the table's **own box** is too narrow (3 first; the first column and columns without a priority never fold). The sorted column never folds (its header is the sort control). Folding is measured after hydration, so such a table may shift once on first load. What still does not fit scrolls sideways with a 2px accent line on each edge that has columns past it and the scroll box focusable; `stickyFirstColumn` keeps the names in place. The order it shows is `sortRows(searchRows(rows, columns, search), columns, sort)` (pure, also for a DetailOverlay's ‹ ›) |
+| Sort / filter / select / page rows | `DataTable` (`columns`, `search`, `selectable` + `bulkActions`, `pageSize`, `loading`). Many columns (a tablet beside the rail, a split view): give the less important ones `priority` 1–3; they fold into the first column's second line when the table's **own box** is too narrow (3 first; the first column and columns without a priority never fold). The sorted column never folds (its header is the sort control). Folding is measured after hydration, so such a table may shift once on first load. What still does not fit scrolls sideways with a 2px strong line (outline-line) on each edge that has columns past it and the scroll box focusable; `stickyFirstColumn` keeps the names in place. The order it shows is `sortRows(searchRows(rows, columns, search), columns, sort)` (pure, also for a DetailOverlay's ‹ ›) |
 | Fixed-height scrolling list | `ScrollArea` (edge lines, optional thin scrollbar, keyboard focusable) |
 | Divider / key cap | `Separator` (horizontal, vertical, with a label); `Kbd` (`keys={["⌘", "K"]}`) |
 | Charts | `BarChart` (grouped / `stacked`), `LineChart` (`area`), `DonutChart` (≤ 5 parts), `Sparkline` (trend in a KPI tile). Series colours are the fixed `chart-1…8` tokens in order, a 9th series folds into “Khác”; one y axis only; legend for 2+ series, keyboard tooltip and table view built in |
@@ -1023,7 +987,7 @@ installed. Without Playwright, `--snippet` prints an expression to evaluate with
 | `target-size` | A control is smaller than 24 × 24 px (its `::before` / `::after` hit area included) and a 24px circle on its centre touches another target or another small target's circle; links in a sentence are exempt |
 | `img-alt` | An `<img>` has no `alt`, or a `role="img"` has no name |
 | `lang` | `<html>` has no `lang` |
-| `field-size` | At a viewport under 640px, an input, textarea or select you type in has text under 16px (iOS Safari zooms the page on focus and never zooms back); read-only and disabled fields are exempt |
+| `field-size` | At a viewport under 640px, an input, textarea or select you type in has text under 16px (iOS Safari zooms the page on focus and never zooms back); read-only and disabled fields are exempt. Fix: `FIELD_INPUT`, or `max-sm:text-input` |
 | `zoom-lock` | The viewport meta has `user-scalable=no` or `maximum-scale` below 2 |
 
 `data-a11y-skip="<reason>"` marks a specimen that breaks a rule on purpose (a contrast sample in a brand book); never
@@ -1045,11 +1009,11 @@ roomy store: `data-density` / `data-type-scale` on `<html>` (or any wrapper), mi
 | Choice | Set by | Token | Read by |
 |---|---|---|---|
 | Density compact / regular / airy | product | `--spacing` (Tailwind's unit: every `p-*`, `gap-*`, `space-*`) | everything |
-| Type scale even / contrast | product | `--text-figure` … `--text-display` | `PageTitle`, `KpiCard`, headings |
-| Title weight | style | `font-title` (`--font-weight-title`) | `PageTitle`, `PageTabsTitle`, `KpiCard` |
-| Font of big numbers | style | `font-figure` | `KpiCard` |
+| Type scale even / contrast | product | `--text-figure` … `--text-tab-xl` | `PageTitle`, `KpiCard`, headings |
+| Title weight | shape | `font-title` (`--font-weight-title`) | `PageTitle`, `PageTabsTitle`, `KpiCard` |
+| Font of big numbers | shape | `font-figure` | `KpiCard` |
 
-Sharp has bold titles and figures in the display font; Flat and Soft semibold in the sans. Apps use `font-title`
+Titles are 500 (`font-title`, headings are not bold) and figures use the sans. Apps use `font-title`
 and `font-figure` for their own titles and big numbers, change density and type scale only through the attributes,
 and never override the variables (`brand-override`).
 
@@ -1130,10 +1094,10 @@ catches and what it must not:
 `skip` or a disabled rule grew against the base branch. The edit hook lints `.css` too and flags any edit of
 `semi-lint.json` or the baseline.
 
-- **Physical / literal colors (`no-literal-palette`):** Never use neutral / white / black colour classes on any prefix or variant (`bg-white`, `text-slate-900`, `border-b-gray-200`, `divide-zinc-100`, `ring-slate-300`, `from-white`, `dark:bg-slate-800`). Always use Semantic Tokens (`bg-panel`, `bg-field`, `text-contrast`, `text-body`, `text-muted`, `border-line`, `divide-divider`).
-- **Fixed chromatic text (`no-fixed-tone-text`):** `text-emerald-400`, `text-rose-700 dark:text-rose-300`, `fill-amber-500` cannot pass contrast in both themes: use `text-accent-fg`, `text-*-fg` or `text-tone-<hue>`.
-- **Brand scale as a state colour (`accent-state-token`):** `ring-primary-500/50`, `bg-primary-500/15`, `border-primary-500/30` are not themed and vanish for light brands on light surfaces (a yellow ring is ≈ 1.3:1 on white): use `ring-focus`, `border-focus`, `bg-accent-subtle` / `bg-accent-subtle-hover`, `border-accent-line`. `/semi-check` rewrites them.
-- **Brand scale as a fill or border (`primary-fill`):** `bg-primary-500`, `hover:bg-primary-600`, `border-primary-500`. The brand colour sits on one step of the scale (yellow on `200`, navy on `900`), so a `primary-500` fill turns pale or off-brand with a brand kit. Main actions and "on" marks are `bg-accent hover:bg-accent-hover text-on-accent` (`BTN_PRIMARY`), selected borders `border-accent-line`, focused ones `border-focus`. `primary-*` is the scale for charts and illustrations: list those files under `skip`. The `/semi-check` codemod rewrites `bg-primary-400…600` to `bg-accent` when the same class list has `text-white` / `text-on-accent`, and reports the rest.
+- **Physical / literal colors (`no-literal-palette`):** Never use neutral / white / black colour classes on any prefix or variant (`bg-white`, `text-slate-900`, `border-b-gray-200`, `divide-zinc-100`, `ring-slate-300`, `from-white`, `dark:bg-slate-800`). Always use Semantic Tokens (`bg-panel`, `bg-field`, `text-strong`, `text-body`, `text-muted`, `border-line`, `divide-divider`).
+- **Fixed chromatic text (`no-fixed-tone-text`):** `text-emerald-400`, `text-rose-700 dark:text-rose-300`, `fill-amber-500` cannot pass contrast in both themes: use `text-strong`, `text-*-fg` or `text-tone-<hue>`.
+- **Brand scale as a state colour (`accent-state-token`):** `ring-primary-500/50`, `bg-primary-500/15`, `border-primary-500/30` are not themed and vanish for light brands on light surfaces (a yellow ring is ≈ 1.3:1 on white): use `ring-focus`, `border-focus`, `bg-item-selected` / `bg-item-selected`, `border-outline-line`. `/semi-check` rewrites them.
+- **Brand scale as a fill or border (`primary-fill`):** `bg-primary-500`, `hover:bg-primary-600`, `border-primary-500`. The brand colour sits on one step of the scale (yellow on `200`, navy on `900`), so a `primary-500` fill turns pale or off-brand with a brand kit. Main actions and "on" marks are `bg-primary hover:bg-primary-hover text-on-primary` (`BTN_PRIMARY`), selected borders `border-outline-line`, focused ones `border-focus`. `primary-*` is the scale for charts and illustrations: list those files under `skip`. The `/semi-check` codemod rewrites `bg-primary-400…600` to `bg-primary` when the same class list has `text-white` / `text-on-primary`, and reports the rest.
 - **Solid pastel surfaces (`no-solid-pastel-surfaces`), arbitrary colours (`hex-colour-class`), literal colours in code (`literal-colour-value`), off-scale sizes (`arbitrary-text-size`).**
 - The colour / size rules read class tokens from every string literal (className, `cn()`, constants, template parts, `@apply`), not lines, so any spelling of a colour is caught.
 - **Illustrations and data colours** (a device drawing, a 3D scene palette, other companies' logos) are content, not UI chrome: name each file under `skip` in `semi-lint.json` with a reason, for `literal-colour-value`, `inline-svg-path` or `no-literal-palette` only: `"skip": { "literal-colour-value": { "lib/scenePalette.ts": "data colours: 3D scene" } }`. The `/semi-check` audit lists each one ("Minh hoạ / màu dữ liệu") and its codemod leaves them; never a whole folder, never the baseline.
@@ -1145,7 +1109,7 @@ catches and what it must not:
 - Emoji or unicode pictograms as icons; filled glyphs mixed with stroke icons; stroke 2+; new inline `<svg>` paths.
 - Native `<select>`, `type="date"`, `type="number"`, `window.confirm` / `alert`.
 - Tokens are named by role, like the large design systems (Material, Carbon, Primer: a type role, a layer), never by
-  one component: `text-figure` (was `text-kpi`), `z-sheet` (was `z-keypad`). The old names stay as deprecated aliases
+  one component: `text-figure` (was `text-figure`), `z-sheet` (was `z-keypad`). The old names stay as deprecated aliases
   until 1.0; the 0.30.0 migration rewrites them.
 - `AppShell` in a page or in a component a page imports (`app-shell-in-page`); a shell gated behind a page skeleton (`shell-gate`); sidebar routing through `onSelect` + `router.push` instead of item `href` (`shell-nav-href`); `BootLoader` in a page, a `loading.tsx` or shell content (`boot-loader-place`).
 - "Đang tải…" text or a page spinner instead of a skeleton (`loading-text`). A step label of a progress bar (`Progress label`, a call with a `fraction` / `value`), text in a `role="status"` / `role="progressbar"` element and a `TaskHost` label are fine.

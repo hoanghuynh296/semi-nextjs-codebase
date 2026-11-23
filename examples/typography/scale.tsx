@@ -1,14 +1,15 @@
 export default function TypographyScale() {
+  // A type specimen shows every size on purpose: data-density-skip keeps it out of the type-mix budget.
   return (
-    <div className="space-y-1.5">
-      <div className="font-display text-display text-contrast">Hiển thị 26</div>
-      <div className="text-heading text-contrast font-semibold">Tiêu đề trang 22</div>
-      <div className="text-title-lg text-contrast font-semibold">Tiêu đề 16</div>
-      <div className="text-title text-contrast font-medium">Tiêu đề thẻ 15</div>
-      <div className="text-ui-lg text-body">Nội dung dài 14</div>
-      <div className="text-ui text-body">Giao diện 13</div>
-      <div className="text-label text-muted">Nhãn 12</div>
-      <div className="text-caption text-muted">Chú thích 11</div>
+    <div data-density-skip className="space-y-1.5">
+      <div className="font-display text-tab-xl text-strong">Tab lớn 28</div>
+      <div className="text-section text-strong">Tiêu đề mục 20</div>
+      <div className="text-figure text-strong">Tiêu đề trang trong thẻ 18</div>
+      <div className="text-lead text-strong font-medium">Tiêu đề thẻ 15</div>
+      <div className="text-copy text-body">Nội dung dài 14</div>
+      <div className="text-ui text-body">Giao diện 12</div>
+      <div className="text-ui text-muted">Nhãn 12</div>
+      <div className="text-tag text-muted">Thẻ 10</div>
     </div>
   );
 }

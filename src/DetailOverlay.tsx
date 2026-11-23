@@ -104,7 +104,7 @@ export function useDetailParam(key = "open"): DetailParamState {
 
 /** The round icon button of the header (close, copy link, ‹ ›). */
 const NAV =
-  "w-9 h-9 shrink-0 rounded-full bg-tint text-contrast hover:bg-tint-hover flex items-center justify-center cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed outline-none focus-visible:ring-2 focus-visible:ring-focus";
+  "w-9 h-9 shrink-0 rounded-full bg-tint text-strong hover:bg-tint-hover flex items-center justify-center cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed outline-none focus-visible:ring-2 focus-visible:ring-focus";
 
 export function DetailOverlay({
   open,
@@ -228,10 +228,10 @@ export function DetailOverlay({
             <Icon name="close" className="w-4 h-4" />
           </button>
           <div className="flex-1 min-w-0 px-1">
-            <h2 id={titleId} className="text-ui font-semibold text-contrast truncate">
+            <h2 id={titleId} className="text-ui font-semibold text-strong truncate">
               {title}
             </h2>
-            {subtitle && <div className="text-caption text-muted truncate">{subtitle}</div>}
+            {subtitle && <div className="text-ui text-muted truncate">{subtitle}</div>}
           </div>
           {onCopyLink && (
             <button type="button" onClick={onCopyLink} aria-label={t.copyLink} title={t.copyLink} className={cn(NAV, "max-sm:hidden")}>
@@ -239,7 +239,7 @@ export function DetailOverlay({
             </button>
           )}
           {counted && (
-            <span className="text-label text-muted tabular-nums px-1">
+            <span className="text-ui text-muted tabular-nums px-1">
               <span aria-hidden>
                 {index + 1} / {total}
               </span>

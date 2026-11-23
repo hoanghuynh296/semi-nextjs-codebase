@@ -89,16 +89,16 @@ export function Tabs<T extends string>({
               disabled={it.disabled}
               onClick={() => onChange(it.key)}
               className={cn(
-                "inline-flex items-center gap-1.5 whitespace-nowrap text-label font-medium transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0",
+                "inline-flex items-center gap-1.5 whitespace-nowrap text-ui font-medium transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0",
                 FOCUS_RING,
                 seg
-                  ? cn("h-full px-2.5 rounded-control", on ? SEGMENT_ON : "text-muted hover:text-contrast")
-                  : cn("h-9 -mb-px border-b-2", on ? "border-accent text-contrast" : "border-transparent text-muted hover:text-contrast"),
+                  ? cn("h-full px-2.5 rounded-control", on ? SEGMENT_ON : "text-muted hover:text-strong")
+                  : cn("h-9 -mb-px border-b-2", on ? "border-strong text-strong" : "border-transparent text-muted hover:text-strong"),
               )}
             >
               {it.icon && <Icon name={it.icon} className="w-3.5 h-3.5" />}
               {it.label}
-              {it.count !== undefined && <span className="text-caption tabular-nums text-muted">{it.count}</span>}
+              {it.count !== undefined && <span className="text-ui tabular-nums text-muted">{it.count}</span>}
             </button>
           );
         })}

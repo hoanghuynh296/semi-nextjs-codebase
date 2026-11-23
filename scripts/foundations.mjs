@@ -1,31 +1,37 @@
 // The foundations of the Semi docs site, read from tokens/ (the same files the CSS is built from), so the page can
-// never show values the system does not use: surfaces and text per theme, the type scale, the styles (Flat, Soft,
-// Sharp: radius, control height, card border, fonts), the z-index and motion scales.
+// never show values the system does not use: surfaces, text tiers, lines and fills per theme, the type scale, the shape
+// (radius, control height, card border, fonts), the z-index and motion scales.
 //   site/foundations.generated.ts   imported by app/foundations/page.tsx; written by build-manifest (do not edit)
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 const SURFACES = [
-  ["color-canvas", "bg-canvas", "Khung ngoài cùng AppShell, lớp bọc toàn trang"],
-  ["color-app", "bg-app", "Nền chính của content panel, trang nội dung"],
-  ["color-panel", "bg-panel", "Thẻ Card, sidebar, thanh công cụ"],
-  ["color-field", "bg-field", "Ô nhập, nền của control và popup"],
-  ["color-raised", "bg-raised", "Hover, track, dòng được chọn"],
+  ["color-canvas", "bg-canvas", "Nền trang, khung quanh các panel"],
+  ["color-app", "bg-app", "Cột nội dung, chứa header của route"],
+  ["color-panel", "bg-panel", "Panel nav, thẻ nội dung, sub-nav, modal"],
+  ["color-field", "bg-field", "Nền ô nhập"],
+  ["color-field-focus", "bg-field-focus", "Nền ô nhập khi focus (tối hơn một bậc)"],
+  ["color-raised", "bg-raised", "Track segmented, nút toolbar, vạch chia nhóm nav"],
+  ["color-raised-2", "bg-raised-2", "Viên đang chọn của segmented (trên track raised)"],
 ];
+
 const TEXT = [
-  ["color-text-contrast", "text-contrast", "Tiêu đề, giá trị quan trọng"],
-  ["color-text-body", "text-body", "Nội dung chính"],
-  ["color-text-muted", "text-muted", "Nhãn phụ, placeholder, gợi ý"],
-  ["color-line", "border-line", "Viền card, bảng, khung"],
-  ["color-control-line", "border-control-line", "Viền ô nhập, checkbox, radio (≥ 3:1)"],
-  ["color-divider", "border-divider", "Đường ngăn trong một khối"],
-  ["color-accent", "bg-accent", "Nền nút chính, dấu đang chọn"],
-  ["color-accent-fg", "text-accent-fg", "Chữ và icon nhấn trên nền tối/sáng"],
+  ["color-text-strong", "text-strong", "Tiêu đề, mục đang chọn, giá trị"],
+  ["color-text-body", "text-body", "Chữ trong thẻ, nội dung"],
+  ["color-text-muted", "text-muted", "Mô tả, tab / nav chưa chọn, breadcrumb, placeholder"],
+  ["color-text-faint", "text-faint", "Nhãn nhóm, gợi ý phím, \"Untitled\""],
+  ["color-field-line", "border-field-line", "Viền ô nhập lúc nghỉ"],
+  ["color-field-line-focus", "border-field-line-focus", "Viền ô nhập khi focus"],
+  ["color-outline-line", "border-outline-line", "Viền nút outline"],
+  ["color-item-hover", "bg-item-hover", "Hover của dòng, mục nav và sub-nav"],
+  ["color-item-selected", "bg-item-selected", "Mục nav đang chọn, dòng đang mở"],
+  ["color-item-checked", "bg-item-checked", "Dòng / thẻ được tick khi chọn nhiều"],
+  ["color-subtle-button", "bg-subtle-button", "Nền nút thường trong nội dung"],
+  ["color-primary", "bg-primary", "Màu brand: nút chính, badge đếm, gạch chân tab lớn đang chọn"],
 ];
 
 export function foundationsSource(root) {
   const tokens = JSON.parse(readFileSync(join(root, "tokens/tokens.json"), "utf8"));
-  const styles = JSON.parse(readFileSync(join(root, "tokens/styles.json"), "utf8"));
   // Readable values: "color-mix(in oklab, var(--semi-text-muted) 65%, transparent)" → "text-muted 65%",
   // "var(--color-primary-500)" → "primary-500".
   const short = (v) =>
@@ -45,18 +51,21 @@ export function foundationsSource(root) {
         return { cls, size: lh ? `${px} / ${typeof lh === "string" ? lh : lh.value}` : px };
       }),
     z: Object.entries(tokens.z).filter(([, v]) => !v?.deprecated).map(([cls, v]) => ({ cls, value: typeof v === "string" ? v : v.value })),
-    motion: Object.entries(tokens.motion).map(([name, value]) => ({ name, value })),
-    styles: styles.styles.map((s) => ({
-      id: s.id,
-      name: s.name,
-      description: s.description,
-      fonts: s.fonts.map((f) => f.family),
-      radius: { chip: s.tokens["radius-chip"], control: s.tokens["radius-control"], card: s.tokens["radius-card"], panel: s.tokens["radius-panel"] },
-      controlHeight: s.tokens["spacing-control"],
-      fieldHeight: s.tokens["spacing-field"],
-      cardBorder: s.tokens["card-border"],
-      cardShadow: s.tokens["shadow-card"],
-    })),
+    motion: Object.entries(tokens.motion)
+      .filter(([name]) => !name.startsWith("$"))
+      .map(([name, v]) => ({ name, value: typeof v === "string" ? v : v.value })),
+    shape: (() => {
+      const v = (k) => tokens.shape[k].value;
+      return {
+        fonts: tokens.shape.$fonts.map((f) => f.family),
+        radius: { chip: v("radius-chip"), control: v("radius-control"), card: v("radius-card"), panel: v("radius-panel") },
+        controlHeight: v("spacing-control"),
+        fieldHeight: v("spacing-field"),
+        cardBorder: v("card-border"),
+        cardShadow: v("shadow-card"),
+        titleWeight: v("font-weight-title"),
+      };
+    })(),
   };
   return [
     "// GENERATED by scripts/foundations.mjs from tokens/ — do not edit.",

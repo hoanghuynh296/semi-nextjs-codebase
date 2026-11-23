@@ -31,12 +31,12 @@ export default function CardBasic() {
   return (
     <Card className="space-y-2 max-w-sm">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-ui font-semibold text-contrast">X1 Carbon · Xưởng A</span>
+        <span className="text-ui font-semibold text-strong">X1 Carbon · Xưởng A</span>
         <Badge tone="emerald" dot>
           Online
         </Badge>
       </div>
-      <p className="text-label text-muted">Đang in: vỏ hộp điều khiển · còn 42 phút</p>
+      <p className="text-ui text-muted">Đang in: vỏ hộp điều khiển · còn 42 phút</p>
     </Card>
   );
 }
@@ -51,12 +51,12 @@ export default function CardStates() {
   return (
     <div className="grid gap-3 sm:grid-cols-2 max-w-xl">
       <Card interactive className="space-y-2">
-        <div className="text-ui font-semibold text-contrast">P1S · Xưởng B</div>
-        <div className={`${TILE} p-2 text-label text-body tabular-nums`}>Đầu phun 220°C · Bàn 60°C</div>
+        <div className="text-ui font-semibold text-strong">P1S · Xưởng B</div>
+        <div className={`${TILE} p-2 text-ui text-body tabular-nums`}>Đầu phun 220°C · Bàn 60°C</div>
       </Card>
       <Card interactive active className="space-y-2">
-        <div className="text-ui font-semibold text-contrast">A1 Mini · đang in</div>
-        <div className={`${TILE} p-2 text-label text-body tabular-nums`}>Tiến độ 64%</div>
+        <div className="text-ui font-semibold text-strong">A1 Mini · đang in</div>
+        <div className={`${TILE} p-2 text-ui text-body tabular-nums`}>Tiến độ 64%</div>
       </Card>
     </div>
   );
@@ -71,9 +71,9 @@ import { Card } from "@semi/ui";
 export default function CardBordered() {
   return (
     <Card bordered padding="none" className="max-w-xl overflow-hidden">
-      <div className="px-card py-2.5 border-b border-divider text-ui font-semibold text-contrast">Đơn mua gần đây</div>
+      <div className="px-card py-2.5 border-b border-divider text-ui font-semibold text-strong">Đơn mua gần đây</div>
       {["PO-1042 · Nhựa PLA 1kg", "PO-1041 · Đầu phun 0.4", "PO-1040 · Bàn in PEI"].map((row) => (
-        <div key={row} className="px-card py-2.5 border-b border-divider last:border-0 text-label text-body">
+        <div key={row} className="px-card py-2.5 border-b border-divider last:border-0 text-ui text-body">
           {row}
         </div>
       ))}

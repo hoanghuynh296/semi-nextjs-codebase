@@ -63,7 +63,7 @@ export default function AIChatWorkspace() {
   };
   return (
     <div className="relative h-[480px] rounded-card bg-canvas border border-line overflow-hidden">
-      <div className="absolute inset-0 flex items-center justify-center text-label text-muted">Canvas / workspace</div>
+      <div className="absolute inset-0 flex items-center justify-center text-ui text-muted">Canvas / workspace</div>
       <AIChat
         title="Trợ lý AI"
         placement="workspace"

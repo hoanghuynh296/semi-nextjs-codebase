@@ -10,7 +10,7 @@ export default function ThemeSwitchers() {
       <ThemeSwitcher />
       <ThemeSwitcher variant="menu" />
       <ThemeToggle />
-      <span className="text-label text-muted tabular-nums">
+      <span className="text-ui text-muted tabular-nums">
         theme = {theme} · resolved = {resolvedTheme}
       </span>
     </div>

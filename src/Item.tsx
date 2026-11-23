@@ -38,16 +38,16 @@ export function Item({
     <>
       {media ?? (icon && <Icon name={icon} className="w-4 h-4 text-muted shrink-0" />)}
       <span className="min-w-0 flex-1">
-        <span className="block text-ui font-medium text-contrast truncate">{title}</span>
-        {description && <span className="block text-label text-muted truncate">{description}</span>}
+        <span className="block text-ui font-medium text-strong truncate">{title}</span>
+        {description && <span className="block text-ui text-muted truncate">{description}</span>}
       </span>
-      {meta && <span className="shrink-0 text-label text-muted tabular-nums">{meta}</span>}
+      {meta && <span className="shrink-0 text-ui text-muted tabular-nums">{meta}</span>}
       {(href || onClick) && !actions && <Icon name="chevron" className="w-4 h-4 text-muted shrink-0" />}
     </>
   );
   const rowCls = "flex items-center gap-3 min-w-0 flex-1 text-left";
   return (
-    <div className={cn("relative flex items-center gap-3 px-4 py-3", (href || onClick) && "hover:bg-field/60 light:hover:bg-field/80 transition-colors", className)}>
+    <div className={cn("relative flex items-center gap-3 px-4 py-3", (href || onClick) && "hover:bg-item-hover transition-colors", className)}>
       {href ? (
         <Link href={href} className={cn(rowCls, "after:absolute after:inset-0 rounded-control", FOCUS_RING)}>
           {main}
@@ -68,7 +68,7 @@ export function Item({
 export function ItemGroup({ label, showLabel = false, className, children }: { label: string; showLabel?: boolean; className?: string; children: React.ReactNode }) {
   return (
     <section aria-label={label} className={cn("space-y-2", className)}>
-      {showLabel && <h3 className="px-1 text-label font-medium text-muted">{label}</h3>}
+      {showLabel && <h3 className="px-1 text-ui font-medium text-muted">{label}</h3>}
       <div className={cn(CARD, "divide-y divide-divider overflow-hidden")}>{children}</div>
     </section>
   );

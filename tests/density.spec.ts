@@ -8,7 +8,7 @@ const BOX = "border:1px solid #ccc;border-radius:8px;width:320px;";
 
 async function audit(page: Page, body: string) {
   await page.setContent(
-    `<html style="--color-accent:${ACCENT}"><body style="font:14px/1.5 sans-serif;margin:0;padding:24px;background:#fff;color:#222"><main>${body}</main></body></html>`,
+    `<html style="--color-primary:${ACCENT}"><body style="font:14px/1.5 sans-serif;margin:0;padding:24px;background:#fff;color:#222"><main>${body}</main></body></html>`,
   );
   return (await page.evaluate(densityAudit, { scope: "main" })).map((h) => h.rule);
 }
@@ -49,6 +49,12 @@ const CASES: [string, string, string][] = [
     "primary-actions",
     `<form><button style="background:${ACCENT};color:#fff">Lưu</button><button style="background:${ACCENT};color:#fff">Gửi</button></form>`,
     `<form><button style="background:${ACCENT};color:#fff">Lưu</button><button style="background:#eee">Huỷ</button><button role="switch" aria-checked="true" style="background:${ACCENT}">on</button><button data-split-menu aria-haspopup="menu" style="background:${ACCENT}">▾</button></form>`,
+  ],
+  [
+    // The same screen shown in light and in dark (nested data-theme scopes): one main button in each, not two in one view.
+    "primary-actions",
+    `<div data-theme="light"><button style="background:${ACCENT};color:#fff">Lưu</button><button style="background:${ACCENT};color:#fff">Gửi</button></div>`,
+    `<div data-theme="light"><button style="background:${ACCENT};color:#fff">Lưu</button></div><div data-theme="dark"><button style="background:${ACCENT};color:#fff">Lưu</button></div>`,
   ],
   [
     "cramped-boxes",

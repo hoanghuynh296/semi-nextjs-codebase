@@ -18,7 +18,7 @@ export const HIT_AREA =
 
 /** The chosen segment of a segmented control (Pills, Toggle, pill Tabs, theme / style switcher). The tonal fill alone
  * is too faint to tell which one is on, so an inset control-line ring marks it at ≥ 3:1 (WCAG 1.4.11). */
-export const SEGMENT_ON = "bg-raised text-contrast ring-1 ring-inset ring-control-line";
+export const SEGMENT_ON = "bg-raised text-strong ring-1 ring-inset ring-control-line";
 
 /** Full-screen backdrop of modals, dialogs and sheets (themed overlay colour + blur). Add a z-* layer. */
 export const OVERLAY = "fixed inset-0 bg-overlay backdrop-blur-lg";

@@ -37,7 +37,7 @@ export function Alert({
       <Icon name={icon ?? s.icon} className={cn("w-4 h-4 mt-px shrink-0", s.fg)} />
       <div className="flex-1 min-w-0 space-y-1">
         {title && <div className={cn("text-ui font-medium", s.fg)}>{title}</div>}
-        {children && <div className="text-label text-body leading-relaxed">{children}</div>}
+        {children && <div className="text-ui text-body leading-relaxed">{children}</div>}
         {action && <div className="pt-1">{action}</div>}
       </div>
       {onDismiss && (
@@ -45,7 +45,7 @@ export function Alert({
           type="button"
           aria-label={t.dismiss}
           onClick={onDismiss}
-          className={cn("w-6 h-6 rounded-control text-muted hover:text-contrast flex items-center justify-center transition shrink-0 cursor-pointer", FOCUS_RING)}
+          className={cn("w-6 h-6 rounded-control text-muted hover:text-strong flex items-center justify-center transition shrink-0 cursor-pointer", FOCUS_RING)}
         >
           <Icon name="close" className="w-3.5 h-3.5" />
         </button>
@@ -55,7 +55,7 @@ export function Alert({
 }
 
 const PROGRESS_FILL: Record<StatusTone | "accent", string> = {
-  accent: "bg-accent",
+  accent: "bg-inverted",
   info: "bg-info-solid",
   success: "bg-success-solid",
   warning: "bg-warning-solid",
@@ -89,9 +89,9 @@ export function Progress({
   return (
     <div className={cn("min-w-0", className)}>
       {(label || showValue) && (
-        <div className="flex items-center justify-between gap-2 mb-1.5 text-label">
+        <div className="flex items-center justify-between gap-2 mb-1.5 text-ui">
           {label && <span className="text-muted font-medium truncate">{label}</span>}
-          {showValue && pct !== undefined && <span className="text-contrast tabular-nums">{Math.round(pct)}%</span>}
+          {showValue && pct !== undefined && <span className="text-strong tabular-nums">{Math.round(pct)}%</span>}
         </div>
       )}
       <div
@@ -112,7 +112,7 @@ export function Progress({
 }
 
 const AVATAR_TONES = ["purple", "sky", "teal", "amber", "rose", "indigo", "emerald", "orange"] as const;
-const AVATAR_SIZE = { sm: "w-6 h-6 text-caption", md: "w-8 h-8 text-label", lg: "w-10 h-10 text-ui" } as const;
+const AVATAR_SIZE = { sm: "w-6 h-6 text-ui", md: "w-8 h-8 text-ui", lg: "w-10 h-10 text-ui" } as const;
 
 /** Person or team mark: photo, else initials on a tone picked from the name (stable per name). */
 export function Avatar({ name, src, size = "md", className }: { name: string; src?: string; size?: keyof typeof AVATAR_SIZE; className?: string }) {
@@ -171,8 +171,8 @@ export function EmptyState({
       <span className="w-9 h-9 rounded-card bg-field border border-line flex items-center justify-center text-muted shrink-0">
         <Icon name={icon ?? (noResults ? "search" : "box")} className="w-4 h-4" />
       </span>
-      <div className="text-ui font-medium text-contrast">{heading}</div>
-      {(description ?? (noResults ? t.noResultsHint : undefined)) && <div className="text-label text-muted max-w-sm">{description ?? t.noResultsHint}</div>}
+      <div className="text-ui font-medium text-strong">{heading}</div>
+      {(description ?? (noResults ? t.noResultsHint : undefined)) && <div className="text-ui text-muted max-w-sm">{description ?? t.noResultsHint}</div>}
       {shownAction && <div className="pt-1">{shownAction}</div>}
     </div>
   );

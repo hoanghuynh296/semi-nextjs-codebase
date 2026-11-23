@@ -81,8 +81,8 @@ export default function WorkspaceRequest() {
             {LINES.map((l, i) => (
               <div key={l.id} className="rounded-card bg-card p-3 flex flex-col gap-2">
                 <div className="min-w-0">
-                  <div className="text-label font-semibold text-contrast">{l.name}</div>
-                  <div className="text-caption text-muted truncate">{l.spec}</div>
+                  <div className="text-ui font-semibold text-strong">{l.name}</div>
+                  <div className="text-ui text-muted truncate">{l.spec}</div>
                 </div>
                 <Stepper label={`số tấn ${l.name}`} unit="tấn" min={1} value={qty[i]} onChange={(v) => setQty(qty.map((q, j) => (j === i ? v : q)))} />
               </div>
@@ -116,32 +116,32 @@ export default function WorkspaceRequest() {
       result={
         <>
           <div className="flex flex-wrap items-center gap-3">
-            <h3 className="flex-1 text-title font-title font-semibold text-contrast">So sánh báo giá</h3>
-            <span className="text-label text-muted">2/2 nhà cung cấp đã trả lời</span>
+            <h3 className="flex-1 text-lead font-title font-semibold text-strong">So sánh báo giá</h3>
+            <span className="text-ui text-muted">2/2 nhà cung cấp đã trả lời</span>
           </div>
           <div className="grid md:grid-cols-2 gap-group">
             {QUOTES.map((q) => (
               <article key={q.supplier} className="rounded-card bg-card p-card flex flex-col gap-3">
                 <div className="min-w-0">
-                  <div className="text-ui font-semibold text-contrast truncate">{q.supplier}</div>
-                  <div className="text-caption text-muted">FOB · {q.days} ngày</div>
+                  <div className="text-ui font-semibold text-strong truncate">{q.supplier}</div>
+                  <div className="text-ui text-muted">FOB · {q.days} ngày</div>
                 </div>
                 <div className="flex flex-col divide-y divide-divider">
                   {LINES.map((l, i) => (
                     <div key={l.id} className="flex items-center gap-2 py-2">
-                      <span className="flex-1 text-label text-body">{l.name}</span>
+                      <span className="flex-1 text-ui text-body">{l.name}</span>
                       {q.best[i] && (
                         <Badge tone="emerald" size="sm">
                           Tốt nhất
                         </Badge>
                       )}
-                      <span className="text-label tabular-nums text-contrast">{usd(q.prices[i])}</span>
+                      <span className="text-ui tabular-nums text-strong">{usd(q.prices[i])}</span>
                     </div>
                   ))}
                 </div>
                 <div className="flex items-center justify-between pt-1">
-                  <span className="text-caption text-muted">Tổng ({qty[0] + qty[1]} tấn)</span>
-                  <span className="text-ui-lg font-figure font-semibold text-contrast tabular-nums">{usd(q.prices[0] * qty[0] + q.prices[1] * qty[1])}</span>
+                  <span className="text-ui text-muted">Tổng ({qty[0] + qty[1]} tấn)</span>
+                  <span className="text-lead font-figure font-semibold text-strong tabular-nums">{usd(q.prices[0] * qty[0] + q.prices[1] * qty[1])}</span>
                 </div>
               </article>
             ))}
@@ -192,7 +192,7 @@ export default function WorkspaceInShell() {
           <WorkspaceSection label="Mặt hàng" count={LINES.length} max={8}>
             {LINES.map((name, i) => (
               <div key={name} className="rounded-card bg-card p-3 flex flex-col gap-2">
-                <div className="text-label font-semibold text-contrast">{name}</div>
+                <div className="text-ui font-semibold text-strong">{name}</div>
                 <Stepper label={`số tấn ${name}`} unit="tấn" min={1} value={qty[i]} onChange={(v) => setQty(qty.map((q, j) => (j === i ? v : q)))} />
               </div>
             ))}

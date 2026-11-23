@@ -15,8 +15,8 @@ export const DENSITY_RULES = [
   ["tight-row", "A row in a list or menu is at least as tall as a control (h-control) when it is clickable, and its text keeps 6px above and below: use Item / ItemGroup, Menu, DataTable."],
   ["box-nesting", "At most three framed boxes inside each other (page panel › card › tile): a fourth frame is noise; use space, a divider or plain text instead."],
   ["type-mix", "At most four text sizes in one box (title, body, label, caption): a fifth size makes the box read as a collage."],
-  ["colour-noise", "At most three colours (accent + status) in one box: colour means something (§3), so more reads as decoration."],
-  ["primary-actions", "One filled accent button per view (page, dialog, form): the rest are secondary or ghost."],
+  ["colour-noise", "At most three colours (brand + status) in one box: colour means something (§3), so more reads as decoration."],
+  ["primary-actions", "One filled brand button per view (page, dialog, form): the rest are neutral (subtle, outline, ghost)."],
   ["cramped-boxes", "Boxes side by side keep 8px or more between them (gap-group between cards, gap-stack between tiles), or share an edge on purpose (0)."],
   ["double-line", "One line between two things: a border next to another border (card edge + row divider, divide-y + border-b) reads as a double line."],
 ];
@@ -32,9 +32,9 @@ export function densityAudit(opts) {
   const root = (o.scope && document.querySelector(o.scope)) || document.body;
   const limit = o.limit || 20;
 
-  // Density unit and control height as the page resolves them (4px / 34px in Flat at regular density).
+  // Density unit and control height as the page resolves them (4px / 34px at regular density).
   const probe = document.createElement("div");
-  probe.style.cssText = "position:absolute;visibility:hidden;left:0;top:0;width:calc(var(--spacing, 0.25rem) * 4);height:var(--spacing-control, 34px);background:var(--color-accent, transparent)";
+  probe.style.cssText = "position:absolute;visibility:hidden;left:0;top:0;width:calc(var(--spacing, 0.25rem) * 4);height:var(--spacing-control, 34px);background:var(--color-primary, transparent)";
   (root.closest("[data-density]") || root).appendChild(probe);
   const u = probe.getBoundingClientRect().width / 4 || 4;
   const control = probe.getBoundingClientRect().height || 34;
@@ -307,7 +307,7 @@ export function densityAudit(opts) {
     if (hues.size > 3) hit("colour-noise", box, `${hues.size} colours`);
   }
 
-  // primary-actions: filled accent buttons per view (dialog, form, example, page).
+  // primary-actions: filled brand (bg-primary) buttons per view (dialog, form, example, page).
   if (accent[3] > 0.5 && chroma(accent) > 24) {
     const views = new Map();
     for (const el of root.querySelectorAll("button, a[href], [role=button]")) {
@@ -316,10 +316,13 @@ export function densityAudit(opts) {
       if (!visible(el) || skipped(el) || el.matches("[data-split-menu]") || el.closest("[role=switch], [role=checkbox], [role=radio], [role=tab], [role=gridcell], [aria-pressed=true], [aria-selected=true], [aria-checked=true], [aria-current]")) continue;
       const bg = rgba(css(el).backgroundColor);
       if (bg[3] < 0.9 || !near(bg, accent, 12)) continue;
-      const view = el.closest("[role=dialog], [role=alertdialog], form, [data-density-view], main") || root;
+      // A nested data-theme scope (the same screen shown in light and in dark) is a view of its own: the brand fill
+      // is one colour in both themes, so the twin of a main button is not a second one.
+      let view = el.closest("[role=dialog], [role=alertdialog], form, [data-density-view], [data-theme]");
+      if (!view || view === document.documentElement || (view !== root && !root.contains(view))) view = el.closest("main") || root;
       views.set(view, [...(views.get(view) || []), el]);
     }
-    for (const [view, btns] of views) if (btns.length > 1) hit("primary-actions", view, `${btns.length} filled accent buttons: ${btns.map(textOf).filter(Boolean).slice(0, 3).join(" · ")}`);
+    for (const [view, btns] of views) if (btns.length > 1) hit("primary-actions", view, `${btns.length} filled brand buttons: ${btns.map(textOf).filter(Boolean).slice(0, 3).join(" · ")}`);
   }
 
   // cramped-boxes: neighbouring boxes closer than 8px, but not touching (a shared edge is on purpose).

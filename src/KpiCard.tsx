@@ -41,19 +41,19 @@ export function KpiCard({
 }) {
   return (
     <div className={`${CARD} ${featured ? "col-span-2 p-card sm:p-panel gap-stack" : "p-card gap-2"} flex flex-col ${className}`} title={hint}>
-      <div className="flex items-center gap-2 text-label font-medium text-muted min-w-0">
+      <div className="flex items-center gap-2 text-ui font-medium text-muted min-w-0">
         {icon && <Icon name={icon} className={`w-4 h-4 shrink-0 ${iconTone ? TONE_TEXT[iconTone] : "text-muted"}`} />}
         <span className="truncate">{label}</span>
       </div>
       <div
         className={`font-figure font-title leading-tight tracking-tight tabular-nums truncate ${
-          featured ? "text-heading-lg sm:text-display" : "text-figure sm:text-heading"
-        } ${tone === "danger" ? "text-danger-fg" : tone === "good" ? "text-success-fg" : "text-contrast"}`}
+          featured ? "text-tab-xl sm:text-tab-xl" : "text-figure sm:text-section"
+        } ${tone === "danger" ? "text-danger-fg" : tone === "good" ? "text-success-fg" : "text-strong"}`}
       >
         {loading ? <Skeleton className={`${featured ? "h-8 w-36" : "h-6 w-28"} my-0.5`} /> : value}
       </div>
       {!loading && sub !== undefined && sub !== null && (
-        <div className="text-label text-muted truncate -mt-1 tabular-nums">{sub}</div>
+        <div className="text-ui text-muted truncate -mt-1 tabular-nums">{sub}</div>
       )}
     </div>
   );

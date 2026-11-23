@@ -49,7 +49,7 @@ export default function CalendarRange() {
   return (
     <div className="space-y-2">
       <Calendar mode="range" value={range} onChange={setRange} />
-      <p className="text-label text-muted tabular-nums">
+      <p className="text-ui text-muted tabular-nums">
         {range.start ?? "…"} → {range.end ?? "…"}
       </p>
     </div>

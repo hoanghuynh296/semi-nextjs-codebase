@@ -12,42 +12,28 @@ left panel menu (`w-52` / `w-14`) floating on `bg-canvas` (`md:p-2 md:gap-2`), f
 sticky sub-page toolbar row (`SubpageToolbar`: filters left, icon-only primary CTA + `SearchInput` + `RefreshButton` right).
 Phones (`< md`) get AppShell's top bar and its full-screen drawer (same groups, drill-down rows, utilities at the bottom); never a hand-made slide-over. `mobileNav="tabs"` keeps `MobileTabBar`, with `mobileTabIds` naming its items (`mobileTabIds` alone also keeps it, with a dev warning).
 
-**Two-Tier Semantic Tokens (Dark & Light Mode):**
-| Semantic Token | Tailwind Class | Dark Mode (`[data-theme="dark"]`) | Light Mode (`[data-theme="light"]`) | Usage |
-|---|---|---|---|---|
-| `--color-canvas` | `bg-canvas` | `#0f1011` | `#eff3f7` | Outermost viewport frame |
-| `--color-app` | `bg-app` | `#151619` | `#f7f9fb` | Main workspace & content canvas |
-| `--color-panel` | `bg-panel` | `#191b1f` | `#ffffff` | Sidebar, Modals, Menus (= `panel-4`) |
-| `--color-panel-0…4` | `bg-panel-0` … `bg-panel-4` | canvas → panel | canvas → panel | Surface scale: 0 = canvas, 2 = app, 4 = panel, 1 / 3 halfway |
-| `--color-card` | `bg-card` | panel + 5% (`#222428`) | app + 5%, recessed (`#eaecef`) | Content cards (`CARD`, `<Card>`, `HERO`): no border, tone only |
-| `--color-card-field` | `bg-card-field` | `#2b2d31` | `#e2e5e8` | Tiles / table heads inside a card (`TILE`) |
-| `--color-tint` | `bg-tint` / `hover:bg-tint-hover` | contrast 7% / 11% | contrast 5% / 9% | Secondary buttons, no border |
-| `--color-field` | `bg-field` | `#202328` | `#eff3f7` | Form inputs (`FIELD_INPUT`), table headers |
-| `--color-raised` | `bg-raised` | `#2b2e34` | `#e1e7ef` | Hover surface, subtle elevation, skeleton shimmer |
-| `--color-text-contrast` | `text-contrast` | `#ffffff` | `#0f172a` (Slate-900) | Headings, active state, high-contrast text |
-| `--color-text-body` | `text-body` | `#d1d5db` (Gray-300) | `#334155` (Slate-700) | Primary UI labels, body text |
-| `--color-text-muted` | `text-muted` | `#9ba1aa` | `#5b6779` | Captions, placeholders, inactive hints |
-| `--color-line` | `border-line` | `rgba(255,255,255,0.12)` | `rgba(0,0,0,0.08)` (Slate-200) | Borders on cards, panels, dividers (inputs: `control-line`) |
-| `--color-line-hover` | `border-line-hover` | `rgba(255,255,255,0.2)` | `rgba(0,0,0,0.16)` (Slate-300) | Hover border state |
-| `--color-control-line` | `border-control-line` | `text-muted` 65% | `text-muted` 80% | Edge of inputs, checkboxes, radios (≥ 3:1); hover `border-control-line-hover` |
-| `--color-divider` | `border-divider` | `rgba(255,255,255,0.05)` | `rgba(0,0,0,0.05)` (Slate-100) | Subtle row & item separators |
+**Tokens (1.0, full list and values: `docs/TOKENS.md`):** one look, pure neutral surfaces the same for every brand.
+| Group | Classes |
+|---|---|
+| Surfaces | `bg-canvas` (#101010 / #ebebeb) · `bg-app` (#161616 / #f3f3f3) · `bg-panel` (#1a1a1a / #fff) · `bg-field` · `bg-field-focus` · `bg-raised` · `bg-raised-2` · `bg-card` · `bg-card-field` · `bg-panel-0…4` |
+| Text (AA on panel / app / canvas / card; faint never on card-field, raised or a row fill) | `text-strong` (titles, active, values) · `text-body` · `text-muted` (descriptions, inactive, placeholders) · `text-faint` (group labels, kbd hints) |
+| Lines | `border-line` · `border-divider` · `border-control-line` (checkbox, radio) · `border-field-line` / `border-field-line-focus` (fields) · `border-outline-line` (outline button, selected card) |
+| Neutral states | `bg-item-hover` · `bg-item-selected` (open record, selected nav item / option) · `bg-item-checked` (checked rows) · `bg-subtle-button` · `bg-tint` · `bg-inverted` + `text-on-inverted` (checked controls) · `ring-focus` / `border-focus` (neutral) |
+| Brand (main button, attention only) | `bg-primary hover:bg-primary-hover text-on-primary` · `bg-secondary hover:bg-secondary-hover text-on-secondary` |
+| Status (fixed for every brand) | `text-*-fg` · `bg-*-bg` + `border-*-border` · `bg-*-solid` + `text-on-solid` · `text-tone-*` |
 
-*Surfaces (C-030):* pages separate by tone, not borders: cards are `bg-card` (never `bg-panel`, the sidebar step), `<Card bordered>` / `CARD_BORDERED` only for a dense data view; secondary buttons `bg-tint` without border (`outline` keeps the frame); the main button is `bg-action hover:bg-action-hover text-on-action` (accent, or `inverted` in a brand with `primaryStyle: "inverted"`).
+*Surfaces (C-030):* pages separate by tone, not borders: cards are `bg-card` (never `bg-panel`, the sidebar step), `<Card bordered>` / `CARD_BORDERED` only for a dense data view; secondary buttons `bg-tint` without border (`outline` keeps the frame); the main button is `bg-primary hover:bg-primary-hover text-on-primary`.
 
-*Accent & status (AA in both themes):* main button `bg-action` (`BTN_PRIMARY`) · accent fill for checked / "on" marks `bg-accent text-on-accent` · primary text/icon `text-accent-fg` · focus `ring-focus` / focused field `border-focus` · selected `bg-accent-subtle` (hover `bg-accent-subtle-hover`) + `border-accent-line` · status text `text-danger-fg` / `text-success-fg` / `text-warning-fg` / `text-info-fg` · tonal text `text-tone-<hue>`. Never `text-*-400` or `text-*-700 dark:text-*-300` in shared UI.
+*Brand & status (AA in both themes):* the brand fill only on the one main button of a view, the nav's create button, attention count badges, "New" tags and the active big-tab underline · checked / "on" marks `bg-inverted text-on-inverted` · links, check marks, active tabs `text-strong` · focus `ring-focus` / focused field `border-focus` · selection `bg-item-selected` / `bg-item-checked`, hover `bg-item-hover` · status text `text-danger-fg` / `text-success-fg` / `text-warning-fg` / `text-info-fg`.
 
 *Theme:* `<html suppressHydrationWarning>` + `<ThemeScript />` in `<head>` (no flash) + `<ThemeProvider defaultTheme="dark">` (same options); `<ThemeSwitcher />` (Sáng · Tối · Hệ thống, settings / sidebar footer), `<ThemeSwitcher variant="menu" />` (one icon button + Menu: headers), `useThemeUtility()` (the same in AppShell `utilities`) or `<ThemeToggle />` (one-tap dark/light), or `const { theme, resolvedTheme, mounted, setTheme } = useTheme()`. `data-theme="system"` follows the OS.
 
-**Colour:** accent (Semi default `#00AE42`; a product gets its own from its brand kit, never in its own CSS) = actions, focus, "on", through `bg-accent` / `text-accent-fg` tokens. Status tokens carry meaning only: success = online/done · warning = busy/paused · danger = error/destructive · info = news/cost. Category tints: `<Badge tone>`, `TONAL_SURFACE`, `text-tone-<hue>` (§3c). Nav menu: grey 16px icons, no count badges, active = `bg-raised text-contrast`.
+**Colour:** neutral everywhere; the brand fill (Semi default `#00AE42`; a product gets its own from its brand kit, never in its own CSS) only on the main button and attention marks (`bg-primary`). Status tokens carry meaning only: success = online/done · warning = busy/paused · danger = error/destructive · info = news/cost. Category tints: `<Badge tone>`, `TONAL_SURFACE`, `text-tone-<hue>` (§3c). Nav menu: grey 16px icons, no count badges, active = `bg-raised text-strong`.
 Chips (`Chip`, `chipClass(active)`): `rounded-full h-control px-3.5`, ghost when off, active uses semantic high-contrast background; colour only on a
 leading dot or icon (`TONE_DOT`, `chipIconClass(tone)`). Card tiles keep their area tint. Flat: no gradients, no glow
-blobs, no `shadow-[0_0_…]` (status dots and power buttons too). Active card = `CARD_ACTIVE` (primary border).
+blobs, no `shadow-[0_0_…]` (status dots and power buttons too). Active card = `CARD_ACTIVE` (`border-outline-line`).
 
-**Type:** page title (`PageTitle` / `PageTabsTitle`) `font-display text-heading sm:text-display font-title tracking-tight text-contrast` ·
-KPI figure (`KpiCard`) `font-figure font-title text-figure sm:text-heading tabular-nums text-contrast` · section `text-ui`–`text-title`
-font-semibold text-contrast` · UI `text-label font-medium text-body` · label `text-label font-medium text-muted` ·
-caption `text-caption`–`text-label` text-muted` · numbers `tabular-nums` (Geist; `font-mono` only for code) · Geist +
-Montserrat Alternates (`font-display`) · weights medium/semibold · type scale only: `text-caption` 11 · `label` 12 · `ui` 14 (compact 13) · `ui-lg` 15 (compact 14) · `title` 15 · `title-lg` 16 · `figure` 18 · `heading-sm` 20 · `heading` 22 · `heading-lg` 24 · `display` 26 (no `text-xs/sm`, no `text-[13px]`) ·
+**Type (`docs/TOKENS.md`):** `text-hero` 36 (32 below sm) · `text-title-xl` 44 · `text-tab-xl` 28 (24 below sm) · `text-section` 20 · `text-figure` 18 · `text-lead` 15 · `text-copy` 14 (reading copy; compact 13) · `text-input` 16 (typed text below sm: `max-sm:text-input`) · **`text-ui` 12, the base UI size** (nav, buttons, labels, meta, rows) · `text-tag` 10 · `text-badge` 10 · `text-overline` 11. `font-sans` (Geist or the brand's) everywhere; `font-display` (the brand's display face, else the sans) only for hero, reading-page titles, big tabs, editorial heads. Headings are not bold: 400 / 500 (`font-title` 500), 600 only overlines, 700 only count badges. `tabular-nums` for numbers, `font-mono` only for code. No `text-xs/sm`, no `text-[13px]` ·
 sentence case, no ALL CAPS. The one exception is `text-overline` (uppercase, tracked) for section labels: a sidebar or drawer group, a palette group, a mega menu column (C-032); anywhere but a plain, non-clickable label element it warns (`overline-place`).
 
 **Status, layers, elevation:** callouts / badges `bg-{danger,success,warning,info}-bg border-*-border text-*-fg` (`Alert`) ·
@@ -64,10 +50,9 @@ control drawn under 24px gets `HIT_AREA` · UI text in shared components comes f
 (`font-sans`, `font-display`), control sizes `h-control` (toolbar buttons, pills, chips, search) / `h-field` (inputs,
 selects), the card border (`border-card`, in `CARD`) and the shape below. Never `h-[34px]` or a per-style class.
 
-**Shape (style tokens):** marks / checkboxes / inline code `rounded-chip` · controls / tiles / rows
+**Shape (shape tokens):** marks / checkboxes / inline code `rounded-chip` · controls / tiles / rows
 `rounded-control` · cards / popovers / menus / toasts `rounded-card` · panels / hero / modal / sidebar `rounded-panel` ·
-pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (in `CARD`; none in Flat). The app's style
-(`<html data-style>`: Flat by default, Soft or Sharp) sets the values. Never `rounded`, `rounded-lg/xl/2xl` or `rounded-[Npx]`.
+pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (none). One look for every app (no styles, no `data-style`). Never `rounded`, `rounded-lg/xl/2xl` or `rounded-[Npx]`.
 
 **Use the shared blocks (`@semi/ui` and `@semi/ui/styles`) — never create a local `ui.tsx` wrapper barrel:**
 - **Layout & Structure (`@semi/ui`):**
@@ -105,7 +90,7 @@ type scale are the product's (`data-density`, `data-type-scale` on `<html>`, `se
 **Density budgets (§4c, measured on the rendered page: `npx semi density <url>`, `test:ui`):** text ≥ 12px from a
 box's sides, ≥ 8px from top / bottom (`tight-box`) · list rows ≥ `h-control` when clickable, 6px around their text
 (`tight-row`: `Item`, `Menu`, `DataTable`) · ≤ 3 frames deep (`box-nesting`) · ≤ 4 text sizes (`type-mix`) and ≤ 3
-colours (`colour-noise`) per box · 1 filled accent button per view (`primary-actions`) · ≥ 8px between boxes
+colours (`colour-noise`) per box · 1 filled brand button per view (`primary-actions`) · ≥ 8px between boxes
 (`cramped-boxes`) · one line between two things (`double-line`). Lengths scale with density. `data-density-view` on a
 frame that stands for a whole screen (preview, sample app); `data-density-skip="<reason>"` only on a specimen.
 
@@ -114,10 +99,10 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - **Compose, never re-create (0.30.0):** no raw `<button>/<input>/<textarea>/<table>` (`raw-control`), no other UI or icon kit (`foreign-ui`), no own `Card`/`Badge`/`Tooltip`… (`local-primitive`), no hand-made overlay or spinner (`custom-overlay`, `custom-spinner`), no `<div onClick>` (`click-target`: `<Card onClick>` is keyboard-ready) or bare `outline-none` (`focus-hidden`), no emoji icons (`emoji-icon`).
 - **No escape hatches:** `p-[13px]` / `z-[9999]` / `bg-panel/[0.05]` / `bg-[var(--semi-…)]` (`arbitrary-value`), `shadow-sm…2xl` (`tw-shadow`), `uppercase` (`text-case`), `leading-*` but tight/none (`leading-override`), colours or type in `style={{}}` (`inline-style-value`) or in `.css` (`css-raw-value`).
 - **The baseline only shrinks:** `--update-baseline` refuses new hits; `--accept-new` only after a Semi upgrade or with the user's OK; `semi-lint --ci` fails a PR whose baseline, skips or disabled rules grew.
-- **No literal palette colors (`no-literal-palette`):** Never use direct physical classes like `bg-white`, `text-slate-900`, `border-slate-200`, `divide-slate-100`, `bg-slate-50`, `bg-gray-800/900`. Always use Semantic Tokens (`bg-panel`, `bg-field`, `text-contrast`, `text-body`, `text-muted`, `border-line`, `divide-divider`).
-- **No fixed chromatic text (`no-fixed-tone-text`):** `text-emerald-400`, `text-rose-700 dark:text-rose-300`, `fill-sky-500` → `text-accent-fg`, `text-*-fg`, `text-tone-<hue>`.
-- **No brand scale for states (`accent-state-token`):** `ring-primary-500/50`, `bg-primary-500/15`, `border-primary-500/30` → `ring-focus`, `bg-accent-subtle`, `border-accent-line` (themed, checked in both themes).
-- **No brand-scale fills (`primary-fill`):** `bg-primary-500 text-white`, `border-primary-500` → `bg-accent hover:bg-accent-hover text-on-accent`, `border-accent-line` / `border-focus`. The brand colour is one step of `primary-*`, so `primary-500` turns pale with a brand kit; the scale is for charts and illustrations (`skip` those files).
+- **No literal palette colors (`no-literal-palette`):** Never use direct physical classes like `bg-white`, `text-slate-900`, `border-slate-200`, `divide-slate-100`, `bg-slate-50`, `bg-gray-800/900`. Always use Semantic Tokens (`bg-panel`, `bg-field`, `text-strong`, `text-body`, `text-muted`, `border-line`, `divide-divider`).
+- **No fixed chromatic text (`no-fixed-tone-text`):** `text-emerald-400`, `text-rose-700 dark:text-rose-300`, `fill-sky-500` → `text-strong`, `text-*-fg`, `text-tone-<hue>`.
+- **No brand scale for states (`accent-state-token`):** `ring-primary-500/50`, `bg-primary-500/15`, `border-primary-500/30` → `ring-focus`, `bg-item-selected`, `border-outline-line` (themed, checked in both themes).
+- **No brand-scale fills (`primary-fill`):** `bg-primary-500 text-white`, `border-primary-500` → `bg-primary hover:bg-primary-hover text-on-primary`, `border-outline-line` / `border-focus`. The brand colour is one step of `primary-*`, so `primary-500` turns pale with a brand kit; the scale is for charts and illustrations (`skip` those files).
 - **No arbitrary colours / sizes:** `bg-[#…]`, `text-[rgb(…)]` (`hex-colour-class`), `"#fff"` in style props or configs (`literal-colour-value`), `text-[13px]` (`arbitrary-text-size`).
 - **No solid pastel surfaces (`no-solid-pastel-surfaces`):** Never use solid pastels (`bg-*-50`, `border-*-200`) for cards, rows, or containers; in dark mode they turn into glaring light rectangles. Use the themed status surfaces (`bg-warning-bg border-warning-border text-warning-fg`, also danger / success / info) or standard `bg-panel`.
 - **Universal Tonal Theme-Matching:** Chromatic accents across ANY component (cards, alert banners, callouts, table rows, buttons, badges, chips) adapt seamlessly to both dark & light themes using alpha transparency: static fill `bg-<color>-500/10`, hover fill `hover:bg-<color>-500/15`, active fill `active:bg-<color>-500/20`, border `border-<color>-500/20`, hover border `hover:border-<color>-500/30`, and text `text-tone-<color>` (or `TONAL_CONTAINER` / `TONAL_HOVER` / `<Badge tone="...">`).
@@ -125,7 +110,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - **Surfaces & Shadows:** Gradients, glow, `shadow-[0_0_…]`, `shadow-sm/md/lg` are banned. Cards are separated by borders (`border-line`); their only resting shadow is `shadow-card`, which the style sets (none in Flat, soft in Soft, hard offset in Sharp).
 - **Typography:** `font-bold`, `text-[9|10px]`, `text-xs/sm`, uppercase labels, ALL CAPS buttons.
 - **Shell structure (`app-shell-in-page`, `shell-gate`, `shell-nav-href`, `boot-loader-place`):** AppShell only from a layout; no `if (!ready) return <PageSkeleton />` before it; `href` on page items, not `onSelect` + `router.push`; `BootLoader` only as the layout's boot gate.
-- **Radii (`radius-token`):** `rounded`, `rounded-sm/md/lg/xl/2xl`, `rounded-[Npx]` (they ignore the app's style); per-style classes or `[data-style=…]` selectors in an app.
+- **Radii (`radius-token`):** `rounded`, `rounded-sm/md/lg/xl/2xl`, `rounded-[Npx]` (they ignore the shape tokens); per-style classes or `[data-style=…]` selectors in an app.
 - **Navigation & Layout:** fixed `border-r` sidebars or `-translate-x-full` hamburger drawers (use `AppShell`: its phone drawer) · local `ui.tsx` wrapper barrels (`PageHeader`, `Select`, `Input`, `Button`, `Modal`): use `Button`, `Field` + `Input`, `CustomSelect`, `Modal`, `EmptyState` from `@semi/ui`.
 - **Icons & Controls:** emoji / ✕ ✓ glyphs, stroke 2+, inline `<path>` · native `<select>` / date / number inputs, `window.confirm` · "Đang tải…" text (a progress step label or a `role="status"` line is fine) · Home button in app headers, page subtitles, text buttons on the page title row.
 - **Content colours:** illustrations and data palettes go under `skip` with a reason per file (`"skip": { "literal-colour-value": { "lib/scenePalette.ts": "data colours: 3D scene" } }`; `literal-colour-value`, `inline-svg-path`, `no-literal-palette` only), not in the baseline. `font-mono` only on code (`<code>`, `<pre>`, `CodeBlock`, `Terminal`, code editors); `max-w-4xl…6xl` only on dialogs and drawers.

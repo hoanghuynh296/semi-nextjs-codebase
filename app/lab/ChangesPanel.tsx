@@ -17,7 +17,7 @@ export function ChangesPanel({ lab, onReset }: { lab: ReturnType<typeof useLabEd
   const errors = validateDraft(draft, LAB_SOURCES) as string[];
   const paramsChanged = rows.some((r) => r.file === "brand/params.mjs");
   const samplesOk = React.useMemo(
-    () => !paramsChanged || comparisonOk(compareSamples({ tokens: LAB_SOURCES.tokens, styles: LAB_SOURCES.styles }, { after: lab.values.params })),
+    () => !paramsChanged || comparisonOk(compareSamples({ tokens: LAB_SOURCES.tokens }, { after: lab.values.params })),
     [paramsChanged, lab.values.params],
   );
   const patch = JSON.stringify(draft, null, 2);
@@ -75,10 +75,10 @@ export function ChangesPanel({ lab, onReset }: { lab: ReturnType<typeof useLabEd
             <TR key={`${r.file}:${r.key}`}>
               <TD className="text-muted">{r.file}</TD>
               <TD>
-                <code className="text-label text-contrast">{r.key}</code>
+                <code className="text-ui text-strong">{r.key}</code>
               </TD>
               <TD className="text-muted break-all">{String(r.from)}</TD>
-              <TD className="text-contrast break-all">{String(r.to)}</TD>
+              <TD className="text-strong break-all">{String(r.to)}</TD>
             </TR>
           ))}
         </TBody>

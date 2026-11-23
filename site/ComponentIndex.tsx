@@ -17,7 +17,7 @@ export function ComponentIndex() {
           <section key={group} className="space-y-3">
             <div className={SECTION_HEAD}>
               <h2 className={SECTION_TITLE}>{group}</h2>
-              <span className="text-caption text-muted tabular-nums">{docs.length}</span>
+              <span className="text-ui text-muted tabular-nums">{docs.length}</span>
             </div>
             <div className="grid gap-3 @2xl:grid-cols-2 @5xl:grid-cols-3">
               {docs.map((d) => {
@@ -29,8 +29,8 @@ export function ComponentIndex() {
                       <div className="max-w-full">{First ? <First /> : <Icon name="code" className="w-8 h-8 text-muted" />}</div>
                     </div>
                     <Link href={`/components/${d.id}/`} className="p-card space-y-1 outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-b-card">
-                      <div className="text-title font-semibold text-contrast">{d.title}</div>
-                      <p className="text-label text-muted line-clamp-2">{d.description}</p>
+                      <div className="text-lead font-semibold text-strong">{d.title}</div>
+                      <p className="text-ui text-muted line-clamp-2">{d.description}</p>
                     </Link>
                   </div>
                 );

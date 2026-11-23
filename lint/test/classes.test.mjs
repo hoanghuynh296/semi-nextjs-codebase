@@ -21,12 +21,12 @@ test("issues #1–#4: every prefix that takes a colour is covered", () => {
 });
 
 test("allowed colours stay allowed", () => {
-  for (const u of ["bg-panel", "text-muted", "border-line", "bg-white/10", "bg-black/40", "bg-purple-500/10", "border-amber-500/20", "bg-emerald-400", "bg-accent", "bg-accent-hover", "text-accent-fg", "text-tone-sky", "bg-danger-bg", "text-on-accent", "ring-focus", "bg-accent-subtle", "border-accent-line"]) {
+  for (const u of ["bg-panel", "text-muted", "border-line", "bg-white/10", "bg-black/40", "bg-purple-500/10", "border-amber-500/20", "bg-emerald-400", "bg-primary", "bg-primary-hover", "text-strong", "text-faint", "text-tone-sky", "bg-danger-bg", "text-on-primary", "ring-focus", "bg-item-selected", "bg-item-hover", "border-outline-line"]) {
     assert.equal(colourRule(u), null, u);
   }
 });
 
-test("the brand scale as a state colour is flagged: focus rings, tints and borders use the themed accent tokens", () => {
+test("the brand scale as a state colour is flagged: focus rings, tints and borders use the neutral state tokens", () => {
   for (const u of ["ring-primary-500/50", "ring-primary-500", "bg-primary-500/15", "border-primary-500/30", "outline-primary-500"]) {
     assert.equal(colourRule(u), "accent-state-token", u);
   }
@@ -37,7 +37,7 @@ test("primary-fill (#15): solid brand-scale fills and borders, in any variant", 
   for (const u of ["bg-primary-500", "bg-primary-400", "bg-primary-900", "border-primary-500", "border-b-primary-400"]) {
     assert.equal(colourRule(u), "primary-fill", u);
   }
-  assert.deepEqual(rules('<button className="bg-primary-500 hover:bg-primary-600 text-on-accent" />'), [
+  assert.deepEqual(rules('<button className="bg-primary-500 hover:bg-primary-600 text-on-primary" />'), [
     "primary-fill:bg-primary-500",
     "primary-fill:hover:bg-primary-600",
   ]);

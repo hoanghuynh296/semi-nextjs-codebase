@@ -15,10 +15,11 @@ test("every shipped migration has a version up to this release, a unique id, a d
   const ids = new Set();
   for (const m of list) {
     assert.match(String(m.version), /^\d+\.\d+\.\d+$/, m.file);
-    // Up to the next minor: an unreleased migration ([Unreleased] in the CHANGELOG) ships with the next release, and
-    // /semi-sync only runs migrations up to the version it installs.
+    // Up to the next minor, or the next major for a breaking release: an unreleased migration ([Unreleased] in the
+    // CHANGELOG) ships with the next release, and /semi-sync only runs migrations up to the version it installs.
     const [maj, min] = pkg.version.split(".").map(Number);
-    assert.ok(cmpVersion(m.version, `${maj}.${min + 1}.0`) <= 0, `${m.file}: version after the next minor of ${pkg.version}`);
+    const next = cmpVersion(m.version, `${maj}.${min + 1}.0`) <= 0 || m.version === `${maj + 1}.0.0`;
+    assert.ok(next, `${m.file}: version after the next minor (or major) of ${pkg.version}`);
     assert.ok(m.id && !ids.has(m.id), `${m.file}: id`);
     ids.add(m.id);
     assert.ok(m.description, `${m.file}: description`);
@@ -229,4 +230,108 @@ test("0.36.0 shell / 0.37.0 account-rail: an account render prop's collapsed che
   rail.default({ files: Object.keys(files), read: (f) => files[f], write: (f, v) => (files[f] = v) });
   assert.match(files["a.tsx"], /\(\{ collapsed, rail \}\)/);
   assert.equal(files["b.css"], "x");
+});
+
+test("1.0.0 foundation: removed colour and size tokens map to the 1.0 names, data-style goes, a second run changes nothing", async () => {
+  const { migrateFoundation, foundationFlags } = await import("../../migrations/1.0.0-foundation.mjs");
+  const src = [
+    `<html lang="vi" data-theme="dark" data-style="soft">`,
+    `cn("text-contrast hover:text-contrast/80 bg-accent hover:bg-accent-hover text-on-accent", "bg-action text-on-action")`,
+    `cn("text-accent-fg aria-selected:bg-accent-subtle hover:bg-accent-subtle-hover border-accent-line decoration-accent")`,
+    `cn("text-caption text-label text-ui text-ui-lg text-title text-title-lg text-heading-sm text-heading text-heading-lg text-display text-kpi font-title font-display")`,
+    `.x { color: var(--color-text-contrast); background: var(--color-accent-subtle); font-size: var(--text-label); line-height: var(--text-heading--line-height); border-color: var(--semi-accent-line); }`,
+    `cn("bg-primary-500 text-tone-rose my-text-label-x")`,
+    `cn("w-full text-label max-sm:text-title-lg sm:text-title-lg")`,
+  ].join("\n");
+  const out = migrateFoundation(src);
+  assert.equal(
+    out,
+    [
+      `<html lang="vi" data-theme="dark">`,
+      `cn("text-strong hover:text-strong/80 bg-primary hover:bg-primary-hover text-on-primary", "bg-primary text-on-primary")`,
+      `cn("text-strong aria-selected:bg-item-selected hover:bg-item-selected border-outline-line decoration-primary")`,
+      `cn("text-ui text-ui text-ui text-lead text-lead text-lead text-section text-section text-tab-xl text-tab-xl text-figure font-title font-display")`,
+      `.x { color: var(--color-text-strong); background: var(--color-item-selected); font-size: var(--text-ui); line-height: var(--text-section--line-height); border-color: var(--semi-outline-line); }`,
+      `cn("bg-primary-500 text-tone-rose my-text-label-x")`,
+      `cn("w-full text-ui max-sm:text-input sm:text-lead")`,
+    ].join("\n"),
+  );
+  assert.equal(migrateFoundation(out), out, "second run changes nothing");
+  const flags = foundationFlags(src, out);
+  assert.ok(flags.some((f) => f.includes("primary-50")), "brand scale flagged");
+  assert.ok(flags.some((f) => f.includes("bg-accent")), "bg-accent → bg-primary flagged");
+  assert.ok(flags.some((f) => f.includes("accent-fg")), "accent-fg flagged");
+});
+
+test("1.0.0 foundation: brand colour never lands on text or lines; --semi-contrast stays; declarations are flagged, not renamed; text-ui flagged", async () => {
+  const { migrateFoundation, foundationFlags } = await import("../../migrations/1.0.0-foundation.mjs");
+  const cls = `cn("text-accent hover:text-action-hover border-accent border-t-accent ring-accent ring-offset-accent outline-accent divide-accent decoration-accent fill-accent stroke-action bg-accent hover:bg-accent-hover text-on-accent bg-contrast")`;
+  const out = migrateFoundation(cls);
+  assert.equal(
+    out,
+    `cn("text-strong hover:text-strong border-outline-line border-t-outline-line ring-focus ring-offset-outline-line outline-focus divide-outline-line decoration-primary fill-strong stroke-strong bg-primary hover:bg-primary-hover text-on-primary bg-strong")`,
+  );
+  assert.equal(migrateFoundation(out), out, "second run changes nothing");
+
+  // reads: --color-contrast → --color-strong, --semi-text-contrast / --semi-accent-fg → --semi-text-strong; --semi-contrast untouched
+  const css = `.a { color: var(--color-contrast); outline-color: var(--semi-text-contrast); fill: var(--semi-accent-fg); background: color-mix(in oklab, var(--semi-contrast) 5%, transparent); border-color: var(--semi-accent); }`;
+  const cssOut = migrateFoundation(css);
+  assert.equal(
+    cssOut,
+    `.a { color: var(--color-strong); outline-color: var(--semi-text-strong); fill: var(--semi-text-strong); background: color-mix(in oklab, var(--semi-contrast) 5%, transparent); border-color: var(--semi-primary); }`,
+  );
+  assert.equal(migrateFoundation(cssOut), cssOut);
+
+  // declarations are not renamed (a renamed --semi-accent: would override the brand kit's --semi-primary) but flagged
+  const decl = `:root{--semi-accent:#f00;--semi-panel:#123}\n@theme { --color-accent-subtle: red; --color-brandish: blue; }\n<div style={{ "--semi-text-contrast": "#000", "--semi-gap": "4px" }} />`;
+  assert.equal(migrateFoundation(decl), decl, "declarations stay as written");
+  const flags = foundationFlags(decl, migrateFoundation(decl));
+  for (const v of ["--semi-accent", "--semi-panel", "--color-accent-subtle", "--semi-text-contrast"])
+    assert.ok(flags.some((f) => f.startsWith(`app CSS sets ${v}: remove it (brand-override) or use the brand kit`)), `${v}: ${flags.join("; ")}`);
+  assert.ok(flags.some((f) => f.startsWith("app CSS sets --semi-accent:") && f.includes("not renamed")));
+  assert.ok(!flags.some((f) => /--semi-gap|--color-brandish/.test(f)), "an app's own variables are not flagged");
+
+  // text-ui (14 → 12px) is flagged; text-ui-lg (renamed) and a text-ui-free file are not
+  const ui = (s) => foundationFlags(s, migrateFoundation(s)).filter((f) => f.startsWith("text-ui is now 12px, was 14: reading copy"));
+  assert.equal(ui(`<p className="text-ui text-muted">x</p>`).length, 1);
+  assert.equal(ui(`.x { font-size: var(--text-ui); }`).length, 1);
+  assert.equal(ui(`<p className="text-ui-lg my-text-ui-x">x</p>`).length, 0);
+});
+
+test("the semi-sync runner collects a migration's flags", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "semi-flags-"));
+  try {
+    mkdirSync(join(dir, "mig"));
+    writeFileSync(join(dir, "mig", "9.9.9-x.mjs"), `export const version = "9.9.9"; export const id = "x"; export const description = "x";\nexport default ({ files, flag }) => { for (const f of files) flag(f, "check me"); };\n`);
+    mkdirSync(join(dir, "app", "app"), { recursive: true });
+    writeFileSync(join(dir, "app", "app", "page.tsx"), "export default function P() { return null; }\n");
+    const [r] = await runMigrations({ appDir: join(dir, "app"), dir: join(dir, "mig"), from: "9.0.0", to: "9.9.9" });
+    assert.ok(r.flags.length >= 1 && r.flags.every((f) => f.message === "check me" && !f.file.startsWith("/")));
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("1.0.0 foundation (review 2): focus rings go to ring-focus, JS declarations are flagged not renamed, accent-accent is flagged", async () => {
+  const { migrateFoundation, foundationFlags } = await import("../../migrations/1.0.0-foundation.mjs");
+  const src = [
+    `cn("focus-visible:ring-accent focus:outline-accent ring-accent/50 border-accent accent-accent")`,
+    `const s = { ["--semi-accent" as string]: x, "--semi-panel": y };`,
+    `el.style.setProperty("--semi-accent", c); el.style.setProperty('--color-panel', c);`,
+    `.a { color: var(--semi-accent); }`,
+  ].join("\n");
+  const out = migrateFoundation(src);
+  assert.equal(
+    out,
+    [
+      `cn("focus-visible:ring-focus focus:outline-focus ring-focus/50 border-outline-line accent-primary")`,
+      `const s = { ["--semi-accent" as string]: x, "--semi-panel": y };`,
+      `el.style.setProperty("--semi-accent", c); el.style.setProperty('--color-panel', c);`,
+      `.a { color: var(--semi-primary); }`,
+    ].join("\n"),
+  );
+  assert.equal(migrateFoundation(out), out, "second run changes nothing");
+  const flags = foundationFlags(src, out);
+  for (const v of ["--semi-accent", "--semi-panel", "--color-panel"]) assert.ok(flags.some((f) => f.includes(`sets ${v}:`)), `${v} flagged`);
+  assert.ok(flags.some((f) => f.startsWith("accent-accent")), "accent-accent flagged");
 });

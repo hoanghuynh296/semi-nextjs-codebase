@@ -12,10 +12,10 @@ import { analyse, extractApply, extractStrings, inNonClassPosition, isClassList,
 const NEUTRAL = {
   // In a dark app a solid white / black fill is a deliberate element (toggle knob, swatch, logo tile): a person decides.
   bg: { white: { light: "panel" }, black: { light: "canvas" }, 50: "field", 100: "field", 200: "raised", 300: "raised", 700: "raised", 800: "panel", 900: "app", 950: "canvas" },
-  text: { white: "contrast", black: { light: "contrast" }, 950: "contrast", 900: "contrast", 800: "contrast", 700: "body", 600: "body", 500: "muted", 400: "muted", 300: { light: "muted", dark: "body" }, 200: { dark: "contrast" }, 100: { dark: "contrast" }, 50: { dark: "contrast" } },
+  text: { white: "strong", black: { light: "strong" }, 950: "strong", 900: "strong", 800: "strong", 700: "body", 600: "body", 500: "muted", 400: "muted", 300: { light: "muted", dark: "body" }, 200: { dark: "strong" }, 100: { dark: "strong" }, 50: { dark: "strong" } },
   border: { white: { dark: "line" }, black: { light: "line" }, 50: "divider", 100: "divider", 200: "line", 300: "line", 400: "line-hover", 600: "line-hover", 700: "line", 800: "line", 900: "divider", 950: "divider" },
   stop: { white: "panel", black: "canvas", 50: "field", 100: "field", 800: "panel", 900: "canvas", 950: "canvas" },
-  icon: { white: "contrast", black: "contrast", 900: "contrast", 800: "contrast", 700: "body", 600: "body", 500: "muted", 400: "muted" },
+  icon: { white: "strong", black: "strong", 900: "strong", 800: "strong", 700: "body", 600: "body", 500: "muted", 400: "muted" },
 };
 const FAMILY = (prefix) =>
   prefix === "bg" ? "bg"
@@ -31,28 +31,31 @@ const TONE = {
   emerald: "emerald", green: "emerald", lime: "emerald", amber: "amber", yellow: "amber", orange: "orange",
   rose: "rose", red: "rose", pink: "pink", fuchsia: "pink",
 };
-const SIZES = { 11: "caption", 12: "label", 13: "ui", 14: "ui", 15: "title", 16: "title-lg", 18: "figure", 20: "heading-sm", 22: "heading", 24: "heading-lg", 26: "display" };
+/** px → the 1.0 type scale (docs/TOKENS.md): 10 tag · 11–12 ui · 13–14 copy · 15–16 lead · 18 figure · 20–22 section · 24–28 tab-xl · ≥ 32 hero. */
+const sizeToken = (px) =>
+  px === 10 ? "tag" : px === 11 || px === 12 ? "ui" : px === 13 || px === 14 ? "copy" : px === 15 || px === 16 ? "lead" : px === 18 ? "figure"
+  : px === 20 || px === 22 ? "section" : px >= 24 && px <= 28 ? "tab-xl" : px >= 32 ? "hero" : null;
 
 /**
  * Map one utility (no variants). Returns a string, "" (drop it), or null (leave it, report as unresolved).
  * `onAccent`: the class list is a solid brand fill with white text (bg-primary-500 text-white), so it is a main action
- * or an "on" mark: the fill becomes bg-accent / hover:bg-accent-hover and the text text-on-accent.
+ * or an attention mark: the fill becomes bg-primary / hover:bg-primary-hover and the text text-on-primary.
  */
 export function mapUtility(utility, variants = [], mode = "light", { onAccent = false } = {}) {
   const size = utility.match(/^text-\[(\d+)px\]$/);
-  if (size) return SIZES[size[1]] ? `text-${SIZES[size[1]]}` : null;
+  if (size) return sizeToken(Number(size[1])) ? `text-${sizeToken(Number(size[1]))}` : null;
   const control = utility.match(/^(h|w|size|min-h|min-w)-\[34px\]$/);
-  if (control) return `${control[1]}-control`; // the toolbar control size, which the style sets (34px in Flat)
+  if (control) return `${control[1]}-control`; // the toolbar control size (34px, a shape token)
   const radius = radiusToken(utility);
-  if (radius !== undefined) return radius; // same value in the default style, follows the app's style after
-  if (/^shadow(?:-sm|-md)?$/.test(utility)) return "shadow-card"; // a resting surface shadow: the style decides (none in Flat)
+  if (radius !== undefined) return radius; // same value as the shape token
+  if (/^shadow(?:-sm|-md)?$/.test(utility)) return "shadow-card"; // a resting surface shadow: the shape token decides (none)
   if (/^shadow-(?:lg|xl|2xl)$/.test(utility)) return "shadow-overlay"; // big shadows only ever meant "floating layer"
 
   const c = parseColour(utility);
   if (!c) return undefined; // not a colour: untouched
   if (c.kind === "arbitrary") return null;
   if (c.kind === "white-black" && c.alpha) return undefined; // overlays (bg-black/50, bg-white/10) are allowed
-  if (onAccent && c.prefix === "text" && c.family === "white" && !c.alpha) return "text-on-accent";
+  if (onAccent && c.prefix === "text" && c.family === "white" && !c.alpha) return "text-on-primary";
 
   const family = FAMILY(c.prefix);
   if (c.kind === "white-black" || c.kind === "neutral") {
@@ -64,14 +67,15 @@ export function mapUtility(utility, variants = [], mode = "light", { onAccent = 
 
   // Chromatic hue
   if (c.family === "primary") {
-    if (family === "text" || family === "icon") return `${c.prefix}-accent-fg`;
+    // No brand scale in 1.0: brand-coloured text and states become neutral; only a solid fill with text on it stays brand.
+    if (family === "text" || family === "icon") return `${c.prefix}-strong`;
     const focus = variants.some((v) => v.startsWith("focus"));
     if (c.prefix === "ring" || c.prefix === "outline") return `${c.prefix}-focus`;
     if (family === "border" && focus) return `${c.prefix}-focus`;
-    if (family === "border") return c.alpha && Number(c.alpha) <= 60 ? `${c.prefix}-accent-line` : `${c.prefix}-accent-fg`;
-    if (c.prefix === "bg" && c.alpha) return Number(c.alpha) <= 15 ? "bg-accent-subtle" : "bg-accent-subtle-hover";
-    if (c.prefix === "bg" && onAccent) return variants.some((v) => /^(?:hover|active|group-hover)/.test(v)) ? "bg-accent-hover" : c.shade >= 400 && c.shade <= 600 ? "bg-accent" : null;
-    return null; // a solid brand fill without white text on it: a person decides (bg-accent, a chart colour, …)
+    if (family === "border") return `${c.prefix}-outline-line`;
+    if (c.prefix === "bg" && c.alpha) return "bg-item-selected";
+    if (c.prefix === "bg" && onAccent) return variants.some((v) => /^(?:hover|active|group-hover)/.test(v)) ? "bg-primary-hover" : c.shade >= 400 && c.shade <= 600 ? "bg-primary" : null;
+    return null; // a solid brand fill without text on it: a person decides (bg-primary, bg-inverted, a chart colour, …)
   }
   const tone = TONE[c.family];
   if (family === "text" || family === "icon") return tone ? `${c.prefix}-tone-${tone}` : null;
@@ -83,7 +87,7 @@ export function mapUtility(utility, variants = [], mode = "light", { onAccent = 
   return null;
 }
 
-const SEMANTIC = /^(.*)-(canvas|app|panel|field|raised|contrast|body|muted|line|line-hover|divider|accent|accent-hover|accent-fg|on-accent|(?:danger|success|warning|info)-fg|tone-[a-z]+)$/;
+const SEMANTIC = /^(.*)-(canvas|app|panel|field|field-focus|raised|raised-2|strong|body|muted|faint|line|line-hover|divider|field-line|field-line-focus|outline-line|item-hover|item-selected|item-checked|subtle-button|primary|primary-hover|on-primary|(?:danger|success|warning|info)-fg|tone-[a-z]+)$/;
 const keyOf = (prefix, variants) => `${FAMILY(prefix) === "border" ? prefix : FAMILY(prefix) ?? prefix}|${variants.filter((v) => v !== "dark" && v !== "light").join(":")}`;
 
 /** Rewrite one class string. Returns { value, changes: [{ from, to }], unresolved: [token] }. */
@@ -97,7 +101,7 @@ export function migrateClassString(value, mode = "light") {
   const semanticKeys = new Set(); // property|variants already set by a semantic token in this string
   const parsed = pieces.map((p) => ({ ...p, ...splitToken(p.t) }));
   const base = parsed.filter((p) => !p.variants.length).map((p) => p.utility);
-  const ctx = { onAccent: base.some((u) => /^bg-primary-[456]00$/.test(u)) && base.some((u) => u === "text-white" || u === "text-on-accent") };
+  const ctx = { onAccent: base.some((u) => /^bg-primary-[456]00$/.test(u)) && base.some((u) => u === "text-white" || u === "text-on-primary") };
 
   for (const p of parsed) {
     if (p.variants.includes("dark") || p.variants.includes("light")) continue;

@@ -220,14 +220,14 @@ export type IconName = keyof typeof ICONS;
 
 /**
  * Multi-path or custom styled SVGs for Vietnam Brands & Platforms.
- * Uses Semi semantic tone classes (text-tone-*, text-contrast) to preserve characteristic brand colors
+ * Uses Semi semantic tone classes (text-tone-*, text-strong) to preserve characteristic brand colors
  * while respecting flat dark-first surfaces and dual-theme calibration.
  */
 export const BRAND_PATHS: Partial<Record<IconName, React.ReactNode>> = {
   shopee: (
     <>
       <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-orange" d="M9 6a3 3 0 0 1 6 0 M4 6h16l-1.5 13.5a2 2 0 0 1-2 1.5h-9a2 2 0 0 1-2-1.5L4 6z" />
-      <path strokeLinecap="round" strokeLinejoin="round" className="text-contrast" d="M14 10.2a1.8 1.8 0 0 0-1.8-1.2h-.4a1.8 1.8 0 0 0 0 3.5h.4a1.8 1.8 0 0 1 0 3.5h-.4a1.8 1.8 0 0 1-1.8-1.2" />
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-strong" d="M14 10.2a1.8 1.8 0 0 0-1.8-1.2h-.4a1.8 1.8 0 0 0 0 3.5h.4a1.8 1.8 0 0 1 0 3.5h-.4a1.8 1.8 0 0 1-1.8-1.2" />
     </>
   ),
   lazada: (
@@ -260,7 +260,7 @@ export const BRAND_PATHS: Partial<Record<IconName, React.ReactNode>> = {
   momo: (
     <>
       <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-pink" d="M6 3h12a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3z" />
-      <path strokeLinecap="round" strokeLinejoin="round" className="text-contrast" d="M5 16V9l3.5 4L12 9v7 M12 16V9l3.5 4L19 9v7" />
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-strong" d="M5 16V9l3.5 4L12 9v7 M12 16V9l3.5 4L19 9v7" />
     </>
   ),
   zalopay: (
@@ -278,7 +278,7 @@ export const BRAND_PATHS: Partial<Record<IconName, React.ReactNode>> = {
   viettelMoney: (
     <>
       <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-rose" d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z" />
-      <path strokeLinecap="round" strokeLinejoin="round" className="text-contrast" d="M12 12c-1.8-2.2-3.5-3-5.2-3A2.8 2.8 0 0 0 4 12a2.8 2.8 0 0 0 2.8 3c1.7 0 3.4-.8 5.2-3 1.8 2.2 3.5 3 5.2 3a2.8 2.8 0 0 0 2.8-3A2.8 2.8 0 0 0 17.2 9c-1.7 0-3.4.8-5.2 3z" />
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-strong" d="M12 12c-1.8-2.2-3.5-3-5.2-3A2.8 2.8 0 0 0 4 12a2.8 2.8 0 0 0 2.8 3c1.7 0 3.4-.8 5.2-3 1.8 2.2 3.5 3 5.2 3a2.8 2.8 0 0 0 2.8-3A2.8 2.8 0 0 0 17.2 9c-1.7 0-3.4.8-5.2 3z" />
     </>
   ),
   ghtk: (
@@ -308,7 +308,7 @@ export const BRAND_PATHS: Partial<Record<IconName, React.ReactNode>> = {
   zalo: (
     <>
       <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-blue" d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8.5z" />
-      <path strokeLinecap="round" strokeLinejoin="round" className="text-contrast" d="M9.5 9h5l-5 6h5" />
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-strong" d="M9.5 9h5l-5 6h5" />
     </>
   ),
   fpt: (
@@ -321,7 +321,7 @@ export const BRAND_PATHS: Partial<Record<IconName, React.ReactNode>> = {
   viettel: (
     <>
       <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-rose" d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z" />
-      <path strokeLinecap="round" strokeLinejoin="round" className="text-contrast" d="M7.5 9a3.5 3.5 0 0 1 3.5 3.5V15H7.5 M13 9a3.5 3.5 0 0 1 3.5 3.5V15H13" />
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-strong" d="M7.5 9a3.5 3.5 0 0 1 3.5 3.5V15H7.5 M13 9a3.5 3.5 0 0 1 3.5 3.5V15H13" />
     </>
   ),
   vinfast: (
@@ -330,7 +330,7 @@ export const BRAND_PATHS: Partial<Record<IconName, React.ReactNode>> = {
   tgdd: (
     <>
       <path strokeLinecap="round" strokeLinejoin="round" className="text-tone-amber" d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z" />
-      <path strokeLinecap="round" strokeLinejoin="round" className="text-contrast" d="M13.5 7a1.2 1.2 0 1 0 0-2.4 1.2 1.2 0 0 0 0 2.4z M9.5 9.5l3.5 1.5 3-1.5 M12 11v3.5 M12 14.5l-2.5 3 M12 14.5l3 2.5" />
+      <path strokeLinecap="round" strokeLinejoin="round" className="text-strong" d="M13.5 7a1.2 1.2 0 1 0 0-2.4 1.2 1.2 0 0 0 0 2.4z M9.5 9.5l3.5 1.5 3-1.5 M12 11v3.5 M12 14.5l-2.5 3 M12 14.5l3 2.5" />
     </>
   ),
 };
@@ -370,7 +370,7 @@ export function Icon({
  * to tell apart, while chips, pills and buttons stay neutral. Tints only (15% fill + light icon), no gradients.
  */
 export const TILE_TONES = {
-  green: "bg-accent-subtle text-accent-fg", // main areas, "on" states
+  green: "bg-item-selected text-strong", // main areas, "on" states
   emerald: "bg-emerald-500/15 text-tone-emerald", // Grab, GHTK, success
   orange: "bg-orange-500/15 text-tone-orange", // Shopee, GHN, FPT
   rose: "bg-rose-500/15 text-tone-rose", // Sendo, Viettel, Viettel Money
@@ -388,7 +388,7 @@ export const TILE_TONES = {
 
 /** Icon colour of each tone when it stands alone (inactive nav item). */
 export const TONE_TEXT = {
-  green: "text-accent-fg",
+  green: "text-strong",
   emerald: "text-tone-emerald",
   orange: "text-tone-orange",
   rose: "text-tone-rose",

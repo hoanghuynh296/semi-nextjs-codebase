@@ -12,11 +12,14 @@
   },
   "tokens": {
     "semantic": [
+      "contrast",
       "canvas",
       "app",
       "panel",
       "field",
+      "field-focus",
       "raised",
+      "raised-2",
       "panel-0",
       "panel-1",
       "panel-2",
@@ -29,28 +32,29 @@
       "inverted",
       "inverted-hover",
       "on-inverted",
-      "contrast",
+      "strong",
       "body",
       "muted",
+      "faint",
+      "field-line",
+      "field-line-focus",
+      "outline-line",
+      "item-hover",
+      "item-selected",
+      "item-checked",
+      "subtle-button",
       "line",
       "line-hover",
       "control-line",
       "control-line-hover",
       "divider",
-      "accent",
-      "accent-hover",
-      "on-accent",
-      "action",
-      "action-hover",
-      "on-action",
-      "accent-fg",
+      "primary",
+      "primary-hover",
+      "on-primary",
+      "secondary",
+      "secondary-hover",
+      "on-secondary",
       "focus",
-      "accent-subtle",
-      "muted-on-subtle",
-      "accent-subtle-hover",
-      "muted-on-subtle-hover",
-      "accent-fg-on-subtle-hover",
-      "accent-line",
       "danger-fg",
       "success-fg",
       "warning-fg",
@@ -94,29 +98,29 @@
       "chart-8"
     ],
     "type": [
-      "text-caption",
-      "text-label",
-      "text-ui",
-      "text-ui-lg",
-      "text-title",
-      "text-title-lg",
+      "text-hero",
+      "text-hero--line-height",
+      "text-title-xl",
+      "text-title-xl--line-height",
+      "text-tab-xl",
+      "text-tab-xl--line-height",
+      "text-section",
+      "text-section--line-height",
       "text-figure",
-      "text-heading-sm",
-      "text-heading",
-      "text-heading-lg",
-      "text-display",
-      "text-overline",
-      "text-caption--line-height",
-      "text-label--line-height",
-      "text-ui--line-height",
-      "text-ui-lg--line-height",
-      "text-title--line-height",
-      "text-title-lg--line-height",
       "text-figure--line-height",
-      "text-heading-sm--line-height",
-      "text-heading--line-height",
-      "text-heading-lg--line-height",
-      "text-display--line-height",
+      "text-lead",
+      "text-lead--line-height",
+      "text-copy",
+      "text-copy--line-height",
+      "text-input",
+      "text-input--line-height",
+      "text-ui",
+      "text-ui--line-height",
+      "text-tag",
+      "text-tag--line-height",
+      "text-badge",
+      "text-badge--line-height",
+      "text-overline",
       "text-overline--line-height"
     ],
     "z": [
@@ -129,7 +133,7 @@
       "z-toast",
       "z-tooltip"
     ],
-    "style": [
+    "shape": [
       "radius-chip",
       "radius-control",
       "radius-card",
@@ -143,27 +147,6 @@
       "font-figure",
       "font-weight-title",
       "spacing"
-    ]
-  },
-  "styles": {
-    "default": "flat",
-    "apply": "<html data-style=\"<id>\"> + \"style\" in semi-lint.json (docs/STYLES.md)",
-    "list": [
-      {
-        "id": "flat",
-        "name": "Flat",
-        "description": "Cool neutral greys, thin borders, no card shadows, medium radii, compact 34px controls, Geist. Dense, information-first screens: dashboards, tools, admin."
-      },
-      {
-        "id": "sharp",
-        "name": "Sharp",
-        "description": "Off-black ink and off-white, strong 2px borders, square corners, a hard offset shadow, Space Grotesk. Bold, editorial screens: landing pages, portfolios, creative tools."
-      },
-      {
-        "id": "soft",
-        "name": "Soft",
-        "description": "Warm, tinted neutrals, borderless cards lifted by a soft shadow, large radii, roomy 40px controls, Plus Jakarta Sans. Calm, friendly screens: consumer apps, storefronts, onboarding."
-      }
     ]
   },
   "icons": [
@@ -1173,7 +1156,7 @@
       "kind": "component",
       "module": "src/DataTable.tsx",
       "client": true,
-      "summary": "Sort by a column header (click again to reverse; aria-sort on the header), filter with `search` (every searchable column, case and Vietnamese marks ignored), select rows with a checkbox column (select-all on the page, bulk actions bar), page with Pagination. Shows skeleton rows while `loading` and an EmptyState when nothing is left. When the columns do not fit its own box, columns with a `priority` fold into the first column's second line; what still does not fit scrolls sideways, with an accent line on each edge that has columns past it and the table focusable to scroll by keyboard. The sorted column never folds. Folding is measured after hydration, so a table with priorities may shift once on first load at a narrow width. The order it shows is `sortRows(searchRows(rows, columns, search), columns, sort)` (for DetailOverlay ‹ ›).",
+      "summary": "Sort by a column header (click again to reverse; aria-sort on the header), filter with `search` (every searchable column, case and Vietnamese marks ignored), select rows with a checkbox column (select-all on the page, bulk actions bar), page with Pagination. Shows skeleton rows while `loading` and an EmptyState when nothing is left. When the columns do not fit its own box, columns with a `priority` fold into the first column's second line; what still does not fit scrolls sideways, with a strong line (outline-line) on each edge that has columns past it and the table focusable to scroll by keyboard. The sorted column never folds. Folding is measured after hydration, so a table with priorities may shift once on first load at a narrow width. The order it shows is `sortRows(searchRows(rows, columns, search), columns, sort)` (for DetailOverlay ‹ ›).",
       "props": [
         "rows",
         "columns",
@@ -3176,7 +3159,7 @@
       "kind": "constant",
       "module": "src/Icon.tsx",
       "client": false,
-      "summary": "Multi-path or custom styled SVGs for Vietnam Brands & Platforms. Uses Semi semantic tone classes (text-tone-*, text-contrast) to preserve characteristic brand colors while respecting flat dark-first surfaces and dual-theme calibration."
+      "summary": "Multi-path or custom styled SVGs for Vietnam Brands & Platforms. Uses Semi semantic tone classes (text-tone-*, text-strong) to preserve characteristic brand colors while respecting flat dark-first surfaces and dual-theme calibration."
     },
     {
       "name": "TILE_TONES",

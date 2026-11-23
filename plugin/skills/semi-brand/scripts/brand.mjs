@@ -2,10 +2,10 @@
 // /semi-brand helper: creates, edits and updates a brand kit repo (docs/BRANDS.md). Zero external deps; the colour
 // work is done by the kit's own @semi/ui (semi-brand build).
 //   node brand.mjs create --cwd <dir> --name "3D Noobs" --package @3dnoobs/brand --primary "#00AE42"
-//        [--secondary "#hex"] [--neutral brand|pure|preset] [--primary-style brand|inverted] [--style flat] [--allow flat,soft]
-//        [--sans Geist] [--display "Montserrat Alternates"]
-//   node brand.mjs set --cwd <dir> primary=#00C853 secondary=none neutral=pure primaryStyle=inverted allow=flat,soft
-//        style=flat sans=Inter display=Inter        edit brand.json, then build
+//        [--secondary "#hex"] [--sans Geist] [--display "Montserrat Alternates"]
+//   node brand.mjs set --cwd <dir> primary=#00C853 primaryOn=#ffffff secondary=none sans=Inter display=none
+//        edit brand.json, then build (primaryOn / secondaryOn: the text on the fill, none = picked for 4.5:1;
+//        display=none: titles use the UI sans)
 //   node brand.mjs build|check --cwd <dir>          the kit's semi-brand
 //   node brand.mjs preview --cwd <dir> [--port N]   serve the kit's preview site (http://localhost:4600); keep it running
 //   node brand.mjs site --cwd <dir>                 static preview site in .preview/out (what the Pages workflow builds)
@@ -15,7 +15,7 @@
 //   node brand.mjs colors <logo.svg>                brand colours used in an SVG logo (most used first, greys left out)
 //   create … --from <brand.json>                    take every choice from a brand.json (the docs Brand preview copies one)
 //   set keys for the guideline: tone=friendly|neutral|formal address=bạn we="3D Noobs" emoji=false
-//        accent=restrained|balanced|expressive secondaryRole=highlight|badge|illustration buttonText=auto|white|dark imagery="…"
+//        imagery="…"
 //        product="…" audience="…" personality=nhanh,vui,đáng tin logo=assets/logo.svg logoDark=… mark=…
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -220,21 +220,22 @@ const builtTokens = () => (existsSync(join(cwd, "dist", "brand.json")) ? readJso
 /** Which part of a kit changed between two builds: "major" (colours / fonts people see), "minor" (new options), "patch". */
 function changeLevel(before, after) {
   if (!before) return "major";
-  const pick = (t) => JSON.stringify({ primary: t.primary, secondary: t.secondary, themes: t.themes, neutrals: t.neutrals, fonts: t.fonts });
-  if (pick(before) !== pick(after)) {
-    const removed = before.styles.allowed.some((s) => !after.styles.allowed.includes(s));
-    const onlyAdded = !removed && JSON.stringify(before.primary) === JSON.stringify(after.primary) && JSON.stringify(before.themes) === JSON.stringify(after.themes) &&
-      Object.keys(before.neutrals).every((s) => JSON.stringify(before.neutrals[s]) === JSON.stringify(after.neutrals[s])) && JSON.stringify(before.fonts) === JSON.stringify(after.fonts);
-    return onlyAdded ? "minor" : "major";
+  // Before 1.0 dist/brand.json had scales, per-theme accents and neutrals: a 1.0 rebuild always changes what people see.
+  if (typeof before.primary?.fill !== "string") return "major";
+  const same = (k) => JSON.stringify(before[k] ?? null) === JSON.stringify(after[k] ?? null);
+  if (!same("primary")) return "major";
+  if (!same("secondary")) return before.secondary ? "major" : "minor"; // a new secondary is a new option
+  if (!same("fonts")) {
+    const sans = (t) => JSON.stringify(t.fonts.find((f) => f.roles.includes("sans")));
+    const hadDisplay = before.fonts.some((f) => f.roles.includes("display"));
+    return sans(before) === sans(after) && !hadDisplay ? "minor" : "major"; // only a display face added: minor
   }
-  // Status colours turned away from the primary (Semi 0.30.0+): visible but small, the brand's own colours unchanged.
-  if (JSON.stringify(before.status ?? null) !== JSON.stringify(after.status ?? null)) return "minor";
-  // Guideline: a new logo is visible in every product (major); voice, colour use, brief and imagery change how agents
+  // Guideline: a new logo is visible in every product (major); voice, brief and imagery change how agents
   // write and compose, not what is on screen today (minor).
   const g = (t, k) => JSON.stringify(t.guide?.[k] ?? null);
   if (g(before, "logo") !== g(after, "logo")) return before.guide?.logo ? "major" : "minor";
   if (["voice", "color", "brief", "imagery"].some((k) => g(before, k) !== g(after, k))) return "minor";
-  return JSON.stringify(before.styles) !== JSON.stringify(after.styles) ? "minor" : "patch";
+  return "patch";
 }
 
 const README = (b) => `# ${b.name}: brand kit
@@ -256,22 +257,25 @@ Hướng dẫn đầy đủ: \`node_modules/@semi/ui/docs/BRANDS.md\`.
 
 function applyPair(brand, key, value) {
   const v = value === "none" || value === "null" ? null : value;
-  if (key === "primary" || key === "secondary" || key === "name" || key === "neutral") brand[key] = v;
-  else if (key === "primaryStyle") {
-    if (v === null || v === "brand") delete brand.primaryStyle; // the default: keep brand.json short
-    else brand.primaryStyle = v;
+  if (key === "primary" || key === "secondary") {
+    // Keep an explicit text colour ({ color, on }) when only the colour changes.
+    const on = typeof brand[key] === "object" && brand[key] ? brand[key].on : undefined;
+    brand[key] = v === null ? null : on ? { color: v, on } : v;
+  } else if (key === "primaryOn" || key === "secondaryOn") {
+    const k = key.replace("On", "");
+    const color = typeof brand[k] === "object" && brand[k] ? brand[k].color : brand[k];
+    if (!color) throw new Error(`${k}: chưa có màu, đặt ${k}=#hex trước`);
+    brand[k] = v === null ? color : { color, on: v };
+  } else if (key === "name") brand.name = v;
+  else if (key === "sans") brand.fonts.sans = v;
+  else if (key === "display") {
+    if (v === null) delete brand.fonts.display; // titles use the UI sans
+    else brand.fonts.display = v;
   }
-  else if (key === "allow") brand.styles.allowed = v.split(",").map((x) => x.trim()).filter(Boolean);
-  else if (key === "style") brand.styles.default = v;
-  else if (key === "sans" || key === "display") brand.fonts[key] = v;
   else if (["tone", "address", "we", "emoji"].includes(key)) {
     brand.voice ||= {};
     if (v === null) delete brand.voice[key];
     else brand.voice[key] = key === "emoji" ? v === "true" : v;
-  } else if (key === "accent" || key === "secondaryRole" || key === "buttonText") {
-    brand.color ||= {};
-    if (v === null) delete brand.color[key];
-    else brand.color[key] = v;
   } else if (key === "product" || key === "audience" || key === "personality" || key === "tagline") {
     brand.brief ||= {};
     if (v === null) delete brand.brief[key];
@@ -287,11 +291,13 @@ function applyPair(brand, key, value) {
   } else if (key === "imagery") {
     if (v === null) delete brand.imagery;
     else brand.imagery = v;
+  } else if (["neutral", "primaryStyle", "allow", "style", "accent", "secondaryRole", "buttonText"].includes(key)) {
+    throw new Error(`"${key}" không còn từ Semi 1.0: một style chung, mặt nền xám trung tính của Semi, màu thương hiệu chỉ cho nút chính (docs/BRANDS.md)`);
   } else if (key === "density" || key === "scale") {
     throw new Error(`"${key}" là lựa chọn của từng sản phẩm, không phải của thương hiệu: chọn khi tạo app (/semi-new-app --${key === "scale" ? "type-scale" : "density"})`);
   } else
     throw new Error(
-      `không biết khoá "${key}" (primary, secondary, name, neutral, primaryStyle, allow, style, sans, display, tone, address, we, emoji, accent, secondaryRole, buttonText, product, audience, personality, tagline, logo, logoDark, mark, imagery)`,
+      `không biết khoá "${key}" (primary, primaryOn, secondary, secondaryOn, name, sans, display, tone, address, we, emoji, product, audience, personality, tagline, logo, logoDark, mark, imagery)`,
     );
 }
 
@@ -340,11 +346,10 @@ if (cmd === "create") {
   if (opts.from) {
     // A brand.json from the docs Brand preview or another kit: its choices become the flags below.
     const src = readJson(resolve(cwd, opts.from));
-    for (const k of ["name", "package", "primary", "secondary", "neutral"]) if (src[k] && !opts[k]) opts[k] = src[k];
-    if (src.primaryStyle && !opts["primary-style"]) opts["primary-style"] = src.primaryStyle;
-    if (src.styles && !opts.style) (opts.style = src.styles.default), (opts.allow = src.styles.allowed.join(","));
+    // Pre-1.0 keys (neutral, primaryStyle, styles, accent, color) are not carried over.
+    for (const k of ["name", "package", "primary", "secondary"]) if (src[k] && !opts[k]) opts[k] = src[k];
     if (src.fonts) (opts.sans ||= src.fonts.sans), (opts.display ||= src.fonts.display);
-    opts.guide = JSON.stringify(Object.fromEntries(["brief", "logo", "voice", "color", "imagery"].filter((k) => src[k] !== undefined).map((k) => [k, src[k]])));
+    opts.guide = JSON.stringify(Object.fromEntries(["brief", "logo", "voice", "imagery"].filter((k) => src[k] !== undefined).map((k) => [k, src[k]])));
   }
   if (existsSync(brandPath)) {
     console.error(`${brandPath} đã có: đây là brand kit có sẵn. Sửa bằng: node brand.mjs set …`);
@@ -357,16 +362,12 @@ if (cmd === "create") {
     }
   mkdirSync(cwd, { recursive: true });
   const target = resolveTargetSpec();
-  const style = opts.style || "flat";
   const brand = {
     name: opts.name,
     package: opts.package,
     primary: opts.primary,
     secondary: opts.secondary && opts.secondary !== "none" ? opts.secondary : null,
-    neutral: opts.neutral || "brand",
-    ...(opts["primary-style"] && opts["primary-style"] !== "brand" ? { primaryStyle: opts["primary-style"] } : {}),
-    styles: { default: style, allowed: (opts.allow || style).split(",").map((s) => s.trim()) },
-    fonts: { sans: opts.sans || "Geist", display: opts.display || "Montserrat Alternates" },
+    fonts: { sans: opts.sans || "Geist", ...(opts.display ? { display: opts.display } : {}) },
     ...(opts.guide ? JSON.parse(opts.guide) : {}),
     semi: brandSemiRange(target.version),
   };
@@ -466,6 +467,15 @@ if (cmd === "update") {
   }
   const brand = readJson(brandPath);
   brand.semi = brandSemiRange(semiVersion() || target.version);
+  // Semi 1.0: keys that no longer do anything (semi-brand build only warns) go, so the kit builds clean.
+  const dropped = ["neutral", "primaryStyle", "styles", "accent", "palettes"].filter((k) => k in brand);
+  for (const k of dropped) delete brand[k];
+  if (brand.color) {
+    for (const k of ["accent", "buttonText", "secondaryRole"]) if (k in brand.color) dropped.push(`color.${k}`), delete brand.color[k];
+    if (!Object.keys(brand.color).length) delete brand.color;
+  }
+  if (brand.fonts?.figure !== undefined) dropped.push("fonts.figure"), delete brand.fonts.figure;
+  if (dropped.length) console.log(`brand.json: bỏ khoá không còn dùng từ Semi 1.0: ${dropped.join(", ")} (docs/BRANDS.md)`);
   writeJson(brandPath, brand);
   const r = kitBin("build");
   if (r.status !== 0) process.exit(r.status);

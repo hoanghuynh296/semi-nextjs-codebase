@@ -88,7 +88,7 @@ function proposedSection(body) {
 
 const RULES = [
   ["no-literal-palette", "violation", /\b(?:bg|text|border)-(?:white|black|(?:slate|gray|zinc|neutral|stone)-\d{2,3})\b(?!\/)/g,
-    "Raw palette classes. Use semantic tokens (bg-panel, bg-field, text-contrast, text-body, text-muted, border-line)."],
+    "Raw palette classes. Use semantic tokens (bg-panel, bg-field, text-strong, text-body, text-muted, border-line)."],
   ["no-hex-class", "violation", /\b(?:bg|text|border)-\[#[0-9a-fA-F]{3,8}\]/g, "Hex colour classes are banned."],
   ["no-shadow", "violation", /\bshadow-(?:sm|md|lg|xl|2xl)\b|\bshadow-\[0_0_[^\]]*\]/g, "Drop shadows / glow are banned (flat Bento UI uses border-line)."],
   ["no-gradient", "violation", /\bbg-(?:gradient|linear|radial|conic)-[\w-]+|\b(?:from|via|to)-(?:white|black|transparent|[a-z]+-\d{2,3})\b/g, "Gradients are banned."],

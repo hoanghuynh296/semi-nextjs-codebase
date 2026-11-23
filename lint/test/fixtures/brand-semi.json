@@ -3,20 +3,11 @@
   "package": "@semi/brand",
   "primary": "#DD592A",
   "secondary": null,
-  "neutral": "tinted",
-  "styles": {
-    "default": "flat",
-    "allowed": [
-      "flat",
-      "soft",
-      "sharp"
-    ]
-  },
   "fonts": {
     "sans": "Inter",
     "display": "Plus Jakarta Sans"
   },
-  "semi": ">=0.30.0 <1.0.0",
+  "semi": ">=1.0.0 <2.0.0",
   "voice": {
     "tone": "neutral",
     "address": "bạn",
@@ -39,9 +30,6 @@
       "error": "Không lưu được thay đổi vì mất kết nối. Kiểm tra mạng rồi bấm Thử lại.",
       "empty": "Chưa có dự án nào. Tạo dự án đầu tiên để bắt đầu."
     }
-  },
-  "color": {
-    "accent": "restrained"
   },
   "brief": {
     "product": "Công ty phần mềm làm ứng dụng web, mobile và công cụ cho doanh nghiệp",

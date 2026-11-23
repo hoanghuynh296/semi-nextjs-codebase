@@ -4,13 +4,13 @@
 import React from "react";
 import { ExternalLink } from "./ExternalLink";
 
-const LINK = "text-accent-fg hover:text-contrast underline underline-offset-2 break-all";
+const LINK = "text-strong hover:text-strong underline underline-offset-2 break-all";
 
 function inline(text: string): React.ReactNode[] {
   return text.split(/(\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\(https?:\/\/[^)\s]+\)|https?:\/\/[^\s)<>]+[^\s)<>.,;:!?])/g).map((part, i) => {
-    if (part.startsWith("**") && part.endsWith("**") && part.length > 4) return <strong key={i} className="font-semibold text-contrast">{part.slice(2, -2)}</strong>;
+    if (part.startsWith("**") && part.endsWith("**") && part.length > 4) return <strong key={i} className="font-semibold text-strong">{part.slice(2, -2)}</strong>;
     if (part.startsWith("`") && part.endsWith("`") && part.length > 2)
-      return <code key={i} className="px-1 rounded-chip bg-field border border-line text-label">{part.slice(1, -1)}</code>;
+      return <code key={i} className="px-1 rounded-chip bg-field border border-line text-ui">{part.slice(1, -1)}</code>;
     // Links go to other sites: a new tab, or the phone's browser inside the app
     const md = part.match(/^\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)$/);
     if (md) return <ExternalLink key={i} href={md[2]} className={LINK}>{md[1]}</ExternalLink>;
@@ -46,7 +46,7 @@ export function Markdown({ text }: { text: string }) {
     if (!line.trim()) continue;
     const h = line.match(/^#{1,4}\s+(.*)$/);
     blocks.push(
-      <p key={blocks.length} className={h ? "font-semibold text-contrast" : ""}>
+      <p key={blocks.length} className={h ? "font-semibold text-strong" : ""}>
         {inline(h ? h[1] : line)}
       </p>
     );

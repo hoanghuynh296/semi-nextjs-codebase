@@ -31,7 +31,7 @@ export function ViewSwitch({
   const seg = (on: boolean) =>
     cn(
       "w-8 h-8 rounded-control flex items-center justify-center transition outline-none focus-visible:ring-2 focus-visible:ring-focus cursor-pointer",
-      on ? "bg-tint-hover text-contrast" : "text-muted hover:text-contrast hover:bg-tint",
+      on ? "bg-tint-hover text-strong" : "text-muted hover:text-strong hover:bg-tint",
     );
   const compact = density === "compact";
   return (

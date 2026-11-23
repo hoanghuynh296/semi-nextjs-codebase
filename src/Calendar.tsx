@@ -136,7 +136,7 @@ export function Calendar(props: CalendarProps) {
   const monthLabel = view ? t.monthYear(view.m + 1, view.y) : "";
   const r = range ? props.value : null;
   const rangeEnd = r?.end ?? (r?.start && hover && hover > r.start ? hover : undefined);
-  const navBtn = cn("w-8 h-8 rounded-control flex items-center justify-center text-muted hover:text-contrast hover:bg-raised transition", FOCUS_RING);
+  const navBtn = cn("w-8 h-8 rounded-control flex items-center justify-center text-muted hover:text-strong hover:bg-raised transition", FOCUS_RING);
 
   return (
     <div className={cn("w-[264px] flex flex-col gap-2", className)}>
@@ -144,7 +144,7 @@ export function Calendar(props: CalendarProps) {
         <button type="button" aria-label={t.prevMonth} disabled={!focus || !monthOpen(addMonths(focus, -1))} onClick={() => page(-1)} className={cn(navBtn, "disabled:opacity-30 disabled:pointer-events-none")}>
           <Icon name="back" className="w-4 h-4" />
         </button>
-        <span className="text-ui font-medium text-contrast tabular-nums" aria-live="polite">
+        <span className="text-ui font-medium text-strong tabular-nums" aria-live="polite">
           {monthLabel}
         </span>
         <button type="button" aria-label={t.nextMonth} disabled={!focus || !monthOpen(addMonths(focus, 1))} onClick={() => page(1)} className={cn(navBtn, "disabled:opacity-30 disabled:pointer-events-none")}>
@@ -152,7 +152,7 @@ export function Calendar(props: CalendarProps) {
         </button>
       </div>
       <div ref={gridRef} role="grid" aria-label={monthLabel || undefined} onKeyDown={onKey} onPointerLeave={() => setHover(null)}>
-        <div role="row" className="grid grid-cols-7 text-center text-caption text-muted">
+        <div role="row" className="grid grid-cols-7 text-center text-ui text-muted">
           {t.weekdaysShort.map((w) => (
             <span key={w} role="columnheader" className="h-7 flex items-center justify-center">
               {w}
@@ -170,7 +170,7 @@ export function Calendar(props: CalendarProps) {
               const inRange = range && r?.start && rangeEnd ? key > r.start && key < rangeEnd : false;
               const isSel = isStart || isEnd;
               return (
-                <div key={key} role="gridcell" aria-selected={isSel || inRange} className={cn(inRange && "bg-accent-subtle", isStart && rangeEnd && "rounded-l-control bg-accent-subtle", isEnd && "rounded-r-control bg-accent-subtle")}>
+                <div key={key} role="gridcell" aria-selected={isSel || inRange} className={cn(inRange && "bg-item-selected", isStart && rangeEnd && "rounded-l-control bg-item-selected", isEnd && "rounded-r-control bg-item-selected")}>
                   <button
                     type="button"
                     tabIndex={key === focusKey ? 0 : -1}
@@ -183,12 +183,12 @@ export function Calendar(props: CalendarProps) {
                     }}
                     onPointerEnter={() => setHover(key)}
                     className={cn(
-                      "w-full h-8 rounded-control text-label tabular-nums flex items-center justify-center transition disabled:opacity-30 disabled:pointer-events-none",
+                      "w-full h-8 rounded-control text-ui tabular-nums flex items-center justify-center transition disabled:opacity-30 disabled:pointer-events-none",
                       FOCUS_RING,
                       isSel
-                        ? "bg-accent text-on-accent font-medium"
+                        ? "bg-inverted text-on-inverted font-medium"
                         : key === today
-                          ? "text-accent-fg border border-accent-line hover:bg-raised"
+                          ? "text-strong border border-outline-line hover:bg-raised"
                           : outside
                             ? "text-muted hover:bg-raised"
                             : "text-body hover:bg-raised",
@@ -212,7 +212,7 @@ export function Calendar(props: CalendarProps) {
               go(new Date());
               pick(today);
             }}
-            className={cn("relative text-label font-medium text-accent-fg hover:text-contrast disabled:opacity-30 disabled:pointer-events-none transition rounded-chip", HIT_AREA, FOCUS_RING)}
+            className={cn("relative text-ui font-medium text-strong hover:text-strong disabled:opacity-30 disabled:pointer-events-none transition rounded-chip", HIT_AREA, FOCUS_RING)}
           >
             {t.today}
           </button>

@@ -56,7 +56,7 @@ export default function FilterChipRowViews() {
         onClear={() => setSel({})}
       />
       <ResultLine count={rows.length} unit="thư" />
-      <p className="text-label text-muted">{rows.map((m) => m.id).join(" · ") || "—"}</p>
+      <p className="text-ui text-muted">{rows.map((m) => m.id).join(" · ") || "—"}</p>
     </div>
   );
 }

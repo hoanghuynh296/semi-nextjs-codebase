@@ -167,7 +167,7 @@ export function SearchPill({
         placeholder={placeholder ?? label}
         aria-label={label}
         enterKeyHint="search"
-        className="flex-1 min-w-0 h-full bg-transparent outline-none text-ui max-sm:text-title-lg text-contrast placeholder:text-muted [&::-webkit-search-cancel-button]:hidden"
+        className="flex-1 min-w-0 h-full bg-transparent outline-none text-ui max-sm:text-input text-strong placeholder:text-muted [&::-webkit-search-cancel-button]:hidden"
       />
       {text ? (
         <button
@@ -175,13 +175,13 @@ export function SearchPill({
           onClick={clear}
           aria-label={t.clearSearch}
           title={t.clearSearch}
-          className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-muted hover:text-contrast hover:bg-tint-hover outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-muted hover:text-strong hover:bg-tint-hover outline-none focus-visible:ring-2 focus-visible:ring-focus"
         >
           <Icon name="close" className="w-4 h-4" />
         </button>
       ) : (
         hint && (
-          <kbd aria-hidden className="max-sm:hidden inline-flex h-6 min-w-6 px-1.5 mr-1.5 items-center justify-center rounded-chip border border-line text-caption font-medium text-body font-sans">
+          <kbd aria-hidden className="max-sm:hidden inline-flex h-6 min-w-6 px-1.5 mr-1.5 items-center justify-center rounded-chip border border-line text-ui font-medium text-body font-sans">
             {hint}
           </kbd>
         )
@@ -215,11 +215,11 @@ export function ResultLine({
   const t = useSemiLocale();
   const current = sort?.options.find((o) => o.value === sort.value);
   return (
-    <div className={cn("flex items-center gap-3 min-h-8 text-label", className)}>
+    <div className={cn("flex items-center gap-3 min-h-8 text-ui", className)}>
       <p className="flex-1 min-w-0 truncate text-muted" aria-live="polite" aria-atomic="true">
         {query ? (
           <>
-            <span className="text-contrast font-medium">“{query}”</span> ·{" "}
+            <span className="text-strong font-medium">“{query}”</span> ·{" "}
           </>
         ) : null}
         <span className="tabular-nums">{unit ? `${t.number(count)} ${unit}` : t.results(count)}</span>
@@ -232,7 +232,7 @@ export function ResultLine({
             <button
               type="button"
               aria-label={`${t.sort}: ${current.label}`}
-              className="shrink-0 inline-flex items-center gap-1.5 h-8 px-2 rounded-control text-label font-medium text-body hover:text-contrast hover:bg-tint outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              className="shrink-0 inline-flex items-center gap-1.5 h-8 px-2 rounded-control text-ui font-medium text-body hover:text-strong hover:bg-tint outline-none focus-visible:ring-2 focus-visible:ring-focus"
             >
               <Icon name="sliders" className="w-3.5 h-3.5 text-muted" />
               {current.label}

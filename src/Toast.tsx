@@ -219,8 +219,8 @@ function ToastCard({ item, scale }: { item: ToastItem; scale: number }) {
         {item.pending ? <Spinner className="w-3.5 h-3.5" /> : <Icon name={s.icon} className="w-3.5 h-3.5" />}
       </span>
       <div className="flex-1 min-w-0">
-        <div className="text-ui font-medium text-contrast">{item.title}</div>
-        {item.description && <div className="text-label text-muted mt-0.5">{item.description}</div>}
+        <div className="text-ui font-medium text-strong">{item.title}</div>
+        {item.description && <div className="text-ui text-muted mt-0.5">{item.description}</div>}
         {act && (
           <button
             type="button"
@@ -230,7 +230,7 @@ function ToastCard({ item, scale }: { item: ToastItem; scale: number }) {
               if (item.undo) drop([item], true); // undone: nothing to commit
               else dismissToast(item.id);
             }}
-            className={cn("mt-1.5 text-label font-medium text-accent-fg hover:text-contrast transition cursor-pointer rounded-chip", FOCUS_RING)}
+            className={cn("mt-1.5 text-ui font-medium text-strong hover:text-strong transition cursor-pointer rounded-chip", FOCUS_RING)}
           >
             {act.label}
           </button>
@@ -240,7 +240,7 @@ function ToastCard({ item, scale }: { item: ToastItem; scale: number }) {
         type="button"
         aria-label={t.dismiss}
         onClick={() => dismissToast(item.id)}
-        className={cn("w-6 h-6 rounded-control text-muted hover:text-contrast hover:bg-raised flex items-center justify-center transition shrink-0 cursor-pointer", FOCUS_RING)}
+        className={cn("w-6 h-6 rounded-control text-muted hover:text-strong hover:bg-raised flex items-center justify-center transition shrink-0 cursor-pointer", FOCUS_RING)}
       >
         <Icon name="close" className="w-3.5 h-3.5" />
       </button>
