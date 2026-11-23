@@ -33,12 +33,12 @@ test("surfaces are pure neutral greys (no brand tint)", () => {
     for (const theme of ["dark", "light"]) assert.ok(hexToOklch(v(k, theme)).c < 0.001, `${theme} ${k} ${v(k, theme)} is tinted`);
 });
 
-test("every text tier reaches 4.5:1 on panel, app and canvas in its theme; a failing value is reported", () => {
+test("every text tier reaches 4.5:1 on panel, app, canvas and card in its theme; a failing value is reported", () => {
   assert.deepEqual(aaErrors(tokens), []);
   const bad = structuredClone(tokens);
-  bad.semantic["color-text-faint"].light = "#737373"; // 3.98:1 on the light canvas, 4.27:1 on app, 4.74:1 on panel
+  bad.semantic["color-text-faint"].light = "#737373"; // 3.98:1 on the light canvas, 4.27:1 on app, below 4.5 on the card, 4.74:1 on panel
   const errors = aaErrors(bad);
-  assert.equal(errors.length, 2);
+  assert.equal(errors.length, 3);
   assert.ok(errors.some((e) => /light color-text-faint #737373 on color-canvas #ebebeb: 3\.98:1/.test(e)), errors.join("; "));
   bad.semantic["color-text-muted"].dark = "var(--semi-x)";
   assert.ok(aaErrors(bad).some((e) => /must be #rrggbb/.test(e)), "a non-hex tier fails too");

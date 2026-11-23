@@ -70,15 +70,15 @@ export const FOUNDATIONS = {
       "key": "color-text-muted",
       "cls": "text-muted",
       "note": "Mô tả, tab / nav chưa chọn, breadcrumb, placeholder",
-      "dark": "#ababab",
-      "light": "#636363"
+      "dark": "#b1b1b1",
+      "light": "#5c5c5c"
     },
     {
       "key": "color-text-faint",
       "cls": "text-faint",
       "note": "Nhãn nhóm, gợi ý phím, \"Untitled\"",
-      "dark": "#858585",
-      "light": "#6a6a6a"
+      "dark": "#8a8a8a",
+      "light": "#656565"
     },
     {
       "key": "color-field-line",

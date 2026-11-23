@@ -337,8 +337,8 @@
   --color-on-inverted: var(--semi-on-inverted); /* Text / icon on bg-inverted */
   --color-strong: var(--semi-text-strong); /* Titles, active items, values (text-strong) */
   --color-body: var(--semi-text-body); /* Card text, body (text-body) */
-  --color-muted: var(--semi-text-muted); /* Descriptions, inactive tabs / nav, breadcrumb, placeholders (text-muted) */
-  --color-faint: var(--semi-text-faint); /* Group labels, kbd hints, "Untitled" (text-faint). Light is #6a6a6a, not #737373: 4.5:1 on canvas */
+  --color-muted: var(--semi-text-muted); /* Descriptions, inactive tabs / nav, breadcrumb, placeholders (text-muted). 4.5:1 also on card, card-field, raised and the item fills over panel and card */
+  --color-faint: var(--semi-text-faint); /* Group labels, kbd hints, "Untitled" (text-faint). Page surfaces and the card only (4.5:1 there), never on card-field, raised or an item fill */
   --color-field-line: var(--semi-field-line); /* Input border at rest (border-field-line) */
   --color-field-line-focus: var(--semi-field-line-focus); /* Input border on focus (border-field-line-focus) */
   --color-outline-line: var(--semi-outline-line); /* Border of an outline button (border-outline-line) */
@@ -427,8 +427,8 @@
   --semi-on-inverted: var(--semi-canvas);
   --semi-text-strong: #f5f5f5;
   --semi-text-body: #e3e3e3;
-  --semi-text-muted: #ababab;
-  --semi-text-faint: #858585;
+  --semi-text-muted: #b1b1b1;
+  --semi-text-faint: #8a8a8a;
   --semi-field-line: color-mix(in oklab, var(--semi-contrast) 10%, transparent);
   --semi-field-line-focus: color-mix(in oklab, var(--semi-contrast) 25%, transparent);
   --semi-outline-line: color-mix(in oklab, var(--semi-contrast) 20%, transparent);
@@ -516,8 +516,8 @@
   --semi-on-inverted: var(--semi-panel);
   --semi-text-strong: #111111;
   --semi-text-body: #2b2b2b;
-  --semi-text-muted: #636363;
-  --semi-text-faint: #6a6a6a;
+  --semi-text-muted: #5c5c5c;
+  --semi-text-faint: #656565;
   --semi-field-line: color-mix(in oklab, var(--semi-contrast) 10%, transparent);
   --semi-field-line-focus: color-mix(in oklab, var(--semi-contrast) 25%, transparent);
   --semi-outline-line: color-mix(in oklab, var(--semi-contrast) 20%, transparent);
@@ -605,8 +605,8 @@
     --semi-on-inverted: var(--semi-panel);
     --semi-text-strong: #111111;
     --semi-text-body: #2b2b2b;
-    --semi-text-muted: #636363;
-    --semi-text-faint: #6a6a6a;
+    --semi-text-muted: #5c5c5c;
+    --semi-text-faint: #656565;
     --semi-field-line: color-mix(in oklab, var(--semi-contrast) 10%, transparent);
     --semi-field-line-focus: color-mix(in oklab, var(--semi-contrast) 25%, transparent);
     --semi-outline-line: color-mix(in oklab, var(--semi-contrast) 20%, transparent);

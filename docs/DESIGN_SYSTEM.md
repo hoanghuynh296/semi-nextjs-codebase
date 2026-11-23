@@ -106,7 +106,7 @@ The full list with values and roles is **`docs/TOKENS.md`**. In short:
 | Group | Utilities |
 |---|---|
 | Surfaces (pure neutral) | `bg-canvas`, `bg-app`, `bg-panel`, `bg-field`, `bg-field-focus`, `bg-raised`, `bg-raised-2`; `bg-card`, `bg-card-field`, `bg-panel-0…4` |
-| Text tiers (≥ 4.5:1 on panel, app, canvas) | `text-strong`, `text-body`, `text-muted`, `text-faint` |
+| Text tiers (≥ 4.5:1 on panel, app, canvas, card; all but faint also on card-field, raised and item fills: `docs/TOKENS.md`) | `text-strong`, `text-body`, `text-muted`, `text-faint` |
 | Lines | `border-line`, `border-line-hover`, `border-divider`, `border-control-line`, `border-field-line`, `border-field-line-focus`, `border-outline-line` |
 | Neutral states | `bg-item-hover`, `bg-item-selected`, `bg-item-checked`, `bg-subtle-button`, `bg-tint`, `bg-inverted` + `text-on-inverted`, `ring-focus` / `border-focus` |
 | Brand fills (main buttons, attention) | `bg-primary` / `hover:bg-primary-hover` + `text-on-primary`; `bg-secondary` / `hover:bg-secondary-hover` + `text-on-secondary` |

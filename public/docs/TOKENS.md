@@ -29,12 +29,17 @@ Kept from 0.x (neutral, derived from the above): `bg-panel-0…4`, `bg-card`, `b
 |---|---|---|---|
 | `text-strong` | titles, active items, values | #f5f5f5 | #111111 |
 | `text-body` | card text, body | #e3e3e3 | #2b2b2b |
-| `text-muted` | descriptions, inactive tabs / nav, breadcrumb, placeholders | #ababab | #636363 |
-| `text-faint` | group labels, kbd hints, "Untitled" | #858585 | #6a6a6a |
+| `text-muted` | descriptions, inactive tabs / nav, breadcrumb, placeholders | #b1b1b1 | #5c5c5c |
+| `text-faint` | group labels, kbd hints, "Untitled" | #8a8a8a | #656565 |
 
-Every tier reaches 4.5:1 on `panel`, `app` and `canvas` in its theme: the token build checks it
-(`scripts/token-css.mjs` `aaErrors`) and a failing value fails `npm run build:tokens` and `npm run check`. The light
-faint is #6a6a6a, not the measured #737373 (3.98:1 on the light canvas). `text-faint` is for those three surfaces only: on `bg-card` / `bg-card-field` it is about 4.2:1, so text on a card uses `text-muted` or stronger.
+Every tier reaches 4.5:1 on `panel`, `app`, `canvas` and `bg-card` in its theme; `text-strong`, `text-body` and
+`text-muted` also on `bg-card-field`, `bg-raised` and on `bg-item-hover` / `bg-item-selected` / `bg-item-checked` over
+the panel and over the card (a checked or selected row in a card table). The token build checks every pair
+(`scripts/token-css.mjs` `aaErrors` resolves the `color-mix()` surfaces and composites the translucent fills) and a
+failing value fails `npm run build:tokens` and `npm run check`. `text-faint` is for the page surfaces and the card
+only: on `bg-card-field`, `bg-raised` or an item fill use `text-muted` or stronger. The muted and faint values are the
+lightest (light) / darkest (dark) greys that pass all of these (worst pair about 4.55:1: muted on a selected row in a
+card, faint on the card).
 
 `text-strong` replaces `text-contrast`. The contrast colour itself (pure white in dark, pure black in light) is the
 private `--semi-contrast`, which every line and fill below mixes; it has no utility.

@@ -16,7 +16,7 @@ Phones (`< md`) get AppShell's top bar and its full-screen drawer (same groups, 
 | Group | Classes |
 |---|---|
 | Surfaces | `bg-canvas` (#101010 / #ebebeb) · `bg-app` (#161616 / #f3f3f3) · `bg-panel` (#1a1a1a / #fff) · `bg-field` · `bg-field-focus` · `bg-raised` · `bg-raised-2` · `bg-card` · `bg-card-field` · `bg-panel-0…4` |
-| Text (AA on panel / app / canvas) | `text-strong` (titles, active, values) · `text-body` · `text-muted` (descriptions, inactive, placeholders) · `text-faint` (group labels, kbd hints) |
+| Text (AA on panel / app / canvas / card; faint never on card-field, raised or a row fill) | `text-strong` (titles, active, values) · `text-body` · `text-muted` (descriptions, inactive, placeholders) · `text-faint` (group labels, kbd hints) |
 | Lines | `border-line` · `border-divider` · `border-control-line` (checkbox, radio) · `border-field-line` / `border-field-line-focus` (fields) · `border-outline-line` (outline button, selected card) |
 | Neutral states | `bg-item-hover` · `bg-item-selected` (open record, selected nav item / option) · `bg-item-checked` (checked rows) · `bg-subtle-button` · `bg-tint` · `bg-inverted` + `text-on-inverted` (checked controls) · `ring-focus` / `border-focus` (neutral) |
 | Brand (main button, attention only) | `bg-primary hover:bg-primary-hover text-on-primary` · `bg-secondary hover:bg-secondary-hover text-on-secondary` |
