@@ -1,156 +1,128 @@
-// node --test lint/test — brand generator (brand/generate.mjs) and the semi-brand CLI on a throwaway kit.
+// node --test lint/test — brand generator (brand/generate.mjs, 1.0 schema) and the semi-brand CLI on a throwaway kit.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { contrast, deltaE, hexToOklch } from "../../brand/color.mjs";
-import { LADDER, SHADES, brandStep, generateBrand, scale, validateBrand } from "../../brand/generate.mjs";
+import { contrast } from "../../brand/color.mjs";
+import { REMOVED_FIELDS, generateBrand, validateBrand } from "../../brand/generate.mjs";
 import { scan } from "../semi-lint.mjs";
 import { preparePreview } from "../../brand/cli.mjs";
 
 const read = (p) => JSON.parse(readFileSync(new URL(`../../${p}`, import.meta.url), "utf8"));
 const tokens = read("tokens/tokens.json");
-const styles = read("tokens/styles.json");
 const CLI = new URL("../../brand/cli.mjs", import.meta.url).pathname;
-const brand = (over = {}) => ({
-  name: "Test",
-  package: "@test/brand",
-  primary: "#00AE42",
-  neutral: "tinted",
-  styles: { default: "flat", allowed: ["flat", "soft", "sharp"] },
-  fonts: { sans: "Geist", display: "Montserrat Alternates" },
-  ...over,
-});
+const brand = (over = {}) => ({ name: "Test", package: "@test/brand", primary: "#00AE42", fonts: { sans: "Geist" }, ...over });
+const gen = (b) => generateBrand(b, { tokens });
 
-test("validation: grey colours, bad names and styles outside the allowed list are errors", () => {
-  const { errors } = validateBrand(brand({ primary: "#111827", package: "Test Brand", styles: { default: "sharp", allowed: ["flat"] } }), { styles });
-  assert.equal(errors.length, 3);
-  assert.match(errors.join("\n"), /gần như xám/);
+test("validation: primary is required, colours are hex, an explicit on-colour must reach 4.5:1, bad names are errors", () => {
+  const { errors } = validateBrand(brand({ primary: undefined, package: "Test Brand", secondary: "orange" }));
+  assert.match(errors.join("\n"), /primary/);
   assert.match(errors.join("\n"), /package/);
-  assert.match(errors.join("\n"), /styles.default/);
-  assert.throws(() => generateBrand(brand({ primary: "green" }), { tokens, styles }), /primary/);
+  assert.match(errors.join("\n"), /secondary/);
+  assert.throws(() => gen(brand({ primary: "green" })), /primary/);
+  assert.match(validateBrand(brand({ primary: { color: "#506bf2", on: "#ffffff" } })).errors.join("\n"), /primary\.on: [^\n]*4\.44:1/);
+  assert.deepEqual(validateBrand(brand({ primary: { color: "#3a4fd0", on: "#ffffff" } })).errors, []);
+  // A grey or black primary is allowed since 1.0 (the brand colour is only a button fill).
+  assert.deepEqual(validateBrand(brand({ primary: "#111827" })).errors, []);
+  assert.match(validateBrand(brand({ fonts: {} })).errors.join("\n"), /fonts\.sans/);
 });
 
-test("scale: fixed lightness per shade, the brand colour itself on its nearest shade, hue kept", () => {
-  for (const hex of ["#2563EB", "#0B1F3A", "#FFD600", "#00AE42"]) {
-    const sc = scale(hex);
-    const step = brandStep(hex);
-    assert.equal(sc[step], hex.toLowerCase(), `${hex} sits on ${step}`);
-    const ls = SHADES.map((s) => hexToOklch(sc[s]).l);
-    // No squashed ends: every neighbour pair differs by a visible step, even for near-black and near-white brands.
-    for (let i = 1; i < ls.length; i++) assert.ok(ls[i - 1] - ls[i] > 0.025, `${hex} ${SHADES[i]} is clearly darker than ${SHADES[i - 1]}`);
-    for (const s of SHADES) if (s !== step) assert.ok(Math.abs(hexToOklch(sc[s]).l - LADDER[s]) < 0.01, `${hex} ${s} on the ladder`);
+test("fills: the text on each fill reaches 4.5:1, the hover keeps it, an explicit on-colour wins; nothing else is derived", () => {
+  const r = gen(brand({ secondary: { color: "#3a4fd0", on: "#ffffff" } }));
+  const { primary, secondary } = r.tokens;
+  assert.equal(primary.fill, "#00ae42");
+  assert.equal(primary.on, "#0c0d0e");
+  assert.notEqual(primary.hover, primary.fill);
+  for (const f of [primary, secondary]) {
+    assert.ok(contrast(f.on, f.fill) >= 4.5);
+    assert.ok(contrast(f.on, f.hover) >= 4.5);
   }
-  const hue = hexToOklch("#2563EB").h;
-  for (const s of [200, 400, 600, 800]) assert.ok(Math.abs(hexToOklch(scale("#2563EB")[s]).h - hue) < 6, `shade ${s} keeps the hue`);
+  assert.equal(secondary.on, "#ffffff");
+  assert.deepEqual(Object.keys(r.tokens).sort(), ["fonts", "guide", "name", "package", "primary", "secondary", "semi"]);
+  assert.doesNotMatch(r.css, /accent|neutral|data-style|--color-primary-\d|--semi-(canvas|panel|text-|focus|danger|success)/);
+  // Every pair of the report is a text pair (hard) or a fill-against-page note (soft).
+  assert.ok(r.report.filter((x) => !x.soft).every((x) => x.ok && x.min === 4.5));
 });
 
-test("fill: per-theme accent (see brand-accent.test.mjs); the dark brand colour stays itself on 500, hover differs and reads", () => {
-  const themes = (primary) => generateBrand(brand({ primary }), { tokens, styles }).tokens.themes;
-  // Orange stays orange in the dark theme (dark text), and is deeper under white text in the light theme.
-  const orange = themes("#FF6B00");
-  assert.equal(orange.dark["color-on-accent"], "#0c0d0e");
-  assert.ok(deltaE(orange.dark["color-accent"], "#FF6B00") < 0.1, `orange dark fill ${orange.dark["color-accent"]}`);
-  assert.equal(orange.light["color-on-accent"], "#ffffff");
-  // Navy is lifted in the dark theme, where its own colour would blend into the page.
-  const navy = themes("#1E3A8A");
-  assert.notEqual(navy.dark["color-accent"], "#1e3a8a");
-  assert.ok(contrast(navy.dark["color-accent"], "#181918") >= 3, "navy dark fill stands out from the panel");
-  // Hover always differs from the fill and still reads.
-  for (const p of ["#0B1F3A", "#FFD600", "#00FFFF", "#E11D48"]) {
-    for (const t of Object.values(themes(p))) {
-      assert.notEqual(t["color-accent-hover"], t["color-accent"], `${p} hover`);
-      assert.ok(contrast(t["color-accent-hover"], t["color-on-accent"]) >= 4.5, `${p} hover text`);
-    }
-  }
+test("secondary: absent = the primary's values on the secondary tokens; present = its own fill", () => {
+  const one = gen(brand());
+  assert.equal(one.tokens.secondary, null);
+  assert.match(one.css, /--semi-secondary: #00ae42;/);
+  assert.match(one.css, /--semi-on-secondary: #0c0d0e;/);
+  const two = gen(brand({ secondary: "#FF8A00" }));
+  assert.match(two.css, /--semi-secondary: #ff8a00;/);
+  assert.equal(two.tokens.guide.color.secondaryRule !== null, true);
+  assert.equal(one.tokens.guide.color.secondaryRule, null);
 });
 
-test("report: focus ring and hover are checked; a fill that blends into the page is a soft finding with a warning", () => {
-  const r = generateBrand(brand({ primary: "#FFD600" }), { tokens, styles });
-  assert.ok(r.report.some((x) => x.check.startsWith("viền focus") && x.min === 3 && x.ok));
-  assert.ok(r.report.some((x) => x.check.startsWith("nút chính khi hover") && x.ok));
-  // The per-theme fill is chosen to stand out from the page, so the soft finding passes (yellow no longer blends into white).
-  const soft = r.report.find((x) => x.check === "nút tách khỏi nền (sáng)");
-  assert.ok(soft.soft && soft.ok, "yellow light fill stands out from white");
+test("fonts: sans required, display optional (without it --font-display-family is not set, so titles use the UI sans)", () => {
+  const plain = gen(brand());
+  assert.match(plain.css, /--font-sans-family: var\(--font-geist\), "Geist";/);
+  assert.doesNotMatch(plain.css, /--font-display-family/);
+  assert.deepEqual(plain.fonts.map((f) => f.roles), [["sans"]]);
+  const css = readFileSync(new URL("../../tokens/tokens.css", import.meta.url), "utf8");
+  assert.match(css, /--semi-font-display: var\(--font-display-family, var\(--semi-font-sans\)\);/, "tokens.css falls back to the UI sans");
+  const both = gen(brand({ fonts: { sans: "Inter", display: "Montserrat Alternates" } }));
+  assert.match(both.css, /--font-display-family: var\(--font-montserrat-alternates\), "Montserrat Alternates";/);
+  assert.deepEqual(both.fonts.find((f) => f.family === "Montserrat Alternates").weight, ["400", "500", "600", "700"]);
+  const same = gen(brand({ fonts: { sans: "Inter", display: "Inter" } }));
+  assert.deepEqual(same.fonts.map((f) => f.roles), [["sans", "display"]]);
 });
 
-test("every pair reaches AA for very different brand colours, in every style and theme", () => {
-  for (const primary of ["#00AE42", "#FACC15", "#2563EB", "#E11D48", "#14B8A6", "#7C3AED", "#F97316", "#0EA5E9", "#84CC16", "#DB2777", "#8B5CF6", "#B45309"]) {
-    for (const neutral of ["tinted", "preset", "pure"]) {
-      const r = generateBrand(brand({ primary, secondary: "#F59E0B", neutral }), { tokens, styles });
-      assert.deepEqual(r.report.filter((x) => !x.ok && !x.soft).map((x) => `${primary} ${neutral} ${x.check} ${x.ratio.toFixed(2)}`), []);
-      for (const theme of ["dark", "light"]) {
-        const t = r.tokens.themes[theme];
-        assert.ok(contrast(t["color-accent"], t["color-on-accent"]) >= 4.5, `${primary} ${theme} button`);
-      }
-    }
-  }
+test("pre-1.0 fields are ignored with a warning naming what they did; the kit still builds", () => {
+  const old = brand({
+    neutral: "tinted",
+    primaryStyle: "inverted",
+    styles: { default: "flat", allowed: ["flat", "soft"] },
+    accent: { sameInBothThemes: true },
+    palettes: {},
+    color: { accent: "balanced", buttonText: "white", secondaryRole: "badge" },
+    fonts: { sans: "Geist", figure: "Inter" },
+  });
+  const v = validateBrand(old);
+  assert.deepEqual(v.errors, []);
+  for (const k of Object.keys(REMOVED_FIELDS)) assert.ok(v.warnings.some((w) => w.startsWith(`${k}: không còn dùng từ Semi 1.0`)), k);
+  const r = gen(old);
+  assert.equal(r.tokens.primary.on, "#0c0d0e", "color.buttonText no longer forces white");
+  assert.equal(r.css, gen(brand()).css, "old fields change nothing in the CSS");
+  for (const kit of ["lint/test/fixtures/brand-semi.json", "lint/test/fixtures/brand-3dnoobs.json", "tests/fixtures/brand.json"]) assert.doesNotThrow(() => gen(read(kit)), kit);
 });
 
-test("Semi's own green stays itself: dark text on 500 in the dark theme, white on a deeper green in the light theme", () => {
-  const t = generateBrand(brand(), { tokens, styles }).tokens.themes;
-  assert.deepEqual([t.dark["color-accent"], t.dark["color-on-accent"]], ["#00ae42", "#0c0d0e"]);
-  assert.equal(t.light["color-on-accent"], "#ffffff");
-  // A very light brand colour keeps a bright fill with dark text in the dark theme; the light theme gets a deep shade.
-  const y = generateBrand(brand({ primary: "#FACC15" }), { tokens, styles }).tokens.themes;
-  assert.equal(y.dark["color-on-accent"], "#0c0d0e");
-  assert.equal(y.light["color-on-accent"], "#ffffff");
-});
-
-test("guideline: brief, logo, voice, colour use and imagery are validated; defaults fill what the brand leaves out", () => {
-  const bad = validateBrand(brand({ voice: { tone: "loud", emoji: "no" }, color: { accent: "neon" }, logo: { full: "logo.gif" } }), { styles });
+test("guideline: brief, logo, voice and imagery are validated; defaults fill what the brand leaves out", () => {
+  const bad = validateBrand(brand({ voice: { tone: "loud", emoji: "no" }, logo: { full: "logo.gif" } }));
   assert.match(bad.errors.join("\n"), /voice.tone/);
   assert.match(bad.errors.join("\n"), /voice.emoji/);
-  assert.match(bad.errors.join("\n"), /color.accent/);
   assert.match(bad.errors.join("\n"), /logo.full/);
-  const plain = generateBrand(brand(), { tokens, styles });
+  const plain = gen(brand());
   assert.equal(plain.tokens.guide.voice.tone, "neutral");
   assert.equal(plain.tokens.guide.voice.custom, false);
-  assert.equal(plain.tokens.guide.color.accent, "restrained");
+  assert.match(plain.tokens.guide.color.rule, /nút chính/);
   assert.ok(plain.warnings.some((w) => /giọng văn/.test(w)), "a brand without a voice is told to add one");
-  const g = generateBrand(brand({ secondary: "#F59E0B", voice: { tone: "formal", address: "quý khách" }, color: { secondaryRole: "badge" } }), { tokens, styles }).tokens.guide;
+  assert.ok(plain.warnings.some((w) => /Chưa có logo/.test(w)));
+  const g = gen(brand({ voice: { tone: "formal", address: "quý khách" } })).tokens.guide;
   assert.equal(g.voice.address, "quý khách");
   assert.ok(g.voice.rules.some((r) => /viết tắt/.test(r)), "formal tone rules");
   assert.ok(g.voice.rules.some((r) => /Nút: động từ/.test(r)), "shared microcopy rules");
-  assert.match(g.color.secondaryRule, /badge/);
-  assert.deepEqual(plain.tokens.guide.color.mix, { neutral: 80, surface: 15, accent: 5 }, "restrained: share of a screen");
-  const mix = g.color.mix;
-  assert.ok(mix.secondary > 0 && mix.accent + mix.secondary === 5, "the secondary takes a share of the accent");
-  assert.equal(Object.values(mix).reduce((a, b) => a + b), 100);
-  assert.match(validateBrand(brand({ brief: { tagline: "x".repeat(91) } }), { styles }).errors.join("\n"), /brief.tagline/);
-  assert.equal(generateBrand(brand({ brief: { tagline: "In 3D chính xác ngay lần đầu" } }), { tokens, styles }).tokens.guide.brief.tagline, "In 3D chính xác ngay lần đầu");
+  assert.match(validateBrand(brand({ brief: { tagline: "x".repeat(91) } })).errors.join("\n"), /brief.tagline/);
+  assert.equal(gen(brand({ brief: { tagline: "In 3D chính xác ngay lần đầu" } })).tokens.guide.brief.tagline, "In 3D chính xác ngay lần đầu");
 });
 
-test("neutrals: tinted takes the primary's hue, preset copies the style's own neutrals; only allowed styles are emitted", () => {
-  const tinted = generateBrand(brand({ primary: "#2563EB", styles: { default: "soft", allowed: ["soft"] } }), { tokens, styles });
-  assert.deepEqual(Object.keys(tinted.tokens.neutrals), ["soft"]);
-  const panel = hexToOklch(tinted.tokens.neutrals.soft.dark["color-panel"]);
-  assert.ok(Math.abs(panel.h - hexToOklch("#2563EB").h) < 15, "dark panel leans blue");
-  // surfaces stay near neutral: a colour cast on large areas is what people see as "ám màu"
-  for (const k of ["color-canvas", "color-app", "color-panel", "color-field"]) for (const theme of ["dark", "light"]) {
-    assert.ok(hexToOklch(tinted.tokens.neutrals.soft[theme][k]).c < 0.006, `${theme} ${k} chroma`);
-  }
-  const preset = generateBrand(brand({ neutral: "preset" }), { tokens, styles });
-  const own = styles.styles.find((s) => s.id === "soft").semantic;
-  assert.equal(preset.tokens.neutrals.soft.light["color-canvas"], own["color-canvas"].light);
-  assert.ok(!/palette/.test(JSON.stringify(preset.tokens)), "no palette in the output");
-  assert.match(preset.css, /\[data-style="sharp"\]\[data-theme="dark"\]/);
-  assert.doesNotMatch(tinted.css, /data-style="flat"/);
+test("brand.json: density, type scale, typography and motif are not brand choices (warnings, no CSS)", () => {
+  const r = gen(brand({ brief: { personality: ["táo bạo"] } }));
+  assert.doesNotMatch(r.css, /--brand-spacing|--brand-title-weight|--brand-motif|--text-/);
+  const old = validateBrand(brand({ density: "airy", typography: { scale: "contrast", title: "strong" }, motif: "dots" }));
+  assert.equal(old.errors.length, 0);
+  assert.match(old.warnings.join("\n"), /density: mật độ là lựa chọn của từng sản phẩm[\s\S]*typography: không còn dùng[\s\S]*motif: không còn dùng/);
 });
 
-test("css: primary scale in @theme, fonts through the family hooks, secondary utilities only when chosen", () => {
-  const plain = generateBrand(brand(), { tokens, styles }).css;
-  assert.match(plain, /@theme \{\n {2}--color-primary: #00ae42;/);
-  assert.match(plain, /--font-sans-family: var\(--font-geist\), "Geist";/);
-  assert.match(plain, /--font-display-family: var\(--font-montserrat-alternates\), "Montserrat Alternates";/);
-  assert.doesNotMatch(plain, /secondary/);
-  const two = generateBrand(brand({ secondary: "#7C3AED" }), { tokens, styles }).css;
-  assert.match(two, /--color-secondary: #7c3aed;/);
-  assert.match(two, /--color-secondary-600: #7c3aed;/);
-  assert.match(two, /--color-secondary-fg: var\(--semi-secondary-fg\);/);
-  assert.match(two, /--color-on-secondary: var\(--semi-on-secondary\);/);
+test("report: a fill that blends into the page is a soft finding with a warning, never a failure", () => {
+  const r = gen(brand({ primary: "#FFD600" }));
+  const soft = r.report.filter((x) => x.soft && !x.ok);
+  assert.ok(soft.length > 0, "yellow on the light page");
+  assert.ok(r.warnings.some((w) => /tách khỏi nền/.test(w)));
+  assert.ok(r.report.filter((x) => !x.soft).every((x) => x.ok));
 });
 
 test("semi-brand build writes the kit, check catches a stale file, storybook encodes brand.json", () => {
@@ -184,7 +156,7 @@ test("kit with a logo and a voice: logo files land in dist/logo, BRAND.md and AG
   const agents = readFileSync(join(dir, "AGENTS.brand.md"), "utf8");
   assert.match(agents, /\*\*Voice \(UI text\)\*\* — Thân thiện/);
   assert.match(agents, /Chưa lưu được\. Thử lại nhé\./);
-  assert.match(agents, /One primary button per area/);
+  assert.match(agents, /at most one filled brand button per page or dialog/);
   execFileSync("node", [CLI, "check"], { cwd: dir });
   writeFileSync(join(dir, "assets", "logo.svg"), '<svg xmlns="http://www.w3.org/2000/svg"><rect/></svg>');
   assert.throws(() => execFileSync("node", [CLI, "check"], { cwd: dir, stdio: "pipe" }), "a changed logo makes the kit stale");
@@ -210,48 +182,38 @@ test("preview site: the template plus this brand's data, fonts module and CSS la
   for (const f of ["next.config.mjs", "postcss.config.mjs", "app/layout.jsx", "app/parts.jsx", "app/(book)/layout.jsx", "app/(book)/page.jsx", "app/(book)/apps/page.jsx", "app/(book)/kit/page.jsx", "app/(book)/components/page.jsx", "app/globals.css", "app/brand.css", "app/brand.json", "public/kit/brand.css", "public/kit/brand.json"]) assert.ok(readFileSync(join(out, f), "utf8").length > 20, f);
   const fonts = readFileSync(join(out, "app/fonts.js"), "utf8");
   assert.match(fonts, /import \{ Inter, Montserrat_Alternates \} from "next\/font\/google";/);
-  assert.match(fonts, /weight: \["600","700"\]/);
+  assert.match(fonts, /weight: \["400","500","600","700"\]/);
   assert.match(fonts, /export const fontVariables = \[inter\.variable, montserratAlternates\.variable\]\.join\(" "\);/);
   assert.equal(readFileSync(join(out, "app/brand.css"), "utf8"), readFileSync(join(dir, "dist/brand.css"), "utf8"));
   assert.match(readFileSync(join(out, "next.config.mjs"), "utf8"), /SEMI_BRAND_BASE_PATH/);
   rmSync(dir, { recursive: true });
 });
 
-test("brand.json: density, type scale, typography and motif are not brand choices (warnings, no CSS)", () => {
-  const r = generateBrand(brand({ brief: { personality: ["táo bạo"] } }), { tokens, styles });
-  assert.equal(r.tokens.guide.signature, undefined);
-  assert.doesNotMatch(r.css, /--brand-spacing|--brand-title-weight|--brand-motif|--text-display:/);
-  const old = validateBrand(brand({ density: "airy", typography: { scale: "contrast", title: "strong" }, motif: "dots" }), { styles });
-  assert.equal(old.errors.length, 0);
-  assert.match(old.warnings.join("\n"), /density: mật độ là lựa chọn của từng sản phẩm[\s\S]*typography: không còn dùng[\s\S]*motif: không còn dùng/);
-});
-
 test("product look: density and type scale live in the tokens, per element, and the app wires them on <html>", async () => {
   const css = readFileSync(new URL("../../tokens/tokens.css", import.meta.url), "utf8");
   assert.match(css, /\[data-density="compact"\] \{[^}]*--semi-spacing: 0\.225rem/);
-  assert.match(css, /\[data-type-scale="contrast"\] \{[^}]*--text-display: 2.125rem/); // 34px, emitted in rem
+  assert.match(css, /\[data-type-scale="contrast"\] \{[^}]*--text-section: 1.5rem/); // 24px, emitted in rem
   const { wireProductLook } = await import("../../plugin/skills/semi-new-app/scripts/setup.mjs");
   const dir = mkdtempSync(join(tmpdir(), "semi-look-"));
   mkdirSync(join(dir, "app"));
-  writeFileSync(join(dir, "app/layout.tsx"), '<html lang="vi" data-style="flat">\n');
-  writeFileSync(join(dir, "semi-lint.json"), '{ "style": "flat" }\n');
+  writeFileSync(join(dir, "app/layout.tsx"), '<html lang="vi">\n');
+  writeFileSync(join(dir, "semi-lint.json"), '{}\n');
   assert.equal(wireProductLook(dir, { density: "airy", typeScale: "contrast" }).ok, true);
-  assert.match(readFileSync(join(dir, "app/layout.tsx"), "utf8"), /<html data-density="airy" data-type-scale="contrast" lang="vi" data-style="flat">/);
-  assert.deepEqual(JSON.parse(readFileSync(join(dir, "semi-lint.json"), "utf8")), { style: "flat", density: "airy", typeScale: "contrast" });
+  assert.match(readFileSync(join(dir, "app/layout.tsx"), "utf8"), /<html data-density="airy" data-type-scale="contrast" lang="vi">/);
+  assert.deepEqual(JSON.parse(readFileSync(join(dir, "semi-lint.json"), "utf8")), { density: "airy", typeScale: "contrast" });
   assert.equal(wireProductLook(dir, { density: "regular" }).ok, true); // back to the default: attribute and key go
   assert.doesNotMatch(readFileSync(join(dir, "app/layout.tsx"), "utf8"), /data-density/);
   assert.equal(wireProductLook(dir, { density: "tight" }).ok, false);
   rmSync(dir, { recursive: true });
 });
 
-
 test("brief.sample: validated, warned about when missing, and written into the agent rules", () => {
   const sample = { list: "Bản in", items: ["Móc khoá PLA", "Giá đỡ điện thoại"], metric: { label: "Bản in đang chạy", value: "12" }, proof: { label: "bản in đã giao", value: "12.000+" } };
-  const ok = validateBrand(brand({ brief: { product: "In 3D", sample } }), { styles });
+  const ok = validateBrand(brand({ brief: { product: "In 3D", sample } }));
   assert.deepEqual(ok.errors, []);
   assert.doesNotMatch(ok.warnings.join("\n"), /brief\.sample/);
-  assert.match(validateBrand(brand({ brief: { product: "In 3D" } }), { styles }).warnings.join("\n"), /Chưa có brief\.sample/);
-  const bad = validateBrand(brand({ brief: { sample: { items: ["một"], metric: { label: "x" } } } }), { styles });
+  assert.match(validateBrand(brand({ brief: { product: "In 3D" } })).warnings.join("\n"), /Chưa có brief\.sample/);
+  const bad = validateBrand(brand({ brief: { sample: { items: ["một"], metric: { label: "x" } } } }));
   assert.match(bad.errors.join("\n"), /brief\.sample\.items[\s\S]*brief\.sample\.metric/);
   const dir = mkdtempSync(join(tmpdir(), "semi-brand-sample-"));
   writeFileSync(join(dir, "brand.json"), JSON.stringify(brand({ brief: { product: "In 3D", sample } })));
@@ -259,32 +221,6 @@ test("brief.sample: validated, warned about when missing, and written into the a
   assert.match(readFileSync(join(dir, "AGENTS.brand.md"), "utf8"), /\*\*Sample content\*\*[^\n]*“Bản in”[^\n]*“Móc khoá PLA”[^\n]*“Bản in đang chạy” \(12\)/);
   assert.equal(JSON.parse(readFileSync(join(dir, "dist/brand.json"), "utf8")).guide.brief.sample.proof.value, "12.000+");
   rmSync(dir, { recursive: true });
-});
-
-test("report: input edges (control-line) reach 3:1 in every style; Semi's status text is checked on the brand surfaces", () => {
-  for (const primary of ["#00AE42", "#2563EB", "#DD592A", "#FACC15", "#7C3AED", "#0F766E", "#E11D48", "#1E3A8A"])
-    for (const neutral of ["tinted", "preset"]) {
-      const { report } = generateBrand(brand({ primary, neutral }), { tokens, styles });
-      const edges = report.filter((r) => r.check.startsWith("viền ô nhập"));
-      const status = report.filter((r) => r.check.startsWith("chữ trạng thái"));
-      assert.equal(edges.length, 6, "3 styles × 2 themes");
-      assert.equal(status.length, 8, "4 statuses × 2 themes");
-      for (const r of [...edges, ...status]) assert.ok(r.ok, `${primary} ${neutral} ${r.check} ${r.ratio.toFixed(2)}`);
-    }
-});
-
-test("color.buttonText: white forces white text on a deeper shade; invalid values are errors; no logo warns", () => {
-  const auto = generateBrand(brand({ primary: "#DD592A" }), { tokens, styles });
-  assert.equal(auto.tokens.themes.dark["color-on-accent"], "#0c0d0e");
-  const white = generateBrand(brand({ primary: "#DD592A", color: { buttonText: "white" }, accent: { sameInBothThemes: true } }), { tokens, styles });
-  for (const th of ["dark", "light"]) {
-    assert.equal(white.tokens.themes[th]["color-on-accent"], "#ffffff");
-    assert.ok(contrast("#ffffff", white.tokens.themes[th]["color-accent"]) >= 4.5);
-  }
-  assert.equal(white.tokens.guide.color.buttonText, "white");
-  assert.match(validateBrand(brand({ color: { buttonText: "black" } }), { styles }).errors.join("\n"), /buttonText/);
-  assert.match(auto.warnings.join("\n"), /Chưa có logo/);
-  assert.match(auto.warnings.join("\n"), /Màu lỗi được xoay \d+°/);
 });
 
 test("semi-brand check ignores the @semi/ui version stamp, not a real change", () => {
@@ -297,50 +233,7 @@ test("semi-brand check ignores the @semi/ui version stamp, not a real change", (
   }
   execFileSync("node", [CLI, "check"], { cwd: dir, stdio: "pipe" });
   const css = join(dir, "dist/brand.css");
-  writeFileSync(css, readFileSync(css, "utf8").replace("--color-primary-500:", "--color-primary-500: #000; --x:"));
+  writeFileSync(css, readFileSync(css, "utf8").replace("--semi-primary:", "--semi-primary: #000; --x:"));
   assert.throws(() => execFileSync("node", [CLI, "check"], { cwd: dir, stdio: "pipe" }));
   rmSync(dir, { recursive: true });
-});
-
-test("status colours close to the primary turn away from it, within a bound that keeps their meaning, at AA", () => {
-  const orange = generateBrand(brand({ primary: "#DD592A" }), { tokens, styles });
-  assert.ok(orange.tokens.status?.danger, "an orange brand turns the error red");
-  assert.ok(Math.abs(orange.tokens.status.danger.turn) <= 12);
-  assert.match(orange.css, /Status, turned away from the primary[\s\S]*--semi-danger-fg: #[0-9a-f]{6};[\s\S]*--semi-danger-bg: color-mix\(in oklab, #[0-9a-f]{6} 12%, transparent\)/);
-  const green = generateBrand(brand({ primary: "#00AE42" }), { tokens, styles });
-  assert.ok(green.tokens.status?.success && Math.abs(green.tokens.status.success.turn) <= 20, "a green brand turns the success green");
-  for (const r of [...orange.report, ...green.report].filter((x) => x.check.startsWith("chữ trạng thái"))) assert.ok(r.ok, `${r.check} ${r.ratio.toFixed(2)}`);
-  const violet = generateBrand(brand({ primary: "#7C3AED" }), { tokens, styles });
-  assert.equal(violet.tokens.status, undefined, "far from every status: nothing turns");
-  assert.doesNotMatch(violet.css, /Status, turned/);
-});
-
-test("neutral brand | pure and primaryStyle brand | inverted (#93): defaults change nothing, pure is grey, inverted re-points the main button", () => {
-  const css = (over) => generateBrand(brand(over), { tokens, styles, version: "0.0.0" }).css;
-  const base = css({});
-  // "tinted" is the older name of "brand", and leaving both keys out is the same kit: byte-identical brand.css
-  const { neutral, ...noNeutral } = brand();
-  assert.equal(generateBrand(noNeutral, { tokens, styles, version: "0.0.0" }).css, base);
-  assert.equal(css({ neutral: "brand" }), base);
-  assert.equal(css({ primaryStyle: "brand" }), base);
-  assert.doesNotMatch(base, /--semi-action/);
-  // pure: every neutral is a 0% saturation grey (chroma ~0), text and lines included
-  const pure = generateBrand(brand({ neutral: "pure" }), { tokens, styles });
-  for (const [sid, themes] of Object.entries(pure.tokens.neutrals))
-    for (const [theme, n] of Object.entries(themes))
-      for (const k of ["color-canvas", "color-app", "color-panel", "color-field", "color-raised", "color-text-contrast", "color-text-body", "color-text-muted"])
-        assert.ok(hexToOklch(n[k]).c < 0.002, `${sid} ${theme} ${k} ${n[k]} is grey`);
-  assert.deepEqual(pure.report.filter((x) => !x.ok && !x.soft).map((x) => x.check), []);
-  // inverted: one block points the action fill at inverted; the accent itself is unchanged
-  const inv = generateBrand(brand({ primaryStyle: "inverted" }), { tokens, styles, version: "0.0.0" });
-  assert.match(inv.css, /--semi-action: var\(--semi-inverted\);\n  --semi-action-hover: var\(--semi-inverted-hover\);\n  --semi-on-action: var\(--semi-on-inverted\);/);
-  assert.equal(inv.css.replace(/\/\* Main button: inverted[^]*?\}\n\n/, ""), base);
-  assert.equal(inv.tokens.primaryStyle, "inverted");
-  assert.ok(inv.report.some((r) => /đảo màu/.test(r.check) && r.ok));
-  assert.ok(!generateBrand(brand(), { tokens, styles }).report.some((r) => /đảo màu/.test(r.check)), "no inverted rows by default");
-  // validation
-  const { errors } = validateBrand(brand({ neutral: "grey", primaryStyle: "black" }), { styles });
-  assert.equal(errors.length, 2);
-  assert.match(errors.join("\n"), /neutral/);
-  assert.match(errors.join("\n"), /primaryStyle/);
 });

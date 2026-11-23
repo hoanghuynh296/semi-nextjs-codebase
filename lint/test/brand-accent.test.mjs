@@ -1,80 +1,50 @@
-// node --test lint/test — the per-theme accent of a brand kit (#84) and "every themed token differs between light and dark".
+// node --test lint/test — brand fills of a kit (1.0: primary / secondary, the text on them, their hover) and "every themed
+// token differs between light and dark" in Semi's own tokens.css.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { contrast, hexToOklch } from "../../brand/color.mjs";
 import { VISIONS, distance, worstPair } from "./cvd.mjs";
-import { accentErrors, generateBrand, validateBrand } from "../../brand/generate.mjs";
+import { ON_COLORS, generateBrand, hoverOf, pickOn } from "../../brand/generate.mjs";
 
 const read = (p) => JSON.parse(readFileSync(new URL(`../../${p}`, import.meta.url), "utf8"));
 const tokens = read("tokens/tokens.json");
-const styles = read("tokens/styles.json");
 const kits = { semi: read("lint/test/fixtures/brand-semi.json"), "3dnoobs": read("lint/test/fixtures/brand-3dnoobs.json") };
-const brand = (over = {}) => ({
-  name: "Test",
-  package: "@test/brand",
-  primary: "#00AE42",
-  neutral: "tinted",
-  styles: { default: "flat", allowed: ["flat", "soft", "sharp"] },
-  fonts: { sans: "Geist", display: "Montserrat Alternates" },
-  ...over,
-});
-const gen = (b) => generateBrand(b, { tokens, styles });
+const brand = (over = {}) => ({ name: "Test", package: "@test/brand", primary: "#00AE42", fonts: { sans: "Geist" }, ...over });
+const gen = (b) => generateBrand(b, { tokens });
 
-test("accent per theme: light is 600 (700 only when 600 fails) , dark a lighter 400-500 one, hover moves one step with the theme", () => {
-  for (const primary of ["#00AE42", "#DD592A", "#2563EB", "#E11D48", "#FFD600", "#00FFFF", "#7C3AED", "#1E3A8A", "#0B1F3A"]) {
-    const r = gen(brand({ primary }));
-    const { light: l, dark: d } = r.tokens.themes;
-    assert.notEqual(l["color-accent"], d["color-accent"], `${primary} fill differs between themes`);
-    for (const [th, t] of [["light", l], ["dark", d]]) {
-      assert.ok(contrast(t["color-accent"], t["color-on-accent"]) >= 4.5, `${primary} ${th} on-accent`);
-      assert.ok(contrast(t["color-accent-hover"], t["color-on-accent"]) >= 4.5, `${primary} ${th} hover text`);
-    }
-    assert.ok(hexToOklch(d["color-accent"]).l > hexToOklch(l["color-accent"]).l, `${primary} dark fill is lighter`);
-    assert.ok(hexToOklch(l["color-accent-hover"]).l < hexToOklch(l["color-accent"]).l, `${primary} light hover is deeper`);
-    assert.ok(hexToOklch(d["color-accent-hover"]).l > hexToOklch(d["color-accent"]).l, `${primary} dark hover is lighter`);
-    assert.ok([600, 700].includes(r.tokens.fidelity.light.fill), `${primary} light shade ${r.tokens.fidelity.light.fill}`);
-    assert.ok([400, 500].includes(r.tokens.fidelity.dark.fill), `${primary} dark shade ${r.tokens.fidelity.dark.fill}`);
-    assert.equal(l["color-accent"], r.tokens.primary[r.tokens.fidelity.light.fill]);
-    assert.ok(r.report.filter((x) => x.check.startsWith("nút tách khỏi nền")).every((x) => x.ok), `${primary} fills stand out from the page`);
+test("on-colour: white when it reaches 4.5:1, else Semi's near-black, else black; every pick reaches AA", () => {
+  assert.equal(pickOn("#0b1f3a"), "#ffffff");
+  assert.equal(pickOn("#ffd600"), "#0c0d0e");
+  // Mid-lightness colours where neither white nor #0c0d0e quite reach 4.5:1 fall back to black.
+  const mids = ["#7a7a7a", "#808080", "#2563eb", "#e11d48", "#f97316", "#7c6f9b", "#22d3ee", "#a35a00"];
+  for (const c of mids) assert.ok(contrast(pickOn(c), c) >= 4.5, `${c}: ${pickOn(c)} ${contrast(pickOn(c), c).toFixed(2)}`);
+  for (let i = 0; i < 4096; i += 7) {
+    const hex = `#${[(i >> 8) & 15, (i >> 4) & 15, i & 15].map((n) => (n * 17).toString(16).padStart(2, "0")).join("")}`;
+    assert.ok(contrast(pickOn(hex), hex) >= 4.5, `${hex}`);
+    assert.ok(ON_COLORS.includes(pickOn(hex)));
   }
-  const g = gen(brand()).tokens.themes;
-  assert.deepEqual([g.light["color-on-accent"], g.dark["color-on-accent"]], ["#ffffff", "#0c0d0e"]);
-  assert.equal(g.dark["color-accent"], "#00ae42", "a brand colour that sits on 500 keeps it in the dark theme");
-  // White text on a mid colour leaves one fill that reads in both themes: without sameInBothThemes that is an error.
-  assert.throws(() => gen(brand({ primary: "#DD592A", color: { buttonText: "white" } })), /giống nhau ở theme sáng và tối/);
-  const white = gen(brand({ primary: "#DD592A", color: { buttonText: "white" }, accent: { sameInBothThemes: true } })).tokens.themes;
-  for (const th of ["dark", "light"]) assert.equal(white[th]["color-on-accent"], "#ffffff");
 });
 
-test("both shipped brands (semi, 3dnoobs) get different light and dark accents with AA contrast", () => {
+test("hover: moves away from the text on it (darker under white, lighter under dark) and keeps AA", () => {
+  for (const c of ["#00ae42", "#ffd600", "#0b1f3a", "#e11d48", "#2563eb", "#7c6f9b", "#ff57ae"]) {
+    const on = pickOn(c);
+    const h = hoverOf(c, on);
+    assert.notEqual(h, c, c);
+    const darker = hexToOklch(h).l < hexToOklch(c).l;
+    assert.equal(darker, on === "#ffffff", `${c}: hover ${h} under ${on}`);
+    assert.ok(contrast(on, h) >= contrast(on, c) - 0.05, `${c}: hover keeps the text contrast`);
+    assert.ok(contrast(on, h) >= 4.5, `${c}: hover ${h} ${contrast(on, h).toFixed(2)}`);
+  }
+});
+
+test("the two shipped kits generate, with AA on every fill and hover; brand fills are the same in both themes", () => {
   for (const [id, b] of Object.entries(kits)) {
-    const { light, dark } = gen(b).tokens.themes;
-    assert.notEqual(light["color-accent"], dark["color-accent"], `${id} fill`);
-    assert.notEqual(light["color-accent-hover"], dark["color-accent-hover"], `${id} hover`);
-    for (const t of [light, dark]) {
-      assert.ok(contrast(t["color-accent"], t["color-on-accent"]) >= 4.5, `${id} on-accent`);
-      assert.ok(contrast(t["color-accent-hover"], t["color-on-accent"]) >= 4.5, `${id} hover on-accent`);
-    }
+    const r = gen(b);
+    assert.deepEqual(r.report.filter((x) => !x.ok && !x.soft), [], id);
+    // One block for every theme scope: the same fill in light and dark.
+    assert.equal(rules(r.css).filter((x) => "--semi-primary" in x.decls).length, 1, `${id}: one primary for both themes`);
   }
-});
-
-test("sameInBothThemes keeps one value; equal accents without it are an error; explicit pins win", () => {
-  const same = gen(brand({ primary: "#FF6B00", accent: { sameInBothThemes: true } })).tokens.themes;
-  for (const k of ["color-accent", "color-accent-hover", "color-on-accent"]) assert.equal(same.light[k], same.dark[k], k);
-  assert.ok(contrast(same.light["color-accent"], same.light["color-on-accent"]) >= 4.5);
-  assert.throws(() => gen(brand({ accent: { light: { fill: 600 }, dark: { fill: 600 } } })), /giống nhau ở theme sáng và tối/);
-  assert.equal(accentErrors({ light: { "color-accent": "#abc123" }, dark: { "color-accent": "#ABC123" } }, {}).length, 1);
-  assert.deepEqual(accentErrors({ light: { "color-accent": "#abc123" }, dark: { "color-accent": "#abc123" } }, { accent: { sameInBothThemes: true } }), []);
-  const pin = gen(brand({ accent: { light: { fill: 600, on: "white" }, dark: { fill: "#33CC66", hover: "#66DD88", on: "dark" } } })).tokens;
-  assert.equal(pin.themes.light["color-accent"], pin.primary[600]);
-  assert.equal(pin.themes.light["color-accent-hover"], pin.primary[700]);
-  assert.deepEqual([pin.themes.dark["color-accent"], pin.themes.dark["color-accent-hover"], pin.themes.dark["color-on-accent"]], ["#33cc66", "#66dd88", "#0c0d0e"]);
-  const bad = validateBrand(brand({ accent: { sameInBothThemes: "yes", light: { fill: 650 }, dark: { fill: "#fff" } } }), { styles }).errors.join("\n");
-  assert.match(bad, /sameInBothThemes: true hoặc false/);
-  assert.match(bad, /accent\.light\.fill/);
-  assert.match(bad, /accent\.dark\.hover: bắt buộc/);
-  assert.match(validateBrand(brand({ accent: { sameInBothThemes: true, light: { fill: 600 } } }), { styles }).errors.join("\n"), /không đi cùng/);
 });
 
 // ── Every themed --semi-* token differs between light and dark ───────────────────────────────────────────────────
@@ -105,72 +75,62 @@ function rules(css, media = "") {
   return out;
 }
 /**
- * Light / dark pairs to compare: { scope: { dark, light } } for the plain theme scopes, every style
- * ([data-style="soft"][data-theme="dark"] …) and the system theme (dark = [data-theme="system"], light = the same
- * selector inside @media (prefers-color-scheme: light)). :root counts as dark.
+ * Light / dark pairs to compare: { scope: { dark, light } } for the plain theme scopes and the system theme
+ * (dark = [data-theme="system"], light = the same selector inside @media (prefers-color-scheme: light)). :root counts as dark.
  */
 function themedScopes(css) {
   const scopes = {};
   const put = (scope, side, decls) => Object.assign(((scopes[scope] ??= { dark: {}, light: {} })[side]), decls);
   for (const r of rules(css)) {
     for (const sel of r.selectors) {
-      const m = /^(?:\[data-style="(\w+)"\])?\[data-theme="(dark|light|system)"\]$/.exec(sel);
+      const m = /^\[data-theme="(dark|light|system)"\]$/.exec(sel);
       if (!m) continue;
-      const [, style = "", theme] = m;
-      if (theme === "system") put(`${style || "plain"} system`, r.media.includes("light") ? "light" : "dark", r.decls);
-      else put(style || "plain", theme, r.decls);
+      const theme = m[1];
+      if (theme === "system") put("plain system", r.media.includes("light") ? "light" : "dark", r.decls);
+      else put("plain", theme, r.decls);
     }
   }
   return scopes;
 }
 /** The plain theme scope. */
 const themed = (css) => themedScopes(css).plain;
-/** Intended to be the same in both themes: white text on the solid status fills, and tokens that only point at themed ones. */
-const REFS = [
-  "--semi-accent-line", "--semi-focus", "--semi-control-line-hover",
-  // C-030 surfaces: the panel scale and the main-button fill point at themed tokens (canvas / app / panel, accent)
-  "--semi-panel-0", "--semi-panel-1", "--semi-panel-2", "--semi-panel-3", "--semi-panel-4",
-  "--semi-action", "--semi-action-hover", "--semi-on-action",
-];
-const SAME_OK = new Set(["--semi-on-solid", ...REFS]);
+/**
+ * Intended to be the same in both themes: white text on the solid status fills, the brand fills (one value for both
+ * themes, a kit sets them), and tokens whose value only points at themed ones (a mix of the contrast colour, a
+ * reference), so they still change with the theme.
+ */
+const BRAND = ["--semi-primary", "--semi-primary-hover", "--semi-on-primary", "--semi-secondary", "--semi-secondary-hover", "--semi-on-secondary"];
+const SAME_OK = new Set(["--semi-on-solid", ...BRAND]);
 function sameTokens({ dark, light }) {
   return Object.keys(light)
-    .filter((k) => k.startsWith("--semi-") && k in dark && dark[k].toLowerCase() === light[k].toLowerCase() && !SAME_OK.has(k))
+    .filter((k) => k.startsWith("--semi-") && k in dark && dark[k].toLowerCase() === light[k].toLowerCase() && !SAME_OK.has(k) && !/var\(--semi-/.test(light[k]))
     .sort();
 }
 
-test("core tokens.css: every themed --semi-* token differs between light and dark (allowlist: on-solid and references)", () => {
-  const t = themed(readFileSync(new URL("../../tokens/tokens.css", import.meta.url), "utf8"));
+test("core tokens.css: every themed --semi-* token differs between light and dark (allowlist: on-solid, brand fills, references)", () => {
+  const css = readFileSync(new URL("../../tokens/tokens.css", import.meta.url), "utf8");
+  const t = themed(css);
   assert.ok(Object.keys(t.light).length > 50, "parsed the light theme");
   assert.deepEqual(sameTokens(t), []);
-  // The allowlisted references really are references, not hidden constants.
-  for (const k of REFS) assert.match(t.light[k], /var\(--semi-/, k);
+  // The pure contrast colour the lines and fills mix really switches.
+  assert.notEqual(t.dark["--semi-contrast"], t.light["--semi-contrast"]);
   // Every chart colour has its own dark value, and each reads against its panel (marks need 3:1).
   for (let n = 1; n <= 8; n++) assert.notEqual(t.dark[`--semi-chart-${n}`], t.light[`--semi-chart-${n}`], `chart-${n}`);
   assert.ok(contrast(t.dark["--semi-chart-6"], t.dark["--semi-panel"]) >= 3, "chart-6 on the dark panel");
   assert.ok(contrast(t.light["--semi-chart-6"], t.light["--semi-panel"]) >= 3, "chart-6 on the light panel");
+  const sys = themedScopes(css)["plain system"];
+  assert.ok(Object.keys(sys.light).length > 50, "system-light block parsed");
+  assert.deepEqual(sameTokens(sys), [], "system-light vs system-dark");
 });
 
-test("every style and the system theme switch too: soft / sharp light vs dark, and @media system-light vs system-dark", () => {
-  const core = themedScopes(readFileSync(new URL("../../tokens/tokens.css", import.meta.url), "utf8"));
-  const kit = themedScopes(gen(kits.semi).css);
-  for (const [name, scopes] of [["core", core], ["kit", kit]]) {
-    const compared = [];
-    for (const [scope, pair] of Object.entries(scopes)) {
-      if (!Object.keys(pair.dark).length || !Object.keys(pair.light).length) continue;
-      compared.push(scope);
-      assert.deepEqual(sameTokens(pair), [], `${name} ${scope}`);
-    }
-    assert.ok(compared.includes("plain system"), `${name}: system-light vs system-dark compared (${compared})`);
-    if (name === "kit") for (const s of ["soft", "sharp"]) assert.ok(compared.includes(s), `${name}: ${s} compared (${compared})`);
+test("a built brand kit sets only the brand fills and fonts, on every theme scope", () => {
+  for (const [id, b] of Object.entries(kits)) {
+    const decls = rules(gen(b).css).flatMap((r) => Object.keys(r.decls));
+    assert.deepEqual([...new Set(decls.filter((d) => d.startsWith("--semi-")))].sort(), [...BRAND].sort(), id);
+    assert.ok(decls.every((d) => d.startsWith("--semi-") || d.startsWith("--font-")), `${id}: ${decls}`);
+    const sel = rules(gen(b).css).find((r) => "--semi-primary" in r.decls).selectors;
+    for (const s of [":root", "[data-theme]", ".dark", ".light"]) assert.ok(sel.includes(s), `${id}: ${s}`);
   }
-});
-
-test("a built brand kit: every themed --semi-* token differs between light and dark", () => {
-  for (const [id, b] of Object.entries(kits)) assert.deepEqual(sameTokens(themed(gen(b).css)), [], id);
-  // A kit that opts into one accent shows up here, which is why sameInBothThemes has to be written down.
-  const same = sameTokens(themed(gen(brand({ accent: { sameInBothThemes: true } })).css));
-  assert.deepEqual(same, ["--semi-accent", "--semi-accent-hover", "--semi-on-accent"]);
 });
 
 // ── The eight chart colours stay distinguishable, also with colour-vision deficiency ─────────────────────────────

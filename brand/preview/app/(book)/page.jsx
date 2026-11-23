@@ -5,18 +5,19 @@
 // .preview/ by semi-brand; do not edit there.
 import { Alert, Button, EmptyState, Icon, KpiCard } from "@semi/ui";
 import { CARD } from "@semi/ui/styles";
+import tokens from "@semi/ui/tokens.json";
 import brand from "../brand.json";
 import { BothThemes, first, guide as g, logoSrc, MiniScreen, Section, THEME_NAME, THEMES } from "../parts";
 
-const font = (role) => brand.fonts.find((f) => f.roles.includes(role))?.family;
-const style = brand.styles.default;
+// Without fonts.display the display face is the UI sans.
+const font = (role) => (brand.fonts.find((f) => f.roles.includes(role)) ?? brand.fonts.find((f) => f.roles.includes("sans")))?.family;
 
 /** The logo (or the name in the display font) as artwork, so the misuse examples work for a brand without a logo. */
 function LogoArt({ theme, height = 40, style: css }) {
   const src = logoSrc(theme);
   if (src) return <img src={src} alt="" style={{ height, width: "auto", ...css }} />;
   return (
-    <span className="font-display font-semibold text-contrast whitespace-nowrap" style={{ fontSize: height * 0.7, lineHeight: 1, display: "inline-block", ...css }}>
+    <span className="font-display font-semibold text-strong whitespace-nowrap" style={{ fontSize: height * 0.7, lineHeight: 1, display: "inline-block", ...css }}>
       {brand.name}
     </span>
   );
@@ -25,7 +26,7 @@ function LogoArt({ theme, height = 40, style: css }) {
 function Cover() {
   const b = g?.brief ?? {};
   return (
-    <section className="rounded-panel bg-accent text-on-accent overflow-hidden">
+    <section className="rounded-panel bg-primary text-on-primary overflow-hidden">
       <div className="grid @3xl:grid-cols-[1.3fr_1fr] gap-8 p-6 @3xl:p-10 items-center">
         <div className="space-y-5 min-w-0">
           {logoSrc("light") && (
@@ -36,7 +37,7 @@ function Cover() {
           <h1 className="font-display font-semibold leading-tight break-words" style={{ fontSize: "clamp(36px, 7vw, 64px)" }}>
             {brand.name}
           </h1>
-          {b.tagline && <p className="text-title-lg leading-relaxed max-w-xl">{b.tagline}</p>}
+          {b.tagline && <p className="text-lead leading-relaxed max-w-xl">{b.tagline}</p>}
           {b.personality?.length > 0 && (
             <ul className="flex flex-wrap gap-2" aria-label="Tính cách">
               {b.personality.map((w) => (
@@ -67,20 +68,20 @@ function Brief() {
       <div className="grid gap-3 @2xl:grid-cols-3">
         {items.map(([k, v, icon]) => (
           <div key={k} className={`${CARD} p-5 space-y-2`}>
-            <div className="flex items-center gap-2 text-label font-medium text-muted">
-              <Icon name={icon} className="w-4 h-4 text-accent-fg" />
+            <div className="flex items-center gap-2 text-ui font-medium text-muted">
+              <Icon name={icon} className="w-4 h-4 text-strong" />
               {k}
             </div>
-            <p className="text-ui-lg text-body leading-relaxed">{v}</p>
+            <p className="text-lead text-body leading-relaxed">{v}</p>
           </div>
         ))}
         {b.personality?.length > 0 && (
           <div className={`${CARD} p-5 space-y-2`}>
-            <div className="flex items-center gap-2 text-label font-medium text-muted">
-              <Icon name="sparkles" className="w-4 h-4 text-accent-fg" />
+            <div className="flex items-center gap-2 text-ui font-medium text-muted">
+              <Icon name="sparkles" className="w-4 h-4 text-strong" />
               Tính cách
             </div>
-            <p className="font-display text-heading font-semibold text-contrast leading-snug">{b.personality.join(" · ")}</p>
+            <p className="font-display text-section font-semibold text-strong leading-snug">{b.personality.join(" · ")}</p>
           </div>
         )}
       </div>
@@ -98,7 +99,7 @@ const MISUSE = [
 
 function Logo() {
   const l = g?.logo;
-  const busy = `repeating-linear-gradient(135deg, ${brand.primary[300]} 0 10px, ${(brand.secondary ?? brand.primary)[700]} 10px 20px)`;
+  const busy = `repeating-linear-gradient(135deg, ${brand.primary.fill} 0 10px, ${(brand.secondary ?? brand.primary).on} 10px 20px)`;
   return (
     <Section title="Logo" icon="image" card={false} lead={l ? `Khoảng trống quanh logo tối thiểu ${l.clearspace} × chiều cao logo; bản đầy đủ rộng ít nhất ${l.minWidth}px.` : undefined}>
       {!l && <Alert tone="info">Thương hiệu chưa có logo: các ví dụ dưới đây dùng tên thương hiệu. Thêm logo bằng: brand.mjs set logo=assets/logo.svg logoDark=… mark=…</Alert>}
@@ -110,7 +111,7 @@ function Logo() {
                 <LogoArt theme={t} />
               </div>
             </div>
-            <figcaption className="text-caption text-muted px-1">
+            <figcaption className="text-ui text-muted px-1">
               Nền {THEME_NAME[t].toLowerCase()}
               {t === "dark" && l && !l.fullDarkDist ? " (chưa có bản cho nền tối: dùng bản thường)" : ""} · nét đứt = khoảng trống
             </figcaption>
@@ -121,21 +122,21 @@ function Logo() {
             {l?.markDist ? (
               [16, 24, 32, 48].map((px) => <img key={px} src={logoSrc("light", "mark")} alt="" style={{ width: px, height: px }} />)
             ) : (
-              <span className="text-label text-muted px-4 text-center">Chưa có biểu tượng vuông (mark) cho favicon và icon app</span>
+              <span className="text-ui text-muted px-4 text-center">Chưa có biểu tượng vuông (mark) cho favicon và icon app</span>
             )}
           </div>
-          <figcaption className="text-caption text-muted px-1">Biểu tượng: favicon, icon app, sidebar thu gọn</figcaption>
+          <figcaption className="text-ui text-muted px-1">Biểu tượng: favicon, icon app, sidebar thu gọn</figcaption>
         </figure>
       </div>
       <div className="space-y-2">
-        <h3 className="text-title font-semibold text-contrast px-1">Không được làm</h3>
+        <h3 className="text-lead font-semibold text-strong px-1">Không được làm</h3>
         <div className="grid gap-3 grid-cols-2 @3xl:grid-cols-5">
           {MISUSE.map(([label, css, textCss]) => (
             <figure key={label} className="space-y-1.5">
               <div data-theme="light" className="bg-canvas rounded-card border border-line h-28 flex items-center justify-center overflow-hidden">
                 <LogoArt theme="light" height={28} style={!logoSrc("light") && textCss ? { ...css, ...textCss } : css} />
               </div>
-              <figcaption className="flex items-center gap-1.5 text-label text-body px-1">
+              <figcaption className="flex items-center gap-1.5 text-ui text-body px-1">
                 <Icon name="close" className="w-4 h-4 text-danger-fg shrink-0" />
                 {label}
               </figcaption>
@@ -145,7 +146,7 @@ function Logo() {
             <div className="rounded-card border border-line h-28 flex items-center justify-center overflow-hidden" style={{ background: busy }}>
               <LogoArt theme="light" height={28} />
             </div>
-            <figcaption className="flex items-center gap-1.5 text-label text-body px-1">
+            <figcaption className="flex items-center gap-1.5 text-ui text-body px-1">
               <Icon name="close" className="w-4 h-4 text-danger-fg shrink-0" />
               Trên nền rối
             </figcaption>
@@ -156,57 +157,31 @@ function Logo() {
   );
 }
 
-const MIX_LABEL = { neutral: "Trung tính (nền, chữ)", surface: "Bề mặt (thẻ, ô nhập)", accent: "Màu chính", secondary: "Màu phụ" };
-const MIX_CLASS = { neutral: "bg-canvas", surface: "bg-raised", accent: "bg-accent", secondary: "bg-secondary-solid" };
-
 function Colors() {
   const c = g?.color;
-  const n = (k) => THEMES.map((t) => brand.neutrals[style]?.[t]?.[k]).filter(Boolean);
+  // Semi's neutrals: the same for every brand (tokens.json), shown so the brand colours are seen against them.
+  const n = (k) => THEMES.map((t) => tokens.semantic[k]?.[t]).filter(Boolean);
   const swatches = [
-    { name: "Màu chính", hex: brand.primary[brand.brandStep], role: "Nút chính, link, mục đang chọn, focus", cls: "bg-primary" },
-    ...(brand.secondary ? [{ name: "Màu phụ", hex: brand.secondary[brand.secondaryStep], role: c?.secondaryRule ? `Chỉ cho ${c.secondaryRule.split(" (")[0]}` : "Điểm nhấn", cls: "bg-secondary" }] : []),
-    { name: "Nền", hex: n("color-canvas").join(" / "), role: "Nền trang (sáng / tối)", cls: "bg-canvas" },
-    { name: "Bề mặt", hex: n("color-panel").join(" / "), role: "Thẻ, bảng, khung", cls: "bg-panel" },
-    { name: "Chữ", hex: n("color-text-contrast").join(" / "), role: "Tiêu đề, chữ chính", cls: "bg-contrast" },
+    { name: "Màu chính", hex: `${brand.primary.fill} · chữ ${brand.primary.on}`, role: "Nút chính, badge cần chú ý, nhãn “Mới”, gạch chân tab lớn", cls: "bg-primary" },
+    ...(brand.secondary ? [{ name: "Màu phụ", hex: `${brand.secondary.fill} · chữ ${brand.secondary.on}`, role: "Nút chính thứ hai", cls: "bg-secondary" }] : []),
+    { name: "Nền", hex: n("color-canvas").join(" / "), role: "Nền trang (tối / sáng), của Semi", cls: "bg-canvas" },
+    { name: "Bề mặt", hex: n("color-panel").join(" / "), role: "Thẻ, thanh điều hướng, của Semi", cls: "bg-panel" },
+    { name: "Chữ", hex: n("color-text-strong").join(" / "), role: "Tiêu đề, chữ chính, của Semi", cls: "bg-strong" },
   ];
-  const off = THEMES.filter((t) => (brand.fidelity?.[t]?.deltaE ?? 0) > 0.08);
   return (
-    <Section title="Màu" icon="palette" card={false} lead={c ? `Mức dùng màu chính: ${c.accentLabel}. ${c.accentRule}` : undefined}>
+    <Section title="Màu" icon="palette" card={false} lead={c?.rule}>
       <div className={`grid gap-3 grid-cols-2 ${swatches.length === 5 ? "@3xl:grid-cols-5" : "@3xl:grid-cols-4"}`}>
         {swatches.map((s, i) => (
           <div key={s.name} className={`${CARD} overflow-hidden ${i === 0 ? "col-span-2 @3xl:col-span-1" : ""}`}>
             <div className={`h-24 ${s.cls} border-b border-line`} />
             <div className="p-3 space-y-1">
-              <div className="text-title font-semibold text-contrast">{s.name}</div>
-              <div className="text-caption text-muted tabular-nums break-all">{s.hex}</div>
-              <div className="text-label text-body">{s.role}</div>
+              <div className="text-lead font-medium text-strong">{s.name}</div>
+              <div className="text-ui text-muted tabular-nums break-all">{s.hex}</div>
+              <div className="text-ui text-body">{s.role}</div>
             </div>
           </div>
         ))}
       </div>
-      {c?.mix && (
-        <div className={`${CARD} p-4 space-y-3`}>
-          <div className="text-title font-semibold text-contrast">Tỉ lệ màu trên một màn hình</div>
-          <div className="flex h-10 rounded-control overflow-hidden border border-line divide-x divide-line-hover" role="img" aria-label={Object.entries(c.mix).map(([k, v]) => `${MIX_LABEL[k]} ${v}%`).join(", ")}>
-            {Object.entries(c.mix).map(([k, v]) => (
-              <div key={k} className={MIX_CLASS[k]} style={{ width: `${v}%` }} />
-            ))}
-          </div>
-          <ul className="flex flex-wrap gap-x-5 gap-y-1.5 text-label text-body">
-            {Object.entries(c.mix).map(([k, v]) => (
-              <li key={k} className="flex items-center gap-1.5">
-                <span className={`w-3 h-3 rounded-chip border border-line ${MIX_CLASS[k]}`} />
-                {MIX_LABEL[k]} <span className="tabular-nums text-muted">{v}%</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-      {off.length > 0 && (
-        <Alert tone="info">
-          Ở nền {off.map((t) => THEME_NAME[t].toLowerCase()).join(" và ")}, nút chính dùng sắc gần nhất với màu thương hiệu mà vẫn đọc rõ (xem UI kit).
-        </Alert>
-      )}
     </Section>
   );
 }
@@ -222,22 +197,22 @@ function Type() {
       <div className="grid gap-3 @2xl:grid-cols-2">
         {pair.map(([role, family, cls]) => (
           <div key={role} className={`${CARD} p-5 space-y-3`}>
-            <div className={`${cls} text-contrast leading-none`} style={{ fontSize: 72 }}>
+            <div className={`${cls} text-strong leading-none`} style={{ fontSize: 72 }}>
               Aa
             </div>
             <div>
-              <div className="text-title font-semibold text-contrast">{family}</div>
-              <div className="text-label text-muted">{role}</div>
+              <div className="text-lead font-semibold text-strong">{family}</div>
+              <div className="text-ui text-muted">{role}</div>
             </div>
-            <div className={`${cls} text-ui-lg text-body break-words`}>AĂÂBCDĐEÊGHIKLMNOÔƠPQRSTUƯVXY · 0123456789 · ạ ả ã ề ộ ữ</div>
+            <div className={`${cls} text-lead text-body break-words`}>AĂÂBCDĐEÊGHIKLMNOÔƠPQRSTUƯVXY · 0123456789 · ạ ả ã ề ộ ữ</div>
           </div>
         ))}
       </div>
       <div className={`${CARD} p-6 space-y-3`}>
-        <div className="font-display font-title text-contrast leading-tight" style={{ fontSize: "clamp(26px, 4vw, 40px)" }}>
+        <div className="font-display font-title text-strong leading-tight" style={{ fontSize: "clamp(26px, 4vw, 40px)" }}>
           {b.tagline || `${brand.name}: rõ ràng, nhanh, đáng tin.`}
         </div>
-        <p className="text-ui-lg text-body leading-relaxed max-w-2xl">
+        <p className="text-lead text-body leading-relaxed max-w-2xl">
           {b.product ? `${b.product}. ` : ""}Đoạn văn dùng font giao diện: dễ đọc ở cỡ nhỏ, đủ dấu tiếng Việt, số liệu thẳng hàng trong bảng.
         </p>
       </div>
@@ -263,7 +238,7 @@ function Voice() {
             ["Không nên", v.dont, "close", "text-danger-fg"],
           ].map(([label, items, icon, cls]) => (
             <div key={label} className={`${CARD} p-5 space-y-2`}>
-              <div className="text-title font-semibold text-contrast">{label}</div>
+              <div className="text-lead font-semibold text-strong">{label}</div>
               {items.length ? (
                 items.map((x) => (
                   <div key={x} className="flex gap-2 text-ui text-body">
@@ -272,7 +247,7 @@ function Voice() {
                   </div>
                 ))
               ) : (
-                <div className="text-label text-muted">Chưa có</div>
+                <div className="text-ui text-muted">Chưa có</div>
               )}
             </div>
           ))}
@@ -291,7 +266,7 @@ function Voice() {
         )}
       </BothThemes>
       <details className={`${CARD} p-4 group`}>
-        <summary className="cursor-pointer text-title font-semibold text-contrast">Quy tắc viết chữ trên giao diện ({v.rules.length})</summary>
+        <summary className="cursor-pointer text-lead font-semibold text-strong">Quy tắc viết chữ trên giao diện ({v.rules.length})</summary>
         <ul className="list-disc pl-5 pt-3 text-ui text-body space-y-1">
           {v.rules.map((r) => (
             <li key={r}>{r}</li>
@@ -313,7 +288,7 @@ export default function BrandBook() {
       <Voice />
       {g?.imagery && (
         <Section title="Hình ảnh" icon="camera">
-          <p className="text-ui-lg text-body leading-relaxed max-w-3xl">{g.imagery}</p>
+          <p className="text-lead text-body leading-relaxed max-w-3xl">{g.imagery}</p>
         </Section>
       )}
     </>

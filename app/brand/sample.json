@@ -4,9 +4,7 @@
     "package": "@3dnoobs/brand",
     "primary": "#00AE42",
     "secondary": null,
-    "neutral": "tinted",
-    "styles": { "default": "flat", "allowed": ["flat", "soft"] },
-    "fonts": { "sans": "Geist", "display": "Montserrat Alternates" }
+    "fonts": { "sans": "Geist" }
   },
   "secondary": "#F59E0B"
 }

@@ -3,8 +3,6 @@
   "package": "@3dnoobs/brand",
   "primary": "#00AE42",
   "secondary": "#FF8A00",
-  "neutral": "tinted",
-  "styles": { "default": "flat", "allowed": ["flat", "soft", "sharp"] },
   "fonts": { "sans": "Be Vietnam Pro", "display": "Montserrat Alternates" },
   "brief": {
     "product": "Cửa hàng và cộng đồng in 3D cho người mới",
@@ -22,6 +20,5 @@
     "tone": "friendly", "address": "bạn", "we": "3D Noobs", "emoji": false,
     "do": ["Gọi đúng tên máy in và vật liệu"], "dont": ["Dùng thuật ngữ G-code với người mới"],
     "examples": { "button": ["In ngay", "Thêm máy in"], "error": "Máy in mất kết nối. Kiểm tra Wi‑Fi rồi thử lại.", "empty": "Chưa có bản in nào. Chọn một mẫu để in thử." }
-  },
-  "color": { "accent": "balanced", "secondaryRole": "highlight" }
+  }
 }
