@@ -106,10 +106,18 @@ function resolveToken(value, tokens) {
   for (const g of Object.values(tokens)) if (g && typeof g === "object" && m[1] in g) return resolveToken(typeof g[m[1]] === "string" ? g[m[1]] : g[m[1]].value, tokens);
   return value;
 }
-/** Alpha of the accent-subtle tint per theme ("color-mix(… accent-fg 14%, transparent)"): accent-fg text on it must read. */
-function subtleAlpha(tokens, theme) {
-  const m = /(\d+(?:\.\d+)?)%/.exec(tokens.semantic?.["color-accent-subtle"]?.[theme] ?? "");
-  return m ? +m[1] / 100 : theme === "dark" ? 0.14 : 0.11;
+/**
+ * The accent-subtle fill (selected rows, active pills) as the browser paints it from tokens.json, given the coloured
+ * text `fg` it is mixed from and the neutrals of one style x theme. "color-mix(… fg N%, transparent)" is see-through:
+ * one colour per surface it sits on (the pages and the card). "color-mix(… fg N%, var(--semi-panel))" is opaque: one
+ * colour wherever it sits (#123: light, so the recessed card does not darken it below text-muted's 4.5:1).
+ */
+export function accentSubtleFills(tokens, theme, fg, n, key = "color-accent-subtle") {
+  const v = String(tokens.semantic?.[key]?.[theme] ?? "");
+  const m = /(\d+(?:\.\d+)?)%,\s*(transparent|var\(--semi-([\w-]+)\))\s*\)\s*$/.exec(v);
+  const a = m ? +m[1] / 100 : theme === "dark" ? 0.14 : 0.11;
+  if (m?.[3]) return [mixOklab(n[`color-${m[3]}`], fg, a)];
+  return [...PAGES.map((k) => n[k]), derivedSurfaces(n, theme).card].map((bg) => blend(fg, bg, a));
 }
 /** Opacity of text-muted in Semi's control-line token per theme ("color-mix(… text-muted 80%, transparent)"), or null. */
 function controlLineAlpha(tokens, theme) {
@@ -488,11 +496,22 @@ export function accentErrors(themes, brand) {
  * Coloured text (accent-fg): the shade closest to the brand colour that reads at AA on every surface and on the
  * accent-subtle tint of itself (selected rows, active pills). The focus ring and selected borders use it too.
  */
-function pickText(sc, brandHex, theme, surfaces, pages, subtle) {
-  const reads = (s) => minContrast(sc[s], [...surfaces, ...pages.map((bg) => blend(sc[s], bg, subtle))]);
+function pickText(sc, brandHex, theme, surfaces, fills) {
+  const reads = (s) => minContrast(sc[s], [...surfaces, ...fills(sc[s])]);
   const ok = SHADES.filter((s) => reads(s) >= AA).sort((a, b) => deltaE(sc[a], brandHex) - deltaE(sc[b], brandHex));
   const shade = ok[0] ?? (theme === "dark" ? 50 : 900);
   return { shade, ratio: reads(shade) };
+}
+
+/** Nudge muted / body text of one style x theme until it reads at AA on the accent-subtle fills too (#123). */
+function fixTextOnFills(n, theme, fills) {
+  for (const k of ["color-text-muted", "color-text-body"]) {
+    let { l, c, h } = hexToOklch(n[k]);
+    for (let i = 0; i < 40 && minContrast(n[k], fills) < AA + 0.05; i++) {
+      l += theme === "dark" ? 0.01 : -0.01;
+      n[k] = oklchToHex({ l, c, h });
+    }
+  }
 }
 
 /** Opaque version of a neutral (rgba lines are composited on the panel) for contrast checks. */
@@ -615,14 +634,16 @@ export function generateBrand(brand, { tokens, styles, version = "", params }) {
   for (const theme of THEMES) {
     const surfaces = allowed.flatMap((st) => SURFACES.map((k) => neutrals[st.id][theme][k]));
     const pages = pagesBy[theme];
-    const subtle = subtleAlpha(tokens, theme);
+    const fillsOf = (fgHex) => allowed.flatMap((st) => accentSubtleFills(tokens, theme, fgHex, neutrals[st.id][theme]));
     const fill = accent[theme];
     const label = (shade, hex) => (shade === null ? hex : `primary-${shade}`);
     const fillName = label(fill.shade, fill.fill);
     const hoverName = label(fill.hoverShade, fill.hover);
     // Coloured text also sits on the C-030 card (selected page, active row inside a card), with and without the tint.
     const cards = allowed.map((st) => derivedSurfaces(neutrals[st.id][theme], theme).card);
-    const fg = pickText(primary, brand.primary, theme, [...surfaces, ...cards], [...pages, ...cards], subtle);
+    const fg = pickText(primary, brand.primary, theme, [...surfaces, ...cards], fillsOf);
+    // Secondary text (time, snippet) of a selected row sits on the same fill: muted / body are nudged where it is short.
+    for (const st of allowed) fixTextOnFills(neutrals[st.id][theme], theme, accentSubtleFills(tokens, theme, primary[fg.shade], neutrals[st.id][theme]));
     themes[theme] = {
       "color-accent": fill.fill,
       "color-accent-hover": fill.hover,
@@ -646,7 +667,7 @@ export function generateBrand(brand, { tokens, styles, version = "", params }) {
     if (fill.page < NON_TEXT)
       warnings.push(`Theme ${t}: nút màu thương hiệu chỉ tách khỏi nền ${fill.page.toFixed(2)}:1 (< 3:1). Nút vẫn đọc được nhờ chữ, nhưng công tắc, thanh trượt và ô chọn khó thấy hơn`);
     if (secondary) {
-      const sfg = pickText(secondary, brand.secondary, theme, surfaces, pages, subtle);
+      const sfg = pickText(secondary, brand.secondary, theme, surfaces, fillsOf);
       const sfill = pickFill(secondary, brand.secondary, theme, pages, "auto", p.fillReach);
       themes[theme]["color-secondary-fg"] = secondary[sfg.shade];
       themes[theme]["color-secondary-solid"] = secondary[sfill.shade];
@@ -666,6 +687,8 @@ export function generateBrand(brand, { tokens, styles, version = "", params }) {
     for (const st of allowed) {
       const n = neutrals[st.id][theme];
       const s = derivedSurfaces(n, theme);
+      const fills = accentSubtleFills(tokens, theme, themes[theme]["color-accent-fg"], n);
+      report.push({ check: `chữ mờ trên nền chọn ${st.name} (${t})`, pair: `text-muted / accent-subtle`, ratio: minContrast(n["color-text-muted"], fills), min: AA });
       report.push({ check: `chữ mờ trên thẻ ${st.name} (${t})`, pair: `text-muted / card + card-field`, ratio: Math.min(contrast(n["color-text-muted"], s.card), contrast(n["color-text-muted"], s.cardField)), min: AA });
       report.push({ check: `thẻ tách khỏi nền ${st.name} (${t})`, pair: `card / app`, ratio: contrast(s.card, n["color-app"]), min: 1.1, soft: true });
       if (brand.primaryStyle === "inverted") {

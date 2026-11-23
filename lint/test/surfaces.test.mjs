@@ -69,7 +69,7 @@ test("Flat light steps (canvas to app, app to panel) are at least Sharp's, in co
 
 // ── C-030 surfaces (#93): panel scale, borderless cards, tint, inverted ─────────────────────────────────────────────
 import { contrast, blend, oklchToHex } from "../../brand/color.mjs";
-import { derivedSurfaces, mixOklab } from "../../brand/generate.mjs";
+import { accentSubtleFills, derivedSurfaces, mixOklab } from "../../brand/generate.mjs";
 
 const TEXT_KEYS = ["color-text-contrast", "color-text-body", "color-text-muted"];
 const neutralsOf = (st, theme) => Object.fromEntries([...KEYS, ...TEXT_KEYS].map((k) => [k, (st.semantic?.[k] ?? tokens.semantic[k])[theme]]));
@@ -163,21 +163,56 @@ test("tokens.css has no plain .bg-* fallbacks that beat responsive variants (SHE
   assert.doesNotMatch(theme, /--color-card(-field)?:/, "no --color-card theme variable (it would also make a border-card colour utility)");
 });
 
-test("accent text reads AA on the card and on the selected tint over it (Pagination current page, active row in a card)", () => {
-  const alpha = (theme) => +/(\d+)%/.exec(tokens.semantic["color-accent-subtle"][theme])[1] / 100;
-  const check = (label, theme, fg, card) => {
-    for (const [what, bg] of [["card", card], ["accent-subtle over card", blend(fg, card, alpha(theme))]]) {
-      const r = contrast(fg, bg);
-      assert.ok(r >= 4.5, `${label} ${theme}: accent-fg ${fg} on ${what} ${r.toFixed(2)}`);
-    }
-  };
+// The selected tint (bg-accent-subtle) as tokens.json paints it: see-through in dark (over the pages and the card),
+// opaque in light (mixed into the panel, #123). Every text a selected row carries reads AA on it: the accent text, the
+// title (text-body) and its secondary text (text-muted: time, snippet), in every style x theme, in core and in kits.
+const subtleSets = () => {
+  const out = [];
   for (const st of styles.styles)
-    for (const theme of ["light", "dark"]) check(`core ${st.id}`, theme, hexOf(tokens.semantic["color-accent-fg"][theme]), derivedSurfaces(neutralsOf(st, theme), theme).card);
-  for (const [id, b] of Object.entries(kits)) {
-    const r = generateBrand({ ...b, styles: { default: "flat", allowed: ids } }, { tokens, styles }).tokens;
-    for (const [sid, t] of Object.entries(r.neutrals))
-      for (const theme of ["light", "dark"]) check(`kit ${id} ${sid}`, theme, r.themes[theme]["color-accent-fg"], derivedSurfaces(t[theme], theme).card);
+    for (const theme of ["light", "dark"]) {
+      const n = neutralsOf(st, theme);
+      out.push([`core ${st.id}`, theme, n, hexOf(tokens.semantic["color-accent-fg"][theme])]);
+    }
+  const all = { ...kits, fixture: read("tests/fixtures/brand.json") };
+  for (const [id, b] of Object.entries(all))
+    for (const neutral of [undefined, "pure"]) {
+      const r = generateBrand({ ...b, neutral, styles: { default: "flat", allowed: ids } }, { tokens, styles }).tokens;
+      for (const [sid, t] of Object.entries(r.neutrals))
+        for (const theme of ["light", "dark"]) out.push([`kit ${id}${neutral ? "/pure" : ""} ${sid}`, theme, t[theme], r.themes[theme]["color-accent-fg"]]);
+    }
+  return out;
+};
+
+test("accent text reads AA on the card and on the selected tint (Pagination current page, active row in a card)", () => {
+  for (const [label, theme, n, fg] of subtleSets()) {
+    const r = contrast(fg, derivedSurfaces(n, theme).card);
+    assert.ok(r >= 4.5, `${label} ${theme}: accent-fg ${fg} on card ${r.toFixed(2)}`);
   }
+});
+
+test("text-muted, text-body and accent-fg read AA on bg-accent-subtle in every style x theme, core and kits (#123)", () => {
+  assert.match(tokens.semantic["color-accent-subtle"].light, /var\(--semi-accent-fg\) \d+%, var\(--semi-panel\)\)$/, "light accent-subtle is mixed into the panel");
+  assert.match(tokens.semantic["color-accent-subtle-hover"].light, /var\(--semi-panel\)\)$/, "its hover is mixed the same way");
+  const fills = (n, theme, fg) => accentSubtleFills(tokens, theme, fg, n);
+  assert.equal(fills(neutralsOf(styles.styles[0], "light"), "light", "#000000").length, 1, "opaque in light: one fill wherever it sits");
+  assert.equal(fills(neutralsOf(styles.styles[0], "dark"), "dark", "#ffffff").length, 4, "see-through in dark: one per page and the card");
+  for (const [label, theme, n, fg] of subtleSets())
+    for (const bg of fills(n, theme, fg))
+      for (const [what, c] of [["text-muted", n["color-text-muted"]], ["text-body", n["color-text-body"]], ["accent-fg", fg]]) {
+        const r = contrast(c, bg);
+        assert.ok(r >= 4.5, `${label} ${theme}: ${what} ${c} on accent-subtle ${bg} ${r.toFixed(2)}`);
+      }
+});
+
+test("the generator keeps muted text AA on accent-subtle for a brand whose tint would fall short", () => {
+  // A deep, saturated primary: its light accent-fg tints the panel hard.
+  const b = { ...kits.semi, primary: "#1d4ed8", secondary: undefined, styles: { default: "flat", allowed: ids } };
+  const r = generateBrand(b, { tokens, styles });
+  for (const [sid, t] of Object.entries(r.tokens.neutrals))
+    for (const theme of ["light", "dark"])
+      for (const bg of accentSubtleFills(tokens, theme, r.tokens.themes[theme]["color-accent-fg"], t[theme]))
+        assert.ok(contrast(t[theme]["color-text-muted"], bg) >= 4.5, `${sid} ${theme}`);
+  assert.ok(r.report.some((x) => /nền chọn/.test(x.check) && x.pair === "text-muted / accent-subtle"), "the report lists it");
 });
 
 // WCAG 1.4.11 asks the field's boundary to stand out from what is around it (the surface), as lint/a11y.mjs measures it;

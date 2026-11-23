@@ -2,6 +2,11 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
+## Unreleased
+
+### Fixed
+- **`text-muted` on `bg-accent-subtle` reads AA in light (#123).** The light selected tint (`--semi-accent-subtle`, and `--semi-accent-subtle-hover`) is now mixed into the panel instead of being see-through: `color-mix(in oklab, var(--semi-accent-fg) 11%, var(--semi-panel))` (hover 18%). Worst case text-muted on it, light: core 4.08 → 4.76, Semi brand 4.10 → 4.82, 3D Noobs brand 4.11 → 4.86; text-body and text-accent-fg rise too; dark is unchanged (14% see-through, 4.64-4.76). Visible: on the panel the tint is the same as before; a selected row on the app, the canvas or a recessed card is now a step lighter than its surroundings instead of darker. Brand kits need no rebuild (no generated value changes for the current kits); the generator now also checks muted / body text on the tint ("chữ mờ trên nền chọn" in the report) and darkens them when a new brand would fall short. Apps can drop `active ? "text-body" : "text-muted"` workarounds.
+
 ## 0.36.0 — 2026-11-23
 
 **Summary.** One minor release with the whole C-030 / C-031 / C-032 UX round: tone-based surfaces (#95), the new shell and navigation (#97), search and filters (#100), overlays, actions, `CommandPalette` and `SplitButton` (#105), page types and states (#110), five new `semi-lint` warnings (#108) and a faster CI (#104). Existing tokens, class constants and props keep working.

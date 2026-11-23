@@ -294,8 +294,8 @@
   --color-on-action: var(--semi-on-action); /* Text / icon on bg-action */
   --color-accent-fg: var(--semi-accent-fg); /* Primary-coloured text/icons on surfaces (links, check marks, active tab); light 800 so it reads on accent-subtle over the recessed card (C-030) */
   --color-focus: var(--semi-focus); /* Focus ring (ring-focus) and focused field border: follows accent-fg, so it reaches 3:1 on every surface */
-  --color-accent-subtle: var(--semi-accent-subtle); /* Selected / active tint behind text-accent-fg or text-contrast (selected option, active tab pill, IconTile) */
-  --color-accent-subtle-hover: var(--semi-accent-subtle-hover); /* Hover of an accent-subtle surface */
+  --color-accent-subtle: var(--semi-accent-subtle); /* Selected / active tint behind text-accent-fg, text-body or text-muted (selected option, active tab pill, IconTile). Light is opaque, mixed into the panel (#123): a see-through tint darkened the recessed card until text-muted fell to 4.1:1 */
+  --color-accent-subtle-hover: var(--semi-accent-subtle-hover); /* Hover of an accent-subtle surface (light: mixed into the panel like accent-subtle) */
   --color-accent-line: var(--semi-accent-line); /* Border of a selected / active item (selected card, today in a calendar); border-accent-fg for a focused field */
   --color-danger-fg: var(--semi-danger-fg); /* Destructive / error text on surfaces */
   --color-success-fg: var(--semi-success-fg); /* Success / online text on surfaces */
@@ -459,8 +459,8 @@
   --semi-on-action: var(--semi-on-accent);
   --semi-accent-fg: var(--color-primary-800);
   --semi-focus: var(--semi-accent-fg);
-  --semi-accent-subtle: color-mix(in oklab, var(--semi-accent-fg) 11%, transparent);
-  --semi-accent-subtle-hover: color-mix(in oklab, var(--semi-accent-fg) 18%, transparent);
+  --semi-accent-subtle: color-mix(in oklab, var(--semi-accent-fg) 11%, var(--semi-panel));
+  --semi-accent-subtle-hover: color-mix(in oklab, var(--semi-accent-fg) 18%, var(--semi-panel));
   --semi-accent-line: color-mix(in oklab, var(--semi-accent-fg) 40%, transparent);
   --semi-danger-fg: var(--color-rose-700);
   --semi-success-fg: var(--color-emerald-700);
@@ -541,8 +541,8 @@
     --semi-on-action: var(--semi-on-accent);
     --semi-accent-fg: var(--color-primary-800);
     --semi-focus: var(--semi-accent-fg);
-    --semi-accent-subtle: color-mix(in oklab, var(--semi-accent-fg) 11%, transparent);
-    --semi-accent-subtle-hover: color-mix(in oklab, var(--semi-accent-fg) 18%, transparent);
+    --semi-accent-subtle: color-mix(in oklab, var(--semi-accent-fg) 11%, var(--semi-panel));
+    --semi-accent-subtle-hover: color-mix(in oklab, var(--semi-accent-fg) 18%, var(--semi-panel));
     --semi-accent-line: color-mix(in oklab, var(--semi-accent-fg) 40%, transparent);
     --semi-danger-fg: var(--color-rose-700);
     --semi-success-fg: var(--color-emerald-700);
