@@ -38,6 +38,11 @@ export interface ShellNavItem {
   /** Short name for the rail when the item has no icon (MobileTabBar too). */
   shortLabel?: string;
   icon?: IconName;
+  /**
+   * Keep the icon's place but hide it (`opacity-0`): for an icon that shows a value only known after mount, so it
+   * does not swap after hydration (`useThemeUtility()` sets it until the stored theme is read).
+   */
+  iconHidden?: boolean;
   href?: string;
   external?: boolean;
   /** Small trailing content in the expanded sidebar (a count, a button). */
@@ -304,7 +309,7 @@ export function AppShell({
     const inner = (
       <>
         {item.icon ? (
-          <Icon name={item.icon} className="w-[18px] h-[18px] shrink-0" />
+          <Icon name={item.icon} className={cn("w-[18px] h-[18px] shrink-0", item.iconHidden && "opacity-0")} />
         ) : (
           <span className={navShortClass} aria-hidden>
             {item.shortLabel ?? abbreviate(item.label)}
@@ -856,7 +861,7 @@ function PhoneDrawer({
   const renderRow = (it: ShellNavItem) => {
     const on = activeTopId === it.id;
     const drill = levelOf(it);
-    const icon = it.icon && <Icon name={it.icon} className="w-5 h-5 text-muted shrink-0" />;
+    const icon = it.icon && <Icon name={it.icon} className={cn("w-5 h-5 text-muted shrink-0", it.iconHidden && "opacity-0")} />;
     return (
       <li key={it.id}>
         {drill ? (
@@ -1031,7 +1036,7 @@ function PhoneDrawer({
                 const cls = cn("w-full flex flex-col items-center gap-1 py-2 rounded-control text-caption text-muted hover:text-contrast hover:bg-tint transition cursor-pointer", FOCUS_RING);
                 const body = (
                   <>
-                    <Icon name={u.icon ?? "box"} className="w-5 h-5" />
+                    <Icon name={u.icon ?? "box"} className={cn("w-5 h-5", u.iconHidden && "opacity-0")} />
                     <span className="truncate max-w-full">{u.label}</span>
                   </>
                 );

@@ -173,7 +173,37 @@ test("0.36.0 shell / 0.37.0 account-rail: an account render prop's collapsed che
   }
   // another shape that reads collapsed: left alone, reported with its line
   const other = `import { AppShell } from "@semi/ui";\n\n<AppShell\n  account={(s) => (s.collapsed ? null : <B />)}\n/>`;
-  assert.deepEqual(railAccount(other), { src: other, manual: [4] });
+  assert.deepEqual(railAccount(other), { src: other, manual: [{ line: 4, reason: "collapsed" }] });
+  // review of #134: only plain reads are rewritten; anything else is reported and left as is (never a syntax error)
+  const H = `import { AppShell } from "@semi/ui";\n`;
+  for (const body of [
+    "<LogoutButton collapsed={collapsed} />", // an attribute name
+    "<B {...{ collapsed }} />", // a spread shorthand
+    "<B c={{ collapsed }} />", // a shorthand property
+    "<p>collapsed</p>", // JSX text
+    "<p>{collapsed}</p>", // a JSX child
+    "<B t={`${collapsed}`} />", // a template literal
+    "collapsed === true ? null : <B />", // a comparison
+    "(collapsed ? null : <p>Mở (collapsed)</p>)", // a read, then the word in JSX text
+  ]) {
+    const f = `${H}<AppShell account={({ collapsed }) => ${body}} />`;
+    assert.deepEqual(railAccount(f), { src: f, manual: [{ line: 2, reason: "collapsed" }] }, body);
+  }
+  // strings, comments, object keys and properties that mention the word are not reads: the reads around them are rewritten
+  const mixed = `${H}<AppShell account={({ collapsed }) => (collapsed /* collapsed */ ? null : <B c="collapsed" k={{ collapsed: 1 }} p={s.collapsed} on={!collapsed} />)} />`;
+  const fixed = railAccount(mixed);
+  assert.deepEqual(fixed.manual, []);
+  assert.equal(
+    fixed.src,
+    `${H}<AppShell account={({ collapsed, rail }) => ((collapsed || rail) /* collapsed */ ? null : <B c="collapsed" k={{ collapsed: 1 }} p={s.collapsed} on={!(collapsed || rail)} />)} />`,
+  );
+  assert.equal(railAccount(fixed.src).src, fixed.src, "twice-safe");
+  // a function or a component that reads neither collapsed nor rail is reported; a plain JSX node is not
+  for (const expr of ["AccountBlock", "(s) => <Account {...s} />", "() => <Account />", "function (s) { return <A />; }"]) {
+    const f = `${H}<AppShell account={${expr}} />`;
+    assert.deepEqual(railAccount(f), { src: f, manual: [{ line: 2, reason: "state" }] }, expr);
+  }
+  assert.deepEqual(railAccount(`${H}<AppShell account={<Avatar />} />`).manual, []);
   // not an AppShell, or no @semi/ui import: left alone
   const modal = `import { Modal } from "@semi/ui";\n<Modal account={({ collapsed }) => collapsed} />`;
   assert.equal(railAccount(modal).src, modal);

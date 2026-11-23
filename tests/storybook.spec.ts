@@ -642,7 +642,18 @@ test("phones get the drawer: focus moves in, stays in, drills down and returns t
   await drawer.getByRole("button", { name: "Giao diện" }).click();
   await page.getByRole("dialog", { name: "Giao diện" }).getByRole("button", { name: "Hệ thống" }).click();
   await expect(drawer).toBeHidden();
+  await expect(menuButton).toBeFocused();
   expect(await page.evaluate(() => localStorage.getItem("semi-theme"))).toBe("system");
+  // by keyboard: Enter on the row opens the level, Enter on a mode picks it and closes the drawer
+  await menuButton.click();
+  await drawer.getByRole("button", { name: "Giao diện" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("dialog", { name: "Giao diện" }).getByRole("button", { name: "Sáng" })).toBeFocused();
+  await expect(page.getByRole("dialog", { name: "Giao diện" }).getByRole("button", { name: "Hệ thống" })).toHaveAttribute("aria-pressed", "true");
+  await page.keyboard.press("Enter");
+  await expect(drawer).toBeHidden();
+  await expect(menuButton).toBeFocused();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   await page.close();
 });
 
@@ -677,6 +688,10 @@ test("AppShell rail (iPad): every item is named and shows a tooltip on the right
   await expect(themeMenu.getByRole("menuitemcheckbox", { name: "Sáng" })).toHaveAttribute("aria-checked", "true");
   await page.keyboard.press("End");
   await expect(themeMenu.getByRole("menuitemcheckbox", { name: "Hệ thống" })).toBeFocused();
+  // opened from the bottom utilities, the Menu stays on screen (it flips above the trigger)
+  const [mb, ub] = [await themeMenu.boundingBox(), await themeUtil.boundingBox()];
+  expect(mb!.y + mb!.height).toBeLessThanOrEqual(1194);
+  expect(mb!.y + mb!.height).toBeLessThanOrEqual(ub!.y + 1);
   await page.keyboard.press("Enter");
   await expect(themeMenu).toBeHidden();
   await expect(themeUtil).toBeFocused();
@@ -756,6 +771,18 @@ test("AppShell desktop: Create menu, collapse to the rail and back from the logo
   await collapse.click();
   await expect(aside).toHaveCSS("width", "60px");
   await expect(aside.getByRole("button", { name: "Mở rộng menu" })).toHaveAttribute("aria-expanded", "false");
+  // the collapsed rail: the theme utility keeps its Tooltip and opens its Menu by keyboard, on screen above it
+  const themeUtil = aside.getByRole("button", { name: "Giao diện" });
+  await themeUtil.focus();
+  await expect(page.getByRole("tooltip")).toHaveText("Giao diện");
+  await page.keyboard.press("ArrowUp");
+  const themeMenu = page.getByRole("menu", { name: "Giao diện" });
+  await expect(themeMenu.getByRole("menuitemcheckbox", { name: "Hệ thống" })).toBeFocused();
+  const [mb, ub] = [await themeMenu.boundingBox(), await themeUtil.boundingBox()];
+  expect(mb!.y + mb!.height).toBeLessThanOrEqual(ub!.y + 1);
+  expect(mb!.x).toBeGreaterThanOrEqual(0);
+  await page.keyboard.press("Escape");
+  await expect(themeUtil).toBeFocused();
   await aside.getByRole("button", { name: "Mở rộng menu" }).click();
   await expect(aside).toHaveCSS("width", "240px");
   await page.close();

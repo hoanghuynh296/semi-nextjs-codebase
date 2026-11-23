@@ -177,6 +177,8 @@ test("WorkspaceLayout and FeatureIntro under Next's App Router: prerendered with
 test("AppShell theme utility under Next's App Router: prerendered, its Menu picks a mode by keyboard (#114)", async ({ page, request }) => {
   const html = await (await request.get(`${BASE}/shell/a`)).text();
   expect(html).toContain('aria-label="Theme"');
+  // its icon is hidden in the server HTML (the stored theme is not known yet), then shown: no swap after hydration
+  expect(html).toMatch(/aria-label="Theme"[^>]*>(?:(?!<\/button>).)*opacity-0/s);
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto(`${BASE}/shell/a`);
   const trigger = page.locator("aside").getByRole("button", { name: "Theme" });
@@ -187,6 +189,7 @@ test("AppShell theme utility under Next's App Router: prerendered, its Menu pick
     await expect(page.getByRole("menu", { name: "Theme" })).toBeVisible({ timeout: 1000 });
   }).toPass({ timeout: 15_000 });
   await expect(page.getByRole("menuitemcheckbox", { name: "Light" })).toHaveAttribute("aria-checked", "true");
+  await expect(trigger.locator("svg")).not.toHaveClass(/opacity-0/);
   await page.keyboard.press("ArrowDown");
   await expect(page.getByRole("menuitemcheckbox", { name: "Dark" })).toBeFocused();
   await page.keyboard.press("Enter");

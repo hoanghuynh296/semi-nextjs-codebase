@@ -152,9 +152,9 @@ function useThemeChoices(labelsProp?: Record<Theme, string>) {
   const labels = labelsProp ?? { light: t.themeLight, dark: t.themeDark, system: t.themeSystem };
   const { theme, mounted, setTheme } = useTheme();
   const items: MenuItem[] = THEME_OPTIONS.map(({ key, icon }) => ({ label: labels[key], icon, checked: mounted && theme === key, onSelect: () => setTheme(key) }));
-  // the chosen mode's icon (the server's defaultTheme until mounted, so the first render matches the HTML)
+  // the chosen mode's icon; hidden until the stored theme is read, so it never swaps after hydration
   const icon: IconName = THEME_OPTIONS.find((o) => o.key === theme)?.icon ?? "sun";
-  return { items, icon, label: t.theme };
+  return { items, icon, label: t.theme, mounted };
 }
 
 /**
@@ -168,7 +168,7 @@ function useThemeChoices(labelsProp?: Record<Theme, string>) {
  */
 export function useThemeUtility({ id = "theme", label, labels }: { id?: string; label?: string; labels?: Record<Theme, string> } = {}): ShellNavItem {
   const choices = useThemeChoices(labels);
-  return { id, label: label ?? choices.label, icon: choices.icon, menu: choices.items };
+  return { id, label: label ?? choices.label, icon: choices.icon, iconHidden: !choices.mounted, menu: choices.items };
 }
 
 export interface ThemeSwitcherProps {
@@ -194,8 +194,7 @@ export function ThemeSwitcher({ variant = "segmented", ...props }: ThemeSwitcher
 }
 
 function ThemeMenuButton({ labels, className = "" }: { labels?: Record<Theme, string>; className?: string }) {
-  const { items, icon, label } = useThemeChoices(labels);
-  const { mounted } = useTheme();
+  const { items, icon, label, mounted } = useThemeChoices(labels);
   return (
     <Menu
       label={label}
