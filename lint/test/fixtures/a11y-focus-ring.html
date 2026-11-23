@@ -21,7 +21,16 @@
     const mode = location.hash.slice(1) || "close";
     const close = document.getElementById("close");
     if (mode === "trap") close.addEventListener("blur", () => close.focus());
-    document.getElementById(mode === "trap" ? "close" : mode).focus();
+    // #modal: an aria-modal dialog whose trap pulls focus that leaves it back in (useFocusTrap); the page behind it
+    // (a button with no ring) is not the dialog's to judge, the dialog's own controls still are.
+    if (mode === "modal") {
+      const dialog = document.querySelector("[role=dialog]");
+      dialog.setAttribute("aria-modal", "true");
+      const behind = Object.assign(document.createElement("button"), { id: "behind", textContent: "Phía sau" });
+      document.body.prepend(behind);
+      document.addEventListener("focusin", (e) => { if (!dialog.contains(e.target)) close.focus(); });
+    }
+    document.getElementById(mode === "trap" || mode === "modal" ? "close" : mode).focus();
   </script>
 </body>
 </html>

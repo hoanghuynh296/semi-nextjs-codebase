@@ -344,7 +344,16 @@ export function a11yAudit(opts) {
       } catch {
         continue;
       }
-      if (document.activeElement !== el || !el.matches(":focus-visible")) continue;
+      const got = document.activeElement;
+      if (got !== el) {
+        // Nothing took focus (an inert or unfocusable control), or a modal dialog's trap kept it inside (the page
+        // behind an open DetailOverlay / Modal): not this control's ring to judge. Anything else that keeps focus
+        // would hide every control after it, so the control is reported.
+        const modal = got && got !== document.body && got.closest("[aria-modal=true]");
+        if (got && got !== document.body && !(modal && !modal.contains(el))) hit("focus-ring", el, `focus could not be moved onto it (${where(got)} keeps it)`);
+        continue;
+      }
+      if (!el.matches(":focus-visible")) continue;
       n++;
       const b = snap(watch);
       el.blur();

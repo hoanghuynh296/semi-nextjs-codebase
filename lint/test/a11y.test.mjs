@@ -46,5 +46,11 @@ test("a11y: focus-ring compares a control with itself unfocused, so a dialog's f
   for (const focused of ["close", "no-ring"])
     assert.deepEqual(run(page(focused)), ["focus-ring button#no-ring: nothing changes when it takes keyboard focus"], `focus on #${focused} when the audit starts`);
   // a control that takes focus back on blur has no unfocused baseline: it is reported, never left out
-  assert.ok(run(page("trap")).some((h) => /^focus-ring button#close: focus could not be moved off it/.test(h)), "the refocusing button is reported");
+  // behind an aria-modal dialog whose trap keeps focus: the page behind is left alone, the dialog is checked
+  assert.deepEqual(run(page("modal")), ["focus-ring button#no-ring: nothing changes when it takes keyboard focus"]);
+  assert.deepEqual(run(page("trap")), [
+    "focus-ring button#close: focus could not be moved off it to compare (it takes focus back on blur): check its ring with Tab by hand",
+    "focus-ring button#next: focus could not be moved onto it (button#close keeps it)",
+    "focus-ring button#no-ring: focus could not be moved onto it (button#close keeps it)",
+  ]);
 });
