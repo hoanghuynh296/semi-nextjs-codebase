@@ -24,8 +24,8 @@ import { Menu, SemiLocaleProvider, en, useSemiLocale } from "@semi/ui";
 function Probe() {
   const t = useSemiLocale();
   return (
-    <span className="text-label text-muted">
-      close = <span className="text-contrast">{t.close}</span> · search = <span className="text-contrast">{t.search}</span>
+    <span className="text-ui text-muted">
+      close = <span className="text-strong">{t.close}</span> · search = <span className="text-strong">{t.search}</span>
     </span>
   );
 }

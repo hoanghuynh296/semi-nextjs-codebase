@@ -1,6 +1,6 @@
 # Typography
 
-The type scale (text-ui 11 … text-tab-xl 26, font-display for titles) and Prose, which styles long-form text — headings, paragraphs, lists, links, quotes, inline code — from that scale.
+The type scale (text-caption 11 … text-display 26, font-display for titles) and Prose, which styles long-form text — headings, paragraphs, lists, links, quotes, inline code — from that scale.
 
 ## When to use
 
@@ -11,7 +11,7 @@ The type scale (text-ui 11 … text-tab-xl 26, font-display for titles) and Pros
 | Need | Use |
 |---|---|
 | Page title | PageTitle |
-| UI text in cards and forms | the type classes directly (text-ui, text-ui…) |
+| UI text in cards and forms | the type classes directly (text-ui, text-label…) |
 
 ## Import
 

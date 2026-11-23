@@ -45,7 +45,7 @@ export default function FileTreeChanges() {
   return (
     <div className="grid gap-3 @xl:grid-cols-[240px_1fr]">
       <FileTree label="Tệp đã thay đổi" files={FILES} selected={file} onSelect={setFile} className="rounded-card border border-line bg-panel p-1.5" />
-      <div className="rounded-card border border-line p-3 text-label text-muted break-all">{file}</div>
+      <div className="rounded-card border border-line p-3 text-ui text-muted break-all">{file}</div>
     </div>
   );
 }

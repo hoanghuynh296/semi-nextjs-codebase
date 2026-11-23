@@ -37,7 +37,7 @@ export default function PopoverQuickEdit() {
   const [draft, setDraft] = useState(name);
   return (
     <div className="flex items-center gap-3">
-      <span className="text-ui font-medium text-contrast">{name}</span>
+      <span className="text-ui font-medium text-strong">{name}</span>
       <Popover
         label="Đổi tên máy in"
         open={open}

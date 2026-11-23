@@ -36,7 +36,7 @@ export default function ViewSwitchDefault() {
   return (
     <div className="flex items-center gap-4">
       <ViewSwitch view={view} onViewChange={setView} density={density} onDensityChange={setDensity} />
-      <span className="text-label text-muted">
+      <span className="text-ui text-muted">
         {view === "grid" ? "Lưới" : "Danh sách"} · {density === "compact" ? "Gọn" : "Thoáng"}
       </span>
     </div>
