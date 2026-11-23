@@ -163,15 +163,15 @@ export const FOUNDATIONS = {
       "size": "15px / 1.6"
     },
     {
-      "cls": "text-copy",
-      "size": "14px / 1.5715"
-    },
-    {
       "cls": "text-input",
       "size": "16px / 1.5"
     },
     {
       "cls": "text-ui",
+      "size": "14px / 1.5715"
+    },
+    {
+      "cls": "text-chrome",
       "size": "12px / 1.5"
     },
     {

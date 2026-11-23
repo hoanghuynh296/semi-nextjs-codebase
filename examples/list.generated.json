@@ -745,7 +745,7 @@
     "id": "typography",
     "title": "Typography",
     "group": "Data display",
-    "description": "The 1.0 type scale (text-tag 10 … text-hero 36, text-ui 12 the base UI size, font-display for hero and big titles) and Prose, which styles long-form text — headings, paragraphs, lists, links, quotes, inline code — from that scale.",
+    "description": "The 1.0 type scale (text-tag 10 … text-hero 36, text-ui 14 for content, text-chrome 12 for the shell chrome, font-display for hero and big titles) and Prose, which styles long-form text — headings, paragraphs, lists, links, quotes, inline code — from that scale.",
     "components": [
       "Prose"
     ]

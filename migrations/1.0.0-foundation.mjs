@@ -1,7 +1,8 @@
 // 1.0.0 (#141): the foundation tokens. One look (no data-style), pure neutral surfaces, four text tiers (text-strong
 // replaces text-contrast), no brand-derived colour (accent-fg / accent-subtle / accent-line are gone; selection is the
 // neutral item-selected), brand fills only for main buttons (bg-accent / bg-action → bg-primary), and the 1.0 type scale
-// (text-ui is the 12px base UI size; the old sizes map to the nearest new role). Exact renames, one pass, so a second
+// (text-ui keeps its name and its 14px as the content size; the 11 / 12px caption and label become text-chrome, the
+// 12px shell chrome size; the other old sizes map to the nearest new role). Exact renames, one pass, so a second
 // run changes nothing. What needs a judgement is flagged (and in the CHANGELOG "Migration" note).
 //
 // Brand colour is not carried onto text or lines: text-accent / text-action (and placeholder- / caret-) → text-strong,
@@ -17,7 +18,7 @@
 export const version = "1.0.0";
 export const id = "foundation";
 export const description =
-  "text-contrast → text-strong, bg-accent/action → bg-primary, text-/border-/ring-accent → text-strong / *-outline-line, accent-fg → text-strong, accent-subtle → item-selected, accent-line → outline-line, old type sizes → the 1.0 scale (a field's max-sm:text-title-lg → max-sm:text-input), data-style removed; --semi-* declarations are flagged, not renamed";
+  "text-contrast → text-strong, bg-accent/action → bg-primary, text-/border-/ring-accent → text-strong / *-outline-line, accent-fg → text-strong, accent-subtle → item-selected, accent-line → outline-line, old type sizes → the 1.0 scale (text-caption / text-label → text-chrome, text-copy → text-ui, text-ui unchanged; a field's max-sm:text-title-lg → max-sm:text-input), data-style removed; --semi-* declarations are flagged, not renamed";
 
 /** Colour names after a utility prefix (bg-, text-, border-, ring- …) and in CSS variables. */
 export const COLORS = {
@@ -35,10 +36,12 @@ export const COLORS = {
   action: "primary",
 };
 
-/** Type sizes (text-<old> → text-<new>). text-ui keeps its name (now 12px), so it is not here. */
+/** Type sizes (text-<old> → text-<new>). text-ui keeps its name and its 14px (the content size), so it is not a source;
+ * text-copy (the 14px size of the first 1.0 draft, never released) → text-ui for an app that adopted it from main. */
 export const SIZES = {
-  caption: "ui",
-  label: "ui",
+  copy: "ui",
+  caption: "chrome",
+  label: "chrome",
   "ui-lg": "lead",
   "title-lg": "lead",
   title: "lead",
@@ -109,8 +112,8 @@ export function foundationFlags(before, after) {
   if (/(^|[^\w-])(?:text|border|decoration|fill|stroke)-accent-fg(?![\w-])/.test(before))
     flags.push("accent-fg → strong: brand-coloured text is gone (links, check marks, active tabs are neutral)");
   if (/data-style|\[data-style/.test(after)) flags.push("data-style left in an expression or a CSS selector: remove it (one look)");
-  if (/(^|[^\w-])text-ui(?![\w-])|--text-ui(?![\w-])/.test(before))
-    flags.push("text-ui is now 12px, was 14: reading copy (sentences, descriptions, table cells) → text-copy; UI text (labels, buttons, meta) stays text-ui");
+  if (/(^|[^\w-])text-label(?![\w-])|--text-label(?![\w-])/.test(before))
+    flags.push("text-label → text-chrome (12px, shell chrome and meta only): a form label, help text, row or button text is content → text-ui (14px)");
   const declared = new Set([...before.matchAll(declRx)].map((m) => (m[1] ? `${m[1]}-${m[2]}` : `${m[3]}-${m[4]}`)));
   for (const v of declared) {
     const name = v.replace(/^(?:semi|color)-/, "");

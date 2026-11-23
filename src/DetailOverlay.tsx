@@ -239,7 +239,7 @@ export function DetailOverlay({
             </button>
           )}
           {counted && (
-            <span className="text-ui text-muted tabular-nums px-1">
+            <span className="text-chrome text-muted tabular-nums px-1">
               <span aria-hidden>
                 {index + 1} / {total}
               </span>

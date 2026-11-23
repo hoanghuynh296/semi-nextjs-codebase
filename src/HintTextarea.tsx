@@ -194,9 +194,9 @@ export function HintTextarea({
               {m.icon && <Icon name={m.icon} className="w-4 h-4 text-muted shrink-0" />}
               <span className="flex-1 min-w-0">
                 <span className="block text-ui font-medium text-strong truncate">{m.label}</span>
-                {m.hint && <span className="block text-ui text-muted truncate">{m.hint}</span>}
+                {m.hint && <span className="block text-chrome text-muted truncate">{m.hint}</span>}
               </span>
-              <span className="text-ui text-muted shrink-0">{m.value}</span>
+              <span className="text-chrome text-muted shrink-0">{m.value}</span>
             </div>
           ))}
         </div>

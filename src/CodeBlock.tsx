@@ -22,7 +22,7 @@ export function CodeBlock({ code, title, className }: { code: string; /** File n
     <div className={cn("relative rounded-control border border-line bg-field", className)}>
       {title && (
         <div className="flex items-center justify-between gap-2 border-b border-divider px-3 h-9">
-          <span className="text-ui font-medium text-muted truncate">{title}</span>
+          <span className="text-chrome font-medium text-muted truncate">{title}</span>
           {button}
         </div>
       )}

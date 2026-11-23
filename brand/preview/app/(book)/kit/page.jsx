@@ -89,8 +89,8 @@ export default function UiKit() {
           {[
             ["text-section", "Tiêu đề mục 20"],
             ["text-lead", "Tiêu đề thẻ 15"],
-            ["text-copy", "Nội dung đọc 14: thông tin rõ ràng, ngắn gọn"],
-            ["text-ui", "Giao diện 12: nhãn, nút, dòng danh sách"],
+            ["text-ui", "Nội dung 14: dòng, nhãn, nút, thông tin rõ ràng"],
+            ["text-chrome", "Khung ứng dụng 12: điều hướng, thông tin phụ"],
             ["text-tag", "Nhãn nhỏ 10"],
           ].map(([cls, text]) => (
             <div key={cls} className="flex items-baseline gap-3">

@@ -38,7 +38,7 @@ export function Breadcrumb({
   const shown: (BreadcrumbItem | "more")[] = collapse ? [items[0], "more", ...items.slice(-2)] : items;
   return (
     <nav aria-label={ariaLabel ?? t.breadcrumb} className={className}>
-      <ol className="flex flex-wrap items-center gap-1 text-ui">
+      <ol className="flex flex-wrap items-center gap-1 text-chrome">
         {shown.map((it, i) => {
           const last = i === shown.length - 1;
           return (

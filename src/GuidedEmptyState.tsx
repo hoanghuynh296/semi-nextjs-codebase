@@ -180,7 +180,7 @@ export function GuidedEmptyState({
                   <IconTile name={it.icon} tone={it.tone ?? "gray"} size="sm" />
                   <span className="min-w-0">
                     <span className="block text-ui font-semibold text-strong">{it.title}</span>
-                    <span className="block text-ui text-muted">{it.hint}</span>
+                    <span className="block text-chrome text-muted">{it.hint}</span>
                   </span>
                 </>
               );

@@ -73,7 +73,7 @@ export function PhoneFilterBar({
         <Icon name="filter" className="w-4 h-4 shrink-0" />
         {t.filters}
         {activeCount > 0 && (
-          <span className="h-5 min-w-5 px-1 rounded-full bg-inverted text-on-inverted text-ui tabular-nums leading-5 text-center">
+          <span className="h-5 min-w-5 px-1 rounded-full bg-inverted text-on-inverted text-chrome tabular-nums leading-5 text-center">
             {activeCount}
           </span>
         )}

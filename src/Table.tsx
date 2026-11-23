@@ -9,7 +9,7 @@ import React from "react";
 import { cn } from "../styles/utils";
 
 export const TABLE = "w-full text-ui border-collapse";
-export const TABLE_HEAD_CELL = "h-9 px-3 text-left text-ui font-medium text-muted bg-field border-b border-line whitespace-nowrap first:rounded-tl-card last:rounded-tr-card";
+export const TABLE_HEAD_CELL = "h-9 px-3 text-left text-chrome font-medium text-muted bg-field border-b border-line whitespace-nowrap first:rounded-tl-card last:rounded-tr-card";
 export const TABLE_CELL = "h-11 px-3 py-2 text-body border-b border-divider whitespace-nowrap";
 export const TABLE_ROW_HOVER = "hover:bg-item-hover transition-colors";
 

@@ -112,7 +112,7 @@ export function Progress({
 }
 
 const AVATAR_TONES = ["purple", "sky", "teal", "amber", "rose", "indigo", "emerald", "orange"] as const;
-const AVATAR_SIZE = { sm: "w-6 h-6 text-ui", md: "w-8 h-8 text-ui", lg: "w-10 h-10 text-ui" } as const;
+const AVATAR_SIZE = { sm: "w-6 h-6 text-chrome", md: "w-8 h-8 text-chrome", lg: "w-10 h-10 text-ui" } as const;
 
 /** Person or team mark: photo, else initials on a tone picked from the name (stable per name). */
 export function Avatar({ name, src, size = "md", className }: { name: string; src?: string; size?: keyof typeof AVATAR_SIZE; className?: string }) {

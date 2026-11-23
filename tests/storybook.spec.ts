@@ -214,17 +214,17 @@ test("Design Lab: every value it edits reaches the utility apps use (no value is
 });
 
 test("Design Lab: a draft follows every page, keeps each density its own values, pauses, and its tabs pass AA", async ({ page }) => {
-  const draft = { type: { "text-ui": "17px", "text-copy": "18px" }, density: { compact: { spacing: "0.3rem" } }, shape: { "radius-card": "1.5rem" } };
+  const draft = { type: { "text-ui": "17px", "text-chrome": "11px" }, density: { compact: { spacing: "0.3rem" } }, shape: { "radius-card": "1.5rem" } };
   await open(page, `/components/button/#lab=${labHash(draft)}`, "dark");
   await expect.poll(() => probe(page, {}, "text-ui", "font-size")).toBe("17px");
   expect(await probe(page, {}, "rounded-card", "border-top-left-radius")).toBe("24px");
   expect(await probe(page, { "data-theme": "light" }, "rounded-card", "border-top-left-radius")).toBe("24px"); // nested theme scopes too
-  expect(await probe(page, { "data-density": "compact" }, "text-copy", "font-size")).toBe("13px"); // compact keeps its own size
+  expect(await probe(page, { "data-density": "compact" }, "text-ui", "font-size")).toBe("13px"); // compact keeps its own size
   expect(await probe(page, { "data-density": "compact" }, "p-4", "padding-top")).toBe("19.2px");
   await page.goto("/components/"); // stored: stays on across pages
   await expect.poll(() => probe(page, {}, "text-ui", "font-size")).toBe("17px");
   await page.getByRole("button", { name: "Tạm tắt bản nháp Lab (xem bản gốc)" }).click();
-  await expect.poll(() => probe(page, {}, "text-ui", "font-size")).toBe("12px");
+  await expect.poll(() => probe(page, {}, "text-ui", "font-size")).toBe("14px");
   await page.getByRole("button", { name: "Bật lại bản nháp Lab" }).click();
   await expect.poll(() => probe(page, {}, "text-ui", "font-size")).toBe("17px");
 
@@ -244,7 +244,7 @@ test("Design Lab: a draft follows every page, keeps each density its own values,
   await page.getByRole("button", { name: "Bỏ bản nháp" }).click();
   await page.getByRole("alertdialog").getByRole("button", { name: "Bỏ bản nháp" }).click();
   await expect(page.getByText("Bản nháp đang trống")).toBeVisible();
-  expect(await probe(page, {}, "text-ui", "font-size")).toBe("12px");
+  expect(await probe(page, {}, "text-ui", "font-size")).toBe("14px");
 });
 
 test("system theme follows prefers-color-scheme", async ({ browser }) => {
@@ -592,6 +592,24 @@ test("Field wires label, hint and error to the input", async ({ page }) => {
   await input.fill("ab");
   await expect(input).toHaveAttribute("aria-invalid", "true");
   await expect(page.getByRole("alert").filter({ hasText: "ít nhất 3 ký tự" })).toBeVisible();
+});
+
+test("type sizes (#155): content is text-ui 14px, shell chrome is text-chrome 12px", async ({ page }) => {
+  const size = (l: import("@playwright/test").Locator) => l.evaluate((el) => getComputedStyle(el).fontSize);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  // content: folded DataTable values (row content) and a field's help text
+  await open(page, "/components/data-table/", "dark");
+  const dt = example(page, "data-table/columns");
+  await dt.getByRole("radio", { name: "Máy tính bảng" }).click();
+  await expect(dt.locator("[data-folded]").first()).toBeVisible();
+  expect(await size(dt.locator("[data-folded]").first())).toBe("14px");
+  await open(page, "/components/field/", "dark");
+  const hint = example(page, "field/basic").getByText("Hiện trên thẻ và trong thông báo.");
+  expect(await size(hint)).toBe("14px");
+  // shell chrome: a sidebar nav item and the breadcrumb
+  await open(page, "/demo/app-shell/", "dark");
+  expect(await size(page.locator("aside").getByText("Khách hàng", { exact: true }).first())).toBe("12px");
+  expect(await size(page.getByRole("navigation", { name: "Đường dẫn" }).locator("ol").first())).toBe("12px");
 });
 
 test("phones get the drawer: focus moves in, stays in, drills down and returns to the menu button", async ({ browser }) => {

@@ -41,7 +41,7 @@ export function Item({
         <span className="block text-ui font-medium text-strong truncate">{title}</span>
         {description && <span className="block text-ui text-muted truncate">{description}</span>}
       </span>
-      {meta && <span className="shrink-0 text-ui text-muted tabular-nums">{meta}</span>}
+      {meta && <span className="shrink-0 text-chrome text-muted tabular-nums">{meta}</span>}
       {(href || onClick) && !actions && <Icon name="chevron" className="w-4 h-4 text-muted shrink-0" />}
     </>
   );

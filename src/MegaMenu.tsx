@@ -177,12 +177,12 @@ export function MegaMenu({
                       <span className="flex items-center gap-1.5 text-ui font-medium text-strong">
                         <span className="truncate">{it.label}</span>
                         {it.isNew && (
-                          <span className="shrink-0 h-4 px-1.5 rounded-full bg-item-selected text-strong text-ui font-semibold leading-none inline-flex items-center">
+                          <span className="shrink-0 h-4 px-1.5 rounded-full bg-item-selected text-strong text-chrome font-semibold leading-none inline-flex items-center">
                             {t.newBadge}
                           </span>
                         )}
                       </span>
-                      {it.hint && <span className="block text-ui text-muted truncate">{it.hint}</span>}
+                      {it.hint && <span className="block text-chrome text-muted truncate">{it.hint}</span>}
                     </span>
                   </Link>
                 </li>

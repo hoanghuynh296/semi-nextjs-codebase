@@ -94,26 +94,45 @@ and `text-tone-*` are one fixed palette for every brand. Their text (light: the 
 | `text-section` | 20 · 500 · lh 1.3 · −0.01em | section heading |
 | `text-figure` | 18 · lh 1.25 | numeric figures; the page title in a content card (400) |
 | `text-lead` | 15 · lh 24 | lead text, card titles |
-| `text-copy` | 14 · lh 22 | reading copy, secondary body, larger buttons |
 | `text-input` | 16 · lh 24 | text you type in, below `sm` only (`max-sm:text-input`): iOS zooms into a field under 16px |
-| `text-ui` | **12 · lh 18, the base UI size** | nav, breadcrumb, buttons, labels, meta, list rows |
+| `text-ui` | **14 · lh 22, the content size** (13 compact) | list and table rows, form labels and help text, field values and placeholders, buttons, menu items, dialog text, body and reading copy |
+| `text-chrome` | **12 · lh 18, the shell chrome size** | nav items, group-label rows, breadcrumb, route-header and toolbar compact buttons (`BTN_SM`), meta (timestamps, counts, hints, captions), kbd and the "/" hint, tooltips, status pills and badges |
 | `text-tag` | 10 · 500 · +0.02em | tags, chips |
 | `text-badge` | 10 · 700 · lh 1 | count badges only |
 | `text-overline` | 11 · 600 · +0.1em · uppercase | section labels |
 
-Naming: the 14px size is `text-copy`, not `text-body`, because `text-body` is the body text colour (one Tailwind
-`text-*` name cannot be both a size and a colour). `text-ui` keeps its name and is now 12px (was 14).
+Two sizes for UI text (C-011, #155): **content is 14px, only the shell chrome is 12px.** 12px suits the frame around the
+work (nav, breadcrumb, toolbars, meta), but dense content at 12px reads poorly, Vietnamese diacritics most of all.
+`text-ui` keeps its pre-1.0 name and size (14px), so apps' content text does not change; `text-chrome` is new. When
+unsure, it is content: `text-ui`. (The 14px size is not called `text-body`: that is the body text colour, and one
+Tailwind `text-*` name cannot be both a size and a colour.)
+
+Which Semi piece uses which: **`text-chrome`**: the AppShell sidebar (nav items, sub-items, group labels, product name,
+create button, utilities), Breadcrumb, Kbd and SearchPill's "/" hint, the command palette's group labels, hints and
+footer, `BTN_SM`, `headerPrimary`, Badge, `STATUS_PILL` / `BADGE_BASE` / `COUNT_PILL` / `TAG`, Tooltip, the Menubar,
+ThemeToggle, table header cells, chart axes and tooltip labels, calendar weekday row, counts and timers (Tabs, Item meta,
+FileDrop sizes, DetailOverlay position, TaskHost timer, FilterChipRow / FilterPanel counts), menu-item descriptions and
+shortcuts, Separator labels, field-row hints of HintTextarea, MobileTabBar labels. **`text-ui`**: everything else that
+is UI text: buttons (`BTN_*`, `MODAL_BTN_*`), Field labels, help and errors, inputs and placeholders, select / combobox /
+menu items, list and table rows (DataTable's folded column values too), dialogs and their subtitles (Modal,
+DetailOverlay, the WorkspaceLayout header), a field's help line (HintTextarea's hint under the field), toasts, empty
+states, disclosure, chat, NavigationMenu (the marketing nav, phone sheet included: it is not the shell), the phone
+drawer of the shell (touch rows stay 14).
+
+**Kept at 12 as chrome or compact controls** (owner's call, #155 review; say so to move one to 14): table header cells
+(`TABLE_HEAD_CELL`, DataTable's head), `BTN_SM` (the compact toolbar button), `headerPrimary` (the main action in an app
+header).
 
 Weights: headings are not bold. 400 and 500 do almost everything (`font-title` is 500); 600 only for overlines and a
 few emphasised labels; 700 only in count badges. Phones: fields you type in stay 16px below `sm` (`text-input`, iOS zoom) and touch
 targets stay 44px.
 
-Density and type scale (`data-density`, `data-type-scale` on `<html>`): compact sets `text-copy` 13 and `text-lead`
+Density and type scale (`data-density`, `data-type-scale` on `<html>`): compact sets `text-ui` 13 and `text-lead`
 14; the contrast type scale raises figure 22, section 24, tab-xl 32, title-xl 52, hero 44 (hero and tab-xl still step
 down below sm).
 
 Removed sizes and their 1.0 names (the `1.0.0-foundation` migration rewrites them): `text-caption`, `text-label` →
-`text-ui`; `text-ui-lg`, `text-title`, `text-title-lg` → `text-lead` (`max-sm:text-title-lg`, the phone size of a field, → `max-sm:text-input`); `text-heading-sm`, `text-heading` →
+`text-chrome` (a `text-label` is flagged: a form label, help text or row is content, `text-ui`); `text-ui` is unchanged; `text-ui-lg`, `text-title`, `text-title-lg` → `text-lead` (`max-sm:text-title-lg`, the phone size of a field, → `max-sm:text-input`); `text-heading-sm`, `text-heading` →
 `text-section`; `text-heading-lg`, `text-display` → `text-tab-xl`; `text-kpi` → `text-figure`.
 
 ## Fonts

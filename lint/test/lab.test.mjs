@@ -23,7 +23,7 @@ test("draft: a value equal to the source drops out; an empty draft writes no CSS
   let d = setDraftValue(emptyDraft(), ["type", "text-ui"], "15px", sources);
   assert.deepEqual(d.type, { "text-ui": "15px" });
   d = setDraftValue(d, ["shape", "radius-card"], "1rem", sources);
-  d = setDraftValue(d, ["type", "text-ui"], "12px", sources); // back to the source value
+  d = setDraftValue(d, ["type", "text-ui"], "14px", sources); // back to the source value
   assert.deepEqual(d.type, {});
   assert.deepEqual(d.shape, { "radius-card": "1rem" });
   d = setDraftValue(d, ["shape", "radius-card"], tokens.shape["radius-card"].value, sources);
@@ -41,7 +41,7 @@ test("labCss: px in rem like the build, the shape on :root and every theme scope
   assert.doesNotMatch(css, /--card-border:/, "card-border is a utility of its own, no theme variable");
   // a density's own sizes stay after the :root override
   assert.ok(css.indexOf('[data-density="compact"]') > css.indexOf(":root {"));
-  assert.match(css, /\[data-density="compact"\] \{[^}]*--text-copy: 0\.8125rem;/);
+  assert.match(css, /\[data-density="compact"\] \{[^}]*--text-ui: 0\.8125rem;/);
 });
 
 test("validateDraft: unknown keys, wrong units and unknown params are refused", () => {
@@ -124,7 +124,7 @@ test("lab:apply --dry prints the changes and writes nothing; an invalid patch ex
   const good = join(dir, "good.json");
   writeFileSync(good, JSON.stringify(draft({ type: { "text-ui": "13px" }, shape: { "radius-card": "1rem" } })));
   const out = execFileSync(process.execPath, [join(ROOT, "scripts/lab-apply.mjs"), good, "--dry"], { encoding: "utf8" });
-  assert.match(out, /type\.text-ui: 12px → 13px/);
+  assert.match(out, /type\.text-ui: 14px → 13px/);
   assert.match(out, /shape\.radius-card: 0\.75rem → 1rem/);
   assert.equal(readFileSync(join(ROOT, "tokens/tokens.json"), "utf8"), before);
   const invalid = join(dir, "invalid.json");

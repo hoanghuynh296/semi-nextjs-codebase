@@ -6,9 +6,8 @@ export default function TypographyScale() {
       <div className="text-section text-strong">Tiêu đề mục 20</div>
       <div className="text-figure text-strong">Tiêu đề trang trong thẻ 18</div>
       <div className="text-lead text-strong font-medium">Tiêu đề thẻ 15</div>
-      <div className="text-copy text-body">Nội dung dài 14</div>
-      <div className="text-ui text-body">Giao diện 12</div>
-      <div className="text-ui text-muted">Nhãn 12</div>
+      <div className="text-ui text-body">Nội dung 14: dòng, nhãn, nút, đoạn văn</div>
+      <div className="text-chrome text-muted">Khung ứng dụng 12: điều hướng, đường dẫn, thông tin phụ</div>
       <div className="text-tag text-muted">Thẻ 10</div>
     </div>
   );

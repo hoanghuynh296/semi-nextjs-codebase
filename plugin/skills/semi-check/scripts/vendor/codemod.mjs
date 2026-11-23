@@ -31,9 +31,9 @@ const TONE = {
   emerald: "emerald", green: "emerald", lime: "emerald", amber: "amber", yellow: "amber", orange: "orange",
   rose: "rose", red: "rose", pink: "pink", fuchsia: "pink",
 };
-/** px → the 1.0 type scale (docs/TOKENS.md): 10 tag · 11–12 ui · 13–14 copy · 15–16 lead · 18 figure · 20–22 section · 24–28 tab-xl · ≥ 32 hero. */
+/** px → the 1.0 type scale (docs/TOKENS.md): 10 tag · 11–12 chrome · 13–14 ui · 15–16 lead · 18 figure · 20–22 section · 24–28 tab-xl · ≥ 32 hero. */
 const sizeToken = (px) =>
-  px === 10 ? "tag" : px === 11 || px === 12 ? "ui" : px === 13 || px === 14 ? "copy" : px === 15 || px === 16 ? "lead" : px === 18 ? "figure"
+  px === 10 ? "tag" : px === 11 || px === 12 ? "chrome" : px === 13 || px === 14 ? "ui" : px === 15 || px === 16 ? "lead" : px === 18 ? "figure"
   : px === 20 || px === 22 ? "section" : px >= 24 && px <= 28 ? "tab-xl" : px >= 32 ? "hero" : null;
 
 /**

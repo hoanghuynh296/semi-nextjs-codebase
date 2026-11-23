@@ -112,7 +112,7 @@ export function FilterOptions({ def, onChange, className }: { def: FilterDef; on
             }
             className="flex-1 min-w-0 py-1.5"
           />
-          {o.count !== undefined && <span className="text-ui text-muted tabular-nums">{o.count}</span>}
+          {o.count !== undefined && <span className="text-chrome text-muted tabular-nums">{o.count}</span>}
         </div>
       ))}
     </div>

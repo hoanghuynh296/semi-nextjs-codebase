@@ -98,7 +98,7 @@ export function Tabs<T extends string>({
             >
               {it.icon && <Icon name={it.icon} className="w-3.5 h-3.5" />}
               {it.label}
-              {it.count !== undefined && <span className="text-ui tabular-nums text-muted">{it.count}</span>}
+              {it.count !== undefined && <span className="text-chrome tabular-nums text-muted">{it.count}</span>}
             </button>
           );
         })}

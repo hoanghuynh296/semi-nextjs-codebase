@@ -44,7 +44,7 @@ export function MobileTabBar({
       <span className={`w-12 h-7 rounded-full flex items-center justify-center transition ${on ? "bg-item-selected" : ""}`}>
         <Icon name={icon} className="w-5 h-5" />
       </span>
-      <span className={`text-ui font-medium truncate max-w-full px-1 ${on ? "text-strong" : "text-muted"}`}>
+      <span className={`text-chrome font-medium truncate max-w-full px-1 ${on ? "text-strong" : "text-muted"}`}>
         {label}
       </span>
     </>

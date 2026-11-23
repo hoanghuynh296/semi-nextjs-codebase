@@ -21,7 +21,7 @@ export const chipClass = (active: boolean) => (active ? CHIP_ON : CHIP_OFF);
 export const chipIconClass = (tone: TileTone = "green") => TONE_TEXT[tone];
 
 /** Static tag (a filament's brand / type on a card): same neutral background for every tag. */
-export const TAG = "inline-flex items-center gap-1.5 h-6 px-2 rounded-full bg-field border border-line text-ui font-medium text-muted";
+export const TAG = "inline-flex items-center gap-1.5 h-6 px-2 rounded-full bg-field border border-line text-chrome font-medium text-muted";
 
 /** Solid dot in a tone (material / category chips and tags). */
 export const TONE_DOT: Record<TileTone, string> = {

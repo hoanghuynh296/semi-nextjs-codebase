@@ -123,7 +123,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [QR code](./components/qr-code/) ([markdown](./docs/components/qr-code.md)): A scannable QR code as one SVG: VietQR / EMVCo payment payloads, receipts (print variant), links. Fixed black modules on white with a 4-module quiet zone in both themes, four error-correction levels, optional caption and copy button. Components: QRCode.
 - [Separator](./components/separator/) ([markdown](./docs/components/separator.md)): A thin divider between groups of content: horizontal, vertical, or with a short label in the middle (“hoặc”). Components: Separator.
 - [Table](./components/table/) ([markdown](./docs/components/table.md)): A dense table for rows compared column by column. Cells stay on one line (the table scrolls sideways on phones); TD wrap for a long-text column, numeric for figures. Components: Table, THead, TBody, TR, TH, TD.
-- [Typography](./components/typography/) ([markdown](./docs/components/typography.md)): The 1.0 type scale (text-tag 10 … text-hero 36, text-ui 12 the base UI size, font-display for hero and big titles) and Prose, which styles long-form text — headings, paragraphs, lists, links, quotes, inline code — from that scale. Components: Prose.
+- [Typography](./components/typography/) ([markdown](./docs/components/typography.md)): The 1.0 type scale (text-tag 10 … text-hero 36, text-ui 14 for content, text-chrome 12 for the shell chrome, font-display for hero and big titles) and Prose, which styles long-form text — headings, paragraphs, lists, links, quotes, inline code — from that scale. Components: Prose.
 
 ### Feedback
 
@@ -201,7 +201,7 @@ Chips (`Chip`, `chipClass(active)`): `rounded-full h-control px-3.5`, ghost when
 leading dot or icon (`TONE_DOT`, `chipIconClass(tone)`). Card tiles keep their area tint. Flat: no gradients, no glow
 blobs, no `shadow-[0_0_…]` (status dots and power buttons too). Active card = `CARD_ACTIVE` (`border-outline-line`).
 
-**Type (`docs/TOKENS.md`):** `text-hero` 36 (32 below sm) · `text-title-xl` 44 · `text-tab-xl` 28 (24 below sm) · `text-section` 20 · `text-figure` 18 · `text-lead` 15 · `text-copy` 14 (reading copy; compact 13) · `text-input` 16 (typed text below sm: `max-sm:text-input`) · **`text-ui` 12, the base UI size** (nav, buttons, labels, meta, rows) · `text-tag` 10 · `text-badge` 10 · `text-overline` 11. `font-sans` (Geist or the brand's) everywhere; `font-display` (the brand's display face, else the sans) only for hero, reading-page titles, big tabs, editorial heads. Headings are not bold: 400 / 500 (`font-title` 500), 600 only overlines, 700 only count badges. `tabular-nums` for numbers, `font-mono` only for code. No `text-xs/sm`, no `text-[13px]` ·
+**Type (`docs/TOKENS.md`):** `text-hero` 36 (32 below sm) · `text-title-xl` 44 · `text-tab-xl` 28 (24 below sm) · `text-section` 20 · `text-figure` 18 · `text-lead` 15 · **`text-ui` 14, the content size** (rows, form labels and help, fields, buttons, menu items, dialogs, body; compact 13) · `text-input` 16 (typed text below sm: `max-sm:text-input`) · **`text-chrome` 12, shell chrome only** (nav, breadcrumb, toolbar compact buttons, meta, kbd) · `text-tag` 10 · `text-badge` 10 · `text-overline` 11. `font-sans` (Geist or the brand's) everywhere; `font-display` (the brand's display face, else the sans) only for hero, reading-page titles, big tabs, editorial heads. Headings are not bold: 400 / 500 (`font-title` 500), 600 only overlines, 700 only count badges. `tabular-nums` for numbers, `font-mono` only for code. No `text-xs/sm`, no `text-[13px]` ·
 sentence case, no ALL CAPS. The one exception is `text-overline` (uppercase, tracked) for section labels: a sidebar or drawer group, a palette group, a mega menu column (C-032); anywhere but a plain, non-clickable label element it warns (`overline-place`).
 
 **Status, layers, elevation:** callouts / badges `bg-{danger,success,warning,info}-bg border-*-border text-*-fg` (`Alert`) ·
@@ -444,9 +444,9 @@ hook of the `semi-design` plugin).
 | Big text tabs | `font-display text-tab-xl` (T5) |
 | Section heading | `text-section text-strong` (500 from the token) |
 | Card title, lead text | `text-lead font-medium text-strong` |
-| Reading copy, secondary body | `text-copy text-body` |
-| UI text: nav, breadcrumb, buttons, labels, meta, list rows | `text-ui` (12px, the base UI size) `text-body` / `text-muted` |
-| Group label, kbd hint, "Untitled" | `text-ui text-faint` |
+| Content: rows, form labels and help, field values, buttons, menu items, dialog text, body, reading copy | `text-ui` (14px, the content size) `text-body` / `text-muted` |
+| Shell chrome: nav, breadcrumb, toolbar compact buttons, meta (timestamps, counts, hints) | `text-chrome` (12px) `text-body` / `text-muted` |
+| Group label, kbd hint, "Untitled" | `text-chrome text-faint` |
 | Tag, chip | `text-tag` (10 / 500 / +0.02em) |
 | Count badge | `text-badge` (10 / 700) |
 | Section label (overline) | `text-overline text-muted`: 11 / 600 / +0.1em, the only uppercase text (C-032) |
@@ -458,8 +458,8 @@ set through `--font-sans-family`) for everything, and `font-display` (brand `fon
 without one it is the UI sans) only for hero, reading-page titles, big tabs and editorial section heads. ui-monospace
 only for code. **Headings are not bold:** 400 and 500 do almost everything (`font-title` is 500); 600 only for overlines
 and a few emphasised labels; 700 only in count badges. Tracking −0.01em on display sizes ≥ 20px (in the tokens). Sizes
-come from the type scale tokens, never `text-[13px]` and never Tailwind's `text-xs` / `text-sm` / `text-base`. The 14px
-size is `text-copy` because `text-body` is the body text colour.
+come from the type scale tokens, never `text-[13px]` and never Tailwind's `text-xs` / `text-sm` / `text-base`. Content is
+14px (`text-ui`); only the shell chrome is 12px (`text-chrome`), see `docs/TOKENS.md` for which piece uses which.
 
 **Fields on a phone:** text you type in is 16px (`text-input`) below `sm`, whatever the field's desktop size. iOS Safari
 zooms the page into a focused field under 16px and never zooms back; the fix is the text size, never `maximum-scale` /
@@ -469,8 +469,8 @@ Command, the Chat composer) already do it; a field of your own, or a NumberInput
 adds `max-sm:text-input`. `base.css` does the same for a bare
 `<input>` / `<textarea>` / `<select>`; the height stays `h-control` / `h-field`.
 
-Minimum `text-tag` / `text-badge` (10px, marks only). Running text (a sentence, a description) is `text-copy`; UI text
-(rows, labels, meta) is `text-ui`. Every size carries its line height (about 1.5 for UI and body: 12/18, 14/22, 15/24;
+Minimum `text-tag` / `text-badge` (10px, marks only). Content (rows, labels, help, buttons, sentences) is `text-ui`
+(14px); the shell chrome and meta are `text-chrome` (12px). Every size carries its line height (about 1.5 for UI and body: 14/22, 12/18, 15/24;
 1.1–1.3 for display sizes), so text rarely needs `leading-*`. Button and
 label text is sentence case ("Lưu", "Xem lại"), never ALL CAPS. Sizes are written in px here and in `tokens.json`
 but `tokens.css` emits them in rem (14px = 0.875rem), so text grows with the browser's default font size (WCAG 1.4.4).
@@ -2445,26 +2445,45 @@ and `text-tone-*` are one fixed palette for every brand. Their text (light: the 
 | `text-section` | 20 · 500 · lh 1.3 · −0.01em | section heading |
 | `text-figure` | 18 · lh 1.25 | numeric figures; the page title in a content card (400) |
 | `text-lead` | 15 · lh 24 | lead text, card titles |
-| `text-copy` | 14 · lh 22 | reading copy, secondary body, larger buttons |
 | `text-input` | 16 · lh 24 | text you type in, below `sm` only (`max-sm:text-input`): iOS zooms into a field under 16px |
-| `text-ui` | **12 · lh 18, the base UI size** | nav, breadcrumb, buttons, labels, meta, list rows |
+| `text-ui` | **14 · lh 22, the content size** (13 compact) | list and table rows, form labels and help text, field values and placeholders, buttons, menu items, dialog text, body and reading copy |
+| `text-chrome` | **12 · lh 18, the shell chrome size** | nav items, group-label rows, breadcrumb, route-header and toolbar compact buttons (`BTN_SM`), meta (timestamps, counts, hints, captions), kbd and the "/" hint, tooltips, status pills and badges |
 | `text-tag` | 10 · 500 · +0.02em | tags, chips |
 | `text-badge` | 10 · 700 · lh 1 | count badges only |
 | `text-overline` | 11 · 600 · +0.1em · uppercase | section labels |
 
-Naming: the 14px size is `text-copy`, not `text-body`, because `text-body` is the body text colour (one Tailwind
-`text-*` name cannot be both a size and a colour). `text-ui` keeps its name and is now 12px (was 14).
+Two sizes for UI text (C-011, #155): **content is 14px, only the shell chrome is 12px.** 12px suits the frame around the
+work (nav, breadcrumb, toolbars, meta), but dense content at 12px reads poorly, Vietnamese diacritics most of all.
+`text-ui` keeps its pre-1.0 name and size (14px), so apps' content text does not change; `text-chrome` is new. When
+unsure, it is content: `text-ui`. (The 14px size is not called `text-body`: that is the body text colour, and one
+Tailwind `text-*` name cannot be both a size and a colour.)
+
+Which Semi piece uses which: **`text-chrome`**: the AppShell sidebar (nav items, sub-items, group labels, product name,
+create button, utilities), Breadcrumb, Kbd and SearchPill's "/" hint, the command palette's group labels, hints and
+footer, `BTN_SM`, `headerPrimary`, Badge, `STATUS_PILL` / `BADGE_BASE` / `COUNT_PILL` / `TAG`, Tooltip, the Menubar,
+ThemeToggle, table header cells, chart axes and tooltip labels, calendar weekday row, counts and timers (Tabs, Item meta,
+FileDrop sizes, DetailOverlay position, TaskHost timer, FilterChipRow / FilterPanel counts), menu-item descriptions and
+shortcuts, Separator labels, field-row hints of HintTextarea, MobileTabBar labels. **`text-ui`**: everything else that
+is UI text: buttons (`BTN_*`, `MODAL_BTN_*`), Field labels, help and errors, inputs and placeholders, select / combobox /
+menu items, list and table rows (DataTable's folded column values too), dialogs and their subtitles (Modal,
+DetailOverlay, the WorkspaceLayout header), a field's help line (HintTextarea's hint under the field), toasts, empty
+states, disclosure, chat, NavigationMenu (the marketing nav, phone sheet included: it is not the shell), the phone
+drawer of the shell (touch rows stay 14).
+
+**Kept at 12 as chrome or compact controls** (owner's call, #155 review; say so to move one to 14): table header cells
+(`TABLE_HEAD_CELL`, DataTable's head), `BTN_SM` (the compact toolbar button), `headerPrimary` (the main action in an app
+header).
 
 Weights: headings are not bold. 400 and 500 do almost everything (`font-title` is 500); 600 only for overlines and a
 few emphasised labels; 700 only in count badges. Phones: fields you type in stay 16px below `sm` (`text-input`, iOS zoom) and touch
 targets stay 44px.
 
-Density and type scale (`data-density`, `data-type-scale` on `<html>`): compact sets `text-copy` 13 and `text-lead`
+Density and type scale (`data-density`, `data-type-scale` on `<html>`): compact sets `text-ui` 13 and `text-lead`
 14; the contrast type scale raises figure 22, section 24, tab-xl 32, title-xl 52, hero 44 (hero and tab-xl still step
 down below sm).
 
 Removed sizes and their 1.0 names (the `1.0.0-foundation` migration rewrites them): `text-caption`, `text-label` →
-`text-ui`; `text-ui-lg`, `text-title`, `text-title-lg` → `text-lead` (`max-sm:text-title-lg`, the phone size of a field, → `max-sm:text-input`); `text-heading-sm`, `text-heading` →
+`text-chrome` (a `text-label` is flagged: a form label, help text or row is content, `text-ui`); `text-ui` is unchanged; `text-ui-lg`, `text-title`, `text-title-lg` → `text-lead` (`max-sm:text-title-lg`, the phone size of a field, → `max-sm:text-input`); `text-heading-sm`, `text-heading` →
 `text-section`; `text-heading-lg`, `text-display` → `text-tab-xl`; `text-kpi` → `text-figure`.
 
 ## Fonts
@@ -2516,7 +2535,7 @@ All web UI here follows the **Semi Design System** (`@semi/ui`, repo `https://gi
 2. **Compose, never re-create.** Import from `@semi/ui` and `@semi/ui/styles` directly. No local wrappers (`components/ui.tsx`), no raw `<select>`, `<table>`, `<dialog>`, `type="date"`, `type="number"`, `window.confirm` / `alert`, no inline `<svg>` or glyph icons (`<Icon name>`, mapping in `docs/ICONS.md`). Every AI conversation is `AIChat`; agent work uses `Reasoning`, `ToolCall`, `TaskList`, `Terminal`, `Sources`; an outward-facing, paid or irreversible agent action waits for `ActionConfirmation`. Pages sit in `AppShell` (or `AppHeader` for a one-screen tool) with `PageTitle` (or the title on the toolbar row: `SubpageToolbar title`, or `TextTabs` for 2–4 sibling views; a detail page opens with `MinimalHeader`); the shell's accent action is `create`, its bottom is `utilities` + `account` (never `footer`), and phones use its drawer; sub-views of one area go in nav `children` (closed until the parent is chosen, optional grey icon, no colour or count; check `useAppShell().submenuVisible` and add a page picker when false); a list page that people search and filter opens with `StickyContextBar` (`SearchPill`, `FilterChipRow` on `md+` / `PhoneFilterBar` + `FilterPanel` on phones, `ResultLine`), filter state in the URL (`useFilterParams`), chips on one line, never wrapped rows (`filter-chip-wrap`, warning); dialogs are `Modal` / `Drawer` / `confirmDialog`; loading is `Skeleton`, never "Đang tải…" text, and a list, grid or table never swaps its rows for a `Spinner` (`no-spinner-in-list`, warning). `AppShell` renders once in a `layout.tsx` (never from a page), its items route by `href` (not `onSelect` + `router.push`), the session check runs once in that layout (best on the server) with `BootLoader` as the only centred spinner, and content loading is a `loading.tsx` with `PageSkeleton` inside the shell, never a skeleton gate around it. No other UI or icon library (`lucide-react`, `react-icons`, `@radix-ui`, `@mui`, a shadcn `components/ui` copy: `foreign-ui`), no own `Card` / `Badge` / `Tooltip`… (`local-primitive`), no raw `<button>`, `<input>`, `<textarea>`, `<table>` (`raw-control`), no hand-made overlay or spinner (`custom-overlay`, `custom-spinner`); a clickable card is `<Card onClick>` (keyboard-ready), never `<div onClick>` (`click-target`).
 3. **Tokens only** (dual theme, any brand):
    - Surfaces and text: `bg-canvas|app|panel|field|raised` (the scale `bg-panel-0…4`: 0 = canvas, 2 = app, 4 = panel), `text-strong|body|muted`, `border-line|divider` (an input's own edge: `border-control-line`, ≥ 3:1); status `bg-*-bg border-*-border text-*-fg` (danger, success, warning, info). Pages separate by tone, not borders: a block that is a card is `<Card>` / `bg-card` (no border; `<Card bordered>` only for a dense data view), never `bg-panel` (the sidebar / modal step); a secondary button is `<Button>` (tint fill `bg-tint`, no border). Main button: `BTN_PRIMARY` / `bg-primary text-on-primary` (the brand may make it inverted). Accent: `bg-primary text-on-primary` for checked / "on" marks, `text-strong`, `bg-item-selected`, `border-outline-line`, `ring-focus`. Never physical colours (`bg-white`, `text-slate-900`, `text-amber-600 dark:text-amber-400`), arbitrary colours (`bg-[#…]`), `primary-N/alpha` or `bg-primary-N` fills (`primary-fill`), gradients or glow shadows.
-   - Type scale only (`docs/TOKENS.md`): `text-ui` (12, the base UI size) · `text-copy` 14 · `text-lead` 15 · `text-figure` 18 · `text-section` 20 · `text-tab-xl` · `text-title-xl` · `text-hero` · `text-tag` / `text-badge` 10 · `text-overline` · `max-sm:text-input` 16 for fields; text colours `text-strong|body|muted|faint`; headings not bold (400 / 500, `font-title` 500), titles and big numbers `font-title` / `font-figure`; `tabular-nums` for numbers; sentence case (the one uppercase style is `text-overline`, for section labels only: a sidebar / drawer group, a palette group, a mega menu column; on any other element it warns: `overline-place`). Running text (a sentence, a description) is `text-copy`; UI text (list rows, table cells, field labels, buttons, a time, a count) is `text-ui`. Each size sets its own line height: no `leading-*` on body text.
+   - Type scale only (`docs/TOKENS.md`): `text-ui` (14, content: rows, labels, fields, buttons, body) · `text-chrome` (12, shell chrome only: nav, breadcrumb, toolbar, meta) · `text-lead` 15 · `text-figure` 18 · `text-section` 20 · `text-tab-xl` · `text-title-xl` · `text-hero` · `text-tag` / `text-badge` 10 · `text-overline` · `max-sm:text-input` 16 for fields; text colours `text-strong|body|muted|faint`; headings not bold (400 / 500, `font-title` 500), titles and big numbers `font-title` / `font-figure`; `tabular-nums` for numbers; sentence case (the one uppercase style is `text-overline`, for section labels only: a sidebar / drawer group, a palette group, a mega menu column; on any other element it warns: `overline-place`). Content (list rows, table cells, field labels and help, buttons, menu items, sentences) is `text-ui` (14); only the shell chrome (nav, breadcrumb, toolbar compact buttons) and meta (a time, a count, a hint) are `text-chrome` (12). Each size sets its own line height: no `leading-*` on body text.
    - Spacing by role (scaled by density): `p-card` inside every card, popover and panel section (`<Card>` sets it; `p-card sm:p-panel` for a roomy one), `gap-stack` between items in a card or form, `gap-group` between cards, `gap-section` between page sections. `gap-1`–`gap-2`, `px-2`, `py-1` only inside one control or row. A card is never tighter than `p-card` (`card-padding`). No arbitrary spacing, z-index or opacity (`p-[13px]`, `z-[9999]`, `bg-panel/[0.05]`: `arbitrary-value`); no `shadow-sm…2xl` (`tw-shadow`), `uppercase` (`text-case`) or `leading-*` other than `leading-tight` (`leading-override`); no colours, sizes or radii in `style={{}}` (`inline-style-value`) or in `.css` (`css-raw-value`).
    - Shape and size are Semi's one look (no styles since 1.0; a leftover `data-style` does nothing): `rounded-chip|control|card|panel|full`, `shadow-card`, `h-control`, `h-field`. Never `rounded-lg`, `rounded-[Npx]`, `h-[34px]` or `[data-style]` selectors. Density and type scale are this product's (`data-density`, `data-type-scale`): never tune paddings or text sizes by hand for that.
    - Layers: `z-sticky` < `z-drawer` < `z-modal` < `z-dialog` < `z-popover` < `z-toast` < `z-tooltip`; never `z-[9999]`.
@@ -11320,7 +11339,7 @@ No props of its own.
 
 # Typography
 
-The 1.0 type scale (text-tag 10 … text-hero 36, text-ui 12 the base UI size, font-display for hero and big titles) and Prose, which styles long-form text — headings, paragraphs, lists, links, quotes, inline code — from that scale.
+The 1.0 type scale (text-tag 10 … text-hero 36, text-ui 14 for content, text-chrome 12 for the shell chrome, font-display for hero and big titles) and Prose, which styles long-form text — headings, paragraphs, lists, links, quotes, inline code — from that scale.
 
 ## When to use
 
@@ -11331,7 +11350,7 @@ The 1.0 type scale (text-tag 10 … text-hero 36, text-ui 12 the base UI size, f
 | Need | Use |
 |---|---|
 | Page title | PageTitle |
-| UI text in cards and forms | the type classes directly (text-ui for labels, rows and meta; text-copy for reading copy) |
+| UI text in cards and forms | the type classes directly (text-ui for content: rows, labels, fields, buttons, copy; text-chrome for shell chrome and meta) |
 
 ## Import
 
@@ -11352,9 +11371,8 @@ export default function TypographyScale() {
       <div className="text-section text-strong">Tiêu đề mục 20</div>
       <div className="text-figure text-strong">Tiêu đề trang trong thẻ 18</div>
       <div className="text-lead text-strong font-medium">Tiêu đề thẻ 15</div>
-      <div className="text-copy text-body">Nội dung dài 14</div>
-      <div className="text-ui text-body">Giao diện 12</div>
-      <div className="text-ui text-muted">Nhãn 12</div>
+      <div className="text-ui text-body">Nội dung 14: dòng, nhãn, nút, đoạn văn</div>
+      <div className="text-chrome text-muted">Khung ứng dụng 12: điều hướng, đường dẫn, thông tin phụ</div>
       <div className="text-tag text-muted">Thẻ 10</div>
     </div>
   );

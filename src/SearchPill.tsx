@@ -181,7 +181,7 @@ export function SearchPill({
         </button>
       ) : (
         hint && (
-          <kbd aria-hidden className="max-sm:hidden inline-flex h-6 min-w-6 px-1.5 mr-1.5 items-center justify-center rounded-chip border border-line text-ui font-medium text-body font-sans">
+          <kbd aria-hidden className="max-sm:hidden inline-flex h-6 min-w-6 px-1.5 mr-1.5 items-center justify-center rounded-chip border border-line text-chrome font-medium text-body font-sans">
             {hint}
           </kbd>
         )

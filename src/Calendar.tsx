@@ -152,7 +152,7 @@ export function Calendar(props: CalendarProps) {
         </button>
       </div>
       <div ref={gridRef} role="grid" aria-label={monthLabel || undefined} onKeyDown={onKey} onPointerLeave={() => setHover(null)}>
-        <div role="row" className="grid grid-cols-7 text-center text-ui text-muted">
+        <div role="row" className="grid grid-cols-7 text-center text-chrome text-muted">
           {t.weekdaysShort.map((w) => (
             <span key={w} role="columnheader" className="h-7 flex items-center justify-center">
               {w}

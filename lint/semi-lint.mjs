@@ -44,7 +44,7 @@ export const HARD = [
   [
     "tw-text-size",
     /\btext-(xs|sm|base|lg|xl)\b/,
-    "use the type scale (docs/TOKENS.md): text-tag 10 · text-ui 12 (the base UI size) · text-copy 14 · text-lead 15 (compact 13 · 14) · max-sm:text-input 16 (a field you type in, below sm) · text-figure 18 · text-section 20 · text-tab-xl 28 · text-title-xl 44 · text-hero 36",
+    "use the type scale (docs/TOKENS.md): text-tag 10 · text-chrome 12 (shell chrome: nav, breadcrumb, meta) · text-ui 14 (content; compact 13) · text-lead 15 · max-sm:text-input 16 (a field you type in, below sm) · text-figure 18 · text-section 20 · text-tab-xl 28 · text-title-xl 44 · text-hero 36",
   ],
   ["grey-surface", /bg-gray-(800|900)|border-gray-700/, "use the surface tokens (bg-panel, border-line…)"],
   [
@@ -129,7 +129,7 @@ export const RATCHET = [
   ["hex-colour-class", null, "No arbitrary colour values (bg-[#fff], text-[rgb(…)], border-[hsl(…)]): use colour tokens."],
   ["literal-colour-value", null, "No literal CSS colours in code (\"#fff\", \"rgb(…)\" in style props or configs): use var(--color-…) tokens."],
   ["radius-token", null, "Radii are shape tokens: rounded-chip (marks, checkboxes, inline code) · rounded-control (buttons, inputs, tiles, rows) · rounded-card · rounded-panel (hero, modal, drawer, sidebar), plus rounded-full / rounded-none. Not rounded / rounded-lg / rounded-xl / rounded-[Npx]: those do not follow the Semi radii."],
-  ["arbitrary-text-size", null, "Use the type scale instead of text-[Npx]: text-tag 10 · ui 12 · copy 14 · lead 15 · input 16 (fields below sm) · figure 18 · section 20 · tab-xl 28 · hero 36 · title-xl 44 (docs/TOKENS.md)."],
+  ["arbitrary-text-size", null, "Use the type scale instead of text-[Npx]: text-tag 10 · chrome 12 (shell) · ui 14 (content) · lead 15 · input 16 (fields below sm) · figure 18 · section 20 · tab-xl 28 · hero 36 · title-xl 44 (docs/TOKENS.md)."],
   [
     "card-padding",
     /(?:<Card\b[^>]*?\bclassName=[^>]*?|\$\{CARD(?:_HOVER)?\}[^`]*?|\bcn\(\s*CARD(?:_HOVER)?\b[^)]*?|\brounded-card\b[^"'`\n]*?)(?<![\w-])p-(?:0\.5|1|1\.5|2|2\.5)(?![\w.])|(?<![\w-])p-(?:0\.5|1|1\.5|2|2\.5)(?![\w.])(?=[^"'`\n]*\brounded-card\b)/g,

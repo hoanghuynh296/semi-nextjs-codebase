@@ -37,4 +37,4 @@ export const MODAL_BTN_DANGER = `${MODAL_BASE} bg-danger-bg hover:bg-danger-bord
 export const BTN_GHOST = `${BASE} px-3 bg-transparent hover:bg-raised text-body hover:text-strong`;
 
 /** Smaller control height (28px) for dense rows: add to any BTN_* constant. */
-export const BTN_SM = "!h-7 !px-2.5 !text-ui";
+export const BTN_SM = "!h-7 !px-2.5 !text-chrome";

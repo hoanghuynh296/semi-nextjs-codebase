@@ -199,7 +199,7 @@ export function Command({
         {groups.map((g, gi) => (
           <div key={g.name || gi} role="group" aria-labelledby={g.name ? `${base}-g-${gi}` : undefined} className="py-1">
             {g.name && (
-              <div id={`${base}-g-${gi}`} role="presentation" className={lg ? "px-3 pt-2 pb-1 text-overline text-muted" : "px-2 pb-1 text-ui font-medium text-muted"}>
+              <div id={`${base}-g-${gi}`} role="presentation" className={lg ? "px-3 pt-2 pb-1 text-overline text-muted" : "px-2 pb-1 text-chrome font-medium text-muted"}>
                 {g.name}
               </div>
             )}
@@ -233,7 +233,7 @@ export function Command({
                 {it.hint ? (
                   <span className="flex-1 min-w-0">
                     <span className={cn("block truncate", lg && "text-ui font-medium text-strong")}>{it.label}</span>
-                    <span className="block text-ui text-muted truncate">{it.hint}</span>
+                    <span className="block text-chrome text-muted truncate">{it.hint}</span>
                   </span>
                 ) : (
                   <span className={cn("flex-1 min-w-0 truncate", lg && "text-ui font-medium text-strong")}>{it.label}</span>
@@ -428,7 +428,7 @@ export function CommandPalette({
           }
           inputEnd={<Kbd className="max-sm:hidden">Esc</Kbd>}
           footer={
-            <div className="max-sm:hidden flex items-center gap-4 h-10 px-4 border-t border-divider text-ui text-muted shrink-0">
+            <div className="max-sm:hidden flex items-center gap-4 h-10 px-4 border-t border-divider text-chrome text-muted shrink-0">
               {legend(["↑", "↓"], t.paletteSelect)}
               {legend(["↵"], t.paletteOpen)}
               {legend(["⌘", "↵"], t.paletteNewTab)}

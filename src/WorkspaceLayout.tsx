@@ -133,7 +133,7 @@ export function WorkspaceSection({
           {label}
         </span>
         {count !== undefined && (
-          <span className="text-ui text-muted tabular-nums">
+          <span className="text-chrome text-muted tabular-nums">
             {count}
             {max !== undefined ? `/${max}` : ""}
           </span>
