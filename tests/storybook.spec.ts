@@ -1651,3 +1651,51 @@ test("HintTextarea: @ and / open a listbox; arrows, Enter inserts at the caret, 
   await expect(text).toBeFocused();
   await expect(text).toHaveValue("Gửi @yenbai hôm nay /");
 });
+
+// #123: the selection fills re-point the text on them (text-muted, and accent-fg on hover) through a static @utility of
+// the same name as the theme colour; Tailwind merges it into bg-accent-subtle and its variants. The fill itself is
+// main's tint; text outside a fill keeps its colour; a hover: variant scopes the text only while hovered.
+for (const theme of THEMES) {
+  test(`selection fills darken the text on them, not the fill or the text around (#123) · ${theme}`, async ({ page }) => {
+    await open(page, "/", theme);
+    await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+    await page.evaluate(() => {
+      const d = document.createElement("div");
+      d.id = "t123";
+      d.className = "bg-card";
+      d.style.cssText = "position:fixed;top:0;left:0;z-index:99999;width:400px;padding:16px";
+      d.innerHTML =
+        '<p id="plain" class="text-muted">plain</p>' +
+        '<div id="sel" class="bg-accent-subtle"><span class="text-muted">sel</span><span class="text-accent-fg">a</span></div>' +
+        '<div id="hov" class="hover:bg-accent-subtle-hover" style="height:40px"><span class="text-muted">hov</span><span class="text-accent-fg">a</span></div>';
+      document.body.appendChild(d);
+    });
+    const read = () =>
+      page.evaluate(() => {
+        const c = (sel: string) => getComputedStyle(document.querySelector(sel)!).color;
+        const bg = (sel: string) => getComputedStyle(document.querySelector(sel)!).backgroundColor;
+        const v = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        return {
+          plain: c("#plain"), sel: c("#sel .text-muted"), selAccent: c("#sel .text-accent-fg"), hov: c("#hov .text-muted"), hovAccent: c("#hov .text-accent-fg"),
+          selBg: bg("#sel"), hovBg: bg("#hov"), subtle: v("--semi-accent-subtle"), hover: v("--semi-accent-subtle-hover"),
+        };
+      });
+    const before = await read();
+    // The fills are main's see-through tints (no per-surface scheme).
+    const tail = (k: string) => / \d+%, transparent\)$/.exec((tokens.semantic as Record<string, Record<string, string>>)[k][theme])![0];
+    expect(before.subtle.endsWith(tail("color-accent-subtle"))).toBe(true);
+    expect(before.hover.endsWith(tail("color-accent-subtle-hover"))).toBe(true);
+    expect(before.selBg).toMatch(/\/ 0\.1[14]\)$|rgba?\(.*, 0\.1[14]\)$/);
+    // Not hovered: the hover row's text is the plain text.
+    expect(before.hov).toBe(before.plain);
+    // Light darkens muted on the selected tint; dark already reads, so it keeps text-muted.
+    if (theme === "light") expect(before.sel).not.toBe(before.plain);
+    else expect(before.sel).toBe(before.plain);
+    await page.hover("#hov");
+    const after = await read();
+    expect(after.hov).not.toBe(before.plain);
+    expect(after.hovAccent).not.toBe(before.selAccent);
+    expect(after.hovBg).not.toBe("rgba(0, 0, 0, 0)");
+    expect(after.plain).toBe(before.plain);
+  });
+}
