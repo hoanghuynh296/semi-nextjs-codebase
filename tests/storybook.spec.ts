@@ -752,14 +752,17 @@ for (const theme of THEMES) {
   });
 }
 
-test("AppShell theme utility: its icon is hidden before mount (no swap after hydration) and shown after", async ({ browser }) => {
+test("AppShell server HTML: the theme utility's icon is hidden before mount and shown after; the account fits the width before mount (#113)", async ({ browser }) => {
   // without JavaScript the page is the server HTML: the stored theme is not known, so the icon keeps its place, hidden
   const ssr = await browser.newPage({ viewport: { width: 1440, height: 900 }, javaScriptEnabled: false });
   await ssr.goto("/demo/app-shell/");
   const before = ssr.locator("aside").getByRole("button", { name: "Giao diện" }).locator("svg");
   await expect(before).toHaveClass(/opacity-0/);
-  // the account is the full block in the server HTML at lg (its `rail` is exact before mount, #113)
+  // the account is the full block in the server HTML at lg and the compact one at md (`rail` is exact before mount, #113)
   await expect(ssr.locator("aside").getByText("Cửa hàng Quận 1")).toBeVisible();
+  await ssr.setViewportSize({ width: 834, height: 1194 });
+  await expect(ssr.locator("aside").getByText("Cửa hàng Quận 1")).toBeHidden();
+  await expect(ssr.locator("aside").getByText("LP", { exact: true })).toBeVisible();
   await ssr.close();
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   await open(page, "/demo/app-shell/", "dark");

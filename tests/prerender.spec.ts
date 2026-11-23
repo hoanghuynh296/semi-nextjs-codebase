@@ -276,22 +276,16 @@ test("AppShell theme utility under Next's App Router: prerendered, its Menu pick
   await expect(trigger).toBeFocused();
 });
 
-test("AppShell account: `rail` is exact in the server HTML, full at lg and compact at md, one copy after mount (#113)", async ({ browser }) => {
-  for (const [width, full] of [[1440, true], [834, false]] as const) {
-    // without JavaScript the page is the server HTML
-    const ssr = await browser.newPage({ viewport: { width, height: 900 }, javaScriptEnabled: false });
-    await ssr.goto(`${BASE}/shell/a`);
-    const aside = ssr.locator("aside");
-    await expect(aside.getByText("Account", { exact: true })).toBeVisible({ visible: full });
-    await expect(aside.getByText("AC", { exact: true })).toBeVisible({ visible: !full });
-    await ssr.close();
-    // hydrated: the same copy shows, and the other one is gone from the DOM
-    const page = await browser.newPage({ viewport: { width, height: 900 } });
+test("AppShell account: `rail` is exact in the server HTML (a rail copy below lg, a full copy from lg), one copy after mount (#113)", async ({ page, request }) => {
+  // this app has no CSS: check the markup here; tests/storybook.spec.ts checks what shows at 1440 and 834
+  const html = await (await request.get(`${BASE}/shell/a`)).text();
+  expect(html).toContain('<div class="lg:hidden"><span>AC</span></div><div class="hidden lg:block"><span>Account</span></div>');
+  for (const [width, keep, drop] of [[1440, "Account", "AC"], [834, "AC", "Account"]] as const) {
+    await page.setViewportSize({ width, height: 900 });
     await page.goto(`${BASE}/shell/a`);
-    const live = page.locator("aside");
-    await expect(live.getByText(full ? "AC" : "Account", { exact: true })).toHaveCount(0);
-    await expect(live.getByText(full ? "Account" : "AC", { exact: true })).toBeVisible();
-    await page.close();
+    // hydrated and measured: only the copy for the width stays
+    await expect(page.locator("aside").getByText(drop, { exact: true })).toHaveCount(0);
+    await expect(page.locator("aside").getByText(keep, { exact: true })).toHaveCount(1);
   }
 });
 
