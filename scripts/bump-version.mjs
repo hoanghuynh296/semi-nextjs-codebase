@@ -16,6 +16,10 @@ const write = (p, data) => writeFileSync(join(root, p), JSON.stringify(data, nul
 
 // [file, get, set]
 const semiDesign = (d) => d.plugins.find((p) => p.name === "semi-design");
+const pinnedVersion = (d) => {
+  const src = semiDesign(d).source;
+  return src?.ref ? src.ref.replace(/^v/, "") : `${JSON.stringify(src)}, not pinned to a release tag (docs/PLUGIN.md)`;
+};
 const MANIFESTS = [
   ["package.json", (d) => d.version, (d, v) => (d.version = v)],
   ["package-lock.json", (d) => d.version, (d, v) => ((d.version = v), (d.packages[""].version = v))],
@@ -23,7 +27,7 @@ const MANIFESTS = [
   ["plugin/.claude-plugin/plugin.json", (d) => d.version, (d, v) => (d.version = v)],
   [".claude-plugin/marketplace.json", (d) => semiDesign(d).version, (d, v) => (semiDesign(d).version = v)],
   // the pin: the plugin comes from the tag of this version
-  [".claude-plugin/marketplace.json (source.ref)", (d) => semiDesign(d).source?.ref?.replace(/^v/, ""), (d, v) => (semiDesign(d).source.ref = `v${v}`)],
+  [".claude-plugin/marketplace.json (source.ref)", pinnedVersion, (d, v) => (semiDesign(d).source.ref = `v${v}`)],
 ];
 const fileOf = (p) => p.replace(/ \(.*\)$/, "");
 
