@@ -5,7 +5,7 @@ import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSy
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
-import { addPackageCommand, brandSemiRange, detectPkgManager, resolveTargetSpec, satisfies } from "../../plugin/skills/semi-new-app/scripts/setup.mjs";
+import { addPackageCommand, brandSemiRange, detectPkgManager, GITHUB_SPEC_BASE, PLUGIN_ROOT, pluginVersion, resolveTargetSpec, satisfies } from "../../plugin/skills/semi-new-app/scripts/setup.mjs";
 
 const UPDATE = new URL("../../plugin/skills/semi-sync/scripts/update.mjs", import.meta.url).pathname;
 const tmp = () => realpathSync(mkdtempSync(join(tmpdir(), "semi-sync-")));
@@ -144,8 +144,8 @@ function brandApp(installed, semi) {
   return root;
 }
 
-function runBrandUpdate(root, pm) {
-  const env = { ...process.env, PATH: `${pm.bin}:${process.env.PATH}`, SEMI_UI_TAGS: TAGS };
+function runBrandUpdate(root, pm, pluginVersion = "1.0.0") {
+  const env = { ...process.env, PATH: `${pm.bin}:${process.env.PATH}`, SEMI_UI_TAGS: TAGS, SEMI_PLUGIN_VERSION: pluginVersion };
   delete env.SEMI_UI_SOURCE;
   return spawnSync(process.execPath, [UPDATE, "--cwd", root], { encoding: "utf8", env });
 }
@@ -161,6 +161,7 @@ test("satisfies / brandSemiRange: comparator ranges, caret unchanged", () => {
 
 test("resolveTargetSpec: >=0.24.0 <1.0.0 gets the latest 0.x, a new major stays capped", () => {
   process.env.SEMI_UI_TAGS = TAGS;
+  process.env.SEMI_PLUGIN_VERSION = "1.0.0";
   try {
     const r = resolveTargetSpec({ range: ">=0.24.0 <1.0.0" });
     assert.equal(r.version, "0.26.1");
@@ -168,9 +169,35 @@ test("resolveTargetSpec: >=0.24.0 <1.0.0 gets the latest 0.x, a new major stays 
     assert.equal(r.limited, true);
     assert.equal(resolveTargetSpec({ range: "^0.24.0" }).version, "0.24.1");
     assert.equal(resolveTargetSpec().version, "1.0.0");
+    assert.equal(resolveTargetSpec().pluginBehind, false);
   } finally {
     delete process.env.SEMI_UI_TAGS;
+    delete process.env.SEMI_PLUGIN_VERSION;
   }
+});
+
+test("resolveTargetSpec: never newer than the plugin's own version (the marketplace pins the plugin to its tag)", () => {
+  process.env.SEMI_UI_TAGS = TAGS;
+  process.env.SEMI_PLUGIN_VERSION = "0.26.1";
+  try {
+    const r = resolveTargetSpec();
+    assert.equal(r.version, "0.26.1");
+    assert.equal(r.spec, `${GITHUB_SPEC_BASE}#v0.26.1`);
+    assert.equal(r.newest, "1.0.0");
+    assert.equal(r.pluginBehind, true);
+    assert.equal(r.limited, false);
+    assert.equal(resolveTargetSpec({ range: "^0.24.0" }).version, "0.24.1");
+    assert.equal(resolveTargetSpec({ range: "^0.24.0" }).limited, true);
+  } finally {
+    delete process.env.SEMI_UI_TAGS;
+    delete process.env.SEMI_PLUGIN_VERSION;
+  }
+});
+
+test("pluginVersion: the version in plugin/.claude-plugin/plugin.json", () => {
+  delete process.env.SEMI_PLUGIN_VERSION;
+  const manifest = JSON.parse(readFileSync(join(PLUGIN_ROOT, ".claude-plugin/plugin.json"), "utf8"));
+  assert.equal(pluginVersion(), manifest.version);
 });
 
 test("update.mjs: installed 0.26.0 + brand ^0.24.0 stays 0.26.0 and warns", { skip: process.platform === "win32" }, () => {
@@ -194,6 +221,42 @@ test("update.mjs: brand >=0.24.0 <1.0.0 moves to the latest 0.x, never to 1.0.0"
     const pm = fakePm(root, "npm", 0);
     runBrandUpdate(root, pm);
     assert.match(readFileSync(pm.log, "utf8"), /@semi\/ui@github:hoanghuynh296\/semi-nextjs-codebase#v0\.26\.1/);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+/** An npm app on installed @semi/ui `installed`, no brand kit; the remote has TAGS. */
+function plainApp(installed) {
+  const root = tmp();
+  write(join(root, "package-lock.json"), "{}\n");
+  write(join(root, "package.json"), json({ name: "app", dependencies: { next: "15.0.0", react: "19.0.0", "@semi/ui": `github:hoanghuynh296/semi-nextjs-codebase#v${installed}` } }));
+  write(join(root, "node_modules/@semi/ui/package.json"), json({ name: "@semi/ui", version: installed }));
+  return root;
+}
+
+test("update.mjs: a plugin pinned to 0.26.1 moves the app to 0.26.1, not 1.0.0, and says to update the plugin", { skip: process.platform === "win32" }, () => {
+  const root = plainApp("0.24.0");
+  try {
+    const pm = fakePm(root, "npm", 0);
+    const r = runBrandUpdate(root, pm, "0.26.1");
+    assert.match(readFileSync(pm.log, "utf8"), /#v0\.26\.1/);
+    assert.doesNotMatch(readFileSync(pm.log, "utf8"), /#v1\.0\.0/);
+    assert.match(r.stdout, /plugin semi-design này viết cho 0\.26\.1/);
+    assert.match(r.stdout, /\/plugin marketplace update semi-marketplace/);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("update.mjs: an app already newer than the plugin is never downgraded", { skip: process.platform === "win32" }, () => {
+  const root = plainApp("1.0.0");
+  try {
+    const pm = fakePm(root, "npm", 0);
+    const r = runBrandUpdate(root, pm, "0.26.1");
+    assert.match(r.stdout, /KHÔNG hạ cấp, giữ 1\.0\.0/);
+    assert.match(r.stdout, /Cập nhật plugin/);
+    assert.ok(!existsSync(pm.log), "no install ran");
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
