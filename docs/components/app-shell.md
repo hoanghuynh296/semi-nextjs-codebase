@@ -370,7 +370,7 @@ export default function AppShellSubmenu() {
 | `shortcuts` | `boolean` | `true` | ⌥ / Alt + 1…9 opens the nth nav item (⌘ / Ctrl + digit in an installed app). Default true. |
 | `mobileNav` | `'drawer' \| 'tabs'` |  | Phone navigation: `drawer` (a full-screen menu from the header's menu button) or `tabs` (MobileTabBar, the items in `mobileTabIds`). Default: `tabs` when `mobileTabIds` is set, else `drawer`. |
 | `mobileTabIds` | `string[]` |  | With `mobileNav="tabs"`: the ids of the items on the tab bar (up to 5; the rest go in its More sheet). |
-| `storageKey` | `string` | `"semi-nav"` | localStorage key of the user's collapse choice ("rail" / "full"; one value for every width). |
+| `storageKey` | `string` | `"semi-nav"` | localStorage key of the user's collapse choice ("rail" / "full"; one value for every width). A 0.x value ("1" / "0", in this key or in the old default key `semi_sidebar_collapsed`) is upgraded once on load. |
 | `children` * | `React.ReactNode` |  |  |
 | `containerClassName` | `string` | `""` | Classes added to the page container inside the content card. |
 
@@ -434,7 +434,7 @@ then the theme (Light / Dark / System), the app's items and sign-out.
 - Slots (mainAction, header.middle / actions / account) are an element or a function of { collapsed, rail } rendered as one stable component: it may call hooks and keeps its state across a collapse, a resize and a route change. rail is exact after mount only.
 - railBelow (default 1280, at least 1024) sets where the nav starts expanded; between md and lg it is always the rail. railWidth (default 72) sets the rail width.
 - page="fixed": the card does not scroll; give the page h-full min-h-0 flex flex-col and let its panels scroll. flush: no centred max-width container or padding.
-- 1.0 breaking: create → mainAction and utilities → tools (the 1.0.0-app-shell migration renames them); account / footer are gone from the nav (move the account to header.account); the stored collapse key is now semi-nav.
+- 1.0 breaking: create → mainAction and utilities → tools (the 1.0.0-app-shell migration renames them); account / footer are gone from the nav (move the account to header.account); the stored collapse key is now semi-nav (a 0.x choice is upgraded once on load).
 - Phones use the drawer (the header's menu button) unless the app sets mobileNav="tabs", with mobileTabIds naming the items on MobileTabBar. In the drawer a parent with its own href is the first row of its level.
 - Sub-items (children) open under their parent while the parent or one of them is the activeId. The rail and widths below lg never show them: read useAppShell().submenuVisible and give the page its own picker when it is false.
 - Pinned items in the rail: give each a distinct icon, or none so the rail shows its initials (shortLabel to choose them).

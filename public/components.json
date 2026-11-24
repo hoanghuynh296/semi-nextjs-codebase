@@ -2951,7 +2951,7 @@
       "kind": "function",
       "module": "src/AppShell.tsx",
       "client": true,
-      "summary": "Sets the stored nav choice on <html> before the first paint, so the server HTML's width is the user's."
+      "summary": "Sets the stored nav choice on <html> before the first paint, so the server HTML's width is the user's (the rules of `readNavChoice`)."
     },
     {
       "name": "isoDay",
@@ -3737,7 +3737,7 @@
       "kind": "constant",
       "module": "styles/surfaces.ts",
       "client": false,
-      "summary": "`FormActions` on a page: sticks to the bottom of the scrolling page, over the page background, with a line above. The component adds the safe-area padding and lifts it above the on-screen keyboard (`bottom`)."
+      "summary": "`FormActions` on a page: sticks to the bottom of the scrolling page, over the content card (`bg-panel`), with a line above. The component adds the safe-area padding and lifts it above the on-screen keyboard (`bottom`)."
     },
     {
       "name": "FIELD_LABEL",
@@ -3793,7 +3793,7 @@
       "kind": "constant",
       "module": "styles/surfaces.ts",
       "client": false,
-      "summary": "The content card: `panel`, radius 16 from sm, flush with the column, 4px above its bottom, no border. Inside it `bg-app` paints the card's colour, so sticky strips (STICKY_TOOLBAR) match the card."
+      "summary": "The content card: `panel`, radius 16 from sm, flush with the column, 4px above its bottom, no border. Sticky strips inside it (STICKY_TOOLBAR, FORM_ACTIONS_STICKY, AppHeader, StickyContextBar) paint `bg-panel`, the card's colour."
     },
     {
       "name": "SHELL_ASIDE",

@@ -958,6 +958,162 @@ test("AppShell nav shortcuts (#144): holding Alt shows the numbers, Alt + digit 
   await page.keyboard.up("Alt");
 });
 
+test("AppShell nav shortcuts (#144, review): an app handler that took the key wins, a real contenteditable keeps it, ⌘ / Ctrl + digit only in an installed app", async ({ browser }) => {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await open(page, "/components/button/", "dark");
+  const aside = page.locator("aside[data-semi-nav-panel]");
+  await expect(aside.getByRole("link", { name: "Giới thiệu" })).toHaveAttribute("title", /\((Alt\+1|⌥1)\)$/);
+  // defaultPrevented: an app's own handler (document, before the shell's window listener) took Alt + 2
+  await page.evaluate(() => {
+    (window as unknown as { __take?: (e: KeyboardEvent) => void }).__take = (e: KeyboardEvent) => e.code === "Digit2" && e.altKey && e.preventDefault();
+    document.addEventListener("keydown", (window as unknown as { __take: (e: KeyboardEvent) => void }).__take);
+  });
+  await page.keyboard.down("Alt");
+  await page.keyboard.press("Digit2");
+  await page.keyboard.up("Alt");
+  await page.waitForTimeout(300);
+  await expect(page).toHaveURL(/\/components\/button\/$/);
+  await page.evaluate(() => document.removeEventListener("keydown", (window as unknown as { __take: (e: KeyboardEvent) => void }).__take));
+  // a real contenteditable (an editor) keeps Alt + digit, typed by the keyboard
+  await page.evaluate(() => {
+    const ed = document.createElement("div");
+    ed.contentEditable = "true";
+    ed.id = "ed";
+    ed.textContent = "x";
+    document.querySelector("main")!.prepend(ed);
+  });
+  await page.locator("#ed").focus();
+  await page.keyboard.press("Alt+Digit2");
+  await page.waitForTimeout(300);
+  await expect(page).toHaveURL(/\/components\/button\/$/);
+  await page.evaluate(() => document.getElementById("ed")!.remove());
+  await page.locator("main h1").first().click();
+  // in a browser tab ⌘ / Ctrl + digit belongs to the browser: no numbers, no navigation
+  const apple = await page.evaluate(() => /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent));
+  const tabMod = apple ? "Meta" : "Control";
+  await page.keyboard.down(tabMod);
+  await expect(aside.locator("[data-nav-num]")).toHaveCount(0);
+  await page.keyboard.up(tabMod);
+  await page.evaluate(() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "2", code: "Digit2", metaKey: /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent), ctrlKey: !/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent), bubbles: true, cancelable: true })));
+  await page.waitForTimeout(300);
+  await expect(page).toHaveURL(/\/components\/button\/$/);
+  await page.close();
+  // installed (display-mode: standalone): ⌘ / Ctrl + digit opens the item and the titles name it
+  const app = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await app.addInitScript(() => {
+    const mm = window.matchMedia.bind(window);
+    window.matchMedia = (q: string) => (q.includes("display-mode: standalone") ? ({ ...mm(q), matches: true, media: q } as MediaQueryList) : mm(q));
+  });
+  await open(app, "/components/button/", "dark");
+  const appAside = app.locator("aside[data-semi-nav-panel]");
+  await expect(appAside.getByRole("link", { name: "Giới thiệu" })).toHaveAttribute("title", /\((Ctrl\+1|⌘1)\)$/);
+  await app.keyboard.down(tabMod);
+  await expect(appAside.locator("[data-nav-num]")).toHaveCount(9);
+  await app.keyboard.up(tabMod);
+  await app.evaluate(() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "2", code: "Digit2", metaKey: /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent), ctrlKey: !/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent), bubbles: true, cancelable: true })));
+  await expect(app).toHaveURL(/\/components\/$/);
+  await app.close();
+});
+
+test("AppShell rail range (#144, review): exactly 1279px is the default rail, 1280px is expanded", async ({ browser }) => {
+  for (const [width, nav] of [[1279, 72], [1280, 224]] as const) {
+    const page = await browser.newPage({ viewport: { width, height: 900 } });
+    await open(page, "/demo/app-shell/", "dark");
+    const aside = page.locator("aside");
+    await expect(aside).toHaveCSS("width", `${nav}px`);
+    // after mount the toggle agrees with the CSS
+    await expect(aside.getByRole("button", { name: nav === 72 ? "Mở rộng menu" : "Thu gọn menu" })).toBeVisible();
+    await page.close();
+  }
+});
+
+test("AppShell storage (#144, review): a 0.x semi_sidebar_collapsed choice moves to semi-nav once, before paint", async ({ browser }) => {
+  for (const [old, want, width] of [["1", "rail", 1440], ["0", "full", 1100]] as const) {
+    const page = await browser.newPage({ viewport: { width, height: 900 } });
+    await page.addInitScript((v) => {
+      if (!sessionStorage.getItem("seeded")) {
+        sessionStorage.setItem("seeded", "1");
+        localStorage.removeItem("semi-nav");
+        localStorage.setItem("semi_sidebar_collapsed", v);
+      }
+      new MutationObserver((_, obs) => {
+        const el = document.querySelector("aside");
+        if (el) {
+          (window as unknown as { __firstNavWidth?: number }).__firstNavWidth = el.getBoundingClientRect().width;
+          obs.disconnect();
+        }
+      }).observe(document, { childList: true, subtree: true });
+    }, old);
+    await open(page, "/demo/app-shell/", "dark");
+    expect(await page.evaluate(() => (window as unknown as { __firstNavWidth?: number }).__firstNavWidth)).toBe(want === "rail" ? 72 : 224);
+    await expect(page.locator("aside")).toHaveCSS("width", want === "rail" ? "72px" : "224px");
+    expect(await page.evaluate(() => [localStorage.getItem("semi-nav"), localStorage.getItem("semi_sidebar_collapsed")])).toEqual([want, null]);
+    await page.close();
+  }
+  // the new key wins over a stale old one, which is left alone
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await page.addInitScript(() => {
+    localStorage.setItem("semi-nav", "full");
+    localStorage.setItem("semi_sidebar_collapsed", "1");
+  });
+  await open(page, "/demo/app-shell/", "dark");
+  await expect(page.locator("aside")).toHaveCSS("width", "224px");
+  expect(await page.evaluate(() => localStorage.getItem("semi-nav"))).toBe("full");
+  await page.close();
+});
+
+test("AppShell phone touch targets (#144, review): menu button, account avatar and every drawer row are 44px at 430", async ({ browser }) => {
+  const page = await browser.newPage({ viewport: { width: 430, height: 900 }, hasTouch: true });
+  await open(page, "/demo/app-shell/", "light");
+  const header = page.locator("header").first();
+  const menu = header.getByRole("button", { name: "Mở menu" });
+  const avatar = header.getByRole("button", { name: "Tài khoản: Lan Phạm" });
+  for (const target of [menu, avatar]) {
+    const b = (await target.boundingBox())!;
+    expect(b.width).toBeGreaterThanOrEqual(44);
+    expect(b.height).toBeGreaterThanOrEqual(44);
+  }
+  await expect(async () => {
+    await menu.click();
+    await expect(page.getByRole("dialog")).toBeVisible({ timeout: 1000 });
+  }).toPass({ timeout: 15_000 });
+  const rows = await page.getByRole("dialog").evaluate((d) =>
+    [...d.querySelectorAll("a, button")]
+      .filter((el) => (el as HTMLElement).offsetParent !== null)
+      .map((el) => ({ name: (el.getAttribute("aria-label") || el.textContent || "").trim(), h: Math.round(el.getBoundingClientRect().height) }))
+      .filter((r) => r.h < 44),
+  );
+  expect(rows).toEqual([]);
+  await page.close();
+});
+
+test("AppShell group label (#144, review): 10px / 500, uppercase, normal tracking, faint", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await open(page, "/demo/app-shell/", "dark");
+  const label = page.locator("aside").getByText("Đã ghim", { exact: true });
+  await expect(label).toBeVisible();
+  const style = await label.evaluate((el) => {
+    const c = getComputedStyle(el.parentElement!);
+    return { size: c.fontSize, weight: c.fontWeight, transform: c.textTransform, tracking: c.letterSpacing };
+  });
+  expect({ ...style, tracking: style.tracking === "0px" ? "normal" : style.tracking }).toEqual({ size: "10px", weight: "500", transform: "uppercase", tracking: "normal" });
+});
+
+for (const theme of THEMES) {
+  test(`sticky strips inside the AppShell content card paint the card's colour (#144, review) · ${theme}`, async ({ page }) => {
+    const bg = (sel: string) => page.locator(sel).first().evaluate((el) => getComputedStyle(el).backgroundColor);
+    await open(page, "/components/form-actions/", theme);
+    const card = await bg("main");
+    expect(card).not.toBe(await page.locator("main").evaluate((el) => getComputedStyle(el.parentElement!).backgroundColor));
+    // FormActions on a page: FORM_ACTIONS_STICKY
+    await expect(page.locator("main .sticky.bottom-0").first()).toBeAttached();
+    expect(await bg("main .sticky.bottom-0")).toBe(card);
+    // StickyContextBar: STICKY_TOOLBAR
+    await open(page, "/components/sticky-context-bar/", theme);
+    expect(await bg("main [role=search].sticky")).toBe(await bg("main"));
+  });
+}
+
 for (const theme of THEMES) {
   test(`floating layers (toast, tooltip, menu, drawer) pass contrast · ${theme}`, async ({ page }) => {
     await open(page, "/components/toast/", theme);

@@ -753,8 +753,8 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   `rounded-panel`). The column holds the **RouteHeader** (h60 from `lg`, padding 0 8px / 16px from `sm`, the column's
   full width: crumbs left, an optional `middle` hidden below `md`, `actions` icon buttons 32×32 and the account avatar
   menu right; `middle` and `actions` sit in their own `Suspense`) and under it the **content card** (`bg-panel`,
-  `rounded-panel`, flush with the column, 4px above its bottom, no border; inside it `bg-app` paints the card's colour
-  so sticky strips match). `page="fixed"`: the card does not scroll, its panels do. `flush`: no centred
+  `rounded-panel`, flush with the column, 4px above its bottom, no border; the sticky strips inside it, `STICKY_TOOLBAR`,
+  `FORM_ACTIONS_STICKY`, `AppHeader`, paint `bg-panel`, the card's colour). `page="fixed"`: the card does not scroll, its panels do. `flush`: no centred
   `max-w-[1440px]` container or padding around the page (the page layout decides). `header={false}` drops the row.
 - **Crumbs:** default group (a link: `section.href`, else its first item) › item › sub-item › the record a detail page
   names with `useRecordCrumb(label)`; or `header.crumbs`. Every crumb is `text-chrome` muted 400 with a chevron, the
@@ -766,7 +766,7 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
 - **Nav order:** logo + collapse button (the logo expands the rail at `lg+`) · the **main action** (`mainAction`: an
   ordinary primary button with the app's label and icon, a `Menu` when it has `items`, its icon with a Tooltip in the
   rail; or your own slot) · the groups (`sections`, `pinned`) separated by a 24px spacer with a 1px `bg-raised` line,
-  labels `text-overline` (normal tracking, 500) `text-faint` in an h32 row with optional 16px icon actions (`section.right`) · the
+  labels 10px / 500 uppercase at normal tracking (`text-overline text-tag tracking-normal`) `text-faint` in an h32 row with optional 16px icon actions (`section.right`) · the
   **bottom row** pinned to the bottom (`tools`: 32×32 ghost icon buttons 4px apart with a Tooltip and an optional
   `count` badge, brand-filled, "99+"; `toolsMenu` in a ••• Menu), stacked in the rail. Items are h32, 4px apart,
   `rounded-control`, `text-chrome` 500, icon 16; inactive `text-muted`, hover `bg-item-hover`, active
@@ -774,7 +774,7 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   action and count badges.
 - **Responsive priority:** (1) the rail first: always between `md` and `lg`; between `lg` and `railBelow` (1280 by
   default) it is the default, expanded from it; the user's toggle is one stored value (`storageKey`, "rail" / "full")
-  for every width. The width is CSS (media queries plus the stored choice, set on `<html>` before paint), and what the
+  for every width; a 0.x value ("1" / "0", or the old `semi_sidebar_collapsed` key) is upgraded once on load. The width is CSS (media queries plus the stored choice, set on `<html>` before paint), and what the
   rail hides is a container query on the panel, so the server HTML is exact and nothing remounts when the width
   crosses a breakpoint or the nav collapses. (2) Below `md` a page's sub-nav stacks above its content (T7). (3) Phones
   get the drawer and no frame padding. In the rail every item keeps its name (the label is `sr-only`) and shows it in
@@ -887,7 +887,7 @@ the right. Props: `title`, `productName` (home bar), `logo` / `logoIcon`, `homeH
   green main action (`headerPrimary(enabled)`), disabled until it can run; never a second green button elsewhere on the
   screen (a panel's own action is `BTN_SECONDARY`).
 - **There is no Home button.** Clicking the logo + title returns home in the same tab; pass `onHome` when leaving needs
-  a confirmation. The bar is full width, `h-13`, `bg-app/95 backdrop-blur-xl border-b border-divider`, sticky.
+  a confirmation. The bar is full width, `h-13`, `bg-panel/95 backdrop-blur-xl border-b border-divider`, sticky.
 - Tool apps (an editor around a canvas / 3D view): left `SidePanel` (320 px, collapses to a rail with the sidebar
   icon), sections `p-3 sm:p-3.5 border-b border-divider`, labels `text-ui font-medium text-muted`, rarely used
   options under a collapsed "Tuỳ chọn khác". Floating canvas controls come from `@semi/ui/styles` (`VIEWPORT_TOOLBAR`
@@ -1006,7 +1006,7 @@ it form by form; the four lint rules below are warnings until 1.0.
 
 - **`FormActions`** is the action row: `Huỷ` (ghost) then `Lưu` (edit) or `Tạo` (`create`, a new record) as the primary,
   right-aligned, with any destructive action (`destructive`, a `variant="danger"` button) alone on the left. On a page it
-  is **sticky** at the bottom of the page (`FORM_ACTIONS_STICKY`: `sticky bottom-0 z-sticky bg-app`, a line above), lifted
+  is **sticky** at the bottom of the page (`FORM_ACTIONS_STICKY`: `sticky bottom-0 z-sticky bg-panel`, a line above), lifted
   above the on-screen keyboard (it follows `visualViewport`) and padded by the safe-area inset; buttons are `h-11` below
   `sm`. In a `Modal` pass `placement="modal"` and put it in `footer`; the primary is then `type="button"` with `onSubmit`
   (the footer sits outside the form). Inside a `<form>` leave `onSubmit` off: the primary submits, so Enter works.
@@ -4750,7 +4750,7 @@ under its field (the summary renders nothing), so a form never says the same thi
 ## Notes
 
 - Order: [destructive … ] Huỷ (ghost) Lưu (primary), right-aligned. "Tạo" (`create`) when the form makes something new, "Lưu" when it edits. Page forms are at most `max-w-2xl` (`FORM_PAGE`), labels above the fields, required fields marked `*` (Field `required`).
-- Sticky: on a page FormActions is `sticky bottom-0` in the page's scroll area, over `bg-app` with a line above, lifted above the keyboard (visualViewport) and padded by the safe-area inset. A page that scrolls inside an `overflow` box keeps the bar at the end of that box. In a Modal pass `placement="modal"` as the footer.
+- Sticky: on a page FormActions is `sticky bottom-0` in the page's scroll area, over the content card (`bg-panel`) with a line above, lifted above the keyboard (visualViewport) and padded by the safe-area inset. A page that scrolls inside an `overflow` box keeps the bar at the end of that box. In a Modal pass `placement="modal"` as the footer.
 - Validation timing: nothing while a field is first filled, its error on blur, then on every change (it clears the moment it is fixed). On submit `form.validate()` touches every field. One error shows only under its field; two or more also show a FormErrorSummary above FormActions.
 - Guard: `dirty` must be false right after a successful save, before you navigate on. It covers reload and tab close (beforeunload), link clicks and back / forward; for a navigation your own code starts (router.push after a button, a Huỷ that goes back) wrap it: `confirmLeave(() => router.back())`. While dirty one history entry is added so back can be asked about; an agreed leave drops it first (Back stays one press, nothing asks twice), and after a save it is a spent marker: navigate on with `confirmLeave(() => router.push(x))` (clean form, no question; the spent entry is popped first so Back is one press).
 - Texts (Huỷ, Lưu, Tạo, "Bạn có thay đổi chưa lưu…", Rời đi, Ở lại, "Có n mục cần sửa") are Vietnamese by default and come from SemiLocaleProvider. Mount ConfirmHost once in the root layout (useUnsavedGuard asks through it).
@@ -7844,7 +7844,7 @@ export default function AppShellSubmenu() {
 | `shortcuts` | `boolean` | `true` | ⌥ / Alt + 1…9 opens the nth nav item (⌘ / Ctrl + digit in an installed app). Default true. |
 | `mobileNav` | `'drawer' \| 'tabs'` |  | Phone navigation: `drawer` (a full-screen menu from the header's menu button) or `tabs` (MobileTabBar, the items in `mobileTabIds`). Default: `tabs` when `mobileTabIds` is set, else `drawer`. |
 | `mobileTabIds` | `string[]` |  | With `mobileNav="tabs"`: the ids of the items on the tab bar (up to 5; the rest go in its More sheet). |
-| `storageKey` | `string` | `"semi-nav"` | localStorage key of the user's collapse choice ("rail" / "full"; one value for every width). |
+| `storageKey` | `string` | `"semi-nav"` | localStorage key of the user's collapse choice ("rail" / "full"; one value for every width). A 0.x value ("1" / "0", in this key or in the old default key `semi_sidebar_collapsed`) is upgraded once on load. |
 | `children` * | `React.ReactNode` |  |  |
 | `containerClassName` | `string` | `""` | Classes added to the page container inside the content card. |
 
@@ -7908,7 +7908,7 @@ then the theme (Light / Dark / System), the app's items and sign-out.
 - Slots (mainAction, header.middle / actions / account) are an element or a function of { collapsed, rail } rendered as one stable component: it may call hooks and keeps its state across a collapse, a resize and a route change. rail is exact after mount only.
 - railBelow (default 1280, at least 1024) sets where the nav starts expanded; between md and lg it is always the rail. railWidth (default 72) sets the rail width.
 - page="fixed": the card does not scroll; give the page h-full min-h-0 flex flex-col and let its panels scroll. flush: no centred max-width container or padding.
-- 1.0 breaking: create → mainAction and utilities → tools (the 1.0.0-app-shell migration renames them); account / footer are gone from the nav (move the account to header.account); the stored collapse key is now semi-nav.
+- 1.0 breaking: create → mainAction and utilities → tools (the 1.0.0-app-shell migration renames them); account / footer are gone from the nav (move the account to header.account); the stored collapse key is now semi-nav (a 0.x choice is upgraded once on load).
 - Phones use the drawer (the header's menu button) unless the app sets mobileNav="tabs", with mobileTabIds naming the items on MobileTabBar. In the drawer a parent with its own href is the first row of its level.
 - Sub-items (children) open under their parent while the parent or one of them is the activeId. The rail and widths below lg never show them: read useAppShell().submenuVisible and give the page its own picker when it is false.
 - Pinned items in the rail: give each a distinct icon, or none so the rail shows its initials (shortLabel to choose them).
@@ -8937,7 +8937,7 @@ export default function StickyContextBarListPage() {
   const active = filters.filter((f) => f.selected.length > 0).length;
   return (
     // the scrolling content panel of the page: STICKY_TOOLBAR bleeds into its side padding (px-4 sm:px-6, as AppShell's)
-    <div className="w-full min-w-0 h-96 overflow-y-auto overscroll-contain rounded-card bg-app px-4 sm:px-6 pt-2.5 pb-4">
+    <div className="w-full min-w-0 h-96 overflow-y-auto overscroll-contain rounded-card bg-panel px-4 sm:px-6 pt-2.5 pb-4">
       {/* the title row scrolls away with the page's action; the bar under it stays */}
       <PageTitle
         title="Nhà cung cấp"

@@ -85,7 +85,7 @@ export default function StickyContextBarListPage() {
   const active = filters.filter((f) => f.selected.length > 0).length;
   return (
     // the scrolling content panel of the page: STICKY_TOOLBAR bleeds into its side padding (px-4 sm:px-6, as AppShell's)
-    <div className="w-full min-w-0 h-96 overflow-y-auto overscroll-contain rounded-card bg-app px-4 sm:px-6 pt-2.5 pb-4">
+    <div className="w-full min-w-0 h-96 overflow-y-auto overscroll-contain rounded-card bg-panel px-4 sm:px-6 pt-2.5 pb-4">
       {/* the title row scrolls away with the page's action; the bar under it stays */}
       <PageTitle
         title="Nhà cung cấp"
