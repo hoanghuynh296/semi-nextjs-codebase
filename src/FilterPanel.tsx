@@ -242,7 +242,7 @@ export function FilterPanel({
           <button
             type="button"
             onClick={onClose}
-            className="w-full h-12 rounded-control bg-primary text-on-primary text-ui font-semibold hover:bg-primary-hover outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-focus cursor-pointer"
+            className="w-full h-12 rounded-control bg-primary text-on-primary text-ui font-semibold hover:bg-primary-hover outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus cursor-pointer"
           >
             {resultCount === undefined ? t.close : t.showResults(resultCount)}
           </button>

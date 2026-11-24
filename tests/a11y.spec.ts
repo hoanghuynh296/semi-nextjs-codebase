@@ -34,6 +34,18 @@ const CASES: [string, string, string][] = [
   ],
   ["focus-ring", `<button style="height:34px;outline:none;border:0;background:#eee;color:#222">Lưu</button>`, `<button ${BTN}>Lưu</button>`],
   [
+    // outline-none + focus-visible:outline-2 (Tailwind 4): the width changes, the style stays none, nothing is drawn
+    "focus-ring",
+    `<style>.o{outline:none}.o:focus-visible{outline-width:2px;outline-color:#111}</style><button class="o" style="height:34px;border:0;background:#eee;color:#222">Lưu</button>`,
+    `<style>.o{outline:none}.o:focus-visible{outline-style:solid;outline-width:2px;outline-color:#111}</style><button class="o" style="height:34px;border:0;background:#eee;color:#222">Lưu</button>`,
+  ],
+  [
+    // a hit area translated away from its control: the control is still 8px, crowded by its neighbours
+    "target-size",
+    `<style>.m{position:relative}.m::before{content:"";position:absolute;top:50%;left:50%;width:24px;height:24px;translate:40px -50%}</style><div>${"<button class='ring m' aria-label='Trang' style='width:8px;height:8px;margin:2px;padding:0;border:0;background:#888'></button>".repeat(3)}</div>`,
+    `<style>.m{position:relative}.m::before{content:"";position:absolute;top:50%;left:50%;width:24px;height:24px;translate:-50% -50%}</style><div>${"<button class='ring m' aria-label='Trang' style='width:8px;height:8px;margin:2px;padding:0;border:0;background:#888'></button>".repeat(3)}</div>`,
+  ],
+  [
     "target-size",
     `<div>${"<button class='ring' aria-label='Trang' style='width:8px;height:8px;margin:2px;padding:0;border:0;background:#888'></button>".repeat(3)}</div>`,
     `<div>${"<button class='ring' aria-label='Trang' style='width:8px;height:8px;margin:10px;padding:0;border:0;background:#888'></button>".repeat(3)}</div>`,

@@ -281,6 +281,9 @@ export function a11yAudit(opts) {
           const x = er.left + e.clientLeft + parseFloat(s.left) + tx + len(ux, w);
           const y = er.top + e.clientTop + parseFloat(s.top) + ty + len(uy, h);
           if ([x, y, w, h].some(isNaN)) continue;
+          // a hit area moved off its control (a wrong translate) does not take the control's clicks: not counted
+          const [cx, cy] = [r.left + r.width / 2, r.top + r.height / 2];
+          if (cx < x || cx > x + w || cy < y || cy > y + h) continue;
           [l, t, rt, b] = [Math.min(l, x), Math.min(t, y), Math.max(rt, x + w), Math.max(b, y + h)];
         }
       }
@@ -323,12 +326,14 @@ export function a11yAudit(opts) {
   // ─── Focus visible (2.4.7) ──────────────────────────────────────────────────────────────────────────────────────
   if (on("focus-ring")) {
     const FOCUSABLE = "a[href], button, input:not([type=hidden]), select, textarea, summary, [tabindex]:not([tabindex='-1']), [contenteditable=true]";
-    const PROPS = ["outlineStyle", "outlineWidth", "outlineColor", "boxShadow", "borderTopColor", "borderBottomColor", "borderLeftColor", "backgroundColor", "color", "textDecorationLine"];
+    const PROPS = ["boxShadow", "borderTopColor", "borderBottomColor", "borderLeftColor", "backgroundColor", "color", "textDecorationLine"];
+    // An outline shows only with a style and a width: `outline-none` + `outline-2` (style none, width 2px) draws nothing.
+    const outline = (s) => (s.outlineStyle === "none" || !(parseFloat(s.outlineWidth) > 0) ? "no outline" : `${s.outlineStyle} ${s.outlineWidth} ${s.outlineColor}`);
     const freeze = document.createElement("style");
     freeze.textContent = "*,*::before,*::after{transition:none!important;animation:none!important}";
     document.head.appendChild(freeze);
     const before = document.activeElement;
-    const snap = (els) => els.map((e) => PROPS.map((p) => getComputedStyle(e)[p]).join("|") + "|" + ["::before", "::after"].map((ps) => getComputedStyle(e, ps).boxShadow + getComputedStyle(e, ps).outlineStyle + getComputedStyle(e, ps).opacity).join("|"));
+    const snap = (els) => els.map((e) => outline(getComputedStyle(e)) + "|" + PROPS.map((p) => getComputedStyle(e)[p]).join("|") + "|" + ["::before", "::after"].map((ps) => getComputedStyle(e, ps).boxShadow + getComputedStyle(e, ps).outlineStyle + getComputedStyle(e, ps).opacity).join("|"));
     let n = 0;
     for (const el of inScope(FOCUSABLE)) {
       if (n >= 300) break;

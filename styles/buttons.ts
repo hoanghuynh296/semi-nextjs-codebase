@@ -9,7 +9,7 @@
  * BTN_HIT: Button adds the phone touch size; a BTN_* on a Link adds BTN_HIT itself.
  */
 const CORE =
-  "inline-flex items-center justify-center gap-1.5 rounded-control font-medium transition-hover outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus cursor-pointer shrink-0 whitespace-nowrap " +
+  "inline-flex items-center justify-center gap-1.5 rounded-control font-medium transition-hover outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus cursor-pointer shrink-0 whitespace-nowrap " +
   "disabled:cursor-not-allowed disabled:!bg-subtle-button disabled:!text-muted disabled:!border-transparent disabled:active:!scale-100";
 const BASE = `${CORE} h-control text-ui`;
 

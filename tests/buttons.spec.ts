@@ -58,3 +58,79 @@ test("Button badge: the drawn count is aria-hidden; with an aria-label the label
   await expect(ex.getByRole("button", { name: "Thông báo, 3 chưa đọc", exact: true })).toBeVisible();
   await expect(ex.getByRole("button", { name: "Duyệt (2)", exact: true })).toBeVisible();
 });
+
+// #162: CodeBlock's copy button at 44px on a touch phone stays inside its title row (above the border) and, with no
+// title, inside the block and clear of the code.
+test("CodeBlock on a touch phone: the 44px copy button stays in its title row, or clear of the code with no title (#162)", async ({ browser }) => {
+  const page = await browser.newPage({ viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true });
+  await page.goto("/components/code-block/");
+  const ex = page.locator('[data-example="code-block/basic"]');
+  const [plain, titled] = [ex.locator("pre").nth(0).locator(".."), ex.locator("pre").nth(1).locator("..")];
+  // titled: the row holds the button; the border-b sits under it
+  const head = titled.locator("div.border-b").first();
+  const [h, b1] = [await head.boundingBox(), await head.getByRole("button").boundingBox()];
+  expect(Math.min(b1!.width, b1!.height)).toBeGreaterThanOrEqual(44);
+  expect(b1!.y).toBeGreaterThanOrEqual(h!.y - 0.5);
+  expect(b1!.y + b1!.height).toBeLessThanOrEqual(h!.y + h!.height - 1 + 0.5); // above the 1px border
+  // plain: the button sits inside the block, the code's padding keeps text clear of it
+  const [box, b2] = [await plain.boundingBox(), await plain.getByRole("button").boundingBox()];
+  expect(Math.min(b2!.width, b2!.height)).toBeGreaterThanOrEqual(44);
+  expect(b2!.y + b2!.height).toBeLessThanOrEqual(box!.y + box!.height + 0.5);
+  const textRight = await plain.locator("pre").evaluate((el) => el.getBoundingClientRect().right - parseFloat(getComputedStyle(el).paddingRight));
+  expect(textRight).toBeLessThanOrEqual(b2!.x + 0.5);
+  await page.close();
+});
+
+const outlined = (el: Element) => {
+  const s = getComputedStyle(el);
+  return `${s.outlineStyle} ${s.outlineWidth}`;
+};
+
+// #162: hand-made brand buttons take Button's focus look (2px outline), not the old ring or none.
+test("FilterPanel apply and NumPadPopup confirm: a 2px focus outline, like Button (#162)", async ({ browser }) => {
+  const page = await browser.newPage({ viewport: { width: 430, height: 932 }, isMobile: true, hasTouch: true });
+  await page.goto("/components/filter-panel/");
+  const open = page.locator('[data-example="filter-panel/phone"]').getByRole("button", { name: /^Bộ lọc/ });
+  const panel = page.getByRole("dialog", { name: "Bộ lọc" });
+  await expect(async () => {
+    await open.click();
+    await expect(panel).toBeVisible({ timeout: 500 });
+  }).toPass({ timeout: 10_000 });
+  const apply = panel.getByRole("button", { name: /kết quả|^Đóng$/ }).last();
+  await page.keyboard.press("Tab"); // keyboard modality, so focus() shows :focus-visible
+  await apply.focus();
+  expect(await apply.evaluate(outlined)).toBe("solid 2px");
+
+  await page.goto("/components/number-input/");
+  const input = page.locator('[data-example="number-input/basic"] input');
+  const pad = page.getByRole("dialog");
+  await expect(async () => {
+    await input.click();
+    await expect(pad).toBeVisible({ timeout: 500 });
+  }).toPass({ timeout: 10_000 });
+  const ok = pad.getByRole("button", { name: "Xác nhận" });
+  await page.keyboard.press("Tab");
+  await ok.focus();
+  expect(await ok.evaluate(outlined)).toBe("solid 2px");
+  await page.close();
+});
+
+// #162: Button's focus outline is drawn (outline-solid with outline-2: Tailwind 4's outline-none sets the style to none).
+test("Button: a visible 2px focus outline on every variant and on a MODAL_* (modal size) button", async ({ page }) => {
+  await page.goto("/components/button/");
+  // the first row of the variants example: one enabled Button per variant (the second row is disabled)
+  const VARIANTS = ["Làm mới", "Mời", "Thêm", "Chia sẻ", "Xem thêm", "Lưu", "Gửi", "Xoá"];
+  const variants = page.locator('[data-example="button/variants"]');
+  const modal = page.locator('[data-example="button/sizes"]').getByRole("button", { name: "Xác nhận", exact: true });
+  const buttons = [...VARIANTS.map((name) => variants.getByRole("button", { name, exact: true }).first()), modal];
+  await expect(buttons[0]).toBeVisible();
+  for (const btn of buttons) {
+    await page.keyboard.press("Tab"); // keyboard modality, so focus() shows :focus-visible
+    await btn.focus();
+    const name = await btn.innerText();
+    expect(await btn.evaluate(outlined), name).toBe("solid 2px");
+    // drawn in a colour, not transparent
+    expect(await btn.evaluate((el) => getComputedStyle(el).outlineColor), name).not.toMatch(/rgba\(0, 0, 0, 0\)|transparent/);
+  }
+  expect(buttons.length).toBe(9);
+});
