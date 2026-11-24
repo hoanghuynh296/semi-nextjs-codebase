@@ -187,7 +187,8 @@ The order it shows is `sortRows(searchRows(rows, columns, search), columns, sort
 | `selectable` | `boolean` | `false` | Add a checkbox column. |
 | `selected` | `string[]` |  |  |
 | `onSelectedChange` | `(ids: string[]) => void` |  |  |
-| `bulkActions` | `(ids: string[]) => ReactNode` |  | Shown above the table while rows are selected: buttons that act on the selection. |
+| `activeRowId` | `null \| string` |  | ID of the currently open record (`useDetailParam().openId`): paints that row `bg-item-selected` (`aria-current="true"`), distinct from checked rows (`bg-item-checked`). |
+| `bulkActions` | `(ids: string[]) => ReactNode` |  | Shown above the table while rows are selected: buttons that act on the selection. On 1.0 list pages (#149), prefer `FilterChipRow` / `PhoneFilterBar` `selection` instead so checking a row never pushes the list down. |
 | `pageSize` | `number` | `0` | Rows per page; 0 shows all rows. |
 | `loading` | `boolean` | `false` |  |
 | `empty` | `React.ReactNode` |  | Shown when there are no rows (or none match the search). |

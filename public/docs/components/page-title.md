@@ -1,6 +1,6 @@
 # Page title
 
-PageTitle is the display title of a page (text only), with the page's own action on its row (`actions`). PageTabsTitle is kept as a deprecated alias for 2–4 sibling tabs — new screens use TextTabs.
+PageTitle is the 18 / 400 UI sans heading of a work page on the same row as the page's main action (`actions`), with `variant="reading"` (44 / 500 display face, text-title-xl) for one-column reading pages only. PageTabsTitle is kept as a deprecated alias for 2–4 sibling tabs — new screens use TextTabs.
 
 ## When to use
 
@@ -43,20 +43,32 @@ export default function PageTitleBasic() {
 import { Button, PageTitle, RefreshButton, toast } from "@semi/ui";
 
 export default function PageTitleActions() {
-  // a list page's title row: the page's one action on the right; below sm it wraps under the title
+  // 1.0 work-page title row: 18/400 UI sans title on the same row as the page's inverse main action
   return (
     <PageTitle
       title="Yêu cầu mua"
       actions={
         <>
           <RefreshButton onRefresh={() => new Promise((r) => setTimeout(r, 600))} />
-          <Button variant="primary" icon="plus" onClick={() => toast({ title: "Tạo yêu cầu" })}>
+          <Button variant="inverse" icon="plus" onClick={() => toast({ title: "Tạo yêu cầu" })}>
             Tạo yêu cầu
           </Button>
         </>
       }
     />
   );
+}
+```
+
+### Reading page (44 / 500 display)
+
+```tsx
+"use client";
+
+import { PageTitle } from "@semi/ui";
+
+export default function PageTitleReading() {
+  return <PageTitle title="Khám phá mẫu in" variant="reading" />;
 }
 ```
 
@@ -87,13 +99,15 @@ export default function PageTabsTitleBasic() {
 
 ### PageTitle
 
-The page's display heading (its `h1`). With `actions`, the title row of a list page: the title on the left, the
-page's action on the right; below `sm` the actions wrap onto their own row under the title.
+The page's heading (`h1`). By default (`variant="work"`) it is 18 / 400 in the UI sans on the same row as `actions`
+(wrapping only when the row runs out of room). Pass `variant="reading"` on a one-column reading page for the 44 / 500
+display title (`text-title-xl`). Inside `<Page title={…}>`, `<Page>` owns the spacing below this row.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `title` * | `React.ReactNode` |  |  |
-| `actions` | `React.ReactNode` |  | The page's own action at the right end of the title row: one `<Button variant="primary">` (or `inverse`) with an icon and text, optionally a `RefreshButton` before it. More actions go in a ⋯ `Menu` as the last item. Below `sm` they wrap under the title. Leave it out on a page whose `SubpageToolbar` carries the actions. |
+| `actions` | `React.ReactNode` |  | The page's own action at the right end of the title row: one `<Button variant="inverse">` (or `primary` when it is the page's one commit action) with an icon and text, optionally a `RefreshButton` or `•••` `Menu` before it. Leave it out on a page whose `SubpageToolbar` carries the actions. |
+| `variant` | `'work' \| 'reading'` | `"work"` | `"work"` (default): 18 / 400 UI sans (`text-figure`), for lists, workspaces and two-column pages. `"reading"`: 44 / 500 display face (`text-title-xl`, lh 1.2, −0.01em), for one-column reading pages only. |
 | `className` | `string` | `""` |  |
 
 ### PageTabsTitle

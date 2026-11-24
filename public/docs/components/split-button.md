@@ -99,7 +99,8 @@ export default function SplitButtonSecondary() {
 | `size` | `'sm' \| 'md'` | `"md"` |  |
 | `loading` | `boolean` | `false` | The main action is running: spinner and no clicks on the main half; the ▾ stays usable. |
 | `disabled` | `boolean` | `false` | Disables both halves. |
-| `collapseOnPhone` | `boolean` | `true` | Below `sm`, show one button (the icon, or the label with ▾) that opens a menu with the main action first. |
+| `fullWidth` | `boolean` | `false` | Stretch to fill its container (e.g. a `WorkspaceLayout` pinned action): the main half takes `flex-1` while the ▾ keeps its width, and `collapseOnPhone` defaults to `false` so phones keep the full-width split button. |
+| `collapseOnPhone` | `boolean` |  | Below `sm`, show one button (the icon, or the label with ▾) that opens a menu with the main action first. Defaults to `false` when `fullWidth` is set, otherwise `true`. |
 | `className` | `string` |  |  |
 
 ## Accessibility

@@ -120,11 +120,11 @@ cards, list and detail with inShell: what a route loading.tsx renders.
 ```tsx
 import { PageSkeleton } from "@semi/ui";
 
-// The three page shapes of a route loading.tsx (`inShell`: no full-page height or padding).
+// The four page shapes of a route loading.tsx (`inShell`: no full-page height or padding).
 export default function SkeletonShapes() {
   return (
     <div className="flex flex-col gap-6">
-      {(["cards", "list", "detail"] as const).map((shape) => (
+      {(["cards", "list", "detail", "workspace"] as const).map((shape) => (
         <div key={shape} data-shape={shape} className="max-h-56 overflow-hidden">
           <PageSkeleton shape={shape} inShell />
         </div>
@@ -216,14 +216,15 @@ A record's detail panel (a `DetailOverlay`, a side panel, a detail page): title 
 ### PageSkeleton
 
 Whole-page placeholder (Suspense fallbacks, route `loading.tsx`): title row + the shape of the content.
-`cards` (default) = a grid of cards, `list` = a toolbar and table rows, `detail` = a header card and two panels.
+`cards` (default) = a grid of cards, `list` = a toolbar and table rows, `detail` = a header card and two panels,
+`workspace` = a 380px `bg-panel-3` control panel with a bottom action bar beside a result table (stacked below `lg`).
 Pick the shape the real page has, so nothing jumps when the data arrives (§13b).
 `inShell` drops the full-viewport height, background and padding: use it in a route `loading.tsx` (the shell and its
 content slot already give those). Without it the skeleton is a whole page, for a Suspense fallback outside the shell.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `shape` | `'list' \| 'cards' \| 'detail'` | `"cards"` |  |
+| `shape` | `'list' \| 'cards' \| 'detail' \| 'workspace'` | `"cards"` |  |
 | `inShell` | `boolean` | `false` |  |
 
 ### Loading

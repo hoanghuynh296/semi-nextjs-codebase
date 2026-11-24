@@ -34,15 +34,18 @@ test("phone cap: an empty state stays within 40% of a 375×568 screen and, when 
   await page.close();
 });
 
-test("PageSkeleton shapes render the shape of cards, a list and a detail page, without full-page height in the shell", async ({ page }) => {
+test("PageSkeleton shapes render the shape of cards, a list, a detail page and a workspace, without full-page height in the shell", async ({ page }) => {
   await page.goto("/components/skeleton/");
   const cards = page.locator('[data-shape="cards"]');
   const list = page.locator('[data-shape="list"]');
   const detail = page.locator('[data-shape="detail"]');
+  const workspace = page.locator('[data-shape="workspace"]');
   await expect(cards.locator('[role="status"] .shimmer').first()).toBeAttached();
   expect(await cards.locator(".shimmer").count()).toBeGreaterThan(6);
   expect(await list.locator("[role=status] > div").count()).toBe(8);
   expect(await detail.locator(".grid > *").count()).toBe(2);
+  await expect(workspace.locator('[role="status"] .shimmer').first()).toBeAttached();
+  expect(await workspace.locator(".shimmer").count()).toBeGreaterThan(4);
   const h = await cards.evaluate((el) => (el.firstElementChild as HTMLElement).getBoundingClientRect().height);
   expect(h).toBeGreaterThan(0);
   expect(await cards.evaluate((el) => getComputedStyle(el.firstElementChild!).height !== `${innerHeight}px`)).toBe(true);

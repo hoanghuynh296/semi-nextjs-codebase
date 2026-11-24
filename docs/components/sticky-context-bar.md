@@ -130,7 +130,7 @@ phones) stacked as a column. One per page, in place of a SubpageToolbar.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `children` * | `React.ReactNode` |  | Usually SearchPill, then FilterChipRow (PhoneFilterBar on phones), then ResultLine. |
+| `children` * | `React.ReactNode` |  | Usually SearchPill, then FilterChipRow (PhoneFilterBar on phones). No ResultLine in 1.0: the list sits 16px under the filter row. |
 | `label` | `string` |  | Accessible name of the region ("Tìm và lọc khách hàng"); leave it out when the bar holds only a search. |
 | `className` | `string` |  |  |
 

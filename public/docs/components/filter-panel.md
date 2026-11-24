@@ -73,8 +73,9 @@ export default function FilterPanelPhone() {
 ### PhoneFilterBar
 
 The filter controls of a phone list page in one row: an optional type menu (the page's views), "Bộ lọc" with the
-active count (opens FilterPanel) and an optional settings button (sort and view). Show it below `md` in place of
-FilterChipRow (`md:hidden` / `max-md:hidden` around each).
+active count (opens FilterPanel), optional `sort` menu, optional `selection` ("Chọn" → replaces the row at the same
+`h-11` height with `"n đã chọn"`, •••, one bulk button and `"Xong"`), and optional settings. Show below `md` in place
+of `FilterChipRow` (`md:hidden` / `max-md:hidden`).
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
@@ -83,6 +84,8 @@ FilterChipRow (`md:hidden` / `max-md:hidden` around each).
 | `activeCount` * | `number` |  | How many filters are on (activeFilterCount); shown on the button. |
 | `onOpenFilters` * | `() => void` |  |  |
 | `filtersOpen` | `boolean` |  | Whether the panel is open (aria-expanded on the button). |
+| `sort` | `SortDef` |  | Sort menu right on the phone filter row (radio items). |
+| `selection` | `ListSelection` |  | Selection mode ("Chọn") and bulk actions replacing the row at the same height (zero list shift). |
 | `onOpenSettings` | `() => void` |  | Opens the sort and view settings; the button shows when given. |
 | `className` | `string` |  |  |
 

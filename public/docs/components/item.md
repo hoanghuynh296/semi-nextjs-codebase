@@ -51,6 +51,11 @@ export default function ItemSettings() {
 | `actions` | `React.ReactNode` |  | Buttons or a Menu at the end (stay clickable on a linked row). |
 | `href` | `string` |  | Make the whole row a link (next/link). |
 | `onClick` | `() => void` |  | Make the whole row a button. |
+| `selectable` | `boolean` | `false` | Show a leading selection checkbox as a sibling control (never nested inside the row link / button). |
+| `checked` | `boolean` | `false` | Checked state in selection mode (`bg-item-checked`). |
+| `onCheckedChange` | `(checked: boolean) => void` |  | Called when the selection checkbox changes. |
+| `selectLabel` | `string` |  | Accessible name for the selection checkbox (defaults to `"Chọn <title>"` when `title` is text). |
+| `selected` | `boolean` | `false` | Open / active record state (`bg-item-selected`, `aria-current="true"`). |
 | `className` | `string` |  |  |
 
 ### ItemGroup

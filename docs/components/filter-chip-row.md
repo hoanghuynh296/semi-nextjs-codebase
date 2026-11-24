@@ -182,8 +182,9 @@ export default function FilterChipRowMany() {
 
 The filter chips of a list page on one line. When they overflow, the row scrolls sideways and ‹ › buttons appear
 (hidden from screen readers and the tab order: every chip is reachable by Tab, which scrolls it into view).
-"Xoá lọc" shows while a filter is on; `leading` (the page's views as Pills) sits before the chips and `trailing`
-(ViewSwitch) at the end, each behind a divider; neither scrolls with the chips.
+"Xoá lọc" shows while a filter is on; `leading` (the page's views as Pills) sits before the chips; `sort`,
+`selection` ("Chọn" → in-place `"n đã chọn"` + bulk actions at the same height) and `trailing` (`ViewSwitch`) sit
+at the right end.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
@@ -191,7 +192,9 @@ The filter chips of a list page on one line. When they overflow, the row scrolls
 | `onChange` * | `(key: string, selected: string[]) => void` |  |  |
 | `onClear` | `() => void` |  | Clears every filter; the "Xoá lọc" button shows while one is on. |
 | `leading` | `React.ReactNode` |  | Before the chips: the page's views (`<Pills>`: Đang mở · Đã đóng · Tất cả), the md+ twin of PhoneFilterBar's `typeItems`. A view is not a filter: "Xoá lọc" leaves it alone. Keep it short (2–5 views); it does not scroll. |
-| `trailing` | `React.ReactNode` |  | Tools at the end of the row: ViewSwitch, a sort that is not in a ResultLine. |
+| `trailing` | `React.ReactNode` |  | Extra tools at the end of the row (e.g. `ViewSwitch`). Replaced in place while `selection` is active. |
+| `sort` | `SortDef` |  | Sort menu at the right end of the filter row (1.0: replaces ResultLine's sort). |
+| `selection` | `ListSelection` |  | Selection mode ("Chọn") and bulk actions replacing the right side at the same height (zero list shift). |
 | `label` | `string` |  | Accessible name of the chip group (default "Bộ lọc"). |
 | `className` | `string` |  |  |
 

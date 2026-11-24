@@ -619,6 +619,7 @@
       "props": [
         "label",
         "orientation",
+        "fullWidth",
         "className",
         "children"
       ],
@@ -637,16 +638,23 @@
       "name": "Card",
       "kind": "component",
       "module": "src/Card.tsx",
-      "client": false,
-      "summary": "With `onClick` the card is a button for keyboards and screen readers too: role=\"button\", in the tab order, Enter and Space click it, FOCUS_RING shows focus (a plain <div onClick> is mouse-only). `active` is then its pressed state. A card that opens another page wraps a next/link around its title instead.",
+      "client": true,
+      "summary": "With `onClick` the card is a button for keyboards and screen readers too: role=\"button\", in the tab order, Enter and Space click it, FOCUS_RING shows focus (a plain <div onClick> is mouse-only). `active` is then its pressed state. With `selectable`, the outer element stays a plain container and renders sibling Checkbox + open button controls so checking and opening never nest interactive elements.",
       "props": [
         "interactive",
         "active",
         "bordered",
         "padding",
+        "selectable",
+        "checked",
+        "onCheckedChange",
+        "selected",
+        "label",
+        "selectLabel",
         "className",
         "onClick",
-        "onKeyDown"
+        "onKeyDown",
+        "children"
       ],
       "doc": "docs/components/card.md"
     },
@@ -1209,6 +1217,7 @@
         "selectable",
         "selected",
         "onSelectedChange",
+        "activeRowId",
         "bulkActions",
         "pageSize",
         "loading",
@@ -1538,13 +1547,15 @@
       "kind": "component",
       "module": "src/FilterChipRow.tsx",
       "client": true,
-      "summary": "The filter chips of a list page on one line. When they overflow, the row scrolls sideways and ‹ › buttons appear (hidden from screen readers and the tab order: every chip is reachable by Tab, which scrolls it into view). \"Xoá lọc\" shows while a filter is on; `leading` (the page's views as Pills) sits before the chips and `trailing` (ViewSwitch) at the end, each behind a divider; neither scrolls with the chips.",
+      "summary": "The filter chips of a list page on one line. When they overflow, the row scrolls sideways and ‹ › buttons appear (hidden from screen readers and the tab order: every chip is reachable by Tab, which scrolls it into view). \"Xoá lọc\" shows while a filter is on; `leading` (the page's views as Pills) sits before the chips; `sort`, `selection` (\"Chọn\" → in-place `\"n đã chọn\"` + bulk actions at the same height) and `trailing` (`ViewSwitch`) sit at the right end.",
       "props": [
         "filters",
         "onChange",
         "onClear",
         "leading",
         "trailing",
+        "sort",
+        "selection",
         "label",
         "className"
       ],
@@ -1555,13 +1566,15 @@
       "kind": "component",
       "module": "src/FilterPanel.tsx",
       "client": true,
-      "summary": "The filter controls of a phone list page in one row: an optional type menu (the page's views), \"Bộ lọc\" with the active count (opens FilterPanel) and an optional settings button (sort and view). Show it below `md` in place of FilterChipRow (`md:hidden` / `max-md:hidden` around each).",
+      "summary": "The filter controls of a phone list page in one row: an optional type menu (the page's views), \"Bộ lọc\" with the active count (opens FilterPanel), optional `sort` menu, optional `selection` (\"Chọn\" → replaces the row at the same `h-11` height with `\"n đã chọn\"`, •••, one bulk button and `\"Xong\"`), and optional settings. Show below `md` in place of `FilterChipRow` (`md:hidden` / `max-md:hidden`).",
       "props": [
         "typeLabel",
         "typeItems",
         "activeCount",
         "onOpenFilters",
         "filtersOpen",
+        "sort",
+        "selection",
         "onOpenSettings",
         "className"
       ],
@@ -1724,6 +1737,11 @@
         "actions",
         "href",
         "onClick",
+        "selectable",
+        "checked",
+        "onCheckedChange",
+        "selectLabel",
+        "selected",
         "className"
       ],
       "doc": "docs/components/item.md"
@@ -1774,6 +1792,46 @@
         "className"
       ],
       "doc": "docs/components/kpi-card.md"
+    },
+    {
+      "name": "ReaderHeader",
+      "kind": "component",
+      "module": "src/ListReader.tsx",
+      "client": true,
+      "summary": "Sticky one-row header of a reader pane (general pattern for mail, tickets, chat; owner decision 2026-11-23): - Left: below-`lg` Back button (wired automatically from `ListReaderLayout`'s `onClose`) + wrapping `title` (never truncated) and optional muted `meta` line underneath. - Right: `[•••]` `Menu` (all secondary / overflow actions) then one main `action`, top-aligned (`items-start`), both buttons at identical `md` (`h-control`) height. - Stays sticky (`sticky top-0 z-sticky bg-app`) while the reader body scrolls underneath.",
+      "props": [
+        "title",
+        "meta",
+        "action",
+        "moreActions",
+        "moreLabel",
+        "onBack",
+        "backLabel",
+        "headingLevel",
+        "className"
+      ],
+      "doc": "docs/components/list-reader.md"
+    },
+    {
+      "name": "ListReaderLayout",
+      "kind": "component",
+      "module": "src/ListReader.tsx",
+      "client": true,
+      "summary": "List + reader layout (#149, #118): a list card on the left and a reader card on the right, each its own independent scroll container (`overflow-y-auto overscroll-contain`), filling the remaining height of `AppShell page=\"fixed\"` / `Page fixed` with zero hand-tuned `calc()`. Drive `open` and `onClose` from `useDetailParam()` (`?open=`, Back closes); pass `recordTitle` to add the open record to `RouteHeader` breadcrumbs via `useRecordCrumb`. Below `lg`, opening an item swaps the reader in place of the list (with `ReaderHeader`'s Back button).",
+      "props": [
+        "list",
+        "reader",
+        "open",
+        "openKey",
+        "onClose",
+        "recordTitle",
+        "empty",
+        "listWidth",
+        "listLabel",
+        "readerLabel",
+        "className"
+      ],
+      "doc": "docs/components/list-reader.md"
     },
     {
       "name": "Markdown",
@@ -1997,6 +2055,73 @@
       "doc": "docs/components/menubar.md"
     },
     {
+      "name": "SubNav",
+      "kind": "component",
+      "module": "src/Page.tsx",
+      "client": true,
+      "summary": "The 240px sub-navigation card of a `two-column` page (`Page layout=\"two-column\" subNav={<SubNav … />}`): padding 20 / 10, sections separated by a 1px `bg-raised` line, group labels in `text-nav-label` (10 / 500 uppercase faint, row h32, optional 16px icon actions on the right), and items (h32, `rounded-control`, padding 4 / 16, `text-chrome` 12 / 500, 16px icon, 2px apart; inactive `text-muted`, hover `bg-item-hover`, active `bg-item-selected text-strong`).",
+      "props": [
+        "sections",
+        "activeId",
+        "onSelect",
+        "label",
+        "className"
+      ],
+      "doc": "docs/components/page.md"
+    },
+    {
+      "name": "PageSection",
+      "kind": "component",
+      "module": "src/Page.tsx",
+      "client": true,
+      "summary": "One content section inside `<Page>`: a 20 / 500 heading (`text-section`) spaced 16px (`gap-4`) above its content, with optional actions on the heading row. Multiple `PageSection`s inside `<Page>` sit 32px apart automatically.",
+      "props": [
+        "title",
+        "editorial",
+        "actions",
+        "description",
+        "headingLevel",
+        "children",
+        "className"
+      ],
+      "doc": "docs/components/page.md"
+    },
+    {
+      "name": "PageGrid",
+      "kind": "component",
+      "module": "src/Page.tsx",
+      "client": true,
+      "summary": "Compact 8px (`gap-2`) grid inside a `<PageSection>` or `<Card>`, sized by `@container` width (§4a rhythm).",
+      "props": [
+        "columns",
+        "children",
+        "className"
+      ],
+      "doc": "docs/components/page.md"
+    },
+    {
+      "name": "Page",
+      "kind": "component",
+      "module": "src/Page.tsx",
+      "client": true,
+      "summary": "Shared 1.0 page anatomy and layout inside `AppShell`'s content card (#149, #71): - `layout=\"work\"` (default): flush, no centred max-width, card padding 16 / 24 (`px-4 sm:px-6`). - `layout=\"reading\"`: centred at max 1536px (`max-w-screen-2xl`) inside 16px card padding, 64px bottom padding. - `layout=\"two-column\"`: 240px (`md:w-60`) sub-nav card + 4px gap + main card (padding 24); stacks below `md`. Owns the vertical rhythm from the card top (32px to the header block, 28px from title or tabs to intro / toolbar, 16px from filter toolbar to list, 32px between content blocks), so pages set no margins on those joins.",
+      "props": [
+        "layout",
+        "fixed",
+        "subNav",
+        "title",
+        "titleVariant",
+        "actions",
+        "tabs",
+        "intro",
+        "toolbar",
+        "children",
+        "footer",
+        "className"
+      ],
+      "doc": "docs/components/page.md"
+    },
+    {
       "name": "PageActionsProvider",
       "kind": "component",
       "module": "src/PageActions.tsx",
@@ -2034,10 +2159,11 @@
       "kind": "component",
       "module": "src/PageTitle.tsx",
       "client": true,
-      "summary": "The page's display heading (its `h1`). With `actions`, the title row of a list page: the title on the left, the page's action on the right; below `sm` the actions wrap onto their own row under the title.",
+      "summary": "The page's heading (`h1`). By default (`variant=\"work\"`) it is 18 / 400 in the UI sans on the same row as `actions` (wrapping only when the row runs out of room). Pass `variant=\"reading\"` on a one-column reading page for the 44 / 500 display title (`text-title-xl`). Inside `<Page title={…}>`, `<Page>` owns the spacing below this row.",
       "props": [
         "title",
         "actions",
+        "variant",
         "className"
       ],
       "doc": "docs/components/page-title.md"
@@ -2480,7 +2606,7 @@
       "kind": "component",
       "module": "src/Skeleton.tsx",
       "client": true,
-      "summary": "Whole-page placeholder (Suspense fallbacks, route `loading.tsx`): title row + the shape of the content. `cards` (default) = a grid of cards, `list` = a toolbar and table rows, `detail` = a header card and two panels. Pick the shape the real page has, so nothing jumps when the data arrives (§13b). `inShell` drops the full-viewport height, background and padding: use it in a route `loading.tsx` (the shell and its content slot already give those). Without it the skeleton is a whole page, for a Suspense fallback outside the shell.",
+      "summary": "Whole-page placeholder (Suspense fallbacks, route `loading.tsx`): title row + the shape of the content. `cards` (default) = a grid of cards, `list` = a toolbar and table rows, `detail` = a header card and two panels, `workspace` = a 380px `bg-panel-3` control panel with a bottom action bar beside a result table (stacked below `lg`). Pick the shape the real page has, so nothing jumps when the data arrives (§13b). `inShell` drops the full-viewport height, background and padding: use it in a route `loading.tsx` (the shell and its content slot already give those). Without it the skeleton is a whole page, for a Suspense fallback outside the shell.",
       "props": [
         "shape",
         "inShell"
@@ -2525,6 +2651,7 @@
         "size",
         "loading",
         "disabled",
+        "fullWidth",
         "collapseOnPhone",
         "className"
       ],
@@ -2984,6 +3111,13 @@
       "module": "src/Field.tsx",
       "client": true,
       "summary": "The surrounding Field's ids and state (null outside a Field)."
+    },
+    {
+      "name": "useListSelection",
+      "kind": "hook",
+      "module": "src/FilterChipRow.tsx",
+      "client": true,
+      "summary": "Local selection-mode state for list pages (table, card grid or phone `Item` rows): wire `active`, `selected`, `onEnter` and `onExit` to `FilterChipRow` / `PhoneFilterBar` `selection`, and `toggle` / `isChecked` to rows or cards."
     },
     {
       "name": "useFilterParams",

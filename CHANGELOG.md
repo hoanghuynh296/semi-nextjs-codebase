@@ -4,6 +4,23 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## Unreleased
 
+**1.0 page layouts and lists (#149, T7; breaking, part of v1.0.0).** Three page layouts inside the content card (`work`, `reading`, `two-column`), layout-owned vertical rhythm (32 / 28 / 32 / 16 / 8), 18 / 400 work-page titles on the action row, calm list pages with sort and zero-shift selection mode in the filter row, non-nested card & item selection, `ListReaderLayout` + sticky `ReaderHeader`, and `WorkspaceLayout` / `SplitButton` / `PageSkeleton` upgrades (#71, #72, #116, #118, #127).
+
+### Breaking
+- **`PageTitle` default typography:** `PageTitle` (`variant="work"`, default) is now 18 / 400 UI sans (`text-figure font-normal text-strong`) on the same row as `actions` (wrapping only when out of width, no longer always stacking below `sm`). Pass `variant="reading"` for the 44 / 500 display title (`font-display text-title-xl font-medium`) on one-column reading pages only.
+- **`ResultLine` deprecated for list pages:** list pages no longer render a result-count row; the list sits 16px under `StickyContextBar`'s filter row (`mb-1.5` after `STICKY_TOOLBAR`'s `py-2.5`). Move sort and selection to `FilterChipRow` / `PhoneFilterBar` `sort` and `selection`.
+
+### Added
+- **`Page`, `SubNav`, `PageSection`, `PageGrid`** (`src/Page.tsx`): shared page anatomy (`title`, `actions`, `tabs`, `intro`, `toolbar`, `children`, `footer`) in `layout="work"` (flush, padding 16 / 24), `layout="reading"` (centred max 1536px inside 16px card padding, 64px bottom), and `layout="two-column"` (240px `SubNav` card, padding 20 / 10, `text-nav-label` group labels with optional 16px icon actions, h32 items 2px apart, 1px `bg-raised` section dividers + 4px gap + main card padding 24, stacking below `md`). `Page fixed` fills the column on `AppShell` without scrolling the card.
+- **Filter-row sort & zero-shift selection (`FilterChipRow`, `PhoneFilterBar`, `useListSelection`):** `sort` (`SortDef`) and `selection` (`ListSelection`: `"Chọn"` → in-place `"n đã chọn"` 600 + `•••` + at most one filled bulk button + `"Xong"` at the exact same height, zero vertical shift on the list, keyboard focus handoff).
+- **Non-nested selection on `Card` & `Item`, and `DataTable activeRowId`:** `Card` and `Item` gain `selectable`, `checked`, `onCheckedChange`, `selected`, `selectLabel` (sibling checkbox + open button, zero nested interactive controls; `bg-item-checked` when checked, `bg-item-selected` when open); `DataTable` gains `activeRowId` (`bg-item-selected`, `aria-current="true"`).
+- **`ListReaderLayout` & `ReaderHeader`** (`src/ListReader.tsx`): list card + reader card, each its own independent scroller on `Page fixed` / `AppShell page="fixed"` with zero `calc()`, `?open=` URL state via `useDetailParam`, `RouteHeader` breadcrumb integration via `useRecordCrumb` (`recordTitle`), reader empty state, below-`lg` swap with Back button, and general sticky one-row `ReaderHeader` (wrapping title left, `[•••]` + one main action right, top-aligned, identical button height).
+- **`WorkspaceLayout`, `SplitButton`, `PageSkeleton` (#116):** `WorkspaceLayout.action` is optional (read-only viewer renders no pinned bottom bar), `SplitButton` (and `ButtonGroup`) gain `fullWidth`, and `PageSkeleton` gains `shape="workspace"`.
+
+### Changed
+- **`examples/list-page/`** rebuilt on `Page layout="work"`, `StickyContextBar` (no `ResultLine`), filter-row `sort` + `selection`, `DataTable` / `Card` grid / phone `Item` rows sharing one selection model, and `DetailOverlay`.
+- **`examples/settings-page/`** rebuilt on `Page layout="reading"` with `PillTabs` and one save action per section.
+
 **1.0 fields and forms (#148, T6; part of v1.0.0).** Quiet fields with a keyboard-only 2px focus outline, overline form section labels, `MultiCombobox` + option groups on `CustomCombobox`, `OptionCards`, `LetterAvatar` (`Avatar initials={1}`), auto-growing / top-resizable reply boxes, `HintTextarea` Popover engine & plain-text snippets, and physical-keyboard dialog autofocus. Covers closed #122, #117 and #26.
 
 ### Added

@@ -36,7 +36,7 @@ with `/semi-propose`.
 | T4 #146 | Buttons and attention marks | merged on `main` (#157), unreleased: ships in 1.0.0 | `1.0.0-buttons` |
 | T5 #147 | Tabs: PillTabs, SegmentedControl, big TextTabs | merged on `main`, unreleased: ships in 1.0.0 | `1.0.0-tabs` |
 | T6 #148 | Fields and forms | merged on `main`, unreleased: ships in 1.0.0 | — |
-| T7 #149 | Page layouts and lists | pending | — |
+| T7 #149 | Page layouts and lists | merged on `main`, unreleased: ships in 1.0.0 | — |
 | T8 #150 | StickyContextBar pinning and actions | pending | — |
 | T9 #151 | Motion wiring | pending | — |
 
@@ -251,14 +251,11 @@ autofocus (`autoFocusFirstField`, opt-out `false`) and `focusFirstField(root)`.
 reply-box drag → `Textarea` / `HintTextarea` `autoGrow` + `resizable`; the `.border-control-line` override in the
 globals tail.
 
-## T7: page layouts and lists (pending, #149)
+## T7: page layouts and lists (merged, ships in 1.0.0)
 
-**Target.** Work pages flush (no centred max-width), reading pages centred at 1536px, two-column pages (240px sub-nav
-card + main card); the rhythm 32 / 28 / 32 / 16 / 8; the page title 18 / 400 on the row of the page's main action; list
-pages without a result-count row, sort and "Chọn" on the filter row, selection mode in the filter row (`n đã chọn` +
-bulk actions, checked rows `item-checked`); the list + reader pattern with the reader header (subject left, ••• and the
-main action right). **Replaces:** in the globals tail the flush container (`main#main > div`), `.page-title-row` and
-`.content-card h1`, `.page-column*`, `.list-*`. **Until it ships:** keep them.
+**What changed** (#149, CHANGELOG "1.0 page layouts and lists"). New `Page` (`layout="work" | "reading" | "two-column"`, `fixed`, shared anatomy slots `title` / `actions` / `tabs` / `intro` / `toolbar` / `children` / `footer` owning the 32 / 28 / 32 / 16 / 8 vertical rhythm), `SubNav` (240px sub-nav card, 20 / 10 padding, `text-nav-label` group labels with optional 16px icon actions, h32 items, 1px `bg-raised` dividers), `PageSection` (20/500 heading + 16px content gap), `PageGrid` (8px `@container` grid), `ListReaderLayout` + `ReaderHeader` (two independent scrollers on `fixed` mode, `?open=`, `useRecordCrumb`, phone swap with Back, sticky one-row header with wrapping title left and `[•••]` + one main action right), and `useListSelection`. `PageTitle` becomes 18 / 400 UI sans on the action row (`variant="reading"` opts into 44 / 500 `text-title-xl` display on one-column reading pages). `FilterChipRow` and `PhoneFilterBar` gain `sort` and in-place `selection` (`"n đã chọn"` 600 + `•••` + at most one filled bulk button + `"Xong"`, zero list shift); `ResultLine` is deprecated for list pages; `DataTable` gains `activeRowId` (`bg-item-selected`); `Card` and `Item` gain non-nested `selectable` / `checked` / `onCheckedChange` / `selected`. `WorkspaceLayout.action` is optional, `SplitButton` gains `fullWidth`, and `PageSkeleton` gains `shape="workspace"`.
+
+**What the app deletes** (sales-hub v0.7.0): in the globals tail the flush container (`main#main > div`), `.page-title-row` and `.content-card h1`, `.page-column*`, `.list-*`, and hand-built selection rows.
 
 ## T8: StickyContextBar pinning (pending, #150)
 
@@ -298,7 +295,7 @@ local code. "Delete when" is the ticket that ships the replacement.
 | `ProviderCards` (`SettingsView.tsx`) | `OptionCards` | T6 (merged, in 1.0.0) |
 | reply-box drag | `Textarea` / `HintTextarea` `autoGrow` + `resizable` | T6 (merged, in 1.0.0) |
 | globals tail: `.border-control-line` override | quiet fields | T6 (merged, in 1.0.0) |
-| globals tail: flush container, `.page-title-row`, `.content-card h1`, `.page-column*`, `.list-*` | T7 page layouts | T7 |
+| globals tail: flush container, `.page-title-row`, `.content-card h1`, `.page-column*`, `.list-*` | T7 page layouts (`Page`, `SubNav`, `PageTitle`, `ListReaderLayout`) | T7 (merged, in 1.0.0) |
 | `semi-pending/BarActions.tsx`, `semi-pending/stickyBar.ts` | `StickyContextBar` pinning and actions | T8 |
 | globals tail: `.bar-actions`, `[data-page]` scroll rules, `.content-card [role="search"]` | `StickyContextBar` | T8 |
 | `app/semi-pending-motion.css`, `PageEnter` | motion tokens and page enter | T9 |

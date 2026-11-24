@@ -431,3 +431,268 @@ test("useTabParam and async onBeforeChange under Next's App Router: arrow keys r
   await expect(page.getByTestId("next-view").filter({ visible: true })).toHaveText("templates");
   expect(pageErrors).toEqual([]);
 });
+
+test("Page layouts and vertical rhythm at 1440, 834 and 430: work, reading and two-column (#149)", async ({ page }) => {
+  // 1. Work layout: flush (no 1440px cap), padding 16px on phone / 24px on md+, rhythm 32 / 28 / 16
+  for (const width of [1440, 834, 430]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(`${BASE}/layouts/work`);
+    const root = page.locator('[data-page-layout="work"]');
+    await expect(root).toBeVisible();
+    const metrics = await page.evaluate(() => {
+      const rootEl = document.querySelector('[data-page-layout="work"]') as HTMLElement;
+      const card = document.querySelector("[data-shell-card]") as HTMLElement;
+      const header = rootEl.querySelector("header") as HTMLElement;
+      const toolbar = rootEl.querySelector("[data-page-toolbar]") as HTMLElement;
+      const search = toolbar.querySelector('[role="search"]') as HTMLElement;
+      const list = rootEl.querySelector(window.innerWidth >= 768 ? '[data-testid="desktop-list"]' : '[data-testid="phone-list"]') as HTMLElement;
+      const h1 = rootEl.querySelector("h1") as HTMLElement;
+      const h1Cs = getComputedStyle(h1);
+      const rootCs = getComputedStyle(rootEl);
+      return {
+        overflow: document.documentElement.scrollWidth - window.innerWidth,
+        padX: parseFloat(rootCs.paddingLeft),
+        padTop: parseFloat(rootCs.paddingTop),
+        cardToHeader: Math.round(header.getBoundingClientRect().top - card.getBoundingClientRect().top),
+        headerToToolbar: Math.round(search.getBoundingClientRect().top - header.getBoundingClientRect().bottom),
+        toolbarToList: Math.round(list.getBoundingClientRect().top - search.getBoundingClientRect().bottom),
+        h1Size: parseFloat(h1Cs.fontSize),
+        h1Weight: parseInt(h1Cs.fontWeight, 10),
+      };
+    });
+    expect(metrics.overflow, `work overflow at ${width}`).toBeLessThanOrEqual(0);
+    expect(metrics.padX, `work padX at ${width}`).toBe(width < 768 ? 16 : 24);
+    expect(metrics.cardToHeader, `work card->header at ${width}`).toBe(32);
+    expect(metrics.headerToToolbar, `work header->toolbar at ${width}`).toBeGreaterThanOrEqual(27);
+    expect(metrics.headerToToolbar, `work header->toolbar at ${width}`).toBeLessThanOrEqual(29);
+    expect(metrics.toolbarToList, `work toolbar->list at ${width}`).toBeGreaterThanOrEqual(15);
+    expect(metrics.toolbarToList, `work toolbar->list at ${width}`).toBeLessThanOrEqual(17);
+    expect(metrics.h1Size).toBe(18);
+    expect(metrics.h1Weight).toBe(400);
+  }
+
+  // 2. Reading layout: 16px side padding, 64px bottom padding, 1536px max-width, 44/500 display title, rhythm 32/28/32/16/8
+  for (const width of [1440, 834, 430]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(`${BASE}/layouts/reading`);
+    const root = page.locator('[data-page-layout="reading"]');
+    await expect(root).toBeVisible();
+    const m = await page.evaluate(() => {
+      const rootEl = document.querySelector('[data-page-layout="reading"]') as HTMLElement;
+      const inner = rootEl.querySelector("[data-page-reading-inner]") as HTMLElement;
+      const h1 = rootEl.querySelector("h1") as HTMLElement;
+      const intro = rootEl.querySelector("header p") as HTMLElement;
+      const sections = Array.from(rootEl.querySelectorAll("[data-page-section]")) as HTMLElement[];
+      const s1Heading = sections[0].querySelector("h2") as HTMLElement;
+      const grid = sections[0].querySelector("[data-page-grid]") as HTMLElement;
+      const rootCs = getComputedStyle(rootEl);
+      const innerCs = getComputedStyle(inner);
+      const h1Cs = getComputedStyle(h1);
+      const gridCs = getComputedStyle(grid);
+      return {
+        overflow: document.documentElement.scrollWidth - window.innerWidth,
+        padX: parseFloat(rootCs.paddingLeft),
+        padBottom: parseFloat(rootCs.paddingBottom),
+        maxW: parseFloat(innerCs.maxWidth),
+        h1Size: parseFloat(h1Cs.fontSize),
+        h1Weight: parseInt(h1Cs.fontWeight, 10),
+        titleToIntro: Math.round(intro.getBoundingClientRect().top - h1.getBoundingClientRect().bottom),
+        sectionGap: Math.round(sections[1].getBoundingClientRect().top - sections[0].getBoundingClientRect().bottom),
+        headingToGrid: Math.round(grid.getBoundingClientRect().top - s1Heading.getBoundingClientRect().bottom),
+        gridGap: parseFloat(gridCs.columnGap || gridCs.gap),
+      };
+    });
+    expect(m.overflow, `reading overflow at ${width}`).toBeLessThanOrEqual(0);
+    expect(m.padX).toBe(16);
+    expect(m.padBottom).toBe(64);
+    expect(m.maxW).toBe(1536);
+    expect(m.h1Size).toBe(44);
+    expect(m.h1Weight).toBe(500);
+    expect(m.titleToIntro).toBe(28);
+    expect(m.sectionGap).toBe(32);
+    expect(m.headingToGrid).toBe(16);
+    expect(m.gridGap).toBe(8);
+  }
+
+  // 3. Two-column layout: 240px sub-nav (20/10 pad) + 4px gap + main card (24px pad) on md+, stacked below md
+  for (const width of [1440, 834, 430]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(`${BASE}/layouts/two-column`);
+    const root = page.locator('[data-page-layout="two-column"]');
+    await expect(root).toBeVisible();
+    const m = await page.evaluate(() => {
+      const subWrap = document.querySelector("[data-page-subnav]") as HTMLElement;
+      const nav = subWrap.querySelector("nav") as HTMLElement;
+      const main = document.querySelector("[data-page-main]") as HTMLElement;
+      const groupLabel = nav.querySelector("[data-subnav-group-label]") as HTMLElement;
+      const items = Array.from(nav.querySelectorAll("[data-subnav-item]")) as HTMLElement[];
+      const subR = subWrap.getBoundingClientRect();
+      const mainR = main.getBoundingClientRect();
+      const navCs = getComputedStyle(nav);
+      const mainCs = getComputedStyle(main);
+      const glCs = getComputedStyle(groupLabel);
+      const itemCs = getComputedStyle(items[0]);
+      return {
+        overflow: document.documentElement.scrollWidth - window.innerWidth,
+        subW: Math.round(subR.width),
+        horizontalGap: Math.round(mainR.left - subR.right),
+        verticalGap: Math.round(mainR.top - subR.bottom),
+        stacked: mainR.top >= subR.bottom - 1,
+        navPadTop: parseFloat(navCs.paddingTop),
+        navPadLeft: parseFloat(navCs.paddingLeft),
+        mainPadX: parseFloat(mainCs.paddingLeft),
+        glHeight: Math.round(groupLabel.getBoundingClientRect().height),
+        glSize: parseFloat(glCs.fontSize),
+        glWeight: parseInt(glCs.fontWeight, 10),
+        itemHeight: Math.round(items[0].getBoundingClientRect().height),
+        itemSize: parseFloat(itemCs.fontSize),
+        itemWeight: parseInt(itemCs.fontWeight, 10),
+        itemGap: Math.round(items[1].getBoundingClientRect().top - items[0].getBoundingClientRect().bottom),
+      };
+    });
+    expect(m.overflow, `two-column overflow at ${width}`).toBeLessThanOrEqual(0);
+    expect(m.navPadTop).toBe(20);
+    expect(m.navPadLeft).toBe(10);
+    expect(m.glHeight).toBe(32);
+    expect(m.glSize).toBe(10);
+    expect(m.glWeight).toBe(500);
+    expect(m.itemHeight).toBe(32);
+    expect(m.itemSize).toBe(12);
+    expect(m.itemWeight).toBe(500);
+    expect(m.itemGap).toBe(2);
+    if (width >= 768) {
+      expect(m.stacked).toBe(false);
+      expect(m.subW).toBe(240);
+      expect(m.horizontalGap).toBe(4);
+      expect(m.mainPadX).toBe(24);
+    } else {
+      expect(m.stacked).toBe(true);
+      expect(m.verticalGap).toBe(4);
+    }
+  }
+});
+
+test("List selection in the filter row: zero vertical shift, full keyboard path, and non-nested Card/Item selection (#149)", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(`${BASE}/layouts/work`);
+  const firstRow = page.locator("tbody tr").first();
+  await expect(firstRow).toBeVisible();
+  const topBefore = (await firstRow.boundingBox())!.y;
+
+  // Keyboard path: Chọn -> check first row -> count (600) + bulk action -> Xong (focus returns to Chọn)
+  const chon = page.getByRole("button", { name: "Chọn", exact: true });
+  await chon.focus();
+  await page.keyboard.press("Enter");
+  const doneBtn = page.getByRole("button", { name: "Xong", exact: true });
+  await expect(doneBtn).toBeFocused();
+  // Zero shift on first row top
+  const topInMode = (await firstRow.boundingBox())!.y;
+  expect(Math.abs(topInMode - topBefore)).toBeLessThanOrEqual(0.5);
+
+  const cb1 = firstRow.getByRole("checkbox");
+  await cb1.focus();
+  await page.keyboard.press("Space");
+  const countEl = page.locator("[data-selection-count]");
+  await expect(countEl).toHaveText("1 đã chọn");
+  const countWeight = await countEl.evaluate((el) => parseInt(getComputedStyle(el).fontWeight, 10));
+  expect(countWeight).toBe(600);
+  expect(Math.abs((await firstRow.boundingBox())!.y - topBefore)).toBeLessThanOrEqual(0.5);
+
+  // Trigger primary bulk action
+  await page.getByRole("button", { name: "Xuất CSV" }).click();
+  await expect(page.getByTestId("bulk-log")).toHaveText("exported:SO-1001");
+
+  // Exit selection mode returns focus to Chọn
+  await doneBtn.click();
+  await expect(chon).toBeFocused();
+  expect(Math.abs((await firstRow.boundingBox())!.y - topBefore)).toBeLessThanOrEqual(0.5);
+
+  // Card grid: checkbox checks without opening; card button opens without checking
+  await page.getByRole("radio", { name: "Dạng lưới" }).click();
+  await chon.click();
+  const cardCb = page.getByRole("checkbox", { name: "Chọn SO-1001" });
+  await cardCb.click();
+  await expect(countEl).toHaveText("1 đã chọn");
+  await expect(page).not.toHaveURL(/open=/);
+  await page.getByRole("button", { name: /SO-1002/ }).click();
+  await expect(page).toHaveURL(/open=SO-1002/);
+  await expect(countEl).toHaveText("1 đã chọn");
+  await page.getByRole("button", { name: "Xong", exact: true }).click();
+
+  // Phone: PhoneFilterBar keeps Bộ lọc + sort + Chọn on one row, and selection mode does not shift first Item
+  await page.setViewportSize({ width: 430, height: 900 });
+  await page.goto(`${BASE}/layouts/work`);
+  const firstItem = page.locator('[data-testid="phone-list"] [role="listitem"]').first();
+  await expect(firstItem).toBeVisible();
+  const phoneTopBefore = (await firstItem.boundingBox())!.y;
+  const phoneChon = page.locator(".md\\:hidden").getByRole("button", { name: "Chọn", exact: true });
+  await phoneChon.click();
+  const phoneTopAfter = (await firstItem.boundingBox())!.y;
+  expect(Math.abs(phoneTopAfter - phoneTopBefore)).toBeLessThanOrEqual(0.5);
+  await page.locator('[data-testid="phone-list"]').getByRole("checkbox", { name: "Chọn SO-1001" }).click();
+  await expect(page.locator("[data-selection-count]")).toHaveText("1 đã chọn");
+  await expect(page).not.toHaveURL(/open=/);
+});
+
+test("List + reader: ?open= URL state, Back closes, RouteHeader crumb, sticky ReaderHeader, independent scroll, and below-lg swap (#149)", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(`${BASE}/layouts/reader`);
+  const listPane = page.locator("[data-reader-list]");
+  const readerPane = page.locator("[data-reader-pane]");
+  await expect(listPane).toBeVisible();
+  await expect(readerPane).toContainText("Chọn một mục ở danh sách bên trái");
+
+  // Open first mail -> ?open=m-1, RouteHeader crumb updates, sticky ReaderHeader buttons match height
+  await listPane.getByRole("button", { name: /Báo giá hạt tiêu đen/ }).click();
+  await expect(page).toHaveURL(/\/layouts\/reader\?open=m-1$/);
+  await expect(page.getByRole("navigation", { name: "Đường dẫn" })).toContainText("Báo giá hạt tiêu đen");
+
+  const header = readerPane.locator("[data-reader-header]");
+  const moreBtn = header.getByRole("button", { name: "Thao tác khác" });
+  const replyBtn = header.getByRole("button", { name: "Trả lời" });
+  const [moreBox, replyBox, headerBefore] = [
+    await moreBtn.boundingBox(),
+    await replyBtn.boundingBox(),
+    await header.boundingBox(),
+  ];
+  expect(Math.abs(moreBox!.height - replyBox!.height)).toBeLessThanOrEqual(1);
+
+  // Independent scrolling: scrolling reader body keeps ReaderHeader sticky and does not scroll list or window
+  await readerPane.evaluate((el) => { el.scrollTop = 400; });
+  const scrollState = await page.evaluate(() => ({
+    windowY: window.scrollY,
+    listTop: document.querySelector("[data-reader-list]")!.scrollTop,
+    readerTop: document.querySelector("[data-reader-pane]")!.scrollTop,
+    headerTop: document.querySelector("[data-reader-header]")!.getBoundingClientRect().top,
+  }));
+  expect(scrollState.windowY).toBe(0);
+  expect(scrollState.listTop).toBe(0);
+  expect(scrollState.readerTop).toBeGreaterThan(200);
+  expect(Math.abs(scrollState.headerTop - headerBefore!.y)).toBeLessThanOrEqual(1);
+
+  // Scrolling list does not change reader scroll or window scroll
+  await listPane.evaluate((el) => { el.scrollTop = 200; });
+  expect(await page.evaluate(() => window.scrollY)).toBe(0);
+  expect(await readerPane.evaluate((el) => el.scrollTop)).toBe(scrollState.readerTop);
+
+  // Browser Back closes ?open= and returns to empty state
+  await page.goBack();
+  await expect(page).toHaveURL(/\/layouts\/reader$/);
+  await expect(readerPane).toContainText("Chọn một mục ở danh sách bên trái");
+
+  // Below lg (834 & 430): reader swaps in with Back button, clicking Back returns to list
+  for (const width of [834, 430]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(`${BASE}/layouts/reader`);
+    await expect(listPane).toBeVisible();
+    await expect(readerPane).toBeHidden();
+    await listPane.getByRole("button", { name: /Báo giá hạt tiêu đen/ }).click();
+    await expect(page).toHaveURL(/\?open=m-1$/);
+    await expect(readerPane).toBeVisible();
+    await expect(listPane).toBeHidden();
+    await readerPane.getByRole("button", { name: "Quay lại danh sách" }).click();
+    await expect(page).toHaveURL(/\/layouts\/reader$/);
+    await expect(listPane).toBeVisible();
+    await expect(readerPane).toBeHidden();
+  }
+});

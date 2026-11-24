@@ -1636,7 +1636,7 @@ test("FilterChipRow: leading views and a single chip by keyboard: radio menu, cl
   await expect(ex.getByRole("button", { name: "Tất cả", exact: true })).toHaveAttribute("aria-pressed", "true");
 });
 
-test("List page block: title row with its action, views and filters in the URL; phone: actions under the title, radio views, radio group in the panel (#115, #119, #120)", async ({ browser }) => {
+test("List page block: title row with its action on one row, views and filters in the URL; phone: radio views, radio group in the panel (#115, #119, #120, #149)", async ({ browser }) => {
   for (const [width, phone] of [[1440, false], [430, true]] as const) {
     const page = await browser.newPage({ viewport: { width, height: 932 }, ...(phone ? { isMobile: true, hasTouch: true } : {}) });
     await open(page, "/components/list-page/", phone ? "light" : "dark");
@@ -1645,8 +1645,7 @@ test("List page block: title row with its action, views and filters in the URL; 
     const create = ex.getByRole("button", { name: "Tạo đơn" });
     await expect(create).toBeVisible();
     const [t, c] = [await title.boundingBox(), await create.boundingBox()];
-    if (phone) expect(c!.y).toBeGreaterThanOrEqual(t!.y + t!.height - 1);
-    else expect(Math.abs(c!.y + c!.height / 2 - (t!.y + t!.height / 2))).toBeLessThan(t!.height / 2);
+    expect(Math.abs(c!.y + c!.height / 2 - (t!.y + t!.height / 2))).toBeLessThan(Math.max(t!.height, c!.height) / 2);
     await expect(ex.getByRole("search", { name: "Tìm và lọc đơn hàng" })).toBeVisible();
     if (!phone) {
       await expect(ex.getByRole("button", { name: "Đang xử lý" })).toHaveAttribute("aria-pressed", "true");

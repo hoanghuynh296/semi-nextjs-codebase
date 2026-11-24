@@ -8,7 +8,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 ## Machine-readable
 
-- [components.json](./components.json): all 166 components, hooks and constants with props, summaries and their doc page
+- [components.json](./components.json): all 172 components, hooks and constants with props, summaries and their doc page
 - [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
@@ -90,12 +90,14 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [App header](./components/app-header/) ([markdown](./docs/components/app-header.md)): The top bar of a stand-alone tool app: logo + title go home, the module name, and one primary action on the right. No Home button. Components: AppHeader.
 - [App shell](./components/app-shell/) ([markdown](./docs/components/app-shell.md)): The 1.0 frame of a multi-page app: a canvas frame with the nav panel (main action, groups, pinned, a bottom row of icon tools) and the content column (the RouteHeader with crumbs, actions and the account avatar menu, then the content card). The nav is the 72px rail first when width runs short (always md–lg, by default lg–1280, the user's toggle remembered), then the phone drawer. Alt + 1…9 opens a nav item. This docs site is an AppShell; the full example runs at /demo/app-shell/. Components: AppShell, RouteHeader, AccountMenu, MobileTabBar.
 - [Breadcrumb](./components/breadcrumb/) ([markdown](./docs/components/breadcrumb.md)): Where the page sits: a trail of links ending with the current page. Long trails collapse their middle into a “…” menu. Components: Breadcrumb.
+- [List + reader](./components/list-reader/) ([markdown](./docs/components/list-reader.md)): A list card beside a reader card (`ListReaderLayout`) with a sticky one-row `ReaderHeader` (wrapping title left, [•••] then one main action right, top-aligned, identical button height). Each panel scrolls independently on `AppShell page="fixed"` / `Page fixed` with zero hand-tuned `calc()`. Open item lives in `?open=` (`useDetailParam`) and `RouteHeader` breadcrumbs (`useRecordCrumb`); below `lg` the reader replaces the list with a Back button. Components: ListReaderLayout, ReaderHeader.
 - [Mega menu](./components/mega-menu/) ([markdown](./docs/components/mega-menu.md)): A flyout of links in category columns: a text-overline header per column, links with a grey icon, a hint and a New badge, and a See all link. AppShell opens it beside the sidebar from a nav item with mega; an app can open it from its own trigger. Components: MegaMenu.
 - [Menubar](./components/menubar/) ([markdown](./docs/components/menubar.md)): The menu bar of a desktop-style tool (Tệp · Sửa · Xem): menus that open from a bar and behave like Menu. Components: Menubar.
 - [Minimal header](./components/minimal-header/) ([markdown](./docs/components/minimal-header.md)): The top row of a detail or settings page inside AppShell: where the page sits on the left (a Breadcrumb), one text link and one primary action on the right. The page's own heading follows it. Components: MinimalHeader.
 - [Navigation menu](./components/navigation-menu/) ([markdown](./docs/components/navigation-menu.md)): Top navigation of a website or landing page: links, and items that open a panel of links with descriptions. Below md it becomes one menu button with a sheet. Components: NavigationMenu.
 - [Page actions](./components/page-actions/) ([markdown](./docs/components/page-actions.md)): Lets a page put its actions into a slot of the shared header: PageActionsProvider wraps the layout, PageActionsSlot marks where they render, PageActions sends them from the page. Components: PageActions, PageActionsProvider, PageActionsSlot.
-- [Page title](./components/page-title/) ([markdown](./docs/components/page-title.md)): PageTitle is the display title of a page (text only), with the page's own action on its row (`actions`). PageTabsTitle is kept as a deprecated alias for 2–4 sibling tabs — new screens use TextTabs. Components: PageTitle, PageTabsTitle.
+- [Page layouts](./components/page/) ([markdown](./docs/components/page.md)): Shared 1.0 page anatomy and three layouts inside AppShell's content card: work (flush, padding 16 / 24), reading (centred max 1536px inside 16px card padding, 64px bottom), and two-column (240px sub-nav card + 4px gap + main card, stacking below md). Owns vertical rhythm (32 / 28 / 32 / 16 / 8). Components: Page, SubNav, PageSection, PageGrid.
+- [Page title](./components/page-title/) ([markdown](./docs/components/page-title.md)): PageTitle is the 18 / 400 UI sans heading of a work page on the same row as the page's main action (`actions`), with `variant="reading"` (44 / 500 display face, text-title-xl) for one-column reading pages only. PageTabsTitle is kept as a deprecated alias for 2–4 sibling tabs — new screens use TextTabs. Components: PageTitle, PageTabsTitle.
 - [Pagination](./components/pagination/) ([markdown](./docs/components/pagination.md)): Page numbers with previous / next for long tables. For card lists prefer auto-loading with “Xem thêm”. Components: Pagination.
 - [Pill tabs](./components/pill-tabs/) ([markdown](./docs/components/pill-tabs.md)): Default section tabs for pages with 5+ sections or sections with icons (settings-like pages): no track, h30 round pills with 16px icons and 12px/600 labels, and one item-hover pill that slides to the active tab in 300ms ease-out. Components: PillTabs.
 - [Resizable panels](./components/resizable/) ([markdown](./docs/components/resizable.md)): Panels side by side or stacked with handles to resize them (an editor beside a preview, a list beside details). Sizes are percentages and can be remembered. Components: ResizablePanels.
@@ -158,8 +160,8 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 - [Agent workspace](./components/agent-run/) ([markdown](./docs/components/agent-run.md)): A full agent turn composed from the AI parts: the request, reasoning, a plan, tool calls, an approval, the answer with sources and a composer with the context meter. Copy it with `semi add agent-run`. Components: .
 - [Dashboard](./components/dashboard/) ([markdown](./docs/components/dashboard.md)): An overview page: title, KPI row with trends, a revenue chart, orders by status and the latest orders. Copy it with `semi add dashboard`, then replace the sample data. Components: .
-- [List page](./components/list-page/) ([markdown](./docs/components/list-page.md)): A records page on the StickyContextBar anatomy: the title row with refresh and the create action (PageTitle actions), then the sticky bar (SearchPill, views as Pills + filter chips on md+, PhoneFilterBar + FilterPanel on phones, ResultLine), then a data table that sorts, selects and pages, with bulk actions. State in the URL. Copy it with `semi add list-page`. Components: .
-- [Settings page](./components/settings-page/) ([markdown](./docs/components/settings-page.md)): A settings page: sections of rows with switches and links, a profile form with validation and one save action, and a danger zone. Copy it with `semi add settings-page`. Components: .
+- [List page](./components/list-page/) ([markdown](./docs/components/list-page.md)): A 1.0 records page on Page layout="work": 18/400 title row with an inverse action, StickyContextBar with SearchPill + FilterChipRow (sort, Chọn and in-place selection mode on the filter row; PhoneFilterBar on phones; no result-count row), DataTable / Card grid / phone Item rows sharing the same selection model, and DetailOverlay (?open=). Copy it with `semi add list-page`. Components: .
+- [Settings page](./components/settings-page/) ([markdown](./docs/components/settings-page.md)): A 1.0 settings page on Page layout="reading" (centred max 1536px inside 16px card padding, 64px bottom) with section tabs (Pills today; PillTabs once T5 merges) and one save action per section. Copy it with `semi add settings-page`. Components: .
 
 ### Setup
 
@@ -185,7 +187,7 @@ content column, 12px shell chrome around 14px content, headings 400 / 500, minim
 brand fill (`bg-primary`, optional `bg-secondary`) only for the one main button of a page or modal (at most one per
 page or modal), the nav's main action, the active big-tab underline, attention badges / "Mới" tags, or a case the app's owner asks for; every other
 action is a neutral button. **When to use which** (buttons, tabs, page layouts): `DESIGN_SYSTEM.md` §0. Moving from
-0.x: `MIGRATION-1.0.md`. Parts marked *(Tn, pending)* (T3, T7–T9) in `DESIGN_SYSTEM.md` are 1.0 targets not merged yet: use what
+0.x: `MIGRATION-1.0.md`. Parts marked *(Tn, pending)* (T3, T8–T9) in `DESIGN_SYSTEM.md` are 1.0 targets not merged yet: use what
 Semi ships today for them, never a local stand-in.
 Shell: `AppShell` (the nav panel and the content column on `bg-canvas`; the route header with crumbs and the account
 avatar menu above the content card), pages with `PageTitle` (+ `actions`) or
@@ -299,7 +301,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (166)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (172)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
@@ -343,6 +345,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `Item`: `Item`, `ItemGroup`
 - `Kbd`: `Kbd`
 - `KpiCard`: `KpiCard`
+- `ListReader`: `ReaderHeader`, `ListReaderLayout`
 - `Markdown`: `Markdown`
 - `MegaMenu`: `MegaMenu`
 - `MinimalHeader`: `MinimalHeader`
@@ -354,6 +357,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `NumberInput`: `NumberInput`
 - `OptionCards`: `OptionCards`
 - `Overlay`: `Tooltip`, `Menu`, `ContextMenu`, `Menubar`
+- `Page`: `SubNav`, `PageSection`, `PageGrid`, `Page`
 - `PageActions`: `PageActionsProvider`, `PageActionsSlot`, `PageActions`
 - `PageTitle`: `PageTitle`, `PageTabsTitle`
 - `Pagination`: `Pagination`
@@ -391,7 +395,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `formValidation`: `FormErrorSummary`
 - `locale`: `SemiLocaleProvider`
 
-**Hooks:** `useAppShell`, `useHotkey`, `useRegisterCommands`, `useDetailParam`, `useField`, `useFilterParams`, `useCoarsePointer`, `useRecordCrumb`, `useTheme`, `useThemeChoices`, `useThemeUtility`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useFormValidation`, `useSemiLocale`, `useTabParam`, `useUnsavedGuard` · **Functions:** `navScript`, `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `filterCommands`, `openCommandPalette`, `openDetail`, `pageWindow`, `startTask`, `themeScript`, `updateToast`, `dismissToast`, `focusFirstField`, `ensureFocusModality`, `confirmDialog`, `confirmDelete`, `kindAttrs`, `readFilterValues`, `readFilters`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `composeRefs`, `cloneTrigger`, `normalizeSearch`, `searchRows`, `sortRows`, `cn`
+**Hooks:** `useAppShell`, `useHotkey`, `useRegisterCommands`, `useDetailParam`, `useField`, `useListSelection`, `useFilterParams`, `useCoarsePointer`, `useRecordCrumb`, `useTheme`, `useThemeChoices`, `useThemeUtility`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useFormValidation`, `useSemiLocale`, `useTabParam`, `useUnsavedGuard` · **Functions:** `navScript`, `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `filterCommands`, `openCommandPalette`, `openDetail`, `pageWindow`, `startTask`, `themeScript`, `updateToast`, `dismissToast`, `focusFirstField`, `ensureFocusModality`, `confirmDialog`, `confirmDelete`, `kindAttrs`, `readFilterValues`, `readFilters`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `composeRefs`, `cloneTrigger`, `normalizeSearch`, `searchRows`, `sortRows`, `cn`
 <!-- generated:components:end -->
 
 
@@ -466,7 +470,7 @@ decisions C-006, C-008.
 | Sections of one record inside a card or dialog | `Tabs` (underline) |
 | List ↔ grid (and optional density) icon toggles | `ViewSwitch` |
 
-**Page layouts** (§4a; T7, pending):
+**Page layouts** (§4a; `Page`, `SubNav`, `ListReaderLayout`, #149):
 
 | Page | Layout |
 |---|---|
@@ -504,7 +508,7 @@ Names and values: **`TOKENS.md`** "Type scale" (the contract; values in `tokens/
 |---|---|
 | Hero | `font-display text-hero font-normal text-strong` (36, 32 below sm) |
 | Reading-page title (one column) | `font-display text-title-xl font-medium text-strong` (44) |
-| Page title of a work page, in its content card | `text-figure font-normal text-strong` (18 / 400), on the row of the page's main action (T7, pending: `PageTitle` still draws the 0.x display title) |
+| Page title of a work page, in its content card | `text-figure font-normal text-strong` (18 / 400), on the row of the page's main action (`PageTitle`, default `variant="work"`) |
 | Big text tabs | `font-display text-tab-xl font-normal` (28, 24 below sm; weight 400 in the brand display face; active `decoration-primary`, inactive `opacity-20`) |
 | Section heading | `text-section text-strong` (20 / 500 from the token) |
 | Card title, lead text | `text-lead font-medium text-strong` (15) |
@@ -759,32 +763,18 @@ Also:
   when it is false.
 - Every flex / grid child that holds text gets `min-w-0` + `truncate`, so long names never push the page wider.
 
-## 4a. Page layouts and rhythm (T7, pending)
+## 4a. Page layouts and rhythm (#149)
 
-Inside the content card, one of four layouts (the "when to use which" table is in §0):
+Inside the content card, pick one of four layouts with `<Page layout="work" | "reading" | "two-column">` (and `<ListReaderLayout>` inside `Page fixed` / `AppShell page="fixed"`; the "when to use which" table is in §0):
 
-- **Work** (lists, tables, workspaces): flush, no centred max-width; card padding 16 / 24.
-- **Reading** (settings, explore, articles): one column centred at max 1536px inside 16px card padding, 64px bottom
-  padding; the title is `font-display text-title-xl font-medium`.
-- **Two-column** (an area with sub-pages): a sub-nav card 240px (`md:w-60`), flush left, padding 20 / 10; a 4px gap;
-  the main card to the right edge, padding 24; no wide side padding. Below `md` the sub-nav stacks above the content.
-  Sub-nav sections: a group label, then items (h32, `rounded-control`, padding 4 / 16, `text-chrome` 500, 16px icon,
-  2px apart); sections split by a 1px line.
-- **List + reader** (mail, queues, chats): a list card and a reader card. The reader header has the subject on the
-  left (it wraps) and [•••][the main action, e.g. Trả lời] on the right of the same row; every other action is in •••.
-  When the search bar is pinned, each card scrolls on its own (§4e).
+- **Work** (`layout="work"`, default: lists, tables, workspaces): flush, no centred max-width; card padding 16 / 24 (`px-4 sm:px-6`).
+- **Reading** (`layout="reading"`: settings, explore, articles): one column centred at max 1536px (`max-w-screen-2xl`) inside 16px card padding, 64px bottom padding; pass `titleVariant="reading"` (or `<PageTitle variant="reading">`) to opt into the 44 / 500 display title (`font-display text-title-xl font-medium`).
+- **Two-column** (`layout="two-column"` + `subNav={<SubNav … />}`: an area with sub-pages or mailbox folders): a sub-nav card 240px (`md:w-60`), flush left, padding 20 / 10; a 4px gap; the main card to the right edge, padding 24; no wide side padding. Below `md` the sub-nav stacks above the content. `SubNav` sections have a group label (`text-nav-label`, 10 / 500 uppercase faint, row h32, optional 16px icon actions on the right), then items (h32, `rounded-control`, padding 4 / 16, `text-chrome` 500, 16px icon, 2px apart; inactive muted, hover `bg-item-hover`, active `bg-item-selected text-strong`); sections split by a 1px `bg-raised` line.
+- **List + reader** (`ListReaderLayout` + `ReaderHeader`, mail, tickets, chat): a list card and a reader card, each its own scroller (`overflow-y-auto overscroll-contain`), filling the remaining column height on `Page fixed` / `AppShell page="fixed"` with zero hand-tuned `calc()`. Open item lives in `?open=` (`useDetailParam`, Back closes) and feeds `RouteHeader` breadcrumbs via `useRecordCrumb` (`recordTitle`). Below `lg` the reader replaces the list with a Back button. `ReaderHeader` is the general pattern for every list + reader: one sticky row, wrapping title on the left, `[•••]` menu then one main action on the right, top-aligned, identical button height; every other action goes into `•••`.
 
-**Vertical rhythm** from the card top: 32px to the header block · 28px from the title or tabs to the intro · 32px
-between blocks · 16px from a heading to its content · 8px inside grids and cards.
+**Vertical rhythm** (owned by `Page`, `PageSection` and `PageGrid`, so pages set no margins on these joins): 32px from the card top to the header block · 28px from the title or tabs to the intro (or toolbar) · 16px from the filter row to the list · 32px between blocks · 16px from a section heading (`PageSection`) to its content · 8px inside grids (`PageGrid`) and cards.
 
-**Page title.** A work page's title is 18 / 400 (`text-figure font-normal text-strong`) on the same row as the page's
-main action, inside the content card; a reading page uses the 44px display title; a page with 2–4 sub-pages uses big
-`TextTabs` as its heading. One `h1` per page.
-
-**Today (until T7 merges):** `PageTitle` (with `actions` for a list page's action) draws the 0.x display title
-(`font-display text-section sm:text-tab-xl`); `SubpageToolbar title` puts it on the toolbar row; `MinimalHeader` is the
-top row of a detail or settings page; `TextTabs` / `PageTabsTitle` are the tab headings. The content sits in a
-`max-w-[1440px] px-4 sm:px-6` container. Use them; the 1.0 layouts replace them in place.
+**Page title.** A work page's title (`PageTitle`, default `variant="work"`) is 18 / 400 UI sans (`text-figure font-normal text-strong`) on the same row as the page's main action (`actions`: an `inverse` or `primary` button); a one-column reading page can opt into `variant="reading"` (`text-title-xl`, 44 / 500 display face); a page with 2–4 sub-pages uses big `TextTabs` as its heading. One `h1` per page. `Page` provides the shared anatomy slots (`title`, `actions`, `tabs`, `intro`, `toolbar`, `children`, `footer`) so pages fill slots instead of hand-building headers.
 
 Grids expand across wide screens (`sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-group`); touch screens stop at 4
 columns (`not-any-pointer-coarse:` for 5+). Card grids beside a sidebar size columns by `@container`
@@ -855,11 +845,14 @@ action: `inverse`, or the brand `primary` when it is the page's commit action; a
   accordion per filter, "Xem N kết quả" at the bottom). State lives in the URL: `useFilterParams(specs)` (or
   `readFilters` / `writeFilters` / `clearFilters` / `activeFilterCount`); a filter change is a history entry, so Back
   undoes it.
-- **1.0 (T7, pending):** no result-count row: the list sits 16px under the filter row. Sort and "Chọn" (selection mode)
-  sit on the filter row. **Selection mode:** "n đã chọn" (600) and the bulk actions replace the right side of the filter
-  row; nothing pushes the list down (this replaces the `DataTable` bulk bar on list pages); checked rows are
-  `bg-item-checked`. **Today:** a `ResultLine` ("“query” · N kết quả", sort on the right) and the `DataTable`
-  `selectable` + `bulkActions` bar.
+- **1.0 list calm & selection (#149):** no result-count row (`ResultLine` is deprecated for list pages): the list sits
+  16px under the filter row. Sort (`sort`) and "Chọn" (`selection`, managed with `useListSelection`) sit on the filter
+  row (`FilterChipRow` trailing; phones: `PhoneFilterBar` keeps Bộ lọc + sort / Chọn on the same row). **Selection
+  mode:** `"n đã chọn"` (600) and the bulk actions (at most one filled button, the rest in `•••`) plus `"Xong"` replace
+  the right side of the filter row at the exact same height — nothing pushes the list down (replacing the `DataTable`
+  bulk bar on list pages). Checked rows/cards use `bg-item-checked`, the open record's row (`DataTable activeRowId`,
+  `Card selected`, `Item selected`) uses `bg-item-selected`. `Card selectable` and `Item selectable` share the same
+  non-nested, keyboard-accessible selection model.
 - **Opening a record:** a record opens in a `DetailOverlay` over the list, not on its own page. Its id lives in the URL
   (`useDetailParam()` → `?open=<id>`; Back closes it, ‹ › replace it); the list stays mounted, so close / Esc / Back land
   at the same scroll. The header has close, the title, "n / N" and ‹ › through the **current** results (over a
@@ -1300,8 +1293,9 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 |---|---|
 | `@semi/ui` → `AppShell.tsx`, `RouteHeader.tsx`, `MobileTabBar.tsx` | `AppShell` (1.0 frame: nav panel with main action, groups, pinned, bottom row of tools; 224px or the 72px rail; RouteHeader; content card; phone drawer; nav shortcuts), `useAppShell` (sub-items shown, rail, shortcuts), `navShortcutKeys`, `RouteHeader` (crumbs, middle, actions, account), `AccountMenu` (the account avatar menu), `useRecordCrumb` (a detail page names its record), `MobileTabBar`, `TAB_BAR_PAD` (opt-in `mobileNav="tabs"`) (§4) |
 | `MegaMenu.tsx`, `MinimalHeader.tsx`, `TextTabs.tsx`, `PillTabs.tsx`, `SegmentedControl.tsx`, `useTabParam.ts` | `MegaMenu` (flyout of category columns, `text-overline` headers, New badges, See all), `MinimalHeader` (breadcrumb left, one link + one primary right), `TextTabs` (big display tabs for 2–4 top-level views, brand underline, `href`, `onBeforeChange`, `activation`), `PillTabs` (default section tabs for 5+ sections or sections with icons, sliding `item-hover` pill, `tabpanel`, `href`, `onBeforeChange`, `activation`), `SegmentedControl` (2–5 filter values with counts, sliding `raised-2` pill, `radiogroup`), `useTabParam` (`?tab=` URL state without history spam per arrow key) (§4, §4h) |
-| `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle` (`actions`: the page's action on the title row), `PageTabsTitle` (underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh; phone layout with `filters` / `collapseFilters` / `secondaryActions`), `ToolbarFilters` (§4a) |
-| `SearchPill.tsx`, `FilterChipRow.tsx`, `ViewSwitch.tsx`, `FilterPanel.tsx`, `filterParams.ts` | `StickyContextBar` (sticky search + chips + result line), `SearchPill` (wide pill search, debounce, `/`), `ResultLine` (query · N kết quả + sort), `SortDef`, `FilterChipRow` (one-line chips, ‹ ›, Xoá lọc, leading views, trailing tools), `FilterChip`, `FilterOptions` (the checkbox list of one filter), `useFilterParams` (filter state in the URL, Back / Forward), `ViewSwitch` (list ↔ grid, density), `PhoneFilterBar` (views · Bộ lọc · settings), `FilterPanel` (full-screen / side-sheet filters); URL helpers `readFilters`, `readFilterValues`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, types `FilterSpec`, `FilterDef`, `FilterOption`, `FilterValues` (§4) |
+| `Page.tsx`, `ListReader.tsx` | `Page` (shared 1.0 page anatomy and `work` / `reading` / `two-column` layouts + vertical rhythm), `SubNav` (240px sub-nav card with `text-nav-label` groups and h32 items), `PageSection` (20/500 heading + 16px content gap), `PageGrid` (8px `@container` grid), `ListReaderLayout` (two independent scrollers on `fixed` mode, `?open=`, `useRecordCrumb`, phone swap), `ReaderHeader` (sticky one-row reader header: wrapping title left, `[•••]` + one main action right) (§4a) |
+| `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle` (18/400 UI sans on the action row; `variant="reading"` 44/500 display title for one-column reading pages), `PageTabsTitle` (deprecated underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh; phone layout with `filters` / `collapseFilters` / `secondaryActions`), `ToolbarFilters` (§4a) |
+| `SearchPill.tsx`, `FilterChipRow.tsx`, `ViewSwitch.tsx`, `FilterPanel.tsx`, `filterParams.ts` | `StickyContextBar` (sticky search + filter row, 16px above the list), `SearchPill` (wide pill search, debounce, `/`), `ResultLine` (deprecated in 1.0), `SortDef`, `FilterChipRow` (one-line chips, ‹ ›, Xoá lọc, leading views, trailing `sort` + `selection` in-place bulk bar + `ViewSwitch`), `useListSelection` (selection-mode state hook), `BulkAction`, `ListSelection`, `FilterChip`, `FilterOptions`, `useFilterParams` (filter state in the URL, Back / Forward), `ViewSwitch` (list ↔ grid, density), `PhoneFilterBar` (views · Bộ lọc · sort · Chọn / in-place selection bar), `FilterPanel` (full-screen / side-sheet filters); URL helpers `readFilters`, `readFilterValues`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, types `FilterSpec`, `FilterDef`, `FilterOption`, `FilterValues` (§4, §4d) |
 | `SplitButton.tsx`, `CardActions.tsx`, `DetailOverlay.tsx` | `SplitButton` (main action + ▾ `Menu` of its variants, one button on phones, G1), `CardActions` (hover / focus icon actions + ⋯ on cards, ⋯ only on touch), `DetailOverlay` (record over its list: ‹ › with n / N, side panel, scroll kept), `useDetailParam` (`?open=` in the URL, Back closes), `openDetail` (open one from anywhere on the route), types `CardAction`, `DetailParamState` (§4, §9) |
 | `WorkspaceLayout.tsx`, `GuidedEmptyState.tsx`, `FeatureIntro.tsx`, `HintTextarea.tsx` | `WorkspaceLayout` (page type workspace: control panel + sticky main action, result), `WorkspaceHeader` (back + tool name, tabs), `WorkspaceSection` (`text-overline` label + counter), `Stepper` (− value +, spinbutton), `GuidedEmptyState` (EmptyState variant guided: step carousel or numbered steps, starting points), `FeatureIntro` (once-per-user feature dialog, `localIntroStore`), `HintTextarea` (@ / `/` hints and suggestions), types `GuideStep`, `GuideTemplate`, `GuideTemplateGroup`, `FeatureIntroSlide`, `FeatureIntroStore`, `HintToken`, `HintTrigger` (§4, §9b, §13, §14) |
 | `KpiCard.tsx`, `Modal.tsx` | `KpiCard` (metric card in the brand's figure font, neutral icon, `featured` for the screen's main number, shimmer), `Modal` (shared portal dialog with `MODAL_HEAD` + `MODAL_FOOT`) (§13, §14) |
@@ -2473,7 +2467,7 @@ with `/semi-propose`.
 | T4 #146 | Buttons and attention marks | merged on `main` (#157), unreleased: ships in 1.0.0 | `1.0.0-buttons` |
 | T5 #147 | Tabs: PillTabs, SegmentedControl, big TextTabs | merged on `main`, unreleased: ships in 1.0.0 | `1.0.0-tabs` |
 | T6 #148 | Fields and forms | merged on `main`, unreleased: ships in 1.0.0 | — |
-| T7 #149 | Page layouts and lists | pending | — |
+| T7 #149 | Page layouts and lists | merged on `main`, unreleased: ships in 1.0.0 | — |
 | T8 #150 | StickyContextBar pinning and actions | pending | — |
 | T9 #151 | Motion wiring | pending | — |
 
@@ -2688,14 +2682,11 @@ autofocus (`autoFocusFirstField`, opt-out `false`) and `focusFirstField(root)`.
 reply-box drag → `Textarea` / `HintTextarea` `autoGrow` + `resizable`; the `.border-control-line` override in the
 globals tail.
 
-## T7: page layouts and lists (pending, #149)
+## T7: page layouts and lists (merged, ships in 1.0.0)
 
-**Target.** Work pages flush (no centred max-width), reading pages centred at 1536px, two-column pages (240px sub-nav
-card + main card); the rhythm 32 / 28 / 32 / 16 / 8; the page title 18 / 400 on the row of the page's main action; list
-pages without a result-count row, sort and "Chọn" on the filter row, selection mode in the filter row (`n đã chọn` +
-bulk actions, checked rows `item-checked`); the list + reader pattern with the reader header (subject left, ••• and the
-main action right). **Replaces:** in the globals tail the flush container (`main#main > div`), `.page-title-row` and
-`.content-card h1`, `.page-column*`, `.list-*`. **Until it ships:** keep them.
+**What changed** (#149, CHANGELOG "1.0 page layouts and lists"). New `Page` (`layout="work" | "reading" | "two-column"`, `fixed`, shared anatomy slots `title` / `actions` / `tabs` / `intro` / `toolbar` / `children` / `footer` owning the 32 / 28 / 32 / 16 / 8 vertical rhythm), `SubNav` (240px sub-nav card, 20 / 10 padding, `text-nav-label` group labels with optional 16px icon actions, h32 items, 1px `bg-raised` dividers), `PageSection` (20/500 heading + 16px content gap), `PageGrid` (8px `@container` grid), `ListReaderLayout` + `ReaderHeader` (two independent scrollers on `fixed` mode, `?open=`, `useRecordCrumb`, phone swap with Back, sticky one-row header with wrapping title left and `[•••]` + one main action right), and `useListSelection`. `PageTitle` becomes 18 / 400 UI sans on the action row (`variant="reading"` opts into 44 / 500 `text-title-xl` display on one-column reading pages). `FilterChipRow` and `PhoneFilterBar` gain `sort` and in-place `selection` (`"n đã chọn"` 600 + `•••` + at most one filled bulk button + `"Xong"`, zero list shift); `ResultLine` is deprecated for list pages; `DataTable` gains `activeRowId` (`bg-item-selected`); `Card` and `Item` gain non-nested `selectable` / `checked` / `onCheckedChange` / `selected`. `WorkspaceLayout.action` is optional, `SplitButton` gains `fullWidth`, and `PageSkeleton` gains `shape="workspace"`.
+
+**What the app deletes** (sales-hub v0.7.0): in the globals tail the flush container (`main#main > div`), `.page-title-row` and `.content-card h1`, `.page-column*`, `.list-*`, and hand-built selection rows.
 
 ## T8: StickyContextBar pinning (pending, #150)
 
@@ -2735,7 +2726,7 @@ local code. "Delete when" is the ticket that ships the replacement.
 | `ProviderCards` (`SettingsView.tsx`) | `OptionCards` | T6 (merged, in 1.0.0) |
 | reply-box drag | `Textarea` / `HintTextarea` `autoGrow` + `resizable` | T6 (merged, in 1.0.0) |
 | globals tail: `.border-control-line` override | quiet fields | T6 (merged, in 1.0.0) |
-| globals tail: flush container, `.page-title-row`, `.content-card h1`, `.page-column*`, `.list-*` | T7 page layouts | T7 |
+| globals tail: flush container, `.page-title-row`, `.content-card h1`, `.page-column*`, `.list-*` | T7 page layouts (`Page`, `SubNav`, `PageTitle`, `ListReaderLayout`) | T7 (merged, in 1.0.0) |
 | `semi-pending/BarActions.tsx`, `semi-pending/stickyBar.ts` | `StickyContextBar` pinning and actions | T8 |
 | globals tail: `.bar-actions`, `[data-page]` scroll rules, `.content-card [role="search"]` | `StickyContextBar` | T8 |
 | `app/semi-pending-motion.css`, `PageEnter` | motion tokens and page enter | T9 |
@@ -2851,7 +2842,7 @@ and `text-tone-*` are one fixed palette for every brand. Their text (light: the 
 | `text-tag` | 10 · 500 · +0.02em | tags, chips |
 | `text-badge` | 10 · 700 · lh 1 | count badges only |
 | `text-overline` | 11 · 600 · +0.1em · uppercase | section labels |
-| `text-nav-label` | 10 · 500 · normal tracking · uppercase · `text-faint` | the AppShell nav group label only |
+| `text-nav-label` | 10 · 500 · normal tracking · uppercase · `text-faint` | AppShell nav and `SubNav` group labels |
 
 Two sizes for UI text (C-011, #155): **content is 14px, only the shell chrome is 12px.** 12px suits the frame around the
 work (nav, breadcrumb, toolbars, meta), but dense content at 12px reads poorly, Vietnamese diacritics most of all.
@@ -2932,14 +2923,14 @@ Under `prefers-reduced-motion: reduce` the distances (`--motion-crumb-distance`,
 
 All web UI here follows the **Semi Design System** (`@semi/ui`, repo `https://github.com/hoanghuynh296/semi-nextjs-codebase`). `npx semi-lint` enforces most of this; the full rules are `node_modules/@semi/ui/docs/QUICK_REF.md` (details in `docs/DESIGN_SYSTEM.md`).
 
-**Semi 1.0 in short** (`DESIGN_SYSTEM.md` §0): one look for every brand; neutral grey surfaces; **the brand colour only on the one main button of a page or modal (at most one filled brand button per page or modal), the nav's main action, the active big-tab underline, attention badges / "Mới" tags, or a case the app's owner asks for**, every other action a neutral button; headings 400 / 500, never bold; content text 14px (`text-ui`), shell chrome 12px (`text-chrome`), fields 16px on phones. Parts marked *(Tn, pending)* in `DESIGN_SYSTEM.md` (T3, T7–T9) are 1.0 targets not shipped yet: use what Semi has today for them and never build a local stand-in. Upgrading from 0.x: `docs/MIGRATION-1.0.md`.
+**Semi 1.0 in short** (`DESIGN_SYSTEM.md` §0): one look for every brand; neutral grey surfaces; **the brand colour only on the one main button of a page or modal (at most one filled brand button per page or modal), the nav's main action, the active big-tab underline, attention badges / "Mới" tags, or a case the app's owner asks for**, every other action a neutral button; headings 400 / 500, never bold; content text 14px (`text-ui`), shell chrome 12px (`text-chrome`), fields 16px on phones. Parts marked *(Tn, pending)* in `DESIGN_SYSTEM.md` (T3, T8–T9) are 1.0 targets not shipped yet: use what Semi has today for them and never build a local stand-in. Upgrading from 0.x: `docs/MIGRATION-1.0.md`.
 
 1. **Ask Semi before writing UI.** Find the component for each need with the `semi` MCP tools (`semi_search` → `semi_docs` → `semi_example`; `semi_block` for whole pages; `semi_props` for props) or the terminal (`npx semi search "bảng có sắp xếp"`, `npx semi docs DataTable`, `npx semi example data-table`, `npx semi add dashboard`). They answer from the installed `@semi/ui`. Read *When to use*, *Use something else when* and *Accessibility*, then start from an example.
 2. **Compose, never re-create.** Import from `@semi/ui` and `@semi/ui/styles` directly. No local wrappers (`components/ui.tsx`), no raw `<select>`, `<table>`, `<dialog>`, `type="date"`, `type="number"`, `window.confirm` / `alert`, no inline `<svg>` or glyph icons (`<Icon name>`, mapping in `docs/ICONS.md`). Every AI conversation is `AIChat`; agent work uses `Reasoning`, `ToolCall`, `TaskList`, `Terminal`, `Sources`; an outward-facing, paid or irreversible agent action waits for `ActionConfirmation`. Pages sit in `AppShell` (or `AppHeader` for a one-screen tool) with `PageTitle` (or the title on the toolbar row: `SubpageToolbar title`, or `TextTabs` for 2–4 sub-pages; a detail page opens with `MinimalHeader`); the shell's one brand-filled action is `mainAction`, its bottom row is `tools` (+ `toolsMenu`), the account (with the theme) is the route header's avatar menu (`header.account`; the nav has no account), and phones use its drawer; sub-views of one area go in nav `children` (closed until the parent is chosen, optional grey icon, no colour or count; check `useAppShell().submenuVisible` and add a page picker when false); a list page that people search and filter opens with `StickyContextBar` (`SearchPill`, `FilterChipRow` on `md+` / `PhoneFilterBar` + `FilterPanel` on phones, `ResultLine`), filter state in the URL (`useFilterParams`), chips on one line, never wrapped rows (`filter-chip-wrap`, warning); dialogs are `Modal` / `Drawer` / `confirmDialog`; loading is `Skeleton`, never "Đang tải…" text, and a list, grid or table never swaps its rows for a `Spinner` (`no-spinner-in-list`, warning). `AppShell` renders once in a `layout.tsx` (never from a page), its items route by `href` (not `onSelect` + `router.push`), the session check runs once in that layout (best on the server) with `BootLoader` as the only centred spinner, and content loading is a `loading.tsx` with `PageSkeleton` inside the shell, never a skeleton gate around it. No other UI or icon library (`lucide-react`, `react-icons`, `@radix-ui`, `@mui`, a shadcn `components/ui` copy: `foreign-ui`), no own `Card` / `Badge` / `Tooltip`… (`local-primitive`), no raw `<button>`, `<input>`, `<textarea>`, `<table>` (`raw-control`), no hand-made overlay or spinner (`custom-overlay`, `custom-spinner`); a clickable card is `<Card onClick>` (keyboard-ready), never `<div onClick>` (`click-target`).
 3. **Tokens only** (dual theme, any brand):
    - Colour (`docs/TOKENS.md`): surfaces `bg-canvas|app|panel|field|raised` (+ `bg-card` for a card in content, never `bg-panel`; `bg-panel-0…4`); text `text-strong|body|muted|faint` (faint only for group labels, kbd hints, "Untitled", on page surfaces and cards); lines `border-line|divider`, `border-control-line` (checkbox, radio), `border-field-line` / `border-outline-line`; neutral states `bg-item-hover` (hover), `bg-item-selected` (open record, active item, selected option), `bg-item-checked` (checked rows), `bg-inverted text-on-inverted` (checked controls), `ring-focus` / `border-focus` (focus); status `bg-*-bg border-*-border text-*-fg` (danger, success, warning, info) and tones `text-tone-*` only on tags, tiles and dots. Pages separate by tone, not borders or shadows (`<Card bordered>` only for a dense data view). **Brand fills** `bg-primary hover:bg-primary-hover text-on-primary` (and `bg-secondary` … when the brand has one) only where the brand colour rule says; selection, links, check marks, active tabs and focus are neutral. Never physical colours (`bg-white`, `text-slate-900`, `text-amber-600 dark:text-amber-400`), arbitrary colours (`bg-[#…]`), `accent-*` or `primary-50…900` (removed in 1.0), gradients or glow shadows.
    - Buttons (`DESIGN_SYSTEM.md` §0, §9): ordinary actions are neutral. `Button` is `subtle` by default; `surface` for toolbar actions; `inverse` for the main action of a card or a list title row (`size="xs" shape="round"` for the pill), `outline` beside it; `ghost` for icon buttons; `primary` / `secondary` (the brand fills; `secondary` is the brand secondary, the primary when the brand has none) only for the one main button of a page or modal (its commit action), the nav's `mainAction` or a case the app's owner asks for; `danger` for destructive. Attention counts are `CountBadge` / Button `badge`, a new item is `NewTag`. Tabs (`DESIGN_SYSTEM.md` §0, §4h): `PillTabs` for 5+ sections or sections with icons (settings-like pages), `SegmentedControl` for 2–5 filter values shown in full with counts (replaces deprecated `Pills`), big `TextTabs` for 2–4 top-level views of a discovery or reading page (display face at 400, brand underline), `FilterChipRow` for filters, `Tabs` for sections of one record, `useTabParam` for `?tab=` URL state without history spam per arrow key.
-   - Layouts (`DESIGN_SYSTEM.md` §4a; T7, pending: today `PageTitle` draws the 0.x display title and content sits in a `max-w-[1440px]` container; build the page structure below with today's components, never a local layout stand-in): **work** pages (lists, tables, workspaces) flush with no centred max-width; **reading** pages (settings, explore, articles) one column centred at 1536px; **two-column** pages a 240px sub-nav card + the main card; **list + reader** a list card + a reader card. Rhythm 32 / 28 / 32 / 16 / 8. A work page's title is 18 / 400 on the row of its main action; one `h1` per page.
+   - Layouts (`DESIGN_SYSTEM.md` §4a, `Page`, `SubNav`, `ListReaderLayout`, `ReaderHeader`): **work** pages (lists, tables, workspaces) flush with no centred max-width (padding 16 / 24); **reading** pages (settings, explore, articles) one column centred at 1536px inside 16px padding + 64px bottom; **two-column** pages a 240px `SubNav` card + 4px gap + main card (padding 24, stacking below `md`); **list + reader** a list card + reader card (`ListReaderLayout` on `Page fixed` / `AppShell page="fixed"`, sticky `ReaderHeader` with wrapping title left and `[•••]` + one main action right). Rhythm 32 / 28 / 32 / 16 / 8 (`PageSection`, `PageGrid`). A work page's `PageTitle` is 18 / 400 on the row of its main action (`variant="reading"` 44 / 500 display on reading pages only); one `h1` per page. List pages omit `ResultLine` (16px under filter row), put sort + "Chọn" on `FilterChipRow` / `PhoneFilterBar`, and swap bulk actions in place on the filter row at the same height (`useListSelection`).
    - Type scale only (`docs/TOKENS.md`): `text-ui` (14, content: rows, labels, fields, buttons, body) · `text-chrome` (12, shell chrome only: nav, breadcrumb, toolbar, meta) · `text-lead` 15 · `text-figure` 18 · `text-section` 20 · `text-tab-xl` · `text-title-xl` · `text-hero` · `text-tag` / `text-badge` 10 · `text-overline` · `max-sm:text-input` 16 for fields; text colours `text-strong|body|muted|faint`; headings not bold (400 / 500, `font-title` 500; 600 only overlines, 700 only count badges), titles and big numbers `font-title` / `font-figure`; `tabular-nums` for numbers; sentence case (the one uppercase style is `text-overline`, only as a group or section label: a nav / drawer group, a palette group, a mega menu column, a section of a form or detail panel; never one field's label, a button, a link or a heading: `overline-place`). Content (list rows, table cells, field labels and help, buttons, menu items, sentences) is `text-ui` (14); only the shell chrome (nav, breadcrumb, toolbar compact buttons) and meta (a time, a count, a hint) are `text-chrome` (12). Each size sets its own line height: no `leading-*` on body text.
    - Spacing by role (scaled by density): `p-card` inside every card, popover and panel section (`<Card>` sets it; `p-card sm:p-panel` for a roomy one), `gap-stack` between items in a card or form, `gap-group` between cards, `gap-section` between page sections. `gap-1`–`gap-2`, `px-2`, `py-1` only inside one control or row. A card is never tighter than `p-card` (`card-padding`). No arbitrary spacing, z-index or opacity (`p-[13px]`, `z-[9999]`, `bg-panel/[0.05]`: `arbitrary-value`); no `shadow-sm…2xl` (`tw-shadow`), `uppercase` (`text-case`) or `leading-*` other than `leading-tight` (`leading-override`); no colours, sizes or radii in `style={{}}` (`inline-style-value`) or in `.css` (`css-raw-value`).
    - Shape and size are Semi's one look (no styles since 1.0; a leftover `data-style` does nothing): `rounded-chip|control|card|panel|full`, `shadow-card`, `h-control`, `h-field`. Never `rounded-lg`, `rounded-[Npx]`, `h-[34px]` or `[data-style]` selectors. Density and type scale are this product's (`data-density`, `data-type-scale`): never tune paddings or text sizes by hand for that.
@@ -3230,6 +3221,7 @@ export default function ButtonGroupBasic() {
 |---|---|---|---|
 | `label` | `string` |  | Accessible name of the group ("Điều hướng ngày"). |
 | `orientation` | `'horizontal' \| 'vertical'` | `"horizontal"` |  |
+| `fullWidth` | `boolean` | `false` | Stretch the group across its container's width (`flex w-full`). |
 | `className` | `string` |  |  |
 | `children` * | `React.ReactNode` |  | Button elements (Button, or anything styled with BTN_*). |
 
@@ -3637,7 +3629,8 @@ export default function SplitButtonSecondary() {
 | `size` | `'sm' \| 'md'` | `"md"` |  |
 | `loading` | `boolean` | `false` | The main action is running: spinner and no clicks on the main half; the ▾ stays usable. |
 | `disabled` | `boolean` | `false` | Disables both halves. |
-| `collapseOnPhone` | `boolean` | `true` | Below `sm`, show one button (the icon, or the label with ▾) that opens a menu with the main action first. |
+| `fullWidth` | `boolean` | `false` | Stretch to fill its container (e.g. a `WorkspaceLayout` pinned action): the main half takes `flex-1` while the ▾ keeps its width, and `collapseOnPhone` defaults to `false` so phones keep the full-width split button. |
+| `collapseOnPhone` | `boolean` |  | Below `sm`, show one button (the icon, or the label with ▾) that opens a menu with the main action first. Defaults to `false` when `fullWidth` is set, otherwise `true`. |
 | `className` | `string` |  |  |
 
 ## Accessibility
@@ -4809,8 +4802,9 @@ export default function FilterChipRowMany() {
 
 The filter chips of a list page on one line. When they overflow, the row scrolls sideways and ‹ › buttons appear
 (hidden from screen readers and the tab order: every chip is reachable by Tab, which scrolls it into view).
-"Xoá lọc" shows while a filter is on; `leading` (the page's views as Pills) sits before the chips and `trailing`
-(ViewSwitch) at the end, each behind a divider; neither scrolls with the chips.
+"Xoá lọc" shows while a filter is on; `leading` (the page's views as Pills) sits before the chips; `sort`,
+`selection` ("Chọn" → in-place `"n đã chọn"` + bulk actions at the same height) and `trailing` (`ViewSwitch`) sit
+at the right end.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
@@ -4818,7 +4812,9 @@ The filter chips of a list page on one line. When they overflow, the row scrolls
 | `onChange` * | `(key: string, selected: string[]) => void` |  |  |
 | `onClear` | `() => void` |  | Clears every filter; the "Xoá lọc" button shows while one is on. |
 | `leading` | `React.ReactNode` |  | Before the chips: the page's views (`<Pills>`: Đang mở · Đã đóng · Tất cả), the md+ twin of PhoneFilterBar's `typeItems`. A view is not a filter: "Xoá lọc" leaves it alone. Keep it short (2–5 views); it does not scroll. |
-| `trailing` | `React.ReactNode` |  | Tools at the end of the row: ViewSwitch, a sort that is not in a ResultLine. |
+| `trailing` | `React.ReactNode` |  | Extra tools at the end of the row (e.g. `ViewSwitch`). Replaced in place while `selection` is active. |
+| `sort` | `SortDef` |  | Sort menu at the right end of the filter row (1.0: replaces ResultLine's sort). |
+| `selection` | `ListSelection` |  | Selection mode ("Chọn") and bulk actions replacing the right side at the same height (zero list shift). |
 | `label` | `string` |  | Accessible name of the chip group (default "Bộ lọc"). |
 | `className` | `string` |  |  |
 
@@ -4942,8 +4938,9 @@ export default function FilterPanelPhone() {
 ### PhoneFilterBar
 
 The filter controls of a phone list page in one row: an optional type menu (the page's views), "Bộ lọc" with the
-active count (opens FilterPanel) and an optional settings button (sort and view). Show it below `md` in place of
-FilterChipRow (`md:hidden` / `max-md:hidden` around each).
+active count (opens FilterPanel), optional `sort` menu, optional `selection` ("Chọn" → replaces the row at the same
+`h-11` height with `"n đã chọn"`, •••, one bulk button and `"Xong"`), and optional settings. Show below `md` in place
+of `FilterChipRow` (`md:hidden` / `max-md:hidden`).
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
@@ -4952,6 +4949,8 @@ FilterChipRow (`md:hidden` / `max-md:hidden` around each).
 | `activeCount` * | `number` |  | How many filters are on (activeFilterCount); shown on the button. |
 | `onOpenFilters` * | `() => void` |  |  |
 | `filtersOpen` | `boolean` |  | Whether the panel is open (aria-expanded on the button). |
+| `sort` | `SortDef` |  | Sort menu right on the phone filter row (radio items). |
+| `selection` | `ListSelection` |  | Selection mode ("Chọn") and bulk actions replacing the row at the same height (zero list shift). |
 | `onOpenSettings` | `() => void` |  | Opens the sort and view settings; the button shows when given. |
 | `className` | `string` |  |  |
 
@@ -8761,6 +8760,181 @@ export default function BreadcrumbCollapsed() {
 
 ---
 
+<!-- docs/components/list-reader.md -->
+
+# List + reader
+
+A list card beside a reader card (`ListReaderLayout`) with a sticky one-row `ReaderHeader` (wrapping title left, [•••] then one main action right, top-aligned, identical button height). Each panel scrolls independently on `AppShell page="fixed"` / `Page fixed` with zero hand-tuned `calc()`. Open item lives in `?open=` (`useDetailParam`) and `RouteHeader` breadcrumbs (`useRecordCrumb`); below `lg` the reader replaces the list with a Back button.
+
+## When to use
+
+- Mail inboxes, support tickets, chat queues, notification centres or log viewers where people scan a list and read items side by side.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A table or card grid where opening a record shows a modal overlay | DetailOverlay + useDetailParam |
+| A tool with a 380px control panel and live result | WorkspaceLayout |
+
+## Import
+
+```tsx
+import { ListReaderLayout, ReaderHeader } from "@semi/ui";
+```
+
+## Examples
+
+### Mail inbox (list + reader)
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Item, ListReaderLayout, ReaderHeader, toast, useDetailParam } from "@semi/ui";
+
+type Thread = { id: string; subject: string; from: string; time: string; preview: string; paragraphs: string[] };
+
+const THREADS: Thread[] = Array.from({ length: 12 }, (_, i) => ({
+  id: `m-${i + 1}`,
+  subject:
+    i === 0
+      ? "Báo giá hạt tiêu đen hữu cơ xuất khẩu quý 4 và lịch giao container tại cảng Cát Lái"
+      : `Trao đổi đơn hàng #${1040 + i} — xác nhận quy cách đóng gói`,
+  from: ["Gia vị Tây Nguyên", "HTX Chư Sê", "Hương Quế Yên Bái", "Nông sản Đắk Lắk"][i % 4],
+  time: `${9 + (i % 9)}:${String((i * 13) % 60).padStart(2, "0")}`,
+  preview: "Gửi anh chị bảng giá cập nhật theo lô 10 tấn và chứng từ kiểm định mới nhất.",
+  paragraphs: Array.from(
+    { length: 8 },
+    (_, p) =>
+      `Đoạn ${p + 1}: Chúng tôi đã kiểm tra tồn kho và lịch tàu dự kiến trong tuần tới. Vui lòng xác nhận số lượng cuối cùng trước 15:00 để bộ phận kho giữ hàng và chuẩn bị hồ sơ xuất xưởng.`,
+  ),
+}));
+
+export default function ListReaderInboxExample() {
+  const detail = useDetailParam("mail");
+  const [fallbackId, setFallbackId] = useState<string | null>(THREADS[0].id);
+  const openId = detail.openId ?? fallbackId;
+  const active = THREADS.find((t) => t.id === openId) ?? null;
+
+  return (
+    <div className="h-[440px] flex flex-col min-h-0">
+      <ListReaderLayout
+        open={active !== null}
+        openKey={active?.id}
+        recordTitle={active?.subject}
+        onClose={() => {
+          setFallbackId(null);
+          if (detail.openId) detail.close();
+        }}
+        listLabel="Danh sách thư"
+        readerLabel="Nội dung thư"
+        list={THREADS.map((item) => (
+          <Item
+            key={item.id}
+            title={item.subject}
+            description={`${item.from} · ${item.preview}`}
+            meta={item.time}
+            selected={active?.id === item.id}
+            onClick={() => {
+              setFallbackId(item.id);
+              detail.open(item.id);
+            }}
+          />
+        ))}
+        reader={
+          active && (
+            <>
+              <ReaderHeader
+                title={active.subject}
+                meta={`${active.from} · ${active.time}`}
+                moreActions={[
+                  { label: "Chuyển tiếp", icon: "send", onSelect: () => toast({ title: "Chuyển tiếp thư" }) },
+                  { label: "Lưu trữ", icon: "folder", onSelect: () => toast({ title: "Đã lưu trữ" }) },
+                  { label: "Xoá thư", icon: "trash", danger: true, onSelect: () => toast({ title: "Đã xoá", tone: "danger" }) },
+                ]}
+                action={{
+                  label: "Trả lời",
+                  icon: "send",
+                  onClick: () => toast({ title: `Trả lời ${active.from}` }),
+                }}
+              />
+              <div className="p-4 sm:p-5 flex flex-col gap-3">
+                {active.paragraphs.map((text, idx) => (
+                  <p key={idx} className="text-ui text-body">
+                    {text}
+                  </p>
+                ))}
+              </div>
+            </>
+          )
+        }
+      />
+    </div>
+  );
+}
+```
+
+## API
+
+### ListReaderLayout
+
+List + reader layout (#149, #118): a list card on the left and a reader card on the right, each its own independent
+scroll container (`overflow-y-auto overscroll-contain`), filling the remaining height of `AppShell page="fixed"` /
+`Page fixed` with zero hand-tuned `calc()`. Drive `open` and `onClose` from `useDetailParam()` (`?open=`, Back
+closes); pass `recordTitle` to add the open record to `RouteHeader` breadcrumbs via `useRecordCrumb`.
+Below `lg`, opening an item swaps the reader in place of the list (with `ReaderHeader`'s Back button).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `list` * | `React.ReactNode` |  | List items (e.g. `Item` rows with `selected={openId === id}`). Scrolls inside the list card. |
+| `reader` * | `React.ReactNode` |  | The open record (`<ReaderHeader … />` + body). Shown when `open` is true. |
+| `open` * | `boolean` |  | True while an item is open (`openId !== null` from `useDetailParam()`). |
+| `openKey` | `null \| string` |  | Identifier of the open item (resets reader scroll to top when switching items). |
+| `onClose` | `() => void` |  | Close handler (`useDetailParam().close`, wired to `ReaderHeader`'s below-`lg` Back button). |
+| `recordTitle` | `null \| string` |  | Open record label pushed into `RouteHeader` breadcrumbs via `useRecordCrumb` while `open` is true. |
+| `empty` | `React.ReactNode` |  | Empty state shown in the reader card on `lg+` when no item is open. |
+| `listWidth` | `'sm' \| 'md' \| 'lg'` | `"md"` | Width of the list card from `lg`: `"sm"` 288px, `"md"` 352px (default), `"lg"` 400px. |
+| `listLabel` | `string` |  | Accessible name of the list region (default locale `listLabel`). |
+| `readerLabel` | `string` |  | Accessible name of the reader region (default locale `readerLabel`). |
+| `className` | `string` |  |  |
+
+### ReaderHeader
+
+Sticky one-row header of a reader pane (general pattern for mail, tickets, chat; owner decision 2026-11-23):
+- Left: below-`lg` Back button (wired automatically from `ListReaderLayout`'s `onClose`) + wrapping `title` (never
+  truncated) and optional muted `meta` line underneath.
+- Right: `[•••]` `Menu` (all secondary / overflow actions) then one main `action`, top-aligned (`items-start`),
+  both buttons at identical `md` (`h-control`) height.
+- Stays sticky (`sticky top-0 z-sticky bg-app`) while the reader body scrolls underneath.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `title` * | `React.ReactNode` |  | Subject or record title on the left; wraps cleanly onto multiple lines. |
+| `meta` | `React.ReactNode` |  | Optional quiet meta line directly under the title (sender, timestamp, ticket id). |
+| `action` | `ReaderMainAction \| React.ReactNode` |  | The one main action on the right (e.g. Trả lời / Reply), or a custom button element at `size="md"`. |
+| `moreActions` | `MenuItem[]` |  | Every other reader action (Chuyển tiếp, Lưu trữ, Đóng ticket, Xoá…) goes into this `•••` Menu. |
+| `moreLabel` | `string` |  | Accessible name of the `•••` menu (default locale `moreActions`). |
+| `onBack` | `() => void` |  | Back handler below `lg` (defaults to the enclosing `ListReaderLayout`'s `onClose`). |
+| `backLabel` | `string` |  | Accessible name of the phone Back button (default locale `backToList`). |
+| `headingLevel` | `1 \| 2 \| 3` | `2` | Heading level for the reader title (default 2: the page `h1` sits above). |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- List and reader are named <section> landmarks; the open item marks aria-current="true" on its row; below lg the Back button returns to the list and closes ?open=.
+- ReaderHeader keeps [•••] and the main action top-aligned at identical height with every secondary action inside •••.
+
+## Notes
+
+- General pattern for every list + reader (mail, tickets, chat): title on the left (wraps), [•••] plus one main action on the right of the same row; every other action goes into •••.
+- Pass `recordTitle` to `ListReaderLayout` so the open record is appended to `RouteHeader` breadcrumbs via `useRecordCrumb`.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/list-reader/ and the types in src/ -->
+
+
+---
+
 <!-- docs/components/mega-menu.md -->
 
 # Mega menu
@@ -9191,11 +9365,241 @@ Where the actions appear: the right end of the page header row.
 
 ---
 
+<!-- docs/components/page.md -->
+
+# Page layouts
+
+Shared 1.0 page anatomy and three layouts inside AppShell's content card: work (flush, padding 16 / 24), reading (centred max 1536px inside 16px card padding, 64px bottom), and two-column (240px sub-nav card + 4px gap + main card, stacking below md). Owns vertical rhythm (32 / 28 / 32 / 16 / 8).
+
+## When to use
+
+- Every page inside AppShell: lists and workspaces (work), settings / explore / articles (reading), areas with sub-pages or mailbox folders (two-column).
+- Shared page slots (title, actions, tabs, intro, toolbar, content, footer) so pages set no margins between blocks.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A tool with a 380px control panel and live result | WorkspaceLayout inside Page layout="work" |
+| A list and open record side by side | ListReaderLayout inside Page fixed |
+
+## Import
+
+```tsx
+import { Page, SubNav, PageSection, PageGrid } from "@semi/ui";
+```
+
+## Examples
+
+### Work layout (flush)
+
+```tsx
+"use client";
+
+import { Button, Card, KpiCard, Page, PageGrid, PageSection, toast } from "@semi/ui";
+
+export default function PageWorkExample() {
+  return (
+    <Page
+      layout="work"
+      title="Tổng quan xưởng in"
+      actions={
+        <Button variant="inverse" icon="plus" onClick={() => toast({ title: "Tạo lệnh in" })}>
+          Tạo lệnh in
+        </Button>
+      }
+    >
+      <PageSection title="Hôm nay">
+        <PageGrid columns={3}>
+          <KpiCard label="Đang in" value="8 máy" sub="2 máy sắp xong" featured />
+          <KpiCard label="Hoàn thành" value="24 đơn" sub="+4 so với hôm qua" />
+          <KpiCard label="Chờ duyệt" value="3 đơn" sub="Cần kiểm tra file" />
+        </PageGrid>
+      </PageSection>
+      <PageSection title="Ghi chú vận hành">
+        <Card>
+          <p className="text-ui text-body">Ca chiều ưu tiên các đơn giao trong ngày trước 17:00.</p>
+        </Card>
+      </PageSection>
+    </Page>
+  );
+}
+```
+
+### Reading layout (centred 1536px + 44px title)
+
+```tsx
+"use client";
+
+import { Card, Page, PageGrid, PageSection } from "@semi/ui";
+
+const ITEMS = [
+  { title: "Nhựa PLA+", detail: "Dễ in, ít cong vênh cho mô hình trưng bày." },
+  { title: "Nhựa PETG", detail: "Chịu nhiệt tốt hơn, phù hợp vỏ thiết bị." },
+  { title: "Nhựa ABS", detail: "Bền cơ học cao, cần buồng in kín." },
+];
+
+export default function PageReadingExample() {
+  return (
+    <Page
+      layout="reading"
+      title="Thư viện vật liệu"
+      titleVariant="reading"
+      intro="Chọn đúng vật liệu giúp bản in bền và ổn định kích thước ngay từ lần đầu."
+    >
+      <PageSection title="Vật liệu phổ biến" editorial>
+        <PageGrid columns={3}>
+          {ITEMS.map((item) => (
+            <Card key={item.title} className="flex flex-col gap-2">
+              <h3 className="text-lead font-medium text-strong">{item.title}</h3>
+              <p className="text-ui text-muted">{item.detail}</p>
+            </Card>
+          ))}
+        </PageGrid>
+      </PageSection>
+    </Page>
+  );
+}
+```
+
+### Two-column layout (SubNav + main card)
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Button, Card, Page, PageSection, SubNav, toast, type SubNavSection } from "@semi/ui";
+
+export default function PageTwoColumnExample() {
+  const [active, setActive] = useState("inbox");
+  const sections: SubNavSection[] = [
+    {
+      label: "Thư mục",
+      items: [
+        { id: "inbox", label: "Hộp thư đến", icon: "inbox", meta: 12 },
+        { id: "sent", label: "Đã gửi", icon: "send" },
+        { id: "archive", label: "Lưu trữ", icon: "folder" },
+      ],
+    },
+    {
+      label: "Nhóm thư",
+      actions: [{ label: "Tạo nhóm thư", icon: "plus", onClick: () => toast({ title: "Tạo nhóm thư mới" }) }],
+      items: [
+        { id: "suppliers", label: "Nhà cung cấp", icon: "tag", meta: 4 },
+        { id: "quotes", label: "Báo giá", icon: "fileText", meta: 7 },
+      ],
+    },
+  ];
+  const current = sections.flatMap((s) => s.items).find((i) => i.id === active);
+  return (
+    <Page
+      layout="two-column"
+      subNav={<SubNav sections={sections} activeId={active} onSelect={setActive} label="Thư mục hộp thư" />}
+      title={current?.label ?? "Hộp thư"}
+      actions={
+        <Button variant="inverse" icon="plus" onClick={() => toast({ title: "Soạn thư mới" })}>
+          Soạn thư
+        </Button>
+      }
+    >
+      <PageSection title="Danh sách gần đây">
+        <Card>
+          <p className="text-ui text-body">Đang xem mục: {current?.label}.</p>
+        </Card>
+      </PageSection>
+    </Page>
+  );
+}
+```
+
+## API
+
+### Page
+
+Shared 1.0 page anatomy and layout inside `AppShell`'s content card (#149, #71):
+- `layout="work"` (default): flush, no centred max-width, card padding 16 / 24 (`px-4 sm:px-6`).
+- `layout="reading"`: centred at max 1536px (`max-w-screen-2xl`) inside 16px card padding, 64px bottom padding.
+- `layout="two-column"`: 240px (`md:w-60`) sub-nav card + 4px gap + main card (padding 24); stacks below `md`.
+
+Owns the vertical rhythm from the card top (32px to the header block, 28px from title or tabs to intro / toolbar,
+16px from filter toolbar to list, 32px between content blocks), so pages set no margins on those joins.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `layout` | `'work' \| 'reading' \| 'two-column'` | `"work"` | Page layout inside the content card: `"work"` (flush, 16 / 24), `"reading"` (centred max 1536px inside 16px card padding, 64px bottom), or `"two-column"` (240px sub-nav card + 4px gap + main card). |
+| `fixed` | `boolean` | `false` | Fixed-height page: fills the content column without scrolling the card so inner panels (`ListReaderLayout`, a pinned list) scroll independently. Works inside `<AppShell page="fixed">` or a shared `<AppShell>`. |
+| `subNav` | `React.ReactNode` |  | Sub-navigation card for `layout="two-column"` (`<SubNav sections={…} activeId={…} />`). |
+| `title` | `React.ReactNode` |  | Page heading: a string / node rendered via `PageTitle` (18/400 UI sans by default), or leave out when `tabs` is big `TextTabs`. |
+| `titleVariant` | `'work' \| 'reading'` | `"work"` | On a `"reading"` page, `"reading"` opts into the 44 / 500 display title (`text-title-xl`). Ignored on other layouts. |
+| `actions` | `React.ReactNode` |  | Actions at the right end of the title row (one `inverse` or `primary` action, optional `•••` `Menu` / `RefreshButton`). |
+| `tabs` | `React.ReactNode` |  | Optional tab bar (`PillTabs`, `Tabs`, `Pills`, `TextTabs`, `PageTabsTitle`). |
+| `intro` | `React.ReactNode` |  | Optional lead intro under the title or tabs (28px below). |
+| `toolbar` | `React.ReactNode` |  | Optional sticky toolbar / filter row (`StickyContextBar`, `SubpageToolbar`); content sits 16px below it. |
+| `children` * | `React.ReactNode` |  | Page blocks (spaced 32px apart; in `fixed` mode, fills the remaining height). |
+| `footer` | `React.ReactNode` |  | Optional page footer (`Pagination`, `FormActions`). |
+| `className` | `string` |  |  |
+
+### SubNav
+
+The 240px sub-navigation card of a `two-column` page (`Page layout="two-column" subNav={<SubNav … />}`):
+padding 20 / 10, sections separated by a 1px `bg-raised` line, group labels in `text-nav-label` (10 / 500 uppercase
+faint, row h32, optional 16px icon actions on the right), and items (h32, `rounded-control`, padding 4 / 16,
+`text-chrome` 12 / 500, 16px icon, 2px apart; inactive `text-muted`, hover `bg-item-hover`, active
+`bg-item-selected text-strong`).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `sections` * | `SubNavSection[]` |  |  |
+| `activeId` * | `string` |  |  |
+| `onSelect` | `(id: string) => void` |  |  |
+| `label` | `string` |  | Accessible name of the sub-nav landmark (default locale `subNav`). |
+| `className` | `string` |  |  |
+
+### PageSection
+
+One content section inside `<Page>`: a 20 / 500 heading (`text-section`) spaced 16px (`gap-4`) above its content,
+with optional actions on the heading row. Multiple `PageSection`s inside `<Page>` sit 32px apart automatically.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `title` | `React.ReactNode` |  |  |
+| `editorial` | `boolean` | `false` | Use `font-display` on the 20px section heading (discovery / editorial reading pages only). |
+| `actions` | `React.ReactNode` |  | Optional quiet control or link on the right of the heading row. |
+| `description` | `React.ReactNode` |  | Optional short muted line under the heading. |
+| `headingLevel` | `2 \| 3` | `2` |  |
+| `children` * | `React.ReactNode` |  |  |
+| `className` | `string` |  |  |
+
+### PageGrid
+
+Compact 8px (`gap-2`) grid inside a `<PageSection>` or `<Card>`, sized by `@container` width (§4a rhythm).
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `columns` | `2 \| 3 \| 4` | `3` |  |
+| `children` * | `React.ReactNode` |  |  |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- Page renders one h1 via PageTitle, groups its header in <header>, and SubNav is an <aside> landmark with <nav> lists and aria-current on the active item.
+- SubNav icon actions carry aria-label, Tooltip, HIT_AREA and FOCUS_RING.
+
+## Notes
+
+- Inside AppShell, a direct-child Page automatically overrides the default 1440px container and switches two-column / fixed modes in CSS without remounting AppShell.
+- Vertical rhythm from the card top: 32px to the header block, 28px title/tabs to intro or toolbar, 16px toolbar to list, 32px between blocks, 16px heading to content (PageSection), 8px inside grids (PageGrid).
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/page/ and the types in src/ -->
+
+
+---
+
 <!-- docs/components/page-title.md -->
 
 # Page title
 
-PageTitle is the display title of a page (text only), with the page's own action on its row (`actions`). PageTabsTitle is kept as a deprecated alias for 2–4 sibling tabs — new screens use TextTabs.
+PageTitle is the 18 / 400 UI sans heading of a work page on the same row as the page's main action (`actions`), with `variant="reading"` (44 / 500 display face, text-title-xl) for one-column reading pages only. PageTabsTitle is kept as a deprecated alias for 2–4 sibling tabs — new screens use TextTabs.
 
 ## When to use
 
@@ -9238,20 +9642,32 @@ export default function PageTitleBasic() {
 import { Button, PageTitle, RefreshButton, toast } from "@semi/ui";
 
 export default function PageTitleActions() {
-  // a list page's title row: the page's one action on the right; below sm it wraps under the title
+  // 1.0 work-page title row: 18/400 UI sans title on the same row as the page's inverse main action
   return (
     <PageTitle
       title="Yêu cầu mua"
       actions={
         <>
           <RefreshButton onRefresh={() => new Promise((r) => setTimeout(r, 600))} />
-          <Button variant="primary" icon="plus" onClick={() => toast({ title: "Tạo yêu cầu" })}>
+          <Button variant="inverse" icon="plus" onClick={() => toast({ title: "Tạo yêu cầu" })}>
             Tạo yêu cầu
           </Button>
         </>
       }
     />
   );
+}
+```
+
+### Reading page (44 / 500 display)
+
+```tsx
+"use client";
+
+import { PageTitle } from "@semi/ui";
+
+export default function PageTitleReading() {
+  return <PageTitle title="Khám phá mẫu in" variant="reading" />;
 }
 ```
 
@@ -9282,13 +9698,15 @@ export default function PageTabsTitleBasic() {
 
 ### PageTitle
 
-The page's display heading (its `h1`). With `actions`, the title row of a list page: the title on the left, the
-page's action on the right; below `sm` the actions wrap onto their own row under the title.
+The page's heading (`h1`). By default (`variant="work"`) it is 18 / 400 in the UI sans on the same row as `actions`
+(wrapping only when the row runs out of room). Pass `variant="reading"` on a one-column reading page for the 44 / 500
+display title (`text-title-xl`). Inside `<Page title={…}>`, `<Page>` owns the spacing below this row.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `title` * | `React.ReactNode` |  |  |
-| `actions` | `React.ReactNode` |  | The page's own action at the right end of the title row: one `<Button variant="primary">` (or `inverse`) with an icon and text, optionally a `RefreshButton` before it. More actions go in a ⋯ `Menu` as the last item. Below `sm` they wrap under the title. Leave it out on a page whose `SubpageToolbar` carries the actions. |
+| `actions` | `React.ReactNode` |  | The page's own action at the right end of the title row: one `<Button variant="inverse">` (or `primary` when it is the page's one commit action) with an icon and text, optionally a `RefreshButton` or `•••` `Menu` before it. Leave it out on a page whose `SubpageToolbar` carries the actions. |
+| `variant` | `'work' \| 'reading'` | `"work"` | `"work"` (default): 18 / 400 UI sans (`text-figure`), for lists, workspaces and two-column pages. `"reading"`: 44 / 500 display face (`text-title-xl`, lh 1.2, −0.01em), for one-column reading pages only. |
 | `className` | `string` | `""` |  |
 
 ### PageTabsTitle
@@ -10124,7 +10542,7 @@ phones) stacked as a column. One per page, in place of a SubpageToolbar.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `children` * | `React.ReactNode` |  | Usually SearchPill, then FilterChipRow (PhoneFilterBar on phones), then ResultLine. |
+| `children` * | `React.ReactNode` |  | Usually SearchPill, then FilterChipRow (PhoneFilterBar on phones). No ResultLine in 1.0: the list sits 16px under the filter row. |
 | `label` | `string` |  | Accessible name of the region ("Tìm và lọc khách hàng"); leave it out when the bar holds only a search. |
 | `className` | `string` |  |  |
 
@@ -10837,6 +11255,44 @@ export default function WorkspaceMinimal() {
 }
 ```
 
+### Read-only viewer
+
+Omit `action` when the viewer cannot commit: no pinned bottom bar is rendered.
+
+```tsx
+"use client";
+
+import { Card, WorkspaceHeader, WorkspaceLayout, WorkspaceSection } from "@semi/ui";
+
+export default function WorkspaceReadOnly() {
+  // Read-only viewer: omit `action` so no empty pinned bar is rendered at the bottom of the panel.
+  return (
+    <WorkspaceLayout
+      header={<WorkspaceHeader title="YC-014 Tiêu đen" description="Chỉ xem · Sale Member" backHref="#requests" backLabel="Về Mua hàng" headingLevel={2} />}
+      panel={
+        <>
+          <WorkspaceSection label="Mặt hàng" count={2}>
+            <Card className="flex flex-col gap-1">
+              <span className="text-ui font-medium text-strong">Tiêu đen 550g/l</span>
+              <span className="text-chrome text-muted tabular-nums">12 tấn · Giao tại Cát Lái</span>
+            </Card>
+          </WorkspaceSection>
+          <WorkspaceSection label="Người phụ trách">
+            <p className="text-ui text-body">Nguyễn Minh An</p>
+          </WorkspaceSection>
+        </>
+      }
+      result={
+        <Card className="flex flex-col gap-2">
+          <h3 className="text-lead font-medium text-strong">Bảng so sánh báo giá</h3>
+          <p className="text-ui text-muted">3 nhà cung cấp đã gửi giá. Chờ quản lý chốt đơn.</p>
+        </Card>
+      }
+    />
+  );
+}
+```
+
 ## API
 
 ### WorkspaceLayout
@@ -10845,7 +11301,7 @@ export default function WorkspaceMinimal() {
 |---|---|---|---|
 | `header` | `React.ReactNode` |  | Top of the panel: a `WorkspaceHeader` (back + tool name), segmented tabs above it when the tool has parts. |
 | `panel` * | `React.ReactNode` |  | The controls: `WorkspaceSection`s. Scrolls inside the panel on `lg+`. |
-| `action` * | `React.ReactNode` |  | The main action (one primary Button, `fullWidth`, a secondary beside it at most). Pinned to the panel's bottom. |
+| `action` | `React.ReactNode` |  | Optional main action (one primary `Button` or `SplitButton` with `fullWidth`, a secondary beside it at most). Pinned to the panel's bottom; omit for a read-only viewer so no pinned bar is rendered. |
 | `result` * | `React.ReactNode` |  | What the controls produce: a preview, a comparison, a list. Its headings start at h2 (the tool name is the h1). |
 | `panelLabel` | `string` |  | Name of the panel region (default "Bảng điều khiển"). |
 | `resultLabel` | `string` |  | Name of the result region (default "Kết quả"). |
@@ -10886,7 +11342,8 @@ A section of the workspace panel: a `text-overline` label, a counter ("3/8") and
 ## Notes
 
 - The panel is 380px wide on lg+, sticky under the top of the scrolling area, and scrolls inside; the result scrolls with the page. On phones the action sticks at `bottom: var(--semi-bottom-bar, 0px)`: AppShell sets it to the tab bar's height in tabs mode, so the action sits above MobileTabBar.
-- One primary in the action bar (fullWidth), a secondary beside it at most (Lưu nháp). Section labels are the only uppercase text (text-overline, written in sentence case in code).
+- One primary in the action bar (`fullWidth` on `Button` or `SplitButton`), a secondary beside it at most (Lưu nháp). Omit `action` for a read-only viewer. Section labels are the only uppercase text (text-overline, written in sentence case in code).
+- Record as WorkspaceLayout vs DetailOverlay: use WorkspaceLayout when a stored record has its own route and a large live result (e.g. a quote comparison matrix); use DetailOverlay for a quick look from a list. Keep inputs and context in the panel and move history/activity below the main result so phone panels stay short.
 - Do not put WorkspaceLayout inside an overflow-x-auto / overflow-hidden box: that box becomes the sticky container and the phone action no longer stays on screen.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/workspace-layout/ and the types in src/ -->
@@ -11353,14 +11810,21 @@ export default function CardBordered() {
 
 With `onClick` the card is a button for keyboards and screen readers too: role="button", in the tab order, Enter and
 Space click it, FOCUS_RING shows focus (a plain <div onClick> is mouse-only). `active` is then its pressed state.
-A card that opens another page wraps a next/link around its title instead.
+With `selectable`, the outer element stays a plain container and renders sibling Checkbox + open button controls
+so checking and opening never nest interactive elements.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `interactive` | `boolean` | `false` | Clickable card (opens a detail view): hover border + press scale. |
-| `active` | `boolean` |  | "On" / selected card: primary border, no glow. On a card with onClick it is also its pressed state (aria-pressed). |
+| `active` | `boolean` |  | "On" / selected card: outline border, no glow. On a non-selectable card with onClick it is also its pressed state (aria-pressed). |
 | `bordered` | `boolean` | `false` | Framed card for dense data views (a table or rows that need an edge): panel fill + 1px line instead of the borderless card surface. |
 | `padding` | `'card' \| 'panel' \| 'none'` | `"card"` | Inner padding: `"card"` = p-card (16px at regular density, the default), `"panel"` = p-card sm:p-panel (a roomy card, 24px from sm), `"none"` for an image or a table that runs to the edge. A padding class in `className` (p-*, px-*, py-*) replaces it. |
+| `selectable` | `boolean` | `false` | Selection mode (#149, #127): renders a corner checkbox as a sibling of the card's open button (zero nested interactive controls) so the card can be checked separately from opening it, by pointer or keyboard. |
+| `checked` | `boolean` | `false` | Checked state in selection mode (`bg-item-checked`). |
+| `onCheckedChange` | `(checked: boolean) => void` |  | Called when the card's selection checkbox toggles. |
+| `selected` | `boolean` | `false` | Open / active record state (`bg-item-selected`, `border-outline-line`). |
+| `label` | `string` |  | Accessible name of the card's open action (also used to build the default checkbox name `"Chọn <label>"`). |
+| `selectLabel` | `string` |  | Override accessible name of the selection checkbox. |
 | `ref` | `React.Ref<HTMLDivElement>` |  |  |
 
 ## Accessibility
@@ -12009,7 +12473,8 @@ The order it shows is `sortRows(searchRows(rows, columns, search), columns, sort
 | `selectable` | `boolean` | `false` | Add a checkbox column. |
 | `selected` | `string[]` |  |  |
 | `onSelectedChange` | `(ids: string[]) => void` |  |  |
-| `bulkActions` | `(ids: string[]) => ReactNode` |  | Shown above the table while rows are selected: buttons that act on the selection. |
+| `activeRowId` | `null \| string` |  | ID of the currently open record (`useDetailParam().openId`): paints that row `bg-item-selected` (`aria-current="true"`), distinct from checked rows (`bg-item-checked`). |
+| `bulkActions` | `(ids: string[]) => ReactNode` |  | Shown above the table while rows are selected: buttons that act on the selection. On 1.0 list pages (#149), prefer `FilterChipRow` / `PhoneFilterBar` `selection` instead so checking a row never pushes the list down. |
 | `pageSize` | `number` | `0` | Rows per page; 0 shows all rows. |
 | `loading` | `boolean` | `false` |  |
 | `empty` | `React.ReactNode` |  | Shown when there are no rows (or none match the search). |
@@ -12161,6 +12626,11 @@ export default function ItemSettings() {
 | `actions` | `React.ReactNode` |  | Buttons or a Menu at the end (stay clickable on a linked row). |
 | `href` | `string` |  | Make the whole row a link (next/link). |
 | `onClick` | `() => void` |  | Make the whole row a button. |
+| `selectable` | `boolean` | `false` | Show a leading selection checkbox as a sibling control (never nested inside the row link / button). |
+| `checked` | `boolean` | `false` | Checked state in selection mode (`bg-item-checked`). |
+| `onCheckedChange` | `(checked: boolean) => void` |  | Called when the selection checkbox changes. |
+| `selectLabel` | `string` |  | Accessible name for the selection checkbox (defaults to `"Chọn <title>"` when `title` is text). |
+| `selected` | `boolean` | `false` | Open / active record state (`bg-item-selected`, `aria-current="true"`). |
 | `className` | `string` |  |  |
 
 ### ItemGroup
@@ -13490,11 +13960,11 @@ cards, list and detail with inShell: what a route loading.tsx renders.
 ```tsx
 import { PageSkeleton } from "@semi/ui";
 
-// The three page shapes of a route loading.tsx (`inShell`: no full-page height or padding).
+// The four page shapes of a route loading.tsx (`inShell`: no full-page height or padding).
 export default function SkeletonShapes() {
   return (
     <div className="flex flex-col gap-6">
-      {(["cards", "list", "detail"] as const).map((shape) => (
+      {(["cards", "list", "detail", "workspace"] as const).map((shape) => (
         <div key={shape} data-shape={shape} className="max-h-56 overflow-hidden">
           <PageSkeleton shape={shape} inShell />
         </div>
@@ -13586,14 +14056,15 @@ A record's detail panel (a `DetailOverlay`, a side panel, a detail page): title 
 ### PageSkeleton
 
 Whole-page placeholder (Suspense fallbacks, route `loading.tsx`): title row + the shape of the content.
-`cards` (default) = a grid of cards, `list` = a toolbar and table rows, `detail` = a header card and two panels.
+`cards` (default) = a grid of cards, `list` = a toolbar and table rows, `detail` = a header card and two panels,
+`workspace` = a 380px `bg-panel-3` control panel with a bottom action bar beside a result table (stacked below `lg`).
 Pick the shape the real page has, so nothing jumps when the data arrives (§13b).
 `inShell` drops the full-viewport height, background and padding: use it in a route `loading.tsx` (the shell and its
 content slot already give those). Without it the skeleton is a whole page, for a Suspense fallback outside the shell.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `shape` | `'list' \| 'cards' \| 'detail'` | `"cards"` |  |
+| `shape` | `'list' \| 'cards' \| 'detail' \| 'workspace'` | `"cards"` |  |
 | `inShell` | `boolean` | `false` |  |
 
 ### Loading
@@ -15073,7 +15544,7 @@ export default function DashboardPage() {
 
 # List page
 
-A records page on the StickyContextBar anatomy: the title row with refresh and the create action (PageTitle actions), then the sticky bar (SearchPill, views as Pills + filter chips on md+, PhoneFilterBar + FilterPanel on phones, ResultLine), then a data table that sorts, selects and pages, with bulk actions. State in the URL. Copy it with `semi add list-page`.
+A 1.0 records page on Page layout="work": 18/400 title row with an inverse action, StickyContextBar with SearchPill + FilterChipRow (sort, Chọn and in-place selection mode on the filter row; PhoneFilterBar on phones; no result-count row), DataTable / Card grid / phone Item rows sharing the same selection model, and DetailOverlay (?open=). Copy it with `semi add list-page`.
 
 ## When to use
 
@@ -15097,25 +15568,34 @@ import { useMemo, useState } from "react";
 import {
   Badge,
   Button,
+  Card,
   DataTable,
+  DetailOverlay,
   FilterChipRow,
   FilterPanel,
-  PageTitle,
+  Item,
+  ItemGroup,
+  Page,
+  PageGrid,
   PhoneFilterBar,
   Pills,
   RefreshButton,
-  ResultLine,
   SearchPill,
   StickyContextBar,
+  ViewSwitch,
   toast,
+  useDetailParam,
   useFilterParams,
+  useListSelection,
   type DataTableColumn,
   type FilterSpec,
+  type ListSelection,
+  type SortDef,
 } from "@semi/ui";
 
 type Order = { id: string; customer: string; status: "pending" | "paid" | "refunded"; channel: "web" | "shopee" | "store"; branch: "hcm" | "hn"; total: number; date: string };
 const STATUS = { paid: ["emerald", "Đã thanh toán"], pending: ["amber", "Chờ xử lý"], refunded: ["rose", "Hoàn tiền"] } as const;
-const ORDERS: Order[] = Array.from({ length: 36 }, (_, i) => ({
+const ORDERS: Order[] = Array.from({ length: 24 }, (_, i) => ({
   id: `SO-${1040 + i}`,
   customer: ["Nguyễn An", "Trần Bình", "Lê Chi", "Phạm Dũng", "Hoàng Hà", "Võ Lan"][i % 6],
   status: (["pending", "paid", "pending", "refunded"] as const)[i % 4],
@@ -15140,7 +15620,6 @@ const IN_VIEW: Record<View, (o: Order) => boolean> = {
 
 const SPECS: (FilterSpec & { key: "channel" | "branch" | "big" })[] = [
   { key: "channel", label: "Kênh bán", icon: "store", options: [{ value: "web", label: "Website" }, { value: "shopee", label: "Shopee" }, { value: "store", label: "Cửa hàng" }] },
-  // one of N: "Chi nhánh: Tất cả" until a branch is picked
   { key: "branch", label: "Chi nhánh", icon: "mapPin", kind: "single", clearValue: "all", options: [{ value: "all", label: "Tất cả" }, { value: "hcm", label: "Hồ Chí Minh" }, { value: "hn", label: "Hà Nội" }] },
   { key: "big", label: "Trên 1 triệu", icon: "banknote", kind: "switch" },
 ];
@@ -15148,22 +15627,55 @@ const SPECS: (FilterSpec & { key: "channel" | "branch" | "big" })[] = [
 const COLUMNS: DataTableColumn<Order>[] = [
   { key: "id", header: "Mã đơn", sortable: true, cell: (o) => <span className="font-medium text-strong">{o.id}</span> },
   { key: "customer", header: "Khách hàng", sortable: true },
-  { key: "status", header: "Trạng thái", value: (o) => STATUS[o.status][1], cell: (o) => <Badge tone={STATUS[o.status][0]} dot>{STATUS[o.status][1]}</Badge> },
-  { key: "date", header: "Ngày", sortable: true },
+  { key: "status", header: "Trạng thái", priority: 2, value: (o) => STATUS[o.status][1], cell: (o) => <Badge tone={STATUS[o.status][0]} dot>{STATUS[o.status][1]}</Badge> },
+  { key: "date", header: "Ngày", priority: 3, sortable: true },
   { key: "total", header: "Tổng", sortable: true, numeric: true, cell: (o) => `${o.total.toLocaleString("vi-VN")} ₫` },
 ];
 
 export default function ListPage() {
-  // filters, view and query live in the URL (?view=done&q=an&f.channel=web): reload, share, Back / Forward keep them
   const f = useFilterParams(SPECS);
+  const detail = useDetailParam();
+  const sel = useListSelection();
   const [panel, setPanel] = useState(false);
+  const [sortBy, setSortBy] = useState("newest");
+  const [mode, setMode] = useState<"list" | "grid">("list");
   const q = f.params.get("q") ?? "";
   const view = (VIEWS.find((v) => v.key === f.params.get("view"))?.key ?? "open") as View;
   const setView = (v: View) => f.setParams({ view: v === "open" ? null : v });
+
+  const sortDef: SortDef = {
+    value: sortBy,
+    onChange: setSortBy,
+    options: [
+      { value: "newest", label: "Mới nhất" },
+      { value: "total-desc", label: "Giá trị cao" },
+      { value: "customer", label: "Tên khách" },
+    ],
+  };
+
+  const selection: ListSelection = {
+    active: sel.active,
+    selected: sel.selected,
+    onEnter: sel.enter,
+    onExit: sel.exit,
+    primaryAction: {
+      label: "Xuất CSV",
+      icon: "download",
+      onClick: (ids) => {
+        toast.success(`Đã xuất ${ids.length} đơn`);
+        sel.exit();
+      },
+    },
+    moreActions: (ids) => [
+      { label: "Đánh dấu đã xử lý", icon: "check", onSelect: () => toast({ title: `Cập nhật ${ids.length} đơn` }) },
+      { label: "Xoá đã chọn", icon: "trash", danger: true, onSelect: () => toast({ title: `Xoá ${ids.length} đơn`, tone: "danger" }) },
+    ],
+  };
+
   const rows = useMemo(() => {
     const needle = q.toLocaleLowerCase("vi");
     const branch = f.values.branch[0] ?? "all";
-    return ORDERS.filter(
+    const list = ORDERS.filter(
       (o) =>
         IN_VIEW[view](o) &&
         (!needle || `${o.id} ${o.customer}`.toLocaleLowerCase("vi").includes(needle)) &&
@@ -15171,55 +15683,128 @@ export default function ListPage() {
         (branch === "all" || o.branch === branch) &&
         (!f.values.big.length || o.total > 1_000_000),
     );
-  }, [q, view, f.values]);
+    return [...list].sort((a, b) =>
+      sortBy === "total-desc" ? b.total - a.total : sortBy === "customer" ? a.customer.localeCompare(b.customer, "vi") : b.date.localeCompare(a.date),
+    );
+  }, [q, view, f.values, sortBy]);
+
+  const openIndex = detail.openId ? rows.findIndex((r) => r.id === detail.openId) : -1;
+  const openOrder = openIndex >= 0 ? rows[openIndex] : null;
+
   return (
-    <div className="min-w-0">
-      <PageTitle
-        title="Đơn hàng"
-        actions={
-          <>
-            <RefreshButton onRefresh={() => new Promise((r) => setTimeout(r, 600))} />
-            <Button variant="primary" icon="plus" onClick={() => toast({ title: "Tạo đơn mới" })}>
-              Tạo đơn
-            </Button>
-          </>
-        }
-      />
-      <StickyContextBar label="Tìm và lọc đơn hàng">
-        <SearchPill value={q} onChange={(v) => f.setParams({ q: v || null }, "replace")} label="Tìm đơn hàng" placeholder="Tìm mã đơn, khách hàng…" focusKey="/" />
-        <FilterChipRow
-          className="max-md:hidden"
-          leading={<Pills value={view} onChange={setView} options={VIEWS} />}
-          filters={f.filters}
-          onChange={f.onChange}
-          onClear={f.onClear}
-        />
-        <PhoneFilterBar
-          className="md:hidden"
-          typeLabel={VIEWS.find((v) => v.key === view)?.label}
-          typeItems={VIEWS.map((v) => ({ label: v.label, radio: true, checked: v.key === view, onSelect: () => setView(v.key) }))}
-          activeCount={f.activeCount}
-          onOpenFilters={() => setPanel(true)}
-          filtersOpen={panel}
-        />
-        <ResultLine query={q} count={rows.length} unit="đơn hàng" />
-      </StickyContextBar>
-      <DataTable
-        label="Đơn hàng"
-        rows={rows}
-        columns={COLUMNS}
-        getRowId={(o) => o.id}
-        defaultSort={{ key: "date", dir: "desc" }}
-        selectable
-        bulkActions={(ids) => (
-          <Button size="sm" variant="subtle" icon="download" onClick={() => toast({ title: `Đã xuất ${ids.length} đơn` })}>
-            Xuất CSV
+    <Page
+      layout="work"
+      title="Đơn hàng"
+      actions={
+        <>
+          <RefreshButton onRefresh={() => new Promise((r) => setTimeout(r, 600))} />
+          <Button variant="inverse" icon="plus" onClick={() => toast({ title: "Tạo đơn mới" })}>
+            Tạo đơn
           </Button>
+        </>
+      }
+      toolbar={
+        <StickyContextBar label="Tìm và lọc đơn hàng">
+          <SearchPill value={q} onChange={(v) => f.setParams({ q: v || null }, "replace")} label="Tìm đơn hàng" placeholder="Tìm mã đơn, khách hàng…" focusKey="/" />
+          <FilterChipRow
+            className="max-md:hidden"
+            leading={<Pills value={view} onChange={setView} options={VIEWS} />}
+            filters={f.filters}
+            onChange={f.onChange}
+            onClear={f.onClear}
+            sort={sortDef}
+            selection={selection}
+            trailing={<ViewSwitch view={mode} onViewChange={setMode} />}
+          />
+          <PhoneFilterBar
+            className="md:hidden"
+            typeLabel={VIEWS.find((v) => v.key === view)?.label}
+            typeItems={VIEWS.map((v) => ({ label: v.label, radio: true, checked: v.key === view, onSelect: () => setView(v.key) }))}
+            activeCount={f.activeCount}
+            onOpenFilters={() => setPanel(true)}
+            filtersOpen={panel}
+            sort={sortDef}
+            selection={selection}
+          />
+        </StickyContextBar>
+      }
+    >
+      {/* Desktop: table or card grid, sharing the same filter-row selection state with zero vertical shift */}
+      <div className="max-md:hidden">
+        {mode === "list" ? (
+          <DataTable
+            label="Đơn hàng"
+            rows={rows}
+            columns={COLUMNS}
+            getRowId={(o) => o.id}
+            selectable
+            selected={sel.selected}
+            onSelectedChange={sel.setSelected}
+            activeRowId={detail.openId}
+            onRowClick={(o) => detail.open(o.id)}
+            pageSize={10}
+          />
+        ) : (
+          <PageGrid columns={3}>
+            {rows.slice(0, 9).map((o) => (
+              <Card
+                key={o.id}
+                selectable={sel.active}
+                checked={sel.isChecked(o.id)}
+                onCheckedChange={(on) => sel.toggle(o.id, on)}
+                selected={detail.openId === o.id}
+                label={`${o.id} · ${o.customer}`}
+                onClick={() => detail.open(o.id)}
+                className="flex flex-col gap-2"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-lead font-medium text-strong">{o.id}</span>
+                  <Badge tone={STATUS[o.status][0]} dot>{STATUS[o.status][1]}</Badge>
+                </div>
+                <span className="text-ui text-body">{o.customer}</span>
+                <span className="text-chrome text-muted tabular-nums">{o.total.toLocaleString("vi-VN")} ₫ · {o.date}</span>
+              </Card>
+            ))}
+          </PageGrid>
         )}
-        pageSize={10}
-      />
-      <FilterPanel open={panel} onClose={() => setPanel(false)} filters={f.filters} onChange={f.onChange} onClear={f.onClear} resultCount={rows.length} />
-    </div>
+      </div>
+
+      {/* Phones: Item rows sharing the exact same non-nested selection model */}
+      <ItemGroup label="Danh sách đơn hàng" className="md:hidden">
+        {rows.slice(0, 10).map((o) => (
+          <Item
+            key={o.id}
+            title={o.id}
+            description={o.customer}
+            meta={`${o.total.toLocaleString("vi-VN")} ₫`}
+            selectable={sel.active}
+            checked={sel.isChecked(o.id)}
+            onCheckedChange={(on) => sel.toggle(o.id, on)}
+            selected={detail.openId === o.id}
+            onClick={() => detail.open(o.id)}
+          />
+        ))}
+      </ItemGroup>
+
+      <FilterPanel open={panel} onClose={() => setPanel(false)} filters={f.filters} onChange={f.onChange} onClear={f.onClear} sort={sortDef} resultCount={rows.length} />
+
+      <DetailOverlay
+        open={openOrder !== null}
+        onClose={detail.close}
+        title={openOrder ? `${openOrder.id} · ${openOrder.customer}` : ""}
+        subtitle={openOrder ? `${STATUS[openOrder.status][1]} · ${openOrder.date}` : undefined}
+        index={openIndex >= 0 ? openIndex : undefined}
+        total={rows.length}
+        onPrev={openIndex > 0 ? () => detail.show(rows[openIndex - 1].id) : undefined}
+        onNext={openIndex >= 0 && openIndex < rows.length - 1 ? () => detail.show(rows[openIndex + 1].id) : undefined}
+      >
+        {openOrder && (
+          <p className="text-ui text-body tabular-nums">
+            Tổng giá trị: <span className="font-medium text-strong">{openOrder.total.toLocaleString("vi-VN")} ₫</span>
+          </p>
+        )}
+      </DetailOverlay>
+    </Page>
   );
 }
 ```
@@ -15240,7 +15825,7 @@ export default function ListPage() {
 
 # Settings page
 
-A settings page: sections of rows with switches and links, a profile form with validation and one save action, and a danger zone. Copy it with `semi add settings-page`.
+A 1.0 settings page on Page layout="reading" (centred max 1536px inside 16px card padding, 64px bottom) with section tabs (Pills today; PillTabs once T5 merges) and one save action per section. Copy it with `semi add settings-page`.
 
 ## When to use
 
@@ -15254,62 +15839,131 @@ A settings page: sections of rows with switches and links, a profile form with v
 "use client";
 
 import { useState } from "react";
-import { Button, Card, confirmDialog, CustomSelect, Field, Input, Item, ItemGroup, PageTitle, Switch, toast } from "@semi/ui";
+import {
+  Button,
+  Card,
+  confirmDialog,
+  CustomSelect,
+  Field,
+  Input,
+  Item,
+  ItemGroup,
+  Page,
+  PageSection,
+  Pills,
+  Switch,
+  toast,
+} from "@semi/ui";
+
+type SectionKey = "general" | "notifications" | "integrations" | "danger";
+
+const SECTIONS: { key: SectionKey; label: string }[] = [
+  { key: "general", label: "Chung" },
+  { key: "notifications", label: "Thông báo" },
+  { key: "integrations", label: "Tích hợp" },
+  { key: "danger", label: "Vùng nguy hiểm" },
+];
 
 export default function SettingsPage() {
+  const [section, setSection] = useState<SectionKey>("general");
   const [name, setName] = useState("Xưởng in A");
   const [lang, setLang] = useState("vi");
   const [notify, setNotify] = useState(true);
   const [digest, setDigest] = useState(false);
+  const [webhook, setWebhook] = useState("https://hooks.semi.vn/orders");
   const error = name.trim().length < 3 ? "Tên cần ít nhất 3 ký tự." : undefined;
+
   return (
-    <div className="space-y-4">
-      <PageTitle title="Cài đặt" />
-      <Card className="space-y-4">
-        <h2 className="text-lead font-medium text-strong">Không gian làm việc</h2>
-        <div className="grid gap-4 @2xl:grid-cols-2">
-          <Field label="Tên" required error={error}>
-            <Input value={name} onChange={(e) => setName(e.target.value)} />
-          </Field>
-          <Field label="Ngôn ngữ">
-            <CustomSelect
-              variant="field"
-              value={lang}
-              onChange={setLang}
-              options={[
-                { value: "vi", label: "Tiếng Việt" },
-                { value: "en", label: "English" },
-              ]}
+    <Page
+      layout="reading"
+      title="Cấu hình"
+      tabs={<Pills value={section} onChange={setSection} options={SECTIONS} />}
+      intro="Thiết lập chung cho không gian làm việc, thông báo và tích hợp."
+    >
+      {section === "general" && (
+        <PageSection title="Không gian làm việc">
+          <Card className="flex flex-col gap-4">
+            <div className="grid gap-4 @2xl:grid-cols-2">
+              <Field label="Tên" required error={error}>
+                <Input value={name} onChange={(e) => setName(e.target.value)} />
+              </Field>
+              <Field label="Ngôn ngữ">
+                <CustomSelect
+                  variant="field"
+                  value={lang}
+                  onChange={setLang}
+                  options={[
+                    { value: "vi", label: "Tiếng Việt" },
+                    { value: "en", label: "English" },
+                  ]}
+                />
+              </Field>
+            </div>
+            <div className="flex justify-end">
+              <Button variant="primary" disabled={Boolean(error)} onClick={() => toast.success("Đã lưu cấu hình chung")}>
+                Lưu
+              </Button>
+            </div>
+          </Card>
+        </PageSection>
+      )}
+
+      {section === "notifications" && (
+        <PageSection title="Thông báo">
+          <ItemGroup label="Thông báo">
+            <Item
+              icon="bell"
+              title="Khi in xong hoặc lỗi"
+              description="Gửi tới ứng dụng và email"
+              actions={<Switch checked={notify} onChange={setNotify} label={<span className="sr-only">Khi in xong hoặc lỗi</span>} />}
             />
-          </Field>
-        </div>
-        <div className="flex justify-end">
-          <Button variant="primary" disabled={Boolean(error)} onClick={() => toast({ title: "Đã lưu", tone: "success" })}>
-            Lưu
-          </Button>
-        </div>
-      </Card>
-      <ItemGroup label="Thông báo" showLabel>
-        <Item icon="bell" title="Khi in xong hoặc lỗi" description="Gửi tới ứng dụng và email" actions={<Switch checked={notify} onChange={setNotify} label={<span className="sr-only">Khi in xong hoặc lỗi</span>} />} />
-        <Item icon="fileText" title="Báo cáo tuần" description="Thứ Hai, 8:00" actions={<Switch checked={digest} onChange={setDigest} label={<span className="sr-only">Báo cáo tuần</span>} />} />
-        <Item icon="key" title="Khoá API" description="Cho tích hợp và agent" href="#api-keys" />
-      </ItemGroup>
-      <Card className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h2 className="text-lead font-medium text-strong">Xoá không gian làm việc</h2>
-          <p className="text-ui text-muted">Xoá mọi máy in, đơn và lịch sử. Không thể khôi phục.</p>
-        </div>
-        <Button
-          variant="danger"
-          icon="trash"
-          onClick={async () => {
-            if (await confirmDialog({ title: "Xoá Xưởng in A?", message: "Mọi dữ liệu sẽ bị xoá vĩnh viễn.", confirmLabel: "Xoá", tone: "danger" })) toast({ title: "Đã xoá", tone: "danger" });
-          }}
-        >
-          Xoá
-        </Button>
-      </Card>
-    </div>
+            <Item
+              icon="fileText"
+              title="Báo cáo tuần"
+              description="Thứ Hai, 8:00"
+              actions={<Switch checked={digest} onChange={setDigest} label={<span className="sr-only">Báo cáo tuần</span>} />}
+            />
+          </ItemGroup>
+        </PageSection>
+      )}
+
+      {section === "integrations" && (
+        <PageSection title="Tích hợp">
+          <Card className="flex flex-col gap-4">
+            <Field label="Webhook nhận sự kiện" kind="url">
+              <Input value={webhook} onChange={(e) => setWebhook(e.target.value)} />
+            </Field>
+            <div className="flex justify-end">
+              <Button variant="primary" onClick={() => toast.success("Đã lưu webhook")}>
+                Lưu
+              </Button>
+            </div>
+          </Card>
+        </PageSection>
+      )}
+
+      {section === "danger" && (
+        <PageSection title="Vùng nguy hiểm">
+          <Card className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h3 className="text-lead font-medium text-strong">Xoá không gian làm việc</h3>
+              <p className="text-ui text-muted">Xoá mọi máy in, đơn và lịch sử. Không thể khôi phục.</p>
+            </div>
+            <Button
+              variant="danger"
+              icon="trash"
+              onClick={async () => {
+                if (await confirmDialog({ title: "Xoá Xưởng in A?", message: "Mọi dữ liệu sẽ bị xoá vĩnh viễn.", confirmLabel: "Xoá", tone: "danger" })) {
+                  toast({ title: "Đã xoá", tone: "danger" });
+                }
+              }}
+            >
+              Xoá
+            </Button>
+          </Card>
+        </PageSection>
+      )}
+    </Page>
   );
 }
 ```
