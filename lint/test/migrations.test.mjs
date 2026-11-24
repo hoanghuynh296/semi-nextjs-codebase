@@ -411,6 +411,8 @@ test("1.0.0 app-shell: comments inside a tag are not props, a > in a comment or 
   // a later, readable tag in the same file is still migrated
   assert.match(shell.migrateShell(apostrophe + "\n<AppShell create={b} />"), /<AppShell header=\{<span>Don't<\/span>\} create=\{a\} \/>/);
   assert.match(shell.migrateShell(apostrophe + "\n<AppShell create={b} />"), /\n<AppShell mainAction=\{b\} \/>$/);
+});
+
 test("1.0.0 buttons: variant=\"secondary\" → \"subtle\" on Semi Button / SplitButton, BTN_SECONDARY → BTN_SUBTLE; twice-safe; outline and expressions flagged", async () => {
   const { migrateButtons, buttonFlags } = await import("../../migrations/1.0.0-buttons.mjs");
   const src = [
