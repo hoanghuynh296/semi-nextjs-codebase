@@ -54,6 +54,8 @@ Khởi động lại Antigravity để nạp plugin `semi-design`.
 /plugin install semi-design
 ```
 
+Plugin được ghim vào **tag phát hành** (`ref` trong `.claude-plugin/marketplace.json`), không lấy từ `main`: app đang dùng bản `@semi/ui` cũ không nhận luật của bản chưa phát hành. Đã cài plugin trước khi ghim (bản lấy từ `main`): gỡ rồi cài lại một lần (`/plugin uninstall semi-design@semi-marketplace`, `/plugin install semi-design`). Thử plugin từ `main` / nhánh: [`docs/PLUGIN.md`](docs/PLUGIN.md).
+
 > **Lưu ý quyền truy cập (Private Repo):**
 > Repo `https://github.com/hoanghuynh296/semi-nextjs-codebase` là **private**. Máy phát triển cần đăng nhập GitHub (`gh auth login && gh auth setup-git` hoặc cấu hình SSH key). Nếu thiếu quyền, `/semi-new-app` sẽ báo đúng 1 lệnh cần chạy rồi dừng.
 
@@ -228,4 +230,4 @@ import { ConfirmHost, ThemeProvider, ThemeScript, ToastHost } from "@semi/ui";
    npm run build:storybook && npm run test:ui
    ```
 4. Nếu sửa `lint/semi-lint.mjs` hoặc `tokens/tokens.json`: chạy `npm run sync:vendor` để cập nhật bản copy trong plugin (`check` sẽ fail nếu quên).
-5. Cập nhật `CHANGELOG.md`, chạy `npm run bump -- X.Y.Z` (cập nhật cả 5 manifest + `tokens.css`; minor cho thay đổi token/quy tắc, major khi đổi tên/xoá component), commit và gắn tag `vX.Y.Z`.
+5. Cập nhật `CHANGELOG.md`, chạy `npm run bump -- X.Y.Z` (cập nhật cả 5 manifest, chuyển `ref` của plugin trong marketplace sang tag mới, + `tokens.css`; minor cho thay đổi token/quy tắc, major khi đổi tên/xoá component), commit và gắn tag `vX.Y.Z` ngay sau khi merge (trước khi có tag, cài plugin sẽ lỗi; [`docs/PLUGIN.md`](docs/PLUGIN.md)).

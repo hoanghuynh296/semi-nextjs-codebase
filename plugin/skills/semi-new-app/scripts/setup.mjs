@@ -166,8 +166,22 @@ export function parseGithubSpec(spec) {
 }
 
 /**
+ * The plugin's own version (plugin/.claude-plugin/plugin.json). The marketplace pins the plugin to the release tag of
+ * that version (docs/PLUGIN.md), so its rules describe exactly that @semi/ui. SEMI_PLUGIN_VERSION overrides it (tests).
+ */
+export function pluginVersion() {
+  if (process.env.SEMI_PLUGIN_VERSION) return process.env.SEMI_PLUGIN_VERSION.replace(/^v/, "");
+  try {
+    return JSON.parse(readFileSync(join(PLUGIN_ROOT, ".claude-plugin", "plugin.json"), "utf8")).version ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * The @semi/ui spec to install: the latest release tag, or the latest one inside `range` (a brand kit's "semi") when
- * given. SEMI_UI_SOURCE overrides it (local checkouts, tests).
+ * given, never newer than the plugin's own version (its rules and skills are written for that release; a newer tag
+ * waits until the plugin is updated: `pluginBehind`). SEMI_UI_SOURCE overrides it (local checkouts, tests).
  */
 export function resolveTargetSpec({ range } = {}) {
   if (process.env.SEMI_UI_SOURCE) {
@@ -182,10 +196,19 @@ export function resolveTargetSpec({ range } = {}) {
     );
     process.exit(2);
   }
-  const fitting = range ? tags.filter((t) => satisfies(t, range)) : tags;
-  const latest = fitting[fitting.length - 1] || tags[tags.length - 1] || "v0.1.0";
+  const own = pluginVersion();
+  const known = own ? tags.filter((t) => cmpSemver(t, own) <= 0) : tags;
+  const pool = known.length ? known : tags;
+  const fitting = range ? pool.filter((t) => satisfies(t, range)) : pool;
+  const latest = fitting[fitting.length - 1] || pool[pool.length - 1] || "v0.1.0";
   const newest = tags[tags.length - 1];
-  return { spec: `${GITHUB_SPEC_BASE}#${latest}`, version: latest.replace(/^v/, ""), newest: newest?.replace(/^v/, ""), limited: Boolean(range && latest !== newest) };
+  return {
+    spec: `${GITHUB_SPEC_BASE}#${latest}`,
+    version: latest.replace(/^v/, ""),
+    newest: newest?.replace(/^v/, ""),
+    limited: Boolean(range && latest !== pool[pool.length - 1]),
+    pluginBehind: Boolean(own && known.length && known.length < tags.length),
+  };
 }
 
 export function findGlobalsCss(webDir) {
