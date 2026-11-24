@@ -3,6 +3,21 @@
 // grow a vertical overflow. Buttons are built with buttonClass() into the docs page, so the real CSS applies.
 import { expect, test } from "@playwright/test";
 import { buttonClass } from "../styles/buttons";
+import type { Page } from "@playwright/test";
+
+/** Waits for React to adopt the page (hydration can replace nodes on a slow CI runner), then puts `html` in a fixed
+ *  box on <body>, outside React's tree, at the top left of the viewport (on screen, so a tap reaches it). */
+async function probe(page: Page, html: string) {
+  await page.waitForFunction(() => {
+    const el = document.querySelector("main");
+    return !!el && Object.keys(el).some((k) => k.startsWith("__reactFiber$"));
+  });
+  await page.evaluate((h) => {
+    const box = Object.assign(document.createElement("div"), { id: "btn-probes", innerHTML: h });
+    box.style.cssText = "position:fixed;top:8px;left:8px;right:8px;z-index:9999;background:var(--color-panel, #fff)";
+    document.body.append(box);
+  }, html);
+}
 
 const icon = buttonClass("ghost", "sm", { iconOnly: true });
 
@@ -10,14 +25,15 @@ test("Button on a touch phone: 44px real size, adjacent icon buttons get their o
   const page = await browser.newPage({ viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true });
   await page.goto("/components/button/");
   expect(await page.evaluate(() => matchMedia("(pointer: coarse)").matches)).toBe(true);
-  await page.evaluate((cls) => {
-    const box = document.createElement("div");
-    box.innerHTML = `<div id="pair" class="flex items-center gap-1"><button id="a" class="${cls}" aria-label="A">A</button><button id="b" class="${cls}" aria-label="B">B</button></div>
-      <div id="row" class="flex items-center gap-2 overflow-x-auto py-0.5">${`<button class="${cls}" aria-label="x">x</button>`.repeat(20)}</div>`;
-    document.querySelector("main")!.prepend(box);
+  await probe(
+    page,
+    `<div id="pair" class="flex items-center gap-1"><button id="a" class="${icon}" aria-label="A">A</button><button id="b" class="${icon}" aria-label="B">B</button></div>
+     <div id="row" class="flex items-center gap-2 overflow-x-auto py-0.5">${`<button class="${icon}" aria-label="x">x</button>`.repeat(20)}</div>`,
+  );
+  await page.evaluate(() => {
     (window as unknown as { taps: string[] }).taps = [];
     for (const id of ["a", "b"]) document.getElementById(id)!.addEventListener("click", () => (window as unknown as { taps: string[] }).taps.push(id));
-  }, icon);
+  });
   const [a, b] = [await page.locator("#a").boundingBox(), await page.locator("#b").boundingBox()];
   for (const r of [a!, b!]) expect(Math.min(r.width, r.height)).toBeGreaterThanOrEqual(44);
   expect(b!.x - (a!.x + a!.width)).toBeGreaterThanOrEqual(3); // the gap stays: nothing covers it
@@ -31,7 +47,7 @@ test("Button on a touch phone: 44px real size, adjacent icon buttons get their o
 
 test("Button with a mouse: the drawn size (sm icon 28px), no touch growth", async ({ page }) => {
   await page.goto("/components/button/");
-  await page.evaluate((cls) => document.querySelector("main")!.insertAdjacentHTML("afterbegin", `<button id="m" class="${cls}" aria-label="M">M</button>`), icon);
+  await probe(page, `<button id="m" class="${icon}" aria-label="M">M</button>`);
   const r = await page.locator("#m").boundingBox();
   expect([Math.round(r!.width), Math.round(r!.height)]).toEqual([28, 28]);
 });
