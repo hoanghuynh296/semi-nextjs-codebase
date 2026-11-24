@@ -19,6 +19,7 @@ import { cn } from "../styles/utils";
  * the tooltip is linked with aria-describedby. Touch screens show nothing: never put essential text in a tooltip.
  */
 export function Tooltip(props: {
+  /** The hint. `null`, `false` or `""` turns the tooltip off and keeps the trigger as it is (same element, no remount). */
   content: React.ReactNode;
   children: React.ReactElement;
   /**
@@ -57,6 +58,7 @@ export function Tooltip(props: {
   }, [open]);
 
   if (!isValidElement(children)) return children;
+  const enabled = content !== null && content !== undefined && content !== false && content !== "";
   const later = (next: boolean, ms: number) => {
     if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(() => setOpen(next), ms);
@@ -70,7 +72,7 @@ export function Tooltip(props: {
   };
   const own = children as React.ReactElement<Record<string, unknown>>;
   const child = (Object.keys(rest).length ? cloneTrigger(own, rest) : own) as React.ReactElement<Record<string, unknown>>;
-  const trigger = cloneTrigger(child, {
+  const trigger = enabled ? cloneTrigger(child, {
     ref: (el: HTMLElement | null) => {
       ref.current = el;
     },
@@ -82,12 +84,13 @@ export function Tooltip(props: {
       setOpen(true);
     },
     onBlur: hideNow,
-  });
+  }) : child;
 
   return (
     <>
       {trigger}
-      {open &&
+      {enabled &&
+        open &&
         pos &&
         createPortal(
           <div
@@ -182,8 +185,10 @@ function MenuPanel({
   panelRef,
   onSide,
   sheet = true,
+  header,
 }: {
   id: string;
+  header?: React.ReactNode;
   items: MenuItem[];
   label: string;
   pos: AnchoredPosition;
@@ -262,6 +267,7 @@ function MenuPanel({
     onClose(!it.href);
     it.onSelect?.();
   };
+  const menuRole = { id, role: "menu", "aria-label": label, onKeyDown: onKey };
   const rowCls = (it: MenuItem) =>
     cn(
       "w-full text-left px-3 py-2 max-sm:py-3 rounded-control text-ui flex items-center gap-2 transition outline-none",
@@ -274,10 +280,7 @@ function MenuPanel({
       <div
         {...FLOATING_LAYER}
         ref={panelRef}
-        id={id}
-        role="menu"
-        aria-label={label}
-        onKeyDown={onKey}
+        {...(header ? {} : menuRole)}
         style={{ left: pos.left, top: pos.top, bottom: pos.bottom, minWidth: pos.minWidth, maxHeight: pos.maxHeight }}
         className={cn(
           "fixed z-popover overflow-y-auto overscroll-contain bg-panel border border-line rounded-card shadow-overlay p-1 flex flex-col gap-0.5",
@@ -285,6 +288,10 @@ function MenuPanel({
           sheet && "max-sm:!left-0 max-sm:!right-0 max-sm:!top-auto max-sm:!bottom-0 max-sm:!min-w-0 max-sm:!max-h-[75dvh] max-sm:rounded-b-none max-sm:rounded-t-panel max-sm:border-x-0 max-sm:border-b-0 max-sm:p-2 max-sm:pb-[max(8px,env(safe-area-inset-bottom))]",
         )}
       >
+        {header && (
+          <div className="px-3 pt-2 pb-2.5 mb-1 border-b border-divider min-w-0">{header}</div>
+        )}
+        <MenuList header={Boolean(header)} {...menuRole}>
         {segments.map((seg, si) => {
           const rows = seg.items.map(({ it, i }, k) => {
             const reason = typeof it.disabled === "string" ? it.disabled : undefined;
@@ -353,9 +360,20 @@ function MenuPanel({
             </React.Fragment>
           );
         })}
+        </MenuList>
       </div>
     </>,
     document.body,
+  );
+}
+
+/** The role=menu element: the panel itself, or (with a header, which is not a menu item) a list under the header. */
+function MenuList({ header, children, ...rest }: { header: boolean; children: React.ReactNode } & React.HTMLAttributes<HTMLDivElement>) {
+  if (!header) return <>{children}</>;
+  return (
+    <div {...rest} className="flex flex-col gap-0.5">
+      {children}
+    </div>
   );
 }
 
@@ -382,9 +400,15 @@ export function Menu({
   align = "right",
   trigger,
   sheet = true,
+  header,
 }: {
   /** The actions. Danger items are listed last, hidden ones left out (see MenuItem). */
   items: MenuItem[];
+  /**
+   * Text above the items that is not an item (an account menu's name and role). It sits outside the `role="menu"`
+   * list, so arrows and type-ahead skip it.
+   */
+  header?: React.ReactNode;
   /** Accessible name of the default trigger. */
   label?: string;
   align?: "left" | "right";
@@ -439,7 +463,7 @@ export function Menu({
           <Icon name="more" className="w-4 h-4" />
         </button>
       )}
-      {open !== false && pos && <MenuPanel id={id} items={items} label={label} pos={pos} initial={open} onClose={close} panelRef={menuRef} sheet={sheet} />}
+      {open !== false && pos && <MenuPanel id={id} items={items} label={label} pos={pos} initial={open} onClose={close} panelRef={menuRef} sheet={sheet} header={header} />}
     </>
   );
 }

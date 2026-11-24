@@ -160,7 +160,7 @@ export const FORM_PAGE = "w-full max-w-2xl flex flex-col gap-stack";
 export const FORM_ACTIONS = "flex items-center justify-end gap-2 flex-wrap";
 
 /**
- * `FormActions` on a page: sticks to the bottom of the scrolling page, over the page background, with a line above.
+ * `FormActions` on a page: sticks to the bottom of the scrolling page, over the page background (`bg-app`; the panel colour inside the AppShell card), with a line above.
  * The component adds the safe-area padding and lifts it above the on-screen keyboard (`bottom`).
  */
 export const FORM_ACTIONS_STICKY = "sticky bottom-0 z-sticky -mx-4 sm:-mx-6 px-4 sm:px-6 pt-3 bg-app border-t border-divider";
@@ -180,12 +180,26 @@ export const FIELD_INPUT =
 export const FIELD_TEXTAREA =
   "w-full bg-field border border-control-line hover:border-control-line-hover rounded-control px-3 py-2 text-ui max-sm:text-input text-strong placeholder:text-muted focus:outline-none focus:border-focus focus:ring-1 focus:ring-focus focus:bg-raised transition-colors disabled:opacity-40";
 
-/** 2-panel floating Bento shell classes (used by AppShell). */
+/** The 1.0 shell frame (used by AppShell, #144): `canvas` with 8px padding and gap from sm, none on phones. */
 export const SHELL_OUTER =
-  "h-dvh overflow-hidden flex flex-col md:flex-row md:p-2 md:gap-2 bg-app md:bg-canvas text-body";
-export const SHELL_ASIDE =
-  "max-md:hidden shrink-0 rounded-panel bg-panel border-card shadow-card flex flex-col overflow-hidden select-none transition-[width] duration-200";
-export const SHELL_MAIN =
-  "flex-1 min-w-0 min-h-0 md:rounded-panel bg-app overflow-y-auto overflow-x-hidden overscroll-contain flex flex-col";
+  "h-dvh overflow-hidden flex flex-col md:flex-row sm:p-2 sm:gap-2 bg-canvas text-body";
+/** The nav panel: `panel`, radius 16, a container (`@container/nav`) so the rail hides labels with a container query. Width: AppShell. */
+export const SHELL_NAV =
+  "@container/nav max-md:hidden shrink-0 rounded-panel bg-panel flex flex-col overflow-hidden select-none motion-safe:transition-[width] duration-200";
+/** The content column: `app`, radius 16 from sm, holds the route header and the content card. */
+export const SHELL_COLUMN = "flex-1 min-w-0 min-h-0 flex flex-col bg-app sm:rounded-panel overflow-hidden";
+/**
+ * The content card: `panel`, radius 16 from sm, flush with the column, 4px above its bottom, no border. Inside it
+ * `bg-app` is the panel colour (`--semi-app`, the variable `bg-app` reads, is set to `--semi-panel` on the card), so
+ * sticky strips that paint `bg-app` (STICKY_TOOLBAR, FORM_ACTIONS_STICKY, AppHeader, StickyContextBar) match the card
+ * and stay `app` on a page without AppShell.
+ */
+export const SHELL_CARD =
+  "flex-1 min-w-0 min-h-0 flex flex-col bg-panel sm:rounded-panel sm:mb-1 overflow-x-hidden overscroll-contain [--semi-app:var(--semi-panel)]";
+/** @deprecated Since 1.0: the nav panel is SHELL_NAV. */
+export const SHELL_ASIDE = SHELL_NAV;
+/** @deprecated Since 1.0: the content is SHELL_COLUMN (route header + card) and SHELL_CARD. */
+export const SHELL_MAIN = SHELL_CARD;
+/** The centred page container inside the card (AppShell without `flush`): at most 1440px, 16 / 24px padding. */
 export const SHELL_CONTAINER =
-  "flex-1 min-w-0 w-full max-w-[1440px] mx-auto px-4 sm:px-6 pt-[max(1rem,env(safe-area-inset-top))] sm:pt-8 pb-8 sm:pb-10 flex flex-col";
+  "flex-1 min-w-0 w-full max-w-[1440px] mx-auto px-4 sm:px-6 pt-4 sm:pt-6 pb-8 sm:pb-10 flex flex-col";

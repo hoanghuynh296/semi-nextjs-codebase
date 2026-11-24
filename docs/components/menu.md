@@ -92,6 +92,7 @@ returns focus. Default trigger: icon-only "more" button; pass `trigger` (an elem
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `items` * | `MenuItem[]` |  | The actions. Danger items are listed last, hidden ones left out (see MenuItem). |
+| `header` | `React.ReactNode` |  | Text above the items that is not an item (an account menu's name and role). It sits outside the `role="menu"` list, so arrows and type-ahead skip it. |
 | `label` | `string` |  | Accessible name of the default trigger. |
 | `align` | `'left' \| 'right'` | `"right"` |  |
 | `trigger` | `ReactElement<unknown, string \| JSXElementConstructor<any>>` |  |  |

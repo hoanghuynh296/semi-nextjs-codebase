@@ -253,40 +253,76 @@ test("WorkspaceLayout and FeatureIntro under Next's App Router: prerendered with
   await expect(page.getByRole("button", { name: "Send (4)" }).filter({ visible: true })).toBeVisible();
 });
 
-test("AppShell theme utility under Next's App Router: prerendered, its Menu picks a mode by keyboard (#114)", async ({ page, request }) => {
-  const html = await (await request.get(`${BASE}/shell/a`)).text();
-  expect(html).toContain('aria-label="Theme"');
-  // its icon is hidden in the server HTML (the stored theme is not known yet), then shown: no swap after hydration
-  expect(html).toMatch(/aria-label="Theme"[^>]*>(?:(?!<\/button>).)*opacity-0/s);
+test("AppShell under Next's App Router (#144): prerendered with its header; a slot keeps one instance across a collapse, every breakpoint and a route change", async ({ page, request }) => {
+  // a static route prerenders the shell; the middle that reads search params waits in its own Suspense
+  const html = await (await request.get(`${BASE}/shell-guard`)).text();
+  expect(html).toContain('aria-label="Prerender"');
+  expect(html).toContain('aria-label="Tài khoản: Ada Lovelace"');
+  expect(html).toMatch(/Count (<!-- -->)?0/);
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto(`${BASE}/shell/a`);
-  const trigger = page.locator("aside").getByRole("button", { name: "Theme" });
-  // the first key may land before hydration: retry until the Menu shows
+  await page.goto(`${BASE}/shell/a?q=chair`);
+  await expect(page.locator("header").getByTestId("query-middle")).toHaveText("Search: chair");
+  const count = page.getByRole("button", { name: /^Count/ });
+  // the first click may land before hydration: retry until the count moves
   await expect(async () => {
-    await trigger.focus();
-    await page.keyboard.press("Enter");
-    await expect(page.getByRole("menu", { name: "Theme" })).toBeVisible({ timeout: 1000 });
+    await count.click();
+    await expect(count).not.toHaveText("Count 0", { timeout: 1000 });
   }).toPass({ timeout: 15_000 });
-  await expect(page.getByRole("menuitemradio", { name: "Light" })).toHaveAttribute("aria-checked", "true");
-  await expect(trigger.locator("svg")).not.toHaveClass(/opacity-0/);
-  await page.keyboard.press("ArrowDown");
-  await expect(page.getByRole("menuitemradio", { name: "Dark" })).toBeFocused();
-  await page.keyboard.press("Enter");
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await expect(trigger).toBeFocused();
+  const n = await count.textContent();
+  const mounts = () => page.evaluate(() => (window as unknown as { __slotMounts: number }).__slotMounts);
+  expect(await mounts()).toBe(1);
+  // collapse and expand
+  await page.locator("aside").getByRole("button", { name: "Thu gọn menu" }).click();
+  await page.locator("aside").getByRole("button", { name: "Mở rộng menu" }).click();
+  // every range: wide, the default rail, md (forced rail), phone, and back
+  for (const width of [1100, 900, 430, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.waitForTimeout(100);
+  }
+  // the phone drawer open and closed: no second instance
+  await page.setViewportSize({ width: 430, height: 900 });
+  await page.locator("header").getByRole("button", { name: "Mở menu" }).click();
+  await expect(page.getByRole("dialog", { name: "Prerender" })).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog", { name: "Prerender" })).toBeHidden();
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await expect(count).toHaveText(n!);
+  expect(await mounts()).toBe(1);
+  // a route change (a nav link): the shell and the slot stay
+  await page.locator("aside").getByRole("link", { name: "Late" }).click();
+  await expect(page).toHaveURL(/\/shell\/late$/);
+  await expect(count).toHaveText(n!);
+  expect(await mounts()).toBe(1);
+  // the default crumbs: the active sub-item under its parent
+  await expect(page.getByRole("navigation", { name: "Đường dẫn" })).toHaveText(/Orders.*Open/);
 });
 
-test("AppShell account: `rail` is exact in the server HTML (a rail copy below lg, a full copy from lg), one copy after mount (#113)", async ({ page, request }) => {
-  // this app has no CSS: check the markup here; tests/storybook.spec.ts checks what shows at 1440 and 834
-  const html = await (await request.get(`${BASE}/shell/a`)).text();
-  expect(html).toContain('<div class="lg:hidden"><span>AC</span></div><div class="hidden lg:block"><span>Account</span></div>');
-  for (const [width, keep, drop] of [[1440, "Account", "AC"], [834, "AC", "Account"]] as const) {
-    await page.setViewportSize({ width, height: 900 });
-    await page.goto(`${BASE}/shell/a`);
-    // hydrated and measured: only the copy for the width stays
-    await expect(page.locator("aside").getByText(drop, { exact: true })).toHaveCount(0);
-    await expect(page.locator("aside").getByText(keep, { exact: true })).toHaveCount(1);
-  }
+test("AppShell nav shortcuts under Next's App Router (#144): Alt + digit clicks the nav link, so the unsaved-changes guard asks first; fields and editors keep the key", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(`${BASE}/shell-guard`);
+  const input = page.getByRole("textbox", { name: "Note" });
+  await expect(async () => {
+    await input.fill("draft");
+    await expect(page.locator("aside").getByRole("link", { name: "Home" })).toHaveAttribute("title", /\((Alt\+1|⌥1)\)$/, { timeout: 1000 });
+  }).toPass({ timeout: 15_000 });
+  // in the field the key is the field's
+  await input.press("Alt+Digit1");
+  await page.waitForTimeout(300);
+  await expect(page).toHaveURL(/\/shell-guard$/);
+  await page.getByTestId("editor").click();
+  await page.keyboard.press("Alt+Digit1");
+  await page.waitForTimeout(300);
+  await expect(page).toHaveURL(/\/shell-guard$/);
+  // outside a field: the guard asks; "Ở lại" stays, "Rời đi" goes
+  await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+  await page.keyboard.press("Alt+Digit1");
+  const dialog = page.getByRole("alertdialog");
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole("button", { name: "Ở lại" }).click();
+  await expect(page).toHaveURL(/\/shell-guard$/);
+  await page.keyboard.press("Alt+Digit1");
+  await page.getByRole("alertdialog").getByRole("button", { name: "Rời đi" }).click();
+  await expect(page).toHaveURL(/\/shell\/a$/);
 });
 
 async function replayTwice(page: import("@playwright/test").Page) {

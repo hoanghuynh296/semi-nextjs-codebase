@@ -121,7 +121,9 @@
       "text-badge",
       "text-badge--line-height",
       "text-overline",
-      "text-overline--line-height"
+      "text-overline--line-height",
+      "text-nav-label",
+      "text-nav-label--line-height"
     ],
     "z": [
       "z-sticky",
@@ -498,7 +500,7 @@
       "kind": "component",
       "module": "src/AppShell.tsx",
       "client": true,
-      "summary": "2-panel floating Bento shell of the Semi Design System (docs/DESIGN_SYSTEM.md §4), after the #94 study (C-031/C-032): - Outer bg-canvas frame with md:p-2 md:gap-2; the sidebar (bg-panel) and the content panel (bg-app) separate by tone - Sidebar from top to bottom: brand + collapse toggle, the accent Create action, the main nav (sections), a pinned group (text-overline label), then the utilities and the account at the bottom - lg+: labels (w-60) or the icon rail (w-[60px], remembered in localStorage); md (iPad): always the rail.",
+      "summary": "The 1.0 frame of a multi-page app (#144, docs/DESIGN_SYSTEM.md §4): - A `canvas` frame (8px padding and gap from sm, none on phones) holding the nav panel and the content column.",
       "props": [
         "productName",
         "logoIcon",
@@ -506,12 +508,17 @@
         "sections",
         "activeId",
         "onSelect",
-        "create",
+        "mainAction",
         "primaryCta",
         "pinned",
-        "utilities",
-        "account",
-        "footer",
+        "tools",
+        "toolsMenu",
+        "header",
+        "page",
+        "flush",
+        "railBelow",
+        "railWidth",
+        "shortcuts",
         "mobileNav",
         "mobileTabIds",
         "storageKey",
@@ -1858,7 +1865,8 @@
         "label",
         "align",
         "trigger",
-        "sheet"
+        "sheet",
+        "header"
       ],
       "doc": "docs/components/menu.md"
     },
@@ -2072,6 +2080,39 @@
         "children"
       ],
       "doc": "docs/components/resizable.md"
+    },
+    {
+      "name": "AccountMenu",
+      "kind": "component",
+      "module": "src/RouteHeader.tsx",
+      "client": true,
+      "summary": "The account avatar menu of the route header: a one-letter avatar (32px) whose Menu has a header (name, role or email), then the theme (Light / Dark / System), the app's items and sign-out.",
+      "props": [
+        "name",
+        "detail",
+        "avatarSrc",
+        "items",
+        "onSignOut",
+        "theme"
+      ],
+      "doc": "docs/components/app-shell.md"
+    },
+    {
+      "name": "RouteHeader",
+      "kind": "component",
+      "module": "src/RouteHeader.tsx",
+      "client": true,
+      "summary": "The route header: h60 from `lg` (56 below), padding 0 8px (16px from `sm`), the column's full width. Crumbs enter with `motion-crumb-in` and leave with `motion-crumb-out` (opacity only under reduced motion); the row itself never moves.",
+      "props": [
+        "crumbs",
+        "middle",
+        "actions",
+        "account",
+        "onMenu",
+        "menuExpanded",
+        "className"
+      ],
+      "doc": "docs/components/app-shell.md"
     },
     {
       "name": "ScrollArea",
@@ -2777,7 +2818,7 @@
       "kind": "hook",
       "module": "src/AppShell.tsx",
       "client": true,
-      "summary": "Inside `AppShell`: whether the sidebar is showing sub-items, so a page can offer its own navigation when not."
+      "summary": "Inside `AppShell`: whether the nav shows sub-items, whether it is the rail, and the nav shortcuts by item id."
     },
     {
       "name": "useHotkey",
@@ -2822,6 +2863,13 @@
       "summary": "True on devices with a touch screen (phones, tablets). Re-evaluated on change. Not just `(pointer: coarse)`: an iPad with a Magic Keyboard / trackpad (typically landscape) reports a fine primary pointer, and iPadOS \"desktop website\" mode looks like a Mac; both still have a touch screen (`any-pointer: coarse`, `maxTouchPoints`). Macs report 0 touch points."
     },
     {
+      "name": "useRecordCrumb",
+      "kind": "hook",
+      "module": "src/RouteHeader.tsx",
+      "client": true,
+      "summary": "A detail page names its record (\"DH-1042\") for the route header's trail while it is on screen; the crumb goes away when the page unmounts or the label becomes empty. Call it in the page, inside AppShell."
+    },
+    {
       "name": "useTheme",
       "kind": "hook",
       "module": "src/ThemeProvider.tsx",
@@ -2829,11 +2877,18 @@
       "summary": ""
     },
     {
+      "name": "useThemeChoices",
+      "kind": "hook",
+      "module": "src/ThemeProvider.tsx",
+      "client": true,
+      "summary": "The three choices as Menu radio items (`menuitemradio`; the menu opens on the current one), the current one `checked` (none until the stored theme is known)."
+    },
+    {
       "name": "useThemeUtility",
       "kind": "hook",
       "module": "src/ThemeProvider.tsx",
       "client": true,
-      "summary": "The theme as an AppShell `utilities` item: a row (an icon in the rail) that opens a Menu of Light / Dark / System with the current one checked; a level of the phone drawer. Keeps \"system\", unlike a `toggleTheme` item. ```tsx const theme = useThemeUtility(); ```"
+      "summary": "The theme as an AppShell `tools` item (for an app without an account; otherwise the route header's account menu holds the theme): an icon that opens a Menu of Light / Dark / System with the current one checked; a level of the phone drawer. Keeps \"system\", unlike a `toggleTheme` item. ```tsx const theme = useThemeUtility(); ```"
     },
     {
       "name": "useScrollLock",
@@ -2893,6 +2948,13 @@
     }
   ],
   "functions": [
+    {
+      "name": "navScript",
+      "kind": "function",
+      "module": "src/AppShell.tsx",
+      "client": true,
+      "summary": "Sets the stored nav choice on <html> before the first paint, so the server HTML's width is the user's (the rules of `readNavChoice`)."
+    },
     {
       "name": "isoDay",
       "kind": "function",
@@ -3092,6 +3154,13 @@
   ],
   "constants": [
     {
+      "name": "NAV_WIDTH",
+      "kind": "constant",
+      "module": "src/AppShell.tsx",
+      "client": true,
+      "summary": ""
+    },
+    {
       "name": "CHAT_ROW",
       "kind": "constant",
       "module": "src/Chat.tsx",
@@ -3188,6 +3257,13 @@
       "module": "src/MobileTabBar.tsx",
       "client": true,
       "summary": "Height of the bar above the safe area; AppShell pads its main scroll area by this much."
+    },
+    {
+      "name": "RecordCrumbContext",
+      "kind": "constant",
+      "module": "src/RouteHeader.tsx",
+      "client": true,
+      "summary": "The record a detail page shows (internal: AppShell provides it)."
     },
     {
       "name": "SIDE_PANEL_WIDTH",
@@ -3663,7 +3739,7 @@
       "kind": "constant",
       "module": "styles/surfaces.ts",
       "client": false,
-      "summary": "`FormActions` on a page: sticks to the bottom of the scrolling page, over the page background, with a line above. The component adds the safe-area padding and lifts it above the on-screen keyboard (`bottom`)."
+      "summary": "`FormActions` on a page: sticks to the bottom of the scrolling page, over the page background (`bg-app`; the panel colour inside the AppShell card), with a line above. The component adds the safe-area padding and lifts it above the on-screen keyboard (`bottom`)."
     },
     {
       "name": "FIELD_LABEL",
@@ -3698,7 +3774,28 @@
       "kind": "constant",
       "module": "styles/surfaces.ts",
       "client": false,
-      "summary": "2-panel floating Bento shell classes (used by AppShell)."
+      "summary": "The 1.0 shell frame (used by AppShell, #144): `canvas` with 8px padding and gap from sm, none on phones."
+    },
+    {
+      "name": "SHELL_NAV",
+      "kind": "constant",
+      "module": "styles/surfaces.ts",
+      "client": false,
+      "summary": "The nav panel: `panel`, radius 16, a container (`@container/nav`) so the rail hides labels with a container query. Width: AppShell."
+    },
+    {
+      "name": "SHELL_COLUMN",
+      "kind": "constant",
+      "module": "styles/surfaces.ts",
+      "client": false,
+      "summary": "The content column: `app`, radius 16 from sm, holds the route header and the content card."
+    },
+    {
+      "name": "SHELL_CARD",
+      "kind": "constant",
+      "module": "styles/surfaces.ts",
+      "client": false,
+      "summary": "The content card: `panel`, radius 16 from sm, flush with the column, 4px above its bottom, no border. Inside it `bg-app` is the panel colour (`--semi-app`, the variable `bg-app` reads, is set to `--semi-panel` on the card), so sticky strips that paint `bg-app` (STICKY_TOOLBAR, FORM_ACTIONS_STICKY, AppHeader, StickyContextBar) match the card and stay `app` on a page without AppShell."
     },
     {
       "name": "SHELL_ASIDE",
@@ -3719,7 +3816,7 @@
       "kind": "constant",
       "module": "styles/surfaces.ts",
       "client": false,
-      "summary": ""
+      "summary": "The centred page container inside the card (AppShell without `flush`): at most 1440px, 16 / 24px padding."
     },
     {
       "name": "FOCUS_RING",

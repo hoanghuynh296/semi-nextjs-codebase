@@ -91,6 +91,12 @@ function phoneOverflow(page: Page) {
   });
 }
 
+/** Pick a theme in the route header's theme menu of the docs site. */
+async function pickTheme(page: Page, name: "Sáng" | "Tối" | "Hệ thống") {
+  await page.locator("header").getByRole("button", { name: "Giao diện", exact: true }).click();
+  await page.getByRole("menu", { name: "Giao diện" }).getByRole("menuitemradio", { name }).click();
+}
+
 // ─── Docs site ───────────────────────────────────────────────────────────────────────────────────────────────────
 
 test("the menu marks the page you are on, and follows navigation", async ({ page }) => {
@@ -132,7 +138,7 @@ test("stored theme is applied before the first paint and survives reload", async
   expect(await page.evaluate(() => (window as unknown as { __firstPaintTheme?: string }).__firstPaintTheme)).toBe("light");
   // the static HTML is clickable before React hydrates (slow on CI with every preview on the page): retry the click
   await expect(async () => {
-    await page.getByRole("radio", { name: "Tối" }).first().click();
+    await pickTheme(page, "Tối");
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark", { timeout: 1000 });
   }).toPass();
   expect(await page.evaluate(() => localStorage.getItem("semi-theme"))).toBe("dark");
@@ -155,13 +161,13 @@ test("brand preview: a #brand= link sets the brand fills on every page, passes c
   await open(page, `/components/#brand=${hash}`, "dark");
   await expect(page.getByText("Blue Co", { exact: true })).toBeVisible();
   for (const theme of THEMES) {
-    await page.getByRole("radio", { name: theme === "dark" ? "Tối" : "Sáng" }).first().click();
+    await pickTheme(page, theme === "dark" ? "Tối" : "Sáng");
     // 1.0: the brand fill is the brand colour as given, the same in both themes; the surfaces stay Semi's neutrals.
     await expect.poll(primary).toBe("#2563eb");
     await expect.poll(canvas).toBe(theme === "dark" ? "#101010" : "#ebebeb");
     expect(await lowContrast(page)).toEqual([]);
   }
-  await page.getByRole("radio", { name: "Tối" }).first().click();
+  await pickTheme(page, "Tối");
   await page.goto("/components/button/"); // stays on across pages (applied once the page hydrates)
   await expect.poll(primary).toBe("#2563eb");
   await page.getByRole("button", { name: "Tắt xem trước brand" }).click();
@@ -232,7 +238,7 @@ test("Design Lab: a draft follows every page, keeps each density its own values,
   await page.goto(`/lab/#lab=${labHash({ ...draft, params: { hoverStep: 0.08 } })}`);
   await page.addStyleTag({ content: "*,*::before,*::after{transition:none!important;animation:none!important}" });
   for (const theme of THEMES) {
-    await page.getByRole("radio", { name: theme === "dark" ? "Tối" : "Sáng" }).first().click();
+    await pickTheme(page, theme === "dark" ? "Tối" : "Sáng");
     for (const tab of ["Chữ", "Hình khối", "Màu", "Thay đổi"]) {
       await page.getByRole("tab", { name: new RegExp(`^${tab}`) }).click();
       expect(await lowContrast(page), `${theme} · ${tab}`).toEqual([]);
@@ -615,7 +621,8 @@ test("type sizes (#155): content is text-ui 14px, shell chrome is text-chrome 12
 test("phones get the drawer: focus moves in, stays in, drills down and returns to the menu button", async ({ browser }) => {
   const page = await browser.newPage({ viewport: { width: 430, height: 932 }, isMobile: true, hasTouch: true });
   await open(page, "/demo/app-shell/", "dark");
-  const menuButton = page.getByRole("button", { name: "Mở menu" });
+  // the menu button sits at the start of the route header
+  const menuButton = page.locator("header").getByRole("button", { name: "Mở menu" });
   await menuButton.click();
   const drawer = page.getByRole("dialog", { name: "Sales Hub" });
   await expect(drawer).toBeVisible();
@@ -639,7 +646,7 @@ test("phones get the drawer: focus moves in, stays in, drills down and returns t
   await expect(level.getByRole("button", { name: "Đang xử lý" })).toBeVisible();
   await level.getByRole("button", { name: /Quay lại/ }).click();
   await expect(orders).toBeFocused();
-  // Create is one row that opens what can be created (no tiles repeating the nav's names)
+  // the main action is one row that opens its choices (no tiles repeating the nav's names)
   await drawer.getByRole("button", { name: "Tạo mới" }).click();
   const createLevel = page.getByRole("dialog", { name: "Tạo mới" });
   await expect(createLevel.getByRole("button", { name: "Phiếu nhập" })).toBeVisible();
@@ -647,50 +654,108 @@ test("phones get the drawer: focus moves in, stays in, drills down and returns t
   await expect(createLevel.getByRole("button", { name: "Báo giá" })).toBeDisabled();
   await expect(createLevel.getByRole("button", { name: "Đơn hàng" })).toBeFocused();
   await page.keyboard.press("Escape");
-  // the theme utility (a `menu` item) opens its choices as a level: the current one is pressed, the first row focused
-  const themeRow = drawer.getByRole("button", { name: "Giao diện" });
-  await themeRow.click();
-  const themeLevel = page.getByRole("dialog", { name: "Giao diện" });
-  await expect(themeLevel.getByRole("button", { name: "Sáng" })).toBeFocused();
-  await expect(themeLevel.getByRole("button", { name: "Tối" })).toHaveAttribute("aria-pressed", "true");
+  // the bottom row's tools: named with their count; the ••• menu opens its items as a level
+  await expect(drawer.getByRole("button", { name: "Thông báo 12" })).toBeVisible();
+  const more = drawer.getByRole("button", { name: "Thêm" });
+  await more.click();
+  await expect(page.getByRole("dialog", { name: "Thêm" }).getByRole("button", { name: "Cài đặt" })).toBeFocused();
   await page.keyboard.press("Escape");
-  await expect(themeRow).toBeFocused();
+  await expect(more).toBeFocused();
   expect(await lowContrast(page)).toEqual([]);
   await page.keyboard.press("Escape");
   await expect(drawer).toBeHidden();
   await expect(menuButton).toBeFocused();
-  // picking a mode in the level applies it and closes the drawer
-  await menuButton.click();
-  await drawer.getByRole("button", { name: "Giao diện" }).click();
-  await page.getByRole("dialog", { name: "Giao diện" }).getByRole("button", { name: "Hệ thống" }).click();
-  await expect(drawer).toBeHidden();
-  await expect(menuButton).toBeFocused();
-  expect(await page.evaluate(() => localStorage.getItem("semi-theme"))).toBe("system");
-  // by keyboard: Enter on the row opens the level, Enter on a mode picks it and closes the drawer
-  await menuButton.click();
-  await drawer.getByRole("button", { name: "Giao diện" }).focus();
-  await page.keyboard.press("Enter");
-  await expect(page.getByRole("dialog", { name: "Giao diện" }).getByRole("button", { name: "Sáng" })).toBeFocused();
-  await expect(page.getByRole("dialog", { name: "Giao diện" }).getByRole("button", { name: "Hệ thống" })).toHaveAttribute("aria-pressed", "true");
-  await page.keyboard.press("Enter");
-  await expect(drawer).toBeHidden();
-  await expect(menuButton).toBeFocused();
-  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   await page.close();
 });
 
-test("AppShell rail (iPad): every item is named and shows a tooltip on the right; mega menu and TextTabs by keyboard", async ({ browser }) => {
+/** The frame as measured: nav, header, card, column and the page width. */
+function frame(page: Page) {
+  return page.evaluate(() => {
+    const box = (el: Element | null) => {
+      const b = el!.getBoundingClientRect();
+      return { x: Math.round(b.x), y: Math.round(b.y), w: Math.round(b.width), h: Math.round(b.height), r: getComputedStyle(el!).borderTopLeftRadius };
+    };
+    const main = document.querySelector("main#main")!;
+    const aside = document.querySelector("aside");
+    return {
+      nav: aside && getComputedStyle(aside).display !== "none" ? box(aside) : null,
+      header: box(document.querySelector("header")),
+      card: box(main),
+      column: box(main.parentElement),
+      overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    };
+  });
+}
+
+test("AppShell frame (#144): padding, gap, radius, nav 224 / 72, header 60, card 4px above the bottom, no side scroll at 1440 / 1100 / 834 / 430", async ({ browser }) => {
+  for (const [width, nav] of [[1440, 224], [1100, 72], [834, 72], [430, null]] as const) {
+    const page = await browser.newPage({ viewport: { width, height: 900 } });
+    await open(page, "/demo/app-shell/", "dark");
+    const f = await frame(page);
+    expect(f.overflow, `${width}: no horizontal scroll`).toBe(0);
+    if (nav) {
+      expect(f.nav).toMatchObject({ x: 8, y: 8, w: nav, r: "16px" });
+      expect(f.column.x, `${width}: 8px gap`).toBe(8 + nav + 8);
+      expect(f.column).toMatchObject({ y: 8, r: "16px" });
+      expect(f.column.x + f.column.w).toBe(width - 8);
+      // the card: flush with the column, 4px above its bottom, radius 16
+      expect(f.card).toMatchObject({ x: f.column.x, w: f.column.w, r: "16px" });
+      expect(f.column.y + f.column.h - (f.card.y + f.card.h)).toBe(4);
+    } else {
+      // phones: no frame padding, the drawer instead of the nav
+      expect(f.nav).toBeNull();
+      expect(f.column).toMatchObject({ x: 0, y: 0, w: width });
+    }
+    if (width >= 1024) expect(f.header.h).toBe(60);
+    expect(f.header.w).toBe(f.column.w);
+    await page.close();
+  }
+});
+
+test("AppShell server HTML (#144): the nav width is exact before any script runs, and the stored choice applies before paint", async ({ browser }) => {
+  const ssr = await browser.newPage({ viewport: { width: 1440, height: 900 }, javaScriptEnabled: false });
+  await ssr.goto("/demo/app-shell/");
+  const aside = ssr.locator("aside");
+  await expect(aside).toHaveCSS("width", "224px");
+  // the rail hides the labels with a container query: still named for assistive tech
+  await ssr.setViewportSize({ width: 1100, height: 900 });
+  await expect(aside).toHaveCSS("width", "72px");
+  await expect(aside.getByRole("link", { name: "Đơn hàng" })).toBeVisible();
+  await expect(aside.getByText("Đã ghim")).toBeHidden();
+  await ssr.setViewportSize({ width: 834, height: 900 });
+  await expect(aside).toHaveCSS("width", "72px");
+  await ssr.close();
+  // a stored choice: the inline script sets it on <html> before the first paint
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await page.addInitScript(() => {
+    localStorage.setItem("semi-nav", "rail");
+    new MutationObserver((_, obs) => {
+      const el = document.querySelector("aside");
+      if (el) {
+        (window as unknown as { __firstNavWidth?: number }).__firstNavWidth = el.getBoundingClientRect().width;
+        obs.disconnect();
+      }
+    }).observe(document, { childList: true, subtree: true });
+  });
+  await page.goto("/demo/app-shell/");
+  expect(await page.evaluate(() => (window as unknown as { __firstNavWidth?: number }).__firstNavWidth)).toBe(72);
+  await expect(page.locator("aside")).toHaveCSS("width", "72px");
+  await page.close();
+});
+
+test("AppShell rail (1100 and iPad): every item is named, shows a tooltip on the right with its shortcut; tools stack; mega menu and TextTabs by keyboard", async ({ browser }) => {
   const page = await browser.newPage({ viewport: { width: 834, height: 1194 } });
   await open(page, "/demo/app-shell/", "light");
   const aside = page.locator("aside");
-  await expect(aside).toHaveCSS("width", "60px");
-  // an item with `right` (a count) and the Create menu trigger get the rail tooltip too
+  await expect(aside).toHaveCSS("width", "72px");
+  // an item with `right` (a count) and the main action get the rail tooltip too
   const inbox = aside.getByRole("button", { name: "Hộp thư" });
   await inbox.focus();
   const tip = page.getByRole("tooltip");
-  await expect(tip).toHaveText("Hộp thư");
+  await expect(tip).toHaveText(/^Hộp thư(Alt\+1|⌥1)$/);
   const [t, b] = [await tip.boundingBox(), await inbox.boundingBox()];
   expect(t!.x).toBeGreaterThan(b!.x + b!.width);
+  expect((await aside.getByRole("link", { name: "Đơn hàng" }).boundingBox())!.width).toBe(32);
   const create = aside.getByRole("button", { name: "Tạo mới" });
   await create.focus();
   await expect(tip).toHaveText("Tạo mới");
@@ -698,31 +763,26 @@ test("AppShell rail (iPad): every item is named and shows a tooltip on the right
   await expect(page.getByRole("menu")).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(create).toBeFocused();
-  // the theme utility in the 60px rail: named, tooltip, a Menu of the three modes by keyboard (#114)
-  const themeUtil = aside.getByRole("button", { name: "Giao diện" });
-  await themeUtil.focus();
-  await expect(tip).toHaveText("Giao diện");
-  const tb = await themeUtil.boundingBox();
-  expect(tb!.width).toBeLessThanOrEqual(44);
+  // the bottom row stacks: 32×32 tools one above the other, a count badge, the ••• menu by keyboard
+  const bell = aside.getByRole("button", { name: "Thông báo 12" });
+  const help = aside.getByRole("button", { name: "Trợ giúp" });
+  const [bb, hb] = [await bell.boundingBox(), await help.boundingBox()];
+  expect(bb).toMatchObject({ width: 32, height: 32 });
+  expect(hb!.y).toBe(bb!.y + 32 + 4);
+  await expect(bell.getByText("12")).toBeVisible();
+  await help.focus();
+  await expect(tip).toHaveText("Trợ giúp");
+  const more = aside.getByRole("button", { name: "Thêm" });
+  await more.focus();
   await page.keyboard.press("Enter");
-  const themeMenu = page.getByRole("menu", { name: "Giao diện" });
-  await expect(themeMenu.getByRole("menuitemradio")).toHaveText(["Sáng", "Tối", "Hệ thống"]);
-  await expect(themeMenu.getByRole("menuitemradio", { name: "Sáng" })).toHaveAttribute("aria-checked", "true");
-  await page.keyboard.press("End");
-  await expect(themeMenu.getByRole("menuitemradio", { name: "Hệ thống" })).toBeFocused();
-  // opened from the bottom utilities, the Menu stays on screen (it flips above the trigger)
-  const [mb, ub] = [await themeMenu.boundingBox(), await themeUtil.boundingBox()];
+  const moreMenu = page.getByRole("menu", { name: "Thêm" });
+  await expect(moreMenu.getByRole("menuitem", { name: "Cài đặt" })).toBeFocused();
+  // opened from the bottom row, the Menu stays on screen
+  const mb = await moreMenu.boundingBox();
   expect(mb!.y + mb!.height).toBeLessThanOrEqual(1194);
-  expect(mb!.y + mb!.height).toBeLessThanOrEqual(ub!.y + 1);
-  await page.keyboard.press("Enter");
-  await expect(themeMenu).toBeHidden();
-  await expect(themeUtil).toBeFocused();
-  expect(await page.evaluate(() => localStorage.getItem("semi-theme"))).toBe("system");
-  await page.keyboard.press("ArrowDown");
-  await expect(page.getByRole("menuitemradio", { name: "Hệ thống" })).toHaveAttribute("aria-checked", "true");
   await page.keyboard.press("Escape");
-  await expect(themeUtil).toBeFocused();
-  // mega menu: opens beside the sidebar, focus on the first link, ↓ moves, Escape returns focus
+  await expect(more).toBeFocused();
+  // mega menu: opens beside the nav, focus on the first link, ↓ moves, Escape returns focus
   const catalog = aside.getByRole("button", { name: "Sản phẩm" });
   await catalog.click();
   const mega = page.getByRole("dialog", { name: "Sản phẩm" });
@@ -741,6 +801,10 @@ test("AppShell rail (iPad): every item is named and shows a tooltip on the right
   await expect(tabs.getByRole("tab", { name: "Đã giao" })).toHaveAttribute("aria-selected", "true");
   await expect(tabs.getByRole("tab", { name: "Đang xử lý" })).toHaveAttribute("tabindex", "-1");
   await expect(page.getByRole("tabpanel")).toBeVisible();
+  // 1100: the default rail between 1024 and 1279, with the expand button on the logo
+  await page.setViewportSize({ width: 1100, height: 900 });
+  await expect(aside).toHaveCSS("width", "72px");
+  await expect(aside.getByRole("button", { name: "Mở rộng menu" })).toHaveAttribute("aria-expanded", "false");
   await page.close();
 });
 
@@ -776,63 +840,298 @@ for (const theme of THEMES) {
   });
 }
 
-test("AppShell server HTML: the theme utility's icon is hidden before mount and shown after; the account fits the width before mount (#113)", async ({ browser }) => {
-  // without JavaScript the page is the server HTML: the stored theme is not known, so the icon keeps its place, hidden
-  const ssr = await browser.newPage({ viewport: { width: 1440, height: 900 }, javaScriptEnabled: false });
-  await ssr.goto("/demo/app-shell/");
-  const before = ssr.locator("aside").getByRole("button", { name: "Giao diện" }).locator("svg");
-  await expect(before).toHaveClass(/opacity-0/);
-  // the account is the full block in the server HTML at lg and the compact one at md (`rail` is exact before mount, #113)
-  await expect(ssr.locator("aside").getByText("Cửa hàng Quận 1")).toBeVisible();
-  await ssr.setViewportSize({ width: 834, height: 1194 });
-  await expect(ssr.locator("aside").getByText("Cửa hàng Quận 1")).toBeHidden();
-  // both copies are in the server HTML; CSS shows only the rail one at md
-  await expect(ssr.locator("aside").getByText("LP", { exact: true }).filter({ visible: true })).toHaveCount(1);
-  await ssr.close();
-  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
-  await open(page, "/demo/app-shell/", "dark");
-  const icon = page.locator("aside").getByRole("button", { name: "Giao diện" }).locator("svg");
-  await expect(icon).not.toHaveClass(/opacity-0/);
-  await expect(icon).toBeVisible();
-  await page.close();
-});
-
-test("AppShell desktop: Create menu, collapse to the rail and back from the logo", async ({ browser }) => {
+test("AppShell desktop: main action menu, collapse to the rail and back from the logo; the choice survives a reload and wins at 1100", async ({ browser }) => {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   await open(page, "/demo/app-shell/", "dark");
   const aside = page.locator("aside");
-  await expect(aside).toHaveCSS("width", "240px");
+  await expect(aside).toHaveCSS("width", "224px");
   await aside.getByRole("button", { name: "Tạo mới" }).click();
   await expect(page.getByRole("menu")).toBeVisible();
   await page.keyboard.press("Escape");
-  // the theme utility is a row with its label; its Menu opens on click
-  await aside.getByRole("button", { name: "Giao diện" }).click();
-  await expect(page.getByRole("menu", { name: "Giao diện" })).toBeVisible();
-  expect(await lowContrast(page)).toEqual([]);
-  await page.keyboard.press("Escape");
+  // nav items: h32, 12px, the active one on item-selected; groups 24px apart with a line
+  const active = aside.getByRole("link", { name: "Đơn hàng" });
+  expect((await active.boundingBox())!.height).toBe(32);
+  await expect(active).toHaveCSS("font-size", "12px");
+  // the expanded nav names the shortcut in the title
+  await expect(aside.getByRole("button", { name: "Hộp thư" })).toHaveAttribute("title", /^Hộp thư \((Alt\+1|⌥1)\)$/);
   const collapse = aside.getByRole("button", { name: "Thu gọn menu" });
   await expect(collapse).toHaveAttribute("aria-expanded", "true");
   await expect(collapse).toHaveAttribute("aria-controls", (await aside.getAttribute("id"))!);
   await collapse.click();
-  await expect(aside).toHaveCSS("width", "60px");
+  await expect(aside).toHaveCSS("width", "72px");
   await expect(aside.getByRole("button", { name: "Mở rộng menu" })).toHaveAttribute("aria-expanded", "false");
-  // the collapsed rail: the theme utility keeps its Tooltip and opens its Menu by keyboard, on screen above it
-  const themeUtil = aside.getByRole("button", { name: "Giao diện" });
-  await themeUtil.focus();
-  await expect(page.getByRole("tooltip")).toHaveText("Giao diện");
-  await page.keyboard.press("ArrowUp");
-  const themeMenu = page.getByRole("menu", { name: "Giao diện" });
-  // ↑ opens on the last choice
-  await expect(themeMenu.getByRole("menuitemradio", { name: "Hệ thống" })).toBeFocused();
-  const [mb, ub] = [await themeMenu.boundingBox(), await themeUtil.boundingBox()];
-  expect(mb!.y + mb!.height).toBeLessThanOrEqual(ub!.y + 1);
-  expect(mb!.x).toBeGreaterThanOrEqual(0);
-  await page.keyboard.press("Escape");
-  await expect(themeUtil).toBeFocused();
+  // remembered: one stored value, applied after a reload and at another width
+  expect(await page.evaluate(() => localStorage.getItem("semi-nav"))).toBe("rail");
+  await page.reload();
+  await expect(aside).toHaveCSS("width", "72px");
   await aside.getByRole("button", { name: "Mở rộng menu" }).click();
-  await expect(aside).toHaveCSS("width", "240px");
+  await expect(aside).toHaveCSS("width", "224px");
+  await page.setViewportSize({ width: 1100, height: 900 });
+  // the person chose expanded: 1100 (the default rail range) stays expanded
+  await expect(aside).toHaveCSS("width", "224px");
+  await page.setViewportSize({ width: 900, height: 900 });
+  // below lg the rail is forced
+  await expect(aside).toHaveCSS("width", "72px");
   await page.close();
 });
+
+for (const theme of THEMES) {
+  test(`AppShell account avatar menu: a proper menu by keyboard, header, theme Light / Dark / System, account, sign-out · ${theme}`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await open(page, "/demo/app-shell/", theme);
+    const avatar = page.locator("header").getByRole("button", { name: "Tài khoản: Lan Phạm" });
+    await expect(avatar).toHaveAttribute("aria-haspopup", "menu");
+    const menu = page.getByRole("menu", { name: "Tài khoản: Lan Phạm" });
+    await expect(async () => {
+      await avatar.focus();
+      await page.keyboard.press("ArrowDown");
+      await expect(menu).toBeVisible({ timeout: 1000 });
+    }).toPass({ timeout: 15_000 });
+    // the header (name, detail) is not an item; a set of choices opens on the current one
+    await expect(page.getByText("Cửa hàng Quận 1")).toBeVisible();
+    await expect(menu.getByRole("menuitemradio")).toHaveText(["Sáng", "Tối", "Hệ thống"]);
+    const current = menu.getByRole("menuitemradio", { name: theme === "dark" ? "Tối" : "Sáng" });
+    await expect(current).toBeFocused();
+    await expect(current).toHaveAttribute("aria-checked", "true");
+    await page.keyboard.press("End");
+    await expect(menu.getByRole("menuitem", { name: "Đăng xuất" })).toBeFocused();
+    await page.keyboard.press("ArrowUp");
+    await expect(menu.getByRole("menuitem", { name: "Tài khoản" })).toBeFocused();
+    expect(await lowContrast(page)).toEqual([]);
+    // pick the other theme, then System
+    const other = theme === "dark" ? "Sáng" : "Tối";
+    await menu.getByRole("menuitemradio", { name: other }).focus();
+    await page.keyboard.press("Enter");
+    await expect(menu).toBeHidden();
+    await expect(avatar).toBeFocused();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", theme === "dark" ? "light" : "dark");
+    await page.keyboard.press("Enter");
+    await menu.getByRole("menuitemradio", { name: "Hệ thống" }).focus();
+    await page.keyboard.press(" ");
+    expect(await page.evaluate(() => localStorage.getItem("semi-theme"))).toBe("system");
+    await expect(avatar).toBeFocused();
+    // the header action holds its own state (a slot is a component)
+    const star = page.locator("header").getByRole("button", { name: "Ghim trang" });
+    await star.click();
+    await expect(star).toHaveAttribute("aria-pressed", "true");
+  });
+}
+
+test("AppShell nav shortcuts (#144): holding Alt shows the numbers, Alt + digit opens the item, fields and IME keep the key", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await open(page, "/components/button/", "dark");
+  const aside = page.locator("aside[data-semi-nav-panel]");
+  // wait for hydration: the shortcut shows in the expanded nav's title
+  await expect(aside.getByRole("link", { name: "Giới thiệu" })).toHaveAttribute("title", /\((Alt\+1|⌥1)\)$/);
+  await page.keyboard.down("Alt");
+  await expect(aside.locator("[data-nav-num]")).toHaveCount(9);
+  await expect(aside.locator("[data-nav-num]").first()).toHaveText("1");
+  await page.keyboard.up("Alt");
+  await expect(aside.locator("[data-nav-num]")).toHaveCount(0);
+  // Alt + 2: the second item (Tất cả component), through its link
+  await page.keyboard.press("Alt+Digit2");
+  await expect(page).toHaveURL(/\/components\/$/);
+  await expect(aside.getByRole("link", { name: "Tất cả component" })).toHaveAttribute("aria-current", "page");
+  // IME composition and editable targets keep the key
+  await page.evaluate(() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "Process", code: "Digit1", altKey: true, keyCode: 229, isComposing: true, bubbles: true, cancelable: true })));
+  await page.waitForTimeout(300);
+  await expect(page).toHaveURL(/\/components\/$/);
+  const prevented = await page.evaluate(() => {
+    const input = document.createElement("input");
+    document.querySelector("main")!.prepend(input);
+    input.focus();
+    const e = new KeyboardEvent("keydown", { key: "1", code: "Digit1", altKey: true, bubbles: true, cancelable: true });
+    input.dispatchEvent(e);
+    input.remove();
+    return e.defaultPrevented;
+  });
+  expect(prevented).toBe(false);
+  await page.waitForTimeout(300);
+  await expect(page).toHaveURL(/\/components\/$/);
+  // a rail with corner badges
+  await page.setViewportSize({ width: 1100, height: 900 });
+  await expect(aside).toHaveCSS("width", "72px");
+  await page.keyboard.down("Alt");
+  const badge = aside.locator("[data-nav-num]").first();
+  const [bb, ab] = [await badge.boundingBox(), await aside.getByRole("link", { name: "Giới thiệu" }).boundingBox()];
+  expect(bb!.x + bb!.width).toBeGreaterThan(ab!.x + ab!.width);
+  await page.keyboard.up("Alt");
+});
+
+test("AppShell nav shortcuts (#144, review): an app handler that took the key wins, a real contenteditable keeps it, ⌘ / Ctrl + digit only in an installed app", async ({ browser }) => {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await open(page, "/components/button/", "dark");
+  const aside = page.locator("aside[data-semi-nav-panel]");
+  await expect(aside.getByRole("link", { name: "Giới thiệu" })).toHaveAttribute("title", /\((Alt\+1|⌥1)\)$/);
+  // defaultPrevented: an app's own handler (document, before the shell's window listener) took Alt + 2
+  await page.evaluate(() => {
+    (window as unknown as { __take?: (e: KeyboardEvent) => void }).__take = (e: KeyboardEvent) => e.code === "Digit2" && e.altKey && e.preventDefault();
+    document.addEventListener("keydown", (window as unknown as { __take: (e: KeyboardEvent) => void }).__take);
+  });
+  await page.keyboard.down("Alt");
+  await page.keyboard.press("Digit2");
+  await page.keyboard.up("Alt");
+  await page.waitForTimeout(300);
+  await expect(page).toHaveURL(/\/components\/button\/$/);
+  await page.evaluate(() => document.removeEventListener("keydown", (window as unknown as { __take: (e: KeyboardEvent) => void }).__take));
+  // a real contenteditable (an editor) keeps Alt + digit, typed by the keyboard
+  await page.evaluate(() => {
+    const ed = document.createElement("div");
+    ed.contentEditable = "true";
+    ed.id = "ed";
+    ed.textContent = "x";
+    document.querySelector("main")!.prepend(ed);
+  });
+  await page.locator("#ed").focus();
+  await page.keyboard.press("Alt+Digit2");
+  await page.waitForTimeout(300);
+  await expect(page).toHaveURL(/\/components\/button\/$/);
+  await page.evaluate(() => document.getElementById("ed")!.remove());
+  await page.locator("main h1").first().click();
+  // in a browser tab ⌘ / Ctrl + digit belongs to the browser: no numbers, no navigation
+  const apple = await page.evaluate(() => /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent));
+  const tabMod = apple ? "Meta" : "Control";
+  await page.keyboard.down(tabMod);
+  await expect(aside.locator("[data-nav-num]")).toHaveCount(0);
+  await page.keyboard.up(tabMod);
+  await page.evaluate(() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "2", code: "Digit2", metaKey: /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent), ctrlKey: !/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent), bubbles: true, cancelable: true })));
+  await page.waitForTimeout(300);
+  await expect(page).toHaveURL(/\/components\/button\/$/);
+  await page.close();
+  // installed (display-mode: standalone): ⌘ / Ctrl + digit opens the item and the titles name it
+  const app = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await app.addInitScript(() => {
+    const mm = window.matchMedia.bind(window);
+    window.matchMedia = (q: string) => (q.includes("display-mode: standalone") ? ({ ...mm(q), matches: true, media: q } as MediaQueryList) : mm(q));
+  });
+  await open(app, "/components/button/", "dark");
+  const appAside = app.locator("aside[data-semi-nav-panel]");
+  await expect(appAside.getByRole("link", { name: "Giới thiệu" })).toHaveAttribute("title", /\((Ctrl\+1|⌘1)\)$/);
+  await app.keyboard.down(tabMod);
+  await expect(appAside.locator("[data-nav-num]")).toHaveCount(9);
+  await app.keyboard.up(tabMod);
+  await app.evaluate(() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "2", code: "Digit2", metaKey: /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent), ctrlKey: !/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent), bubbles: true, cancelable: true })));
+  await expect(app).toHaveURL(/\/components\/$/);
+  await app.close();
+});
+
+test("AppShell rail range (#144, review): exactly 1279px is the default rail, 1280px is expanded", async ({ browser }) => {
+  for (const [width, nav] of [[1279, 72], [1280, 224]] as const) {
+    const page = await browser.newPage({ viewport: { width, height: 900 } });
+    await open(page, "/demo/app-shell/", "dark");
+    const aside = page.locator("aside");
+    await expect(aside).toHaveCSS("width", `${nav}px`);
+    // after mount the toggle agrees with the CSS
+    await expect(aside.getByRole("button", { name: nav === 72 ? "Mở rộng menu" : "Thu gọn menu" })).toBeVisible();
+    await page.close();
+  }
+});
+
+test("AppShell storage (#144, review): a 0.x semi_sidebar_collapsed choice moves to semi-nav once, before paint", async ({ browser }) => {
+  for (const [old, want, width] of [["1", "rail", 1440], ["0", "full", 1100]] as const) {
+    const page = await browser.newPage({ viewport: { width, height: 900 } });
+    await page.addInitScript((v) => {
+      if (!sessionStorage.getItem("seeded")) {
+        sessionStorage.setItem("seeded", "1");
+        localStorage.removeItem("semi-nav");
+        localStorage.setItem("semi_sidebar_collapsed", v);
+      }
+      new MutationObserver((_, obs) => {
+        const el = document.querySelector("aside");
+        if (el) {
+          (window as unknown as { __firstNavWidth?: number }).__firstNavWidth = el.getBoundingClientRect().width;
+          obs.disconnect();
+        }
+      }).observe(document, { childList: true, subtree: true });
+    }, old);
+    await open(page, "/demo/app-shell/", "dark");
+    expect(await page.evaluate(() => (window as unknown as { __firstNavWidth?: number }).__firstNavWidth)).toBe(want === "rail" ? 72 : 224);
+    await expect(page.locator("aside")).toHaveCSS("width", want === "rail" ? "72px" : "224px");
+    expect(await page.evaluate(() => [localStorage.getItem("semi-nav"), localStorage.getItem("semi_sidebar_collapsed")])).toEqual([want, null]);
+    await page.close();
+  }
+  // the new key wins over a stale old one, which is left alone
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await page.addInitScript(() => {
+    localStorage.setItem("semi-nav", "full");
+    localStorage.setItem("semi_sidebar_collapsed", "1");
+  });
+  await open(page, "/demo/app-shell/", "dark");
+  await expect(page.locator("aside")).toHaveCSS("width", "224px");
+  expect(await page.evaluate(() => localStorage.getItem("semi-nav"))).toBe("full");
+  await page.close();
+});
+
+test("AppShell phone touch targets (#144, review): menu button, account avatar and every drawer row are 44px at 430", async ({ browser }) => {
+  const page = await browser.newPage({ viewport: { width: 430, height: 900 }, hasTouch: true });
+  await open(page, "/demo/app-shell/", "light");
+  const header = page.locator("header").first();
+  const menu = header.getByRole("button", { name: "Mở menu" });
+  const avatar = header.getByRole("button", { name: "Tài khoản: Lan Phạm" });
+  for (const target of [menu, avatar]) {
+    const b = (await target.boundingBox())!;
+    expect(b.width).toBeGreaterThanOrEqual(44);
+    expect(b.height).toBeGreaterThanOrEqual(44);
+  }
+  await expect(async () => {
+    await menu.click();
+    await expect(page.getByRole("dialog")).toBeVisible({ timeout: 1000 });
+  }).toPass({ timeout: 15_000 });
+  const rows = await page.getByRole("dialog").evaluate((d) =>
+    [...d.querySelectorAll("a, button")]
+      .filter((el) => (el as HTMLElement).offsetParent !== null)
+      .map((el) => ({ name: (el.getAttribute("aria-label") || el.textContent || "").trim(), h: Math.round(el.getBoundingClientRect().height) }))
+      .filter((r) => r.h < 44),
+  );
+  expect(rows).toEqual([]);
+  await page.close();
+});
+
+test("AppShell group label (#144, review): 10px / 500, uppercase, normal tracking, faint", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await open(page, "/demo/app-shell/", "dark");
+  const label = page.locator("aside").getByText("Đã ghim", { exact: true });
+  await expect(label).toBeVisible();
+  const style = await label.evaluate((el) => {
+    const c = getComputedStyle(el.parentElement!);
+    return { size: c.fontSize, weight: c.fontWeight, transform: c.textTransform, tracking: c.letterSpacing };
+  });
+  expect({ ...style, tracking: style.tracking === "0px" ? "normal" : style.tracking }).toEqual({ size: "10px", weight: "500", transform: "uppercase", tracking: "normal" });
+});
+
+for (const theme of THEMES) {
+  test(`sticky strips on bg-app: the card's colour inside the AppShell content card, the page's outside (#144, review) · ${theme}`, async ({ page }) => {
+    const bg = (sel: string) => page.locator(sel).first().evaluate((el) => getComputedStyle(el).backgroundColor);
+    await open(page, "/components/form-actions/", theme);
+    const card = await bg("main");
+    const app = await page.evaluate(() => {
+      const probe = document.createElement("div");
+      probe.className = "bg-app";
+      document.body.append(probe);
+      const v = getComputedStyle(probe).backgroundColor;
+      probe.remove();
+      return v;
+    });
+    expect(card).not.toBe(app);
+    // FormActions on a page (FORM_ACTIONS_STICKY) inside the card: the panel colour
+    const strip = page.locator("main .sticky.bottom-0").first();
+    await expect(strip).toBeAttached();
+    expect(await bg("main .sticky.bottom-0")).toBe(card);
+    // the same strip on a page without AppShell (outside the card): the app colour, no white bar
+    expect(
+      await strip.evaluate((el) => {
+        const copy = el.cloneNode(true) as HTMLElement;
+        document.body.append(copy);
+        const v = getComputedStyle(copy).backgroundColor;
+        copy.remove();
+        return v;
+      }),
+    ).toBe(app);
+    // StickyContextBar (STICKY_TOOLBAR) inside the card: the panel colour
+    await open(page, "/components/sticky-context-bar/", theme);
+    expect(await bg("main [role=search].sticky")).toBe(await bg("main"));
+  });
+}
 
 for (const theme of THEMES) {
   test(`floating layers (toast, tooltip, menu, drawer) pass contrast · ${theme}`, async ({ page }) => {

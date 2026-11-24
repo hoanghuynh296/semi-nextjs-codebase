@@ -40,25 +40,16 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       logoIcon="sparkles"
       sections={START}
       primaryCta={{ label: "GitHub Repository", icon: "external", href: "https://github.com/hoanghuynh296/semi-nextjs-codebase", external: true }}
-      // the rail (collapsed, or md) has 44px: the theme as one icon button that keeps "system" (#113, #114); `rail` is
-      // exact in the server HTML (AppShell renders both until the width is known)
-      account={({ rail }) =>
-        rail ? (
-          <div className="flex justify-center">
-            <ThemeSwitcher variant="menu" />
-          </div>
-        ) : (
-          <div className="flex flex-col gap-2">
-            <ThemeSwitcher fullWidth />
-            <div className="flex items-center justify-between text-ui text-muted px-1">
-              <span className="tabular-nums" title={UNRELEASED ? "Build từ main: có thay đổi chưa phát hành" : undefined}>
-                @semi/ui v{pkg.version}
-                {UNRELEASED && " · main"}
-              </span>
-              <Badge size="sm">{ICON_COUNT} icon</Badge>
-            </div>
-          </div>
-        )
+      // the route header's right side: the version, then the theme (Light / Dark / System, keeps "system")
+      actions={
+        <>
+          <span className="hidden sm:inline-flex items-center gap-2 mr-2 text-chrome text-muted tabular-nums" title={UNRELEASED ? "Build từ main: có thay đổi chưa phát hành" : undefined}>
+            @semi/ui v{pkg.version}
+            {UNRELEASED && " · main"}
+            <Badge size="sm">{ICON_COUNT} icon</Badge>
+          </span>
+          <ThemeSwitcher variant="menu" />
+        </>
       }
     >
       {children}

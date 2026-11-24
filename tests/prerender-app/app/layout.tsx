@@ -6,7 +6,7 @@ import { Palette } from "./Palette";
 // boundary, `next build` of /prerender/[id] fails (#82). The CommandPalette is app-wide the same way (#102).
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="vi">
+    <html lang="vi" suppressHydrationWarning>
       <body>
         <ThemeProvider defaultTheme="light">
           <ToastHost />

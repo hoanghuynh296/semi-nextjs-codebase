@@ -349,3 +349,66 @@ test("1.0.0 foundation (review 2): focus rings go to ring-focus, JS declarations
   for (const v of ["--semi-accent", "--semi-panel", "--color-panel"]) assert.ok(flags.some((f) => f.includes(`sets ${v}:`)), `${v} flagged`);
   assert.ok(flags.some((f) => f.startsWith("accent-accent")), "accent-accent flagged");
 });
+
+test("1.0.0 app-shell: AppShell create → mainAction, utilities → tools; account / footer reported; twice-safe", async () => {
+  const shell = await import("../../migrations/1.0.0-app-shell.mjs");
+  assert.equal(shell.version, "1.0.0");
+  const src = [
+    'import { AppShell, DocsShell, useThemeUtility } from "@semi/ui";',
+    "const theme = useThemeUtility();",
+    "<AppShell productName=\"A\" create={{ label: \"Tạo mới\", items }} utilities={[theme]} account={({ rail }) => (rail ? <A /> : <B />)}>",
+    "  {children}",
+    "</AppShell>;",
+    '<DocsShell productName="D" utilities={tools} footer={() => <x create="1" />} />;',
+    "<Other create={x} utilities={y} />;",
+  ].join("\n");
+  const out = shell.migrateShell(src);
+  assert.match(out, /<AppShell productName="A" mainAction=\{\{ label: "Tạo mới", items \}\} tools=\{\[theme\]\} account=/);
+  assert.match(out, /<DocsShell productName="D" tools=\{tools\} footer=\{\(\) => <x create="1" \/>\} \/>/);
+  // other components and props inside an attribute's braces are untouched
+  assert.match(out, /<Other create=\{x\} utilities=\{y\} \/>/);
+  assert.equal(shell.migrateShell(out), out);
+  const flags = shell.shellFlags(src);
+  assert.ok(flags.some((m) => m.startsWith("AppShell account:")));
+  assert.ok(flags.some((m) => m.startsWith("DocsShell account / footer")));
+  assert.ok(flags.some((m) => m.startsWith("useThemeUtility()")));
+  // both the old and the new prop: left for a person, reported
+  const both = '<AppShell create={a} mainAction={b} sections={s} />';
+  assert.equal(shell.migrateShell(both), both);
+  assert.ok(shell.shellFlags(both).some((m) => m.includes("sets both create and mainAction")));
+  // through read / write / flag
+  const files = { "a.tsx": src, "b.css": "x" };
+  const flagged = [];
+  shell.default({ files: Object.keys(files), read: (f) => files[f], write: (f, v) => (files[f] = v), flag: (f, m) => flagged.push([f, m]) });
+  assert.match(files["a.tsx"], /mainAction=/);
+  assert.equal(files["b.css"], "x");
+  assert.ok(flagged.every(([f]) => f === "a.tsx") && flagged.length >= 3);
+});
+
+test("1.0.0 app-shell: comments inside a tag are not props, a > in a comment or string does not end the tag; {...spread} reported", async () => {
+  const shell = await import("../../migrations/1.0.0-app-shell.mjs");
+  // the comment names the old prop: the real prop is renamed, the comment kept as written
+  assert.equal(shell.migrateShell("<AppShell /* create */ create={a} />"), "<AppShell /* create */ mainAction={a} />");
+  assert.equal(shell.migrateShell("<AppShell\n  // utilities moved\n  utilities={u}\n/>"), "<AppShell\n  // utilities moved\n  tools={u}\n/>");
+  // only a comment: nothing to rename
+  assert.equal(shell.migrateShell("<AppShell /* create={a} */ sections={s} />"), "<AppShell /* create={a} */ sections={s} />");
+  // a > inside a comment or a string does not end the tag early
+  assert.equal(shell.migrateShell('<AppShell /* a > b */ title="x > y" create={a} />'), '<AppShell /* a > b */ title="x > y" mainAction={a} />');
+  // a string that holds the prop name is not a prop
+  assert.equal(shell.migrateShell('<AppShell title=" create" sections={s} />'), '<AppShell title=" create" sections={s} />');
+  assert.deepEqual(shell.shellFlags("<AppShell /* account */ sections={s} />"), []);
+  // a spread may carry create / utilities: reported, not rewritten
+  const spread = "<AppShell {...props} sections={s} />";
+  assert.equal(shell.migrateShell(spread), spread);
+  assert.ok(shell.shellFlags(spread).some((m) => m.startsWith("AppShell {...spread}")));
+  assert.ok(shell.shellFlags("<DocsShell { ...rest } />").some((m) => m.startsWith("DocsShell {...spread}")));
+  // a spread inside an attribute's braces is not the tag's
+  assert.ok(!shell.shellFlags("<AppShell header={{ ...h }} />").some((m) => m.includes("spread")));
+  // an apostrophe in nested JSX text reads as an open string: the tag is left alone and reported, not silently skipped
+  const apostrophe = "import { AppShell } from \"@semi/ui\";\n<AppShell header={<span>Don't</span>} create={a} />";
+  assert.equal(shell.migrateShell(apostrophe), apostrophe);
+  assert.ok(shell.shellFlags(apostrophe).some((m) => m.startsWith("AppShell / DocsShell tag on line 2:")));
+  // a later, readable tag in the same file is still migrated
+  assert.match(shell.migrateShell(apostrophe + "\n<AppShell create={b} />"), /<AppShell header=\{<span>Don't<\/span>\} create=\{a\} \/>/);
+  assert.match(shell.migrateShell(apostrophe + "\n<AppShell create={b} />"), /\n<AppShell mainAction=\{b\} \/>$/);
+});

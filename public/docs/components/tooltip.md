@@ -48,7 +48,7 @@ the tooltip is linked with aria-describedby. Touch screens show nothing: never p
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `content` * | `React.ReactNode` |  |  |
+| `content` * | `React.ReactNode` |  | The hint. `null`, `false` or `""` turns the tooltip off and keeps the trigger as it is (same element, no remount). |
 | `children` * | `ReactElement<unknown, string \| JSXElementConstructor<any>>` |  |  |
 | `side` | `'right' \| 'bottom' \| 'top'` | `"top"` | Where the hint shows; `right` is for a vertical icon rail (AppShell's collapsed sidebar). |
 

@@ -41,6 +41,7 @@ const SAMPLE_CLASS: Record<string, string> = {
   "text-tag": "text-tag",
   "text-badge": "text-badge",
   "text-overline": "text-overline",
+  "text-nav-label": "text-nav-label",
 };
 const DENSITIES = Object.keys(tokens.product.density);
 const SCALES = Object.keys(tokens.product.typeScale);

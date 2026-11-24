@@ -13,7 +13,7 @@ export const description = "AppShell / DocsShell footer → account (not where a
 
 /** The opening tags of AppShell / DocsShell as [start, end) ranges: a `>` inside `{…}` (an arrow function) or a string
  * does not end the tag. */
-function shellTags(src) {
+export function shellTags(src) {
   const out = [];
   for (const m of src.matchAll(/<(?:AppShell|DocsShell)\b/g)) {
     let depth = 0;
@@ -35,7 +35,7 @@ function shellTags(src) {
 }
 
 /** Whether a prop name appears at brace depth 0 of an opening tag (not inside an attribute's {…} or a string). */
-function hasTopLevelProp(tag, name) {
+export function hasTopLevelProp(tag, name) {
   let depth = 0;
   let quote = "";
   for (let i = 0; i < tag.length; i++) {

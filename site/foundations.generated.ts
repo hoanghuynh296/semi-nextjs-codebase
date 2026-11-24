@@ -185,6 +185,10 @@ export const FOUNDATIONS = {
     {
       "cls": "text-overline",
       "size": "11px / 1.5"
+    },
+    {
+      "cls": "text-nav-label",
+      "size": "10px / 1.4"
     }
   ],
   "z": [

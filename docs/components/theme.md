@@ -119,7 +119,7 @@ Three-way theme picker (Sáng · Tối · Hệ thống): segmented for settings 
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `variant` | `'menu' \| 'segmented'` | `"segmented"` | `segmented` (default): the three choices side by side, for settings pages and sidebar footers. `menu`: one icon button (the chosen mode's icon) whose Menu lists the three with the current one checked, for headers, toolbars and other tight spots; in AppShell's `utilities` use `useThemeUtility()` instead. |
+| `variant` | `'menu' \| 'segmented'` | `"segmented"` | `segmented` (default): the three choices side by side, for settings pages and sidebar footers. `menu`: one icon button (the chosen mode's icon) whose Menu lists the three with the current one checked, for headers, toolbars and other tight spots; in AppShell the account avatar menu already holds the theme (`useThemeUtility()` for `tools` when there is no account). |
 | `showLabels` | `boolean` |  | Show the text label next to each icon (default: icons only, label in the tooltip). `segmented` only. |
 | `fullWidth` | `boolean` |  | Stretch to the container width (sidebar footers, settings rows). `segmented` only. |
 | `labels` | `Record<Theme, string>` |  | Override the labels (default: the SemiLocaleProvider strings). |
