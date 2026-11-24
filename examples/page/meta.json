@@ -1,0 +1,50 @@
+{
+  "title": "Page layouts",
+  "group": "Navigation & layout",
+  "description": "Shared 1.0 page anatomy and three layouts inside AppShell's content card: work (flush, padding 16 / 24), reading (centred max 1536px inside 16px card padding, 64px bottom), and two-column (240px sub-nav card + 4px gap + main card, stacking below md). Owns vertical rhythm (32 / 28 / 32 / 16 / 8).",
+  "components": [
+    "Page",
+    "SubNav",
+    "PageSection",
+    "PageGrid"
+  ],
+  "when": [
+    "Every page inside AppShell: lists and workspaces (work), settings / explore / articles (reading), areas with sub-pages or mailbox folders (two-column).",
+    "Shared page slots (title, actions, tabs, intro, toolbar, content, footer) so pages set no margins between blocks."
+  ],
+  "instead": [
+    {
+      "need": "A tool with a 380px control panel and live result",
+      "use": "WorkspaceLayout inside Page layout=\"work\""
+    },
+    {
+      "need": "A list and open record side by side",
+      "use": "ListReaderLayout inside Page fixed"
+    }
+  ],
+  "a11y": [
+    "Page renders one h1 via PageTitle, groups its header in <header>, and SubNav is an <aside> landmark with <nav> lists and aria-current on the active item.",
+    "SubNav icon actions carry aria-label, Tooltip, HIT_AREA and FOCUS_RING."
+  ],
+  "notes": [
+    "Inside AppShell, a direct-child Page automatically overrides the default 1440px container and switches two-column / fixed modes in CSS without remounting AppShell.",
+    "Vertical rhythm from the card top: 32px to the header block, 28px title/tabs to intro or toolbar, 16px toolbar to list, 32px between blocks, 16px heading to content (PageSection), 8px inside grids (PageGrid)."
+  ],
+  "examples": [
+    {
+      "file": "work",
+      "title": "Work layout (flush)",
+      "preview": "frame"
+    },
+    {
+      "file": "reading",
+      "title": "Reading layout (centred 1536px + 44px title)",
+      "preview": "frame"
+    },
+    {
+      "file": "two-column",
+      "title": "Two-column layout (SubNav + main card)",
+      "preview": "frame"
+    }
+  ]
+}

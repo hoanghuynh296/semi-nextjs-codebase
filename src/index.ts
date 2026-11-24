@@ -27,6 +27,7 @@ export { RouteHeader, AccountMenu, useRecordCrumb, type RouteHeaderProps, type R
 export * from "./MegaMenu";
 export * from "./MinimalHeader";
 export * from "./TextTabs";
+export * from "./Page";
 export * from "./PageTitle";
 export * from "./SubpageToolbar";
 export * from "./SearchPill";

@@ -109,3 +109,19 @@
 @media (forced-colors: active) {
   :focus-visible { outline: 2px solid Highlight !important; outline-offset: 2px; }
 }
+
+/* Page layout inside AppShell (#149): a Page component as the content card's child owns padding, max-width, two-column
+   panel split and fixed-height scrolling without requiring layout-level pathname checks. */
+[data-shell-container]:has(> [data-page-layout]) {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  min-height: 0;
+}
+[data-shell-card]:has(> [data-shell-container] > [data-page-layout="two-column"]) {
+  background-color: transparent;
+  border-radius: initial;
+}
+[data-shell-card]:has(> [data-shell-container] > [data-page-fixed]) {
+  overflow: hidden;
+}

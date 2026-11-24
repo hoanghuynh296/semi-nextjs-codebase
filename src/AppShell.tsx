@@ -935,6 +935,7 @@ export function AppShell({
                   TAB_BAR_PAD only pads the end of the scroll */}
               <main
                 id="main"
+                data-shell-card=""
                 data-page={page}
                 className={cn(
                   SHELL_CARD,
@@ -943,7 +944,7 @@ export function AppShell({
                   tabs && "max-md:[--semi-bottom-bar:calc(4rem+env(safe-area-inset-bottom))] max-md:[--semi-bottom-pad:1rem]",
                 )}
               >
-                <div className={cn(flush ? "flex-1 min-w-0 min-h-0 w-full flex flex-col" : SHELL_CONTAINER, page === "fixed" && "min-h-0", containerClassName)}>
+                <div data-shell-container="" className={cn(flush ? "flex-1 min-w-0 min-h-0 w-full flex flex-col" : SHELL_CONTAINER, page === "fixed" && "min-h-0", containerClassName)}>
                   <PageActionsSlot className="empty:hidden ml-auto mb-2 sticky top-0 z-sticky" />
                   {children}
                 </div>
