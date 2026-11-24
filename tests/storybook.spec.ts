@@ -1127,7 +1127,7 @@ for (const theme of THEMES) {
         return v;
       }),
     ).toBe(app);
-    // StickyContextBar (STICKY_TOOLBAR) and AppHeader inside the card: the panel colour
+    // StickyContextBar (STICKY_TOOLBAR) inside the card: the panel colour
     await open(page, "/components/sticky-context-bar/", theme);
     expect(await bg("main [role=search].sticky")).toBe(await bg("main"));
   });
