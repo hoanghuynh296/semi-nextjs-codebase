@@ -12,7 +12,7 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Card actions](card-actions.md) | `CardActions` | Cards and media tiles in a grid (suppliers, products, templates, files) that open on click and have one or two quick actions. |
 | [Chip](chip.md) | `Chip` | Several filters that can be on at once (materials, device types). |
 | [External link](external-link.md) | `ExternalLink` | Any link that leaves the app (docs, GitHub, a payment page). |
-| [Pills](pills.md) | `Pills` | Filter a list by status or period: Tất cả / Đang in / Xong. |
+| [Pills (deprecated)](pills.md) | `Pills` | Legacy screens not yet migrated to SegmentedControl or PillTabs. |
 | [Split button](split-button.md) | `SplitButton` | Two or more ways to start one job (type it in, import a file, copy from another system): G1. |
 | [Toggle](toggle.md) | `Toggle`, `ToggleGroup` | A view mode with icons; text formatting; a pin / follow / mute switch on a toolbar. |
 
@@ -75,13 +75,15 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Page actions](page-actions.md) | `PageActions`, `PageActionsProvider`, `PageActionsSlot` | A layout owns the header row but the page decides the actions (PageTabsTitle + “+”). |
 | [Page title](page-title.md) | `PageTitle`, `PageTabsTitle` | The first line of every page (PageTitle). |
 | [Pagination](pagination.md) | `Pagination` | Server-paged tables and reports. |
+| [Pill tabs](pill-tabs.md) | `PillTabs` | 5+ sections of one page, or sections with icons (Cấu hình: Hộp thư, Nhóm thư, Nguồn khách, Mặt hàng, Mẫu thư, Data Hub, Doanh nghiệp, Người dùng). |
 | [Resizable panels](resizable.md) | `ResizablePanels` | Tools where people tune the space between two or three areas. |
 | [Scroll area](scroll-area.md) | `ScrollArea` | A list or log inside a card that must keep its height. |
+| [Segmented control](segmented-control.md) | `SegmentedControl` | 2–5 filter values shown in full, often with counts (Tất cả · Đang mở · Đang báo giá · Đã chốt). |
 | [Side panel](side-panel.md) | `SidePanel`, `SidePanelToggle` | Settings or layers beside a 3D view, map or editor. |
 | [Sticky context bar](sticky-context-bar.md) | `StickyContextBar` | A list, grid or table page with a search and filters people change while they scroll (customers, suppliers, products). |
 | [Subpage toolbar](subpage-toolbar.md) | `SubpageToolbar`, `RefreshButton` | Every list or grid page. |
 | [Tabs](tabs.md) | `Tabs` | Sections of one object: Tổng quan / Hoạt động / Cài đặt. |
-| [Text tabs](text-tabs.md) | `TextTabs` | A page whose heading is a choice of 2–4 sibling views (Đang xử lý / Đã giao / Tất cả). |
+| [Text tabs](text-tabs.md) | `TextTabs` | 2–4 top-level views of a discovery or reading page, rendered as the page heading (Khám phá / Mẫu sẵn / Cảm hứng). |
 | [Workspace layout](workspace-layout.md) | `WorkspaceLayout`, `WorkspaceHeader`, `WorkspaceSection` | A tool where the user sets inputs and sees what they produce: a quote request and its comparison, a generator, an import with a preview, a print job. |
 
 ## Data display

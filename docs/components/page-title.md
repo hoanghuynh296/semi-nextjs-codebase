@@ -1,19 +1,20 @@
 # Page title
 
-PageTitle is the large display title of a page (text only), with the page's own action on its row (`actions`). PageTabsTitle turns it into 2–4 underline tabs for sibling pages.
+PageTitle is the display title of a page (text only), with the page's own action on its row (`actions`). PageTabsTitle is kept as a deprecated alias for 2–4 sibling tabs — new screens use TextTabs.
 
 ## When to use
 
 - The first line of every page (PageTitle).
 - A list page's title row: the title and the page's action (one primary or secondary, plus RefreshButton) above a StickyContextBar (PageTitle actions).
-- 2–4 sibling views of one area: Máy in / Job in (PageTabsTitle).
 
 ## Use something else when
 
 | Need | Use |
 |---|---|
+| 2–4 top-level views as the page heading | TextTabs |
+| 5+ sections of a page, or sections with icons | PillTabs |
+| 2–5 filter values shown in full, with counts | SegmentedControl |
 | Tabs inside a card or panel | Tabs |
-| A filter | Pills |
 | The top row of a detail or settings page (a Breadcrumb and one action) | MinimalHeader |
 
 ## Import
@@ -98,7 +99,6 @@ page's action on the right; below `sm` the actions wrap onto their own row under
 ### PageTabsTitle
 
 Underline display tabs used when a view groups 2–4 sibling sub-pages (e.g. "Máy in / Job in", "Sản phẩm / Danh mục").
-Replaces putting a separate <Pills> bar directly under a <PageTitle>.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|

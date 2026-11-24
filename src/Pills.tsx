@@ -1,9 +1,12 @@
 "use client";
 
-// Single-choice pill group (filters, period / chart toggles).
+// Legacy single-choice pill group; deprecated in 1.0 (#147) in favour of SegmentedControl (2–5 filter values with
+// counts and a sliding raised-2 pill) and PillTabs (5+ sections or sections with icons). Kept exported so existing
+// blocks and consumer apps continue to compile until migrated.
 import React from "react";
 import { SEGMENT_ON } from "../styles/utils";
 
+/** @deprecated Use `SegmentedControl` (2–5 filter values, with `label`) or `PillTabs` (5+ sections or sections with icons). */
 export function Pills<T extends string>({
   value,
   options,

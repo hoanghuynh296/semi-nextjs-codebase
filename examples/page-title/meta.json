@@ -1,24 +1,31 @@
 {
   "title": "Page title",
   "group": "Navigation & layout",
-  "description": "PageTitle is the large display title of a page (text only), with the page's own action on its row (`actions`). PageTabsTitle turns it into 2–4 underline tabs for sibling pages.",
+  "description": "PageTitle is the display title of a page (text only), with the page's own action on its row (`actions`). PageTabsTitle is kept as a deprecated alias for 2–4 sibling tabs — new screens use TextTabs.",
   "components": [
     "PageTitle",
     "PageTabsTitle"
   ],
   "when": [
     "The first line of every page (PageTitle).",
-    "A list page's title row: the title and the page's action (one primary or secondary, plus RefreshButton) above a StickyContextBar (PageTitle actions).",
-    "2–4 sibling views of one area: Máy in / Job in (PageTabsTitle)."
+    "A list page's title row: the title and the page's action (one primary or secondary, plus RefreshButton) above a StickyContextBar (PageTitle actions)."
   ],
   "instead": [
     {
-      "need": "Tabs inside a card or panel",
-      "use": "Tabs"
+      "need": "2–4 top-level views as the page heading",
+      "use": "TextTabs"
     },
     {
-      "need": "A filter",
-      "use": "Pills"
+      "need": "5+ sections of a page, or sections with icons",
+      "use": "PillTabs"
+    },
+    {
+      "need": "2–5 filter values shown in full, with counts",
+      "use": "SegmentedControl"
+    },
+    {
+      "need": "Tabs inside a card or panel",
+      "use": "Tabs"
     },
     {
       "need": "The top row of a detail or settings page (a Breadcrumb and one action)",

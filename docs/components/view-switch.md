@@ -11,7 +11,7 @@ List ↔ grid and an optional density toggle, as small icon toggles at the end o
 
 | Need | Use |
 |---|---|
-| Switching between different data (orders vs. returns) | TextTabs or Pills |
+| Switching between different data or status slices | SegmentedControl or TextTabs |
 | A table ↔ chart switch of one data set | Chart's table view |
 
 ## Import

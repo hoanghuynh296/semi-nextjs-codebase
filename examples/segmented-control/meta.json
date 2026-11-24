@@ -1,0 +1,49 @@
+{
+  "title": "Segmented control",
+  "group": "Navigation & layout",
+  "description": "Small single-choice filter sets shown in full (2–5 values, often with tabular-nums counts): a `raised` track (h32, radius 8, padding 4, gap 4) with h24 items (12px/600) and one solid `raised-2` pill (white in light theme) sliding in 300ms ease-out.",
+  "components": [
+    "SegmentedControl"
+  ],
+  "when": [
+    "2–5 filter values shown in full, often with counts (Tất cả · Đang mở · Đang báo giá · Đã chốt).",
+    "Leading view switch of a FilterChipRow (`leading`) when a list splits into a few status slices."
+  ],
+  "instead": [
+    {
+      "need": "5+ sections of a page, or sections with icons (settings-like pages)",
+      "use": "PillTabs"
+    },
+    {
+      "need": "2–4 top-level views of a discovery or reading page",
+      "use": "TextTabs"
+    },
+    {
+      "need": "Facet filters (supplier, owner, date, multiple active at once)",
+      "use": "FilterChipRow"
+    },
+    {
+      "need": "List ↔ grid and density icon toggles",
+      "use": "ViewSwitch"
+    }
+  ],
+  "a11y": [
+    "WAI-ARIA radiogroup / radio with aria-checked and roving tabindex; ←/→, ↑/↓, Home and End.",
+    "activation=\"manual\" moves focus with arrows and selects on Enter or Space; onBeforeChange can refuse a switch.",
+    "Scrolls sideways on phones with a 2px edge cue and keeps the active segment in view; sliding and fades turn off under prefers-reduced-motion."
+  ],
+  "notes": [
+    "Replaces the deprecated `Pills` component in 1.0.",
+    "When to use which: PillTabs for 5+ sections or sections with icons · SegmentedControl for 2–5 filter values shown in full with counts · TextTabs for 2–4 top-level views of a discovery or reading page · FilterChipRow for filters."
+  ],
+  "examples": [
+    {
+      "file": "counts",
+      "title": "Status filter with counts"
+    },
+    {
+      "file": "overflow",
+      "title": "Manual activation, guard and narrow scroll"
+    }
+  ]
+}

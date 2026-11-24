@@ -49,7 +49,7 @@ export interface PageTabOption<T extends string = string> {
 
 /**
  * Underline display tabs used when a view groups 2–4 sibling sub-pages (e.g. "Máy in / Job in", "Sản phẩm / Danh mục").
- * Replaces putting a separate <Pills> bar directly under a <PageTitle>.
+ * @deprecated Use `TextTabs` (big display tabs with brand underline, roving tabindex, href and guard support) or `PillTabs` (5+ sections).
  */
 export function PageTabsTitle<T extends string = string>({
   tabs,

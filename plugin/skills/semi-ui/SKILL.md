@@ -99,9 +99,9 @@ what Semi has today for that part, and never write a local stand-in.
 - **Shell** (`AppShell`): the nav's one brand action is `mainAction`, its bottom row `tools` / `toolsMenu`; the account
   and the theme are the route header's avatar menu (`header.account`); a detail page names its record with
   `useRecordCrumb(label)`; never draw a breadcrumb of your own at the top.
-- **Which tabs** (T5, pending; today `Tabs`, `Pills`, `TextTabs`): `PillTabs` for 5+ sections or sections with icons,
-  `SegmentedControl` for 2–5 filter values with counts, big `TextTabs` for 2–4 sub-pages as the heading,
-  `FilterChipRow` for filters, `Tabs` for sections of one record.
+- **Which tabs** (`DESIGN_SYSTEM.md` §4h): `PillTabs` for 5+ sections or sections with icons,
+  `SegmentedControl` for 2–5 filter values shown in full with counts, big `TextTabs` for 2–4 top-level views as the
+  heading, `FilterChipRow` for filters, `Tabs` for sections of one record, `useTabParam` for `?tab=` URL state.
 - **Which layout** (T7, pending): work (flush) for lists, tables and workspaces; reading (one column, centred 1536px)
   for settings, explore and articles; two-column (240px sub-nav card + main card) for an area with sub-pages; list +
   reader for mail and queues. Rhythm 32 / 28 / 32 / 16 / 8 from the card top.

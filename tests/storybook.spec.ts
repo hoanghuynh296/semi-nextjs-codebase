@@ -40,7 +40,21 @@ for (const path of PAGES) {
     test(`axe · ${theme} · ${path}`, async ({ page }) => {
       await open(page, path, theme);
       const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
-      const serious = violations.filter((v) => v.impact === "serious" || v.impact === "critical");
+      // Inactive big TextTabs render text-strong at opacity-20 by explicit owner decision (#147); keep every other
+      // axe rule active on them and keep color-contrast active on active TextTabs and every other element.
+      const inactiveBigTabs = await page.evaluate(() =>
+        [...document.querySelectorAll('[data-text-tabs] [role="tab"][aria-selected="false"]')].map((el) => el.id).filter(Boolean),
+      );
+      const serious = violations
+        .filter((v) => v.impact === "serious" || v.impact === "critical")
+        .map((v) => ({
+          ...v,
+          nodes:
+            v.id === "color-contrast" && inactiveBigTabs.length
+              ? v.nodes.filter((n) => !inactiveBigTabs.some((id) => n.target.some((t) => String(t).includes(`#${id}`))))
+              : v.nodes,
+        }))
+        .filter((v) => v.nodes.length > 0);
       expect(serious.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).slice(0, 3).join(" | ")}`)).toEqual([]);
     });
   }
@@ -2259,4 +2273,246 @@ test("HintTextarea: @ and / open a listbox; arrows, Enter inserts at the caret, 
   await expect(list).toBeHidden();
   await expect(text).toBeFocused();
   await expect(text).toHaveValue("Gửi @yenbai hôm nay /");
+});
+
+test("PillTabs (#147): h30 round pills, sliding item-hover pill, tablist/tabpanel, roving focus, manual activation, guard, ?section= without history spam, overflow at 430", async ({ browser }) => {
+  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  await open(page, "/components/pill-tabs/", "dark");
+
+  // 1) Visuals & ARIA on sections example
+  const sec = example(page, "pill-tabs/sections");
+  const tablist = sec.getByRole("tablist", { name: "Cấu hình" });
+  const firstTab = tablist.getByRole("tab", { name: "Hộp thư" });
+  const secondTab = tablist.getByRole("tab", { name: "Nhóm thư" });
+  const lastTab = tablist.getByRole("tab", { name: "Người dùng" });
+  const panel = sec.getByRole("tabpanel");
+
+  await expect(firstTab).toHaveAttribute("aria-selected", "true");
+  await expect(firstTab).toHaveAttribute("tabindex", "0");
+  await expect(secondTab).toHaveAttribute("tabindex", "-1");
+  await expect(panel).toHaveAttribute("aria-labelledby", (await firstTab.getAttribute("id"))!);
+  await expect(firstTab).toHaveAttribute("aria-controls", (await panel.getAttribute("id"))!);
+
+  const metrics = await firstTab.evaluate((el) => {
+    const cs = getComputedStyle(el);
+    return { h: Math.round(el.getBoundingClientRect().height), r: parseFloat(cs.borderTopLeftRadius), size: cs.fontSize, weight: cs.fontWeight };
+  });
+  expect(metrics).toMatchObject({ h: 30, size: "12px", weight: "600" });
+  expect(metrics.r).toBeGreaterThanOrEqual(9999);
+
+  // Sliding pill moves with the active tab
+  const pill = tablist.locator("[data-pill]");
+  await expect(pill).toBeVisible();
+  const x0 = await pill.evaluate((el) => el.getBoundingClientRect().x);
+  await expect(async () => {
+    await firstTab.focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(secondTab).toHaveAttribute("aria-selected", "true", { timeout: 500 });
+  }).toPass({ timeout: 10_000 });
+  await expect(secondTab).toBeFocused();
+  await expect(secondTab).toHaveAttribute("tabindex", "0");
+  await expect(firstTab).toHaveAttribute("tabindex", "-1");
+  await expect.poll(() => pill.evaluate((el) => el.getBoundingClientRect().x)).toBeGreaterThan(x0);
+
+  // Home / End
+  await page.keyboard.press("End");
+  await expect(lastTab).toBeFocused();
+  await expect(lastTab).toHaveAttribute("aria-selected", "true");
+  await page.keyboard.press("Home");
+  await expect(firstTab).toBeFocused();
+  await expect(firstTab).toHaveAttribute("aria-selected", "true");
+
+  // 2) Manual activation, refusing guard, and ?section= without pushing a history entry per arrow key
+  const guarded = example(page, "pill-tabs/guarded");
+  const gList = guarded.getByRole("tablist", { name: "Cấu hình khu vực" });
+  const general = gList.getByRole("tab", { name: "Chung" });
+  const notif = gList.getByRole("tab", { name: "Thông báo" });
+  const members = gList.getByRole("tab", { name: "Thành viên" });
+
+  const h0 = await page.evaluate(() => history.length);
+  await general.focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(notif).toHaveAttribute("aria-selected", "true");
+  await expect(page).toHaveURL(/[?&]section=notifications/);
+  await page.keyboard.press("ArrowRight");
+  await expect(members).toHaveAttribute("aria-selected", "true");
+  await expect(page).toHaveURL(/[?&]section=members/);
+  expect(await page.evaluate(() => history.length)).toBe(h0);
+
+  // Refusing guard on button tab: neither click nor arrow moves selection or focus
+  await guarded.getByRole("switch", { name: "Có thay đổi chưa lưu" }).click();
+  await members.focus();
+  await page.keyboard.press("ArrowLeft");
+  await expect(members).toHaveAttribute("aria-selected", "true");
+  await expect(members).toBeFocused();
+  await expect(guarded.getByText(/Đã chặn chuyển sang "Thông báo"/)).toBeVisible();
+  await general.click();
+  await expect(members).toHaveAttribute("aria-selected", "true");
+  await guarded.getByRole("switch", { name: "Có thay đổi chưa lưu" }).click();
+
+  // Manual activation: arrows move focus only; Enter / Space commits
+  await guarded.getByRole("switch", { name: /manual/i }).click();
+  await members.focus();
+  await page.keyboard.press("ArrowLeft");
+  await expect(notif).toBeFocused();
+  await expect(members).toHaveAttribute("aria-selected", "true");
+  await expect(notif).toHaveAttribute("aria-selected", "false");
+  await page.keyboard.press("Enter");
+  await expect(notif).toHaveAttribute("aria-selected", "true");
+  await page.keyboard.press("Home");
+  await expect(general).toBeFocused();
+  await expect(notif).toHaveAttribute("aria-selected", "true");
+  await page.keyboard.press(" ");
+  await expect(general).toHaveAttribute("aria-selected", "true");
+
+  // 3) Overflow at 430px: edge cue appears, active tab scrolls into view, zero page horizontal scroll
+  await page.setViewportSize({ width: 430, height: 900 });
+  const scroller = sec.locator("[data-edges]");
+  await expect(scroller).toHaveAttribute("data-edges", /right/);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
+  await firstTab.focus();
+  await page.keyboard.press("End");
+  await expect(lastTab).toHaveAttribute("aria-selected", "true");
+  await expect.poll(() => scroller.evaluate((el) => el.scrollLeft)).toBeGreaterThan(0);
+  await expect(scroller).toHaveAttribute("data-edges", /left/);
+  await page.close();
+
+  // 4) prefers-reduced-motion: sliding pill transition is disabled
+  const reduced = await browser.newPage({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
+  await reduced.goto("/components/pill-tabs/");
+  const rPill = example(reduced, "pill-tabs/sections").locator("[data-pill]");
+  await expect(rPill).toBeVisible();
+  expect(await rPill.evaluate((el) => getComputedStyle(el).transitionProperty)).toBe("none");
+  await reduced.close();
+});
+
+test("SegmentedControl (#147): raised track h32, h24 items, sliding raised-2 pill in dark & light, counts, radiogroup arrows (←/→/↑/↓/Home/End), manual, guard, 430 overflow", async ({ browser }) => {
+  for (const theme of THEMES) {
+    const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    await open(page, "/components/segmented-control/", theme);
+    const counts = example(page, "segmented-control/counts");
+    const group = counts.getByRole("radiogroup", { name: "Trạng thái mua hàng" });
+    const all = group.getByRole("radio", { name: /Tất cả/ });
+    const openRadio = group.getByRole("radio", { name: /Đang mở/ });
+    const doneRadio = group.getByRole("radio", { name: /Đã chốt/ });
+    const pill = group.locator("[data-pill]");
+
+    const trackMetrics = await group.evaluate((el) => {
+      const cs = getComputedStyle(el);
+      return { h: Math.round(el.getBoundingClientRect().height), r: cs.borderTopLeftRadius, bg: cs.backgroundColor };
+    });
+    expect(trackMetrics).toMatchObject({ h: 32, r: "8px", bg: theme === "dark" ? "rgb(43, 43, 43)" : "rgb(230, 230, 230)" });
+    const pillBg = await pill.evaluate((el) => getComputedStyle(el).backgroundColor);
+    expect(pillBg).toBe(theme === "dark" ? "rgb(66, 66, 66)" : "rgb(255, 255, 255)");
+
+    const itemMetrics = await all.evaluate((el) => {
+      const cs = getComputedStyle(el);
+      return { h: Math.round(el.getBoundingClientRect().height), size: cs.fontSize, weight: cs.fontWeight };
+    });
+    expect(itemMetrics).toMatchObject({ h: 24, size: "12px", weight: "600" });
+
+    // ←/→ and ↑/↓ and Home/End
+    await expect(async () => {
+      await all.focus();
+      await page.keyboard.press("ArrowDown");
+      await expect(openRadio).toHaveAttribute("aria-checked", "true", { timeout: 500 });
+    }).toPass({ timeout: 10_000 });
+    await expect(openRadio).toBeFocused();
+    await page.keyboard.press("End");
+    await expect(doneRadio).toHaveAttribute("aria-checked", "true");
+    await expect(doneRadio).toBeFocused();
+    await page.keyboard.press("ArrowUp");
+    await expect(group.getByRole("radio", { name: /Đang báo giá/ })).toHaveAttribute("aria-checked", "true");
+    await page.keyboard.press("Home");
+    await expect(all).toHaveAttribute("aria-checked", "true");
+
+    if (theme === "dark") {
+      // Manual activation + refusing guard + 430px overflow
+      const ov = example(page, "segmented-control/overflow");
+      const wGroup = ov.getByRole("radiogroup", { name: "Kho hàng" });
+      const wAll = wGroup.getByRole("radio", { name: /Tất cả kho/ });
+      const wHcm = wGroup.getByRole("radio", { name: /TP\. Hồ Chí Minh/ });
+
+      await ov.getByRole("switch", { name: "Khoá bộ lọc đang chọn" }).click();
+      await wAll.focus();
+      await page.keyboard.press("ArrowRight");
+      await expect(wAll).toHaveAttribute("aria-checked", "true");
+      await expect(wAll).toBeFocused();
+      await ov.getByRole("switch", { name: "Khoá bộ lọc đang chọn" }).click();
+
+      await ov.getByRole("switch", { name: /manual/i }).click();
+      await wAll.focus();
+      await page.keyboard.press("ArrowRight");
+      await expect(wHcm).toBeFocused();
+      await expect(wAll).toHaveAttribute("aria-checked", "true");
+      await page.keyboard.press("Enter");
+      await expect(wHcm).toHaveAttribute("aria-checked", "true");
+
+      await page.setViewportSize({ width: 430, height: 900 });
+      await expect(ov.locator("[data-edges]")).toHaveAttribute("data-edges", /right|left/);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
+    }
+    await page.close();
+  }
+});
+
+test("Big TextTabs (#147): 24/28px font-display weight 400, opacity 0.2 inactive, 2px brand underline at 6px, 28px to intro, href guard", async ({ browser }) => {
+  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  await open(page, "/components/text-tabs/", "dark");
+
+  const heading = example(page, "text-tabs/heading");
+  const list = heading.getByRole("tablist", { name: "Thư viện cộng đồng" });
+  const active = list.getByRole("tab", { name: "Khám phá" });
+  const inactive = list.getByRole("tab", { name: "Ứng dụng" });
+  const panel = heading.getByRole("tabpanel");
+
+  const activeCss = await active.evaluate((el) => {
+    const cs = getComputedStyle(el);
+    return {
+      size: cs.fontSize,
+      weight: cs.fontWeight,
+      opacity: cs.opacity,
+      deco: cs.textDecorationLine,
+      thickness: cs.textDecorationThickness,
+      offset: cs.textUnderlineOffset,
+      tracking: cs.letterSpacing,
+    };
+  });
+  expect(activeCss).toMatchObject({ size: "28px", weight: "400", opacity: "1", deco: "underline", thickness: "2px", offset: "6px" });
+  expect(parseFloat(activeCss.tracking)).toBeLessThan(0);
+
+  const inactiveOpacity = await inactive.evaluate((el) => getComputedStyle(el).opacity);
+  expect(inactiveOpacity).toBe("0.2");
+  expect(await panel.evaluate((el) => getComputedStyle(el).paddingTop)).toBe("28px");
+  expect(await list.evaluate((el) => getComputedStyle(el).columnGap)).toBe("24px");
+
+  // Refusing guard on href tabs: blocks navigation when dirty, allows navigation when clean
+  const linked = example(page, "text-tabs/linked");
+  const lList = linked.getByRole("tablist", { name: "Mua hàng" });
+  const reqLink = lList.getByRole("tab", { name: "Yêu cầu" });
+  const beforeUrl = page.url();
+
+  await linked.getByRole("switch", { name: /Có thay đổi chưa lưu/ }).click();
+  await reqLink.click();
+  expect(page.url()).toBe(beforeUrl);
+  await expect(linked.getByText(/Đã giữ nguyên trang Nhà cung cấp/)).toBeVisible();
+
+  // Keyboard Enter & Space on guarded href tab also stay put while dirty
+  await reqLink.focus();
+  await page.keyboard.press("Enter");
+  expect(page.url()).toBe(beforeUrl);
+  await page.keyboard.press(" ");
+  expect(page.url()).toBe(beforeUrl);
+
+  // Uncheck dirty -> clicking href tab navigates
+  await linked.getByRole("switch", { name: /Có thay đổi chưa lưu/ }).click();
+  await reqLink.click();
+  await expect(page).toHaveURL(/[?&]view=requests/);
+
+  // Below sm (430px): 24px display size, 16px gap, zero horizontal page scroll
+  await page.setViewportSize({ width: 430, height: 900 });
+  expect(await active.evaluate((el) => getComputedStyle(el).fontSize)).toBe("24px");
+  expect(await list.evaluate((el) => getComputedStyle(el).columnGap)).toBe("16px");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
+  await page.close();
 });

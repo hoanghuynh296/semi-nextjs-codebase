@@ -11,12 +11,16 @@
   ],
   "instead": [
     {
-      "need": "Sibling pages of an area",
-      "use": "PageTabsTitle"
+      "need": "5+ sections of a page, or sections with icons (settings-like pages)",
+      "use": "PillTabs"
     },
     {
-      "need": "Filter a list (no panels)",
-      "use": "Pills"
+      "need": "2–4 top-level views of a discovery or reading page",
+      "use": "TextTabs"
+    },
+    {
+      "need": "2–5 filter values shown in full, with counts",
+      "use": "SegmentedControl"
     }
   ],
   "a11y": [

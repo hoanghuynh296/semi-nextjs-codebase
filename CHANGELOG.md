@@ -4,6 +4,21 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## Unreleased
 
+**1.0 tabs (#147, T5; breaking, part of v1.0.0).** Three tab controls with one mechanical rule (`DESIGN_SYSTEM.md` §0, §4h): `PillTabs` (new), `SegmentedControl` (new), and big `TextTabs` (restyled), plus the shared `#121` keyboard, overflow, guard and `?tab=` URL behaviour (`useTabParam`).
+
+### Added
+- **`PillTabs`** (default for 5+ sections of a page or sections with icons, e.g. settings): no track, h30 fully round pills (`rounded-full`), 16px icon + 4px + label in `text-chrome font-semibold` (12px/600), inactive `text-muted`, active `text-strong`, one `bg-item-hover` pill sliding in 300ms ease-out (`transition-slide`); WAI-ARIA `tablist` / `tab` / `tabpanel` (`id`, `aria-controls`, `aria-labelledby`, optional `idPrefix` for page-owned panels), roving `tabIndex`, ←/→, Home / End, `href` support.
+- **`SegmentedControl`** (2–5 filter values shown in full, with optional tabular-nums counts): `bg-raised` track (`rounded-control`, padding 4, gap 4, h32), h24 items (`px-4 py-1.5`, 12px/600, inactive `text-muted`, active `text-strong`), one solid `bg-raised-2` pill (white on `raised` in light theme) sliding in 300ms (`transition-slide`); WAI-ARIA `radiogroup` / `radio`, ←/→, ↑/↓, Home / End.
+- **`useTabParam(defaultValue, options)`:** Next 16 App Router–safe `?tab=` URL state hook built on `urlState.ts` (`null` history state, `queueMicrotask` listeners, no `useSearchParams`). Automatic arrow-key stepping always replaces (`history.replaceState`), so arrowing across tabs never pushes one history entry per key.
+- **Shared tab behaviour (#121) on `PillTabs`, `SegmentedControl` and `TextTabs`:** sideways scroll with no scrollbar, horizontal auto-scroll of the active item (without vertical page jump), 2px `bg-outline-line` overflow edge cue (`data-edges`), `activation="manual"` (arrows move focus, Enter / Space commits), sync/async `onBeforeChange(key) => boolean | Promise<boolean>` honoured by both button tabs and `href` link tabs (arrow keys in automatic mode move selection and focus only after `value` actually updates), and `prefers-reduced-motion` turning off sliding pills and edge-cue fades.
+
+### Changed
+- **Big `TextTabs` (replaced old look in place):** strictly for 2–4 top-level views of a discovery or reading page; `font-display text-tab-xl font-normal` (24px below `sm`, 28px from `sm`, weight 400 in the brand display face — never forced bold, lh 1.2, tracking −0.01em), every tab in `text-strong`, inactive at `opacity-20` (hover raises opacity in 150ms, keyboard `:focus-visible` restores full opacity), active 2px `decoration-primary` underline at 6px offset under the word only, gaps 16 / 20 / 24 (`base` / `sm` / `md`), 28px (`pt-7` / `mb-7`) to the intro below.
+- **Existing components' fate:** **`Pills`** is **deprecated** (kept exported for compatibility; replace with `SegmentedControl` for 2–5 filter values or `PillTabs` for 5+ sections); **`PageTabsTitle`** is **deprecated** (kept exported; replace with big `TextTabs`); **`Tabs`** (`variant="underline"`) is **kept** for sections of one record inside a card (`variant="segmented"` deprecated in favour of `SegmentedControl` / `PillTabs`); **`ViewSwitch`** is **kept** for icon-only list ↔ grid (+ density) toggles in `FilterChipRow trailing`.
+
+### Migration
+- `/semi-sync` runs `1.0.0-tabs`, which flags deprecated `<Pills>`, `<PageTabsTitle>`, `<Tabs variant="segmented">` and leftover `.text-tabs-strong` stand-in CSS for hand migration (because `SegmentedControl` and `PillTabs` require an accessible `label`). Delete app stand-ins `PillTabs.tsx`, `SegmentedControl.tsx` and `.text-tabs-strong`.
+
 **1.0 foundation (#141, T1 of the 1.0 update; breaking, released as v1.0.0).** One look for every brand, pure neutral surfaces, four text tiers, no brand-derived colour, the brand fill only for main buttons and attention marks, the 1.0 type scale (content 14px `text-ui`, shell chrome 12px `text-chrome`, #155), and motion tokens. Names and values: `docs/TOKENS.md`. Run `/semi-sync`: the `1.0.0-foundation` migration rewrites the renamed classes and CSS variables and lists what needs a hand fix. Brand kits must be rebuilt for 1.0 (`/semi-brand update`, T11).
 
 ### Breaking

@@ -8,7 +8,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 ## Machine-readable
 
-- [components.json](./components.json): all 161 components, hooks and constants with props, summaries and their doc page
+- [components.json](./components.json): all 163 components, hooks and constants with props, summaries and their doc page
 - [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
@@ -38,7 +38,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Card actions](./components/card-actions/) ([markdown](./docs/components/card-actions.md)): Quick actions on a card or media tile: round icon buttons in the top right corner that show on hover or keyboard focus where the device can hover, and one always-visible ⋯ with every action on touch screens. Goes inside a `group relative` card. Components: CardActions.
 - [Chip](./components/chip/) ([markdown](./docs/components/chip.md)): A pill-shaped toggle for filters and tags. Neutral when off; active uses the high-contrast surface, with colour only on its dot or icon (tone). Components: Chip.
 - [External link](./components/external-link/) ([markdown](./docs/components/external-link.md)): A link to another site: opens a new tab on desktop and the external browser inside a mobile WebView, with an external-link icon. Components: ExternalLink.
-- [Pills](./components/pills/) ([markdown](./docs/components/pills.md)): A single-choice filter of 2–5 options on one track (segmented look). The left side of a SubpageToolbar. Components: Pills.
+- [Pills (deprecated)](./components/pills/) ([markdown](./docs/components/pills.md)): Deprecated in 1.0: use SegmentedControl for 2–5 filter values shown in full (with counts and a sliding raised-2 pill) or PillTabs for 5+ page sections with icons. Kept exported so existing screens continue to compile until migrated. Components: Pills.
 - [Split button](./components/split-button/) ([markdown](./docs/components/split-button.md)): The main action and a ▾ that opens a Menu of the other ways to do the same job (Thêm khách hàng | ▾ Nhập từ file, Tìm trong Data Hub). One filled button in total; below sm one button opens the whole list, the main action first. Components: SplitButton.
 - [Toggle](./components/toggle/) ([markdown](./docs/components/toggle.md)): Buttons that stay pressed. Toggle for one (pin, mute, bold); ToggleGroup for a set of icon or short options, one or several at a time (list / grid view, text styles). Components: Toggle, ToggleGroup.
 
@@ -93,15 +93,17 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Minimal header](./components/minimal-header/) ([markdown](./docs/components/minimal-header.md)): The top row of a detail or settings page inside AppShell: where the page sits on the left (a Breadcrumb), one text link and one primary action on the right. The page's own heading follows it. Components: MinimalHeader.
 - [Navigation menu](./components/navigation-menu/) ([markdown](./docs/components/navigation-menu.md)): Top navigation of a website or landing page: links, and items that open a panel of links with descriptions. Below md it becomes one menu button with a sheet. Components: NavigationMenu.
 - [Page actions](./components/page-actions/) ([markdown](./docs/components/page-actions.md)): Lets a page put its actions into a slot of the shared header: PageActionsProvider wraps the layout, PageActionsSlot marks where they render, PageActions sends them from the page. Components: PageActions, PageActionsProvider, PageActionsSlot.
-- [Page title](./components/page-title/) ([markdown](./docs/components/page-title.md)): PageTitle is the large display title of a page (text only), with the page's own action on its row (`actions`). PageTabsTitle turns it into 2–4 underline tabs for sibling pages. Components: PageTitle, PageTabsTitle.
+- [Page title](./components/page-title/) ([markdown](./docs/components/page-title.md)): PageTitle is the display title of a page (text only), with the page's own action on its row (`actions`). PageTabsTitle is kept as a deprecated alias for 2–4 sibling tabs — new screens use TextTabs. Components: PageTitle, PageTabsTitle.
 - [Pagination](./components/pagination/) ([markdown](./docs/components/pagination.md)): Page numbers with previous / next for long tables. For card lists prefer auto-loading with “Xem thêm”. Components: Pagination.
+- [Pill tabs](./components/pill-tabs/) ([markdown](./docs/components/pill-tabs.md)): Default section tabs for pages with 5+ sections or sections with icons (settings-like pages): no track, h30 round pills with 16px icons and 12px/600 labels, and one item-hover pill that slides to the active tab in 300ms ease-out. Components: PillTabs.
 - [Resizable panels](./components/resizable/) ([markdown](./docs/components/resizable.md)): Panels side by side or stacked with handles to resize them (an editor beside a preview, a list beside details). Sizes are percentages and can be remembered. Components: ResizablePanels.
 - [Scroll area](./components/scroll-area/) ([markdown](./docs/components/scroll-area.md)): A fixed-size scrolling region (a long list in a card, a log). Semi hides scrollbars, so it marks the edges that have more content, can show a thin scrollbar, and is reachable by keyboard. Components: ScrollArea.
+- [Segmented control](./components/segmented-control/) ([markdown](./docs/components/segmented-control.md)): Small single-choice filter sets shown in full (2–5 values, often with tabular-nums counts): a `raised` track (h32, radius 8, padding 4, gap 4) with h24 items (12px/600) and one solid `raised-2` pill (white in light theme) sliding in 300ms ease-out. Components: SegmentedControl.
 - [Side panel](./components/side-panel/) ([markdown](./docs/components/side-panel.md)): A 320px tool panel beside a canvas that collapses to a 48px rail; SidePanelToggle is its collapse button. Components: SidePanel, SidePanelToggle.
 - [Sticky context bar](./components/sticky-context-bar/) ([markdown](./docs/components/sticky-context-bar.md)): The top of a list page that stays while the rows scroll under it: SearchPill, then FilterChipRow (PhoneFilterBar on phones), then ResultLine. An opaque STICKY_TOOLBAR strip, below the safe area on phones. The title row with the page's action (PageTitle actions) sits above it and scrolls away. Components: StickyContextBar.
 - [Subpage toolbar](./components/subpage-toolbar/) ([markdown](./docs/components/subpage-toolbar.md)): The sticky row with a page's filters on the left and search, refresh and the icon-only primary action on the right: under the page title, or with the title on the same row (title). RefreshButton spins while its promise runs. Components: SubpageToolbar, RefreshButton.
 - [Tabs](./components/tabs/) ([markdown](./docs/components/tabs.md)): Switch between panels of content inside a page or card: underline (default) or segmented, with icons and counts. Components: Tabs.
-- [Text tabs](./components/text-tabs/) ([markdown](./docs/components/text-tabs.md)): Large text tabs that are the page heading: 2–4 sibling views in display type, the current one bright and the others dim, no underline. Buttons switch at once; tabs with href are links, so the URL picks the view. Components: TextTabs.
+- [Text tabs](./components/text-tabs/) ([markdown](./docs/components/text-tabs.md)): Big display tabs (`font-display text-tab-xl`, 24px below sm / 28px from sm, weight 400) for 2–4 top-level views of a discovery or reading page: every tab in strong text colour, inactive at opacity 0.2 (raised on hover in 150ms), active with a 2px brand underline at 6px offset under the word only. Components: TextTabs.
 - [Workspace layout](./components/workspace-layout/) ([markdown](./docs/components/workspace-layout.md)): Page type “workspace” (L12): a control panel on the left (segmented tabs, back + tool name, sections with a text-overline label and a counter like “3/8”, drop zones, steppers, a message box) with the main action pinned at its bottom, and the result on the right. Phones stack the panel above the result with the action at the bottom of the screen. Components: WorkspaceLayout, WorkspaceHeader, WorkspaceSection.
 
 ### Data display
@@ -181,7 +183,7 @@ content column, 12px shell chrome around 14px content, headings 400 / 500, minim
 brand fill (`bg-primary`, optional `bg-secondary`) only for the one main button of a page or modal (at most one per
 page or modal), the nav's main action, the active big-tab underline, attention badges / "Mới" tags, or a case the app's owner asks for; every other
 action is a neutral button. **When to use which** (buttons, tabs, page layouts): `DESIGN_SYSTEM.md` §0. Moving from
-0.x: `MIGRATION-1.0.md`. Parts marked *(Tn, pending)* (T3, T5–T9) in `DESIGN_SYSTEM.md` are 1.0 targets not merged yet: use what
+0.x: `MIGRATION-1.0.md`. Parts marked *(Tn, pending)* (T3, T6–T9) in `DESIGN_SYSTEM.md` are 1.0 targets not merged yet: use what
 Semi ships today for them, never a local stand-in.
 Shell: `AppShell` (the nav panel and the content column on `bg-canvas`; the route header with crumbs and the account
 avatar menu above the content card), pages with `PageTitle` (+ `actions`) or
@@ -234,7 +236,8 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (none
 - **Layout & Structure (`@semi/ui`):**
   - `ThemeProvider`, `useTheme`, `ThemeToggle`: Zero-runtime-overhead dual-theme management via `data-theme` attribute and CSS variables.
   - `AppShell` (+ `MobileTabBar`, `TAB_BAR_PAD` for `mobileNav="tabs"`), 1.0 (#144): a `bg-canvas` frame with the nav panel (224px or the 72px rail; the rail is the default between `lg` and 1280px, `railBelow`, and always between `md` and `lg`) and the content column, which holds the `RouteHeader` (crumbs left, `header.middle`, `header.actions` icon buttons and the account avatar menu `header.account: { name, detail, items, onSignOut }` with the theme) above the content card (`page="fixed"`, `flush`). Nav top to bottom: logo + collapse, `mainAction` (the nav's one brand-filled action), `sections` / `pinned` (labels `text-nav-label`), the bottom row `tools` (32×32 icon buttons, `count` badges, `toolsMenu` •••). No account in the nav. ⌥ / Alt + 1–9 opens the nth item (`navShortcutKeys`). A detail page names its record with `useRecordCrumb(label)`. Phones: the route header's menu button opens a full-screen drawer. A nav item with `mega` opens a `MegaMenu`. Items may carry `children` (one level, optional grey icon, no colour or count): closed by default, open only while the parent or a child is active; hidden in the rail / below `lg` / phones, so pages check `useAppShell().submenuVisible` and offer their own picker.
-  - `PageTitle`, `PageTabsTitle`: text-only display heading or underline tab heading (`h-[2.5px] bg-primary`). `PageTitle actions` is a list page's title row: one primary (or `inverse`) + `RefreshButton` on the right, wrapping under the title below `sm`.
+  - `PillTabs`, `SegmentedControl`, `TextTabs`, `useTabParam` (§4h, #147): `PillTabs` for 5+ sections or sections with icons (no track, h30 round pills, sliding `item-hover` pill, `tabpanel`); `SegmentedControl` for 2–5 filter values shown in full with tabular-nums counts (`raised` track, sliding `raised-2` pill, `radiogroup` / `radio`; replaces deprecated `Pills`); big `TextTabs` for 2–4 top-level views of a discovery or reading page (`font-display text-tab-xl font-normal`, inactive `opacity-20`, active 2px brand underline at 6px offset; replaces deprecated `PageTabsTitle`). All three share overflow edge cues, `activation="manual"`, sync/async `onBeforeChange` on button and `href` tabs, `useTabParam` (`?tab=` without history spam per arrow key), and reduced-motion support.
+  - `PageTitle`, `PageTabsTitle` (deprecated → `TextTabs`): text-only display heading. `PageTitle actions` is a list page's title row: one primary (or `inverse`) + `RefreshButton` on the right, wrapping under the title below `sm`.
   - `SubpageToolbar`: sticky toolbar (`STICKY_TOOLBAR`) with `left` filters and `right` icon-only `BTN_PRIMARY BTN_ICON` + `SearchInput` + `RefreshButton`; `title` puts the page title on the same row (then no `PageTitle`).
     Phone layout (opt-in): `filters` (typed, `FilterDef[]`; more than two collapse into "Bộ lọc · N" + active chips) or `collapseFilters` (for `left`), and `secondaryActions` (a ⋯ menu below `sm`).
   - Overlay and actions (§4, §9, #102): a list record opens in `<DetailOverlay open onClose index total onPrev onNext side related>` driven by `useDetailParam()` (`?open=`, Back closes, ‹ › replace; over a `DataTable` its results are `sortRows(searchRows(rows, columns, q), columns, sort)`, never a copied comparator); a `DataTable` with many columns gives the minor ones `priority` 1–3 (they fold into the first column when the table's own box is narrow, e.g. 834 px beside the rail) and `stickyFirstColumn` when it can still scroll; cards get `<CardActions label actions menu>` inside a `group relative` card (`label` is required: lint `card-hover-actions-touch`, hard); round icon buttons are `<Button iconOnly shape="round">` (`raw-pill-button`); a `DetailOverlay` without `useDetailParam` warns (`detail-overlay-url`); one `<CommandPalette items>` in the root layout (⌘K; pages add `useRegisterCommands(items)`, a button calls `openCommandPalette()`). Grouping (G1–G12): alternatives of the main action → `<SplitButton label onClick items menuLabel>`; secondary page / row actions → ⋯ `Menu` (items: `group`, `description`, `checked`, `loading`, `href`, `hidden`, `disabled: "reason"`; danger always last; bottom sheet below `sm`); `ButtonGroup` only for toggles / steps of one control; one filled primary per view.
@@ -294,7 +297,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (161)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (163)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
@@ -350,6 +353,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `PageActions`: `PageActionsProvider`, `PageActionsSlot`, `PageActions`
 - `PageTitle`: `PageTitle`, `PageTabsTitle`
 - `Pagination`: `Pagination`
+- `PillTabs`: `PillTabs`
 - `Pills`: `Pills`
 - `Popover`: `Popover`, `HoverCard`
 - `Prose`: `Prose`
@@ -360,6 +364,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `ScrollArea`: `ScrollArea`
 - `SearchInput`: `SearchInput`
 - `SearchPill`: `StickyContextBar`, `SearchPill`, `ResultLine`
+- `SegmentedControl`: `SegmentedControl`
 - `Separator`: `Separator`
 - `SidePanel`: `SidePanelToggle`, `SidePanel`
 - `Skeleton`: `Skeleton`, `Loading`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `SkeletonList`, `SkeletonTable`, `SkeletonDetail`, `PageSkeleton`, `BootLoader`
@@ -382,7 +387,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `formValidation`: `FormErrorSummary`
 - `locale`: `SemiLocaleProvider`
 
-**Hooks:** `useAppShell`, `useHotkey`, `useRegisterCommands`, `useDetailParam`, `useField`, `useFilterParams`, `useCoarsePointer`, `useRecordCrumb`, `useTheme`, `useThemeChoices`, `useThemeUtility`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useFormValidation`, `useSemiLocale`, `useUnsavedGuard` · **Functions:** `navScript`, `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `filterCommands`, `openCommandPalette`, `openDetail`, `pageWindow`, `startTask`, `themeScript`, `updateToast`, `dismissToast`, `confirmDialog`, `confirmDelete`, `kindAttrs`, `readFilterValues`, `readFilters`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `composeRefs`, `cloneTrigger`, `normalizeSearch`, `searchRows`, `sortRows`, `cn`
+**Hooks:** `useAppShell`, `useHotkey`, `useRegisterCommands`, `useDetailParam`, `useField`, `useFilterParams`, `useCoarsePointer`, `useRecordCrumb`, `useTheme`, `useThemeChoices`, `useThemeUtility`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useFormValidation`, `useSemiLocale`, `useTabParam`, `useUnsavedGuard` · **Functions:** `navScript`, `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `filterCommands`, `openCommandPalette`, `openDetail`, `pageWindow`, `startTask`, `themeScript`, `updateToast`, `dismissToast`, `confirmDialog`, `confirmDelete`, `kindAttrs`, `readFilterValues`, `readFilters`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `composeRefs`, `cloneTrigger`, `normalizeSearch`, `searchRows`, `sortRows`, `cn`
 <!-- generated:components:end -->
 
 
@@ -446,15 +451,16 @@ decisions C-006, C-008.
 | The one commit action of a page or modal; the nav's main action; a case the owner asked for | `primary` (or `secondary`, when the brand has one) |
 | A destructive confirm in a dialog | `danger` |
 
-**Tabs and filters** (T5, pending: until then `Tabs`, `Pills`, `TextTabs`, `PageTabsTitle` as they are today):
+**Tabs and filters** (§4h, T5 #147):
 
 | Need | Use |
 |---|---|
-| 5+ sections of one page, or sections with icons (Cấu hình) | `PillTabs` |
+| 5+ sections of one page, or sections with icons (settings-like pages, Cấu hình) | `PillTabs` |
 | 2–5 filter values shown in full, often with counts (Đang mở · Đã đóng · Tất cả) | `SegmentedControl` |
-| 2–4 sub-pages of a page, as its heading (display face, brand underline) | big `TextTabs` |
+| 2–4 top-level views of a discovery or reading page, as its heading (display face, brand underline) | big `TextTabs` |
 | Filters of a list (status, owner, date) | `FilterChipRow` (md+) / `PhoneFilterBar` + `FilterPanel` (phones) |
-| Sections of one record inside a card | `Tabs` (underline) |
+| Sections of one record inside a card or dialog | `Tabs` (underline) |
+| List ↔ grid (and optional density) icon toggles | `ViewSwitch` |
 
 **Page layouts** (§4a; T7, pending):
 
@@ -495,7 +501,7 @@ Names and values: **`TOKENS.md`** "Type scale" (the contract; values in `tokens/
 | Hero | `font-display text-hero font-normal text-strong` (36, 32 below sm) |
 | Reading-page title (one column) | `font-display text-title-xl font-medium text-strong` (44) |
 | Page title of a work page, in its content card | `text-figure font-normal text-strong` (18 / 400), on the row of the page's main action (T7, pending: `PageTitle` still draws the 0.x display title) |
-| Big text tabs | `font-display text-tab-xl` (28, 24 below sm; T5) |
+| Big text tabs | `font-display text-tab-xl font-normal` (28, 24 below sm; weight 400 in the brand display face; active `decoration-primary`, inactive `opacity-20`) |
 | Section heading | `text-section text-strong` (20 / 500 from the token) |
 | Card title, lead text | `text-lead font-medium text-strong` (15) |
 | **Content**: list and table rows, form labels and help, field values, buttons, menu items, dialog text, body | `text-ui` (**14**) `text-body` / `text-muted` |
@@ -907,6 +913,39 @@ and the utilities `transition-hover`, `transition-nav`, `transition-slide`, `ani
 Apps may use the tokens now in their own CSS (`transition: background-color var(--motion-hover)`); never a hand-made
 duration or easing.
 
+## 4h. Tabs, segmented controls & URL `?tab=` (#147, #121)
+
+Choose the tab or filter control mechanically from §0 "When to use which":
+
+- **`PillTabs`** (5+ sections of one page, or sections with icons, e.g. Cấu hình): no track; h30 fully round pills
+  (`rounded-full`), 16px icon + 4px + label in `text-chrome font-semibold` (12px/600), inactive `text-muted`, active
+  `text-strong`; one `bg-item-hover` pill slides behind the active tab in 300ms ease-out (`transition-slide`). WAI-ARIA
+  `tablist` / `tab` / `tabpanel` with `id`, `aria-controls` and `aria-labelledby`, roving `tabIndex`, ←/→, Home / End.
+- **`SegmentedControl`** (2–5 filter values shown in full, with optional tabular-nums counts): `bg-raised` track
+  (`rounded-control`, padding 4, gap 4, h32), h24 items (`px-4 py-1.5`, 12px/600, inactive `text-muted`, active
+  `text-strong`), one solid `bg-raised-2` pill (white in light theme) sliding in 300ms (`transition-slide`). WAI-ARIA
+  `radiogroup` / `radio` with ←/→, ↑/↓, Home / End. Replaces the deprecated `Pills`.
+- **Big `TextTabs`** (strictly 2–4 top-level views of a discovery or reading page, as its heading): `font-display
+  text-tab-xl font-normal` (24px below `sm`, 28px from `sm`, weight 400 in the brand display face — never force 600–800
+  bold on top of `font-display`, lh 1.2, tracking −0.01em), every tab in `text-strong`, inactive `opacity-20` (hover
+  raises opacity in 150ms, keyboard `:focus-visible` restores full contrast), active 2px `decoration-primary` underline
+  at 6px offset under the word only; gaps 16 / 20 / 24 (`base` / `sm` / `md`); 28px (`pt-7` / `mb-7`) to the intro
+  below. Replaces `PageTabsTitle` (deprecated).
+- **Shared behaviour across all three (#121):**
+  - **Overflow:** one horizontal row (`no-scrollbar`), active item scrolls horizontally into view without moving the
+    page vertically, no horizontal page scroll at 430px, and a 2px `bg-outline-line` edge cue (`data-edges`) marks each
+    side with more tabs.
+  - **Manual activation:** `activation="manual"` moves focus with arrows and commits on Enter / Space (default
+    `"automatic"` switches button tabs on arrow keys; `href` tabs always move focus on arrows and navigate on Enter / Space).
+  - **Guard (`onBeforeChange`):** `(key) => boolean | Promise<boolean>`, honoured by both button tabs and `href` link
+    tabs (an `href` tab does not navigate when the guard refuses). In automatic mode arrow keys move focus and selection
+    only after `value` really changed.
+  - **URL `?tab=` (`useTabParam`):** `const [tab, setTab] = useTabParam("mail", { values })` (built on `urlState.ts`,
+    Next 16 App Router safe: `null` history state, `queueMicrotask` listeners, no `useSearchParams`). Arrow-key stepping
+    always replaces (`history.replaceState`), so pressing ←/→ never pushes a history entry per key. Pages already using
+    `useFilterParams` can call `setParams({ tab: next === defaultTab ? null : next }, "replace")`.
+  - **Reduced motion:** sliding pills and edge-cue fades turn off under `prefers-reduced-motion` (opacity only, no slide).
+
 ## 5. Card
 
 Cards separate from the page by tone (`bg-card`, Surfaces in §2), with no visible border.
@@ -1035,7 +1074,9 @@ it form by form; the four lint rules below are warnings until 1.0.
 
 ## 10. Pills, chips, badges
 
-- Single choice: `Pills` (`h-control rounded-control` track, active = `SEGMENT_ON`).
+- Single choice (2–5 filter values shown in full, with counts): `SegmentedControl` (`bg-raised` track, sliding
+  `bg-raised-2` pill, `radiogroup` / `radio`, §4h). `Pills` (`SEGMENT_ON`) is deprecated in 1.0 and kept exported for
+  compatibility.
 - Sub-page filter tabs / chips: `Chip` (see §3 Chips). Static labels: `TAG`.
 - Filter chips may carry an icon and a count: icon `w-3.5 h-3.5` + label + `COUNT_PILL`.
 - Status pill: `STATUS_PILL` + `bg-*-bg text-*-fg` (danger, success, warning, info) with a status dot (§11), or `<Badge tone>`.
@@ -1248,7 +1289,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | Import | Exports |
 |---|---|
 | `@semi/ui` → `AppShell.tsx`, `RouteHeader.tsx`, `MobileTabBar.tsx` | `AppShell` (1.0 frame: nav panel with main action, groups, pinned, bottom row of tools; 224px or the 72px rail; RouteHeader; content card; phone drawer; nav shortcuts), `useAppShell` (sub-items shown, rail, shortcuts), `navShortcutKeys`, `RouteHeader` (crumbs, middle, actions, account), `AccountMenu` (the account avatar menu), `useRecordCrumb` (a detail page names its record), `MobileTabBar`, `TAB_BAR_PAD` (opt-in `mobileNav="tabs"`) (§4) |
-| `MegaMenu.tsx`, `MinimalHeader.tsx`, `TextTabs.tsx` | `MegaMenu` (flyout of category columns, `text-overline` headers, New badges, See all), `MinimalHeader` (breadcrumb left, one link + one primary right), `TextTabs` (large text tabs as the page heading, ARIA tabs, `href` for URL-driven views) (§4) |
+| `MegaMenu.tsx`, `MinimalHeader.tsx`, `TextTabs.tsx`, `PillTabs.tsx`, `SegmentedControl.tsx`, `useTabParam.ts` | `MegaMenu` (flyout of category columns, `text-overline` headers, New badges, See all), `MinimalHeader` (breadcrumb left, one link + one primary right), `TextTabs` (big display tabs for 2–4 top-level views, brand underline, `href`, `onBeforeChange`, `activation`), `PillTabs` (default section tabs for 5+ sections or sections with icons, sliding `item-hover` pill, `tabpanel`, `href`, `onBeforeChange`, `activation`), `SegmentedControl` (2–5 filter values with counts, sliding `raised-2` pill, `radiogroup`), `useTabParam` (`?tab=` URL state without history spam per arrow key) (§4, §4h) |
 | `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle` (`actions`: the page's action on the title row), `PageTabsTitle` (underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh; phone layout with `filters` / `collapseFilters` / `secondaryActions`), `ToolbarFilters` (§4a) |
 | `SearchPill.tsx`, `FilterChipRow.tsx`, `ViewSwitch.tsx`, `FilterPanel.tsx`, `filterParams.ts` | `StickyContextBar` (sticky search + chips + result line), `SearchPill` (wide pill search, debounce, `/`), `ResultLine` (query · N kết quả + sort), `SortDef`, `FilterChipRow` (one-line chips, ‹ ›, Xoá lọc, leading views, trailing tools), `FilterChip`, `FilterOptions` (the checkbox list of one filter), `useFilterParams` (filter state in the URL, Back / Forward), `ViewSwitch` (list ↔ grid, density), `PhoneFilterBar` (views · Bộ lọc · settings), `FilterPanel` (full-screen / side-sheet filters); URL helpers `readFilters`, `readFilterValues`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, types `FilterSpec`, `FilterDef`, `FilterOption`, `FilterValues` (§4) |
 | `SplitButton.tsx`, `CardActions.tsx`, `DetailOverlay.tsx` | `SplitButton` (main action + ▾ `Menu` of its variants, one button on phones, G1), `CardActions` (hover / focus icon actions + ⋯ on cards, ⋯ only on touch), `DetailOverlay` (record over its list: ‹ › with n / N, side panel, scroll kept), `useDetailParam` (`?open=` in the URL, Back closes), `openDetail` (open one from anywhere on the route), types `CardAction`, `DetailParamState` (§4, §9) |
@@ -1317,7 +1358,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Persistent message in a page | `Alert` (tone, title, action, `onDismiss`) |
 | Save / Cancel under a form; losing typed work; field errors | `FormActions`, `useUnsavedGuard`, `useFormValidation` + `FormErrorSummary` (§9b) |
 | Secondary task beside the page | `Drawer` (right / left / bottom / top sheet) |
-| Sections of one record | `Tabs` (underline; `segmented` inside a toolbar); 2–4 sibling views as the page heading → `TextTabs` (or `PageTabsTitle`) |
+| Sections of one page (5+, or with icons); 2–5 filter values with counts; 2–4 top-level views; sections of one record | `PillTabs` (5+ sections / icons) · `SegmentedControl` (2–5 filter values with counts) · big `TextTabs` (2–4 top-level views as the page heading, display face + brand underline) · `Tabs` (underline, sections of one record inside a card) · `useTabParam` (`?tab=` in the URL) (§4h) |
 | Top row of a detail / settings page | `MinimalHeader` (`Breadcrumb` left, one link + one primary right) |
 | Title row of a list page (title + create action + refresh) | `PageTitle actions` above the `StickyContextBar` (block `list-page`) |
 | Many destinations of one area in a few groups | `MegaMenu` (AppShell item `mega`, or its own trigger) |
@@ -1357,6 +1398,8 @@ The full inventory with props is generated into `components.json` (`npm run buil
 
 - Contrast: every text / background pair ≥ 4.5:1 (3:1 for ≥ 24px) in **both** themes; `npm run test:ui` checks every
   Storybook page in light and dark, plus axe (WCAG 2.2 AA), control boundaries ≥ 3:1 and focus in forced colours.
+  One explicit owner exception (#147): inactive tabs of big `TextTabs` render `text-strong` at `opacity-20` (hover
+  raises opacity, keyboard `:focus-visible` restores full opacity).
 - Keyboard: every control is reachable and shows `FOCUS_RING` (`focus-visible` only); dialogs (`Modal`, `Drawer`,
   `confirmDialog`, `NumPadPopup`) trap focus, close on Escape and return focus to the opener (`useDialog`); menus,
   tabs and comboboxes follow the WAI-ARIA keyboard patterns.
@@ -2417,7 +2460,7 @@ with `/semi-propose`.
 | T2 #144 | Shell: frame, RouteHeader, nav, account avatar menu, shortcuts | merged on `main` (#159), unreleased: ships in 1.0.0 | `1.0.0-app-shell` |
 | T3 #145 | Lint and checks for the 1.0 rules | pending | — |
 | T4 #146 | Buttons and attention marks | merged on `main` (#157), unreleased: ships in 1.0.0 | `1.0.0-buttons` |
-| T5 #147 | Tabs: PillTabs, SegmentedControl, big TextTabs | pending | — |
+| T5 #147 | Tabs: PillTabs, SegmentedControl, big TextTabs | merged on `main`, unreleased: ships in 1.0.0 | `1.0.0-tabs` |
 | T6 #148 | Fields and forms | pending | — |
 | T7 #149 | Page layouts and lists | pending | — |
 | T8 #150 | StickyContextBar pinning and actions | pending | — |
@@ -2585,11 +2628,34 @@ page's commit action; an icon button's count moves to Button `badge` (or `CountB
 **What the app deletes** (sales-hub v0.7.0): in the globals tail `.content-actions-inverse .bg-action` (the forced
 inverse main button) and the `content-actions-inverse` class where it only served that: use `variant="inverse"`.
 
-## T5: tabs (pending, #147)
+## T5: tabs (merged, ships in 1.0.0)
 
-**Target.** `PillTabs` (5+ sections or sections with icons), `SegmentedControl` (2–5 filter values with counts), big
-`TextTabs` (2–4 sub-pages, display face, brand underline). **Replaces:** `app/components/semi-pending/PillTabs.tsx`,
-`SegmentedControl.tsx`; `.text-tabs-strong` in the globals tail. **Until it ships:** keep them.
+**What changed** (#147, #121). Three tab controls with one clear rule (`DESIGN_SYSTEM.md` §0, §4h):
+- **`PillTabs` (new):** default for 5+ sections of a page or sections with icons (settings-like pages). No track, h30
+  round pills (16px icon + 4px + 12px/600 label), sliding `item-hover` pill in 300ms (`transition-slide`), `tablist` /
+  `tab` / `tabpanel` (`id`, `aria-controls`, `aria-labelledby`), roving `tabIndex`, ←/→, Home / End.
+- **`SegmentedControl` (new):** 2–5 filter values shown in full, with optional tabular-nums counts. `raised` track
+  (radius 8, padding 4, gap 4, h32), h24 items (12px/600), sliding solid `raised-2` pill (white in light theme) in
+  300ms, `radiogroup` / `radio`, ←/→, ↑/↓, Home / End.
+- **Big `TextTabs` (updated):** strictly 2–4 top-level views of a discovery or reading page. `font-display text-tab-xl
+  font-normal` (24px below `sm`, 28px from `sm`, weight 400 in the brand display face), every tab in `text-strong`,
+  inactive `opacity-20` (hover raises opacity in 150ms, keyboard focus restores full opacity), active 2px brand
+  underline (`decoration-primary`) at 6px offset under the word only, gaps 16 / 20 / 24, 28px to the intro below.
+- **Shared across all three:** sideways scroll with no scrollbar, 2px `bg-outline-line` overflow edge cue
+  (`data-edges`), `activation="manual"`, sync/async `onBeforeChange(key)` honoured by both button and `href` tabs,
+  **`useTabParam`** (`?tab=` URL state via `urlState.ts` without pushing a history entry per arrow key), and
+  `prefers-reduced-motion` turning off sliding pills and edge-cue fades.
+- **Existing components:** `Pills`, `PageTabsTitle`, and `Tabs variant="segmented"` are **deprecated** (kept exported
+  so existing code keeps compiling); `ViewSwitch` is **kept** (icon-only list ↔ grid + density toggle); `Tabs`
+  underline is **kept** for sections of one record inside a card; the old `TextTabs` look is replaced in place.
+
+**The migration (`1.0.0-tabs`) flags** deprecated `Pills`, `PageTabsTitle`, `Tabs variant="segmented"`, and any
+leftover `.text-tabs-strong` stand-in rules for hand migration (because `SegmentedControl` and `PillTabs` require an
+accessible `label`).
+
+**What the app deletes** (sales-hub v0.7.0): `app/components/semi-pending/PillTabs.tsx`,
+`app/components/semi-pending/SegmentedControl.tsx`, and `.text-tabs-strong` in the `TODO(semi-pending)` tail of
+`app/globals.css`.
 
 ## T6: fields and forms (pending, #148)
 
@@ -2638,9 +2704,9 @@ local code. "Delete when" is the ticket that ships the replacement.
 | `semi-pending/navShortcuts.ts`, `[data-nav-num]` | AppShell nav shortcuts | T2 (merged, in 1.0.0) |
 | globals tail: `.nav-spaced`, `.group-label`, rail width | AppShell nav, `text-nav-label` | T2 (merged, in 1.0.0) |
 | globals tail: `.content-actions-inverse .bg-action` | `Button variant="inverse"` | T4 (merged, in 1.0.0) |
-| `semi-pending/PillTabs.tsx` | `PillTabs` | T5 |
-| `semi-pending/SegmentedControl.tsx` | `SegmentedControl` | T5 |
-| globals tail: `.text-tabs-strong` | big `TextTabs` | T5 |
+| `semi-pending/PillTabs.tsx` | `PillTabs` | T5 (merged, in 1.0.0) |
+| `semi-pending/SegmentedControl.tsx` | `SegmentedControl` | T5 (merged, in 1.0.0) |
+| globals tail: `.text-tabs-strong` | big `TextTabs` | T5 (merged, in 1.0.0) |
 | `semi-pending/MultiCombobox.tsx` | `MultiCombobox` | T6 |
 | `semi-pending/LetterAvatar.tsx` | `LetterAvatar` | T6 |
 | `semi-pending/autofocus.ts` | Modal / Drawer autofocus | T6 |
@@ -2844,13 +2910,13 @@ Under `prefers-reduced-motion: reduce` the distances (`--motion-crumb-distance`,
 
 All web UI here follows the **Semi Design System** (`@semi/ui`, repo `https://github.com/hoanghuynh296/semi-nextjs-codebase`). `npx semi-lint` enforces most of this; the full rules are `node_modules/@semi/ui/docs/QUICK_REF.md` (details in `docs/DESIGN_SYSTEM.md`).
 
-**Semi 1.0 in short** (`DESIGN_SYSTEM.md` §0): one look for every brand; neutral grey surfaces; **the brand colour only on the one main button of a page or modal (at most one filled brand button per page or modal), the nav's main action, the active big-tab underline, attention badges / "Mới" tags, or a case the app's owner asks for**, every other action a neutral button; headings 400 / 500, never bold; content text 14px (`text-ui`), shell chrome 12px (`text-chrome`), fields 16px on phones. Parts marked *(Tn, pending)* in `DESIGN_SYSTEM.md` (T3, T5–T9) are 1.0 targets not shipped yet: use what Semi has today for them and never build a local stand-in. Upgrading from 0.x: `docs/MIGRATION-1.0.md`.
+**Semi 1.0 in short** (`DESIGN_SYSTEM.md` §0): one look for every brand; neutral grey surfaces; **the brand colour only on the one main button of a page or modal (at most one filled brand button per page or modal), the nav's main action, the active big-tab underline, attention badges / "Mới" tags, or a case the app's owner asks for**, every other action a neutral button; headings 400 / 500, never bold; content text 14px (`text-ui`), shell chrome 12px (`text-chrome`), fields 16px on phones. Parts marked *(Tn, pending)* in `DESIGN_SYSTEM.md` (T3, T6–T9) are 1.0 targets not shipped yet: use what Semi has today for them and never build a local stand-in. Upgrading from 0.x: `docs/MIGRATION-1.0.md`.
 
 1. **Ask Semi before writing UI.** Find the component for each need with the `semi` MCP tools (`semi_search` → `semi_docs` → `semi_example`; `semi_block` for whole pages; `semi_props` for props) or the terminal (`npx semi search "bảng có sắp xếp"`, `npx semi docs DataTable`, `npx semi example data-table`, `npx semi add dashboard`). They answer from the installed `@semi/ui`. Read *When to use*, *Use something else when* and *Accessibility*, then start from an example.
 2. **Compose, never re-create.** Import from `@semi/ui` and `@semi/ui/styles` directly. No local wrappers (`components/ui.tsx`), no raw `<select>`, `<table>`, `<dialog>`, `type="date"`, `type="number"`, `window.confirm` / `alert`, no inline `<svg>` or glyph icons (`<Icon name>`, mapping in `docs/ICONS.md`). Every AI conversation is `AIChat`; agent work uses `Reasoning`, `ToolCall`, `TaskList`, `Terminal`, `Sources`; an outward-facing, paid or irreversible agent action waits for `ActionConfirmation`. Pages sit in `AppShell` (or `AppHeader` for a one-screen tool) with `PageTitle` (or the title on the toolbar row: `SubpageToolbar title`, or `TextTabs` for 2–4 sub-pages; a detail page opens with `MinimalHeader`); the shell's one brand-filled action is `mainAction`, its bottom row is `tools` (+ `toolsMenu`), the account (with the theme) is the route header's avatar menu (`header.account`; the nav has no account), and phones use its drawer; sub-views of one area go in nav `children` (closed until the parent is chosen, optional grey icon, no colour or count; check `useAppShell().submenuVisible` and add a page picker when false); a list page that people search and filter opens with `StickyContextBar` (`SearchPill`, `FilterChipRow` on `md+` / `PhoneFilterBar` + `FilterPanel` on phones, `ResultLine`), filter state in the URL (`useFilterParams`), chips on one line, never wrapped rows (`filter-chip-wrap`, warning); dialogs are `Modal` / `Drawer` / `confirmDialog`; loading is `Skeleton`, never "Đang tải…" text, and a list, grid or table never swaps its rows for a `Spinner` (`no-spinner-in-list`, warning). `AppShell` renders once in a `layout.tsx` (never from a page), its items route by `href` (not `onSelect` + `router.push`), the session check runs once in that layout (best on the server) with `BootLoader` as the only centred spinner, and content loading is a `loading.tsx` with `PageSkeleton` inside the shell, never a skeleton gate around it. No other UI or icon library (`lucide-react`, `react-icons`, `@radix-ui`, `@mui`, a shadcn `components/ui` copy: `foreign-ui`), no own `Card` / `Badge` / `Tooltip`… (`local-primitive`), no raw `<button>`, `<input>`, `<textarea>`, `<table>` (`raw-control`), no hand-made overlay or spinner (`custom-overlay`, `custom-spinner`); a clickable card is `<Card onClick>` (keyboard-ready), never `<div onClick>` (`click-target`).
 3. **Tokens only** (dual theme, any brand):
    - Colour (`docs/TOKENS.md`): surfaces `bg-canvas|app|panel|field|raised` (+ `bg-card` for a card in content, never `bg-panel`; `bg-panel-0…4`); text `text-strong|body|muted|faint` (faint only for group labels, kbd hints, "Untitled", on page surfaces and cards); lines `border-line|divider`, `border-control-line` (checkbox, radio), `border-field-line` / `border-outline-line`; neutral states `bg-item-hover` (hover), `bg-item-selected` (open record, active item, selected option), `bg-item-checked` (checked rows), `bg-inverted text-on-inverted` (checked controls), `ring-focus` / `border-focus` (focus); status `bg-*-bg border-*-border text-*-fg` (danger, success, warning, info) and tones `text-tone-*` only on tags, tiles and dots. Pages separate by tone, not borders or shadows (`<Card bordered>` only for a dense data view). **Brand fills** `bg-primary hover:bg-primary-hover text-on-primary` (and `bg-secondary` … when the brand has one) only where the brand colour rule says; selection, links, check marks, active tabs and focus are neutral. Never physical colours (`bg-white`, `text-slate-900`, `text-amber-600 dark:text-amber-400`), arbitrary colours (`bg-[#…]`), `accent-*` or `primary-50…900` (removed in 1.0), gradients or glow shadows.
-   - Buttons (`DESIGN_SYSTEM.md` §0, §9): ordinary actions are neutral. `Button` is `subtle` by default; `surface` for toolbar actions; `inverse` for the main action of a card or a list title row (`size="xs" shape="round"` for the pill), `outline` beside it; `ghost` for icon buttons; `primary` / `secondary` (the brand fills; `secondary` is the brand secondary, the primary when the brand has none) only for the one main button of a page or modal (its commit action), the nav's `mainAction` or a case the app's owner asks for; `danger` for destructive. Attention counts are `CountBadge` / Button `badge`, a new item is `NewTag`. Tabs: `FilterChipRow` for filters, `Tabs` for sections of one record, `TextTabs` for 2–4 sub-pages as the heading. (T5, pending: `PillTabs` for 5+ sections or sections with icons and `SegmentedControl` for 2–5 filter values with counts do not exist yet: today use `Tabs` / `Pills`; the big display `TextTabs` look comes with T5.)
+   - Buttons (`DESIGN_SYSTEM.md` §0, §9): ordinary actions are neutral. `Button` is `subtle` by default; `surface` for toolbar actions; `inverse` for the main action of a card or a list title row (`size="xs" shape="round"` for the pill), `outline` beside it; `ghost` for icon buttons; `primary` / `secondary` (the brand fills; `secondary` is the brand secondary, the primary when the brand has none) only for the one main button of a page or modal (its commit action), the nav's `mainAction` or a case the app's owner asks for; `danger` for destructive. Attention counts are `CountBadge` / Button `badge`, a new item is `NewTag`. Tabs (`DESIGN_SYSTEM.md` §0, §4h): `PillTabs` for 5+ sections or sections with icons (settings-like pages), `SegmentedControl` for 2–5 filter values shown in full with counts (replaces deprecated `Pills`), big `TextTabs` for 2–4 top-level views of a discovery or reading page (display face at 400, brand underline), `FilterChipRow` for filters, `Tabs` for sections of one record, `useTabParam` for `?tab=` URL state without history spam per arrow key.
    - Layouts (`DESIGN_SYSTEM.md` §4a; T7, pending: today `PageTitle` draws the 0.x display title and content sits in a `max-w-[1440px]` container; build the page structure below with today's components, never a local layout stand-in): **work** pages (lists, tables, workspaces) flush with no centred max-width; **reading** pages (settings, explore, articles) one column centred at 1536px; **two-column** pages a 240px sub-nav card + the main card; **list + reader** a list card + a reader card. Rhythm 32 / 28 / 32 / 16 / 8. A work page's title is 18 / 400 on the row of its main action; one `h1` per page.
    - Type scale only (`docs/TOKENS.md`): `text-ui` (14, content: rows, labels, fields, buttons, body) · `text-chrome` (12, shell chrome only: nav, breadcrumb, toolbar, meta) · `text-lead` 15 · `text-figure` 18 · `text-section` 20 · `text-tab-xl` · `text-title-xl` · `text-hero` · `text-tag` / `text-badge` 10 · `text-overline` · `max-sm:text-input` 16 for fields; text colours `text-strong|body|muted|faint`; headings not bold (400 / 500, `font-title` 500; 600 only overlines, 700 only count badges), titles and big numbers `font-title` / `font-figure`; `tabular-nums` for numbers; sentence case (the one uppercase style is `text-overline`, only as a group or section label: a nav / drawer group, a palette group, a mega menu column, a section of a form or detail panel; never one field's label, a button, a link or a heading: `overline-place`). Content (list rows, table cells, field labels and help, buttons, menu items, sentences) is `text-ui` (14); only the shell chrome (nav, breadcrumb, toolbar compact buttons) and meta (a time, a count, a hint) are `text-chrome` (12). Each size sets its own line height: no `leading-*` on body text.
    - Spacing by role (scaled by density): `p-card` inside every card, popover and panel section (`<Card>` sets it; `p-card sm:p-panel` for a roomy one), `gap-stack` between items in a card or form, `gap-group` between cards, `gap-section` between page sections. `gap-1`–`gap-2`, `px-2`, `py-1` only inside one control or row. A card is never tighter than `p-card` (`card-padding`). No arbitrary spacing, z-index or opacity (`p-[13px]`, `z-[9999]`, `bg-panel/[0.05]`: `arbitrary-value`); no `shadow-sm…2xl` (`tw-shadow`), `uppercase` (`text-case`) or `leading-*` other than `leading-tight` (`leading-override`); no colours, sizes or radii in `style={{}}` (`inline-style-value`) or in `.css` (`css-raw-value`).
@@ -3376,23 +3442,22 @@ export default function ExternalLinkBasic() {
 
 <!-- docs/components/pills.md -->
 
-# Pills
+# Pills (deprecated)
 
-A single-choice filter of 2–5 options on one track (segmented look). The left side of a SubpageToolbar.
+Deprecated in 1.0: use SegmentedControl for 2–5 filter values shown in full (with counts and a sliding raised-2 pill) or PillTabs for 5+ page sections with icons. Kept exported so existing screens continue to compile until migrated.
 
 ## When to use
 
-- Filter a list by status or period: Tất cả / Đang in / Xong.
-- Switch a small view mode with no panels.
+- Legacy screens not yet migrated to SegmentedControl or PillTabs.
 
 ## Use something else when
 
 | Need | Use |
 |---|---|
-| Switch panels of content | Tabs |
-| Many filters, several at once | Chip |
-| Sibling pages | PageTabsTitle |
-| Icon options or several on at once | ToggleGroup |
+| 2–5 filter values shown in full, with counts | SegmentedControl |
+| 5+ sections of a page, or sections with icons | PillTabs |
+| 2–4 top-level views of a discovery or reading page | TextTabs |
+| Filters of a list | FilterChipRow |
 
 ## Import
 
@@ -3440,8 +3505,7 @@ export default function PillsBasic() {
 
 ## Accessibility
 
-- Each option is a button with aria-pressed; Tab moves between options. For an icon set or a radio-group keyboard model use ToggleGroup.
-- The chosen option has an inset ring (SEGMENT_ON) as well as the fill, so it stands out at ≥ 3:1.
+- Each option is a button with aria-pressed; Tab moves between options. SegmentedControl uses WAI-ARIA radiogroup / radio with arrow keys.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/pills/ and the types in src/ -->
 
@@ -6103,7 +6167,7 @@ List ↔ grid and an optional density toggle, as small icon toggles at the end o
 
 | Need | Use |
 |---|---|
-| Switching between different data (orders vs. returns) | TextTabs or Pills |
+| Switching between different data or status slices | SegmentedControl or TextTabs |
 | A table ↔ chart switch of one data set | Chart's table view |
 
 ## Import
@@ -8748,20 +8812,21 @@ Where the actions appear: the right end of the page header row.
 
 # Page title
 
-PageTitle is the large display title of a page (text only), with the page's own action on its row (`actions`). PageTabsTitle turns it into 2–4 underline tabs for sibling pages.
+PageTitle is the display title of a page (text only), with the page's own action on its row (`actions`). PageTabsTitle is kept as a deprecated alias for 2–4 sibling tabs — new screens use TextTabs.
 
 ## When to use
 
 - The first line of every page (PageTitle).
 - A list page's title row: the title and the page's action (one primary or secondary, plus RefreshButton) above a StickyContextBar (PageTitle actions).
-- 2–4 sibling views of one area: Máy in / Job in (PageTabsTitle).
 
 ## Use something else when
 
 | Need | Use |
 |---|---|
+| 2–4 top-level views as the page heading | TextTabs |
+| 5+ sections of a page, or sections with icons | PillTabs |
+| 2–5 filter values shown in full, with counts | SegmentedControl |
 | Tabs inside a card or panel | Tabs |
-| A filter | Pills |
 | The top row of a detail or settings page (a Breadcrumb and one action) | MinimalHeader |
 
 ## Import
@@ -8846,7 +8911,6 @@ page's action on the right; below `sm` the actions wrap onto their own row under
 ### PageTabsTitle
 
 Underline display tabs used when a view groups 2–4 sibling sub-pages (e.g. "Máy in / Job in", "Sản phẩm / Danh mục").
-Replaces putting a separate <Pills> bar directly under a <PageTitle>.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
@@ -8925,6 +8989,246 @@ export default function PaginationBasic() {
 - A nav landmark; the current page has aria-current="page"; arrows are labelled.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/pagination/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/pill-tabs.md -->
+
+# Pill tabs
+
+Default section tabs for pages with 5+ sections or sections with icons (settings-like pages): no track, h30 round pills with 16px icons and 12px/600 labels, and one item-hover pill that slides to the active tab in 300ms ease-out.
+
+## When to use
+
+- 5+ sections of one page, or sections with icons (Cấu hình: Hộp thư, Nhóm thư, Nguồn khách, Mặt hàng, Mẫu thư, Data Hub, Doanh nghiệp, Người dùng).
+- Section switching that needs URL state (?tab=) or an unsaved-changes guard (onBeforeChange).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| 2–5 filter values shown in full, often with counts | SegmentedControl |
+| 2–4 top-level views of a discovery or reading page | TextTabs |
+| Filters of a list (status, owner, date) | FilterChipRow |
+| Sections of one record inside a card or dialog | Tabs |
+
+## Import
+
+```tsx
+import { PillTabs, useTabParam } from "@semi/ui";
+```
+
+## Examples
+
+### Settings sections with icons
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Card, PillTabs, type PillTabItem } from "@semi/ui";
+
+const SECTIONS = [
+  { key: "mail", label: "Hộp thư", icon: "mail", summary: "Kết nối IMAP / SMTP và chu kỳ đồng bộ thư đến." },
+  { key: "groups", label: "Nhóm thư", icon: "layers", summary: "Quy tắc tự động gán thư theo nhà cung cấp và từ khoá." },
+  { key: "sources", label: "Nguồn khách", icon: "filter", summary: "Kênh tiếp nhận yêu cầu báo giá từ hội chợ, web và đại lý." },
+  { key: "items", label: "Mặt hàng", icon: "tag", summary: "Danh mục nguyên liệu, quy cách đóng gói và đơn vị tính." },
+  { key: "templates", label: "Mẫu thư", icon: "fileText", summary: "Mẫu hỏi giá và phản hồi nhanh có biến trộn." },
+  { key: "datahub", label: "Data Hub", icon: "database", summary: "Khoá kết nối đồng bộ danh mục với hệ thống trung tâm." },
+  { key: "company", label: "Doanh nghiệp", icon: "settings", summary: "Tên pháp nhân, mã số thuế và chữ ký mặc định." },
+  { key: "users", label: "Người dùng", icon: "user", summary: "Thành viên phòng mua hàng và quyền phê duyệt." },
+] as const satisfies readonly (PillTabItem & { summary: string })[];
+
+export default function PillTabsSections() {
+  const [section, setSection] = useState<(typeof SECTIONS)[number]["key"]>("mail");
+  const current = SECTIONS.find((s) => s.key === section) ?? SECTIONS[0];
+
+  return (
+    <PillTabs
+      label="Cấu hình"
+      value={section}
+      onChange={(next) => setSection(next)}
+      items={[...SECTIONS]}
+    >
+      <Card className="flex flex-col gap-stack">
+        <h2 className="text-section text-strong">{current.label}</h2>
+        <p className="text-ui text-muted">{current.summary}</p>
+      </Card>
+    </PillTabs>
+  );
+}
+```
+
+### URL ?tab=, manual activation and guard
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Card, PillTabs, Switch, useTabParam } from "@semi/ui";
+
+const TABS = [
+  { key: "general", label: "Chung", icon: "settings" },
+  { key: "notifications", label: "Thông báo", icon: "bell" },
+  { key: "members", label: "Thành viên", icon: "users" },
+  { key: "audit", label: "Nhật ký", icon: "clock" },
+] as const;
+
+const KEYS = TABS.map((t) => t.key);
+
+export default function PillTabsGuarded() {
+  const [tab, setTab] = useTabParam<(typeof TABS)[number]["key"]>("general", { param: "section", values: KEYS });
+  const [dirty, setDirty] = useState(false);
+  const [manual, setManual] = useState(false);
+  const [blocked, setBlocked] = useState<string | null>(null);
+
+  return (
+    <div className="flex flex-col gap-group">
+      <div className="flex flex-wrap items-center gap-group">
+        <Switch checked={dirty} onChange={(v) => (setDirty(v), setBlocked(null))} label="Có thay đổi chưa lưu" />
+        <Switch checked={manual} onChange={setManual} label="Chuyển bằng Enter / Space (manual)" />
+      </div>
+      <PillTabs
+        label="Cấu hình khu vực"
+        value={tab}
+        onChange={(next, meta) => {
+          setBlocked(null);
+          setTab(next, meta);
+        }}
+        onBeforeChange={(next) => {
+          if (dirty) {
+            setBlocked(TABS.find((t) => t.key === next)?.label ?? next);
+            return false;
+          }
+          return true;
+        }}
+        activation={manual ? "manual" : "automatic"}
+        items={[...TABS]}
+      >
+        <Card className="flex flex-col gap-2">
+          <p className="text-ui text-strong">Mục đang mở: {TABS.find((t) => t.key === tab)?.label}</p>
+          <p className="text-ui text-muted">
+            {blocked
+              ? `Đã chặn chuyển sang "${blocked}" vì còn thay đổi chưa lưu.`
+              : "Phím mũi tên cập nhật ?section= bằng replaceState nên không sinh thêm lịch sử mỗi lần bấm."}
+          </p>
+        </Card>
+      </PillTabs>
+    </div>
+  );
+}
+```
+
+### When to use which: all three side by side
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { PillTabs, SegmentedControl, Separator, TextTabs } from "@semi/ui";
+
+export default function TabsWhenToUseWhich() {
+  const [section, setSection] = useState<"mail" | "groups" | "sources" | "items" | "templates" | "users">("mail");
+  const [status, setStatus] = useState<"all" | "open" | "quoting" | "done">("open");
+  const [view, setView] = useState<"discover" | "templates" | "collections">("discover");
+
+  return (
+    <div className="flex flex-col gap-section">
+      <div data-density-view="" className="flex flex-col gap-3">
+        <div className="text-overline text-muted">PillTabs · 5+ mục hoặc có biểu tượng</div>
+        <PillTabs
+          label="Cấu hình hệ thống"
+          value={section}
+          onChange={(v) => setSection(v)}
+          panelClassName="pt-3"
+          items={[
+            { key: "mail", label: "Hộp thư", icon: "mail" },
+            { key: "groups", label: "Nhóm thư", icon: "layers" },
+            { key: "sources", label: "Nguồn khách", icon: "filter" },
+            { key: "items", label: "Mặt hàng", icon: "tag" },
+            { key: "templates", label: "Mẫu thư", icon: "fileText" },
+            { key: "users", label: "Người dùng", icon: "user" },
+          ]}
+        >
+          <p className="text-ui text-muted">Cấu hình máy chủ thư và chu kỳ đồng bộ tự động mỗi 5 phút.</p>
+        </PillTabs>
+      </div>
+
+      <Separator />
+
+      <div data-density-view="" className="flex flex-col gap-3">
+        <div className="text-overline text-muted">SegmentedControl · 2–5 giá trị lọc</div>
+        <div>
+          <SegmentedControl
+            label="Trạng thái yêu cầu"
+            value={status}
+            onChange={(v) => setStatus(v)}
+            options={[
+              { key: "all", label: "Tất cả", count: 128 },
+              { key: "open", label: "Đang mở", count: 24 },
+              { key: "quoting", label: "Đang báo giá", count: 9 },
+              { key: "done", label: "Đã chốt", count: 95 },
+            ]}
+          />
+        </div>
+        <p className="text-ui text-muted">Hiển thị các yêu cầu ở trạng thái đã chọn ngay trong danh sách hiện tại.</p>
+      </div>
+
+      <Separator />
+
+      <div data-density-view="" className="flex flex-col gap-3">
+        <div className="text-overline text-muted">TextTabs · 2–4 góc nhìn lớn</div>
+        <TextTabs
+          label="Thư viện mẫu"
+          heading={false}
+          className="mb-0"
+          value={view}
+          onChange={(v) => setView(v)}
+          items={[
+            { key: "discover", label: "Khám phá" },
+            { key: "templates", label: "Mẫu sẵn" },
+            { key: "collections", label: "Bộ sưu tập" },
+          ]}
+        >
+          <p className="text-lead text-muted">Tổng hợp các mẫu thiết kế được cộng đồng in nhiều nhất tuần này.</p>
+        </TextTabs>
+      </div>
+    </div>
+  );
+}
+```
+
+## API
+
+### PillTabs
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `items` * | `PillTabItem<T>[]` |  |  |
+| `value` * | `T` |  |  |
+| `onChange` | `(key: T, meta: TabChangeMeta) => void` |  | Called when the active tab changes; receives `{ via }` so URL state hooks can replace on arrow keys. |
+| `onBeforeChange` | `TabBeforeChange<T>` |  | Guard run before switching (button AND href tabs); return or resolve `false` to stay on the current tab. |
+| `activation` | `'automatic' \| 'manual'` | `"automatic"` | `"automatic"` (default) switches as arrows move; `"manual"` moves focus with arrows and commits on Enter / Space. |
+| `label` * | `string` |  | Accessible name of the tab list ("Cấu hình"). |
+| `idPrefix` | `string` |  | Optional id prefix when the page renders its own `role="tabpanel"` below: tab `${idPrefix}-tab-${key}` controls panel `${idPrefix}-panel`. Omit when passing `children` or item `content` (ids are generated automatically). |
+| `children` | `React.ReactNode` |  | Active panel content; omit to use per-item `content` or render the panel yourself. |
+| `className` | `string` |  |  |
+| `panelClassName` | `string` | `"pt-7"` |  |
+
+## Accessibility
+
+- WAI-ARIA tablist / tab / tabpanel with id, aria-controls and aria-labelledby; roving tabindex; ←/→, Home and End.
+- activation="manual" moves focus with arrows and switches on Enter or Space; default "automatic" switches button tabs on arrow keys once onBeforeChange approves.
+- Overflowing rows scroll sideways with no scrollbar, keep the active tab in view and show a 2px edge cue; sliding and fades turn off under prefers-reduced-motion.
+
+## Notes
+
+- Keep the section in the URL with `const [tab, setTab] = useTabParam("mail", { values })` (or `useFilterParams().setParams({ tab }, "replace")`): arrow keys replace the entry so they never stack history entries.
+- Pass `idPrefix` when the page renders its own `role="tabpanel"` below (`${idPrefix}-panel` labelled by `${idPrefix}-tab-${key}`).
+- When to use which: PillTabs for 5+ sections or sections with icons · SegmentedControl for 2–5 filter values shown in full with counts · TextTabs for 2–4 top-level views of a discovery or reading page · FilterChipRow for filters.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/pill-tabs/ and the types in src/ -->
 
 
 ---
@@ -9070,6 +9374,154 @@ export default function ScrollAreaLog() {
 - A labelled region that becomes focusable when it scrolls, so arrow keys scroll it.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/scroll-area/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/segmented-control.md -->
+
+# Segmented control
+
+Small single-choice filter sets shown in full (2–5 values, often with tabular-nums counts): a `raised` track (h32, radius 8, padding 4, gap 4) with h24 items (12px/600) and one solid `raised-2` pill (white in light theme) sliding in 300ms ease-out.
+
+## When to use
+
+- 2–5 filter values shown in full, often with counts (Tất cả · Đang mở · Đang báo giá · Đã chốt).
+- Leading view switch of a FilterChipRow (`leading`) when a list splits into a few status slices.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| 5+ sections of a page, or sections with icons (settings-like pages) | PillTabs |
+| 2–4 top-level views of a discovery or reading page | TextTabs |
+| Facet filters (supplier, owner, date, multiple active at once) | FilterChipRow |
+| List ↔ grid and density icon toggles | ViewSwitch |
+
+## Import
+
+```tsx
+import { SegmentedControl } from "@semi/ui";
+```
+
+## Examples
+
+### Status filter with counts
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Badge, Item, ItemGroup, SegmentedControl } from "@semi/ui";
+
+const REQUESTS = [
+  { id: "YC-204", title: "Hạt nhựa PLA Basic trắng 1kg × 40", status: "open" as const, statusLabel: "Đang mở", tone: "sky" as const },
+  { id: "YC-203", title: "Đầu phun thép tôi 0.4mm × 12", status: "quoting" as const, statusLabel: "Đang báo giá", tone: "amber" as const },
+  { id: "YC-201", title: "Bàn nhiệt PEI nhám 256×256 × 8", status: "done" as const, statusLabel: "Đã chốt", tone: "emerald" as const },
+  { id: "YC-199", title: "Cuộn PETG HF xám 1kg × 24", status: "open" as const, statusLabel: "Đang mở", tone: "sky" as const },
+];
+
+export default function SegmentedControlCounts() {
+  const [status, setStatus] = useState<"all" | "open" | "quoting" | "done">("all");
+  const visible = status === "all" ? REQUESTS : REQUESTS.filter((r) => r.status === status);
+
+  return (
+    <div className="flex flex-col gap-group">
+      <div>
+        <SegmentedControl
+          label="Trạng thái mua hàng"
+          value={status}
+          onChange={(v) => setStatus(v)}
+          options={[
+            { key: "all", label: "Tất cả", count: REQUESTS.length },
+            { key: "open", label: "Đang mở", count: REQUESTS.filter((r) => r.status === "open").length },
+            { key: "quoting", label: "Đang báo giá", count: REQUESTS.filter((r) => r.status === "quoting").length },
+            { key: "done", label: "Đã chốt", count: REQUESTS.filter((r) => r.status === "done").length },
+          ]}
+        />
+      </div>
+      <ItemGroup label="Danh sách yêu cầu">
+        {visible.map((r) => (
+          <Item key={r.id} title={r.title} description={r.id} meta={<Badge tone={r.tone}>{r.statusLabel}</Badge>} />
+        ))}
+      </ItemGroup>
+    </div>
+  );
+}
+```
+
+### Manual activation, guard and narrow scroll
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { SegmentedControl, Switch } from "@semi/ui";
+
+const OPTIONS = [
+  { key: "all", label: "Tất cả kho", count: 312 },
+  { key: "hcm", label: "TP. Hồ Chí Minh", count: 148 },
+  { key: "bd", label: "Bình Dương", count: 86 },
+  { key: "dn", label: "Đà Nẵng", count: 34 },
+  { key: "hn", label: "Hà Nội", count: 44 },
+] as const;
+
+export default function SegmentedControlOverflow() {
+  const [warehouse, setWarehouse] = useState<(typeof OPTIONS)[number]["key"]>("all");
+  const [manual, setManual] = useState(false);
+  const [locked, setLocked] = useState(false);
+
+  return (
+    <div className="flex flex-col gap-group">
+      <div className="flex flex-wrap items-center gap-group">
+        <Switch checked={manual} onChange={setManual} label="Chuyển bằng Enter / Space (manual)" />
+        <Switch checked={locked} onChange={setLocked} label="Khoá bộ lọc đang chọn" />
+      </div>
+      <div>
+        <SegmentedControl
+          label="Kho hàng"
+          value={warehouse}
+          onChange={(v) => setWarehouse(v)}
+          onBeforeChange={() => !locked}
+          activation={manual ? "manual" : "automatic"}
+          options={[...OPTIONS]}
+        />
+      </div>
+      <p className="text-ui text-muted">
+        Đang xem: {OPTIONS.find((o) => o.key === warehouse)?.label}
+        {locked ? " · Đang khoá chuyển đổi." : "."}
+      </p>
+    </div>
+  );
+}
+```
+
+## API
+
+### SegmentedControl
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `options` * | `SegmentOption<T>[]` |  |  |
+| `value` * | `T` |  |  |
+| `onChange` * | `(value: T, meta: TabChangeMeta) => void` |  | Called when the chosen option changes; receives `{ via }` so URL state hooks can replace on arrow keys. |
+| `onBeforeChange` | `TabBeforeChange<T>` |  | Guard run before switching; return or resolve `false` to keep the current option. |
+| `activation` | `'automatic' \| 'manual'` | `"automatic"` | `"automatic"` (default) switches as arrows move; `"manual"` moves focus with arrows and commits on Enter / Space. |
+| `label` * | `string` |  | Accessible name of the radio group ("Trạng thái"). |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- WAI-ARIA radiogroup / radio with aria-checked and roving tabindex; ←/→, ↑/↓, Home and End.
+- activation="manual" moves focus with arrows and selects on Enter or Space; onBeforeChange can refuse a switch.
+- Scrolls sideways on phones with a 2px edge cue and keeps the active segment in view; sliding and fades turn off under prefers-reduced-motion.
+
+## Notes
+
+- Replaces the deprecated `Pills` component in 1.0.
+- When to use which: PillTabs for 5+ sections or sections with icons · SegmentedControl for 2–5 filter values shown in full with counts · TextTabs for 2–4 top-level views of a discovery or reading page · FilterChipRow for filters.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/segmented-control/ and the types in src/ -->
 
 
 ---
@@ -9526,8 +9978,9 @@ Switch between panels of content inside a page or card: underline (default) or s
 
 | Need | Use |
 |---|---|
-| Sibling pages of an area | PageTabsTitle |
-| Filter a list (no panels) | Pills |
+| 5+ sections of a page, or sections with icons (settings-like pages) | PillTabs |
+| 2–4 top-level views of a discovery or reading page | TextTabs |
+| 2–5 filter values shown in full, with counts | SegmentedControl |
 
 ## Import
 
@@ -9615,30 +10068,32 @@ export default function TabsSegmented() {
 
 # Text tabs
 
-Large text tabs that are the page heading: 2–4 sibling views in display type, the current one bright and the others dim, no underline. Buttons switch at once; tabs with href are links, so the URL picks the view.
+Big display tabs (`font-display text-tab-xl`, 24px below sm / 28px from sm, weight 400) for 2–4 top-level views of a discovery or reading page: every tab in strong text colour, inactive at opacity 0.2 (raised on hover in 150ms), active with a 2px brand underline at 6px offset under the word only.
 
 ## When to use
 
-- A page whose heading is a choice of 2–4 sibling views (Đang xử lý / Đã giao / Tất cả).
-- Views people link to or reload into: give the tabs an href (URL-driven).
+- 2–4 top-level views of a discovery or reading page, rendered as the page heading (Khám phá / Mẫu sẵn / Cảm hứng).
+- Views people link to or reload into: pass `href` on each item or keep `?tab=` with `useTabParam`.
 
 ## Use something else when
 
 | Need | Use |
 |---|---|
-| Sections of one record inside a page or card | Tabs |
-| Filters of one list (status, owner) | Pills |
+| 5+ sections of one page, or sections with icons (settings-like pages) | PillTabs |
+| 2–5 filter values shown in full, often with counts | SegmentedControl |
+| Filters of a list | FilterChipRow |
+| Sections of one record inside a card or dialog | Tabs |
 | A page with one title | PageTitle |
 
 ## Import
 
 ```tsx
-import { TextTabs } from "@semi/ui";
+import { TextTabs, useTabParam } from "@semi/ui";
 ```
 
 ## Examples
 
-### Page heading with a panel
+### Page heading with intro and panel
 
 ```tsx
 "use client";
@@ -9646,45 +10101,78 @@ import { TextTabs } from "@semi/ui";
 import { useState } from "react";
 import { TextTabs } from "@semi/ui";
 
+const VIEWS = [
+  { key: "discover", label: "Khám phá", intro: "Các mẫu in 3D nổi bật được cộng đồng hoàn thiện trong tuần qua." },
+  { key: "use-cases", label: "Ứng dụng", intro: "Bộ gá xưởng, hộp điện tử và phụ kiện bàn làm việc sẵn thông số in." },
+  { key: "collections", label: "Bộ sưu tập", intro: "Tuyển tập theo vật liệu PLA, PETG chịu nhiệt và TPU đàn hồi." },
+] as const;
+
 export default function TextTabsHeading() {
-  const [view, setView] = useState<"open" | "done" | "all">("open");
+  const [view, setView] = useState<(typeof VIEWS)[number]["key"]>("discover");
+  const current = VIEWS.find((v) => v.key === view) ?? VIEWS[0];
+
   return (
     <TextTabs
-      label="Đơn hàng"
+      label="Thư viện cộng đồng"
       value={view}
-      onChange={setView}
-      items={[
-        { key: "open", label: "Đang xử lý" },
-        { key: "done", label: "Đã giao" },
-        { key: "all", label: "Tất cả" },
-      ]}
+      onChange={(next) => setView(next)}
+      items={[...VIEWS]}
     >
-      <p className="text-ui text-body">{view === "open" ? "12 đơn đang xử lý." : view === "done" ? "48 đơn đã giao tuần này." : "60 đơn."}</p>
+      <p className="text-lead text-muted">{current.intro}</p>
     </TextTabs>
   );
 }
 ```
 
-### URL-driven
+### URL-driven href tabs with guard
 
 ```tsx
 "use client";
 
-import { TextTabs } from "@semi/ui";
+import { useState } from "react";
+import { Switch, TextTabs } from "@semi/ui";
 
-/** URL-driven: each tab is a link and the page reads the current one from the URL (here a fixed value). */
+/** URL-driven: each tab is a link; `onBeforeChange` blocks link navigation when there are unsaved edits. */
 export default function TextTabsLinked() {
-  const view = "suppliers"; // e.g. from useSearchParams().get("view") or the route
+  const [dirty, setDirty] = useState(false);
+  const [refused, setRefused] = useState(false);
+
   return (
-    <TextTabs
-      label="Mua hàng"
-      heading={false}
-      value={view}
-      items={[
-        { key: "requests", label: "Yêu cầu", href: "?view=requests" },
-        { key: "suppliers", label: "Nhà cung cấp", href: "?view=suppliers" },
-      ]}
-    />
+    <div className="flex flex-col gap-group">
+      <Switch
+        checked={dirty}
+        onChange={(v) => {
+          setDirty(v);
+          setRefused(false);
+        }}
+        label="Có thay đổi chưa lưu (chặn chuyển link)"
+      />
+      <TextTabs
+        label="Mua hàng"
+        heading={false}
+        className="mb-0"
+        value="suppliers"
+        onBeforeChange={() => {
+          if (dirty) {
+            setRefused(true);
+            return false;
+          }
+          setRefused(false);
+          return true;
+        }}
+        items={[
+          { key: "requests", label: "Yêu cầu", href: "?view=requests" },
+          { key: "suppliers", label: "Nhà cung cấp", href: "?view=suppliers" },
+          { key: "quotes", label: "Báo giá", href: "?view=quotes" },
+        ]}
+      >
+        <p className="text-ui text-muted">
+          {refused
+            ? "Đã giữ nguyên trang Nhà cung cấp vì biểu mẫu còn thay đổi chưa lưu."
+            : "Mỗi tab là một liên kết Next.js; phím ←/→ di chuyển tiêu điểm, Enter hoặc Space mở liên kết."}
+        </p>
+      </TextTabs>
+    </div>
   );
 }
 ```
@@ -9696,24 +10184,28 @@ export default function TextTabsLinked() {
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `items` * | `TextTabItem<T>[]` |  |  |
-| `value` * | `T` |  | The current tab (read it from the URL for linked tabs). |
-| `onChange` | `(key: T) => void` |  | Called with the tab chosen; tabs with `href` call it too, then navigate. |
-| `label` * | `string` |  | Accessible name of the tab list ("Đơn hàng"). |
+| `value` * | `T` |  | The current tab (read it from the URL for linked tabs, or via `useTabParam`). |
+| `onChange` | `(key: T, meta: TabChangeMeta) => void` |  | Called with the tab chosen; tabs with `href` call it too, then navigate unless `onBeforeChange` refuses. |
+| `onBeforeChange` | `TabBeforeChange<T>` |  | Guard run before switching (button AND href tabs); return or resolve `false` to keep the current tab. |
+| `activation` | `'automatic' \| 'manual'` | `"automatic"` | `"automatic"` (default) switches button tabs as arrows move; `"manual"` moves focus with arrows and commits on Enter / Space. |
+| `label` * | `string` |  | Accessible name of the tab list ("Khám phá"). |
 | `heading` | `boolean` | `true` | Wrap the tabs in the page's `h1` (default): they are the page heading. Set false when the page has its own h1. |
-| `children` | `React.ReactNode` |  | The current tab's content, rendered in the tab panel. Omit to render the content yourself below. |
+| `children` | `React.ReactNode` |  | The current tab's content, rendered in the tab panel (28px below the tab row by default). Omit to render content below. |
 | `className` | `string` |  |  |
-| `panelClassName` | `string` | `"pt-4"` |  |
+| `panelClassName` | `string` | `"pt-7"` |  |
 
 ## Accessibility
 
-- WAI-ARIA tabs: tablist / tab / tabpanel, ←/→, Home, End move and the current tab is the only tab stop.
-- Buttons switch as focus moves; linked tabs (href) move focus only and Enter follows the link, so arrows never load a route.
-- The tabs sit in the page h1 by default (heading={false} when the page has its own h1); the panel is linked to its tab when children are given.
+- WAI-ARIA tabs: tablist / tab / tabpanel, ←/→, Home and End move and the current tab is the only tab stop.
+- Buttons switch as focus moves (or wait for Enter / Space with `activation="manual"`); linked tabs (`href`) move focus on arrows and navigate on Enter or Space.
+- `onBeforeChange` guards both button tabs and `href` link tabs (sync boolean or Promise<boolean>).
+- Inactive tabs use `text-strong` at `opacity-20` (explicit owner exception for the 24–28px display tab heading; hover raises opacity, keyboard `:focus-visible` restores full contrast).
 
 ## Notes
 
-- Dim tabs use text-muted (≥ 4.5:1 in both themes): never lighter.
-- More than 4 views, or long names: Tabs or a CustomSelect, not TextTabs.
+- Only for 2–4 sub-pages. For 5+ sections or sections with icons, use `PillTabs`.
+- Weight is 400 (`font-normal`) in `font-display`: never force 600–800 bold on top of a heavy display face.
+- Gaps are 16 / 20 / 24px (`base` / `sm` / `md`) with 28px from the tab row to the intro text below.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/text-tabs/ and the types in src/ -->
 

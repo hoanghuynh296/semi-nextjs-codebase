@@ -34,7 +34,7 @@ with `/semi-propose`.
 | T2 #144 | Shell: frame, RouteHeader, nav, account avatar menu, shortcuts | merged on `main` (#159), unreleased: ships in 1.0.0 | `1.0.0-app-shell` |
 | T3 #145 | Lint and checks for the 1.0 rules | pending | — |
 | T4 #146 | Buttons and attention marks | merged on `main` (#157), unreleased: ships in 1.0.0 | `1.0.0-buttons` |
-| T5 #147 | Tabs: PillTabs, SegmentedControl, big TextTabs | pending | — |
+| T5 #147 | Tabs: PillTabs, SegmentedControl, big TextTabs | merged on `main`, unreleased: ships in 1.0.0 | `1.0.0-tabs` |
 | T6 #148 | Fields and forms | pending | — |
 | T7 #149 | Page layouts and lists | pending | — |
 | T8 #150 | StickyContextBar pinning and actions | pending | — |
@@ -202,11 +202,34 @@ page's commit action; an icon button's count moves to Button `badge` (or `CountB
 **What the app deletes** (sales-hub v0.7.0): in the globals tail `.content-actions-inverse .bg-action` (the forced
 inverse main button) and the `content-actions-inverse` class where it only served that: use `variant="inverse"`.
 
-## T5: tabs (pending, #147)
+## T5: tabs (merged, ships in 1.0.0)
 
-**Target.** `PillTabs` (5+ sections or sections with icons), `SegmentedControl` (2–5 filter values with counts), big
-`TextTabs` (2–4 sub-pages, display face, brand underline). **Replaces:** `app/components/semi-pending/PillTabs.tsx`,
-`SegmentedControl.tsx`; `.text-tabs-strong` in the globals tail. **Until it ships:** keep them.
+**What changed** (#147, #121). Three tab controls with one clear rule (`DESIGN_SYSTEM.md` §0, §4h):
+- **`PillTabs` (new):** default for 5+ sections of a page or sections with icons (settings-like pages). No track, h30
+  round pills (16px icon + 4px + 12px/600 label), sliding `item-hover` pill in 300ms (`transition-slide`), `tablist` /
+  `tab` / `tabpanel` (`id`, `aria-controls`, `aria-labelledby`), roving `tabIndex`, ←/→, Home / End.
+- **`SegmentedControl` (new):** 2–5 filter values shown in full, with optional tabular-nums counts. `raised` track
+  (radius 8, padding 4, gap 4, h32), h24 items (12px/600), sliding solid `raised-2` pill (white in light theme) in
+  300ms, `radiogroup` / `radio`, ←/→, ↑/↓, Home / End.
+- **Big `TextTabs` (updated):** strictly 2–4 top-level views of a discovery or reading page. `font-display text-tab-xl
+  font-normal` (24px below `sm`, 28px from `sm`, weight 400 in the brand display face), every tab in `text-strong`,
+  inactive `opacity-20` (hover raises opacity in 150ms, keyboard focus restores full opacity), active 2px brand
+  underline (`decoration-primary`) at 6px offset under the word only, gaps 16 / 20 / 24, 28px to the intro below.
+- **Shared across all three:** sideways scroll with no scrollbar, 2px `bg-outline-line` overflow edge cue
+  (`data-edges`), `activation="manual"`, sync/async `onBeforeChange(key)` honoured by both button and `href` tabs,
+  **`useTabParam`** (`?tab=` URL state via `urlState.ts` without pushing a history entry per arrow key), and
+  `prefers-reduced-motion` turning off sliding pills and edge-cue fades.
+- **Existing components:** `Pills`, `PageTabsTitle`, and `Tabs variant="segmented"` are **deprecated** (kept exported
+  so existing code keeps compiling); `ViewSwitch` is **kept** (icon-only list ↔ grid + density toggle); `Tabs`
+  underline is **kept** for sections of one record inside a card; the old `TextTabs` look is replaced in place.
+
+**The migration (`1.0.0-tabs`) flags** deprecated `Pills`, `PageTabsTitle`, `Tabs variant="segmented"`, and any
+leftover `.text-tabs-strong` stand-in rules for hand migration (because `SegmentedControl` and `PillTabs` require an
+accessible `label`).
+
+**What the app deletes** (sales-hub v0.7.0): `app/components/semi-pending/PillTabs.tsx`,
+`app/components/semi-pending/SegmentedControl.tsx`, and `.text-tabs-strong` in the `TODO(semi-pending)` tail of
+`app/globals.css`.
 
 ## T6: fields and forms (pending, #148)
 
@@ -255,9 +278,9 @@ local code. "Delete when" is the ticket that ships the replacement.
 | `semi-pending/navShortcuts.ts`, `[data-nav-num]` | AppShell nav shortcuts | T2 (merged, in 1.0.0) |
 | globals tail: `.nav-spaced`, `.group-label`, rail width | AppShell nav, `text-nav-label` | T2 (merged, in 1.0.0) |
 | globals tail: `.content-actions-inverse .bg-action` | `Button variant="inverse"` | T4 (merged, in 1.0.0) |
-| `semi-pending/PillTabs.tsx` | `PillTabs` | T5 |
-| `semi-pending/SegmentedControl.tsx` | `SegmentedControl` | T5 |
-| globals tail: `.text-tabs-strong` | big `TextTabs` | T5 |
+| `semi-pending/PillTabs.tsx` | `PillTabs` | T5 (merged, in 1.0.0) |
+| `semi-pending/SegmentedControl.tsx` | `SegmentedControl` | T5 (merged, in 1.0.0) |
+| globals tail: `.text-tabs-strong` | big `TextTabs` | T5 (merged, in 1.0.0) |
 | `semi-pending/MultiCombobox.tsx` | `MultiCombobox` | T6 |
 | `semi-pending/LetterAvatar.tsx` | `LetterAvatar` | T6 |
 | `semi-pending/autofocus.ts` | Modal / Drawer autofocus | T6 |

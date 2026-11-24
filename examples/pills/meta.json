@@ -1,35 +1,33 @@
 {
-  "title": "Pills",
+  "title": "Pills (deprecated)",
   "group": "Actions",
-  "description": "A single-choice filter of 2–5 options on one track (segmented look). The left side of a SubpageToolbar.",
+  "description": "Deprecated in 1.0: use SegmentedControl for 2–5 filter values shown in full (with counts and a sliding raised-2 pill) or PillTabs for 5+ page sections with icons. Kept exported so existing screens continue to compile until migrated.",
   "components": [
     "Pills"
   ],
   "when": [
-    "Filter a list by status or period: Tất cả / Đang in / Xong.",
-    "Switch a small view mode with no panels."
+    "Legacy screens not yet migrated to SegmentedControl or PillTabs."
   ],
   "instead": [
     {
-      "need": "Switch panels of content",
-      "use": "Tabs"
+      "need": "2–5 filter values shown in full, with counts",
+      "use": "SegmentedControl"
     },
     {
-      "need": "Many filters, several at once",
-      "use": "Chip"
+      "need": "5+ sections of a page, or sections with icons",
+      "use": "PillTabs"
     },
     {
-      "need": "Sibling pages",
-      "use": "PageTabsTitle"
+      "need": "2–4 top-level views of a discovery or reading page",
+      "use": "TextTabs"
     },
     {
-      "need": "Icon options or several on at once",
-      "use": "ToggleGroup"
+      "need": "Filters of a list",
+      "use": "FilterChipRow"
     }
   ],
   "a11y": [
-    "Each option is a button with aria-pressed; Tab moves between options. For an icon set or a radio-group keyboard model use ToggleGroup.",
-    "The chosen option has an inset ring (SEGMENT_ON) as well as the fill, so it stands out at ≥ 3:1."
+    "Each option is a button with aria-pressed; Tab moves between options. SegmentedControl uses WAI-ARIA radiogroup / radio with arrow keys."
   ],
   "examples": [
     {

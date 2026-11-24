@@ -1,7 +1,8 @@
 "use client";
 
-// In-page tabs (WAI-ARIA tabs: ←/→/Home/End move, the active tab is the only tab stop). For switching between 2–4
-// sibling pages use PageTabsTitle; for a filter with no panels use Pills.
+// In-page tabs for sections of one record inside a card or dialog (WAI-ARIA tabs: ←/→/Home/End move, the active tab is
+// the only tab stop). For 5+ page sections or sections with icons use PillTabs; for 2–4 sibling views use TextTabs; for
+// 2–5 filter values use SegmentedControl.
 import React, { useId, useRef } from "react";
 import { Icon, type IconName } from "./Icon";
 import { cn, FOCUS_RING, SEGMENT_ON } from "../styles/utils";

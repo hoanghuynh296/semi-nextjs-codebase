@@ -457,3 +457,34 @@ test("1.0.0 buttons: variant=\"secondary\" → \"subtle\" on Semi Button / Split
   assert.ok(buttonFlags(`<Card when={a > b} variant={'secondary'} />`).some((f) => f.startsWith("<Card variant")), "after a > in braces");
   assert.deepEqual(buttonFlags(`<Card onClick={() => go()} variant="primary" />`), []);
 });
+
+test("1.0.0 tabs: flags deprecated Pills, PageTabsTitle, Tabs variant=\"segmented\" and .text-tabs-strong stand-in", async () => {
+  const tabs = await import("../../migrations/1.0.0-tabs.mjs");
+  assert.equal(tabs.version, "1.0.0");
+  const tsx = [
+    `import { Pills, PageTabsTitle, Tabs } from "@semi/ui";`,
+    `<Pills value={v} onChange={setV} options={OPTS} />`,
+    `<PageTabsTitle tabs={T} value={v} onChange={setV} />`,
+    `<Tabs variant="segmented" items={T} value={v} onChange={setV} />`,
+    `<div className="text-tabs-strong" />`,
+  ].join("\n");
+  const flags = tabs.tabFlags(tsx, "a.tsx");
+  assert.equal(flags.length, 4, flags.join("; "));
+  assert.ok(flags.some((f) => f.startsWith("Pills is deprecated")));
+  assert.ok(flags.some((f) => f.startsWith("PageTabsTitle is deprecated")));
+  assert.ok(flags.some((f) => f.startsWith('Tabs variant="segmented" is deprecated')));
+  assert.ok(flags.some((f) => f.startsWith("remove .text-tabs-strong")));
+  // arrow functions or `>` inside balanced `{...}` props must not terminate the <Tabs ...> scan early
+  const arrowProp = `import { Tabs } from "@semi/ui";\n<Tabs onChange={(v) => setV(v)} variant="segmented" />`;
+  assert.equal(tabs.tabFlags(arrowProp, "arrow.tsx").length, 1);
+  const gtProp = `import { Tabs } from "@semi/ui";\n<Tabs when={a > b} variant={'segmented'} />`;
+  assert.equal(tabs.tabFlags(gtProp, "gt.tsx").length, 1);
+  assert.deepEqual(tabs.tabFlags(`import { PillTabs, SegmentedControl, TextTabs } from "@semi/ui";\n<PillTabs /><SegmentedControl /><TextTabs />`, "clean.tsx"), []);
+  assert.equal(tabs.tabFlags(`.text-tabs-strong [role="tab"] { opacity: 0.2; }`, "globals.css").length, 1);
+  // through migrate({ files, read, flag })
+  const files = { "a.tsx": tsx, "b.css": ".text-tabs-strong { margin-bottom: 28px; }" };
+  const reported = [];
+  tabs.default({ files: Object.keys(files), read: (f) => files[f], flag: (f, m) => reported.push([f, m]) });
+  assert.equal(reported.filter(([f]) => f === "a.tsx").length, 4);
+  assert.equal(reported.filter(([f]) => f === "b.css").length, 1);
+});
