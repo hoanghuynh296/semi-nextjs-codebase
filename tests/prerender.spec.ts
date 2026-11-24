@@ -359,17 +359,21 @@ test("FeatureIntro under StrictMode in next dev: a replayed intro closes for goo
   await replayTwice(page);
 });
 
-test("useTabParam and async onBeforeChange under Next's App Router: arrow keys replace ?tab= without pushing history, and async guard blocks both button and href tabs (#147)", async ({ page, request }) => {
+test("useTabParam and async onBeforeChange under Next's App Router: arrow keys replace ?tab= without pushing history, and async guard blocks/races/rejects cleanly on button and href tabs (#147)", async ({ page, request }) => {
   const html = await (await request.get(`${BASE}/tabs/a`)).text();
   expect(html).toContain('aria-label="Settings sections"');
   expect(html).toContain('aria-label="Order status"');
   expect(html).toContain('aria-label="Explore views"');
+
+  const pageErrors: string[] = [];
+  page.on("pageerror", (e) => pageErrors.push(e.message));
 
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto(`${BASE}/tabs/a`);
   const hookTab = page.getByTestId("hook-tab").filter({ visible: true });
   const nextTab = page.getByTestId("next-tab").filter({ visible: true });
   const list = page.getByRole("tablist", { name: "Settings sections" }).filter({ visible: true });
+  const explore = page.getByRole("tablist", { name: "Explore views" }).filter({ visible: true });
   await expect(hookTab).toHaveText("mail");
   await expect(nextTab).toHaveText("default");
 
@@ -390,23 +394,40 @@ test("useTabParam and async onBeforeChange under Next's App Router: arrow keys r
   // Arrow-key stepping must never push one history entry per key.
   expect(await page.evaluate(() => history.length)).toBe(startHistory);
 
-  // Turn on async guard: both button tabs (arrow + click) and Next <Link href> tabs are refused.
-  await page.getByLabel("Block async guard").filter({ visible: true }).check();
+  // Refuse mode: both button tabs (arrow) and Next <Link href> tabs are refused.
+  await page.getByLabel("Guard refuse").filter({ visible: true }).check();
   await list.getByRole("tab", { name: "Sources" }).focus();
   await page.keyboard.press("ArrowLeft");
   await expect(page.getByTestId("refused-count").filter({ visible: true })).toHaveText("1");
   await expect(hookTab).toHaveText("sources");
   await expect(list.getByRole("tab", { name: "Sources" })).toBeFocused();
 
-  const explore = page.getByRole("tablist", { name: "Explore views" }).filter({ visible: true });
   await explore.getByRole("tab", { name: "Templates" }).click();
   await expect(page.getByTestId("refused-count").filter({ visible: true })).toHaveText("2");
   await expect(page).toHaveURL(/\/tabs\/a\?tab=sources$/);
   await expect(page.getByTestId("next-view").filter({ visible: true })).toHaveText("discover");
 
-  // Unblock async guard: clicking the <Link href> tab navigates after the Promise resolves.
-  await page.getByLabel("Block async guard").filter({ visible: true }).uncheck();
+  // Reject mode: rejected async guard on both button and href tabs refuses cleanly with zero unhandled rejections.
+  await page.getByLabel("Guard reject").filter({ visible: true }).check();
+  await list.getByRole("tab", { name: "Mail" }).click();
+  await expect(page.getByTestId("refused-count").filter({ visible: true })).toHaveText("3");
+  await expect(hookTab).toHaveText("sources");
+  await explore.getByRole("tab", { name: "Templates" }).click();
+  await expect(page.getByTestId("refused-count").filter({ visible: true })).toHaveText("4");
+  await expect(page).toHaveURL(/\/tabs\/a\?tab=sources$/);
+
+  // Concurrent async race: click Groups (slow 140ms) then Mail (fast 15ms); stale Groups must NOT clobber Mail.
+  await page.getByLabel("Guard race").filter({ visible: true }).check();
+  await list.getByRole("tab", { name: "Groups" }).click();
+  await list.getByRole("tab", { name: "Mail" }).click();
+  await expect(hookTab).toHaveText("mail");
+  await page.waitForTimeout(220);
+  await expect(hookTab).toHaveText("mail");
+
+  // Allow mode: clicking the <Link href> tab navigates after the Promise resolves.
+  await page.getByLabel("Guard allow").filter({ visible: true }).check();
   await explore.getByRole("tab", { name: "Templates" }).click();
   await expect(page).toHaveURL(/\/tabs\/a\?view=templates$/);
   await expect(page.getByTestId("next-view").filter({ visible: true })).toHaveText("templates");
+  expect(pageErrors).toEqual([]);
 });

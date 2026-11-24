@@ -12,6 +12,32 @@ const importsFromSemi = (src, name) =>
     new RegExp(`(^|[\\s,])${name}(?=[\\s,]|$)`).test(m[1]),
   );
 
+/** Each opening tag of `name` as [start, end) (end after its `>`), skipping `>` inside balanced `{…}` and quotes. */
+function openingTags(src, name) {
+  const out = [];
+  const rx = new RegExp(`<${name}(?=[\\s/>])`, "g");
+  let m;
+  while ((m = rx.exec(src))) {
+    let depth = 0;
+    let quote = null;
+    let i = m.index + m[0].length;
+    for (; i < src.length; i++) {
+      const c = src[i];
+      if (quote) {
+        if (c === "\\") i++;
+        else if (c === quote) quote = null;
+      } else if (c === '"' || c === "'" || c === "`") quote = c;
+      else if (c === "{") depth++;
+      else if (c === "}") depth--;
+      else if (c === ">" && depth === 0) break;
+    }
+    out.push(src.slice(m.index, i + 1));
+  }
+  return out;
+}
+
+const SEGMENTED_VARIANT = /\bvariant=(?:"segmented"|'segmented'|\{\s*["']segmented["']\s*\})/;
+
 /** Hand fixes to report for one source file. */
 export function tabFlags(src, file = "") {
   const flags = [];
@@ -22,7 +48,7 @@ export function tabFlags(src, file = "") {
     if (importsFromSemi(src, "PageTabsTitle") && /<PageTabsTitle\b/.test(src)) {
       flags.push("PageTabsTitle is deprecated in 1.0: use TextTabs (2–4 top-level views, display face with brand underline) or PillTabs (5+ sections)");
     }
-    if (importsFromSemi(src, "Tabs") && /<Tabs\b[^>]*\bvariant=(?:"segmented"|'segmented'|\{\s*["']segmented["']\s*\})/.test(src)) {
+    if (importsFromSemi(src, "Tabs") && openingTags(src, "Tabs").some((tag) => SEGMENTED_VARIANT.test(tag))) {
       flags.push('Tabs variant="segmented" is deprecated in 1.0: use SegmentedControl (filter values) or PillTabs (section panels)');
     }
   }

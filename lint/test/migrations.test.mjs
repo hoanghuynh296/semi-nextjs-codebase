@@ -474,6 +474,11 @@ test("1.0.0 tabs: flags deprecated Pills, PageTabsTitle, Tabs variant=\"segmente
   assert.ok(flags.some((f) => f.startsWith("PageTabsTitle is deprecated")));
   assert.ok(flags.some((f) => f.startsWith('Tabs variant="segmented" is deprecated')));
   assert.ok(flags.some((f) => f.startsWith("remove .text-tabs-strong")));
+  // arrow functions or `>` inside balanced `{...}` props must not terminate the <Tabs ...> scan early
+  const arrowProp = `import { Tabs } from "@semi/ui";\n<Tabs onChange={(v) => setV(v)} variant="segmented" />`;
+  assert.equal(tabs.tabFlags(arrowProp, "arrow.tsx").length, 1);
+  const gtProp = `import { Tabs } from "@semi/ui";\n<Tabs when={a > b} variant={'segmented'} />`;
+  assert.equal(tabs.tabFlags(gtProp, "gt.tsx").length, 1);
   assert.deepEqual(tabs.tabFlags(`import { PillTabs, SegmentedControl, TextTabs } from "@semi/ui";\n<PillTabs /><SegmentedControl /><TextTabs />`, "clean.tsx"), []);
   assert.equal(tabs.tabFlags(`.text-tabs-strong [role="tab"] { opacity: 0.2; }`, "globals.css").length, 1);
   // through migrate({ files, read, flag })

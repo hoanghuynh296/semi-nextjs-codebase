@@ -84,9 +84,9 @@ export function PillTabs<T extends string = string>({
     listRef,
   });
 
-  const activeIdx = Math.max(0, items.findIndex((i) => i.key === value));
-  const activeItem = items[activeIdx];
-  const panelBody = children !== undefined ? children : activeItem?.content;
+  const activeIdx = items.findIndex((i) => i.key === value);
+  const activeItem = activeIdx >= 0 ? items[activeIdx] : undefined;
+  const panelBody = activeItem ? (children !== undefined ? children : activeItem.content) : undefined;
   const hasOwnPanel = panelBody !== undefined;
   const tabId = (it: PillTabItem<T>, n: number) => (idPrefix ? `${idPrefix}-tab-${it.key}` : `${base}-tab-${n}`);
   const panelId = idPrefix ? `${idPrefix}-panel` : `${base}-panel`;

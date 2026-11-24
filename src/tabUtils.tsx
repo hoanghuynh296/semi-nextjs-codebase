@@ -4,7 +4,7 @@
 // sideways scroll with edge cues, keeping the active item in horizontal view without scrolling the page vertically,
 // measuring the sliding active pill, manual vs automatic activation, and sync / async onBeforeChange guards on both
 // button and link tabs (#121, #147).
-import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { TabChangeMeta } from "./useTabParam";
 import { cn } from "../styles/utils";
 
@@ -169,6 +169,16 @@ export function useTabActivation<T extends string>({
   const [focusedKey, setFocusedKey] = useState<T | null>(null);
   const pendingFocusKey = useRef<T | null>(null);
   const bypassLinkKey = useRef<T | null>(null);
+  const guardSeq = useRef(0);
+
+  useEffect(
+    () => () => {
+      guardSeq.current += 1;
+      bypassLinkKey.current = null;
+      pendingFocusKey.current = null;
+    },
+    [],
+  );
 
   const enabled = items.filter((i) => !i.disabled);
   const activeItem = items.find((i) => i.key === value);
@@ -198,6 +208,7 @@ export function useTabActivation<T extends string>({
 
   const requestButtonChange = useCallback(
     (nextKey: T, via: "keyboard" | "click") => {
+      const seq = ++guardSeq.current;
       if (nextKey === value) {
         if (via === "click") setFocusedKey(null);
         return;
@@ -209,15 +220,21 @@ export function useTabActivation<T extends string>({
           return;
         }
         if (isPromiseLike(res)) {
-          void res.then((ok) => {
-            if (!ok) {
-              if (pendingFocusKey.current === nextKey) pendingFocusKey.current = null;
-              return;
-            }
-            if (via === "keyboard") pendingFocusKey.current = nextKey;
-            else setFocusedKey(null);
-            onChange?.(nextKey, { via });
-          });
+          void Promise.resolve(res).then(
+            (ok) => {
+              if (guardSeq.current !== seq) return;
+              if (!ok) {
+                if (pendingFocusKey.current === nextKey) pendingFocusKey.current = null;
+                return;
+              }
+              if (via === "keyboard") pendingFocusKey.current = nextKey;
+              else setFocusedKey(null);
+              onChange?.(nextKey, { via });
+            },
+            () => {
+              if (guardSeq.current === seq && pendingFocusKey.current === nextKey) pendingFocusKey.current = null;
+            },
+          );
           return;
         }
       }
@@ -243,6 +260,7 @@ export function useTabActivation<T extends string>({
           onChange?.(item.key, { via: "click" });
           return;
         }
+        const seq = ++guardSeq.current;
         if (item.key === value) return;
         if (onBeforeChange) {
           const res = onBeforeChange(item.key);
@@ -254,11 +272,20 @@ export function useTabActivation<T extends string>({
             // Prevent Next's <Link> from navigating while the guard promise settles; re-click once approved.
             e.preventDefault();
             const target = e.currentTarget;
-            void res.then((ok) => {
-              if (!ok) return;
-              bypassLinkKey.current = item.key;
-              target.click();
-            });
+            void Promise.resolve(res).then(
+              (ok) => {
+                if (guardSeq.current !== seq || !ok || !target.isConnected) return;
+                bypassLinkKey.current = item.key;
+                try {
+                  target.click();
+                } finally {
+                  if (bypassLinkKey.current === item.key) bypassLinkKey.current = null;
+                }
+              },
+              () => {
+                // Rejected guard refuses navigation cleanly.
+              },
+            );
             return;
           }
         }

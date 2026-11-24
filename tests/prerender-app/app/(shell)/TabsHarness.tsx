@@ -30,15 +30,24 @@ export function TabsSearchProbe() {
   );
 }
 
+type GuardMode = "allow" | "refuse" | "reject" | "race";
+
 export function TabsHarness() {
   const [tab, setTab] = useTabParam("mail", { values: ["mail", "groups", "sources"] as const });
   const [status, setStatus] = useTabParam("all", { param: "status", values: ["all", "open", "done"] as const });
-  const [blockAsync, setBlockAsync] = useState(false);
+  const [mode, setMode] = useState<GuardMode>("allow");
   const [refusedCount, setRefusedCount] = useState(0);
 
-  const asyncGuard = async () => {
-    await new Promise((r) => setTimeout(r, 15));
-    if (blockAsync) {
+  const asyncGuard = async (nextKey: string) => {
+    // In "race" mode, "groups" resolves slowly (140ms) while "sources" resolves quickly (15ms), so clicking Groups
+    // then Sources immediately tests that the stale slow guard does not clobber the newer fast pick.
+    const delay = mode === "race" && nextKey === "groups" ? 140 : 15;
+    await new Promise((r) => setTimeout(r, delay));
+    if (mode === "reject") {
+      setRefusedCount((n) => n + 1);
+      throw new Error("guard failed");
+    }
+    if (mode === "refuse") {
       setRefusedCount((n) => n + 1);
       return false;
     }
@@ -47,10 +56,14 @@ export function TabsHarness() {
 
   return (
     <div className="space-y-6">
-      <label className="inline-flex items-center gap-2 text-ui">
-        <input type="checkbox" checked={blockAsync} onChange={(e) => setBlockAsync(e.target.checked)} />
-        Block async guard
-      </label>
+      <div className="flex flex-wrap gap-3 text-ui">
+        {(["allow", "refuse", "reject", "race"] as const).map((m) => (
+          <label key={m} className="inline-flex items-center gap-1.5">
+            <input type="radio" name="guard-mode" checked={mode === m} onChange={() => setMode(m)} />
+            Guard {m}
+          </label>
+        ))}
+      </div>
       <span data-testid="refused-count">{refusedCount}</span>
       <span data-testid="hook-tab">{tab}</span>
       <span data-testid="hook-status">{status}</span>
