@@ -87,7 +87,7 @@ scale (`bg-primary-500`, `ring-primary-500/50` …), `tokens/styles/*.json` and 
 
 | Flag | Decide |
 |---|---|
-| `bg-accent → bg-primary` | A main button (the one commit action of the page or modal), the nav's create action, an attention badge or tag: keep. A checked control or an "on" mark: `bg-inverted text-on-inverted`. A selected row or option: `bg-item-selected`. |
+| `bg-accent → bg-primary` | A main button (the one commit action of the page or modal), the nav's main action (`mainAction`), an attention badge or tag: keep. A checked control or an "on" mark: `bg-inverted text-on-inverted`. A selected row or option: `bg-item-selected`. |
 | `text-label → text-chrome` | Shell chrome or meta (a time, a count, a hint, a toolbar's compact button): keep. A form label, help text, list row or button text is content: `text-ui`. |
 | `accent-fg → strong`, `accent-accent` | Links, check marks and active tabs are neutral now; a tinted checkbox or range is `bg-inverted`. |
 | `primary-50…900` | `bg-primary` (main button, attention) or a neutral token (`bg-item-selected`, `border-outline-line`, `ring-focus`). Charts use `chart-1…8`. |

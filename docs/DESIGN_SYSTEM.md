@@ -30,9 +30,10 @@ The brand primary (`bg-primary` + `text-on-primary`) and the optional brand seco
 1. **The main button of a whole page or of a modal:** its commit action (Gửi, Lưu, Gửi yêu cầu báo giá). **At most one
    filled brand button per page and per modal**; a second one is a warning (`primary-actions`), unless the app's owner
    asked for that case (say so in a comment).
-2. **The nav's one main action** (the create action of `AppShell`).
+2. **The nav's one main action** (`mainAction` of `AppShell`).
 3. **The active underline of big text tabs** (`decoration-primary`).
 4. **Attention marks:** count badges that ask for action (unread, to approve) and "Mới" tags.
+5. **A case the app's owner asks for** (say so in a comment where it is used).
 
 Nothing else. Links, check marks, active tabs, selection, focus rings, toggles, charts' first series, icons and
 headings are neutral. Every ordinary action is a neutral button (subtle, surface, inverse, outline, ghost: §9). Status

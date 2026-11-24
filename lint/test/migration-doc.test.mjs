@@ -48,3 +48,22 @@ test("the AGENTS block marks each pending 1.0 part as pending", () => {
         assert.match(line, /pending/, `plugin/rules/AGENTS.md names ${name} (${ticket}) without saying it is pending: ${line.slice(0, 80)}`);
   }
 });
+
+// A range of pending tickets written in the AGENTS block ("T3, T5–T9", "T2–T9") must not include a merged one.
+test("the AGENTS block's list of pending tickets leaves out every merged ticket", () => {
+  const rules = readFileSync(join(root, "plugin/rules/AGENTS.md"), "utf8");
+  const merged = guide
+    .split("\n")
+    .map((l) => l.match(/^\| (T\d+) #\d+ \|.*\b(?:merged|shipped)\b/))
+    .filter(Boolean)
+    .map((m) => Number(m[1].slice(1)));
+  const lists = [...rules.matchAll(/pending[^\n]{0,40}?\((T\d+(?:[–-]T\d+)?(?:, T\d+(?:[–-]T\d+)?)*)\)|\((T\d+(?:[–-]T\d+)?(?:, T\d+(?:[–-]T\d+)?)*)\)/g)].map((m) => m[1] ?? m[2]);
+  assert.ok(lists.length > 0, "no pending-ticket list found in plugin/rules/AGENTS.md");
+  for (const list of lists) {
+    const nums = list.split(", ").flatMap((p) => {
+      const [a, b] = p.split(/[–-]/).map((x) => Number(x.replace("T", "")));
+      return b ? Array.from({ length: b - a + 1 }, (_, i) => a + i) : [a];
+    });
+    for (const n of merged) assert.ok(!nums.includes(n), `plugin/rules/AGENTS.md lists T${n} as pending in "(${list})", but MIGRATION-1.0.md says it is merged`);
+  }
+});

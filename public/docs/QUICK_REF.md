@@ -12,7 +12,7 @@ content column, 12px shell chrome around 14px content, headings 400 / 500, minim
 brand fill (`bg-primary`, optional `bg-secondary`) only for the one main button of a page or modal (at most one per
 page or modal), the nav's main action, the active big-tab underline, attention badges / "Mới" tags, or a case the app's owner asks for; every other
 action is a neutral button. **When to use which** (buttons, tabs, page layouts): `DESIGN_SYSTEM.md` §0. Moving from
-0.x: `MIGRATION-1.0.md`. Parts marked *(T5–T9, pending)* in `DESIGN_SYSTEM.md` are 1.0 targets not merged yet: use what
+0.x: `MIGRATION-1.0.md`. Parts marked *(Tn, pending)* (T3, T5–T9) in `DESIGN_SYSTEM.md` are 1.0 targets not merged yet: use what
 Semi ships today for them, never a local stand-in.
 Shell: `AppShell` (the nav panel and the content column on `bg-canvas`; the route header with crumbs and the account
 avatar menu above the content card), pages with `PageTitle` (+ `actions`) or
@@ -31,7 +31,7 @@ drawer; never a hand-made slide-over. `mobileNav="tabs"` keeps `MobileTabBar`, w
 
 *Surfaces (C-030):* pages separate by tone, not borders: cards are `bg-card` (never `bg-panel`, the sidebar step), `<Card bordered>` / `CARD_BORDERED` only for a dense data view; secondary buttons `bg-tint` without border (`outline` keeps the frame); the main button is `bg-primary hover:bg-primary-hover text-on-primary`.
 
-*Brand & status (AA in both themes):* the brand fill only on the one main button of a view, the nav's `mainAction`, attention count badges, "New" tags and the active big-tab underline · checked / "on" marks `bg-inverted text-on-inverted` · links, check marks, active tabs `text-strong` · focus `ring-focus` / focused field `border-focus` · selection `bg-item-selected` / `bg-item-checked`, hover `bg-item-hover` · status text `text-danger-fg` / `text-success-fg` / `text-warning-fg` / `text-info-fg`.
+*Brand & status (AA in both themes):* the brand fill only on the one main button of a page or modal, the nav's `mainAction`, attention count badges, "New" tags, the active big-tab underline, or a case the app's owner asks for · checked / "on" marks `bg-inverted text-on-inverted` · links, check marks, active tabs `text-strong` · focus `ring-focus` / focused field `border-focus` · selection `bg-item-selected` / `bg-item-checked`, hover `bg-item-hover` · status text `text-danger-fg` / `text-success-fg` / `text-warning-fg` / `text-info-fg`.
 
 *Theme:* `<html suppressHydrationWarning>` + `<ThemeScript />` in `<head>` (no flash) + `<ThemeProvider defaultTheme="dark">` (same options); `<ThemeSwitcher />` (Sáng · Tối · Hệ thống, settings / sidebar footer), `<ThemeSwitcher variant="menu" />` (one icon button + Menu: headers), the account avatar menu of the route header (the default place), `useThemeUtility()` (the same in AppShell `tools`, for an app without an account) or `<ThemeToggle />` (one-tap dark/light), or `const { theme, resolvedTheme, mounted, setTheme } = useTheme()`. `data-theme="system"` follows the OS.
 
