@@ -32,8 +32,12 @@ export function SplitButton({
   items: MenuItem[];
   /** Accessible name of the ▾ button and of its menu (default "Thao tác khác"). */
   menuLabel?: string;
-  /** `primary` for the view's main action (G7: one filled primary per view), `secondary` elsewhere. */
-  variant?: "primary" | "secondary";
+  /**
+   * `primary` (brand) for the view's one main action (G7), `inverse` for the main action of a card or a list title row,
+   * `subtle` elsewhere; `secondary` is the brand secondary.
+   * @default "primary"
+   */
+  variant?: "primary" | "secondary" | "inverse" | "subtle" | "surface";
   size?: "sm" | "md";
   /** The main action is running: spinner and no clicks on the main half; the ▾ stays usable. */
   loading?: boolean;
@@ -49,7 +53,14 @@ export function SplitButton({
   const t = useSemiLocale();
   const more = menuLabel ?? t.moreActions;
   const visible = items.filter((it) => !it.hidden);
-  const divider = variant === "primary" ? "border-l border-on-primary/25" : "border-l border-divider";
+  const divider =
+    variant === "primary"
+      ? "border-l border-on-primary/25"
+      : variant === "secondary"
+        ? "border-l border-on-secondary/25"
+        : variant === "inverse"
+          ? "border-l border-on-inverted/25"
+          : "border-l border-divider";
   const wide = (
     <ButtonGroup label={label} className={cn(collapseOnPhone && "max-sm:hidden", className)}>
       <Button variant={variant} size={size} icon={icon} loading={loading} disabled={disabled} onClick={onClick}>

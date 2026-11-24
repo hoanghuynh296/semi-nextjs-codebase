@@ -79,3 +79,22 @@ test("a11y · what it leaves alone: a hit area from a pseudo-element, inline lin
   );
   expect(hits).toEqual([]);
 });
+
+test("a11y · a hit area centred with the translate property (Tailwind 4's -translate-1/2, HIT_AREA) sits on its button, not beside it", async ({ page }) => {
+  // The ::before is the button's own size, centred with `translate: -50% -50%`: read without the translate it would
+  // start halfway across the button and cover the small link 8px to its right.
+  const hits = await audit(
+    page,
+    `<style>.hit{position:relative}.hit::before{content:"";position:absolute;top:50%;left:50%;min-width:100%;min-height:100%;translate:-50% -50%}</style>
+     <div style="display:flex;align-items:center;gap:8px"><button class="ring hit" style="width:100px;height:28px">Copy page</button><a class="ring" href="#" style="display:inline-flex;height:22px">x.md</a></div>`,
+  );
+  expect(hits).toEqual([]);
+  // A calc() translate (`calc(-50% + 1px) calc(-50% - 1px)`) is two values, each worked out: the 24px hit areas of
+  // three 6px dots then reach 24px, so none is too small.
+  const calc = await audit(
+    page,
+    `<style>.dot{position:relative}.dot::before{content:"";position:absolute;top:50%;left:50%;width:24px;height:24px;translate:calc(-50% + 1px) calc(-50% - 1px)}</style>
+     <div>${"<button class='ring dot' aria-label='Trang' style='width:6px;height:6px;margin:3px;padding:0;border:0;background:#888'></button>".repeat(3)}</div>`,
+  );
+  expect(calc).toEqual([]);
+});

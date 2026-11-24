@@ -412,3 +412,48 @@ test("1.0.0 app-shell: comments inside a tag are not props, a > in a comment or 
   assert.match(shell.migrateShell(apostrophe + "\n<AppShell create={b} />"), /<AppShell header=\{<span>Don't<\/span>\} create=\{a\} \/>/);
   assert.match(shell.migrateShell(apostrophe + "\n<AppShell create={b} />"), /\n<AppShell mainAction=\{b\} \/>$/);
 });
+
+test("1.0.0 buttons: variant=\"secondary\" → \"subtle\" on Semi Button / SplitButton, BTN_SECONDARY → BTN_SUBTLE; twice-safe; outline and expressions flagged", async () => {
+  const { migrateButtons, buttonFlags } = await import("../../migrations/1.0.0-buttons.mjs");
+  const src = [
+    `import { Button, SplitButton, BTN_SECONDARY, MODAL_BTN_SECONDARY } from "@semi/ui";`,
+    `<Button variant="secondary" onClick={() => a > b}>x</Button>`,
+    `<Button onClick={() => go()} variant={"secondary"} size="sm" />`,
+    `<SplitButton label="x" variant='secondary' items={[]} />`,
+    `<Card variant="secondary" />`,
+    `<button className={cn(BTN_SECONDARY, "x")} /><button className={MODAL_BTN_SECONDARY} />`,
+  ].join("\n");
+  const out = migrateButtons(src);
+  assert.equal(
+    out,
+    [
+      `import { Button, SplitButton, BTN_SUBTLE, MODAL_BTN_SUBTLE } from "@semi/ui";`,
+      `<Button variant="subtle" onClick={() => a > b}>x</Button>`,
+      `<Button onClick={() => go()} variant="subtle" size="sm" />`,
+      `<SplitButton label="x" variant="subtle" items={[]} />`,
+      `<Card variant="secondary" />`,
+      `<button className={cn(BTN_SUBTLE, "x")} /><button className={MODAL_BTN_SUBTLE} />`,
+    ].join("\n"),
+  );
+  assert.equal(migrateButtons(out), out, "second run changes nothing");
+  // a Button that is not Semi's is left alone
+  const local = `import { Button } from "./ui";\n<Button variant="secondary" />`;
+  assert.equal(migrateButtons(local), local);
+  const flags = buttonFlags(`import { Button } from "@semi/ui";\nconst v = ok ? "primary" : "secondary";\n<Button variant={v} /><Button variant="outline" />`);
+  assert.equal(flags.length, 2, flags.join("; "));
+  assert.deepEqual(buttonFlags(out.replace(`<Card variant="secondary" />`, "")), []);
+  // what the rename cannot reach is flagged: an alias, a namespace import, a ButtonVariant wrapper, a non-Semi component
+  const alias = `import { Button as B } from "@semi/ui";\n<B variant="secondary" />`;
+  assert.equal(migrateButtons(alias), alias);
+  assert.ok(buttonFlags(alias).some((f) => f.startsWith("Button imported under another name")), "alias");
+  const ns = `import * as S from "@semi/ui";\n<S.Button variant="secondary" />`;
+  assert.ok(buttonFlags(ns).some((f) => f.startsWith("Button imported under another name")), "namespace");
+  assert.ok(buttonFlags(ns).some((f) => f.startsWith("<S.Button variant")), "namespace tag");
+  const wrapper = `import { Button, type ButtonVariant } from "@semi/ui";\nexport const Act = ({ v }: { v: ButtonVariant }) => <Button variant={v} />;`;
+  assert.ok(buttonFlags(wrapper).some((f) => f.startsWith("a wrapper typed with ButtonVariant")), "wrapper");
+  assert.ok(buttonFlags(`<Card variant="secondary" />`).some((f) => f.startsWith("<Card variant")), "non-Semi component");
+  // an arrow (=>) or a > inside {…} before the variant does not end the tag
+  assert.ok(buttonFlags(`<Card onClick={() => go()} variant="secondary" />`).some((f) => f.startsWith("<Card variant")), "after an arrow");
+  assert.ok(buttonFlags(`<Card when={a > b} variant={'secondary'} />`).some((f) => f.startsWith("<Card variant")), "after a > in braces");
+  assert.deepEqual(buttonFlags(`<Card onClick={() => go()} variant="primary" />`), []);
+});

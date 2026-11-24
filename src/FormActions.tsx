@@ -78,7 +78,7 @@ export function FormActions({ onCancel, cancelLabel, submitLabel, create = false
     >
       {destructive && <div className="mr-auto flex items-center">{destructive}</div>}
       {onCancel && (
-        <Button variant="ghost" className={CANCEL} onClick={onCancel} disabled={loading}>
+        <Button variant="subtle" className={CANCEL} onClick={onCancel} disabled={loading}>
           {cancelLabel ?? t.cancel}
         </Button>
       )}

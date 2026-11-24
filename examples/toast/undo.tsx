@@ -35,7 +35,7 @@ export default function ToastUndo() {
       ))}
       {rows.length === 0 && <li className="text-ui text-muted">Đã lưu trữ hết, bấm Hoàn tác để khôi phục.</li>}
       <li>
-        <Button size="sm" variant="secondary" onClick={archiveAndLeave}>
+        <Button size="sm" variant="subtle" onClick={archiveAndLeave}>
           Lưu trữ rồi chuyển trang
         </Button>
       </li>

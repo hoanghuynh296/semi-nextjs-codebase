@@ -8,6 +8,7 @@ import React, { useCallback, useEffect, useLayoutEffect, useRef, useState, type 
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { Icon, type IconName } from "./Icon";
+import { NewTag } from "./CountBadge";
 import { FLOATING_LAYER } from "./a11y";
 import { useSemiLocale } from "./locale";
 import { cn, FOCUS_RING } from "../styles/utils";
@@ -177,9 +178,7 @@ export function MegaMenu({
                       <span className="flex items-center gap-1.5 text-ui font-medium text-strong">
                         <span className="truncate">{it.label}</span>
                         {it.isNew && (
-                          <span className="shrink-0 h-4 px-1.5 rounded-full bg-item-selected text-strong text-chrome font-semibold leading-none inline-flex items-center">
-                            {t.newBadge}
-                          </span>
+                          <NewTag />
                         )}
                       </span>
                       {it.hint && <span className="block text-chrome text-muted truncate">{it.hint}</span>}

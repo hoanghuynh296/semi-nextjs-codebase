@@ -32,7 +32,7 @@ export function Modal({
   title: React.ReactNode;
   /** Optional one-line description under the title (announced with the dialog). */
   description?: React.ReactNode;
-  /** Action buttons rendered inside MODAL_FOOT (use MODAL_BTN_PRIMARY / MODAL_BTN_SECONDARY / MODAL_BTN_DANGER or <Button size="modal">). */
+  /** Action buttons rendered inside MODAL_FOOT (use MODAL_BTN_PRIMARY / MODAL_BTN_SUBTLE / MODAL_BTN_DANGER or <Button size="modal">). */
   footer?: React.ReactNode;
   /** Width class on >= sm screens (e.g. "max-w-md", "max-w-lg", "max-w-2xl"). */
   maxWidth?: string;

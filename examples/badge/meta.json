@@ -1,12 +1,16 @@
 {
   "title": "Badge",
   "group": "Data display",
-  "description": "A read-only status or tag in a tone (10% fill, 20% border, theme-safe text), with an optional dot or icon.",
+  "description": "A read-only status or tag in a tone (10% fill, 20% border, theme-safe text; one fixed palette for every brand), and the attention marks in the brand colour: CountBadge (unread, to approve; 99+ cap) and NewTag (\"Mới\").",
   "components": [
-    "Badge"
+    "Badge",
+    "CountBadge",
+    "NewTag"
   ],
   "when": [
-    "Status of a row or card (Đã thanh toán, Lỗi), a plan or role tag."
+    "Status of a row or card (Đã thanh toán, Lỗi), a plan or role tag.",
+    "Something waits for the user (unread, to approve): CountBadge, or Button badge on an icon button.",
+    "A new feature or item in a menu: NewTag."
   ],
   "instead": [
     {
@@ -14,17 +18,23 @@
       "use": "Chip"
     },
     {
-      "need": "A count next to a title",
-      "use": "COUNT_PILL"
+      "need": "A count next to a title that is not an alert",
+      "use": "COUNT_PILL or CountBadge tone=\"neutral\""
     }
   ],
   "a11y": [
-    "Text, not colour alone, carries the meaning; it never wraps."
+    "Text, not colour alone, carries the meaning; it never wraps.",
+    "A count on an icon button is said in the button's aria-label."
   ],
   "examples": [
     {
       "file": "tones",
       "title": "Tones"
+    },
+    {
+      "file": "attention",
+      "title": "Attention marks",
+      "description": "CountBadge in the brand fill (99+ cap; tone=\"neutral\" for a plain count), Button badge at a button's corner (the count goes in an icon button's aria-label; a button with text and no aria-label gets it as screen-reader text), NewTag: the brand at 18% behind brand text, or the strong text where the brand is not AA on it."
     }
   ]
 }

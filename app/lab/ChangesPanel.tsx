@@ -87,13 +87,13 @@ export function ChangesPanel({ lab, onReset }: { lab: ReturnType<typeof useLabEd
         <Button variant="primary" icon="code" disabled={errors.length > 0} onClick={() => copyText(prompt, "lệnh cho agent")}>
           Copy lệnh cho agent
         </Button>
-        <Button variant="secondary" icon="copy" onClick={() => copyText(patch, "patch JSON")}>
+        <Button variant="subtle" icon="copy" onClick={() => copyText(patch, "patch JSON")}>
           Copy patch JSON
         </Button>
-        <Button variant="secondary" icon="external" onClick={share}>
+        <Button variant="subtle" icon="external" onClick={share}>
           Copy link chia sẻ
         </Button>
-        <Button variant="secondary" icon="reset" onClick={onReset}>
+        <Button variant="subtle" icon="reset" onClick={onReset}>
           Bỏ bản nháp
         </Button>
       </div>

@@ -8,7 +8,7 @@ export default function SplitButtonSecondary() {
   const [busy, setBusy] = useState(false);
   return (
     <SplitButton
-      variant="secondary"
+      variant="subtle"
       label="Mở trong IDE"
       icon="code"
       loading={busy}

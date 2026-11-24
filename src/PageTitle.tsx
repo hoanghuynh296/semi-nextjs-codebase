@@ -20,7 +20,7 @@ export function PageTitle({
 }: {
   title: React.ReactNode;
   /**
-   * The page's own action at the right end of the title row: one `<Button variant="primary">` (or secondary) with an
+   * The page's own action at the right end of the title row: one `<Button variant="primary">` (or `inverse`) with an
    * icon and text, optionally a `RefreshButton` before it. More actions go in a ⋯ `Menu` as the last item. Below `sm`
    * they wrap under the title. Leave it out on a page whose `SubpageToolbar` carries the actions.
    */

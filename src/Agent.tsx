@@ -328,10 +328,10 @@ export function ActionConfirmation({
           {children && <div className="text-ui text-body">{children}</div>}
           {state === "pending" ? (
             <div className="flex flex-wrap gap-2 pt-1">
-              <Button size="sm" variant={danger ? "danger" : "primary"} onClick={onApprove}>
+              <Button size="sm" variant={danger ? "danger" : "inverse"} onClick={onApprove}>
                 {approveLabel ?? t.approve}
               </Button>
-              <Button size="sm" variant="secondary" onClick={onReject}>
+              <Button size="sm" variant="subtle" onClick={onReject}>
                 {rejectLabel ?? t.reject}
               </Button>
             </div>

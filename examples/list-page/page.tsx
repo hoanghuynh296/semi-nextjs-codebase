@@ -119,7 +119,7 @@ export default function ListPage() {
         defaultSort={{ key: "date", dir: "desc" }}
         selectable
         bulkActions={(ids) => (
-          <Button size="sm" variant="secondary" icon="download" onClick={() => toast({ title: `Đã xuất ${ids.length} đơn` })}>
+          <Button size="sm" variant="subtle" icon="download" onClick={() => toast({ title: `Đã xuất ${ids.length} đơn` })}>
             Xuất CSV
           </Button>
         )}

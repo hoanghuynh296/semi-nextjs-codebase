@@ -118,7 +118,7 @@ export function TypePanel({ lab }: { lab: ReturnType<typeof useLabEditor> }) {
               <KpiCard label="Đơn mới" value="128" sub="12 chờ xác nhận" icon="cart" iconTone="sky" />
               <div className="flex flex-wrap items-start gap-2">
                 <Button variant="primary">Tạo đơn</Button>
-                <Button variant="secondary">Xuất file</Button>
+                <Button variant="subtle">Xuất file</Button>
               </div>
             </div>
           </div>

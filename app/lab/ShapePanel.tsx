@@ -90,7 +90,7 @@ export function ShapePanel({ lab }: { lab: ReturnType<typeof useLabEditor> }) {
             <Checkbox checked={notify} onChange={setNotify} label="Gửi thông báo khi in xong" />
             <div className="flex flex-wrap gap-2">
               <Button variant="primary" icon="play">In ngay</Button>
-              <Button variant="secondary">Để sau</Button>
+              <Button variant="subtle">Để sau</Button>
             </div>
           </Card>
           <KpiCard label="Bản in đang chạy" value="12" sub="3 máy rảnh" icon="printer" iconTone="green" />

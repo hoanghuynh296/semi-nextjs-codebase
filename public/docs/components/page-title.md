@@ -92,7 +92,7 @@ page's action on the right; below `sm` the actions wrap onto their own row under
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `title` * | `React.ReactNode` |  |  |
-| `actions` | `React.ReactNode` |  | The page's own action at the right end of the title row: one `<Button variant="primary">` (or secondary) with an icon and text, optionally a `RefreshButton` before it. More actions go in a ⋯ `Menu` as the last item. Below `sm` they wrap under the title. Leave it out on a page whose `SubpageToolbar` carries the actions. |
+| `actions` | `React.ReactNode` |  | The page's own action at the right end of the title row: one `<Button variant="primary">` (or `inverse`) with an icon and text, optionally a `RefreshButton` before it. More actions go in a ⋯ `Menu` as the last item. Below `sm` they wrap under the title. Leave it out on a page whose `SubpageToolbar` carries the actions. |
 | `className` | `string` | `""` |  |
 
 ### PageTabsTitle

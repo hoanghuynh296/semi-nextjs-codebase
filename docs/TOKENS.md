@@ -76,6 +76,10 @@ There is no brand-derived colour anywhere: `accent`, `accent-hover`, `on-accent`
 |---|---|
 | `bg-primary` / `hover:bg-primary-hover` / `text-on-primary` | the one main button of a page, a modal or the nav; attention count badges, "New" tags, the active big-tab underline (`decoration-primary`) |
 | `bg-secondary` / `hover:bg-secondary-hover` / `text-on-secondary` | the secondary main button, only when the brand has a secondary (otherwise it equals primary) |
+| `bg-new-tag` / `text-on-new-tag` | the "Mới" / "New" tag (`NewTag`, `NEW_TAG`): the primary at 18%; its text is the primary where that reaches 4.5:1 on the tag over canvas, app, panel and card, else the strong text, per theme (`new-tag-text-dark` / `-light`: the token build checks Semi's default, the brand generator picks a kit's). Semi's default green is not AA on its tint over the dark card, so the default text is the strong text in both themes |
+| `COUNT_BADGE` (`CountBadge`, Button `badge`) | an attention count: `bg-primary` + `text-on-primary`, `text-badge`, "99+" cap; a plain count is `tone="neutral"` (`bg-raised` + strong text) |
+
+Buttons (1.0, #146): `subtle` = `bg-subtle-button` (hover `tint-hover`), `surface` = `bg-raised` (hover `raised-2`), `inverse` = `bg-inverted` + `text-on-inverted`, `outline` = transparent + `border-outline-line`, `ghost` = `item-hover` on hover, `primary` / `secondary` = the brand fills, `danger` = the danger status fill (hover `danger-bg-hover`); disabled = `bg-subtle-button` + `text-muted` for every variant. The token build checks each variant's text on its fill and hover fill (and the count badge and New tag) at 4.5:1 over canvas, app, panel and card in both themes (`buttonAaErrors`).
 
 Nothing else in Semi uses the brand colour. The brand kit sets the fills; the generator checks 4.5:1 for the text on
 each and picks the on-colour. Status colours (`*-fg`, `*-bg`, `*-border`, `*-solid` for danger, success, warning, info)

@@ -54,6 +54,10 @@
       "secondary",
       "secondary-hover",
       "on-secondary",
+      "new-tag",
+      "new-tag-text-dark",
+      "new-tag-text-light",
+      "on-new-tag",
       "focus",
       "danger-fg",
       "success-fg",
@@ -72,6 +76,7 @@
       "tone-rose",
       "tone-pink",
       "danger-bg",
+      "danger-bg-hover",
       "danger-border",
       "danger-solid",
       "success-bg",
@@ -597,6 +602,7 @@
         "fullWidth",
         "iconOnly",
         "shape",
+        "badge",
         "type",
         "disabled",
         "className",
@@ -1113,6 +1119,33 @@
         "onOpenInNewTab"
       ],
       "doc": "docs/components/command-palette.md"
+    },
+    {
+      "name": "CountBadge",
+      "kind": "component",
+      "module": "src/CountBadge.tsx",
+      "client": true,
+      "summary": "A count in the brand colour (text-badge, 700), \"99+\" cap. A plain count that is not an alert passes tone=\"neutral\".",
+      "props": [
+        "count",
+        "max",
+        "tone",
+        "corner",
+        "className"
+      ],
+      "doc": "docs/components/badge.md"
+    },
+    {
+      "name": "NewTag",
+      "kind": "component",
+      "module": "src/CountBadge.tsx",
+      "client": true,
+      "summary": "\"Mới\" / \"New\" tag: the brand colour at 18% behind brand text (or the strong text where the brand text is not AA on it).",
+      "props": [
+        "children",
+        "className"
+      ],
+      "doc": "docs/components/badge.md"
     },
     {
       "name": "CustomCombobox",
@@ -3145,6 +3178,13 @@
       "summary": "The app's main action at the right of the header (Slice, Phối màu, Xong)."
     },
     {
+      "name": "buttonClass",
+      "kind": "function",
+      "module": "styles/buttons.ts",
+      "client": false,
+      "summary": "Button's classes: variant × size, icon-only, round, full width, the phone touch size (BTN_HIT), and `relative` unless className positions it."
+    },
+    {
       "name": "cn",
       "kind": "function",
       "module": "styles/utils.ts",
@@ -3441,81 +3481,144 @@
       "summary": "Info badge at the bottom right of the 3D view (size, count)."
     },
     {
-      "name": "BTN_PRIMARY",
+      "name": "BTN_SUBTLE",
       "kind": "constant",
       "module": "styles/buttons.ts",
       "client": false,
-      "summary": "Main action (Thêm, Lưu): the action fill (the accent, or the inverted neutral in a brand with primaryStyle inverted)."
+      "summary": "Ordinary action (the default): translucent neutral fill (subtle-button), strong text."
     },
     {
-      "name": "BTN_SECONDARY",
+      "name": "BTN_SURFACE",
       "kind": "constant",
       "module": "styles/buttons.ts",
       "client": false,
-      "summary": "Secondary action (Làm mới, Tính lại, Đóng): translucent tint fill, no border (C-030); reads on every surface."
+      "summary": "Toolbar action (Mời, Tuỳ chỉnh): the raised surface fill."
+    },
+    {
+      "name": "BTN_INVERSE",
+      "kind": "constant",
+      "module": "styles/buttons.ts",
+      "client": false,
+      "summary": "Main action of a card or of a list page's title row (Thêm, Xem): the strong text colour as the fill."
     },
     {
       "name": "BTN_OUTLINE",
       "kind": "constant",
       "module": "styles/buttons.ts",
       "client": false,
-      "summary": "Outlined secondary action: field fill and a 1px line, the look of BTN_SECONDARY before 0.36 (a toolbar of framed controls)."
-    },
-    {
-      "name": "BTN_ICON",
-      "kind": "constant",
-      "module": "styles/buttons.ts",
-      "client": false,
-      "summary": "Icon-only toolbar button (Thêm, Làm mới): add to BTN_PRIMARY / BTN_SECONDARY; keep `title` + `aria-label`."
-    },
-    {
-      "name": "BTN_DANGER",
-      "kind": "constant",
-      "module": "styles/buttons.ts",
-      "client": false,
-      "summary": "Destructive action (Dừng in, Xoá)."
-    },
-    {
-      "name": "MODAL_BTN_PRIMARY",
-      "kind": "constant",
-      "module": "styles/buttons.ts",
-      "client": false,
-      "summary": "Main action in dialogs & modals (Lưu, In lại, Gửi lệnh)."
-    },
-    {
-      "name": "MODAL_BTN_SECONDARY",
-      "kind": "constant",
-      "module": "styles/buttons.ts",
-      "client": false,
-      "summary": "Secondary action in dialogs & modals (Huỷ, Đóng): tint fill, no border."
-    },
-    {
-      "name": "MODAL_BTN_OUTLINE",
-      "kind": "constant",
-      "module": "styles/buttons.ts",
-      "client": false,
-      "summary": "Outlined secondary action in dialogs & modals."
-    },
-    {
-      "name": "MODAL_BTN_DANGER",
-      "kind": "constant",
-      "module": "styles/buttons.ts",
-      "client": false,
-      "summary": "Destructive action in dialogs & modals (Dừng in, Xoá)."
+      "summary": "Secondary action beside an inverse one (Chia sẻ): transparent with a 1px outline-line."
     },
     {
       "name": "BTN_GHOST",
       "kind": "constant",
       "module": "styles/buttons.ts",
       "client": false,
-      "summary": "Quiet action without a surface (row actions, \"Xem thêm\", cancel inside a toolbar)."
+      "summary": "Icon buttons (32×32 with BTN_ICON), the nav bottom row, quiet row actions: no fill, item-hover on hover."
+    },
+    {
+      "name": "BTN_PRIMARY",
+      "kind": "constant",
+      "module": "styles/buttons.ts",
+      "client": false,
+      "summary": "The one main button of a page, a dialog (its commit: Gửi, Lưu) or the nav: the brand primary fill."
+    },
+    {
+      "name": "BTN_SECONDARY",
+      "kind": "constant",
+      "module": "styles/buttons.ts",
+      "client": false,
+      "summary": "A second brand main button: the brand secondary fill (the primary when the brand has none)."
+    },
+    {
+      "name": "BTN_DANGER",
+      "kind": "constant",
+      "module": "styles/buttons.ts",
+      "client": false,
+      "summary": "Destructive action (Dừng in, Xoá): the danger status fill (tint + line) with danger text."
+    },
+    {
+      "name": "BTN_ICON",
+      "kind": "constant",
+      "module": "styles/buttons.ts",
+      "client": false,
+      "summary": "Icon-only button: add to any BTN_* constant (square, h-control); keep `title` + `aria-label`."
     },
     {
       "name": "BTN_SM",
       "kind": "constant",
       "module": "styles/buttons.ts",
       "client": false,
-      "summary": "Smaller control height (28px) for dense rows: add to any BTN_* constant."
+      "summary": "Compact (28px, 12px text) for dense rows and toolbars: add to any BTN_* constant."
+    },
+    {
+      "name": "BTN_XS",
+      "kind": "constant",
+      "module": "styles/buttons.ts",
+      "client": false,
+      "summary": "Smallest (24px, 12px text): the inverse pill of a list title row, chips of actions. Add to any BTN_* constant."
+    },
+    {
+      "name": "MODAL_BTN_SURFACE",
+      "kind": "constant",
+      "module": "styles/buttons.ts",
+      "client": false,
+      "summary": "Surface / inverse / ghost at dialog size."
+    },
+    {
+      "name": "MODAL_BTN_INVERSE",
+      "kind": "constant",
+      "module": "styles/buttons.ts",
+      "client": false,
+      "summary": ""
+    },
+    {
+      "name": "MODAL_BTN_GHOST",
+      "kind": "constant",
+      "module": "styles/buttons.ts",
+      "client": false,
+      "summary": ""
+    },
+    {
+      "name": "MODAL_BTN_PRIMARY",
+      "kind": "constant",
+      "module": "styles/buttons.ts",
+      "client": false,
+      "summary": "Commit action of a dialog (Lưu, In lại, Gửi lệnh): the brand primary."
+    },
+    {
+      "name": "MODAL_BTN_SECONDARY",
+      "kind": "constant",
+      "module": "styles/buttons.ts",
+      "client": false,
+      "summary": "Second brand action of a dialog: the brand secondary."
+    },
+    {
+      "name": "MODAL_BTN_SUBTLE",
+      "kind": "constant",
+      "module": "styles/buttons.ts",
+      "client": false,
+      "summary": "Cancel / close in a dialog (Huỷ, Đóng): subtle."
+    },
+    {
+      "name": "MODAL_BTN_OUTLINE",
+      "kind": "constant",
+      "module": "styles/buttons.ts",
+      "client": false,
+      "summary": "Outlined action in a dialog."
+    },
+    {
+      "name": "MODAL_BTN_DANGER",
+      "kind": "constant",
+      "module": "styles/buttons.ts",
+      "client": false,
+      "summary": "Destructive confirm in a dialog (Xoá, Dừng in): the danger status fill (tint + line, danger text: AA in both themes)."
+    },
+    {
+      "name": "BTN_HIT",
+      "kind": "constant",
+      "module": "styles/buttons.ts",
+      "client": false,
+      "summary": "44px touch target on a phone with a touch screen (`pointer-coarse` + `max-sm`): the button itself grows to at least 44 × 44px (min-height / min-width win over the `!h-7` / `!w-7` of sm / xs). Real size, not a pseudo-element, so it never covers a neighbour and never overflows a scroll row. A mouse, a tablet and a desktop keep the drawn size."
     },
     {
       "name": "CARD",
@@ -3600,6 +3703,34 @@
       "module": "styles/surfaces.ts",
       "client": false,
       "summary": ""
+    },
+    {
+      "name": "COUNT_BADGE",
+      "kind": "constant",
+      "module": "styles/surfaces.ts",
+      "client": false,
+      "summary": "Attention count (unread, to approve): the brand fill with its on-colour, text-badge (10/700). CountBadge renders it with the 99+ cap."
+    },
+    {
+      "name": "COUNT_BADGE_NEUTRAL",
+      "kind": "constant",
+      "module": "styles/surfaces.ts",
+      "client": false,
+      "summary": "A plain count that is not an alert: neutral."
+    },
+    {
+      "name": "COUNT_BADGE_CORNER",
+      "kind": "constant",
+      "module": "styles/surfaces.ts",
+      "client": false,
+      "summary": "Add to COUNT_BADGE to pin it to the top-right corner of a `relative` icon button."
+    },
+    {
+      "name": "NEW_TAG",
+      "kind": "constant",
+      "module": "styles/surfaces.ts",
+      "client": false,
+      "summary": "\"Mới\" / \"New\" tag: the brand colour at 18% (bg-new-tag) behind brand text (text-on-new-tag: the brand, or the strong text where the brand is not AA on that tint; the token build decides)."
     },
     {
       "name": "SECTION_LINK",

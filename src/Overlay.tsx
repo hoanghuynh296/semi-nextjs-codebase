@@ -11,7 +11,7 @@ import { Spinner } from "./Button";
 import { cloneTrigger, useAnchoredPosition, type AnchoredPosition } from "./floating";
 import { FLOATING_LAYER } from "./a11y";
 import { useSemiLocale } from "./locale";
-import { BTN_ICON, BTN_SECONDARY } from "../styles/buttons";
+import { BTN_ICON, BTN_SUBTLE } from "../styles/buttons";
 import { cn } from "../styles/utils";
 
 /**
@@ -459,7 +459,7 @@ export function Menu({
       {trigger && isValidElement(trigger) ? (
         cloneTrigger(trigger, triggerProps)
       ) : (
-        <button type="button" aria-label={label} title={label} className={cn(BTN_SECONDARY, BTN_ICON)} {...triggerProps}>
+        <button type="button" aria-label={label} title={label} className={cn(BTN_SUBTLE, BTN_ICON)} {...triggerProps}>
           <Icon name="more" className="w-4 h-4" />
         </button>
       )}

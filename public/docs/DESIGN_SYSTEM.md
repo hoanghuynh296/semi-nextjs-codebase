@@ -130,7 +130,7 @@ outermost frame to the brightest step, plus the card and two fills:
 | `panel-4` | `bg-panel-4` = `bg-panel` | panel | Sidebar (`SHELL_ASIDE`), modal, popover, menu, toast |
 | card | `bg-card` | dark: panel + 5% text-strong (above the panel); light: app + 5% text-strong (recessed) | Content cards: `CARD`, `<Card>`, `HERO` |
 | card-field | `bg-card-field` | card + 5% (dark) / 3% (light) text-strong | Tiles, readings, table heads inside a card (`TILE`) |
-| tint / tint-hover | `bg-tint`, `hover:bg-tint-hover` | text-strong at 7% / 11% (dark), 5% / 9% (light) | Secondary buttons (`BTN_SECONDARY`, `MODAL_BTN_SECONDARY`, `ICON_BTN`, `MODAL_CLOSE`): no border |
+| tint / tint-hover | `bg-tint`, `hover:bg-tint-hover` | text-strong at 7% / 11% (dark), 5% / 9% (light) | `ICON_BTN`, `MODAL_CLOSE`; `tint-hover` is the hover of a subtle button (`BTN_SUBTLE`): no border |
 | inverted | `bg-inverted` + `text-on-inverted` | near-white on dark, near-black on light | Checked controls (checkbox, switch, radio, slider), the selected day, the inverse button |
 
 - `canvas`, `app` and `panel` are `panel-0`, `panel-2`, `panel-4` (one value, two names). Since 1.0 they are pure
@@ -433,7 +433,7 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   title is still the page `h1` in display type and text only; filters follow it, actions sit at the right end; narrow
   screens wrap filters and actions below the title. Text buttons stay in the toolbar's `right` slot in both layouts.
 - **List page header (#115, #120):** a list page with a `StickyContextBar` opens with its title row, `PageTitle` with
-  `actions`: the title on the left, the page's one action on the right (one `Button variant="primary"` or secondary,
+  `actions`: the title on the left, the page's one action on the right (one `Button variant="primary"` or `inverse`,
   icon + text, optionally a `RefreshButton` before it; more actions in a ⋯ `Menu`); below `sm` the actions wrap onto
   their own row under the title. The title row scrolls away, the bar under it stays. `MinimalHeader` is the top row of
   a detail or settings page (a `Breadcrumb` and one action), not of a list page; a `SubpageToolbar` page keeps its
@@ -441,7 +441,7 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
 - Each sub-page opens with a large display title (text only), followed by the toolbar row (or sharing it, above): pill filter tabs
   (`CHIP_BASE` + `chipClass(active)`) on the left, icon-only primary CTA + secondary controls on the right. The row
   carries `STICKY_TOOLBAR` so the filters stay on top of the scrolling content (below the safe area on phones).
-  "Thêm …" and "Làm mới" buttons are icon-only (`BTN_PRIMARY`/`BTN_SECONDARY` + `BTN_ICON`, `RefreshButton`) with
+  "Thêm …" and "Làm mới" buttons are icon-only (`BTN_PRIMARY`/`BTN_SUBTLE` + `BTN_ICON`, `RefreshButton`) with
   `title` + `aria-label` carrying the label.
 - **Search and filters (C-032, #99):** a list page that people search and filter opens, under its heading, with one
   `StickyContextBar` (in place of a `SubpageToolbar`): a `SearchPill` (one per page, it feeds the list or `DataTable`;
@@ -502,7 +502,7 @@ the right. Props: `title`, `productName` (home bar), `logo` / `logoIcon`, `homeH
 - Title = the app's name only (the product's name is never put in front of a module's name).
 - On the right: icon buttons (`HEADER_ICON_BTN` + `HEADER_ICON_OFF|ON`), "Huỷ" when opened from another app, and ONE
   green main action (`headerPrimary(enabled)`), disabled until it can run; never a second green button elsewhere on the
-  screen (a panel's own action is `BTN_SECONDARY`).
+  screen (a panel's own action is `BTN_SUBTLE`).
 - **There is no Home button.** Clicking the logo + title returns home in the same tab; pass `onHome` when leaving needs
   a confirmation. The bar is full width, `h-13`, `bg-app/95 backdrop-blur-xl border-b border-divider`, sticky.
 - Tool apps (an editor around a canvas / 3D view): left `SidePanel` (320 px, collapses to a rail with the sidebar
@@ -528,7 +528,7 @@ padding that comes from three files.
 | At most three frames inside each other (page panel › card › tile) | `box-nesting` | white space, a divider or plain text instead of the fourth frame |
 | At most four text sizes in one box (title, body, label, caption) | `type-mix` | weight and colour (`font-medium`, `text-muted`) for the rest |
 | At most three colours in one box (brand and status; greys do not count) | `colour-noise` | neutral icons, a tone only where it means a state (§3) |
-| One filled brand button per view (page, dialog, form) | `primary-actions` | `Button` (secondary) or `ghost` for the rest |
+| One filled brand button per view (page, dialog, form) | `primary-actions` | `Button` (`subtle`, `inverse` for a card's main action) or `ghost` for the rest |
 | Boxes side by side keep ≥ 2 units (8px) apart, or share an edge on purpose | `cramped-boxes` | `gap-group` between cards, `gap-stack` between tiles |
 | One line between two things | `double-line` | no `border-b` on the last row of a card (`TBody`, `ItemGroup` do it), no border next to a `divide-y` |
 
@@ -586,8 +586,24 @@ tiles use `w-11 h-11 rounded-card` with their area's `TILE_TONES`.
 
 ## 9. Buttons
 
-`BTN_PRIMARY` / `BTN_SECONDARY` / `BTN_OUTLINE` / `BTN_DANGER` from `@semi/ui/styles` (`rounded-control`, `h-control`,
-`text-ui font-medium`, flat). Primary fills with `bg-primary` (the brand fill, one per view); secondary is a translucent `bg-tint` with no border; outline is the framed field look. Icon-only: add `BTN_ICON`, or `ICON_BTN` (`w-7 h-7 rounded-control`) inside cards. Big
+1.0 variants (#146), `Button variant` or the `BTN_*` constants from `@semi/ui/styles` (`rounded-control`, `h-control`,
+`text-ui` 14px `font-medium`, flat, hover in 150ms `transition-hover`, a 2px `outline-focus` focus outline, disabled
+neutral for every variant, at least 44 × 44px on a phone with a touch screen (`BTN_HIT`: `pointer-coarse` + `max-sm`, real size, no pseudo-element that could cover a neighbour)):
+
+| Variant | Constant | Look | When |
+|---|---|---|---|
+| `subtle` (default) | `BTN_SUBTLE` | `bg-subtle-button`, strong text | ordinary actions |
+| `surface` | `BTN_SURFACE` | `bg-raised` | toolbar actions (Mời, Tuỳ chỉnh) |
+| `inverse` | `BTN_INVERSE` | `bg-inverted` + `text-on-inverted` | the main action of a card or a list title row (Thêm, Xem); `size="xs" shape="round"` is the pill |
+| `outline` | `BTN_OUTLINE` | transparent, 1px `outline-line` | beside an inverse one (Chia sẻ) |
+| `ghost` | `BTN_GHOST` | no fill, `item-hover` on hover | icon buttons, the nav bottom row, quiet row actions |
+| `primary` / `secondary` | `BTN_PRIMARY` / `BTN_SECONDARY` | the brand fills with their on-colours | only the one main button of a page, a dialog (its commit: Gửi, Lưu) or the nav, or a case the app's owner asks for; `secondary` is the brand secondary (the primary when the brand has none) |
+| `danger` | `BTN_DANGER` | the danger status fill (tint, line, danger text) | destructive actions; the destructive confirm of a dialog |
+
+Sizes: `md` (h-control, 14px), `sm` (`BTN_SM`, 28px, 12px `text-chrome`: dense rows, toolbars), `xs` (`BTN_XS`, 24px,
+12px), `modal` (`MODAL_BTN_*`: 44px / 15px on phones, h-control from sm: dialog footers, a full-width commit; commit
+`primary`, cancel `subtle`, destructive `danger`). `badge` pins an attention `CountBadge` to an icon button's corner.
+Every variant's text reaches 4.5:1 on its fill and on its hover fill in both themes (the token build checks it). Icon-only: add `BTN_ICON`, or `ICON_BTN` (`w-7 h-7 rounded-control`) inside cards. Big
 state toggles (power) are round: `w-20 h-20 sm:w-24 sm:h-24 rounded-full`, flat `bg-primary text-on-primary` when on,
 `bg-field` when off. A running action shows a spinner inside its own button only.
 
@@ -924,7 +940,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 
 | Need | Use |
 |---|---|
-| Any action | `Button` (`variant` primary / secondary / outline / danger / ghost, `size` md / sm / modal, `icon`, `iconOnly` + `aria-label`, `shape="round"` for a round icon button, `loading`); `Spinner` only inside a button or field running its own action, never for a page) |
+| Any action | `Button` (`variant` subtle (default) / surface / inverse / outline / ghost / primary / secondary (brand) / danger, `size` xs / sm / md / modal, `badge` (attention count on an icon button), `icon`, `iconOnly` + `aria-label`, `shape="round"` for a round icon button, `loading`); `Spinner` only inside a button or field running its own action, never for a page) |
 | Overflow actions of a row / card / page | `Menu` (icon-only "more" trigger or your own; `danger` items always last; `group`, `description`, `checked`, `loading`, `href`, `hidden`; a bottom sheet below `sm`) (§9 G2, G4, G5) |
 | Other ways to start the main action | `SplitButton` (Thêm khách hàng \| ▾ Nhập từ file, Tìm trong Data Hub) (§9 G1) |
 | Quick actions on a card or media tile | `CardActions` (inside a `group relative` card; `label` names the item) |
@@ -932,6 +948,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Hint for an icon-only control | `Tooltip` (never essential text: touch screens do not show it) |
 | Feedback after an action | `toast.success|error|warning|info(title)`, `toast.undo(title, restore)` after a reversible destructive action, `toast.promise(p, { loading, success, error })` (§14c) + `<ToastHost />` in the layout (`label` when a page section is also called "Thông báo"). Irreversible: `confirmDelete({ name })` first |
 | A job the user must wait for | `startTask({ label, onCancel, timer })` + `<TaskHost />` in the layout |
+| Something waits for the user (unread, to approve); a new item | `CountBadge` (brand fill, 99+; `tone="neutral"` for a plain count) or Button `badge`; `NewTag` ("Mới": brand at 18%, AA-picked text) |
 | Persistent message in a page | `Alert` (tone, title, action, `onDismiss`) |
 | Save / Cancel under a form; losing typed work; field errors | `FormActions`, `useUnsavedGuard`, `useFormValidation` + `FormErrorSummary` (§9b) |
 | Secondary task beside the page | `Drawer` (right / left / bottom / top sheet) |

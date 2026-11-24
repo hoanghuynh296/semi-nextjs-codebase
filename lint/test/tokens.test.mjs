@@ -64,3 +64,26 @@ test("light item fills are visible on the card and step hover < checked < select
   const [hover, checked, selected] = ["color-item-hover", "color-item-checked", "color-item-selected"].map(r);
   assert.ok(hover >= 1.2 && checked > hover + 0.05 && selected > checked + 0.05, `${hover} ${checked} ${selected}`);
 });
+
+test("1.0 buttons (#146): every variant's text on its fill, the count badge and the New tag reach 4.5:1 in both themes", async () => {
+  const { buttonAaErrors, BUTTON_PAIRS, newTagText } = await import("../../scripts/token-css.mjs");
+  assert.deepEqual(buttonAaErrors(tokens), []);
+  const names = BUTTON_PAIRS.map(([n]) => n);
+  for (const v of ["subtle", "surface", "inverse", "primary", "secondary", "disabled", "count badge", "new tag"]) assert.ok(names.includes(v), v);
+  // Semi's default New tag text is what the AA rule picks for the default primary
+  for (const theme of ["dark", "light"])
+    assert.equal(resolveColor(tokens, `color-new-tag-text-${theme}`, theme)[0], newTagText(tokens, tokens.semantic["color-primary"][theme], theme), theme);
+  // a light brand primary (yellow) is not AA on its own tint in light: strong text; a deep one is AA in dark
+  assert.equal(newTagText(tokens, "#ffd400", "light"), tokens.semantic["color-text-strong"].light.toLowerCase());
+  assert.equal(newTagText(tokens, "#ffd400", "dark"), "#ffd400");
+  // a light primary: the check still passes once on-primary is picked (the generator picks it; here a dark one)
+  const light = structuredClone(tokens);
+  light.semantic["color-primary"] = { dark: "#ffd400", light: "#ffd400" };
+  light.semantic["color-primary-hover"] = { dark: "#ffe04d", light: "#ffe04d" };
+  light.semantic["color-on-primary"] = { dark: "#0c0d0e", light: "#0c0d0e" };
+  light.semantic["color-new-tag-text-dark"] = { dark: "#ffd400", light: "#ffd400" };
+  assert.deepEqual(buttonAaErrors(light), []);
+  // without a brand secondary, secondary is the primary
+  assert.equal(tokens.semantic["color-secondary"].dark, "var(--semi-primary)");
+  assert.equal(tokens.semantic["color-on-secondary"].light, "var(--semi-on-primary)");
+});

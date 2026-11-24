@@ -99,7 +99,7 @@ export function ErrorState({
   return (
     <StateBlock kind="error" role="alert" headingLevel={headingLevel} icon={icon} tone="danger" title={title ?? t.errorTitle} message={message ?? t.errorMessage} detail={detail} className={className}>
       {onRetry && (
-        <Button variant="primary" icon="refresh" onClick={onRetry}>
+        <Button variant="inverse" icon="refresh" onClick={onRetry}>
           {retryLabel ?? t.retry}
         </Button>
       )}

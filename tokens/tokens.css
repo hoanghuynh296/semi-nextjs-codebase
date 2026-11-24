@@ -361,6 +361,10 @@
   --color-secondary: var(--semi-secondary); /* Brand secondary fill (optional; the primary when the brand has none): the secondary main button only */
   --color-secondary-hover: var(--semi-secondary-hover); /* Hover of the secondary fill */
   --color-on-secondary: var(--semi-on-secondary); /* Text / icon on bg-secondary */
+  --color-new-tag: var(--semi-new-tag); /* "Mới" / "New" tag fill: the brand primary at 18% (bg-new-tag, NEW_TAG / NewTag) */
+  --color-new-tag-text-dark: var(--semi-new-tag-text-dark); /* Text of the New tag in the dark theme, picked by the token build (Semi's default) or the brand generator (a kit): the brand when it reaches 4.5:1 on the tag over canvas, app, panel and card, else the strong text. Use text-on-new-tag */
+  --color-new-tag-text-light: var(--semi-new-tag-text-light); /* Text of the New tag in the light theme (same rule as new-tag-text-dark). Use text-on-new-tag */
+  --color-on-new-tag: var(--semi-on-new-tag); /* Text on bg-new-tag: the brand where it is AA on that tint, else the strong text (the token build checks it) */
   --color-focus: var(--semi-focus); /* Keyboard focus ring (ring-focus) and focused-control border: the strong text colour, ≥ 3:1 on every surface. Neutral, never the brand */
   --color-danger-fg: var(--semi-danger-fg); /* Destructive / error text on surfaces and on its tint (≥ 4.5:1 over every surface) */
   --color-success-fg: var(--semi-success-fg); /* Success / online text on surfaces */
@@ -379,6 +383,7 @@
   --color-tone-rose: var(--semi-tone-rose); /* Tonal rose text on tinted (bg-rose-500/10) or neutral surfaces */
   --color-tone-pink: var(--semi-tone-pink); /* Tonal pink text on tinted (bg-pink-500/10) or neutral surfaces */
   --color-danger-bg: var(--semi-danger-bg); /* Tinted danger surface (callout, badge, danger button) */
+  --color-danger-bg-hover: var(--semi-danger-bg-hover); /* Hover of the danger button's tint (danger text keeps 4.5:1 on it; danger-border is a line, too dark a fill for the light danger text) */
   --color-danger-border: var(--semi-danger-border); /* Border of the tinted danger surface */
   --color-danger-solid: var(--semi-danger-solid); /* Solid danger fill (status dot, progress, destructive confirm); text on it is on-solid */
   --color-success-bg: var(--semi-success-bg); /* Tinted success surface (callout, badge, danger button) */
@@ -451,6 +456,10 @@
   --semi-secondary: var(--semi-primary);
   --semi-secondary-hover: var(--semi-primary-hover);
   --semi-on-secondary: var(--semi-on-primary);
+  --semi-new-tag: color-mix(in oklab, var(--semi-primary) 18%, transparent);
+  --semi-new-tag-text-dark: #f5f5f5;
+  --semi-new-tag-text-light: #111111;
+  --semi-on-new-tag: var(--semi-new-tag-text-dark);
   --semi-focus: var(--semi-text-strong);
   --semi-danger-fg: var(--color-rose-300);
   --semi-success-fg: var(--color-emerald-400);
@@ -469,6 +478,7 @@
   --semi-tone-rose: var(--color-rose-300);
   --semi-tone-pink: var(--color-pink-300);
   --semi-danger-bg: color-mix(in oklab, var(--color-rose-500) 12%, transparent);
+  --semi-danger-bg-hover: color-mix(in oklab, var(--color-rose-500) 18%, transparent);
   --semi-danger-border: color-mix(in oklab, var(--color-rose-500) 25%, transparent);
   --semi-danger-solid: var(--color-rose-500);
   --semi-success-bg: color-mix(in oklab, var(--color-emerald-500) 12%, transparent);
@@ -540,6 +550,10 @@
   --semi-secondary: var(--semi-primary);
   --semi-secondary-hover: var(--semi-primary-hover);
   --semi-on-secondary: var(--semi-on-primary);
+  --semi-new-tag: color-mix(in oklab, var(--semi-primary) 18%, transparent);
+  --semi-new-tag-text-dark: #f5f5f5;
+  --semi-new-tag-text-light: #111111;
+  --semi-on-new-tag: var(--semi-new-tag-text-light);
   --semi-focus: var(--semi-text-strong);
   --semi-danger-fg: var(--color-rose-800);
   --semi-success-fg: var(--color-emerald-800);
@@ -558,6 +572,7 @@
   --semi-tone-rose: var(--color-rose-800);
   --semi-tone-pink: var(--color-pink-800);
   --semi-danger-bg: color-mix(in oklab, var(--color-rose-500) 10%, transparent);
+  --semi-danger-bg-hover: color-mix(in oklab, var(--color-rose-500) 15%, transparent);
   --semi-danger-border: color-mix(in oklab, var(--color-rose-500) 30%, transparent);
   --semi-danger-solid: var(--color-rose-600);
   --semi-success-bg: color-mix(in oklab, var(--color-emerald-500) 10%, transparent);
@@ -629,6 +644,10 @@
     --semi-secondary: var(--semi-primary);
     --semi-secondary-hover: var(--semi-primary-hover);
     --semi-on-secondary: var(--semi-on-primary);
+    --semi-new-tag: color-mix(in oklab, var(--semi-primary) 18%, transparent);
+    --semi-new-tag-text-dark: #f5f5f5;
+    --semi-new-tag-text-light: #111111;
+    --semi-on-new-tag: var(--semi-new-tag-text-light);
     --semi-focus: var(--semi-text-strong);
     --semi-danger-fg: var(--color-rose-800);
     --semi-success-fg: var(--color-emerald-800);
@@ -647,6 +666,7 @@
     --semi-tone-rose: var(--color-rose-800);
     --semi-tone-pink: var(--color-pink-800);
     --semi-danger-bg: color-mix(in oklab, var(--color-rose-500) 10%, transparent);
+    --semi-danger-bg-hover: color-mix(in oklab, var(--color-rose-500) 15%, transparent);
     --semi-danger-border: color-mix(in oklab, var(--color-rose-500) 30%, transparent);
     --semi-danger-solid: var(--color-rose-600);
     --semi-success-bg: color-mix(in oklab, var(--color-emerald-500) 10%, transparent);
@@ -724,6 +744,10 @@
   --color-secondary: var(--semi-secondary);
   --color-secondary-hover: var(--semi-secondary-hover);
   --color-on-secondary: var(--semi-on-secondary);
+  --color-new-tag: var(--semi-new-tag);
+  --color-new-tag-text-dark: var(--semi-new-tag-text-dark);
+  --color-new-tag-text-light: var(--semi-new-tag-text-light);
+  --color-on-new-tag: var(--semi-on-new-tag);
   --color-focus: var(--semi-focus);
   --color-danger-fg: var(--semi-danger-fg);
   --color-success-fg: var(--semi-success-fg);
@@ -742,6 +766,7 @@
   --color-tone-rose: var(--semi-tone-rose);
   --color-tone-pink: var(--semi-tone-pink);
   --color-danger-bg: var(--semi-danger-bg);
+  --color-danger-bg-hover: var(--semi-danger-bg-hover);
   --color-danger-border: var(--semi-danger-border);
   --color-danger-solid: var(--semi-danger-solid);
   --color-success-bg: var(--semi-success-bg);

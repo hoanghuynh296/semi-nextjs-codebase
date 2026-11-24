@@ -8,7 +8,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 ## Machine-readable
 
-- [components.json](./components.json): all 159 components, hooks and constants with props, summaries and their doc page
+- [components.json](./components.json): all 161 components, hooks and constants with props, summaries and their doc page
 - [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
@@ -32,7 +32,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 ### Actions
 
-- [Button](./components/button/) ([markdown](./docs/components/button.md)): The action control: one primary per area (the action fill: the accent, or a neutral inverted fill in a brand with primaryStyle inverted), secondary (a translucent tint, no border) for the rest, outline (field fill + line) for framed toolbars, danger for destructive actions, ghost for quiet ones. Spinner shows work in progress inside the control that runs it. Components: Button, Spinner.
+- [Button](./components/button/) ([markdown](./docs/components/button.md)): The action control, 1.0 variants: subtle (default) for ordinary actions, surface for toolbar actions, inverse for the main action of a card or a list title row, outline beside an inverse one, ghost for icon buttons, primary / secondary (the brand fills) only for the one main button of a page, a dialog or the nav, danger for destructive actions. Spinner shows work in progress inside the control that runs it. Components: Button, Spinner.
 - [Button group](./components/button-group/) ([markdown](./docs/components/button-group.md)): Joins related buttons into one segmented control: shared borders, outer corners only (‹ Hôm nay ›, Lưu | ▾). Components: ButtonGroup.
 - [Card actions](./components/card-actions/) ([markdown](./docs/components/card-actions.md)): Quick actions on a card or media tile: round icon buttons in the top right corner that show on hover or keyboard focus where the device can hover, and one always-visible ⋯ with every action on touch screens. Goes inside a `group relative` card. Components: CardActions.
 - [Chip](./components/chip/) ([markdown](./docs/components/chip.md)): A pill-shaped toggle for filters and tags. Neutral when off; active uses the high-contrast surface, with colour only on its dot or icon (tone). Components: Chip.
@@ -108,7 +108,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Accordion](./components/accordion/) ([markdown](./docs/components/accordion.md)): A list of sections where one (or several) open at a time: FAQs, settings groups, help. Components: Accordion.
 - [Aspect ratio](./components/aspect-ratio/) ([markdown](./docs/components/aspect-ratio.md)): Keeps media at a fixed ratio while its width follows the layout (images, video, maps, 3D previews). Components: AspectRatio.
 - [Avatar](./components/avatar/) ([markdown](./docs/components/avatar.md)): A person or team: their image, or initials on a tone picked from the name. Components: Avatar.
-- [Badge](./components/badge/) ([markdown](./docs/components/badge.md)): A read-only status or tag in a tone (10% fill, 20% border, theme-safe text), with an optional dot or icon. Components: Badge.
+- [Badge](./components/badge/) ([markdown](./docs/components/badge.md)): A read-only status or tag in a tone (10% fill, 20% border, theme-safe text; one fixed palette for every brand), and the attention marks in the brand colour: CountBadge (unread, to approve; 99+ cap) and NewTag ("Mới"). Components: Badge, CountBadge, NewTag.
 - [Card](./components/card/) ([markdown](./docs/components/card.md)): The bento content card: the card surface (bg-card, separated from the page by tone, no visible border in Flat and Soft) with the style's radius and resting shadow. bordered frames a dense data view; interactive adds hover / press, active marks the selected or running item. Components: Card.
 - [Carousel](./components/carousel/) ([markdown](./docs/components/carousel.md)): Slides in a row that scroll by swipe, trackpad, arrow keys, buttons or dots (CSS scroll-snap, no library). Phones show one slide and a peek of the next. Components: Carousel.
 - [Chart](./components/chart/) ([markdown](./docs/components/chart.md)): Charts in SVG on Semi tokens, no library: BarChart (grouped or stacked columns), LineChart (optional area wash), DonutChart (parts of a whole) and Sparkline (a trend in a tile). Series use the fixed chart-1…8 colours (validated for colour-blind readers in both themes); every chart has a legend for 2+ series, a hover / keyboard tooltip and a table view. Components: BarChart, LineChart, DonutChart, Sparkline.

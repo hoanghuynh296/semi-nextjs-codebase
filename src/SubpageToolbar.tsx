@@ -11,7 +11,7 @@ import { useSemiLocale } from "./locale";
 import { Icon, type IconName } from "./Icon";
 import { SearchInput } from "./SearchInput";
 import { RefreshButton } from "./RefreshButton";
-import { BTN_ICON, BTN_PRIMARY, BTN_SECONDARY } from "../styles/buttons";
+import { BTN_ICON, BTN_PRIMARY, BTN_SUBTLE } from "../styles/buttons";
 import { STICKY_TOOLBAR } from "../styles/surfaces";
 import { PAGE_TITLE_TEXT } from "./pageTitleText";
 import { Menu, type MenuItem } from "./Overlay";
@@ -99,7 +99,7 @@ export function SubpageToolbar({
       onClick={() => setSheet(true)}
       aria-haspopup="dialog"
       aria-expanded={sheet}
-      className={cn(BTN_SECONDARY, "shrink-0 gap-1.5", count > 0 && "!bg-inverted !text-on-inverted", extra)}
+      className={cn(BTN_SUBTLE, "shrink-0 gap-1.5", count > 0 && "!bg-inverted !text-on-inverted", extra)}
     >
       <Icon name="filter" className="w-4 h-4" />
       {t.filterCount(count)}
@@ -135,7 +135,7 @@ export function SubpageToolbar({
         {(collapseFilters || filters) && filterButton("sm:hidden max-sm:mr-auto")}
         {right}
         {secondaryActions?.filter((a) => !a.hidden).map((a, i) => (
-          <button key={i} type="button" onClick={a.onSelect} disabled={Boolean(a.disabled)} title={typeof a.disabled === "string" ? a.disabled : undefined} className={cn(BTN_SECONDARY, "max-sm:hidden gap-1.5", a.danger && "text-danger-fg")}>
+          <button key={i} type="button" onClick={a.onSelect} disabled={Boolean(a.disabled)} title={typeof a.disabled === "string" ? a.disabled : undefined} className={cn(BTN_SUBTLE, "max-sm:hidden gap-1.5", a.danger && "text-danger-fg")}>
             {a.icon && <Icon name={a.icon} className="w-4 h-4" />}
             {a.label}
           </button>

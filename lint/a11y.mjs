@@ -268,10 +268,18 @@ export function a11yAudit(opts) {
           if (s.content === "none" || s.position !== "absolute" || s.pointerEvents === "none" || s.display === "none") continue;
           const m = /matrix\(([^)]+)\)/.exec(s.transform);
           const [tx, ty] = m ? m[1].split(",").slice(4).map(parseFloat) : [0, 0];
-          const x = er.left + e.clientLeft + parseFloat(s.left) + tx;
-          const y = er.top + e.clientTop + parseFloat(s.top) + ty;
           const w = parseFloat(s.width);
           const h = parseFloat(s.height);
+          // the `translate` property (Tailwind 4's translate-* utilities): px or % of the pseudo-element's own size
+          // a length: px, % of the pseudo-element's own size, or a calc() of those added / subtracted
+          const len = (v = "", size) =>
+            (v.replace(/^calc\((.*)\)$/, "$1").replace(/\s+-\s+/g, " + -").split(/\s+\+\s+/))
+              .reduce((sum, t) => sum + (t.trim().endsWith("%") ? (parseFloat(t) / 100) * size : parseFloat(t) || 0), 0);
+          // split on spaces outside parentheses: `calc(-50% + 2px) 3px` is two values
+          const parts = (v) => v.match(/(?:[^\s(]+|\([^)]*\))+/g) ?? [];
+          const [ux, uy = "0px"] = s.translate && s.translate !== "none" ? parts(s.translate) : ["0px"];
+          const x = er.left + e.clientLeft + parseFloat(s.left) + tx + len(ux, w);
+          const y = er.top + e.clientTop + parseFloat(s.top) + ty + len(uy, h);
           if ([x, y, w, h].some(isNaN)) continue;
           [l, t, rt, b] = [Math.min(l, x), Math.min(t, y), Math.max(rt, x + w), Math.max(b, y + h)];
         }
