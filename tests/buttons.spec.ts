@@ -116,11 +116,21 @@ test("FilterPanel apply and NumPadPopup confirm: a 2px focus outline, like Butto
 });
 
 // #162: Button's focus outline is drawn (outline-solid with outline-2: Tailwind 4's outline-none sets the style to none).
-test("Button: a visible 2px focus outline in the focus colour", async ({ page }) => {
+test("Button: a visible 2px focus outline on every variant and on a MODAL_* (modal size) button", async ({ page }) => {
   await page.goto("/components/button/");
-  const btn = page.locator('[data-example="button/variants"] button.bg-subtle-button').first();
-  await expect(btn).toBeVisible();
-  await page.keyboard.press("Tab");
-  await btn.focus();
-  expect(await btn.evaluate(outlined)).toBe("solid 2px");
+  // the first row of the variants example: one enabled Button per variant (the second row is disabled)
+  const VARIANTS = ["Làm mới", "Mời", "Thêm", "Chia sẻ", "Xem thêm", "Lưu", "Gửi", "Xoá"];
+  const variants = page.locator('[data-example="button/variants"]');
+  const modal = page.locator('[data-example="button/sizes"]').getByRole("button", { name: "Xác nhận", exact: true });
+  const buttons = [...VARIANTS.map((name) => variants.getByRole("button", { name, exact: true }).first()), modal];
+  await expect(buttons[0]).toBeVisible();
+  for (const btn of buttons) {
+    await page.keyboard.press("Tab"); // keyboard modality, so focus() shows :focus-visible
+    await btn.focus();
+    const name = await btn.innerText();
+    expect(await btn.evaluate(outlined), name).toBe("solid 2px");
+    // drawn in a colour, not transparent
+    expect(await btn.evaluate((el) => getComputedStyle(el).outlineColor), name).not.toMatch(/rgba\(0, 0, 0, 0\)|transparent/);
+  }
+  expect(buttons.length).toBe(9);
 });
