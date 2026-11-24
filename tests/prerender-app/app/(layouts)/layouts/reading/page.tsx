@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { Card } from "../../../../../src/Card";
-import { Page, PageGrid, PageSection } from "../../../../../src/Page";
+import { Card } from "../../../../../../src/Card";
+import { Page, PageGrid, PageSection } from "../../../../../../src/Page";
 
 export default function ReadingLayoutPage() {
   return (

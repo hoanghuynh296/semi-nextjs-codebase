@@ -1,12 +1,17 @@
 "use client";
 
 import React from "react";
+import { usePathname } from "next/navigation";
 import { AppShell } from "../../../../src/AppShell";
 
 export default function LayoutsShell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const isFixed = pathname === "/layouts/reader";
+  const activeId = pathname?.split("/").pop() || "work";
   return (
     <AppShell
       flush
+      page={isFixed ? "fixed" : "scroll"}
       productName="Semi Layouts"
       sections={[
         {
@@ -19,7 +24,7 @@ export default function LayoutsShell({ children }: { children: React.ReactNode }
           ],
         },
       ]}
-      activeId="work"
+      activeId={activeId}
       header={{
         account: { name: "Hoang Huynh", detail: "Owner" },
       }}

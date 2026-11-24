@@ -2531,3 +2531,225 @@ test("Big TextTabs (#147): 24/28px font-display weight 400, opacity 0.2 inactive
   expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
   await page.close();
 });
+
+test("Page layouts and vertical rhythm at 1440, 834 and 430: work, reading and two-column (#149)", async ({ browser }) => {
+  for (const width of [1440, 834, 430]) {
+    const page = await browser.newPage({ viewport: { width, height: 900 } });
+    await open(page, "/components/page/", width === 430 ? "light" : "dark");
+
+    // 1. Work layout
+    const work = example(page, "page/work").locator('[data-page-layout="work"]');
+    await expect(work).toBeVisible();
+    const wm = await work.evaluate((el) => {
+      const cs = getComputedStyle(el);
+      const h1 = el.querySelector("h1") as HTMLElement;
+      const h1Cs = getComputedStyle(h1);
+      const header = el.querySelector("[data-page-header]") as HTMLElement;
+      const body = el.querySelector("[data-page-body]") as HTMLElement;
+      return {
+        padX: parseFloat(cs.paddingLeft),
+        padTop: parseFloat(cs.paddingTop),
+        headerToBody: Math.round(body.getBoundingClientRect().top - header.getBoundingClientRect().bottom),
+        h1Size: parseFloat(h1Cs.fontSize),
+        h1Weight: parseInt(h1Cs.fontWeight, 10),
+      };
+    });
+    expect(wm.padX, `work padX at ${width}`).toBe(width < 768 ? 16 : 24);
+    expect(wm.padTop, `work padTop at ${width}`).toBe(32);
+    expect(wm.headerToBody, `work header->body at ${width}`).toBe(32);
+    expect(wm.h1Size).toBe(18);
+    expect(wm.h1Weight).toBe(400);
+
+    // 2. Reading layout
+    const reading = example(page, "page/reading").locator('[data-page-layout="reading"]');
+    await reading.scrollIntoViewIfNeeded();
+    const rm = await reading.evaluate((el) => {
+      const cs = getComputedStyle(el);
+      const col = el.querySelector("[data-page-column]") as HTMLElement;
+      const colCs = getComputedStyle(col);
+      const h1 = el.querySelector("h1") as HTMLElement;
+      const h1Cs = getComputedStyle(h1);
+      const intro = el.querySelector("[data-page-intro]") as HTMLElement;
+      const sections = Array.from(el.querySelectorAll("[data-page-section]")) as HTMLElement[];
+      const s1Heading = sections[0].querySelector("h2") as HTMLElement;
+      const grid = sections[0].querySelector("[data-page-grid]") as HTMLElement;
+      const gridCs = getComputedStyle(grid);
+      return {
+        padX: parseFloat(cs.paddingLeft),
+        padBottom: parseFloat(cs.paddingBottom),
+        maxW: parseFloat(colCs.maxWidth),
+        h1Size: parseFloat(h1Cs.fontSize),
+        h1Weight: parseInt(h1Cs.fontWeight, 10),
+        titleToIntro: Math.round(intro.getBoundingClientRect().top - h1.getBoundingClientRect().bottom),
+        headingToGrid: Math.round(grid.getBoundingClientRect().top - s1Heading.getBoundingClientRect().bottom),
+        gridGap: parseFloat(gridCs.columnGap || gridCs.gap),
+      };
+    });
+    expect(rm.padX).toBe(16);
+    expect(rm.padBottom).toBe(64);
+    expect(rm.maxW).toBe(1536);
+    expect(rm.h1Size).toBe(44);
+    expect(rm.h1Weight).toBe(500);
+    expect(rm.titleToIntro).toBe(28);
+    expect(rm.headingToGrid).toBe(16);
+    expect(rm.gridGap).toBe(8);
+
+    // 3. Two-column layout
+    const two = example(page, "page/two-column").locator('[data-page-layout="two-column"]');
+    await two.scrollIntoViewIfNeeded();
+    const tm = await two.evaluate((el) => {
+      const subWrap = el.querySelector("[data-page-subnav]") as HTMLElement;
+      const nav = el.querySelector("[data-subnav]") as HTMLElement;
+      const main = el.querySelector("[data-page-main]") as HTMLElement;
+      const groupLabel = nav.querySelector(".text-nav-label") as HTMLElement;
+      const groupRow = groupLabel.parentElement as HTMLElement;
+      const items = Array.from(nav.querySelectorAll("nav button, nav a")) as HTMLElement[];
+      const subR = subWrap.getBoundingClientRect();
+      const mainR = main.getBoundingClientRect();
+      const navCs = getComputedStyle(nav);
+      const mainCs = getComputedStyle(main);
+      const glCs = getComputedStyle(groupLabel);
+      const itemCs = getComputedStyle(items[0]);
+      return {
+        subW: Math.round(subR.width),
+        hGap: Math.round(mainR.left - subR.right),
+        vGap: Math.round(mainR.top - subR.bottom),
+        stacked: mainR.top >= subR.bottom - 1,
+        navPadTop: parseFloat(navCs.paddingTop),
+        navPadLeft: parseFloat(navCs.paddingLeft),
+        mainPadX: parseFloat(mainCs.paddingLeft),
+        glHeight: Math.round(groupRow.getBoundingClientRect().height),
+        glSize: parseFloat(glCs.fontSize),
+        glWeight: parseInt(glCs.fontWeight, 10),
+        itemHeight: Math.round(items[0].getBoundingClientRect().height),
+        itemSize: parseFloat(itemCs.fontSize),
+        itemWeight: parseInt(itemCs.fontWeight, 10),
+        itemGap: Math.round(items[1].getBoundingClientRect().top - items[0].getBoundingClientRect().bottom),
+      };
+    });
+    expect(tm.navPadTop).toBe(20);
+    expect(tm.navPadLeft).toBe(10);
+    expect(tm.glHeight).toBe(32);
+    expect(tm.glSize).toBe(10);
+    expect(tm.glWeight).toBe(500);
+    expect(tm.itemHeight).toBe(32);
+    expect(tm.itemSize).toBe(12);
+    expect(tm.itemWeight).toBe(500);
+    expect(tm.itemGap).toBe(2);
+    if (width >= 768) {
+      expect(tm.stacked).toBe(false);
+      expect(tm.subW).toBe(240);
+      expect(tm.hGap).toBe(4);
+      expect(tm.mainPadX).toBe(24);
+    } else {
+      expect(tm.stacked).toBe(true);
+      expect(tm.vGap).toBe(4);
+    }
+    await page.close();
+  }
+});
+
+test("List page selection mode: zero vertical shift on first row, 600 count, keyboard path, and non-nested Card/Item selection (#149)", async ({ browser }) => {
+  // Desktop (1440)
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await open(page, "/components/list-page/", "dark");
+  const ex = example(page, "list-page/page");
+  const firstRow = ex.locator("tbody tr").first();
+  await expect(firstRow).toBeVisible();
+  const topBefore = (await firstRow.boundingBox())!.y;
+
+  const chon = ex.getByRole("button", { name: "Chọn", exact: true }).filter({ visible: true });
+  await chon.focus();
+  await page.keyboard.press("Enter");
+  const doneBtn = ex.getByRole("button", { name: "Xong", exact: true }).filter({ visible: true });
+  await expect(doneBtn).toBeFocused();
+  expect(Math.abs((await firstRow.boundingBox())!.y - topBefore)).toBeLessThanOrEqual(0.5);
+
+  const cb1 = firstRow.getByRole("checkbox");
+  await cb1.focus();
+  await page.keyboard.press("Space");
+  const countEl = ex.locator("[data-selection-bar]").getByRole("status").filter({ visible: true });
+  await expect(countEl).toHaveText("1 đã chọn");
+  expect(await countEl.evaluate((el) => parseInt(getComputedStyle(el).fontWeight, 10))).toBe(600);
+  expect(Math.abs((await firstRow.boundingBox())!.y - topBefore)).toBeLessThanOrEqual(0.5);
+
+  await doneBtn.click();
+  await expect(chon).toBeFocused();
+  expect(Math.abs((await firstRow.boundingBox())!.y - topBefore)).toBeLessThanOrEqual(0.5);
+
+  // Card grid: checkbox toggles check without opening detail
+  await ex.getByRole("button", { name: "Lưới" }).click();
+  await chon.click();
+  await ex.getByRole("checkbox").first().click();
+  await expect(countEl).toHaveText("1 đã chọn");
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await page.close();
+
+  // Phone (430): selection mode keeps first item at the exact same y
+  const phone = await browser.newPage({ viewport: { width: 430, height: 900 }, isMobile: true, hasTouch: true });
+  await open(phone, "/components/list-page/", "light");
+  const pex = example(phone, "list-page/page");
+  const firstItem = pex.getByRole("region", { name: "Danh sách đơn hàng" }).getByRole("button").first();
+  await expect(firstItem).toBeVisible();
+  const phoneChon = pex.getByRole("button", { name: "Chọn", exact: true }).filter({ visible: true });
+  await phoneChon.scrollIntoViewIfNeeded();
+  const phoneTopBefore = (await firstItem.boundingBox())!.y;
+  await phoneChon.click();
+  expect(Math.abs((await firstItem.boundingBox())!.y - phoneTopBefore)).toBeLessThanOrEqual(0.5);
+  await pex.getByRole("checkbox").filter({ visible: true }).first().click();
+  await expect(pex.locator("[data-selection-bar]").getByRole("status").filter({ visible: true })).toHaveText("1 đã chọn");
+  await phone.close();
+});
+
+test("List + reader: sticky ReaderHeader with matching button heights, independent scroll, and below-lg swap (#149)", async ({ browser }) => {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await open(page, "/components/list-reader/", "dark");
+  const ex = example(page, "list-reader/inbox");
+  const listPane = ex.locator("[data-reader-list]");
+  const readerPane = ex.locator("[data-reader-pane]");
+  await expect(listPane).toBeVisible();
+
+  const header = readerPane.locator("[data-reader-header]");
+  await expect(header).toBeVisible();
+  const moreBtn = header.getByRole("button", { name: "Thao tác khác" });
+  const mainBtn = header.getByRole("button", { name: "Trả lời" });
+  const [mb, rb, hbBefore] = [await moreBtn.boundingBox(), await mainBtn.boundingBox(), await header.boundingBox()];
+  expect(Math.abs(mb!.height - rb!.height)).toBeLessThanOrEqual(1);
+
+  await readerPane.evaluate((el) => { el.scrollTop = 260; });
+  const after = await ex.evaluate(() => ({
+    listTop: document.querySelector('[data-example="list-reader/inbox"] [data-reader-list]')!.scrollTop,
+    readerTop: document.querySelector('[data-example="list-reader/inbox"] [data-reader-pane]')!.scrollTop,
+    headerTop: document.querySelector('[data-example="list-reader/inbox"] [data-reader-header]')!.getBoundingClientRect().top,
+  }));
+  expect(after.listTop).toBe(0);
+  expect(after.readerTop).toBeGreaterThan(100);
+  expect(Math.abs(after.headerTop - hbBefore!.y)).toBeLessThanOrEqual(1);
+  await page.close();
+
+  // Below lg (834 & 430): reader swaps in with Back button, Back returns to list, clicking item re-opens reader
+  for (const width of [834, 430]) {
+    const narrow = await browser.newPage({ viewport: { width, height: 900 } });
+    await open(narrow, "/components/list-reader/", "light");
+    const nex = example(narrow, "list-reader/inbox");
+    const nList = nex.locator("[data-reader-list]");
+    const nReader = nex.locator("[data-reader-pane]");
+    await expect(nReader).toBeVisible();
+    await expect(nList).toBeHidden();
+    await nReader.getByRole("button", { name: "Về danh sách" }).click();
+    await expect(nList).toBeVisible();
+    await expect(nReader).toBeHidden();
+    await nList.getByRole("button").first().click();
+    await expect(nReader).toBeVisible();
+    await expect(nList).toBeHidden();
+    await narrow.close();
+  }
+});
+
+test("WorkspaceLayout without action renders no bottom bar; SplitButton fullWidth spans its container (#149)", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await open(page, "/components/workspace-layout/", "dark");
+  const ro = example(page, "workspace-layout/readonly");
+  await expect(ro.getByRole("heading", { name: "YC-014 Tiêu đen" })).toBeVisible();
+  await expect(ro.locator("[data-workspace-action]")).toHaveCount(0);
+});

@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button } from "../../../../../src/Button";
-import { useDetailParam } from "../../../../../src/DetailOverlay";
-import { Item } from "../../../../../src/Item";
-import { ListReaderLayout, ReaderHeader } from "../../../../../src/ListReader";
-import { Page, SubNav, type SubNavSection } from "../../../../../src/Page";
+import { Button } from "../../../../../../src/Button";
+import { useDetailParam } from "../../../../../../src/DetailOverlay";
+import { Item } from "../../../../../../src/Item";
+import { ListReaderLayout, ReaderHeader } from "../../../../../../src/ListReader";
+import { Page, SubNav, type SubNavSection } from "../../../../../../src/Page";
 
 type Mail = { id: string; subject: string; from: string; time: string; paragraphs: string[] };
 const MAILS: Mail[] = Array.from({ length: 24 }, (_, i) => ({

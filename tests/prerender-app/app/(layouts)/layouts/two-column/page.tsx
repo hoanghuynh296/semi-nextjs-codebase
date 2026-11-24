@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { Button } from "../../../../../src/Button";
-import { Card } from "../../../../../src/Card";
-import { Page, PageSection, SubNav, type SubNavSection } from "../../../../../src/Page";
+import { Button } from "../../../../../../src/Button";
+import { Card } from "../../../../../../src/Card";
+import { Page, PageSection, SubNav, type SubNavSection } from "../../../../../../src/Page";
 
 export default function TwoColumnLayoutPage() {
   const [active, setActive] = useState("inbox");
