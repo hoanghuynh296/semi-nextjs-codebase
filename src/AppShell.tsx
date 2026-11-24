@@ -618,11 +618,10 @@ export function AppShell({
     ));
 
   const groupSpacer = <div aria-hidden className="shrink-0 h-6 flex items-center px-2"><div className="h-px flex-1 bg-raised" /></div>;
-  // the group label: 10px / 500 uppercase at normal tracking (spec). `text-overline` gives the uppercase (the one place
-  // it is allowed) and `text-tag` the 10px / 500: Tailwind emits `text-tag` after `text-overline`, so its size wins.
+  // the group label: `text-nav-label` (10px / 500, uppercase, normal tracking, faint), one class of its own
   const groupLabel = (label: string, icon?: IconName, right?: React.ReactNode) => (
     <div className={cn("shrink-0 h-8 flex items-center justify-between gap-2 px-2 py-1.5 select-none", `@max-[120px]/nav:hidden`)}>
-      <span className="flex items-center gap-1.5 min-w-0 text-overline text-tag tracking-normal text-faint">
+      <span className="flex items-center gap-1.5 min-w-0 text-nav-label">
         {icon && <Icon name={icon} className="w-3.5 h-3.5 shrink-0" />}
         <span className="truncate">{label}</span>
       </span>

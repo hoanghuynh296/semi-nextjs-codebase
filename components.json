@@ -121,7 +121,9 @@
       "text-badge",
       "text-badge--line-height",
       "text-overline",
-      "text-overline--line-height"
+      "text-overline--line-height",
+      "text-nav-label",
+      "text-nav-label--line-height"
     ],
     "z": [
       "z-sticky",
@@ -3737,7 +3739,7 @@
       "kind": "constant",
       "module": "styles/surfaces.ts",
       "client": false,
-      "summary": "`FormActions` on a page: sticks to the bottom of the scrolling page, over the content card (`bg-panel`), with a line above. The component adds the safe-area padding and lifts it above the on-screen keyboard (`bottom`)."
+      "summary": "`FormActions` on a page: sticks to the bottom of the scrolling page, over the page background (`bg-app`; the panel colour inside the AppShell card), with a line above. The component adds the safe-area padding and lifts it above the on-screen keyboard (`bottom`)."
     },
     {
       "name": "FIELD_LABEL",
@@ -3793,7 +3795,7 @@
       "kind": "constant",
       "module": "styles/surfaces.ts",
       "client": false,
-      "summary": "The content card: `panel`, radius 16 from sm, flush with the column, 4px above its bottom, no border. Sticky strips inside it (STICKY_TOOLBAR, FORM_ACTIONS_STICKY, AppHeader, StickyContextBar) paint `bg-panel`, the card's colour."
+      "summary": "The content card: `panel`, radius 16 from sm, flush with the column, 4px above its bottom, no border. Inside it `bg-app` is the panel colour (`--semi-app`, the variable `bg-app` reads, is set to `--semi-panel` on the card), so sticky strips that paint `bg-app` (STICKY_TOOLBAR, FORM_ACTIONS_STICKY, AppHeader, StickyContextBar) match the card and stay `app` on a page without AppShell."
     },
     {
       "name": "SHELL_ASIDE",

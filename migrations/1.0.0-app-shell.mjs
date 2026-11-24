@@ -17,7 +17,8 @@ const RENAMES = [
 /**
  * The AppShell / DocsShell opening tags of a file, as `{ a, b, masked }`: the range in the source and the tag with its
  * comments (`/* … *\/`, `// …`) and string contents blanked to spaces (same length), so a comment that names a prop or
- * holds a `>` is never read as code.
+ * holds a `>` is never read as code. A tag whose end cannot be found (an apostrophe in nested JSX text, `Don't`, reads
+ * as an open string) comes back as `{ a, b: -1, masked: null }`: it is not rewritten and `shellFlags` reports it.
  */
 export function shellTagsMasked(src) {
   const out = [];
@@ -25,6 +26,7 @@ export function shellTagsMasked(src) {
     let depth = 0;
     let quote = "";
     let masked = m[0];
+    let closed = false;
     for (let i = m.index + m[0].length; i < src.length; i++) {
       const ch = src[i];
       if (quote) {
@@ -47,9 +49,11 @@ export function shellTagsMasked(src) {
       else if (ch === "}") depth--;
       else if (ch === ">" && depth === 0) {
         out.push({ a: m.index, b: i + 1, masked });
+        closed = true;
         break;
       }
     }
+    if (!closed) out.push({ a: m.index, b: -1, masked: null });
   }
   return out;
 }
@@ -85,6 +89,7 @@ export function migrateShell(src) {
   let out = src;
   // from the last tag to the first, so earlier ranges stay valid
   for (const { a, b, masked: m0 } of shellTagsMasked(src).reverse()) {
+    if (b === -1) continue;
     let tag = out.slice(a, b);
     let masked = m0;
     for (const [from, to, which] of RENAMES) {
@@ -101,7 +106,13 @@ export function migrateShell(src) {
 /** What the migration cannot rewrite, as hand-fix messages. */
 export function shellFlags(src) {
   const out = [];
-  const tags = shellTagsMasked(src).map((t) => t.masked);
+  const all = shellTagsMasked(src);
+  const unread = all.filter((t) => t.b === -1);
+  if (unread.length) {
+    const lines = unread.map((t) => src.slice(0, t.a).split("\n").length).join(", ");
+    out.push(`AppShell / DocsShell tag on line ${lines}: the migration could not find where the tag ends (an apostrophe in JSX text inside an attribute, like Don't, reads as an open string), so it renamed nothing there; rename create → mainAction and utilities → tools by hand.`);
+  }
+  const tags = all.filter((t) => t.b !== -1).map((t) => t.masked);
   for (const tag of tags) {
     const name = /^<(\w+)/.exec(tag)[1];
     if (name === "AppShell") {

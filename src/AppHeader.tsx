@@ -61,7 +61,7 @@ export function AppHeader({
     "min-w-0 shrink flex items-center gap-2 rounded-control -mx-1.5 px-1.5 py-1 hover:bg-raised active:scale-95 transition";
   return (
     <header
-      className={`${app ? "block" : "hidden md:block"} sticky top-0 bg-panel/95 backdrop-blur-xl border-b border-divider z-sticky shrink-0 select-none ${className}`}
+      className={`${app ? "block" : "hidden md:block"} sticky top-0 bg-app/95 backdrop-blur-xl border-b border-divider z-sticky shrink-0 select-none ${className}`}
     >
       <div className="w-full px-3 sm:px-5 h-13 flex items-center gap-2.5 min-w-0">
         {onHome ? (

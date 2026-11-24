@@ -12,7 +12,7 @@ its fonts, its logo and its voice (`docs/BRANDS.md`).
 | Utility | Role | Dark | Light |
 |---|---|---|---|
 | `bg-canvas` | page background, frame around the panels | #101010 | #ebebeb |
-| `bg-app` | content column, holds the route header | #161616 | #f3f3f3 |
+| `bg-app` | content column, holds the route header; the panel colour inside the AppShell content card (`SHELL_CARD` sets `--semi-app: var(--semi-panel)`), so sticky strips on `bg-app` match the card | #161616 | #f3f3f3 |
 | `bg-panel` | nav panel, content card, sub-nav card, modal, popover | #1a1a1a | #ffffff |
 | `bg-field` | input fill at rest | #222222 | #ffffff |
 | `bg-field-focus` | input fill on focus (one step darker) | #161616 | #f7f7f7 |
@@ -100,6 +100,7 @@ and `text-tone-*` are one fixed palette for every brand. Their text (light: the 
 | `text-tag` | 10 · 500 · +0.02em | tags, chips |
 | `text-badge` | 10 · 700 · lh 1 | count badges only |
 | `text-overline` | 11 · 600 · +0.1em · uppercase | section labels |
+| `text-nav-label` | 10 · 500 · normal tracking · uppercase · `text-faint` | the AppShell nav group label only |
 
 Two sizes for UI text (C-011, #155): **content is 14px, only the shell chrome is 12px.** 12px suits the frame around the
 work (nav, breadcrumb, toolbars, meta), but dense content at 12px reads poorly, Vietnamese diacritics most of all.

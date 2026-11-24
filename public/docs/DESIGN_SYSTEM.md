@@ -370,8 +370,8 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   `rounded-panel`). The column holds the **RouteHeader** (h60 from `lg`, padding 0 8px / 16px from `sm`, the column's
   full width: crumbs left, an optional `middle` hidden below `md`, `actions` icon buttons 32×32 and the account avatar
   menu right; `middle` and `actions` sit in their own `Suspense`) and under it the **content card** (`bg-panel`,
-  `rounded-panel`, flush with the column, 4px above its bottom, no border; the sticky strips inside it, `STICKY_TOOLBAR`,
-  `FORM_ACTIONS_STICKY`, `AppHeader`, paint `bg-panel`, the card's colour). `page="fixed"`: the card does not scroll, its panels do. `flush`: no centred
+  `rounded-panel`, flush with the column, 4px above its bottom, no border; inside it `bg-app` is the panel colour, since the card sets
+  `--semi-app` to `--semi-panel`, so sticky strips that paint `bg-app` match the card). `page="fixed"`: the card does not scroll, its panels do. `flush`: no centred
   `max-w-[1440px]` container or padding around the page (the page layout decides). `header={false}` drops the row.
 - **Crumbs:** default group (a link: `section.href`, else its first item) › item › sub-item › the record a detail page
   names with `useRecordCrumb(label)`; or `header.crumbs`. Every crumb is `text-chrome` muted 400 with a chevron, the
@@ -383,7 +383,7 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
 - **Nav order:** logo + collapse button (the logo expands the rail at `lg+`) · the **main action** (`mainAction`: an
   ordinary primary button with the app's label and icon, a `Menu` when it has `items`, its icon with a Tooltip in the
   rail; or your own slot) · the groups (`sections`, `pinned`) separated by a 24px spacer with a 1px `bg-raised` line,
-  labels 10px / 500 uppercase at normal tracking (`text-overline text-tag tracking-normal`) `text-faint` in an h32 row with optional 16px icon actions (`section.right`) · the
+  labels `text-nav-label` (10 / 500, uppercase, normal tracking, `text-faint`) in an h32 row with optional 16px icon actions (`section.right`) · the
   **bottom row** pinned to the bottom (`tools`: 32×32 ghost icon buttons 4px apart with a Tooltip and an optional
   `count` badge, brand-filled, "99+"; `toolsMenu` in a ••• Menu), stacked in the rail. Items are h32, 4px apart,
   `rounded-control`, `text-chrome` 500, icon 16; inactive `text-muted`, hover `bg-item-hover`, active
@@ -504,7 +504,7 @@ the right. Props: `title`, `productName` (home bar), `logo` / `logoIcon`, `homeH
   green main action (`headerPrimary(enabled)`), disabled until it can run; never a second green button elsewhere on the
   screen (a panel's own action is `BTN_SECONDARY`).
 - **There is no Home button.** Clicking the logo + title returns home in the same tab; pass `onHome` when leaving needs
-  a confirmation. The bar is full width, `h-13`, `bg-panel/95 backdrop-blur-xl border-b border-divider`, sticky.
+  a confirmation. The bar is full width, `h-13`, `bg-app/95 backdrop-blur-xl border-b border-divider`, sticky.
 - Tool apps (an editor around a canvas / 3D view): left `SidePanel` (320 px, collapses to a rail with the sidebar
   icon), sections `p-3 sm:p-3.5 border-b border-divider`, labels `text-ui font-medium text-muted`, rarely used
   options under a collapsed "Tuỳ chọn khác". Floating canvas controls come from `@semi/ui/styles` (`VIEWPORT_TOOLBAR`
@@ -623,7 +623,7 @@ it form by form; the four lint rules below are warnings until 1.0.
 
 - **`FormActions`** is the action row: `Huỷ` (ghost) then `Lưu` (edit) or `Tạo` (`create`, a new record) as the primary,
   right-aligned, with any destructive action (`destructive`, a `variant="danger"` button) alone on the left. On a page it
-  is **sticky** at the bottom of the page (`FORM_ACTIONS_STICKY`: `sticky bottom-0 z-sticky bg-panel`, a line above), lifted
+  is **sticky** at the bottom of the page (`FORM_ACTIONS_STICKY`: `sticky bottom-0 z-sticky bg-app`, a line above), lifted
   above the on-screen keyboard (it follows `visualViewport`) and padded by the safe-area inset; buttons are `h-11` below
   `sm`. In a `Modal` pass `placement="modal"` and put it in `footer`; the primary is then `type="button"` with `onSubmit`
   (the footer sits outside the form). Inside a `<form>` leave `onSubmit` off: the primary submits, so Enter works.

@@ -404,4 +404,11 @@ test("1.0.0 app-shell: comments inside a tag are not props, a > in a comment or 
   assert.ok(shell.shellFlags("<DocsShell { ...rest } />").some((m) => m.startsWith("DocsShell {...spread}")));
   // a spread inside an attribute's braces is not the tag's
   assert.ok(!shell.shellFlags("<AppShell header={{ ...h }} />").some((m) => m.includes("spread")));
+  // an apostrophe in nested JSX text reads as an open string: the tag is left alone and reported, not silently skipped
+  const apostrophe = "import { AppShell } from \"@semi/ui\";\n<AppShell header={<span>Don't</span>} create={a} />";
+  assert.equal(shell.migrateShell(apostrophe), apostrophe);
+  assert.ok(shell.shellFlags(apostrophe).some((m) => m.startsWith("AppShell / DocsShell tag on line 2:")));
+  // a later, readable tag in the same file is still migrated
+  assert.match(shell.migrateShell(apostrophe + "\n<AppShell create={b} />"), /<AppShell header=\{<span>Don't<\/span>\} create=\{a\} \/>/);
+  assert.match(shell.migrateShell(apostrophe + "\n<AppShell create={b} />"), /\n<AppShell mainAction=\{b\} \/>$/);
 });

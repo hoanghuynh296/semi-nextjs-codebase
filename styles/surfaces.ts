@@ -33,7 +33,7 @@ export const STATUS_DOT = {
  * Bleeds to the panel's side padding so cards scroll under an opaque strip; the negative y margin keeps the layout
  * gap unchanged. On phones it sits below the safe area, which `before:` paints over. */
 export const STICKY_TOOLBAR =
-  "sticky top-0 max-md:top-[env(safe-area-inset-top)] z-sticky -mx-4 sm:-mx-6 px-4 sm:px-6 -my-2.5 py-2.5 bg-panel before:absolute before:inset-x-0 before:bottom-full before:h-[env(safe-area-inset-top)] before:bg-panel";
+  "sticky top-0 max-md:top-[env(safe-area-inset-top)] z-sticky -mx-4 sm:-mx-6 px-4 sm:px-6 -my-2.5 py-2.5 bg-app before:absolute before:inset-x-0 before:bottom-full before:h-[env(safe-area-inset-top)] before:bg-app";
 
 /** Tonal tile inside a card (stats, readings, nested rows): one step off the card (bg-card-field), no border. */
 export const TILE = "rounded-control bg-card-field";
@@ -160,10 +160,10 @@ export const FORM_PAGE = "w-full max-w-2xl flex flex-col gap-stack";
 export const FORM_ACTIONS = "flex items-center justify-end gap-2 flex-wrap";
 
 /**
- * `FormActions` on a page: sticks to the bottom of the scrolling page, over the content card (`bg-panel`), with a line above.
+ * `FormActions` on a page: sticks to the bottom of the scrolling page, over the page background (`bg-app`; the panel colour inside the AppShell card), with a line above.
  * The component adds the safe-area padding and lifts it above the on-screen keyboard (`bottom`).
  */
-export const FORM_ACTIONS_STICKY = "sticky bottom-0 z-sticky -mx-4 sm:-mx-6 px-4 sm:px-6 pt-3 bg-panel border-t border-divider";
+export const FORM_ACTIONS_STICKY = "sticky bottom-0 z-sticky -mx-4 sm:-mx-6 px-4 sm:px-6 pt-3 bg-app border-t border-divider";
 
 /** Form field label above an input/select/textarea. */
 export const FIELD_LABEL = "block text-ui font-medium text-muted mb-1";
@@ -189,11 +189,13 @@ export const SHELL_NAV =
 /** The content column: `app`, radius 16 from sm, holds the route header and the content card. */
 export const SHELL_COLUMN = "flex-1 min-w-0 min-h-0 flex flex-col bg-app sm:rounded-panel overflow-hidden";
 /**
- * The content card: `panel`, radius 16 from sm, flush with the column, 4px above its bottom, no border. Sticky strips
- * inside it (STICKY_TOOLBAR, FORM_ACTIONS_STICKY, AppHeader, StickyContextBar) paint `bg-panel`, the card's colour.
+ * The content card: `panel`, radius 16 from sm, flush with the column, 4px above its bottom, no border. Inside it
+ * `bg-app` is the panel colour (`--semi-app`, the variable `bg-app` reads, is set to `--semi-panel` on the card), so
+ * sticky strips that paint `bg-app` (STICKY_TOOLBAR, FORM_ACTIONS_STICKY, AppHeader, StickyContextBar) match the card
+ * and stay `app` on a page without AppShell.
  */
 export const SHELL_CARD =
-  "flex-1 min-w-0 min-h-0 flex flex-col bg-panel sm:rounded-panel sm:mb-1 overflow-x-hidden overscroll-contain";
+  "flex-1 min-w-0 min-h-0 flex flex-col bg-panel sm:rounded-panel sm:mb-1 overflow-x-hidden overscroll-contain [--semi-app:var(--semi-panel)]";
 /** @deprecated Since 1.0: the nav panel is SHELL_NAV. */
 export const SHELL_ASIDE = SHELL_NAV;
 /** @deprecated Since 1.0: the content is SHELL_COLUMN (route header + card) and SHELL_CARD. */

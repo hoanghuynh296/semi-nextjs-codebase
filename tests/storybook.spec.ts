@@ -1100,15 +1100,34 @@ test("AppShell group label (#144, review): 10px / 500, uppercase, normal trackin
 });
 
 for (const theme of THEMES) {
-  test(`sticky strips inside the AppShell content card paint the card's colour (#144, review) · ${theme}`, async ({ page }) => {
+  test(`sticky strips on bg-app: the card's colour inside the AppShell content card, the page's outside (#144, review) · ${theme}`, async ({ page }) => {
     const bg = (sel: string) => page.locator(sel).first().evaluate((el) => getComputedStyle(el).backgroundColor);
     await open(page, "/components/form-actions/", theme);
     const card = await bg("main");
-    expect(card).not.toBe(await page.locator("main").evaluate((el) => getComputedStyle(el.parentElement!).backgroundColor));
-    // FormActions on a page: FORM_ACTIONS_STICKY
-    await expect(page.locator("main .sticky.bottom-0").first()).toBeAttached();
+    const app = await page.evaluate(() => {
+      const probe = document.createElement("div");
+      probe.className = "bg-app";
+      document.body.append(probe);
+      const v = getComputedStyle(probe).backgroundColor;
+      probe.remove();
+      return v;
+    });
+    expect(card).not.toBe(app);
+    // FormActions on a page (FORM_ACTIONS_STICKY) inside the card: the panel colour
+    const strip = page.locator("main .sticky.bottom-0").first();
+    await expect(strip).toBeAttached();
     expect(await bg("main .sticky.bottom-0")).toBe(card);
-    // StickyContextBar: STICKY_TOOLBAR
+    // the same strip on a page without AppShell (outside the card): the app colour, no white bar
+    expect(
+      await strip.evaluate((el) => {
+        const copy = el.cloneNode(true) as HTMLElement;
+        document.body.append(copy);
+        const v = getComputedStyle(copy).backgroundColor;
+        copy.remove();
+        return v;
+      }),
+    ).toBe(app);
+    // StickyContextBar (STICKY_TOOLBAR) and AppHeader inside the card: the panel colour
     await open(page, "/components/sticky-context-bar/", theme);
     expect(await bg("main [role=search].sticky")).toBe(await bg("main"));
   });
