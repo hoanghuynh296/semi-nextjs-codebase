@@ -79,3 +79,14 @@ test("a11y · what it leaves alone: a hit area from a pseudo-element, inline lin
   );
   expect(hits).toEqual([]);
 });
+
+test("a11y · a hit area centred with the translate property (Tailwind 4's -translate-1/2, BTN_HIT) sits on its button, not beside it", async ({ page }) => {
+  // The ::before is the button's own size, centred with `translate: -50% -50%`: read without the translate it would
+  // start halfway across the button and cover the small link 8px to its right.
+  const hits = await audit(
+    page,
+    `<style>.hit{position:relative}.hit::before{content:"";position:absolute;top:50%;left:50%;min-width:100%;min-height:100%;translate:-50% -50%}</style>
+     <div style="display:flex;align-items:center;gap:8px"><button class="ring hit" style="width:100px;height:28px">Copy page</button><a class="ring" href="#" style="display:inline-flex;height:22px">x.md</a></div>`,
+  );
+  expect(hits).toEqual([]);
+});

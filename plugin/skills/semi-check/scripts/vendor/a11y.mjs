@@ -268,10 +268,13 @@ export function a11yAudit(opts) {
           if (s.content === "none" || s.position !== "absolute" || s.pointerEvents === "none" || s.display === "none") continue;
           const m = /matrix\(([^)]+)\)/.exec(s.transform);
           const [tx, ty] = m ? m[1].split(",").slice(4).map(parseFloat) : [0, 0];
-          const x = er.left + e.clientLeft + parseFloat(s.left) + tx;
-          const y = er.top + e.clientTop + parseFloat(s.top) + ty;
           const w = parseFloat(s.width);
           const h = parseFloat(s.height);
+          // the `translate` property (Tailwind 4's translate-* utilities): px or % of the pseudo-element's own size
+          const len = (v, size) => (v?.endsWith("%") ? (parseFloat(v) / 100) * size : parseFloat(v) || 0);
+          const [ux, uy = "0px"] = s.translate && s.translate !== "none" ? s.translate.split(/\s+/) : ["0px"];
+          const x = er.left + e.clientLeft + parseFloat(s.left) + tx + len(ux, w);
+          const y = er.top + e.clientTop + parseFloat(s.top) + ty + len(uy, h);
           if ([x, y, w, h].some(isNaN)) continue;
           [l, t, rt, b] = [Math.min(l, x), Math.min(t, y), Math.max(rt, x + w), Math.max(b, y + h)];
         }
