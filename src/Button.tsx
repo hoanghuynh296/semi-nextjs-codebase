@@ -51,7 +51,7 @@ type Base = Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "children"> & {
    * @default "md"
    */
   size?: ButtonSize;
-  /** Attention count at the top-right corner (brand fill, "99+" cap), for an icon button: unread, waiting jobs. 0 hides it. Hidden from screen readers: say the count in `aria-label`. */
+  /** Attention count at the top-right corner (brand fill, "99+" cap), for an icon button: unread, waiting jobs. 0 hides it. The drawn badge is aria-hidden: with an `aria-label`, say the count in it ("Thông báo, 12 chưa đọc"); without one, Button adds the count as screen-reader text. */
   badge?: number;
   /** Leading icon from the Semi registry. */
   icon?: IconName;
@@ -101,6 +101,8 @@ export function Button({
       {loading ? <Spinner className={iconCls} /> : icon && <Icon name={icon} className={iconCls} />}
       {!iconOnly && children}
       {badge ? <CountBadge count={badge} corner aria-hidden /> : null}
+      {/* No aria-label to carry the count: screen readers get it from here (the drawn badge is aria-hidden). */}
+      {badge && badge > 0 && !rest["aria-label"] && !rest["aria-labelledby"] ? <span className="sr-only">{` (${badge > 99 ? "99+" : badge})`}</span> : null}
     </button>
   );
 }

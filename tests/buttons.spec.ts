@@ -35,3 +35,10 @@ test("Button with a mouse: the drawn size (sm icon 28px), no touch growth", asyn
   const r = await page.locator("#m").boundingBox();
   expect([Math.round(r!.width), Math.round(r!.height)]).toEqual([28, 28]);
 });
+
+test("Button badge: the drawn count is aria-hidden; with an aria-label the label says it, without one the count is screen-reader text", async ({ page }) => {
+  await page.goto("/components/badge/");
+  const ex = page.locator('[data-example="badge/attention"]');
+  await expect(ex.getByRole("button", { name: "Thông báo, 3 chưa đọc", exact: true })).toBeVisible();
+  await expect(ex.getByRole("button", { name: "Duyệt (2)", exact: true })).toBeVisible();
+});

@@ -56,7 +56,7 @@ export default function BadgeTones() {
 
 ### Attention marks
 
-CountBadge in the brand fill (99+ cap; tone="neutral" for a plain count), Button badge at an icon button's corner, NewTag: the brand at 18% behind brand text, or the strong text where the brand is not AA on it.
+CountBadge in the brand fill (99+ cap; tone="neutral" for a plain count), Button badge at a button's corner (the count goes in an icon button's aria-label; a button with text and no aria-label gets it as screen-reader text), NewTag: the brand at 18% behind brand text, or the strong text where the brand is not AA on it.
 
 ```tsx
 import { Button, CountBadge, NewTag } from "@semi/ui";
@@ -66,6 +66,9 @@ export default function BadgeAttention() {
     <div className="flex flex-wrap items-center gap-4">
       <Button variant="ghost" iconOnly icon="bell" aria-label="Thông báo, 3 chưa đọc" badge={3} />
       <Button variant="ghost" iconOnly icon="mail" aria-label="Hộp thư, hơn 99 chưa đọc" badge={240} />
+      <Button size="sm" icon="check" badge={2}>
+        Duyệt
+      </Button>
       <span className="inline-flex items-center gap-2 text-ui text-body">
         Chờ duyệt <CountBadge count={5} />
       </span>

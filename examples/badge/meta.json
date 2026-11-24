@@ -34,7 +34,7 @@
     {
       "file": "attention",
       "title": "Attention marks",
-      "description": "CountBadge in the brand fill (99+ cap; tone=\"neutral\" for a plain count), Button badge at an icon button's corner, NewTag: the brand at 18% behind brand text, or the strong text where the brand is not AA on it."
+      "description": "CountBadge in the brand fill (99+ cap; tone=\"neutral\" for a plain count), Button badge at a button's corner (the count goes in an icon button's aria-label; a button with text and no aria-label gets it as screen-reader text), NewTag: the brand at 18% behind brand text, or the strong text where the brand is not AA on it."
     }
   ]
 }

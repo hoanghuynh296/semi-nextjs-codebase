@@ -149,7 +149,7 @@ export default function ButtonSizes() {
           Sửa (sm)
         </Button>
         <Button icon="edit">Sửa (md)</Button>
-        <Button variant="ghost" iconOnly icon="bell" aria-label="Thông báo" badge={12} />
+        <Button variant="ghost" iconOnly icon="bell" aria-label="Thông báo, 12 chưa đọc" badge={12} />
       </div>
       <div className="flex gap-2 max-w-sm">
         <Button size="modal" className="flex-1">
@@ -173,7 +173,7 @@ export default function ButtonSizes() {
 | `ref` | `React.Ref<HTMLButtonElement>` |  |  |
 | `variant` | `ButtonVariant` | `"subtle"` | Look of the button. `subtle` ordinary action · `surface` toolbar action · `inverse` the main action of a card or a list title row · `outline` beside an inverse one · `ghost` icon buttons, the nav bottom row · `primary` / `secondary` the brand fill, only for the one main button of a page, a dialog (its commit) or the nav, or a case the app's owner asks for (`secondary` is the brand secondary; the primary when the brand has none) · `danger`. Disabled is neutral for every variant. |
 | `size` | `'xs' \| 'sm' \| 'md' \| 'modal'` | `"md"` | md = h-control (34px, 14px text) · sm = 28px, 12px text (dense rows, toolbars) · xs = 24px, 12px text (the inverse pill of a list title row) · modal = 44px and 15px text on phones, h-control from sm (dialog footers, a full-width commit). |
-| `badge` | `number` |  | Attention count at the top-right corner (brand fill, "99+" cap), for an icon button: unread, waiting jobs. 0 hides it. Hidden from screen readers: say the count in `aria-label`. |
+| `badge` | `number` |  | Attention count at the top-right corner (brand fill, "99+" cap), for an icon button: unread, waiting jobs. 0 hides it. The drawn badge is aria-hidden: with an `aria-label`, say the count in it ("Thông báo, 12 chưa đọc"); without one, Button adds the count as screen-reader text. |
 | `icon` | `IconName` |  | Leading icon from the Semi registry. |
 | `loading` | `boolean` | `false` | Shows a spinner in place of the icon and blocks clicks (aria-busy). |
 | `fullWidth` | `boolean` | `false` |  |
