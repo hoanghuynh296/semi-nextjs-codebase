@@ -16,6 +16,11 @@ not from `main`:
 So rules, skills and scripts that are merged into `main` but not released never reach apps that still use the last
 release of `@semi/ui`. (Before #160 the source was `"./plugin"`, which installed whatever was on `main`.)
 
+**Installed before the pin?** A plugin installed from `main` while the source was `"./plugin"` is also labelled
+0.36.1, and `/plugin marketplace update` / `claude plugin update` compare versions, so they keep that copy. Reinstall
+once to get the tag: `claude plugin uninstall semi-design@semi-marketplace`, then
+`claude plugin install semi-design@semi-marketplace` (or the same in `/plugin`), then restart the session.
+
 ## What follows the pin
 
 - **The plugin's files** (`plugin/`: rules, skills, hooks, the MCP launcher) come from the tag in `ref`.
