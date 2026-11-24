@@ -144,13 +144,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           ))}
         </Card>` : `<EmptyState title=${J(copy.list)} description={${J(copy.empty)}} />`}
       </div>`
-      : `      <section className="rounded-panel border-card bg-panel">
-        <div className="p-6 @2xl:p-10 space-y-4 @2xl:max-w-2xl">
-          <h2 className="font-display font-title text-section @2xl:text-tab-xl leading-tight text-strong">{${J(copy.title)}}</h2>
-          <p className="text-lead text-body">{${J(copy.lead)}}</p>
-          <Button variant="primary">{${J(copy.action)}}</Button>
-        </div>
-      </section>
+      : `      <Card padding="panel" className="space-y-2 @2xl:max-w-2xl">
+        <h2 className="text-section text-strong">{${J(copy.title)}}</h2>
+        <p className="text-lead text-body">{${J(copy.lead)}}</p>
+      </Card>
       <EmptyState title=${J(copy.list)} description={${J(copy.empty)}} />`;
     // The shell lives in the route-group layout (stays mounted while people navigate); pages render only content
     // (DESIGN_SYSTEM.md "Shell lifecycle", semi-lint app-shell-in-page / shell-nav-href). Loading inside the shell is
@@ -164,7 +161,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       `"use client";
 
 import { usePathname } from "next/navigation";
-${logoImport}import { AppShell, ThemeToggle, type ShellNavSection } from "@semi/ui";
+${logoImport}import { AppShell, type ShellNavSection } from "@semi/ui";
 
 const SECTIONS: ShellNavSection[] = [
   { label: "Ứng dụng", items: [{ id: "home", label: "Tổng quan", shortLabel: "Trang chủ", icon: "grid", href: "/" }, { id: "list", label: ${J(copy.list)}, icon: "box", href: "/list" }] },
@@ -180,7 +177,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       ${logoEl ? `logo={${logoEl}}` : `logoIcon="layers"`}
       sections={SECTIONS}
       activeId={active}
-      account={() => <ThemeToggle />}
+      // Who is signed in: the route header's avatar menu (with the theme). Replace with the real session.
+      header={{ account: { name: "Quản trị viên" } }}
     >
       {children}
     </AppShell>
@@ -221,7 +219,9 @@ export default function SettingsPage() {
 }
 `,
     );
-    const used = ["Button", "Card", "EmptyState", "KpiCard"].filter((n) => main.includes(`<${n}`));
+    // A work page (DESIGN_SYSTEM.md §4a): the page's one main action (the brand fill, §0) on the title row.
+    const titleRow = `<PageTitle title={${J(appName)}} actions={<Button variant="primary">{${J(copy.action)}}</Button>} />`;
+    const used = ["Button", "Card", "EmptyState", "KpiCard"].filter((n) => main.includes(`<${n}`) || titleRow.includes(`<${n}`));
     writeFileSync(
       join(group, "page.tsx"),
       `import { ${[...used, "PageTitle"].join(", ")} } from "@semi/ui";
@@ -230,7 +230,7 @@ ${header}
 export default function HomePage() {
   return (
     <>
-      <PageTitle title={${J(appName)}} />
+      ${titleRow}
       <div className="@container space-y-5">
 ${main}
       </div>
@@ -244,7 +244,7 @@ ${main}
     const items = copy.items.length
       ? `
         <section className="space-y-4">
-          <h2 className="font-display font-title text-section text-strong">{${J(copy.list)}}</h2>
+          <h2 className="font-display text-section text-strong">{${J(copy.list)}}</h2>
           <div className="grid gap-3 @lg:grid-cols-2 @3xl:grid-cols-3">
             {${J(copy.items)}.map((item) => (
               <Card key={item} interactive className="p-4 flex items-center gap-3">
@@ -257,8 +257,8 @@ ${main}
       : "";
     const proof = copy.proof
       ? `
-          <div className="rounded-panel bg-item-selected p-6 @3xl:p-8 flex flex-col justify-center gap-2 min-h-48">
-            <div className="font-figure font-title text-tab-xl tabular-nums leading-none text-strong">{${J(copy.proof.value)}}</div>
+          <div className="rounded-panel bg-card p-6 @3xl:p-8 flex flex-col justify-center gap-2 min-h-48">
+            <div className="font-figure font-normal text-tab-xl tabular-nums leading-none text-strong">{${J(copy.proof.value)}}</div>
             <div className="text-lead text-body">{${J(copy.proof.label)}}</div>
           </div>`
       : "";
@@ -273,14 +273,14 @@ export default function HomePage() {
           ${logoEl ?? `<span className="font-display font-title text-lead text-strong">{${J(appName)}}</span>`}
           <div className="ml-auto flex items-center gap-2">
             <ThemeToggle />
-            <Button variant="primary">{${J(copy.action)}}</Button>
+            <Button variant="outline">{${J(copy.action)}}</Button>
           </div>
         </div>
       </header>
       <main className="@container px-4 sm:px-8 py-10 space-y-12">
         <section className={\`grid gap-8 items-center ${copy.proof ? "@3xl:grid-cols-[3fr_2fr]" : ""}\`}>
           <div className="space-y-4">
-            <h1 className="font-display font-title text-section @3xl:text-tab-xl leading-tight text-strong">{${J(copy.title)}}</h1>
+            <h1 className="font-display text-hero font-normal text-strong">{${J(copy.title)}}</h1>
             <p className="text-lead text-body max-w-xl">{${J(copy.lead)}}</p>
             <Button variant="primary">{${J(copy.action)}}</Button>
           </div>${proof}

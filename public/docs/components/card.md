@@ -1,6 +1,6 @@
 # Card
 
-The bento content card: the card surface (bg-card, separated from the page by tone, no visible border in Flat and Soft) with the style's radius and resting shadow. bordered frames a dense data view; interactive adds hover / press, active marks the selected or running item.
+The bento content card: the card surface (bg-card, separated from the page by tone: no border, no shadow, rounded-card). bordered frames a dense data view; interactive adds hover / press, active marks the selected or running item.
 
 ## When to use
 

@@ -1,157 +1,191 @@
 # Semi Design System
 
-**This file is the single source of truth for every UI rule of every Semi app** (3D Noobs Studio and the other Semi
-products). Rules change **only in the semi repo** (`hoanghuynh296/semi-nextjs-codebase`): update this file,
+**This file is the single source of truth for every UI rule of every Semi app** (3D Noobs Studio, sales-hub and the
+other Semi products). Rules change **only in the semi repo** (`hoanghuynh296/semi-nextjs-codebase`): update this file,
 `QUICK_REF.md` and `DECISIONS.md` in the same commit as the code, extend `lint/semi-lint.mjs` when the rule can be
 grepped, then release a new version (see the repo README). Apps never keep their own copy of a rule; agent memory,
 skills, AGENTS.md and plan docs only point here. A rule that lives in two places drifts.
 
-Apps read this file from `node_modules/@semi/ui/docs/DESIGN_SYSTEM.md` (the version they installed).
+Apps read this file from `node_modules/@semi/ui/docs/DESIGN_SYSTEM.md` (the version they installed). Companion docs:
+`TOKENS.md` (every token name and value), `QUICK_REF.md` (the cheatsheet), `MIGRATION-1.0.md` (moving an app from 0.x),
+`BRANDS.md` (brand kits), `ICONS.md`. Tokens: `@semi/ui/tokens.css` (generated from `tokens/tokens.json`). Base layer:
+`@semi/ui/base.css`. Components: `@semi/ui`; class constants: `@semi/ui/styles` (§16). Lint: `npx semi-lint`.
 
-The UI is a **restrained product theme, dark and light,** with a **bento card layout**: neutral page, rounded cards with thin
-borders, a neutral icon menu, uniform chips and tags with coloured dots, pure neutral greys, the brand's primary colour
-(Semi green without a brand kit) only on the main button and a few attention marks, few words. A brand kit (`BRANDS.md`)
-sets the primary (and an optional secondary) fill, fonts, logo and voice. Token names: `docs/TOKENS.md`.
+**1.0.** Semi 1.0 is one breaking release built in tickets T1–T12 (#141–#153). A rule below marked **(T5, pending)**
+is the 1.0 target whose component has not merged yet: build the rest of the screen to it, use what Semi ships today
+for that part (named next to it), and never write a local stand-in for it. `MIGRATION-1.0.md` has the status of each
+ticket.
 
-Quick cheatsheet: `QUICK_REF.md`. Tokens: `@semi/ui/tokens.css` (generated from `tokens/tokens.json`). Base layer:
-`@semi/ui/base.css`. Shared building blocks: `@semi/ui` (components) and `@semi/ui/styles` (class constants), see §16;
-use them instead of re-typing class strings. Lint: `npx semi-lint` (config `semi-lint.json`, also run by the agent edit
-hook of the `semi-design` plugin).
+## 0. The 1.0 look in one page
 
-## Core principles
+A **restrained product UI, dark and light**: a neutral grey frame, panels and cards that separate by tone (no borders,
+no shadows), compact 12px shell chrome around 14px content, headings that are not bold, ordinary actions in neutral
+buttons and the brand colour on very few things. Few words; icons where they help scanning.
+
+### Brand colour rule
+
+The brand primary (`bg-primary` + `text-on-primary`) and the optional brand secondary (`bg-secondary` +
+`text-on-secondary`) are used **only** for:
+
+1. **The main button of a whole page or of a modal:** its commit action (Gửi, Lưu, Gửi yêu cầu báo giá). **At most one
+   filled brand button per page and per modal**; a second one is a warning (`primary-actions`), unless the app's owner
+   asked for that case (say so in a comment).
+2. **The nav's one main action** (`mainAction` of `AppShell`).
+3. **The active underline of big text tabs** (`decoration-primary`).
+4. **Attention marks:** count badges that ask for action (unread, to approve) and "Mới" tags.
+5. **A case the app's owner asks for** (say so in a comment where it is used).
+
+Nothing else. Links, check marks, active tabs, selection, focus rings, toggles, charts' first series, icons and
+headings are neutral. Every ordinary action is a neutral button (subtle, surface, inverse, outline, ghost: §9). Status
+colours (success, warning, danger, info) are one fixed palette for every brand and carry meaning only (§3). Owner
+decisions C-006, C-008.
+
+### When to use which
+
+**Buttons** (§9, `Button variant`; T4, #146):
+
+| Need | Variant |
+|---|---|
+| An ordinary action (Lưu bản nháp, Xuất, Lọc) | `subtle` (the default) |
+| A toolbar action (Mời, Tuỳ chỉnh) | `surface` |
+| The main action of a card, or of a list page's title row (Thêm, Xem) | `inverse` (the pill: small, fully round) |
+| A secondary action beside an inverse one (Chia sẻ) | `outline` |
+| An icon button (32×32), the nav bottom row, a quiet row action | `ghost` |
+| The one commit action of a page or modal; the nav's main action; a case the owner asked for | `primary` (or `secondary`, when the brand has one) |
+| A destructive confirm in a dialog | `danger` |
+
+**Tabs and filters** (T5, pending: until then `Tabs`, `Pills`, `TextTabs`, `PageTabsTitle` as they are today):
+
+| Need | Use |
+|---|---|
+| 5+ sections of one page, or sections with icons (Cấu hình) | `PillTabs` |
+| 2–5 filter values shown in full, often with counts (Đang mở · Đã đóng · Tất cả) | `SegmentedControl` |
+| 2–4 sub-pages of a page, as its heading (display face, brand underline) | big `TextTabs` |
+| Filters of a list (status, owner, date) | `FilterChipRow` (md+) / `PhoneFilterBar` + `FilterPanel` (phones) |
+| Sections of one record inside a card | `Tabs` (underline) |
+
+**Page layouts** (§4a; T7, pending):
+
+| Page | Layout |
+|---|---|
+| A list, a table, a workspace: people work in it all day | **work**: flush, no centred max-width, card padding 16 / 24 |
+| Settings, an explore or catalogue page, an article: people read it | **reading**: one column centred at max 1536px, 16px card padding, 64px bottom |
+| An area with its own sub-pages (Cấu hình › Tài khoản, Thông báo …) | **two-column**: a 240px sub-nav card, then the main card |
+| A mailbox, a queue, chats: a list and the open item side by side | **list + reader**: a list card and a reader card |
+
+### Core principles
 
 - **Few words, icons where they help scanning.** Nav items, actions, statuses and empty states carry an icon; a label,
-  a row or a card title does not need one (§19). Minimal text: no subtitle or caption under page titles, no captions
-  that repeat what an icon already says.
-- **Flat, no glow, no gradients.** No gradient fills, no blurred colour blobs, no coloured `shadow-[0_0_…]` glows
-  (buttons, cards, status dots, power buttons). Depth comes from the surface tokens and translucent white overlays
-  (`shadow-card` is none); emphasis ("on", active, selected) comes from a neutral fill (`bg-inverted`,
-  `bg-item-selected`) or a `border-outline-line` border.
-  The only gradient is the skeleton shimmer sweep in `base.css`.
-- **Colour on content, not on chrome.** The nav menu is neutral (grey icons, no count badges; active item =
-  `bg-raised text-strong`). Colour goes where it helps reading the content: a coloured dot or icon on filter chips
-  and tags, card icon tiles use their area's soft tint, primary marks the main action and "on". Status colours (§3)
-  appear only where they carry a state.
-- **Unified sub-page toolbar.** Sub-pages open with a large `font-display` title (text only), followed by a single
-  sticky toolbar row: pill filter tabs on the left, the icon-only primary CTA (`BTN_PRIMARY` + `BTN_ICON`) + secondary
-  filter/search/refresh controls on the right (§4). All toolbar controls share `h-control` and `text-ui font-medium`.
-- **Space first, then frames.** Group with white space; put a group in a card (`rounded-card`) when it is one thing
-  people act on, and nested facts in tiles. At most three frames inside each other, one line between two things
-  (§4c): a screen of boxes in boxes reads as noise.
-- **One look.** Every brand and app shares the same neutrals, radii, control sizes and type scale (`docs/TOKENS.md`);
-  there are no styles and no `data-style` since 1.0.
-- **Brand colour for the main button only.** `bg-primary` (Semi default green `#00AE42`; a product gets its own from its
-  brand kit, see §2b) for the one main button of a page, modal or nav, attention badges / "New" tags and the active
-  big-tab underline. Selection, links and focus are neutral; status colours carry meaning only (§3).
-- **Phone first.** Used from iPhone and iPad: no horizontal page scroll at 375px, touch targets ≥ 36px (44px for nav),
-  the home logo header is hidden under 768px (`md`).
-- **No scrollbars.** Scrollbars are hidden on every page and screen size (`base.css`); areas still scroll. Don't add
-  scrollbar styling back (`custom-scrollbar` is a no-op kept on old elements).
-- **App-styled controls only.** No native `<select>`, `<input type="date">` or `type="number"`: their OS popups ignore
-  the theme (iPad shows a white iOS wheel). Use `CustomSelect`, `DatePicker`, `NumberInput`.
+  a row or a card title does not need one (§19). No subtitle or caption under page titles, no caption that repeats what
+  an icon says.
+- **Flat, no glow, no gradients.** Depth comes from the neutral surface steps (§2); emphasis ("on", active, selected)
+  comes from a neutral fill (`bg-inverted`, `bg-item-selected`, `bg-item-checked`) or a `border-outline-line` border.
+  The only gradient is the skeleton shimmer.
+- **Neutral chrome, colour on content.** The nav is neutral (grey 16px icons, the active item `bg-item-selected
+  text-strong`). Colour goes where it helps reading content: a status badge, a coloured dot on a filter chip, a tile
+  tone. The brand colour follows the rule above.
+- **Space first, then frames.** Group with white space; a card (`rounded-card`) only for one thing people act on. At most
+  three frames inside each other, one line between two things (§4c).
+- **One look.** Every brand and app shares the same neutrals, radii, control sizes and type scale (`TOKENS.md`). There
+  are no styles and no `data-style` since 1.0. A brand changes its two fills, its fonts, its logo and its voice; a
+  product changes its density and type scale (§19).
+- **Phone first.** No horizontal page scroll at 375px; touch targets 44px; fields you type in are 16px below `sm`.
+- **No scrollbars.** Hidden everywhere (`base.css`); areas still scroll.
+- **App-styled controls only.** No native `<select>`, `<input type="date">` or `type="number"` (their OS popups ignore
+  the theme): `CustomSelect`, `DatePicker`, `NumberInput`.
 
 ## 1. Typography
 
-1.0 scale and names: **`docs/TOKENS.md`** (the contract; values in `tokens/tokens.json`).
+Names and values: **`TOKENS.md`** "Type scale" (the contract; values in `tokens/tokens.json`).
 
 | Role | Classes |
 |---|---|
-| Hero | `font-display text-hero font-normal text-strong` |
-| Reading-page title (one column) | `font-display text-title-xl font-medium text-strong` |
-| Page title in a content card | `text-figure font-normal text-strong`, on the row of the page's main action |
-| Big text tabs | `font-display text-tab-xl` (T5) |
-| Section heading | `text-section text-strong` (500 from the token) |
-| Card title, lead text | `text-lead font-medium text-strong` |
-| Content: rows, form labels and help, field values, buttons, menu items, dialog text, body, reading copy | `text-ui` (14px, the content size) `text-body` / `text-muted` |
-| Shell chrome: nav, breadcrumb, toolbar compact buttons, meta (timestamps, counts, hints) | `text-chrome` (12px) `text-body` / `text-muted` |
-| Group label, kbd hint, "Untitled" | `text-chrome text-faint` |
+| Hero | `font-display text-hero font-normal text-strong` (36, 32 below sm) |
+| Reading-page title (one column) | `font-display text-title-xl font-medium text-strong` (44) |
+| Page title of a work page, in its content card | `text-figure font-normal text-strong` (18 / 400), on the row of the page's main action (T7, pending: `PageTitle` still draws the 0.x display title) |
+| Big text tabs | `font-display text-tab-xl` (28, 24 below sm; T5) |
+| Section heading | `text-section text-strong` (20 / 500 from the token) |
+| Card title, lead text | `text-lead font-medium text-strong` (15) |
+| **Content**: list and table rows, form labels and help, field values, buttons, menu items, dialog text, body | `text-ui` (**14**) `text-body` / `text-muted` |
+| **Shell chrome**: nav, breadcrumb, route header, toolbar compact buttons, meta (times, counts, hints), kbd, badges, tooltips | `text-chrome` (**12**) `text-body` / `text-muted` |
+| Group label, kbd hint, "Untitled" | `text-chrome text-faint`; the nav group label is `text-nav-label` (10 / 500 uppercase, normal tracking, faint; AppShell draws it) |
+| Section label in a form or detail panel ("MODEL", "PROMPT") | `text-overline text-muted` (11 / 600 / +0.1em uppercase) |
 | Tag, chip | `text-tag` (10 / 500 / +0.02em) |
 | Count badge | `text-badge` (10 / 700) |
-| Section label (overline) | `text-overline text-muted`: 11 / 600 / +0.1em, the only uppercase text (C-032) |
-| Numbers (temperatures, %, times, money, counts) | add `tabular-nums` |
-| Code (code editors, parameter keys, error codes) | `font-mono`, only there |
+| Numbers | add `tabular-nums` |
+| Code | `font-mono`, only there |
 
-Two families: `font-sans` (the UI face, brand `fonts.sans`, default Geist, loaded with `next/font` as `--font-geist` or
-set through `--font-sans-family`) for everything, and `font-display` (brand `fonts.display`, `--font-display-family`;
-without one it is the UI sans) only for hero, reading-page titles, big tabs and editorial section heads. ui-monospace
-only for code. **Headings are not bold:** 400 and 500 do almost everything (`font-title` is 500); 600 only for overlines
-and a few emphasised labels; 700 only in count badges. Tracking −0.01em on display sizes ≥ 20px (in the tokens). Sizes
-come from the type scale tokens, never `text-[13px]` and never Tailwind's `text-xs` / `text-sm` / `text-base`. Content is
-14px (`text-ui`); only the shell chrome is 12px (`text-chrome`), see `docs/TOKENS.md` for which piece uses which.
+- **Two UI sizes (C-011):** content is 14px (`text-ui`); only the shell chrome around the work is 12px
+  (`text-chrome`). When unsure, it is content. `TOKENS.md` lists which Semi piece uses which.
+- **Headings are not bold.** 400 and 500 do almost everything (`font-title` is 500); 600 only for overlines, "n đã chọn"
+  and a few emphasised labels; 700 only in count badges. Never `font-bold`.
+- **Two families.** `font-sans` (the UI face: brand `fonts.sans`, default Geist) for everything; `font-display` (brand
+  `fonts.display`, falling back to the UI sans) only for the hero, reading-page titles, big tabs and editorial section
+  heads. Tracking −0.01em on display sizes from 20px (in the tokens).
+- **Overline** (`text-overline`) is the only uppercase text, and only as a **group or section label**: a nav or drawer
+  group, a palette group, a mega menu column, a section of a form or detail panel. Never the label of one field, a
+  button, a link, a table cell or a heading (`overline-place`).
+- Sizes come from the type tokens only, never `text-[13px]` or `text-xs` / `text-sm` / `text-base`. Every size carries
+  its line height (about 1.5 for UI and body: 12/18, 14/22, 15/24; 1.1–1.3 for display), so text rarely needs
+  `leading-*`. Minimum `text-tag` / `text-badge` (10px, marks only). Sentence case for buttons and labels ("Lưu", "Xem
+  lại"). Sizes are emitted in rem, so text follows the browser's font size (WCAG 1.4.4).
+- **Fields on a phone:** text you type in is 16px below `sm` (`max-sm:text-input`): iOS zooms into a field under
+  16px and never zooms back. Never `maximum-scale` / `user-scalable=no`. `FIELD_INPUT`, `FIELD_TEXTAREA` and every
+  Semi text-entry control (Input, SearchInput, NumberInput, InputGroup, InputOTP, Textarea, CustomCombobox, Command, the
+  Chat composer) already do it; a field of your own adds `max-sm:text-input`. Touch rows stay 14.
 
-**Fields on a phone:** text you type in is 16px (`text-input`) below `sm`, whatever the field's desktop size. iOS Safari
-zooms the page into a focused field under 16px and never zooms back; the fix is the text size, never `maximum-scale` /
-`user-scalable=no` in the viewport (it blocks pinch zoom, an a11y failure). `FIELD_INPUT`, `FIELD_TEXTAREA` and every
-Semi text-entry control (Input, SearchInput, NumberInput with `FIELD_INPUT`, InputGroup, InputOTP, Textarea, CustomCombobox,
-Command, the Chat composer) already do it; a field of your own, or a NumberInput whose caller passes its own `text-ui`,
-adds `max-sm:text-input`. `base.css` does the same for a bare
-`<input>` / `<textarea>` / `<select>`; the height stays `h-control` / `h-field`.
+## 2. Colour tokens
 
-Minimum `text-tag` / `text-badge` (10px, marks only). Content (rows, labels, help, buttons, sentences) is `text-ui`
-(14px); the shell chrome and meta are `text-chrome` (12px). Every size carries its line height (about 1.5 for UI and body: 14/22, 12/18, 15/24;
-1.1–1.3 for display sizes), so text rarely needs `leading-*`. Button and
-label text is sentence case ("Lưu", "Xem lại"), never ALL CAPS. Sizes are written in px here and in `tokens.json`
-but `tokens.css` emits them in rem (14px = 0.875rem), so text grows with the browser's default font size (WCAG 1.4.4).
+Components and apps use the semantic utilities only, never a hex, a palette shade (`bg-white`, `text-slate-900`,
+`text-amber-600 dark:text-amber-400`) or a `dark:` pair. Every token has a value per theme, so one class works in dark
+and light. Full list with values: **`TOKENS.md`**.
 
-## 2. Dual-Theme & Semantic Tokenization (Two-Tier Tokens)
+| Group | Utilities | Use |
+|---|---|---|
+| Surfaces (pure neutral, same for every brand) | `bg-canvas`, `bg-app`, `bg-panel`, `bg-field`, `bg-field-focus`, `bg-raised`, `bg-raised-2`; `bg-card`, `bg-card-field`, `bg-panel-0…4` | frame, content column, nav / card / modal, input fill, segmented track and toolbar buttons, segmented active pill |
+| Text tiers | `text-strong`, `text-body`, `text-muted`, `text-faint` | titles and values; card text; descriptions, inactive items, breadcrumb, placeholders; group labels, kbd hints, "Untitled" |
+| Lines | `border-field-line`, `border-field-line-focus`, `border-outline-line`, `border-line`, `border-divider`, `border-control-line` | input at rest / on focus (T6), outline buttons and a selected card, frames, dividers, checkboxes and radios |
+| Neutral states | `bg-item-hover`, `bg-item-selected`, `bg-item-checked`, `bg-subtle-button`, `bg-inverted` + `text-on-inverted`, `ring-focus` / `border-focus` | hover; the open record or active item; checked rows in selection mode; ordinary buttons; checked controls and the inverse button; focus |
+| Brand fills | `bg-primary` / `hover:bg-primary-hover` + `text-on-primary`; `bg-secondary` / `hover:bg-secondary-hover` + `text-on-secondary` | only what the brand colour rule (§0) allows |
+| Status (same for every brand) | `text-*-fg`, `bg-*-bg`, `border-*-border`, `bg-*-solid` + `text-on-solid`; `text-tone-*` | danger, success, warning, info; tile and tag tones |
 
-Semi architecture separates tokens into two tiers:
-- **Tier 1 (Primitives & Brand):** Fixed raw hex palettes (`primary-*`, `emerald-*`, `gray-*`, `rose-*`, `amber-*`, `sky-*`) defined in `tokens/tokens.json`.
-- **Tier 2 (Semantic Tokens):** Dynamic CSS variables that automatically adapt according to the active theme (`data-theme="dark"` or `data-theme="light"`). Developers build UI exclusively with Semantic Tokens (`bg-panel`, `bg-field`, `text-strong`, `text-body`, `text-muted`, `border-line`), eliminating hard-coded physical colors and manual `dark:bg-...` / `light:bg-...` conditional classes.
+- **Text on surfaces:** every tier reaches 4.5:1 on `panel`, `app`, `canvas` and `card` in its theme; `text-strong`,
+  `text-body` and `text-muted` also on `card-field`, `raised` and the item fills. `text-faint` is for page surfaces and
+  the card only. The token build checks every pair and fails on a miss.
+- **Selection is neutral:** `bg-item-hover` (hover), `bg-item-selected` (the open record, the active nav item, the
+  selected option), `bg-item-checked` (checked rows or cards in selection mode); a checked control is `bg-inverted`.
+  Light row states step hover < checked < selected, each visible on a card (C-010).
+- **Focus is neutral:** `ring-focus` / `border-focus` (the strong text colour, ≥ 3:1 everywhere), never the brand.
+- There is **no brand-derived colour**: no tinted greys, no `accent-*`, no `primary-50…900` scale (removed in 1.0;
+  `MIGRATION-1.0.md`).
 
-### Semantic Tokens Mapping Table
+### Surfaces (C-030)
 
-The full list with values and roles is **`docs/TOKENS.md`**. In short:
+Pages separate by **tone, not borders**. One numbered scale from the outer frame to the brightest step:
 
-| Group | Utilities |
-|---|---|
-| Surfaces (pure neutral) | `bg-canvas`, `bg-app`, `bg-panel`, `bg-field`, `bg-field-focus`, `bg-raised`, `bg-raised-2`; `bg-card`, `bg-card-field`, `bg-panel-0…4` |
-| Text tiers (≥ 4.5:1 on panel, app, canvas, card; all but faint also on card-field, raised and item fills: `docs/TOKENS.md`) | `text-strong`, `text-body`, `text-muted`, `text-faint` |
-| Lines | `border-line`, `border-line-hover`, `border-divider`, `border-control-line`, `border-field-line`, `border-field-line-focus`, `border-outline-line` |
-| Neutral states | `bg-item-hover`, `bg-item-selected`, `bg-item-checked`, `bg-subtle-button`, `bg-tint`, `bg-inverted` + `text-on-inverted`, `ring-focus` / `border-focus` |
-| Brand fills (main buttons, attention) | `bg-primary` / `hover:bg-primary-hover` + `text-on-primary`; `bg-secondary` / `hover:bg-secondary-hover` + `text-on-secondary` |
-| Status (same for every brand) | `text-*-fg`, `bg-*-bg`, `border-*-border`, `bg-*-solid` + `text-on-solid`; `text-tone-*` |
+| Step | Utility | Use |
+|---|---|---|
+| `panel-0` | `bg-panel-0` = `bg-canvas` | the frame around the panels |
+| `panel-1` | `bg-panel-1` | a band between the frame and the content (rare) |
+| `panel-2` | `bg-panel-2` = `bg-app` | the content column; holds the route header |
+| `panel-3` | `bg-panel-3` | a calm block inside the content (an inset area, a workspace control panel) |
+| `panel-4` | `bg-panel-4` = `bg-panel` | nav panel, content card of the frame, sub-nav card, modal, popover, menu, toast |
+| card | `bg-card` | a card inside content: `CARD`, `<Card>`, `HERO` |
+| card-field | `bg-card-field` | tiles, readings, table heads inside a card (`TILE`) |
+| tint / tint-hover | `bg-tint`, `hover:bg-tint-hover` | `ICON_BTN`, `MODAL_CLOSE`; `tint-hover` is the hover of a subtle button (`BTN_SUBTLE`, fill `bg-subtle-button`) |
+| inverted | `bg-inverted` + `text-on-inverted` | checked controls, the selected day, the inverse button |
 
-States never use a fixed palette shade with alpha (`ring-primary-500/50`, `bg-primary-500/15`): use `ring-focus`,
-`bg-item-selected` / `bg-item-checked`, `border-outline-line` (`accent-state-token`). The `primary-*` scale is gone
-since 1.0.
+- Dark: canvas #101010, app #161616, panel #1a1a1a; light: canvas #ebebeb, app #f3f3f3, panel #ffffff. The steps
+  between, the card, the fills and inverted are mixed from them in CSS (`color-mix(in oklab, …)`).
+- **Cards have no border** (`card-border` is a transparent 1px, so hover borders do not move the layout). A dense data
+  view that needs an edge uses `<Card bordered>` / `CARD_BORDERED`.
+- **A block that means "card" is `bg-card`**, never `bg-panel` (that is the frame's panel, modal and popover step).
+- `bg-card` and `bg-card-field` are `@utility` rules, so opacity modifiers (`bg-card/80`) do not work; `var(--color-card)`
+  is there for app CSS.
 
-### Surfaces (C-030, #93)
-
-Pages separate by **tone, not borders** (measured on magnific.com, owner decision C-030). One numbered scale, from the
-outermost frame to the brightest step, plus the card and two fills:
-
-| Step | Utility | Value | Use |
-|---|---|---|---|
-| `panel-0` | `bg-panel-0` = `bg-canvas` | canvas | The frame around the bento shell (`SHELL_OUTER md:bg-canvas`) |
-| `panel-1` | `bg-panel-1` | halfway canvas → app | A band between the frame and the content (rare) |
-| `panel-2` | `bg-panel-2` = `bg-app` | app | Main content (`SHELL_MAIN`, page background) |
-| `panel-3` | `bg-panel-3` | halfway app → panel | A calm block inside the content (sticky bars, inset areas) |
-| `panel-4` | `bg-panel-4` = `bg-panel` | panel | Sidebar (`SHELL_ASIDE`), modal, popover, menu, toast |
-| card | `bg-card` | dark: panel + 5% text-strong (above the panel); light: app + 5% text-strong (recessed) | Content cards: `CARD`, `<Card>`, `HERO` |
-| card-field | `bg-card-field` | card + 5% (dark) / 3% (light) text-strong | Tiles, readings, table heads inside a card (`TILE`) |
-| tint / tint-hover | `bg-tint`, `hover:bg-tint-hover` | text-strong at 7% / 11% (dark), 5% / 9% (light) | `ICON_BTN`, `MODAL_CLOSE`; `tint-hover` is the hover of a subtle button (`BTN_SUBTLE`): no border |
-| inverted | `bg-inverted` + `text-on-inverted` | near-white on dark, near-black on light | Checked controls (checkbox, switch, radio, slider), the selected day, the inverse button |
-
-- `canvas`, `app` and `panel` are `panel-0`, `panel-2`, `panel-4` (one value, two names). Since 1.0 they are pure
-  neutral greys, the same for every brand (dark #101010 / #161616 / #1a1a1a, light #ebebeb / #f3f3f3 / #ffffff); the
-  steps between, the card, the fills and inverted are mixed from them and the contrast colour in CSS
-  (`color-mix(in oklab, …)`).
-- **Cards have no border** (`card-border` is `1px solid transparent`: the box stays, so hover and `CARD_ACTIVE`
-  borders do not move the layout). A dense data view that needs an edge uses
-  `<Card bordered>` / `CARD_BORDERED` (panel fill + `border-line`, the pre-0.36 card).
-- `bg-card` and `bg-card-field` are `@utility` rules, not theme colours (a `--color-card` theme colour would also
-  generate a `border-card` colour utility that collides with the style's `border-card`), so opacity modifiers
-  (`bg-card/80`) do not work; `var(--color-card)` is still there for app CSS.
-- **A block that means "card" is `bg-card`**, never `bg-panel` (that is the sidebar / modal step: on the light app it
-  now reads as a raised white block, not a card).
-- **Secondary buttons are a tint fill** with no border; `outline` (`BTN_OUTLINE`, `<Button variant="outline">`) keeps
-  the framed look for a toolbar of framed controls. Focus rings are unchanged.
-- **Main buttons read the brand fill** (`bg-primary`); checked controls, selection, links, focus are neutral.
-- Text tiers reach 4.5:1 on canvas, app and panel in both themes (checked by the token build); status and tone text
-  reach 4.5:1 on their badges (`lint/test/surfaces.test.mjs`, the docs-site contrast tests).
-
-**Cách sinh CSS:** giá trị theo theme nằm ở biến nguồn `--semi-*` (đặt trong `:root/[data-theme=dark]` và `[data-theme=light]`); utility đọc qua `@theme inline` (`bg-panel` → `var(--semi-panel)`), còn `--color-*` được khai báo lại ở mỗi theme scope cho CSS của app (`var(--color-panel)`).
+How the CSS is built: each themed value is a source variable `--semi-*` set in `:root, [data-theme=dark]` and
+`[data-theme=light]`; utilities read them through `@theme inline` (`bg-panel` → `var(--semi-panel)`), and `--color-*`
+is re-declared per theme scope for app CSS (`var(--color-panel)`).
 
 ### Status, overlay, elevation and layers
 
@@ -159,25 +193,25 @@ outermost frame to the brightest step, plus the card and two fills:
 |---|---|
 | Status callout / badge / danger button | `bg-{danger,success,warning,info}-bg` + `border-*-border` + `text-*-fg` (`Alert`, `BTN_DANGER`) |
 | Status dot, progress fill, destructive solid | `bg-*-solid` (+ `text-on-solid`) |
-| Backdrop of modal / drawer / dialog | `bg-overlay` (themed scrim) — or `OVERLAY` |
+| Backdrop of modal / drawer / dialog | `bg-overlay` (or `OVERLAY`) |
 | Floating layer (modal, popover, menu, toast, tooltip) | `shadow-overlay` |
 | Controls floating over a canvas | `shadow-float` |
 | Global stacking | `z-sticky` 30 < `z-drawer` 40 < `z-modal` 50 < `z-dialog` 60 < `z-sheet` 70 < `z-popover` 80 < `z-toast` 90 < `z-tooltip` 95 |
 
-Surfaces stay flat: no `shadow-sm/md` on cards; a resting card shadow is `shadow-card` only (already in `CARD`, `HERO`,
-`SHELL_ASIDE`), whose value comes from the style. Local stacking inside one component keeps `z-10` / `z-20`; anything
-that covers the page uses a layer token, never `z-[9999]`. Easing: `ease-out-soft` (entering), `ease-in-soft` (leaving).
+Surfaces stay flat: no `shadow-sm/md` on cards (`shadow-card` is none). Local stacking inside one component keeps
+`z-10` / `z-20`; anything that covers the page uses a layer token, never `z-[9999]`.
 
-### Theme Switching Mechanism
+### Theme switching
 
-Themes are toggled via the `data-theme` attribute on `<html>` (with fallback `.dark` / `.light` classes):
-```html
-<html lang="vi" data-theme="dark" class="dark">
-```
-`data-theme="system"` follows the OS in pure CSS (no JS). Users pick a theme with `<ThemeSwitcher />` (Sáng · Tối · Hệ thống: settings pages, sidebar footer; `fullWidth` in a sidebar), `<ThemeSwitcher variant="menu" />` (one icon button whose `Menu` lists the three, the current one checked: headers, toolbars), the account avatar menu of AppShell's route header (the same three as radio items, from the internal `useThemeChoices`), `useThemeUtility()` (the same Menu as an AppShell `tools` item, for an app without an account) or flip it with `<ThemeToggle />` (one-tap dark/light). Any element can pin a theme for its subtree with `data-theme="light|dark"` (plus the matching class): all semantic tokens re-resolve inside it. Apps render `<ThemeScript />` in `<head>` (sets the stored theme
-before the first paint, so there is no flash of the wrong theme) and wrap the body in `<ThemeProvider>` with the **same options**:
+Themes are set by `data-theme` on `<html>` (with `.dark` / `.light` classes); `data-theme="system"` follows the OS in
+pure CSS. Any element can pin a theme for its subtree with `data-theme="light|dark"`. Users pick one with
+the account avatar menu of AppShell's route header (Light / Dark / System as radio items, from the internal `useThemeChoices`: the default place in an app),
+`<ThemeSwitcher />` (Sáng · Tối · Hệ thống; `variant="menu"`: one icon button with a Menu), `useThemeUtility()` (the same
+Menu as an AppShell `tools` item, for an app without an account) or `<ThemeToggle />` (one tap). Apps render `<ThemeScript />` in `<head>` (no flash of the wrong theme) and
+wrap the body in `<ThemeProvider>` with the **same options**:
+
 ```tsx
-import { ThemeProvider, ThemeScript, ThemeToggle } from "@semi/ui";
+import { ThemeProvider, ThemeScript } from "@semi/ui";
 
 export default function RootLayout({ children }) {
   return (
@@ -186,185 +220,80 @@ export default function RootLayout({ children }) {
         <ThemeScript defaultTheme="dark" />
       </head>
       <body className="bg-app text-body">
-        <ThemeProvider defaultTheme="dark">
-          {children}
-        </ThemeProvider>
+        <ThemeProvider defaultTheme="dark">{children}</ThemeProvider>
       </body>
     </html>
   );
 }
 ```
 
-### Why Physical Colors Are Prohibited
-Hardcoding physical palette classes such as `bg-white`, `text-slate-900`, `border-slate-200`, or `bg-slate-50` creates the "Dark Shell, Light Core" conflict:
-- In Dark Mode, a card with `bg-white` creates a blinding white rectangle inside a dark Bento frame.
-- In Light Mode, text with `text-white` disappears completely on the white page background.
-By using `bg-panel` and `text-strong`, your UI seamlessly flips from dark obsidian to crisp slate without writing a single media query.
-
 ## 2b. Brand per product
 
-A product's brand comes from its **brand kit** (`docs/BRANDS.md`), never from its own CSS: the kit's `dist/brand.css`
+A product's brand comes from its **brand kit** (`BRANDS.md`), never from its own CSS: the kit's `dist/brand.css`
 (imported after `@semi/ui/tokens.css`) sets only the primary fill (and an optional secondary), the text colour on each,
-and the fonts. Surfaces, text, lines, focus and status are the same for every brand. With `"brand"` in
-`semi-lint.json`, the app may not set any of them (`brand-override`: `--color-primary*`, `--color-on-primary`,
-`--semi-*`, `--brand-*`, `--spacing`, `--density-spacing`, the font variables). Density and type scale are the
-product's own choice, not the brand's (§19). An app without a kit uses Semi's own green. A brand change is made in the
-brand repo (`/semi-brand`) and reaches products with `/semi-sync`. There is one look: no styles, no `data-style`.
+and the fonts (`fonts.sans`, optional `fonts.display`). Surfaces, text, lines, focus and status are the same for every
+brand. With `"brand"` in `semi-lint.json` the app may not set any of them (`brand-override`). An app without a kit uses
+Semi's own green. A brand change is made in the brand repo (`/semi-brand`) and reaches products with `/semi-sync`.
 
 ## 3. Colour meaning
 
-- **Brand** (primary, optional secondary; Semi default `#00AE42`): only the one main button of a page, a modal or the
-  nav (`BTN_PRIMARY`: `bg-primary hover:bg-primary-hover text-on-primary`), attention count badges, "New" tags and the
-  active big-tab underline. Nothing else: links, check marks, active tabs, selection and the focus ring are neutral.
-- **Selection** is neutral: `bg-item-hover` (hover), `bg-item-selected` (the open record, the selected nav item or
-  option), `bg-item-checked` (checked rows / cards in selection mode); a checked control is `bg-inverted` +
-  `text-on-inverted`; the focus ring is `ring-focus` (the strong text colour).
+- **Brand:** the brand colour rule (§0). `BTN_PRIMARY` is `bg-primary hover:bg-primary-hover text-on-primary`.
+- **Selection** is neutral (§2).
 - **Status** carries meaning only, never decoration or a brand mark: success (online, ready, done), warning (busy,
-  paused, connecting), danger (error, destructive), info (neutral news, cost). Tokens `bg-*-bg` + `border-*-border` +
-  `text-*-fg`, `bg-*-solid` for a dot or a fill (table in §2); `<Alert tone>`, `<Badge tone>`, `StatusDot`.
-- **Tile tones** (`TILE_TONES` in `Icon.tsx`: a soft tint + `text-tone-*`; `TONE_TEXT` for a bare icon): green ·
-  pink · sky · amber · violet (indigo) · gray (advanced / unknown). Each app maps its areas to tones once (in its own
-  extension doc) and keeps the mapping everywhere. The nav menu uses neutral `w-4 h-4` (16px) icons in `text-muted`;
-  the active item is drawn by `AppShell`.
-- **Chips and tags** (`Chip.tsx`) share one pill style (`rounded-full h-control px-3.5 text-ui font-medium`):
-  `chipClass(active)` gives borderless ghost pills when off (`bg-transparent text-muted hover:text-strong
-  hover:bg-field`) and a raised pill when on (`bg-raised border-line text-strong`); static tags use `TAG`
-  (neutral). Per-item colour appears only on a leading dot (`TONE_DOT`) or icon (`chipIconClass(tone)`). The chosen
+  paused, connecting), danger (error, destructive), info (neutral news, cost). `<Alert tone>`, `<Badge tone>`,
+  `StatusDot`; callouts use `bg-*-bg border-*-border text-*-fg`.
+- **Tones** (`SemanticTone`: purple, violet, indigo, blue, sky, cyan, teal, emerald, green, amber, yellow, orange,
+  rose, red, pink, gray) mark a **category** on a tag, a tile or a dot, never a whole surface: `<Badge tone>`,
+  `<Chip tone>`, `TILE_TONES` + `TONE_TEXT` (`Icon.tsx`), `TONAL_SURFACE[tone]` (= `TONAL_CONTAINER`, a 10% tint, a 20%
+  line, `text-tone-<color>`) and `TONAL_HOVER[tone]`. Each app maps its areas to tones once (in its extension doc) and
+  keeps the mapping. Never a solid pastel (`bg-purple-50`, `border-amber-200`: glaring slabs in dark) and never a fixed
+  shade (`text-purple-700`): `no-solid-pastel-surfaces`, `no-fixed-tone-text`.
+- **Rows:** a selected row is `bg-item-selected`, a checked one `bg-item-checked`; a row that needs attention keeps a
+  neutral fill and shows its state on a badge. Its secondary text stays `text-muted`.
+- **Chips and tags** (`Chip.tsx`) share one pill (`rounded-full h-control px-3.5 text-ui font-medium`): `chipClass(active)`;
+  static tags `TAG`. Per-item colour only on a leading dot (`TONE_DOT`) or icon (`chipIconClass(tone)`). The chosen
   segment of `Pills`, `Toggle` and pill `Tabs` is `SEGMENT_ON`.
-- Data series in charts may use several hues; that is the one place extra colours belong. Syntax colours in code
-  views are the other exception.
+- Data series in charts use the fixed `chart-1…8` hues; syntax colours in code views are the other exception.
 
-## 3b. Tinted cards, callouts & alert banners (Alpha-transparency over solid pastels)
+### 3b. Callouts and category cards
 
-**Never use solid pastel surface classes** (such as `bg-purple-50`, `bg-sky-50`, `bg-amber-50`, `border-amber-200`, `border-purple-200`) on cards or containers.
-In `data-theme="dark"`, solid pastels have luminance > 95% and turn into glaring white/neon rectangular slabs that ruin the dark interface.
-
-Instead, follow the canonical Semi patterns:
-1. **Categorized / Feature Cards:**
-   Keep the card shell neutral (`<Card>`, or `bg-card`) and express the category on the icon tile:
-   ```tsx
-   <Card>
-     <div className="flex items-center gap-2">
-       <span className={cn("p-1.5 rounded-control", TILE_TONES.violet)}>
-         <Icon name="plug" className="w-4 h-4" />
-       </span>
-       <span className="text-ui font-semibold text-strong">{title}</span>
-     </div>
-     <p className="text-ui text-muted mt-1">{description}</p>
-   </Card>
-   ```
-2. **Callout / Alert Banners:**
-   When an inline banner or callout needs a chromatic tint (info, warning, success, danger), use `<Alert tone>` or the
-   themed status surface tokens, which are tinted fills and borders tuned for AA text in both themes:
-   ```tsx
-   {/* Warning callout */}
-   <div className="flex items-center gap-2 px-3 py-2.5 rounded-control bg-warning-bg text-warning-fg border border-warning-border text-ui">
-     <Icon name="alertTriangle" className="w-4 h-4 shrink-0" />
-     <span>{warningMessage}</span>
-   </div>
-   ```
-   *Why tokens:* the tint blends onto the panel in both themes, and `text-*-fg` is the shade that reaches 4.5:1 on it in each theme; a fixed `text-amber-600 dark:text-amber-400` pair cannot be checked and breaks under a brand or style.
-
-## 3c. Universal Theme-Matching Tonal Architecture (All Components)
-
-When migrating existing applications, UI elements across the interface often carry identifying chromatic colors:
-- **Tonal Bento Cards & Stat Widgets** (e.g., purple analytics card, blue billing summary)
-- **Alert Banners & Callouts** (e.g., amber warning banner, emerald success alert)
-- **Table Rows & List Items** (e.g., highlighted pending order row)
-- **Interactive Buttons & Pills** (e.g., soft green action button, violet pill)
-- **Badges, Chips & Status Tags** (e.g., `<Badge tone="purple">`, `<Chip tone="emerald">`)
-
-**Semi does not strip these colors down to monotonous gray.** Nor does it leave light-mode pastels (`bg-*-50`, `border-*-200`) that turn into glaring white/light boxes in Dark Mode.
-
-Instead, Semi keeps each colour on a **themed tone**: a translucent tint that blends onto the surface in both themes,
-and a text colour (`text-tone-<color>`, `text-*-fg`) whose value changes per theme so it reaches 4.5:1 on that tint.
-Never a fixed shade (`text-purple-700`, `text-amber-400`) and never a `dark:` pair: the pair cannot be checked, and it
-breaks under a brand kit or a style (`no-fixed-tone-text`, hard rule 10).
-
-| Need | Use | What it gives |
-|---|---|---|
-| A status (error, success, warning, info) | `bg-*-bg border-*-border text-*-fg`, or `<Alert tone>` / `<Badge tone>` | Meaning, tuned for AA in both themes |
-| A category tint (card, tile, tag) | `TONAL_SURFACE[tone]` (= `TONAL_CONTAINER`), `<Badge tone>`, `TILE_TONES` | `bg-<color>-500/10 border-<color>-500/20 text-tone-<color>` |
-| Its hover | `TONAL_HOVER[tone]` | `hover:bg-<color>-500/15 hover:border-<color>-500/30` |
-| Coloured text or icon alone | `text-tone-<color>` (`TONE_TEXT`), `text-*-fg` for a status | Themed shade, 4.5:1 on panel |
-| A highlighted row | `bg-item-selected` (selected), a status `bg-*-bg` (a row that needs attention); its secondary text stays `text-muted` (the fill darkens it, #123) | No hue picked per row, no `active ? "text-body" : "text-muted"` swap |
-
-### Examples Across Component Types
-
-#### 1. Tonal card / stat widget
 ```tsx
-// Before (light mode only):
-<div className="rounded-card border border-purple-200 bg-purple-50 p-4 text-purple-900 hover:bg-purple-100">
-  <p className="text-sm font-semibold">Pro Subscription</p>
-</div>
+// A category card: neutral card, the tone on its icon tile.
+<Card>
+  <div className="flex items-center gap-2">
+    <IconTile name="plug" tone="violet" size="sm" />
+    <span className="text-lead font-medium text-strong">{title}</span>
+  </div>
+  <p className="text-ui text-muted mt-1">{description}</p>
+</Card>
 
-// After:
-<div className={cn("rounded-card border p-card", TONAL_SURFACE.purple, TONAL_HOVER.purple)}>
-  <p className="text-lead font-semibold">Pro Subscription</p>
-</div>
+// 3b. A callout (Alert, tinted status surface): <Alert tone="warning">Giấy phép sắp hết hạn.</Alert>
+// A status on a row: <TD><Badge tone="sky">Chờ duyệt</Badge></TD>, the row itself stays neutral.
 ```
 
-#### 2. Alert banner / callout
-```tsx
-// Before:
-<div className="rounded-control border border-amber-200 bg-amber-50 p-3 text-amber-800">Your license expires soon.</div>
+## 4. Frame and shell
 
-// After:
-<Alert tone="warning">Your license expires soon.</Alert>
-// or, hand-made: rounded-control border border-warning-border bg-warning-bg px-3 py-2 text-warning-fg
-```
-
-#### 3. Highlighted table row
-```tsx
-// Before:
-<tr className="bg-blue-50 border-b border-blue-100 text-blue-700">…</tr>
-
-// After: the row stays neutral; the status sits on its badge, a selected row takes the neutral `bg-item-selected`.
-<TR className={selected ? "bg-item-selected" : undefined}>… <TD><Badge tone="sky">Chờ duyệt</Badge></TD></TR>
-```
-
-#### 4. Badges & chips
-```tsx
-// Before:
-<span className="px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 dark:bg-rose-900 dark:text-rose-300">Urgent</span>
-
-// After:
-<Badge tone="rose">Urgent</Badge>
-```
-
-### Standard Palette Tones (`SemanticTone`)
-Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@semi/ui/styles` via `TONAL_CONTAINER`, `TONAL_HOVER`, `TONAL_SURFACE`:
-- `purple`, `violet`, `indigo`
-- `blue`, `sky`, `cyan`, `teal`
-- `emerald`, `green`
-- `amber`, `yellow`, `orange`
-- `rose`, `red`, `pink`
-- `gray` (neutral fallback)
-
-## 4. Layout
-
-- **Radius scale (shape tokens):** tiny marks (checkbox, colour swatch, key cap, inline code) `rounded-chip` · controls,
-  inputs, buttons, inner tiles and list rows `rounded-control` · cards, popovers, menus, toasts `rounded-card` · panels,
-  hero, modals, drawers, sidebar `rounded-panel` · filter chips, pills, avatars, badges, dots `rounded-full`. Values 4 · 8 ·
-  12 · 16px (`docs/TOKENS.md`). Never the raw scale (`rounded`, `rounded-lg/xl/2xl`) or `rounded-[Npx]` (`radius-token`).
-- **Control height:** all toolbar buttons, filter chips, pills, search inputs, custom selects and date pickers use
-  `h-control` (34px, a shape token) and `text-ui font-medium` so toolbar rows align evenly. Form inputs and
-  selects use `h-field` (36px). Never `h-[34px]`: it would not follow the shape token.
-- **Spacing (semantic tokens, scaled by density):** pick by role, not by number. They come from `tokens.json` "space"
-  and multiply the density unit, so a compact product gets 90% and an airy one 115% without any change in code:
+- **Radius scale (shape tokens):** tiny marks (checkbox, swatch, key cap, inline code) `rounded-chip` 4 · controls,
+  inputs, buttons, inner tiles, list rows and nav items `rounded-control` 8 · cards, popovers, menus, toasts
+  `rounded-card` 12 · frame panels, modals, drawers `rounded-panel` 16 · chips, pills, avatars, badges, dots
+  `rounded-full`. Never `rounded-lg/xl/2xl` or `rounded-[Npx]` (`radius-token`).
+- **Control height:** toolbar buttons, chips, pills, search inputs, selects and date pickers use `h-control` (34px);
+  form inputs `h-field` (36px). Never `h-[34px]`.
+- **Spacing by role** (from `tokens.json` "space", scaled by density: compact 90%, airy 115%):
 
   | Utility | Regular | Use |
   |---|---:|---|
-  | `p-card` | 16px | inside a card, popover, list panel, side panel section (`<Card>` sets it by default) |
-  | `sm:p-panel` | 24px | hero, page panel, a roomy card from `sm` (`p-card sm:p-panel`) |
+  | `p-card` | 16px | inside a card, popover, list panel, side panel section (`<Card>` sets it) |
+  | `sm:p-panel` | 24px | a roomy card or page panel from `sm` (`p-card sm:p-panel`) |
   | `gap-stack` | 12px | between items inside a card or a form |
   | `gap-group` | 16px | between cards in a grid or a list of cards |
   | `gap-section` | 24px | between sections of a page |
 
-  Smaller steps (`gap-1`–`gap-2`, `px-2`, `py-1`) are for the inside of one control (an icon and its label, a chip):
-  never the padding of a row or a box. A card or panel is never tighter than `p-card` (`card-padding`), a list row
-  never shorter than a control (`Item` is `px-4 py-3`): a cramped box with text against its edges is the most common
-  layout bug. The budgets are in §4c.
+  `gap-1`–`gap-2`, `px-2`, `py-1` are for the inside of one control, never a row's or a box's padding. A card is never
+  tighter than `p-card` (`card-padding`), a list row never shorter than a control (`Item` is `px-4 py-3`). Budgets: §4c.
+
+### The frame (T2, #144)
+
 - **Frame (1.0, #144):** a `bg-canvas` frame (`sm:p-2 sm:gap-2`, none on phones) holding the **nav panel** (`bg-panel`,
   `rounded-panel`, padding 16 / 20, 224px or the 72px rail, `railWidth`) and the **content column** (`bg-app`,
   `rounded-panel`). The column holds the **RouteHeader** (h60 from `lg`, padding 0 8px / 16px from `sm`, the column's
@@ -415,84 +344,51 @@ Available in `@semi/ui` via `<Badge tone="...">`, `<Chip tone="...">` and in `@s
   group, and the tools (with their counts and the ••• menu as a level) at the bottom. The drawer is the default when the app sets neither `mobileNav` nor
   `mobileTabIds`; `mobileNav="tabs"` keeps the bottom tab bar (`MobileTabBar`) with the items named in `mobileTabIds`
   (the first ones without it). `mobileTabIds` alone still keeps the tab bar (C-034) but warns in development.
+
+Also:
+
 - **Shell lifecycle:** `AppShell` renders once in the root or a route-group `layout.tsx`, so it stays mounted while
-  people navigate; a page renders only its content, never `AppShell` or a component that renders it
-  (`app-shell-in-page`). Page items carry `href` and stay `next/link` links even when `onSelect` is set (`onSelect`
-  then only reports the click); never route with `onSelect` + `router.push` (`shell-nav-href`). The session check runs
-  once, in the layout (best on the server), never per page; loading is §13b.
-- **Sub-menus:** a nav item may carry one level of sub-items (`children`: mailbox folders, saved views). They are
-  **closed by default** and open under their parent only while the parent or one of its sub-items is active; choosing
-  another item closes them (no manual toggle, no state to remember). Sub-items are indented on a thin
-  `border-divider` guide, `h-7`, with an optional grey `w-3.5` icon (all sub-items of a parent get one, or none): no
-  colour dot, no count (the menu stays neutral; counts and colours live in the page). The parent shows a chevron and keeps `text-strong` while a sub-item holds the active fill. The `w-14` rail,
-  widths below `lg` and phones never show sub-items: pages read `useAppShell().submenuVisible` and offer the same choice
-  in their toolbar (a `CustomSelect`) when it is false.
-- **Title and toolbar: two layouts, pick one per page.** (a) Title on its own row, toolbar below (`PageTitle` +
-  `SubpageToolbar`), for pages with many filters. (b) Title on the toolbar row (`SubpageToolbar title="…"`, no
-  `PageTitle`), for pages whose few filters and actions fit beside the title: the content starts higher. In (b) the
-  title is still the page `h1` in display type and text only; filters follow it, actions sit at the right end; narrow
-  screens wrap filters and actions below the title. Text buttons stay in the toolbar's `right` slot in both layouts.
-- **List page header (#115, #120):** a list page with a `StickyContextBar` opens with its title row, `PageTitle` with
-  `actions`: the title on the left, the page's one action on the right (one `Button variant="primary"` or `inverse`,
-  icon + text, optionally a `RefreshButton` before it; more actions in a ⋯ `Menu`); below `sm` the actions wrap onto
-  their own row under the title. The title row scrolls away, the bar under it stays. `MinimalHeader` is the top row of
-  a detail or settings page (a `Breadcrumb` and one action), not of a list page; a `SubpageToolbar` page keeps its
-  actions in the toolbar and gives `PageTitle` no `actions`.
-- Each sub-page opens with a large display title (text only), followed by the toolbar row (or sharing it, above): pill filter tabs
-  (`CHIP_BASE` + `chipClass(active)`) on the left, icon-only primary CTA + secondary controls on the right. The row
-  carries `STICKY_TOOLBAR` so the filters stay on top of the scrolling content (below the safe area on phones).
-  "Thêm …" and "Làm mới" buttons are icon-only (`BTN_PRIMARY`/`BTN_SUBTLE` + `BTN_ICON`, `RefreshButton`) with
-  `title` + `aria-label` carrying the label.
-- **Search and filters (C-032, #99):** a list page that people search and filter opens, under its heading, with one
-  `StickyContextBar` (in place of a `SubpageToolbar`): a `SearchPill` (one per page, it feeds the list or `DataTable`;
-  250 ms debounce, Escape clears, `focusKey="/"`; a history push of `useFilterParams` / `useDetailParam` / `openDetail`
-  during the debounce sends the pending text first, onto the current entry, so Back keeps the query), then the filters, then a `ResultLine` ("“query” · N kết quả", the
-  sort on the right). On `md+` the filters are a `FilterChipRow`: one line of chips (`h-8 rounded-full`, `bg-tint`,
-  solid `bg-inverted` with the value or "Nhãn · N" when on), each a multi-select `Popover`, a single-choice radio
-  `Menu` (`kind: "single"`, "Hộp thư: Tất cả", `menuitemradio`; `clearValue` is the default option, never in the URL
-  and never an active filter) or a switch chip; the row scrolls sideways with ‹ › and never wraps; "Xoá lọc" shows
-  while one is on; the page's views (`Pills`: Đang mở · Đã đóng · Tất cả; the default may be other than "all") lead it
-  in `leading`, a `ViewSwitch` (list ↔ grid, density) ends it in `trailing`. Below `md` a `PhoneFilterBar` (views as
-  `typeItems` radio items · "Bộ lọc · N" · settings) opens a `FilterPanel`: full screen, sort first, booleans as
-  switches, one accordion per filter (a radio group for a single one), "Xem N kết quả" at the bottom (a side sheet from `sm`, also for
-  a desktop page with more filters than chips). Phone chrome stays within two rows plus the result line (P1). State
-  lives in the URL: `useFilterParams(specs)`, or `readFilters` / `writeFilters` / `clearFilters` / `activeFilterCount`
-  on your router's params (`?f.status=new&f.status=won&f.big=1`); a filter change is a history entry, so Back undoes it.
-  A `SubpageToolbar` page gets the same on phones with `filters` (typed: up to two as chips, more collapse into
-  "Bộ lọc" with the active ones as chips, C-026), or `collapseFilters` for its `left` (a bottom `Drawer`), and
-  `secondaryActions` (text buttons from `sm`, a ⋯ `Menu` below it; the primary stays visible).
-- **Overlay and actions (C-032, #102):** a record of a list opens in a `DetailOverlay` over the list, not on its own
-  page: its id lives in the URL (`useDetailParam()` → `?open=<id>`; opening is a history entry, so Back closes it, ‹ ›
-  replace it), the list stays mounted under it, so close / Esc / Back land at the same scroll position. The header has
-  close, the title, "n / N" and ‹ › (← →) through the **current** results (the filtered, sorted list; over a
-  `DataTable` build them with its own `sortRows(searchRows(rows, columns, search), columns, sort)`, all pages, never a
-  copy of its comparator), the side panel the actions: one `SplitButton` (the main action and its variants), a row of icon buttons, a ⋯ `Menu`, then the
-  facts. Keep the filters in the URL too, so a shared link opens the record over the same results; existing detail
-  routes stay for deep links and long workflows. A palette item or notification opens a record of the current route with
-  `openDetail(id)` (not a same-route `router.push`, which Firefox and Safari < 26 do not report to the list). Cards and media tiles in a grid get `CardActions` (one or two round
-  icon actions on hover or focus, a ⋯ always visible on touch). The app-wide "Tìm hoặc tạo" box is one
-  `CommandPalette` in the root layout (⌘K / Ctrl+K, `openCommandPalette()` from a header button): places from the
-  layout, each page's quick actions and records from `useRegisterCommands`; groups under `text-overline` headings,
-  coloured tiles only for actions, ⌘↵ opens an item with `href` in a new tab.
-- **Page type "workspace" (C-032, #106, L12):** a tool where people set inputs and see what they produce (a quote request
-  and its comparison, a generator, an import with a preview) is a `WorkspaceLayout`: a `bg-panel-3 rounded-panel`
-  control panel on the left (`lg:w-[380px]`, sticky, scrolls inside) and the result on the right. Top of the panel: the
-  tool's parts as a full-width `ToggleGroup`, then `WorkspaceHeader` (round back link named by where it goes, the tool
-  name as the page `h1`, one muted line). Then `WorkspaceSection`s: a `text-overline` label, a counter ("3/8") and a
-  small text action on the right; inside, cards of lines with a `Stepper`, a `DropZone`, a `HintTextarea`. The **main
-  action** is pinned to the panel's bottom (one primary `fullWidth`, a secondary beside it at most). Below `lg` the panel
-  stacks above the result and its action stays at the bottom of the screen while the panel is in view (above MobileTabBar:
-  AppShell sets `--semi-bottom-bar` in tabs mode; never put the layout in an `overflow-*` box). Headings in the result
-  start at `h2`.
-- Grids expand across wide screens (e.g. `sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-group`); touch screens
-  (iPad) stop at 4 columns (`not-any-pointer-coarse:` for 5+). Card grids **beside a sidebar** size columns by
-  `@container` (`@xl:grid-cols-…`), never by viewport breakpoints (lint rule `viewport-grid-cols`, enabled per path via
-  `"only"` in `semi-lint.json`).
-- A filter sidebar beside long results scrolls on its own: on desktop the row fills the screen and sidebar and results
-  are two `overflow-y-auto overscroll-contain` columns (no sticky + JS height). Long lists load the next page near the
-  end ("Xem thêm" stays as fallback). Where filters sit in a sheet, the active ones show as removable chips.
-- Every flex/grid child that holds text gets `min-w-0` + `truncate` so long names never push the page wider.
-- No narrow `max-w-4xl/5xl/6xl` page containers: content uses the full width (cap `max-w-[1440px]`).
+  people navigate; a page renders only its content (`app-shell-in-page`). Items carry `href` and stay `next/link` links
+  (`onSelect` only reports the click; never `onSelect` + `router.push`: `shell-nav-href`). The session check runs once,
+  in the layout (best on the server); loading is §13b.
+- **Sub-menus:** a nav item may carry one level of sub-items (`children`: mailbox folders, saved views), closed by
+  default and open only while the parent or a sub-item is active; no colour dot, no count. The rail, widths below `lg`
+  and phones never show them: pages read `useAppShell().submenuVisible` and offer the same choice in their own toolbar
+  when it is false.
+- Every flex / grid child that holds text gets `min-w-0` + `truncate`, so long names never push the page wider.
+
+## 4a. Page layouts and rhythm (T7, pending)
+
+Inside the content card, one of four layouts (the "when to use which" table is in §0):
+
+- **Work** (lists, tables, workspaces): flush, no centred max-width; card padding 16 / 24.
+- **Reading** (settings, explore, articles): one column centred at max 1536px inside 16px card padding, 64px bottom
+  padding; the title is `font-display text-title-xl font-medium`.
+- **Two-column** (an area with sub-pages): a sub-nav card 240px (`md:w-60`), flush left, padding 20 / 10; a 4px gap;
+  the main card to the right edge, padding 24; no wide side padding. Below `md` the sub-nav stacks above the content.
+  Sub-nav sections: a group label, then items (h32, `rounded-control`, padding 4 / 16, `text-chrome` 500, 16px icon,
+  2px apart); sections split by a 1px line.
+- **List + reader** (mail, queues, chats): a list card and a reader card. The reader header has the subject on the
+  left (it wraps) and [•••][the main action, e.g. Trả lời] on the right of the same row; every other action is in •••.
+  When the search bar is pinned, each card scrolls on its own (§4e).
+
+**Vertical rhythm** from the card top: 32px to the header block · 28px from the title or tabs to the intro · 32px
+between blocks · 16px from a heading to its content · 8px inside grids and cards.
+
+**Page title.** A work page's title is 18 / 400 (`text-figure font-normal text-strong`) on the same row as the page's
+main action, inside the content card; a reading page uses the 44px display title; a page with 2–4 sub-pages uses big
+`TextTabs` as its heading. One `h1` per page.
+
+**Today (until T7 merges):** `PageTitle` (with `actions` for a list page's action) draws the 0.x display title
+(`font-display text-section sm:text-tab-xl`); `SubpageToolbar title` puts it on the toolbar row; `MinimalHeader` is the
+top row of a detail or settings page; `TextTabs` / `PageTabsTitle` are the tab headings. The content sits in a
+`max-w-[1440px] px-4 sm:px-6` container. Use them; the 1.0 layouts replace them in place.
+
+Grids expand across wide screens (`sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-group`); touch screens stop at 4
+columns (`not-any-pointer-coarse:` for 5+). Card grids beside a sidebar size columns by `@container`
+(`@xl:grid-cols-…`), never by viewport breakpoints (`viewport-grid-cols`). No narrow `max-w-4xl/5xl/6xl` page
+containers (`narrow-container`). A filter sidebar beside long results scrolls on its own (two `overflow-y-auto
+overscroll-contain` columns). Long lists load the next page near the end ("Xem thêm" as fallback).
 
 ## 4b. Stand-alone app header
 
@@ -542,6 +438,83 @@ attributes cover the rest, and review lists both:
 
 What no number catches stays a review by eye (§19): one main block per screen, rhythm, alignment.
 
+## 4d. List pages
+
+A list page that people search and filter has, from the top: the **title row** (the title and the page's one main
+action: `inverse`, or the brand `primary` when it is the page's commit action; a ⋯ `Menu` for the rest), then the
+**`StickyContextBar`**, then the list.
+
+- **The bar** holds one `SearchPill` (it feeds the list or `DataTable`; 250ms debounce, Escape clears, `focusKey="/"`),
+  then the filters. On `md+` the filters are a `FilterChipRow`: one line of chips, each a multi-select `Popover`, a
+  single-choice radio `Menu` (`kind: "single"`, "Hộp thư: Tất cả"; `clearValue` is the default, never in the URL and
+  never an active filter) or a switch chip; the row scrolls sideways with ‹ › and never wraps (`filter-chip-wrap`);
+  "Xoá lọc" shows while one is on; the page's views lead it in `leading`, a `ViewSwitch` ends it in `trailing`. Below
+  `md` a `PhoneFilterBar` (views · "Bộ lọc · N" · settings) opens a `FilterPanel` (full screen, sort first, one
+  accordion per filter, "Xem N kết quả" at the bottom). State lives in the URL: `useFilterParams(specs)` (or
+  `readFilters` / `writeFilters` / `clearFilters` / `activeFilterCount`); a filter change is a history entry, so Back
+  undoes it.
+- **1.0 (T7, pending):** no result-count row: the list sits 16px under the filter row. Sort and "Chọn" (selection mode)
+  sit on the filter row. **Selection mode:** "n đã chọn" (600) and the bulk actions replace the right side of the filter
+  row; nothing pushes the list down (this replaces the `DataTable` bulk bar on list pages); checked rows are
+  `bg-item-checked`. **Today:** a `ResultLine` ("“query” · N kết quả", sort on the right) and the `DataTable`
+  `selectable` + `bulkActions` bar.
+- **Opening a record:** a record opens in a `DetailOverlay` over the list, not on its own page. Its id lives in the URL
+  (`useDetailParam()` → `?open=<id>`; Back closes it, ‹ › replace it); the list stays mounted, so close / Esc / Back land
+  at the same scroll. The header has close, the title, "n / N" and ‹ › through the **current** results (over a
+  `DataTable`: `sortRows(searchRows(rows, columns, search), columns, sort)`, never a copied comparator); the side panel
+  holds the actions (one `SplitButton` or main button, icon buttons, a ⋯ `Menu`) then the facts. A palette item or a
+  notification opens a record of the current route with `openDetail(id)`. Cards and media tiles in a grid get
+  `CardActions`.
+- **A `SubpageToolbar` page** (a page with filters but no search bar) gets the same on phones with `filters` (typed: up
+  to two as chips, more collapse into "Bộ lọc"), or `collapseFilters` for its `left`, and `secondaryActions`.
+- The app-wide "Tìm hoặc tạo" box is one `CommandPalette` in the root layout (⌘K / Ctrl+K, `openCommandPalette()`):
+  places from the layout, each page's actions and records from `useRegisterCommands`; groups under `text-overline`
+  headings; ⌘↵ opens an item with `href` in a new tab.
+
+## 4e. StickyContextBar behaviour (T8, pending)
+
+- **Pinning.** The bar pins when the page scrolls past it, or when its search field gets focus (focus scrolls smoothly
+  in 250ms, no layout shift).
+- **Unpinning.** Once pinned, scrolling up stops at the pin. Only a **new** upward gesture that starts at the list top
+  unpins it; momentum and flings never do.
+- **State is kept.** Filter, sort, search and data changes leave it alone: pinned stays pinned, unpinned stays unpinned.
+- **How:** once pinned the page stops scrolling and the list area (each card of a list + reader page) becomes its own
+  scroll container sized to the viewport, with `overscroll-behavior: contain`; the page's scroll range is exactly the
+  pin height. Never clamp the wheel on a scrolling document (it judders on trackpads).
+- **Actions when pinned.** The title row's actions move inside the search field, on its right: at most two, [•••][main
+  action], 8px apart, the last inset like the "/" hint, hidden while the field has focus.
+- **Today:** the bar is `sticky` under the title row; build the page as above and leave the pinning to Semi.
+
+## 4f. Workspace pages
+
+A tool where people set inputs and see what they produce (a quote request and its comparison, a generator, an import
+with a preview) is a `WorkspaceLayout`: a `bg-panel-3 rounded-panel` control panel on the left (`lg:w-[380px]`, sticky,
+scrolls inside) and the result on the right. Top of the panel: the tool's parts as a full-width `ToggleGroup`, then
+`WorkspaceHeader` (round back link named by where it goes, the tool name as the page `h1`, one muted line). Then
+`WorkspaceSection`s (a `text-overline` label, a counter "3/8", a small text action); inside, cards of lines with a
+`Stepper`, a `DropZone`, a `HintTextarea`. The **main action** is pinned to the panel's bottom (one primary
+`fullWidth`, a secondary beside it at most). Below `lg` the panel stacks above the result and its action stays at the
+bottom of the screen while the panel is in view (above MobileTabBar: AppShell sets `--semi-bottom-bar` in tabs mode;
+never put the layout in an `overflow-*` box). Headings in the result start at `h2`.
+
+## 4g. Motion (T9, pending)
+
+The motion tokens ship with T1 (`TOKENS.md` "Motion": `--motion-hover`, `--motion-nav`, `--motion-crumb-in` / `-out`,
+`--motion-enter`, `--motion-stagger`, `--motion-pulse`, `--motion-tooltip`, `--motion-disclosure`, `--motion-slide`
+and the utilities `transition-hover`, `transition-nav`, `transition-slide`, `animate-enter`, `animate-crumb-in`,
+`animate-tooltip-in`, `animate-pulse`). T9 wires the components:
+
+- Colours on hover and active change in 150ms (`transition-hover`); the nav's active fill in 150ms (`transition-nav`).
+- A new crumb slides in 6px (`animate-crumb-in`); page content enters with opacity and 4px (`animate-enter`), the
+  first ~10 items staggered 35ms, **once per route** (never on a filter or tab change).
+- The skeleton pulses 1 → 0.6 → 1 in 2.5s; a tooltip fades and scales from 0.96; a disclosure opens in 300ms ease-out;
+  the active pill of `PillTabs` / `SegmentedControl` slides in 300ms.
+- Under `prefers-reduced-motion` there is no translate and no scale: opacity only (the tokens do it).
+- The shell never remounts or moves on a route change.
+
+Apps may use the tokens now in their own CSS (`transition: background-color var(--motion-hover)`); never a hand-made
+duration or easing.
+
 ## 5. Card
 
 Cards separate from the page by tone (`bg-card`, Surfaces in §2), with no visible border.
@@ -556,11 +529,11 @@ import { CARD, CARD_BORDERED, CARD_HOVER, CARD_ACTIVE } from "@semi/ui/styles";
 
 <div className={`${CARD} p-card flex flex-col gap-stack`}>…</div>          // static
 <button className={`${CARD_HOVER} p-card text-left`}>…</button>         // opens something
-<div className={`${CARD} ${CARD_ACTIVE} p-card`}>…</div>                // active / "on" / running: primary border, no glow
+<div className={`${CARD} ${CARD_ACTIVE} p-card`}>…</div>                // active / "on" / running: border-outline-line, no glow
 <div className={`${CARD_BORDERED} overflow-hidden`}>…table…</div>        // dense data view that needs an edge
 ```
 
-Card header row: `IconTile` (or the item's image) · name (`text-lead font-semibold`) + caption · icon actions
+Card header row: `IconTile` (or the item's image) · name (`text-lead font-medium`: 500, headings are not bold) + caption · icon actions
 (`ICON_BTN`, `ICON_BTN_DANGER`) on the right.
 
 ## 6. Hero card
@@ -570,9 +543,9 @@ Card header row: `IconTile` (or the item's image) · name (`text-lead font-semib
 ## 7. Icon tile
 
 `<IconTile name="box" tone="green" size="sm|md|lg" />`: rounded square with a soft tint of the area's tone.
-`sm` 28px (list rows) · `md` 36px (card headers) · `lg` 44px (dialogs, empty states). Nav items use a grey `w-4 h-4`
-icon in a `h-8` row; the active item uses a neutral raised fill (`bg-raised text-strong`). Dashboard quick feature
-tiles use `w-11 h-11 rounded-card` with their area's `TILE_TONES`.
+`sm` 28px (list rows) · `md` 36px (card headers) · `lg` 44px (dialogs, empty states). Nav items use a grey 16px icon in
+an h32 row; the active item is `bg-item-selected text-strong` (§4). Dashboard quick feature tiles use `w-11 h-11
+rounded-card` with their area's `TILE_TONES`.
 
 ## 8. Section heading
 
@@ -604,7 +577,7 @@ Sizes: `md` (h-control, 14px), `sm` (`BTN_SM`, 28px, 12px `text-chrome`: dense r
 12px), `modal` (`MODAL_BTN_*`: 44px / 15px on phones, h-control from sm: dialog footers, a full-width commit; commit
 `primary`, cancel `subtle`, destructive `danger`). `badge` pins an attention `CountBadge` to an icon button's corner.
 Every variant's text reaches 4.5:1 on its fill and on its hover fill in both themes (the token build checks it). Icon-only: add `BTN_ICON`, or `ICON_BTN` (`w-7 h-7 rounded-control`) inside cards. Big
-state toggles (power) are round: `w-20 h-20 sm:w-24 sm:h-24 rounded-full`, flat `bg-primary text-on-primary` when on,
+state toggles (power) are round: `w-20 h-20 sm:w-24 sm:h-24 rounded-full`, flat `bg-inverted text-on-inverted` when on (an "on" state is neutral, §0),
 `bg-field` when off. A running action shows a spinner inside its own button only.
 
 ### Grouping actions (G1–G12, C-025 / C-026)
@@ -685,8 +658,8 @@ Size `w-2 h-2` (`w-1.5 h-1.5` inline in a caption).
 ## 12. Tiles & readings
 
 Nested facts (readings, KPIs, sensor values) sit in `TILE` (`rounded-control bg-card-field`, no border)
-with an icon above or before a `tabular-nums` value. Progress is a ring or a `h-1.5 rounded-full` bar in
-`bg-primary` on `bg-raised` (`Progress`).
+with an icon above or before a `tabular-nums` value. Progress is a ring or a `h-1.5 rounded-full` bar on `bg-raised`
+(`Progress`): `bg-inverted` by default, a status `tone` when it means one; never the brand fill.
 
 ## 13. Empty state
 
@@ -1005,7 +978,10 @@ The full inventory with props is generated into `components.json` (`npm run buil
   composer, checkbox, radio) draws its edge in `border-control-line` (≥ 3:1); `border-line` is for cards, tables and
   frames, which need no edge. The chosen segment of a segmented control (`Pills`, `Toggle`, pill `Tabs`, theme / style
   switcher) uses `SEGMENT_ON`: the tonal fill alone is too faint, its inset ring is what tells which one is on.
-- Focus on an input you type in: `border-focus` plus a 1px `ring-focus` (2px in all), like `FOCUS_RING` elsewhere.
+- Focus on an input you type in: today `border-focus` plus a 1px `ring-focus` (2px in all), like `FOCUS_RING`
+  elsewhere. 1.0 (T6, pending): quiet fields, `border-field-line` at rest and `border-field-line-focus` + `bg-field-focus`
+  on focus with no glow ring (below 3:1, accepted by the owner), plus a 2px outline for keyboard focus only
+  (`:focus-visible`).
 - Forced colours (Windows high contrast) drop box-shadow, so `base.css` draws a system-colour outline on
   `:focus-visible`; keep `base.css` imported, and never rely on a shadow alone to show focus.
 - Names: icon-only controls carry `aria-label` (Button's type requires it); form controls get their label from `Field`.
@@ -1045,8 +1021,8 @@ Every AI-made app tends towards the same screen: sidebar, title, four equal KPI 
 table; a landing page with a hero and three feature cards ("Fast / Secure / Dedicated"). Semi screens avoid it in two
 ways.
 
-**The product's look.** Colour, fonts and voice come from the brand; the style sets shape, title weight and the font
-of big numbers. Density and type scale belong to each **product**, because one brand has a dense dashboard and a
+**The product's look.** Colour (the two brand fills), fonts and voice come from the brand; shape, title weight and the
+font of big numbers are Semi's one look (`tokens.json` "shape"). Density and type scale belong to each **product**, because one brand has a dense dashboard and a
 roomy store: `data-density` / `data-type-scale` on `<html>` (or any wrapper), mirrored as `"density"` /
 `"typeScale"` in `semi-lint.json`, picked in `/semi-new-app` by the kind of product.
 
@@ -1117,9 +1093,9 @@ catches and what it must not:
   or in a stylesheet (`css-raw-value`).
 - **Keyboard (`click-target`, `focus-hidden`):** `<div onClick>` without a role (a backdrop is `role="presentation"`),
   `outline-none` with no focus style on the same element (a text field's caret counts).
-- **Forms (warnings until 1.0):** `form-no-guard`, `action-order`, `toast-for-validation`, `field-input-mode` (§9b). They print and never fail the run.
-- **Feedback (warning until 1.0):** `local-toast` (§14c): a toast library or an app-level toast wrapper instead of `toast` from `@semi/ui`.
-- **The #94 patterns (#107, warnings until 1.0, C-021):** `no-spinner-in-list` (a `Spinner`, a lucide `Loader2`, an `animate-spin` element or "Đang tải" / "Loading…" in a
+- **Forms (warnings):** `form-no-guard`, `action-order`, `toast-for-validation`, `field-input-mode` (§9b). They print and never fail the run.
+- **Feedback (warning):** `local-toast` (§14c): a toast library or an app-level toast wrapper instead of `toast` from `@semi/ui`.
+- **The #94 patterns (#107, warnings, C-021):** `no-spinner-in-list` (a `Spinner`, a lucide `Loader2`, an `animate-spin` element or "Đang tải" / "Loading…" in a
   list, grid or table body, as the other branch of `loading ? … : rows.map(…)` or as an early `if (loading) return <Spinner />`
   of a component that renders a list: show the shape, §13b; a spinner inside the button or field that runs its own action is
   fine), `filter-chip-wrap` (clickable chips, hand-made or `Chip`, that filter, in a `flex-wrap`: `FilterChipRow` +
@@ -1140,26 +1116,26 @@ catches and what it must not:
 
 - **Physical / literal colors (`no-literal-palette`):** Never use neutral / white / black colour classes on any prefix or variant (`bg-white`, `text-slate-900`, `border-b-gray-200`, `divide-zinc-100`, `ring-slate-300`, `from-white`, `dark:bg-slate-800`). Always use Semantic Tokens (`bg-panel`, `bg-field`, `text-strong`, `text-body`, `text-muted`, `border-line`, `divide-divider`).
 - **Fixed chromatic text (`no-fixed-tone-text`):** `text-emerald-400`, `text-rose-700 dark:text-rose-300`, `fill-amber-500` cannot pass contrast in both themes: use `text-strong`, `text-*-fg` or `text-tone-<hue>`.
-- **Brand scale as a state colour (`accent-state-token`):** `ring-primary-500/50`, `bg-primary-500/15`, `border-primary-500/30` are not themed and vanish for light brands on light surfaces (a yellow ring is ≈ 1.3:1 on white): use `ring-focus`, `border-focus`, `bg-item-selected` / `bg-item-selected`, `border-outline-line`. `/semi-check` rewrites them.
-- **Brand scale as a fill or border (`primary-fill`):** `bg-primary-500`, `hover:bg-primary-600`, `border-primary-500`. The brand colour sits on one step of the scale (yellow on `200`, navy on `900`), so a `primary-500` fill turns pale or off-brand with a brand kit. Main actions and "on" marks are `bg-primary hover:bg-primary-hover text-on-primary` (`BTN_PRIMARY`), selected borders `border-outline-line`, focused ones `border-focus`. `primary-*` is the scale for charts and illustrations: list those files under `skip`. The `/semi-check` codemod rewrites `bg-primary-400…600` to `bg-primary` when the same class list has `text-white` / `text-on-primary`, and reports the rest.
+- **Brand scale as a state colour (`accent-state-token`):** `ring-primary-500/50`, `bg-primary-500/15`, `border-primary-500/30` are not themed and vanish for light brands on light surfaces (a yellow ring is ≈ 1.3:1 on white): use `ring-focus`, `border-focus`, `bg-item-selected` / `bg-item-checked`, `border-outline-line`. `/semi-check` rewrites them.
+- **Brand scale as a fill or border (`primary-fill`):** `bg-primary-500`, `hover:bg-primary-600`, `border-primary-500`. The `primary-50…900` scale is removed in 1.0. Main actions are `bg-primary hover:bg-primary-hover text-on-primary` (`BTN_PRIMARY`, §0), "on" marks `bg-inverted`, selected borders `border-outline-line`, focused ones `border-focus`; charts use `chart-1…8`. The `/semi-check` codemod rewrites `bg-primary-400…600` to `bg-primary` when the same class list has `text-white` / `text-on-primary`, and reports the rest.
 - **Solid pastel surfaces (`no-solid-pastel-surfaces`), arbitrary colours (`hex-colour-class`), literal colours in code (`literal-colour-value`), off-scale sizes (`arbitrary-text-size`).**
 - The colour / size rules read class tokens from every string literal (className, `cn()`, constants, template parts, `@apply`), not lines, so any spelling of a colour is caught.
 - **Illustrations and data colours** (a device drawing, a 3D scene palette, other companies' logos) are content, not UI chrome: name each file under `skip` in `semi-lint.json` with a reason, for `literal-colour-value`, `inline-svg-path` or `no-literal-palette` only: `"skip": { "literal-colour-value": { "lib/scenePalette.ts": "data colours: 3D scene" } }`. The `/semi-check` audit lists each one ("Minh hoạ / màu dữ liệu") and its codemod leaves them; never a whole folder, never the baseline.
 - **Overriding Card component (`card-class-override`):** Never pass any `bg-*` or `shadow-*` (with or without a variant such as `hover:`) to `<Card />`; use `TONAL_CONTAINER` on a plain element for a tinted card.
 - Gradients, glow blobs, coloured glow shadows (`shadow-[0_0_…]`), "glassmorphism" panels.
 - Solid greys for surfaces (`bg-gray-800/900`), `border-gray-700`, hard-coded hex colour classes (`bg-[#...]`, `text-[#...]`).
-- `font-bold` / `extrabold` / `black`; `text-[9px]` / `text-[10px]`; `text-xs` / `text-sm`; `uppercase` labels; ALL-CAPS button text.
-- Raw or arbitrary radii (`rounded-lg`, `rounded-[10px]`) instead of the style tokens; `font-mono` for numbers (fine on `<code>`, `<pre>`, `CodeBlock`, `Terminal` and `textarea` / `contentEditable` code editors); coloured icon tiles in front of every card title; one decorative icon colour per card (`decorative-icon-tones`, §19).
+- `font-bold` / `extrabold` / `black`, or a heading heavier than 500 (`font-semibold` on a title); `text-[9px]` / `text-[10px]`; `text-xs` / `text-sm`; `uppercase` labels; ALL-CAPS button text.
+- Raw or arbitrary radii (`rounded-lg`, `rounded-[10px]`) instead of the shape tokens; `font-mono` for numbers (fine on `<code>`, `<pre>`, `CodeBlock`, `Terminal` and `textarea` / `contentEditable` code editors); coloured icon tiles in front of every card title; one decorative icon colour per card (`decorative-icon-tones`, §19).
 - Emoji or unicode pictograms as icons; filled glyphs mixed with stroke icons; stroke 2+; new inline `<svg>` paths.
 - Native `<select>`, `type="date"`, `type="number"`, `window.confirm` / `alert`.
 - Tokens are named by role, like the large design systems (Material, Carbon, Primer: a type role, a layer), never by
-  one component: `text-figure` (was `text-figure`), `z-sheet` (was `z-keypad`). The old names stay as deprecated aliases
-  until 1.0; the 0.30.0 migration rewrites them.
+  one component: `text-figure` (was `text-kpi`), `z-sheet` (was `z-keypad`). 1.0 removed the old names; the 0.30.0 and
+  1.0.0 migrations rewrite them (`MIGRATION-1.0.md`).
 - `AppShell` in a page or in a component a page imports (`app-shell-in-page`); a shell gated behind a page skeleton (`shell-gate`); sidebar routing through `onSelect` + `router.push` instead of item `href` (`shell-nav-href`); `BootLoader` in a page, a `loading.tsx` or shell content (`boot-loader-place`).
 - "Đang tải…" text or a page spinner instead of a skeleton (`loading-text`). A step label of a progress bar (`Progress label`, a call with a `fraction` / `value`), text in a `role="status"` / `role="progressbar"` element and a `TaskHost` label are fine.
 - A Home button in an app header; subtitles under page titles.
-- Coloured nav icons or count badges in the menu; chips or tags with different background colours.
-- Narrow `max-w-5xl` page containers that waste horizontal space (`narrow-container`; a dialog or drawer with `MODAL_PANEL`, `Modal`, `Drawer` or `role="dialog"` keeps its max width).
+- Coloured nav icons or count badges on nav items (only the nav's bottom-row `tools` carry attention badges); the brand fill anywhere the brand colour rule (§0) does not list; chips or tags with different background colours.
+- Narrow `max-w-5xl` page containers that waste horizontal space (a reading page centres at 1536px, §4a) (`narrow-container`; a dialog or drawer with `MODAL_PANEL`, `Modal`, `Drawer` or `role="dialog"` keeps its max width).
 - Copies of `@semi/ui/styles` class strings (app chrome) instead of the constants; `window.open` / bare external links.
 
 ## App extensions

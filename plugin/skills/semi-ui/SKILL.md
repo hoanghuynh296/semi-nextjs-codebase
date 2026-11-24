@@ -76,6 +76,71 @@ If neither works (`semi_status` answers, or `npx semi` is missing), the app has 
    size in both themes), or evaluate the output of their `--snippet` on the page with a browser tool. Fix every hit
    before finishing. Report what you used and any gap you filed.
 
+## Semi 1.0 rules to hold while you build
+
+Full rules: `node_modules/@semi/ui/docs/DESIGN_SYSTEM.md` §0 (the 1.0 look, the brand colour rule, when to use which).
+A part marked *(Tn, pending)* there (T3, T5–T9) is a 1.0 target that has not shipped: build the rest of the screen to it, use
+what Semi has today for that part, and never write a local stand-in.
+
+- **Brand colour:** `bg-primary` (or `bg-secondary`) only on the one main button of a page or modal (its commit action;
+  at most one filled brand button per page or modal), the nav's main action, the active big-tab underline and attention
+  badges / "Mới" tags, or a case the app's owner asks for. Every other action is a neutral button; selection, links, check marks, active tabs and focus are
+  neutral (`bg-item-selected`, `bg-item-checked`, `bg-inverted`, `text-strong`, `ring-focus`).
+- **Colour tokens:** surfaces `bg-canvas|app|panel|card|field|raised`, text `text-strong|body|muted|faint`, status
+  `bg-*-bg border-*-border text-*-fg`; tones only on tags, tiles and dots. No hex, no palette shade, no `dark:` pair.
+- **Type:** content is `text-ui` (14: rows, labels, help, field values, buttons, menu items, dialogs, body); only the
+  shell chrome and meta are `text-chrome` (12: nav, breadcrumb, toolbar compact buttons, times, counts, hints); fields
+  `max-sm:text-input` (16) on phones. Headings 400 / 500 (`font-title`), never bold. `text-overline` only as a group or
+  section label. `font-display` only for the hero, a reading page's title, big tabs, editorial heads.
+- **Which button** (`DESIGN_SYSTEM.md` §9): `subtle` (default) for ordinary actions, `surface` for toolbar actions,
+  `inverse` for a card's or a list title row's main action (`size="xs" shape="round"` for the pill), `outline` beside
+  it, `ghost` for icon buttons, `primary` / `secondary` (brand) for the page's or modal's commit, `danger` for a
+  destructive confirm. Attention counts: `CountBadge` / Button `badge`; a new item: `NewTag`.
+- **Shell** (`AppShell`): the nav's one brand action is `mainAction`, its bottom row `tools` / `toolsMenu`; the account
+  and the theme are the route header's avatar menu (`header.account`); a detail page names its record with
+  `useRecordCrumb(label)`; never draw a breadcrumb of your own at the top.
+- **Which tabs** (T5, pending; today `Tabs`, `Pills`, `TextTabs`): `PillTabs` for 5+ sections or sections with icons,
+  `SegmentedControl` for 2–5 filter values with counts, big `TextTabs` for 2–4 sub-pages as the heading,
+  `FilterChipRow` for filters, `Tabs` for sections of one record.
+- **Which layout** (T7, pending): work (flush) for lists, tables and workspaces; reading (one column, centred 1536px)
+  for settings, explore and articles; two-column (240px sub-nav card + main card) for an area with sub-pages; list +
+  reader for mail and queues. Rhythm 32 / 28 / 32 / 16 / 8 from the card top.
+
+## Draft first
+
+A new screen, a layout change or a multi-step flow starts as a **draft**: an unlinked route (`app/(draft)/<name>/page.tsx`,
+not in the nav) built from Semi components with typed mock fixtures next to it (`fixtures.ts`), and `?state=` to switch
+between its states (`?state=empty`, `loading`, `error`, `many`). Check it at 375px and 1280px in both themes, show it to
+the owner, and build the real page only after they approve it. Then delete the draft route and its fixtures; nothing
+outside the draft imports them. Small changes to an existing screen skip the draft.
+
+## Page recipes
+
+Each recipe names the components in order, then its phone form. Start from the block or example named; replace the
+sample data. Every page has its loading (`loading.tsx` → `PageSkeleton` of its shape), error (`error.tsx` →
+`ErrorState`) and empty states.
+
+| Page | Desktop (1280) | Phone (375) |
+|---|---|---|
+| **List** (`semi add list-page`) | work layout · `PageTitle` + `actions` (title, `RefreshButton`, the one main action) · `StickyContextBar` (`SearchPill`, `FilterChipRow` with views in `leading`, `ResultLine`) · `DataTable` (or `Item` rows) · a record opens in `DetailOverlay` (`useDetailParam`). 1.0 (T7): no count row, sort and "Chọn" on the filter row, selection mode in the filter row | title row wraps its actions under the title · `PhoneFilterBar` + `FilterPanel` · rows as `Item`s or the table scrolling sideways · `DetailOverlay` full screen |
+| **Detail** | `MinimalHeader` (breadcrumb, one action) or the overlay above · facts as label / value rows in a `Card` · one main action (`SplitButton` when it has variants) + ⋯ `Menu` · related lists below | one column · actions in the header's ⋯ · `Menu` opens as a bottom sheet |
+| **Dashboard** (`semi add dashboard`) | work layout · `PageTitle` · one `KpiCard featured` bigger than the rest · a chart · the latest records | KPIs stack, the featured one first · charts full width |
+| **Settings** (`semi add settings-page`) | reading or two-column layout (sub-pages in a sub-nav card) · sections with `text-section` heads · rows with `Switch` (applies at once) and links · one save action (`FormActions`) for a form · a danger zone last | sub-nav stacks above the content · `FormActions` sticky at the bottom |
+| **Form** (`npx semi example form-actions`) | `Field` + `Input` / `CustomSelect` / `DatePicker` … in `FORM_PAGE` (max-w-2xl) · `text-overline` section labels for groups · `FormActions` (Huỷ, then Lưu / Tạo) · `useUnsavedGuard`, `useFormValidation` | one column · fields 16px · `FormActions` sticky above the keyboard |
+| **List + reader** | a list card and a reader card side by side (T7, pending: today `ResizablePanels` or a two-column grid of `Card`s) · reader header: subject left, ⋯ and the main action (Trả lời) right | the list; the reader opens over it (`DetailOverlay`) |
+| **Reading page** | reading layout · `font-display text-title-xl font-medium` title · `Prose` / `Markdown` · sections with `text-section` heads | one column, the title at its phone size |
+| **Empty state** | `EmptyState` `first-use` (one sentence, the action that fills the page; hide the title row's main action while it shows) or `no-results` (with "Xoá lọc") · `GuidedEmptyState` when the first use needs steps | compact, at most 40% of the screen |
+
+**Boring defaults** (do these without being asked): a status is a `<Badge tone>` from one status → tone mapping for the
+whole app (never a tone picked per screen); numbers, money and dates formatted in one app helper (`Intl` with `vi-VN`)
+and shown with `tabular-nums`; create and edit in a `Modal` for a few fields, a page for a long form; a reversible destructive action
+done at once with `toast.undo`, an irreversible one confirmed with `confirmDelete`; copy in the brand's voice, in
+Vietnamese, sentence case; an error says what failed and offers a retry, keeping loaded data; each route group has
+`loading.tsx`, `error.tsx`, `not-found.tsx`.
+
+**Final check** for every page you built: screenshot it at 375 and 1280, in dark and light. Is the first record visible
+without scrolling? Is there one `h1`? Is there at most one filled brand button? Does every colour mean something?
+
 ## The app's look: density and type scale
 
 Since 1.0 Semi has one look for every brand (no Flat / Soft / Sharp styles; a leftover `data-style` does nothing). What
