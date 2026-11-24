@@ -101,7 +101,7 @@ export function TypePanel({ lab }: { lab: ReturnType<typeof useLabEditor> }) {
                     />
                   </TD>
                   <TD>
-                    <span className={`text-strong ${SAMPLE_CLASS[k] ?? ""}`}>In 3D dễ như bấm nút</span>
+                    <span data-density-skip="type scale specimen" className={`text-strong ${SAMPLE_CLASS[k] ?? ""}`}>In 3D dễ như bấm nút</span>
                   </TD>
                 </TR>
               ))}
