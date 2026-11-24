@@ -24,8 +24,8 @@ export function WorkspaceLayout({
   header?: React.ReactNode;
   /** The controls: `WorkspaceSection`s. Scrolls inside the panel on `lg+`. */
   panel: React.ReactNode;
-  /** The main action (one primary Button, `fullWidth`, a secondary beside it at most). Pinned to the panel's bottom. */
-  action: React.ReactNode;
+  /** Optional main action (one primary `Button` or `SplitButton` with `fullWidth`, a secondary beside it at most). Pinned to the panel's bottom; omit for a read-only viewer so no pinned bar is rendered. */
+  action?: React.ReactNode;
   /** What the controls produce: a preview, a comparison, a list. Its headings start at h2 (the tool name is the h1). */
   result: React.ReactNode;
   /** Name of the panel region (default "Bảng điều khiển"). */
@@ -43,9 +43,11 @@ export function WorkspaceLayout({
       >
         {header && <div className="px-4 pt-4 pb-2 shrink-0">{header}</div>}
         <div className={cn("lg:flex-1 min-h-0 lg:overflow-y-auto lg:overscroll-contain px-4 pb-4 flex flex-col gap-section", !header && "pt-4")}>{panel}</div>
-        <div className="sticky bottom-[var(--semi-bottom-bar,0px)] z-sticky shrink-0 p-4 pb-[var(--semi-bottom-pad,max(1rem,env(safe-area-inset-bottom)))] lg:pb-4 border-t border-divider bg-panel-3 rounded-b-panel">
-          {action}
-        </div>
+        {action !== undefined && action !== null && action !== false && (
+          <div className="sticky bottom-[var(--semi-bottom-bar,0px)] z-sticky shrink-0 p-4 pb-[var(--semi-bottom-pad,max(1rem,env(safe-area-inset-bottom)))] lg:pb-4 border-t border-divider bg-panel-3 rounded-b-panel">
+            {action}
+          </div>
+        )}
       </section>
       <section aria-label={resultLabel ?? t.workspaceResult} className="flex-1 min-w-0 flex flex-col gap-section">
         {result}

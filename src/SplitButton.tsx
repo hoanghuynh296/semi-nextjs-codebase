@@ -21,7 +21,8 @@ export function SplitButton({
   size = "md",
   loading = false,
   disabled = false,
-  collapseOnPhone = true,
+  fullWidth = false,
+  collapseOnPhone: collapseOnPhoneProp,
   className,
 }: {
   /** The main action ("Thêm khách hàng"). */
@@ -44,13 +45,19 @@ export function SplitButton({
   /** Disables both halves. */
   disabled?: boolean;
   /**
+   * Stretch to fill its container (e.g. a `WorkspaceLayout` pinned action): the main half takes `flex-1` while the ▾
+   * keeps its width, and `collapseOnPhone` defaults to `false` so phones keep the full-width split button.
+   */
+  fullWidth?: boolean;
+  /**
    * Below `sm`, show one button (the icon, or the label with ▾) that opens a menu with the main action first.
-   * @default true
+   * Defaults to `false` when `fullWidth` is set, otherwise `true`.
    */
   collapseOnPhone?: boolean;
   className?: string;
 }) {
   const t = useSemiLocale();
+  const collapseOnPhone = collapseOnPhoneProp ?? !fullWidth;
   const more = menuLabel ?? t.moreActions;
   const visible = items.filter((it) => !it.hidden);
   const divider =
@@ -62,8 +69,16 @@ export function SplitButton({
           ? "border-l border-on-inverted/25"
           : "border-l border-divider";
   const wide = (
-    <ButtonGroup label={label} className={cn(collapseOnPhone && "max-sm:hidden", className)}>
-      <Button variant={variant} size={size} icon={icon} loading={loading} disabled={disabled} onClick={onClick}>
+    <ButtonGroup label={label} fullWidth={fullWidth} className={cn(collapseOnPhone && "max-sm:hidden", className)}>
+      <Button
+        variant={variant}
+        size={size}
+        icon={icon}
+        loading={loading}
+        disabled={disabled}
+        onClick={onClick}
+        className={fullWidth ? "flex-1 min-w-0" : undefined}
+      >
         {label}
       </Button>
       {visible.length > 0 && (
@@ -83,15 +98,15 @@ export function SplitButton({
   return (
     <>
       {wide}
-      <span className={cn("sm:hidden inline-flex", className)}>
+      <span className={cn("sm:hidden", fullWidth ? "flex w-full" : "inline-flex", className)}>
         <Menu
           label={label}
           items={all}
           trigger={
-            icon ? (
+            icon && !fullWidth ? (
               <Button variant={variant} size={size} iconOnly icon={icon} aria-label={label} disabled={disabled} />
             ) : (
-              <Button variant={variant} size={size} disabled={disabled}>
+              <Button variant={variant} size={size} icon={icon} fullWidth={fullWidth} disabled={disabled}>
                 {label}
                 <Icon name="chevronDown" className="w-3.5 h-3.5" />
               </Button>
