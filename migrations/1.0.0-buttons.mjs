@@ -17,7 +17,7 @@ const importsFromSemi = (src, name) =>
     new RegExp(`(^|[\\s,])${name}(?=[\\s,]|$)`).test(m[1]),
   );
 
-/** Each opening tag of `name` as [start, end) (end after its `>`), skipping `>` inside {…} and quotes. */
+/** Each opening tag of `name` (a tag name or a regex source for one) as [start, end) (end after its `>`), skipping `>` inside {…} and quotes. */
 function openingTags(src, name) {
   const out = [];
   const rx = new RegExp(`<${name}(?=[\\s/>])`, "g");
@@ -79,8 +79,13 @@ export function buttonFlags(after) {
     flags.push('Button imported under another name (as / import * as) in a file that names "secondary": not rewritten; in 1.0 "secondary" is the brand secondary fill, the neutral button is "subtle"');
   if (importsFromSemi(after, "ButtonVariant"))
     flags.push('a wrapper typed with ButtonVariant passes the variant through: a "secondary" its callers pass is now the brand secondary fill; the neutral button is "subtle"');
-  for (const m of after.matchAll(/<([A-Za-z][\w.]*)(?=[\s>])[^<>]*?\bvariant=(?:"secondary"|'secondary'|\{\s*["']secondary["']\s*\})/g))
-    flags.push(`<${m[1]} variant="secondary"> is not a Semi Button / SplitButton imported from @semi/ui, so it was not rewritten: if it wraps Button, "secondary" is now the brand secondary fill (the neutral one is "subtle")`);
+  // every opening tag, walked by openingTags (an arrow `=>` or a `>` inside {…} does not end the tag)
+  for (const [a, b] of openingTags(after, "[A-Za-z][\\w.]*")) {
+    const tag = after.slice(a, b);
+    if (!/\bvariant=(?:"secondary"|'secondary'|\{\s*["']secondary["']\s*\})/.test(tag)) continue;
+    const name = /^<([\w.]+)/.exec(tag)[1];
+    flags.push(`<${name} variant="secondary"> is not a Semi Button / SplitButton imported from @semi/ui, so it was not rewritten: if it wraps Button, "secondary" is now the brand secondary fill (the neutral one is "subtle")`);
+  }
   return [...new Set(flags)];
 }
 

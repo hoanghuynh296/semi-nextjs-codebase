@@ -450,4 +450,8 @@ test("1.0.0 buttons: variant=\"secondary\" → \"subtle\" on Semi Button / Split
   const wrapper = `import { Button, type ButtonVariant } from "@semi/ui";\nexport const Act = ({ v }: { v: ButtonVariant }) => <Button variant={v} />;`;
   assert.ok(buttonFlags(wrapper).some((f) => f.startsWith("a wrapper typed with ButtonVariant")), "wrapper");
   assert.ok(buttonFlags(`<Card variant="secondary" />`).some((f) => f.startsWith("<Card variant")), "non-Semi component");
+  // an arrow (=>) or a > inside {…} before the variant does not end the tag
+  assert.ok(buttonFlags(`<Card onClick={() => go()} variant="secondary" />`).some((f) => f.startsWith("<Card variant")), "after an arrow");
+  assert.ok(buttonFlags(`<Card when={a > b} variant={'secondary'} />`).some((f) => f.startsWith("<Card variant")), "after a > in braces");
+  assert.deepEqual(buttonFlags(`<Card onClick={() => go()} variant="primary" />`), []);
 });
