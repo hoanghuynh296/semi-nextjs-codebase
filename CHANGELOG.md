@@ -80,6 +80,9 @@ Shell upgrade (C-041, #113, #114 a / c): gaps found adopting the 0.36 shell, a n
 - Apps that set `mobileNav="tabs"` + `mobileTabIds` need no change (the warning goes away). Apps with only `mobileTabIds`: add `mobileNav="tabs"` to keep the tab bar on purpose, or remove `mobileTabIds` for the phone drawer.
 - Optional: replace a theme `toggleTheme` utility with `useThemeUtility()` to give the "system" choice back.
 
+### Plugin
+- **The `semi-design` plugin is pinned to the release tag (#160).** The marketplace installs `plugin/` from the tag in `ref` (`git-subdir` source, `v0.36.1` now) instead of `./plugin` on `main`, so apps on the last release no longer get rules for unreleased changes. `npm run bump` moves `ref`; `check:version` fails when it disagrees with the version or the source is not a tag. The plugin never installs an `@semi/ui` newer than its own version (`resolveTargetSpec`); `/semi-sync` says to run `/plugin marketplace update semi-marketplace` when a newer release exists and never downgrades an app already on one. Maintainers: push the tag right after merging a bump; test unreleased plugin changes as `docs/PLUGIN.md` says.
+
 ## 0.36.1 — 2026-11-23
 
 **Summary.** A patch with two fixes from sales-hub's 0.36.0 adoption (C-041): `SearchPill` no longer loses a query typed just before a history push (#128), and `semi a11y` no longer reports `focus-ring` on a dialog's own focused controls such as `DetailOverlay`'s close and ‹ › buttons (#126).
