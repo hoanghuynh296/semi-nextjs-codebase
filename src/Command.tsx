@@ -174,7 +174,7 @@ export function Command({
   const optionId = (i: number) => `${base}-o-${i}`;
   return (
     <div className={cn("flex flex-col min-h-0", className)}>
-      <div className={cn("flex items-center border-b border-divider shrink-0", lg ? "gap-3 px-4 h-14" : "gap-2 px-3 h-12")}>
+      <div className={cn("flex items-center border-b border-divider focus-within:border-focus shrink-0", lg ? "gap-3 px-4 h-14" : "gap-2 px-3 h-12")}>
         <Icon name="search" className={cn("text-muted shrink-0", lg ? "w-5 h-5" : "w-4 h-4")} />
         <input
           role="combobox"
