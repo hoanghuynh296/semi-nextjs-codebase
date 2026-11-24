@@ -150,6 +150,7 @@ const DOCS = [
   ["docs/AGENT_TOOLS.md", "AGENT_TOOLS.md", "Agent tools: the semi CLI (search, docs, example, add) and the MCP server, and the page blocks"],
   ["docs/ICONS.md", "ICONS.md", "Semantic icon guide: which icon means what"],
   ["docs/BRANDS.md", "BRANDS.md", "Brands: brand kits (brand.json → brand.css), the step-by-step flow from a new brand to its first product, which command when"],
+  ["docs/MIGRATION-1.0.md", "MIGRATION-1.0.md", "Migrating an app from 0.x to 1.0: what each 1.0 ticket changed, the migrations, the hand fixes and which stand-ins an app deletes"],
   ["docs/TOKENS.md", "TOKENS.md", "Tokens: surfaces, text tiers, lines and fills, brand fills, type scale, fonts, shape, motion (final 1.0 names)"],
   ["plugin/rules/AGENTS.md", "agent-rules.md", "Rules block for a consumer app's AGENTS.md / CLAUDE.md"],
   ["tokens/tokens.css", "tokens.css", "Generated design tokens (CSS variables for both themes)"],

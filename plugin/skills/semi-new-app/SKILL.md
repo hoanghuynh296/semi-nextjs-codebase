@@ -44,9 +44,12 @@ The user should **never** have to run `npm install` or config commands: you run 
    `github:hoanghuynh296/semi-nextjs-codebase`, sets `transpilePackages`, wires `tokens.css` + `base.css` + `@source`
    into `app/globals.css`, writes `app/layout.tsx` (the brand's fonts, or Semi's Geist, `ThemeScript` / `ThemeProvider`
    with the default theme, `ToastHost`, `ConfirmHost`, `TaskHost`, metadata from the brief) and a starter page for the kind
-   (tool / app: `AppShell` in the route-group layout `app/(app)/layout.tsx` with the brand's logo and `href` items, a
-   `loading.tsx` beside it, and `app/(app)/page.tsx` with its main figure as `KpiCard featured` and its sample items; store /
-   landing: a top bar, a hero with the tagline, product line and button text, the proof figure and the sample items),
+   (tool / app: `AppShell` in the route-group layout `app/(app)/layout.tsx` with the brand's logo, `href` items and the
+   theme in the route header's account avatar menu (`header.account`: a sample account), a
+   `loading.tsx` beside it, and `app/(app)/page.tsx` on the work layout: the title row with the page's one main action
+   (the brand fill, `DESIGN_SYSTEM.md` §0), then its main figure as `KpiCard featured` and its sample items; store /
+   landing: a top bar (an outline action), a hero (`text-hero`, 400) with the tagline, product line and the one brand
+   button, the proof figure and the sample items),
    `semi-lint.json` (with `"density"` / `"typeScale"` when not the default), `data-density` / `data-type-scale` on
    `<html>`, `AGENTS.md` (Semi rules) and `CLAUDE.md` (`@AGENTS.md`, so Claude
    Code reads them). With `--brand` it installs the kit

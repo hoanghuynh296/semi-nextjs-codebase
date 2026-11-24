@@ -24,6 +24,14 @@ refactor (that is `/semi-check`, which is also how an app without `@semi/ui` ado
    fonts changed) is skipped with a message: ask the user, and if they agree run again with `--accept-major`. The kit's
    `"semi"` range caps the `@semi/ui` version; when it holds the app back, the script says so: run `/semi-brand update`
    in the brand repo, release, then `/semi-sync` again.
-4. Since 1.0 Semi has one look: if the script says a style is left in `semi-lint.json` / `<html>`, it is ignored; `/semi-check` foundation removes it. Add the `next/font` lines it prints for missing fonts to the layout.
-5. Report in a few lines: `old version → new version`, each migration that ran and the files it changed, and the
+4. **Crossing 1.0** (from 0.x): follow `node_modules/@semi/ui/docs/MIGRATION-1.0.md`. Rebuild the brand kit first
+   (`/semi-brand update` in the brand repo: the first 1.0 rebuild is major), then run this with `--accept-major`. The
+   script prints the CHANGELOG of every release since your version and runs every migration since your version (the
+   `1.0.0-*` ones included); do each hand fix it flags with the guide's
+   table (e.g. a `bg-accent` that became `bg-primary`: keep it only on a main button or an attention mark, else
+   `bg-inverted` / `bg-item-selected`; a `text-label` that is content → `text-ui`). Then delete the app's stand-ins
+   whose ticket the guide marks **shipped**, and keep the others. Check each key screen at 375 and 1280 in both themes:
+   one `h1`, at most one filled brand button per page or modal.
+5. Since 1.0 Semi has one look: if the script says a style is left in `semi-lint.json` / `<html>`, it is ignored; `/semi-check` foundation removes it. Add the `next/font` lines it prints for missing fonts to the layout.
+6. Report in a few lines: `old version → new version`, each migration that ran and the files it changed, and the
    CHANGELOG points that matter for this app. New lint rules of the release show up at the next `/semi-check`.
