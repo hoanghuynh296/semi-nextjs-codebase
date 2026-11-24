@@ -11,8 +11,9 @@ Switch between panels of content inside a page or card: underline (default) or s
 
 | Need | Use |
 |---|---|
-| Sibling pages of an area | PageTabsTitle |
-| Filter a list (no panels) | Pills |
+| 5+ sections of a page, or sections with icons (settings-like pages) | PillTabs |
+| 2–4 top-level views of a discovery or reading page | TextTabs |
+| 2–5 filter values shown in full, with counts | SegmentedControl |
 
 ## Import
 

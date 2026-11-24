@@ -47,9 +47,9 @@
   },
   {
     "id": "pills",
-    "title": "Pills",
+    "title": "Pills (deprecated)",
     "group": "Actions",
-    "description": "A single-choice filter of 2–5 options on one track (segmented look). The left side of a SubpageToolbar.",
+    "description": "Deprecated in 1.0: use SegmentedControl for 2–5 filter values shown in full (with counts and a sliding raised-2 pill) or PillTabs for 5+ page sections with icons. Kept exported so existing screens continue to compile until migrated.",
     "components": [
       "Pills"
     ]
@@ -480,7 +480,7 @@
     "id": "page-title",
     "title": "Page title",
     "group": "Navigation & layout",
-    "description": "PageTitle is the large display title of a page (text only), with the page's own action on its row (`actions`). PageTabsTitle turns it into 2–4 underline tabs for sibling pages.",
+    "description": "PageTitle is the display title of a page (text only), with the page's own action on its row (`actions`). PageTabsTitle is kept as a deprecated alias for 2–4 sibling tabs — new screens use TextTabs.",
     "components": [
       "PageTitle",
       "PageTabsTitle"
@@ -493,6 +493,15 @@
     "description": "Page numbers with previous / next for long tables. For card lists prefer auto-loading with “Xem thêm”.",
     "components": [
       "Pagination"
+    ]
+  },
+  {
+    "id": "pill-tabs",
+    "title": "Pill tabs",
+    "group": "Navigation & layout",
+    "description": "Default section tabs for pages with 5+ sections or sections with icons (settings-like pages): no track, h30 round pills with 16px icons and 12px/600 labels, and one item-hover pill that slides to the active tab in 300ms ease-out.",
+    "components": [
+      "PillTabs"
     ]
   },
   {
@@ -511,6 +520,15 @@
     "description": "A fixed-size scrolling region (a long list in a card, a log). Semi hides scrollbars, so it marks the edges that have more content, can show a thin scrollbar, and is reachable by keyboard.",
     "components": [
       "ScrollArea"
+    ]
+  },
+  {
+    "id": "segmented-control",
+    "title": "Segmented control",
+    "group": "Navigation & layout",
+    "description": "Small single-choice filter sets shown in full (2–5 values, often with tabular-nums counts): a `raised` track (h32, radius 8, padding 4, gap 4) with h24 items (12px/600) and one solid `raised-2` pill (white in light theme) sliding in 300ms ease-out.",
+    "components": [
+      "SegmentedControl"
     ]
   },
   {
@@ -555,7 +573,7 @@
     "id": "text-tabs",
     "title": "Text tabs",
     "group": "Navigation & layout",
-    "description": "Large text tabs that are the page heading: 2–4 sibling views in display type, the current one bright and the others dim, no underline. Buttons switch at once; tabs with href are links, so the URL picks the view.",
+    "description": "Big display tabs (`font-display text-tab-xl`, 24px below sm / 28px from sm, weight 400) for 2–4 top-level views of a discovery or reading page: every tab in strong text colour, inactive at opacity 0.2 (raised on hover in 150ms), active with a 2px brand underline at 6px offset under the word only.",
     "components": [
       "TextTabs"
     ]

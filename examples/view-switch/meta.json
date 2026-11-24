@@ -11,8 +11,8 @@
   ],
   "instead": [
     {
-      "need": "Switching between different data (orders vs. returns)",
-      "use": "TextTabs or Pills"
+      "need": "Switching between different data or status slices",
+      "use": "SegmentedControl or TextTabs"
     },
     {
       "need": "A table ↔ chart switch of one data set",

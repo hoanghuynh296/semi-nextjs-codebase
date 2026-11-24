@@ -1,22 +1,33 @@
 {
   "title": "Text tabs",
   "group": "Navigation & layout",
-  "description": "Large text tabs that are the page heading: 2–4 sibling views in display type, the current one bright and the others dim, no underline. Buttons switch at once; tabs with href are links, so the URL picks the view.",
+  "description": "Big display tabs (`font-display text-tab-xl`, 24px below sm / 28px from sm, weight 400) for 2–4 top-level views of a discovery or reading page: every tab in strong text colour, inactive at opacity 0.2 (raised on hover in 150ms), active with a 2px brand underline at 6px offset under the word only.",
   "components": [
     "TextTabs"
   ],
+  "imports": [
+    "useTabParam"
+  ],
   "when": [
-    "A page whose heading is a choice of 2–4 sibling views (Đang xử lý / Đã giao / Tất cả).",
-    "Views people link to or reload into: give the tabs an href (URL-driven)."
+    "2–4 top-level views of a discovery or reading page, rendered as the page heading (Khám phá / Mẫu sẵn / Cảm hứng).",
+    "Views people link to or reload into: pass `href` on each item or keep `?tab=` with `useTabParam`."
   ],
   "instead": [
     {
-      "need": "Sections of one record inside a page or card",
-      "use": "Tabs"
+      "need": "5+ sections of one page, or sections with icons (settings-like pages)",
+      "use": "PillTabs"
     },
     {
-      "need": "Filters of one list (status, owner)",
-      "use": "Pills"
+      "need": "2–5 filter values shown in full, often with counts",
+      "use": "SegmentedControl"
+    },
+    {
+      "need": "Filters of a list",
+      "use": "FilterChipRow"
+    },
+    {
+      "need": "Sections of one record inside a card or dialog",
+      "use": "Tabs"
     },
     {
       "need": "A page with one title",
@@ -24,22 +35,24 @@
     }
   ],
   "a11y": [
-    "WAI-ARIA tabs: tablist / tab / tabpanel, ←/→, Home, End move and the current tab is the only tab stop.",
-    "Buttons switch as focus moves; linked tabs (href) move focus only and Enter follows the link, so arrows never load a route.",
-    "The tabs sit in the page h1 by default (heading={false} when the page has its own h1); the panel is linked to its tab when children are given."
+    "WAI-ARIA tabs: tablist / tab / tabpanel, ←/→, Home and End move and the current tab is the only tab stop.",
+    "Buttons switch as focus moves (or wait for Enter / Space with `activation=\"manual\"`); linked tabs (`href`) move focus on arrows and navigate on Enter or Space.",
+    "`onBeforeChange` guards both button tabs and `href` link tabs (sync boolean or Promise<boolean>).",
+    "Inactive tabs use `text-strong` at `opacity-20` (explicit owner exception for the 24–28px display tab heading; hover raises opacity, keyboard `:focus-visible` restores full contrast)."
   ],
   "notes": [
-    "Dim tabs use text-muted (≥ 4.5:1 in both themes): never lighter.",
-    "More than 4 views, or long names: Tabs or a CustomSelect, not TextTabs."
+    "Only for 2–4 sub-pages. For 5+ sections or sections with icons, use `PillTabs`.",
+    "Weight is 400 (`font-normal`) in `font-display`: never force 600–800 bold on top of a heavy display face.",
+    "Gaps are 16 / 20 / 24px (`base` / `sm` / `md`) with 28px from the tab row to the intro text below."
   ],
   "examples": [
     {
       "file": "heading",
-      "title": "Page heading with a panel"
+      "title": "Page heading with intro and panel"
     },
     {
       "file": "linked",
-      "title": "URL-driven"
+      "title": "URL-driven href tabs with guard"
     }
   ]
 }

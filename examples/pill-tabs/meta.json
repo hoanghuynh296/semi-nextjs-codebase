@@ -1,0 +1,57 @@
+{
+  "title": "Pill tabs",
+  "group": "Navigation & layout",
+  "description": "Default section tabs for pages with 5+ sections or sections with icons (settings-like pages): no track, h30 round pills with 16px icons and 12px/600 labels, and one item-hover pill that slides to the active tab in 300ms ease-out.",
+  "components": [
+    "PillTabs"
+  ],
+  "imports": [
+    "useTabParam"
+  ],
+  "when": [
+    "5+ sections of one page, or sections with icons (Cấu hình: Hộp thư, Nhóm thư, Nguồn khách, Mặt hàng, Mẫu thư, Data Hub, Doanh nghiệp, Người dùng).",
+    "Section switching that needs URL state (?tab=) or an unsaved-changes guard (onBeforeChange)."
+  ],
+  "instead": [
+    {
+      "need": "2–5 filter values shown in full, often with counts",
+      "use": "SegmentedControl"
+    },
+    {
+      "need": "2–4 top-level views of a discovery or reading page",
+      "use": "TextTabs"
+    },
+    {
+      "need": "Filters of a list (status, owner, date)",
+      "use": "FilterChipRow"
+    },
+    {
+      "need": "Sections of one record inside a card or dialog",
+      "use": "Tabs"
+    }
+  ],
+  "a11y": [
+    "WAI-ARIA tablist / tab / tabpanel with id, aria-controls and aria-labelledby; roving tabindex; ←/→, Home and End.",
+    "activation=\"manual\" moves focus with arrows and switches on Enter or Space; default \"automatic\" switches button tabs on arrow keys once onBeforeChange approves.",
+    "Overflowing rows scroll sideways with no scrollbar, keep the active tab in view and show a 2px edge cue; sliding and fades turn off under prefers-reduced-motion."
+  ],
+  "notes": [
+    "Keep the section in the URL with `const [tab, setTab] = useTabParam(\"mail\", { values })` (or `useFilterParams().setParams({ tab }, \"replace\")`): arrow keys replace the entry so they never stack history entries.",
+    "Pass `idPrefix` when the page renders its own `role=\"tabpanel\"` below (`${idPrefix}-panel` labelled by `${idPrefix}-tab-${key}`).",
+    "When to use which: PillTabs for 5+ sections or sections with icons · SegmentedControl for 2–5 filter values shown in full with counts · TextTabs for 2–4 top-level views of a discovery or reading page · FilterChipRow for filters."
+  ],
+  "examples": [
+    {
+      "file": "sections",
+      "title": "Settings sections with icons"
+    },
+    {
+      "file": "guarded",
+      "title": "URL ?tab=, manual activation and guard"
+    },
+    {
+      "file": "choosing",
+      "title": "When to use which: all three side by side"
+    }
+  ]
+}

@@ -54,15 +54,16 @@ decisions C-006, C-008.
 | The one commit action of a page or modal; the nav's main action; a case the owner asked for | `primary` (or `secondary`, when the brand has one) |
 | A destructive confirm in a dialog | `danger` |
 
-**Tabs and filters** (T5, pending: until then `Tabs`, `Pills`, `TextTabs`, `PageTabsTitle` as they are today):
+**Tabs and filters** (§4h, T5 #147):
 
 | Need | Use |
 |---|---|
-| 5+ sections of one page, or sections with icons (Cấu hình) | `PillTabs` |
+| 5+ sections of one page, or sections with icons (settings-like pages, Cấu hình) | `PillTabs` |
 | 2–5 filter values shown in full, often with counts (Đang mở · Đã đóng · Tất cả) | `SegmentedControl` |
-| 2–4 sub-pages of a page, as its heading (display face, brand underline) | big `TextTabs` |
+| 2–4 top-level views of a discovery or reading page, as its heading (display face, brand underline) | big `TextTabs` |
 | Filters of a list (status, owner, date) | `FilterChipRow` (md+) / `PhoneFilterBar` + `FilterPanel` (phones) |
-| Sections of one record inside a card | `Tabs` (underline) |
+| Sections of one record inside a card or dialog | `Tabs` (underline) |
+| List ↔ grid (and optional density) icon toggles | `ViewSwitch` |
 
 **Page layouts** (§4a; T7, pending):
 
@@ -103,7 +104,7 @@ Names and values: **`TOKENS.md`** "Type scale" (the contract; values in `tokens/
 | Hero | `font-display text-hero font-normal text-strong` (36, 32 below sm) |
 | Reading-page title (one column) | `font-display text-title-xl font-medium text-strong` (44) |
 | Page title of a work page, in its content card | `text-figure font-normal text-strong` (18 / 400), on the row of the page's main action (T7, pending: `PageTitle` still draws the 0.x display title) |
-| Big text tabs | `font-display text-tab-xl` (28, 24 below sm; T5) |
+| Big text tabs | `font-display text-tab-xl font-normal` (28, 24 below sm; weight 400 in the brand display face; active `decoration-primary`, inactive `opacity-20`) |
 | Section heading | `text-section text-strong` (20 / 500 from the token) |
 | Card title, lead text | `text-lead font-medium text-strong` (15) |
 | **Content**: list and table rows, form labels and help, field values, buttons, menu items, dialog text, body | `text-ui` (**14**) `text-body` / `text-muted` |
@@ -515,6 +516,39 @@ and the utilities `transition-hover`, `transition-nav`, `transition-slide`, `ani
 Apps may use the tokens now in their own CSS (`transition: background-color var(--motion-hover)`); never a hand-made
 duration or easing.
 
+## 4h. Tabs, segmented controls & URL `?tab=` (#147, #121)
+
+Choose the tab or filter control mechanically from §0 "When to use which":
+
+- **`PillTabs`** (5+ sections of one page, or sections with icons, e.g. Cấu hình): no track; h30 fully round pills
+  (`rounded-full`), 16px icon + 4px + label in `text-chrome font-semibold` (12px/600), inactive `text-muted`, active
+  `text-strong`; one `bg-item-hover` pill slides behind the active tab in 300ms ease-out (`transition-slide`). WAI-ARIA
+  `tablist` / `tab` / `tabpanel` with `id`, `aria-controls` and `aria-labelledby`, roving `tabIndex`, ←/→, Home / End.
+- **`SegmentedControl`** (2–5 filter values shown in full, with optional tabular-nums counts): `bg-raised` track
+  (`rounded-control`, padding 4, gap 4, h32), h24 items (`px-4 py-1.5`, 12px/600, inactive `text-muted`, active
+  `text-strong`), one solid `bg-raised-2` pill (white in light theme) sliding in 300ms (`transition-slide`). WAI-ARIA
+  `radiogroup` / `radio` with ←/→, ↑/↓, Home / End. Replaces the deprecated `Pills`.
+- **Big `TextTabs`** (strictly 2–4 top-level views of a discovery or reading page, as its heading): `font-display
+  text-tab-xl font-normal` (24px below `sm`, 28px from `sm`, weight 400 in the brand display face — never force 600–800
+  bold on top of `font-display`, lh 1.2, tracking −0.01em), every tab in `text-strong`, inactive `opacity-20` (hover
+  raises opacity in 150ms, keyboard `:focus-visible` restores full contrast), active 2px `decoration-primary` underline
+  at 6px offset under the word only; gaps 16 / 20 / 24 (`base` / `sm` / `md`); 28px (`pt-7` / `mb-7`) to the intro
+  below. Replaces `PageTabsTitle` (deprecated).
+- **Shared behaviour across all three (#121):**
+  - **Overflow:** one horizontal row (`no-scrollbar`), active item scrolls horizontally into view without moving the
+    page vertically, no horizontal page scroll at 430px, and a 2px `bg-outline-line` edge cue (`data-edges`) marks each
+    side with more tabs.
+  - **Manual activation:** `activation="manual"` moves focus with arrows and commits on Enter / Space (default
+    `"automatic"` switches button tabs on arrow keys; `href` tabs always move focus on arrows and navigate on Enter / Space).
+  - **Guard (`onBeforeChange`):** `(key) => boolean | Promise<boolean>`, honoured by both button tabs and `href` link
+    tabs (an `href` tab does not navigate when the guard refuses). In automatic mode arrow keys move focus and selection
+    only after `value` really changed.
+  - **URL `?tab=` (`useTabParam`):** `const [tab, setTab] = useTabParam("mail", { values })` (built on `urlState.ts`,
+    Next 16 App Router safe: `null` history state, `queueMicrotask` listeners, no `useSearchParams`). Arrow-key stepping
+    always replaces (`history.replaceState`), so pressing ←/→ never pushes a history entry per key. Pages already using
+    `useFilterParams` can call `setParams({ tab: next === defaultTab ? null : next }, "replace")`.
+  - **Reduced motion:** sliding pills and edge-cue fades turn off under `prefers-reduced-motion` (opacity only, no slide).
+
 ## 5. Card
 
 Cards separate from the page by tone (`bg-card`, Surfaces in §2), with no visible border.
@@ -643,7 +677,9 @@ it form by form; the four lint rules below are warnings until 1.0.
 
 ## 10. Pills, chips, badges
 
-- Single choice: `Pills` (`h-control rounded-control` track, active = `SEGMENT_ON`).
+- Single choice (2–5 filter values shown in full, with counts): `SegmentedControl` (`bg-raised` track, sliding
+  `bg-raised-2` pill, `radiogroup` / `radio`, §4h). `Pills` (`SEGMENT_ON`) is deprecated in 1.0 and kept exported for
+  compatibility.
 - Sub-page filter tabs / chips: `Chip` (see §3 Chips). Static labels: `TAG`.
 - Filter chips may carry an icon and a count: icon `w-3.5 h-3.5` + label + `COUNT_PILL`.
 - Status pill: `STATUS_PILL` + `bg-*-bg text-*-fg` (danger, success, warning, info) with a status dot (§11), or `<Badge tone>`.
@@ -856,7 +892,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | Import | Exports |
 |---|---|
 | `@semi/ui` → `AppShell.tsx`, `RouteHeader.tsx`, `MobileTabBar.tsx` | `AppShell` (1.0 frame: nav panel with main action, groups, pinned, bottom row of tools; 224px or the 72px rail; RouteHeader; content card; phone drawer; nav shortcuts), `useAppShell` (sub-items shown, rail, shortcuts), `navShortcutKeys`, `RouteHeader` (crumbs, middle, actions, account), `AccountMenu` (the account avatar menu), `useRecordCrumb` (a detail page names its record), `MobileTabBar`, `TAB_BAR_PAD` (opt-in `mobileNav="tabs"`) (§4) |
-| `MegaMenu.tsx`, `MinimalHeader.tsx`, `TextTabs.tsx` | `MegaMenu` (flyout of category columns, `text-overline` headers, New badges, See all), `MinimalHeader` (breadcrumb left, one link + one primary right), `TextTabs` (large text tabs as the page heading, ARIA tabs, `href` for URL-driven views) (§4) |
+| `MegaMenu.tsx`, `MinimalHeader.tsx`, `TextTabs.tsx`, `PillTabs.tsx`, `SegmentedControl.tsx`, `useTabParam.ts` | `MegaMenu` (flyout of category columns, `text-overline` headers, New badges, See all), `MinimalHeader` (breadcrumb left, one link + one primary right), `TextTabs` (big display tabs for 2–4 top-level views, brand underline, `href`, `onBeforeChange`, `activation`), `PillTabs` (default section tabs for 5+ sections or sections with icons, sliding `item-hover` pill, `tabpanel`, `href`, `onBeforeChange`, `activation`), `SegmentedControl` (2–5 filter values with counts, sliding `raised-2` pill, `radiogroup`), `useTabParam` (`?tab=` URL state without history spam per arrow key) (§4, §4h) |
 | `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle` (`actions`: the page's action on the title row), `PageTabsTitle` (underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh; phone layout with `filters` / `collapseFilters` / `secondaryActions`), `ToolbarFilters` (§4a) |
 | `SearchPill.tsx`, `FilterChipRow.tsx`, `ViewSwitch.tsx`, `FilterPanel.tsx`, `filterParams.ts` | `StickyContextBar` (sticky search + chips + result line), `SearchPill` (wide pill search, debounce, `/`), `ResultLine` (query · N kết quả + sort), `SortDef`, `FilterChipRow` (one-line chips, ‹ ›, Xoá lọc, leading views, trailing tools), `FilterChip`, `FilterOptions` (the checkbox list of one filter), `useFilterParams` (filter state in the URL, Back / Forward), `ViewSwitch` (list ↔ grid, density), `PhoneFilterBar` (views · Bộ lọc · settings), `FilterPanel` (full-screen / side-sheet filters); URL helpers `readFilters`, `readFilterValues`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, types `FilterSpec`, `FilterDef`, `FilterOption`, `FilterValues` (§4) |
 | `SplitButton.tsx`, `CardActions.tsx`, `DetailOverlay.tsx` | `SplitButton` (main action + ▾ `Menu` of its variants, one button on phones, G1), `CardActions` (hover / focus icon actions + ⋯ on cards, ⋯ only on touch), `DetailOverlay` (record over its list: ‹ › with n / N, side panel, scroll kept), `useDetailParam` (`?open=` in the URL, Back closes), `openDetail` (open one from anywhere on the route), types `CardAction`, `DetailParamState` (§4, §9) |
@@ -925,7 +961,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Persistent message in a page | `Alert` (tone, title, action, `onDismiss`) |
 | Save / Cancel under a form; losing typed work; field errors | `FormActions`, `useUnsavedGuard`, `useFormValidation` + `FormErrorSummary` (§9b) |
 | Secondary task beside the page | `Drawer` (right / left / bottom / top sheet) |
-| Sections of one record | `Tabs` (underline; `segmented` inside a toolbar); 2–4 sibling views as the page heading → `TextTabs` (or `PageTabsTitle`) |
+| Sections of one page (5+, or with icons); 2–5 filter values with counts; 2–4 top-level views; sections of one record | `PillTabs` (5+ sections / icons) · `SegmentedControl` (2–5 filter values with counts) · big `TextTabs` (2–4 top-level views as the page heading, display face + brand underline) · `Tabs` (underline, sections of one record inside a card) · `useTabParam` (`?tab=` in the URL) (§4h) |
 | Top row of a detail / settings page | `MinimalHeader` (`Breadcrumb` left, one link + one primary right) |
 | Title row of a list page (title + create action + refresh) | `PageTitle actions` above the `StickyContextBar` (block `list-page`) |
 | Many destinations of one area in a few groups | `MegaMenu` (AppShell item `mega`, or its own trigger) |
@@ -965,6 +1001,8 @@ The full inventory with props is generated into `components.json` (`npm run buil
 
 - Contrast: every text / background pair ≥ 4.5:1 (3:1 for ≥ 24px) in **both** themes; `npm run test:ui` checks every
   Storybook page in light and dark, plus axe (WCAG 2.2 AA), control boundaries ≥ 3:1 and focus in forced colours.
+  One explicit owner exception (#147): inactive tabs of big `TextTabs` render `text-strong` at `opacity-20` (hover
+  raises opacity, keyboard `:focus-visible` restores full opacity).
 - Keyboard: every control is reachable and shows `FOCUS_RING` (`focus-visible` only); dialogs (`Modal`, `Drawer`,
   `confirmDialog`, `NumPadPopup`) trap focus, close on Escape and return focus to the opener (`useDialog`); menus,
   tabs and comboboxes follow the WAI-ARIA keyboard patterns.

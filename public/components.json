@@ -1982,7 +1982,7 @@
       "kind": "component",
       "module": "src/PageTitle.tsx",
       "client": true,
-      "summary": "Underline display tabs used when a view groups 2–4 sibling sub-pages (e.g. \"Máy in / Job in\", \"Sản phẩm / Danh mục\"). Replaces putting a separate <Pills> bar directly under a <PageTitle>.",
+      "summary": "Underline display tabs used when a view groups 2–4 sibling sub-pages (e.g. \"Máy in / Job in\", \"Sản phẩm / Danh mục\").",
       "props": [
         "tabs",
         "value",
@@ -2007,11 +2007,31 @@
       "doc": "docs/components/pagination.md"
     },
     {
+      "name": "PillTabs",
+      "kind": "component",
+      "module": "src/PillTabs.tsx",
+      "client": true,
+      "summary": "Default tabs for pages with 5+ sections or sections with icons (settings-like pages, #147): no track, h30 fully round pills (16px icon + 4px gap + 12px/600 label), inactive muted, active strong, with one item-hover pill that slides in 300ms ease-out (motion-slide).",
+      "props": [
+        "items",
+        "value",
+        "onChange",
+        "onBeforeChange",
+        "activation",
+        "label",
+        "idPrefix",
+        "children",
+        "className",
+        "panelClassName"
+      ],
+      "doc": "docs/components/pill-tabs.md"
+    },
+    {
       "name": "Pills",
       "kind": "component",
       "module": "src/Pills.tsx",
       "client": true,
-      "summary": "Single-choice pill group (filters, period / chart toggles).",
+      "summary": "Legacy single-choice pill group; deprecated in 1.0 (#147) in favour of SegmentedControl (2–5 filter values with counts and a sliding raised-2 pill) and PillTabs (5+ sections or sections with icons).",
       "props": [
         "value",
         "options",
@@ -2224,6 +2244,23 @@
         "className"
       ],
       "doc": "docs/components/search-pill.md"
+    },
+    {
+      "name": "SegmentedControl",
+      "kind": "component",
+      "module": "src/SegmentedControl.tsx",
+      "client": true,
+      "summary": "Small single-choice filter sets shown in full (2–5 values, often with counts: Đang mở · Đã đóng · Tất cả, #147): a `raised` track (radius 8, padding 4, gap 4, h32) with h24 items (padding 6/16, 12px/600) and one solid `raised-2` pill (white in light theme) that slides in 300ms ease-out (motion-slide).",
+      "props": [
+        "options",
+        "value",
+        "onChange",
+        "onBeforeChange",
+        "activation",
+        "label",
+        "className"
+      ],
+      "doc": "docs/components/segmented-control.md"
     },
     {
       "name": "Separator",
@@ -2580,7 +2617,7 @@
       "kind": "component",
       "module": "src/Tabs.tsx",
       "client": true,
-      "summary": "In-page tabs (WAI-ARIA tabs: ←/→/Home/End move, the active tab is the only tab stop).",
+      "summary": "In-page tabs for sections of one record inside a card or dialog (WAI-ARIA tabs: ←/→/Home/End move, the active tab is the only tab stop).",
       "props": [
         "items",
         "value",
@@ -2623,11 +2660,13 @@
       "kind": "component",
       "module": "src/TextTabs.tsx",
       "client": true,
-      "summary": "Text tabs as the page heading (#96, L19 of the #94 study): 2–4 sibling views named in display type, the current one bright and the others dim, no underline or tab chrome.",
+      "summary": "Big text tabs as the page heading for 2–4 top-level views of a discovery or reading page (#96, #147): display face (`font-display text-tab-xl`, 24px below sm / 28px from sm, weight 400, lh 1.2, tracking -0.01em), every tab in `text-strong`, inactive at opacity 0.2 (raised on hover / keyboard focus in 150ms), active with a 2px brand underline at 6px offset under the word only, gaps 16 / 20 / 24, 28px to the intro below.",
       "props": [
         "items",
         "value",
         "onChange",
+        "onBeforeChange",
+        "activation",
         "label",
         "heading",
         "children",
@@ -2971,6 +3010,13 @@
       "module": "src/locale.tsx",
       "client": true,
       "summary": "Strings for the current locale (vi unless a SemiLocaleProvider says otherwise)."
+    },
+    {
+      "name": "useTabParam",
+      "kind": "hook",
+      "module": "src/useTabParam.ts",
+      "client": true,
+      "summary": "Keep the active tab in `?tab=` (or `options.param`), SSR- and prerender-safe: the server render and hydration see `defaultValue`, then the URL is read right after mount. Automatic arrow-key changes always replace the current history entry, so pressing ←/→ across five tabs never pushes five entries."
     },
     {
       "name": "useUnsavedGuard",
