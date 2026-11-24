@@ -15,10 +15,12 @@ test("Button classes: relative only when className does not position it, so abso
   assert.ok(has(buttonClass("ghost", "md", { className: "absolutely-not" }), "relative"));
 });
 
-test("Button classes: the hit area is 24px on a fine pointer and 44px under any-pointer-coarse, at every size", () => {
+test("Button classes: at least 44 × 44px on a phone with a touch screen (pointer-coarse, max-sm), at every size", () => {
   for (const size of ["xs", "sm", "md", "modal"]) assert.ok(buttonClass("subtle", size).includes(BTN_HIT), size);
-  assert.match(BTN_HIT, /before:size-6/);
-  assert.match(BTN_HIT, /any-pointer-coarse:before:size-\[44px\]/);
+  // real size on a phone with a touch screen, never a pseudo-element that could cover a neighbour (review #157)
+  assert.match(BTN_HIT, /pointer-coarse:max-sm:min-h-11/);
+  assert.match(BTN_HIT, /pointer-coarse:max-sm:min-w-11/);
+  assert.doesNotMatch(BTN_HIT, /before:|any-pointer/);
 });
 
 test("Button classes: every variant has its own modal look (no silent fallback to subtle)", () => {

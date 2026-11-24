@@ -3182,7 +3182,7 @@
       "kind": "function",
       "module": "styles/buttons.ts",
       "client": false,
-      "summary": "Button's classes: variant × size, icon-only, round, full width, the hit area, and `relative` unless className positions it."
+      "summary": "Button's classes: variant × size, icon-only, round, full width, the phone touch size (BTN_HIT), and `relative` unless className positions it."
     },
     {
       "name": "cn",
@@ -3618,7 +3618,7 @@
       "kind": "constant",
       "module": "styles/buttons.ts",
       "client": false,
-      "summary": "The hit area (HIT_AREA of styles/utils, repeated here so this file has no imports): a 24px pseudo-element on a fine pointer, 44px on a touch screen (any-pointer-coarse), centred, never smaller than the button. Needs a positioned button."
+      "summary": "44px touch target on a phone with a touch screen (`pointer-coarse` + `max-sm`): the button itself grows to at least 44 × 44px (min-height / min-width win over the `!h-7` / `!w-7` of sm / xs). Real size, not a pseudo-element, so it never covers a neighbour and never overflows a scroll row. A mouse, a tablet and a desktop keep the drawn size."
     },
     {
       "name": "CARD",

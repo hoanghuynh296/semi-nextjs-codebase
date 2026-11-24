@@ -588,7 +588,7 @@ tiles use `w-11 h-11 rounded-card` with their area's `TILE_TONES`.
 
 1.0 variants (#146), `Button variant` or the `BTN_*` constants from `@semi/ui/styles` (`rounded-control`, `h-control`,
 `text-ui` 14px `font-medium`, flat, hover in 150ms `transition-hover`, a 2px `outline-focus` focus outline, disabled
-neutral for every variant, a 24px hit area that grows to 44px on a touch screen (`BTN_HIT`, `any-pointer-coarse`)):
+neutral for every variant, at least 44 × 44px on a phone with a touch screen (`BTN_HIT`: `pointer-coarse` + `max-sm`, real size, no pseudo-element that could cover a neighbour)):
 
 | Variant | Constant | Look | When |
 |---|---|---|---|

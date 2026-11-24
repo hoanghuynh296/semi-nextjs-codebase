@@ -5,8 +5,8 @@
 /**
  * What every variant shares: content text (text-ui, 14px), hover in 150ms (transition-hover = --motion-hover), a 2px
  * focus outline (outline-focus, the strong text colour, as on fields), a neutral disabled look for every variant
- * (brand ones too). Not `relative`: Button adds it (and BTN_HIT) unless its className positions it; a BTN_* on a
- * Link adds `relative` + BTN_HIT itself for the phone hit area.
+ * (brand ones too). Not `relative` (Button adds it for the corner badge unless its className positions it) and not
+ * BTN_HIT: Button adds the phone touch size; a BTN_* on a Link adds BTN_HIT itself.
  */
 const CORE =
   "inline-flex items-center justify-center gap-1.5 rounded-control font-medium transition-hover outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus cursor-pointer shrink-0 whitespace-nowrap " +
@@ -70,11 +70,11 @@ export const MODAL_BTN_OUTLINE = `${MODAL_BASE} bg-transparent border border-out
 export const MODAL_BTN_DANGER = `${MODAL_BASE} bg-danger-bg hover:bg-danger-bg-hover border border-danger-border text-danger-fg active:scale-[0.98]`;
 
 /**
- * The hit area (HIT_AREA of styles/utils, repeated here so this file has no imports): a 24px pseudo-element on a fine
- * pointer, 44px on a touch screen (any-pointer-coarse), centred, never smaller than the button. Needs a positioned button.
+ * 44px touch target on a phone with a touch screen (`pointer-coarse` + `max-sm`): the button itself grows to at least
+ * 44 × 44px (min-height / min-width win over the `!h-7` / `!w-7` of sm / xs). Real size, not a pseudo-element, so it
+ * never covers a neighbour and never overflows a scroll row. A mouse, a tablet and a desktop keep the drawn size.
  */
-export const BTN_HIT =
-  "before:absolute before:top-1/2 before:left-1/2 before:size-6 before:min-w-full before:min-h-full before:-translate-1/2 any-pointer-coarse:before:size-[44px]";
+export const BTN_HIT = "pointer-coarse:max-sm:min-h-11 pointer-coarse:max-sm:min-w-11";
 
 export type ButtonVariantName = "subtle" | "surface" | "inverse" | "outline" | "ghost" | "primary" | "secondary" | "danger";
 export type ButtonSizeName = "xs" | "sm" | "md" | "modal";
@@ -89,7 +89,7 @@ const MODAL: Record<ButtonVariantName, string> = {
 /** A className that positions the button itself (then it is already a containing block: no `relative`). */
 const POSITIONED = /(^|\s)(?:[\w-]+:)*(absolute|fixed|sticky)(?=\s|$)/;
 
-/** Button's classes: variant × size, icon-only, round, full width, the hit area, and `relative` unless className positions it. */
+/** Button's classes: variant × size, icon-only, round, full width, the phone touch size (BTN_HIT), and `relative` unless className positions it. */
 export function buttonClass(
   variant: ButtonVariantName = "subtle",
   size: ButtonSizeName = "md",
