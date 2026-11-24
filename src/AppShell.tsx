@@ -230,7 +230,10 @@ export interface AppShellProps {
   mobileNav?: "drawer" | "tabs";
   /** With `mobileNav="tabs"`: the ids of the items on the tab bar (up to 5; the rest go in its More sheet). */
   mobileTabIds?: string[];
-  /** localStorage key of the user's collapse choice ("rail" / "full"; one value for every width). */
+  /**
+   * localStorage key of the user's collapse choice ("rail" / "full"; one value for every width). A 0.x value ("1" /
+   * "0", in this key or in the old default key `semi_sidebar_collapsed`) is upgraded once on load.
+   */
   storageKey?: string;
   children: React.ReactNode;
   /** Classes added to the page container inside the content card. */
@@ -255,9 +258,31 @@ function SlotHost({ slot, state }: { slot: ShellSlot; state: ShellSlotState }) {
   return <>{typeof slot === "function" ? slot(state) : slot}</>;
 }
 
-/** Sets the stored nav choice on <html> before the first paint, so the server HTML's width is the user's. */
+/** The 0.x default key of the collapse choice ("1" collapsed, "0" expanded), moved once to the new key. */
+const LEGACY_NAV_KEY = "semi_sidebar_collapsed";
+
+/**
+ * Reads the stored nav choice, upgrading a 0.x value once: "1" → "rail", "0" → "full", whether it sits in the key
+ * itself (an app's own `storageKey`) or, when the key is empty, in the 0.x default key `semi_sidebar_collapsed`, which
+ * is then deleted. So an upgrade keeps the person's choice.
+ */
+function readNavChoice(storageKey: string): "rail" | "full" | null {
+  const s = localStorage;
+  let v = s.getItem(storageKey);
+  if (v === null && storageKey !== LEGACY_NAV_KEY) {
+    v = s.getItem(LEGACY_NAV_KEY);
+    if (v !== null) s.removeItem(LEGACY_NAV_KEY);
+  }
+  if (v === "1" || v === "0") {
+    v = v === "1" ? "rail" : "full";
+    s.setItem(storageKey, v);
+  }
+  return v === "rail" || v === "full" ? v : null;
+}
+
+/** Sets the stored nav choice on <html> before the first paint, so the server HTML's width is the user's (the rules of `readNavChoice`). */
 export function navScript(storageKey: string) {
-  return `(function(k){try{var v=localStorage.getItem(k);if(v==="rail"||v==="full")document.documentElement.setAttribute("data-semi-nav",v)}catch(e){}})(${JSON.stringify(storageKey)})`;
+  return `(function(k,o){try{var s=localStorage,v=s.getItem(k);if(v===null&&k!==o){v=s.getItem(o);if(v!==null)s.removeItem(o)}if(v==="1"||v==="0"){v=v==="1"?"rail":"full";s.setItem(k,v)}if(v==="rail"||v==="full")document.documentElement.setAttribute("data-semi-nav",v)}catch(e){}})(${JSON.stringify(storageKey)},${JSON.stringify(LEGACY_NAV_KEY)})`;
 }
 
 /** The nav width rules: the rail from md, expanded from `railBelow` unless the user chose the rail, from lg if they chose expanded. */
@@ -325,13 +350,12 @@ export function AppShell({
   }, [railBelow]);
 
   useEffect(() => {
-    let stored: string | null = null;
+    let value: "rail" | "full" | null = null;
     try {
-      stored = localStorage.getItem(storageKey);
+      value = readNavChoice(storageKey);
     } catch {
       // storage blocked: the default for the width
     }
-    const value = stored === "rail" || stored === "full" ? stored : null;
     setChoice(value);
     const root = document.documentElement;
     if (value) root.setAttribute("data-semi-nav", value);
@@ -594,9 +618,11 @@ export function AppShell({
     ));
 
   const groupSpacer = <div aria-hidden className="shrink-0 h-6 flex items-center px-2"><div className="h-px flex-1 bg-raised" /></div>;
+  // the group label: 10px / 500 uppercase at normal tracking (spec). `text-overline` gives the uppercase (the one place
+  // it is allowed) and `text-tag` the 10px / 500: Tailwind emits `text-tag` after `text-overline`, so its size wins.
   const groupLabel = (label: string, icon?: IconName, right?: React.ReactNode) => (
     <div className={cn("shrink-0 h-8 flex items-center justify-between gap-2 px-2 py-1.5 select-none", `@max-[120px]/nav:hidden`)}>
-      <span className="flex items-center gap-1.5 min-w-0 text-overline tracking-normal font-medium text-faint">
+      <span className="flex items-center gap-1.5 min-w-0 text-overline text-tag tracking-normal text-faint">
         {icon && <Icon name={icon} className="w-3.5 h-3.5 shrink-0" />}
         <span className="truncate">{label}</span>
       </span>

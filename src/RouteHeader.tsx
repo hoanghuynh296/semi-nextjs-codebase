@@ -81,7 +81,7 @@ export function AccountMenu({ name, detail, avatarSrc, items = [], onSignOut, th
       }
       trigger={
         <Tooltip content={name}>
-          <button type="button" aria-label={label} className={cn("w-8 h-8 shrink-0 rounded-full flex items-center justify-center cursor-pointer", FOCUS_RING)}>
+          <button type="button" aria-label={label} className={cn("w-8 h-8 max-md:w-11 max-md:h-11 shrink-0 rounded-full flex items-center justify-center cursor-pointer", FOCUS_RING)}>
             <span aria-hidden className="inline-flex">
               <Avatar name={avatarSrc ? name : letter} src={avatarSrc} size="md" />
             </span>

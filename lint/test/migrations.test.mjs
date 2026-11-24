@@ -384,3 +384,24 @@ test("1.0.0 app-shell: AppShell create → mainAction, utilities → tools; acco
   assert.equal(files["b.css"], "x");
   assert.ok(flagged.every(([f]) => f === "a.tsx") && flagged.length >= 3);
 });
+
+test("1.0.0 app-shell: comments inside a tag are not props, a > in a comment or string does not end the tag; {...spread} reported", async () => {
+  const shell = await import("../../migrations/1.0.0-app-shell.mjs");
+  // the comment names the old prop: the real prop is renamed, the comment kept as written
+  assert.equal(shell.migrateShell("<AppShell /* create */ create={a} />"), "<AppShell /* create */ mainAction={a} />");
+  assert.equal(shell.migrateShell("<AppShell\n  // utilities moved\n  utilities={u}\n/>"), "<AppShell\n  // utilities moved\n  tools={u}\n/>");
+  // only a comment: nothing to rename
+  assert.equal(shell.migrateShell("<AppShell /* create={a} */ sections={s} />"), "<AppShell /* create={a} */ sections={s} />");
+  // a > inside a comment or a string does not end the tag early
+  assert.equal(shell.migrateShell('<AppShell /* a > b */ title="x > y" create={a} />'), '<AppShell /* a > b */ title="x > y" mainAction={a} />');
+  // a string that holds the prop name is not a prop
+  assert.equal(shell.migrateShell('<AppShell title=" create" sections={s} />'), '<AppShell title=" create" sections={s} />');
+  assert.deepEqual(shell.shellFlags("<AppShell /* account */ sections={s} />"), []);
+  // a spread may carry create / utilities: reported, not rewritten
+  const spread = "<AppShell {...props} sections={s} />";
+  assert.equal(shell.migrateShell(spread), spread);
+  assert.ok(shell.shellFlags(spread).some((m) => m.startsWith("AppShell {...spread}")));
+  assert.ok(shell.shellFlags("<DocsShell { ...rest } />").some((m) => m.startsWith("DocsShell {...spread}")));
+  // a spread inside an attribute's braces is not the tag's
+  assert.ok(!shell.shellFlags("<AppShell header={{ ...h }} />").some((m) => m.includes("spread")));
+});
