@@ -358,3 +358,55 @@ test("FeatureIntro under StrictMode in next dev: a replayed intro closes for goo
   await page.waitForLoadState("networkidle");
   await replayTwice(page);
 });
+
+test("useTabParam and async onBeforeChange under Next's App Router: arrow keys replace ?tab= without pushing history, and async guard blocks both button and href tabs (#147)", async ({ page, request }) => {
+  const html = await (await request.get(`${BASE}/tabs/a`)).text();
+  expect(html).toContain('aria-label="Settings sections"');
+  expect(html).toContain('aria-label="Order status"');
+  expect(html).toContain('aria-label="Explore views"');
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(`${BASE}/tabs/a`);
+  const hookTab = page.getByTestId("hook-tab").filter({ visible: true });
+  const nextTab = page.getByTestId("next-tab").filter({ visible: true });
+  const list = page.getByRole("tablist", { name: "Settings sections" }).filter({ visible: true });
+  await expect(hookTab).toHaveText("mail");
+  await expect(nextTab).toHaveText("default");
+
+  const startHistory = await page.evaluate(() => history.length);
+  await expect(async () => {
+    await list.getByRole("tab", { name: "Mail" }).focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(hookTab).toHaveText("groups", { timeout: 500 });
+  }).toPass({ timeout: 15_000 });
+  await expect(nextTab).toHaveText("groups");
+  await expect(page).toHaveURL(/\/tabs\/a\?tab=groups$/);
+  await expect(list.getByRole("tab", { name: "Groups" })).toBeFocused();
+
+  await page.keyboard.press("ArrowRight");
+  await expect(hookTab).toHaveText("sources");
+  await expect(nextTab).toHaveText("sources");
+  await expect(page).toHaveURL(/\/tabs\/a\?tab=sources$/);
+  // Arrow-key stepping must never push one history entry per key.
+  expect(await page.evaluate(() => history.length)).toBe(startHistory);
+
+  // Turn on async guard: both button tabs (arrow + click) and Next <Link href> tabs are refused.
+  await page.getByLabel("Block async guard").filter({ visible: true }).check();
+  await list.getByRole("tab", { name: "Sources" }).focus();
+  await page.keyboard.press("ArrowLeft");
+  await expect(page.getByTestId("refused-count").filter({ visible: true })).toHaveText("1");
+  await expect(hookTab).toHaveText("sources");
+  await expect(list.getByRole("tab", { name: "Sources" })).toBeFocused();
+
+  const explore = page.getByRole("tablist", { name: "Explore views" }).filter({ visible: true });
+  await explore.getByRole("tab", { name: "Templates" }).click();
+  await expect(page.getByTestId("refused-count").filter({ visible: true })).toHaveText("2");
+  await expect(page).toHaveURL(/\/tabs\/a\?tab=sources$/);
+  await expect(page.getByTestId("next-view").filter({ visible: true })).toHaveText("discover");
+
+  // Unblock async guard: clicking the <Link href> tab navigates after the Promise resolves.
+  await page.getByLabel("Block async guard").filter({ visible: true }).uncheck();
+  await explore.getByRole("tab", { name: "Templates" }).click();
+  await expect(page).toHaveURL(/\/tabs\/a\?view=templates$/);
+  await expect(page.getByTestId("next-view").filter({ visible: true })).toHaveText("templates");
+});
