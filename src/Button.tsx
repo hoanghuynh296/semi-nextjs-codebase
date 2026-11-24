@@ -51,7 +51,7 @@ type Base = Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "children"> & {
    * @default "md"
    */
   size?: ButtonSize;
-  /** Attention count at the top-right corner (brand fill, "99+" cap), for an icon button: unread, waiting jobs. 0 hides it. */
+  /** Attention count at the top-right corner (brand fill, "99+" cap), for an icon button: unread, waiting jobs. 0 hides it. Hidden from screen readers: say the count in `aria-label`. */
   badge?: number;
   /** Leading icon from the Semi registry. */
   icon?: IconName;
@@ -100,7 +100,7 @@ export function Button({
     >
       {loading ? <Spinner className={iconCls} /> : icon && <Icon name={icon} className={iconCls} />}
       {!iconOnly && children}
-      {badge ? <CountBadge count={badge} corner /> : null}
+      {badge ? <CountBadge count={badge} corner aria-hidden /> : null}
     </button>
   );
 }
