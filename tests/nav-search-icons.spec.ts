@@ -80,9 +80,67 @@ test("phone drawer supports collapsible nav groups and external mainAction (#172
 
   const actionsBtn = dialog.getByRole("button", { name: "Actions", exact: true });
   await expect(actionsBtn).toHaveAttribute("aria-expanded", "false");
+  await expect(actionsBtn).not.toHaveAttribute("aria-controls");
   await actionsBtn.click();
   await expect(actionsBtn).toHaveAttribute("aria-expanded", "true");
+  await expect(actionsBtn).toHaveAttribute("aria-controls", /.+-sec-\d+$/);
   await expect(dialog.getByRole("link", { name: "Button", exact: true })).toBeVisible();
+});
+
+test("phone drawer navSearch closes the drawer even when activeId stays the same (#172)", async ({ page }) => {
+  await page.setViewportSize({ width: 430, height: 932 });
+  await open(page, "/icons/?q=sparkles", "light");
+  await expect(page.getByRole("searchbox", { name: "Tìm icon" })).toHaveValue("sparkles");
+
+  await page.getByRole("button", { name: /Mở menu/i }).click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toBeVisible();
+
+  const combobox = dialog.getByRole("combobox", { name: "Tìm nhanh tài liệu" });
+  await combobox.fill("trash");
+  const listbox = dialog.getByRole("listbox", { name: "Kết quả tìm kiếm" });
+  await expect(listbox).toBeVisible();
+  await listbox.getByRole("option", { name: /trash/i }).first().click();
+
+  await expect(dialog).toBeHidden();
+  await expect(page).toHaveURL(/\/icons\/\?q=trash/);
+  await expect(page.getByRole("searchbox", { name: "Tìm icon" })).toHaveValue("trash");
+});
+
+test("nav quick search guards IME composition and supports ArrowDown/ArrowUp selection (#172)", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await open(page, "/", "light");
+
+  const aside = page.locator("aside[data-semi-nav-panel]");
+  const combobox = aside.getByRole("combobox", { name: "Tìm nhanh tài liệu" });
+  const listbox = aside.getByRole("listbox", { name: "Kết quả tìm kiếm" });
+
+  await combobox.fill("button");
+  await expect(listbox).toBeVisible();
+
+  // Vietnamese IME composition: Enter / Escape with isComposing or keyCode 229 must not navigate or close
+  await combobox.evaluate((el) => {
+    el.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", isComposing: true, bubbles: true, cancelable: true }));
+    el.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", isComposing: true, bubbles: true, cancelable: true }));
+    el.dispatchEvent(new KeyboardEvent("keydown", { key: "Process", keyCode: 229, bubbles: true, cancelable: true }));
+  });
+  await expect(listbox).toBeVisible();
+  await expect(page).toHaveURL(/\/$/);
+
+  // ArrowDown / ArrowUp moves aria-selected across options and Enter navigates to the active option
+  const options = listbox.getByRole("option");
+  expect(await options.count()).toBeGreaterThan(1);
+  await expect(options.nth(0)).toHaveAttribute("aria-selected", "true");
+  await combobox.press("ArrowDown");
+  await expect(options.nth(1)).toHaveAttribute("aria-selected", "true");
+  const secondHref = await options.nth(1).getAttribute("href");
+  expect(secondHref).toBeTruthy();
+  await combobox.press("ArrowUp");
+  await expect(options.nth(0)).toHaveAttribute("aria-selected", "true");
+  await combobox.press("ArrowDown");
+  await expect(options.nth(1)).toHaveAttribute("aria-selected", "true");
+  await combobox.press("Enter");
+  await expect(page).toHaveURL(new RegExp(`${secondHref!.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`));
 });
 
 test("nav quick search finds components, pages, and icons with keyboard navigation (#172)", async ({ page }) => {

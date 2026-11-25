@@ -404,7 +404,7 @@ export function AppShell({
   const sectionHasActive = (section: ShellNavSection) =>
     section.items.some((i) => i.id === activeId || i.id === activeTopId);
   const isSectionOpen = (section: ShellNavSection, idx: number) => {
-    if (!section.collapsible) return true;
+    if (!section.collapsible || !section.label || section.hideLabel) return true;
     const key = sectionKey(section, idx);
     if (key in sectionToggles) return sectionToggles[key];
     if (sectionHasActive(section)) return true;
@@ -1182,12 +1182,24 @@ function PhoneDrawer({
   onClose: () => void;
 }) {
   const t = useSemiLocale();
+  const drawerId = useId();
   const ref = useRef<HTMLDivElement>(null);
+  const navSearchRef = useRef<HTMLDivElement>(null);
   const [level, setLevel] = useState<DrillLevel | null>(null);
   // the row that opened the level: focus returns to it on the way back
   const [returnTo, setReturnTo] = useState<string | null>(null);
   const back = () => setLevel(null);
   const { titleId } = useDialog(ref, true, () => (level ? back() : onClose()));
+  // Close the drawer when a link inside navSearch is clicked (even if activeId does not change, e.g. /icons/?q=…).
+  useEffect(() => {
+    const el = navSearchRef.current;
+    if (!el) return;
+    const onLinkClick = (e: MouseEvent) => {
+      if ((e.target as HTMLElement | null)?.closest("a")) onClose();
+    };
+    el.addEventListener("click", onLinkClick);
+    return () => el.removeEventListener("click", onLinkClick);
+  }, [onClose, level]);
   // a new level gets focus on its first row, so a screen reader hears where it went; back at the root, the row that
   // opened it gets focus again
   useEffect(() => {
@@ -1380,18 +1392,18 @@ function PhoneDrawer({
                   {create.label}
                 </button>
               ))}
-            {navSearch && <div className="relative px-1">{navSearch}</div>}
+            {navSearch && <div ref={navSearchRef} className="relative px-1">{navSearch}</div>}
             {sections.map((s, idx) => {
               if (!s.items?.length) return null;
               const open = isSectionOpen(s, idx);
-              const listId = `drawer-sec-${idx}`;
+              const listId = `${drawerId}-sec-${idx}`;
               return (
                 <nav key={s.label ?? idx} aria-label={s.label ?? (idx === 0 ? t.mainMenu : `Menu ${idx + 1}`)}>
                   {s.label && !s.hideLabel && (s.collapsible ? (
                     <button
                       type="button"
                       aria-expanded={open}
-                      aria-controls={listId}
+                      aria-controls={open ? listId : undefined}
                       onClick={() => onToggleSection(s, idx)}
                       className={cn("w-full flex items-center justify-between gap-2 px-3 py-2 rounded-control text-chrome font-medium text-muted hover:text-strong hover:bg-item-hover transition-hover cursor-pointer", FOCUS_RING)}
                     >

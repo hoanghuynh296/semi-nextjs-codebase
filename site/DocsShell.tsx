@@ -130,7 +130,6 @@ function NavQuickSearch({ sections }: { sections: ShellNavSection[] }) {
     }
 
     if (hasIconsPage) {
-      let iconHits = 0;
       for (const [name, meta] of Object.entries(ICON_CATALOG)) {
         const nameLow = name.toLowerCase();
         const lucideLow = meta.lucideEquivalent?.toLowerCase() ?? "";
@@ -155,8 +154,6 @@ function NavQuickSearch({ sections }: { sections: ShellNavSection[] }) {
             icon: name as IconName,
             score,
           });
-          iconHits++;
-          if (iconHits >= 24) break;
         }
       }
     }
@@ -190,6 +187,7 @@ function NavQuickSearch({ sections }: { sections: ShellNavSection[] }) {
   };
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.nativeEvent.isComposing || e.keyCode === 229) return;
     if (e.key === "Escape") {
       if (showDropdown) {
         e.preventDefault();
@@ -209,7 +207,12 @@ function NavQuickSearch({ sections }: { sections: ShellNavSection[] }) {
       setActiveIndex((i) => (i - 1 + hits.length) % hits.length);
     } else if (e.key === "Enter" && clampedIndex >= 0) {
       e.preventDefault();
-      selectHit(hits[clampedIndex]);
+      const opt = activeOptionId ? document.getElementById(activeOptionId) : null;
+      if (opt instanceof HTMLElement) {
+        opt.click();
+      } else {
+        selectHit(hits[clampedIndex]);
+      }
     }
   };
 
