@@ -30,7 +30,7 @@ refactor (that is `/semi-check`, which is also how an app without `@semi/ui` ado
    `1.0.0-*` ones included); do each hand fix it flags with the guide's
    table (e.g. a `bg-accent` that became `bg-primary`: keep it only on a main button or an attention mark, else
    `bg-inverted` / `bg-item-selected`; a `text-label` that is content → `text-ui`). Then delete the app's stand-ins
-   whose ticket the guide marks **shipped**, and keep the others. Check each key screen at 375 and 1280 in both themes:
+   listed in `docs/MIGRATION-1.0.md`. Check each key screen at 375 and 1280 in both themes:
    one `h1`, at most one filled brand button per page or modal.
 5. Since 1.0 Semi has one look: if the script says a style is left in `semi-lint.json` / `<html>`, it is ignored; `/semi-check` foundation removes it. Add the `next/font` lines it prints for missing fonts to the layout.
 6. Report in a few lines: `old version → new version`, each migration that ran and the files it changed, and the

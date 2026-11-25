@@ -30,8 +30,9 @@ If neither works (`semi_status` answers, or `npx semi` is missing), the app has 
    sending"). Search each one; Vietnamese or English both work. Read `why` lines: they come from another component's
    "use something else when" table and usually name the right pick.
 2. **Read the page of every component you will use** (`semi_docs`), at least *When to use*, *Use something else when*
-   and *Accessibility*. Pick by meaning, not by look: `Pills` filter, `Tabs` switch sections, `ToggleGroup` pick a
-   mode; `Menu` for actions, `NavigationMenu` for site links, `Menubar` for tool commands.
+   and *Accessibility*. Pick by meaning, not by look: `SegmentedControl` filters 2–5 values, `PillTabs` switches 5+
+   sections or sections with icons, big `TextTabs` switches 2–4 top-level views, `Tabs` switches sections of one record,
+   `ToggleGroup` picks a mode; `Menu` for actions, `NavigationMenu` for site links, `Menubar` for tool commands.
 3. **A whole page:** start from a block (`semi add dashboard` writes `app/dashboard/page.tsx`; `--out <path>` to
    choose, never `--force` over the user's file without asking). Replace the sample data with the app's data and
    types; keep the Semi components and their order.
@@ -79,8 +80,7 @@ If neither works (`semi_status` answers, or `npx semi` is missing), the app has 
 ## Semi 1.0 rules to hold while you build
 
 Full rules: `node_modules/@semi/ui/docs/DESIGN_SYSTEM.md` §0 (the 1.0 look, the brand colour rule, when to use which).
-A part marked *(Tn, pending)* there (T3, T8–T9) is a 1.0 target that has not shipped: build the rest of the screen to it, use
-what Semi has today for that part, and never write a local stand-in.
+All T1–T9 components, tokens and motion rules are shipped in 1.0.0; never write a local stand-in.
 
 - **Brand colour:** `bg-primary` (or `bg-secondary`) only on the one main button of a page or modal (its commit action;
   at most one filled brand button per page or modal), the nav's main action, the active big-tab underline and attention
@@ -122,13 +122,13 @@ sample data. Every page has its loading (`loading.tsx` → `PageSkeleton` of its
 
 | Page | Desktop (1280) | Phone (375) |
 |---|---|---|
-| **List** (`semi add list-page`) | work layout · `PageTitle` + `actions` (title, `RefreshButton`, the one main action) · `StickyContextBar` (`SearchPill`, `FilterChipRow` with views in `leading`, `ResultLine`) · `DataTable` (or `Item` rows) · a record opens in `DetailOverlay` (`useDetailParam`). 1.0 (T7): no count row, sort and "Chọn" on the filter row, selection mode in the filter row | title row wraps its actions under the title · `PhoneFilterBar` + `FilterPanel` · rows as `Item`s or the table scrolling sideways · `DetailOverlay` full screen |
+| **List** (`semi add list-page`) | `Page layout="work"` (`enter`) · `PageTitle` + `actions` (title, `RefreshButton`, the one main action: `inverse` or `primary`, rest in `•••`) · `StickyContextBar` (`SearchPill` with `BarActions` in `trailing` for pinned actions, `FilterChipRow` with `SegmentedControl` views in `leading`, `sort` and zero-shift `selection` via `useListSelection`, no `ResultLine`) · `DataTable` (`activeRowId`) or `Card` / `Item` rows · a record opens in `DetailOverlay` (`useDetailParam`) | title row wraps its actions when out of width · `PhoneFilterBar` + `FilterPanel` · rows as `Item`s or the table scrolling sideways · `DetailOverlay` full screen |
 | **Detail** | `MinimalHeader` (breadcrumb, one action) or the overlay above · facts as label / value rows in a `Card` · one main action (`SplitButton` when it has variants) + ⋯ `Menu` · related lists below | one column · actions in the header's ⋯ · `Menu` opens as a bottom sheet |
-| **Dashboard** (`semi add dashboard`) | work layout · `PageTitle` · one `KpiCard featured` bigger than the rest · a chart · the latest records | KPIs stack, the featured one first · charts full width |
-| **Settings** (`semi add settings-page`) | reading or two-column layout (sub-pages in a sub-nav card) · sections with `text-section` heads · rows with `Switch` (applies at once) and links · one save action (`FormActions`) for a form · a danger zone last | sub-nav stacks above the content · `FormActions` sticky at the bottom |
-| **Form** (`npx semi example form-actions`) | `Field` + `Input` / `CustomSelect` / `DatePicker` … in `FORM_PAGE` (max-w-2xl) · `text-overline` section labels for groups · `FormActions` (Huỷ, then Lưu / Tạo) · `useUnsavedGuard`, `useFormValidation` | one column · fields 16px · `FormActions` sticky above the keyboard |
-| **List + reader** | a list card and a reader card side by side (T7, pending: today `ResizablePanels` or a two-column grid of `Card`s) · reader header: subject left, ⋯ and the main action (Trả lời) right | the list; the reader opens over it (`DetailOverlay`) |
-| **Reading page** | reading layout · `font-display text-title-xl font-medium` title · `Prose` / `Markdown` · sections with `text-section` heads | one column, the title at its phone size |
+| **Dashboard** (`semi add dashboard`) | `Page layout="work"` · `PageTitle` · one `KpiCard featured` bigger than the rest · a chart · the latest records | KPIs stack, the featured one first · charts full width |
+| **Settings** (`semi add settings-page`) | `Page layout="reading"` (with `PillTabs`) or `layout="two-column"` (240px `SubNav` card + main card) · sections with `PageSection` (`text-section` heads) · rows with `Switch` (applies at once) and links · one save action (`FormActions`) for a form · a danger zone last | `SubNav` stacks above the content · `FormActions` sticky at the bottom |
+| **Form** (`npx semi example form-actions`) | `Field` + `Input` / `CustomSelect` / `CustomCombobox` / `MultiCombobox` / `OptionCards` / `DatePicker` … in `FORM_PAGE` (max-w-2xl) · `text-overline` section labels for groups · `FormActions` (Huỷ, then Lưu / Tạo) · `useUnsavedGuard`, `useFormValidation` | one column · fields 16px · `FormActions` sticky above the keyboard |
+| **List + reader** | `ListReaderLayout` + sticky `ReaderHeader` inside `Page fixed` / `AppShell page="fixed"` (list card + reader card, independent scrollers, `?open=` via `useDetailParam`, `useRecordCrumb`) · `ReaderHeader`: wrapping title left, `[•••]` and one main action (Trả lời) right | the list; opening a record swaps to the reader with a Back button |
+| **Reading page** | `Page layout="reading"` (`titleVariant="reading"` → `font-display text-title-xl font-medium`) · `Prose` / `Markdown` · `PageSection` (`text-section` heads) | one column, the title at its phone size |
 | **Empty state** | `EmptyState` `first-use` (one sentence, the action that fills the page; hide the title row's main action while it shows) or `no-results` (with "Xoá lọc") · `GuidedEmptyState` when the first use needs steps | compact, at most 40% of the screen |
 
 **Boring defaults** (do these without being asked): a status is a `<Badge tone>` from one status → tone mapping for the

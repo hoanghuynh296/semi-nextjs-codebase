@@ -1,6 +1,6 @@
 ---
 name: semi-brand
-description: Create or change a brand on the Semi Design System - a brand kit repo (brand.json → brand.css, fonts, logo, BRAND.md guideline, agent rules) that every product of that brand installs, so they all share its colours, fonts, logo, voice and allowed styles. Starts from a brief (product, audience, personality), asks the few independent choices (logo, primary, optional secondary, neutrals, styles, fonts, voice, colour use), derives the rest with contrast checks, previews it, and releases a tag.
+description: Create or change a brand on the Semi Design System - a brand kit repo (brand.json → brand.css, fonts, logo, BRAND.md guideline, agent rules) that every product of that brand installs, so they all share its colours, fonts, logo and voice in Semi's one look. Starts from a brief (product, audience, personality), asks the few independent choices (logo, primary, optional secondary, fonts with optional display, voice), derives the text and hover colours with contrast checks, previews it, and releases a tag.
 ---
 
 # Brand kit (`/semi-brand`)
