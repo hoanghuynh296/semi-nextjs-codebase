@@ -946,4 +946,4 @@ function main(argv) {
 }
 
 const isMain = process.argv[1] && resolve(process.argv[1]).replace(/\\/g, "/").match(/semi-lint(\.mjs)?$/);
-if (isMain) process.exit(main(process.argv.slice(2)));
+if (isMain) process.exitCode = main(process.argv.slice(2));

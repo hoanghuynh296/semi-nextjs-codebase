@@ -971,5 +971,5 @@ if (isMain) {
     process.stdout.write(formatSummary(report, rel && !rel.startsWith("..") ? rel : written));
   }
   // --ci: summary only, exit 1 while anything is left (a periodic check in the app's CI).
-  if (ci && totals(report).total) process.exit(1);
+  if (ci && totals(report).total) process.exitCode = 1;
 }
