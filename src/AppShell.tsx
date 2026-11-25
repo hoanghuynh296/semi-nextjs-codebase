@@ -1221,14 +1221,21 @@ function PhoneDrawer({
     return () => el.removeEventListener("click", onLinkClick);
   }, [onClose, level]);
   // Close the drawer when a button or link inside navFooter is activated (e.g. CommandDialog trigger).
+  // Defer to a macrotask so the click event finishes bubbling to React's root listener before PhoneDrawer unmounts.
   useEffect(() => {
     const el = navFooterRef.current;
     if (!el) return;
+    let timer: ReturnType<typeof setTimeout> | undefined;
     const onActionClick = (e: MouseEvent) => {
-      if ((e.target as HTMLElement | null)?.closest("a, button")) onClose();
+      if ((e.target as HTMLElement | null)?.closest("a, button")) {
+        timer = setTimeout(onClose, 0);
+      }
     };
     el.addEventListener("click", onActionClick);
-    return () => el.removeEventListener("click", onActionClick);
+    return () => {
+      el.removeEventListener("click", onActionClick);
+      if (timer !== undefined) clearTimeout(timer);
+    };
   }, [onClose, level]);
   // a new level gets focus on its first row, so a screen reader hears where it went; back at the root, the row that
   // opened it gets focus again
