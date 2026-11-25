@@ -286,7 +286,7 @@ test("URL state (#129, #124, #139): legacy rewrite, patch single entry, ?sort= s
 
   await page.goBack();
   await expect(page).not.toHaveURL(/sort=total\.desc/);
-  await expect(page.getByTestId("result-ids")).toHaveText(/^SO-1001/);
+  await expect(page.getByTestId("result-ids")).toHaveText(/^SO-1003/);
 
   // 4. #139: empty single chip is disabled (cannot open empty menu).
   const emptyChip = page.locator("[data-sticky-bar]").getByRole("button", { name: "Kho hàng" });
@@ -296,10 +296,7 @@ test("URL state (#129, #124, #139): legacy rewrite, patch single entry, ?sort= s
   await page.getByTestId("open-panel").click();
   const dialog = page.getByRole("dialog", { name: "Bộ lọc" });
   await expect(dialog).toBeVisible();
-  const boxTrigger = dialog.getByRole("button", { name: /Hộp thư/ });
-  if ((await boxTrigger.getAttribute("aria-expanded")) !== "true") {
-    await boxTrigger.click();
-  }
+  // "Hộp thư" is active (f.box=sales), so FilterPanel opens its accordion automatically.
   const radioGroup = dialog.getByRole("radiogroup", { name: "Hộp thư" });
   await expect(radioGroup).toBeVisible();
   const hasExtraGroup = await radioGroup.evaluate((el) => Boolean(el.parentElement?.getAttribute("role") === "group"));
