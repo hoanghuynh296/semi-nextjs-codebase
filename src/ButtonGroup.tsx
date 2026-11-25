@@ -7,12 +7,15 @@ import { cn } from "../styles/utils";
 export function ButtonGroup({
   label,
   orientation = "horizontal",
+  fullWidth = false,
   className,
   children,
 }: {
   /** Accessible name of the group ("Điều hướng ngày"). */
   label?: string;
   orientation?: "horizontal" | "vertical";
+  /** Stretch the group across its container's width (`flex w-full`). */
+  fullWidth?: boolean;
   className?: string;
   /** Button elements (Button, or anything styled with BTN_*). */
   children: React.ReactNode;
@@ -22,7 +25,8 @@ export function ButtonGroup({
       role="group"
       aria-label={label}
       className={cn(
-        "inline-flex isolate *:focus-visible:z-10",
+        fullWidth ? "flex w-full" : "inline-flex",
+        "isolate *:focus-visible:z-10",
         orientation === "horizontal"
           ? "flex-row *:!rounded-none [&>*:first-child]:!rounded-l-control [&>*:last-child]:!rounded-r-control [&>*+*]:-ml-px"
           : "flex-col *:!rounded-none [&>*:first-child]:!rounded-t-control [&>*:last-child]:!rounded-b-control [&>*+*]:-mt-px",

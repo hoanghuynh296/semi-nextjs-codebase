@@ -88,14 +88,21 @@ export default function CardBordered() {
 
 With `onClick` the card is a button for keyboards and screen readers too: role="button", in the tab order, Enter and
 Space click it, FOCUS_RING shows focus (a plain <div onClick> is mouse-only). `active` is then its pressed state.
-A card that opens another page wraps a next/link around its title instead.
+With `selectable`, the outer element stays a plain container and renders sibling Checkbox + open button controls
+so checking and opening never nest interactive elements.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `interactive` | `boolean` | `false` | Clickable card (opens a detail view): hover border + press scale. |
-| `active` | `boolean` |  | "On" / selected card: primary border, no glow. On a card with onClick it is also its pressed state (aria-pressed). |
+| `active` | `boolean` |  | "On" / selected card: outline border, no glow. On a non-selectable card with onClick it is also its pressed state (aria-pressed). |
 | `bordered` | `boolean` | `false` | Framed card for dense data views (a table or rows that need an edge): panel fill + 1px line instead of the borderless card surface. |
 | `padding` | `'card' \| 'panel' \| 'none'` | `"card"` | Inner padding: `"card"` = p-card (16px at regular density, the default), `"panel"` = p-card sm:p-panel (a roomy card, 24px from sm), `"none"` for an image or a table that runs to the edge. A padding class in `className` (p-*, px-*, py-*) replaces it. |
+| `selectable` | `boolean` | `false` | Selection mode (#149, #127): renders a corner checkbox as a sibling of the card's open button (zero nested interactive controls) so the card can be checked separately from opening it, by pointer or keyboard. |
+| `checked` | `boolean` | `false` | Checked state in selection mode (`bg-item-checked`). |
+| `onCheckedChange` | `(checked: boolean) => void` |  | Called when the card's selection checkbox toggles. |
+| `selected` | `boolean` | `false` | Open / active record state (`bg-item-selected`, `border-outline-line`). |
+| `label` | `string` |  | Accessible name of the card's open action (also used to build the default checkbox name `"Chọn <label>"`). |
+| `selectLabel` | `string` |  | Override accessible name of the selection checkbox. |
 | `ref` | `React.Ref<HTMLDivElement>` |  |  |
 
 ## Accessibility

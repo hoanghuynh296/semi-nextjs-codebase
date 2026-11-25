@@ -186,6 +186,16 @@ export const vi = {
   introDone: "Bắt đầu",
   hintType: "Gõ",
   hintSuggestions: (n: number) => `${n} gợi ý, dùng ↑ ↓ để chọn, Enter để chèn`,
+  subNav: "Điều hướng trang",
+  selectMode: "Chọn",
+  selectDone: "Xong",
+  nSelected: (n: number) => `${n} đã chọn`,
+  selectItem: (name: string) => `Chọn ${name}`,
+  readerEmpty: "Chọn một mục để xem.",
+  backToList: "Về danh sách",
+  readerLabel: "Nội dung",
+  listLabel: "Danh sách",
+  bulkActions: "Thao tác hàng loạt",
 };
 
 export type SemiStrings = typeof vi;
@@ -372,6 +382,16 @@ export const en: SemiStrings = {
   introDone: "Get started",
   hintType: "Type",
   hintSuggestions: (n: number) => `${n} ${n === 1 ? "suggestion" : "suggestions"}, use ↑ ↓ to choose, Enter to insert`,
+  subNav: "Page navigation",
+  selectMode: "Select",
+  selectDone: "Done",
+  nSelected: (n: number) => `${n} selected`,
+  selectItem: (name: string) => `Select ${name}`,
+  readerEmpty: "Choose an item to read.",
+  backToList: "Back to the list",
+  readerLabel: "Content",
+  listLabel: "List",
+  bulkActions: "Bulk actions",
 };
 
 const LocaleContext = createContext<SemiStrings>(vi);

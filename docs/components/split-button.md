@@ -84,6 +84,34 @@ export default function SplitButtonSecondary() {
 }
 ```
 
+### Full width (workspace action bar)
+
+`fullWidth` stretches the primary button across its container (e.g. WorkspaceLayout's pinned action bar) and keeps the split trigger on phones.
+
+```tsx
+"use client";
+
+import { SplitButton, toast } from "@semi/ui";
+
+export default function SplitButtonFullWidth() {
+  return (
+    <div className="max-w-sm">
+      <SplitButton
+        fullWidth
+        label="Gửi hỏi giá"
+        icon="send"
+        onClick={() => toast.success("Đã gửi hỏi giá")}
+        menuLabel="Cách gửi khác"
+        items={[
+          { label: "Gửi từ mẫu", icon: "fileText", onSelect: () => toast.info("Chọn mẫu") },
+          { label: "Lưu nháp", icon: "check", onSelect: () => toast.info("Đã lưu nháp") },
+        ]}
+      />
+    </div>
+  );
+}
+```
+
 ## API
 
 ### SplitButton
@@ -99,7 +127,8 @@ export default function SplitButtonSecondary() {
 | `size` | `'sm' \| 'md'` | `"md"` |  |
 | `loading` | `boolean` | `false` | The main action is running: spinner and no clicks on the main half; the ▾ stays usable. |
 | `disabled` | `boolean` | `false` | Disables both halves. |
-| `collapseOnPhone` | `boolean` | `true` | Below `sm`, show one button (the icon, or the label with ▾) that opens a menu with the main action first. |
+| `fullWidth` | `boolean` | `false` | Stretch to fill its container (e.g. a `WorkspaceLayout` pinned action): the main half takes `flex-1` while the ▾ keeps its width, and `collapseOnPhone` defaults to `false` so phones keep the full-width split button. |
+| `collapseOnPhone` | `boolean` |  | Below `sm`, show one button (the icon, or the label with ▾) that opens a menu with the main action first. Defaults to `false` when `fullWidth` is set, otherwise `true`. |
 | `className` | `string` |  |  |
 
 ## Accessibility

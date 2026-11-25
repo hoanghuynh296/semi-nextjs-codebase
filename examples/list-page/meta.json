@@ -1,7 +1,7 @@
 {
   "title": "List page",
   "group": "Blocks",
-  "description": "A records page on the StickyContextBar anatomy: the title row with refresh and the create action (PageTitle actions), then the sticky bar (SearchPill, views as Pills + filter chips on md+, PhoneFilterBar + FilterPanel on phones, ResultLine), then a data table that sorts, selects and pages, with bulk actions. State in the URL. Copy it with `semi add list-page`.",
+  "description": "A 1.0 records page on Page layout=\"work\": 18/400 title row with an inverse action, StickyContextBar with SearchPill + FilterChipRow (sort, Chọn and in-place selection mode on the filter row; PhoneFilterBar on phones; no result-count row), DataTable / Card grid / phone Item rows sharing the same selection model, and DetailOverlay (?open=). Copy it with `semi add list-page`.",
   "components": [],
   "when": [
     "Orders, customers, products, jobs: any page whose job is to find and act on records."

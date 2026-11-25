@@ -45,11 +45,17 @@
       "file": "minimal",
       "title": "Minimal",
       "description": "No header: just sections, the action and the result."
+    },
+    {
+      "file": "readonly",
+      "title": "Read-only viewer",
+      "description": "Omit `action` when the viewer cannot commit: no pinned bottom bar is rendered."
     }
   ],
   "notes": [
     "The panel is 380px wide on lg+, sticky under the top of the scrolling area, and scrolls inside; the result scrolls with the page. On phones the action sticks at `bottom: var(--semi-bottom-bar, 0px)`: AppShell sets it to the tab bar's height in tabs mode, so the action sits above MobileTabBar.",
-    "One primary in the action bar (fullWidth), a secondary beside it at most (Lưu nháp). Section labels are the only uppercase text (text-overline, written in sentence case in code).",
+    "One primary in the action bar (`fullWidth` on `Button` or `SplitButton`), a secondary beside it at most (Lưu nháp). Omit `action` for a read-only viewer. Section labels are the only uppercase text (text-overline, written in sentence case in code).",
+    "Record as WorkspaceLayout vs DetailOverlay: use WorkspaceLayout when a stored record has its own route and a large live result (e.g. a quote comparison matrix); use DetailOverlay for a quick look from a list. Keep inputs and context in the panel and move history/activity below the main result so phone panels stay short.",
     "Do not put WorkspaceLayout inside an overflow-x-auto / overflow-hidden box: that box becomes the sticky container and the phone action no longer stays on screen."
   ]
 }

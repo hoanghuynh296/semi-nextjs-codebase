@@ -1,7 +1,7 @@
 {
   "title": "Page title",
   "group": "Navigation & layout",
-  "description": "PageTitle is the display title of a page (text only), with the page's own action on its row (`actions`). PageTabsTitle is kept as a deprecated alias for 2–4 sibling tabs — new screens use TextTabs.",
+  "description": "PageTitle is the 18 / 400 UI sans heading of a work page on the same row as the page's main action (`actions`), with `variant=\"reading\"` (44 / 500 display face, text-title-xl) for one-column reading pages only. PageTabsTitle is kept as a deprecated alias for 2–4 sibling tabs — new screens use TextTabs.",
   "components": [
     "PageTitle",
     "PageTabsTitle"
@@ -48,6 +48,10 @@
     {
       "file": "actions",
       "title": "With the page's action"
+    },
+    {
+      "file": "reading",
+      "title": "Reading page (44 / 500 display)"
     },
     {
       "file": "tabs",

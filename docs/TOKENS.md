@@ -104,7 +104,7 @@ and `text-tone-*` are one fixed palette for every brand. Their text (light: the 
 | `text-tag` | 10 · 500 · +0.02em | tags, chips |
 | `text-badge` | 10 · 700 · lh 1 | count badges only |
 | `text-overline` | 11 · 600 · +0.1em · uppercase | section labels |
-| `text-nav-label` | 10 · 500 · normal tracking · uppercase · `text-faint` | the AppShell nav group label only |
+| `text-nav-label` | 10 · 500 · normal tracking · uppercase · `text-faint` | AppShell nav and `SubNav` group labels |
 
 Two sizes for UI text (C-011, #155): **content is 14px, only the shell chrome is 12px.** 12px suits the frame around the
 work (nav, breadcrumb, toolbars, meta), but dense content at 12px reads poorly, Vietnamese diacritics most of all.

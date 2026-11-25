@@ -65,7 +65,7 @@ decisions C-006, C-008.
 | Sections of one record inside a card or dialog | `Tabs` (underline) |
 | List ↔ grid (and optional density) icon toggles | `ViewSwitch` |
 
-**Page layouts** (§4a; T7, pending):
+**Page layouts** (§4a; `Page`, `SubNav`, `ListReaderLayout`, #149):
 
 | Page | Layout |
 |---|---|
@@ -103,7 +103,7 @@ Names and values: **`TOKENS.md`** "Type scale" (the contract; values in `tokens/
 |---|---|
 | Hero | `font-display text-hero font-normal text-strong` (36, 32 below sm) |
 | Reading-page title (one column) | `font-display text-title-xl font-medium text-strong` (44) |
-| Page title of a work page, in its content card | `text-figure font-normal text-strong` (18 / 400), on the row of the page's main action (T7, pending: `PageTitle` still draws the 0.x display title) |
+| Page title of a work page, in its content card | `text-figure font-normal text-strong` (18 / 400), on the row of the page's main action (`PageTitle`, default `variant="work"`) |
 | Big text tabs | `font-display text-tab-xl font-normal` (28, 24 below sm; weight 400 in the brand display face; active `decoration-primary`, inactive `opacity-20`) |
 | Section heading | `text-section text-strong` (20 / 500 from the token) |
 | Card title, lead text | `text-lead font-medium text-strong` (15) |
@@ -358,32 +358,18 @@ Also:
   when it is false.
 - Every flex / grid child that holds text gets `min-w-0` + `truncate`, so long names never push the page wider.
 
-## 4a. Page layouts and rhythm (T7, pending)
+## 4a. Page layouts and rhythm (#149)
 
-Inside the content card, one of four layouts (the "when to use which" table is in §0):
+Inside the content card, pick one of four layouts with `<Page layout="work" | "reading" | "two-column">` (and `<ListReaderLayout>` inside `Page fixed` / `AppShell page="fixed"`; the "when to use which" table is in §0):
 
-- **Work** (lists, tables, workspaces): flush, no centred max-width; card padding 16 / 24.
-- **Reading** (settings, explore, articles): one column centred at max 1536px inside 16px card padding, 64px bottom
-  padding; the title is `font-display text-title-xl font-medium`.
-- **Two-column** (an area with sub-pages): a sub-nav card 240px (`md:w-60`), flush left, padding 20 / 10; a 4px gap;
-  the main card to the right edge, padding 24; no wide side padding. Below `md` the sub-nav stacks above the content.
-  Sub-nav sections: a group label, then items (h32, `rounded-control`, padding 4 / 16, `text-chrome` 500, 16px icon,
-  2px apart); sections split by a 1px line.
-- **List + reader** (mail, queues, chats): a list card and a reader card. The reader header has the subject on the
-  left (it wraps) and [•••][the main action, e.g. Trả lời] on the right of the same row; every other action is in •••.
-  When the search bar is pinned, each card scrolls on its own (§4e).
+- **Work** (`layout="work"`, default: lists, tables, workspaces): flush, no centred max-width; card padding 16 / 24 (`px-4 sm:px-6`).
+- **Reading** (`layout="reading"`: settings, explore, articles): one column centred at max 1536px (`max-w-screen-2xl`) inside 16px card padding, 64px bottom padding; pass `titleVariant="reading"` (or `<PageTitle variant="reading">`) to opt into the 44 / 500 display title (`font-display text-title-xl font-medium`).
+- **Two-column** (`layout="two-column"` + `subNav={<SubNav … />}`: an area with sub-pages or mailbox folders): a sub-nav card 240px (`md:w-60`), flush left, padding 20 / 10; a 4px gap; the main card to the right edge, padding 24; no wide side padding. Below `md` the sub-nav stacks above the content. `SubNav` sections have a group label (`text-nav-label`, 10 / 500 uppercase faint, row h32, optional 16px icon actions on the right), then items (h32, `rounded-control`, padding 4 / 16, `text-chrome` 500, 16px icon, 2px apart; inactive muted, hover `bg-item-hover`, active `bg-item-selected text-strong`); sections split by a 1px `bg-raised` line.
+- **List + reader** (`ListReaderLayout` + `ReaderHeader`, mail, tickets, chat): a list card and a reader card, each its own scroller (`overflow-y-auto overscroll-contain`), filling the remaining column height on `Page fixed` / `AppShell page="fixed"` with zero hand-tuned `calc()`. Open item lives in `?open=` (`useDetailParam`, Back closes) and feeds `RouteHeader` breadcrumbs via `useRecordCrumb` (`recordTitle`). Below `lg` the reader replaces the list with a Back button. `ReaderHeader` is the general pattern for every list + reader: one sticky row, wrapping title on the left, `[•••]` menu then one main action on the right, top-aligned, identical button height; every other action goes into `•••`.
 
-**Vertical rhythm** from the card top: 32px to the header block · 28px from the title or tabs to the intro · 32px
-between blocks · 16px from a heading to its content · 8px inside grids and cards.
+**Vertical rhythm** (owned by `Page`, `PageSection` and `PageGrid`, so pages set no margins on these joins): 32px from the card top to the header block · 28px from the title or tabs to the intro (or toolbar) · 16px from the filter row to the list · 32px between blocks · 16px from a section heading (`PageSection`) to its content · 8px inside grids (`PageGrid`) and cards.
 
-**Page title.** A work page's title is 18 / 400 (`text-figure font-normal text-strong`) on the same row as the page's
-main action, inside the content card; a reading page uses the 44px display title; a page with 2–4 sub-pages uses big
-`TextTabs` as its heading. One `h1` per page.
-
-**Today (until T7 merges):** `PageTitle` (with `actions` for a list page's action) draws the 0.x display title
-(`font-display text-section sm:text-tab-xl`); `SubpageToolbar title` puts it on the toolbar row; `MinimalHeader` is the
-top row of a detail or settings page; `TextTabs` / `PageTabsTitle` are the tab headings. The content sits in a
-`max-w-[1440px] px-4 sm:px-6` container. Use them; the 1.0 layouts replace them in place.
+**Page title.** A work page's title (`PageTitle`, default `variant="work"`) is 18 / 400 UI sans (`text-figure font-normal text-strong`) on the same row as the page's main action (`actions`: an `inverse` or `primary` button); a one-column reading page can opt into `variant="reading"` (`text-title-xl`, 44 / 500 display face); a page with 2–4 sub-pages uses big `TextTabs` as its heading. One `h1` per page. `Page` provides the shared anatomy slots (`title`, `actions`, `tabs`, `intro`, `toolbar`, `children`, `footer`) so pages fill slots instead of hand-building headers.
 
 Grids expand across wide screens (`sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-group`); touch screens stop at 4
 columns (`not-any-pointer-coarse:` for 5+). Card grids beside a sidebar size columns by `@container`
@@ -454,11 +440,14 @@ action: `inverse`, or the brand `primary` when it is the page's commit action; a
   accordion per filter, "Xem N kết quả" at the bottom). State lives in the URL: `useFilterParams(specs)` (or
   `readFilters` / `writeFilters` / `clearFilters` / `activeFilterCount`); a filter change is a history entry, so Back
   undoes it.
-- **1.0 (T7, pending):** no result-count row: the list sits 16px under the filter row. Sort and "Chọn" (selection mode)
-  sit on the filter row. **Selection mode:** "n đã chọn" (600) and the bulk actions replace the right side of the filter
-  row; nothing pushes the list down (this replaces the `DataTable` bulk bar on list pages); checked rows are
-  `bg-item-checked`. **Today:** a `ResultLine` ("“query” · N kết quả", sort on the right) and the `DataTable`
-  `selectable` + `bulkActions` bar.
+- **1.0 list calm & selection (#149):** no result-count row (`ResultLine` is deprecated for list pages): the list sits
+  16px under the filter row. Sort (`sort`) and "Chọn" (`selection`, managed with `useListSelection`) sit on the filter
+  row (`FilterChipRow` trailing; phones: `PhoneFilterBar` keeps Bộ lọc + sort / Chọn on the same row). **Selection
+  mode:** `"n đã chọn"` (600) and the bulk actions (at most one filled button, the rest in `•••`) plus `"Xong"` replace
+  the right side of the filter row at the exact same height — nothing pushes the list down (replacing the `DataTable`
+  bulk bar on list pages). Checked rows/cards use `bg-item-checked`, the open record's row (`DataTable activeRowId`,
+  `Card selected`, `Item selected`) uses `bg-item-selected`. `Card selectable` and `Item selectable` share the same
+  non-nested, keyboard-accessible selection model.
 - **Opening a record:** a record opens in a `DetailOverlay` over the list, not on its own page. Its id lives in the URL
   (`useDetailParam()` → `?open=<id>`; Back closes it, ‹ › replace it); the list stays mounted, so close / Esc / Back land
   at the same scroll. The header has close, the title, "n / N" and ‹ › through the **current** results (over a
@@ -899,8 +888,9 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 |---|---|
 | `@semi/ui` → `AppShell.tsx`, `RouteHeader.tsx`, `MobileTabBar.tsx` | `AppShell` (1.0 frame: nav panel with main action, groups, pinned, bottom row of tools; 224px or the 72px rail; RouteHeader; content card; phone drawer; nav shortcuts), `useAppShell` (sub-items shown, rail, shortcuts), `navShortcutKeys`, `RouteHeader` (crumbs, middle, actions, account), `AccountMenu` (the account avatar menu), `useRecordCrumb` (a detail page names its record), `MobileTabBar`, `TAB_BAR_PAD` (opt-in `mobileNav="tabs"`) (§4) |
 | `MegaMenu.tsx`, `MinimalHeader.tsx`, `TextTabs.tsx`, `PillTabs.tsx`, `SegmentedControl.tsx`, `useTabParam.ts` | `MegaMenu` (flyout of category columns, `text-overline` headers, New badges, See all), `MinimalHeader` (breadcrumb left, one link + one primary right), `TextTabs` (big display tabs for 2–4 top-level views, brand underline, `href`, `onBeforeChange`, `activation`), `PillTabs` (default section tabs for 5+ sections or sections with icons, sliding `item-hover` pill, `tabpanel`, `href`, `onBeforeChange`, `activation`), `SegmentedControl` (2–5 filter values with counts, sliding `raised-2` pill, `radiogroup`), `useTabParam` (`?tab=` URL state without history spam per arrow key) (§4, §4h) |
-| `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle` (`actions`: the page's action on the title row), `PageTabsTitle` (underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh; phone layout with `filters` / `collapseFilters` / `secondaryActions`), `ToolbarFilters` (§4a) |
-| `SearchPill.tsx`, `FilterChipRow.tsx`, `ViewSwitch.tsx`, `FilterPanel.tsx`, `filterParams.ts` | `StickyContextBar` (sticky search + chips + result line), `SearchPill` (wide pill search, debounce, `/`), `ResultLine` (query · N kết quả + sort), `SortDef`, `FilterChipRow` (one-line chips, ‹ ›, Xoá lọc, leading views, trailing tools), `FilterChip`, `FilterOptions` (the checkbox list of one filter), `useFilterParams` (filter state in the URL, Back / Forward), `ViewSwitch` (list ↔ grid, density), `PhoneFilterBar` (views · Bộ lọc · settings), `FilterPanel` (full-screen / side-sheet filters); URL helpers `readFilters`, `readFilterValues`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, types `FilterSpec`, `FilterDef`, `FilterOption`, `FilterValues` (§4) |
+| `Page.tsx`, `ListReader.tsx` | `Page` (shared 1.0 page anatomy and `work` / `reading` / `two-column` layouts + vertical rhythm), `SubNav` (240px sub-nav card with `text-nav-label` groups and h32 items), `PageSection` (20/500 heading + 16px content gap), `PageGrid` (8px `@container` grid), `ListReaderLayout` (two independent scrollers on `fixed` mode, `?open=`, `useRecordCrumb`, phone swap), `ReaderHeader` (sticky one-row reader header: wrapping title left, `[•••]` + one main action right) (§4a) |
+| `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle` (18/400 UI sans on the action row; `variant="reading"` 44/500 display title for one-column reading pages), `PageTabsTitle` (deprecated underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh; phone layout with `filters` / `collapseFilters` / `secondaryActions`), `ToolbarFilters` (§4a) |
+| `SearchPill.tsx`, `FilterChipRow.tsx`, `ViewSwitch.tsx`, `FilterPanel.tsx`, `filterParams.ts` | `StickyContextBar` (sticky search + filter row, 16px above the list), `SearchPill` (wide pill search, debounce, `/`), `ResultLine` (deprecated in 1.0), `SortDef`, `FilterChipRow` (one-line chips, ‹ ›, Xoá lọc, leading views, trailing `sort` + `selection` in-place bulk bar + `ViewSwitch`), `useListSelection` (selection-mode state hook), `BulkAction`, `ListSelection`, `FilterChip`, `FilterOptions`, `useFilterParams` (filter state in the URL, Back / Forward), `ViewSwitch` (list ↔ grid, density), `PhoneFilterBar` (views · Bộ lọc · sort · Chọn / in-place selection bar), `FilterPanel` (full-screen / side-sheet filters); URL helpers `readFilters`, `readFilterValues`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, types `FilterSpec`, `FilterDef`, `FilterOption`, `FilterValues` (§4, §4d) |
 | `SplitButton.tsx`, `CardActions.tsx`, `DetailOverlay.tsx` | `SplitButton` (main action + ▾ `Menu` of its variants, one button on phones, G1), `CardActions` (hover / focus icon actions + ⋯ on cards, ⋯ only on touch), `DetailOverlay` (record over its list: ‹ › with n / N, side panel, scroll kept), `useDetailParam` (`?open=` in the URL, Back closes), `openDetail` (open one from anywhere on the route), types `CardAction`, `DetailParamState` (§4, §9) |
 | `WorkspaceLayout.tsx`, `GuidedEmptyState.tsx`, `FeatureIntro.tsx`, `HintTextarea.tsx` | `WorkspaceLayout` (page type workspace: control panel + sticky main action, result), `WorkspaceHeader` (back + tool name, tabs), `WorkspaceSection` (`text-overline` label + counter), `Stepper` (− value +, spinbutton), `GuidedEmptyState` (EmptyState variant guided: step carousel or numbered steps, starting points), `FeatureIntro` (once-per-user feature dialog, `localIntroStore`), `HintTextarea` (@ / `/` hints and suggestions), types `GuideStep`, `GuideTemplate`, `GuideTemplateGroup`, `FeatureIntroSlide`, `FeatureIntroStore`, `HintToken`, `HintTrigger` (§4, §9b, §13, §14) |
 | `KpiCard.tsx`, `Modal.tsx` | `KpiCard` (metric card in the brand's figure font, neutral icon, `featured` for the screen's main number, shimmer), `Modal` (shared portal dialog with `MODAL_HEAD` + `MODAL_FOOT`) (§13, §14) |

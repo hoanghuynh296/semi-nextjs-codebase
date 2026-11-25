@@ -5,10 +5,11 @@
 // switches, one accordion per multi filter (a radio group for a single one), and "Xem N kết quả" at the bottom.
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { Button } from "./Button";
 import { Icon } from "./Icon";
 import { Menu, type MenuItem } from "./Overlay";
 import { RadioGroup, Switch } from "./Choice";
-import { FilterOptions } from "./FilterChipRow";
+import { FilterOptions, type ListSelection } from "./FilterChipRow";
 import { useDialog } from "./a11y";
 import { useSemiLocale } from "./locale";
 import type { FilterDef } from "./filterParams";
@@ -16,12 +17,13 @@ import type { SortDef } from "./SearchPill";
 import { cn } from "../styles/utils";
 
 const SEG =
-  "h-10 flex items-center justify-center gap-1.5 text-ui font-medium text-strong hover:bg-tint-hover outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus cursor-pointer";
+  "h-11 flex items-center justify-center gap-1.5 text-ui font-medium text-strong hover:bg-tint-hover outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus cursor-pointer";
 
 /**
  * The filter controls of a phone list page in one row: an optional type menu (the page's views), "Bộ lọc" with the
- * active count (opens FilterPanel) and an optional settings button (sort and view). Show it below `md` in place of
- * FilterChipRow (`md:hidden` / `max-md:hidden` around each).
+ * active count (opens FilterPanel), optional `sort` menu, optional `selection` ("Chọn" → replaces the row at the same
+ * `h-11` height with `"n đã chọn"`, •••, one bulk button and `"Xong"`), and optional settings. Show below `md` in place
+ * of `FilterChipRow` (`md:hidden` / `max-md:hidden`).
  */
 export function PhoneFilterBar({
   typeLabel,
@@ -29,6 +31,8 @@ export function PhoneFilterBar({
   activeCount,
   onOpenFilters,
   filtersOpen,
+  sort,
+  selection,
   onOpenSettings,
   className,
 }: {
@@ -41,13 +45,81 @@ export function PhoneFilterBar({
   onOpenFilters: () => void;
   /** Whether the panel is open (aria-expanded on the button). */
   filtersOpen?: boolean;
+  /** Sort menu right on the phone filter row (radio items). */
+  sort?: SortDef;
+  /** Selection mode ("Chọn") and bulk actions replacing the row at the same height (zero list shift). */
+  selection?: ListSelection;
   /** Opens the sort and view settings; the button shows when given. */
   onOpenSettings?: () => void;
   className?: string;
 }) {
   const t = useSemiLocale();
+  const enterRef = useRef<HTMLButtonElement>(null);
+  const exitRef = useRef<HTMLButtonElement>(null);
+  const pendingFocus = useRef<"enter" | "exit" | null>(null);
+  const selecting = Boolean(selection && (selection.active || selection.selected.length > 0));
+
+  useEffect(() => {
+    if (pendingFocus.current === "exit" && selecting) {
+      pendingFocus.current = null;
+      exitRef.current?.focus();
+    } else if (pendingFocus.current === "enter" && !selecting) {
+      pendingFocus.current = null;
+      enterRef.current?.focus();
+    }
+  }, [selecting]);
+
+  if (selecting && selection) {
+    const moreItems = typeof selection.moreActions === "function" ? selection.moreActions(selection.selected) : selection.moreActions;
+    return (
+      <div
+        data-filter-row=""
+        data-selection-bar=""
+        role="region"
+        aria-label={t.bulkActions}
+        className={cn("h-11 flex items-center gap-1.5 px-2.5 rounded-full bg-tint min-w-0", className)}
+      >
+        <span role="status" aria-live="polite" aria-atomic="true" className="text-ui font-semibold text-strong tabular-nums truncate pl-1 mr-auto">
+          {t.nSelected(selection.selected.length)}
+        </span>
+        {moreItems && moreItems.length > 0 && (
+          <Menu
+            label={t.moreActions}
+            items={moreItems}
+            trigger={
+              <Button variant="subtle" size="sm" iconOnly icon="more" aria-label={t.moreActions} disabled={selection.selected.length === 0} />
+            }
+          />
+        )}
+        {selection.primaryAction && (
+          <Button
+            variant={selection.primaryAction.variant ?? "inverse"}
+            size="sm"
+            icon={selection.primaryAction.icon}
+            disabled={selection.primaryAction.disabled || selection.selected.length === 0}
+            onClick={() => selection.primaryAction!.onClick(selection.selected)}
+          >
+            {selection.primaryAction.label}
+          </Button>
+        )}
+        <Button
+          ref={exitRef}
+          variant="ghost"
+          size="sm"
+          onClick={() => {
+            pendingFocus.current = "enter";
+            selection.onExit();
+          }}
+        >
+          {t.selectDone}
+        </Button>
+      </div>
+    );
+  }
+
+  const currentSort = sort?.options.find((o) => o.value === sort.value);
   return (
-    <div className={cn("flex items-stretch rounded-full bg-tint overflow-hidden divide-x divide-divider", className)}>
+    <div data-filter-row="" className={cn("h-11 flex items-stretch rounded-full bg-tint overflow-hidden divide-x divide-divider", className)}>
       {typeItems && typeLabel && (
         <div className="flex-1 min-w-0 flex">
           <Menu
@@ -71,13 +143,45 @@ export function PhoneFilterBar({
         className={cn(SEG, "flex-1 min-w-0 px-3")}
       >
         <Icon name="filter" className="w-4 h-4 shrink-0" />
-        {t.filters}
+        <span className="truncate">{t.filters}</span>
         {activeCount > 0 && (
-          <span className="h-5 min-w-5 px-1 rounded-full bg-inverted text-on-inverted text-chrome tabular-nums leading-5 text-center">
+          <span className="h-5 min-w-5 px-1 rounded-full bg-inverted text-on-inverted text-chrome tabular-nums leading-5 text-center shrink-0">
             {activeCount}
           </span>
         )}
       </button>
+      {sort && currentSort && (
+        <div className="shrink-0 flex">
+          <Menu
+            label={t.sort}
+            items={sort.options.map((o) => ({
+              label: o.label,
+              radio: true,
+              checked: o.value === sort.value,
+              onSelect: () => sort.onChange(o.value),
+            }))}
+            trigger={
+              <button type="button" aria-label={`${t.sort}: ${currentSort.label}`} title={currentSort.label} className={cn(SEG, "px-3")}>
+                <Icon name="sliders" className="w-4 h-4 shrink-0" />
+                {!(typeItems && typeLabel) && <span className="max-w-24 truncate">{currentSort.label}</span>}
+              </button>
+            }
+          />
+        </div>
+      )}
+      {selection && (
+        <button
+          ref={enterRef}
+          type="button"
+          onClick={() => {
+            pendingFocus.current = "exit";
+            selection.onEnter();
+          }}
+          className={cn(SEG, "px-3.5 shrink-0")}
+        >
+          {t.selectMode}
+        </button>
+      )}
       {onOpenSettings && (
         <button type="button" onClick={onOpenSettings} aria-label={t.viewOptions} title={t.viewOptions} className={cn(SEG, "w-12 shrink-0")}>
           <Icon name="sliders" className="w-4 h-4" />

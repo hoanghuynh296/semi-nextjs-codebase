@@ -1,17 +1,86 @@
 "use client";
 
-// Search and filters (#99, C-032 L3): one filter chip per facet on a single line (icon, label, count when active,
-// chevron), a multi-select popover per chip, ‹ › when the row overflows, "Xoá lọc", and the view tools at the end.
-// The chips are controlled: the page owns the state, usually in the URL (useFilterParams or the filterParams helpers).
-import React, { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
-import { Icon } from "./Icon";
+// Search and filters (#99, C-032 L3; 1.0 #149): one filter chip per facet on a single line (icon, label, count when
+// active, chevron), a multi-select popover per chip, ‹ › when the row overflows, "Xoá lọc", and sort + "Chọn" (select
+// mode) at the end. In selection mode, "n đã chọn" (600) and bulk actions (at most one filled button, rest in •••)
+// replace the right side at the exact same height so nothing pushes the list down.
+import React, { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { Button } from "./Button";
+import { Icon, type IconName } from "./Icon";
 import { Popover } from "./Popover";
-import { Menu } from "./Overlay";
+import { Menu, type MenuItem } from "./Overlay";
 import { Checkbox } from "./Choice";
 import { useSemiLocale } from "./locale";
-import { activeFilterCount, clearFilters, readFilters, toQueryString, writeFilters, type FilterDef, type FilterSpec, type FilterValues } from "./filterParams";
+import { activeFilterCount, clearFilters, readFilters, writeFilters, type FilterDef, type FilterSpec, type FilterValues } from "./filterParams";
+import type { SortDef } from "./SearchPill";
 import { currentSearch, patchSearch, subscribeUrl, writeSearch } from "./urlState";
 import { cn } from "../styles/utils";
+
+/** The one filled bulk action shown directly on the filter row in selection mode; every other action goes into •••. */
+export interface BulkAction {
+  label: string;
+  icon?: IconName;
+  onClick: (selectedIds: string[]) => void;
+  /** Button variant (default `"inverse"` inside a content card; never add a second brand primary). */
+  variant?: "inverse" | "primary" | "subtle" | "surface";
+  disabled?: boolean;
+}
+
+/**
+ * Selection mode state and bulk actions shared by `FilterChipRow` (md+) and `PhoneFilterBar` (< md).
+ * When `active` is true or `selected.length > 0`, the right side of the filter row swaps in place (same height, zero
+ * layout shift) to `"n đã chọn"` (600), optional `•••` menu, at most one filled bulk button, and `"Xong"`.
+ */
+export interface ListSelection {
+  /** Whether selection mode is open (via "Chọn", or automatically active while `selected.length > 0`). */
+  active: boolean;
+  /** Currently checked item IDs. */
+  selected: string[];
+  /** Enter selection mode ("Chọn"). */
+  onEnter: () => void;
+  /** Exit selection mode and clear checked items ("Xong"). */
+  onExit: () => void;
+  /** At most one filled bulk action button shown directly on the row. */
+  primaryAction?: BulkAction;
+  /** Every other bulk action goes into the ••• `Menu`. */
+  moreActions?: MenuItem[] | ((selectedIds: string[]) => MenuItem[]);
+}
+
+/**
+ * Local selection-mode state for list pages (table, card grid or phone `Item` rows): wire `active`, `selected`,
+ * `onEnter` and `onExit` to `FilterChipRow` / `PhoneFilterBar` `selection`, and `toggle` / `isChecked` to rows or cards.
+ */
+export function useListSelection(initial: string[] = []) {
+  const [state, setState] = useState<{ active: boolean; selected: string[] }>(() => ({
+    active: initial.length > 0,
+    selected: initial,
+  }));
+  const setSelected = useCallback((ids: string[]) => {
+    setState((prev) => ({
+      active: ids.length > 0 ? true : prev.active,
+      selected: ids,
+    }));
+  }, []);
+  const enter = useCallback(() => {
+    setState((prev) => (prev.active ? prev : { ...prev, active: true }));
+  }, []);
+  const exit = useCallback(() => {
+    setState({ active: false, selected: [] });
+  }, []);
+  const toggle = useCallback((id: string, checked?: boolean) => {
+    setState((prev) => {
+      const has = prev.selected.includes(id);
+      const nextOn = checked === undefined ? !has : checked;
+      const next = nextOn ? (has ? prev.selected : [...prev.selected, id]) : prev.selected.filter((x) => x !== id);
+      return {
+        active: next.length > 0 ? true : prev.active,
+        selected: next,
+      };
+    });
+  }, []);
+  const isChecked = useCallback((id: string) => state.selected.includes(id), [state.selected]);
+  return { active: state.active, selected: state.selected, enter, exit, toggle, setSelected, isChecked };
+}
 
 const CHIP =
   "shrink-0 inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-ui font-medium whitespace-nowrap transition outline-none focus-visible:ring-2 focus-visible:ring-focus cursor-pointer";
@@ -122,8 +191,9 @@ export function FilterOptions({ def, onChange, className }: { def: FilterDef; on
 /**
  * The filter chips of a list page on one line. When they overflow, the row scrolls sideways and ‹ › buttons appear
  * (hidden from screen readers and the tab order: every chip is reachable by Tab, which scrolls it into view).
- * "Xoá lọc" shows while a filter is on; `leading` (the page's views as Pills) sits before the chips and `trailing`
- * (ViewSwitch) at the end, each behind a divider; neither scrolls with the chips.
+ * "Xoá lọc" shows while a filter is on; `leading` (the page's views as Pills) sits before the chips; `sort`,
+ * `selection` ("Chọn" → in-place `"n đã chọn"` + bulk actions at the same height) and `trailing` (`ViewSwitch`) sit
+ * at the right end.
  */
 export function FilterChipRow({
   filters,
@@ -131,6 +201,8 @@ export function FilterChipRow({
   onClear,
   leading,
   trailing,
+  sort,
+  selection,
   label,
   className,
 }: {
@@ -143,15 +215,24 @@ export function FilterChipRow({
    * `typeItems`. A view is not a filter: "Xoá lọc" leaves it alone. Keep it short (2–5 views); it does not scroll.
    */
   leading?: React.ReactNode;
-  /** Tools at the end of the row: ViewSwitch, a sort that is not in a ResultLine. */
+  /** Extra tools at the end of the row (e.g. `ViewSwitch`). Replaced in place while `selection` is active. */
   trailing?: React.ReactNode;
+  /** Sort menu at the right end of the filter row (1.0: replaces ResultLine's sort). */
+  sort?: SortDef;
+  /** Selection mode ("Chọn") and bulk actions replacing the right side at the same height (zero list shift). */
+  selection?: ListSelection;
   /** Accessible name of the chip group (default "Bộ lọc"). */
   label?: string;
   className?: string;
 }) {
   const t = useSemiLocale();
   const ref = useRef<HTMLDivElement>(null);
+  const enterRef = useRef<HTMLButtonElement>(null);
+  const exitRef = useRef<HTMLButtonElement>(null);
+  const pendingFocus = useRef<"enter" | "exit" | null>(null);
   const [edges, setEdges] = useState({ left: false, right: false });
+  const selecting = Boolean(selection && (selection.active || selection.selected.length > 0));
+
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
@@ -164,13 +245,31 @@ export function FilterChipRow({
       el.removeEventListener("scroll", update);
       ro?.disconnect();
     };
-  }, [filters.length]);
+  }, [filters.length, selecting]);
+
+  useEffect(() => {
+    if (pendingFocus.current === "exit" && selecting) {
+      pendingFocus.current = null;
+      exitRef.current?.focus();
+    } else if (pendingFocus.current === "enter" && !selecting) {
+      pendingFocus.current = null;
+      enterRef.current?.focus();
+    }
+  }, [selecting]);
+
   const scroll = (dir: 1 | -1) => ref.current?.scrollBy({ left: dir * Math.max(160, (ref.current?.clientWidth ?? 480) * 0.6), behavior: "smooth" });
   const active = activeFilterCount(filters) > 0;
+  const currentSort = sort?.options.find((o) => o.value === sort.value);
+  const moreItems = selection
+    ? typeof selection.moreActions === "function"
+      ? selection.moreActions(selection.selected)
+      : selection.moreActions
+    : undefined;
+  const hasRight = Boolean(sort || selection || trailing);
   const arrow =
     "absolute top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-panel shadow-overlay flex items-center justify-center text-strong hover:bg-raised cursor-pointer";
   return (
-    <div className={cn("flex items-center gap-2 min-w-0", className)}>
+    <div data-filter-row="" className={cn("min-h-9 flex items-center gap-2 min-w-0", className)}>
       {leading && <div className="shrink-0 flex items-center gap-1 pr-2 border-r border-divider">{leading}</div>}
       <div className="relative flex-1 min-w-0">
         {edges.left && (
@@ -198,7 +297,87 @@ export function FilterChipRow({
           </button>
         )}
       </div>
-      {trailing && <div className="shrink-0 flex items-center gap-1 pl-2 border-l border-divider">{trailing}</div>}
+      {hasRight && (
+        <div
+          data-selection-bar={selecting ? "" : undefined}
+          role={selecting ? "region" : undefined}
+          aria-label={selecting ? t.bulkActions : undefined}
+          className="shrink-0 flex items-center gap-1.5 pl-2 border-l border-divider"
+        >
+          {selecting && selection ? (
+            <>
+              <span role="status" aria-live="polite" aria-atomic="true" className="text-ui font-semibold text-strong tabular-nums whitespace-nowrap px-1">
+                {t.nSelected(selection.selected.length)}
+              </span>
+              {moreItems && moreItems.length > 0 && (
+                <Menu
+                  label={t.moreActions}
+                  items={moreItems}
+                  trigger={
+                    <Button variant="subtle" size="sm" iconOnly icon="more" aria-label={t.moreActions} disabled={selection.selected.length === 0} />
+                  }
+                />
+              )}
+              {selection.primaryAction && (
+                <Button
+                  variant={selection.primaryAction.variant ?? "inverse"}
+                  size="sm"
+                  icon={selection.primaryAction.icon}
+                  disabled={selection.primaryAction.disabled || selection.selected.length === 0}
+                  onClick={() => selection.primaryAction!.onClick(selection.selected)}
+                >
+                  {selection.primaryAction.label}
+                </Button>
+              )}
+              <Button
+                ref={exitRef}
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  pendingFocus.current = "enter";
+                  selection.onExit();
+                }}
+              >
+                {t.selectDone}
+              </Button>
+            </>
+          ) : (
+            <>
+              {sort && currentSort && (
+                <Menu
+                  label={t.sort}
+                  items={sort.options.map((o) => ({
+                    label: o.label,
+                    radio: true,
+                    checked: o.value === sort.value,
+                    onSelect: () => sort.onChange(o.value),
+                  }))}
+                  trigger={
+                    <Button variant="ghost" size="sm" icon="sliders" aria-label={`${t.sort}: ${currentSort.label}`}>
+                      <span className="max-w-36 truncate">{currentSort.label}</span>
+                      <Icon name="chevronDown" className="w-3.5 h-3.5 text-muted shrink-0" />
+                    </Button>
+                  }
+                />
+              )}
+              {selection && (
+                <Button
+                  ref={enterRef}
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    pendingFocus.current = "exit";
+                    selection.onEnter();
+                  }}
+                >
+                  {t.selectMode}
+                </Button>
+              )}
+              {trailing}
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }

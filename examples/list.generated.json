@@ -448,6 +448,16 @@
     ]
   },
   {
+    "id": "list-reader",
+    "title": "List + reader",
+    "group": "Navigation & layout",
+    "description": "A list card beside a reader card (`ListReaderLayout`) with a sticky one-row `ReaderHeader` (wrapping title left, [•••] then one main action right, top-aligned, identical button height). Each panel scrolls independently on `AppShell page=\"fixed\"` / `Page fixed` with zero hand-tuned `calc()`. Open item lives in `?open=` (`useDetailParam`) and `RouteHeader` breadcrumbs (`useRecordCrumb`); below `lg` the reader replaces the list with a Back button.",
+    "components": [
+      "ListReaderLayout",
+      "ReaderHeader"
+    ]
+  },
+  {
     "id": "mega-menu",
     "title": "Mega menu",
     "group": "Navigation & layout",
@@ -495,10 +505,22 @@
     ]
   },
   {
+    "id": "page",
+    "title": "Page layouts",
+    "group": "Navigation & layout",
+    "description": "Shared 1.0 page anatomy and three layouts inside AppShell's content card: work (flush, padding 16 / 24), reading (centred max 1536px inside 16px card padding, 64px bottom), and two-column (240px sub-nav card + 4px gap + main card, stacking below md). Owns vertical rhythm (32 / 28 / 32 / 16 / 8).",
+    "components": [
+      "Page",
+      "SubNav",
+      "PageSection",
+      "PageGrid"
+    ]
+  },
+  {
     "id": "page-title",
     "title": "Page title",
     "group": "Navigation & layout",
-    "description": "PageTitle is the display title of a page (text only), with the page's own action on its row (`actions`). PageTabsTitle is kept as a deprecated alias for 2–4 sibling tabs — new screens use TextTabs.",
+    "description": "PageTitle is the 18 / 400 UI sans heading of a work page on the same row as the page's main action (`actions`), with `variant=\"reading\"` (44 / 500 display face, text-title-xl) for one-column reading pages only. PageTabsTitle is kept as a deprecated alias for 2–4 sibling tabs — new screens use TextTabs.",
     "components": [
       "PageTitle",
       "PageTabsTitle"
@@ -996,14 +1018,14 @@
     "id": "list-page",
     "title": "List page",
     "group": "Blocks",
-    "description": "A records page on the StickyContextBar anatomy: the title row with refresh and the create action (PageTitle actions), then the sticky bar (SearchPill, views as Pills + filter chips on md+, PhoneFilterBar + FilterPanel on phones, ResultLine), then a data table that sorts, selects and pages, with bulk actions. State in the URL. Copy it with `semi add list-page`.",
+    "description": "A 1.0 records page on Page layout=\"work\": 18/400 title row with an inverse action, StickyContextBar with SearchPill + FilterChipRow (sort, Chọn and in-place selection mode on the filter row; PhoneFilterBar on phones; no result-count row), DataTable / Card grid / phone Item rows sharing the same selection model, and DetailOverlay (?open=). Copy it with `semi add list-page`.",
     "components": []
   },
   {
     "id": "settings-page",
     "title": "Settings page",
     "group": "Blocks",
-    "description": "A settings page: sections of rows with switches and links, a profile form with validation and one save action, and a danger zone. Copy it with `semi add settings-page`.",
+    "description": "A 1.0 settings page on Page layout=\"reading\" (centred max 1536px inside 16px card padding, 64px bottom) with PillTabs section navigation and one save action per section. Copy it with `semi add settings-page`.",
     "components": []
   },
   {

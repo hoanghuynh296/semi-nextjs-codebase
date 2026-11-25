@@ -431,3 +431,62 @@ test("useTabParam and async onBeforeChange under Next's App Router: arrow keys r
   await expect(page.getByTestId("next-view").filter({ visible: true })).toHaveText("templates");
   expect(pageErrors).toEqual([]);
 });
+
+test("Page layouts prerender cleanly under Next's App Router: work, reading, two-column and reader (#149)", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  for (const [path, layout, heading] of [
+    ["/layouts/work", "work", "Đơn hàng"],
+    ["/layouts/reading", "reading", "Thư viện vật liệu"],
+    ["/layouts/two-column", "two-column", "Hộp thư đến"],
+    ["/layouts/reader", "two-column", "Hộp thư"],
+  ] as const) {
+    await page.goto(`${BASE}${path}`);
+    await expect(page.locator(`[data-page-layout="${layout}"]`)).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: heading })).toBeVisible();
+  }
+});
+
+test("List selection & List + reader under Next's App Router: keyboard selection, ?open= URL state, RouteHeader crumb, and Back (#149)", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(`${BASE}/layouts/work`);
+  const desktopBar = page.locator('[data-filter-row]').first();
+  const chon = desktopBar.getByRole("button", { name: "Chọn", exact: true });
+  await chon.focus();
+  await page.keyboard.press("Enter");
+  const doneBtn = desktopBar.getByRole("button", { name: "Xong", exact: true });
+  await expect(doneBtn).toBeFocused();
+
+  // Check first row via keyboard -> count updates -> primary bulk action fires -> Xong returns focus to Chọn
+  const firstCb = page.locator("tbody tr").first().getByRole("checkbox");
+  await firstCb.focus();
+  await page.keyboard.press("Space");
+  await expect(desktopBar.getByRole("status")).toHaveText("1 đã chọn");
+  await desktopBar.getByRole("button", { name: "Xuất CSV" }).click();
+  await expect(page.getByTestId("bulk-log")).toHaveText("exported:SO-1001");
+  await doneBtn.click();
+  await expect(chon).toBeFocused();
+
+  // Card grid: checkbox checks without opening ?open=; card button opens ?open= without toggling check
+  await page.getByRole("button", { name: "Lưới" }).click();
+  await chon.click();
+  await page.locator('[data-testid="desktop-list"]').getByRole("checkbox", { name: "Chọn SO-1001" }).click();
+  await expect(desktopBar.getByRole("status")).toHaveText("1 đã chọn");
+  await expect(page).not.toHaveURL(/open=/);
+  await page.locator('[data-testid="desktop-list"]').getByRole("button", { name: /SO-1002/ }).click();
+  await expect(page).toHaveURL(/open=SO-1002/);
+  await expect(desktopBar.getByRole("status")).toHaveText("1 đã chọn");
+
+  // List + reader: empty state -> click item writes ?open=m-1 & updates RouteHeader crumb -> Back closes
+  await page.goto(`${BASE}/layouts/reader`);
+  const listPane = page.locator("[data-reader-list]");
+  const readerPane = page.locator("[data-reader-pane]");
+  await expect(readerPane).toContainText("Chọn một mục để xem.");
+  await listPane.getByRole("button", { name: /Báo giá hạt tiêu đen/ }).click();
+  await expect(page).toHaveURL(/\/layouts\/reader\?open=m-1$/);
+  await expect(page.getByRole("navigation", { name: "Đường dẫn" })).toContainText("Báo giá hạt tiêu đen");
+  await readerPane.locator("[data-reader-header]").getByRole("button", { name: "Trả lời" }).click();
+  await expect(page.getByTestId("reader-action-log")).toHaveText("reply:m-1");
+  await page.goBack();
+  await expect(page).toHaveURL(/\/layouts\/reader$/);
+  await expect(readerPane).toContainText("Chọn một mục để xem.");
+});

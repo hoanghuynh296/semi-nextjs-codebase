@@ -70,11 +70,13 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [App header](app-header.md) | `AppHeader` | Single-screen tools: 3D editors, slicers, colour tools. |
 | [App shell](app-shell.md) | `AppShell`, `RouteHeader`, `AccountMenu`, `MobileTabBar` | Every app with several pages (dashboards, admin, store back office). |
 | [Breadcrumb](breadcrumb.md) | `Breadcrumb` | Detail pages deep in a hierarchy (Kho › Vật liệu › PLA đen). |
+| [List + reader](list-reader.md) | `ListReaderLayout`, `ReaderHeader` | Mail inboxes, support tickets, chat queues, notification centres or log viewers where people scan a list and read items side by side. |
 | [Mega menu](mega-menu.md) | `MegaMenu` | One sidebar item leads to many destinations of one area that fall into 2–4 groups (a catalogue, tools, reports). |
 | [Menubar](menubar.md) | `Menubar` | Editors and tool apps with many commands (3D, slicer, image tools), next to an AppHeader. |
 | [Minimal header](minimal-header.md) | `MinimalHeader` | A detail page (one order, one customer) or a settings page reached from a list. |
 | [Navigation menu](navigation-menu.md) | `NavigationMenu` | Marketing sites, storefronts, docs headers. |
 | [Page actions](page-actions.md) | `PageActions`, `PageActionsProvider`, `PageActionsSlot` | A layout owns the header row but the page decides the actions (PageTabsTitle + “+”). |
+| [Page layouts](page.md) | `Page`, `SubNav`, `PageSection`, `PageGrid` | Every page inside AppShell: lists and workspaces (work), settings / explore / articles (reading), areas with sub-pages or mailbox folders (two-column). |
 | [Page title](page-title.md) | `PageTitle`, `PageTabsTitle` | The first line of every page (PageTitle). |
 | [Pagination](pagination.md) | `Pagination` | Server-paged tables and reports. |
 | [Pill tabs](pill-tabs.md) | `PillTabs` | 5+ sections of one page, or sections with icons (Cấu hình: Hộp thư, Nhóm thư, Nguồn khách, Mặt hàng, Mẫu thư, Data Hub, Doanh nghiệp, Người dùng). |

@@ -79,7 +79,7 @@ If neither works (`semi_status` answers, or `npx semi` is missing), the app has 
 ## Semi 1.0 rules to hold while you build
 
 Full rules: `node_modules/@semi/ui/docs/DESIGN_SYSTEM.md` §0 (the 1.0 look, the brand colour rule, when to use which).
-A part marked *(Tn, pending)* there (T3, T5, T7–T9) is a 1.0 target that has not shipped: build the rest of the screen to it, use
+A part marked *(Tn, pending)* there (T3, T8–T9) is a 1.0 target that has not shipped: build the rest of the screen to it, use
 what Semi has today for that part, and never write a local stand-in.
 
 - **Brand colour:** `bg-primary` (or `bg-secondary`) only on the one main button of a page or modal (its commit action;
@@ -102,9 +102,9 @@ what Semi has today for that part, and never write a local stand-in.
 - **Which tabs** (`DESIGN_SYSTEM.md` §4h): `PillTabs` for 5+ sections or sections with icons,
   `SegmentedControl` for 2–5 filter values shown in full with counts, big `TextTabs` for 2–4 top-level views as the
   heading, `FilterChipRow` for filters, `Tabs` for sections of one record, `useTabParam` for `?tab=` URL state.
-- **Which layout** (T7, pending): work (flush) for lists, tables and workspaces; reading (one column, centred 1536px)
-  for settings, explore and articles; two-column (240px sub-nav card + main card) for an area with sub-pages; list +
-  reader for mail and queues. Rhythm 32 / 28 / 32 / 16 / 8 from the card top.
+- **Which layout** (`Page`, `SubNav`, `ListReaderLayout`): work (flush) for lists, tables and workspaces; reading (one column, centred 1536px)
+  for settings, explore and articles; two-column (240px `SubNav` card + 4px gap + main card) for an area with sub-pages; list +
+  reader (`ListReaderLayout` + `ReaderHeader`) for mail, tickets and chat. Rhythm 32 / 28 / 32 / 16 / 8 from the card top.
 
 ## Draft first
 

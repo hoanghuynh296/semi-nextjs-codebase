@@ -2,9 +2,13 @@
 
 // A list row: a leading icon / avatar / image, a title with a description, meta on the right and actions. ItemGroup
 // stacks rows in a card with dividers (settings lists, files, members, notifications).
+// 1.0 (#149): supports non-nested selection (`selectable` / `checked` / `onCheckedChange`, bg-item-checked) and the
+// open record state (`selected`, bg-item-selected) with keyboard-accessible sibling controls.
 import React from "react";
 import Link from "next/link";
+import { Checkbox } from "./Choice";
 import { Icon, type IconName } from "./Icon";
+import { useSemiLocale } from "./locale";
 import { CARD } from "../styles/surfaces";
 import { FOCUS_RING, cn } from "../styles/utils";
 
@@ -17,6 +21,11 @@ export function Item({
   actions,
   href,
   onClick,
+  selectable = false,
+  checked = false,
+  onCheckedChange,
+  selectLabel,
+  selected = false,
   className,
 }: {
   /** A leading icon (or pass `media` for an Avatar, IconTile or image). */
@@ -32,8 +41,19 @@ export function Item({
   href?: string;
   /** Make the whole row a button. */
   onClick?: () => void;
+  /** Show a leading selection checkbox as a sibling control (never nested inside the row link / button). */
+  selectable?: boolean;
+  /** Checked state in selection mode (`bg-item-checked`). */
+  checked?: boolean;
+  /** Called when the selection checkbox changes. */
+  onCheckedChange?: (checked: boolean) => void;
+  /** Accessible name for the selection checkbox (defaults to `"Chọn <title>"` when `title` is text). */
+  selectLabel?: string;
+  /** Open / active record state (`bg-item-selected`, `aria-current="true"`). */
+  selected?: boolean;
   className?: string;
 }) {
+  const t = useSemiLocale();
   const main = (
     <>
       {media ?? (icon && <Icon name={icon} className="w-4 h-4 text-muted shrink-0" />)}
@@ -46,14 +66,25 @@ export function Item({
     </>
   );
   const rowCls = "flex items-center gap-3 min-w-0 flex-1 text-left";
+  const checkboxName = selectLabel ?? (typeof title === "string" ? t.selectItem(title) : t.selectRow);
+  const bgCls = selected
+    ? "bg-item-selected"
+    : checked
+      ? cn("bg-item-checked", (href || onClick) && "hover:bg-item-selected")
+      : (href || onClick) && "hover:bg-item-hover";
   return (
-    <div className={cn("relative flex items-center gap-3 px-4 py-3", (href || onClick) && "hover:bg-item-hover transition-colors", className)}>
+    <div className={cn("relative flex items-center gap-3 px-4 py-3 transition-colors", bgCls, className)}>
+      {selectable && (
+        <div className="relative z-10 flex shrink-0 items-center">
+          <Checkbox checked={checked} onChange={(on) => onCheckedChange?.(on)} aria-label={checkboxName} />
+        </div>
+      )}
       {href ? (
-        <Link href={href} className={cn(rowCls, "after:absolute after:inset-0 rounded-control", FOCUS_RING)}>
+        <Link href={href} aria-current={selected ? "true" : undefined} className={cn(rowCls, "after:absolute after:inset-0 rounded-control", FOCUS_RING)}>
           {main}
         </Link>
       ) : onClick ? (
-        <button type="button" onClick={onClick} className={cn(rowCls, "after:absolute after:inset-0 rounded-control", FOCUS_RING)}>
+        <button type="button" onClick={onClick} aria-current={selected ? "true" : undefined} className={cn(rowCls, "after:absolute after:inset-0 rounded-control", FOCUS_RING)}>
           {main}
         </button>
       ) : (

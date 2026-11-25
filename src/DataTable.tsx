@@ -65,6 +65,7 @@ export function DataTable<T>({
   selectable = false,
   selected: selectedProp,
   onSelectedChange,
+  activeRowId,
   bulkActions,
   pageSize = 0,
   loading = false,
@@ -87,7 +88,12 @@ export function DataTable<T>({
   selectable?: boolean;
   selected?: string[];
   onSelectedChange?: (ids: string[]) => void;
-  /** Shown above the table while rows are selected: buttons that act on the selection. */
+  /** ID of the currently open record (`useDetailParam().openId`): paints that row `bg-item-selected` (`aria-current="true"`), distinct from checked rows (`bg-item-checked`). */
+  activeRowId?: string | null;
+  /**
+   * Shown above the table while rows are selected: buttons that act on the selection.
+   * On 1.0 list pages (#149), prefer `FilterChipRow` / `PhoneFilterBar` `selection` instead so checking a row never pushes the list down.
+   */
   bulkActions?: (ids: string[]) => React.ReactNode;
   /** Rows per page; 0 shows all rows. */
   pageSize?: number;
@@ -228,13 +234,15 @@ export function DataTable<T>({
         }
       : { className: undefined, style: undefined };
   // a sticky body cell paints the card under the row's own fill, so scrolled cells do not show through it
-  const pinnedBody = (isSel: boolean) =>
+  const pinnedBody = (isSel: boolean, isOpen = false) =>
     sticky &&
     cn(
       "bg-card after:pointer-events-none after:absolute after:inset-0 after:-z-10",
-      isSel
-        ? cn("after:bg-item-checked", onRowClick && "group-hover/row:after:bg-item-selected")
-        : onRowClick && "group-hover/row:after:bg-item-hover",
+      isOpen
+        ? "after:bg-item-selected"
+        : isSel
+          ? cn("after:bg-item-checked", onRowClick && "group-hover/row:after:bg-item-selected")
+          : onRowClick && "group-hover/row:after:bg-item-hover",
     );
 
   const toggleSort = (key: string) => {
@@ -332,16 +340,23 @@ export function DataTable<T>({
                 : visible.map((row) => {
                     const id = getRowId(row);
                     const isSel = selected.includes(id);
+                    const isOpen = activeRowId != null && id === activeRowId;
                     return (
                       <TR
                         key={id}
                         onClick={onRowClick ? () => onRowClick(row) : undefined}
                         aria-selected={selectable ? isSel : undefined}
-                        // a checked row keeps its fill on hover (one step stronger), like its pinned cell
-                        className={cn("group/row", isSel && cn("bg-item-checked", onRowClick && "hover:!bg-item-selected"))}
+                        aria-current={isOpen ? "true" : undefined}
+                        // open record is item-selected; a checked row is item-checked (item-selected on hover)
+                        className={cn(
+                          "group/row",
+                          isOpen
+                            ? "bg-item-selected hover:!bg-item-selected"
+                            : isSel && cn("bg-item-checked", onRowClick && "hover:!bg-item-selected"),
+                        )}
                       >
                         {selectable && (
-                          <TD onClick={(e) => e.stopPropagation()} {...pinned(false, 0)} className={cn(pinned(false, 0).className, pinnedBody(isSel))}>
+                          <TD onClick={(e) => e.stopPropagation()} {...pinned(false, 0)} className={cn(pinned(false, 0).className, pinnedBody(isSel, isOpen))}>
                             <Checkbox checked={isSel} onChange={(on) => toggleRow(id, on)} aria-label={t.selectRow} />
                           </TD>
                         )}
@@ -349,7 +364,7 @@ export function DataTable<T>({
                           const pin = ci === 0 ? pinned(true, lead.check) : null;
                           const content = c.cell ? c.cell(row) : (valueOf(c, row) ?? "");
                           return (
-                            <TD key={c.key} numeric={c.numeric} wrap={c.wrap} className={cn(pin?.className, pin && pinnedBody(isSel))} style={pin?.style}>
+                            <TD key={c.key} numeric={c.numeric} wrap={c.wrap} className={cn(pin?.className, pin && pinnedBody(isSel, isOpen))} style={pin?.style}>
                               {ci === 0 && foldedCols.length > 0 ? (
                                 <>
                                   <div>{content}</div>

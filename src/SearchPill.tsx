@@ -27,14 +27,15 @@ export function StickyContextBar({
   label,
   className,
 }: {
-  /** Usually SearchPill, then FilterChipRow (PhoneFilterBar on phones), then ResultLine. */
+  /** Usually SearchPill, then FilterChipRow (PhoneFilterBar on phones). No ResultLine in 1.0: the list sits 16px under the filter row. */
   children: React.ReactNode;
   /** Accessible name of the region ("Tìm và lọc khách hàng"); leave it out when the bar holds only a search. */
   label?: string;
   className?: string;
 }) {
+  // STICKY_TOOLBAR has py-2.5 (10px bottom padding) + -my-2.5; mb-1.5 (6px) leaves 16px from the filter row to the list.
   return (
-    <div role={label ? "search" : undefined} aria-label={label} className={cn(STICKY_TOOLBAR, "flex flex-col gap-2 mb-3", className)}>
+    <div role={label ? "search" : undefined} aria-label={label} className={cn(STICKY_TOOLBAR, "flex flex-col gap-2 mb-1.5", className)}>
       {children}
     </div>
   );
@@ -194,6 +195,7 @@ export function SearchPill({
 /**
  * The line under the search: `“query” · N kết quả` on the left (announced politely when it changes), the sort menu on
  * the right. Leave out `query` for a plain count.
+ * @deprecated Since 1.0 (#149): list pages have no result-count row; put sort and selection on `FilterChipRow` / `PhoneFilterBar`.
  */
 export function ResultLine({
   count,

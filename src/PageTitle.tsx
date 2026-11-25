@@ -1,43 +1,52 @@
 "use client";
 
-// Page title and underline display-tab heading of the Semi Design System (docs/DESIGN_SYSTEM.md §1, §4a).
-// Titles are text-only (no subtitles). The page's own action (one primary or secondary, plus a RefreshButton) can sit
-// at the right end of the title row (`actions`, a list page above its StickyContextBar); filters go in the toolbar or
-// the StickyContextBar below.
+// Page title and underline display-tab heading of the Semi Design System (#149, docs/DESIGN_SYSTEM.md §1, §4a).
+// Titles are text-only (no subtitles). On a work page the title is 18 / 400 in the UI sans on the same row as the
+// page's main action (`actions`: an inverse or primary Button, optionally a ••• Menu or RefreshButton before it).
+// One-column reading pages can opt into `variant="reading"` (display face 44 / 500, text-title-xl).
 import React from "react";
-import { PAGE_TITLE_TEXT } from "./pageTitleText";
+import { PAGE_TITLE_READING_TEXT, PAGE_TITLE_TEXT } from "./pageTitleText";
 import { useSemiLocale } from "./locale";
 import { cn } from "../styles/utils";
 
 /**
- * The page's display heading (its `h1`). With `actions`, the title row of a list page: the title on the left, the
- * page's action on the right; below `sm` the actions wrap onto their own row under the title.
+ * The page's heading (`h1`). By default (`variant="work"`) it is 18 / 400 in the UI sans on the same row as `actions`
+ * (wrapping only when the row runs out of room). Pass `variant="reading"` on a one-column reading page for the 44 / 500
+ * display title (`text-title-xl`). Inside `<Page title={…}>`, `<Page>` owns the spacing below this row.
  */
 export function PageTitle({
   title,
   actions,
+  variant = "work",
   className = "",
 }: {
   title: React.ReactNode;
   /**
-   * The page's own action at the right end of the title row: one `<Button variant="primary">` (or `inverse`) with an
-   * icon and text, optionally a `RefreshButton` before it. More actions go in a ⋯ `Menu` as the last item. Below `sm`
-   * they wrap under the title. Leave it out on a page whose `SubpageToolbar` carries the actions.
+   * The page's own action at the right end of the title row: one `<Button variant="inverse">` (or `primary` when it is
+   * the page's one commit action) with an icon and text, optionally a `RefreshButton` or `•••` `Menu` before it. Leave
+   * it out on a page whose `SubpageToolbar` carries the actions.
    */
   actions?: React.ReactNode;
+  /**
+   * `"work"` (default): 18 / 400 UI sans (`text-figure`), for lists, workspaces and two-column pages.
+   * `"reading"`: 44 / 500 display face (`text-title-xl`, lh 1.2, −0.01em), for one-column reading pages only.
+   * @default "work"
+   */
+  variant?: "work" | "reading";
   className?: string;
 }) {
+  const titleCls = variant === "reading" ? PAGE_TITLE_READING_TEXT : PAGE_TITLE_TEXT;
   if (!actions) {
     return (
-      <div className={`mb-6 sm:mb-7 min-w-0 ${className}`}>
-        <h1 className={`pb-2 ${PAGE_TITLE_TEXT}`}>{title}</h1>
+      <div className={cn("mb-7 min-w-0", className)}>
+        <h1 className={titleCls}>{title}</h1>
       </div>
     );
   }
   return (
-    <div className={cn("mb-6 sm:mb-7 min-w-0 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-stack", className)}>
-      <h1 className={cn("min-w-0 sm:flex-1 sm:pb-2", PAGE_TITLE_TEXT)}>{title}</h1>
-      <div className="flex flex-wrap items-center gap-2 sm:shrink-0 sm:justify-end sm:pb-2">{actions}</div>
+    <div className={cn("mb-7 min-w-0 flex flex-wrap items-center justify-between gap-x-3 gap-y-2", className)}>
+      <h1 className={cn("min-w-0 flex-1", titleCls)}>{title}</h1>
+      <div className="flex flex-wrap items-center gap-2 shrink-0 justify-end">{actions}</div>
     </div>
   );
 }
@@ -67,7 +76,7 @@ export function PageTabsTitle<T extends string = string>({
   const t = useSemiLocale();
   const ariaLabel = ariaLabelProp ?? t.views;
   return (
-    <div className={`mb-6 sm:mb-7 min-w-0 ${className}`}>
+    <div className={`mb-7 min-w-0 ${className}`}>
       <div
         role="tablist"
         aria-label={ariaLabel}

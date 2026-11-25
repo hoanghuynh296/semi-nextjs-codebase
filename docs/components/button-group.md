@@ -60,6 +60,7 @@ export default function ButtonGroupBasic() {
 |---|---|---|---|
 | `label` | `string` |  | Accessible name of the group ("Điều hướng ngày"). |
 | `orientation` | `'horizontal' \| 'vertical'` | `"horizontal"` |  |
+| `fullWidth` | `boolean` | `false` | Stretch the group across its container's width (`flex w-full`). |
 | `className` | `string` |  |  |
 | `children` * | `React.ReactNode` |  | Button elements (Button, or anything styled with BTN_*). |
 

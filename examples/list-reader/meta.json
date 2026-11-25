@@ -1,0 +1,43 @@
+{
+  "title": "List + reader",
+  "group": "Navigation & layout",
+  "description": "A list card beside a reader card (`ListReaderLayout`) with a sticky one-row `ReaderHeader` (wrapping title left, [•••] then one main action right, top-aligned, identical button height). Each panel scrolls independently on `AppShell page=\"fixed\"` / `Page fixed` with zero hand-tuned `calc()`. Open item lives in `?open=` (`useDetailParam`) and `RouteHeader` breadcrumbs (`useRecordCrumb`); below `lg` the reader replaces the list with a Back button.",
+  "components": [
+    "ListReaderLayout",
+    "ReaderHeader"
+  ],
+  "when": [
+    "Mail inboxes, support tickets, chat queues, notification centres or log viewers where people scan a list and read items side by side."
+  ],
+  "instead": [
+    {
+      "need": "A table or card grid where opening a record shows a modal overlay",
+      "use": "DetailOverlay + useDetailParam"
+    },
+    {
+      "need": "A tool with a 380px control panel and live result",
+      "use": "WorkspaceLayout"
+    }
+  ],
+  "a11y": [
+    "List and reader are named <section> landmarks; the open item marks aria-current=\"true\" on its row; below lg the Back button returns to the list and closes ?open=.",
+    "ReaderHeader keeps [•••] and the main action top-aligned at identical height with every secondary action inside •••."
+  ],
+  "notes": [
+    "General pattern for every list + reader (mail, tickets, chat): title on the left (wraps), [•••] plus one main action on the right of the same row; every other action goes into •••.",
+    "Pass `recordTitle` to `ListReaderLayout` so the open record is appended to `RouteHeader` breadcrumbs via `useRecordCrumb`."
+  ],
+  "examples": [
+    {
+      "file": "inbox",
+      "title": "Mail inbox (list + reader)",
+      "preview": "frame"
+    },
+    {
+      "file": "in-shell",
+      "title": "In AppShell page=\"fixed\"",
+      "description": "Full-height list + reader inside AppShell page=\"fixed\" and Page layout=\"two-column\" fixed (zero calc()). Full screen at /demo/list-reader/.",
+      "preview": "none"
+    }
+  ]
+}

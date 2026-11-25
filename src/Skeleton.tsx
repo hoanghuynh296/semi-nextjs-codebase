@@ -213,14 +213,66 @@ export function SkeletonDetail({
 
 /**
  * Whole-page placeholder (Suspense fallbacks, route `loading.tsx`): title row + the shape of the content.
- * `cards` (default) = a grid of cards, `list` = a toolbar and table rows, `detail` = a header card and two panels.
+ * `cards` (default) = a grid of cards, `list` = a toolbar and table rows, `detail` = a header card and two panels,
+ * `workspace` = a 380px `bg-panel-3` control panel with a bottom action bar beside a result table (stacked below `lg`).
  * Pick the shape the real page has, so nothing jumps when the data arrives (§13b).
  * `inShell` drops the full-viewport height, background and padding: use it in a route `loading.tsx` (the shell and its
  * content slot already give those). Without it the skeleton is a whole page, for a Suspense fallback outside the shell.
  */
-export function PageSkeleton({ shape = "cards", inShell = false }: { shape?: "cards" | "list" | "detail"; inShell?: boolean }) {
+export function PageSkeleton({ shape = "cards", inShell = false }: { shape?: "cards" | "list" | "detail" | "workspace"; inShell?: boolean }) {
+  const outer = inShell ? "w-full flex flex-col gap-5" : "h-dvh bg-app p-4 sm:p-6 max-w-[1440px] w-full mx-auto flex flex-col gap-5";
+  if (shape === "workspace") {
+    return (
+      <div className={outer}>
+        <Loading className="flex flex-col lg:flex-row lg:items-start gap-group w-full">
+          <div className="w-full lg:w-[380px] shrink-0 flex flex-col gap-5 bg-panel-3 rounded-panel p-4">
+            <div className="flex items-center gap-2.5">
+              <Skeleton className="w-8 h-8 !rounded-full shrink-0" />
+              <div className="flex-1 min-w-0 flex flex-col gap-1.5">
+                <Skeleton className="h-4 w-2/3" />
+                <Skeleton className="h-3 w-1/3" />
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Skeleton className="h-3 w-20" />
+              <Skeleton className="h-11 w-full" />
+              <Skeleton className="h-11 w-full" />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Skeleton className="h-3 w-24" />
+              <Skeleton className="h-20 w-full" />
+            </div>
+            <div className="pt-3 border-t border-divider">
+              <Skeleton className="h-9 w-full" />
+            </div>
+          </div>
+          <div className="flex-1 min-w-0 flex flex-col gap-4">
+            <Skeleton className="h-5 w-44" />
+            <div className={cn(CARD, "overflow-hidden")}>
+              <div className="flex items-center gap-4 px-4 h-10 border-b border-divider">
+                {[0, 1, 2, 3].map((c) => (
+                  <div key={c} className={cn("min-w-0", c === 0 ? "flex-[2]" : "flex-1", c > 1 && "max-sm:hidden")}>
+                    <Skeleton className={cn("h-3", c >= 2 ? "w-10 ml-auto" : "w-16")} />
+                  </div>
+                ))}
+              </div>
+              {Array.from({ length: 5 }, (_, r) => (
+                <div key={r} className="flex items-center gap-4 px-4 h-12 border-b border-divider last:border-0">
+                  {[0, 1, 2, 3].map((c) => (
+                    <div key={c} className={cn("min-w-0", c === 0 ? "flex-[2]" : "flex-1", c > 1 && "max-sm:hidden")}>
+                      <Skeleton className={cn("h-3.5 max-w-full", skeletonCellClass(c, r, c >= 2))} />
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        </Loading>
+      </div>
+    );
+  }
   return (
-    <div className={inShell ? "w-full flex flex-col gap-5" : "h-dvh bg-app p-4 sm:p-6 max-w-[1440px] w-full mx-auto flex flex-col gap-5"}>
+    <div className={outer}>
       <div className="flex items-center gap-3">
         <Skeleton className="w-10 h-10 !rounded-control" />
         <Skeleton className="h-5 w-40" />
