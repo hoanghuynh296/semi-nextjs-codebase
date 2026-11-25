@@ -118,10 +118,11 @@ test("the menu marks the page you are on, and follows navigation", async ({ page
   const nav = page.locator("aside");
   const link = (name: string) => nav.getByRole("link", { name, exact: true });
   await expect(link("Button")).toHaveAttribute("aria-current", "page");
+  await nav.getByRole("button", { name: "Overlays", exact: true }).click();
   await link("Modal").click();
   await expect(page).toHaveURL(/\/components\/modal\/$/);
   await expect(link("Modal")).toHaveAttribute("aria-current", "page");
-  await expect(link("Button")).not.toHaveAttribute("aria-current", "page");
+  await expect(nav.locator('a[href$="/components/button/"]')).not.toHaveAttribute("aria-current", "page");
 });
 
 test("an example switches to its exact code and copies the page markdown", async ({ page, context }) => {
@@ -1864,6 +1865,11 @@ test("side menu: items have icon in desktop mode, and keeps its scroll position 
   await open(page, "/components/", "dark");
   const menu = page.locator("aside .overflow-y-auto").first();
   await expect(page.locator("aside nav svg").first()).toBeVisible();
+  // Component groups start collapsed (#172): expand them so the menu overflows and Menubar is below the fold.
+  const toggles = page.locator("aside button[aria-expanded='false']");
+  for (let i = await toggles.count(); i > 0; i--) {
+    await toggles.first().click();
+  }
   const link = page.locator("aside").getByRole("link", { name: "Menubar" });
   // the menu can re-render once after load (#101: "Element is not attached to the DOM"): retry the pair together, so
   // the item is looked up again on the settled menu. A real person clicks what is already in view; Playwright would
