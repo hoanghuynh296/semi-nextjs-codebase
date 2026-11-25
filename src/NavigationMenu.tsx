@@ -54,7 +54,7 @@ export function NavigationMenu({
     return () => document.removeEventListener("pointerdown", onDown);
   }, [open]);
   const linkCls = (href: string) =>
-    cn("inline-flex items-center h-control px-3 rounded-control text-ui font-medium transition-hover", href === current ? "text-strong bg-raised" : "text-body hover:text-strong hover:bg-field", FOCUS_RING);
+    cn("inline-flex items-center h-control px-3 rounded-control text-ui font-medium transition-hover", href === current ? "text-strong bg-item-selected" : "text-body hover:text-strong hover:bg-item-hover", FOCUS_RING);
   return (
     <nav
       ref={navRef}
@@ -86,7 +86,7 @@ export function NavigationMenu({
                   aria-controls={`${base}-${i}`}
                   onClick={() => setOpen(open === i ? null : i)}
                   onKeyDown={(e) => e.key === "ArrowDown" && (e.preventDefault(), setOpen(i))}
-                  className={cn(linkCls(""), "gap-1", open === i && "text-strong bg-field")}
+                  className={cn(linkCls(""), "gap-1", open === i && "text-strong bg-item-selected")}
                 >
                   {it.label}
                   <Icon name="chevronDown" className={cn("w-3.5 h-3.5 transition-transform", open === i && "rotate-180")} />
@@ -99,7 +99,7 @@ export function NavigationMenu({
                           href={l.href}
                           aria-current={l.href === current ? "page" : undefined}
                           onClick={() => setOpen(null)}
-                          className={cn("flex gap-3 rounded-control p-2.5 hover:bg-field", FOCUS_RING)}
+                          className={cn("flex gap-3 rounded-control p-2.5 hover:bg-item-hover", FOCUS_RING)}
                         >
                           {l.icon && <Icon name={l.icon} className="w-4 h-4 mt-0.5 text-strong shrink-0" />}
                           <span className="min-w-0">
@@ -133,7 +133,7 @@ export function NavigationMenu({
                   <ul className="space-y-0.5">
                     {it.links.map((l) => (
                       <li key={l.href}>
-                        <Link href={l.href} onClick={() => setSheet(false)} aria-current={l.href === current ? "page" : undefined} className={cn("flex items-center gap-2 rounded-control px-2 py-2 text-ui text-body hover:bg-field", FOCUS_RING)}>
+                        <Link href={l.href} onClick={() => setSheet(false)} aria-current={l.href === current ? "page" : undefined} className={cn("flex items-center gap-2 rounded-control px-2 py-2 text-ui", l.href === current ? "bg-item-selected text-strong font-medium" : "text-body hover:bg-item-hover", FOCUS_RING)}>
                           {l.icon && <Icon name={l.icon} className="w-4 h-4 text-muted" />}
                           {l.label}
                         </Link>
@@ -142,7 +142,7 @@ export function NavigationMenu({
                   </ul>
                 </>
               ) : (
-                <Link href={it.href ?? "#"} onClick={() => setSheet(false)} className={cn("block rounded-control px-2 py-2 text-ui font-medium text-strong hover:bg-field", FOCUS_RING)}>
+                <Link href={it.href ?? "#"} onClick={() => setSheet(false)} className={cn("block rounded-control px-2 py-2 text-ui font-medium text-strong hover:bg-item-hover", FOCUS_RING)}>
                   {it.label}
                 </Link>
               )}
