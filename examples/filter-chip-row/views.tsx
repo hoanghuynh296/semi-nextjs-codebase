@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FilterChipRow, Pills, ResultLine, type FilterDef } from "@semi/ui";
+import { FilterChipRow, SegmentedControl, type FilterDef } from "@semi/ui";
 
 const MAIL = [
   { id: "Báo giá tiêu đen", box: "sales", folder: "inbox", open: true },
@@ -50,12 +50,11 @@ export default function FilterChipRowViews() {
   return (
     <div className="flex flex-col gap-2 w-full min-w-0">
       <FilterChipRow
-        leading={<Pills value={view} onChange={setView} options={VIEWS} />}
+        leading={<SegmentedControl label="Trạng thái thư" value={view} onChange={setView} options={VIEWS} />}
         filters={filters}
         onChange={(key, selected) => setSel({ ...sel, [key]: selected })}
         onClear={() => setSel({})}
       />
-      <ResultLine count={rows.length} unit="thư" />
       <p className="text-ui text-muted">{rows.map((m) => m.id).join(" · ") || "—"}</p>
     </div>
   );

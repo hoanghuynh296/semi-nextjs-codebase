@@ -5,7 +5,7 @@ import { Button, CommandDialog, Kbd, toast, useHotkey, type CommandItem } from "
 
 export default function CommandPalette() {
   const [open, setOpen] = useState(false);
-  useHotkey(() => setOpen((v) => !v));
+  useHotkey(() => setOpen((v) => !v), "j");
   const go = (title: string) => () => toast({ title });
   const items: CommandItem[] = [
     { id: "orders", label: "Đơn hàng", group: "Trang", icon: "bag", onSelect: go("Mở Đơn hàng") },
@@ -17,7 +17,7 @@ export default function CommandPalette() {
   return (
     <>
       <Button icon="search" onClick={() => setOpen(true)}>
-        Tìm nhanh <Kbd keys={["⌘", "K"]} />
+        Tìm nhanh <Kbd keys={["⌘", "J"]} />
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen} items={items} />
     </>

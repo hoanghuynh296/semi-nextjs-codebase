@@ -14,9 +14,9 @@ import {
   Page,
   PageGrid,
   PhoneFilterBar,
-  Pills,
   RefreshButton,
   SearchPill,
+  SegmentedControl,
   StickyContextBar,
   ViewSwitch,
   toast,
@@ -144,7 +144,7 @@ export default function ListPage() {
           <SearchPill value={q} onChange={(v) => f.setParams({ q: v || null }, "replace")} label="Tìm đơn hàng" placeholder="Tìm mã đơn, khách hàng…" focusKey="/" />
           <FilterChipRow
             className="max-md:hidden"
-            leading={<Pills value={view} onChange={setView} options={VIEWS} />}
+            leading={<SegmentedControl label="Trạng thái đơn" value={view} onChange={setView} options={VIEWS} />}
             filters={f.filters}
             onChange={f.onChange}
             onClear={f.onClear}
