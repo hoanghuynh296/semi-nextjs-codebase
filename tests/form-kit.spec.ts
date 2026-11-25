@@ -118,25 +118,31 @@ test("FormActions on a phone: the bar rides above the on-screen keyboard and dro
 // ---- useUnsavedGuard with the app router (the docs site is a Next.js app router app) ----
 
 const nameField = (page: Page) => page.locator(FORM).getByLabel("Tên máy in", { exact: false });
-const toButton = (page: Page) => page.locator('a[href$="/components/button/"]').first();
+async function clickNav(page: Page, group: string, href: string) {
+  const aside = page.locator("aside");
+  const toggle = aside.getByRole("button", { name: group, exact: true });
+  if ((await toggle.getAttribute("aria-expanded")) === "false") await toggle.click();
+  await aside.locator(`a[href$="${href}"]`).first().click();
+}
+const toButton = (page: Page) => clickNav(page, "Actions", "/components/button/");
 
 test("useUnsavedGuard · route change: a link click asks, Ở lại keeps the typed text, Rời đi goes", async ({ page }) => {
   await page.goto(PAGE);
   await nameField(page).fill("Bambu P1S");
-  await toButton(page).click();
+  await toButton(page);
   const ask = page.getByRole("alertdialog", { name: "Rời khỏi trang?" });
   await expect(ask).toContainText("Bạn có thay đổi chưa lưu");
   await ask.getByRole("button", { name: "Ở lại" }).click();
   await expect(page).toHaveURL(/\/components\/form-actions\/$/);
   await expect(nameField(page)).toHaveValue("Bambu P1S");
-  await toButton(page).click();
+  await toButton(page);
   await page.getByRole("alertdialog", { name: "Rời khỏi trang?" }).getByRole("button", { name: "Rời đi" }).click();
   await expect(page).toHaveURL(/\/components\/button\/$/);
 });
 
 test("useUnsavedGuard · a clean form never asks", async ({ page }) => {
   await page.goto(PAGE);
-  await toButton(page).click();
+  await toButton(page);
   await expect(page).toHaveURL(/\/components\/button\/$/);
   await expect(page.getByRole("alertdialog")).toHaveCount(0);
   // typed and then emptied again is clean too
@@ -153,7 +159,7 @@ test("useUnsavedGuard · a clean form never asks", async ({ page }) => {
 
 test("useUnsavedGuard · back and forward: asked once, Ở lại stays on the form, Rời đi goes back", async ({ page }) => {
   await page.goto("/components/button/");
-  await page.locator('a[href$="/components/form-actions/"]').first().click();
+  await clickNav(page, "Forms", "/components/form-actions/");
   await expect(page).toHaveURL(/\/components\/form-actions\/$/);
   await nameField(page).fill("Bambu P1S");
   await page.goBack();
@@ -192,7 +198,7 @@ const historyLength = (page: Page) => page.evaluate(() => history.length);
 
 test("useUnsavedGuard · Huỷ with confirmLeave(router.back) asks once and goes back one step", async ({ page }) => {
   await page.goto("/components/button/");
-  await page.locator('a[href$="/components/form-actions/"]').first().click();
+  await clickNav(page, "Forms", "/components/form-actions/");
   await nameField(page).fill("Bambu P1S");
   await page.locator(FORM).getByRole("button", { name: "Huỷ" }).click();
   await LEAVE(page).getByRole("button", { name: "Rời đi" }).click();
@@ -203,9 +209,9 @@ test("useUnsavedGuard · Huỷ with confirmLeave(router.back) asks once and goes
 
 test("useUnsavedGuard · after Rời đi on a link the history has one entry for the new page: Back is one press", async ({ page }) => {
   await page.goto("/components/button/");
-  await page.locator('a[href$="/components/form-actions/"]').first().click();
+  await clickNav(page, "Forms", "/components/form-actions/");
   await nameField(page).fill("Bambu P1S");
-  await page.locator('a[href$="/components/states/"]').first().click();
+  await clickNav(page, "Feedback", "/components/states/");
   await LEAVE(page).getByRole("button", { name: "Rời đi" }).click();
   await expect(page).toHaveURL(/\/components\/states\/$/);
   await page.goBack();
@@ -239,7 +245,7 @@ test("useUnsavedGuard · a plain <a> (hard navigation) asks once, then leaves wi
 
 test("useUnsavedGuard · save: the entry is spent, confirmLeave(router.push) goes on without a question and Back is one press", async ({ page }) => {
   await page.goto("/components/button/");
-  await page.locator('a[href$="/components/form-actions/"]').first().click();
+  await clickNav(page, "Forms", "/components/form-actions/");
   await expect(page).toHaveURL(/\/components\/form-actions\/$/);
   const lengthBefore = await historyLength(page);
   const f = page.locator(FORM);
@@ -296,7 +302,7 @@ test("useUnsavedGuard · an agreed confirmLeave that does not navigate (delete d
     });
   expect(await prevented()).toBe(true);
   expect(await page.evaluate(() => (history.state as Record<string, unknown> | null)?.__semiUnsavedGuard)).toBe(true);
-  await toButton(page).click();
+  await toButton(page);
   await expect(LEAVE(page)).toBeVisible(); // links ask again
 });
 

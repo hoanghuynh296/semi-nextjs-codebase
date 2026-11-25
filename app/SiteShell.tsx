@@ -23,7 +23,8 @@ const START: ShellNavSection[] = [
     items: [
       { id: "home", label: "Giới thiệu", shortLabel: "Home", icon: "sparkles", href: "/" },
       { id: "components", label: "Tất cả component", shortLabel: "UI", icon: "grid", href: "/components/" },
-      { id: "foundations", label: "Foundations & icon", shortLabel: "Tokens", icon: "palette", href: "/foundations/" },
+      { id: "foundations", label: "Foundations", shortLabel: "Tokens", icon: "palette", href: "/foundations/" },
+      { id: "icons", label: "Icons", shortLabel: "Icons", icon: "shapes", href: "/icons/" },
       { id: "brand", label: "Brand preview", shortLabel: "Brand", icon: "palette", href: "/brand/" },
       { id: "lab", label: "Design Lab", shortLabel: "Lab", icon: "sliders", href: "/lab/" },
     ],
@@ -39,7 +40,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       productName="Semi Design"
       logoIcon="sparkles"
       sections={START}
-      primaryCta={{ label: "GitHub Repository", icon: "external", href: "https://github.com/hoanghuynh296/semi-nextjs-codebase", external: true }}
+      mainAction={{ label: "GitHub Repository", icon: "external", href: "https://github.com/hoanghuynh296/semi-nextjs-codebase", external: true }}
       // the route header's right side: the version, then the theme (Light / Dark / System, keeps "system")
       actions={
         <>

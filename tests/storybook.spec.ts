@@ -9,7 +9,7 @@ import { a11yHits, lowContrast } from "./contrast";
 import { densityAudit } from "../lint/density.mjs";
 
 const DOC_PAGES = docs.map((d) => `/components/${d.id}/`);
-const PAGES = ["/", "/components/", "/foundations/", "/brand/", "/lab/", "/demo/app-shell/", ...DOC_PAGES];
+const PAGES = ["/", "/components/", "/foundations/", "/icons/", "/brand/", "/lab/", "/demo/app-shell/", ...DOC_PAGES];
 /** Pages checked at phone width: the gallery shows one example of every doc. */
 const THEMES = ["dark", "light"] as const;
 const example = (page: Page, id: string) => page.locator(`[data-example="${id}"]`);
@@ -118,10 +118,11 @@ test("the menu marks the page you are on, and follows navigation", async ({ page
   const nav = page.locator("aside");
   const link = (name: string) => nav.getByRole("link", { name, exact: true });
   await expect(link("Button")).toHaveAttribute("aria-current", "page");
+  await nav.getByRole("button", { name: "Overlays", exact: true }).click();
   await link("Modal").click();
   await expect(page).toHaveURL(/\/components\/modal\/$/);
   await expect(link("Modal")).toHaveAttribute("aria-current", "page");
-  await expect(link("Button")).not.toHaveAttribute("aria-current", "page");
+  await expect(nav.locator('a[href$="/components/button/"]')).not.toHaveAttribute("aria-current", "page");
 });
 
 test("an example switches to its exact code and copies the page markdown", async ({ page, context }) => {
@@ -1918,6 +1919,11 @@ test("side menu: items have icon in desktop mode, and keeps its scroll position 
   await open(page, "/components/", "dark");
   const menu = page.locator("aside .overflow-y-auto").first();
   await expect(page.locator("aside nav svg").first()).toBeVisible();
+  // Component groups start collapsed (#172): expand them so the menu overflows and Menubar is below the fold.
+  const toggles = page.locator("aside button[aria-expanded='false']");
+  for (let i = await toggles.count(); i > 0; i--) {
+    await toggles.first().click();
+  }
   const link = page.locator("aside").getByRole("link", { name: "Menubar" });
   // the menu can re-render once after load (#101: "Element is not attached to the DOM"): retry the pair together, so
   // the item is looked up again on the settled menu. A real person clicks what is already in view; Playwright would
@@ -2122,7 +2128,7 @@ test("focused input shows a 2px keyboard outline; Terminal output is a named reg
 });
 
 test("a clickable Card is a keyboard button: Tab reaches it, Enter picks it, aria-pressed follows", async ({ page }) => {
-  await open(page, "/foundations/", "light");
+  await open(page, "/icons/", "light");
   const tile = page.getByRole("button", { name: /^trash\b/ }).first();
   await tile.focus();
   await expect(tile).toBeFocused();

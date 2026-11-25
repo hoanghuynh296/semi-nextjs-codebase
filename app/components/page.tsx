@@ -14,7 +14,7 @@ export default function ComponentsPage() {
       <div className="space-y-3">
         <PageTitle title="Component" />
         <p className="text-lead text-body max-w-3xl">
-          {list.length} trang tài liệu, mỗi trang có ví dụ chạy thật, code copy được, bảng API sinh từ TypeScript và bản markdown cho agent. Đổi theme / style ở chân menu để xem mọi component theo từng diện mạo.
+          {list.length} trang tài liệu, mỗi trang có ví dụ chạy thật, code copy được, bảng API sinh từ TypeScript và bản markdown cho agent. Đổi sáng / tối ở góc trên phải để kiểm tra mọi component ở cả hai theme.
         </p>
       </div>
       <ComponentIndex />

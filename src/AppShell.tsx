@@ -77,6 +77,8 @@ export interface ShellAction {
   /** The choices; the button opens them in a Menu. On phones the drawer shows one row that opens them as a level. */
   items?: MenuItem[];
   href?: string;
+  /** Open `href` in a new tab (`target="_blank" rel="noopener noreferrer"`). */
+  external?: boolean;
   onClick?: () => void;
 }
 
@@ -164,6 +166,10 @@ export interface ShellNavSection {
   right?: React.ReactNode;
   /** Where the group's crumb links (default: its first item with an href). */
   href?: string;
+  /** Let the user collapse and expand this group by clicking its heading (expanded nav and phone drawer; the rail still shows its items). */
+  collapsible?: boolean;
+  /** Initial open state when `collapsible` is true (default `true`). Automatically opens when `activeId` is inside the group. */
+  defaultOpen?: boolean;
   items: ShellNavItem[];
   loading?: boolean;
   loadingCount?: number;
@@ -199,6 +205,8 @@ export interface AppShellProps {
     external?: boolean;
     onClick?: () => void;
   };
+  /** Optional quick-search field rendered above the nav sections in the expanded sidebar and phone drawer (hidden in the rail). */
+  navSearch?: React.ReactNode;
   /** A group under the main nav (saved views, frequent records). */
   pinned?: ShellPinned;
   /** The bottom row of the nav: 32×32 ghost icon buttons (help, notifications), stacked in the rail. */
@@ -304,6 +312,7 @@ export function AppShell({
   onSelect,
   mainAction,
   primaryCta,
+  navSearch,
   pinned,
   tools = [],
   toolsMenu = [],
@@ -327,6 +336,8 @@ export function AppShell({
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [megaId, setMegaId] = useState<string | null>(null);
   const [keysShown, setKeysShown] = useState(false);
+  // Per-section manual expand/collapse overrides for collapsible sections (keyed by label or index).
+  const [sectionToggles, setSectionToggles] = useState<Record<string, boolean>>({});
   // false on the server and in the first client render: the platform (⌥ or Alt) is known after mount
   const [mounted, setMounted] = useState(false);
   const [record, setRecord] = useState<string | null>(null);
@@ -388,9 +399,51 @@ export function AppShell({
   const submenuVisible = width !== null && !rail && width !== "phone";
   const megaItem = allItems.find((i) => i.id === megaId && i.mega);
 
+  // Collapsible nav sections: start closed when defaultOpen is false, auto-open when activeId is inside the group.
+  const sectionKey = (section: ShellNavSection, idx: number) => section.label ?? String(idx);
+  const sectionHasActive = (section: ShellNavSection) =>
+    section.items.some((i) => i.id === activeId || i.id === activeTopId);
+  const isSectionOpen = (section: ShellNavSection, idx: number) => {
+    if (!section.collapsible || !section.label || section.hideLabel) return true;
+    const key = sectionKey(section, idx);
+    if (key in sectionToggles) return sectionToggles[key];
+    if (sectionHasActive(section)) return true;
+    return section.defaultOpen ?? true;
+  };
+  const toggleSection = (section: ShellNavSection, idx: number) => {
+    if (!section.collapsible) return;
+    const key = sectionKey(section, idx);
+    const currentlyOpen = isSectionOpen(section, idx);
+    setSectionToggles((prev) => ({ ...prev, [key]: !currentlyOpen }));
+  };
+
+  // When activeId changes to an item in another section, auto-open that section (clearing any prior manual collapse)
+  // and close the phone drawer if it was open.
+  const prevActiveIdRef = useRef(activeId);
+  useEffect(() => {
+    if (prevActiveIdRef.current === activeId) return;
+    prevActiveIdRef.current = activeId;
+    setDrawerOpen(false);
+    const activeSecIdx = sections.findIndex((s) => s.items.some((i) => i.id === activeId || i.id === activeTopId));
+    if (activeSecIdx >= 0) {
+      const key = sectionKey(sections[activeSecIdx], activeSecIdx);
+      setSectionToggles((prev) => {
+        if (prev[key] !== false) return prev;
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      });
+    }
+  }, [activeId, activeTopId, sections]);
+
   // ─── Shortcuts: the first nine items in visual order ─────────────────────────────────────────────────────────
-  // only what is drawn: a section still loading shows skeletons, not its items
-  const numbered = [...sections.filter((sec) => !sec.loading).flatMap((sec) => sec.items), ...(pinned?.items ?? [])].slice(0, 9);
+  // only what is drawn: a section still loading or collapsed (in expanded mode) is skipped
+  const numbered = [
+    ...sections
+      .filter((sec, idx) => !sec.loading && (rail || isSectionOpen(sec, idx)))
+      .flatMap((sec) => sec.items),
+    ...(pinned?.items ?? []),
+  ].slice(0, 9);
   const numberOf = (id: string) => {
     const i = numbered.findIndex((it) => it.id === id);
     return i < 0 ? 0 : i + 1;
@@ -619,15 +672,41 @@ export function AppShell({
 
   const groupSpacer = <div aria-hidden className="shrink-0 h-6 flex items-center px-2"><div className="h-px flex-1 bg-raised" /></div>;
   // the group label: `text-nav-label` (10px / 500, uppercase, normal tracking, faint), one class of its own
-  const groupLabel = (label: string, icon?: IconName, right?: React.ReactNode) => (
-    <div className={cn("shrink-0 h-8 flex items-center justify-between gap-2 px-2 py-1.5 select-none", `@max-[120px]/nav:hidden`)}>
-      <span className="flex items-center gap-1.5 min-w-0 text-nav-label">
-        {icon && <Icon name={icon} className="w-3.5 h-3.5 shrink-0" />}
-        <span className="truncate">{label}</span>
-      </span>
-      {right && <span className="flex items-center gap-1 shrink-0 text-muted">{right}</span>}
-    </div>
-  );
+  const groupLabel = (
+    label: string,
+    icon?: IconName,
+    right?: React.ReactNode,
+    collapse?: { open: boolean; controlsId: string; onToggle: () => void },
+  ) =>
+    collapse ? (
+      <div className={cn("shrink-0 h-8 flex items-center justify-between gap-1 select-none", `@max-[120px]/nav:hidden`)}>
+        <button
+          type="button"
+          aria-expanded={collapse.open}
+          aria-controls={collapse.controlsId}
+          onClick={collapse.onToggle}
+          className={cn(
+            "flex-1 min-w-0 h-8 flex items-center justify-between gap-2 px-2 rounded-control text-nav-label hover:text-strong hover:bg-item-hover transition-hover cursor-pointer",
+            FOCUS_RING,
+          )}
+        >
+          <span className="flex items-center gap-1.5 min-w-0">
+            {icon && <Icon name={icon} className="w-3.5 h-3.5 shrink-0" />}
+            <span className="truncate">{label}</span>
+          </span>
+          <Icon name={collapse.open ? "chevronDown" : "chevron"} className="w-3.5 h-3.5 shrink-0" />
+        </button>
+        {right && <span className="flex items-center gap-1 shrink-0 pr-1 text-muted">{right}</span>}
+      </div>
+    ) : (
+      <div className={cn("shrink-0 h-8 flex items-center justify-between gap-2 px-2 py-1.5 select-none", `@max-[120px]/nav:hidden`)}>
+        <span className="flex items-center gap-1.5 min-w-0 text-nav-label">
+          {icon && <Icon name={icon} className="w-3.5 h-3.5 shrink-0" />}
+          <span className="truncate">{label}</span>
+        </span>
+        {right && <span className="flex items-center gap-1 shrink-0 text-muted">{right}</span>}
+      </div>
+    );
 
   const logoTile = logo ?? (
     <span className="w-8 h-8 rounded-control bg-inverted text-on-inverted flex items-center justify-center shrink-0">
@@ -662,7 +741,12 @@ export function AppShell({
       />
     ) : action.href ? (
       <Tooltip content={tip(action.label)} side="right">
-        <Link href={action.href} className={actionClass}>
+        <Link
+          href={action.href}
+          target={action.external ? "_blank" : undefined}
+          rel={action.external ? "noopener noreferrer" : undefined}
+          className={actionClass}
+        >
           {actionInner}
         </Link>
       </Tooltip>
@@ -835,17 +919,32 @@ export function AppShell({
                     )}
                   </div>
                 )}
+
+                {navSearch && <div className={cn("relative", `@max-[120px]/nav:hidden`)}>{navSearch}</div>}
               </div>
 
               {/* Scrollable nav: sections, then the pinned group; the padding keeps the rail's corner badges visible */}
               <div className="flex-1 min-h-0 flex flex-col overflow-y-auto overflow-x-hidden px-(--semi-nav-pad) py-4">
                 {sections.map((section, idx) => {
                   if (!section.loading && (!section.items || section.items.length === 0)) return null;
+                  const open = isSectionOpen(section, idx);
+                  const navId = `${asideId}-sec-${idx}`;
                   return (
                     <React.Fragment key={section.label ?? idx}>
                       {idx > 0 && groupSpacer}
-                      {section.label && !section.hideLabel && groupLabel(section.label, section.icon, section.right)}
-                      <nav aria-label={section.label ?? (idx === 0 ? t.mainMenu : `Menu ${idx + 1}`)} className="flex flex-col gap-1">
+                      {section.label &&
+                        !section.hideLabel &&
+                        groupLabel(
+                          section.label,
+                          section.icon,
+                          section.right,
+                          section.collapsible ? { open, controlsId: navId, onToggle: () => toggleSection(section, idx) } : undefined,
+                        )}
+                      <nav
+                        id={section.collapsible ? navId : undefined}
+                        aria-label={section.label ?? (idx === 0 ? t.mainMenu : `Menu ${idx + 1}`)}
+                        className={cn("flex-col gap-1", open ? "flex" : "hidden @max-[120px]/nav:flex")}
+                      >
                         {section.loading
                           ? Array.from({ length: section.loadingCount ?? 5 }, (_, i) => (
                               <div key={i} className="w-full h-8 flex items-center gap-2 px-2 rounded-control" aria-hidden>
@@ -969,7 +1068,10 @@ export function AppShell({
                 productName={productName}
                 logoTile={logoTile}
                 action={action}
+                navSearch={navSearch}
                 sections={sections}
+                isSectionOpen={isSectionOpen}
+                onToggleSection={toggleSection}
                 pinned={pinned}
                 tools={tools}
                 toolsMenu={toolsMenu}
@@ -1052,7 +1154,10 @@ function PhoneDrawer({
   productName,
   logoTile,
   action: create,
+  navSearch,
   sections,
+  isSectionOpen,
+  onToggleSection,
   pinned,
   tools: utilities,
   toolsMenu,
@@ -1064,7 +1169,10 @@ function PhoneDrawer({
   productName: string;
   logoTile: React.ReactNode;
   action: ShellAction | null;
+  navSearch?: React.ReactNode;
   sections: ShellNavSection[];
+  isSectionOpen: (section: ShellNavSection, idx: number) => boolean;
+  onToggleSection: (section: ShellNavSection, idx: number) => void;
   pinned?: ShellPinned;
   tools: ShellTool[];
   toolsMenu: MenuItem[];
@@ -1074,12 +1182,24 @@ function PhoneDrawer({
   onClose: () => void;
 }) {
   const t = useSemiLocale();
+  const drawerId = useId();
   const ref = useRef<HTMLDivElement>(null);
+  const navSearchRef = useRef<HTMLDivElement>(null);
   const [level, setLevel] = useState<DrillLevel | null>(null);
   // the row that opened the level: focus returns to it on the way back
   const [returnTo, setReturnTo] = useState<string | null>(null);
   const back = () => setLevel(null);
   const { titleId } = useDialog(ref, true, () => (level ? back() : onClose()));
+  // Close the drawer when a link inside navSearch is clicked (even if activeId does not change, e.g. /icons/?q=…).
+  useEffect(() => {
+    const el = navSearchRef.current;
+    if (!el) return;
+    const onLinkClick = (e: MouseEvent) => {
+      if ((e.target as HTMLElement | null)?.closest("a")) onClose();
+    };
+    el.addEventListener("click", onLinkClick);
+    return () => el.removeEventListener("click", onLinkClick);
+  }, [onClose, level]);
   // a new level gets focus on its first row, so a screen reader hears where it went; back at the root, the row that
   // opened it gets focus again
   useEffect(() => {
@@ -1249,7 +1369,13 @@ function PhoneDrawer({
                   <Icon name="chevron" className="w-4 h-4 shrink-0" />
                 </button>
               ) : create.href ? (
-                <Link href={create.href} onClick={onClose} className={cn("mx-1 flex items-center justify-center gap-2 h-11 rounded-control bg-primary text-on-primary hover:bg-primary-hover text-ui font-semibold", FOCUS_RING)}>
+                <Link
+                  href={create.href}
+                  target={create.external ? "_blank" : undefined}
+                  rel={create.external ? "noopener noreferrer" : undefined}
+                  onClick={onClose}
+                  className={cn("mx-1 flex items-center justify-center gap-2 h-11 rounded-control bg-primary text-on-primary hover:bg-primary-hover text-ui font-semibold", FOCUS_RING)}
+                >
                   <Icon name={create.icon ?? "plus"} className="w-4 h-4" />
                   {create.label}
                 </Link>
@@ -1266,14 +1392,34 @@ function PhoneDrawer({
                   {create.label}
                 </button>
               ))}
-            {sections.map((s, idx) =>
-              s.items?.length ? (
+            {navSearch && <div ref={navSearchRef} className="relative px-1">{navSearch}</div>}
+            {sections.map((s, idx) => {
+              if (!s.items?.length) return null;
+              const open = isSectionOpen(s, idx);
+              const listId = `${drawerId}-sec-${idx}`;
+              return (
                 <nav key={s.label ?? idx} aria-label={s.label ?? (idx === 0 ? t.mainMenu : `Menu ${idx + 1}`)}>
-                  {s.label && !s.hideLabel && idx > 0 && <div className="px-3 pb-1 text-chrome font-medium text-muted">{s.label}</div>}
-                  <ul className="flex flex-col gap-0.5">{s.items.map(renderRow)}</ul>
+                  {s.label && !s.hideLabel && (s.collapsible ? (
+                    <button
+                      type="button"
+                      aria-expanded={open}
+                      aria-controls={open ? listId : undefined}
+                      onClick={() => onToggleSection(s, idx)}
+                      className={cn("w-full flex items-center justify-between gap-2 px-3 py-2 rounded-control text-chrome font-medium text-muted hover:text-strong hover:bg-item-hover transition-hover cursor-pointer", FOCUS_RING)}
+                    >
+                      <span className="flex items-center gap-2 min-w-0">
+                        {s.icon && <Icon name={s.icon} className="w-4 h-4 shrink-0" />}
+                        <span className="truncate">{s.label}</span>
+                      </span>
+                      <Icon name={open ? "chevronDown" : "chevron"} className="w-3.5 h-3.5 shrink-0" />
+                    </button>
+                  ) : idx > 0 ? (
+                    <div className="px-3 pb-1 text-chrome font-medium text-muted">{s.label}</div>
+                  ) : null)}
+                  {open && <ul id={s.collapsible ? listId : undefined} className="flex flex-col gap-0.5">{s.items.map(renderRow)}</ul>}
                 </nav>
-              ) : null,
-            )}
+              );
+            })}
             {pinned && pinned.items.length > 0 && (
               <nav aria-label={pinned.label}>
                 <div className="px-3 pb-1 text-chrome font-medium text-muted">{pinned.label}</div>
