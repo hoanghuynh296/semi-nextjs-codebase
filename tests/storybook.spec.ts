@@ -1834,6 +1834,58 @@ test("NavigationMenu opens a panel of links and Escape returns focus", async ({ 
   await expect(trigger).toBeFocused();
 });
 
+test("NavigationMenu Tab/Shift+Tab traverses portaled panel and clicking a panel link works", async ({ page }) => {
+  await open(page, "/components/navigation-menu/", "dark");
+  const nav = page.getByRole("navigation", { name: "Điều hướng chính" });
+  const trigger = nav.getByRole("button", { name: "Sản phẩm" });
+  const nextItem = nav.getByRole("link", { name: "Bảng giá" });
+
+  // Enter opens panel; Tab moves from trigger into first portaled link
+  await trigger.focus();
+  await page.keyboard.press("Enter");
+  await expect(trigger).toHaveAttribute("aria-expanded", "true");
+  const panelId = await trigger.getAttribute("aria-controls");
+  expect(panelId).toBeTruthy();
+  const panel = page.locator(`[id="${panelId}"]`);
+  const firstLink = panel.getByRole("link", { name: /In theo yêu cầu/ });
+  const secondLink = panel.getByRole("link", { name: /Vật liệu/ });
+  const lastLink = panel.getByRole("link", { name: /Studio/ });
+
+  await page.keyboard.press("Tab");
+  await expect(firstLink).toBeFocused();
+
+  // Shift+Tab from first link returns to trigger and keeps panel open
+  await page.keyboard.press("Shift+Tab");
+  await expect(trigger).toBeFocused();
+  await expect(trigger).toHaveAttribute("aria-expanded", "true");
+
+  // Tab through all panel links; Tab off the last link closes panel and advances to next nav item
+  await page.keyboard.press("Tab");
+  await expect(firstLink).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(secondLink).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(lastLink).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(trigger).toHaveAttribute("aria-expanded", "false");
+  await expect(nextItem).toBeFocused();
+
+  // Clicking panel padding (blur with relatedTarget === null) keeps panel open; clicking a link fires click and closes it
+  await trigger.click();
+  await expect(panel).toBeVisible();
+  await panel.click({ position: { x: 4, y: 4 } });
+  await expect(panel).toBeVisible();
+  await secondLink.evaluate((el) => {
+    el.addEventListener("click", (e) => {
+      e.preventDefault();
+      (window as unknown as { __navPanelLinkClicked?: boolean }).__navPanelLinkClicked = true;
+    });
+  });
+  await secondLink.click();
+  await expect(trigger).toHaveAttribute("aria-expanded", "false");
+  expect(await page.evaluate(() => (window as unknown as { __navPanelLinkClicked?: boolean }).__navPanelLinkClicked)).toBe(true);
+});
+
 test("Agent parts: tool call opens, approval replaces its buttons, file tree moves from the keyboard", async ({ page }) => {
   await open(page, "/components/tool-call/", "dark");
   const slice = page.getByRole("button", { name: /Cắt lớp mô hình/ });

@@ -35,16 +35,18 @@ function NavigationPanel({
   panelRef,
   onClose,
   onBlur,
+  onTabOut,
 }: {
   id: string;
-  anchor: HTMLButtonElement | null;
+  anchor: HTMLElement | null;
   links: NavigationLink[];
   current?: string;
   panelRef: React.RefObject<HTMLDivElement | null>;
   onClose: (returnFocus?: boolean) => void;
   onBlur: (e: React.FocusEvent) => void;
+  onTabOut: (dir: "backward" | "forward", e?: React.KeyboardEvent) => void;
 }) {
-  const anchorRef = useRef<HTMLButtonElement | null>(anchor);
+  const anchorRef = useRef<HTMLElement | null>(anchor);
   anchorRef.current = anchor;
   const pos = useAnchoredPosition(anchorRef, true, { minWidth: 480, gap: 6 });
   if (!pos || typeof document === "undefined") return null;
@@ -59,6 +61,19 @@ function NavigationPanel({
         if (e.key === "Escape") {
           e.preventDefault();
           onClose(true);
+          return;
+        }
+        if (e.key === "Tab") {
+          const focusables = panelRef.current?.querySelectorAll<HTMLElement>("a[href], button:not([disabled])");
+          if (!focusables || focusables.length === 0) return;
+          const first = focusables[0];
+          const last = focusables[focusables.length - 1];
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            onTabOut("backward");
+          } else if (!e.shiftKey && document.activeElement === last) {
+            onTabOut("forward", e);
+          }
         }
       }}
       className="fixed z-popover overflow-y-auto overscroll-contain rounded-card border border-line bg-panel p-2 shadow-overlay"
@@ -108,12 +123,12 @@ export function NavigationMenu({
   const [sheet, setSheet] = useState(false);
   const navRef = useRef<HTMLElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
-  const btnRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const itemRefs = useRef<(HTMLElement | null)[]>([]);
   const base = useId();
   const close = (returnFocus = false) => {
     const idx = open;
     setOpen(null);
-    if (returnFocus && idx !== null) btnRefs.current[idx]?.focus();
+    if (returnFocus && idx !== null) itemRefs.current[idx]?.focus();
   };
   useEffect(() => {
     if (open === null) return;
@@ -126,7 +141,23 @@ export function NavigationMenu({
   }, [open]);
   const handleBlur = (e: React.FocusEvent) => {
     const next = e.relatedTarget as Node | null;
-    if (open !== null && !navRef.current?.contains(next) && !panelRef.current?.contains(next)) setOpen(null);
+    if (open !== null && next && !navRef.current?.contains(next) && !panelRef.current?.contains(next)) setOpen(null);
+  };
+  const handleTabOut = (dir: "backward" | "forward", e?: React.KeyboardEvent) => {
+    if (open === null) return;
+    if (dir === "backward") {
+      itemRefs.current[open]?.focus();
+      return;
+    }
+    const next = itemRefs.current[open + 1];
+    if (next) {
+      e?.preventDefault();
+      setOpen(null);
+      next.focus();
+    } else {
+      setOpen(null);
+      itemRefs.current[open]?.focus();
+    }
   };
   const linkCls = (href: string) =>
     cn("inline-flex items-center h-control px-3 rounded-control text-ui font-medium transition-hover", href === current ? "text-strong bg-item-selected" : "text-body hover:text-strong hover:bg-item-hover", FOCUS_RING);
@@ -151,7 +182,7 @@ export function NavigationMenu({
             {it.links ? (
               <button
                 ref={(el) => {
-                  btnRefs.current[i] = el;
+                  itemRefs.current[i] = el;
                 }}
                 type="button"
                 aria-expanded={open === i}
@@ -162,6 +193,12 @@ export function NavigationMenu({
                     e.preventDefault();
                     setOpen(i);
                     requestAnimationFrame(() => panelRef.current?.querySelector<HTMLElement>("a")?.focus());
+                  } else if (e.key === "Tab" && !e.shiftKey && open === i) {
+                    const first = panelRef.current?.querySelector<HTMLElement>("a[href], button:not([disabled])");
+                    if (first) {
+                      e.preventDefault();
+                      first.focus();
+                    }
                   }
                 }}
                 className={cn(linkCls(""), "gap-1", open === i && "text-strong bg-item-selected")}
@@ -170,7 +207,14 @@ export function NavigationMenu({
                 <Icon name="chevronDown" className={cn("w-3.5 h-3.5 transition-transform", open === i && "rotate-180")} />
               </button>
             ) : (
-              <Link href={it.href ?? "#"} aria-current={it.href === current ? "page" : undefined} className={linkCls(it.href ?? "")}>
+              <Link
+                ref={(el) => {
+                  itemRefs.current[i] = el;
+                }}
+                href={it.href ?? "#"}
+                aria-current={it.href === current ? "page" : undefined}
+                className={linkCls(it.href ?? "")}
+              >
                 {it.label}
               </Link>
             )}
@@ -181,12 +225,13 @@ export function NavigationMenu({
         <NavigationPanel
           key={open}
           id={`${base}-${open}`}
-          anchor={btnRefs.current[open]}
+          anchor={itemRefs.current[open]}
           links={openItem.links}
           current={current}
           panelRef={panelRef}
           onClose={close}
           onBlur={handleBlur}
+          onTabOut={handleTabOut}
         />
       )}
       <button type="button" aria-label={label} aria-haspopup="dialog" aria-expanded={sheet} onClick={() => setSheet(true)} className={cn("md:hidden inline-flex items-center justify-center w-control h-control rounded-control border border-line text-body", FOCUS_RING)}>
