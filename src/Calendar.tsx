@@ -136,7 +136,7 @@ export function Calendar(props: CalendarProps) {
   const monthLabel = view ? t.monthYear(view.m + 1, view.y) : "";
   const r = range ? props.value : null;
   const rangeEnd = r?.end ?? (r?.start && hover && hover > r.start ? hover : undefined);
-  const navBtn = cn("w-8 h-8 rounded-control flex items-center justify-center text-muted hover:text-strong hover:bg-raised transition", FOCUS_RING);
+  const navBtn = cn("relative w-8 h-8 rounded-control flex items-center justify-center text-muted hover:text-strong hover:bg-raised transition", HIT_AREA, FOCUS_RING);
 
   return (
     <div className={cn("w-[264px] flex flex-col gap-2", className)}>

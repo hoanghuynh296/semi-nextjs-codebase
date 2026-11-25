@@ -13,7 +13,7 @@ import { Tooltip } from "./Overlay";
 import { STATUS_ICON } from "./Toast";
 import { useSemiLocale } from "./locale";
 import type { SemanticTone } from "../styles/surfaces";
-import { FOCUS_RING, cn } from "../styles/utils";
+import { FOCUS_RING, HIT_AREA, cn } from "../styles/utils";
 
 const DISCLOSURE_ROW = cn("w-full flex items-center gap-2 text-left rounded-control transition-hover", FOCUS_RING);
 const chevron = (open: boolean) => <Icon name="chevronDown" className={cn("w-3.5 h-3.5 text-muted shrink-0 semi-disclosure-chevron", !open && "-rotate-90")} />;
@@ -204,7 +204,7 @@ export function Citation({ n, source }: { /** 1-based, matching the Sources list
       <ExternalLink
         href={source.href}
         aria-label={`${t.source(n)}: ${source.title}`}
-        className={cn("inline-flex items-center justify-center min-w-4 h-4 px-1 mx-0.5 align-[0.15em] rounded-chip bg-field border border-line text-chrome leading-none text-muted hover:text-strong tabular-nums no-underline", FOCUS_RING)}
+        className={cn("relative inline-flex items-center justify-center min-w-4 h-4 px-1 mx-0.5 align-[0.15em] rounded-chip bg-field border border-line text-chrome leading-none text-muted hover:text-strong tabular-nums no-underline", HIT_AREA, FOCUS_RING)}
       >
         {n}
       </ExternalLink>

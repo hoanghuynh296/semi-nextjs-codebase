@@ -12,7 +12,7 @@ import { ensureFocusModality, FLOATING_LAYER } from "./a11y";
 import { useAnchoredPosition } from "./floating";
 import { normalizeSearch } from "./listQuery";
 import { FIELD_INPUT } from "../styles/surfaces";
-import { cn } from "../styles/utils";
+import { cn, HIT_AREA } from "../styles/utils";
 
 export interface CustomComboboxOption {
   value: string;
@@ -205,7 +205,7 @@ export function CustomCombobox({
           aria-hidden
           disabled={disabled}
           onClick={() => setOpen((prev) => !prev)}
-          className="absolute right-2.5 p-1 text-muted hover:text-strong transition-hover cursor-pointer"
+          className={cn("absolute right-2.5 p-1 text-muted hover:text-strong transition-hover cursor-pointer", HIT_AREA)}
         >
           <Icon name="chevronDown" className={`w-3.5 h-3.5 [transition:transform_var(--motion-hover)] motion-reduce:transition-none ${open ? "rotate-180" : ""}`} />
         </button>

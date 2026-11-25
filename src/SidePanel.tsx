@@ -6,6 +6,7 @@
 import React from "react";
 import { useSemiLocale } from "./locale";
 import { Icon } from "./Icon";
+import { cn, HIT_AREA } from "../styles/utils";
 
 export const SIDE_PANEL_WIDTH = 320;
 export const SIDE_PANEL_COLLAPSED = 48;
@@ -19,7 +20,7 @@ export function SidePanelToggle({ onClick }: { onClick: () => void }) {
       onClick={onClick}
       aria-label={t.collapsePanel}
       title={t.collapsePanel}
-      className="w-7 h-7 -my-1 rounded-control flex items-center justify-center text-muted hover:text-strong hover:bg-raised transition shrink-0"
+      className={cn("relative w-7 h-7 -my-1 rounded-control flex items-center justify-center text-muted hover:text-strong hover:bg-raised transition shrink-0", HIT_AREA)}
     >
       <Icon name="sidebar" className="w-3.5 h-3.5" />
     </button>
@@ -68,7 +69,7 @@ export function SidePanel({
           onClick={onToggleCollapse}
           aria-label={t.expandPanel}
           title={t.expandPanel}
-          className="w-7 h-7 rounded-control flex items-center justify-center text-muted hover:text-strong hover:bg-raised transition-hover"
+          className={cn("relative w-7 h-7 rounded-control flex items-center justify-center text-muted hover:text-strong hover:bg-raised transition-hover", HIT_AREA)}
         >
           <Icon name="sidebar" className="w-3.5 h-3.5" />
         </button>
