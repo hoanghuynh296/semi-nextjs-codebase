@@ -1803,7 +1803,7 @@
       "kind": "component",
       "module": "src/ListReader.tsx",
       "client": true,
-      "summary": "Sticky one-row header of a reader pane (general pattern for mail, tickets, chat; owner decision 2026-11-23): - Left: below-`lg` Back button (wired automatically from `ListReaderLayout`'s `onClose`) + wrapping `title` (never truncated) and optional muted `meta` line underneath. - Right: `[•••]` `Menu` (all secondary / overflow actions) then one main `action`, top-aligned (`items-start`), both buttons at identical `md` (`h-control`) height. - Stays sticky (`sticky top-0 z-sticky bg-app`) while the reader body scrolls underneath.",
+      "summary": "Sticky one-row header of a reader pane (general pattern for mail, tickets, chat; owner decision 2026-11-23): - Left: Back button while the reader replaces the list (wired automatically from `ListReaderLayout`'s `onClose`; below `lg` with your own `onBack`) + wrapping `title` (at least 70% of the row; clamped to 3 lines, the full text in the native tooltip when it is a string) and optional muted `meta` line underneath. - Right: `[•••]` `Menu` (all secondary / overflow actions) then one main `action`, top-aligned (`items-start`), both buttons at identical `md` (`h-control`) height. In a narrow pane, where they do not fit beside a 70% title, they move to their own row under the title, on the right (#188). - Stays sticky (`sticky top-0 z-sticky bg-app`) while the reader body scrolls underneath.",
       "props": [
         "title",
         "meta",
@@ -1822,7 +1822,7 @@
       "kind": "component",
       "module": "src/ListReader.tsx",
       "client": true,
-      "summary": "List + reader layout (#149, #118): a list card on the left and a reader card on the right, each its own independent scroll container (`overflow-y-auto overscroll-contain`), filling the remaining height of `AppShell page=\"fixed\"` / `Page fixed` with zero hand-tuned `calc()`. Drive `open` and `onClose` from `useDetailParam()` (`?open=`, Back closes); pass `recordTitle` to add the open record to `RouteHeader` breadcrumbs via `useRecordCrumb`. Below `lg`, opening an item swaps the reader in place of the list (with `ReaderHeader`'s Back button).",
+      "summary": "List + reader layout (#149, #118): a list card on the left and a reader card on the right, each its own independent scroll container (`overflow-y-auto overscroll-contain`), filling the remaining height of `AppShell page=\"fixed\"` / `Page fixed` with zero hand-tuned `calc()`. Drive `open` and `onClose` from `useDetailParam()` (`?open=`, Back closes); pass `recordTitle` to add the open record to `RouteHeader` breadcrumbs via `useRecordCrumb`. When the layout itself is narrower than the list + 16px + a 360px reader (a container query, not the viewport: a rail, a sub-nav or a side panel all count), opening an item swaps the reader in place of the list (with `ReaderHeader`'s Back button), so the reader never drops below 360px (#188).",
       "props": [
         "list",
         "reader",
@@ -1834,7 +1834,8 @@
         "listWidth",
         "listLabel",
         "readerLabel",
-        "className"
+        "className",
+        "gridClassName"
       ],
       "doc": "docs/components/list-reader.md"
     },
@@ -2337,7 +2338,7 @@
       "kind": "component",
       "module": "src/RouteHeader.tsx",
       "client": true,
-      "summary": "The route header: h60 from `lg` (56 below), padding 0 8px (16px from `sm`), the column's full width. Crumbs enter with `motion-crumb-in` and leave with `motion-crumb-out` (opacity only under reduced motion); the row itself never moves.",
+      "summary": "The route header: h60 from `lg` (56 below), padding 0 16px (the content's inset, also on phones, #188), the column's full width; below `sm` the trail shows only the current page. Crumbs enter with `motion-crumb-in` and leave with `motion-crumb-out` (opacity only under reduced motion); the row itself never moves.",
       "props": [
         "crumbs",
         "middle",

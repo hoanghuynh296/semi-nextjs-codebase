@@ -94,7 +94,7 @@ export function AccountMenu({ name, detail, avatarSrc, items = [], onSignOut, th
 // ─── Route header ───────────────────────────────────────────────────────────────────────────────────────────────
 
 export interface RouteHeaderProps {
-  /** The trail: group (a link), page, record. Every crumb is muted; the trail never wraps and long crumbs truncate. */
+  /** The trail: group (a link), page, record. Every crumb is muted; the trail never wraps and long crumbs truncate. Below `sm` only the last crumb (the current page) shows. */
   crumbs: RouteCrumb[];
   /** Optional middle: a search field on a search page, a small info banner. Hidden below `md`. In its own Suspense. */
   middle?: React.ReactNode;
@@ -126,8 +126,9 @@ function Trail({ crumbs, className, label, hidden }: { crumbs: RouteCrumb[]; cla
             <span className="truncate">{c.label}</span>
           </>
         );
+        // phones (below sm): only the current page; the trail above it is a tap on the menu (or the browser's Back) away (#188)
         return (
-          <li key={i} className={cn("flex items-center gap-1 min-w-0", last ? "shrink" : "shrink-[4]")}>
+          <li key={i} className={cn("flex items-center gap-1 min-w-0", last ? "shrink" : "shrink-[4] max-sm:hidden")}>
             {c.href && !last ? (
               <Link href={c.href} tabIndex={hidden ? -1 : undefined} className={cn("inline-flex items-center gap-1 min-w-0 rounded-chip hover:text-strong transition-hover", FOCUS_RING)}>
                 {inner}
@@ -159,7 +160,8 @@ function Trail({ crumbs, className, label, hidden }: { crumbs: RouteCrumb[]; cla
 }
 
 /**
- * The route header: h60 from `lg` (56 below), padding 0 8px (16px from `sm`), the column's full width. Crumbs enter with
+ * The route header: h60 from `lg` (56 below), padding 0 16px (the content's inset, also on phones, #188), the column's
+ * full width; below `sm` the trail shows only the current page. Crumbs enter with
  * `motion-crumb-in` and leave with `motion-crumb-out` (opacity only under reduced motion); the row itself never moves.
  */
 export function RouteHeader({ crumbs, middle, actions, account, onMenu, menuExpanded, className }: RouteHeaderProps) {
@@ -182,7 +184,7 @@ export function RouteHeader({ crumbs, middle, actions, account, onMenu, menuExpa
   }, [leaving]);
 
   return (
-    <header className={cn("shrink-0 h-14 lg:h-15 px-2 sm:px-4 flex items-center gap-3 min-w-0", className)}>
+    <header className={cn("shrink-0 h-14 lg:h-15 px-4 flex items-center gap-3 min-w-0", className)}>
       {onMenu && (
         <button
           type="button"
@@ -190,7 +192,7 @@ export function RouteHeader({ crumbs, middle, actions, account, onMenu, menuExpa
           aria-label={t.openMenu}
           aria-haspopup="dialog"
           aria-expanded={menuExpanded}
-          className={cn("md:hidden -ml-1 w-11 h-11 shrink-0 rounded-control flex items-center justify-center text-strong hover:bg-item-hover transition-hover cursor-pointer", FOCUS_RING)}
+          className={cn("md:hidden -ml-3 w-11 h-11 shrink-0 rounded-control flex items-center justify-center text-strong hover:bg-item-hover transition-hover cursor-pointer", FOCUS_RING)}
         >
           <Icon name="menu" className="w-5 h-5" />
         </button>

@@ -1,6 +1,6 @@
 # List + reader
 
-A list card beside a reader card (`ListReaderLayout`) with a sticky one-row `ReaderHeader` (wrapping title left, [•••] then one main action right, top-aligned, identical button height). Each panel scrolls independently on `AppShell page="fixed"` / `Page fixed` with zero hand-tuned `calc()`. Open item lives in `?open=` (`useDetailParam`) and `RouteHeader` breadcrumbs (`useRecordCrumb`); below `lg` the reader replaces the list with a Back button.
+A list card beside a reader card (`ListReaderLayout`) with a sticky one-row `ReaderHeader` (wrapping title left, [•••] then one main action right, top-aligned, identical button height). Each panel scrolls independently on `AppShell page="fixed"` / `Page fixed` with zero hand-tuned `calc()`. Open item lives in `?open=` (`useDetailParam`) and `RouteHeader` breadcrumbs (`useRecordCrumb`); when the layout is too narrow for the list and a 360px reader (its own width, not the viewport), the reader replaces the list with a Back button.
 
 ## When to use
 
@@ -244,7 +244,9 @@ List + reader layout (#149, #118): a list card on the left and a reader card on 
 scroll container (`overflow-y-auto overscroll-contain`), filling the remaining height of `AppShell page="fixed"` /
 `Page fixed` with zero hand-tuned `calc()`. Drive `open` and `onClose` from `useDetailParam()` (`?open=`, Back
 closes); pass `recordTitle` to add the open record to `RouteHeader` breadcrumbs via `useRecordCrumb`.
-Below `lg`, opening an item swaps the reader in place of the list (with `ReaderHeader`'s Back button).
+When the layout itself is narrower than the list + 16px + a 360px reader (a container query, not the viewport: a rail,
+a sub-nav or a side panel all count), opening an item swaps the reader in place of the list (with `ReaderHeader`'s
+Back button), so the reader never drops below 360px (#188).
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
@@ -252,38 +254,41 @@ Below `lg`, opening an item swaps the reader in place of the list (with `ReaderH
 | `reader` * | `React.ReactNode` |  | The open record (`<ReaderHeader … />` + body). Shown when `open` is true. |
 | `open` * | `boolean` |  | True while an item is open (`openId !== null` from `useDetailParam()`). |
 | `openKey` | `null \| string` |  | Identifier of the open item (resets reader scroll to top when switching items). |
-| `onClose` | `() => void` |  | Close handler (`useDetailParam().close`, wired to `ReaderHeader`'s below-`lg` Back button). |
+| `onClose` | `() => void` |  | Close handler (`useDetailParam().close`, wired to `ReaderHeader`'s Back button while the reader replaces the list). |
 | `recordTitle` | `null \| string` |  | Open record label pushed into `RouteHeader` breadcrumbs via `useRecordCrumb` while `open` is true. |
-| `empty` | `React.ReactNode` |  | Empty state shown in the reader card on `lg+` when no item is open. |
-| `listWidth` | `'sm' \| 'md' \| 'lg'` | `"md"` | Width of the list card from `lg`: `"sm"` 288px, `"md"` 352px (default), `"lg"` 400px. |
+| `empty` | `React.ReactNode` |  | Empty state shown in the reader card, while list and reader sit side by side, when no item is open. |
+| `listWidth` | `'sm' \| 'md' \| 'lg'` | `"md"` | Width of the list card side by side: `"sm"` 288px, `"md"` 352px (default), `"lg"` 400px. Side by side from 664 / 728 / 776px of layout width. |
 | `listLabel` | `string` |  | Accessible name of the list region (default locale `listLabel`). |
 | `readerLabel` | `string` |  | Accessible name of the reader region (default locale `readerLabel`). |
-| `className` | `string` |  |  |
+| `className` | `string` |  | Classes of the outer element (`data-list-reader`, the container the split is measured on): size and placement. |
+| `gridClassName` | `string` |  | Classes of the inner grid that holds the two panes (gap, columns). Before 1.1 `className` landed here. |
 
 ### ReaderHeader
 
 Sticky one-row header of a reader pane (general pattern for mail, tickets, chat; owner decision 2026-11-23):
-- Left: below-`lg` Back button (wired automatically from `ListReaderLayout`'s `onClose`) + wrapping `title` (never
-  truncated) and optional muted `meta` line underneath.
+- Left: Back button while the reader replaces the list (wired automatically from `ListReaderLayout`'s `onClose`;
+  below `lg` with your own `onBack`) + wrapping `title` (at least 70% of the row; clamped to 3 lines, the full text
+  in the native tooltip when it is a string) and optional muted `meta` line underneath.
 - Right: `[•••]` `Menu` (all secondary / overflow actions) then one main `action`, top-aligned (`items-start`),
-  both buttons at identical `md` (`h-control`) height.
+  both buttons at identical `md` (`h-control`) height. In a narrow pane, where they do not fit beside a 70% title,
+  they move to their own row under the title, on the right (#188).
 - Stays sticky (`sticky top-0 z-sticky bg-app`) while the reader body scrolls underneath.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `title` * | `React.ReactNode` |  | Subject or record title on the left; wraps cleanly onto multiple lines. |
+| `title` * | `React.ReactNode` |  | Subject or record title on the left; wraps, at most 3 lines (a string also shows in full as the native tooltip). |
 | `meta` | `React.ReactNode` |  | Optional quiet meta line directly under the title (sender, timestamp, ticket id). |
 | `action` | `ReaderMainAction \| React.ReactNode` |  | The one main action on the right (e.g. Trả lời / Reply), or a custom button element at `size="md"`. |
 | `moreActions` | `MenuItem[]` |  | Every other reader action (Chuyển tiếp, Lưu trữ, Đóng ticket, Xoá…) goes into this `•••` Menu. |
 | `moreLabel` | `string` |  | Accessible name of the `•••` menu (default locale `moreActions`). |
-| `onBack` | `() => void` |  | Back handler below `lg` (defaults to the enclosing `ListReaderLayout`'s `onClose`). |
+| `onBack` | `() => void` |  | Back handler (defaults to the enclosing `ListReaderLayout`'s `onClose`). Inside a `ListReaderLayout` the button shows while the reader replaces the list; outside one, below `lg`. |
 | `backLabel` | `string` |  | Accessible name of the phone Back button (default locale `backToList`). |
 | `headingLevel` | `1 \| 2 \| 3` | `2` | Heading level for the reader title (default 2: the page `h1` sits above). |
 | `className` | `string` |  |  |
 
 ## Accessibility
 
-- List and reader are named <section> landmarks; the open item marks aria-current="true" on its row; below lg the Back button returns to the list and closes ?open=.
+- List and reader are named <section> landmarks; the open item marks aria-current="true" on its row; while the reader replaces the list (narrow layout) the Back button returns to the list and closes ?open=.
 - ReaderHeader keeps [•••] and the main action top-aligned at identical height with every secondary action inside •••.
 
 ## Notes
