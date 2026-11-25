@@ -1823,9 +1823,12 @@ test("NavigationMenu opens a panel of links and Escape returns focus", async ({ 
   const trigger = nav.getByRole("button", { name: "Sản phẩm" });
   await trigger.click();
   await expect(trigger).toHaveAttribute("aria-expanded", "true");
-  await expect(nav.getByRole("link", { name: /Vật liệu/ })).toBeVisible();
+  const panelId = await trigger.getAttribute("aria-controls");
+  expect(panelId).toBeTruthy();
+  const panel = page.locator(`[id="${panelId}"]`);
+  await expect(panel.getByRole("link", { name: /Vật liệu/ })).toBeVisible();
   await expect(nav.getByRole("link", { name: "Bảng giá" })).toHaveAttribute("aria-current", "page");
-  await nav.getByRole("link", { name: /Vật liệu/ }).focus();
+  await panel.getByRole("link", { name: /Vật liệu/ }).focus();
   await page.keyboard.press("Escape");
   await expect(trigger).toHaveAttribute("aria-expanded", "false");
   await expect(trigger).toBeFocused();
