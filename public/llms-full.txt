@@ -3194,7 +3194,7 @@ import { ButtonGroup } from "@semi/ui";
 ### Navigation and split button
 
 ```tsx
-import { Button, ButtonGroup, Menu } from "@semi/ui";
+import { Button, ButtonGroup } from "@semi/ui";
 
 export default function ButtonGroupBasic() {
   return (
@@ -3204,17 +3204,10 @@ export default function ButtonGroupBasic() {
         <Button>Hôm nay</Button>
         <Button iconOnly icon="chevron" aria-label="Ngày sau" />
       </ButtonGroup>
-      <ButtonGroup label="Lưu">
-        <Button variant="primary" icon="check">
-          Lưu
-        </Button>
-        <Menu
-          label="Tuỳ chọn lưu"
-          items={[
-            { label: "Lưu bản nháp", icon: "fileText", onSelect: () => undefined },
-            { label: "Lưu và in", icon: "printer", onSelect: () => undefined },
-          ]}
-        />
+      <ButtonGroup label="Thu phóng">
+        <Button iconOnly icon="minus" aria-label="Thu nhỏ" />
+        <Button className="tabular-nums">100%</Button>
+        <Button iconOnly icon="plus" aria-label="Phóng to" />
       </ButtonGroup>
     </div>
   );
@@ -6527,7 +6520,7 @@ export default function SwitchCardHeader() {
       {RULES.map((r) => (
         <Card key={r.id} className="space-y-2">
           <div className="flex items-center justify-between gap-3">
-            <span id={`rule-${r.id}`} className="text-ui font-semibold text-strong">
+            <span id={`rule-${r.id}`} className="text-ui font-medium text-strong">
               {r.name}
             </span>
             <Switch checked={on[r.id]} onChange={(v) => setOn({ ...on, [r.id]: v })} aria-labelledby={`rule-${r.id}`} />
@@ -7165,7 +7158,7 @@ export default function DetailOverlayList() {
       >
         {order && (
           <section className="flex flex-col gap-2">
-            <h3 className="text-ui font-semibold text-strong">Sản phẩm</h3>
+            <h3 className="text-ui font-medium text-strong">Sản phẩm</h3>
             <p className="text-ui text-body">3 mặt hàng · giao trong 2 ngày.</p>
           </section>
         )}
@@ -7557,7 +7550,7 @@ export default function HoverCardUser() {
         <div className="flex items-start gap-3">
           <Avatar name="Minh Anh" />
           <div className="space-y-1">
-            <div className="text-ui font-semibold text-strong">Minh Anh</div>
+            <div className="text-ui font-medium text-strong">Minh Anh</div>
             <div className="text-ui text-muted">Quản lý xưởng · Khu A</div>
             <Badge tone="emerald" dot size="sm">
               Đang trực
@@ -8427,7 +8420,7 @@ export default function FullShell() {
       <PageTitle
         title="Đơn hàng"
         actions={
-          <Button variant="primary" icon="plus">
+          <Button variant="inverse" icon="plus">
             Tạo đơn
           </Button>
         }
@@ -8438,7 +8431,7 @@ export default function FullShell() {
           {["DH-1042", "DH-1041", "DH-1039", "DH-1037", "DH-1036", "DH-1033"].map((id, i) => (
             <Card key={id} className="flex flex-col gap-stack">
               <div className="flex items-center justify-between gap-3 min-w-0">
-                <span className="text-ui font-semibold text-strong truncate">{id}</span>
+                <span className="text-ui font-medium text-strong truncate">{id}</span>
                 <span className="text-ui text-muted tabular-nums shrink-0">{PRICE.format((i + 2) * 450_000)}</span>
               </div>
               <p className="text-ui text-body truncate">{["Bambu Lab A1 mini", "PLA Basic 1kg × 4", "Combo AMS Lite", "PETG HF 1kg × 2", "Bàn in PEI", "TPU 95A 1kg"][i]}</p>
@@ -9402,7 +9395,7 @@ import { NavigationMenu } from "@semi/ui";
 export default function NavigationMenuSite() {
   return (
     <div className="flex items-center justify-between rounded-card border border-line bg-panel px-3 py-2">
-      <span className="text-ui font-semibold text-strong">3D Noobs</span>
+      <span className="text-ui font-medium text-strong">3D Noobs</span>
       <NavigationMenu
         label="Điều hướng chính"
         current="/pricing"
@@ -11253,7 +11246,7 @@ Tabs, back + name, sections with counters, steppers, a drop zone, a message with
 
 ```tsx
 import { useState } from "react";
-import { Badge, Button, DropZone, HintTextarea, Stepper, ToggleGroup, WorkspaceHeader, WorkspaceLayout, WorkspaceSection } from "@semi/ui";
+import { Badge, Button, DropZone, HintTextarea, SegmentedControl, Stepper, WorkspaceHeader, WorkspaceLayout, WorkspaceSection } from "@semi/ui";
 
 const LINES = [
   { id: "l1", name: "Tiêu đen 500 g/l", spec: "Độ ẩm ≤ 13%, sạch 99,5%" },
@@ -11285,16 +11278,15 @@ export default function WorkspaceRequest() {
           description="Cần hàng trước 15/12 · Trần Thu Hà"
           headingLevel={2}
           tabs={
-            <ToggleGroup
+            <SegmentedControl
               label="Phần của yêu cầu"
-              value={[tab]}
-              onChange={(v) => v[0] && setTab(v[0])}
+              value={tab}
+              onChange={setTab}
               options={[
                 { key: "lines", label: "Mặt hàng" },
                 { key: "suppliers", label: "Nhà cung cấp" },
                 { key: "terms", label: "Điều khoản" },
               ]}
-              className="w-full [&>button]:flex-1"
             />
           }
         />
@@ -11305,7 +11297,7 @@ export default function WorkspaceRequest() {
             {LINES.map((l, i) => (
               <div key={l.id} className="rounded-card bg-card p-3 flex flex-col gap-2">
                 <div className="min-w-0">
-                  <div className="text-ui font-semibold text-strong">{l.name}</div>
+                  <div className="text-ui font-medium text-strong">{l.name}</div>
                   <div className="text-ui text-muted truncate">{l.spec}</div>
                 </div>
                 <Stepper label={`số tấn ${l.name}`} unit="tấn" min={1} value={qty[i]} onChange={(v) => setQty(qty.map((q, j) => (j === i ? v : q)))} />
@@ -11340,14 +11332,14 @@ export default function WorkspaceRequest() {
       result={
         <>
           <div className="flex flex-wrap items-center gap-3">
-            <h3 className="flex-1 text-lead font-title font-semibold text-strong">So sánh báo giá</h3>
+            <h3 className="flex-1 text-lead font-title font-medium text-strong">So sánh báo giá</h3>
             <span className="text-ui text-muted">2/2 nhà cung cấp đã trả lời</span>
           </div>
           <div className="grid md:grid-cols-2 gap-group">
             {QUOTES.map((q) => (
               <article key={q.supplier} className="rounded-card bg-card p-card flex flex-col gap-3">
                 <div className="min-w-0">
-                  <div className="text-ui font-semibold text-strong truncate">{q.supplier}</div>
+                  <div className="text-ui font-medium text-strong truncate">{q.supplier}</div>
                   <div className="text-ui text-muted">FOB · {q.days} ngày</div>
                 </div>
                 <div className="flex flex-col divide-y divide-divider">
@@ -11365,7 +11357,7 @@ export default function WorkspaceRequest() {
                 </div>
                 <div className="flex items-center justify-between pt-1">
                   <span className="text-ui text-muted">Tổng ({qty[0] + qty[1]} tấn)</span>
-                  <span className="text-lead font-figure font-semibold text-strong tabular-nums">{usd(q.prices[0] * qty[0] + q.prices[1] * qty[1])}</span>
+                  <span className="text-lead font-figure font-medium text-strong tabular-nums">{usd(q.prices[0] * qty[0] + q.prices[1] * qty[1])}</span>
                 </div>
               </article>
             ))}
@@ -11416,7 +11408,7 @@ export default function WorkspaceInShell() {
           <WorkspaceSection label="Mặt hàng" count={LINES.length} max={8}>
             {LINES.map((name, i) => (
               <div key={name} className="rounded-card bg-card p-3 flex flex-col gap-2">
-                <div className="text-ui font-semibold text-strong">{name}</div>
+                <div className="text-ui font-medium text-strong">{name}</div>
                 <Stepper label={`số tấn ${name}`} unit="tấn" min={1} value={qty[i]} onChange={(v) => setQty(qty.map((q, j) => (j === i ? v : q)))} />
               </div>
             ))}
@@ -11960,7 +11952,7 @@ export default function CardBasic() {
   return (
     <Card className="space-y-2 max-w-sm">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-ui font-semibold text-strong">X1 Carbon · Xưởng A</span>
+        <span className="text-ui font-medium text-strong">X1 Carbon · Xưởng A</span>
         <Badge tone="emerald" dot>
           Online
         </Badge>
@@ -11980,11 +11972,11 @@ export default function CardStates() {
   return (
     <div className="grid gap-3 sm:grid-cols-2 max-w-xl">
       <Card interactive className="space-y-2">
-        <div className="text-ui font-semibold text-strong">P1S · Xưởng B</div>
+        <div className="text-ui font-medium text-strong">P1S · Xưởng B</div>
         <div className={`${TILE} p-2 text-ui text-body tabular-nums`}>Đầu phun 220°C · Bàn 60°C</div>
       </Card>
       <Card interactive active className="space-y-2">
-        <div className="text-ui font-semibold text-strong">A1 Mini · đang in</div>
+        <div className="text-ui font-medium text-strong">A1 Mini · đang in</div>
         <div className={`${TILE} p-2 text-ui text-body tabular-nums`}>Tiến độ 64%</div>
       </Card>
     </div>
@@ -12000,7 +11992,7 @@ import { Card } from "@semi/ui";
 export default function CardBordered() {
   return (
     <Card bordered padding="none" className="max-w-xl overflow-hidden">
-      <div className="px-card py-2.5 border-b border-divider text-ui font-semibold text-strong">Đơn mua gần đây</div>
+      <div className="px-card py-2.5 border-b border-divider text-ui font-medium text-strong">Đơn mua gần đây</div>
       {["PO-1042 · Nhựa PLA 1kg", "PO-1041 · Đầu phun 0.4", "PO-1040 · Bàn in PEI"].map((row) => (
         <div key={row} className="px-card py-2.5 border-b border-divider last:border-0 text-ui text-body">
           {row}
@@ -12088,7 +12080,7 @@ export default function CarouselProducts() {
       {ITEMS.map((name, i) => (
         <Card key={name} className="space-y-2">
           <AspectRatio ratio={4 / 3} className="rounded-control bg-field">
-            <div className="flex h-full items-center justify-center text-tab-xl font-semibold text-muted">{i + 1}</div>
+            <div className="flex h-full items-center justify-center text-tab-xl font-normal text-muted">{i + 1}</div>
           </AspectRatio>
           <div className="text-ui font-medium text-strong">{name}</div>
           <div className="text-ui text-muted tabular-nums">{(89 + i * 30).toLocaleString("vi-VN")}k ₫</div>
@@ -16311,7 +16303,7 @@ export default function ThemeScope() {
         <div key={t} data-theme={t} className="rounded-card border border-line bg-canvas p-3">
           <Card className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-ui font-semibold text-strong">data-theme="{t}"</span>
+              <span className="text-ui font-medium text-strong">data-theme="{t}"</span>
               <Badge tone="emerald" dot>
                 Online
               </Badge>

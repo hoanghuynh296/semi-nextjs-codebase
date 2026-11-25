@@ -29,7 +29,7 @@ Tabs, back + name, sections with counters, steppers, a drop zone, a message with
 
 ```tsx
 import { useState } from "react";
-import { Badge, Button, DropZone, HintTextarea, Stepper, ToggleGroup, WorkspaceHeader, WorkspaceLayout, WorkspaceSection } from "@semi/ui";
+import { Badge, Button, DropZone, HintTextarea, SegmentedControl, Stepper, WorkspaceHeader, WorkspaceLayout, WorkspaceSection } from "@semi/ui";
 
 const LINES = [
   { id: "l1", name: "Tiêu đen 500 g/l", spec: "Độ ẩm ≤ 13%, sạch 99,5%" },
@@ -61,16 +61,15 @@ export default function WorkspaceRequest() {
           description="Cần hàng trước 15/12 · Trần Thu Hà"
           headingLevel={2}
           tabs={
-            <ToggleGroup
+            <SegmentedControl
               label="Phần của yêu cầu"
-              value={[tab]}
-              onChange={(v) => v[0] && setTab(v[0])}
+              value={tab}
+              onChange={setTab}
               options={[
                 { key: "lines", label: "Mặt hàng" },
                 { key: "suppliers", label: "Nhà cung cấp" },
                 { key: "terms", label: "Điều khoản" },
               ]}
-              className="w-full [&>button]:flex-1"
             />
           }
         />
@@ -81,7 +80,7 @@ export default function WorkspaceRequest() {
             {LINES.map((l, i) => (
               <div key={l.id} className="rounded-card bg-card p-3 flex flex-col gap-2">
                 <div className="min-w-0">
-                  <div className="text-ui font-semibold text-strong">{l.name}</div>
+                  <div className="text-ui font-medium text-strong">{l.name}</div>
                   <div className="text-ui text-muted truncate">{l.spec}</div>
                 </div>
                 <Stepper label={`số tấn ${l.name}`} unit="tấn" min={1} value={qty[i]} onChange={(v) => setQty(qty.map((q, j) => (j === i ? v : q)))} />
@@ -116,14 +115,14 @@ export default function WorkspaceRequest() {
       result={
         <>
           <div className="flex flex-wrap items-center gap-3">
-            <h3 className="flex-1 text-lead font-title font-semibold text-strong">So sánh báo giá</h3>
+            <h3 className="flex-1 text-lead font-title font-medium text-strong">So sánh báo giá</h3>
             <span className="text-ui text-muted">2/2 nhà cung cấp đã trả lời</span>
           </div>
           <div className="grid md:grid-cols-2 gap-group">
             {QUOTES.map((q) => (
               <article key={q.supplier} className="rounded-card bg-card p-card flex flex-col gap-3">
                 <div className="min-w-0">
-                  <div className="text-ui font-semibold text-strong truncate">{q.supplier}</div>
+                  <div className="text-ui font-medium text-strong truncate">{q.supplier}</div>
                   <div className="text-ui text-muted">FOB · {q.days} ngày</div>
                 </div>
                 <div className="flex flex-col divide-y divide-divider">
@@ -141,7 +140,7 @@ export default function WorkspaceRequest() {
                 </div>
                 <div className="flex items-center justify-between pt-1">
                   <span className="text-ui text-muted">Tổng ({qty[0] + qty[1]} tấn)</span>
-                  <span className="text-lead font-figure font-semibold text-strong tabular-nums">{usd(q.prices[0] * qty[0] + q.prices[1] * qty[1])}</span>
+                  <span className="text-lead font-figure font-medium text-strong tabular-nums">{usd(q.prices[0] * qty[0] + q.prices[1] * qty[1])}</span>
                 </div>
               </article>
             ))}
@@ -192,7 +191,7 @@ export default function WorkspaceInShell() {
           <WorkspaceSection label="Mặt hàng" count={LINES.length} max={8}>
             {LINES.map((name, i) => (
               <div key={name} className="rounded-card bg-card p-3 flex flex-col gap-2">
-                <div className="text-ui font-semibold text-strong">{name}</div>
+                <div className="text-ui font-medium text-strong">{name}</div>
                 <Stepper label={`số tấn ${name}`} unit="tấn" min={1} value={qty[i]} onChange={(v) => setQty(qty.map((q, j) => (j === i ? v : q)))} />
               </div>
             ))}
