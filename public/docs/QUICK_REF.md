@@ -126,7 +126,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (173)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (174)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
