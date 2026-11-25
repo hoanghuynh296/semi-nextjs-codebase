@@ -4,7 +4,21 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## Unreleased
 
-- **`AppShell.navFooter` & Storybook `CommandDialog` search (#181):** Added optional `navFooter` prop to `AppShell` (pinned at the bottom of the desktop sidebar above `tools` and at the bottom of `PhoneDrawer`). Replaced Storybook's `RouteHeader` global search with a pinned bottom nav trigger (`Tìm nhanh` + `⌘K` / icon with Tooltip in the 72px rail) opening `CommandDialog` across all pages, component docs, and icons (`/icons/?q=`), and added Vietnamese IME composition guarding to `Command`.
+## 1.0.1 - 2026-11-25
+
+**Summary.** Patch release adding `AppShell.navFooter`, replacing Storybook's header global search with a sticky bottom `Tìm nhanh ⌘K` `CommandDialog` trigger, and adding Vietnamese IME composition guards in `Command` and `useFocusTrap` (#181, PR #182).
+
+### Added
+
+- **`AppShell.navFooter` (#181, PR #182):** Added optional `navFooter` prop to `AppShell` (pinned at the bottom of the desktop sidebar above `tools` and at the bottom of `PhoneDrawer`).
+
+### Changed
+
+- **Storybook global search in `DocsShell` (#181, PR #182):** Removed global search from `RouteHeader` and replaced it with a sticky bottom `navFooter` trigger (`Tìm nhanh` + `⌘K` in the expanded sidebar, search icon with `Tooltip` in the 72px rail) opening `CommandDialog` across all pages, component docs, and icons (`/icons/?q=`).
+
+### Fixed
+
+- **Vietnamese IME composition guards (#181, PR #182):** Guarded `Command` and `useFocusTrap` key handlers against active IME composition (`isComposing` / keyCode 229) so Escape/Enter during Vietnamese input does not prematurely dismiss dialogs or select items.
 
 ## 1.0.0 - 2026-11-25
 
