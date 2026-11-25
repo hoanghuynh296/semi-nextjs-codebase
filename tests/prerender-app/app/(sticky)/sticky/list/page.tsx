@@ -84,6 +84,7 @@ export default function StickyListPage() {
   const [view, setView] = useState<"list" | "grid">("list");
   const [actionLog, setActionLog] = useState("");
   const [orderedIds, setOrderedIds] = useState<string[]>([]);
+  const [resultsCalls, setResultsCalls] = useState(0);
   const q = f.params.get("q") ?? "";
   const isShort = f.params.get("short") === "1";
 
@@ -174,16 +175,22 @@ export default function StickyListPage() {
       <output data-testid="result-ids" className="sr-only">
         {orderedIds.slice(0, 5).join(",")}
       </output>
+      <output data-testid="results-calls" className="sr-only">
+        {resultsCalls}
+      </output>
       <div className="max-md:hidden" data-testid="desktop-list">
         <DataTable
           label="Đơn hàng"
-          rows={filtered}
-          columns={COLUMNS}
+          rows={filtered.slice()}
+          columns={[...COLUMNS]}
           getRowId={(r) => r.id}
           search={q}
           sort={f.sort}
           onSortChange={f.setSort}
-          onResultsChange={(rows) => setOrderedIds(rows.map((r) => r.id))}
+          onResultsChange={(rows) => {
+            setOrderedIds(rows.map((r) => r.id));
+            setResultsCalls((c) => c + 1);
+          }}
           selectable
           selected={sel.selected}
           onSelectedChange={sel.setSelected}

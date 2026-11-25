@@ -310,4 +310,65 @@ test("URL state (#129, #124, #139): legacy rewrite, patch single entry, ?sort= s
   await page.keyboard.press("ArrowUp");
   await expect(page).toHaveURL(/f\.box=/);
   expect(await page.evaluate(() => history.length)).toBe(histBeforeArrows);
+
+  // 6. DataTable.onResultsChange with inline rows/columns + setState does not infinite-loop.
+  await page.waitForTimeout(200);
+  const calls1 = Number(await page.getByTestId("results-calls").textContent());
+  await page.waitForTimeout(200);
+  const calls2 = Number(await page.getByTestId("results-calls").textContent());
+  expect(calls1).toBeGreaterThan(0);
+  expect(calls1).toBeLessThan(15);
+  expect(calls2).toBe(calls1);
+});
+
+test("short-list focus-pin works below md (< 768px), reduced-motion pins instantly, and wheel cancels smoothTo", async ({ page }) => {
+  // (a) Short-list focus-pin at < 768px (phone viewport, no layout-pin CSS).
+  await page.setViewportSize({ width: 430, height: 820 });
+  await page.goto("/demo/sticky-list/?short=1");
+  await page.waitForFunction(() => {
+    const m = document.getElementById("main");
+    return m && parseFloat(m.style.getPropertyValue("--sticky-pin")) > 0;
+  });
+  const phoneInput = page.locator("[data-sticky-bar] input[type='search']");
+  await phoneInput.focus();
+  await page.waitForTimeout(350);
+  const phoneMetrics = await readMetrics(page, "[data-page-body]");
+  expect(phoneMetrics.stuck).toBe(true);
+  expect(Math.abs(phoneMetrics.mainScroll - phoneMetrics.pinVar)).toBeLessThanOrEqual(2);
+
+  // (b1) Reduced-motion pins synchronously without waiting 250ms.
+  await page.setViewportSize({ width: 1440, height: 820 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/demo/sticky-list/?short=1");
+  await page.waitForFunction(() => {
+    const m = document.getElementById("main");
+    return m && parseFloat(m.style.getPropertyValue("--sticky-pin")) > 0;
+  });
+  const reducedInput = page.locator("[data-sticky-bar] input[type='search']");
+  await reducedInput.focus();
+  const reducedScroll = await page.evaluate(() => {
+    const m = document.getElementById("main")!;
+    return { y: m.scrollTop, pin: parseFloat(m.style.getPropertyValue("--sticky-pin")) };
+  });
+  expect(Math.abs(reducedScroll.y - reducedScroll.pin)).toBeLessThanOrEqual(2);
+
+  // (b2) Wheel during smoothTo cancels the animation and fallback timer does not snap back to pin.
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/demo/sticky-list/");
+  await page.waitForFunction(() => {
+    const m = document.getElementById("main");
+    return m && parseFloat(m.style.getPropertyValue("--sticky-pin")) > 0;
+  });
+  const desktopInput = page.locator("[data-sticky-bar] input[type='search']");
+  await desktopInput.focus();
+  await page.waitForTimeout(30);
+  await page.evaluate(() => {
+    const m = document.getElementById("main")!;
+    m.dispatchEvent(new WheelEvent("wheel", { deltaY: -40, bubbles: true, cancelable: true }));
+    m.scrollTop = 0;
+  });
+  await page.waitForTimeout(360);
+  const afterCancel = await readMetrics(page, "[data-page-body]");
+  expect(afterCancel.mainScroll).toBeLessThan(afterCancel.pinVar - 2);
+  expect(afterCancel.stuck).toBe(false);
 });

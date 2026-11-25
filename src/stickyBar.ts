@@ -69,46 +69,51 @@ function isSearchField(target: EventTarget | null, bar: HTMLElement): target is 
 }
 
 /** Ease-out cubic scroll to `to` in 250ms; instant under reduced motion; wheel or touchstart cancels it. */
-function smoothTo(el: HTMLElement, to: number): () => void {
+function smoothTo(el: HTMLElement, to: number, onDone?: () => void): () => void {
   const from = el.scrollTop;
   const reduced = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
   if (reduced || Math.abs(to - from) < 2) {
     el.scrollTop = to;
+    onDone?.();
     return () => {};
   }
   const t0 = performance.now();
   let rafId = 0;
-  let cancelled = false;
+  let fallback = 0;
+  let finished = false;
   const unlisten = () => {
     el.removeEventListener("wheel", cancel);
     el.removeEventListener("touchstart", cancel);
   };
-  const cancel = () => {
-    cancelled = true;
+  const finish = () => {
+    if (finished) return;
+    finished = true;
     cancelAnimationFrame(rafId);
+    window.clearTimeout(fallback);
     unlisten();
+    onDone?.();
+  };
+  const cancel = () => {
+    finish();
   };
   el.addEventListener("wheel", cancel, { once: true, passive: true });
   el.addEventListener("touchstart", cancel, { once: true, passive: true });
   const step = (now: number) => {
-    if (cancelled) return;
+    if (finished) return;
     const k = Math.min(1, (now - t0) / PIN_SCROLL_MS);
     el.scrollTop = from + (to - from) * (1 - Math.pow(1 - k, 3));
     if (k < 1) rafId = requestAnimationFrame(step);
-    else unlisten();
+    else finish();
   };
   rafId = requestAnimationFrame(step);
   // Fallback if rAF is throttled (background tab).
-  const fallback = window.setTimeout(() => {
-    if (!cancelled && Math.abs(el.scrollTop - to) > 1 && performance.now() - t0 >= PIN_SCROLL_MS) {
+  fallback = window.setTimeout(() => {
+    if (!finished && Math.abs(el.scrollTop - to) > 1 && performance.now() - t0 >= PIN_SCROLL_MS) {
       el.scrollTop = to;
     }
-    unlisten();
+    finish();
   }, PIN_SCROLL_MS + 60);
-  return () => {
-    window.clearTimeout(fallback);
-    cancel();
-  };
+  return cancel;
 }
 
 /**
@@ -131,6 +136,7 @@ export function useStickyBarPin(barRef: RefObject<HTMLDivElement | null>, enable
     let floor = 0;
     let uncancelable = false;
     let fixed = false;
+    let animating = false;
     let idleTimer: ReturnType<typeof setTimeout> | undefined;
     let cancelAnim: () => void = () => {};
 
@@ -160,7 +166,7 @@ export function useStickyBarPin(barRef: RefObject<HTMLDivElement | null>, enable
     };
 
     const holdShortPage = () => {
-      if (pin === null || pin <= 0) return;
+      if (animating || pin === null || pin <= 0) return;
       const content = scroller.firstElementChild as HTMLElement | null;
       if (!content) return;
       // On md+, CSS layout-pin already sizes the container to view + pin; on narrow viewports (< md) or standalone
@@ -253,7 +259,12 @@ export function useStickyBarPin(barRef: RefObject<HTMLDivElement | null>, enable
         content.style.minHeight = `${pin + scroller.clientHeight}px`;
       }
       cancelAnim();
-      cancelAnim = smoothTo(scroller, pin);
+      animating = true;
+      cancelAnim = smoothTo(scroller, pin, () => {
+        animating = false;
+        holdShortPage();
+        mark();
+      });
     };
 
     const onFocusOut = (e: FocusEvent) => {

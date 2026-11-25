@@ -129,8 +129,16 @@ export function DataTable<T>({
   const sorted = useMemo(() => sortRows(filtered, columns, sort), [filtered, columns, sort]);
   const onResultsChangeRef = useRef(onResultsChange);
   onResultsChangeRef.current = onResultsChange;
+  const getRowIdRef = useRef(getRowId);
+  getRowIdRef.current = getRowId;
+  const lastEmittedIdsRef = useRef<string[] | null>(null);
   useEffect(() => {
-    onResultsChangeRef.current?.(sorted);
+    if (!onResultsChangeRef.current) return;
+    const ids = sorted.map((r) => getRowIdRef.current(r));
+    const prev = lastEmittedIdsRef.current;
+    if (prev && prev.length === ids.length && prev.every((id, i) => id === ids[i])) return;
+    lastEmittedIdsRef.current = ids;
+    onResultsChangeRef.current(sorted);
   }, [sorted]);
   const pages = pageSize > 0 ? Math.max(1, Math.ceil(sorted.length / pageSize)) : 1;
   const visible = useMemo(() => (pageSize > 0 ? sorted.slice((page - 1) * pageSize, page * pageSize) : sorted), [sorted, page, pageSize]);
