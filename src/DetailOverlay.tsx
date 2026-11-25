@@ -223,39 +223,47 @@ export function DetailOverlay({
         aria-label={label}
         className="relative w-full max-w-[1240px] flex flex-col bg-panel-3 sm:rounded-panel shadow-overlay overflow-hidden"
       >
-        <div className="flex items-center gap-2 h-14 px-3 sm:px-4 border-b border-divider shrink-0">
+        {/* One row (56px) while the title keeps 60% of it; in a narrow dialog the counter and ‹ › wrap to a row under
+            the title, which then may take up to 3 lines (#188) */}
+        <div data-detail-header="" className="@container/detail-header flex flex-wrap items-center gap-2 min-h-14 py-1 px-3 sm:px-4 border-b border-divider shrink-0">
           <button type="button" onClick={onClose} aria-label={t.close} title={`${t.close} (Esc)`} className={NAV}>
             <Icon name="close" className="w-4 h-4" />
           </button>
-          <div className="flex-1 min-w-0 px-1">
-            <h2 id={titleId} className="text-ui font-medium text-strong truncate">
+          <div data-detail-title="" className="flex-1 min-w-[60%] px-1">
+            <h2
+              id={titleId}
+              title={typeof title === "string" ? title : undefined}
+              className="text-ui font-medium text-strong truncate @max-[36rem]/detail-header:whitespace-normal @max-[36rem]/detail-header:break-words @max-[36rem]/detail-header:line-clamp-3"
+            >
               {title}
             </h2>
             {subtitle && <div className="text-ui text-muted truncate">{subtitle}</div>}
           </div>
-          {onCopyLink && (
-            <button type="button" onClick={onCopyLink} aria-label={t.copyLink} title={t.copyLink} className={cn(NAV, "max-sm:hidden")}>
-              <Icon name="copy" className="w-4 h-4" />
-            </button>
-          )}
-          {counted && (
-            <span className="text-chrome text-muted tabular-nums px-1">
-              <span aria-hidden>
-                {index + 1} / {total}
+          <div data-detail-nav="" className="ml-auto shrink-0 flex items-center gap-2">
+            {onCopyLink && (
+              <button type="button" onClick={onCopyLink} aria-label={t.copyLink} title={t.copyLink} className={cn(NAV, "max-sm:hidden")}>
+                <Icon name="copy" className="w-4 h-4" />
+              </button>
+            )}
+            {counted && (
+              <span className="text-chrome text-muted tabular-nums px-1">
+                <span aria-hidden>
+                  {index + 1} / {total}
+                </span>
+                <span className="sr-only">{t.itemOf(index + 1, total)}</span>
               </span>
-              <span className="sr-only">{t.itemOf(index + 1, total)}</span>
-            </span>
-          )}
-          {(onPrev || onNext || counted) && (
-            <>
-              <button ref={prevBtn} type="button" onClick={onPrev} disabled={!onPrev} aria-label={t.prevItem} title={`${t.prevItem} (←)`} aria-keyshortcuts="ArrowLeft" className={NAV}>
-                <Icon name="back" className="w-4 h-4" />
-              </button>
-              <button ref={nextBtn} type="button" onClick={onNext} disabled={!onNext} aria-label={t.nextItem} title={`${t.nextItem} (→)`} aria-keyshortcuts="ArrowRight" className={NAV}>
-                <Icon name="chevron" className="w-4 h-4" />
-              </button>
-            </>
-          )}
+            )}
+            {(onPrev || onNext || counted) && (
+              <>
+                <button ref={prevBtn} type="button" onClick={onPrev} disabled={!onPrev} aria-label={t.prevItem} title={`${t.prevItem} (←)`} aria-keyshortcuts="ArrowLeft" className={NAV}>
+                  <Icon name="back" className="w-4 h-4" />
+                </button>
+                <button ref={nextBtn} type="button" onClick={onNext} disabled={!onNext} aria-label={t.nextItem} title={`${t.nextItem} (→)`} aria-keyshortcuts="ArrowRight" className={NAV}>
+                  <Icon name="chevron" className="w-4 h-4" />
+                </button>
+              </>
+            )}
+          </div>
         </div>
         <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto overscroll-contain lg:overflow-hidden lg:grid lg:grid-cols-[minmax(0,1fr)_360px]">
           <div data-detail-scroll className="lg:overflow-y-auto lg:overscroll-contain p-4 sm:p-6 flex flex-col gap-6 min-w-0">

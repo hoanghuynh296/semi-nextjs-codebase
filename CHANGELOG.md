@@ -4,6 +4,14 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## Unreleased
 
+### Changed
+
+- **Narrow layouts (#188):** visible changes at phone, tablet and small-laptop widths; the desktop sizes stay the same.
+  - `ListReaderLayout` sits side by side only while its **own width** holds the list + 16px + a 360px reader (664 / 728 / 776px for `listWidth` sm / md / lg; a container query, no longer the `lg` viewport breakpoint). Narrower, the reader replaces the list with `ReaderHeader`'s Back button, e.g. at 1024px with the rail and a `SubNav` (before: a ~270px reader); wider layouts between `md` and `lg` now show both panes when they fit. The root element is now a wrapper (`data-list-reader`, `className` lands on it) around the grid.
+  - `ReaderHeader`: the title keeps at least 70% of the row and clamps to 3 lines (a string title shows in full as the native tooltip); the `[•••]` + main action wrap to their own row under the title, on the right, when they do not fit beside it (before: a ~90–120px title column wrapping to 5–8 lines). Its Back button follows the layout's split instead of `lg` (your own `onBack` still shows below `lg`).
+  - `DetailOverlay` header: in a narrow dialog the copy link, "n / N" and ‹ › wrap to a row under the title, which then may take 3 lines (string titles get the native tooltip); one 56px row as before when it fits.
+  - `RouteHeader`: below `sm` the breadcrumb shows only the current page; the header's horizontal padding is 16px at every width (was 8px on phones), the same inset as the content. The phone menu button keeps its icon at 16px.
+
 ## 1.0.1 - 2026-11-25
 
 **Summary.** Patch release adding `AppShell.navFooter`, replacing Storybook's header global search with a sticky bottom `Tìm nhanh ⌘K` `CommandDialog` trigger, and adding Vietnamese IME composition guards in `Command` and `useFocusTrap` (#181, PR #182).
