@@ -33,7 +33,7 @@
     "Scrolls sideways on phones with a 2px edge cue and keeps the active segment in view; sliding and fades turn off under prefers-reduced-motion."
   ],
   "notes": [
-    "Replaces the deprecated `Pills` component in 1.0.",
+    "Replaces the removed 0.x `Pills` component in 1.0.",
     "When to use which: PillTabs for 5+ sections or sections with icons · SegmentedControl for 2–5 filter values shown in full with counts · TextTabs for 2–4 top-level views of a discovery or reading page · FilterChipRow for filters."
   ],
   "examples": [

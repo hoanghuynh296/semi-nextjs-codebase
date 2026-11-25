@@ -20,7 +20,7 @@
     },
     {
       "need": "2–5 visible options",
-      "use": "Pills, RadioGroup or OptionCards"
+      "use": "SegmentedControl, RadioGroup or OptionCards"
     }
   ],
   "a11y": [

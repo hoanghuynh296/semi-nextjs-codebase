@@ -1,47 +1,56 @@
 {
   "title": "Command",
   "group": "Overlays",
-  "description": "A command palette: type to filter actions and pages, ↑/↓ to move, Enter to run. Command is the inline list; CommandDialog opens it over the page, usually on ⌘K (useHotkey). Matching ignores case and Vietnamese marks.",
+  "description": "Command palette and searchable action lists: CommandPalette is the app-wide ⌘K / Ctrl+K “search or create” box (mounted once in the root layout, fed by pages with useRegisterCommands); CommandDialog is a controlled dialog with your own open state (useHotkey); Command is the inline list. Matching ignores case and Vietnamese marks.",
   "components": [
     "Command",
-    "CommandDialog"
+    "CommandDialog",
+    "CommandPalette"
   ],
   "imports": [
+    "useRegisterCommands",
+    "openCommandPalette",
     "useHotkey",
     "filterCommands",
     "normalizeSearch",
     "type CommandItem"
   ],
   "when": [
-    "Jump anywhere and run any action from the keyboard (⌘K) in apps with many pages.",
-    "A searchable action list inside a Popover."
+    "Every app with more than a few pages: mount CommandPalette once in the root layout to jump to a place or record and start a create action from anywhere on ⌘K (L1).",
+    "A SearchPill or “Tìm hoặc tạo” button in the header that opens CommandPalette (openCommandPalette).",
+    "A palette with your own open state and no app-wide registry (CommandDialog) or a searchable action list inside a Popover (Command)."
   ],
   "instead": [
-    {
-      "need": "The app-wide ⌘K “search or create” box, fed by every page",
-      "use": "CommandPalette"
-    },
     {
       "need": "Pick one value in a form",
       "use": "CustomCombobox"
     },
     {
       "need": "Filter the list on the page",
-      "use": "SearchInput"
+      "use": "SearchPill or SearchInput"
     }
   ],
   "a11y": [
-    "The input is an ARIA combobox owning a listbox (aria-activedescendant), so focus stays in the input; groups are labelled; the dialog traps focus and Escape closes it."
+    "The input is an ARIA combobox owning a listbox (aria-activedescendant), so focus stays in the input; groups are labelled by their heading, disabled items are aria-disabled; dialogs trap focus, Escape closes and focus returns."
   ],
   "examples": [
     {
+      "file": "app",
+      "title": "App-wide palette (CommandPalette)",
+      "description": "Press ⌘K (Ctrl+K) or the button; type “tieu” to find the supplier by keyword."
+    },
+    {
       "file": "dialog",
-      "title": "⌘K palette",
-      "description": "Press ⌘K (Ctrl+K) or the button; try typing “don hang” without marks."
+      "title": "Controlled dialog (CommandDialog)",
+      "description": "Press ⌘J (Ctrl+J) or the button; try typing “don hang” without marks."
     },
     {
       "file": "inline",
-      "title": "Inline"
+      "title": "Inline (Command)"
     }
+  ],
+  "notes": [
+    "A record that opens in a DetailOverlay on the current route: its `onSelect` calls `openDetail(id)` (or the page's `open(id)`), not `router.push(\"?open=…\")` to the same route, which browsers without the Navigation API do not report to the list. Give it `href` too, for ⌘↵.",
+    "⌘K on Apple devices, Ctrl+K elsewhere (Ctrl+K on a Mac deletes to the end of the line in text fields); a key a widget already handled, or typed in a rich-text editor, does not open it."
   ]
 }

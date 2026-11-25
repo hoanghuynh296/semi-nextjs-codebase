@@ -1,6 +1,6 @@
 # Page title
 
-PageTitle is the 18 / 400 UI sans heading of a work page on the same row as the page's main action (`actions`), with `variant="reading"` (44 / 500 display face, text-title-xl) for one-column reading pages only. PageTabsTitle is kept as a deprecated alias for 2–4 sibling tabs — new screens use TextTabs.
+PageTitle is the 18 / 400 UI sans heading of a work page on the same row as the page's main action (`actions`), with `variant="reading"` (44 / 500 display face, text-title-xl) for one-column reading pages only.
 
 ## When to use
 
@@ -20,7 +20,7 @@ PageTitle is the 18 / 400 UI sans heading of a work page on the same row as the 
 ## Import
 
 ```tsx
-import { PageTitle, PageTabsTitle } from "@semi/ui";
+import { PageTitle } from "@semi/ui";
 ```
 
 ## Examples
@@ -72,29 +72,6 @@ export default function PageTitleReading() {
 }
 ```
 
-### PageTabsTitle
-
-```tsx
-"use client";
-
-import { useState } from "react";
-import { PageTabsTitle } from "@semi/ui";
-
-export default function PageTabsTitleBasic() {
-  const [view, setView] = useState<"printers" | "jobs">("printers");
-  return (
-    <PageTabsTitle
-      value={view}
-      onChange={setView}
-      tabs={[
-        { key: "printers", label: "Máy in" },
-        { key: "jobs", label: "Job in" },
-      ]}
-    />
-  );
-}
-```
-
 ## API
 
 ### PageTitle
@@ -110,21 +87,9 @@ display title (`text-title-xl`). Inside `<Page title={…}>`, `<Page>` owns the 
 | `variant` | `'work' \| 'reading'` | `"work"` | `"work"` (default): 18 / 400 UI sans (`text-figure`), for lists, workspaces and two-column pages. `"reading"`: 44 / 500 display face (`text-title-xl`, lh 1.2, −0.01em), for one-column reading pages only. |
 | `className` | `string` | `""` |  |
 
-### PageTabsTitle
-
-Underline display tabs used when a view groups 2–4 sibling sub-pages (e.g. "Máy in / Job in", "Sản phẩm / Danh mục").
-
-| Prop | Type | Default | Description |
-|---|---|---|---|
-| `tabs` * | `PageTabOption<T>[]` |  |  |
-| `value` * | `T` |  |  |
-| `onChange` * | `(key: T) => void` |  |  |
-| `ariaLabel` | `string` |  |  |
-| `className` | `string` | `""` |  |
-
 ## Accessibility
 
-- PageTitle is the page h1; its actions follow it in the reading and tab order. PageTabsTitle is a tablist with arrow-key navigation.
+- PageTitle is the page h1; its actions follow it in the reading and tab order.
 
 ## Notes
 

@@ -221,11 +221,12 @@ inverse main button) and the `content-actions-inverse` class where it only serve
   (`data-edges`), `activation="manual"`, sync/async `onBeforeChange(key)` honoured by both button and `href` tabs,
   **`useTabParam`** (`?tab=` URL state via `urlState.ts` without pushing a history entry per arrow key), and
   `prefers-reduced-motion` turning off sliding pills and edge-cue fades.
-- **Existing components:** `Pills`, `PageTabsTitle`, and `Tabs variant="segmented"` are **deprecated** (kept exported
-  so existing code keeps compiling); `ViewSwitch` is **kept** (icon-only list ↔ grid + density toggle); `Tabs`
-  underline is **kept** for sections of one record inside a card; the old `TextTabs` look is replaced in place.
+- **Removed in 1.0 (#173):** `Pills` → `SegmentedControl` / `PillTabs`, `PageTabsTitle` → `TextTabs`, and
+  `Tabs variant="segmented"` → `SegmentedControl` (`Tabs` is now underline-only for sections of one record inside a
+  card or dialog). `ViewSwitch` is **kept** (icon-only list ↔ grid + density toggle); the old `TextTabs` look is
+  replaced in place.
 
-**The migration (`1.0.0-tabs`) flags** deprecated `Pills`, `PageTabsTitle`, `Tabs variant="segmented"`, and any
+**The migration (`1.0.0-tabs`) flags** removed `Pills`, `PageTabsTitle`, `Tabs variant="segmented"`, and any
 leftover `.text-tabs-strong` stand-in rules for hand migration (because `SegmentedControl` and `PillTabs` require an
 accessible `label`).
 
@@ -255,7 +256,7 @@ globals tail.
 
 ## T7: page layouts and lists (merged, ships in 1.0.0)
 
-**What changed** (#149, CHANGELOG "1.0 page layouts and lists"). New `Page` (`layout="work" | "reading" | "two-column"`, `fixed`, shared anatomy slots `title` / `actions` / `tabs` / `intro` / `toolbar` / `children` / `footer` owning the 32 / 28 / 32 / 16 / 8 vertical rhythm), `SubNav` (240px sub-nav card, 20 / 10 padding, `text-nav-label` group labels with optional 16px icon actions, h32 items, 1px `bg-raised` dividers), `PageSection` (20/500 heading + 16px content gap), `PageGrid` (8px `@container` grid), `ListReaderLayout` + `ReaderHeader` (two independent scrollers on `fixed` mode, `?open=`, `useRecordCrumb`, phone swap with Back, sticky one-row header with wrapping title left and `[•••]` + one main action right), and `useListSelection`. `PageTitle` becomes 18 / 400 UI sans on the action row (`variant="reading"` opts into 44 / 500 `text-title-xl` display on one-column reading pages). `FilterChipRow` and `PhoneFilterBar` gain `sort` and in-place `selection` (`"n đã chọn"` 600 + `•••` + at most one filled bulk button + `"Xong"`, zero list shift); `ResultLine` is deprecated for list pages; `DataTable` gains `activeRowId` (`bg-item-selected`); `Card` and `Item` gain non-nested `selectable` / `checked` / `onCheckedChange` / `selected`. `WorkspaceLayout.action` is optional, `SplitButton` gains `fullWidth`, and `PageSkeleton` gains `shape="workspace"`.
+**What changed** (#149, CHANGELOG "1.0 page layouts and lists"). New `Page` (`layout="work" | "reading" | "two-column"`, `fixed`, shared anatomy slots `title` / `actions` / `tabs` / `intro` / `toolbar` / `children` / `footer` owning the 32 / 28 / 32 / 16 / 8 vertical rhythm), `SubNav` (240px sub-nav card, 20 / 10 padding, `text-nav-label` group labels with optional 16px icon actions, h32 items, 1px `bg-raised` dividers), `PageSection` (20/500 heading + 16px content gap), `PageGrid` (8px `@container` grid), `ListReaderLayout` + `ReaderHeader` (two independent scrollers on `fixed` mode, `?open=`, `useRecordCrumb`, phone swap with Back, sticky one-row header with wrapping title left and `[•••]` + one main action right), and `useListSelection`. `PageTitle` becomes 18 / 400 UI sans on the action row (`variant="reading"` opts into 44 / 500 `text-title-xl` display on one-column reading pages). `FilterChipRow` and `PhoneFilterBar` gain `sort` and in-place `selection` (`"n đã chọn"` 600 + `•••` + at most one filled bulk button + `"Xong"`, zero list shift); `ResultLine` is removed in 1.0 (#173, replaced by `FilterChipRow` / `PhoneFilterBar` `sort` and `selection`); `DataTable` gains `activeRowId` (`bg-item-selected`); `Card` and `Item` gain non-nested `selectable` / `checked` / `onCheckedChange` / `selected`. `WorkspaceLayout.action` is optional, `SplitButton` gains `fullWidth`, and `PageSkeleton` gains `shape="workspace"`.
 
 **What the app deletes** (sales-hub v0.7.0): in the globals tail the flush container (`main#main > div`), `.page-title-row` and `.content-card h1`, `.page-column*`, `.list-*`, and hand-built selection rows.
 

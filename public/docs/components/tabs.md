@@ -1,11 +1,10 @@
 # Tabs
 
-Switch between panels of content inside a page or card: underline (default) or segmented, with icons and counts.
+Switch between panels of content inside a card or dialog with underline tabs, icons and counts.
 
 ## When to use
 
-- Sections of one object: Tổng quan / Hoạt động / Cài đặt.
-- A segmented period switch that changes a panel (variant="segmented").
+- Sections of one object inside a card or dialog: Tổng quan / Hoạt động / Cài đặt.
 
 ## Use something else when
 
@@ -48,32 +47,6 @@ export default function TabsUnderline() {
 }
 ```
 
-### Segmented
-
-```tsx
-"use client";
-
-import { useState } from "react";
-import { Tabs } from "@semi/ui";
-
-export default function TabsSegmented() {
-  const [range, setRange] = useState<"day" | "week" | "month">("week");
-  return (
-    <Tabs
-      variant="segmented"
-      label="Khoảng thời gian"
-      value={range}
-      onChange={setRange}
-      items={[
-        { key: "day", label: "Ngày" },
-        { key: "week", label: "Tuần" },
-        { key: "month", label: "Tháng" },
-      ]}
-    />
-  );
-}
-```
-
 ## API
 
 ### Tabs
@@ -83,7 +56,6 @@ export default function TabsSegmented() {
 | `items` * | `TabItem<T>[]` |  |  |
 | `value` * | `T` |  |  |
 | `onChange` * | `(key: T) => void` |  |  |
-| `variant` | `'underline' \| 'segmented'` | `"underline"` | underline = section tabs inside a card or page · segmented = compact switch inside a toolbar. |
 | `label` | `string` |  | Accessible name of the tab list. |
 | `className` | `string` |  |  |
 | `panelClassName` | `string` | `"pt-4"` |  |

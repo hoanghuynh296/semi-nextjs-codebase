@@ -1,6 +1,6 @@
 "use client";
 
-import { FilterChipRow, ResultLine, ViewSwitch, useFilterParams, type ViewMode } from "@semi/ui";
+import { FilterChipRow, ViewSwitch, useFilterParams, type ViewMode } from "@semi/ui";
 
 const ORDERS = [
   { id: "1024", status: "new", channel: "shopee", paid: true },
@@ -43,7 +43,6 @@ export default function FilterChipRowUrlState() {
         onClear={f.onClear}
         trailing={<ViewSwitch view={view} onViewChange={(v) => f.setParams({ view: v === "list" ? null : v }, "replace")} />}
       />
-      <ResultLine count={rows.length} unit="đơn hàng" />
       <p className="text-ui text-muted">{rows.map((o) => `#${o.id}`).join(" · ") || "—"}</p>
     </div>
   );

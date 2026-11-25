@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Pills, SubpageToolbar, toast } from "@semi/ui";
+import { SegmentedControl, SubpageToolbar, toast } from "@semi/ui";
 
 export default function SubpageToolbarListPage() {
   const [status, setStatus] = useState("all");
@@ -9,7 +9,8 @@ export default function SubpageToolbarListPage() {
   return (
     <SubpageToolbar
       left={
-        <Pills
+        <SegmentedControl
+          label="Trạng thái máy in"
           value={status}
           onChange={setStatus}
           options={[

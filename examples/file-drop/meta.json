@@ -1,13 +1,18 @@
 {
   "title": "FileDrop",
   "group": "Forms",
-  "description": "A file picker and dropzone with one row per file: size, upload progress, done, and remove / retry on failure. Controlled: the app owns the list and does the upload.",
+  "description": "A file picker and dropzone with one row per file (size, upload progress, done, remove / retry on failure) plus DropZone, its compact dashed-tile variant for workspace panels (optional file rows). Controlled: the app owns the list and does the upload.",
   "components": [
-    "FileDrop"
+    "FileDrop",
+    "DropZone"
+  ],
+  "imports": [
+    "type DropZoneProps"
   ],
   "when": [
-    "Choosing or dropping one or more files: CSV import, product photos, invoices, firmware, model files.",
+    "Choosing or dropping one or more files: CSV import, product photos, invoices, firmware, model files (FileDrop).",
     "Showing the progress of each upload and letting the user retry or remove a file.",
+    "Attachments in a WorkspaceSection or narrow side panel where the section label carries the count (DropZone).",
     "Duplicates (same name and size as an item or earlier in the batch) and dropped folders are rejected too: onReject reasons are type, size, directory, duplicate, multiple."
   ],
   "instead": [
@@ -45,6 +50,11 @@
       "file": "single",
       "title": "One file",
       "description": "Without multiple, only the first valid file is added; the rest go to onReject with reason \"multiple\"."
+    },
+    {
+      "file": "drop-zone",
+      "title": "Compact workspace drop zone (DropZone)",
+      "description": "A light dashed tile on the panel surface for WorkspaceSection attachments, with optional file rows."
     }
   ]
 }

@@ -1,31 +1,70 @@
 # Command
 
-A command palette: type to filter actions and pages, ↑/↓ to move, Enter to run. Command is the inline list; CommandDialog opens it over the page, usually on ⌘K (useHotkey). Matching ignores case and Vietnamese marks.
+Command palette and searchable action lists: CommandPalette is the app-wide ⌘K / Ctrl+K “search or create” box (mounted once in the root layout, fed by pages with useRegisterCommands); CommandDialog is a controlled dialog with your own open state (useHotkey); Command is the inline list. Matching ignores case and Vietnamese marks.
 
 ## When to use
 
-- Jump anywhere and run any action from the keyboard (⌘K) in apps with many pages.
-- A searchable action list inside a Popover.
+- Every app with more than a few pages: mount CommandPalette once in the root layout to jump to a place or record and start a create action from anywhere on ⌘K (L1).
+- A SearchPill or “Tìm hoặc tạo” button in the header that opens CommandPalette (openCommandPalette).
+- A palette with your own open state and no app-wide registry (CommandDialog) or a searchable action list inside a Popover (Command).
 
 ## Use something else when
 
 | Need | Use |
 |---|---|
-| The app-wide ⌘K “search or create” box, fed by every page | CommandPalette |
 | Pick one value in a form | CustomCombobox |
-| Filter the list on the page | SearchInput |
+| Filter the list on the page | SearchPill or SearchInput |
 
 ## Import
 
 ```tsx
-import { Command, CommandDialog, useHotkey, filterCommands, normalizeSearch, type CommandItem } from "@semi/ui";
+import { Command, CommandDialog, CommandPalette, useRegisterCommands, openCommandPalette, useHotkey, filterCommands, normalizeSearch, type CommandItem } from "@semi/ui";
 ```
 
 ## Examples
 
-### ⌘K palette
+### App-wide palette (CommandPalette)
 
-Press ⌘K (Ctrl+K) or the button; try typing “don hang” without marks.
+Press ⌘K (Ctrl+K) or the button; type “tieu” to find the supplier by keyword.
+
+```tsx
+"use client";
+
+import { useMemo } from "react";
+import { Button, CommandPalette, Kbd, openCommandPalette, toast, useRegisterCommands, type CommandItem } from "@semi/ui";
+
+// Mount CommandPalette once in the root layout with the app's places. A page adds its own quick actions and records
+// with useRegisterCommands while it is mounted. ⌘↵ opens an item with href in a new tab.
+const PLACES: CommandItem[] = [
+  { id: "inbox", label: "Hộp thư", group: "Trang", icon: "mail", href: "#inbox", onSelect: () => toast({ title: "Mở Hộp thư" }) },
+  { id: "suppliers", label: "Nhà cung cấp", group: "Trang", icon: "store", href: "#suppliers", onSelect: () => toast({ title: "Mở Nhà cung cấp" }) },
+  { id: "settings", label: "Cài đặt", group: "Trang", icon: "settings", onSelect: () => toast({ title: "Mở Cài đặt" }) },
+];
+
+export default function CommandPaletteApp() {
+  const pageItems = useMemo<CommandItem[]>(
+    () => [
+      { id: "new-supplier", label: "Thêm nhà cung cấp", group: "Tạo nhanh", icon: "plus", tone: "blue", shortcut: ["⌘", "N"], onSelect: () => toast({ title: "Thêm nhà cung cấp" }) },
+      { id: "new-request", label: "Tạo yêu cầu mua", group: "Tạo nhanh", icon: "clipboardList", tone: "green", onSelect: () => toast({ title: "Tạo yêu cầu mua" }) },
+      { id: "s1", label: "Gia vị Tây Nguyên", hint: "Nhà cung cấp · Đắk Lắk", group: "Nhà cung cấp", icon: "store", keywords: ["tieu", "pepper"], href: "#suppliers?open=s1", onSelect: () => toast({ title: "Mở Gia vị Tây Nguyên" }) },
+    ],
+    [],
+  );
+  useRegisterCommands(pageItems);
+  return (
+    <>
+      <Button icon="search" onClick={() => openCommandPalette()}>
+        Tìm hoặc tạo <Kbd keys={["⌘", "K"]} />
+      </Button>
+      <CommandPalette items={PLACES} />
+    </>
+  );
+}
+```
+
+### Controlled dialog (CommandDialog)
+
+Press ⌘J (Ctrl+J) or the button; try typing “don hang” without marks.
 
 ```tsx
 "use client";
@@ -35,7 +74,7 @@ import { Button, CommandDialog, Kbd, toast, useHotkey, type CommandItem } from "
 
 export default function CommandPalette() {
   const [open, setOpen] = useState(false);
-  useHotkey(() => setOpen((v) => !v));
+  useHotkey(() => setOpen((v) => !v), "j");
   const go = (title: string) => () => toast({ title });
   const items: CommandItem[] = [
     { id: "orders", label: "Đơn hàng", group: "Trang", icon: "bag", onSelect: go("Mở Đơn hàng") },
@@ -47,7 +86,7 @@ export default function CommandPalette() {
   return (
     <>
       <Button icon="search" onClick={() => setOpen(true)}>
-        Tìm nhanh <Kbd keys={["⌘", "K"]} />
+        Tìm nhanh <Kbd keys={["⌘", "J"]} />
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen} items={items} />
     </>
@@ -55,7 +94,7 @@ export default function CommandPalette() {
 }
 ```
 
-### Inline
+### Inline (Command)
 
 ```tsx
 "use client";
@@ -113,8 +152,31 @@ The command palette over the page: a modal dialog near the top, closed by Escape
 | `placeholder` | `string` |  |  |
 | `emptyText` | `React.ReactNode` |  |  |
 
+### CommandPalette
+
+The app-wide "search or create" box (L1): one dialog for search and quick actions, opened with ⌘K / Ctrl+K. Mount
+it once in the root layout with the app's places; pages add their own items with useRegisterCommands. Groups get
+`text-overline` headings, actions a coloured tile (`tone`), records a hint line; the footer shows the keys
+(↑↓ select, ↵ open, ⌘↵ new tab for items with `href`, Esc close). Uncontrolled unless `open` is given.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `items` | `CommandItem[]` | `EMPTY` | The app's own items (places, global actions). Items registered by pages are listed first. |
+| `open` | `boolean` |  | Controlled open state; leave out to let the palette (⌘K, openCommandPalette) manage it. |
+| `onOpenChange` | `(open: boolean) => void` |  |  |
+| `hotkey` | `string \| false` | `"k"` | ⌘ / Ctrl + this key toggles the palette; `false` binds nothing. |
+| `placeholder` | `string` |  |  |
+| `emptyText` | `React.ReactNode \| ((query: string) => React.ReactNode)` |  |  |
+| `initialQuery` | `string` |  | The query when it opens (a `?q=` deep link). |
+| `onOpenInNewTab` | `(item: CommandItem) => void` |  |  |
+
 ## Accessibility
 
-- The input is an ARIA combobox owning a listbox (aria-activedescendant), so focus stays in the input; groups are labelled; the dialog traps focus and Escape closes it.
+- The input is an ARIA combobox owning a listbox (aria-activedescendant), so focus stays in the input; groups are labelled by their heading, disabled items are aria-disabled; dialogs trap focus, Escape closes and focus returns.
+
+## Notes
+
+- A record that opens in a DetailOverlay on the current route: its `onSelect` calls `openDetail(id)` (or the page's `open(id)`), not `router.push("?open=…")` to the same route, which browsers without the Navigation API do not report to the list. Give it `href` too, for ⌘↵.
+- ⌘K on Apple devices, Ctrl+K elsewhere (Ctrl+K on a Mac deletes to the end of the line in text fields); a key a widget already handled, or typed in a rich-text editor, does not open it.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/command/ and the types in src/ -->

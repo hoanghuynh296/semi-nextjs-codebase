@@ -4,7 +4,6 @@ export * from "./iconCatalog";
 export * from "./Chip";
 export * from "./Badge";
 export * from "./CountBadge";
-export * from "./Pills";
 export * from "./PillTabs";
 export * from "./SegmentedControl";
 export * from "./useTabParam";

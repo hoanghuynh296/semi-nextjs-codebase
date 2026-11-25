@@ -8,7 +8,6 @@ import {
   Item,
   PageTitle,
   PhoneFilterBar,
-  ResultLine,
   SearchPill,
   StickyContextBar,
   ViewSwitch,
@@ -62,7 +61,7 @@ export default function StickyContextBarListPage() {
       <PageTitle
         title="Nhà cung cấp"
         actions={
-          <Button variant="primary" icon="plus" onClick={() => toast({ title: "Thêm nhà cung cấp" })}>
+          <Button variant="inverse" icon="plus" onClick={() => toast({ title: "Thêm nhà cung cấp" })}>
             Thêm nhà cung cấp
           </Button>
         }
@@ -74,10 +73,10 @@ export default function StickyContextBarListPage() {
           filters={filters}
           onChange={onChange}
           onClear={() => setSel({})}
+          sort={sortDef}
           trailing={<ViewSwitch view={view} onViewChange={setView} />}
         />
-        <PhoneFilterBar className="md:hidden" activeCount={active} onOpenFilters={() => setPanel(true)} filtersOpen={panel} />
-        <ResultLine query={q} count={rows.length} unit="nhà cung cấp" sort={sortDef} />
+        <PhoneFilterBar className="md:hidden" activeCount={active} onOpenFilters={() => setPanel(true)} filtersOpen={panel} sort={sortDef} />
       </StickyContextBar>
       <ul className={view === "grid" ? "grid grid-cols-2 gap-group" : "flex flex-col"}>
         {rows.map((s) => (

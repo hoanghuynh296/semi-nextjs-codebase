@@ -12,7 +12,6 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Card actions](card-actions.md) | `CardActions` | Cards and media tiles in a grid (suppliers, products, templates, files) that open on click and have one or two quick actions. |
 | [Chip](chip.md) | `Chip` | Several filters that can be on at once (materials, device types). |
 | [External link](external-link.md) | `ExternalLink` | Any link that leaves the app (docs, GitHub, a payment page). |
-| [Pills (deprecated)](pills.md) | `Pills` | Legacy screens not yet migrated to SegmentedControl or PillTabs. |
 | [Split button](split-button.md) | `SplitButton` | Two or more ways to start one job (type it in, import a file, copy from another system): G1. |
 | [Toggle](toggle.md) | `Toggle`, `ToggleGroup` | A view mode with icons; text formatting; a pin / follow / mute switch on a toolbar. |
 
@@ -24,9 +23,8 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Checkbox](checkbox.md) | `Checkbox` | Opt in to something in a form (accept terms, include archived). |
 | [Combobox](combobox.md) | `CustomCombobox` | Long or grouped lists the user searches (materials, customers, repositories, SKUs). |
 | [Date picker](date-picker.md) | `DatePicker` | Schedule a job, filter by day, set a due date. |
-| [Drop zone](drop-zone.md) | `DropZone` | Attachments in a WorkspaceSection (specs, sample photos), where the section label carries the count. |
 | [Field, Input, Textarea](field.md) | `Field`, `Input`, `Textarea` | Every form control: wrap it in Field instead of writing a <label>. |
-| [FileDrop](file-drop.md) | `FileDrop` | Choosing or dropping one or more files: CSV import, product photos, invoices, firmware, model files. |
+| [FileDrop](file-drop.md) | `FileDrop`, `DropZone` | Choosing or dropping one or more files: CSV import, product photos, invoices, firmware, model files (FileDrop). |
 | [Filter chip row](filter-chip-row.md) | `FilterChipRow`, `FilterChip`, `FilterOptions` | The filters of a list, grid or table page on desktop and iPad (md+), under its SearchPill in a StickyContextBar. |
 | [Filter panel](filter-panel.md) | `PhoneFilterBar`, `FilterPanel` | Below md on every page that has a FilterChipRow on desktop (same filters, same state). |
 | [Form actions, unsaved guard, validation](form-actions.md) | `FormActions`, `useUnsavedGuard`, `useFormValidation`, `FormErrorSummary` | Every form: the action row is FormActions, never a hand-ordered pair of buttons. |
@@ -38,7 +36,7 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Option cards](option-cards.md) | `OptionCards` | Picking one visual option from 2–6 choices (an AI provider, a shipping method, a plan) where a card with an icon or short description reads faster than a radio list. |
 | [Radio group](radio-group.md) | `RadioGroup` | 2–5 options where the descriptions help the choice (plans, shipping). |
 | [Search input](search-input.md) | `SearchInput` | Filter the list or grid on the current page. |
-| [Search pill](search-pill.md) | `SearchPill`, `ResultLine` | The search of a list, grid or DataTable page, above its filter chips (inside StickyContextBar). |
+| [Search pill](search-pill.md) | `SearchPill` | The search of a list, grid or DataTable page, above its filter chips (inside StickyContextBar). |
 | [Select](select.md) | `CustomSelect` | One value from a short or medium list (printers, regions). |
 | [Slider](slider.md) | `Slider` | Values where the position matters more than the exact number (volume, opacity, infill, price range filters). |
 | [Stepper](stepper.md) | `Stepper` | A small whole number people nudge rather than type: tấn per line, copies, guests, 1–99. |
@@ -49,8 +47,7 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 
 | Doc | Components | When to use |
 |---|---|---|
-| [Command](command.md) | `Command`, `CommandDialog` | Jump anywhere and run any action from the keyboard (⌘K) in apps with many pages. |
-| [Command palette](command-palette.md) | `CommandPalette` | Every app with more than a few pages: jump to a place or record and start a create action from anywhere (L1). |
+| [Command](command.md) | `Command`, `CommandDialog`, `CommandPalette` | Every app with more than a few pages: mount CommandPalette once in the root layout to jump to a place or record and start a create action from anywhere on ⌘K (L1). |
 | [Confirm dialog](confirm-dialog.md) | `ConfirmHost` | Before an irreversible action: delete, stop a print, discard changes. confirmDelete names the object. |
 | [Context menu](context-menu.md) | `ContextMenu` | Power-user shortcuts on canvases, file grids and rows, when the same actions also exist in a visible Menu or toolbar. |
 | [Detail overlay](detail-overlay.md) | `DetailOverlay` | Open a record from a list, grid or table and step through the results without losing the list (suppliers, orders, leads). |
@@ -75,9 +72,9 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Menubar](menubar.md) | `Menubar` | Editors and tool apps with many commands (3D, slicer, image tools), next to an AppHeader. |
 | [Minimal header](minimal-header.md) | `MinimalHeader` | A detail page (one order, one customer) or a settings page reached from a list. |
 | [Navigation menu](navigation-menu.md) | `NavigationMenu` | Marketing sites, storefronts, docs headers. |
-| [Page actions](page-actions.md) | `PageActions`, `PageActionsProvider`, `PageActionsSlot` | A layout owns the header row but the page decides the actions (PageTabsTitle + “+”). |
+| [Page actions](page-actions.md) | `PageActions`, `PageActionsProvider`, `PageActionsSlot` | A layout owns the header row but the page decides the actions (TextTabs + “+”). |
 | [Page layouts](page.md) | `Page`, `PageEnter`, `SubNav`, `PageSection`, `PageGrid` | Every page inside AppShell: lists and workspaces (work), settings / explore / articles (reading), areas with sub-pages or mailbox folders (two-column). |
-| [Page title](page-title.md) | `PageTitle`, `PageTabsTitle` | The first line of every page (PageTitle). |
+| [Page title](page-title.md) | `PageTitle` | The first line of every page (PageTitle). |
 | [Pagination](pagination.md) | `Pagination` | Server-paged tables and reports. |
 | [Pill tabs](pill-tabs.md) | `PillTabs` | 5+ sections of one page, or sections with icons (Cấu hình: Hộp thư, Nhóm thư, Nguồn khách, Mặt hàng, Mẫu thư, Data Hub, Doanh nghiệp, Người dùng). |
 | [Resizable panels](resizable.md) | `ResizablePanels` | Tools where people tune the space between two or three areas. |
@@ -86,7 +83,7 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Side panel](side-panel.md) | `SidePanel`, `SidePanelToggle` | Settings or layers beside a 3D view, map or editor. |
 | [Sticky context bar](sticky-context-bar.md) | `StickyContextBar`, `BarActions` | A list, grid or table page with a search and filters people change while they scroll (customers, suppliers, products). |
 | [Subpage toolbar](subpage-toolbar.md) | `SubpageToolbar`, `RefreshButton` | Every list or grid page. |
-| [Tabs](tabs.md) | `Tabs` | Sections of one object: Tổng quan / Hoạt động / Cài đặt. |
+| [Tabs](tabs.md) | `Tabs` | Sections of one object inside a card or dialog: Tổng quan / Hoạt động / Cài đặt. |
 | [Text tabs](text-tabs.md) | `TextTabs` | 2–4 top-level views of a discovery or reading page, rendered as the page heading (Khám phá / Mẫu sẵn / Cảm hứng). |
 | [Workspace layout](workspace-layout.md) | `WorkspaceLayout`, `WorkspaceHeader`, `WorkspaceSection` | A tool where the user sets inputs and sees what they produce: a quote request and its comparison, a generator, an import with a preview, a print job. |
 

@@ -15,7 +15,7 @@ The action control, 1.0 variants: subtle (default) for ordinary actions, surface
 |---|---|
 | Go to another page | next/link (styled with BTN_* from @semi/ui/styles when it must look like a button) |
 | Link to another site | ExternalLink |
-| Pick one of 2–5 filters | Pills |
+| Pick one of 2–5 filters | SegmentedControl |
 | Turn a setting on / off | Switch |
 
 ## Import

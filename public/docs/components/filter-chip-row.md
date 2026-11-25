@@ -29,7 +29,7 @@ import { FilterChipRow, FilterChip, FilterOptions, useFilterParams, readFilters,
 ```tsx
 "use client";
 
-import { FilterChipRow, ResultLine, ViewSwitch, useFilterParams, type ViewMode } from "@semi/ui";
+import { FilterChipRow, ViewSwitch, useFilterParams, type ViewMode } from "@semi/ui";
 
 const ORDERS = [
   { id: "1024", status: "new", channel: "shopee", paid: true },
@@ -72,7 +72,6 @@ export default function FilterChipRowUrlState() {
         onClear={f.onClear}
         trailing={<ViewSwitch view={view} onViewChange={(v) => f.setParams({ view: v === "list" ? null : v }, "replace")} />}
       />
-      <ResultLine count={rows.length} unit="đơn hàng" />
       <p className="text-ui text-muted">{rows.map((o) => `#${o.id}`).join(" · ") || "—"}</p>
     </div>
   );
@@ -85,7 +84,7 @@ export default function FilterChipRowUrlState() {
 "use client";
 
 import { useState } from "react";
-import { FilterChipRow, Pills, ResultLine, type FilterDef } from "@semi/ui";
+import { FilterChipRow, SegmentedControl, type FilterDef } from "@semi/ui";
 
 const MAIL = [
   { id: "Báo giá tiêu đen", box: "sales", folder: "inbox", open: true },
@@ -134,12 +133,11 @@ export default function FilterChipRowViews() {
   return (
     <div className="flex flex-col gap-2 w-full min-w-0">
       <FilterChipRow
-        leading={<Pills value={view} onChange={setView} options={VIEWS} />}
+        leading={<SegmentedControl label="Trạng thái thư" value={view} onChange={setView} options={VIEWS} />}
         filters={filters}
         onChange={(key, selected) => setSel({ ...sel, [key]: selected })}
         onClear={() => setSel({})}
       />
-      <ResultLine count={rows.length} unit="thư" />
       <p className="text-ui text-muted">{rows.map((m) => m.id).join(" · ") || "—"}</p>
     </div>
   );
@@ -182,7 +180,7 @@ export default function FilterChipRowMany() {
 
 The filter chips of a list page on one line. When they overflow, the row scrolls sideways and ‹ › buttons appear
 (hidden from screen readers and the tab order: every chip is reachable by Tab, which scrolls it into view).
-"Xoá lọc" shows while a filter is on; `leading` (the page's views as Pills) sits before the chips; `sort`,
+"Xoá lọc" shows while a filter is on; `leading` (the page's views as SegmentedControl) sits before the chips; `sort`,
 `selection` ("Chọn" → in-place `"n đã chọn"` + bulk actions at the same height) and `trailing` (`ViewSwitch`) sit
 at the right end.
 
@@ -191,9 +189,9 @@ at the right end.
 | `filters` * | `FilterDef[]` |  |  |
 | `onChange` * | `(key: string, selected: string[]) => void` |  |  |
 | `onClear` | `() => void` |  | Clears every filter; the "Xoá lọc" button shows while one is on. |
-| `leading` | `React.ReactNode` |  | Before the chips: the page's views (`<Pills>`: Đang mở · Đã đóng · Tất cả), the md+ twin of PhoneFilterBar's `typeItems`. A view is not a filter: "Xoá lọc" leaves it alone. Keep it short (2–5 views); it does not scroll. |
+| `leading` | `React.ReactNode` |  | Before the chips: the page's views (`<SegmentedControl>`: Đang mở · Đã đóng · Tất cả), the md+ twin of PhoneFilterBar's `typeItems`. A view is not a filter: "Xoá lọc" leaves it alone. Keep it short (2–5 views); it does not scroll. |
 | `trailing` | `React.ReactNode` |  | Extra tools at the end of the row (e.g. `ViewSwitch`). Replaced in place while `selection` is active. |
-| `sort` | `SortDef` |  | Sort menu at the right end of the filter row (1.0: replaces ResultLine's sort). |
+| `sort` | `SortDef` |  | Sort menu at the right end of the filter row. |
 | `selection` | `ListSelection` |  | Selection mode ("Chọn") and bulk actions replacing the right side at the same height (zero list shift). |
 | `label` | `string` |  | Accessible name of the chip group (default "Bộ lọc"). |
 | `className` | `string` |  |  |
