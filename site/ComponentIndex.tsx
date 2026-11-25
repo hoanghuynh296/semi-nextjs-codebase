@@ -29,7 +29,7 @@ export function ComponentIndex() {
                       <div className="max-w-full">{First ? <First /> : <Icon name="code" className="w-8 h-8 text-muted" />}</div>
                     </div>
                     <Link href={`/components/${d.id}/`} className="p-card space-y-1 outline-none focus-visible:ring-2 focus-visible:ring-focus rounded-b-card">
-                      <div className="text-lead font-semibold text-strong">{d.title}</div>
+                      <div className="text-lead font-medium text-strong">{d.title}</div>
                       <p className="text-ui text-muted line-clamp-2">{d.description}</p>
                     </Link>
                   </div>

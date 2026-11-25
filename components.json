@@ -2702,7 +2702,7 @@
       "kind": "component",
       "module": "src/SubpageToolbar.tsx",
       "client": true,
-      "summary": "Unified sticky sub-page toolbar row (docs/DESIGN_SYSTEM.md §4a): - Optional title: the page title shares the row with filters and actions (instead of a PageTitle above) - Left slot: filter pills / chips / CustomSelect dropdowns - Right slot: icon-only primary CTA (BTN_PRIMARY BTN_ICON) + SearchInput + RefreshButton (+ optional extra controls) - Phone layout (#57, opt-in): `filters` (or `left` with `collapseFilters`) go behind a \"Bộ lọc · N\" button and `secondaryActions` into a ⋯ menu, so below `sm` the toolbar is at most two rows (title, then search + buttons).",
+      "summary": "Unified sticky sub-page toolbar row (docs/DESIGN_SYSTEM.md §4a): - Optional title: the page title shares the row with filters and actions (instead of a PageTitle above) - Left slot: filter pills / chips / CustomSelect dropdowns - Right slot: icon-only add CTA (BTN_INVERSE BTN_ICON) + SearchInput + RefreshButton (+ optional extra controls) - Phone layout (#57, opt-in): `filters` (or `left` with `collapseFilters`) go behind a \"Bộ lọc · N\" button and `secondaryActions` into a ⋯ menu, so below `sm` the toolbar is at most two rows (title, then search + buttons).",
       "props": [
         "title",
         "left",

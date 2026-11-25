@@ -40,7 +40,7 @@ export const TILE = "rounded-control bg-card-field";
 
 /** Section heading row: <div className={SECTION_HEAD}><h2 className={SECTION_TITLE}>…</h2><span className={COUNT_PILL}>3</span></div> */
 export const SECTION_HEAD = "flex items-center gap-2 px-1";
-export const SECTION_TITLE = "text-ui font-semibold text-strong tracking-tight";
+export const SECTION_TITLE = "text-ui font-medium text-strong tracking-tight";
 export const COUNT_PILL = "h-4 min-w-[18px] px-1.5 rounded-full bg-raised text-chrome tabular-nums text-muted inline-flex items-center justify-center";
 
 /** Attention count (unread, to approve): the brand fill with its on-colour, text-badge (10/700). CountBadge renders it with the 99+ cap. */
@@ -157,7 +157,7 @@ export const MODAL_PANEL =
 /** Modal header row: icon/title left, close button right. Includes safe-area padding on mobile. */
 export const MODAL_HEAD = "px-5 pt-4 max-sm:pt-[max(1rem,env(safe-area-inset-top))] pb-3 flex items-center justify-between gap-3 shrink-0";
 /** Modal title. */
-export const MODAL_TITLE = "text-lead font-semibold text-strong tracking-tight truncate";
+export const MODAL_TITLE = "text-lead font-medium text-strong tracking-tight truncate";
 /** Modal footer: buttons right-aligned; stretched on a phone with safe-area bottom padding. */
 export const MODAL_FOOT =
   "px-5 py-3 max-sm:pb-[max(1rem,env(safe-area-inset-bottom))] border-t border-divider flex items-center justify-end gap-2 shrink-0 max-sm:*:flex-1";

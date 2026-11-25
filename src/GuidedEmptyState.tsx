@@ -99,7 +99,7 @@ export function GuidedEmptyState({
         className={cn("rounded-panel bg-card p-card sm:p-panel flex flex-col gap-group", EMPTY_PHONE_CAP, FOCUS_RING)}
       >
         <div className="flex items-start gap-3">
-          <H className="flex-1 min-w-0 text-lead font-title font-semibold text-strong">{title}</H>
+          <H className="flex-1 min-w-0 text-lead font-title font-medium text-strong">{title}</H>
           {tutorial && (
             <Link href={tutorial.href} className={cn("max-sm:hidden shrink-0 inline-flex items-center gap-1 text-ui font-medium text-strong hover:underline rounded-chip", FOCUS_RING)}>
               {tutorial.label}
@@ -115,7 +115,7 @@ export function GuidedEmptyState({
             <div className="flex flex-col gap-3 min-w-0">
               <div aria-live="polite" className="flex flex-col gap-2">
                 <span className="text-overline text-muted tabular-nums">{t.stepOf(at + 1, steps.length)}</span>
-                <H2 className="text-lead font-semibold text-strong">{s.title}</H2>
+                <H2 className="text-lead font-medium text-strong">{s.title}</H2>
                 <p className="text-ui text-body">{s.body}</p>
               </div>
               <div className="flex flex-wrap items-center gap-2 pt-1">
@@ -142,7 +142,7 @@ export function GuidedEmptyState({
                     {n + 1}
                   </span>
                   <div className="min-w-0 flex flex-col gap-0.5">
-                    <H2 className="text-ui font-semibold text-strong">
+                    <H2 className="text-ui font-medium text-strong">
                       <span className="sr-only">{t.stepOf(n + 1, steps.length)}: </span>
                       {st.title}
                     </H2>
@@ -158,7 +158,7 @@ export function GuidedEmptyState({
       {templates?.map((g) => (
         <section key={g.category} aria-label={g.category} className="flex flex-col gap-3">
           <div className="flex items-center gap-2 px-1">
-            <H2 className="flex-1 min-w-0 text-ui font-semibold text-strong">{g.category}</H2>
+            <H2 className="flex-1 min-w-0 text-ui font-medium text-strong">{g.category}</H2>
             {(g.seeAllHref || g.onSeeAll) &&
               (g.seeAllHref ? (
                 <Link href={g.seeAllHref} className={cn("text-ui font-medium text-muted hover:text-strong inline-flex items-center gap-1 rounded-chip", FOCUS_RING)}>
@@ -179,7 +179,7 @@ export function GuidedEmptyState({
                 <>
                   <IconTile name={it.icon} tone={it.tone ?? "gray"} size="sm" />
                   <span className="min-w-0">
-                    <span className="block text-ui font-semibold text-strong">{it.title}</span>
+                    <span className="block text-ui font-medium text-strong">{it.title}</span>
                     <span className="block text-chrome text-muted">{it.hint}</span>
                   </span>
                 </>

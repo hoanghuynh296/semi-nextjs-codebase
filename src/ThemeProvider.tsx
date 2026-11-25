@@ -5,7 +5,7 @@ import { useSemiLocale } from "./locale";
 import { Icon, type IconName } from "./Icon";
 import { Menu, Tooltip, type MenuItem } from "./Overlay";
 import { BTN_ICON, BTN_SUBTLE } from "../styles/buttons";
-import { cn, SEGMENT_ON } from "../styles/utils";
+import { cn, FOCUS_RING } from "../styles/utils";
 import type { Theme, ThemeOptions } from "./ThemeScript";
 import type { ShellNavItem } from "./AppShell";
 
@@ -133,7 +133,7 @@ export function ThemeToggle({ className = "", size = "md" }: ThemeToggleProps) {
       onClick={toggleTheme}
       title={isDark ? t.toLight : t.toDark}
       aria-label={isDark ? t.toLight : t.toDark}
-      className={`${sizeClasses} rounded-control bg-field hover:bg-raised border border-line text-muted hover:text-strong flex items-center justify-center transition active:scale-95 cursor-pointer shrink-0 ${className}`}
+      className={cn(sizeClasses, "rounded-control bg-raised hover:bg-raised-2 text-muted hover:text-strong flex items-center justify-center transition-hover active:scale-95 cursor-pointer shrink-0", FOCUS_RING, className)}
     >
       <Icon name={isDark ? "sun" : "moon"} className={`${size === "sm" ? "w-3.5 h-3.5" : "w-4 h-4"} transition-opacity ${mounted ? "" : "opacity-0"}`} />
     </button>
@@ -219,7 +219,7 @@ function ThemeSegments({ showLabels = false, fullWidth = false, labels: labelsPr
     <div
       role="radiogroup"
       aria-label={t.theme}
-      className={`${fullWidth ? "flex w-full" : "inline-flex"} items-center gap-0.5 bg-field p-0.5 h-control rounded-control border border-line shrink-0 ${className}`}
+      className={`${fullWidth ? "flex w-full" : "inline-flex"} items-center gap-0.5 bg-raised p-1 h-control rounded-control shrink-0 ${className}`}
     >
       {THEME_OPTIONS.map(({ key, icon }) => {
         // Nothing is selected until the stored theme is known (avoids flashing defaultTheme as selected).
@@ -233,8 +233,8 @@ function ThemeSegments({ showLabels = false, fullWidth = false, labels: labelsPr
             aria-label={labels[key]}
             title={labels[key]}
             onClick={() => setTheme(key)}
-            className={`${fullWidth ? "flex-1" : ""} ${showLabels ? "px-2.5" : "w-8"} h-full rounded-control inline-flex items-center justify-center gap-1.5 text-chrome font-medium whitespace-nowrap transition cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-focus ${
-              on ? SEGMENT_ON : "text-muted hover:text-strong"
+            className={`${fullWidth ? "flex-1" : ""} ${showLabels ? "px-2.5" : "w-8"} h-full rounded-control inline-flex items-center justify-center gap-1.5 text-chrome font-medium whitespace-nowrap transition-hover cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-focus ${
+              on ? "bg-raised-2 text-strong" : "text-muted hover:text-strong hover:bg-item-hover"
             }`}
           >
             <Icon name={icon} className="w-3.5 h-3.5 shrink-0" />

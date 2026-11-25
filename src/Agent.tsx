@@ -481,7 +481,7 @@ export function FileTree({
               activate(v);
             }}
             style={{ paddingLeft: `${(v.level - 1) * 16 + 8}px` }}
-            className={cn("flex items-center gap-1.5 h-7 pr-2 rounded-control cursor-pointer select-none", isSel ? "bg-raised text-strong font-medium" : "text-body hover:bg-raised", FOCUS_RING)}
+            className={cn("flex items-center gap-1.5 h-7 pr-2 rounded-control cursor-pointer select-none", isSel ? "bg-item-selected text-strong font-medium" : "text-body hover:bg-item-hover", FOCUS_RING)}
           >
             {isFolder ? chevron(open) : <span className="w-3.5 shrink-0" />}
             <Icon name={isFolder ? (open ? "folderOpen" : "folder") : "file"} className="w-4 h-4 text-muted shrink-0" />

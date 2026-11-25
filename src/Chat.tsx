@@ -165,7 +165,7 @@ export function ChatIntro({ icon = "sparkles", title, children }: { icon?: IconN
   return (
     <div className="flex flex-col items-center text-center gap-2.5 pt-2">
       <IconTile name={icon} tone="green" size="lg" />
-      <div className="text-lead font-semibold text-strong tracking-tight">{title}</div>
+      <div className="text-lead font-medium text-strong tracking-tight">{title}</div>
       {children && <p className="text-ui text-muted max-w-[300px] leading-relaxed">{children}</p>}
     </div>
   );
@@ -779,7 +779,7 @@ export function ChatPanel({
       )}
       <div className="relative px-4 pt-3 pb-2.5 flex items-center gap-2.5 border-b border-divider shrink-0">
         <IconTile name={icon} tone="green" size="sm" />
-        <h2 id={titleId} className="min-w-0 flex-1 text-lead font-semibold text-strong tracking-tight truncate">
+        <h2 id={titleId} className="min-w-0 flex-1 text-lead font-medium text-strong tracking-tight truncate">
           {title}
         </h2>
         {actions}

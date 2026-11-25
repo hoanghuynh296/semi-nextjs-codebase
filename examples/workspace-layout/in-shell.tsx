@@ -32,7 +32,7 @@ export default function WorkspaceInShell() {
           <WorkspaceSection label="Mặt hàng" count={LINES.length} max={8}>
             {LINES.map((name, i) => (
               <div key={name} className="rounded-card bg-card p-3 flex flex-col gap-2">
-                <div className="text-ui font-semibold text-strong">{name}</div>
+                <div className="text-ui font-medium text-strong">{name}</div>
                 <Stepper label={`số tấn ${name}`} unit="tấn" min={1} value={qty[i]} onChange={(v) => setQty(qty.map((q, j) => (j === i ? v : q)))} />
               </div>
             ))}

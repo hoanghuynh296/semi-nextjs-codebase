@@ -160,7 +160,7 @@ export default function FullShell() {
       <PageTitle
         title="Đơn hàng"
         actions={
-          <Button variant="primary" icon="plus">
+          <Button variant="inverse" icon="plus">
             Tạo đơn
           </Button>
         }
@@ -171,7 +171,7 @@ export default function FullShell() {
           {["DH-1042", "DH-1041", "DH-1039", "DH-1037", "DH-1036", "DH-1033"].map((id, i) => (
             <Card key={id} className="flex flex-col gap-stack">
               <div className="flex items-center justify-between gap-3 min-w-0">
-                <span className="text-ui font-semibold text-strong truncate">{id}</span>
+                <span className="text-ui font-medium text-strong truncate">{id}</span>
                 <span className="text-ui text-muted tabular-nums shrink-0">{PRICE.format((i + 2) * 450_000)}</span>
               </div>
               <p className="text-ui text-body truncate">{["Bambu Lab A1 mini", "PLA Basic 1kg × 4", "Combo AMS Lite", "PETG HF 1kg × 2", "Bàn in PEI", "TPU 95A 1kg"][i]}</p>

@@ -106,7 +106,7 @@ export function ConfirmHost() {
       >
         <div className={`px-5 pt-5 pb-4 space-y-2 ${c.icon ? "text-center" : ""}`}>
           {c.icon && <div className="flex justify-center pb-1">{c.icon}</div>}
-          <h3 id={titleId} className="text-lead font-semibold text-strong">
+          <h3 id={titleId} className="text-lead font-medium text-strong">
             {title}
           </h3>
           {message && <p className="text-ui text-muted leading-relaxed whitespace-pre-line">{message}</p>}
