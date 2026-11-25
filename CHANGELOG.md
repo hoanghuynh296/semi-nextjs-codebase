@@ -4,6 +4,9 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## Unreleased
 
+### Fixed
+- **`test:ui` parallel worktree ports (#143):** `playwright.config.ts` sets `reuseExistingServer: false` on all three web servers so local runs never attach to another worktree's build, accepts `SEMI_PW_PORT_BASE` as an alias for `SEMI_UI_PORT` (default `4319`, using `port`, `+1`, `+2`), and `AGENTS.md` documents running `test:ui` in parallel worktrees.
+
 ### Docs (T10 final pass, #152)
 - **All T1–T9 1.0 docs finalised:** removed all `*(Tn, pending)*` markers across `docs/DESIGN_SYSTEM.md`, `docs/QUICK_REF.md`, `docs/MIGRATION-1.0.md`, `plugin/rules/AGENTS.md` (and vendor copy), and `plugin/skills/**`.
 - **`docs/MIGRATION-1.0.md`:** completed T8 (`StickyContextBar` layout-pin / focus-pin, `BarActions`, URL-state upgrades) and T9 (`PageEnter`, `motion-pulse`, `Tooltip` / `Disclosure` / hover motion tokens, reduced motion) sections, updated all T1–T9 status rows and PR numbers, and completed the sales-hub v0.7.0 stand-in → Semi 1.0 replacement table. Updated `lint/test/migration-doc.test.mjs` to assert zero pending-ticket references once all tickets are merged.
