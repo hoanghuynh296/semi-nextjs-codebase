@@ -11,12 +11,13 @@
 //   row, clamped to 3 lines), [•••] menu then one main action on the right, top-aligned, identical button height
 //   (`h-control`), sticky while the body scrolls; every other action goes into •••. When the actions do not fit beside
 //   a 70% title (a narrow pane), they move to a row under the title (#188).
-import React, { createContext, useContext, useEffect, useLayoutEffect, useRef } from "react";
+import React, { createContext, useContext, useEffect, useId, useLayoutEffect, useRef } from "react";
 import { Button } from "./Button";
 import { EmptyState } from "./Feedback";
 import type { IconName } from "./Icon";
 import { Menu, type MenuItem } from "./Overlay";
 import { useRecordCrumb } from "./RouteHeader";
+import { ClampToggle, useClampToggle } from "./clampedTitle";
 import { useSemiLocale } from "./locale";
 import { CARD } from "../styles/surfaces";
 import { cn } from "../styles/utils";
@@ -83,6 +84,9 @@ export function ReaderHeader({
   // a rail + SubNav the list is hidden while the viewport is lg); outside one, below lg
   const backHidden = ctx.backHidden ?? "lg:hidden";
   const H = `h${headingLevel}` as const;
+  const titleId = useId();
+  // a title cut at 3 lines gets a toggle that shows it in full (touch screens never show the native tooltip, #196)
+  const clamp = useClampToggle<HTMLHeadingElement>(title);
   const isMainAction = (a: unknown): a is ReaderMainAction =>
     Boolean(a) && typeof a === "object" && !React.isValidElement(a) && typeof (a as ReaderMainAction).label === "string";
 
@@ -107,15 +111,20 @@ export function ReaderHeader({
       )}
       {/* flex-wrap + a 70% minimum: the title keeps most of the row and the actions wrap under it when they do not fit */}
       <div data-reader-title="" className="min-w-[70%] flex-1 pt-1">
-        {/* tabIndex -1: ListReaderLayout moves focus here when the reader replaces the focused list row */}
-        <H
-          data-reader-focus=""
-          tabIndex={-1}
-          title={typeof title === "string" ? title : undefined}
-          className="text-lead font-medium text-strong break-words line-clamp-3 outline-none"
-        >
-          {title}
-        </H>
+        <div className="flex items-end gap-1 min-w-0">
+          {/* tabIndex -1: ListReaderLayout moves focus here when the reader replaces the focused list row */}
+          <H
+            tabIndex={-1}
+            className={cn("flex-1 min-w-0 text-lead font-medium text-strong break-words outline-none", !clamp.expanded && "line-clamp-3")}
+            ref={clamp.ref}
+            id={titleId}
+            data-reader-focus=""
+            title={typeof title === "string" ? title : undefined}
+          >
+            {title}
+          </H>
+          {clamp.cut && <ClampToggle expanded={clamp.expanded} onToggle={clamp.toggle} controls={titleId} />}
+        </div>
         {meta && <div className="text-chrome text-muted mt-0.5">{meta}</div>}
       </div>
       {(moreActions?.length || action) && (

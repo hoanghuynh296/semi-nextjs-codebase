@@ -10,6 +10,7 @@ import { Icon } from "./Icon";
 import { useDialog } from "./a11y";
 import { currentSearch, navigationApi, patchSearch, subscribeUrl } from "./urlState";
 import { useSemiLocale } from "./locale";
+import { ClampToggle, useClampToggle } from "./clampedTitle";
 import { cn } from "../styles/utils";
 
 /** What useDetailParam returns: the open id and the ways to change it (all write the URL). */
@@ -149,6 +150,8 @@ export function DetailOverlay({
   const ref = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
+  // a cut title (one line, or 3 in a narrow dialog) gets a toggle that shows it in full (no tooltip on touch, #196)
+  const clamp = useClampToggle<HTMLHeadingElement>(title);
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   const shown = open && mounted;
@@ -230,13 +233,22 @@ export function DetailOverlay({
             <Icon name="close" className="w-4 h-4" />
           </button>
           <div data-detail-title="" className="flex-1 min-w-[60%] px-1">
-            <h2
-              id={titleId}
-              title={typeof title === "string" ? title : undefined}
-              className="text-ui font-medium text-strong truncate @max-[36rem]/detail-header:whitespace-normal @max-[36rem]/detail-header:break-words @max-[36rem]/detail-header:line-clamp-3"
-            >
-              {title}
-            </h2>
+            <div className="flex items-end gap-1 min-w-0">
+              <h2
+                ref={clamp.ref}
+                id={titleId}
+                title={typeof title === "string" ? title : undefined}
+                className={cn(
+                  "flex-1 min-w-0 text-ui font-medium text-strong",
+                  clamp.expanded
+                    ? "whitespace-normal break-words"
+                    : "truncate @max-[36rem]/detail-header:whitespace-normal @max-[36rem]/detail-header:break-words @max-[36rem]/detail-header:line-clamp-3",
+                )}
+              >
+                {title}
+              </h2>
+              {clamp.cut && <ClampToggle expanded={clamp.expanded} onToggle={clamp.toggle} controls={titleId} />}
+            </div>
             {subtitle && <div className="text-ui text-muted truncate">{subtitle}</div>}
           </div>
           <div data-detail-nav="" className="ml-auto shrink-0 flex items-center gap-2">
