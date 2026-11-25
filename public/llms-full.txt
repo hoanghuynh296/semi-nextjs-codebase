@@ -8,7 +8,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 ## Machine-readable
 
-- [components.json](./components.json): all 172 components, hooks and constants with props, summaries and their doc page
+- [components.json](./components.json): all 173 components, hooks and constants with props, summaries and their doc page
 - [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
@@ -96,7 +96,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Minimal header](./components/minimal-header/) ([markdown](./docs/components/minimal-header.md)): The top row of a detail or settings page inside AppShell: where the page sits on the left (a Breadcrumb), one text link and one primary action on the right. The page's own heading follows it. Components: MinimalHeader.
 - [Navigation menu](./components/navigation-menu/) ([markdown](./docs/components/navigation-menu.md)): Top navigation of a website or landing page: links, and items that open a panel of links with descriptions. Below md it becomes one menu button with a sheet. Components: NavigationMenu.
 - [Page actions](./components/page-actions/) ([markdown](./docs/components/page-actions.md)): Lets a page put its actions into a slot of the shared header: PageActionsProvider wraps the layout, PageActionsSlot marks where they render, PageActions sends them from the page. Components: PageActions, PageActionsProvider, PageActionsSlot.
-- [Page layouts](./components/page/) ([markdown](./docs/components/page.md)): Shared 1.0 page anatomy and three layouts inside AppShell's content card: work (flush, padding 16 / 24), reading (centred max 1536px inside 16px card padding, 64px bottom), and two-column (240px sub-nav card + 4px gap + main card, stacking below md). Owns vertical rhythm (32 / 28 / 32 / 16 / 8). Components: Page, SubNav, PageSection, PageGrid.
+- [Page layouts](./components/page/) ([markdown](./docs/components/page.md)): Shared 1.0 page anatomy and three layouts inside AppShell's content card: work (flush, padding 16 / 24), reading (centred max 1536px inside 16px card padding, 64px bottom), and two-column (240px sub-nav card + 4px gap + main card, stacking below md). Owns vertical rhythm (32 / 28 / 32 / 16 / 8). Components: Page, PageEnter, SubNav, PageSection, PageGrid.
 - [Page title](./components/page-title/) ([markdown](./docs/components/page-title.md)): PageTitle is the 18 / 400 UI sans heading of a work page on the same row as the page's main action (`actions`), with `variant="reading"` (44 / 500 display face, text-title-xl) for one-column reading pages only. PageTabsTitle is kept as a deprecated alias for 2–4 sibling tabs — new screens use TextTabs. Components: PageTitle, PageTabsTitle.
 - [Pagination](./components/pagination/) ([markdown](./docs/components/pagination.md)): Page numbers with previous / next for long tables. For card lists prefer auto-loading with “Xem thêm”. Components: Pagination.
 - [Pill tabs](./components/pill-tabs/) ([markdown](./docs/components/pill-tabs.md)): Default section tabs for pages with 5+ sections or sections with icons (settings-like pages): no track, h30 round pills with 16px icons and 12px/600 labels, and one item-hover pill that slides to the active tab in 300ms ease-out. Components: PillTabs.
@@ -301,7 +301,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (172)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (173)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
@@ -359,6 +359,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `Overlay`: `Tooltip`, `Menu`, `ContextMenu`, `Menubar`
 - `Page`: `SubNav`, `PageSection`, `PageGrid`, `Page`
 - `PageActions`: `PageActionsProvider`, `PageActionsSlot`, `PageActions`
+- `PageEnter`: `PageEnter`
 - `PageTitle`: `PageTitle`, `PageTabsTitle`
 - `Pagination`: `Pagination`
 - `PillTabs`: `PillTabs`
@@ -892,23 +893,32 @@ scrolls inside) and the result on the right. Top of the panel: the tool's parts 
 bottom of the screen while the panel is in view (above MobileTabBar: AppShell sets `--semi-bottom-bar` in tabs mode;
 never put the layout in an `overflow-*` box). Headings in the result start at `h2`.
 
-## 4g. Motion (T9, pending)
+## 4g. Motion (#151)
 
-The motion tokens ship with T1 (`TOKENS.md` "Motion": `--motion-hover`, `--motion-nav`, `--motion-crumb-in` / `-out`,
-`--motion-enter`, `--motion-stagger`, `--motion-pulse`, `--motion-tooltip`, `--motion-disclosure`, `--motion-slide`
-and the utilities `transition-hover`, `transition-nav`, `transition-slide`, `animate-enter`, `animate-crumb-in`,
-`animate-tooltip-in`, `animate-pulse`). T9 wires the components:
+Semi wires T1's motion tokens (`TOKENS.md` "Motion": `--motion-hover`, `--motion-nav`, `--motion-crumb-in` / `-out`,
+`--motion-enter`, `--motion-stagger`, `--motion-pulse`, `--motion-tooltip`, `--motion-disclosure` /
+`--motion-disclosure-close`, `--motion-slide`, and the utilities `transition-hover`, `transition-nav`,
+`transition-slide`, `animate-enter`, `animate-crumb-in`, `animate-tooltip-in`, `animate-pulse`) across components:
 
-- Colours on hover and active change in 150ms (`transition-hover`); the nav's active fill in 150ms (`transition-nav`).
-- A new crumb slides in 6px (`animate-crumb-in`); page content enters with opacity and 4px (`animate-enter`), the
-  first ~10 items staggered 35ms, **once per route** (never on a filter or tab change).
-- The skeleton pulses 1 → 0.6 → 1 in 2.5s; a tooltip fades and scales from 0.96; a disclosure opens in 300ms ease-out;
-  the active pill of `PillTabs` / `SegmentedControl` slides in 300ms.
-- Under `prefers-reduced-motion` there is no translate and no scale: opacity only (the tokens do it).
-- The shell never remounts or moves on a route change.
+- **Hover & nav:** colours on hover and active change in 150ms (`transition-hover`) on links, buttons, tabs, menus and
+  rows; the nav's active background in 150ms (`transition-nav`).
+- **Page enter (`PageEnter` / `<Page enter>`):** top blocks and the first ~10 rows / cards (`tbody > tr`,
+  `[role="listitem"]`, `[data-page-grid] > *`, `[data-motion-item]`, `Item`) rise in with `motion-enter` (400ms,
+  opacity + 4px) and `motion-stagger` (35ms per item), **once per route** (keyed by pathname — never on filter, search,
+  sort or `?tab=` changes, and never for rows arriving after the initial enter window). `PageEnter` uses
+  `display: contents`, so it adds no layout box and never breaks fixed-height chains or inner scrollers.
+- **Skeleton pulse:** `Skeleton` and `PageSkeleton` pulse quietly with `motion-pulse` (2.5s ease-in-out, opacity
+  1 → 0.6 → 1), replacing Tailwind's default pulse; content replaces skeletons in place with no jump.
+- **Tooltip & disclosure:** `Tooltip` enters with `animate-tooltip-in` (200ms, opacity + scale 0.96 → 1); `Accordion`
+  and `Collapsible` open in 300ms ease-out (`--motion-disclosure`) and close in 300ms ease-in
+  (`--motion-disclosure-close`); `PillTabs` / `SegmentedControl` slide in 300ms (`transition-slide`).
+- **Reduced motion (`prefers-reduced-motion: reduce`):** opacity only (no translate, no scale, no slide); skeleton
+  pulse stops.
+- **Shell stillness:** the shell (nav, frame, route header bar, content card) never animates, remounts or moves on a
+  route change.
 
-Apps may use the tokens now in their own CSS (`transition: background-color var(--motion-hover)`); never a hand-made
-duration or easing.
+Apps should use these tokens in their own CSS (`transition: background-color var(--motion-hover)`); never hard-code a
+duration or easing that a token covers.
 
 ## 4h. Tabs, segmented controls & URL `?tab=` (#147, #121)
 
@@ -1293,7 +1303,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 |---|---|
 | `@semi/ui` → `AppShell.tsx`, `RouteHeader.tsx`, `MobileTabBar.tsx` | `AppShell` (1.0 frame: nav panel with main action, groups, pinned, bottom row of tools; 224px or the 72px rail; RouteHeader; content card; phone drawer; nav shortcuts), `useAppShell` (sub-items shown, rail, shortcuts), `navShortcutKeys`, `RouteHeader` (crumbs, middle, actions, account), `AccountMenu` (the account avatar menu), `useRecordCrumb` (a detail page names its record), `MobileTabBar`, `TAB_BAR_PAD` (opt-in `mobileNav="tabs"`) (§4) |
 | `MegaMenu.tsx`, `MinimalHeader.tsx`, `TextTabs.tsx`, `PillTabs.tsx`, `SegmentedControl.tsx`, `useTabParam.ts` | `MegaMenu` (flyout of category columns, `text-overline` headers, New badges, See all), `MinimalHeader` (breadcrumb left, one link + one primary right), `TextTabs` (big display tabs for 2–4 top-level views, brand underline, `href`, `onBeforeChange`, `activation`), `PillTabs` (default section tabs for 5+ sections or sections with icons, sliding `item-hover` pill, `tabpanel`, `href`, `onBeforeChange`, `activation`), `SegmentedControl` (2–5 filter values with counts, sliding `raised-2` pill, `radiogroup`), `useTabParam` (`?tab=` URL state without history spam per arrow key) (§4, §4h) |
-| `Page.tsx`, `ListReader.tsx` | `Page` (shared 1.0 page anatomy and `work` / `reading` / `two-column` layouts + vertical rhythm), `SubNav` (240px sub-nav card with `text-nav-label` groups and h32 items), `PageSection` (20/500 heading + 16px content gap), `PageGrid` (8px `@container` grid), `ListReaderLayout` (two independent scrollers on `fixed` mode, `?open=`, `useRecordCrumb`, phone swap), `ReaderHeader` (sticky one-row reader header: wrapping title left, `[•••]` + one main action right) (§4a) |
+| `Page.tsx`, `PageEnter.tsx`, `ListReader.tsx` | `Page` (shared 1.0 page anatomy and `work` / `reading` / `two-column` layouts + vertical rhythm + `enter`), `PageEnter` (`display: contents` route-level `motion-enter` + `motion-stagger` wrapper for top blocks and first ~10 rows / cards, once per route), `SubNav` (240px sub-nav card with `text-nav-label` groups and h32 items), `PageSection` (20/500 heading + 16px content gap), `PageGrid` (8px `@container` grid), `ListReaderLayout` (two independent scrollers on `fixed` mode, `?open=`, `useRecordCrumb`, phone swap), `ReaderHeader` (sticky one-row reader header: wrapping title left, `[•••]` + one main action right) (§4a, §4g) |
 | `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle` (18/400 UI sans on the action row; `variant="reading"` 44/500 display title for one-column reading pages), `PageTabsTitle` (deprecated underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh; phone layout with `filters` / `collapseFilters` / `secondaryActions`), `ToolbarFilters` (§4a) |
 | `SearchPill.tsx`, `FilterChipRow.tsx`, `ViewSwitch.tsx`, `FilterPanel.tsx`, `filterParams.ts` | `StickyContextBar` (sticky search + filter row, 16px above the list), `SearchPill` (wide pill search, debounce, `/`), `ResultLine` (deprecated in 1.0), `SortDef`, `FilterChipRow` (one-line chips, ‹ ›, Xoá lọc, leading views, trailing `sort` + `selection` in-place bulk bar + `ViewSwitch`), `useListSelection` (selection-mode state hook), `BulkAction`, `ListSelection`, `FilterChip`, `FilterOptions`, `useFilterParams` (filter state in the URL, Back / Forward), `ViewSwitch` (list ↔ grid, density), `PhoneFilterBar` (views · Bộ lọc · sort · Chọn / in-place selection bar), `FilterPanel` (full-screen / side-sheet filters); URL helpers `readFilters`, `readFilterValues`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, types `FilterSpec`, `FilterDef`, `FilterOption`, `FilterValues` (§4, §4d) |
 | `SplitButton.tsx`, `CardActions.tsx`, `DetailOverlay.tsx` | `SplitButton` (main action + ▾ `Menu` of its variants, one button on phones, G1), `CardActions` (hover / focus icon actions + ⋯ on cards, ⋯ only on touch), `DetailOverlay` (record over its list: ‹ › with n / N, side panel, scroll kept), `useDetailParam` (`?open=` in the URL, Back closes), `openDetail` (open one from anywhere on the route), types `CardAction`, `DetailParamState` (§4, §9) |
@@ -2895,7 +2905,7 @@ The one look's radii, card shadow and border, control sizes and spacing unit are
 ## Motion
 
 Each token is a duration and an easing, usable in a `transition` or `animation` shorthand
-(`transition: background-color var(--motion-hover)`). T9 wires the components; T1 defines them.
+(`transition: background-color var(--motion-hover)`). Components wire these tokens across hover, page enter (`PageEnter` / `Page enter`), skeletons (`Skeleton` / `PageSkeleton`), `Tooltip`, `Accordion` / `Collapsible`, `RouteHeader`, and sliding tabs (#151).
 
 | Token | Value | Use |
 |---|---|---|
@@ -2910,8 +2920,7 @@ Each token is a duration and an easing, usable in a `transition` or `animation` 
 | `--motion-disclosure` / `--motion-disclosure-close` | 300ms ease-out / ease-in | disclosure open / close |
 | `--motion-slide` | 300ms ease-out | sliding active pill (`transition-slide`) |
 
-Under `prefers-reduced-motion: reduce` the distances (`--motion-crumb-distance`, `--motion-enter-distance`) are 0 and
-`--motion-tooltip-scale` is 1, so every entrance is opacity only.
+Under `prefers-reduced-motion: reduce` every entrance is opacity only (no translate, no scale, no slide) and skeleton pulse stops.
 
 
 ---
@@ -9539,7 +9548,7 @@ Shared 1.0 page anatomy and three layouts inside AppShell's content card: work (
 ## Import
 
 ```tsx
-import { Page, SubNav, PageSection, PageGrid } from "@semi/ui";
+import { Page, PageEnter, SubNav, PageSection, PageGrid } from "@semi/ui";
 ```
 
 ## Examples
@@ -9681,6 +9690,7 @@ Owns the vertical rhythm from the card top (32px to the header block, 28px from 
 |---|---|---|---|
 | `layout` | `'work' \| 'reading' \| 'two-column'` | `"work"` | Page layout inside the content card: `"work"` (flush, 16 / 24), `"reading"` (centred max 1536px inside 16px card padding, 64px bottom), or `"two-column"` (240px sub-nav card + 4px gap + main card). |
 | `fixed` | `boolean` | `false` | Fixed-height page: fills the content column without scrolling the card so inner panels (`ListReaderLayout`, a pinned list) scroll independently. Works inside `<AppShell page="fixed">` or a shared `<AppShell>`. |
+| `enter` | `string \| boolean` | `false` | Run `motion-enter` + `motion-stagger` on the page's top blocks and first ~10 rows / cards once per route (`PageEnter`). Pass `true` to key by pathname, or a string for a custom route key. Adds no layout box. |
 | `subNav` | `React.ReactNode` |  | Sub-navigation card for `layout="two-column"` (`<SubNav sections={…} activeId={…} />`). |
 | `title` | `React.ReactNode` |  | Page heading: a string / node rendered via `PageTitle` (18/400 UI sans by default), or leave out when `tabs` is big `TextTabs`. |
 | `titleVariant` | `'work' \| 'reading'` | `"work"` | On a `"reading"` page, `"reading"` opts into the 44 / 500 display title (`text-title-xl`). Ignored on other layouts. |
@@ -9691,6 +9701,20 @@ Owns the vertical rhythm from the card top (32px to the header block, 28px from 
 | `children` * | `React.ReactNode` |  | Page blocks (spaced 32px apart; in `fixed` mode, fills the remaining height). |
 | `footer` | `React.ReactNode` |  | Optional page footer (`Pagination`, `FormActions`). |
 | `className` | `string` |  |  |
+
+### PageEnter
+
+Runs `motion-enter` + `motion-stagger` (first ~10 rows / cards) once per route without adding a layout box
+(`display: contents`). Wrap `{children}` inside `AppShell` (or pass `enter` on `<Page>`) so the shell stays still
+and only page content rises in on route changes. Filter, search, sort and `?tab=` changes never replay it, and rows
+arriving after `windowMs` do not animate. Under `prefers-reduced-motion: reduce`, entrance is opacity only.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `routeKey` | `string` |  | Key that triggers a new entrance when it changes. Defaults to `usePathname()` (ignores query string changes). |
+| `disabled` | `boolean` | `false` | Disable the enter animation completely. |
+| `windowMs` | `number` | `DEFAULT_ENTER_WINDOW_MS` | Milliseconds after route mount before the enter window closes so late-arriving rows do not animate. |
+| `children` * | `React.ReactNode` |  |  |
 
 ### SubNav
 
@@ -9740,7 +9764,8 @@ Compact 8px (`gap-2`) grid inside a `<PageSection>` or `<Card>`, sized by `@cont
 
 ## Notes
 
-- Inside AppShell, a direct-child Page automatically overrides the default 1440px container and switches two-column / fixed modes in CSS without remounting AppShell.
+- Inside AppShell, a direct-child Page automatically overrides the default 1440px container and switches two-column / fixed modes in CSS without remounting AppShell (also works when wrapped in PageEnter).
+- Wrap AppShell children in PageEnter (or pass enter on Page) to run motion-enter + motion-stagger on top blocks and the first ~10 rows / cards once per route. PageEnter renders display: contents so fixed-height chains and inner scrollers keep working; filter, search, sort and ?tab= changes never replay it.
 - Vertical rhythm from the card top: 32px to the header block, 28px title/tabs to intro or toolbar, 16px toolbar to list, 32px between blocks, 16px heading to content (PageSection), 8px inside grids (PageGrid).
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/page/ and the types in src/ -->

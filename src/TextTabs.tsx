@@ -108,7 +108,7 @@ export function TextTabs<T extends string = string>({
               onClick: (e: React.MouseEvent<HTMLElement>) => onItemClick(it, e),
               onKeyDown: (e: React.KeyboardEvent<HTMLElement>) => onItemKeyDown(it, e),
               className: cn(
-                "shrink-0 whitespace-nowrap font-display text-tab-xl font-normal text-strong rounded-control underline decoration-2 underline-offset-6 transition-opacity duration-150 motion-reduce:transition-none",
+                "shrink-0 whitespace-nowrap font-display text-tab-xl font-normal text-strong rounded-control underline decoration-2 underline-offset-6 transition-hover",
                 it.disabled ? "opacity-20 cursor-not-allowed" : "cursor-pointer",
                 FOCUS_RING,
                 on ? "opacity-100 decoration-primary" : cn("opacity-20 decoration-transparent", !it.disabled && "hover:opacity-50 focus-visible:opacity-100"),

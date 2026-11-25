@@ -73,7 +73,7 @@ export function Item({
       ? cn("bg-item-checked", (href || onClick) && "hover:bg-item-selected")
       : (href || onClick) && "hover:bg-item-hover";
   return (
-    <div className={cn("relative flex items-center gap-3 px-4 py-3 transition-colors", bgCls, className)}>
+    <div data-motion-item="" className={cn("relative flex items-center gap-3 px-4 py-3 transition-hover", bgCls, className)}>
       {selectable && (
         <div className="relative z-10 flex shrink-0 items-center">
           <Checkbox checked={checked} onChange={(on) => onCheckedChange?.(on)} aria-label={checkboxName} />

@@ -9,10 +9,10 @@ export const CARD = "bg-card border-card rounded-card shadow-card min-w-0";
 export const CARD_BORDERED = "bg-panel border border-line rounded-card shadow-card min-w-0";
 
 /** Clickable card (opens a detail view): the border shows on hover. */
-export const CARD_HOVER = `${CARD} hover:border-line-hover active:scale-[0.99] transition`;
+export const CARD_HOVER = `${CARD} hover:border-line-hover active:scale-[0.99] transition-hover`;
 
 /** Clickable bordered card. */
-export const CARD_BORDERED_HOVER = `${CARD_BORDERED} hover:border-line-hover active:scale-[0.99] transition`;
+export const CARD_BORDERED_HOVER = `${CARD_BORDERED} hover:border-line-hover active:scale-[0.99] transition-hover`;
 
 /** Plain hero panel at the top of a page, on the card surface. No glow (docs/DESIGN_SYSTEM.md, "Flat, no glow, no gradients"). */
 export const HERO = "relative overflow-hidden rounded-panel border-card bg-card shadow-card p-card sm:p-panel";
@@ -53,11 +53,11 @@ export const COUNT_BADGE_CORNER = "absolute -top-1 -right-1 pointer-events-none"
 export const NEW_TAG = "inline-flex items-center h-4 px-1.5 rounded-full bg-new-tag text-on-new-tag text-tag leading-none shrink-0";
 
 /** Text link on the right of a section heading ("Quản lý ›"). */
-export const SECTION_LINK = "ml-auto inline-flex items-center gap-1 text-ui font-medium text-muted hover:text-strong transition";
+export const SECTION_LINK = "ml-auto inline-flex items-center gap-1 text-ui font-medium text-muted hover:text-strong transition-hover";
 
 /** Empty state: dashed card, icon above one short line. Usually a <button> that adds the first item. */
 export const EMPTY =
-  "rounded-card border border-dashed border-line p-8 flex flex-col items-center gap-2.5 text-center text-ui text-muted hover:text-strong hover:border-line-hover transition outline-none focus-visible:ring-2 focus-visible:ring-focus";
+  "rounded-card border border-dashed border-line p-8 flex flex-col items-center gap-2.5 text-center text-ui text-muted hover:text-strong hover:border-line-hover transition-hover outline-none focus-visible:ring-2 focus-visible:ring-focus";
 
 /** Non-interactive empty state (EmptyState): same dashed card as EMPTY without the hover. */
 export const EMPTY_STATIC =
@@ -68,13 +68,13 @@ export const EMPTY_PHONE_CAP = "max-sm:p-4 max-sm:gap-2 max-sm:max-h-[40svh] max
 
 /** Square icon-only action button in a card header (edit, delete, more). */
 export const ICON_BTN =
-  "w-7 h-7 rounded-control flex items-center justify-center text-muted hover:text-strong bg-tint hover:bg-tint-hover transition outline-none focus-visible:ring-2 focus-visible:ring-focus active:scale-95";
+  "w-7 h-7 rounded-control flex items-center justify-center text-muted hover:text-strong bg-tint hover:bg-tint-hover transition-hover outline-none focus-visible:ring-2 focus-visible:ring-focus active:scale-95";
 export const ICON_BTN_DANGER =
-  "w-7 h-7 rounded-control flex items-center justify-center text-muted hover:text-danger-fg bg-tint hover:bg-danger-bg active:bg-danger-border transition outline-none focus-visible:ring-2 focus-visible:ring-focus active:scale-95";
+  "w-7 h-7 rounded-control flex items-center justify-center text-muted hover:text-danger-fg bg-tint hover:bg-danger-bg active:bg-danger-border transition-hover outline-none focus-visible:ring-2 focus-visible:ring-focus active:scale-95";
 
 /** Close button in modal headers: visible background pill with clear contrast, easily tappable on dark backgrounds. */
 export const MODAL_CLOSE =
-  "w-9 h-9 sm:w-8 sm:h-8 rounded-full bg-tint hover:bg-tint-hover text-muted hover:text-strong flex items-center justify-center transition outline-none focus-visible:ring-2 focus-visible:ring-focus active:scale-95 shrink-0";
+  "w-9 h-9 sm:w-8 sm:h-8 rounded-full bg-tint hover:bg-tint-hover text-muted hover:text-strong flex items-center justify-center transition-hover outline-none focus-visible:ring-2 focus-visible:ring-focus active:scale-95 shrink-0";
 
 /** Status pill (device state, job result): coloured 15% fill + 300 text. */
 export const STATUS_PILL = "inline-flex items-center gap-1.5 h-6 px-2 rounded-full text-chrome font-medium whitespace-nowrap";
@@ -183,11 +183,11 @@ export const FIELD_TEXT_PHONE = "max-sm:text-input";
 
 /** Form text input: 1.0 quiet field (bg-field, 1px field-line, radius 8; darker fill + field-line-focus on focus, no glow; 2px keyboard-only outline). */
 export const FIELD_INPUT =
-  "w-full h-field pointer-coarse:max-sm:min-h-11 bg-field border border-field-line rounded-control px-3 text-ui max-sm:text-input text-strong placeholder:text-muted focus:border-field-line-focus focus:bg-field-focus outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus transition-colors disabled:opacity-40";
+  "w-full h-field pointer-coarse:max-sm:min-h-11 bg-field border border-field-line rounded-control px-3 text-ui max-sm:text-input text-strong placeholder:text-muted focus:border-field-line-focus focus:bg-field-focus outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus transition-hover disabled:opacity-40";
 
 /** Form textarea: 1.0 quiet field matching FIELD_INPUT. */
 export const FIELD_TEXTAREA =
-  "w-full bg-field border border-field-line rounded-control px-3 py-2 text-ui max-sm:text-input text-strong placeholder:text-muted focus:border-field-line-focus focus:bg-field-focus outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus transition-colors disabled:opacity-40";
+  "w-full bg-field border border-field-line rounded-control px-3 py-2 text-ui max-sm:text-input text-strong placeholder:text-muted focus:border-field-line-focus focus:bg-field-focus outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus transition-hover disabled:opacity-40";
 
 /** The 1.0 shell frame (used by AppShell, #144): `canvas` with 8px padding and gap from sm, none on phones. */
 export const SHELL_OUTER =

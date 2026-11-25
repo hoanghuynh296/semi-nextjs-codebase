@@ -38,13 +38,24 @@ export function Collapsible({
         aria-expanded={isOpen}
         aria-controls={id}
         onClick={() => setOpen(!isOpen)}
-        className={cn("w-full flex items-center gap-2 py-2 text-left text-ui font-medium text-strong rounded-control", FOCUS_RING)}
+        className={cn("w-full flex items-center gap-2 py-2 text-left text-ui font-medium text-strong rounded-control transition-hover", FOCUS_RING)}
       >
-        <Icon name="chevronDown" className={cn("w-4 h-4 text-muted shrink-0 transition-transform", !isOpen && "-rotate-90")} />
+        <Icon
+          name="chevronDown"
+          className={cn("w-4 h-4 text-muted shrink-0 semi-disclosure-chevron", !isOpen && "-rotate-90")}
+        />
         <span className="flex-1 min-w-0">{title}</span>
       </button>
-      <div id={id} hidden={!isOpen} className="pl-6 pb-2 text-ui text-body">
-        {children}
+      <div
+        id={id}
+        data-open={isOpen ? "true" : "false"}
+        aria-hidden={!isOpen || undefined}
+        inert={!isOpen || undefined}
+        className="semi-disclosure"
+      >
+        <div>
+          <div className="pl-6 pb-2 text-ui text-body">{children}</div>
+        </div>
       </div>
     </div>
   );
@@ -123,16 +134,29 @@ export function Accordion({
                 onClick={() => toggle(it.key)}
                 onKeyDown={(e) => onKey(e, i)}
                 className={cn(
-                  "w-full flex items-center gap-3 py-3 text-left text-ui font-medium text-strong rounded-control disabled:opacity-40 disabled:cursor-not-allowed",
+                  "w-full flex items-center gap-3 py-3 text-left text-ui font-medium text-strong rounded-control transition-hover disabled:opacity-40 disabled:cursor-not-allowed",
                   FOCUS_RING,
                 )}
               >
                 <span className="flex-1 min-w-0">{it.title}</span>
-                <Icon name="chevronDown" className={cn("w-4 h-4 text-muted shrink-0 transition-transform", isOpen && "rotate-180")} />
+                <Icon
+                  name="chevronDown"
+                  className={cn("w-4 h-4 text-muted shrink-0 semi-disclosure-chevron", isOpen && "rotate-180")}
+                />
               </button>
             </H>
-            <div id={pid} role="region" aria-labelledby={hid} hidden={!isOpen} className="pb-3 text-ui text-body">
-              {it.content}
+            <div
+              id={pid}
+              role="region"
+              aria-labelledby={hid}
+              data-open={isOpen ? "true" : "false"}
+              aria-hidden={!isOpen || undefined}
+              inert={!isOpen || undefined}
+              className="semi-disclosure"
+            >
+              <div>
+                <div className="pb-3 text-ui text-body">{it.content}</div>
+              </div>
             </div>
           </div>
         );

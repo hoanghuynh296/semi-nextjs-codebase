@@ -171,7 +171,7 @@ export function MegaMenu({
                       onNavigate?.(it.id);
                       onClose();
                     }}
-                    className={cn("flex items-start gap-2.5 rounded-control px-2 py-2 hover:bg-tint transition", FOCUS_RING)}
+                    className={cn("flex items-start gap-2.5 rounded-control px-2 py-2 hover:bg-tint transition-hover", FOCUS_RING)}
                   >
                     {it.icon && <Icon name={it.icon} className="w-4 h-4 mt-0.5 text-muted shrink-0" />}
                     <span className="min-w-0 flex-1">

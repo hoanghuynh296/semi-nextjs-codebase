@@ -101,8 +101,8 @@ export function Tooltip(props: {
             onPointerLeave={hide}
             style={{ left: pos.left, top: pos.top, bottom: pos.bottom }}
             className={cn(
-              "fixed z-tooltip max-w-[260px] px-2 py-1 rounded-control bg-raised border border-line text-chrome text-strong shadow-overlay",
-              side === "right" && "-translate-y-1/2",
+              "fixed z-tooltip max-w-[260px] px-2 py-1 rounded-control bg-raised border border-line text-chrome text-strong shadow-overlay animate-tooltip-in",
+              side === "right" ? "-translate-y-1/2 origin-left" : pos.bottom !== undefined ? "origin-bottom" : "origin-top",
             )}
           >
             {content}
@@ -270,7 +270,7 @@ function MenuPanel({
   const menuRole = { id, role: "menu", "aria-label": label, onKeyDown: onKey };
   const rowCls = (it: MenuItem) =>
     cn(
-      "w-full text-left px-3 py-2 max-sm:py-3 rounded-control text-ui flex items-center gap-2 transition outline-none",
+      "w-full text-left px-3 py-2 max-sm:py-3 rounded-control text-ui flex items-center gap-2 transition-hover outline-none",
       it.disabled ? "opacity-40 cursor-not-allowed" : it.loading ? "cursor-progress" : "cursor-pointer",
       it.danger ? "text-danger-fg hover:bg-danger-bg focus-visible:bg-danger-bg" : "text-body hover:bg-raised hover:text-strong focus-visible:bg-raised focus-visible:text-strong",
     );
@@ -605,7 +605,7 @@ export function Menubar({ menus, label, className }: { menus: MenubarMenu[]; /**
             e.preventDefault();
             keys[e.key]();
           }}
-          className={cn("h-7 px-2.5 rounded-control text-chrome font-medium transition outline-none focus-visible:ring-2 focus-visible:ring-focus", open === i ? "bg-raised text-strong" : "text-body hover:bg-field hover:text-strong")}
+          className={cn("h-7 px-2.5 rounded-control text-chrome font-medium transition-hover outline-none focus-visible:ring-2 focus-visible:ring-focus", open === i ? "bg-raised text-strong" : "text-body hover:bg-field hover:text-strong")}
         >
           {m.label}
         </button>

@@ -1,6 +1,6 @@
 "use client";
 
-// Shimmer placeholders shown while a page or a list loads (docs/DESIGN_SYSTEM.md §13b). The `.shimmer` class lives in base.css.
+// Pulsing skeleton placeholders shown while a page or a list loads (docs/DESIGN_SYSTEM.md §13b). Uses `motion-pulse` (2.5s ease-in-out, opacity 1→0.6→1; stops under prefers-reduced-motion) via `.shimmer` in base.css.
 import React from "react";
 import { useSemiLocale } from "./locale";
 import { Spinner } from "./Button";

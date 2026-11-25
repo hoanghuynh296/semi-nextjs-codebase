@@ -4,6 +4,18 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## Unreleased
 
+**1.0 motion wiring (#151, T9; part of v1.0.0).** Wires T1's motion tokens across Semi components: once-per-route page enter & stagger (`PageEnter` / `Page enter`), `motion-pulse` on skeletons, `motion-tooltip` on `Tooltip`, `motion-disclosure` / `motion-disclosure-close` on `Accordion` and `Collapsible`, `transition-hover` on interactive elements, and opacity-only reduced motion with stopped skeleton pulse.
+
+### Added
+- **`PageEnter` (`src/PageEnter.tsx`) and `Page enter` prop:** `display: contents` route-level wrapper (keyed by `usePathname()` or custom `routeKey`) that runs `motion-enter` (400ms, opacity + translateY 4px → 0) and `motion-stagger` (35ms per item, capped at the first 10 rows / cards) once per route. Never replays on filter, search, sort or `?tab=` changes, and never animates rows arriving after `windowMs` (default 1000ms). Adds no layout box, so fixed-height chains and inner scrollers keep working.
+
+### Changed
+- **Skeleton pulse (`Skeleton`, `PageSkeleton`, `.shimmer`):** pulses quietly with `motion-pulse` (2.5s ease-in-out, opacity 1 → 0.6 → 1) instead of the old gradient sweep or Tailwind's default `animate-pulse`, and stops under `prefers-reduced-motion: reduce`.
+- **`Tooltip` (`src/Overlay.tsx`):** enters with `animate-tooltip-in` (`--motion-tooltip`, 200ms `cubic-bezier(0.16,1,0.3,1)`, opacity + scale 0.96 → 1).
+- **Disclosure (`Accordion`, `Collapsible`, `src/Disclosure.tsx`):** panel and chevron animate with `--motion-disclosure` (300ms ease-out) on open and `--motion-disclosure-close` (300ms ease-in) on close, with `inert` + `aria-hidden` while closed; under `prefers-reduced-motion: reduce`, opacity only (no slide or chevron animation).
+- **Hover & token consistency:** replaced hard-coded durations / easings (`duration-150`, `duration-200`, `duration-300`, `animate-in`) and bare `transition` / `transition-colors` across `Table`, `Item`, `Tabs`, `TextTabs`, `Pills`, `Overlay`, `CustomSelect`, `CustomCombobox`, `SearchInput`, `SidePanel`, `Agent`, `Chat`, `Pagination`, `NavigationMenu`, `MegaMenu`, `OptionCards`, `styles/surfaces.ts`, `styles/appChrome.ts` and `styles/base.css` with motion tokens (`transition-hover`, `animate-tooltip-in`, `--motion-disclosure`).
+- **Reduced motion (`styles/base.css`):** under `prefers-reduced-motion: reduce`, all entrances (`PageEnter`, `animate-enter`, `animate-crumb-in`, `animate-tooltip-in`, `.slide-panel-in` / `-out`) animate opacity only (zero `transform` keyframes), disclosures fade without sliding, and skeleton pulse stops.
+
 **1.0 page layouts and lists (#149, T7; breaking, part of v1.0.0).** Three page layouts inside the content card (`work`, `reading`, `two-column`), layout-owned vertical rhythm (32 / 28 / 32 / 16 / 8), 18 / 400 work-page titles on the action row, calm list pages with sort and zero-shift selection mode in the filter row, non-nested card & item selection, `ListReaderLayout` + sticky `ReaderHeader`, and `WorkspaceLayout` / `SplitButton` / `PageSkeleton` upgrades (#71, #72, #116, #118, #127).
 
 ### Breaking
