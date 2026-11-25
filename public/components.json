@@ -2108,6 +2108,7 @@
       "props": [
         "layout",
         "fixed",
+        "enter",
         "subNav",
         "title",
         "titleVariant",
@@ -2153,6 +2154,20 @@
         "children"
       ],
       "doc": "docs/components/page-actions.md"
+    },
+    {
+      "name": "PageEnter",
+      "kind": "component",
+      "module": "src/PageEnter.tsx",
+      "client": true,
+      "summary": "Runs `motion-enter` + `motion-stagger` (first ~10 rows / cards) once per route without adding a layout box (`display: contents`). Wrap `{children}` inside `AppShell` (or pass `enter` on `<Page>`) so the shell stays still and only page content rises in on route changes. Filter, search, sort and `?tab=` changes never replay it, and rows arriving after `windowMs` do not animate. Under `prefers-reduced-motion: reduce`, entrance is opacity only.",
+      "props": [
+        "routeKey",
+        "disabled",
+        "windowMs",
+        "children"
+      ],
+      "doc": "docs/components/page.md"
     },
     {
       "name": "PageTitle",

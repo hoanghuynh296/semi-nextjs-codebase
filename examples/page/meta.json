@@ -4,6 +4,7 @@
   "description": "Shared 1.0 page anatomy and three layouts inside AppShell's content card: work (flush, padding 16 / 24), reading (centred max 1536px inside 16px card padding, 64px bottom), and two-column (240px sub-nav card + 4px gap + main card, stacking below md). Owns vertical rhythm (32 / 28 / 32 / 16 / 8).",
   "components": [
     "Page",
+    "PageEnter",
     "SubNav",
     "PageSection",
     "PageGrid"
@@ -27,7 +28,8 @@
     "SubNav icon actions carry aria-label, Tooltip, HIT_AREA and FOCUS_RING."
   ],
   "notes": [
-    "Inside AppShell, a direct-child Page automatically overrides the default 1440px container and switches two-column / fixed modes in CSS without remounting AppShell.",
+    "Inside AppShell, a direct-child Page automatically overrides the default 1440px container and switches two-column / fixed modes in CSS without remounting AppShell (also works when wrapped in PageEnter).",
+    "Wrap AppShell children in PageEnter (or pass enter on Page) to run motion-enter + motion-stagger on top blocks and the first ~10 rows / cards once per route. PageEnter renders display: contents so fixed-height chains and inner scrollers keep working; filter, search, sort and ?tab= changes never replay it.",
     "Vertical rhythm from the card top: 32px to the header block, 28px title/tabs to intro or toolbar, 16px toolbar to list, 32px between blocks, 16px heading to content (PageSection), 8px inside grids (PageGrid)."
   ],
   "examples": [

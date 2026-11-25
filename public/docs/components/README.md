@@ -76,7 +76,7 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Minimal header](minimal-header.md) | `MinimalHeader` | A detail page (one order, one customer) or a settings page reached from a list. |
 | [Navigation menu](navigation-menu.md) | `NavigationMenu` | Marketing sites, storefronts, docs headers. |
 | [Page actions](page-actions.md) | `PageActions`, `PageActionsProvider`, `PageActionsSlot` | A layout owns the header row but the page decides the actions (PageTabsTitle + “+”). |
-| [Page layouts](page.md) | `Page`, `SubNav`, `PageSection`, `PageGrid` | Every page inside AppShell: lists and workspaces (work), settings / explore / articles (reading), areas with sub-pages or mailbox folders (two-column). |
+| [Page layouts](page.md) | `Page`, `PageEnter`, `SubNav`, `PageSection`, `PageGrid` | Every page inside AppShell: lists and workspaces (work), settings / explore / articles (reading), areas with sub-pages or mailbox folders (two-column). |
 | [Page title](page-title.md) | `PageTitle`, `PageTabsTitle` | The first line of every page (PageTitle). |
 | [Pagination](pagination.md) | `Pagination` | Server-paged tables and reports. |
 | [Pill tabs](pill-tabs.md) | `PillTabs` | 5+ sections of one page, or sections with icons (Cấu hình: Hộp thư, Nhóm thư, Nguồn khách, Mặt hàng, Mẫu thư, Data Hub, Doanh nghiệp, Người dùng). |

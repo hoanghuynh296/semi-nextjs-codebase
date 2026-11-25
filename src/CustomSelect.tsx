@@ -202,13 +202,13 @@ export function CustomSelect({
           setActive(options.findIndex((o) => o.value === value));
         }}
         onKeyDown={onKey}
-        className={`flex items-center justify-between gap-2 outline-none cursor-pointer transition select-none disabled:opacity-40 disabled:cursor-not-allowed ${TRIGGER[variant]} ${buttonClassName}`}
+        className={`flex items-center justify-between gap-2 outline-none cursor-pointer transition-hover select-none disabled:opacity-40 disabled:cursor-not-allowed ${TRIGGER[variant]} ${buttonClassName}`}
       >
         <span className={`flex items-center gap-1.5 min-w-0 ${block ? "flex-1" : variant === "bare" ? "" : "max-w-[130px] sm:max-w-[180px]"}`}>
           {selected?.icon}
           {showsText && <span className={`truncate ${selected ? "" : "text-muted"}`}>{shown}</span>}
         </span>
-        <Icon name="chevronDown" className={`${variant === "bare" ? "hidden" : ""} w-3.5 h-3.5 text-muted transition-transform duration-150 shrink-0 ${open ? "rotate-180" : ""}`} />
+        <Icon name="chevronDown" className={`${variant === "bare" ? "hidden" : ""} w-3.5 h-3.5 text-muted [transition:transform_var(--motion-hover)] motion-reduce:transition-none shrink-0 ${open ? "rotate-180" : ""}`} />
       </button>
 
       {open &&
@@ -241,7 +241,7 @@ export function CustomSelect({
                     title={opt.title}
                     onClick={() => pick(opt)}
                     onPointerEnter={() => setActive(i)}
-                    className={`w-full text-left px-3 py-2 rounded-control text-ui transition cursor-pointer flex items-center justify-between gap-3 disabled:opacity-40 disabled:cursor-not-allowed ${
+                    className={`w-full text-left px-3 py-2 rounded-control text-ui transition-hover cursor-pointer flex items-center justify-between gap-3 disabled:opacity-40 disabled:cursor-not-allowed ${
                       isSelected
                         ? "bg-item-selected text-strong font-medium"
                         : i === active

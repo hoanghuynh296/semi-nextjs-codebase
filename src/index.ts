@@ -28,6 +28,7 @@ export * from "./MegaMenu";
 export * from "./MinimalHeader";
 export * from "./TextTabs";
 export * from "./Page";
+export * from "./PageEnter";
 export * from "./ListReader";
 export * from "./PageTitle";
 export * from "./SubpageToolbar";

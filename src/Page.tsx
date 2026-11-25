@@ -12,6 +12,7 @@ import React from "react";
 import Link from "next/link";
 import { Icon, type IconName } from "./Icon";
 import { Tooltip } from "./Overlay";
+import { PageEnter } from "./PageEnter";
 import { PageTitle } from "./PageTitle";
 import { useSemiLocale } from "./locale";
 import { cn, FOCUS_RING, HIT_AREA } from "../styles/utils";
@@ -234,6 +235,7 @@ export type PageLayout = "work" | "reading" | "two-column";
 export function Page({
   layout = "work",
   fixed = false,
+  enter = false,
   subNav,
   title,
   titleVariant = "work",
@@ -256,6 +258,11 @@ export function Page({
    * pinned list) scroll independently. Works inside `<AppShell page="fixed">` or a shared `<AppShell>`.
    */
   fixed?: boolean;
+  /**
+   * Run `motion-enter` + `motion-stagger` on the page's top blocks and first ~10 rows / cards once per route
+   * (`PageEnter`). Pass `true` to key by pathname, or a string for a custom route key. Adds no layout box.
+   */
+  enter?: boolean | string;
   /** Sub-navigation card for `layout="two-column"` (`<SubNav sections={…} activeId={…} />`). */
   subNav?: React.ReactNode;
   /** Page heading: a string / node rendered via `PageTitle` (18/400 UI sans by default), or leave out when `tabs` is big `TextTabs`. */
@@ -320,8 +327,11 @@ export function Page({
     </>
   );
 
+  const wrap = (node: React.ReactElement) =>
+    enter ? <PageEnter routeKey={typeof enter === "string" ? enter : undefined}>{node}</PageEnter> : node;
+
   if (layout === "reading") {
-    return (
+    return wrap(
       <div
         data-page-layout="reading"
         data-page-fixed={fixed ? "" : undefined}
@@ -337,7 +347,7 @@ export function Page({
         >
           {flow}
         </div>
-      </div>
+      </div>,
     );
   }
 
@@ -352,7 +362,7 @@ export function Page({
             ),
           })
         : subNav;
-    return (
+    return wrap(
       <div
         data-page-layout="two-column"
         data-page-fixed={fixed ? "" : undefined}
@@ -376,11 +386,11 @@ export function Page({
         >
           {flow}
         </div>
-      </div>
+      </div>,
     );
   }
 
-  return (
+  return wrap(
     <div
       data-page-layout="work"
       data-page-fixed={fixed ? "" : undefined}
@@ -392,6 +402,6 @@ export function Page({
       )}
     >
       {flow}
-    </div>
+    </div>,
   );
 }

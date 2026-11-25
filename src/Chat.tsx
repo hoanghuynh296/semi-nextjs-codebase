@@ -765,7 +765,7 @@ export function ChatPanel({
           aria-valuemax={MAX_WIDTH}
           aria-label={t.chatResize}
           title={t.chatResize}
-          className="max-sm:hidden absolute inset-y-0 left-0 w-1.5 z-10 cursor-col-resize touch-none select-none group outline-none hover:bg-outline-line focus-visible:bg-focus active:bg-field-line-focus transition-colors duration-150"
+          className="max-sm:hidden absolute inset-y-0 left-0 w-1.5 z-10 cursor-col-resize touch-none select-none group outline-none hover:bg-outline-line focus-visible:bg-focus active:bg-field-line-focus transition-hover"
         >
           <div className="absolute inset-y-0 -right-1.5 left-0 cursor-col-resize" />
           <div className="absolute top-1/2 left-0.5 -translate-y-1/2 w-3.5 h-9 rounded-full bg-field border border-line group-hover:border-strong flex items-center justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity shadow-float">

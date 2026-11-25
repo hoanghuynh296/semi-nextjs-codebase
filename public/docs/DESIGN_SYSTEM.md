@@ -487,23 +487,32 @@ scrolls inside) and the result on the right. Top of the panel: the tool's parts 
 bottom of the screen while the panel is in view (above MobileTabBar: AppShell sets `--semi-bottom-bar` in tabs mode;
 never put the layout in an `overflow-*` box). Headings in the result start at `h2`.
 
-## 4g. Motion (T9, pending)
+## 4g. Motion (#151)
 
-The motion tokens ship with T1 (`TOKENS.md` "Motion": `--motion-hover`, `--motion-nav`, `--motion-crumb-in` / `-out`,
-`--motion-enter`, `--motion-stagger`, `--motion-pulse`, `--motion-tooltip`, `--motion-disclosure`, `--motion-slide`
-and the utilities `transition-hover`, `transition-nav`, `transition-slide`, `animate-enter`, `animate-crumb-in`,
-`animate-tooltip-in`, `animate-pulse`). T9 wires the components:
+Semi wires T1's motion tokens (`TOKENS.md` "Motion": `--motion-hover`, `--motion-nav`, `--motion-crumb-in` / `-out`,
+`--motion-enter`, `--motion-stagger`, `--motion-pulse`, `--motion-tooltip`, `--motion-disclosure` /
+`--motion-disclosure-close`, `--motion-slide`, and the utilities `transition-hover`, `transition-nav`,
+`transition-slide`, `animate-enter`, `animate-crumb-in`, `animate-tooltip-in`, `animate-pulse`) across components:
 
-- Colours on hover and active change in 150ms (`transition-hover`); the nav's active fill in 150ms (`transition-nav`).
-- A new crumb slides in 6px (`animate-crumb-in`); page content enters with opacity and 4px (`animate-enter`), the
-  first ~10 items staggered 35ms, **once per route** (never on a filter or tab change).
-- The skeleton pulses 1 → 0.6 → 1 in 2.5s; a tooltip fades and scales from 0.96; a disclosure opens in 300ms ease-out;
-  the active pill of `PillTabs` / `SegmentedControl` slides in 300ms.
-- Under `prefers-reduced-motion` there is no translate and no scale: opacity only (the tokens do it).
-- The shell never remounts or moves on a route change.
+- **Hover & nav:** colours on hover and active change in 150ms (`transition-hover`) on links, buttons, tabs, menus and
+  rows; the nav's active background in 150ms (`transition-nav`).
+- **Page enter (`PageEnter` / `<Page enter>`):** top blocks and the first ~10 rows / cards (`tbody > tr`,
+  `[role="listitem"]`, `[data-page-grid] > *`, `[data-motion-item]`, `Item`) rise in with `motion-enter` (400ms,
+  opacity + 4px) and `motion-stagger` (35ms per item), **once per route** (keyed by pathname — never on filter, search,
+  sort or `?tab=` changes, and never for rows arriving after the initial enter window). `PageEnter` uses
+  `display: contents`, so it adds no layout box and never breaks fixed-height chains or inner scrollers.
+- **Skeleton pulse:** `Skeleton` and `PageSkeleton` pulse quietly with `motion-pulse` (2.5s ease-in-out, opacity
+  1 → 0.6 → 1), replacing Tailwind's default pulse; content replaces skeletons in place with no jump.
+- **Tooltip & disclosure:** `Tooltip` enters with `animate-tooltip-in` (200ms, opacity + scale 0.96 → 1); `Accordion`
+  and `Collapsible` open in 300ms ease-out (`--motion-disclosure`) and close in 300ms ease-in
+  (`--motion-disclosure-close`); `PillTabs` / `SegmentedControl` slide in 300ms (`transition-slide`).
+- **Reduced motion (`prefers-reduced-motion: reduce`):** opacity only (no translate, no scale, no slide); skeleton
+  pulse stops.
+- **Shell stillness:** the shell (nav, frame, route header bar, content card) never animates, remounts or moves on a
+  route change.
 
-Apps may use the tokens now in their own CSS (`transition: background-color var(--motion-hover)`); never a hand-made
-duration or easing.
+Apps should use these tokens in their own CSS (`transition: background-color var(--motion-hover)`); never hard-code a
+duration or easing that a token covers.
 
 ## 4h. Tabs, segmented controls & URL `?tab=` (#147, #121)
 
@@ -888,7 +897,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 |---|---|
 | `@semi/ui` → `AppShell.tsx`, `RouteHeader.tsx`, `MobileTabBar.tsx` | `AppShell` (1.0 frame: nav panel with main action, groups, pinned, bottom row of tools; 224px or the 72px rail; RouteHeader; content card; phone drawer; nav shortcuts), `useAppShell` (sub-items shown, rail, shortcuts), `navShortcutKeys`, `RouteHeader` (crumbs, middle, actions, account), `AccountMenu` (the account avatar menu), `useRecordCrumb` (a detail page names its record), `MobileTabBar`, `TAB_BAR_PAD` (opt-in `mobileNav="tabs"`) (§4) |
 | `MegaMenu.tsx`, `MinimalHeader.tsx`, `TextTabs.tsx`, `PillTabs.tsx`, `SegmentedControl.tsx`, `useTabParam.ts` | `MegaMenu` (flyout of category columns, `text-overline` headers, New badges, See all), `MinimalHeader` (breadcrumb left, one link + one primary right), `TextTabs` (big display tabs for 2–4 top-level views, brand underline, `href`, `onBeforeChange`, `activation`), `PillTabs` (default section tabs for 5+ sections or sections with icons, sliding `item-hover` pill, `tabpanel`, `href`, `onBeforeChange`, `activation`), `SegmentedControl` (2–5 filter values with counts, sliding `raised-2` pill, `radiogroup`), `useTabParam` (`?tab=` URL state without history spam per arrow key) (§4, §4h) |
-| `Page.tsx`, `ListReader.tsx` | `Page` (shared 1.0 page anatomy and `work` / `reading` / `two-column` layouts + vertical rhythm), `SubNav` (240px sub-nav card with `text-nav-label` groups and h32 items), `PageSection` (20/500 heading + 16px content gap), `PageGrid` (8px `@container` grid), `ListReaderLayout` (two independent scrollers on `fixed` mode, `?open=`, `useRecordCrumb`, phone swap), `ReaderHeader` (sticky one-row reader header: wrapping title left, `[•••]` + one main action right) (§4a) |
+| `Page.tsx`, `PageEnter.tsx`, `ListReader.tsx` | `Page` (shared 1.0 page anatomy and `work` / `reading` / `two-column` layouts + vertical rhythm + `enter`), `PageEnter` (`display: contents` route-level `motion-enter` + `motion-stagger` wrapper for top blocks and first ~10 rows / cards, once per route), `SubNav` (240px sub-nav card with `text-nav-label` groups and h32 items), `PageSection` (20/500 heading + 16px content gap), `PageGrid` (8px `@container` grid), `ListReaderLayout` (two independent scrollers on `fixed` mode, `?open=`, `useRecordCrumb`, phone swap), `ReaderHeader` (sticky one-row reader header: wrapping title left, `[•••]` + one main action right) (§4a, §4g) |
 | `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle` (18/400 UI sans on the action row; `variant="reading"` 44/500 display title for one-column reading pages), `PageTabsTitle` (deprecated underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh; phone layout with `filters` / `collapseFilters` / `secondaryActions`), `ToolbarFilters` (§4a) |
 | `SearchPill.tsx`, `FilterChipRow.tsx`, `ViewSwitch.tsx`, `FilterPanel.tsx`, `filterParams.ts` | `StickyContextBar` (sticky search + filter row, 16px above the list), `SearchPill` (wide pill search, debounce, `/`), `ResultLine` (deprecated in 1.0), `SortDef`, `FilterChipRow` (one-line chips, ‹ ›, Xoá lọc, leading views, trailing `sort` + `selection` in-place bulk bar + `ViewSwitch`), `useListSelection` (selection-mode state hook), `BulkAction`, `ListSelection`, `FilterChip`, `FilterOptions`, `useFilterParams` (filter state in the URL, Back / Forward), `ViewSwitch` (list ↔ grid, density), `PhoneFilterBar` (views · Bộ lọc · sort · Chọn / in-place selection bar), `FilterPanel` (full-screen / side-sheet filters); URL helpers `readFilters`, `readFilterValues`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, types `FilterSpec`, `FilterDef`, `FilterOption`, `FilterValues` (§4, §4d) |
 | `SplitButton.tsx`, `CardActions.tsx`, `DetailOverlay.tsx` | `SplitButton` (main action + ▾ `Menu` of its variants, one button on phones, G1), `CardActions` (hover / focus icon actions + ⋯ on cards, ⋯ only on touch), `DetailOverlay` (record over its list: ‹ › with n / N, side panel, scroll kept), `useDetailParam` (`?open=` in the URL, Back closes), `openDetail` (open one from anywhere on the route), types `CardAction`, `DetailParamState` (§4, §9) |

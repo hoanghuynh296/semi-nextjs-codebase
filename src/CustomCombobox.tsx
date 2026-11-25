@@ -205,9 +205,9 @@ export function CustomCombobox({
           aria-hidden
           disabled={disabled}
           onClick={() => setOpen((prev) => !prev)}
-          className="absolute right-2.5 p-1 text-muted hover:text-strong transition cursor-pointer"
+          className="absolute right-2.5 p-1 text-muted hover:text-strong transition-hover cursor-pointer"
         >
-          <Icon name="chevronDown" className={`w-3.5 h-3.5 transition-transform duration-150 ${open ? "rotate-180" : ""}`} />
+          <Icon name="chevronDown" className={`w-3.5 h-3.5 [transition:transform_var(--motion-hover)] motion-reduce:transition-none ${open ? "rotate-180" : ""}`} />
         </button>
       </div>
 

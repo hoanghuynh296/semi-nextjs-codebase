@@ -50,7 +50,7 @@ export function SidePanel({
   return (
     <div
       id={id}
-      className="flex-shrink-0 bg-panel border-r border-divider z-10 select-none h-full relative overflow-hidden transition-[width] duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] motion-reduce:transition-none"
+      className="flex-shrink-0 bg-panel border-r border-divider z-10 select-none h-full relative overflow-hidden [transition:width_var(--motion-disclosure)] motion-reduce:transition-none"
       style={{ width: `${collapsed ? SIDE_PANEL_COLLAPSED : width}px` }}
       onTransitionEnd={(e) => {
         if (e.target === e.currentTarget && e.propertyName === "width") setSettling(false);
@@ -59,7 +59,7 @@ export function SidePanel({
       {/* Collapsed: a thin rail with the expand button (same toggle as the home menu) */}
       <div
         inert={!collapsed}
-        className={`absolute inset-y-0 left-0 w-12 flex flex-col items-center pt-3 transition-opacity duration-200 ${
+        className={`absolute inset-y-0 left-0 w-12 flex flex-col items-center pt-3 transition-hover ${
           collapsed ? "opacity-100 delay-100" : "opacity-0 pointer-events-none"
         }`}
       >
@@ -68,7 +68,7 @@ export function SidePanel({
           onClick={onToggleCollapse}
           aria-label={t.expandPanel}
           title={t.expandPanel}
-          className="w-7 h-7 rounded-control flex items-center justify-center text-muted hover:text-strong hover:bg-raised transition"
+          className="w-7 h-7 rounded-control flex items-center justify-center text-muted hover:text-strong hover:bg-raised transition-hover"
         >
           <Icon name="sidebar" className="w-3.5 h-3.5" />
         </button>
@@ -76,7 +76,7 @@ export function SidePanel({
 
       <div
         inert={collapsed}
-        className={`h-full flex flex-col overflow-y-auto overflow-x-hidden overscroll-contain custom-scrollbar relative transition-opacity duration-200 ${
+        className={`h-full flex flex-col overflow-y-auto overflow-x-hidden overscroll-contain custom-scrollbar relative transition-hover ${
           collapsed ? "opacity-0 pointer-events-none" : "opacity-100 delay-75"
         }`}
         style={collapsed || settling ? { width: `${width}px` } : undefined}

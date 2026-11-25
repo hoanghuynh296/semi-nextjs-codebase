@@ -157,7 +157,7 @@ The one look's radii, card shadow and border, control sizes and spacing unit are
 ## Motion
 
 Each token is a duration and an easing, usable in a `transition` or `animation` shorthand
-(`transition: background-color var(--motion-hover)`). T9 wires the components; T1 defines them.
+(`transition: background-color var(--motion-hover)`). Components wire these tokens across hover, page enter (`PageEnter` / `Page enter`), skeletons (`Skeleton` / `PageSkeleton`), `Tooltip`, `Accordion` / `Collapsible`, `RouteHeader`, and sliding tabs (#151).
 
 | Token | Value | Use |
 |---|---|---|
@@ -172,5 +172,4 @@ Each token is a duration and an easing, usable in a `transition` or `animation` 
 | `--motion-disclosure` / `--motion-disclosure-close` | 300ms ease-out / ease-in | disclosure open / close |
 | `--motion-slide` | 300ms ease-out | sliding active pill (`transition-slide`) |
 
-Under `prefers-reduced-motion: reduce` the distances (`--motion-crumb-distance`, `--motion-enter-distance`) are 0 and
-`--motion-tooltip-scale` is 1, so every entrance is opacity only.
+Under `prefers-reduced-motion: reduce` every entrance is opacity only (no translate, no scale, no slide) and skeleton pulse stops.

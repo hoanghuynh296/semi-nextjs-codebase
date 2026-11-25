@@ -54,7 +54,7 @@ export function NavigationMenu({
     return () => document.removeEventListener("pointerdown", onDown);
   }, [open]);
   const linkCls = (href: string) =>
-    cn("inline-flex items-center h-control px-3 rounded-control text-ui font-medium transition", href === current ? "text-strong bg-raised" : "text-body hover:text-strong hover:bg-field", FOCUS_RING);
+    cn("inline-flex items-center h-control px-3 rounded-control text-ui font-medium transition-hover", href === current ? "text-strong bg-raised" : "text-body hover:text-strong hover:bg-field", FOCUS_RING);
   return (
     <nav
       ref={navRef}

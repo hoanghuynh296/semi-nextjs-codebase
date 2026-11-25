@@ -511,6 +511,7 @@
     "description": "Shared 1.0 page anatomy and three layouts inside AppShell's content card: work (flush, padding 16 / 24), reading (centred max 1536px inside 16px card padding, 64px bottom), and two-column (240px sub-nav card + 4px gap + main card, stacking below md). Owns vertical rhythm (32 / 28 / 32 / 16 / 8).",
     "components": [
       "Page",
+      "PageEnter",
       "SubNav",
       "PageSection",
       "PageGrid"

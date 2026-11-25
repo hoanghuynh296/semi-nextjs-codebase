@@ -129,7 +129,7 @@ export function TabEdgeCue({
       aria-hidden
       data-edge={side}
       className={cn(
-        "pointer-events-none absolute z-10 w-0.5 rounded-full bg-outline-line transition-opacity duration-150 motion-reduce:transition-none",
+        "pointer-events-none absolute z-10 w-0.5 rounded-full bg-outline-line transition-hover",
         insetClass,
         side === "left" ? "left-0" : "right-0",
         shown ? "opacity-100" : "opacity-0",

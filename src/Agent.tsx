@@ -15,8 +15,8 @@ import { useSemiLocale } from "./locale";
 import type { SemanticTone } from "../styles/surfaces";
 import { FOCUS_RING, cn } from "../styles/utils";
 
-const DISCLOSURE_ROW = cn("w-full flex items-center gap-2 text-left rounded-control transition", FOCUS_RING);
-const chevron = (open: boolean) => <Icon name="chevronDown" className={cn("w-3.5 h-3.5 text-muted shrink-0 transition-transform", !open && "-rotate-90")} />;
+const DISCLOSURE_ROW = cn("w-full flex items-center gap-2 text-left rounded-control transition-hover", FOCUS_RING);
+const chevron = (open: boolean) => <Icon name="chevronDown" className={cn("w-3.5 h-3.5 text-muted shrink-0 semi-disclosure-chevron", !open && "-rotate-90")} />;
 
 // ─── Reasoning ───────────────────────────────────────────────────────────────────────────────────────────────────
 

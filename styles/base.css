@@ -66,15 +66,81 @@
 *, *::before, *::after { scrollbar-width: none; -ms-overflow-style: none; }
 ::-webkit-scrollbar { display: none; width: 0; height: 0; }
 
-/* Loading skeleton: a tonal block with a light band sweeping across (Skeleton.tsx). The only gradient Semi allows. */
-@keyframes shimmer-sweep { 100% { transform: translateX(100%); } }
-.shimmer { position: relative; overflow: hidden; background-color: var(--color-raised); }
-.shimmer::after {
-  content: ""; position: absolute; inset: 0; transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, var(--color-line-hover) 50%, transparent);
-  animation: shimmer-sweep 1.4s ease-in-out infinite;
+/* Loading skeleton: tonal block pulsing quietly with motion-pulse (Skeleton.tsx, PageSkeleton). */
+@keyframes semi-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
 }
-@media (prefers-reduced-motion: reduce) { .shimmer::after { animation: none; } }
+.shimmer {
+  background-color: var(--color-raised);
+  animation: semi-pulse var(--motion-pulse) infinite;
+}
+
+/* Page enter (PageEnter, Page enter prop): top blocks and first ~10 rows / cards rise in once per route (#151).
+   No layout box (display: contents on [data-motion-enter]), so fixed-height chains and inner scrollers keep working. */
+@keyframes semi-enter {
+  from { opacity: 0; transform: translateY(var(--motion-enter-distance)); }
+  to { opacity: 1; transform: none; }
+}
+[data-motion-enter="active"] > :not([data-page-layout]),
+[data-motion-enter="active"] :is([data-page-header], [data-page-body] > *, [data-page-footer]),
+[data-motion-enter="active"] :is(tbody > tr, [role="listitem"], [data-page-grid] > *, [data-motion-item]):nth-child(-n + 10) {
+  animation: semi-enter var(--motion-enter) both;
+}
+[data-motion-enter="active"] > :not([data-page-layout]):nth-child(2),
+[data-motion-enter="active"] [data-page-body] > :nth-child(1) {
+  animation-delay: var(--motion-stagger);
+}
+[data-motion-enter="active"] > :not([data-page-layout]):nth-child(3),
+[data-motion-enter="active"] [data-page-body] > :nth-child(2) {
+  animation-delay: calc(var(--motion-stagger) * 2);
+}
+[data-motion-enter="active"] > :not([data-page-layout]):nth-child(n + 4),
+[data-motion-enter="active"] [data-page-body] > :nth-child(n + 3),
+[data-motion-enter="active"] [data-page-footer] {
+  animation-delay: calc(var(--motion-stagger) * 3);
+}
+[data-motion-enter="active"] :is(tbody > tr, [role="listitem"], [data-page-grid] > *, [data-motion-item]):nth-child(1) { animation-delay: calc(var(--motion-stagger) * 2); }
+[data-motion-enter="active"] :is(tbody > tr, [role="listitem"], [data-page-grid] > *, [data-motion-item]):nth-child(2) { animation-delay: calc(var(--motion-stagger) * 3); }
+[data-motion-enter="active"] :is(tbody > tr, [role="listitem"], [data-page-grid] > *, [data-motion-item]):nth-child(3) { animation-delay: calc(var(--motion-stagger) * 4); }
+[data-motion-enter="active"] :is(tbody > tr, [role="listitem"], [data-page-grid] > *, [data-motion-item]):nth-child(4) { animation-delay: calc(var(--motion-stagger) * 5); }
+[data-motion-enter="active"] :is(tbody > tr, [role="listitem"], [data-page-grid] > *, [data-motion-item]):nth-child(5) { animation-delay: calc(var(--motion-stagger) * 6); }
+[data-motion-enter="active"] :is(tbody > tr, [role="listitem"], [data-page-grid] > *, [data-motion-item]):nth-child(6) { animation-delay: calc(var(--motion-stagger) * 7); }
+[data-motion-enter="active"] :is(tbody > tr, [role="listitem"], [data-page-grid] > *, [data-motion-item]):nth-child(7) { animation-delay: calc(var(--motion-stagger) * 8); }
+[data-motion-enter="active"] :is(tbody > tr, [role="listitem"], [data-page-grid] > *, [data-motion-item]):nth-child(8) { animation-delay: calc(var(--motion-stagger) * 9); }
+[data-motion-enter="active"] :is(tbody > tr, [role="listitem"], [data-page-grid] > *, [data-motion-item]):nth-child(9) { animation-delay: calc(var(--motion-stagger) * 10); }
+[data-motion-enter="active"] :is(tbody > tr, [role="listitem"], [data-page-grid] > *, [data-motion-item]):nth-child(10) { animation-delay: calc(var(--motion-stagger) * 11); }
+
+/* Disclosure panel (Accordion, Collapsible): 300ms ease-out open, 300ms ease-in close (#151). */
+.semi-disclosure {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    grid-template-rows var(--motion-disclosure-close),
+    opacity var(--motion-disclosure-close),
+    visibility 0s linear 300ms;
+}
+.semi-disclosure[data-open="true"] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    grid-template-rows var(--motion-disclosure),
+    opacity var(--motion-disclosure),
+    visibility 0s linear 0s;
+}
+.semi-disclosure > div {
+  overflow: hidden;
+  min-height: 0;
+}
+.semi-disclosure-chevron {
+  transition: transform var(--motion-disclosure-close);
+}
+[aria-expanded="true"] > .semi-disclosure-chevron {
+  transition: transform var(--motion-disclosure);
+}
 
 /* Indeterminate Progress bar: a third-width fill sliding across the track. */
 @keyframes progress-slide { from { left: -33%; } to { left: 100%; } }
@@ -84,13 +150,49 @@
 /* Side panel slide (generic right-edge panels: AI chats, inspectors). */
 @keyframes slide-panel-in { from { transform: translateX(100%); opacity: 0; } }
 @keyframes slide-panel-out { to { transform: translateX(100%); opacity: 0; } }
-.slide-panel-in { animation: slide-panel-in 0.3s var(--ease-out-soft, cubic-bezier(0.2, 0.8, 0.2, 1)) both; }
-.slide-panel-out { animation: slide-panel-out 0.25s var(--ease-in-soft, cubic-bezier(0.4, 0, 1, 1)) both; }
-@media (prefers-reduced-motion: reduce) { .slide-panel-in, .slide-panel-out { animation-duration: 1ms; } }
+.slide-panel-in { animation: slide-panel-in var(--motion-disclosure) both; }
+.slide-panel-out { animation: slide-panel-out var(--motion-disclosure-close) both; }
 
 /* AppShell route header: the leaving breadcrumb fades out (motion-crumb-out, opacity only) while the new one enters. */
 @keyframes semi-crumb-out { to { opacity: 0; } }
 .semi-crumb-out { animation: semi-crumb-out var(--motion-crumb-out) both; }
+
+/* Reduced motion: opacity only (no translate, no scale, no slide); skeleton pulse stops (#151). */
+@keyframes semi-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes semi-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shimmer,
+  .animate-pulse {
+    animation: none;
+  }
+  .animate-enter,
+  .animate-crumb-in,
+  .animate-tooltip-in,
+  .slide-panel-in,
+  [data-motion-enter="active"] > :not([data-page-layout]),
+  [data-motion-enter="active"] :is([data-page-header], [data-page-body] > *, [data-page-footer]),
+  [data-motion-enter="active"] :is(tbody > tr, [role="listitem"], [data-page-grid] > *, [data-motion-item]):nth-child(-n + 10) {
+    animation-name: semi-fade-in;
+  }
+  .slide-panel-out {
+    animation-name: semi-fade-out;
+  }
+  .semi-disclosure {
+    transition: opacity var(--motion-disclosure-close), visibility 0s linear 300ms;
+  }
+  .semi-disclosure[data-open="true"] {
+    transition: opacity var(--motion-disclosure), visibility 0s linear 0s;
+  }
+  .semi-disclosure-chevron {
+    transition: none;
+  }
+}
 
 /* Visually hidden text (sr-only) is absolutely positioned: with no positioned ancestor its static position deep in a
    scrolling panel would stretch the document and let the whole page scroll past the shell. Pin it to the corner of
@@ -111,17 +213,21 @@
 }
 
 /* Page layout inside AppShell (#149): a Page component as the content card's child owns padding, max-width, two-column
-   panel split and fixed-height scrolling without requiring layout-level pathname checks. */
-[data-shell-container]:has(> [data-page-layout]) {
+   panel split and fixed-height scrolling without requiring layout-level pathname checks. Also matches through PageEnter
+   (display: contents, [data-motion-enter]). */
+[data-shell-container]:has(> [data-page-layout]),
+[data-shell-container]:has(> [data-motion-enter] > [data-page-layout]) {
   max-width: none;
   margin: 0;
   padding: 0;
   min-height: 0;
 }
-[data-shell-card]:has(> [data-shell-container] > [data-page-layout="two-column"]) {
+[data-shell-card]:has(> [data-shell-container] > [data-page-layout="two-column"]),
+[data-shell-card]:has(> [data-shell-container] > [data-motion-enter] > [data-page-layout="two-column"]) {
   background-color: transparent;
   border-radius: initial;
 }
-[data-shell-card]:has(> [data-shell-container] > [data-page-fixed]) {
+[data-shell-card]:has(> [data-shell-container] > [data-page-fixed]),
+[data-shell-card]:has(> [data-shell-container] > [data-motion-enter] > [data-page-fixed]) {
   overflow: hidden;
 }

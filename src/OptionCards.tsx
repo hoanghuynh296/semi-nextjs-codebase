@@ -118,7 +118,7 @@ export function OptionCards<T extends string = string>({
             onClick={() => !isDisabled && onChange(o.value)}
             onKeyDown={onKeyDown(i)}
             className={cn(
-              "w-full min-w-0 min-h-11 text-left rounded-card border px-4 py-3 flex items-start gap-3 transition-colors cursor-pointer select-none",
+              "w-full min-w-0 min-h-11 text-left rounded-card border px-4 py-3 flex items-start gap-3 transition-hover cursor-pointer select-none",
               "outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus",
               "disabled:opacity-40 disabled:cursor-not-allowed",
               selected
