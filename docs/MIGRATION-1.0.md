@@ -230,7 +230,7 @@ inverse main button) and the `content-actions-inverse` class where it only serve
 leftover `.text-tabs-strong` stand-in rules for hand migration (because `SegmentedControl` and `PillTabs` require an
 accessible `label`).
 
-**What the app deletes** (sales-hub v0.7.0): `app/components/semi-pending/PillTabs.tsx`,
+**What the app deletes** (sales-hub v0.7.0): `app/components/semi-pending/PillTabs.tsx` (note: the stand-in took `tabs={…}` while Semi 1.0 `PillTabs` takes `items={…}`),
 `app/components/semi-pending/SegmentedControl.tsx`, and `.text-tabs-strong` in the `TODO(semi-pending)` tail of
 `app/globals.css`.
 
