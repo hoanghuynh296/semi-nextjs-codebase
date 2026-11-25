@@ -88,7 +88,7 @@ openDetail during the debounce sends the pending text first, so the query stays 
 | `debounce` | `number` | `250` | Milliseconds to wait after the last key before `onChange` (0: every key). |
 | `focusKey` | `string` |  | A key that focuses the field from anywhere on the page, e.g. "/". Shown as a key cap while the field is empty. |
 | `shortcut` | `string` |  | Key cap shown while empty when the app binds the shortcut itself ("⌘K" for a command palette). |
-| `trailing` | `React.ReactNode` |  | Extra tools at the right end (image search, voice): IconButtons. |
+| `trailing` | `React.ReactNode` |  | Extra tools at the right end (pinned `<BarActions />`, image search, voice). |
 | `className` | `string` |  |  |
 
 ### ResultLine

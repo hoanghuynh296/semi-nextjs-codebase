@@ -1,9 +1,10 @@
 {
   "title": "Sticky context bar",
   "group": "Navigation & layout",
-  "description": "The top of a list page that stays while the rows scroll under it: SearchPill, then FilterChipRow (PhoneFilterBar on phones), then ResultLine. An opaque STICKY_TOOLBAR strip, below the safe area on phones. The title row with the page's action (PageTitle actions) sits above it and scrolls away.",
+  "description": "The top of a list page that pins on scroll or search focus (250ms ease-out), holds against trackpad momentum and flings, and moves up to 2 page actions into SearchPill via BarActions while pinned. Pins by layout from md+ with independent overscroll-contained list/reader scrollers; keeps native touch scrolling below md.",
   "components": [
-    "StickyContextBar"
+    "StickyContextBar",
+    "BarActions"
   ],
   "when": [
     "A list, grid or table page with a search and filters people change while they scroll (customers, suppliers, products).",

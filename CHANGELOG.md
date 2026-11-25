@@ -4,6 +4,16 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## Unreleased
 
+**1.0 `StickyContextBar` pin behaviour, pinned `BarActions` slot and URL state (#150, T8; part of v1.0.0).** Trackpad-proven layout-pin scrolling for list and list + reader pages, focus-pin on search input, in-field pinned actions slot (`BarActions`), and URL-state upgrades from #129, #124 and #139.
+
+### Added
+- **`StickyContextBar` layout-pin & focus-pin (`src/SearchPill.tsx`, `src/stickyBar.ts`, `styles/base.css`):** pins when scrolling past the bar or focusing the search text field (250ms ease-out, instant under reduced motion, cancelled by wheel/touch; works on short lists; filter chips/sort/view buttons do not pin). From `md` (768px), pins by layout (`--sticky-view + --sticky-pin`, `overscroll-behavior: contain` on the list or `ListReaderLayout` panels) so momentum and flings never unpin and only a new deliberate upward gesture from the list top unpins. Filter, sort, search, selection-mode and data changes keep pinned/unpinned state. Exposes `data-stuck`, `data-searching`, `--sticky-pin` and `--sticky-view`, clearing all on unmount. Below `md`, keeps native scrolling and touch behaviour.
+- **`BarActions` & `BarAction` (`src/SearchPill.tsx`):** pinned-state action slot for `SearchPill trailing` (≤ 2 icon-button slots with tooltips in title-row order `[•••][main action]`, 8px apart, last inset matching the `"/"` shortcut hint, hidden with zero layout space when unpinned or while the search field has focus, 150ms fade, opacity-only under reduced motion, out of accessibility tree when hidden).
+- **URL state (`useFilterParams`, `filterParams.ts`, `urlState.ts`, `DataTable`):**
+  - `legacy` option on `useFilterParams` rewrites old query params once after hydration with `replaceState` (zero history entries); `patch(values, mode)` changes multiple filters in one history entry; `replaceFilters` and `writeSearch` exported from `@semi/ui` (#129).
+  - URL-backed `?sort=key.dir` (`sort`, `setSort`, `sortDef` on `useFilterParams`; pure `readSort`, `writeSort`, `parseSort`, `formatSort`, `SORT_PARAM`) shared by `FilterChipRow`, `PhoneFilterBar`, `FilterPanel` and `DataTable`; `DataTable` gains `onResultsChange` alongside `sortRows` / `searchRows` (#124).
+- **`FilterPanel` & `FilterChip` fixes (#139):** `single` radio group changes in `FilterPanel` write with `"replace"` (arrowing adds zero history entries); `RadioGroup` accepts `aria-label` / `aria-labelledby` so `FilterPanel` names `role="radiogroup"` directly without an extra wrapping `role="group"`; a `single` `FilterChip` with no options is disabled instead of opening an empty menu.
+
 **1.0 motion wiring (#151, T9; part of v1.0.0).** Wires T1's motion tokens across Semi components: once-per-route page enter & stagger (`PageEnter` / `Page enter`), `motion-pulse` on skeletons, `motion-tooltip` on `Tooltip`, `motion-disclosure` / `motion-disclosure-close` on `Accordion` and `Collapsible`, `transition-hover` on interactive elements, and opacity-only reduced motion with stopped skeleton pulse.
 
 ### Added

@@ -84,7 +84,7 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Scroll area](scroll-area.md) | `ScrollArea` | A list or log inside a card that must keep its height. |
 | [Segmented control](segmented-control.md) | `SegmentedControl` | 2–5 filter values shown in full, often with counts (Tất cả · Đang mở · Đang báo giá · Đã chốt). |
 | [Side panel](side-panel.md) | `SidePanel`, `SidePanelToggle` | Settings or layers beside a 3D view, map or editor. |
-| [Sticky context bar](sticky-context-bar.md) | `StickyContextBar` | A list, grid or table page with a search and filters people change while they scroll (customers, suppliers, products). |
+| [Sticky context bar](sticky-context-bar.md) | `StickyContextBar`, `BarActions` | A list, grid or table page with a search and filters people change while they scroll (customers, suppliers, products). |
 | [Subpage toolbar](subpage-toolbar.md) | `SubpageToolbar`, `RefreshButton` | Every list or grid page. |
 | [Tabs](tabs.md) | `Tabs` | Sections of one object: Tổng quan / Hoạt động / Cài đặt. |
 | [Text tabs](text-tabs.md) | `TextTabs` | 2–4 top-level views of a discovery or reading page, rendered as the page heading (Khám phá / Mẫu sẵn / Cảm hứng). |

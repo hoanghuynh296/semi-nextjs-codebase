@@ -1056,7 +1056,9 @@
         "label",
         "name",
         "direction",
-        "className"
+        "className",
+        "aria-label",
+        "aria-labelledby"
       ],
       "doc": "docs/components/radio-group.md"
     },
@@ -1214,6 +1216,7 @@
         "sort",
         "defaultSort",
         "onSortChange",
+        "onResultsChange",
         "selectable",
         "selected",
         "onSelectedChange",
@@ -2404,14 +2407,29 @@
       "doc": "docs/components/search-input.md"
     },
     {
+      "name": "BarActions",
+      "kind": "component",
+      "module": "src/SearchPill.tsx",
+      "client": true,
+      "summary": "Page actions that move inside `SearchPill`'s `trailing` slot while `StickyContextBar` is pinned (`data-stuck`) and hide while the search field has focus (`data-searching`, 150ms fade, out of the accessibility tree and taking zero layout space when hidden so the `\"/\"` shortcut hint never shifts). Always renders at most **2 slots**, in the title row's order (`[•••][main action]`, 8px apart, last button inset matching the `\"/\"` hint): with more than two actions (or any `menu` items), the main action stays on the right and the rest collapse into `•••` on the left.",
+      "props": [
+        "actions",
+        "menu",
+        "moreLabel",
+        "className"
+      ],
+      "doc": "docs/components/sticky-context-bar.md"
+    },
+    {
       "name": "StickyContextBar",
       "kind": "component",
       "module": "src/SearchPill.tsx",
       "client": true,
-      "summary": "The search, the filter chips and the result line of a list page, pinned to the top of the scrolling content while the rows scroll under it. It is `STICKY_TOOLBAR` (opaque, bleeds to the panel's side padding, below the safe area on phones) stacked as a column. One per page, in place of a SubpageToolbar.",
+      "summary": "The search and filter bar of a list page, pinned to the top of the scrolling content while the rows scroll under it. Pin behaviour (#150): - Pins when the scroller scrolls past the bar, or when the search text field gets focus (250ms ease-out, instant under reduced motion, cancelled by wheel/touch; works on short lists too; chips/sort/view buttons do not pin). - From `md` (768px), pins by layout: the scroller's exact scroll range equals `--sticky-pin` and the list area (or each `ListReaderLayout` panel) scrolls independently with `overscroll-behavior: contain`. Only a new upward wheel gesture starting at the list top unpins; momentum and flings never unpin. Below `md`, keeps native touch scrolling. - Exposes `data-stuck` and `data-searching` on the bar and `--sticky-pin` / `--sticky-view` on the scroller, clearing them on unmount.",
       "props": [
         "children",
         "label",
+        "pin",
         "className"
       ],
       "doc": "docs/components/sticky-context-bar.md"
@@ -3139,7 +3157,7 @@
       "kind": "hook",
       "module": "src/FilterChipRow.tsx",
       "client": true,
-      "summary": "Filter state in the URL, with no router hook. The server render and hydration see no params (prerender-safe: no `window` in render, no `useSearchParams`, which would suspend a prerendered route); the URL is read right after. Writes use `history.pushState(null, …)` / `replaceState(null, …)`, which Next's App Router turns into its own navigation, so `useSearchParams` and `router.refresh()` keep the filters. It follows Back / Forward, every other useFilterParams on the page, and (where the Navigation API exists, and on any re-render elsewhere) a Link or `router.push` to the same route. Without the Navigation API (Firefox, Safari < 26) a hook in a layout that does not re-render can miss such a navigation: there, and with a router of your own, use the pure helpers (`readFilters`, `writeFilters`, `clearFilters`) on `useSearchParams`."
+      "summary": "Filter and sort state in the URL, with no router hook. The server render and hydration see no params (prerender-safe: no `window` in render, no `useSearchParams`, which would suspend a prerendered route); the URL is read right after. Writes use `history.pushState(null, …)` / `replaceState(null, …)`, which Next's App Router turns into its own navigation, so `useSearchParams` and `router.refresh()` keep the filters. It follows Back / Forward, every other useFilterParams on the page, and (where the Navigation API exists, and on any re-render elsewhere) a Link or `router.push` to the same route. Without the Navigation API (Firefox, Safari < 26) a hook in a layout that does not re-render can miss such a navigation: there, and with a router of your own, use the pure helpers (`readFilters`, `writeFilters`, `clearFilters`) on `useSearchParams`."
     },
     {
       "name": "useCoarsePointer",
@@ -3410,6 +3428,34 @@
       "summary": "A query string for a URL: \"\" when there are no params, else \"?a=1&b=2\"."
     },
     {
+      "name": "parseSort",
+      "kind": "function",
+      "module": "src/filterParams.ts",
+      "client": false,
+      "summary": "Parse `\"key.asc\"` / `\"key.desc\"` into a `DataTableSort` (returns `null` for empty or invalid strings)."
+    },
+    {
+      "name": "formatSort",
+      "kind": "function",
+      "module": "src/filterParams.ts",
+      "client": false,
+      "summary": "Format a `DataTableSort` as `\"key.dir\"` (or `\"\"` when `null`)."
+    },
+    {
+      "name": "readSort",
+      "kind": "function",
+      "module": "src/filterParams.ts",
+      "client": false,
+      "summary": "Read `?sort=key.dir` from search params, falling back to `defaultSort` (default `null`) when absent or invalid."
+    },
+    {
+      "name": "writeSort",
+      "kind": "function",
+      "module": "src/filterParams.ts",
+      "client": false,
+      "summary": "New search params with `sort` written as `?sort=key.dir`. Passing `null` or the `defaultSort` removes the param so default URLs stay clean."
+    },
+    {
       "name": "composeRefs",
       "kind": "function",
       "module": "src/floating.ts",
@@ -3443,6 +3489,62 @@
       "module": "src/listQuery.ts",
       "client": false,
       "summary": "The rows in DataTable's order for `sort`: numbers by value, text in Vietnamese order with numbers inside compared as numbers (\"SO-9\" before \"SO-10\"), empty values (`null` / `undefined`) last in both directions, ties in their input order. No sort, or a key no column has, returns `rows` itself."
+    },
+    {
+      "name": "currentSearch",
+      "kind": "function",
+      "module": "src/urlState.ts",
+      "client": true,
+      "summary": ""
+    },
+    {
+      "name": "navigationApi",
+      "kind": "function",
+      "module": "src/urlState.ts",
+      "client": true,
+      "summary": "The Navigation API where the browser has it (Chromium, Safari 26+); Firefox and older Safari have none."
+    },
+    {
+      "name": "subscribeUrl",
+      "kind": "function",
+      "module": "src/urlState.ts",
+      "client": true,
+      "summary": ""
+    },
+    {
+      "name": "holdPending",
+      "kind": "function",
+      "module": "src/urlState.ts",
+      "client": true,
+      "summary": "Hold a pending write until it is sent or cancelled; a push runs it first. Returns the release."
+    },
+    {
+      "name": "flushPending",
+      "kind": "function",
+      "module": "src/urlState.ts",
+      "client": true,
+      "summary": "Send every pending write now (each released before it runs, so a flush that pushes does not loop)."
+    },
+    {
+      "name": "writeSearch",
+      "kind": "function",
+      "module": "src/urlState.ts",
+      "client": true,
+      "summary": "Write the search part of the current URL (path and hash kept) and tell the readers. A push first flushes the pending writes onto the current entry; pass a function of the current search to build on what they wrote."
+    },
+    {
+      "name": "patchSearch",
+      "kind": "function",
+      "module": "src/urlState.ts",
+      "client": true,
+      "summary": "Set or remove (`null` / \"\") params of the current URL."
+    },
+    {
+      "name": "replaceFilters",
+      "kind": "function",
+      "module": "src/urlState.ts",
+      "client": true,
+      "summary": "Replace one or more filters in the current URL without pushing a history entry (for code outside `useFilterParams`, e.g. legacy link rewrites or programmatic resets). Notifies every `useFilterParams` hook on the page."
     },
     {
       "name": "headerPrimary",
@@ -3664,6 +3766,13 @@
       "summary": ""
     },
     {
+      "name": "SORT_PARAM",
+      "kind": "constant",
+      "module": "src/filterParams.ts",
+      "client": false,
+      "summary": "Default URL param name for sort state (`?sort=key.dir`)."
+    },
+    {
       "name": "vi",
       "kind": "constant",
       "module": "src/locale.tsx",
@@ -3676,6 +3785,13 @@
       "module": "src/locale.tsx",
       "client": true,
       "summary": ""
+    },
+    {
+      "name": "URL_EVENT",
+      "kind": "constant",
+      "module": "src/urlState.ts",
+      "client": true,
+      "summary": "Fired after a write here, so every hook on the page (and a second one) re-reads the URL."
     },
     {
       "name": "HEADER_ICON_BTN",

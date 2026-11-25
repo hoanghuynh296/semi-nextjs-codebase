@@ -100,7 +100,7 @@ of a desktop page with more filters than its chip row shows). Changes apply at o
 | `open` * | `boolean` |  |  |
 | `onClose` * | `() => void` |  |  |
 | `filters` * | `FilterDef[]` |  |  |
-| `onChange` * | `(key: string, selected: string[]) => void` |  |  |
+| `onChange` * | `(key: string, selected: string[], mode?: "push" \| "replace") => void` |  |  |
 | `onClear` * | `() => void` |  |  |
 | `sort` | `SortDef` |  | Sort choices, shown first as a row of chips. |
 | `resultCount` | `number` |  | Rows matching now, on the bottom button ("Xem 12 kết quả"); without it the button says "Đóng". |
