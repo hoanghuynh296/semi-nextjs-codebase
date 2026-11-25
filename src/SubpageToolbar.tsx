@@ -3,7 +3,7 @@
 // Unified sticky sub-page toolbar row (docs/DESIGN_SYSTEM.md §4a):
 // - Optional title: the page title shares the row with filters and actions (instead of a PageTitle above)
 // - Left slot: filter pills / chips / CustomSelect dropdowns
-// - Right slot: icon-only primary CTA (BTN_PRIMARY BTN_ICON) + SearchInput + RefreshButton (+ optional extra controls)
+// - Right slot: icon-only add CTA (BTN_INVERSE BTN_ICON) + SearchInput + RefreshButton (+ optional extra controls)
 // - Phone layout (#57, opt-in): `filters` (or `left` with `collapseFilters`) go behind a "Bộ lọc · N" button and
 //   `secondaryActions` into a ⋯ menu, so below `sm` the toolbar is at most two rows (title, then search + buttons).
 import React, { useState } from "react";
@@ -11,7 +11,7 @@ import { useSemiLocale } from "./locale";
 import { Icon, type IconName } from "./Icon";
 import { SearchInput } from "./SearchInput";
 import { RefreshButton } from "./RefreshButton";
-import { BTN_ICON, BTN_PRIMARY, BTN_SUBTLE } from "../styles/buttons";
+import { BTN_ICON, BTN_INVERSE, BTN_SUBTLE } from "../styles/buttons";
 import { STICKY_TOOLBAR } from "../styles/surfaces";
 import { PAGE_TITLE_TEXT } from "./pageTitleText";
 import { Menu, type MenuItem } from "./Overlay";
@@ -149,7 +149,7 @@ export function SubpageToolbar({
           <button
             type="button"
             onClick={onPrimaryAction}
-            className={`${BTN_PRIMARY} ${BTN_ICON}`}
+            className={`${BTN_INVERSE} ${BTN_ICON}`}
             title={primaryActionLabel}
             aria-label={primaryActionLabel}
           >
