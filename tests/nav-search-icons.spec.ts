@@ -117,6 +117,28 @@ test("header quick search is centered in RouteHeader at 1440px and hidden withou
       await expect(header.getByRole("combobox", { name: "Tìm nhanh tài liệu" })).toBeHidden();
     }
   }
+
+  // At md (768px): middle combobox and right actions do not overlap
+  await page.setViewportSize({ width: 768, height: 900 });
+  await open(page, "/", "light");
+  const mdCombo = await header.getByRole("combobox", { name: "Tìm nhanh tài liệu" }).boundingBox();
+  const mdThemeBtn = await header.getByRole("button", { name: "Giao diện", exact: true }).boundingBox();
+  expect(mdCombo).toBeTruthy();
+  expect(mdThemeBtn).toBeTruthy();
+  expect(mdCombo!.x + mdCombo!.width).toBeLessThanOrEqual(mdThemeBtn!.x + 1);
+
+  // Outside click closes the portaled listbox, and resizing below md dismisses it cleanly
+  const listbox = page.getByRole("listbox", { name: "Kết quả tìm kiếm" });
+  const mdCombobox = header.getByRole("combobox", { name: "Tìm nhanh tài liệu" });
+  await mdCombobox.fill("button");
+  await expect(listbox).toBeVisible();
+  await page.locator("main").click({ position: { x: 24, y: 24 } });
+  await expect(listbox).toBeHidden();
+
+  await mdCombobox.focus();
+  await expect(listbox).toBeVisible();
+  await page.setViewportSize({ width: 430, height: 900 });
+  await expect(listbox).toBeHidden();
 });
 
 test("nav quick search guards IME composition and supports ArrowDown/ArrowUp selection (#172, #179)", async ({ page }) => {

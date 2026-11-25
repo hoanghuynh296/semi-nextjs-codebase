@@ -205,7 +205,7 @@ export function RouteHeader({ crumbs, middle, actions, account, onMenu, menuExpa
         </div>
       )}
       {(actions || account) ? (
-        <div className={cn("flex items-center justify-end gap-1", middle ? "md:flex-1 shrink-0 min-w-0" : "shrink-0")}>
+        <div className={cn("flex items-center justify-end gap-1", middle ? "md:flex-1 shrink-0" : "shrink-0")}>
           {actions && <Suspense fallback={<SlotSkeleton />}>{actions}</Suspense>}
           {account && (isAccount(account) ? <AccountMenu {...account} /> : account)}
         </div>

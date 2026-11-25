@@ -190,6 +190,11 @@ function NavQuickSearch({ sections }: { sections: ShellNavSection[] }) {
       const el = rootRef.current;
       if (!el) return;
       const r = el.getBoundingClientRect();
+      if (r.width === 0 && r.height === 0) {
+        setDropdownRect(null);
+        setOpen(false);
+        return;
+      }
       setDropdownRect({ top: r.bottom + 4, left: r.left, width: r.width });
     };
     update();
