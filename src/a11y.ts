@@ -10,7 +10,7 @@ const FOCUSABLE =
 
 const KEYBOARD_MEDIA = "(hover: hover) and (pointer: fine)";
 const FIRST_FIELD =
-  'input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([disabled]):not([readonly]), textarea:not([disabled]):not([readonly]), [role="combobox"]:not([aria-disabled="true"])';
+  'input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([disabled]):not([readonly]), textarea:not([disabled]):not([readonly]), [role="combobox"]:not([disabled]):not([aria-disabled="true"])';
 
 const hasPhysicalKeyboard = () =>
   typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia(KEYBOARD_MEDIA).matches;
@@ -158,17 +158,25 @@ export function useFocusTrap(
     if (!root) return;
     const opener = document.activeElement as HTMLElement | null;
     const items = () => [...root.querySelectorAll<HTMLElement>(FOCUSABLE)].filter((el) => el.offsetParent !== null || el === document.activeElement);
+    const activeEl = document.activeElement;
+    const alreadyInField =
+      activeEl instanceof HTMLElement && root.contains(activeEl) && (activeEl.matches(FIRST_FIELD) || activeEl.isContentEditable);
     const explicit = root.querySelector<HTMLElement>("[data-autofocus],[autofocus]");
     let first: HTMLElement;
-    if (explicit) {
+    if (alreadyInField) {
+      first = activeEl;
+    } else if (explicit) {
       first = explicit;
       first.focus({ preventScroll: true });
     } else if (autoFocusFirstField && focusFirstField(root) && document.activeElement instanceof HTMLElement && root.contains(document.activeElement)) {
       first = document.activeElement;
     } else {
       const list = items();
-      // On touch devices (or when autoFocusFirstField is off), prefer a non-field control (e.g. close button) so the phone keyboard stays closed.
-      first = (!hasPhysicalKeyboard() ? list.find((el) => !el.matches(FIRST_FIELD)) : undefined) ?? list[0] ?? root;
+      // On touch devices (no physical keyboard), prefer a non-field control (e.g. close button) and fall back to root
+      // rather than a field so the phone on-screen keyboard stays closed.
+      first = !hasPhysicalKeyboard()
+        ? (list.find((el) => !el.matches(FIRST_FIELD) && !el.isContentEditable) ?? root)
+        : (list[0] ?? root);
       if (first === root && !root.hasAttribute("tabindex")) root.setAttribute("tabindex", "-1");
       first.focus({ preventScroll: true });
     }

@@ -2,6 +2,9 @@
 // MultiCombobox, CustomCombobox option groups, OptionCards, LetterAvatar,
 // reply box auto-grow & resize edge, HintTextarea popover & snippets, dialog autofocus.
 import { expect, test, type Locator, type Page } from "@playwright/test";
+import { PRERENDER_PORT } from "../playwright.config";
+
+const PRERENDER_URL = `http://127.0.0.1:${PRERENDER_PORT}`;
 
 const THEMES = ["dark", "light"] as const;
 
@@ -348,4 +351,103 @@ test("Dialog autofocus: Modal and Drawer focus first field on fine-pointer deskt
   await expect(phoneDialog).toBeVisible();
   await expect(phoneDialog.locator("input").first()).not.toBeFocused();
   await phoneCtx.close();
+});
+
+test("HintTextarea inside a modal near the bottom flips its portaled listbox above without clipping", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 640 });
+  await page.goto(`${PRERENDER_URL}/t6-forms`);
+  await page.getByRole("button", { name: "Mở modal gợi ý" }).click();
+  const dialog = page.getByRole("dialog", { name: "Gửi báo giá" });
+  await expect(dialog).toBeVisible();
+
+  const text = dialog.getByRole("combobox", { name: "Lời nhắn trong modal" });
+  const list = page.getByRole("listbox");
+  await text.fill("Báo giá /");
+  await expect(list).toBeVisible();
+
+  // Portaled outside the modal and positioned above the textarea (flipped above) inside the viewport
+  const geo = await list.evaluate((listEl, taEl) => {
+    const lr = listEl.getBoundingClientRect();
+    const tr = taEl!.getBoundingClientRect();
+    return { listTop: lr.top, listBottom: lr.bottom, taTop: tr.top, vh: window.innerHeight };
+  }, await text.elementHandle());
+  expect(geo.listBottom).toBeLessThanOrEqual(geo.taTop + 2);
+  expect(geo.listTop).toBeGreaterThanOrEqual(0);
+  expect(geo.listBottom).toBeLessThanOrEqual(geo.vh);
+});
+
+test("Dialog autofocus: autoFocusFirstField={false} opt-out, already-focused field kept, disabled combobox skipped", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto(`${PRERENDER_URL}/t6-forms`);
+
+  // Modal autoFocusFirstField={false}: input is NOT focused
+  await page.getByRole("button", { name: "Mở modal tắt autofocus" }).click();
+  const m1 = page.getByRole("dialog", { name: "Modal tắt autofocus" });
+  await expect(m1).toBeVisible();
+  await expect(m1.locator("input").first()).not.toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(m1).toBeHidden();
+
+  // Drawer autoFocusFirstField={false}: input is NOT focused
+  await page.getByRole("button", { name: "Mở drawer tắt autofocus" }).click();
+  const d1 = page.getByRole("dialog", { name: "Drawer tắt autofocus" });
+  await expect(d1).toBeVisible();
+  await expect(d1.locator("input").first()).not.toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(d1).toBeHidden();
+
+  // Already-focused field (React autoFocus on second input) is kept without stealing focus
+  await page.getByRole("button", { name: "Mở modal đã focus sẵn" }).click();
+  const m2 = page.getByRole("dialog", { name: "Modal đã focus sẵn" });
+  await expect(m2).toBeVisible();
+  await expect(m2.getByRole("textbox", { name: "Trường thứ hai" })).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(m2).toBeHidden();
+
+  // Disabled CustomSelect ([role="combobox"][disabled]) is skipped; enabled Input after it receives focus
+  await page.getByRole("button", { name: "Mở modal bỏ qua combobox disabled" }).click();
+  const m3 = page.getByRole("dialog", { name: "Modal bỏ qua combobox disabled" });
+  await expect(m3).toBeVisible();
+  await expect(m3.getByRole("textbox", { name: "Ô tiếp theo" })).toBeFocused();
+  await page.keyboard.press("Escape");
+});
+
+test("Reply box resize edge: pointer drag resizes height and pointercancel cleans up drag listeners", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await open(page, "/components/field/", "dark");
+  const box = example(page, "field/sections");
+  const textarea = box.locator("textarea").first();
+  const handle = box.getByRole("separator", { name: "Đổi chiều cao ô nhập" });
+
+  await handle.scrollIntoViewIfNeeded();
+  await expect(handle).toBeVisible();
+  // Ensure React has hydrated the example before starting pointer drag
+  await expect(async () => {
+    await textarea.fill("Dòng 1\nDòng 2\nDòng 3");
+    await expect(textarea).toHaveValue("Dòng 1\nDòng 2\nDòng 3", { timeout: 500 });
+  }).toPass({ timeout: 10_000 });
+  const startH = await textarea.evaluate((el) => el.getBoundingClientRect().height);
+  const hb = (await handle.boundingBox())!;
+
+  // Drag handle upward by 60px -> textarea grows
+  await page.mouse.move(hb.x + hb.width / 2, hb.y + hb.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(hb.x + hb.width / 2, hb.y + hb.height / 2 - 60);
+  await page.mouse.up();
+  const afterDrag = await textarea.evaluate((el) => el.getBoundingClientRect().height);
+  expect(afterDrag).toBeGreaterThan(startH + 20);
+
+  // Start a second drag and cancel it via pointercancel -> subsequent pointermove must NOT resize
+  const hb2 = (await handle.boundingBox())!;
+  await handle.dispatchEvent("pointerdown", { pointerId: 7, pointerType: "mouse", button: 0, clientY: hb2.y + 4, bubbles: true });
+  await page.evaluate(() => {
+    window.dispatchEvent(new PointerEvent("pointermove", { pointerId: 7, clientY: 100, bubbles: true }));
+    window.dispatchEvent(new PointerEvent("pointercancel", { pointerId: 7, bubbles: true }));
+  });
+  const afterCancel = await textarea.evaluate((el) => el.getBoundingClientRect().height);
+  await page.evaluate(() => {
+    window.dispatchEvent(new PointerEvent("pointermove", { pointerId: 7, clientY: 10, bubbles: true }));
+  });
+  const afterLateMove = await textarea.evaluate((el) => el.getBoundingClientRect().height);
+  expect(afterLateMove).toBe(afterCancel);
 });
