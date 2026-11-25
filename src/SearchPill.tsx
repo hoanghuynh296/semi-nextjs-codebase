@@ -1,11 +1,14 @@
 "use client";
 
-// Search and filters (#99, C-032 L2 + L17): the sticky context bar of a list page, its wide pill search and the
-// result line under it ("query · N kết quả" with the sort on the right).
+// Search and filters (#99, C-032 L2 + L17; 1.0 #150): the sticky context bar of a list page (layout-pin on md+,
+// focus-pin in 250ms ease-out, gesture-aware unpin, pinned BarActions slot), its wide pill search and the
+// deprecated result line.
 import React, { useEffect, useRef, useState } from "react";
-import { Icon } from "./Icon";
-import { Menu } from "./Overlay";
+import { Button } from "./Button";
+import { Icon, type IconName } from "./Icon";
+import { Menu, Tooltip } from "./Overlay";
 import { useSemiLocale } from "./locale";
+import { useStickyBarPin } from "./stickyBar";
 import { STICKY_TOOLBAR } from "../styles/surfaces";
 import { cn } from "../styles/utils";
 import { holdPending, subscribeUrl } from "./urlState";
@@ -17,25 +20,127 @@ export interface SortDef {
   onChange: (value: string) => void;
 }
 
+/** One page action shown inside `SearchPill` via `BarActions` while `StickyContextBar` is pinned. */
+export interface BarAction {
+  key: string;
+  label: string;
+  icon: IconName;
+  onSelect?: () => void;
+  /** Marks the page's main action (always placed last, on the right, matching the title row). */
+  primary?: boolean;
+  /**
+   * Button variant when shown directly in the bar. Defaults to `"inverse"` for `primary` actions (matching content-card
+   * title rows) and `"ghost"` for secondary actions. Pass `"primary"` only if the page's title-row action itself is the
+   * brand primary button.
+   */
+  variant?: "inverse" | "primary" | "subtle" | "ghost";
+  disabled?: boolean;
+}
+
 /**
- * The search, the filter chips and the result line of a list page, pinned to the top of the scrolling content while
- * the rows scroll under it. It is `STICKY_TOOLBAR` (opaque, bleeds to the panel's side padding, below the safe area on
- * phones) stacked as a column. One per page, in place of a SubpageToolbar.
+ * Page actions that move inside `SearchPill`'s `trailing` slot while `StickyContextBar` is pinned (`data-stuck`) and
+ * hide while the search field has focus (`data-searching`, 150ms fade, out of the accessibility tree and taking zero
+ * layout space when hidden so the `"/"` shortcut hint never shifts).
+ *
+ * Always renders at most **2 slots**, in the title row's order (`[•••][main action]`, 8px apart, last button inset
+ * matching the `"/"` hint): with more than two actions (or any `menu` items), the main action stays on the right and
+ * the rest collapse into `•••` on the left.
+ */
+export function BarActions({
+  actions,
+  menu,
+  moreLabel,
+  className,
+}: {
+  /** Primary and secondary page actions (in title-row order: secondary left, `primary` last). */
+  actions: BarAction[];
+  /** Extra overflow items always placed inside the `•••` menu. */
+  menu?: BarAction[];
+  /** Accessible name and tooltip of the `•••` overflow button (default locale `moreActions`). */
+  moreLabel?: string;
+  className?: string;
+}) {
+  const t = useSemiLocale();
+  const hasMenu = Boolean(menu && menu.length > 0);
+  if (!actions.length && !hasMenu) return null;
+  const ordered = [...actions.filter((a) => !a.primary), ...actions.filter((a) => a.primary)];
+  const hasOverflow = hasMenu || ordered.length > 2;
+  const rest = [...(menu ?? []), ...(hasOverflow && ordered.length > 1 ? ordered.slice(0, -1) : [])];
+  const shown = hasOverflow ? ordered.slice(-1) : ordered;
+  const overflowLabel = moreLabel ?? t.moreActions;
+
+  return (
+    <div data-bar-actions="" className={cn("semi-bar-actions", className)}>
+      {rest.length > 0 && (
+        <Menu
+          label={overflowLabel}
+          items={rest.map((a) => ({
+            label: a.label,
+            icon: a.icon,
+            disabled: a.disabled,
+            onSelect: a.onSelect,
+          }))}
+          trigger={
+            <Tooltip content={overflowLabel}>
+              <Button size="sm" variant="ghost" iconOnly icon="more" aria-label={overflowLabel} />
+            </Tooltip>
+          }
+        />
+      )}
+      {shown.map((a) => (
+        <Tooltip key={a.key} content={a.label}>
+          <Button
+            size="sm"
+            variant={a.variant ?? (a.primary ? "inverse" : "ghost")}
+            iconOnly
+            icon={a.icon}
+            aria-label={a.label}
+            disabled={a.disabled}
+            onClick={a.onSelect}
+          />
+        </Tooltip>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * The search and filter bar of a list page, pinned to the top of the scrolling content while the rows scroll under it.
+ *
+ * Pin behaviour (#150):
+ * - Pins when the scroller scrolls past the bar, or when the search text field gets focus (250ms ease-out, instant
+ *   under reduced motion, cancelled by wheel/touch; works on short lists too; chips/sort/view buttons do not pin).
+ * - From `md` (768px), pins by layout: the scroller's exact scroll range equals `--sticky-pin` and the list area (or
+ *   each `ListReaderLayout` panel) scrolls independently with `overscroll-behavior: contain`. Only a new upward wheel
+ *   gesture starting at the list top unpins; momentum and flings never unpin. Below `md`, keeps native touch scrolling.
+ * - Exposes `data-stuck` and `data-searching` on the bar and `--sticky-pin` / `--sticky-view` on the scroller, clearing
+ *   them on unmount.
  */
 export function StickyContextBar({
   children,
   label,
+  pin = true,
   className,
 }: {
-  /** Usually SearchPill, then FilterChipRow (PhoneFilterBar on phones). No ResultLine in 1.0: the list sits 16px under the filter row. */
+  /** Usually SearchPill (with optional BarActions in `trailing`), then FilterChipRow (PhoneFilterBar on phones). No ResultLine in 1.0: the list sits 16px under the filter row. */
   children: React.ReactNode;
   /** Accessible name of the region ("Tìm và lọc khách hàng"); leave it out when the bar holds only a search. */
   label?: string;
+  /** Enable trackpad-proven layout pinning, focus-pin and `data-stuck` / `data-searching` state (default `true`). */
+  pin?: boolean;
   className?: string;
 }) {
+  const barRef = useRef<HTMLDivElement>(null);
+  useStickyBarPin(barRef, pin);
   // STICKY_TOOLBAR has py-2.5 (10px bottom padding) + -my-2.5; mb-1.5 (6px) leaves 16px from the filter row to the list.
   return (
-    <div role={label ? "search" : undefined} aria-label={label} className={cn(STICKY_TOOLBAR, "flex flex-col gap-2 mb-1.5", className)}>
+    <div
+      ref={barRef}
+      data-sticky-bar=""
+      role={label ? "search" : undefined}
+      aria-label={label}
+      className={cn(STICKY_TOOLBAR, "shrink-0 flex flex-col gap-2 mb-1.5", className)}
+    >
       {children}
     </div>
   );
@@ -74,7 +179,7 @@ export function SearchPill({
   focusKey?: string;
   /** Key cap shown while empty when the app binds the shortcut itself ("⌘K" for a command palette). */
   shortcut?: string;
-  /** Extra tools at the right end (image search, voice): IconButtons. */
+  /** Extra tools at the right end (pinned `<BarActions />`, image search, voice). */
   trailing?: React.ReactNode;
   className?: string;
 }) {
