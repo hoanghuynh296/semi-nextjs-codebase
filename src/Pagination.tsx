@@ -1,7 +1,7 @@
 "use client";
 
 // Page-number pager: ‹ 1 … 4 [5] 6 … 12 ›. Current page = primary tint, others neutral (Dashboard style).
-import React from "react";
+import React, { useSyncExternalStore } from "react";
 import { useSemiLocale } from "./locale";
 import { Icon } from "./Icon";
 
@@ -29,8 +29,21 @@ function phonePageWindow(page: number, pages: number): (number | null)[] {
   return out;
 }
 
+/** A touch phone: the same media as Tailwind's `pointer-coarse:max-sm:` (BTN_HIT). */
+const PHONE_TOUCH = "(pointer: coarse) and (max-width: 39.99rem)";
+const subscribePhone = (cb: () => void) => {
+  const mq = window.matchMedia(PHONE_TOUCH);
+  mq.addEventListener("change", cb);
+  return () => mq.removeEventListener("change", cb);
+};
+/** After mount only: the server and the hydration pass render the full window (one list, never two). */
+function usePhoneTouch(): boolean {
+  return useSyncExternalStore(subscribePhone, () => window.matchMedia(PHONE_TOUCH).matches, () => false);
+}
+
 // 32px drawn; on a touch phone (pointer-coarse + max-sm) each button grows to 44 × 44 (BTN_HIT: a dense row, so real
-// size rather than a pseudo-element that would cover a neighbour) and the phone window keeps them on one row.
+// size rather than a pseudo-element that would cover a neighbour) and the phone window keeps them on one row (gap 0:
+// the 44px boxes touch, they do not overlap).
 const BTN = "min-w-[32px] h-8 pointer-coarse:max-sm:min-h-11 pointer-coarse:max-sm:min-w-11 px-2 rounded-control text-ui font-medium tabular-nums inline-flex items-center justify-center transition-hover";
 
 export function Pagination({
@@ -46,12 +59,13 @@ export function Pagination({
   className?: string;
 }) {
   const t = useSemiLocale();
+  const phone = usePhoneTouch();
   if (pages <= 1) return null;
   const go = (p: number) => p >= 1 && p <= pages && p !== page && onChange(p);
   const numbers = (items: (number | null)[]) =>
     items.map((p, i) =>
       p === null ? (
-        <span key={`gap-${i}`} className="min-w-[24px] text-center text-ui text-muted" aria-hidden>
+        <span key={`gap-${i}`} className="min-w-[24px] pointer-coarse:max-sm:min-w-4 text-center text-ui text-muted" aria-hidden>
           …
         </span>
       ) : (
@@ -68,7 +82,7 @@ export function Pagination({
       ),
     );
   return (
-    <nav aria-label={t.pagination} className={`flex items-center justify-center gap-1 flex-wrap ${className}`}>
+    <nav aria-label={t.pagination} className={`flex items-center justify-center gap-1 pointer-coarse:max-sm:gap-0 flex-wrap ${className}`}>
       <button
         type="button"
         aria-label={t.prevPage}
@@ -78,9 +92,7 @@ export function Pagination({
       >
         <Icon name="back" className="w-4 h-4" />
       </button>
-      {/* the wide window on desktops, tablets and mice; the phone window on a touch phone (one of them is display: none) */}
-      <span className="contents pointer-coarse:max-sm:hidden">{numbers(pageWindow(page, pages))}</span>
-      <span className="hidden pointer-coarse:max-sm:contents">{numbers(phonePageWindow(page, pages))}</span>
+      {numbers(phone ? phonePageWindow(page, pages) : pageWindow(page, pages))}
       <button
         type="button"
         aria-label={t.nextPage}

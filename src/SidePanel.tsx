@@ -20,7 +20,8 @@ export function SidePanelToggle({ onClick }: { onClick: () => void }) {
       onClick={onClick}
       aria-label={t.collapsePanel}
       title={t.collapsePanel}
-      className={cn("relative w-7 h-7 -my-1 rounded-control flex items-center justify-center text-muted hover:text-strong hover:bg-raised transition shrink-0", HIT_AREA)}
+      // a 44px square on a touch phone as real size (its row grows): a pseudo-element would cover the content under it
+      className="w-7 h-7 -my-1 pointer-coarse:max-sm:size-11 pointer-coarse:max-sm:my-0 rounded-control flex items-center justify-center text-muted hover:text-strong hover:bg-raised transition shrink-0"
     >
       <Icon name="sidebar" className="w-3.5 h-3.5" />
     </button>

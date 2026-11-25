@@ -30,7 +30,7 @@ export default function SourcesAnswer() {
     <div className="max-w-xl">
       <AssistantMessage actions={<Sources sources={SOURCES} />}>
         In PETG ở 230–250°C<Citation n={1} source={SOURCES[0]} />, bàn nhiệt 70–80°C<Citation n={2} source={SOURCES[1]} />. Kéo sợi thường giảm khi tăng rút
-        nhựa lên 1–2 mm<Citation n={3} source={SOURCES[2]} />.
+        nhựa lên 1–2 mm<Citation n={2} source={SOURCES[1]} /><Citation n={3} source={SOURCES[2]} />.
       </AssistantMessage>
     </div>
   );

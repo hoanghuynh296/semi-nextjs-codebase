@@ -1025,14 +1025,18 @@ The full inventory with props is generated into `components.json` (`npm run buil
   smaller (a carousel dot, a slider thumb, a text button in a line, a 16px checkbox) takes `HIT_AREA`
   (`@semi/ui/styles`): a pseudo-element that grows the click area to 24px, 44px on touch screens, while the visible
   size and layout stay; the control needs `relative` and no `::before` of its own.
-- Touch targets (#186): on a phone with a touch screen every control has a hit area of at least 44 × 44px, while the
-  drawn size with a mouse stays. Two shared helpers, nothing hand-made: `BTN_HIT` (`pointer-coarse` + `max-sm` real
-  growth; in `Button`, `BTN_ICON`, `HEADER_ICON_BTN`, `MODAL_CLOSE`) for a control in a dense row whose 44px
-  pseudo-element would cover a neighbour (Pagination, ViewSwitch, GuidedEmptyState step nav), and `HIT_AREA` (an
-  invisible `::before`) for an isolated small control (Alert dismiss, MultiCombobox chip remove, combobox chevron,
-  SidePanel toggles, Citation chips, CardActions ⋯, Calendar month nav, Carousel dots). Pagination shows first ·
-  current · last on a touch phone so its 44px buttons stay on one row. `tests/touch-targets.spec.ts` measures a sample
-  of each at 390 × 844 (touch) and the drawn size at 1440.
+- Touch targets (#186): every control has a tap area of at least 44 × 44px on a touch screen, while the drawn size
+  with a mouse stays. Two shared helpers, nothing hand-made: `BTN_HIT` (`pointer-coarse` + `max-sm`, touch phones only,
+  real growth; in `Button`, `BTN_ICON`, `HEADER_ICON_BTN`, `MODAL_CLOSE`) for a control in a dense row or above
+  content, whose 44px pseudo-element would cover a neighbour (Pagination, ViewSwitch, GuidedEmptyState step nav,
+  `SidePanelToggle`, Carousel dots: the dot stays 6px inside a 44px button), and `HIT_AREA` (an invisible `::before`:
+  24px with a mouse, 44px with `any-pointer-coarse`, i.e. any device with a touch screen at any width) for an isolated
+  small control (Alert dismiss, MultiCombobox chip remove, SidePanel expand, CardActions ⋯, Calendar month nav). Inline
+  chips (`Citation`) get their own area: 44px tall on touch phones, only 2px wider each side, so adjacent chips never
+  overlap. A chevron inside a field (`CustomCombobox`) becomes its own 44px column with matching input padding, so its
+  area never reaches the text. Pagination shows first · current · last on a touch phone, chosen after mount (one list;
+  the server renders the full window). `tests/touch-targets.spec.ts` measures a sample of each at 390 × 844 (touch),
+  taps near each edge of the 44px box with `elementFromPoint`, and checks the drawn size at 1440.
 - Motion: animations respect `prefers-reduced-motion`.
 
 **Measured in apps.** Semi's components pass the checks above in `test:ui`, but a screen made of them can still fail:
