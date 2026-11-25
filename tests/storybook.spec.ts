@@ -9,7 +9,7 @@ import { a11yHits, lowContrast } from "./contrast";
 import { densityAudit } from "../lint/density.mjs";
 
 const DOC_PAGES = docs.map((d) => `/components/${d.id}/`);
-const PAGES = ["/", "/components/", "/foundations/", "/brand/", "/lab/", "/demo/app-shell/", ...DOC_PAGES];
+const PAGES = ["/", "/components/", "/foundations/", "/icons/", "/brand/", "/lab/", "/demo/app-shell/", ...DOC_PAGES];
 /** Pages checked at phone width: the gallery shows one example of every doc. */
 const THEMES = ["dark", "light"] as const;
 const example = (page: Page, id: string) => page.locator(`[data-example="${id}"]`);
@@ -2074,7 +2074,7 @@ test("focused input shows a 2px keyboard outline; Terminal output is a named reg
 });
 
 test("a clickable Card is a keyboard button: Tab reaches it, Enter picks it, aria-pressed follows", async ({ page }) => {
-  await open(page, "/foundations/", "light");
+  await open(page, "/icons/", "light");
   const tile = page.getByRole("button", { name: /^trash\b/ }).first();
   await tile.focus();
   await expect(tile).toBeFocused();

@@ -2,12 +2,13 @@ import Link from "next/link";
 import list from "../examples/list.generated.json";
 import pkg from "../package.json";
 import { PageTitle } from "../src/PageTitle";
-import { Icon, type IconName } from "../src/Icon";
+import { Icon, ICONS, type IconName } from "../src/Icon";
 import { CARD, CARD_HOVER, SECTION_HEAD, SECTION_TITLE } from "../styles/surfaces";
 import { CodeBlock } from "../site/CodeBlock";
 import { FOCUS_RING } from "../styles/utils";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
+const ICON_COUNT = Object.keys(ICONS).length;
 
 const AGENT_FILES: { href: string; title: string; text: string }[] = [
   { href: `${BASE}/llms.txt`, title: "llms.txt", text: "Mục lục cho agent: mọi trang và bản markdown của nó." },
@@ -18,7 +19,8 @@ const AGENT_FILES: { href: string; title: string; text: string }[] = [
 
 const START: { href: string; icon: IconName; title: string; text: string }[] = [
   { href: "/components/", icon: "grid", title: "Component", text: `${list.length} trang, ví dụ chạy thật, API sinh từ TypeScript.` },
-  { href: "/foundations/", icon: "palette", title: "Foundations", text: "Token bề mặt, thang chữ, bộ icon theo ngữ nghĩa." },
+  { href: "/foundations/", icon: "palette", title: "Foundations", text: "Token bề mặt, bậc chữ, hình khối và thang chữ cho cả hai theme." },
+  { href: "/icons/", icon: "shapes", title: "Icons", text: `${ICON_COUNT} icon theo ngữ nghĩa, tìm theo tên hoặc ý định, bấm để copy.` },
   { href: "/brand/", icon: "sparkles", title: "Brand preview", text: "Xem một thương hiệu trên mọi component trước khi tạo brand kit." },
 ];
 
@@ -37,16 +39,16 @@ export default function HomePage() {
       <div className="space-y-3">
         <PageTitle title="Semi Design System" />
         <p className="text-lead text-body max-w-3xl">
-          Bộ kit gốc để làm phần mềm cho nhiều thương hiệu: component React (Next.js, Tailwind 4), token chạy cả sáng lẫn tối, ba style và brand kit cho từng
+          Bộ kit gốc để làm phần mềm cho nhiều thương hiệu: component React (Next.js, Tailwind 4), token chạy cả sáng lẫn tối, một hình khối thống nhất và brand kit cho từng
           thương hiệu. Mọi thứ viết cho agent dùng trước: mỗi component có ví dụ là file thật, bảng API sinh từ code và bản markdown để đọc không cần chạy trang.
         </p>
       </div>
 
-      <section className="grid gap-3 @3xl:grid-cols-3">
+      <section className="grid gap-3 @2xl:grid-cols-2 @5xl:grid-cols-4">
         {START.map((s) => (
           <Link key={s.href} href={s.href} className={`${CARD_HOVER} p-card space-y-2 outline-none focus-visible:ring-2 focus-visible:ring-focus`}>
             <Icon name={s.icon} className="w-5 h-5 text-muted" />
-            <div className="text-lead font-semibold text-strong">{s.title}</div>
+            <div className="text-lead font-medium text-strong">{s.title}</div>
             <p className="text-ui text-muted">{s.text}</p>
           </Link>
         ))}
@@ -72,7 +74,7 @@ export default function HomePage() {
           <div className="grid gap-2 @2xl:grid-cols-2">
             {AGENT_FILES.map((f) => (
               <a key={f.title} href={f.href} className={`rounded-control border border-line bg-field p-3 hover:border-line-hover transition ${FOCUS_RING}`}>
-                <div className="text-ui font-semibold text-strong">{f.title}</div>
+                <div className="text-ui font-medium text-strong">{f.title}</div>
                 <div className="text-ui text-muted">{f.text}</div>
               </a>
             ))}

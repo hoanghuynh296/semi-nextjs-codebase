@@ -515,6 +515,7 @@
         "onSelect",
         "mainAction",
         "primaryCta",
+        "navSearch",
         "pinned",
         "tools",
         "toolsMenu",
