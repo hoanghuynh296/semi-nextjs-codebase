@@ -10,7 +10,7 @@ Exactly one option of a few, each with an optional description; vertical by defa
 
 | Need | Use |
 |---|---|
-| A filter on a list | Pills |
+| A filter on a list | SegmentedControl |
 | More than 5 options | CustomSelect |
 
 ## Import

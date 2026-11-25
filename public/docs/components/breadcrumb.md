@@ -11,7 +11,7 @@ Where the page sits: a trail of links ending with the current page. Long trails 
 | Need | Use |
 |---|---|
 | Top-level pages of an app | AppShell navigation |
-| Sibling views | PageTabsTitle |
+| Sibling views | TextTabs |
 
 ## Import
 

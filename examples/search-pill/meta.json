@@ -1,14 +1,12 @@
 {
   "title": "Search pill",
   "group": "Forms",
-  "description": "The wide pill search of a list page (one per page), with an optional `trailing` slot for `<BarActions>` when pinned in StickyContextBar. Typing is debounced (250 ms), Escape and the clear button clear at once, an optional key (/) focuses it. ResultLine is deprecated for 1.0 list pages (use FilterChipRow / PhoneFilterBar `sort` and `selection` instead).",
+  "description": "The wide pill search of a list page (one per page), with an optional `trailing` slot for `<BarActions>` when pinned in StickyContextBar. Typing is debounced (250 ms), Escape and the clear button clear at once, an optional key (/) focuses it.",
   "components": [
-    "SearchPill",
-    "ResultLine"
+    "SearchPill"
   ],
   "when": [
-    "The search of a list, grid or DataTable page, above its filter chips (inside StickyContextBar).",
-    "Showing how many rows match and how they are sorted, right above the rows."
+    "The search of a list, grid or DataTable page, above its filter chips (inside StickyContextBar)."
   ],
   "instead": [
     {
@@ -26,7 +24,6 @@
   ],
   "a11y": [
     "label is required: it names the field (type=search) and is the placeholder when none is given.",
-    "The result line is a polite live region, so the new count is read after typing; the sort trigger says the current choice (“Sắp xếp: Mới thêm”).",
     "focusKey is ignored while typing in another field and with ⌘ / Ctrl / Alt; the key cap is hidden from screen readers."
   ],
   "notes": [
@@ -39,10 +36,6 @@
     {
       "file": "default",
       "title": "Search"
-    },
-    {
-      "file": "result-line",
-      "title": "With the result line and sort"
     }
   ]
 }

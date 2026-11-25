@@ -23,7 +23,7 @@
     },
     {
       "need": "Pick one of 2–5 filters",
-      "use": "Pills"
+      "use": "SegmentedControl"
     },
     {
       "need": "Turn a setting on / off",

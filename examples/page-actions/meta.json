@@ -8,7 +8,7 @@
     "PageActionsSlot"
   ],
   "when": [
-    "A layout owns the header row but the page decides the actions (PageTabsTitle + “+”)."
+    "A layout owns the header row but the page decides the actions (TextTabs + “+”)."
   ],
   "a11y": [
     "Rendered through a portal into the slot, so tab order follows the header."

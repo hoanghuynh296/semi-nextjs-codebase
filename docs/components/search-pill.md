@@ -1,11 +1,10 @@
 # Search pill
 
-The wide pill search of a list page (one per page), with an optional `trailing` slot for `<BarActions>` when pinned in StickyContextBar. Typing is debounced (250 ms), Escape and the clear button clear at once, an optional key (/) focuses it. ResultLine is deprecated for 1.0 list pages (use FilterChipRow / PhoneFilterBar `sort` and `selection` instead).
+The wide pill search of a list page (one per page), with an optional `trailing` slot for `<BarActions>` when pinned in StickyContextBar. Typing is debounced (250 ms), Escape and the clear button clear at once, an optional key (/) focuses it.
 
 ## When to use
 
 - The search of a list, grid or DataTable page, above its filter chips (inside StickyContextBar).
-- Showing how many rows match and how they are sorted, right above the rows.
 
 ## Use something else when
 
@@ -18,7 +17,7 @@ The wide pill search of a list page (one per page), with an optional `trailing` 
 ## Import
 
 ```tsx
-import { SearchPill, ResultLine } from "@semi/ui";
+import { SearchPill } from "@semi/ui";
 ```
 
 ## Examples
@@ -39,32 +38,6 @@ export default function SearchPillDefault() {
       <p className="text-ui text-muted">
         Đang tìm: <span className="text-strong">{q || "—"}</span> (gõ xong 250 ms mới gửi; Esc để xoá; phím / để vào ô tìm)
       </p>
-    </div>
-  );
-}
-```
-
-### With the result line and sort
-
-```tsx
-"use client";
-
-import { useState } from "react";
-import { ResultLine, SearchPill } from "@semi/ui";
-
-const SORTS = [
-  { value: "recent", label: "Mới thêm" },
-  { value: "volume", label: "Sản lượng năm" },
-  { value: "name", label: "Tên A–Z" },
-];
-
-export default function SearchPillResultLine() {
-  const [q, setQ] = useState("tiêu đen");
-  const [sort, setSort] = useState("recent");
-  return (
-    <div className="flex flex-col gap-2 w-full">
-      <SearchPill value={q} onChange={setQ} label="Tìm khách hàng" shortcut="⌘K" />
-      <ResultLine query={q} count={q ? 128 : 1240} unit="khách hàng" sort={{ value: sort, onChange: setSort, options: SORTS }} />
     </div>
   );
 }
@@ -91,24 +64,9 @@ openDetail during the debounce sends the pending text first, so the query stays 
 | `trailing` | `React.ReactNode` |  | Extra tools at the right end (pinned `<BarActions />`, image search, voice). |
 | `className` | `string` |  |  |
 
-### ResultLine
-
-The line under the search: `“query” · N kết quả` on the left (announced politely when it changes), the sort menu on
-the right. Leave out `query` for a plain count.
-
-| Prop | Type | Default | Description |
-|---|---|---|---|
-| `count` * | `number` |  |  |
-| `query` | `string` |  |  |
-| `unit` | `string` |  | What is counted ("khách hàng"); default the locale's "kết quả". |
-| `sort` | `SortDef` |  |  |
-| `trailing` | `React.ReactNode` |  | More tools at the right end, after the sort (a ViewSwitch when there is no chip row). |
-| `className` | `string` |  |  |
-
 ## Accessibility
 
 - label is required: it names the field (type=search) and is the placeholder when none is given.
-- The result line is a polite live region, so the new count is read after typing; the sort trigger says the current choice (“Sắp xếp: Mới thêm”).
 - focusKey is ignored while typing in another field and with ⌘ / Ctrl / Alt; the key cap is hidden from screen readers.
 
 ## Notes

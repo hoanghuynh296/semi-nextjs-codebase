@@ -49,11 +49,11 @@ export function SubpageToolbar({
 }: {
   /**
    * The page title, on the same row as the filters and actions (the page then has no PageTitle). A string becomes
-   * the page's h1 in PageTitle type; pass a PageTabsTitle for sibling views. Leave it out to keep the title on its own
+   * the page's h1 in PageTitle type; pass a `TextTabs` for sibling views. Leave it out to keep the title on its own
    * row above (PageTitle + SubpageToolbar). On narrow screens the filters and actions wrap below the title.
    */
   title?: React.ReactNode;
-  /** Filter controls on the left (Pills, Chip, CustomSelect). */
+  /** Filter controls on the left (SegmentedControl, Chip, CustomSelect). */
   left?: React.ReactNode;
   /** Optional extra controls on the right (placed before the primary icon button). */
   right?: React.ReactNode;
@@ -117,7 +117,7 @@ export function SubpageToolbar({
         (typeof title === "string" ? (
           <h1 className={`min-w-0 max-w-full shrink ${PAGE_TITLE_TEXT}`}>{title}</h1>
         ) : (
-          // A PageTabsTitle keeps its own bottom margin on a row of its own; on the toolbar row the row spaces it.
+          // Custom title nodes (such as TextTabs) keep their own bottom margin on a row of their own; on the toolbar row the row spaces them.
           <div className="min-w-0 max-w-full shrink *:!mb-0">{title}</div>
         ))}
       {(left || !title || filters) && (

@@ -15,7 +15,7 @@
     },
     {
       "need": "Sibling views",
-      "use": "PageTabsTitle"
+      "use": "TextTabs"
     }
   ],
   "a11y": [

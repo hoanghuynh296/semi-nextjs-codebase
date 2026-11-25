@@ -1129,7 +1129,7 @@
         "initialQuery",
         "onOpenInNewTab"
       ],
-      "doc": "docs/components/command-palette.md"
+      "doc": "docs/components/command.md"
     },
     {
       "name": "CountBadge",
@@ -1493,7 +1493,7 @@
       "props": [
         "items"
       ],
-      "doc": "docs/components/drop-zone.md"
+      "doc": "docs/components/file-drop.md"
     },
     {
       "name": "FileDrop",
@@ -1551,7 +1551,7 @@
       "kind": "component",
       "module": "src/FilterChipRow.tsx",
       "client": true,
-      "summary": "The filter chips of a list page on one line. When they overflow, the row scrolls sideways and ‹ › buttons appear (hidden from screen readers and the tab order: every chip is reachable by Tab, which scrolls it into view). \"Xoá lọc\" shows while a filter is on; `leading` (the page's views as Pills) sits before the chips; `sort`, `selection` (\"Chọn\" → in-place `\"n đã chọn\"` + bulk actions at the same height) and `trailing` (`ViewSwitch`) sit at the right end.",
+      "summary": "The filter chips of a list page on one line. When they overflow, the row scrolls sideways and ‹ › buttons appear (hidden from screen readers and the tab order: every chip is reachable by Tab, which scrolls it into view). \"Xoá lọc\" shows while a filter is on; `leading` (the page's views as SegmentedControl) sits before the chips; `sort`, `selection` (\"Chọn\" → in-place `\"n đã chọn\"` + bulk actions at the same height) and `trailing` (`ViewSwitch`) sit at the right end.",
       "props": [
         "filters",
         "onChange",
@@ -2188,21 +2188,6 @@
       "doc": "docs/components/page-title.md"
     },
     {
-      "name": "PageTabsTitle",
-      "kind": "component",
-      "module": "src/PageTitle.tsx",
-      "client": true,
-      "summary": "Underline display tabs used when a view groups 2–4 sibling sub-pages (e.g. \"Máy in / Job in\", \"Sản phẩm / Danh mục\").",
-      "props": [
-        "tabs",
-        "value",
-        "onChange",
-        "ariaLabel",
-        "className"
-      ],
-      "doc": "docs/components/page-title.md"
-    },
-    {
       "name": "Pagination",
       "kind": "component",
       "module": "src/Pagination.tsx",
@@ -2235,20 +2220,6 @@
         "panelClassName"
       ],
       "doc": "docs/components/pill-tabs.md"
-    },
-    {
-      "name": "Pills",
-      "kind": "component",
-      "module": "src/Pills.tsx",
-      "client": true,
-      "summary": "Legacy single-choice pill group; deprecated in 1.0 (#147) in favour of SegmentedControl (2–5 filter values with counts and a sliding raised-2 pill) and PillTabs (5+ sections or sections with icons).",
-      "props": [
-        "value",
-        "options",
-        "onChange",
-        "className"
-      ],
-      "doc": "docs/components/pills.md"
     },
     {
       "name": "Popover",
@@ -2449,22 +2420,6 @@
         "debounce",
         "focusKey",
         "shortcut",
-        "trailing",
-        "className"
-      ],
-      "doc": "docs/components/search-pill.md"
-    },
-    {
-      "name": "ResultLine",
-      "kind": "component",
-      "module": "src/SearchPill.tsx",
-      "client": true,
-      "summary": "The line under the search: `“query” · N kết quả` on the left (announced politely when it changes), the sort menu on the right. Leave out `query` for a plain count.",
-      "props": [
-        "count",
-        "query",
-        "unit",
-        "sort",
         "trailing",
         "className"
       ],
@@ -2848,7 +2803,6 @@
         "items",
         "value",
         "onChange",
-        "variant",
         "label",
         "className",
         "panelClassName"
@@ -4359,7 +4313,7 @@
       "kind": "constant",
       "module": "styles/utils.ts",
       "client": false,
-      "summary": "The chosen segment of a segmented control (Pills, Toggle, pill Tabs, theme / style switcher). The tonal fill alone is too faint to tell which one is on, so an inset control-line ring marks it at ≥ 3:1 (WCAG 1.4.11)."
+      "summary": "The chosen segment of a segmented control (Toggle, theme / style switcher). The tonal fill alone is too faint to tell which one is on, so an inset control-line ring marks it at ≥ 3:1 (WCAG 1.4.11)."
     },
     {
       "name": "OVERLAY",

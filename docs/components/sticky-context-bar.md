@@ -36,7 +36,6 @@ import {
   Item,
   PageTitle,
   PhoneFilterBar,
-  ResultLine,
   SearchPill,
   StickyContextBar,
   ViewSwitch,
@@ -90,7 +89,7 @@ export default function StickyContextBarListPage() {
       <PageTitle
         title="Nhà cung cấp"
         actions={
-          <Button variant="primary" icon="plus" onClick={() => toast({ title: "Thêm nhà cung cấp" })}>
+          <Button variant="inverse" icon="plus" onClick={() => toast({ title: "Thêm nhà cung cấp" })}>
             Thêm nhà cung cấp
           </Button>
         }
@@ -102,10 +101,10 @@ export default function StickyContextBarListPage() {
           filters={filters}
           onChange={onChange}
           onClear={() => setSel({})}
+          sort={sortDef}
           trailing={<ViewSwitch view={view} onViewChange={setView} />}
         />
-        <PhoneFilterBar className="md:hidden" activeCount={active} onOpenFilters={() => setPanel(true)} filtersOpen={panel} />
-        <ResultLine query={q} count={rows.length} unit="nhà cung cấp" sort={sortDef} />
+        <PhoneFilterBar className="md:hidden" activeCount={active} onOpenFilters={() => setPanel(true)} filtersOpen={panel} sort={sortDef} />
       </StickyContextBar>
       <ul className={view === "grid" ? "grid grid-cols-2 gap-group" : "flex flex-col"}>
         {rows.map((s) => (
@@ -137,7 +136,7 @@ Pin behaviour (#150):
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `children` * | `React.ReactNode` |  | Usually SearchPill (with optional BarActions in `trailing`), then FilterChipRow (PhoneFilterBar on phones). No ResultLine in 1.0: the list sits 16px under the filter row. |
+| `children` * | `React.ReactNode` |  | Usually SearchPill (with optional BarActions in `trailing`), then FilterChipRow (PhoneFilterBar on phones). The list sits 16px under the filter row. |
 | `label` | `string` |  | Accessible name of the region ("Tìm và lọc khách hàng"); leave it out when the bar holds only a search. |
 | `pin` | `boolean` | `true` | Enable trackpad-proven layout pinning, focus-pin and `data-stuck` / `data-searching` state (default `true`). |
 | `className` | `string` |  |  |
@@ -167,7 +166,7 @@ the rest collapse into `•••` on the left.
 ## Notes
 
 - One per page, right under the page heading: PageTitle with `actions` (the page's one `inverse` or `primary` action + `•••` / RefreshButton) or TextTabs. Pass `<BarActions actions={…} menu={…} />` in SearchPill's `trailing` slot so up to 2 icon buttons (`[•••][main action]`) appear inside the pinned search bar when the title row scrolls out of view.
-- 1.0 list pages omit ResultLine: the list sits 16px under the filter row, and `sort` + `selection` ("Chọn", managed with `useListSelection`) live on FilterChipRow / PhoneFilterBar.
+- 1.0 list pages have no result-count row: the list sits 16px under the filter row, and `sort` + `selection` ("Chọn", managed with `useListSelection`) live on FilterChipRow / PhoneFilterBar.
 - Desktop and iPad show FilterChipRow (max-md:hidden on the phone bar's sibling), phones PhoneFilterBar (md:hidden): same filters, same state.
 - The page's views (Đang mở · Đã đóng · Tất cả) are `SegmentedControl` in FilterChipRow `leading` on md+ and PhoneFilterBar `typeItems` (radio items) on phones: same state, usually a plain param (?view=) written with useFilterParams().setParams. The default view may be other than “all”; leave it out of the URL.
 - Phone chrome: at most 2 rows (search + PhoneFilterBar), under 25% of the viewport (P1).

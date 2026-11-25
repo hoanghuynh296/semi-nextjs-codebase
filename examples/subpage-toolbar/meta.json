@@ -44,7 +44,7 @@
   ],
   "notes": [
     "Two layouts, both valid: PageTitle + SubpageToolbar (title on its own row), or SubpageToolbar with title (one row). Pick one per page, never both.",
-    "With title, a string becomes the page h1 in PageTitle type; a PageTabsTitle works too. Narrow screens wrap the filters and actions below the title.",
+    "With title, a string becomes the page h1 in PageTitle type; a TextTabs works too. Narrow screens wrap the filters and actions below the title.",
     "Text buttons belong in right (secondary actions); the title itself stays text only and the primary action stays icon-only.",
     "Phone layout (#57): with filters (typed, FilterDef[]) or collapseFilters (for left), below sm the toolbar is two rows at most: the title, then Bộ lọc · N, ⋯ (secondaryActions), the primary, the search. Above sm it is the row it always was; more than two typed filters collapse into Bộ lọc with the active ones as chips beside it (C-026)."
   ]

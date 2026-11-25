@@ -11,7 +11,7 @@
   "instead": [
     {
       "need": "A filter on a list",
-      "use": "Pills"
+      "use": "SegmentedControl"
     },
     {
       "need": "More than 5 options",

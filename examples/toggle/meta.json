@@ -12,7 +12,7 @@
   "instead": [
     {
       "need": "Filter a list by text options",
-      "use": "Pills"
+      "use": "SegmentedControl"
     },
     {
       "need": "A setting saved immediately with a label",

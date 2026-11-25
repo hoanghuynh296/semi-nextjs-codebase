@@ -129,7 +129,7 @@ test("an example switches to its exact code and copies the page markdown", async
   await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   await open(page, "/components/button/", "dark");
   const ex = example(page, "button/variants");
-  await ex.getByRole("button", { name: "Code" }).click();
+  await ex.getByRole("radio", { name: "Code" }).click();
   await expect(ex.locator("pre code")).toContainText('import { Button } from "@semi/ui";');
   await page.getByRole("button", { name: "Copy page" }).click();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toContain("# Button");
@@ -516,7 +516,7 @@ for (const theme of THEMES)
       await expect(page.getByRole("dialog", { name: "Trạng thái" })).toBeVisible();
 
       await open(page, "/components/view-switch/", theme);
-      const sw = example(page, "view-switch/default");
+      const sw = example(page, "view-switch/default").locator("[data-density-view]");
       await expect(sw.getByRole("radio").first().or(sw.getByRole("button").first())).toBeVisible();
       await sw.locator("button").first().focus();
       expect(await a11yHits(page)).toEqual([]);
@@ -524,11 +524,11 @@ for (const theme of THEMES)
     });
 
 test("CommandPalette hotkey: the platform's key opens it from a field, not the other modifier or a rich-text editor (#102)", async ({ page }) => {
-  await open(page, "/components/command-palette/", "dark");
+  await open(page, "/components/command/", "dark");
   const apple = await page.evaluate(() => /Mac|iPhone|iPad/i.test(navigator.platform || navigator.userAgent));
   const dialog = page.getByRole("dialog", { name: "Tìm hoặc tạo" });
   // hydrated first (the shortcut works), so React never re-renders over the probes; they live outside its tree
-  await expect(example(page, "command-palette/app").getByRole("button", { name: /Tìm hoặc tạo/ })).toBeVisible();
+  await expect(example(page, "command/app").getByRole("button", { name: /Tìm hoặc tạo/ })).toBeVisible();
   await expect(async () => {
     await page.keyboard.press("ControlOrMeta+k");
     await expect(dialog).toBeVisible({ timeout: 500 });
@@ -584,7 +584,7 @@ test("ContextMenu on touch: a long-press opens a bottom sheet, a tap on the back
 });
 
 test("CommandPalette: ⌘K, a combobox over a grouped listbox, page items first, Escape closes (#102)", async ({ page }) => {
-  await open(page, "/components/command-palette/", "dark");
+  await open(page, "/components/command/", "dark");
   await page.keyboard.press("ControlOrMeta+k");
   const dialog = page.getByRole("dialog", { name: "Tìm hoặc tạo" });
   await expect(dialog).toBeVisible();
@@ -597,7 +597,7 @@ test("CommandPalette: ⌘K, a combobox over a grouped listbox, page items first,
   await input.press("Enter");
   await expect(dialog).toBeHidden();
   await expect(page.getByText("Mở Gia vị Tây Nguyên")).toBeVisible();
-  await example(page, "command-palette/app").getByRole("button", { name: /Tìm hoặc tạo/ }).click();
+  await example(page, "command/app").getByRole("button", { name: /Tìm hoặc tạo/ }).click();
   await expect(dialog).toBeVisible();
   await input.fill("khong co");
   await expect(dialog.getByText("Không có kết quả cho “khong co”. Thử từ khác.")).toBeVisible();
@@ -1317,9 +1317,9 @@ test("agents: llms.txt links every component page and its markdown, and everythi
 
 // ─── Components added in 0.10 ────────────────────────────────────────────────────────────────────────────────────
 
-test("Command: ⌘K opens it, matching ignores Vietnamese marks, Enter runs, Escape closes", async ({ page }) => {
+test("Command: ⌘J opens it, matching ignores Vietnamese marks, Enter runs, Escape closes", async ({ page }) => {
   await open(page, "/components/command/", "dark");
-  await page.keyboard.press("ControlOrMeta+k");
+  await page.keyboard.press("ControlOrMeta+j");
   const dialog = page.getByRole("dialog", { name: "Bảng lệnh" });
   await expect(dialog).toBeVisible();
   const input = dialog.getByRole("combobox");
@@ -1330,7 +1330,7 @@ test("Command: ⌘K opens it, matching ignores Vietnamese marks, Enter runs, Esc
   await input.press("Enter");
   await expect(dialog).toBeHidden();
   await expect(page.getByText("Mở Đơn hàng")).toBeVisible();
-  await page.keyboard.press("ControlOrMeta+k");
+  await page.keyboard.press("ControlOrMeta+j");
   await expect(dialog).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(dialog).toBeHidden();
@@ -1517,7 +1517,7 @@ test("Popover moves focus in and returns it; ContextMenu opens with Shift+F10", 
   await expect(pop).toBeHidden();
   await expect(opener).toBeFocused();
   await open(page, "/components/context-menu/", "dark");
-  const area = example(page, "context-menu/file").locator("[tabindex='0']").first();
+  const area = example(page, "context-menu/file").locator("[data-density-view] [tabindex='0']").first();
   await area.focus();
   await page.keyboard.press("Shift+F10");
   await expect(page.getByRole("menu", { name: "Thao tác tệp" })).toBeVisible();
@@ -1587,15 +1587,14 @@ test("FilterChipRow: leading views and a single chip by keyboard: radio menu, cl
   await open(page, "/components/filter-chip-row/", "dark");
   const ex = example(page, "filter-chip-row/views");
   // the default view is not "all"
-  const open1 = ex.getByRole("button", { name: "Chưa xử lý" });
-  await expect(open1).toHaveAttribute("aria-pressed", "true");
-  await expect(ex.getByText("2 thư")).toBeVisible();
+  const open1 = ex.getByRole("radio", { name: "Chưa xử lý" });
+  await expect(open1).toHaveAttribute("aria-checked", "true");
+  await expect(ex.getByText("Báo giá tiêu đen · Hỏi giá hồi")).toBeVisible();
   await open1.focus();
-  await page.keyboard.press("Tab");
-  await expect(ex.getByRole("button", { name: "Tất cả", exact: true })).toBeFocused();
-  await page.keyboard.press("Enter");
-  await expect(ex.getByRole("button", { name: "Tất cả", exact: true })).toHaveAttribute("aria-pressed", "true");
-  await expect(ex.getByText("4 thư")).toBeVisible();
+  await page.keyboard.press("ArrowRight");
+  await expect(ex.getByRole("radio", { name: "Tất cả", exact: true })).toBeFocused();
+  await expect(ex.getByRole("radio", { name: "Tất cả", exact: true })).toHaveAttribute("aria-checked", "true");
+  await expect(ex.getByText("Báo giá tiêu đen · Đơn đặt hàng quế · Hoá đơn tháng 10 · Hỏi giá hồi")).toBeVisible();
   // the next Tab stop is the single chip, named for the filter and its default value
   await page.keyboard.press("Tab");
   const chip = ex.getByRole("button", { name: "Hộp thư: Tất cả" });
@@ -1613,7 +1612,7 @@ test("FilterChipRow: leading views and a single chip by keyboard: radio menu, cl
   await expect(menu).toBeHidden();
   const on = ex.getByRole("button", { name: "Hộp thư: Bán hàng" });
   await expect(on).toBeFocused();
-  await expect(ex.getByText("2 thư")).toBeVisible();
+  await expect(ex.getByText("Báo giá tiêu đen · Đơn đặt hàng quế")).toBeVisible();
   // it opens on the checked item; Escape returns to the chip
   await page.keyboard.press("Enter");
   await expect(menu.getByRole("menuitemradio", { name: /^Bán hàng/ })).toBeFocused();
@@ -1634,7 +1633,7 @@ test("FilterChipRow: leading views and a single chip by keyboard: radio menu, cl
   await expect(ex.getByRole("button", { name: "Thư mục: Lưu trữ" })).toBeVisible();
   await ex.getByRole("button", { name: "Xoá lọc" }).click();
   await expect(ex.getByRole("button", { name: "Thư mục" })).toBeVisible();
-  await expect(ex.getByRole("button", { name: "Tất cả", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await expect(ex.getByRole("radio", { name: "Tất cả", exact: true })).toHaveAttribute("aria-checked", "true");
 });
 
 test("List page block: title row with its action on one row, views and filters in the URL; phone: radio views, radio group in the panel (#115, #119, #120, #149)", async ({ browser }) => {
@@ -1649,8 +1648,8 @@ test("List page block: title row with its action on one row, views and filters i
     expect(Math.abs(c!.y + c!.height / 2 - (t!.y + t!.height / 2))).toBeLessThan(Math.max(t!.height, c!.height) / 2);
     await expect(ex.getByRole("search", { name: "Tìm và lọc đơn hàng" })).toBeVisible();
     if (!phone) {
-      await expect(ex.getByRole("button", { name: "Đang xử lý" })).toHaveAttribute("aria-pressed", "true");
-      await ex.getByRole("button", { name: "Đã xong" }).click();
+      await expect(ex.getByRole("radio", { name: "Đang xử lý" })).toHaveAttribute("aria-checked", "true");
+      await ex.getByRole("radio", { name: "Đã xong" }).click();
       await expect(page).toHaveURL(/[?&]view=done(&|$)/);
       await ex.getByRole("button", { name: "Chi nhánh: Tất cả" }).click();
       await page.getByRole("menu", { name: "Chi nhánh" }).getByRole("menuitemradio", { name: "Hà Nội" }).click();
@@ -2064,12 +2063,6 @@ for (const theme of THEMES)
     expect(await weakEdges(page)).toEqual([]);
   });
 
-test("the chosen segment has a ring, not only a faint fill", async ({ page }) => {
-  await open(page, "/components/tabs/", "light");
-  const on = page.getByRole("tab", { name: "Tuần" });
-  expect(await on.evaluate((e) => getComputedStyle(e).boxShadow)).toMatch(/inset/);
-});
-
 test("DatePicker, toolbar select and tab panel show keyboard focus", async ({ page }) => {
   const ring = async (loc: ReturnType<Page["locator"]>) => {
     await loc.focus();
@@ -2226,8 +2219,8 @@ test("Stepper: a spinbutton; arrows, Page Up / Down, Home / End; the − + butto
 });
 
 test("DropZone: Enter on the tile opens the file picker; the file shows and the section counter follows (#106)", async ({ page }) => {
-  await open(page, "/components/drop-zone/", "dark");
-  const box = example(page, "drop-zone/basic");
+  await open(page, "/components/file-drop/", "dark");
+  const box = example(page, "file-drop/drop-zone");
   const zone = box.getByRole("button", { name: /Kéo tệp quy cách vào đây/ });
   await zone.focus();
   let chooser!: import("@playwright/test").FileChooser;
@@ -2456,7 +2449,7 @@ test("PillTabs (#147): h30 round pills, sliding item-hover pill, tablist/tabpane
   // 4) prefers-reduced-motion: sliding pill transition is disabled
   const reduced = await browser.newPage({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
   await reduced.goto("/components/pill-tabs/");
-  const rPill = example(reduced, "pill-tabs/sections").locator("[data-pill]");
+  const rPill = example(reduced, "pill-tabs/sections").locator("[data-density-view] [data-pill]");
   await expect(rPill).toBeVisible();
   expect(await rPill.evaluate((el) => getComputedStyle(el).transitionProperty)).toBe("none");
   await reduced.close();

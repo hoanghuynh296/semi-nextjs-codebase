@@ -16,7 +16,7 @@ export const FOCUS_RING =
 export const HIT_AREA =
   "before:absolute before:top-1/2 before:left-1/2 before:size-6 before:min-w-full before:min-h-full before:-translate-1/2 any-pointer-coarse:before:size-[44px]";
 
-/** The chosen segment of a segmented control (Pills, Toggle, pill Tabs, theme / style switcher). The tonal fill alone
+/** The chosen segment of a segmented control (Toggle, theme / style switcher). The tonal fill alone
  * is too faint to tell which one is on, so an inset control-line ring marks it at ≥ 3:1 (WCAG 1.4.11). */
 export const SEGMENT_ON = "bg-raised text-strong ring-1 ring-inset ring-control-line";
 
