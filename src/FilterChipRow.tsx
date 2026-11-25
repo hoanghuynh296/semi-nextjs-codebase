@@ -11,7 +11,21 @@ import { Popover } from "./Popover";
 import { Menu, type MenuItem } from "./Overlay";
 import { Checkbox } from "./Choice";
 import { useSemiLocale } from "./locale";
-import { activeFilterCount, clearFilters, readFilters, writeFilters, type FilterDef, type FilterSpec, type FilterValues } from "./filterParams";
+import {
+  activeFilterCount,
+  clearFilters,
+  FILTER_PARAM_PREFIX,
+  formatSort,
+  parseSort,
+  readFilters,
+  readSort,
+  writeFilters,
+  writeSort,
+  type FilterDef,
+  type FilterSpec,
+  type FilterValues,
+} from "./filterParams";
+import type { DataTableSort } from "./DataTable";
 import type { SortDef } from "./SearchPill";
 import { currentSearch, patchSearch, subscribeUrl, writeSearch } from "./urlState";
 import { cn } from "../styles/utils";
@@ -106,13 +120,27 @@ export function FilterChip({ def, onChange }: { def: FilterDef; onChange: (selec
     );
   }
   if (def.kind === "single") {
+    const options = def.options ?? [];
     const current = def.selected[0] ?? def.clearValue;
-    const currentLabel = def.options?.find((o) => o.value === current)?.label;
+    const currentLabel = options.find((o) => o.value === current)?.label;
+    const disabled = options.length === 0;
+    const trigger = (
+      <button
+        type="button"
+        disabled={disabled}
+        className={cn(CHIP, on ? CHIP_ON : CHIP_OFF, disabled && "opacity-40 cursor-not-allowed")}
+      >
+        {icon}
+        <span className="max-w-56 truncate">{currentLabel ? `${def.label}: ${currentLabel}` : def.label}</span>
+        <Icon name="chevronDown" className="w-3.5 h-3.5 shrink-0 opacity-70" />
+      </button>
+    );
+    if (disabled) return trigger;
     return (
       <Menu
         align="left"
         label={def.label}
-        items={(def.options ?? []).map((o) => ({
+        items={options.map((o) => ({
           label: o.label,
           icon: o.icon,
           radio: true,
@@ -120,13 +148,7 @@ export function FilterChip({ def, onChange }: { def: FilterDef; onChange: (selec
           shortcut: o.count === undefined ? undefined : String(o.count),
           onSelect: () => onChange(o.value === def.clearValue ? [] : [o.value]),
         }))}
-        trigger={
-          <button type="button" className={cn(CHIP, on ? CHIP_ON : CHIP_OFF)}>
-            {icon}
-            <span className="max-w-56 truncate">{currentLabel ? `${def.label}: ${currentLabel}` : def.label}</span>
-            <Icon name="chevronDown" className="w-3.5 h-3.5 shrink-0 opacity-70" />
-          </button>
-        }
+        trigger={trigger}
       />
     );
   }
@@ -382,6 +404,38 @@ export function FilterChipRow({
   );
 }
 
+/** Options for URL-backed sort (`?sort=key.dir`) inside `useFilterParams`. */
+export interface FilterParamsSortOptions {
+  /** Sort menu choices for `FilterChipRow` / `PhoneFilterBar` / `FilterPanel`; each `value` is `"key.dir"` (e.g. `"total.desc"`). */
+  options?: { value: string; label: string }[];
+  /** Default sort when `?sort=` is absent (never written to the URL). */
+  defaultSort?: DataTableSort | null;
+  /** URL param name (default `"sort"`). */
+  param?: string;
+  /** Optional allow-list of sortable column keys; unknown keys in the URL fall back to `defaultSort`. */
+  allowedKeys?: readonly string[];
+}
+
+/**
+ * Legacy URL param rewriter for `useFilterParams`:
+ * - A map `{ oldParam: "target" }` rewrites `oldParam` once after hydration with `replaceState` (zero history entries).
+ *   When `"target"` matches a filter spec key, values move to `<prefix><target>` (cleaned by the spec); otherwise
+ *   `"target"` is written as a plain param (e.g. `{ search: "q" }`).
+ * - A function `(params) => nextParams | null | undefined` handles custom migrations; returning a changed `URLSearchParams`
+ *   replaces the URL once after hydration.
+ */
+export type LegacyParamsMap = Record<string, string> | ((params: URLSearchParams) => URLSearchParams | null | undefined);
+
+/** Options for `useFilterParams`. */
+export interface FilterParamsOptions {
+  /** Prefix for filter query params (default `"f."`). */
+  prefix?: string;
+  /** Rewrites old URL params once after hydration via `replaceState` (no extra history entry). */
+  legacy?: LegacyParamsMap;
+  /** URL-backed sort (`?sort=key.dir`) shared by `FilterChipRow`, `PhoneFilterBar`, `FilterPanel` and `DataTable`. */
+  sort?: FilterParamsSortOptions;
+}
+
 /** What useFilterParams returns: the filters with their state and the ways to change them (all write the URL). */
 export interface FilterParamsState<K extends string = string> {
   /** The filters with `selected`, for FilterChipRow / FilterPanel. */
@@ -390,19 +444,27 @@ export interface FilterParamsState<K extends string = string> {
   values: FilterValues<K>;
   /** How many filters are on (PhoneFilterBar's count). */
   activeCount: number;
-  /** Set one filter (a new history entry, so Back undoes it). */
-  onChange: (key: string, selected: string[]) => void;
+  /** Set one filter (default `"push"` so Back undoes it; `"replace"` updates in place without adding a history entry). */
+  onChange: (key: string, selected: string[], mode?: "push" | "replace") => void;
+  /** Change several filters at once in a single history entry (default `"push"`). */
+  patch: (values: Partial<FilterValues<K>>, mode?: "push" | "replace") => void;
   /** Clear every filter. */
   onClear: () => void;
   /** The current search params (the query, the sort, the view live there too). */
   params: URLSearchParams;
   /** Set or remove other params (`null` or "" removes): `setParams({ q: "tiêu" }, "replace")`. Default `push`. */
   setParams: (patch: Record<string, string | null>, mode?: "push" | "replace") => void;
+  /** URL-backed sort (`?sort=key.dir`) for `<DataTable sort={f.sort} onSortChange={f.setSort} />`. */
+  sort: DataTableSort | null;
+  /** Update `?sort=key.dir` (`null` or `defaultSort` clears the param). Default `"push"`. */
+  setSort: (next: DataTableSort | null, mode?: "push" | "replace") => void;
+  /** Ready-to-pass `SortDef` for `FilterChipRow` / `PhoneFilterBar` / `FilterPanel` when `options.sort.options` is given. */
+  sortDef?: SortDef;
 }
 
 /**
- * Filter state in the URL, with no router hook. The server render and hydration see no params (prerender-safe: no
- * `window` in render, no `useSearchParams`, which would suspend a prerendered route); the URL is read right after.
+ * Filter and sort state in the URL, with no router hook. The server render and hydration see no params (prerender-safe:
+ * no `window` in render, no `useSearchParams`, which would suspend a prerendered route); the URL is read right after.
  * Writes use `history.pushState(null, …)` / `replaceState(null, …)`, which Next's App Router turns into its own
  * navigation, so `useSearchParams` and `router.refresh()` keep the filters. It follows Back / Forward, every other
  * useFilterParams on the page, and (where the Navigation API exists, and on any re-render elsewhere) a Link or
@@ -410,24 +472,104 @@ export interface FilterParamsState<K extends string = string> {
  * not re-render can miss such a navigation: there, and with a router of your own, use the pure helpers
  * (`readFilters`, `writeFilters`, `clearFilters`) on `useSearchParams`.
  */
-export function useFilterParams<K extends string>(specs: readonly (FilterSpec & { key: K })[], options: { prefix?: string } = {}): FilterParamsState<K> {
-  const { prefix } = options;
+export function useFilterParams<K extends string>(
+  specs: readonly (FilterSpec & { key: K })[],
+  options: FilterParamsOptions = {},
+): FilterParamsState<K> {
+  const { prefix = FILTER_PARAM_PREFIX, legacy, sort: sortOpt } = options;
   const search = useSyncExternalStore(subscribeUrl, currentSearch, () => "");
   // specs are usually an inline array: key the memo on their content, not their identity
   const specsKey = JSON.stringify(specs);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const stableSpecs = useMemo(() => specs, [specsKey]);
+  const sortParam = sortOpt?.param;
+  const defaultSortKey = sortOpt?.defaultSort?.key ?? "";
+  const defaultSortDir = sortOpt?.defaultSort?.dir ?? "";
+  const sortAllowedKey = sortOpt?.allowedKeys ? JSON.stringify(sortOpt.allowedKeys) : "";
+  const sortOptionsKey = sortOpt?.options ? JSON.stringify(sortOpt.options) : "";
+  const defaultSort = useMemo<DataTableSort | null>(
+    () => (defaultSortKey && (defaultSortDir === "asc" || defaultSortDir === "desc") ? { key: defaultSortKey, dir: defaultSortDir } : null),
+    [defaultSortKey, defaultSortDir],
+  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const sortAllowed = useMemo(() => sortOpt?.allowedKeys, [sortAllowedKey]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const sortOptions = useMemo(() => sortOpt?.options, [sortOptionsKey]);
+
+  // Rewrite legacy params once after hydration with `replaceState` (zero history entries).
+  const legacyRef = useRef(legacy);
+  legacyRef.current = legacy;
+  const didRewriteLegacy = useRef(false);
+  useEffect(() => {
+    if (didRewriteLegacy.current) return;
+    didRewriteLegacy.current = true;
+    const map = legacyRef.current;
+    if (!map) return;
+    const raw = currentSearch();
+    if (!raw || raw === "?") return;
+    const current = new URLSearchParams(raw);
+    if (typeof map === "function") {
+      const next = map(new URLSearchParams(current));
+      if (next && next.toString() !== current.toString()) writeSearch(next, "replace");
+      return;
+    }
+    let next = new URLSearchParams(current);
+    let changed = false;
+    const filterPatch: Partial<FilterValues> = {};
+    for (const [oldKey, targetKey] of Object.entries(map)) {
+      if (!next.has(oldKey)) continue;
+      const spec = stableSpecs.find((s) => s.key === targetKey);
+      if (spec) {
+        const destParam = prefix + spec.key;
+        if (oldKey === destParam) continue;
+        if (!next.has(destParam)) filterPatch[spec.key] = next.getAll(oldKey);
+        next.delete(oldKey);
+        changed = true;
+      } else {
+        if (oldKey === targetKey) continue;
+        if (!next.has(targetKey)) {
+          const vals = next.getAll(oldKey);
+          for (const v of vals) if (v) next.append(targetKey, v);
+        }
+        next.delete(oldKey);
+        changed = true;
+      }
+    }
+    if (Object.keys(filterPatch).length > 0) {
+      next = writeFilters(next, filterPatch, stableSpecs, prefix);
+    }
+    if (changed && next.toString() !== current.toString()) {
+      writeSearch(next, "replace");
+    }
+  }, [stableSpecs, prefix]);
+
   return useMemo(() => {
     const filters = readFilters(search, stableSpecs, prefix);
+    const sort = readSort(search, { param: sortParam, defaultSort, allowedKeys: sortAllowed });
+    const setSort = (next: DataTableSort | null, mode: "push" | "replace" = "push") =>
+      writeSearch((current) => writeSort(current, next, { param: sortParam, defaultSort }), mode);
+    const sortDef: SortDef | undefined = sortOptions
+      ? {
+          value: formatSort(sort),
+          options: sortOptions,
+          onChange: (v) => setSort(parseSort(v, sortAllowed), "push"),
+        }
+      : undefined;
     return {
       filters,
       values: Object.fromEntries(filters.map((f) => [f.key, f.selected])) as FilterValues<K>,
       activeCount: activeFilterCount(filters),
       // built on the URL after a push flushed a pending search (#128), not the one read before it
-      onChange: (key, selected) => writeSearch((current) => writeFilters(current, { [key]: selected }, stableSpecs, prefix), "push"),
+      onChange: (key, selected, mode = "push") =>
+        writeSearch((current) => writeFilters(current, { [key]: selected }, stableSpecs, prefix), mode),
+      patch: (values, mode = "push") =>
+        writeSearch((current) => writeFilters(current, values, stableSpecs, prefix), mode),
       onClear: () => writeSearch((current) => clearFilters(current, stableSpecs, prefix), "push"),
       params: new URLSearchParams(search),
       setParams: (patch, mode = "push") => patchSearch(patch, mode),
+      sort,
+      setSort,
+      sortDef,
     };
-  }, [search, stableSpecs, prefix]);
+  }, [search, stableSpecs, prefix, sortParam, defaultSort, sortAllowed, sortOptions]);
 }

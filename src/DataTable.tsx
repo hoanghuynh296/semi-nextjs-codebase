@@ -62,6 +62,7 @@ export function DataTable<T>({
   sort: sortProp,
   defaultSort,
   onSortChange,
+  onResultsChange,
   selectable = false,
   selected: selectedProp,
   onSelectedChange,
@@ -84,6 +85,8 @@ export function DataTable<T>({
   sort?: DataTableSort | null;
   defaultSort?: DataTableSort;
   onSortChange?: (sort: DataTableSort | null) => void;
+  /** Called with the searched + sorted rows (all pages) whenever the result order changes, so a DetailOverlay's ‹ › walks the table's exact order. */
+  onResultsChange?: (rows: T[]) => void;
   /** Add a checkbox column. */
   selectable?: boolean;
   selected?: string[];
@@ -124,6 +127,11 @@ export function DataTable<T>({
   const valueOf = (col: DataTableColumn<T>, row: T) => (col.value ? col.value(row) : (row as Record<string, unknown>)[col.key]) as string | number | null | undefined;
   const filtered = useMemo(() => searchRows(rows, columns, search), [rows, columns, search]);
   const sorted = useMemo(() => sortRows(filtered, columns, sort), [filtered, columns, sort]);
+  const onResultsChangeRef = useRef(onResultsChange);
+  onResultsChangeRef.current = onResultsChange;
+  useEffect(() => {
+    onResultsChangeRef.current?.(sorted);
+  }, [sorted]);
   const pages = pageSize > 0 ? Math.max(1, Math.ceil(sorted.length / pageSize)) : 1;
   const visible = useMemo(() => (pageSize > 0 ? sorted.slice((page - 1) * pageSize, page * pageSize) : sorted), [sorted, page, pageSize]);
   const visibleIds = visible.map(getRowId);

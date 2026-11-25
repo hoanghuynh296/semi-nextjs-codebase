@@ -6,6 +6,7 @@
 // `?f.status=new&f.status=quoting&f.big=1`; a single filter has one value (`?f.mailbox=sales`), none for its default.
 // Unknown values (an old link, a typo) are dropped when read.
 import type { IconName } from "./Icon";
+import type { DataTableSort } from "./DataTable";
 
 /** One choice of a multi-select or single-choice filter. */
 export interface FilterOption {
@@ -117,4 +118,51 @@ export function activeFilterCount(filters: readonly { selected: readonly string[
 export function toQueryString(params: URLSearchParams): string {
   const qs = params.toString();
   return qs ? `?${qs}` : "";
+}
+
+/** Default URL param name for sort state (`?sort=key.dir`). */
+export const SORT_PARAM = "sort";
+
+/** Parse `"key.asc"` / `"key.desc"` into a `DataTableSort` (returns `null` for empty or invalid strings). */
+export function parseSort(raw: string | null | undefined, allowedKeys?: readonly string[]): DataTableSort | null {
+  if (!raw) return null;
+  const dot = raw.lastIndexOf(".");
+  if (dot <= 0) return null;
+  const key = raw.slice(0, dot);
+  const dir = raw.slice(dot + 1);
+  if (dir !== "asc" && dir !== "desc") return null;
+  if (allowedKeys && !allowedKeys.includes(key)) return null;
+  return { key, dir };
+}
+
+/** Format a `DataTableSort` as `"key.dir"` (or `""` when `null`). */
+export function formatSort(sort: DataTableSort | null | undefined): string {
+  return sort ? `${sort.key}.${sort.dir}` : "";
+}
+
+/** Read `?sort=key.dir` from search params, falling back to `defaultSort` (default `null`) when absent or invalid. */
+export function readSort(
+  params: ParamsInput,
+  options: { param?: string; defaultSort?: DataTableSort | null; allowedKeys?: readonly string[] } = {},
+): DataTableSort | null {
+  const { param = SORT_PARAM, defaultSort = null, allowedKeys } = options;
+  const p = toParams(params);
+  return parseSort(p.get(param), allowedKeys) ?? defaultSort;
+}
+
+/**
+ * New search params with `sort` written as `?sort=key.dir`. Passing `null` or the `defaultSort` removes the param
+ * so default URLs stay clean.
+ */
+export function writeSort(
+  params: ParamsInput,
+  sort: DataTableSort | null,
+  options: { param?: string; defaultSort?: DataTableSort | null } = {},
+): URLSearchParams {
+  const { param = SORT_PARAM, defaultSort = null } = options;
+  const next = toParams(params);
+  const isDefault = Boolean(sort && defaultSort && sort.key === defaultSort.key && sort.dir === defaultSort.dir);
+  if (!sort || isDefault) next.delete(param);
+  else next.set(param, formatSort(sort));
+  return next;
 }

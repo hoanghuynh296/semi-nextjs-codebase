@@ -210,7 +210,7 @@ export function FilterPanel({
   open: boolean;
   onClose: () => void;
   filters: FilterDef[];
-  onChange: (key: string, selected: string[]) => void;
+  onChange: (key: string, selected: string[], mode?: "push" | "replace") => void;
   onClear: () => void;
   /** Sort choices, shown first as a row of chips. */
   sort?: SortDef;
@@ -323,15 +323,14 @@ export function FilterPanel({
                   {isOpen && (
                     <div id={bodyId}>
                       {single ? (
-                        <div role="group" aria-label={f.label} className="px-4 pb-4 pt-1">
-                          <RadioGroup
-                            name={bodyId}
-                            value={current ?? ""}
-                            onChange={(v) => onChange(f.key, v === f.clearValue ? [] : [v])}
-                            options={(f.options ?? []).map((o) => ({ value: o.value, label: o.label }))}
-                            className="[&>div]:gap-4"
-                          />
-                        </div>
+                        <RadioGroup
+                          name={bodyId}
+                          aria-label={f.label}
+                          value={current ?? ""}
+                          onChange={(v) => onChange(f.key, v === f.clearValue ? [] : [v], "replace")}
+                          options={(f.options ?? []).map((o) => ({ value: o.value, label: o.label }))}
+                          className="px-4 pb-4 pt-1 [&>div]:gap-4"
+                        />
                       ) : (
                         <FilterOptions def={f} onChange={(s) => onChange(f.key, s)} className="max-h-none px-2.5 pb-3 pt-0" />
                       )}

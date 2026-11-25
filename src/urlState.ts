@@ -1,9 +1,9 @@
 "use client";
 
-// The URL as shared state for useFilterParams and useDetailParam (internal, not exported from @semi/ui): read
-// `location.search` after hydration, write with `history.pushState(null, …)` (Next's App Router turns that into its
-// own navigation and keeps useSearchParams in step), and tell every reader on the page.
-import { toQueryString } from "./filterParams";
+// The URL as shared state for useFilterParams and useDetailParam: read `location.search` after hydration, write with
+// `history.pushState(null, …)` / `replaceState(null, …)` (Next's App Router turns that into its own navigation and
+// keeps useSearchParams in step), and tell every reader on the page.
+import { toQueryString, writeFilters, type FilterSpec, type FilterValues } from "./filterParams";
 
 export function currentSearch() {
   return typeof window === "undefined" ? "" : window.location.search;
@@ -79,4 +79,12 @@ export function patchSearch(patch: Record<string, string | null>, mode: "push" |
     }
     return next;
   }, mode);
+}
+
+/**
+ * Replace one or more filters in the current URL without pushing a history entry (for code outside `useFilterParams`,
+ * e.g. legacy link rewrites or programmatic resets). Notifies every `useFilterParams` hook on the page.
+ */
+export function replaceFilters(patch: Partial<FilterValues>, specs?: readonly FilterSpec[], prefix?: string) {
+  writeSearch((current) => writeFilters(current, patch, specs, prefix), "replace");
 }

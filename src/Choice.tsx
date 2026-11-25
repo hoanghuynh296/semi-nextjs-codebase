@@ -181,6 +181,8 @@ export function RadioGroup<T extends string>({
   name: nameProp,
   direction = "vertical",
   className,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledby,
 }: {
   value: T;
   onChange: (value: T) => void;
@@ -190,11 +192,20 @@ export function RadioGroup<T extends string>({
   name?: string;
   direction?: "vertical" | "horizontal";
   className?: string;
+  /** Accessible name for the radiogroup when no visible `label` is rendered. `label` wins. */
+  "aria-label"?: string;
+  /** Id of the element that names the radiogroup when no visible `label` is rendered. `label` wins. */
+  "aria-labelledby"?: string;
 }) {
   const auto = useId();
   const name = nameProp ?? `radio-${auto}`;
   return (
-    <div role="radiogroup" aria-labelledby={label ? `${name}-label` : undefined} className={className}>
+    <div
+      role="radiogroup"
+      aria-label={label ? undefined : ariaLabel}
+      aria-labelledby={label ? `${name}-label` : ariaLabelledby}
+      className={className}
+    >
       {label && (
         <div id={`${name}-label`} className="text-ui font-medium text-muted mb-1.5">
           {label}

@@ -35,6 +35,7 @@ export * from "./SubpageToolbar";
 export * from "./SearchPill";
 export * from "./FilterChipRow";
 export * from "./filterParams";
+export { replaceFilters, writeSearch } from "./urlState";
 export * from "./ViewSwitch";
 export * from "./FilterPanel";
 export * from "./Card";
