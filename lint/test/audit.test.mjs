@@ -278,3 +278,57 @@ test("semi-gate: wireLintGate puts semi-lint in lint and writes the CI workflow 
   assert.deepEqual(wireLintGate(web), [], "second run changes nothing");
   rmSync(root, { recursive: true });
 });
+
+test("#145 audit detects 0.x brand.json schema, sales-hub-style semi-pending stand-ins, and counts StickyContextBar pages (#139)", () => {
+  const { root, web } = app();
+  // 0.x brand.json with removed keys (styles, neutral) → brand-schema issue
+  const kit = join(web, "node_modules", "@old", "brand");
+  mkdirSync(join(kit, "dist"), { recursive: true });
+  writeFileSync(join(kit, "package.json"), JSON.stringify({ name: "@old/brand", version: "0.5.0" }));
+  const oldBrand = { name: "Old", package: "@old/brand", primary: "#00AE42", neutral: "tinted", styles: ["flat"], fonts: { sans: "Inter" } };
+  writeFileSync(join(kit, "brand.json"), JSON.stringify(oldBrand));
+  writeFileSync(join(kit, "dist/brand.json"), JSON.stringify(oldBrand));
+  writeFileSync(join(web, "semi-lint.json"), JSON.stringify({ scan: ["app"], brand: "@old/brand" }));
+
+  // Sales-hub-style stand-ins: semi-pending-*.css, app/components/semi-pending/*, and TODO(semi-pending) in globals.css
+  mkdirSync(join(web, "app/components/semi-pending"), { recursive: true });
+  writeFileSync(join(web, "app/semi-pending-neutral.css"), `:root {}\n`);
+  writeFileSync(join(web, "app/components/semi-pending/PillTabs.tsx"), `export function PillTabs() { return <div />; }\n`);
+  writeFileSync(join(web, "app/globals.css"), `@import "tailwindcss";\n@import "@semi/ui/tokens.css";\n/* TODO(semi-pending): remove after 1.0 */\n`);
+
+  // StickyContextBar page counted in toolbarPagesCount and question text (#139)
+  mkdirSync(join(web, "app/orders"), { recursive: true });
+  writeFileSync(
+    join(web, "app/orders/page.tsx"),
+    `import { PageTitle, StickyContextBar } from "@semi/ui";\nexport default function Orders() { return <><PageTitle title="Đơn" /><StickyContextBar /></>; }\n`,
+  );
+
+  const report = auditProject(root);
+  const a = report.apps[0];
+  const schemaIssue = a.issues.find((i) => i.check === "brand-schema");
+  assert.ok(schemaIssue, "reports brand-schema for 0.x brand.json");
+  assert.match(schemaIssue.what, /neutral.*styles/);
+
+  const pendingIssues = a.issues.filter((i) => i.check === "semi-pending");
+  assert.equal(pendingIssues.length, 3, "detects css, component, and TODO(semi-pending) stand-ins");
+  assert.ok(pendingIssues.every((i) => /MIGRATION-1\.0\.md/.test(i.fix)));
+  assert.equal(a.standIns.length, 3);
+  assert.match(formatSummary(report), /stand-in tạm \(docs\/MIGRATION-1\.0\.md\)/);
+
+  // StickyContextBar page counted: 2 pages total, 1 has StickyContextBar → 50% covered, so question is NOT asked (#139)
+  assert.equal(a.structure.toolbarPagesCount, 1);
+  assert.equal(a.structure.pageFileCount, 2);
+  assert.equal(a.questions.find((q) => q.id === "page-headers-and-wrappers"), undefined);
+
+  // Add 2 more pages without toolbar → now 1/4 covered (< 50%), question IS asked and names StickyContextBar
+  mkdirSync(join(web, "app/reports"), { recursive: true });
+  writeFileSync(join(web, "app/reports/page.tsx"), `export default function R() { return <main>Reports</main>; }\n`);
+  mkdirSync(join(web, "app/settings"), { recursive: true });
+  writeFileSync(join(web, "app/settings/page.tsx"), `export default function S() { return <main>Settings</main>; }\n`);
+  const a2 = auditProject(root).apps[0];
+  const structQ = a2.questions.find((q) => q.id === "page-headers-and-wrappers");
+  assert.ok(structQ, "page-headers-and-wrappers question present when < 50% covered");
+  assert.match(structQ.question, /3\/4 pages without SubpageToolbar \/ StickyContextBar/);
+
+  rmSync(root, { recursive: true });
+});

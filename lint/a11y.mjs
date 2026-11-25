@@ -16,7 +16,7 @@ export const A11Y_RULES = [
   ["edge", "A field you type in or pick from shows its edge against the surface around it: border-control-line (3:1, WCAG 1.4.11), or a quiet border-field-line edge backed by a 2px ≥ 3:1 :focus-visible outline."],
   ["name", "Every control has a name a screen reader can say: a visible text, a Field label, or aria-label on an icon-only control. A placeholder is not a label (WCAG 4.1.2, 1.3.1)."],
   ["focus-ring", "Every control shows where focus is when reached with Tab: FOCUS_RING, or a Semi component that draws it (WCAG 2.4.7)."],
-  ["target-size", "Every control you click or tap is at least 24×24px, or keeps 24px from the next one (WCAG 2.5.8); Semi controls are h-control."],
+  ["target-size", "Every control you click or tap is at least 24×24px, or keeps 24px from the next one (WCAG 2.5.8); Semi controls are h-control (44px touch target on phones via BTN_HIT)."],
   ["img-alt", "An image has alt (alt=\"\" when it only decorates); an element with role=img has aria-label (WCAG 1.1.1)."],
   ["lang", "<html lang> names the page's language, so a screen reader reads it with the right voice (WCAG 3.1.1)."],
   ["field-size", "A field you type in has text of 16px or more below 640px: iOS Safari zooms the page into a smaller one on focus and never zooms back (use FIELD_INPUT, or add max-sm:text-input)."],

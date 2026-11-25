@@ -57,6 +57,12 @@ const CASES: [string, string, string][] = [
     `<div data-theme="light"><button style="background:${ACCENT};color:#fff">Lưu</button></div><div data-theme="dark"><button style="background:${ACCENT};color:#fff">Lưu</button></div>`,
   ],
   [
+    // 1.0: nav's mainAction (<nav>) is its own scope, separate from the page's one filled brand button.
+    "primary-actions",
+    `<nav><button style="background:${ACCENT};color:#fff">Tạo mới</button><button style="background:${ACCENT};color:#fff">Khác</button></nav>`,
+    `<nav><button style="background:${ACCENT};color:#fff">Tạo mới</button></nav><div><button style="background:${ACCENT};color:#fff">Lưu</button></div>`,
+  ],
+  [
     "cramped-boxes",
     `<div style="display:flex;gap:4px"><div style="${BOX}width:200px;padding:16px">Một</div><div style="${BOX}width:200px;padding:16px">Hai</div></div>`,
     `<div style="display:flex;gap:16px"><div style="${BOX}width:200px;padding:16px">Một</div><div style="${BOX}width:200px;padding:16px">Hai</div></div>`,

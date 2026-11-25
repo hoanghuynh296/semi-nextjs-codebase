@@ -64,14 +64,14 @@ function nearestToken(hex) {
 const SEMI_COMPONENT_MAP = [
   { pattern: /^(appshell|dashboardlayout|shell)$/i, semi: "AppShell (@semi/ui)" },
   { pattern: /^(mobiletabbar|bottomnav|bottombar)$/i, semi: "MobileTabBar (@semi/ui)" },
-  { pattern: /^(pagetitle|pageheader|pagetabstitle)$/i, semi: "PageTitle / PageTabsTitle (@semi/ui)" },
-  { pattern: /^(subpagetoolbar|toolbar|filterbar)$/i, semi: "SubpageToolbar (@semi/ui)" },
+  { pattern: /^(pagetitle|pageheader|pagetabstitle)$/i, semi: "PageTitle / TextTabs (@semi/ui)" },
+  { pattern: /^(subpagetoolbar|toolbar|filterbar)$/i, semi: "StickyContextBar / SubpageToolbar (@semi/ui)" },
   { pattern: /^(kpicard|kpi|statcard|metriccard)$/i, semi: "KpiCard (@semi/ui)" },
   { pattern: /^(modal|dialog)$/i, semi: "Modal (@semi/ui)" },
   { pattern: /^(ui|primitives)$/i, semi: "Direct @semi/ui + @semi/ui/styles imports (remove wrapper barrel)" },
   { pattern: /^(icon|icons|svgicon|appicon)$/i, semi: "Icon / IconTile (@semi/ui)" },
-  { pattern: /^(chip|tag|filterchip)$/i, semi: "Chip (@semi/ui)" },
-  { pattern: /^(pill|pills|segmented|tabs|tabbar)$/i, semi: "Pills (@semi/ui)" },
+  { pattern: /^(chip|tag|filterchip)$/i, semi: "Chip / NewTag / CountBadge (@semi/ui)" },
+  { pattern: /^(pill|pills|segmented|tabs|tabbar)$/i, semi: "PillTabs / SegmentedControl / TextTabs (@semi/ui)" },
   { pattern: /^(select|customselect|dropdown)$/i, semi: "CustomSelect (@semi/ui)" },
   { pattern: /^(combobox|customcombobox|autocomplete)$/i, semi: "CustomCombobox (@semi/ui)" },
   { pattern: /^(numberinput|numericinput|stepper)$/i, semi: "NumberInput (@semi/ui)" },
@@ -87,7 +87,7 @@ const SEMI_COMPONENT_MAP = [
   { pattern: /^(confirm|confirmdialog|confirmmodal|alertdialog)$/i, semi: "confirmDialog + ConfirmHost (@semi/ui)" },
   { pattern: /^(externallink|outlink)$/i, semi: "ExternalLink (@semi/ui)" },
   { pattern: /^(markdown|mdrenderer)$/i, semi: "Markdown (@semi/ui)" },
-  { pattern: /^(button|btn|iconbutton)$/i, semi: "BTN_PRIMARY / BTN_SECONDARY / BTN_DANGER (@semi/ui/styles)" },
+  { pattern: /^(button|btn|iconbutton)$/i, semi: "Button / BTN_SUBTLE / BTN_PRIMARY / BTN_INVERSE (@semi/ui)" },
   { pattern: /^(card|panel|surface)$/i, semi: "CARD / CARD_HOVER (@semi/ui/styles)" },
 ];
 
@@ -260,7 +260,8 @@ export function auditSingleApp(cwd) {
   let totalSemantic = 0;
   // Literal colours come from the same class-token analysis semi-lint runs (vendor/classes.mjs), so they never disagree.
   const inventoryFiles = [];
-  const SEMANTIC_RX = /\b((?:bg|from|via|to)-(?:canvas|app|panel|field|raised|card|card-field|primary|primary-hover|item-hover|item-selected|item-checked|subtle-button|overlay|(?:danger|success|warning|info)-(?:bg|border|solid))|text-(?:strong|body|muted|faint|on-primary|danger-fg|success-fg|warning-fg|info-fg|tone-[a-z]+)|(?:border|divide)-(?:line|divider|line-hover|outline-line|field-line))\b/g;
+  const SEMANTIC_RX =
+    /\b((?:bg|from|via|to)-(?:canvas|app|panel|field|field-focus|raised|raised-2|card|card-field|primary|primary-hover|secondary|secondary-hover|new-tag|item-hover|item-selected|item-checked|subtle-button|inverted|inverted-hover|overlay|(?:danger|success|warning|info)-(?:bg|border|solid))|text-(?:strong|body|muted|faint|on-primary|on-secondary|on-new-tag|on-inverted|danger-fg|success-fg|warning-fg|info-fg|tone-[a-z]+)|(?:border|divide)-(?:line|divider|line-hover|outline-line|field-line|field-line-focus|control-line)|(?:ring|outline)-focus|decoration-primary)\b/g;
 
   const CHROMATIC_TONAL_RX = /\b(?:(?:hover:|active:)?(?:bg|border)|divide|ring|text)-(amber|yellow|orange|red|rose|pink|fuchsia|purple|violet|indigo|blue|sky|cyan|teal|emerald|green)-(?:50|100|200|300|600|700|800|900)\b/g;
   const tonalCounts = new Map();
@@ -281,12 +282,22 @@ export function auditSingleApp(cwd) {
   const wrapperFiles = [];
   const tablePages = [];
   const pagesWithoutToolbar = [];
+  const standIns = [];
   const sources = [];
 
   for (const file of allFiles) {
     const text = readFileSync(file, "utf8");
     const rel = relative(cwd, file).split(sep).join("/");
     sources.push({ rel, src: text, css: file.endsWith(".css") });
+    // Detect sales-hub-style 1.0 stand-ins: semi-pending-*.css, */components/semi-pending/*, and TODO(semi-pending)
+    if (/(?:^|\/)semi-pending-[^/]+\.css$/.test(rel)) {
+      standIns.push({ file: rel, kind: "css", detail: "file CSS stand-in tạm (semi-pending-*.css)" });
+    } else if (/(?:^|\/)components\/semi-pending\//.test(rel)) {
+      standIns.push({ file: rel, kind: "component", detail: "component stand-in tạm (components/semi-pending/*)" });
+    } else {
+      const pendingTodos = (text.match(/TODO\(\s*semi-pending\s*\)/g) || []).length;
+      if (pendingTodos > 0) standIns.push({ file: rel, kind: "todo", count: pendingTodos, detail: `TODO(semi-pending) ×${pendingTodos}` });
+    }
     const hexMatches = text.match(/#[0-9a-fA-F]{6}\b/g) || [];
     for (const h of hexMatches) {
       const upper = h.toUpperCase();
@@ -329,9 +340,13 @@ export function auditSingleApp(cwd) {
 
     if (/\b(AppShell|AppHeader)\b/.test(text)) usesAppShell = true; // AppHeader: the Semi frame of tool apps
     if (/<aside[^>]*\b(border-r|-translate-x-full)\b/.test(text)) legacySidebarFile = rel;
-    // a 0.36 list page has a StickyContextBar in place of a SubpageToolbar (#115)
-    if (/\b(SubpageToolbar|StickyContextBar|STICKY_TOOLBAR)\b/.test(text)) toolbarPagesCount++;
-    else if (/(?:^|\/)page\.tsx$/.test(rel) && isListPage(text)) pagesWithoutToolbar.push(rel);
+    // a 0.36+ / 1.0 list page has a StickyContextBar or SubpageToolbar (#115, #139)
+    const isPage = /(?:^|\/)page\.tsx$/.test(rel);
+    if (/\b(SubpageToolbar|StickyContextBar|STICKY_TOOLBAR)\b/.test(text)) {
+      if (isPage) toolbarPagesCount++;
+    } else if (isPage && isListPage(text)) {
+      pagesWithoutToolbar.push(rel);
+    }
     if (/\bPagination\b/.test(text)) paginationPagesCount++;
     if (/\bKpiCard\b/.test(text)) usesKpiCard = true;
     if (/function\s+KPICard\b/.test(text)) customKpiCardFile = rel;
@@ -414,20 +429,21 @@ export function auditSingleApp(cwd) {
   if (!usesAppShell || legacySidebarFile) {
     questions.push({
       id: "app-shell",
-      question: `Layout shell (${legacySidebarFile || "layout.tsx"}) does not use @semi/ui's floating Bento AppShell + collapsible w-52/w-14 sidebar + MobileTabBar. Replace with AppShell?`,
+      question: `Layout shell (${legacySidebarFile || "layout.tsx"}) does not use @semi/ui's floating Bento AppShell + collapsible rail sidebar + MobileTabBar. Replace with AppShell?`,
       options: [
-        "(Recommended) Replace layout with AppShell + grouped sidebar sections + MobileTabBar (3D Noobs Studio style)",
+        "(Recommended) Replace layout with AppShell + RouteHeader + grouped sidebar sections + MobileTabBar",
         "Keep current layout shell",
       ],
     });
   }
 
+  const pagesWithoutStructure = Math.max(0, pageFiles.length - toolbarPagesCount);
   if (wrapperFiles.length > 0 || toolbarPagesCount < Math.max(1, Math.floor(pageFiles.length / 2))) {
     questions.push({
       id: "page-headers-and-wrappers",
-      question: `Found legacy UI wrapper file(s) (${wrapperFiles.join(", ") || "PageHeader"}) and ${pageFiles.length - toolbarPagesCount}/${pageFiles.length} pages without SubpageToolbar (STICKY_TOOLBAR). Refactor to Semi page structure?`,
+      question: `Found legacy UI wrapper file(s) (${wrapperFiles.join(", ") || "PageHeader"}) and ${pagesWithoutStructure}/${pageFiles.length} pages without SubpageToolbar / StickyContextBar. Refactor to Semi page structure?`,
       options: [
-        "(Recommended) Remove ui.tsx wrappers and standardize all pages on PageTitle/PageTabsTitle + SubpageToolbar (icon-only + CTA, SearchInput, RefreshButton) + Modal (MODAL_FOOT) + FIELD_INPUT",
+        "(Recommended) Remove ui.tsx wrappers and standardize all pages on Page + PageTitle + StickyContextBar / SubpageToolbar + Modal + FIELD_INPUT",
         "Keep local ui.tsx wrappers and only fix lint errors",
       ],
     });
@@ -465,7 +481,7 @@ export function auditSingleApp(cwd) {
       question: `Found custom hex colours off the default Semi palette: ${sample}. How should we map them?`,
       options: [
         "(Recommended) Map to the nearest Semi surface/status/primary tokens",
-        "Override --color-primary-* in globals.css @theme to keep this project's brand accent",
+        "Configure primary (and optional secondary) in brand.json via /semi-brand",
       ],
     });
   }
@@ -574,7 +590,7 @@ export function auditSingleApp(cwd) {
   const layout = ["app/layout.tsx", "src/app/layout.tsx", "app/layout.jsx", "src/app/layout.jsx"].find((f) => existsSync(join(cwd, f)));
   if (layout && !/\bThemeProvider\b/.test(readFileSync(join(cwd, layout), "utf8")))
     setup("providers", layout, "layout chưa có ThemeScript / ThemeProvider / ToastHost / ConfirmHost", theme.theme === "unknown" ? `bọc layout; chưa rõ app sáng hay tối (${theme.evidence}): hỏi người dùng, rồi foundation --theme dark|light` : `bọc layout, defaultTheme="${mode}" theo giao diện hiện tại (${theme.evidence})`, "manual");
-  // Brand kit (docs/BRANDS.md): installed, its brand.css in the Semi CSS block, its rules in AGENTS.md.
+  // Brand kit (docs/BRANDS.md): installed, 1.0 brand.json schema, its brand.css in the Semi CSS block, its rules in AGENTS.md.
   const brand = readBrand(cwd);
   const brandKit = brand?.kit ?? null;
   if (brand && !brandKit) setup("brand", "package.json", `brand kit ${brand.pkg} chưa cài`, "npm install, hoặc foundation --brand <github:owner/repo>");
@@ -584,6 +600,39 @@ export function auditSingleApp(cwd) {
     const agents = [cwd, dirname(cwd), dirname(dirname(cwd))].map((d) => join(d, "AGENTS.md")).filter((p) => existsSync(p));
     if (!agents.some((p) => readFileSync(p, "utf8").includes("<!-- semi-brand:start -->"))) missing.push("luật brand trong AGENTS.md");
     if (missing.length) setup("brand", cssRel, `chưa nối brand ${brandKit.name}: ${missing.join(", ")}`, "foundation (nối lại brand)");
+    // 1.0 brand.json schema: primary (required), optional secondary, fonts (sans + optional display), logo, voice; no 0.x fields.
+    const srcBrandPath = join(brand.dir, "brand.json");
+    let srcBrand = null;
+    if (existsSync(srcBrandPath)) {
+      try {
+        srcBrand = JSON.parse(readFileSync(srcBrandPath, "utf8"));
+      } catch {}
+    }
+    const oldBrandKeys = new Set();
+    for (const obj of [brandKit, srcBrand].filter(Boolean)) {
+      for (const k of ["neutral", "primaryStyle", "styles", "accent", "color", "palettes"]) if (k in obj) oldBrandKeys.add(k);
+      if (obj.fonts && !Array.isArray(obj.fonts) && "figure" in obj.fonts) oldBrandKeys.add("fonts.figure");
+      if (Array.isArray(obj.fonts) && obj.fonts.some((f) => f.roles?.includes("figure"))) oldBrandKeys.add("fonts.figure");
+    }
+    const missingBrandKeys = [];
+    if (!brandKit.primary) missingBrandKeys.push("primary");
+    const hasSans = Array.isArray(brandKit.fonts) ? brandKit.fonts.some((f) => f.roles?.includes("sans")) : Boolean(brandKit.fonts?.sans);
+    if (!hasSans) missingBrandKeys.push("fonts.sans");
+    if (oldBrandKeys.size || missingBrandKeys.length) {
+      const why = [
+        oldBrandKeys.size && `field cũ 0.x: ${[...oldBrandKeys].join(", ")}`,
+        missingBrandKeys.length && `thiếu: ${missingBrandKeys.join(", ")}`,
+      ]
+        .filter(Boolean)
+        .join("; ");
+      setup(
+        "brand-schema",
+        `${brand.pkg}/brand.json`,
+        `brand kit ${brandKit.name || brand.pkg} chưa theo schema 1.0 (${why}; 1.0: primary, optional secondary, fonts.sans + optional display, logo, voice)`,
+        "chạy /semi-brand update trong repo brand và phát hành bản 1.0 (docs/MIGRATION-1.0.md)",
+        "manual",
+      );
+    }
   }
 
   // One look since 1.0: a "style" / "palette" left in semi-lint.json or on <html> is ignored by Semi; foundation removes it.
@@ -601,6 +650,7 @@ export function auditSingleApp(cwd) {
   for (const f of tablePages) decide("tables", f, "bảng `<table>` HTML", "Table của @semi/ui, hoặc lưới Card cho danh sách thực thể");
   for (const d of duplicateComponents) if (!wrapperFiles.includes(d.file)) decide("duplicates", d.file, `component riêng ${d.name} (${d.importsCount} chỗ import)`, d.semiEquivalent);
   for (const l of detectedLibs) decide("third-party-ui", "package.json", `thư viện UI ${l.label}`, "thay bằng @semi/ui rồi gỡ thư viện");
+  for (const s of standIns) decide("semi-pending", s.file, s.detail, "xoá stand-in và chuyển sang component / token 1.0 (xem docs/MIGRATION-1.0.md)");
 
   for (const h of hard) issues.push({ phase: "lint", kind: "manual", rule: h.rule, file: h.file, line: h.line, text: h.text });
   // Class-token findings: what the codemod rewrites is "auto", what it cannot map is "manual".
@@ -631,7 +681,7 @@ export function auditSingleApp(cwd) {
     if (!css) continue;
     for (const f of analyse(src, { css: true })) if (!autoAt.has(`${rel}:${f.line}:${f.token}`)) issues.push({ phase: "lint", kind: "manual", rule: f.rule, file: rel, line: f.line, token: f.token });
   }
-  const STEP = ["semi-ui", "tailwind-v4", "transpile", "semi-css", "semi-lint-config", "semi-gate", "providers", "brand", "legacy-look", "fonts"];
+  const STEP = ["semi-ui", "tailwind-v4", "transpile", "semi-css", "semi-lint-config", "semi-gate", "providers", "brand", "brand-schema", "legacy-look", "fonts"];
   issues.sort(
     (a, b) =>
       PHASES.indexOf(a.phase) - PHASES.indexOf(b.phase) ||
@@ -712,6 +762,7 @@ export function auditSingleApp(cwd) {
       semanticAdoptionRate,
     },
     duplicateComponents,
+    standIns,
     lint: {
       hardTotal: hard.length,
       hardByRule,
@@ -757,10 +808,11 @@ const CHECK_NAMES = {
   "app-shell": "khung AppShell",
   "ui-wrappers": "wrapper UI riêng",
   "kpi-card": "KPICard riêng",
-  "subpage-toolbar": "trang thiếu SubpageToolbar",
+  "subpage-toolbar": "trang thiếu SubpageToolbar / StickyContextBar",
   tables: "bảng HTML",
   duplicates: "component trùng @semi/ui",
   "third-party-ui": "thư viện UI khác",
+  "semi-pending": "stand-in tạm (docs/MIGRATION-1.0.md)",
 };
 const PHASE_NAMES = { foundation: "Nền móng", tokens: "Token (codemod)", lint: "Sửa tay", structure: "Cấu trúc (cần quyết định)" };
 const SETUP_NAMES = {
@@ -772,6 +824,7 @@ const SETUP_NAMES = {
   "semi-gate": "semi-lint trong lint + CI",
   providers: "provider trong layout",
   brand: "brand kit",
+  "brand-schema": "brand.json schema 1.0",
   "legacy-look": "style / palette cũ",
   fonts: "font trong layout",
 };
