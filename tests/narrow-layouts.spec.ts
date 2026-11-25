@@ -88,24 +88,53 @@ test("ListReaderLayout at 1024 (rail + sub-nav): the reader replaces the list, B
   const back = pane.getByRole("button", { name: "Về danh sách" });
   await expect(back).toBeVisible();
   await expect(list).toBeHidden();
-  // the static HTML is there before React hydrates: retry until Enter on Back shows the list
+  // the static HTML is there before React hydrates: retry until Enter on Back shows the list (the one manual focus)
   await expect(async () => {
     await back.focus();
     await page.keyboard.press("Enter");
     await expect(list).toBeVisible({ timeout: 500 });
   }).toPass();
   await expect(pane).toBeHidden();
+  // focus moved to the row that was open, never to <body>
   const first = list.getByRole("button").first();
-  await first.focus();
+  await expect(first).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(pane).toBeVisible();
   await expect(list).toBeHidden();
   await expect(page).toHaveURL(/open=m-1/);
+  // focus moved to the reader's title; Shift+Tab reaches Back, Enter gives focus back to the row
+  await expect(pane.locator("[data-reader-header] h2")).toBeFocused();
+  await page.keyboard.press("Shift+Tab");
+  await expect(back).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(list).toBeVisible();
+  await expect(first).toBeFocused();
+  expect(await page.evaluate(() => document.activeElement === document.body)).toBe(false);
+  await page.keyboard.press("Enter");
+  await expect(pane.locator("[data-reader-header] h2")).toBeFocused();
   // wide enough for both: side by side again, the Back button hidden
   await page.setViewportSize({ width: 1440, height: 900 });
   await expect(list).toBeVisible();
   await expect(back).toBeHidden();
   expect((await pane.boundingBox())!.width).toBeGreaterThanOrEqual(360);
+  await page.context().close();
+});
+
+test("ReaderHeader with an app's own onBack inside ListReaderLayout at 1024 (single pane): Back shows and works by keyboard (#188 review)", async ({ browser }) => {
+  const page = await newPage(browser, SIZES[2]);
+  await page.goto("/demo/sticky-reader/");
+  const pane = page.locator("[data-reader-pane]");
+  const list = page.locator("[data-reader-list]");
+  const back = pane.getByRole("button", { name: "Về danh sách" });
+  await expect(list).toBeHidden();
+  await expect(back).toBeVisible();
+  await expect(async () => {
+    await back.focus();
+    await page.keyboard.press("Enter");
+    await expect(list).toBeVisible({ timeout: 500 });
+  }).toPass();
+  await expect(pane).toBeHidden();
+  await expect(list.getByRole("button", { name: /Thư trao đổi #1 —/ })).toBeFocused();
   await page.context().close();
 });
 

@@ -1834,7 +1834,8 @@
         "listWidth",
         "listLabel",
         "readerLabel",
-        "className"
+        "className",
+        "gridClassName"
       ],
       "doc": "docs/components/list-reader.md"
     },

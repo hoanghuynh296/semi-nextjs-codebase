@@ -260,7 +260,8 @@ Back button), so the reader never drops below 360px (#188).
 | `listWidth` | `'sm' \| 'md' \| 'lg'` | `"md"` | Width of the list card side by side: `"sm"` 288px, `"md"` 352px (default), `"lg"` 400px. Side by side from 664 / 728 / 776px of layout width. |
 | `listLabel` | `string` |  | Accessible name of the list region (default locale `listLabel`). |
 | `readerLabel` | `string` |  | Accessible name of the reader region (default locale `readerLabel`). |
-| `className` | `string` |  |  |
+| `className` | `string` |  | Classes of the outer element (`data-list-reader`, the container the split is measured on): size and placement. |
+| `gridClassName` | `string` |  | Classes of the inner grid that holds the two panes (gap, columns). Before 1.1 `className` landed here. |
 
 ### ReaderHeader
 
@@ -280,7 +281,7 @@ Sticky one-row header of a reader pane (general pattern for mail, tickets, chat;
 | `action` | `ReaderMainAction \| React.ReactNode` |  | The one main action on the right (e.g. Trả lời / Reply), or a custom button element at `size="md"`. |
 | `moreActions` | `MenuItem[]` |  | Every other reader action (Chuyển tiếp, Lưu trữ, Đóng ticket, Xoá…) goes into this `•••` Menu. |
 | `moreLabel` | `string` |  | Accessible name of the `•••` menu (default locale `moreActions`). |
-| `onBack` | `() => void` |  | Back handler (defaults to the enclosing `ListReaderLayout`'s `onClose`, shown while the reader replaces the list; your own: below `lg`). |
+| `onBack` | `() => void` |  | Back handler (defaults to the enclosing `ListReaderLayout`'s `onClose`). Inside a `ListReaderLayout` the button shows while the reader replaces the list; outside one, below `lg`. |
 | `backLabel` | `string` |  | Accessible name of the phone Back button (default locale `backToList`). |
 | `headingLevel` | `1 \| 2 \| 3` | `2` | Heading level for the reader title (default 2: the page `h1` sits above). |
 | `className` | `string` |  |  |

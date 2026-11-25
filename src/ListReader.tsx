@@ -11,7 +11,7 @@
 //   row, clamped to 3 lines), [•••] menu then one main action on the right, top-aligned, identical button height
 //   (`h-control`), sticky while the body scrolls; every other action goes into •••. When the actions do not fit beside
 //   a 70% title (a narrow pane), they move to a row under the title (#188).
-import React, { createContext, useContext, useEffect, useRef } from "react";
+import React, { createContext, useContext, useEffect, useLayoutEffect, useRef } from "react";
 import { Button } from "./Button";
 import { EmptyState } from "./Feedback";
 import type { IconName } from "./Icon";
@@ -68,7 +68,7 @@ export function ReaderHeader({
   moreActions?: MenuItem[];
   /** Accessible name of the `•••` menu (default locale `moreActions`). */
   moreLabel?: string;
-  /** Back handler (defaults to the enclosing `ListReaderLayout`'s `onClose`, shown while the reader replaces the list; your own: below `lg`). */
+  /** Back handler (defaults to the enclosing `ListReaderLayout`'s `onClose`). Inside a `ListReaderLayout` the button shows while the reader replaces the list; outside one, below `lg`. */
   onBack?: () => void;
   /** Accessible name of the phone Back button (default locale `backToList`). */
   backLabel?: string;
@@ -79,7 +79,9 @@ export function ReaderHeader({
   const t = useSemiLocale();
   const ctx = useContext(ReaderContext);
   const handleBack = onBack ?? ctx.onClose;
-  const backHidden = onBack || !ctx.backHidden ? "lg:hidden" : ctx.backHidden;
+  // inside a ListReaderLayout the Back button follows the layout's split (also with an app's own onBack: at 1024 with
+  // a rail + SubNav the list is hidden while the viewport is lg); outside one, below lg
+  const backHidden = ctx.backHidden ?? "lg:hidden";
   const H = `h${headingLevel}` as const;
   const isMainAction = (a: unknown): a is ReaderMainAction =>
     Boolean(a) && typeof a === "object" && !React.isValidElement(a) && typeof (a as ReaderMainAction).label === "string";
@@ -105,7 +107,13 @@ export function ReaderHeader({
       )}
       {/* flex-wrap + a 70% minimum: the title keeps most of the row and the actions wrap under it when they do not fit */}
       <div data-reader-title="" className="min-w-[70%] flex-1 pt-1">
-        <H title={typeof title === "string" ? title : undefined} className="text-lead font-medium text-strong break-words line-clamp-3">
+        {/* tabIndex -1: ListReaderLayout moves focus here when the reader replaces the focused list row */}
+        <H
+          data-reader-focus=""
+          tabIndex={-1}
+          title={typeof title === "string" ? title : undefined}
+          className="text-lead font-medium text-strong break-words line-clamp-3 outline-none"
+        >
           {title}
         </H>
         {meta && <div className="text-chrome text-muted mt-0.5">{meta}</div>}
@@ -184,6 +192,7 @@ export function ListReaderLayout({
   listLabel,
   readerLabel,
   className,
+  gridClassName,
 }: {
   /** List items (e.g. `Item` rows with `selected={openId === id}`). Scrolls inside the list card. */
   list: React.ReactNode;
@@ -205,23 +214,64 @@ export function ListReaderLayout({
   listLabel?: string;
   /** Accessible name of the reader region (default locale `readerLabel`). */
   readerLabel?: string;
+  /** Classes of the outer element (`data-list-reader`, the container the split is measured on): size and placement. */
   className?: string;
+  /** Classes of the inner grid that holds the two panes (gap, columns). Before 1.1 `className` landed here. */
+  gridClassName?: string;
 }) {
   const t = useSemiLocale();
   const readerRef = useRef<HTMLElement>(null);
+  const listRef = useRef<HTMLElement>(null);
+  /** The row that opened the reader (or was focused last), to give focus back when the list returns. */
+  const lastRow = useRef<HTMLElement | null>(null);
   useRecordCrumb(open ? recordTitle : null);
 
   useEffect(() => {
     if (open) readerRef.current?.scrollTo?.({ top: 0 });
   }, [open, openKey]);
 
+  // remember the open row while it is marked (Item: aria-current="true")
+  useEffect(() => {
+    if (!open) return;
+    const row = listRef.current?.querySelector<HTMLElement>('[aria-current="true"], [aria-selected="true"]');
+    if (row) lastRow.current = row;
+  }, [open, openKey]);
+
+  // One pane replacing the other (narrow layout) hides the focused element: move focus to what took its place, so it
+  // never drops to <body>. Side by side nothing moves.
+  const wasOpen = useRef(open);
+  useLayoutEffect(() => {
+    if (wasOpen.current === open) return;
+    wasOpen.current = open;
+    const active = document.activeElement as HTMLElement | null;
+    const lost = (pane: HTMLElement | null) =>
+      !active || active === document.body || !active.isConnected || Boolean(pane?.contains(active));
+    const hidden = (el: HTMLElement | null) => !!el && el.getClientRects().length === 0;
+    if (open && hidden(listRef.current) && lost(listRef.current)) {
+      const pane = readerRef.current;
+      const target = pane?.querySelector<HTMLElement>("[data-reader-focus]") ?? pane;
+      if (target === pane && pane && !pane.hasAttribute("tabindex")) pane.tabIndex = -1;
+      target?.focus({ preventScroll: true });
+    } else if (!open && hidden(readerRef.current) && lost(readerRef.current)) {
+      const list = listRef.current;
+      const row =
+        (lastRow.current?.isConnected && list?.contains(lastRow.current) ? lastRow.current : null) ??
+        list?.querySelector<HTMLElement>('[aria-current="true"], [aria-selected="true"], a[href], button:not([disabled]), [tabindex="0"]');
+      row?.focus();
+    }
+  }, [open]);
+
   const split = SPLIT[listWidth];
   return (
     <ReaderContext.Provider value={{ onClose, backHidden: split.back }}>
       {/* the container: its width (not the viewport) decides side by side or one pane */}
       <div data-list-reader="" className={cn("@container/reader-layout flex-1 min-h-0 min-w-0 flex flex-col", className)}>
-        <div className={cn("flex-1 min-h-0 min-w-0 grid grid-cols-1 gap-group", split.grid)}>
+        <div className={cn("flex-1 min-h-0 min-w-0 grid grid-cols-1 gap-group", split.grid, gridClassName)}>
           <section
+            ref={listRef}
+            onFocus={(e) => {
+              if (e.target !== e.currentTarget) lastRow.current = e.target as HTMLElement;
+            }}
             aria-label={listLabel ?? t.listLabel}
             data-reader-list=""
             className={cn(
