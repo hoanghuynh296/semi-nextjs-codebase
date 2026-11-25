@@ -94,10 +94,25 @@ test("one-brand-button & brand-colour-use: per-line opt-in requires a reason; pe
     ),
     [],
   );
-  // Per-line opt-in WITHOUT reason does NOT suppress warning
+  // Per-line opt-in WITHOUT reason (line comment or empty JSX block comment) does NOT suppress warning
   assert.equal(
     warn(
       `<Page>\n  <Button variant="primary">Đặt hàng</Button>\n  // semi-lint-allow one-brand-button\n  <Button variant="secondary">Yêu cầu báo giá</Button>\n</Page>`,
+      "one-brand-button",
+    ).length,
+    1,
+  );
+  assert.equal(
+    warn(
+      `<Page>\n  <Button variant="primary">Đặt hàng</Button>\n  {/* semi-lint-allow one-brand-button: */}\n  <Button variant="secondary">Yêu cầu báo giá</Button>\n</Page>`,
+      "one-brand-button",
+    ).length,
+    1,
+  );
+  // Two primary buttons with an unrelated neutral ternary or onClick early return between them still warn
+  assert.equal(
+    warn(
+      `<Page>\n  <Button variant="primary" onClick={() => { if (!ok) return; save(); }}>A</Button>\n  {flag ? <Button variant="subtle">X</Button> : <Button variant="ghost">Y</Button>}\n  <Button variant="primary">B</Button>\n</Page>`,
       "one-brand-button",
     ).length,
     1,
@@ -129,6 +144,7 @@ test("brand-colour-use: allows main buttons, nav mainAction, big-tab underline, 
   // PASS
   const PASS = [
     `<button className="bg-primary hover:bg-primary-hover text-on-primary">Lưu</button>`,
+    `// leading comment line must not shift offsets\n<button className="bg-primary text-on-primary">Lưu</button>`,
     `<Link href="/new" className="bg-primary text-on-primary">Tạo mới</Link>`,
     `<Button variant="primary">Lưu</Button>`,
     `<CountBadge count={5} />`,
@@ -175,6 +191,7 @@ test("heading-weight: flags font-semibold / font-bold on headings and title util
     `<h1 className="text-figure font-semibold text-strong">Đơn hàng</h1>`,
     `<h2 className="text-section font-bold text-strong">Tổng quan</h2>`,
     `<h3 className="font-semibold">Chi tiết</h3>`,
+    `<h2 className="font-[600]">Arbitrary 600</h2>`,
     `<PageTitle title="Đơn hàng" className="font-semibold" />`,
     `<div className="text-hero font-semibold">Hero</div>`,
     `<div className="text-tab-xl font-medium">Khám phá</div>`,

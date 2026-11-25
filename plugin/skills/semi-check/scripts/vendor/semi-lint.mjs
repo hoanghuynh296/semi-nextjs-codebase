@@ -622,7 +622,7 @@ export function patternHits(code) {
 /** Per-line opt-in allowance: `// semi-lint-allow <rule>: <reason>` or `/* semi-lint-allow <rule>: <reason> *\/` on the same or previous line. */
 export function isAllowedByComment(rawRows, line1, ruleId) {
   const escaped = ruleId.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const rx = new RegExp(`(?://|/\\*)\\s*semi-lint-allow\\s+${escaped}\\s*:\\s*\\S`);
+  const rx = new RegExp(`(?://|/\\*)\\s*semi-lint-allow\\s+${escaped}\\s*:\\s*(?!\\*\\/)\\S`);
   return rx.test(rawRows[line1 - 1] ?? "") || rx.test(rawRows[line1 - 2] ?? "");
 }
 
@@ -709,8 +709,8 @@ const BRAND_ALLOWED_HOST = /^(?:Button|SplitButton|CountBadge|NewTag|AppShell|bu
 const BRAND_ALLOWED_CONST = /\b(?:BTN_PRIMARY|BTN_SECONDARY|MODAL_BTN_PRIMARY|MODAL_BTN_SECONDARY|COUNT_BADGE|NEW_TAG|headerPrimary|mainAction)\b/;
 const MODAL_SCOPE_TAG = /^(?:Modal|Drawer|Sheet)$/;
 const DIALOG_ROLE_RX = /\brole=\{?\s*["'](?:dialog|alertdialog)["']/;
-const HEAVY_WEIGHT = /\bfont-(?:semibold|bold|extrabold|black|\[(?:600|700|800|900)\])\b/;
-const MEDIUM_OR_HEAVIER = /\bfont-(?:medium|semibold|bold|extrabold|black|\[(?:500|600|700|800|900)\])\b/;
+const HEAVY_WEIGHT = /(?<![\w-])font-(?:semibold|bold|extrabold|black|\[(?:600|700|800|900)\])(?![\w-])/;
+const MEDIUM_OR_HEAVIER = /(?<![\w-])font-(?:medium|semibold|bold|extrabold|black|\[(?:500|600|700|800|900)\])(?![\w-])/;
 const HEADING_SIZE_TOKEN = /^(?:text-hero|text-title-xl|text-tab-xl|text-section)$/;
 
 /** Enclosing top-level component / function name at `index` (so a file with two components scopes each separately). */
@@ -746,14 +746,13 @@ function enclosingCondBranch(code, index) {
   return "";
 }
 
-/** True when two brand buttons in the same scope sit in mutually exclusive branches (ternary `:`, or separated by an early `return` / `else`). */
+/** True when two brand buttons in the same scope sit in mutually exclusive branches (direct ternary `:`, or separated by a JSX `return` branch). */
 function mutuallyExclusive(between) {
   if (!between) return false;
   // Direct ternary branch separator between the two buttons (e.g. `{cond ? <Button variant="primary">A</Button> : <Button variant="primary">B</Button>}`)
   if (/(?:<\/(?:Button|SplitButton)>|\/>)\s*\)\s*:\s*\(?\s*$|>\s*:\s*$/.test(between.trimEnd())) return true;
-  if (/\)\s*:\s*\(?\s*<(?:Button|SplitButton)\b/.test(between)) return true;
-  // Separate return branches (e.g. `if (step === 1) return ...; return ...;`)
-  if (/(?:^|[;\n])\s*(?:if\s*\(|else\b|case\b)[\s\S]*\breturn\b/.test(between) || /\breturn\s*\(?[\s\S]*;\s*(?:if\s*\(|else\b|return\b)/.test(between)) return true;
+  // Separate JSX return branches (e.g. `if (step === 1) return (<Button .../>); return (<Button .../>);`)
+  if (/;\s*(?:if\s*\([^)]*\)\s*)?return\s*(?:\(\s*<|<)/.test(between)) return true;
   return false;
 }
 
@@ -806,7 +805,7 @@ export function v1Hits(src, code = src) {
   //    (decoration-primary), attention CountBadge and NewTag.
   const rows = src.split(/\r?\n/);
   for (const s of extractStrings(src).filter((x) => !inNonClassPosition(src, x))) {
-    const host = enclosingTag(code, s.open);
+    const host = enclosingTag(src, s.open);
     const declLine = rows[s.line - 1] ?? "";
     for (const tok of tokensOf(s.value)) {
       if (tok.length > 80 || !/^[!\w[\-:&>*.#%/()@,=\]]+$/.test(tok)) continue;
