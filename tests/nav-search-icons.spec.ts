@@ -1,5 +1,5 @@
-// #172: AppShell collapsible nav groups, mainAction external primary link, Storybook nav quick search,
-// and the /foundations/ + /icons/ split.
+// #172, #179, #181: AppShell collapsible nav groups, mainAction external primary link,
+// pinned bottom nav CommandDialog search (desktop, rail, phone drawer), and /foundations/ + /icons/.
 import { expect, test, type Page } from "@playwright/test";
 import { a11yHits } from "./contrast";
 
@@ -66,149 +66,171 @@ test("mainAction renders GitHub Repository as a brand primary external link (#17
   await expect(ghLink).toHaveClass(/bg-primary/);
 });
 
-test("phone drawer supports collapsible nav groups and external mainAction (#172)", async ({ page }) => {
+test("phone drawer supports collapsible nav groups, external mainAction, and bottom CommandDialog trigger (#172, #181)", async ({ page }) => {
   await page.setViewportSize({ width: 430, height: 932 });
   await open(page, "/", "light");
 
   await page.getByRole("button", { name: /Mở menu/i }).click();
-  const dialog = page.getByRole("dialog");
-  await expect(dialog).toBeVisible();
+  const drawer = page.getByRole("dialog");
+  await expect(drawer).toBeVisible();
 
-  const ghLink = dialog.getByRole("link", { name: "GitHub Repository" });
+  const ghLink = drawer.getByRole("link", { name: "GitHub Repository" });
   await expect(ghLink).toHaveAttribute("target", "_blank");
   await expect(ghLink).toHaveAttribute("rel", /noopener/);
 
-  const actionsBtn = dialog.getByRole("button", { name: "Actions", exact: true });
+  const actionsBtn = drawer.getByRole("button", { name: "Actions", exact: true });
   await expect(actionsBtn).toHaveAttribute("aria-expanded", "false");
   await expect(actionsBtn).not.toHaveAttribute("aria-controls");
   await actionsBtn.click();
   await expect(actionsBtn).toHaveAttribute("aria-expanded", "true");
   await expect(actionsBtn).toHaveAttribute("aria-controls", /.+-sec-\d+$/);
-  await expect(dialog.getByRole("link", { name: "Button", exact: true })).toBeVisible();
+  await expect(drawer.getByRole("link", { name: "Button", exact: true })).toBeVisible();
+
+  // Pinned bottom search trigger in PhoneDrawer closes the drawer and opens CommandDialog
+  const trigger = drawer.locator("[data-semi-nav-footer]").getByRole("button", { name: "Tìm nhanh" });
+  await expect(trigger).toBeVisible();
+  await trigger.click();
+
+  const cmdDialog = page.getByRole("dialog", { name: "Bảng lệnh" });
+  await expect(cmdDialog).toBeVisible();
+  const input = cmdDialog.getByRole("combobox");
+  await expect(input).toBeFocused();
+  await input.fill("modal");
+  await cmdDialog.getByRole("option", { name: /Modal/ }).first().click();
+  await expect(cmdDialog).toBeHidden();
+  await expect(page).toHaveURL(/\/components\/modal\/$/);
 });
 
-test("header quick search is centered in RouteHeader at 1440px and hidden without overflow at phone widths (#179)", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
+test("RouteHeader has no global search; pinned bottom nav trigger stays sticky and adapts to rail (#181)", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 700 });
   await open(page, "/", "light");
 
   const header = page.locator("header").first();
   const aside = page.locator("aside[data-semi-nav-panel]");
-  const combobox = header.getByRole("combobox", { name: "Tìm nhanh tài liệu" });
-  await expect(combobox).toBeVisible();
-  await expect(aside.getByRole("combobox", { name: "Tìm nhanh tài liệu" })).toHaveCount(0);
 
-  // Centered horizontally inside RouteHeader (within 40px of header midpoint)
-  const [headerBox, comboBox] = await Promise.all([header.boundingBox(), combobox.boundingBox()]);
-  expect(headerBox).toBeTruthy();
-  expect(comboBox).toBeTruthy();
-  const headerCenter = headerBox!.x + headerBox!.width / 2;
-  const comboCenter = comboBox!.x + comboBox!.width / 2;
-  expect(Math.abs(headerCenter - comboCenter)).toBeLessThan(40);
+  // No global search input in RouteHeader
+  await expect(header.getByRole("combobox")).toHaveCount(0);
+  await expect(header.getByRole("searchbox")).toHaveCount(0);
 
-  // No horizontal overflow at 1440px, 430px, and 375px on / and /icons/
-  for (const width of [1440, 430, 375]) {
+  // Sticky bottom nav trigger is visible inside navFooter at the bottom of aside
+  const footer = aside.locator("[data-semi-nav-footer]");
+  const trigger = footer.getByRole("button", { name: "Tìm nhanh" });
+  await expect(trigger).toBeVisible();
+  const beforeBox = await trigger.boundingBox();
+  const asideBox = await aside.boundingBox();
+  expect(beforeBox).toBeTruthy();
+  expect(asideBox).toBeTruthy();
+  expect(beforeBox!.y + beforeBox!.height).toBeLessThanOrEqual(asideBox!.y + asideBox!.height + 1);
+  expect(beforeBox!.y).toBeGreaterThan(asideBox!.y + asideBox!.height - 80);
+
+  // Expand multiple component groups so the nav scrolls, then scroll to bottom and confirm trigger stays pinned
+  for (const group of ["Actions", "Forms", "Overlays", "Data display"]) {
+    await aside.getByRole("button", { name: group, exact: true }).click();
+  }
+  const scrollArea = aside.locator(".overflow-y-auto").first();
+  const scrolled = await scrollArea.evaluate((el) => {
+    el.scrollTop = el.scrollHeight;
+    return el.scrollTop;
+  });
+  expect(scrolled).toBeGreaterThan(0);
+  const afterBox = await trigger.boundingBox();
+  expect(afterBox).toBeTruthy();
+  expect(Math.abs(afterBox!.y - beforeBox!.y)).toBeLessThanOrEqual(1);
+
+  // Collapse to 72px rail: trigger collapses to a 32x32 icon button and still opens CommandDialog
+  await aside.getByRole("button", { name: /Thu gọn menu/i }).click();
+  const railBox = await trigger.boundingBox();
+  expect(railBox).toBeTruthy();
+  expect(railBox!.width).toBeLessThanOrEqual(36);
+  await trigger.click();
+  const cmdDialog = page.getByRole("dialog", { name: "Bảng lệnh" });
+  await expect(cmdDialog).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(cmdDialog).toBeHidden();
+
+  // No horizontal overflow at 1440px, 768px, 430px, and 375px on / and /icons/
+  for (const width of [1440, 768, 430, 375]) {
     await page.setViewportSize({ width, height: 900 });
     for (const path of ["/", "/icons/"]) {
       await open(page, path, "light");
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
       expect(overflow, `overflow on ${path} at ${width}px`).toBeLessThanOrEqual(0);
     }
-    if (width < 768) {
-      await expect(header.getByRole("combobox", { name: "Tìm nhanh tài liệu" })).toBeHidden();
-    }
   }
-
-  // At md (768px): middle combobox and right actions do not overlap
-  await page.setViewportSize({ width: 768, height: 900 });
-  await open(page, "/", "light");
-  const mdCombo = await header.getByRole("combobox", { name: "Tìm nhanh tài liệu" }).boundingBox();
-  const mdThemeBtn = await header.getByRole("button", { name: "Giao diện", exact: true }).boundingBox();
-  expect(mdCombo).toBeTruthy();
-  expect(mdThemeBtn).toBeTruthy();
-  expect(mdCombo!.x + mdCombo!.width).toBeLessThanOrEqual(mdThemeBtn!.x + 1);
-
-  // Outside click closes the portaled listbox, and resizing below md dismisses it cleanly
-  const listbox = page.getByRole("listbox", { name: "Kết quả tìm kiếm" });
-  const mdCombobox = header.getByRole("combobox", { name: "Tìm nhanh tài liệu" });
-  await mdCombobox.fill("button");
-  await expect(listbox).toBeVisible();
-  await page.locator("main").click({ position: { x: 24, y: 24 } });
-  await expect(listbox).toBeHidden();
-
-  await mdCombobox.focus();
-  await expect(listbox).toBeVisible();
-  await page.setViewportSize({ width: 430, height: 900 });
-  await expect(listbox).toBeHidden();
 });
 
-test("nav quick search guards IME composition and supports ArrowDown/ArrowUp selection (#172, #179)", async ({ page }) => {
+test("CommandDialog opens via click or ⌘K/Ctrl+K, guards IME, supports keyboard navigation, and navigates to pages, components, and icons (#181)", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await open(page, "/", "light");
 
-  const header = page.locator("header").first();
-  const combobox = header.getByRole("combobox", { name: "Tìm nhanh tài liệu" });
-  const listbox = page.getByRole("listbox", { name: "Kết quả tìm kiếm" });
+  const aside = page.locator("aside[data-semi-nav-panel]");
+  const trigger = aside.locator("[data-semi-nav-footer]").getByRole("button", { name: "Tìm nhanh" });
+  const cmdDialog = page.getByRole("dialog", { name: "Bảng lệnh" });
 
-  await combobox.fill("button");
-  await expect(listbox).toBeVisible();
+  // Open via ⌘K / Ctrl+K shortcut
+  await expect(trigger).toBeVisible();
+  await expect(async () => {
+    await page.keyboard.press("ControlOrMeta+k");
+    await expect(cmdDialog).toBeVisible({ timeout: 500 });
+  }).toPass({ timeout: 10_000 });
 
-  // Vietnamese IME composition: Enter / Escape with isComposing or keyCode 229 must not navigate or close
-  await combobox.evaluate((el) => {
+  const input = cmdDialog.getByRole("combobox");
+  await expect(input).toBeFocused();
+
+  // Groups are present: Trang, Component, Icons
+  await expect(cmdDialog.getByRole("group", { name: "Trang" })).toBeVisible();
+  await expect(cmdDialog.getByRole("group", { name: "Component" })).toBeVisible();
+  await expect(cmdDialog.getByRole("group", { name: "Icons" })).toBeVisible();
+
+  // Search a component and guard Vietnamese IME composition
+  await input.fill("button");
+  const options = cmdDialog.getByRole("option");
+  expect(await options.count()).toBeGreaterThan(1);
+  await input.evaluate((el) => {
     el.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", isComposing: true, bubbles: true, cancelable: true }));
     el.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", isComposing: true, bubbles: true, cancelable: true }));
     el.dispatchEvent(new KeyboardEvent("keydown", { key: "Process", keyCode: 229, bubbles: true, cancelable: true }));
   });
-  await expect(listbox).toBeVisible();
+  await expect(cmdDialog).toBeVisible();
   await expect(page).toHaveURL(/\/$/);
 
-  // ArrowDown / ArrowUp moves aria-selected across options and Enter navigates to the active option
-  const options = listbox.getByRole("option");
-  expect(await options.count()).toBeGreaterThan(1);
+  // ArrowDown / ArrowUp moves aria-selected across options
   await expect(options.nth(0)).toHaveAttribute("aria-selected", "true");
-  await combobox.press("ArrowDown");
+  await input.press("ArrowDown");
   await expect(options.nth(1)).toHaveAttribute("aria-selected", "true");
-  const secondHref = await options.nth(1).getAttribute("href");
-  expect(secondHref).toBeTruthy();
-  await combobox.press("ArrowUp");
+  await input.press("ArrowUp");
   await expect(options.nth(0)).toHaveAttribute("aria-selected", "true");
-  await combobox.press("ArrowDown");
-  await expect(options.nth(1)).toHaveAttribute("aria-selected", "true");
-  await combobox.press("Enter");
-  await expect(page).toHaveURL(new RegExp(`${secondHref!.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`));
-});
 
-test("nav quick search finds components, pages, and icons with keyboard navigation (#172, #179)", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await open(page, "/", "light");
+  // Escape clears query first, second Escape closes dialog
+  await input.press("Escape");
+  await expect(input).toHaveValue("");
+  await expect(cmdDialog).toBeVisible();
+  await input.press("Escape");
+  await expect(cmdDialog).toBeHidden();
 
-  const header = page.locator("header").first();
-  const combobox = header.getByRole("combobox", { name: "Tìm nhanh tài liệu" });
-  await expect(combobox).toBeVisible();
-
-  // Search a component and navigate with Enter
-  await combobox.fill("modal");
-  const listbox = page.getByRole("listbox", { name: "Kết quả tìm kiếm" });
-  await expect(listbox).toBeVisible();
-  await expect(listbox.getByRole("option", { name: /Modal/ }).first()).toBeVisible();
-  await combobox.press("Enter");
+  // Open via trigger click, search a component and press Enter
+  await trigger.click();
+  await expect(cmdDialog).toBeVisible();
+  await input.fill("modal");
+  await expect(cmdDialog.getByRole("option", { name: /Modal/ }).first()).toBeVisible();
+  await input.press("Enter");
+  await expect(cmdDialog).toBeHidden();
   await expect(page).toHaveURL(/\/components\/modal\/$/);
 
-  // Escape closes dropdown
-  await combobox.fill("button");
-  await expect(listbox).toBeVisible();
-  await combobox.press("Escape");
-  await expect(listbox).toBeHidden();
-
-  // Search a top-level page and click
-  await combobox.fill("foundations");
-  await expect(listbox).toBeVisible();
-  await listbox.getByRole("option", { name: /Foundations/ }).first().click();
+  // Open via ⌘K, search a page and click
+  await page.keyboard.press("ControlOrMeta+k");
+  await expect(cmdDialog).toBeVisible();
+  await input.fill("foundations");
+  await cmdDialog.getByRole("option", { name: /Foundations/ }).first().click();
+  await expect(cmdDialog).toBeHidden();
   await expect(page).toHaveURL(/\/foundations\/$/);
 
-  // Search an icon and jump to /icons/?q=<name>
-  await combobox.fill("trash");
-  await expect(listbox).toBeVisible();
-  await listbox.getByRole("option", { name: /trash/i }).first().click();
+  // Open via trigger click, search an icon and jump to /icons/?q=<name>
+  await trigger.click();
+  await expect(cmdDialog).toBeVisible();
+  await input.fill("trash");
+  await cmdDialog.getByRole("option", { name: /trash/i }).first().click();
+  await expect(cmdDialog).toBeHidden();
   await expect(page).toHaveURL(/\/icons\/\?q=trash/);
   await expect(page.getByRole("searchbox", { name: "Tìm icon" })).toHaveValue("trash");
 });
@@ -235,7 +257,7 @@ test("/icons/ uses StickyContextBar + SearchPill with / shortcut, clear button, 
   await expect(searchbox).toBeFocused();
 });
 
-test("/foundations/ and /icons/ split cleanly and pass a11y in both themes (#172, #179)", async ({ page }) => {
+test("/foundations/ and /icons/ split cleanly and pass a11y in both themes (#172, #179, #181)", async ({ page }) => {
   for (const width of [1440, 375]) {
     await page.setViewportSize({ width, height: 900 });
 

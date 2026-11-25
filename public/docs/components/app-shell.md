@@ -360,6 +360,7 @@ export default function AppShellSubmenu() {
 | `mainAction` | `ShellAction \| ShellSlot` |  | The nav's one main action, the only brand-filled control in the nav: data (label + icon, a menu, a link or an action) drawn as an ordinary primary button, or your own slot. In the rail: the icon with a Tooltip. The phone drawer shows the data form as a row; a slot keeps its one instance in the nav, so give phones its action elsewhere. |
 | `primaryCta` | `{ label: string; icon: IconName; href?: string; external?: boolean; onClick?: () => void; }` |  | Optional quiet launcher under the main action (another app, a docs link). |
 | `navSearch` | `React.ReactNode` |  | Optional quick-search field rendered above the nav sections in the expanded sidebar and phone drawer (hidden in the rail). |
+| `navFooter` | `React.ReactNode` |  | Optional content pinned at the bottom of the nav bar (above `tools`) in the desktop sidebar and phone drawer. |
 | `pinned` | `ShellPinned` |  | A group under the main nav (saved views, frequent records). |
 | `tools` | `ShellTool[]` | `[]` | The bottom row of the nav: 32×32 ghost icon buttons (help, notifications), stacked in the rail. |
 | `toolsMenu` | `MenuItem[]` | `[]` | The rest of the bottom row, in a ••• Menu after the tools. |

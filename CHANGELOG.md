@@ -4,6 +4,8 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## Unreleased
 
+- **`AppShell.navFooter` & Storybook `CommandDialog` search (#181):** Added optional `navFooter` prop to `AppShell` (pinned at the bottom of the desktop sidebar above `tools` and at the bottom of `PhoneDrawer`). Replaced Storybook's `RouteHeader` global search with a pinned bottom nav trigger (`Tìm nhanh` + `⌘K` / icon with Tooltip in the 72px rail) opening `CommandDialog` across all pages, component docs, and icons (`/icons/?q=`), and added Vietnamese IME composition guarding to `Command`.
+
 ## 1.0.0 - 2026-11-25
 
 **Summary.** Semi Design System 1.0 — one breaking release delivering one look for every brand, pure neutral surfaces, four AA-verified text tiers, brand colour restricted to main buttons and attention marks, a two-tier UI type scale (14px content `text-ui`, 12px shell chrome `text-chrome`), the 1.0 `AppShell` frame + `RouteHeader` + `AccountMenu`, neutral-default buttons and attention marks, three clear tab controls (`PillTabs`, `SegmentedControl`, big `TextTabs`), quiet fields and reply boxes, three page layouts (`work`, `reading`, `two-column`) with `ListReaderLayout`, trackpad-proven `StickyContextBar` layout-pinning with `BarActions`, once-per-route `PageEnter` and motion tokens, 1.0 `semi-lint` / `/semi-check` rules, and the C-013 legacy cleanup.
