@@ -6,7 +6,7 @@
 import React, { createContext, Suspense, useContext, useEffect, useState } from "react";
 import Link from "next/link";
 import { Icon, type IconName } from "./Icon";
-import { Avatar } from "./Feedback";
+import { LetterAvatar } from "./Feedback";
 import { Menu, Tooltip, type MenuItem } from "./Overlay";
 import { useSemiLocale } from "./locale";
 import { useThemeChoices } from "./ThemeProvider";
@@ -62,7 +62,6 @@ export function useRecordCrumb(label: string | null | undefined) {
 export function AccountMenu({ name, detail, avatarSrc, items = [], onSignOut, theme = true }: ShellAccount) {
   const t = useSemiLocale();
   const choices = useThemeChoices();
-  const letter = name.trim().charAt(0).toLocaleUpperCase() || "?";
   const label = `${t.account}: ${name}`;
   const all: MenuItem[] = [
     ...(theme ? choices.items.map((it) => ({ ...it, group: choices.label })) : []),
@@ -83,7 +82,7 @@ export function AccountMenu({ name, detail, avatarSrc, items = [], onSignOut, th
         <Tooltip content={name}>
           <button type="button" aria-label={label} className={cn("w-8 h-8 max-md:w-11 max-md:h-11 shrink-0 rounded-full flex items-center justify-center cursor-pointer", FOCUS_RING)}>
             <span aria-hidden className="inline-flex">
-              <Avatar name={avatarSrc ? name : letter} src={avatarSrc} size="md" />
+              <LetterAvatar name={name} src={avatarSrc} size="md" />
             </span>
           </button>
         </Tooltip>

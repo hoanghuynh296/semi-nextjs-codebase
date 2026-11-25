@@ -9,6 +9,9 @@ import { NumPadPopup, useCoarsePointer } from "./NumPadPopup";
 import { useField } from "./Field";
 import { kindAttrs } from "./fieldKinds";
 import { useSemiLocale } from "./locale";
+import { ensureFocusModality } from "./a11y";
+import { FIELD_INPUT } from "../styles/surfaces";
+import { cn } from "../styles/utils";
 
 type Props = Omit<React.InputHTMLAttributes<HTMLInputElement>, "inputMode"> & {
   ref?: React.Ref<HTMLInputElement>;
@@ -26,7 +29,8 @@ const setNativeValue = (el: HTMLInputElement, v: string) => {
   el.dispatchEvent(new Event("input", { bubbles: true }));
 };
 
-export function NumberInput({ ref, numpadLabel, unit, integer, onClick, readOnly, disabled, type = "number", ...rest }: Props) {
+export function NumberInput({ ref, numpadLabel, unit, integer, onClick, readOnly, disabled, type = "number", className, ...rest }: Props) {
+  ensureFocusModality();
   const coarse = useCoarsePointer();
   const t = useSemiLocale();
   const field = useField();
@@ -50,6 +54,7 @@ export function NumberInput({ ref, numpadLabel, unit, integer, onClick, readOnly
         autoComplete={kindAttrs(field?.kind).autoComplete}
         enterKeyHint={kindAttrs(field?.kind).enterKeyHint}
         {...rest}
+        className={cn(FIELD_INPUT, "aria-invalid:border-danger-fg aria-invalid:focus:border-danger-fg", className)}
         ref={setRefs}
         type={usePad ? "text" : type}
         inputMode={usePad ? "none" : integer ? "numeric" : "decimal"}

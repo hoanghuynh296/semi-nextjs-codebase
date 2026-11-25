@@ -79,6 +79,12 @@ jobs:
         with:
           name: builds
 
+      - name: Install WebKit and Firefox when this shard runs the IME test
+        run: |
+          if npx playwright test --list --shard=${{ matrix.shard }}/6 | grep -q "hint-textarea-ime"; then
+            npx playwright install --with-deps webkit firefox
+          fi
+
       - name: "Browser checks (docs and brand book: contrast AA both themes, axe, phone widths, theme, keyboard), shard ${{ matrix.shard }}/6"
         run: npm run test:ui -- --shard=${{ matrix.shard }}/6
 

@@ -22,7 +22,7 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 |---|---|---|
 | [Calendar](calendar.md) | `Calendar` | Inline date selection on a page; picking a date range for a report. |
 | [Checkbox](checkbox.md) | `Checkbox` | Opt in to something in a form (accept terms, include archived). |
-| [Combobox](combobox.md) | `CustomCombobox` | Long lists the user searches (materials, customers, SKUs). |
+| [Combobox](combobox.md) | `CustomCombobox` | Long or grouped lists the user searches (materials, customers, repositories, SKUs). |
 | [Date picker](date-picker.md) | `DatePicker` | Schedule a job, filter by day, set a due date. |
 | [Drop zone](drop-zone.md) | `DropZone` | Attachments in a WorkspaceSection (specs, sample photos), where the section label carries the count. |
 | [Field, Input, Textarea](field.md) | `Field`, `Input`, `Textarea` | Every form control: wrap it in Field instead of writing a <label>. |
@@ -33,7 +33,9 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Hint textarea](hint-textarea.md) | `HintTextarea` | A message or note where people mention a record (@ a supplier, a colleague) or insert a template or command (/). |
 | [Input group](input-group.md) | `InputGroup` | Money and units, URLs and domains, a copy or reveal button inside the field. |
 | [Input OTP](input-otp.md) | `InputOTP` | Verification codes, PINs, invite codes of a fixed length. |
+| [Multi combobox](multi-combobox.md) | `MultiCombobox` | Picking several values from a long or grouped list in a form (supplied goods, tags, assignees, repositories). |
 | [Number input](number-input.md) | `NumberInput`, `NumPadPopup` | Quantities, temperatures, prices, percentages. |
+| [Option cards](option-cards.md) | `OptionCards` | Picking one visual option from 2–6 choices (an AI provider, a shipping method, a plan) where a card with an icon or short description reads faster than a radio list. |
 | [Radio group](radio-group.md) | `RadioGroup` | 2–5 options where the descriptions help the choice (plans, shipping). |
 | [Search input](search-input.md) | `SearchInput` | Filter the list or grid on the current page. |
 | [Search pill](search-pill.md) | `SearchPill`, `ResultLine` | The search of a list, grid or DataTable page, above its filter chips (inside StickyContextBar). |
@@ -92,7 +94,7 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 |---|---|---|
 | [Accordion](accordion.md) | `Accordion` | FAQs and help; long settings split into groups. |
 | [Aspect ratio](aspect-ratio.md) | `AspectRatio` | Thumbnails and media that must not jump while loading. |
-| [Avatar](avatar.md) | `Avatar` | Owners, assignees, customers in rows and cards. |
+| [Avatar & LetterAvatar](avatar.md) | `Avatar`, `LetterAvatar` | Owners, assignees, customers in rows and cards (`Avatar`). |
 | [Badge](badge.md) | `Badge`, `CountBadge`, `NewTag` | Status of a row or card (Đã thanh toán, Lỗi), a plan or role tag. |
 | [Card](card.md) | `Card` | Group the content of a page in cards; nested facts in TILE (bg-card-field). |
 | [Carousel](carousel.md) | `Carousel` | Product photos, featured items, onboarding steps. |

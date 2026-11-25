@@ -8,7 +8,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 ## Machine-readable
 
-- [components.json](./components.json): all 163 components, hooks and constants with props, summaries and their doc page
+- [components.json](./components.json): all 166 components, hooks and constants with props, summaries and their doc page
 - [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
@@ -46,7 +46,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 - [Calendar](./components/calendar/) ([markdown](./docs/components/calendar.md)): A month grid to pick one day or a range (YYYY-MM-DD, weeks start on Monday). DatePicker shows it in a popover; place it inline for schedules and report filters. Components: Calendar.
 - [Checkbox](./components/checkbox/) ([markdown](./docs/components/checkbox.md)): A native checkbox with label and description, checked fill in the accent, and an indeterminate state for “select all”. Components: Checkbox.
-- [Combobox](./components/combobox/) ([markdown](./docs/components/combobox.md)): CustomCombobox: type to filter a long list, then pick one value. Components: CustomCombobox.
+- [Combobox](./components/combobox/) ([markdown](./docs/components/combobox.md)): CustomCombobox: type to filter a long or grouped list (diacritic-aware, IME-safe), then pick one value or keep a new one. Components: CustomCombobox.
 - [Date picker](./components/date-picker/) ([markdown](./docs/components/date-picker.md)): A date field with a Calendar popover (YYYY-MM-DD, min / max). Never type="date". Components: DatePicker.
 - [Drop zone](./components/drop-zone/) ([markdown](./docs/components/drop-zone.md)): The compact FileDrop for a workspace panel: a light dashed tile on the panel surface with a title and a hint, the same checks (accept, maxSize, duplicates), keyboard and announcements; the file rows are optional. Components: DropZone.
 - [Field, Input, Textarea](./components/field/) ([markdown](./docs/components/field.md)): Field gives any control a label, a hint and an error, wired for screen readers; `kind` sets the phone keyboard, autofill and Enter key of an email, phone, number, money, URL, search or password field. Input and Textarea are the standard text controls (bg-field, h-field). Components: Field, Input, Textarea.
@@ -57,7 +57,9 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Hint textarea](./components/hint-textarea/) ([markdown](./docs/components/hint-textarea.md)): A text area that says what it can do (L15): a hint row under the text (“Gõ @ để nhắc nhà cung cấp · Gõ / để chèn mẫu”) and a suggestion list while the word at the caret starts with a trigger; the chosen item is inserted with a space after it. Components: HintTextarea.
 - [Input group](./components/input-group/) ([markdown](./docs/components/input-group.md)): An input with fixed parts around it: a prefix (https://), a unit (kg, ₫), an icon or a small button (copy, show password). Components: InputGroup.
 - [Input OTP](./components/input-otp/) ([markdown](./docs/components/input-otp.md)): One-time code entry (OTP, PIN, 2FA): boxes on screen, one real input underneath, so paste, SMS autofill, screen readers and the number keypad work like a normal field. Components: InputOTP.
+- [Multi combobox](./components/multi-combobox/) ([markdown](./docs/components/multi-combobox.md)): Searchable multi-select: chosen values show as removable chips, an add button (default “Thêm” / “Add”) opens a portaled popover with a quiet search field and a checkbox list. Supports option groups (`group`), diacritic-aware search and Vietnamese Telex IME. Components: MultiCombobox.
 - [Number input](./components/number-input/) ([markdown](./docs/components/number-input.md)): NumberInput: numbers with a touch keypad (NumPadPopup) on phones and tablets, plain typing elsewhere. Never type="number". Components: NumberInput, NumPadPopup.
+- [Option cards](./components/option-cards/) ([markdown](./docs/components/option-cards.md)): Selectable cards with radio-group semantics (arrow keys, single tab stop): icon, name, optional description, neutral selected state (`bg-item-selected` + `border-outline-line` + `text-strong`, no brand tint) and 8px grid gap. Components: OptionCards.
 - [Radio group](./components/radio-group/) ([markdown](./docs/components/radio-group.md)): Exactly one option of a few, each with an optional description; vertical by default. Components: RadioGroup.
 - [Search input](./components/search-input/) ([markdown](./docs/components/search-input.md)): The toolbar search: an icon button that opens into a field (clear button, h-control); it collapses again when empty and focus leaves. SubpageToolbar includes one. Components: SearchInput.
 - [Search pill](./components/search-pill/) ([markdown](./docs/components/search-pill.md)): The wide pill search of a list page (one per page) and the result line under it: “query” · N kết quả on the left, the sort menu on the right. Typing is debounced (250 ms), Escape and the clear button clear at once, an optional key (/) focuses it. Components: SearchPill, ResultLine.
@@ -110,7 +112,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 - [Accordion](./components/accordion/) ([markdown](./docs/components/accordion.md)): A list of sections where one (or several) open at a time: FAQs, settings groups, help. Components: Accordion.
 - [Aspect ratio](./components/aspect-ratio/) ([markdown](./docs/components/aspect-ratio.md)): Keeps media at a fixed ratio while its width follows the layout (images, video, maps, 3D previews). Components: AspectRatio.
-- [Avatar](./components/avatar/) ([markdown](./docs/components/avatar.md)): A person or team: their image, or initials on a tone picked from the name. Components: Avatar.
+- [Avatar & LetterAvatar](./components/avatar/) ([markdown](./docs/components/avatar.md)): A person or team: their image, two initials on a stable tone (`Avatar`), or one upper-cased letter (`vi` locale, "?" when empty) on a neutral fill (`LetterAvatar`, or `Avatar initials={1}`). Components: Avatar, LetterAvatar.
 - [Badge](./components/badge/) ([markdown](./docs/components/badge.md)): A read-only status or tag in a tone (10% fill, 20% border, theme-safe text; one fixed palette for every brand), and the attention marks in the brand colour: CountBadge (unread, to approve; 99+ cap) and NewTag ("Mới"). Components: Badge, CountBadge, NewTag.
 - [Card](./components/card/) ([markdown](./docs/components/card.md)): The bento content card: the card surface (bg-card, separated from the page by tone: no border, no shadow, rounded-card). bordered frames a dense data view; interactive adds hover / press, active marks the selected or running item. Components: Card.
 - [Carousel](./components/carousel/) ([markdown](./docs/components/carousel.md)): Slides in a row that scroll by swipe, trackpad, arrow keys, buttons or dots (CSS scroll-snap, no library). Phones show one slide and a peek of the next. Components: Carousel.
@@ -183,7 +185,7 @@ content column, 12px shell chrome around 14px content, headings 400 / 500, minim
 brand fill (`bg-primary`, optional `bg-secondary`) only for the one main button of a page or modal (at most one per
 page or modal), the nav's main action, the active big-tab underline, attention badges / "Mới" tags, or a case the app's owner asks for; every other
 action is a neutral button. **When to use which** (buttons, tabs, page layouts): `DESIGN_SYSTEM.md` §0. Moving from
-0.x: `MIGRATION-1.0.md`. Parts marked *(Tn, pending)* (T3, T6–T9) in `DESIGN_SYSTEM.md` are 1.0 targets not merged yet: use what
+0.x: `MIGRATION-1.0.md`. Parts marked *(Tn, pending)* (T3, T7–T9) in `DESIGN_SYSTEM.md` are 1.0 targets not merged yet: use what
 Semi ships today for them, never a local stand-in.
 Shell: `AppShell` (the nav panel and the content column on `bg-canvas`; the route header with crumbs and the account
 avatar menu above the content card), pages with `PageTitle` (+ `actions`) or
@@ -212,7 +214,7 @@ leading dot or icon (`TONE_DOT`, `chipIconClass(tone)`). Card tiles keep their a
 blobs, no `shadow-[0_0_…]` (status dots and power buttons too). Active card = `CARD_ACTIVE` (`border-outline-line`).
 
 **Type (`docs/TOKENS.md`):** `text-hero` 36 (32 below sm) · `text-title-xl` 44 · `text-tab-xl` 28 (24 below sm) · `text-section` 20 · `text-figure` 18 · `text-lead` 15 · **`text-ui` 14, the content size** (rows, form labels and help, fields, buttons, menu items, dialogs, body; compact 13) · `text-input` 16 (typed text below sm: `max-sm:text-input`) · **`text-chrome` 12, shell chrome only** (nav, breadcrumb, toolbar compact buttons, meta, kbd) · `text-tag` 10 · `text-badge` 10 · `text-overline` 11. `font-sans` (Geist or the brand's) everywhere; `font-display` (the brand's display face, else the sans) only for hero, reading-page titles, big tabs, editorial heads. Headings are not bold: 400 / 500 (`font-title` 500), 600 only overlines, 700 only count badges. `tabular-nums` for numbers, `font-mono` only for code. No `text-xs/sm`, no `text-[13px]` ·
-sentence case, no ALL CAPS. The one exception is `text-overline` (uppercase, tracked) for section labels: a sidebar or drawer group, a palette group, a mega menu column (C-032); anywhere but a plain, non-clickable label element it warns (`overline-place`).
+sentence case, no ALL CAPS. The one exception is `text-overline` (uppercase, tracked) for section labels: a sidebar or drawer group, a palette group, a mega menu column, a form or detail section ("MODEL", "PROMPT"; never a single field's `<label>`) (C-032); anywhere but a plain, non-clickable label element it warns (`overline-place`).
 
 **Status, layers, elevation:** callouts / badges `bg-{danger,success,warning,info}-bg border-*-border text-*-fg` (`Alert`) ·
 dots / bars `bg-*-solid` · backdrop `bg-overlay` · floating layers `shadow-overlay` (canvas controls `shadow-float`) ·
@@ -297,7 +299,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (163)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (166)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
@@ -327,7 +329,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `Drawer`: `Drawer`
 - `ExternalLink`: `ExternalLink`
 - `FeatureIntro`: `FeatureIntro`
-- `Feedback`: `Alert`, `Progress`, `Avatar`, `EmptyState`
+- `Feedback`: `Alert`, `Progress`, `Avatar`, `LetterAvatar`, `EmptyState`
 - `Field`: `Field`, `Input`, `Textarea`
 - `FileDrop`: `DropZone`, `FileDrop`
 - `FilterChipRow`: `FilterChip`, `FilterOptions`, `FilterChipRow`
@@ -346,9 +348,11 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `MinimalHeader`: `MinimalHeader`
 - `MobileTabBar`: `MobileTabBar`
 - `Modal`: `Modal`
+- `MultiCombobox`: `MultiCombobox`
 - `NavigationMenu`: `NavigationMenu`
 - `NumPadPopup`: `NumPadPopup`
 - `NumberInput`: `NumberInput`
+- `OptionCards`: `OptionCards`
 - `Overlay`: `Tooltip`, `Menu`, `ContextMenu`, `Menubar`
 - `PageActions`: `PageActionsProvider`, `PageActionsSlot`, `PageActions`
 - `PageTitle`: `PageTitle`, `PageTabsTitle`
@@ -387,7 +391,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `formValidation`: `FormErrorSummary`
 - `locale`: `SemiLocaleProvider`
 
-**Hooks:** `useAppShell`, `useHotkey`, `useRegisterCommands`, `useDetailParam`, `useField`, `useFilterParams`, `useCoarsePointer`, `useRecordCrumb`, `useTheme`, `useThemeChoices`, `useThemeUtility`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useFormValidation`, `useSemiLocale`, `useTabParam`, `useUnsavedGuard` · **Functions:** `navScript`, `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `filterCommands`, `openCommandPalette`, `openDetail`, `pageWindow`, `startTask`, `themeScript`, `updateToast`, `dismissToast`, `confirmDialog`, `confirmDelete`, `kindAttrs`, `readFilterValues`, `readFilters`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `composeRefs`, `cloneTrigger`, `normalizeSearch`, `searchRows`, `sortRows`, `cn`
+**Hooks:** `useAppShell`, `useHotkey`, `useRegisterCommands`, `useDetailParam`, `useField`, `useFilterParams`, `useCoarsePointer`, `useRecordCrumb`, `useTheme`, `useThemeChoices`, `useThemeUtility`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useFormValidation`, `useSemiLocale`, `useTabParam`, `useUnsavedGuard` · **Functions:** `navScript`, `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `filterCommands`, `openCommandPalette`, `openDetail`, `pageWindow`, `startTask`, `themeScript`, `updateToast`, `dismissToast`, `focusFirstField`, `ensureFocusModality`, `confirmDialog`, `confirmDelete`, `kindAttrs`, `readFilterValues`, `readFilters`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `composeRefs`, `cloneTrigger`, `normalizeSearch`, `searchRows`, `sortRows`, `cn`
 <!-- generated:components:end -->
 
 
@@ -542,7 +546,7 @@ and light. Full list with values: **`TOKENS.md`**.
 |---|---|---|
 | Surfaces (pure neutral, same for every brand) | `bg-canvas`, `bg-app`, `bg-panel`, `bg-field`, `bg-field-focus`, `bg-raised`, `bg-raised-2`; `bg-card`, `bg-card-field`, `bg-panel-0…4` | frame, content column, nav / card / modal, input fill, segmented track and toolbar buttons, segmented active pill |
 | Text tiers | `text-strong`, `text-body`, `text-muted`, `text-faint` | titles and values; card text; descriptions, inactive items, breadcrumb, placeholders; group labels, kbd hints, "Untitled" |
-| Lines | `border-field-line`, `border-field-line-focus`, `border-outline-line`, `border-line`, `border-divider`, `border-control-line` | input at rest / on focus (T6), outline buttons and a selected card, frames, dividers, checkboxes and radios |
+| Lines | `border-field-line`, `border-field-line-focus`, `border-outline-line`, `border-line`, `border-divider`, `border-control-line` | input at rest / on focus (quiet fields), outline buttons and a selected card, frames, dividers, checkboxes and radios |
 | Neutral states | `bg-item-hover`, `bg-item-selected`, `bg-item-checked`, `bg-subtle-button`, `bg-inverted` + `text-on-inverted`, `ring-focus` / `border-focus` | hover; the open record or active item; checked rows in selection mode; ordinary buttons; checked controls and the inverse button; focus |
 | Brand fills | `bg-primary` / `hover:bg-primary-hover` + `text-on-primary`; `bg-secondary` / `hover:bg-secondary-hover` + `text-on-secondary` | only what the brand colour rule (§0) allows |
 | Status (same for every brand) | `text-*-fg`, `bg-*-bg`, `border-*-border`, `bg-*-solid` + `text-on-solid`; `text-tone-*` | danger, success, warning, info; tile and tag tones |
@@ -1059,13 +1063,19 @@ it form by form; the four lint rules below are warnings until 1.0.
   `enterKeyHint`, it keeps its own type and keypad); a prop on the control wins (`autoComplete="new-password"`, `type="text"`
   next to an `https://` addon). `number` and `money` stay text inputs with the decimal keypad, never `type="number"`; the text
   holds Vietnamese separators, so parse it with `parseMoney` / `parseNumber` (#69), not `Number()`.
-- **Small counts and hinted text (#106).** A small whole number people nudge (tấn per line, copies, seats) is a `Stepper`
+- **Small counts and hinted text (#106, #148).** A small whole number people nudge (tấn per line, copies, seats) is a `Stepper`
   (− value +, a spinbutton: arrows, Page Up / Down, Home / End; the − + buttons are out of the Tab order); typed numbers stay
-  `NumberInput`. A message or note that can mention a record or insert a template is a `HintTextarea`: a hint row under
-  the text ("Gõ @ để nhắc nhà cung cấp · Gõ / để chèn mẫu") and a listbox of at most six suggestions (the textarea is a `combobox`; keyCode 229 / composing keys are left to the input method) while the word at the
-  caret starts with a trigger (↑ ↓, Enter / Tab inserts, Escape closes only the list; matching ignores Vietnamese marks).
+  `NumberInput`. A message or note that can mention a record or insert a template or plain-text snippet is a `HintTextarea`:
+  a hint row under the text ("Gõ @ để nhắc nhà cung cấp · Gõ / để chèn mẫu") and a suggestion list positioned with the Popover
+  engine (portaled at `z-popover`, flips above near the bottom, never clipped by a pane or modal; `HintToken.insert` overrides
+  what is inserted, `showValue` controls the right-hand key column, long values truncate; keyCode 229 / composing keys are left
+  to the input method). For a reply box, pass `autoGrow` / `resizable` on `Textarea` or `HintTextarea` (grows from 3 rows up to
+  50% of its container, then scrolls; from `md` a top `role="separator"` resizes by drag or ArrowUp / ArrowDown ±24px up to
+  80%, double-click resets to auto; phones auto-grow only).
 - **Layout and validation.** Labels sit above fields, required fields get `*` (`Field required`), the error shows under the
-  field (`Field error`). Validation runs on blur, then on every change (`useFormValidation`: `form.errors`, `onBlur={form.blur("x")}`,
+  field (`Field error`). Group related fields with a `text-overline text-muted` section label (never on a single field's
+  `<label>`). Use `MultiCombobox` for searchable multi-select with removable chips (supports `group`), `OptionCards` for
+  selectable radio-group cards (neutral `item-selected`, 8px grid gap). Validation runs on blur, then on every change (`useFormValidation`: `form.errors`, `onBlur={form.blur("x")}`,
   `form.validate()` on submit). With more than one error `FormErrorSummary` puts an `Alert` above `FormActions`; one error is
   shown only under its field. A problem inside a field is never a toast. Page forms are at most `max-w-2xl` (`FORM_PAGE`).
 - **Lint (warnings, they never fail):** `form-no-guard` (a page form without `useUnsavedGuard`), `action-order` (the primary
@@ -1300,7 +1310,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `PageActions.tsx` | `PageActions` (a tab's header buttons), `PageActionsSlot` + `PageActionsProvider` |
 | `Skeleton.tsx` | `Skeleton`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `SkeletonList`, `SkeletonTable`, `SkeletonDetail` (shaped: list rows, table rows, a record), `PageSkeleton` (`shape` cards / list / detail), `Loading`, `BootLoader` (boot / session gate only) (§13b) |
 | `FormActions.tsx`, `useUnsavedGuard.ts`, `formValidation.tsx`, `fieldKinds.ts` | `FormActions` (Huỷ + Lưu / Tạo, sticky on a page, `placement="modal"` footer), `useUnsavedGuard` (reload, tab close, link, back), `useFormValidation` + `FormErrorSummary` (blur, then change; Alert summary), `FIELD_KINDS` / `FieldKind` (§9b) |
-| `Feedback.tsx`, `States.tsx` | `EmptyState` (`variant` first-use / no-results, `onClearFilters`), `ErrorState`, `NotFound`, `Forbidden` (§13, §13c) |
+| `Feedback.tsx`, `States.tsx` | `Alert`, `Progress`, `Avatar` (`initials={1 \| 2}`, `tone="auto \| neutral"`), `LetterAvatar` (one-letter neutral avatar, `vi` locale), `EmptyState` (`variant` first-use / no-results, `onClearFilters`), `ErrorState`, `NotFound`, `Forbidden` (§13, §13c) |
 | `FileDrop.tsx` | `FileDrop`, `DropZone` (compact FileDrop for a workspace panel), `DropZoneProps`, `FileDropItem`, `FileRejection`, `matchesAccept`, `formatFileSize`, `classifyFiles`, `FileRejectReason` (§13b uploads: `FileDrop` + `Progress`) |
 | `confirmDialog.tsx` | `confirmDialog()`, `confirmDelete()`, `ConfirmHost`, `ConfirmOptions`, `ConfirmDeleteOptions` (§14, §14c) |
 | `TaskHost.tsx` | `startTask()`, `TaskHost`, `TaskOptions`, `TaskHandle` (blocking task overlay, §13b) |
@@ -1309,10 +1319,10 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `Chat.tsx` | `AIChat`, `ChatPanel`, `ChatView`, `ChatList`, `ChatComposer`, `UserMessage`, `AssistantMessage`, `ChatAnswer`, `ChatError`, `ChatThinking`, `ChatIntro`, `ChatSuggestion(s)`, `ChatAvatar`, `ChatCopyButton`, `ChatModelPicker`, `CHAT_ROW`, `CHAT_CHIP`, `CHAT_PICK_CHIP`, `ChatItem` (§14b) |
 | `ExternalLink.tsx` | `ExternalLink` |
 | `Pills.tsx`, `Chip.tsx` | single choice / on-off chips (`Chip`, `CHIP_BASE`, `chipClass`, `chipIconClass`, `TAG`, `TONE_DOT`) |
-| `SearchInput`, `CustomSelect`, `CustomCombobox`, `DatePicker`, `Pagination` | toolbar and form inputs |
+| `SearchInput`, `CustomSelect`, `CustomCombobox`, `MultiCombobox`, `OptionCards`, `DatePicker`, `Pagination` | toolbar and form inputs (`CustomCombobox` & `MultiCombobox`: diacritic-aware, IME-safe search + `group` headings; `OptionCards`: selectable radio-group cards with neutral `item-selected` fill, 8px grid gap) |
 | `NumberInput` (+ `NumPadPopup`, `useCoarsePointer`) | every number field (app numpad on touch screens) |
 | `SidePanel`, `SidePanelToggle`, `RefreshButton` | tool-app left panel, icon-only reload action |
-| Hooks (`Field.tsx`, `a11y.ts`, `floating.ts`) | `useField` (a custom control reads its `Field`: id, `aria-describedby`, invalid), `useDialog` (focus trap + scroll lock + Escape for a modal-like surface; built on `useFocusTrap` and `useScrollLock`), `useBackdropClose` (a backdrop that wraps its panel closes only on a click that starts and ends on it), `useAnchoredPosition` (fixed menu / tooltip next to its trigger, flips above, never clipped), `useCoarsePointer`, `useTheme` |
+| Hooks (`Field.tsx`, `a11y.ts`, `floating.ts`) | `useField` (a custom control reads its `Field`: id, `aria-describedby`, invalid), `useDialog` (focus trap + scroll lock + Escape for a modal-like surface; built on `useFocusTrap` and `useScrollLock`), `focusFirstField(root)` (focuses the first field only on `(hover: hover) and (pointer: fine)` unless focus already sits in a field; `Modal` and `Drawer` run it on open by default, `autoFocusFirstField={false}` opts out), `useBackdropClose` (a backdrop that wraps its panel closes only on a click that starts and ends on it), `useAnchoredPosition` (fixed menu / tooltip next to its trigger, flips above, never clipped), `useCoarsePointer`, `useTheme` |
 | `@semi/ui/styles` → `surfaces.ts` | `SHELL_*`, `CARD`, `CARD_HOVER`, `CARD_BORDERED`, `CARD_BORDERED_HOVER`, `CARD_ACTIVE`, `HERO`, `TILE`, `SECTION_*`, `COUNT_PILL`, `EMPTY`, `ICON_BTN` / `ICON_BTN_DANGER`, `STATUS_PILL`, `STATUS_DOT`, `STICKY_TOOLBAR`, `MODAL_*`, `FIELD_LABEL`, `FIELD_INPUT`, `FIELD_TEXTAREA`, `FORM_PAGE`, `FORM_ACTIONS`, `FORM_ACTIONS_STICKY` |
 | `buttons.ts` | `BTN_PRIMARY`, `BTN_SECONDARY`, `BTN_OUTLINE`, `BTN_DANGER`, `BTN_ICON`, `MODAL_BTN_*` (incl. `MODAL_BTN_OUTLINE`) |
 | `appChrome.ts` | `HEADER_ICON_*`, `headerPrimary`, `HEADER_PILL`, `VIEWPORT_*` |
@@ -1334,10 +1344,8 @@ with `aria-describedby`, sets `aria-invalid` and announces the error (`role="ale
 </Field>
 ```
 
-Input surface: `FIELD_INPUT` (`bg-field border border-control-line hover:border-control-line-hover rounded-control px-3 h-field
-text-ui … focus:border-focus`); invalid adds `border-danger-fg` (`danger-border` is too faint for an input's edge). Never `focus:outline-none` without a visible focus
-border. Choices: `Checkbox` (with `indeterminate`), `Switch` (settings that apply at once), `RadioGroup` (2–5 exclusive
-options; more → `CustomSelect`). A `Switch` or `Checkbox` without a visible `label` (on a card whose title names it, a
+Input surface: `FIELD_INPUT` (quiet 1.0 field: `bg-field border border-field-line rounded-control px-3 h-field text-ui max-sm:text-input`; on focus `border-field-line-focus bg-field-focus`, no glow ring; on keyboard focus `:focus-visible` a 2px `outline-focus` outline shared with buttons); invalid adds `border-danger-fg` (`danger-border` is too faint for an input's edge). Never `outline-none` without a visible focus indicator. Choices: `Checkbox` (with `indeterminate`), `Switch` (settings that apply at once), `RadioGroup` (2–5 exclusive
+options; more → `CustomSelect`), `OptionCards` (selectable radio-group cards with neutral `item-selected`, 8px gap), `MultiCombobox` (searchable multi-select with removable chips and option groups). A `Switch` or `Checkbox` without a visible `label` (on a card whose title names it, a
 table row) gets `aria-labelledby` (the title's id) or `aria-label`; `label` wins, and in development an unnamed one logs
 a warning. Both get `HIT_AREA`: a 24 × 24 px click area (44 × 44 px on touch screens) from a pseudo-element, so the
 visible size (`size="sm" | "md"`) and the layout stay the same.
@@ -1365,7 +1373,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Compared rows | `Table` + `THead` / `TBody` / `TR` / `TH` / `TD numeric`; cells stay on one line and the table scrolls sideways on phones (`TD wrap` for a long-text column); entity overviews stay Bento `Card`s |
 | Progress / quota | `Progress` (determinate or indeterminate) |
 | Choose or drop files, per-file upload progress | `FileDrop` (controlled `items`; `onAdd` accepted files, `onReject` (type, size, directory, duplicate, multiple), `onRemove`, `onRetry`; `accept`, `maxSize`; inside `Field`). Never a native `<input type="file">` |
-| People | `Avatar` (photo or initials on a stable tone) |
+| People | `Avatar` (photo or 1–2 initials on a stable tone), `LetterAvatar` (one letter upper-cased with `vi` locale, `?` when empty, neutral fill) |
 | Nothing to show yet | `EmptyState` (icon, one line, action) |
 | Related buttons as one control | `ButtonGroup` (‹ Hôm nay ›, zoom, view mode: G3); a main action with variants → `SplitButton` |
 | Pressed state / icon option sets | `Toggle` (one, `aria-pressed`); `ToggleGroup` (`type` single = radio group, multiple = toolbar). Text filters stay `Pills` |
@@ -1409,14 +1417,17 @@ The full inventory with props is generated into `components.json` (`npm run buil
   `body` keep their own Tab handling; focus that leaves the dialog anywhere else is sent back.
 - Triggers keep their own props: `Popover`, `HoverCard`, `Tooltip` and `Menu` add theirs to the trigger element
   without replacing its `ref` or handlers (the trigger's handler runs first; `preventDefault()` there skips ours).
-- Boundaries and states (WCAG 1.4.11): an input you type in or tick (text field, select field, combobox, OTP slot,
-  composer, checkbox, radio) draws its edge in `border-control-line` (≥ 3:1); `border-line` is for cards, tables and
-  frames, which need no edge. The chosen segment of a segmented control (`Pills`, `Toggle`, pill `Tabs`, theme / style
-  switcher) uses `SEGMENT_ON`: the tonal fill alone is too faint, its inset ring is what tells which one is on.
-- Focus on an input you type in: today `border-focus` plus a 1px `ring-focus` (2px in all), like `FOCUS_RING`
-  elsewhere. 1.0 (T6, pending): quiet fields, `border-field-line` at rest and `border-field-line-focus` + `bg-field-focus`
-  on focus with no glow ring (below 3:1, accepted by the owner), plus a 2px outline for keyboard focus only
-  (`:focus-visible`).
+- Boundaries and states (WCAG 1.4.11): checkboxes and radios keep `border-control-line` (≥ 3:1). Text-like fields
+  (`Input`, `NumberInput`, `Textarea`, `HintTextarea`, `CustomSelect`, `CustomCombobox`, `MultiCombobox`, `DatePicker`,
+  `SearchInput`, `SearchPill`, `Command`, `InputGroup`, `InputOTP`) use the 1.0 quiet field style (`bg-field`, 1px
+  `border-field-line`, `rounded-control`; on focus `border-field-line-focus` + `bg-field-focus`, no glow ring). Their
+  resting edge is below 3:1 by the owner's choice (C-007), backed by a keyboard-only (`:focus-visible`) 2px
+  `outline-focus` outline (≥ 3:1 in both themes, shared with buttons). The chosen segment of a segmented control
+  (`Pills`, `Toggle`, pill `Tabs`, theme switcher) uses `SEGMENT_ON`: its inset ring marks which one is on.
+- Dialog autofocus: `Modal` and `Drawer` focus their first field only on devices with a physical keyboard
+  (`(hover: hover) and (pointer: fine)`), never when focus already sits in a field, and opt out with
+  `autoFocusFirstField={false}`; touch phones keep the on-screen keyboard closed. Use `focusFirstField(root)` for the
+  same rule after a tab change.
 - Forced colours (Windows high contrast) drop box-shadow, so `base.css` draws a system-colour outline on
   `:focus-visible`; keep `base.css` imported, and never rely on a shadow alone to show focus.
 - Names: icon-only controls carry `aria-label` (Button's type requires it); form controls get their label from `Field`.
@@ -1436,7 +1447,7 @@ installed. Without Playwright, `--snippet` prints an expression to evaluate with
 | Rule | Fails when |
 |---|---|
 | `contrast` | Text is under 4.5:1 against the surface under it, translucent tints blended in (3:1 from 24px, or bold from 18.66px); disabled controls are exempt |
-| `edge` | A field you type in or pick from (input, textarea, select, combobox) shows no edge, or an edge or fill under 3:1, against the surface around it; a wrapper hugging the field (an input group, a composer) counts as its edge; an open combobox (a command palette) is told apart by its list |
+| `edge` | A field you type in or pick from (input, textarea, select, combobox) shows no edge, or an edge below 3:1 without a quiet edge (≥ 1.2:1, `border-field-line`) backed by a 2px ≥ 3:1 `:focus-visible` outline; a wrapper hugging the field (an input group, a composer) counts as its edge; an open combobox (a command palette) is told apart by its list |
 | `name` | A button, link, field or ARIA control has no name (text, `aria-label`, `aria-labelledby`, a label, `title`), or only a placeholder |
 | `focus-ring` | Focusing a control from the keyboard changes nothing on it, its three wrappers or its siblings (outline, shadow, border, fill, colour), compared with the control unfocused (the focus a dialog's trap already put on it is taken off first; a control that takes focus back on blur is reported as "could not be moved off", a control focus cannot land on while another element keeps it as "could not be moved onto"; the page behind an `aria-modal` dialog is left out) |
 | `target-size` | A control is smaller than 24 × 24 px (its `::before` / `::after` hit area included) and a 24px circle on its centre touches another target or another small target's circle; links in a sentence are exempt |
@@ -2461,7 +2472,7 @@ with `/semi-propose`.
 | T3 #145 | Lint and checks for the 1.0 rules | pending | — |
 | T4 #146 | Buttons and attention marks | merged on `main` (#157), unreleased: ships in 1.0.0 | `1.0.0-buttons` |
 | T5 #147 | Tabs: PillTabs, SegmentedControl, big TextTabs | merged on `main`, unreleased: ships in 1.0.0 | `1.0.0-tabs` |
-| T6 #148 | Fields and forms | pending | — |
+| T6 #148 | Fields and forms | merged on `main`, unreleased: ships in 1.0.0 | — |
 | T7 #149 | Page layouts and lists | pending | — |
 | T8 #150 | StickyContextBar pinning and actions | pending | — |
 | T9 #151 | Motion wiring | pending | — |
@@ -2657,14 +2668,25 @@ accessible `label`).
 `app/components/semi-pending/SegmentedControl.tsx`, and `.text-tabs-strong` in the `TODO(semi-pending)` tail of
 `app/globals.css`.
 
-## T6: fields and forms (pending, #148)
+## T6: fields and forms (merged, ships in 1.0.0)
 
-**Target.** Quiet fields (`field` fill, 1px `field-line`, on focus `field-line-focus` + `field-focus`, no glow; a 2px
-outline for keyboard focus only), overline section labels in forms, `MultiCombobox`, `OptionCards`, `LetterAvatar`, an
-auto-growing reply box with a keyboard-resizable edge, dialog autofocus only with a physical keyboard.
-**Replaces:** `app/components/semi-pending/MultiCombobox.tsx`, `LetterAvatar.tsx`, `autofocus.ts`; `ProviderCards` (in
-`SettingsView.tsx`) → `OptionCards`; the reply-box drag → the Textarea option; the `.border-control-line` override in
-the globals tail. **Until it ships:** keep them.
+**What changed** (#148). Every text-like field (`Input`, `NumberInput`, `Textarea`, `HintTextarea`, `CustomSelect`,
+`CustomCombobox`, `MultiCombobox`, `DatePicker`, `SearchInput`, `SearchPill`, `Command`, `InputGroup`, `InputOTP`) moves
+to the quiet 1.0 style (`bg-field`, 1px `border-field-line`, `rounded-control`; on focus `border-field-line-focus` +
+`bg-field-focus`, no glow ring; keyboard-only 2px `outline-focus` outline). `semi a11y` accepts the quiet field edge
+(< 3:1 by owner choice) when the 2px ≥ 3:1 `:focus-visible` outline exists. `text-overline` is allowed for form/detail
+section labels (never a single field's `<label>`) and does not force `display: flex`. New: `MultiCombobox` (searchable
+multi-select with removable chips, IME-safe/diacritic-aware search, option groups), `CustomCombobox` option groups
+(`group`), `OptionCards` (`radiogroup`/`radio`, neutral `item-selected`, 8px gap), `LetterAvatar` (and `Avatar
+initials={1}` / `tone="neutral"`, wired into `AccountMenu`), `Textarea` / `HintTextarea` reply-box `autoGrow` +
+`resizable` top `role="separator"` edge (md+, phones auto-grow only), `HintTextarea` Popover engine (portaled at
+`z-popover`, flips above) + `HintToken.insert` / `showValue` + value truncation, `Modal` / `Drawer` physical-keyboard
+autofocus (`autoFocusFirstField`, opt-out `false`) and `focusFirstField(root)`.
+
+**What the app deletes:** `app/components/semi-pending/MultiCombobox.tsx` → `MultiCombobox`; `LetterAvatar.tsx` →
+`LetterAvatar`; `autofocus.ts` → `Modal` / `Drawer` autofocus + `focusFirstField(root)`; `ProviderCards` → `OptionCards`;
+reply-box drag → `Textarea` / `HintTextarea` `autoGrow` + `resizable`; the `.border-control-line` override in the
+globals tail.
 
 ## T7: page layouts and lists (pending, #149)
 
@@ -2707,12 +2729,12 @@ local code. "Delete when" is the ticket that ships the replacement.
 | `semi-pending/PillTabs.tsx` | `PillTabs` | T5 (merged, in 1.0.0) |
 | `semi-pending/SegmentedControl.tsx` | `SegmentedControl` | T5 (merged, in 1.0.0) |
 | globals tail: `.text-tabs-strong` | big `TextTabs` | T5 (merged, in 1.0.0) |
-| `semi-pending/MultiCombobox.tsx` | `MultiCombobox` | T6 |
-| `semi-pending/LetterAvatar.tsx` | `LetterAvatar` | T6 |
-| `semi-pending/autofocus.ts` | Modal / Drawer autofocus | T6 |
-| `ProviderCards` (`SettingsView.tsx`) | `OptionCards` | T6 |
-| reply-box drag | Textarea resize option | T6 |
-| globals tail: `.border-control-line` override | quiet fields | T6 |
+| `semi-pending/MultiCombobox.tsx` | `MultiCombobox` | T6 (merged, in 1.0.0) |
+| `semi-pending/LetterAvatar.tsx` | `LetterAvatar` | T6 (merged, in 1.0.0) |
+| `semi-pending/autofocus.ts` | Modal / Drawer autofocus, `focusFirstField` | T6 (merged, in 1.0.0) |
+| `ProviderCards` (`SettingsView.tsx`) | `OptionCards` | T6 (merged, in 1.0.0) |
+| reply-box drag | `Textarea` / `HintTextarea` `autoGrow` + `resizable` | T6 (merged, in 1.0.0) |
+| globals tail: `.border-control-line` override | quiet fields | T6 (merged, in 1.0.0) |
 | globals tail: flush container, `.page-title-row`, `.content-card h1`, `.page-column*`, `.list-*` | T7 page layouts | T7 |
 | `semi-pending/BarActions.tsx`, `semi-pending/stickyBar.ts` | `StickyContextBar` pinning and actions | T8 |
 | globals tail: `.bar-actions`, `[data-page]` scroll rules, `.content-card [role="search"]` | `StickyContextBar` | T8 |
@@ -2910,7 +2932,7 @@ Under `prefers-reduced-motion: reduce` the distances (`--motion-crumb-distance`,
 
 All web UI here follows the **Semi Design System** (`@semi/ui`, repo `https://github.com/hoanghuynh296/semi-nextjs-codebase`). `npx semi-lint` enforces most of this; the full rules are `node_modules/@semi/ui/docs/QUICK_REF.md` (details in `docs/DESIGN_SYSTEM.md`).
 
-**Semi 1.0 in short** (`DESIGN_SYSTEM.md` §0): one look for every brand; neutral grey surfaces; **the brand colour only on the one main button of a page or modal (at most one filled brand button per page or modal), the nav's main action, the active big-tab underline, attention badges / "Mới" tags, or a case the app's owner asks for**, every other action a neutral button; headings 400 / 500, never bold; content text 14px (`text-ui`), shell chrome 12px (`text-chrome`), fields 16px on phones. Parts marked *(Tn, pending)* in `DESIGN_SYSTEM.md` (T3, T6–T9) are 1.0 targets not shipped yet: use what Semi has today for them and never build a local stand-in. Upgrading from 0.x: `docs/MIGRATION-1.0.md`.
+**Semi 1.0 in short** (`DESIGN_SYSTEM.md` §0): one look for every brand; neutral grey surfaces; **the brand colour only on the one main button of a page or modal (at most one filled brand button per page or modal), the nav's main action, the active big-tab underline, attention badges / "Mới" tags, or a case the app's owner asks for**, every other action a neutral button; headings 400 / 500, never bold; content text 14px (`text-ui`), shell chrome 12px (`text-chrome`), fields 16px on phones. Parts marked *(Tn, pending)* in `DESIGN_SYSTEM.md` (T3, T7–T9) are 1.0 targets not shipped yet: use what Semi has today for them and never build a local stand-in. Upgrading from 0.x: `docs/MIGRATION-1.0.md`.
 
 1. **Ask Semi before writing UI.** Find the component for each need with the `semi` MCP tools (`semi_search` → `semi_docs` → `semi_example`; `semi_block` for whole pages; `semi_props` for props) or the terminal (`npx semi search "bảng có sắp xếp"`, `npx semi docs DataTable`, `npx semi example data-table`, `npx semi add dashboard`). They answer from the installed `@semi/ui`. Read *When to use*, *Use something else when* and *Accessibility*, then start from an example.
 2. **Compose, never re-create.** Import from `@semi/ui` and `@semi/ui/styles` directly. No local wrappers (`components/ui.tsx`), no raw `<select>`, `<table>`, `<dialog>`, `type="date"`, `type="number"`, `window.confirm` / `alert`, no inline `<svg>` or glyph icons (`<Icon name>`, mapping in `docs/ICONS.md`). Every AI conversation is `AIChat`; agent work uses `Reasoning`, `ToolCall`, `TaskList`, `Terminal`, `Sources`; an outward-facing, paid or irreversible agent action waits for `ActionConfirmation`. Pages sit in `AppShell` (or `AppHeader` for a one-screen tool) with `PageTitle` (or the title on the toolbar row: `SubpageToolbar title`, or `TextTabs` for 2–4 sub-pages; a detail page opens with `MinimalHeader`); the shell's one brand-filled action is `mainAction`, its bottom row is `tools` (+ `toolsMenu`), the account (with the theme) is the route header's avatar menu (`header.account`; the nav has no account), and phones use its drawer; sub-views of one area go in nav `children` (closed until the parent is chosen, optional grey icon, no colour or count; check `useAppShell().submenuVisible` and add a page picker when false); a list page that people search and filter opens with `StickyContextBar` (`SearchPill`, `FilterChipRow` on `md+` / `PhoneFilterBar` + `FilterPanel` on phones, `ResultLine`), filter state in the URL (`useFilterParams`), chips on one line, never wrapped rows (`filter-chip-wrap`, warning); dialogs are `Modal` / `Drawer` / `confirmDialog`; loading is `Skeleton`, never "Đang tải…" text, and a list, grid or table never swaps its rows for a `Spinner` (`no-spinner-in-list`, warning). `AppShell` renders once in a `layout.tsx` (never from a page), its items route by `href` (not `onSelect` + `router.push`), the session check runs once in that layout (best on the server) with `BootLoader` as the only centred spinner, and content loading is a `loading.tsx` with `PageSkeleton` inside the shell, never a skeleton gate around it. No other UI or icon library (`lucide-react`, `react-icons`, `@radix-ui`, `@mui`, a shadcn `components/ui` copy: `foreign-ui`), no own `Card` / `Badge` / `Tooltip`… (`local-primitive`), no raw `<button>`, `<input>`, `<textarea>`, `<table>` (`raw-control`), no hand-made overlay or spinner (`custom-overlay`, `custom-spinner`); a clickable card is `<Card onClick>` (keyboard-ready), never `<div onClick>` (`click-target`).
@@ -2929,7 +2951,7 @@ All web UI here follows the **Semi Design System** (`@semi/ui`, repo `https://gi
    **Grouped actions** (`DESIGN_SYSTEM.md` §9, G1–G12): one way to start one job (other ways to create the same thing go under the primary in a `SplitButton`, never as extra toolbar buttons); secondary page actions in the ⋯ `Menu` (at most one secondary button visible); `ButtonGroup` only for toggles or steps of one control; a table row has one inline action + ⋯, a card `CardActions` (always with `label`: `card-hover-actions-touch` is a hard error); a round icon button is `<Button iconOnly shape="round">`, never a hand-made `rounded-full` button (`raw-pill-button`, warning); danger last; one filled primary per view; 3+ icon-only buttons in a row go into ⋯. A list record opens in a `DetailOverlay` with `useDetailParam` (`?open=`), not a new page (`detail-overlay-url`, warning); the ⌘K box is one `CommandPalette` in the root layout (pages add items with `useRegisterCommands`).
    **Forms** (`DESIGN_SYSTEM.md` §9b): the action row is `FormActions` (Huỷ ghost, then Lưu / Tạo, destructive on the left, sticky on a page); `useUnsavedGuard(dirty)` so typed work is never lost; `Field kind` for email / phone / number / money / URL / search / password; errors under the field (`useFormValidation`, `FormErrorSummary`), never in a toast; page forms `max-w-2xl` (`npx semi example form-actions`).
 5. **Brand** (when `semi-lint.json` has `"brand"`): ask `semi_brand` (or `npx semi brand voice|color|logo|brief`) before writing UI text or placing colour. Write in the brand's voice, use its fills only as the brand colour rule says, import the logo from the kit; never define colours, fonts or Semi tokens in the app (`brand-override`). Brand changes happen in the brand repo with `/semi-brand`, then `/semi-sync` here.
-6. **Accessibility** (`DESIGN_SYSTEM.md` §18, checked on the page by `npx semi a11y <url>`): icon-only controls have `aria-label`, and a field's name comes from `Field` (a placeholder is not a label); anything clickable is a button or a link (`click-target`); custom controls keep `FOCUS_RING`, never a bare `outline-none` (`focus-hidden`); every text / background pair reaches 4.5:1 in both themes (themed text tokens, never a fixed shade on a tinted surface); a field you type in shows `border-control-line` (3:1); a control drawn smaller than 24px gets `HIT_AREA`; images have `alt`; never `maximum-scale` or `user-scalable=no` in the viewport.
+6. **Accessibility** (`DESIGN_SYSTEM.md` §18, checked on the page by `npx semi a11y <url>`): icon-only controls have `aria-label`, and a field's name comes from `Field` (a placeholder is not a label); anything clickable is a button or a link (`click-target`); custom controls keep `FOCUS_RING` or the 2px `:focus-visible` `outline-focus`, never a bare `outline-none` (`focus-hidden`); every text / background pair reaches 4.5:1 in both themes (themed text tokens, never a fixed shade on a tinted surface); text-like fields use the quiet 1.0 style (`border-field-line`, backed by the 2px `:focus-visible` outline), checkboxes and radios keep `border-control-line` (3:1); a control drawn smaller than 24px gets `HIT_AREA`; images have `alt`; never `maximum-scale` or `user-scalable=no` in the viewport.
 7. **Gaps go upstream, lint is never silenced.** When `@semi/ui` cannot express a need, run `/semi-sync`, re-check the docs, then `/semi-propose`; meanwhile a minimal compliant workaround marked `// TODO(semi#<issue>)`. Never add a `skip`, disable a rule or grow `semi-lint-baseline.json` to get past lint: fix the code. The baseline only shrinks (`semi-lint --update-baseline`); `--accept-new` is for `/semi-sync` and needs the user's OK otherwise, and `semi-lint --ci` fails a pull request whose baseline or skips grew. The one per-file `skip`, with the user's OK and a reason, is for illustrations and data colours (not UI chrome): `"skip": { "literal-colour-value": { "lib/scenePalette.ts": "data colours: 3D scene" } }` (also `inline-svg-path`, `no-literal-palette`, `inline-style-value`). Shared rules change in the Semi repo, never only in this file; app-specific patterns go in `docs/UI_EXTENSIONS.md`.
 8. **Before finishing:** `npx semi-lint` clean (it also checks `.css`), `npx tsc --noEmit`, the page checked in both themes and at phone width, and `npx semi density <url>` and `npx semi a11y <url>` clean when the app runs (no Playwright: evaluate their `--snippet` with a browser tool, `a11y` in each theme). CI runs `semi-lint --ci` and `tsc` (`.github/workflows/semi.yml`). Whole-app check: `/semi-check`; newer Semi or brand kit: `/semi-sync`.
 <!-- semi-design-system:end -->
@@ -3954,22 +3976,23 @@ export default function CheckboxRowSelect() {
 
 # Combobox
 
-CustomCombobox: type to filter a long list, then pick one value.
+CustomCombobox: type to filter a long or grouped list (diacritic-aware, IME-safe), then pick one value or keep a new one.
 
 ## When to use
 
-- Long lists the user searches (materials, customers, SKUs).
+- Long or grouped lists the user searches (materials, customers, repositories, SKUs).
 
 ## Use something else when
 
 | Need | Use |
 |---|---|
-| A short fixed list | CustomSelect |
+| A short fixed list without search | CustomSelect |
+| Pick multiple values with removable chips | MultiCombobox |
 
 ## Import
 
 ```tsx
-import { CustomCombobox } from "@semi/ui";
+import { CustomCombobox, type CustomComboboxOption } from "@semi/ui";
 ```
 
 ## Examples
@@ -4002,6 +4025,36 @@ export default function ComboboxBasic() {
 }
 ```
 
+### Grouped options
+
+Pass group on consecutive options; headings stay only while one of their options matches.
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { CustomCombobox, Field, type CustomComboboxOption } from "@semi/ui";
+
+const REPOS: CustomComboboxOption[] = [
+  { value: "semi-nextjs-codebase", label: "semi-nextjs-codebase", group: "Nền tảng" },
+  { value: "semi-brand", label: "semi-brand", group: "Nền tảng" },
+  { value: "sales-hub", label: "sales-hub", group: "Ứng dụng" },
+  { value: "data-hub", label: "data-hub", group: "Ứng dụng" },
+  { value: "feedback-hub", label: "feedback-hub", group: "Ứng dụng" },
+];
+
+export default function ComboboxGroups() {
+  const [repo, setRepo] = useState("");
+  return (
+    <div className="max-w-md">
+      <Field label="Kho mã nguồn">
+        <CustomCombobox value={repo} onChange={setRepo} placeholder="Tìm repo…" options={REPOS} />
+      </Field>
+    </div>
+  );
+}
+```
+
 ## API
 
 ### CustomCombobox
@@ -4010,7 +4063,7 @@ export default function ComboboxBasic() {
 |---|---|---|---|
 | `value` * | `string` |  |  |
 | `onChange` * | `(val: string) => void` |  |  |
-| `options` * | `(string \| Option)[]` |  |  |
+| `options` * | `(string \| CustomComboboxOption)[]` |  |  |
 | `placeholder` | `string` |  |  |
 | `required` | `boolean` | `false` |  |
 | `id` | `string` |  |  |
@@ -4021,7 +4074,8 @@ export default function ComboboxBasic() {
 
 ## Accessibility
 
-- ARIA combobox: arrows move through matches, Enter picks, Escape clears / closes; works inside Field.
+- ARIA combobox: arrows move through matching enabled options (skipping group headings), Enter picks, Escape closes; works inside Field.
+- Option groups use role="group" + aria-labelledby so headings are announced and not selectable; a heading disappears when none of its options match.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/combobox/ and the types in src/ -->
 
@@ -4296,6 +4350,46 @@ export default function FieldTextarea() {
 }
 ```
 
+### Overline section labels and reply box
+
+Use text-overline text-muted for form section labels (never for a single field), and Textarea resizable for an auto-growing reply box.
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Field, Input, Textarea } from "@semi/ui";
+
+export default function FieldSections() {
+  const [model, setModel] = useState("claude-sonnet");
+  const [prompt, setPrompt] = useState("");
+  return (
+    <div className="max-w-lg space-y-6">
+      <div className="space-y-3">
+        <div className="text-overline text-muted">Mô hình</div>
+        <Field label="Tên mô hình">
+          <Input value={model} onChange={(e) => setModel(e.target.value)} />
+        </Field>
+      </div>
+      <div className="space-y-3">
+        <div className="text-overline text-muted">Lời nhắc</div>
+        <div className="h-64 flex flex-col justify-end rounded-card border border-line bg-panel p-card">
+          <Field label="Nội dung trả lời">
+            <Textarea
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              placeholder="Gõ nhiều dòng để tự giãn, kéo mép trên (từ md) để đổi chiều cao…"
+              autoGrow
+              resizable
+            />
+          </Field>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
 ## API
 
 ### Field
@@ -4322,11 +4416,14 @@ Text input on the field surface (FIELD_INPUT). For numbers use NumberInput, for 
 
 ### Textarea
 
-Multi-line text on the field surface (FIELD_TEXTAREA).
+Multi-line text on the field surface (FIELD_TEXTAREA), with optional reply-box auto-grow and top resize edge.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `ref` | `React.Ref<HTMLTextAreaElement>` |  |  |
+| `autoGrow` | `boolean` | `false` | Grow with typed text from `rows` (default 3) up to 50% of its container, then scroll inside. |
+| `resizable` | `boolean` | `false` | From `md`: adds a top resize edge (`role="separator"`, drag / ArrowUp / ArrowDown ±24px / double-click reset, up to 80% of container). Phones: auto-grow only. |
+| `containerRef` | `RefObject<HTMLElement \| null>` |  | Optional bounding container for 50% / 80% height caps (auto-detected when omitted). |
 
 ## Accessibility
 
@@ -5160,7 +5257,7 @@ import { HintTextarea, type HintToken, type HintTrigger } from "@semi/ui";
 
 ### Mentions and templates
 
-Type @ or / at the start of a word.
+Type @ or / at the start of a word. The suggestion list portals at z-popover and flips above when there is no room below.
 
 ```tsx
 import { useState } from "react";
@@ -5193,6 +5290,51 @@ export default function HintTextareaBasic() {
             ],
           },
         ]}
+      />
+    </div>
+  );
+}
+```
+
+### Plain-text snippets and reply box
+
+value (or insert) replaces the trigger word with a token (@s1) or plain text (a snippet); resizable auto-grows from 3 rows to 50% and adds a top resize edge from md.
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { HintTextarea, type HintToken } from "@semi/ui";
+
+const SNIPPETS: HintToken[] = [
+  {
+    value: "/vat",
+    insert: "Giá chưa gồm VAT 8%, giao tại kho Bình Dương.",
+    label: "Giá chưa gồm VAT",
+    hint: "Điều khoản thuế và giao hàng tiêu chuẩn",
+    icon: "fileText",
+  },
+  {
+    value: "/mau",
+    insert: "Bên em xin nhận 1 kg mẫu kiểm tra chất lượng trước khi chốt đơn.",
+    label: "Xin mẫu kiểm tra",
+    hint: "Mẫu 1 kg trước khi đặt lô chính",
+    icon: "fileText",
+  },
+];
+
+export default function HintTextareaSnippets() {
+  const [reply, setReply] = useState("");
+  return (
+    <div className="max-w-lg h-72 flex flex-col justify-end border border-line rounded-card p-card bg-panel">
+      <HintTextarea
+        label="Trả lời nhà cung cấp"
+        placeholder="Nhập trả lời… gõ / để chèn ghi chú nhanh"
+        value={reply}
+        onChange={setReply}
+        autoGrow
+        resizable
+        triggers={[{ char: "/", hint: "để chèn ghi chú thường dùng", items: SNIPPETS }]}
       />
     </div>
   );
@@ -5243,7 +5385,10 @@ export default function HintTextareaField() {
 | `triggers` * | `HintTrigger[]` |  | One per trigger character, each with its suggestions. |
 | `label` | `string` |  | Accessible name when there is no surrounding `Field` label. |
 | `placeholder` | `string` |  |  |
-| `rows` | `number` | `4` |  |
+| `rows` | `number` |  | Visible row count (defaults to 3 when `autoGrow` / `resizable` is set, else 4). |
+| `autoGrow` | `boolean` | `false` | Grow with typed text from `rows` (default 3) up to 50% of its container, then scroll inside. |
+| `resizable` | `boolean` | `false` | From `md`: adds a top resize edge (`role="separator"`, drag / ArrowUp / ArrowDown ±24px / double-click reset, up to 80% of container). Phones: auto-grow only. |
+| `containerRef` | `RefObject<HTMLElement \| null>` |  | Optional bounding container for 50% / 80% height caps (auto-detected when omitted). |
 | `disabled` | `boolean` | `false` |  |
 | `id` | `string` |  | Set by the surrounding Field when omitted. |
 | `className` | `string` |  |  |
@@ -5255,7 +5400,9 @@ export default function HintTextareaField() {
 
 ## Notes
 
-- Matching ignores case and Vietnamese marks (“tay nguyen” finds “Tây Nguyên”); at most six suggestions show.
+- `value` (or `insert` when the inserted text differs from the short key) replaces the trigger word: use it for a token (`@s1`) or plain text (a snippet or canned reply). `showValue` defaults to `false` when `insert` is set, and long values truncate so the label stays readable.
+- The suggestion list uses the Popover engine (`useAnchoredPosition` + portal at `z-popover`), so it flips above near the bottom and is never clipped by a scrolling pane or modal.
+- Matching ignores case and Vietnamese marks (“tay nguyen” finds “Tây Nguyên”); at most six suggestions show. Telex IME composition (`isComposing`, `keyCode` 229) is verified across Chromium, WebKit and Firefox.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/hint-textarea/ and the types in src/ -->
 
@@ -5416,6 +5563,120 @@ export default function InputOTPBasic() {
 
 ---
 
+<!-- docs/components/multi-combobox.md -->
+
+# Multi combobox
+
+Searchable multi-select: chosen values show as removable chips, an add button (default “Thêm” / “Add”) opens a portaled popover with a quiet search field and a checkbox list. Supports option groups (`group`), diacritic-aware search and Vietnamese Telex IME.
+
+## When to use
+
+- Picking several values from a long or grouped list in a form (supplied goods, tags, assignees, repositories).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Pick one value with search | CustomCombobox |
+| Pick one value from a short fixed list | CustomSelect |
+| Filter a list page in a toolbar | FilterChipRow |
+
+## Import
+
+```tsx
+import { MultiCombobox, type MultiComboboxOption } from "@semi/ui";
+```
+
+## Examples
+
+### Chips and searchable popover
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Field, MultiCombobox } from "@semi/ui";
+
+const GOODS = [
+  { value: "tieu-den", label: "Hạt tiêu đen Đắk Lắk" },
+  { value: "que-yen-bai", label: "Quế thanh Yên Bái" },
+  { value: "hoa-hoi", label: "Hoa hồi Lạng Sơn" },
+  { value: "ca-phe-robusta", label: "Cà phê Robusta Gia Lai" },
+  { value: "dieu-binh-phuoc", label: "Hạt điều Bình Phước" },
+];
+
+export default function MultiComboboxBasic() {
+  const [selected, setSelected] = useState<string[]>(["tieu-den", "que-yen-bai"]);
+  return (
+    <div className="max-w-lg">
+      <Field label="Mặt hàng cung ứng">
+        <MultiCombobox label="Mặt hàng cung ứng" value={selected} onChange={setSelected} options={GOODS} />
+      </Field>
+    </div>
+  );
+}
+```
+
+### Grouped options
+
+Consecutive options with the same group share a heading; headings stay only while at least one option matches and are skipped by arrow keys.
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Field, MultiCombobox, type MultiComboboxOption } from "@semi/ui";
+
+const OPTIONS: MultiComboboxOption[] = [
+  { value: "tieu-den", label: "Hạt tiêu đen", group: "Gia vị Tây Nguyên" },
+  { value: "tieu-trang", label: "Hạt tiêu trắng", group: "Gia vị Tây Nguyên" },
+  { value: "que-yen-bai", label: "Quế thanh Yên Bái", group: "Gia vị miền Bắc" },
+  { value: "hoa-hoi", label: "Hoa hồi Lạng Sơn", group: "Gia vị miền Bắc" },
+  { value: "ca-phe", label: "Cà phê Robusta", group: "Nông sản khác" },
+];
+
+export default function MultiComboboxGroups() {
+  const [selected, setSelected] = useState<string[]>(["tieu-den"]);
+  return (
+    <div className="max-w-lg">
+      <Field label="Danh mục sản phẩm">
+        <MultiCombobox label="Danh mục sản phẩm" value={selected} onChange={setSelected} options={OPTIONS} />
+      </Field>
+    </div>
+  );
+}
+```
+
+## API
+
+### MultiCombobox
+
+Searchable multi-select with removable chips and a portaled search + checkbox popover.
+Supports option groups (`group`), diacritic-aware search and Vietnamese Telex IME composition.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `value` * | `string[]` |  | Selected option values (controlled). |
+| `onChange` * | `(next: string[]) => void` |  |  |
+| `options` * | `MultiComboboxOption[]` |  |  |
+| `label` | `string` |  | Accessible name of the field ("Mặt hàng cung ứng") when not inside a `Field`. |
+| `addLabel` | `string` |  | Label on the button that opens the picker (defaults to "Thêm" / "Add"). |
+| `searchPlaceholder` | `string` |  | Placeholder inside the popover's search input. |
+| `empty` | `React.ReactNode` |  | Shown when nothing matches the search query. |
+| `disabled` | `boolean` | `false` |  |
+| `id` | `string` |  |  |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- Each removable chip has a remove button with an accessible name (“Bỏ chọn <label>” / “Remove <label>”).
+- Inside the popover: the search input is a combobox owning a multi-select listbox (↑/↓ skip group headings, Enter / Space toggle, Escape closes and returns focus to the add button; IME composition keys are ignored).
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/multi-combobox/ and the types in src/ -->
+
+
+---
+
 <!-- docs/components/number-input.md -->
 
 # Number input
@@ -5486,6 +5747,123 @@ export default function NumberInputBasic() {
 - inputMode="decimal" or numeric; the keypad is a dialog with focus trap and Escape.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/number-input/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/option-cards.md -->
+
+# Option cards
+
+Selectable cards with radio-group semantics (arrow keys, single tab stop): icon, name, optional description, neutral selected state (`bg-item-selected` + `border-outline-line` + `text-strong`, no brand tint) and 8px grid gap.
+
+## When to use
+
+- Picking one visual option from 2–6 choices (an AI provider, a shipping method, a plan) where a card with an icon or short description reads faster than a radio list.
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| Compact inline radio list without cards | RadioGroup |
+| Pick one from a long or searchable list | CustomSelect or CustomCombobox |
+| Pick multiple values with search and chips | MultiCombobox |
+
+## Import
+
+```tsx
+import { OptionCards, type OptionCardItem } from "@semi/ui";
+```
+
+## Examples
+
+### Provider picker
+
+Overline section label above a 2-column grid of option cards.
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { OptionCards } from "@semi/ui";
+
+export default function OptionCardsBasic() {
+  const [provider, setProvider] = useState("openai");
+  return (
+    <div className="space-y-3 max-w-xl">
+      <div className="text-overline text-muted">Nhà cung cấp AI</div>
+      <OptionCards
+        label="Nhà cung cấp AI"
+        value={provider}
+        onChange={setProvider}
+        options={[
+          { value: "openai", label: "OpenAI", icon: "sparkles" },
+          { value: "anthropic", label: "Anthropic", icon: "cpu" },
+          { value: "google", label: "Google Gemini", icon: "zap" },
+          { value: "local", label: "Máy chủ nội bộ", icon: "server" },
+        ]}
+      />
+    </div>
+  );
+}
+```
+
+### With descriptions
+
+Each card can carry a short muted description.
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Field, OptionCards } from "@semi/ui";
+
+export default function OptionCardsDescriptions() {
+  const [delivery, setDelivery] = useState("warehouse");
+  return (
+    <div className="max-w-xl">
+      <Field label="Phương thức giao hàng">
+        <OptionCards
+          value={delivery}
+          onChange={setDelivery}
+          options={[
+            { value: "warehouse", label: "Giao tại kho", description: "Nhận hàng trực tiếp tại kho Bình Dương.", icon: "truck" },
+            { value: "port", label: "FOB cảng Hải Phòng", description: "Nhà cung cấp chịu chi phí đến khi hàng lên tàu.", icon: "globe" },
+            { value: "express", label: "Chuyển phát nhanh", description: "Chỉ áp dụng cho mẫu dưới 5 kg.", icon: "zap" },
+          ]}
+        />
+      </Field>
+    </div>
+  );
+}
+```
+
+## API
+
+### OptionCards
+
+Selectable option cards with radio-group semantics: icon, name, optional description, 8px grid gap, neutral selected
+fill (`bg-item-selected`, `border-outline-line`, `text-strong`, no brand tint). Arrow keys move selection and focus;
+the group is one tab stop.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `value` * | `T` |  |  |
+| `onChange` * | `(value: T) => void` |  |  |
+| `options` * | `OptionCardItem<T>[]` |  |  |
+| `label` | `string` |  | Accessible name of the group when not inside a `Field` or named by `aria-labelledby`. |
+| `columns` | `1 \| 2 \| 3 \| 4` | `2` | Column count from `sm` up (stacks to 1 column on phones for readability at 375px). |
+| `disabled` | `boolean` | `false` |  |
+| `className` | `string` |  |  |
+| `aria-label` | `string` |  |  |
+| `aria-labelledby` | `string` |  |  |
+
+## Accessibility
+
+- role="radiogroup" with role="radio" and aria-checked; roving tabindex gives the whole group one tab stop.
+- Arrow keys (←/→/↑/↓) and Home/End move both selection and focus, wrapping around and skipping disabled cards.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/option-cards/ and the types in src/ -->
 
 
 ---
@@ -5764,8 +6142,9 @@ CustomSelect: pick one value from a list, in a field, in a toolbar, inline in a 
 
 | Need | Use |
 |---|---|
-| A long list the user types into | CustomCombobox |
-| 2–5 visible options | Pills or RadioGroup |
+| A long or grouped list that needs search | CustomCombobox |
+| Pick multiple values with search and removable chips | MultiCombobox |
+| 2–5 visible options | Pills, RadioGroup or OptionCards |
 
 ## Import
 
@@ -6964,12 +7343,14 @@ export default function DrawerSides() {
 | `title` * | `React.ReactNode` |  |  |
 | `side` | `'left' \| 'right' \| 'bottom' \| 'top'` | `"right"` | right (default) / left: side sheet; bottom: phone-style sheet; top: a sheet from the top (announcements, search). |
 | `footer` | `React.ReactNode` |  | Actions pinned to the bottom (MODAL_FOOT). |
+| `autoFocusFirstField` | `boolean` | `true` | Focus the first text-like field when opening on devices with a physical keyboard (`(hover: hover) and (pointer: fine)`). Touch phones keep the keyboard closed. |
 | `className` | `string` |  | Width override for side drawers (e.g. "sm:max-w-lg"). |
 | `children` * | `React.ReactNode` |  |  |
 
 ## Accessibility
 
 - A modal dialog: focus trap, Escape, focus returns to the opener; the title labels it.
+- Autofocuses the first field on devices with a physical keyboard ((hover: hover) and (pointer: fine)) unless autoFocusFirstField={false}; touch phones keep the on-screen keyboard closed.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/drawer/ and the types in src/ -->
 
@@ -7419,11 +7800,13 @@ export default function ModalLayers() {
 | `footer` | `React.ReactNode` |  | Action buttons rendered inside MODAL_FOOT (use MODAL_BTN_PRIMARY / MODAL_BTN_SUBTLE / MODAL_BTN_DANGER or <Button size="modal">). |
 | `maxWidth` | `string` | `"max-w-lg"` | Width class on >= sm screens (e.g. "max-w-md", "max-w-lg", "max-w-2xl"). |
 | `closeOnBackdrop` | `boolean` | `true` | Close when the backdrop is clicked (turn off for forms that would lose input). |
+| `autoFocusFirstField` | `boolean` | `true` | Focus the first text-like field when opening on devices with a physical keyboard (`(hover: hover) and (pointer: fine)`). Touch phones keep the keyboard closed. |
 | `children` * | `React.ReactNode` |  |  |
 
 ## Accessibility
 
 - role="dialog" + aria-modal, labelled by the title; Escape and the close button close it; focus trap and focus return built in; page scroll is locked.
+- Autofocuses the first field on devices with a physical keyboard ((hover: hover) and (pointer: fine)) unless autoFocusFirstField={false}; touch phones keep the on-screen keyboard closed.
 - Layers inside it (CustomSelect, Popover, Menu, DatePicker, Tooltip) handle Escape first: Escape closes the open layer, a second Escape closes the Modal. Tab in a portaled layer stays with that layer; focus that leaves the Modal comes back.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/modal/ and the types in src/ -->
@@ -10480,7 +10863,7 @@ Back + tool name (+ one meta line) at the top of the workspace panel; `tabs` (a 
 | `onBack` | `() => void` |  | Back without a URL (closes the tool); ignored when `backHref` is set. |
 | `backLabel` | `string` |  | Accessible name of the back button: where it goes ("Về Mua hàng"). Default "Quay lại". |
 | `tabs` | `React.ReactNode` |  | Segmented tabs of the tool's parts, full width above the title (`<ToggleGroup className="w-full" …/>`). |
-| `headingLevel` | `2 \| 1` | `1` | 1 (default): the tool name is the page title. 2 when the page already has an h1. |
+| `headingLevel` | `1 \| 2` | `1` | 1 (default): the tool name is the page title. 2 when the page already has an h1. |
 
 ### WorkspaceSection
 
@@ -10659,18 +11042,19 @@ export default function AspectRatioBasic() {
 
 <!-- docs/components/avatar.md -->
 
-# Avatar
+# Avatar & LetterAvatar
 
-A person or team: their image, or initials on a tone picked from the name.
+A person or team: their image, two initials on a stable tone (`Avatar`), or one upper-cased letter (`vi` locale, "?" when empty) on a neutral fill (`LetterAvatar`, or `Avatar initials={1}`).
 
 ## When to use
 
-- Owners, assignees, customers in rows and cards.
+- Owners, assignees, customers in rows and cards (`Avatar`).
+- Neutral one-letter account or sender marks without a photo (`LetterAvatar`, used by the route header's account menu).
 
 ## Import
 
 ```tsx
-import { Avatar } from "@semi/ui";
+import { Avatar, LetterAvatar } from "@semi/ui";
 ```
 
 ## Examples
@@ -10691,6 +11075,25 @@ export default function AvatarSizes() {
 }
 ```
 
+### One-letter neutral avatar
+
+LetterAvatar draws the first letter upper-cased with the vi locale (Đ, Á, or ? when empty) on a neutral fill.
+
+```tsx
+import { LetterAvatar } from "@semi/ui";
+
+export default function AvatarLetter() {
+  return (
+    <div className="flex items-center gap-3">
+      <LetterAvatar name="Đặng Minh Anh" size="lg" />
+      <LetterAvatar name="Hoàng Huỳnh" />
+      <LetterAvatar name="ánh dương" size="sm" />
+      <LetterAvatar name="" size="sm" />
+    </div>
+  );
+}
+```
+
 ## API
 
 ### Avatar
@@ -10702,11 +11105,24 @@ Person or team mark: photo, else initials on a tone picked from the name (stable
 | `name` * | `string` |  |  |
 | `src` | `string` |  |  |
 | `size` | `'sm' \| 'md' \| 'lg'` | `"md"` |  |
+| `initials` | `1 \| 2` | `2` | Number of initials to draw: `2` (default) uses the last two words; `1` uses the first letter (`vi` locale, "?" when empty). |
+| `tone` | `'auto' \| 'neutral'` | `"auto"` | `auto` picks a stable category tone from the name; `neutral` uses the neutral raised fill (as in LetterAvatar). |
+| `className` | `string` |  |  |
+
+### LetterAvatar
+
+One-letter neutral avatar: the name's first letter upper-cased with the `vi` locale ("?" when empty) on a neutral fill; accessible name = the full name.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `name` * | `string` |  |  |
+| `src` | `string` |  |  |
+| `size` | `'sm' \| 'md' \| 'lg'` | `"md"` |  |
 | `className` | `string` |  |  |
 
 ## Accessibility
 
-- The name is the accessible label; decorative next to a visible name.
+- The full name is the accessible label (`role="img"` + `aria-label`); mark `aria-hidden` when placed next to the same visible name.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/avatar/ and the types in src/ -->
 
@@ -10824,7 +11240,7 @@ A count in the brand colour (text-badge, 700), "99+" cap. A plain count that is 
 |---|---|---|---|
 | `count` * | `number` |  | The count. 0 or less renders nothing. |
 | `max` | `number` | `99` | Above it the badge shows `max+` (99+). |
-| `tone` | `'attention' \| 'neutral'` | `"attention"` | `attention` (default): the brand fill, for something that waits for the user (unread, to approve). `neutral`: a plain count that is not an alert. |
+| `tone` | `'neutral' \| 'attention'` | `"attention"` | `attention` (default): the brand fill, for something that waits for the user (unread, to approve). `neutral`: a plain count that is not an alert. |
 | `corner` | `boolean` | `false` | Pinned to the top-right corner of a `relative` parent (an icon button). Button's `badge` prop uses it. |
 
 ### NewTag
@@ -11019,7 +11435,7 @@ export default function CarouselProducts() {
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `label` * | `string` |  | Accessible name of the carousel ("Ảnh sản phẩm"). |
-| `perView` | `2 \| 1 \| 3 \| 4` | `1` | Slides visible at once from sm up (phones always show one and a peek of the next). |
+| `perView` | `1 \| 2 \| 3 \| 4` | `1` | Slides visible at once from sm up (phones always show one and a peek of the next). |
 | `className` | `string` |  |  |
 | `children` * | `React.ReactNode` |  | One child per slide. |
 
@@ -12704,7 +13120,7 @@ data already loaded on screen and show this in place of the failed part only (§
 | `retryLabel` | `string` |  |  |
 | `action` | `React.ReactNode` |  | Extra action beside the retry (a link home, "Báo lỗi"). |
 | `icon` | `IconName` | `"alert"` |  |
-| `headingLevel` | `2 \| 1 \| 3` |  | Heading level of the title: 2 inside a page (default), 1 when this is the whole page (a route `error.tsx`). |
+| `headingLevel` | `1 \| 2 \| 3` |  | Heading level of the title: 2 inside a page (default), 1 when this is the whole page (a route `error.tsx`). |
 | `className` | `string` |  |  |
 
 ### NotFound
@@ -12717,7 +13133,7 @@ A wrong or removed URL (route `not-found.tsx`, `notFound()`): one sentence and a
 | `message` | `React.ReactNode` |  |  |
 | `homeHref` | `string` | `"/"` | Where "Về trang chủ" goes. |
 | `homeLabel` | `string` |  |  |
-| `headingLevel` | `2 \| 1 \| 3` | `1` | Heading level of the title: 1 (default, a not-found page is the whole page) or 2 inside a page. |
+| `headingLevel` | `1 \| 2 \| 3` | `1` | Heading level of the title: 1 (default, a not-found page is the whole page) or 2 inside a page. |
 | `className` | `string` |  |  |
 
 ### Forbidden
@@ -12730,7 +13146,7 @@ Signed in but not allowed (a 403, or a page the role cannot open): say so and li
 | `message` | `React.ReactNode` |  |  |
 | `homeHref` | `string` | `"/"` |  |
 | `homeLabel` | `string` |  |  |
-| `headingLevel` | `2 \| 1 \| 3` | `1` | Heading level of the title: 1 (default) or 2 inside a page. |
+| `headingLevel` | `1 \| 2 \| 3` | `1` | Heading level of the title: 1 (default) or 2 inside a page. |
 | `action` | `React.ReactNode` |  | Extra action beside the link home (a mailto to the admin, "Đổi tài khoản"). |
 | `className` | `string` |  |  |
 
@@ -12865,7 +13281,7 @@ export default function GuidedSteps() {
 | `action` | `React.ReactNode` |  | The one primary action that fills the page (a filled Button). Hide the page's own primary while this shows. |
 | `tutorial` | `{ label: string; href: string; }` |  | Link to the full guide, top right from `sm`. |
 | `templates` | `GuideTemplateGroup[]` |  | Rows of ready starting points under the guide. |
-| `headingLevel` | `2 \| 1 \| 3` | `2` | Level of the title (2 inside a page, default); category headings are one below. |
+| `headingLevel` | `1 \| 2 \| 3` | `2` | Level of the title (2 inside a page, default); category headings are one below. |
 | `className` | `string` |  |  |
 
 ## Accessibility

@@ -181,13 +181,13 @@ export const FIELD_LABEL = "block text-ui font-medium text-muted mb-1";
  * never zooms back), the size of the component from `sm` up. Add it to every text-entry control. */
 export const FIELD_TEXT_PHONE = "max-sm:text-input";
 
-/** Form text input: semantic field surface with crisp border-line. */
+/** Form text input: 1.0 quiet field (bg-field, 1px field-line, radius 8; darker fill + field-line-focus on focus, no glow; 2px keyboard-only outline). */
 export const FIELD_INPUT =
-  "w-full h-field bg-field border border-control-line hover:border-control-line-hover rounded-control px-3 text-ui max-sm:text-input text-strong placeholder:text-muted focus:outline-none focus:border-focus focus:ring-1 focus:ring-focus focus:bg-raised transition-colors disabled:opacity-40";
+  "w-full h-field pointer-coarse:max-sm:min-h-11 bg-field border border-field-line rounded-control px-3 text-ui max-sm:text-input text-strong placeholder:text-muted focus:border-field-line-focus focus:bg-field-focus outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus transition-colors disabled:opacity-40";
 
-/** Form textarea: matches FIELD_INPUT contrast and focus border. */
+/** Form textarea: 1.0 quiet field matching FIELD_INPUT. */
 export const FIELD_TEXTAREA =
-  "w-full bg-field border border-control-line hover:border-control-line-hover rounded-control px-3 py-2 text-ui max-sm:text-input text-strong placeholder:text-muted focus:outline-none focus:border-focus focus:ring-1 focus:ring-focus focus:bg-raised transition-colors disabled:opacity-40";
+  "w-full bg-field border border-field-line rounded-control px-3 py-2 text-ui max-sm:text-input text-strong placeholder:text-muted focus:border-field-line-focus focus:bg-field-focus outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus transition-colors disabled:opacity-40";
 
 /** The 1.0 shell frame (used by AppShell, #144): `canvas` with 8px padding and gap from sm, none on phones. */
 export const SHELL_OUTER =

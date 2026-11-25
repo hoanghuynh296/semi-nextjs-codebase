@@ -20,7 +20,8 @@
     }
   ],
   "a11y": [
-    "A modal dialog: focus trap, Escape, focus returns to the opener; the title labels it."
+    "A modal dialog: focus trap, Escape, focus returns to the opener; the title labels it.",
+    "Autofocuses the first field on devices with a physical keyboard ((hover: hover) and (pointer: fine)) unless autoFocusFirstField={false}; touch phones keep the on-screen keyboard closed."
   ],
   "examples": [
     {

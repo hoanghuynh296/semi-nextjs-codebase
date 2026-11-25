@@ -11,12 +11,16 @@
   ],
   "instead": [
     {
-      "need": "A long list the user types into",
+      "need": "A long or grouped list that needs search",
       "use": "CustomCombobox"
     },
     {
+      "need": "Pick multiple values with search and removable chips",
+      "use": "MultiCombobox"
+    },
+    {
       "need": "2–5 visible options",
-      "use": "Pills or RadioGroup"
+      "use": "Pills, RadioGroup or OptionCards"
     }
   ],
   "a11y": [

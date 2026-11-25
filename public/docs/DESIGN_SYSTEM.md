@@ -145,7 +145,7 @@ and light. Full list with values: **`TOKENS.md`**.
 |---|---|---|
 | Surfaces (pure neutral, same for every brand) | `bg-canvas`, `bg-app`, `bg-panel`, `bg-field`, `bg-field-focus`, `bg-raised`, `bg-raised-2`; `bg-card`, `bg-card-field`, `bg-panel-0…4` | frame, content column, nav / card / modal, input fill, segmented track and toolbar buttons, segmented active pill |
 | Text tiers | `text-strong`, `text-body`, `text-muted`, `text-faint` | titles and values; card text; descriptions, inactive items, breadcrumb, placeholders; group labels, kbd hints, "Untitled" |
-| Lines | `border-field-line`, `border-field-line-focus`, `border-outline-line`, `border-line`, `border-divider`, `border-control-line` | input at rest / on focus (T6), outline buttons and a selected card, frames, dividers, checkboxes and radios |
+| Lines | `border-field-line`, `border-field-line-focus`, `border-outline-line`, `border-line`, `border-divider`, `border-control-line` | input at rest / on focus (quiet fields), outline buttons and a selected card, frames, dividers, checkboxes and radios |
 | Neutral states | `bg-item-hover`, `bg-item-selected`, `bg-item-checked`, `bg-subtle-button`, `bg-inverted` + `text-on-inverted`, `ring-focus` / `border-focus` | hover; the open record or active item; checked rows in selection mode; ordinary buttons; checked controls and the inverse button; focus |
 | Brand fills | `bg-primary` / `hover:bg-primary-hover` + `text-on-primary`; `bg-secondary` / `hover:bg-secondary-hover` + `text-on-secondary` | only what the brand colour rule (§0) allows |
 | Status (same for every brand) | `text-*-fg`, `bg-*-bg`, `border-*-border`, `bg-*-solid` + `text-on-solid`; `text-tone-*` | danger, success, warning, info; tile and tag tones |
@@ -662,13 +662,19 @@ it form by form; the four lint rules below are warnings until 1.0.
   `enterKeyHint`, it keeps its own type and keypad); a prop on the control wins (`autoComplete="new-password"`, `type="text"`
   next to an `https://` addon). `number` and `money` stay text inputs with the decimal keypad, never `type="number"`; the text
   holds Vietnamese separators, so parse it with `parseMoney` / `parseNumber` (#69), not `Number()`.
-- **Small counts and hinted text (#106).** A small whole number people nudge (tấn per line, copies, seats) is a `Stepper`
+- **Small counts and hinted text (#106, #148).** A small whole number people nudge (tấn per line, copies, seats) is a `Stepper`
   (− value +, a spinbutton: arrows, Page Up / Down, Home / End; the − + buttons are out of the Tab order); typed numbers stay
-  `NumberInput`. A message or note that can mention a record or insert a template is a `HintTextarea`: a hint row under
-  the text ("Gõ @ để nhắc nhà cung cấp · Gõ / để chèn mẫu") and a listbox of at most six suggestions (the textarea is a `combobox`; keyCode 229 / composing keys are left to the input method) while the word at the
-  caret starts with a trigger (↑ ↓, Enter / Tab inserts, Escape closes only the list; matching ignores Vietnamese marks).
+  `NumberInput`. A message or note that can mention a record or insert a template or plain-text snippet is a `HintTextarea`:
+  a hint row under the text ("Gõ @ để nhắc nhà cung cấp · Gõ / để chèn mẫu") and a suggestion list positioned with the Popover
+  engine (portaled at `z-popover`, flips above near the bottom, never clipped by a pane or modal; `HintToken.insert` overrides
+  what is inserted, `showValue` controls the right-hand key column, long values truncate; keyCode 229 / composing keys are left
+  to the input method). For a reply box, pass `autoGrow` / `resizable` on `Textarea` or `HintTextarea` (grows from 3 rows up to
+  50% of its container, then scrolls; from `md` a top `role="separator"` resizes by drag or ArrowUp / ArrowDown ±24px up to
+  80%, double-click resets to auto; phones auto-grow only).
 - **Layout and validation.** Labels sit above fields, required fields get `*` (`Field required`), the error shows under the
-  field (`Field error`). Validation runs on blur, then on every change (`useFormValidation`: `form.errors`, `onBlur={form.blur("x")}`,
+  field (`Field error`). Group related fields with a `text-overline text-muted` section label (never on a single field's
+  `<label>`). Use `MultiCombobox` for searchable multi-select with removable chips (supports `group`), `OptionCards` for
+  selectable radio-group cards (neutral `item-selected`, 8px grid gap). Validation runs on blur, then on every change (`useFormValidation`: `form.errors`, `onBlur={form.blur("x")}`,
   `form.validate()` on submit). With more than one error `FormErrorSummary` puts an `Alert` above `FormActions`; one error is
   shown only under its field. A problem inside a field is never a toast. Page forms are at most `max-w-2xl` (`FORM_PAGE`).
 - **Lint (warnings, they never fail):** `form-no-guard` (a page form without `useUnsavedGuard`), `action-order` (the primary
@@ -903,7 +909,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `PageActions.tsx` | `PageActions` (a tab's header buttons), `PageActionsSlot` + `PageActionsProvider` |
 | `Skeleton.tsx` | `Skeleton`, `SkeletonCard`, `SkeletonGrid`, `SkeletonRows`, `SkeletonList`, `SkeletonTable`, `SkeletonDetail` (shaped: list rows, table rows, a record), `PageSkeleton` (`shape` cards / list / detail), `Loading`, `BootLoader` (boot / session gate only) (§13b) |
 | `FormActions.tsx`, `useUnsavedGuard.ts`, `formValidation.tsx`, `fieldKinds.ts` | `FormActions` (Huỷ + Lưu / Tạo, sticky on a page, `placement="modal"` footer), `useUnsavedGuard` (reload, tab close, link, back), `useFormValidation` + `FormErrorSummary` (blur, then change; Alert summary), `FIELD_KINDS` / `FieldKind` (§9b) |
-| `Feedback.tsx`, `States.tsx` | `EmptyState` (`variant` first-use / no-results, `onClearFilters`), `ErrorState`, `NotFound`, `Forbidden` (§13, §13c) |
+| `Feedback.tsx`, `States.tsx` | `Alert`, `Progress`, `Avatar` (`initials={1 \| 2}`, `tone="auto \| neutral"`), `LetterAvatar` (one-letter neutral avatar, `vi` locale), `EmptyState` (`variant` first-use / no-results, `onClearFilters`), `ErrorState`, `NotFound`, `Forbidden` (§13, §13c) |
 | `FileDrop.tsx` | `FileDrop`, `DropZone` (compact FileDrop for a workspace panel), `DropZoneProps`, `FileDropItem`, `FileRejection`, `matchesAccept`, `formatFileSize`, `classifyFiles`, `FileRejectReason` (§13b uploads: `FileDrop` + `Progress`) |
 | `confirmDialog.tsx` | `confirmDialog()`, `confirmDelete()`, `ConfirmHost`, `ConfirmOptions`, `ConfirmDeleteOptions` (§14, §14c) |
 | `TaskHost.tsx` | `startTask()`, `TaskHost`, `TaskOptions`, `TaskHandle` (blocking task overlay, §13b) |
@@ -912,10 +918,10 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `Chat.tsx` | `AIChat`, `ChatPanel`, `ChatView`, `ChatList`, `ChatComposer`, `UserMessage`, `AssistantMessage`, `ChatAnswer`, `ChatError`, `ChatThinking`, `ChatIntro`, `ChatSuggestion(s)`, `ChatAvatar`, `ChatCopyButton`, `ChatModelPicker`, `CHAT_ROW`, `CHAT_CHIP`, `CHAT_PICK_CHIP`, `ChatItem` (§14b) |
 | `ExternalLink.tsx` | `ExternalLink` |
 | `Pills.tsx`, `Chip.tsx` | single choice / on-off chips (`Chip`, `CHIP_BASE`, `chipClass`, `chipIconClass`, `TAG`, `TONE_DOT`) |
-| `SearchInput`, `CustomSelect`, `CustomCombobox`, `DatePicker`, `Pagination` | toolbar and form inputs |
+| `SearchInput`, `CustomSelect`, `CustomCombobox`, `MultiCombobox`, `OptionCards`, `DatePicker`, `Pagination` | toolbar and form inputs (`CustomCombobox` & `MultiCombobox`: diacritic-aware, IME-safe search + `group` headings; `OptionCards`: selectable radio-group cards with neutral `item-selected` fill, 8px grid gap) |
 | `NumberInput` (+ `NumPadPopup`, `useCoarsePointer`) | every number field (app numpad on touch screens) |
 | `SidePanel`, `SidePanelToggle`, `RefreshButton` | tool-app left panel, icon-only reload action |
-| Hooks (`Field.tsx`, `a11y.ts`, `floating.ts`) | `useField` (a custom control reads its `Field`: id, `aria-describedby`, invalid), `useDialog` (focus trap + scroll lock + Escape for a modal-like surface; built on `useFocusTrap` and `useScrollLock`), `useBackdropClose` (a backdrop that wraps its panel closes only on a click that starts and ends on it), `useAnchoredPosition` (fixed menu / tooltip next to its trigger, flips above, never clipped), `useCoarsePointer`, `useTheme` |
+| Hooks (`Field.tsx`, `a11y.ts`, `floating.ts`) | `useField` (a custom control reads its `Field`: id, `aria-describedby`, invalid), `useDialog` (focus trap + scroll lock + Escape for a modal-like surface; built on `useFocusTrap` and `useScrollLock`), `focusFirstField(root)` (focuses the first field only on `(hover: hover) and (pointer: fine)` unless focus already sits in a field; `Modal` and `Drawer` run it on open by default, `autoFocusFirstField={false}` opts out), `useBackdropClose` (a backdrop that wraps its panel closes only on a click that starts and ends on it), `useAnchoredPosition` (fixed menu / tooltip next to its trigger, flips above, never clipped), `useCoarsePointer`, `useTheme` |
 | `@semi/ui/styles` → `surfaces.ts` | `SHELL_*`, `CARD`, `CARD_HOVER`, `CARD_BORDERED`, `CARD_BORDERED_HOVER`, `CARD_ACTIVE`, `HERO`, `TILE`, `SECTION_*`, `COUNT_PILL`, `EMPTY`, `ICON_BTN` / `ICON_BTN_DANGER`, `STATUS_PILL`, `STATUS_DOT`, `STICKY_TOOLBAR`, `MODAL_*`, `FIELD_LABEL`, `FIELD_INPUT`, `FIELD_TEXTAREA`, `FORM_PAGE`, `FORM_ACTIONS`, `FORM_ACTIONS_STICKY` |
 | `buttons.ts` | `BTN_PRIMARY`, `BTN_SECONDARY`, `BTN_OUTLINE`, `BTN_DANGER`, `BTN_ICON`, `MODAL_BTN_*` (incl. `MODAL_BTN_OUTLINE`) |
 | `appChrome.ts` | `HEADER_ICON_*`, `headerPrimary`, `HEADER_PILL`, `VIEWPORT_*` |
@@ -937,10 +943,8 @@ with `aria-describedby`, sets `aria-invalid` and announces the error (`role="ale
 </Field>
 ```
 
-Input surface: `FIELD_INPUT` (`bg-field border border-control-line hover:border-control-line-hover rounded-control px-3 h-field
-text-ui … focus:border-focus`); invalid adds `border-danger-fg` (`danger-border` is too faint for an input's edge). Never `focus:outline-none` without a visible focus
-border. Choices: `Checkbox` (with `indeterminate`), `Switch` (settings that apply at once), `RadioGroup` (2–5 exclusive
-options; more → `CustomSelect`). A `Switch` or `Checkbox` without a visible `label` (on a card whose title names it, a
+Input surface: `FIELD_INPUT` (quiet 1.0 field: `bg-field border border-field-line rounded-control px-3 h-field text-ui max-sm:text-input`; on focus `border-field-line-focus bg-field-focus`, no glow ring; on keyboard focus `:focus-visible` a 2px `outline-focus` outline shared with buttons); invalid adds `border-danger-fg` (`danger-border` is too faint for an input's edge). Never `outline-none` without a visible focus indicator. Choices: `Checkbox` (with `indeterminate`), `Switch` (settings that apply at once), `RadioGroup` (2–5 exclusive
+options; more → `CustomSelect`), `OptionCards` (selectable radio-group cards with neutral `item-selected`, 8px gap), `MultiCombobox` (searchable multi-select with removable chips and option groups). A `Switch` or `Checkbox` without a visible `label` (on a card whose title names it, a
 table row) gets `aria-labelledby` (the title's id) or `aria-label`; `label` wins, and in development an unnamed one logs
 a warning. Both get `HIT_AREA`: a 24 × 24 px click area (44 × 44 px on touch screens) from a pseudo-element, so the
 visible size (`size="sm" | "md"`) and the layout stay the same.
@@ -968,7 +972,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Compared rows | `Table` + `THead` / `TBody` / `TR` / `TH` / `TD numeric`; cells stay on one line and the table scrolls sideways on phones (`TD wrap` for a long-text column); entity overviews stay Bento `Card`s |
 | Progress / quota | `Progress` (determinate or indeterminate) |
 | Choose or drop files, per-file upload progress | `FileDrop` (controlled `items`; `onAdd` accepted files, `onReject` (type, size, directory, duplicate, multiple), `onRemove`, `onRetry`; `accept`, `maxSize`; inside `Field`). Never a native `<input type="file">` |
-| People | `Avatar` (photo or initials on a stable tone) |
+| People | `Avatar` (photo or 1–2 initials on a stable tone), `LetterAvatar` (one letter upper-cased with `vi` locale, `?` when empty, neutral fill) |
 | Nothing to show yet | `EmptyState` (icon, one line, action) |
 | Related buttons as one control | `ButtonGroup` (‹ Hôm nay ›, zoom, view mode: G3); a main action with variants → `SplitButton` |
 | Pressed state / icon option sets | `Toggle` (one, `aria-pressed`); `ToggleGroup` (`type` single = radio group, multiple = toolbar). Text filters stay `Pills` |
@@ -1012,14 +1016,17 @@ The full inventory with props is generated into `components.json` (`npm run buil
   `body` keep their own Tab handling; focus that leaves the dialog anywhere else is sent back.
 - Triggers keep their own props: `Popover`, `HoverCard`, `Tooltip` and `Menu` add theirs to the trigger element
   without replacing its `ref` or handlers (the trigger's handler runs first; `preventDefault()` there skips ours).
-- Boundaries and states (WCAG 1.4.11): an input you type in or tick (text field, select field, combobox, OTP slot,
-  composer, checkbox, radio) draws its edge in `border-control-line` (≥ 3:1); `border-line` is for cards, tables and
-  frames, which need no edge. The chosen segment of a segmented control (`Pills`, `Toggle`, pill `Tabs`, theme / style
-  switcher) uses `SEGMENT_ON`: the tonal fill alone is too faint, its inset ring is what tells which one is on.
-- Focus on an input you type in: today `border-focus` plus a 1px `ring-focus` (2px in all), like `FOCUS_RING`
-  elsewhere. 1.0 (T6, pending): quiet fields, `border-field-line` at rest and `border-field-line-focus` + `bg-field-focus`
-  on focus with no glow ring (below 3:1, accepted by the owner), plus a 2px outline for keyboard focus only
-  (`:focus-visible`).
+- Boundaries and states (WCAG 1.4.11): checkboxes and radios keep `border-control-line` (≥ 3:1). Text-like fields
+  (`Input`, `NumberInput`, `Textarea`, `HintTextarea`, `CustomSelect`, `CustomCombobox`, `MultiCombobox`, `DatePicker`,
+  `SearchInput`, `SearchPill`, `Command`, `InputGroup`, `InputOTP`) use the 1.0 quiet field style (`bg-field`, 1px
+  `border-field-line`, `rounded-control`; on focus `border-field-line-focus` + `bg-field-focus`, no glow ring). Their
+  resting edge is below 3:1 by the owner's choice (C-007), backed by a keyboard-only (`:focus-visible`) 2px
+  `outline-focus` outline (≥ 3:1 in both themes, shared with buttons). The chosen segment of a segmented control
+  (`Pills`, `Toggle`, pill `Tabs`, theme switcher) uses `SEGMENT_ON`: its inset ring marks which one is on.
+- Dialog autofocus: `Modal` and `Drawer` focus their first field only on devices with a physical keyboard
+  (`(hover: hover) and (pointer: fine)`), never when focus already sits in a field, and opt out with
+  `autoFocusFirstField={false}`; touch phones keep the on-screen keyboard closed. Use `focusFirstField(root)` for the
+  same rule after a tab change.
 - Forced colours (Windows high contrast) drop box-shadow, so `base.css` draws a system-colour outline on
   `:focus-visible`; keep `base.css` imported, and never rely on a shadow alone to show focus.
 - Names: icon-only controls carry `aria-label` (Button's type requires it); form controls get their label from `Field`.
@@ -1039,7 +1046,7 @@ installed. Without Playwright, `--snippet` prints an expression to evaluate with
 | Rule | Fails when |
 |---|---|
 | `contrast` | Text is under 4.5:1 against the surface under it, translucent tints blended in (3:1 from 24px, or bold from 18.66px); disabled controls are exempt |
-| `edge` | A field you type in or pick from (input, textarea, select, combobox) shows no edge, or an edge or fill under 3:1, against the surface around it; a wrapper hugging the field (an input group, a composer) counts as its edge; an open combobox (a command palette) is told apart by its list |
+| `edge` | A field you type in or pick from (input, textarea, select, combobox) shows no edge, or an edge below 3:1 without a quiet edge (≥ 1.2:1, `border-field-line`) backed by a 2px ≥ 3:1 `:focus-visible` outline; a wrapper hugging the field (an input group, a composer) counts as its edge; an open combobox (a command palette) is told apart by its list |
 | `name` | A button, link, field or ARIA control has no name (text, `aria-label`, `aria-labelledby`, a label, `title`), or only a placeholder |
 | `focus-ring` | Focusing a control from the keyboard changes nothing on it, its three wrappers or its siblings (outline, shadow, border, fill, colour), compared with the control unfocused (the focus a dialog's trap already put on it is taken off first; a control that takes focus back on blur is reported as "could not be moved off", a control focus cannot land on while another element keeps it as "could not be moved onto"; the page behind an `aria-modal` dialog is left out) |
 | `target-size` | A control is smaller than 24 × 24 px (its `::before` / `::after` hit area included) and a 24px circle on its centre touches another target or another small target's circle; links in a sentence are exempt |

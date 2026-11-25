@@ -25,6 +25,7 @@ export function Modal({
   footer,
   maxWidth = "max-w-lg",
   closeOnBackdrop = true,
+  autoFocusFirstField = true,
   children,
 }: {
   open: boolean;
@@ -38,12 +39,14 @@ export function Modal({
   maxWidth?: string;
   /** Close when the backdrop is clicked (turn off for forms that would lose input). */
   closeOnBackdrop?: boolean;
+  /** Focus the first text-like field when opening on devices with a physical keyboard (`(hover: hover) and (pointer: fine)`). Touch phones keep the keyboard closed. @default true */
+  autoFocusFirstField?: boolean;
   children: React.ReactNode;
 }) {
   const [mounted, setMounted] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const t = useSemiLocale();
-  const { titleId } = useDialog(panelRef, open && mounted, onClose);
+  const { titleId } = useDialog(panelRef, open && mounted, onClose, { autoFocusFirstField });
   const descId = `${titleId}-desc`;
   const backdrop = useBackdropClose(closeOnBackdrop ? onClose : undefined);
 

@@ -7,10 +7,12 @@
 // Input, Textarea, NumberInput, CustomSelect and CustomCombobox inside a Field pick up its id, aria-describedby,
 // aria-invalid and required automatically; `kind` (email, tel, number, money, url, search, password) also gives Input
 // the right type, phone keyboard, autofill and Enter key.
-import React, { createContext, useContext, useId } from "react";
+import React, { createContext, useContext, useId, useRef } from "react";
 import { Icon, type IconName } from "./Icon";
+import { ensureFocusModality } from "./a11y";
 import { kindAttrs, type FieldKind } from "./fieldKinds";
 import { useSemiLocale } from "./locale";
+import { useReplyResize } from "./useReplyResize";
 import { FIELD_INPUT, FIELD_LABEL, FIELD_TEXTAREA } from "../styles/surfaces";
 import { cn } from "../styles/utils";
 
@@ -92,7 +94,7 @@ export function Field({
   );
 }
 
-const INVALID = "aria-invalid:border-danger-fg aria-invalid:focus:border-danger-fg aria-invalid:focus:ring-danger-fg";
+const INVALID = "aria-invalid:border-danger-fg aria-invalid:focus:border-danger-fg";
 
 type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   ref?: React.Ref<HTMLInputElement>;
@@ -102,6 +104,7 @@ type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
 
 /** Text input on the field surface (FIELD_INPUT). For numbers use NumberInput, for dates DatePicker. */
 export function Input({ ref, icon, className, ...rest }: InputProps) {
+  ensureFocusModality();
   const field = useField();
   const input = (
     <input
@@ -124,19 +127,70 @@ export function Input({ ref, icon, className, ...rest }: InputProps) {
   );
 }
 
-/** Multi-line text on the field surface (FIELD_TEXTAREA). */
-export function Textarea({ ref, className, rows = 3, ...rest }: React.TextareaHTMLAttributes<HTMLTextAreaElement> & { ref?: React.Ref<HTMLTextAreaElement> }) {
+type TextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
+  ref?: React.Ref<HTMLTextAreaElement>;
+  /** Grow with typed text from `rows` (default 3) up to 50% of its container, then scroll inside. */
+  autoGrow?: boolean;
+  /** From `md`: adds a top resize edge (`role="separator"`, drag / ArrowUp / ArrowDown ±24px / double-click reset, up to 80% of container). Phones: auto-grow only. */
+  resizable?: boolean;
+  /** Optional bounding container for 50% / 80% height caps (auto-detected when omitted). */
+  containerRef?: React.RefObject<HTMLElement | null>;
+};
+
+/** Multi-line text on the field surface (FIELD_TEXTAREA), with optional reply-box auto-grow and top resize edge. */
+export function Textarea({ ref, className, rows = 3, autoGrow = false, resizable = false, containerRef, id: idProp, ...rest }: TextareaProps) {
+  ensureFocusModality();
+  const t = useSemiLocale();
   const field = useField();
-  return (
+  const auto = useId();
+  const textareaId = idProp ?? field?.id ?? (resizable ? `textarea-${auto}` : undefined);
+  const ownRef = useRef<HTMLTextAreaElement | null>(null);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const setRefs = (el: HTMLTextAreaElement | null) => {
+    ownRef.current = el;
+    if (typeof ref === "function") ref(el);
+    else if (ref) (ref as React.RefObject<HTMLTextAreaElement | null>).current = el;
+  };
+  const { bounds, separatorHandlers } = useReplyResize({
+    autoGrow,
+    resizable,
+    textareaRef: ownRef,
+    wrapperRef,
+    containerRef,
+    value: rest.value,
+    rows,
+    disabled: rest.disabled,
+  });
+  const ta = (
     <textarea
-      ref={ref}
+      ref={setRefs}
       rows={rows}
-      id={field?.id}
+      id={textareaId}
       aria-describedby={field?.describedBy}
       aria-invalid={field?.invalid || undefined}
       required={field?.required}
       {...rest}
-      className={cn(FIELD_TEXTAREA, INVALID, className)}
+      className={cn(FIELD_TEXTAREA, INVALID, (autoGrow || resizable) && "resize-none", className)}
     />
+  );
+  if (!resizable) return ta;
+  return (
+    <div ref={wrapperRef} className="min-w-0 flex flex-col">
+      <div
+        role="separator"
+        tabIndex={rest.disabled ? -1 : 0}
+        aria-orientation="horizontal"
+        aria-controls={textareaId}
+        aria-label={t.replyResize}
+        aria-valuenow={bounds.now}
+        aria-valuemin={bounds.min}
+        aria-valuemax={bounds.max}
+        {...separatorHandlers}
+        className="group hidden md:flex items-center justify-center h-2.5 cursor-row-resize select-none touch-none rounded-chip outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+      >
+        <span aria-hidden className="w-8 h-1 rounded-full bg-field-line group-hover:bg-field-line-focus transition-colors" />
+      </div>
+      {ta}
+    </div>
   );
 }

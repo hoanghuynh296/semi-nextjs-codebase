@@ -13,7 +13,7 @@ import { chromium } from "./density.mjs";
 /** [id, rule]: the texts printed next to a hit. Keep them in step with DESIGN_SYSTEM.md §18. */
 export const A11Y_RULES = [
   ["contrast", "Text reaches 4.5:1 against what is under it (3:1 from 24px, or bold from 18.66px), in both themes: text-muted / text-faint / text-*-fg on their own surfaces, text-on-primary on bg-primary (WCAG 1.4.3)."],
-  ["edge", "A field you type in or pick from shows its edge at 3:1 against the surface around it: border-control-line, as Semi's fields draw it (WCAG 1.4.11)."],
+  ["edge", "A field you type in or pick from shows its edge against the surface around it: border-control-line (3:1, WCAG 1.4.11), or a quiet border-field-line edge backed by a 2px ≥ 3:1 :focus-visible outline."],
   ["name", "Every control has a name a screen reader can say: a visible text, a Field label, or aria-label on an icon-only control. A placeholder is not a label (WCAG 4.1.2, 1.3.1)."],
   ["focus-ring", "Every control shows where focus is when reached with Tab: FOCUS_RING, or a Semi component that draws it (WCAG 2.4.7)."],
   ["target-size", "Every control you click or tap is at least 24×24px, or keeps 24px from the next one (WCAG 2.5.8); Semi controls are h-control."],
@@ -162,7 +162,11 @@ export function a11yAudit(opts) {
       if (size < 16) hit("field-size", el, `${size}px, needs 16px or more below 640px (iOS zooms the page on focus; max-sm:text-input)`);
     }
 
-  if (on("edge"))
+  if (on("edge")) {
+    const freeze = document.createElement("style");
+    freeze.textContent = "*,*::before,*::after{transition:none!important;animation:none!important}";
+    document.head.appendChild(freeze);
+    const prevActive = document.activeElement;
     for (const el of inScope(FIELD)) {
       if (!shown(el) || tiny(el) || disabled(el) || hidden(el) || getComputedStyle(el).opacity === "0") continue;
       // A combobox whose list is open below it (a command palette) is told apart by that list.
@@ -171,10 +175,12 @@ export function a11yAudit(opts) {
       // The frame that draws the field: the field itself, or a wrapper hugging it (an input group, a composer).
       let best = 1;
       let framed = false;
+      const frames = [];
       for (let f = el, i = 0; f && i < 4; f = f.parentElement, i++) {
         const fr = f.getBoundingClientRect();
         const inset = Math.min(r.left - fr.left, fr.right - r.right, r.top - fr.top, fr.bottom - r.bottom);
         if (f !== el && (inset > 10 || fr.height > r.height + 64)) break;
+        frames.push(f);
         const s = getComputedStyle(f);
         const under = bgOf(f.parentElement);
         const fill = rgba(s.backgroundColor);
@@ -189,8 +195,49 @@ export function a11yAudit(opts) {
         }
         if (best >= 3) break;
       }
-      if (best < 3) hit("edge", el, framed ? `edge ${best.toFixed(2)}:1 against the surface, needs 3:1` : "no visible edge");
+      if (best >= 3) continue;
+      // 1.0 quiet fields (#148): a resting edge below 3:1 (≥ 1.2:1, e.g. border-field-line at 10% contrast colour) is
+      // accepted when keyboard focus (:focus-visible) draws a ≥ 2px outline at ≥ 3:1 contrast on the field or its frame.
+      let quietOk = false;
+      if (best >= 1.2 && el.tabIndex >= 0) {
+        const held = document.activeElement;
+        if (held && held !== document.body && held.blur) held.blur();
+        const cleared = frames.filter((f) => f.hasAttribute("data-pointer-focus"));
+        for (const f of cleared) f.removeAttribute("data-pointer-focus");
+        try {
+          el.focus({ preventScroll: true, focusVisible: true });
+        } catch {}
+        const got = document.activeElement;
+        if (got === el && el.matches(":focus-visible")) {
+          for (const f of frames) {
+            const s = getComputedStyle(f);
+            if (s.outlineStyle === "none" || parseFloat(s.outlineWidth) < 1.9) continue;
+            const oc = rgba(s.outlineColor);
+            const under = bgOf(f.parentElement);
+            if (oc[3] > 0 && ratio(blend(oc, under), under) >= 3) {
+              quietOk = true;
+              break;
+            }
+          }
+          el.blur();
+        } else {
+          const modal = got && got !== document.body && got.closest("[aria-modal=true]");
+          if (modal && !modal.contains(el)) quietOk = true;
+        }
+        for (const f of cleared) f.setAttribute("data-pointer-focus", "");
+      }
+      if (!quietOk) {
+        const msg = !framed
+          ? "no visible edge"
+          : best >= 1.2
+            ? `quiet edge ${best.toFixed(2)}:1 without a 2px ≥ 3:1 :focus-visible outline`
+            : `edge ${best.toFixed(2)}:1 against the surface, needs 3:1`;
+        hit("edge", el, msg);
+      }
     }
+    freeze.remove();
+    if (prevActive && prevActive !== document.body && prevActive.focus) prevActive.focus({ preventScroll: true });
+  }
 
   // ─── Names (4.1.2) ──────────────────────────────────────────────────────────────────────────────────────────────
   const CONTROL = "button, a[href], input:not([type=hidden]), select, textarea, summary, [role=button], [role=link], [role=checkbox], [role=radio], [role=switch], [role=tab], [role=menuitem], [role=menuitemcheckbox], [role=menuitemradio], [role=option], [role=combobox], [role=slider], [role=spinbutton], [role=textbox], [role=searchbox], [role=treeitem]";

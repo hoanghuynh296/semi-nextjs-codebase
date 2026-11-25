@@ -35,7 +35,7 @@ with `/semi-propose`.
 | T3 #145 | Lint and checks for the 1.0 rules | pending | — |
 | T4 #146 | Buttons and attention marks | merged on `main` (#157), unreleased: ships in 1.0.0 | `1.0.0-buttons` |
 | T5 #147 | Tabs: PillTabs, SegmentedControl, big TextTabs | merged on `main`, unreleased: ships in 1.0.0 | `1.0.0-tabs` |
-| T6 #148 | Fields and forms | pending | — |
+| T6 #148 | Fields and forms | merged on `main`, unreleased: ships in 1.0.0 | — |
 | T7 #149 | Page layouts and lists | pending | — |
 | T8 #150 | StickyContextBar pinning and actions | pending | — |
 | T9 #151 | Motion wiring | pending | — |
@@ -231,14 +231,25 @@ accessible `label`).
 `app/components/semi-pending/SegmentedControl.tsx`, and `.text-tabs-strong` in the `TODO(semi-pending)` tail of
 `app/globals.css`.
 
-## T6: fields and forms (pending, #148)
+## T6: fields and forms (merged, ships in 1.0.0)
 
-**Target.** Quiet fields (`field` fill, 1px `field-line`, on focus `field-line-focus` + `field-focus`, no glow; a 2px
-outline for keyboard focus only), overline section labels in forms, `MultiCombobox`, `OptionCards`, `LetterAvatar`, an
-auto-growing reply box with a keyboard-resizable edge, dialog autofocus only with a physical keyboard.
-**Replaces:** `app/components/semi-pending/MultiCombobox.tsx`, `LetterAvatar.tsx`, `autofocus.ts`; `ProviderCards` (in
-`SettingsView.tsx`) → `OptionCards`; the reply-box drag → the Textarea option; the `.border-control-line` override in
-the globals tail. **Until it ships:** keep them.
+**What changed** (#148). Every text-like field (`Input`, `NumberInput`, `Textarea`, `HintTextarea`, `CustomSelect`,
+`CustomCombobox`, `MultiCombobox`, `DatePicker`, `SearchInput`, `SearchPill`, `Command`, `InputGroup`, `InputOTP`) moves
+to the quiet 1.0 style (`bg-field`, 1px `border-field-line`, `rounded-control`; on focus `border-field-line-focus` +
+`bg-field-focus`, no glow ring; keyboard-only 2px `outline-focus` outline). `semi a11y` accepts the quiet field edge
+(< 3:1 by owner choice) when the 2px ≥ 3:1 `:focus-visible` outline exists. `text-overline` is allowed for form/detail
+section labels (never a single field's `<label>`) and does not force `display: flex`. New: `MultiCombobox` (searchable
+multi-select with removable chips, IME-safe/diacritic-aware search, option groups), `CustomCombobox` option groups
+(`group`), `OptionCards` (`radiogroup`/`radio`, neutral `item-selected`, 8px gap), `LetterAvatar` (and `Avatar
+initials={1}` / `tone="neutral"`, wired into `AccountMenu`), `Textarea` / `HintTextarea` reply-box `autoGrow` +
+`resizable` top `role="separator"` edge (md+, phones auto-grow only), `HintTextarea` Popover engine (portaled at
+`z-popover`, flips above) + `HintToken.insert` / `showValue` + value truncation, `Modal` / `Drawer` physical-keyboard
+autofocus (`autoFocusFirstField`, opt-out `false`) and `focusFirstField(root)`.
+
+**What the app deletes:** `app/components/semi-pending/MultiCombobox.tsx` → `MultiCombobox`; `LetterAvatar.tsx` →
+`LetterAvatar`; `autofocus.ts` → `Modal` / `Drawer` autofocus + `focusFirstField(root)`; `ProviderCards` → `OptionCards`;
+reply-box drag → `Textarea` / `HintTextarea` `autoGrow` + `resizable`; the `.border-control-line` override in the
+globals tail.
 
 ## T7: page layouts and lists (pending, #149)
 
@@ -281,12 +292,12 @@ local code. "Delete when" is the ticket that ships the replacement.
 | `semi-pending/PillTabs.tsx` | `PillTabs` | T5 (merged, in 1.0.0) |
 | `semi-pending/SegmentedControl.tsx` | `SegmentedControl` | T5 (merged, in 1.0.0) |
 | globals tail: `.text-tabs-strong` | big `TextTabs` | T5 (merged, in 1.0.0) |
-| `semi-pending/MultiCombobox.tsx` | `MultiCombobox` | T6 |
-| `semi-pending/LetterAvatar.tsx` | `LetterAvatar` | T6 |
-| `semi-pending/autofocus.ts` | Modal / Drawer autofocus | T6 |
-| `ProviderCards` (`SettingsView.tsx`) | `OptionCards` | T6 |
-| reply-box drag | Textarea resize option | T6 |
-| globals tail: `.border-control-line` override | quiet fields | T6 |
+| `semi-pending/MultiCombobox.tsx` | `MultiCombobox` | T6 (merged, in 1.0.0) |
+| `semi-pending/LetterAvatar.tsx` | `LetterAvatar` | T6 (merged, in 1.0.0) |
+| `semi-pending/autofocus.ts` | Modal / Drawer autofocus, `focusFirstField` | T6 (merged, in 1.0.0) |
+| `ProviderCards` (`SettingsView.tsx`) | `OptionCards` | T6 (merged, in 1.0.0) |
+| reply-box drag | `Textarea` / `HintTextarea` `autoGrow` + `resizable` | T6 (merged, in 1.0.0) |
+| globals tail: `.border-control-line` override | quiet fields | T6 (merged, in 1.0.0) |
 | globals tail: flush container, `.page-title-row`, `.content-card h1`, `.page-column*`, `.list-*` | T7 page layouts | T7 |
 | `semi-pending/BarActions.tsx`, `semi-pending/stickyBar.ts` | `StickyContextBar` pinning and actions | T8 |
 | globals tail: `.bar-actions`, `[data-page]` scroll rules, `.content-card [role="search"]` | `StickyContextBar` | T8 |

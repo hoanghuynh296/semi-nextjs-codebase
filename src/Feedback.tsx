@@ -114,22 +114,70 @@ export function Progress({
 const AVATAR_TONES = ["purple", "sky", "teal", "amber", "rose", "indigo", "emerald", "orange"] as const;
 const AVATAR_SIZE = { sm: "w-6 h-6 text-chrome", md: "w-8 h-8 text-chrome", lg: "w-10 h-10 text-ui" } as const;
 
+const firstLetter = (name: string) => {
+  const trimmed = name.trim();
+  if (!trimmed) return "?";
+  const [first] = Array.from(trimmed);
+  return first ? first.toLocaleUpperCase("vi") : "?";
+};
+
 /** Person or team mark: photo, else initials on a tone picked from the name (stable per name). */
-export function Avatar({ name, src, size = "md", className }: { name: string; src?: string; size?: keyof typeof AVATAR_SIZE; className?: string }) {
-  const initials = name.trim().split(/\s+/).slice(-2).map((w) => w[0]?.toUpperCase() ?? "").join("");
+export function Avatar({
+  name,
+  src,
+  size = "md",
+  initials = 2,
+  tone = "auto",
+  className,
+}: {
+  name: string;
+  src?: string;
+  size?: keyof typeof AVATAR_SIZE;
+  /** Number of initials to draw: `2` (default) uses the last two words; `1` uses the first letter (`vi` locale, "?" when empty). */
+  initials?: 1 | 2;
+  /** `auto` picks a stable category tone from the name; `neutral` uses the neutral raised fill (as in LetterAvatar). */
+  tone?: "auto" | "neutral";
+  className?: string;
+}) {
+  const trimmed = name.trim();
+  const text =
+    initials === 1
+      ? firstLetter(trimmed)
+      : trimmed
+          .split(/\s+/)
+          .filter(Boolean)
+          .slice(-2)
+          .map((w) => Array.from(w)[0]?.toLocaleUpperCase("vi") ?? "")
+          .join("") || "?";
   let h = 0;
   for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
-  const tone = AVATAR_TONES[h % AVATAR_TONES.length];
+  const surface = tone === "neutral" ? "bg-raised border-line text-strong" : TONAL_SURFACE[AVATAR_TONES[h % AVATAR_TONES.length]];
   const cls = cn("inline-flex items-center justify-center rounded-full shrink-0 overflow-hidden font-medium select-none border", AVATAR_SIZE[size], className);
+  const label = trimmed || "?";
   if (src) {
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={src} alt={name} className={cn(cls, "object-cover border-line")} />;
+    return <img src={src} alt={label} className={cn(cls, "object-cover border-line")} />;
   }
   return (
-    <span role="img" aria-label={name} className={cn(cls, TONAL_SURFACE[tone])}>
-      {initials}
+    <span role="img" aria-label={label} className={cn(cls, surface)}>
+      {text}
     </span>
   );
+}
+
+/** One-letter neutral avatar: the name's first letter upper-cased with the `vi` locale ("?" when empty) on a neutral fill; accessible name = the full name. */
+export function LetterAvatar({
+  name,
+  src,
+  size = "md",
+  className,
+}: {
+  name: string;
+  src?: string;
+  size?: keyof typeof AVATAR_SIZE;
+  className?: string;
+}) {
+  return <Avatar name={name} src={src} size={size} initials={1} tone="neutral" className={className} />;
 }
 
 /**

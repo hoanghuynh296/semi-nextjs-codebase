@@ -48,10 +48,10 @@ interface CustomSelectProps {
 
 const TRIGGER: Record<NonNullable<CustomSelectProps["variant"]>, string> = {
   toolbar:
-    "h-control px-3 bg-panel border border-line rounded-control text-ui font-medium text-body hover:border-line-hover focus-visible:ring-2 focus-visible:ring-focus",
+    "h-control pointer-coarse:max-sm:min-h-11 px-3 bg-field border border-field-line rounded-control text-ui font-medium text-body hover:text-strong focus:border-field-line-focus focus:bg-field-focus focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus",
   field:
-    "w-full h-field px-3 bg-field border border-control-line rounded-control text-ui text-strong hover:border-control-line-hover focus-visible:border-focus focus-visible:ring-1 focus-visible:ring-focus aria-invalid:border-danger-fg",
-  inline: "w-full h-7 px-0 bg-transparent text-ui font-medium text-body hover:text-strong rounded-chip focus-visible:ring-2 focus-visible:ring-focus",
+    "w-full h-field pointer-coarse:max-sm:min-h-11 px-3 bg-field border border-field-line rounded-control text-ui text-strong focus:border-field-line-focus focus:bg-field-focus focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus aria-invalid:border-danger-fg aria-invalid:focus:border-danger-fg",
+  inline: "w-full h-7 px-0 bg-transparent text-ui font-medium text-body hover:text-strong rounded-chip focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus",
   bare: "",
 };
 
@@ -243,10 +243,10 @@ export function CustomSelect({
                     onPointerEnter={() => setActive(i)}
                     className={`w-full text-left px-3 py-2 rounded-control text-ui transition cursor-pointer flex items-center justify-between gap-3 disabled:opacity-40 disabled:cursor-not-allowed ${
                       isSelected
-                        ? "bg-raised text-strong font-medium"
+                        ? "bg-item-selected text-strong font-medium"
                         : i === active
-                        ? "bg-raised/70 text-strong"
-                        : "text-body hover:bg-raised hover:text-strong"
+                        ? "bg-item-hover text-strong"
+                        : "text-body hover:bg-item-hover hover:text-strong"
                     }`}
                   >
                     <span className="flex items-center gap-1.5 min-w-0">

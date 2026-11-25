@@ -1305,6 +1305,7 @@
         "title",
         "side",
         "footer",
+        "autoFocusFirstField",
         "className",
         "children"
       ],
@@ -1385,6 +1386,22 @@
         "name",
         "src",
         "size",
+        "initials",
+        "tone",
+        "className"
+      ],
+      "doc": "docs/components/avatar.md"
+    },
+    {
+      "name": "LetterAvatar",
+      "kind": "component",
+      "module": "src/Feedback.tsx",
+      "client": true,
+      "summary": "One-letter neutral avatar: the name's first letter upper-cased with the `vi` locale (\"?\" when empty) on a neutral fill; accessible name = the full name.",
+      "props": [
+        "name",
+        "src",
+        "size",
         "className"
       ],
       "doc": "docs/components/avatar.md"
@@ -1442,11 +1459,15 @@
       "kind": "component",
       "module": "src/Field.tsx",
       "client": true,
-      "summary": "Multi-line text on the field surface (FIELD_TEXTAREA).",
+      "summary": "Multi-line text on the field surface (FIELD_TEXTAREA), with optional reply-box auto-grow and top resize edge.",
       "props": [
         "ref",
         "className",
-        "rows"
+        "rows",
+        "autoGrow",
+        "resizable",
+        "containerRef",
+        "id"
       ],
       "doc": "docs/components/field.md"
     },
@@ -1608,7 +1629,7 @@
       "kind": "component",
       "module": "src/HintTextarea.tsx",
       "client": true,
-      "summary": "A text area that says what it can do (#94 L15, docs/DESIGN_SYSTEM.md §9b): a hint row under the text (\"Gõ @ để nhắc nhà cung cấp · Gõ / để chèn mẫu\") and a suggestion list while the word at the caret starts with a trigger.",
+      "summary": "A text area that says what it can do (#94 L15, #148, docs/DESIGN_SYSTEM.md §9b): a hint row under the text (\"Gõ @ để nhắc nhà cung cấp · Gõ / để chèn mẫu\") and a suggestion list portaled with the Popover engine (flips above when there is no room below, never clipped by a pane or modal).",
       "props": [
         "value",
         "onChange",
@@ -1616,6 +1637,9 @@
         "label",
         "placeholder",
         "rows",
+        "autoGrow",
+        "resizable",
+        "containerRef",
         "disabled",
         "id",
         "className"
@@ -1825,9 +1849,30 @@
         "footer",
         "maxWidth",
         "closeOnBackdrop",
+        "autoFocusFirstField",
         "children"
       ],
       "doc": "docs/components/modal.md"
+    },
+    {
+      "name": "MultiCombobox",
+      "kind": "component",
+      "module": "src/MultiCombobox.tsx",
+      "client": true,
+      "summary": "Searchable multi-select with removable chips and a portaled search + checkbox popover. Supports option groups (`group`), diacritic-aware search and Vietnamese Telex IME composition.",
+      "props": [
+        "value",
+        "onChange",
+        "options",
+        "label",
+        "addLabel",
+        "searchPlaceholder",
+        "empty",
+        "disabled",
+        "id",
+        "className"
+      ],
+      "doc": "docs/components/multi-combobox.md"
     },
     {
       "name": "NavigationMenu",
@@ -1874,9 +1919,29 @@
         "onClick",
         "readOnly",
         "disabled",
-        "type"
+        "type",
+        "className"
       ],
       "doc": "docs/components/number-input.md"
+    },
+    {
+      "name": "OptionCards",
+      "kind": "component",
+      "module": "src/OptionCards.tsx",
+      "client": true,
+      "summary": "Selectable option cards with radio-group semantics: icon, name, optional description, 8px grid gap, neutral selected fill (`bg-item-selected`, `border-outline-line`, `text-strong`, no brand tint). Arrow keys move selection and focus; the group is one tab stop.",
+      "props": [
+        "value",
+        "onChange",
+        "options",
+        "label",
+        "columns",
+        "disabled",
+        "className",
+        "aria-label",
+        "aria-labelledby"
+      ],
+      "doc": "docs/components/option-cards.md"
     },
     {
       "name": "Tooltip",
@@ -3119,6 +3184,20 @@
       "summary": "Closes a toast. An undo toast closed this way commits (`onCommit`)."
     },
     {
+      "name": "focusFirstField",
+      "kind": "function",
+      "module": "src/a11y.ts",
+      "client": true,
+      "summary": "Focus the first text-like field inside `root` on devices with a physical keyboard (`(hover: hover) and (pointer: fine)`), so touch phones keep their on-screen keyboard closed. Does nothing when focus already sits in a field inside `root`. Useful after a tab change inside a settings page. Returns `true` if a field was focused."
+    },
+    {
+      "name": "ensureFocusModality",
+      "kind": "function",
+      "module": "src/a11y.ts",
+      "client": true,
+      "summary": "Tracks whether the latest focus came from a pointer (mouse / touch) vs the keyboard, so text-entry fields — where browsers always match `:focus-visible` even on mouse click — show the 2px focus outline only on keyboard focus. Safe to call multiple times; attaches once per document in the browser, never during SSR."
+    },
+    {
       "name": "confirmDialog",
       "kind": "function",
       "module": "src/confirmDialog.tsx",
@@ -3937,14 +4016,14 @@
       "kind": "constant",
       "module": "styles/surfaces.ts",
       "client": false,
-      "summary": "Form text input: semantic field surface with crisp border-line."
+      "summary": "Form text input: 1.0 quiet field (bg-field, 1px field-line, radius 8; darker fill + field-line-focus on focus, no glow; 2px keyboard-only outline)."
     },
     {
       "name": "FIELD_TEXTAREA",
       "kind": "constant",
       "module": "styles/surfaces.ts",
       "client": false,
-      "summary": "Form textarea: matches FIELD_INPUT contrast and focus border."
+      "summary": "Form textarea: 1.0 quiet field matching FIELD_INPUT."
     },
     {
       "name": "SHELL_OUTER",

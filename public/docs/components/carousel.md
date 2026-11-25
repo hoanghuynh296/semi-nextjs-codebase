@@ -52,7 +52,7 @@ export default function CarouselProducts() {
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `label` * | `string` |  | Accessible name of the carousel ("Ảnh sản phẩm"). |
-| `perView` | `2 \| 1 \| 3 \| 4` | `1` | Slides visible at once from sm up (phones always show one and a peek of the next). |
+| `perView` | `1 \| 2 \| 3 \| 4` | `1` | Slides visible at once from sm up (phones always show one and a peek of the next). |
 | `className` | `string` |  |  |
 | `children` * | `React.ReactNode` |  | One child per slide. |
 

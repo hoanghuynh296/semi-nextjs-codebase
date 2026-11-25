@@ -63,6 +63,9 @@ jobs:
       - name: "Prerender regression build (#82: bare ToastHost in a root layout, dynamic route)"
         run: npm run build:prerender-test
 
+      - name: Install WebKit and Firefox for the IME test
+        run: npx playwright install --with-deps webkit firefox
+
       - name: Browser checks on that build (contrast AA both themes, axe, theme, keyboard)
         run: npm run test:ui
 

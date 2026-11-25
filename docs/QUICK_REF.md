@@ -12,7 +12,7 @@ content column, 12px shell chrome around 14px content, headings 400 / 500, minim
 brand fill (`bg-primary`, optional `bg-secondary`) only for the one main button of a page or modal (at most one per
 page or modal), the nav's main action, the active big-tab underline, attention badges / "Mới" tags, or a case the app's owner asks for; every other
 action is a neutral button. **When to use which** (buttons, tabs, page layouts): `DESIGN_SYSTEM.md` §0. Moving from
-0.x: `MIGRATION-1.0.md`. Parts marked *(Tn, pending)* (T3, T6–T9) in `DESIGN_SYSTEM.md` are 1.0 targets not merged yet: use what
+0.x: `MIGRATION-1.0.md`. Parts marked *(Tn, pending)* (T3, T7–T9) in `DESIGN_SYSTEM.md` are 1.0 targets not merged yet: use what
 Semi ships today for them, never a local stand-in.
 Shell: `AppShell` (the nav panel and the content column on `bg-canvas`; the route header with crumbs and the account
 avatar menu above the content card), pages with `PageTitle` (+ `actions`) or
@@ -41,7 +41,7 @@ leading dot or icon (`TONE_DOT`, `chipIconClass(tone)`). Card tiles keep their a
 blobs, no `shadow-[0_0_…]` (status dots and power buttons too). Active card = `CARD_ACTIVE` (`border-outline-line`).
 
 **Type (`docs/TOKENS.md`):** `text-hero` 36 (32 below sm) · `text-title-xl` 44 · `text-tab-xl` 28 (24 below sm) · `text-section` 20 · `text-figure` 18 · `text-lead` 15 · **`text-ui` 14, the content size** (rows, form labels and help, fields, buttons, menu items, dialogs, body; compact 13) · `text-input` 16 (typed text below sm: `max-sm:text-input`) · **`text-chrome` 12, shell chrome only** (nav, breadcrumb, toolbar compact buttons, meta, kbd) · `text-tag` 10 · `text-badge` 10 · `text-overline` 11. `font-sans` (Geist or the brand's) everywhere; `font-display` (the brand's display face, else the sans) only for hero, reading-page titles, big tabs, editorial heads. Headings are not bold: 400 / 500 (`font-title` 500), 600 only overlines, 700 only count badges. `tabular-nums` for numbers, `font-mono` only for code. No `text-xs/sm`, no `text-[13px]` ·
-sentence case, no ALL CAPS. The one exception is `text-overline` (uppercase, tracked) for section labels: a sidebar or drawer group, a palette group, a mega menu column (C-032); anywhere but a plain, non-clickable label element it warns (`overline-place`).
+sentence case, no ALL CAPS. The one exception is `text-overline` (uppercase, tracked) for section labels: a sidebar or drawer group, a palette group, a mega menu column, a form or detail section ("MODEL", "PROMPT"; never a single field's `<label>`) (C-032); anywhere but a plain, non-clickable label element it warns (`overline-place`).
 
 **Status, layers, elevation:** callouts / badges `bg-{danger,success,warning,info}-bg border-*-border text-*-fg` (`Alert`) ·
 dots / bars `bg-*-solid` · backdrop `bg-overlay` · floating layers `shadow-overlay` (canvas controls `shadow-float`) ·
@@ -126,7 +126,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (163)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (166)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
@@ -156,7 +156,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `Drawer`: `Drawer`
 - `ExternalLink`: `ExternalLink`
 - `FeatureIntro`: `FeatureIntro`
-- `Feedback`: `Alert`, `Progress`, `Avatar`, `EmptyState`
+- `Feedback`: `Alert`, `Progress`, `Avatar`, `LetterAvatar`, `EmptyState`
 - `Field`: `Field`, `Input`, `Textarea`
 - `FileDrop`: `DropZone`, `FileDrop`
 - `FilterChipRow`: `FilterChip`, `FilterOptions`, `FilterChipRow`
@@ -175,9 +175,11 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `MinimalHeader`: `MinimalHeader`
 - `MobileTabBar`: `MobileTabBar`
 - `Modal`: `Modal`
+- `MultiCombobox`: `MultiCombobox`
 - `NavigationMenu`: `NavigationMenu`
 - `NumPadPopup`: `NumPadPopup`
 - `NumberInput`: `NumberInput`
+- `OptionCards`: `OptionCards`
 - `Overlay`: `Tooltip`, `Menu`, `ContextMenu`, `Menubar`
 - `PageActions`: `PageActionsProvider`, `PageActionsSlot`, `PageActions`
 - `PageTitle`: `PageTitle`, `PageTabsTitle`
@@ -216,5 +218,5 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `formValidation`: `FormErrorSummary`
 - `locale`: `SemiLocaleProvider`
 
-**Hooks:** `useAppShell`, `useHotkey`, `useRegisterCommands`, `useDetailParam`, `useField`, `useFilterParams`, `useCoarsePointer`, `useRecordCrumb`, `useTheme`, `useThemeChoices`, `useThemeUtility`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useFormValidation`, `useSemiLocale`, `useTabParam`, `useUnsavedGuard` · **Functions:** `navScript`, `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `filterCommands`, `openCommandPalette`, `openDetail`, `pageWindow`, `startTask`, `themeScript`, `updateToast`, `dismissToast`, `confirmDialog`, `confirmDelete`, `kindAttrs`, `readFilterValues`, `readFilters`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `composeRefs`, `cloneTrigger`, `normalizeSearch`, `searchRows`, `sortRows`, `cn`
+**Hooks:** `useAppShell`, `useHotkey`, `useRegisterCommands`, `useDetailParam`, `useField`, `useFilterParams`, `useCoarsePointer`, `useRecordCrumb`, `useTheme`, `useThemeChoices`, `useThemeUtility`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useFormValidation`, `useSemiLocale`, `useTabParam`, `useUnsavedGuard` · **Functions:** `navScript`, `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `filterCommands`, `openCommandPalette`, `openDetail`, `pageWindow`, `startTask`, `themeScript`, `updateToast`, `dismissToast`, `focusFirstField`, `ensureFocusModality`, `confirmDialog`, `confirmDelete`, `kindAttrs`, `readFilterValues`, `readFilters`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `composeRefs`, `cloneTrigger`, `normalizeSearch`, `searchRows`, `sortRows`, `cn`
 <!-- generated:components:end -->

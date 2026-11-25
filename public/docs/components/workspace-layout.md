@@ -264,7 +264,7 @@ Back + tool name (+ one meta line) at the top of the workspace panel; `tabs` (a 
 | `onBack` | `() => void` |  | Back without a URL (closes the tool); ignored when `backHref` is set. |
 | `backLabel` | `string` |  | Accessible name of the back button: where it goes ("Về Mua hàng"). Default "Quay lại". |
 | `tabs` | `React.ReactNode` |  | Segmented tabs of the tool's parts, full width above the title (`<ToggleGroup className="w-full" …/>`). |
-| `headingLevel` | `2 \| 1` | `1` | 1 (default): the tool name is the page title. 2 when the page already has an h1. |
+| `headingLevel` | `1 \| 2` | `1` | 1 (default): the tool name is the page title. 2 when the page already has an h1. |
 
 ### WorkspaceSection
 

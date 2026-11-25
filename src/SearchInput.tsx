@@ -71,7 +71,7 @@ export function SearchInput({
         onClick={handleOpen}
         aria-label={label || placeholder}
         title={label || placeholder}
-        className="w-control h-control rounded-control bg-panel border border-line hover:border-line-hover text-muted hover:text-strong flex items-center justify-center transition active:scale-95 shrink-0"
+        className="w-control h-control pointer-coarse:max-sm:min-h-11 pointer-coarse:max-sm:min-w-11 rounded-control bg-field border border-field-line hover:bg-item-hover text-muted hover:text-strong flex items-center justify-center transition-colors outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus active:scale-95 shrink-0"
       >
         <Icon name="search" className="w-3.5 h-3.5" />
       </button>
@@ -92,14 +92,14 @@ export function SearchInput({
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         aria-label={label || placeholder}
-        className="w-full bg-panel border border-control-line hover:border-control-line-hover rounded-control pl-8 pr-7 h-control text-ui max-sm:text-input text-strong placeholder:text-muted outline-none focus:border-focus focus:ring-1 focus:ring-focus transition"
+        className="w-full bg-field border border-field-line rounded-control pl-8 pr-7 h-control pointer-coarse:max-sm:min-h-11 text-ui max-sm:text-input text-strong placeholder:text-muted outline-none focus:border-field-line-focus focus:bg-field-focus focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus transition-colors [&::-webkit-search-cancel-button]:hidden"
       />
       <button
         type="button"
         onClick={handleClearOrClose}
         aria-label={value ? t.clearSearch : t.closeSearch}
         title={value ? t.clearSearch : t.closeSearch}
-        className="w-5 h-5 rounded-chip flex items-center justify-center text-muted hover:text-strong absolute right-1.5 top-1/2 -translate-y-1/2 transition"
+        className="w-5 h-5 rounded-chip flex items-center justify-center text-muted hover:text-strong absolute right-1.5 top-1/2 -translate-y-1/2 transition-colors outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
       >
         <Icon name="close" className="w-3 h-3" />
       </button>

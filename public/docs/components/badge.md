@@ -107,7 +107,7 @@ A count in the brand colour (text-badge, 700), "99+" cap. A plain count that is 
 |---|---|---|---|
 | `count` * | `number` |  | The count. 0 or less renders nothing. |
 | `max` | `number` | `99` | Above it the badge shows `max+` (99+). |
-| `tone` | `'attention' \| 'neutral'` | `"attention"` | `attention` (default): the brand fill, for something that waits for the user (unread, to approve). `neutral`: a plain count that is not an alert. |
+| `tone` | `'neutral' \| 'attention'` | `"attention"` | `attention` (default): the brand fill, for something that waits for the user (unread, to approve). `neutral`: a plain count that is not an alert. |
 | `corner` | `boolean` | `false` | Pinned to the top-right corner of a `relative` parent (an icon button). Button's `badge` prop uses it. |
 
 ### NewTag

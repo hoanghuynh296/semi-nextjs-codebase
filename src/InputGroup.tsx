@@ -22,10 +22,11 @@ export function InputGroup({
   const addon = "flex items-center shrink-0 text-ui text-muted px-3 [&>button]:-mx-2";
   return (
     <div
+      data-field-frame=""
       className={cn(
-        "flex items-stretch w-full h-field bg-field border border-control-line hover:border-control-line-hover rounded-control transition-colors overflow-hidden",
-        "focus-within:border-focus focus-within:ring-1 focus-within:ring-focus focus-within:bg-raised",
-        "[&_input]:h-full [&_input]:min-w-0 [&_input]:flex-1 [&_input]:!border-0 [&_input]:!bg-transparent [&_input]:!rounded-none [&_input]:!ring-0",
+        "flex items-stretch w-full h-field pointer-coarse:max-sm:min-h-11 bg-field border border-field-line rounded-control transition-colors",
+        "focus-within:border-field-line-focus focus-within:bg-field-focus has-[input:focus-visible]:outline-solid has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-focus",
+        "[&_input]:h-full [&_input]:min-w-0 [&_input]:flex-1 [&_input]:!border-0 [&_input]:!bg-transparent [&_input]:!rounded-none [&_input]:!outline-0",
         start ? "[&_input]:!pl-0" : "",
         end ? "[&_input]:!pr-0" : "",
         className,

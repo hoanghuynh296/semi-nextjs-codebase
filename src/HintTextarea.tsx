@@ -1,22 +1,30 @@
 "use client";
 
-// A text area that says what it can do (#94 L15, docs/DESIGN_SYSTEM.md §9b): a hint row under the text ("Gõ @ để nhắc
-// nhà cung cấp · Gõ / để chèn mẫu") and a suggestion list while the word at the caret starts with a trigger.
-// Combobox + listbox (role=combobox on the textarea, aria-expanded, aria-autocomplete="list", aria-activedescendant): ↑ / ↓ move, Enter or Tab inserts, Escape closes
-// the list (and only the list). Keys typed while an input method is composing (Vietnamese Telex) are left alone.
+// A text area that says what it can do (#94 L15, #148, docs/DESIGN_SYSTEM.md §9b): a hint row under the text
+// ("Gõ @ để nhắc nhà cung cấp · Gõ / để chèn mẫu") and a suggestion list portaled with the Popover engine (flips above
+// when there is no room below, never clipped by a pane or modal). `value` (or `insert`) replaces the trigger word:
+// a token ("@s1") or plain text (a snippet). Optional reply-box auto-grow + top resize edge (md+).
 import React, { useId, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useField } from "./Field";
 import { Icon, type IconName } from "./Icon";
+import { ensureFocusModality, FLOATING_LAYER } from "./a11y";
+import { useAnchoredPosition } from "./floating";
 import { useSemiLocale } from "./locale";
+import { useReplyResize } from "./useReplyResize";
 import { cn } from "../styles/utils";
 
 export interface HintToken {
-  /** What is inserted, with its trigger ("@s1", "/bao-gia"); a space follows it. */
+  /** Short key or handle ("@s1", "/bao-gia"), or the inserted text itself when `insert` is omitted. Replaces the trigger word. */
   value: string;
+  /** Text inserted in place of the trigger word (defaults to `value`), followed by a space. Use for plain-text snippets or templates. */
+  insert?: string;
   label: string;
   /** One muted line (a region, a subject). */
   hint?: string;
   icon?: IconName;
+  /** Show `value` on the right of the suggestion row (defaults to `true` when `insert` is omitted, `false` when `insert` is set). */
+  showValue?: boolean;
 }
 
 export interface HintTrigger {
@@ -37,7 +45,10 @@ export function HintTextarea({
   triggers,
   label,
   placeholder,
-  rows = 4,
+  rows,
+  autoGrow = false,
+  resizable = false,
+  containerRef,
   disabled = false,
   id,
   className,
@@ -49,21 +60,45 @@ export function HintTextarea({
   /** Accessible name when there is no surrounding `Field` label. */
   label?: string;
   placeholder?: string;
+  /** Visible row count (defaults to 3 when `autoGrow` / `resizable` is set, else 4). */
   rows?: number;
+  /** Grow with typed text from `rows` (default 3) up to 50% of its container, then scroll inside. */
+  autoGrow?: boolean;
+  /** From `md`: adds a top resize edge (`role="separator"`, drag / ArrowUp / ArrowDown ±24px / double-click reset, up to 80% of container). Phones: auto-grow only. */
+  resizable?: boolean;
+  /** Optional bounding container for 50% / 80% height caps (auto-detected when omitted). */
+  containerRef?: React.RefObject<HTMLElement | null>;
   disabled?: boolean;
   /** Set by the surrounding Field when omitted. */
   id?: string;
   className?: string;
 }) {
+  ensureFocusModality();
   const t = useSemiLocale();
   const field = useField();
   const auto = useId();
+  const textareaId = id ?? field?.id ?? `${auto}-input`;
   const listId = `${auto}-list`;
+  const effectiveRows = rows ?? (autoGrow || resizable ? 3 : 4);
   const ref = useRef<HTMLTextAreaElement>(null);
+  const boxRef = useRef<HTMLDivElement>(null);
+  const hintRef = useRef<HTMLParagraphElement>(null);
   const [caret, setCaret] = useState<number | null>(null);
   const [active, setActive] = useState(0);
   const [dismissed, setDismissed] = useState(false);
   const [focused, setFocused] = useState(false);
+
+  const { bounds, separatorHandlers } = useReplyResize({
+    autoGrow,
+    resizable,
+    textareaRef: ref,
+    wrapperRef: boxRef,
+    containerRef,
+    value,
+    rows: effectiveRows,
+    extraHeightRef: hintRef,
+    disabled,
+  });
 
   const chars = triggers.map((tr) => escape(tr.char)).join("");
   const word = useMemo(() => {
@@ -79,30 +114,33 @@ export function HintTextarea({
   );
   const open = focused && !dismissed && !disabled && matches.length > 0;
   const current = Math.min(active, matches.length - 1);
+  // Positioned with the Popover engine and portaled at z-popover: flips above when near the bottom, never clipped.
+  const pos = useAnchoredPosition(boxRef, open, { minWidth: 280, gap: 6 });
 
   const readCaret = (el: HTMLTextAreaElement) => setCaret(el.selectionStart === el.selectionEnd ? el.selectionStart : null);
 
-  const insert = (tok: HintToken) => {
+  const insertToken = (tok: HintToken) => {
     if (!word) return;
     const after = value.slice(word.end);
-    const text = `${tok.value}${after.startsWith(" ") ? "" : " "}`;
+    const replacement = tok.insert ?? tok.value;
+    const text = `${replacement}${after.startsWith(" ") ? "" : " "}`;
     const next = value.slice(0, word.start) + text + after;
-    const pos = word.start + text.length + (after.startsWith(" ") ? 1 : 0);
-    pendingCaret.current = pos;
+    const posCaret = word.start + text.length + (after.startsWith(" ") ? 1 : 0);
+    pendingCaret.current = posCaret;
     onChange(next);
     setActive(0);
-    setCaret(pos);
+    setCaret(posCaret);
   };
 
   // after an insert: put the caret after the token in the same commit as the new value, before the next key
   const pendingCaret = useRef<number | null>(null);
   useLayoutEffect(() => {
     const el = ref.current;
-    const pos = pendingCaret.current;
-    if (!el || pos === null || el.value !== value) return;
+    const posCaret = pendingCaret.current;
+    if (!el || posCaret === null || el.value !== value) return;
     pendingCaret.current = null;
     el.focus();
-    el.setSelectionRange(pos, pos);
+    el.setSelectionRange(posCaret, posCaret);
   }, [value]);
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -117,7 +155,7 @@ export function HintTextarea({
       setActive((current - 1 + matches.length) % matches.length);
     } else if ((e.key === "Enter" && !e.shiftKey && !e.metaKey && !e.ctrlKey) || (e.key === "Tab" && !e.shiftKey)) {
       e.preventDefault();
-      insert(matches[current]);
+      insertToken(matches[current]);
     } else if (e.key === "Escape") {
       // close the list, not the dialog around it
       e.preventDefault();
@@ -129,12 +167,36 @@ export function HintTextarea({
   const optionId = (n: number) => `${auto}-opt-${n}`;
   return (
     <div className={cn("relative min-w-0", className)}>
-      <div className={cn("rounded-card bg-tint border border-control-line hover:border-control-line-hover focus-within:border-focus focus-within:ring-1 focus-within:ring-focus transition-colors", disabled && "opacity-40")}>
+      {resizable && (
+        <div
+          role="separator"
+          tabIndex={disabled ? -1 : 0}
+          aria-orientation="horizontal"
+          aria-controls={textareaId}
+          aria-label={t.replyResize}
+          aria-valuenow={bounds.now}
+          aria-valuemin={bounds.min}
+          aria-valuemax={bounds.max}
+          {...separatorHandlers}
+          className="group hidden md:flex items-center justify-center h-2.5 cursor-row-resize select-none touch-none rounded-chip outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+        >
+          <span aria-hidden className="w-8 h-1 rounded-full bg-field-line group-hover:bg-field-line-focus transition-colors" />
+        </div>
+      )}
+      <div
+        ref={boxRef}
+        data-field-frame=""
+        className={cn(
+          "rounded-control bg-field border border-field-line focus-within:border-field-line-focus focus-within:bg-field-focus has-[textarea:focus-visible]:outline-solid has-[textarea:focus-visible]:outline-2 has-[textarea:focus-visible]:outline-offset-2 has-[textarea:focus-visible]:outline-focus transition-colors",
+          field?.invalid && "border-danger-fg focus-within:border-danger-fg",
+          disabled && "opacity-40",
+        )}
+      >
         <textarea
           ref={ref}
-          id={id ?? field?.id}
+          id={textareaId}
           value={value}
-          rows={rows}
+          rows={effectiveRows}
           disabled={disabled}
           aria-label={field ? undefined : label}
           aria-describedby={[`${auto}-hint`, field?.describedBy].filter(Boolean).join(" ")}
@@ -160,7 +222,7 @@ export function HintTextarea({
           onBlur={() => setFocused(false)}
           className="block w-full resize-none bg-transparent outline-none px-4 pt-3 text-ui max-sm:text-input text-strong placeholder:text-muted disabled:cursor-not-allowed"
         />
-        <p id={`${auto}-hint`} className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 pb-2.5 pt-1 text-ui text-body">
+        <p ref={hintRef} id={`${auto}-hint`} className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 pb-2.5 pt-1 text-ui text-body">
           <Icon name="sparkles" className="w-3.5 h-3.5 shrink-0" />
           {triggers.map((tr) => (
             <span key={tr.char}>
@@ -172,35 +234,50 @@ export function HintTextarea({
       <div role="status" className="sr-only">
         {open ? t.hintSuggestions(matches.length) : ""}
       </div>
-      {open && (
-        <div
-          id={listId}
-          role="listbox"
-          aria-label={trigger!.hint}
-          className="absolute left-2 right-2 sm:right-auto sm:w-80 top-full mt-1 z-popover bg-panel-4 border border-line rounded-card shadow-overlay p-1.5"
-        >
-          {matches.map((m, n) => (
-            <div
-              key={m.value}
-              id={optionId(n)}
-              role="option"
-              aria-selected={n === current}
-              // keep focus (and the caret) in the text area
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => insert(m)}
-              onMouseMove={() => setActive(n)}
-              className={cn("flex items-center gap-2.5 px-2 py-1.5 rounded-control cursor-pointer", n === current && "bg-tint-hover")}
-            >
-              {m.icon && <Icon name={m.icon} className="w-4 h-4 text-muted shrink-0" />}
-              <span className="flex-1 min-w-0">
-                <span className="block text-ui font-medium text-strong truncate">{m.label}</span>
-                {m.hint && <span className="block text-chrome text-muted truncate">{m.hint}</span>}
-              </span>
-              <span className="text-chrome text-muted shrink-0">{m.value}</span>
-            </div>
-          ))}
-        </div>
-      )}
+      {open &&
+        pos &&
+        createPortal(
+          <div
+            {...FLOATING_LAYER}
+            id={listId}
+            role="listbox"
+            aria-label={trigger!.hint}
+            style={{
+              left: pos.left,
+              top: pos.top,
+              bottom: pos.bottom,
+              minWidth: Math.min(pos.minWidth, 320),
+              maxWidth: "min(24rem, calc(100vw - 16px))",
+              maxHeight: pos.maxHeight,
+            }}
+            className="fixed z-popover overflow-y-auto overscroll-contain bg-panel border border-line rounded-card shadow-overlay p-1.5"
+          >
+            {matches.map((m, n) => {
+              const showVal = m.showValue ?? m.insert === undefined;
+              return (
+                <div
+                  key={`${m.value}\u0000${m.label}`}
+                  id={optionId(n)}
+                  role="option"
+                  aria-selected={n === current}
+                  // keep focus (and the caret) in the text area
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => insertToken(m)}
+                  onMouseMove={() => setActive(n)}
+                  className={cn("flex items-center gap-2.5 px-2 py-1.5 rounded-control cursor-pointer", n === current && "bg-item-selected")}
+                >
+                  {m.icon && <Icon name={m.icon} className="w-4 h-4 text-muted shrink-0" />}
+                  <span className="flex-1 min-w-0">
+                    <span className="block text-ui font-medium text-strong truncate">{m.label}</span>
+                    {m.hint && <span className="block text-chrome text-muted truncate">{m.hint}</span>}
+                  </span>
+                  {showVal && <span className="max-w-28 truncate text-chrome text-muted shrink-0">{m.value}</span>}
+                </div>
+              );
+            })}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }
