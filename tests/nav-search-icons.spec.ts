@@ -87,33 +87,45 @@ test("phone drawer supports collapsible nav groups and external mainAction (#172
   await expect(dialog.getByRole("link", { name: "Button", exact: true })).toBeVisible();
 });
 
-test("phone drawer navSearch closes the drawer even when activeId stays the same (#172)", async ({ page }) => {
-  await page.setViewportSize({ width: 430, height: 932 });
-  await open(page, "/icons/?q=sparkles", "light");
-  await expect(page.getByRole("searchbox", { name: "Tìm icon" })).toHaveValue("sparkles");
-
-  await page.getByRole("button", { name: /Mở menu/i }).click();
-  const dialog = page.getByRole("dialog");
-  await expect(dialog).toBeVisible();
-
-  const combobox = dialog.getByRole("combobox", { name: "Tìm nhanh tài liệu" });
-  await combobox.fill("trash");
-  const listbox = dialog.getByRole("listbox", { name: "Kết quả tìm kiếm" });
-  await expect(listbox).toBeVisible();
-  await listbox.getByRole("option", { name: /trash/i }).first().click();
-
-  await expect(dialog).toBeHidden();
-  await expect(page).toHaveURL(/\/icons\/\?q=trash/);
-  await expect(page.getByRole("searchbox", { name: "Tìm icon" })).toHaveValue("trash");
-});
-
-test("nav quick search guards IME composition and supports ArrowDown/ArrowUp selection (#172)", async ({ page }) => {
+test("header quick search is centered in RouteHeader at 1440px and hidden without overflow at phone widths (#179)", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await open(page, "/", "light");
 
+  const header = page.locator("header").first();
   const aside = page.locator("aside[data-semi-nav-panel]");
-  const combobox = aside.getByRole("combobox", { name: "Tìm nhanh tài liệu" });
-  const listbox = aside.getByRole("listbox", { name: "Kết quả tìm kiếm" });
+  const combobox = header.getByRole("combobox", { name: "Tìm nhanh tài liệu" });
+  await expect(combobox).toBeVisible();
+  await expect(aside.getByRole("combobox", { name: "Tìm nhanh tài liệu" })).toHaveCount(0);
+
+  // Centered horizontally inside RouteHeader (within 40px of header midpoint)
+  const [headerBox, comboBox] = await Promise.all([header.boundingBox(), combobox.boundingBox()]);
+  expect(headerBox).toBeTruthy();
+  expect(comboBox).toBeTruthy();
+  const headerCenter = headerBox!.x + headerBox!.width / 2;
+  const comboCenter = comboBox!.x + comboBox!.width / 2;
+  expect(Math.abs(headerCenter - comboCenter)).toBeLessThan(40);
+
+  // No horizontal overflow at 1440px, 430px, and 375px on / and /icons/
+  for (const width of [1440, 430, 375]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const path of ["/", "/icons/"]) {
+      await open(page, path, "light");
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+      expect(overflow, `overflow on ${path} at ${width}px`).toBeLessThanOrEqual(0);
+    }
+    if (width < 768) {
+      await expect(header.getByRole("combobox", { name: "Tìm nhanh tài liệu" })).toBeHidden();
+    }
+  }
+});
+
+test("nav quick search guards IME composition and supports ArrowDown/ArrowUp selection (#172, #179)", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await open(page, "/", "light");
+
+  const header = page.locator("header").first();
+  const combobox = header.getByRole("combobox", { name: "Tìm nhanh tài liệu" });
+  const listbox = page.getByRole("listbox", { name: "Kết quả tìm kiếm" });
 
   await combobox.fill("button");
   await expect(listbox).toBeVisible();
@@ -143,17 +155,17 @@ test("nav quick search guards IME composition and supports ArrowDown/ArrowUp sel
   await expect(page).toHaveURL(new RegExp(`${secondHref!.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`));
 });
 
-test("nav quick search finds components, pages, and icons with keyboard navigation (#172)", async ({ page }) => {
+test("nav quick search finds components, pages, and icons with keyboard navigation (#172, #179)", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await open(page, "/", "light");
 
-  const aside = page.locator("aside[data-semi-nav-panel]");
-  const combobox = aside.getByRole("combobox", { name: "Tìm nhanh tài liệu" });
+  const header = page.locator("header").first();
+  const combobox = header.getByRole("combobox", { name: "Tìm nhanh tài liệu" });
   await expect(combobox).toBeVisible();
 
   // Search a component and navigate with Enter
   await combobox.fill("modal");
-  const listbox = aside.getByRole("listbox", { name: "Kết quả tìm kiếm" });
+  const listbox = page.getByRole("listbox", { name: "Kết quả tìm kiếm" });
   await expect(listbox).toBeVisible();
   await expect(listbox.getByRole("option", { name: /Modal/ }).first()).toBeVisible();
   await combobox.press("Enter");
@@ -179,21 +191,47 @@ test("nav quick search finds components, pages, and icons with keyboard navigati
   await expect(page.getByRole("searchbox", { name: "Tìm icon" })).toHaveValue("trash");
 });
 
-test("/foundations/ and /icons/ split cleanly and pass a11y in both themes (#172)", async ({ page }) => {
+test("/icons/ uses StickyContextBar + SearchPill with / shortcut, clear button, and ?q= prefill (#179)", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
+  await open(page, "/icons/?q=sparkles", "light");
 
-  for (const theme of ["light", "dark"] as const) {
-    await open(page, "/foundations/", theme);
-    await expect(page.getByRole("heading", { name: "Foundations", level: 1 })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Bề mặt và chữ" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Thang chữ" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Tra cứu icon" })).toHaveCount(0);
-    expect(await a11yHits(page)).toEqual([]);
+  const bar = page.locator("[data-sticky-bar]");
+  await expect(bar).toBeVisible();
+  await expect(bar).toHaveAttribute("role", "search");
+  await expect(bar).toHaveAttribute("aria-label", "Tìm và lọc icon");
 
-    await open(page, "/icons/?q=sparkles", theme);
-    await expect(page.getByRole("heading", { name: "Icons", level: 1 })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Tra cứu icon" })).toBeVisible();
-    await expect(page.getByRole("searchbox", { name: "Tìm icon" })).toHaveValue("sparkles");
-    expect(await a11yHits(page)).toEqual([]);
+  const searchbox = bar.getByRole("searchbox", { name: "Tìm icon" });
+  await expect(searchbox).toHaveValue("sparkles");
+
+  // Clear button clears the search pill
+  await bar.getByRole("button", { name: /Xoá tìm kiếm|Clear search/i }).click();
+  await expect(searchbox).toHaveValue("");
+
+  // Blur and press "/" shortcut to focus SearchPill
+  await searchbox.blur();
+  await page.keyboard.press("/");
+  await expect(searchbox).toBeFocused();
+});
+
+test("/foundations/ and /icons/ split cleanly and pass a11y in both themes (#172, #179)", async ({ page }) => {
+  for (const width of [1440, 375]) {
+    await page.setViewportSize({ width, height: 900 });
+
+    for (const theme of ["light", "dark"] as const) {
+      if (width === 1440) {
+        await open(page, "/foundations/", theme);
+        await expect(page.getByRole("heading", { name: "Foundations", level: 1 })).toBeVisible();
+        await expect(page.getByRole("heading", { name: "Bề mặt và chữ" })).toBeVisible();
+        await expect(page.getByRole("heading", { name: "Thang chữ" })).toBeVisible();
+        await expect(page.getByRole("heading", { name: "Tra cứu icon" })).toHaveCount(0);
+        expect(await a11yHits(page)).toEqual([]);
+      }
+
+      await open(page, "/icons/?q=sparkles", theme);
+      await expect(page.getByRole("heading", { name: "Icons", level: 1 })).toBeVisible();
+      await expect(page.getByRole("heading", { name: "Tra cứu icon" })).toBeVisible();
+      await expect(page.getByRole("searchbox", { name: "Tìm icon" })).toHaveValue("sparkles");
+      expect(await a11yHits(page)).toEqual([]);
+    }
   }
 });

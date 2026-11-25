@@ -200,16 +200,18 @@ export function RouteHeader({ crumbs, middle, actions, account, onMenu, menuExpa
         {leaving && <Trail key={`out-${leaving.key}`} crumbs={leaving.crumbs} label={t.breadcrumb} hidden className="semi-crumb-out absolute inset-y-0 left-0 flex items-center pointer-events-none" />}
       </div>
       {middle && (
-        <div className="hidden md:flex min-w-0 max-w-[40%] items-center">
+        <div className="hidden md:flex shrink-0 min-w-0 max-w-[40%] items-center justify-center">
           <Suspense fallback={<SlotSkeleton />}>{middle}</Suspense>
         </div>
       )}
-      {(actions || account) && (
-        <div className="shrink-0 flex items-center gap-1">
+      {(actions || account) ? (
+        <div className={cn("flex items-center justify-end gap-1", middle ? "md:flex-1 shrink-0 min-w-0" : "shrink-0")}>
           {actions && <Suspense fallback={<SlotSkeleton />}>{actions}</Suspense>}
           {account && (isAccount(account) ? <AccountMenu {...account} /> : account)}
         </div>
-      )}
+      ) : middle ? (
+        <div className="hidden md:block flex-1 min-w-0" aria-hidden />
+      ) : null}
     </header>
   );
 }
