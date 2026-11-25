@@ -1,6 +1,6 @@
 # Search pill
 
-The wide pill search of a list page (one per page) and the result line under it: “query” · N kết quả on the left, the sort menu on the right. Typing is debounced (250 ms), Escape and the clear button clear at once, an optional key (/) focuses it.
+The wide pill search of a list page (one per page), with an optional `trailing` slot for `<BarActions>` when pinned in StickyContextBar. Typing is debounced (250 ms), Escape and the clear button clear at once, an optional key (/) focuses it. ResultLine is deprecated for 1.0 list pages (use FilterChipRow / PhoneFilterBar `sort` and `selection` instead).
 
 ## When to use
 

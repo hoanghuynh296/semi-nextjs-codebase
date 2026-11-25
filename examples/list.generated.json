@@ -142,7 +142,7 @@
     "id": "filter-chip-row",
     "title": "Filter chip row",
     "group": "Forms",
-    "description": "A list page's filters as one line of chips (icon, label, chevron; solid with the value or count when on). Each chip opens a small multi-select popover, a single-choice chip a radio menu (“Hộp thư: Tất cả”), a switch chip toggles; the page's views (Pills) can lead the row; the row scrolls sideways with ‹ › when it overflows, shows “Xoá lọc” while a filter is on and ends with the view tools. State in the URL with useFilterParams or the filterParams helpers.",
+    "description": "A list page's filters as one line of chips (icon, label, chevron; solid with the value or count when on). Each chip opens a small multi-select popover, a single-choice chip a radio menu (“Hộp thư: Tất cả”), a switch chip toggles; the page's views (SegmentedControl) can lead the row; the row scrolls sideways with ‹ › when it overflows, shows “Xoá lọc” while a filter is on and ends with `sort`, zero-shift `selection` (“Chọn” via `useListSelection`) and `ViewSwitch`. State in the URL with useFilterParams or the filterParams helpers.",
     "components": [
       "FilterChipRow",
       "FilterChip",
@@ -248,7 +248,7 @@
     "id": "search-pill",
     "title": "Search pill",
     "group": "Forms",
-    "description": "The wide pill search of a list page (one per page) and the result line under it: “query” · N kết quả on the left, the sort menu on the right. Typing is debounced (250 ms), Escape and the clear button clear at once, an optional key (/) focuses it.",
+    "description": "The wide pill search of a list page (one per page), with an optional `trailing` slot for `<BarActions>` when pinned in StickyContextBar. Typing is debounced (250 ms), Escape and the clear button clear at once, an optional key (/) focuses it. ResultLine is deprecated for 1.0 list pages (use FilterChipRow / PhoneFilterBar `sort` and `selection` instead).",
     "components": [
       "SearchPill",
       "ResultLine"
@@ -866,7 +866,7 @@
     "id": "skeleton",
     "title": "Skeleton",
     "group": "Feedback",
-    "description": "Shimmer placeholders while content loads, shaped like what loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, SkeletonList (divided list rows), SkeletonTable (table rows), SkeletonDetail (a record's detail panel), PageSkeleton; Loading announces the region. Never “Đang tải…” text or a spinner in a list. BootLoader is the one centred spinner, for the boot / session gate before the shell exists.",
+    "description": "Quietly pulsing placeholders (`motion-pulse`: 2.5s opacity 1 → 0.6 → 1, stops under prefers-reduced-motion) while content loads, shaped like what loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, SkeletonList (divided list rows), SkeletonTable (table rows), SkeletonDetail (a record's detail panel), PageSkeleton; Loading announces the region. Never “Đang tải…” text or a spinner in a list. BootLoader is the one centred spinner, for the boot / session gate before the shell exists.",
     "components": [
       "Skeleton",
       "SkeletonCard",

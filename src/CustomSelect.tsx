@@ -33,7 +33,7 @@ interface CustomSelectProps {
   iconsInList?: boolean;
   /** The button shows only the selected option's icon (its label becomes the tooltip), e.g. the AI profile logo. */
   iconOnly?: boolean;
-  /** toolbar = h-control toolbar control (34px in Flat) · field = full-width form field · inline = bare text inside a row ·
+  /** toolbar = h-control toolbar control (34px) · field = full-width form field · inline = bare text inside a row ·
    *  bare = no trigger styling (the caller passes it in buttonClassName, e.g. the automation code chips) */
   variant?: "toolbar" | "field" | "inline" | "bare";
   disabled?: boolean;

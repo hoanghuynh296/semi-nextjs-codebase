@@ -4,6 +4,12 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## Unreleased
 
+### Docs (T10 final pass, #152)
+- **All T1–T9 1.0 docs finalised:** removed all `*(Tn, pending)*` markers across `docs/DESIGN_SYSTEM.md`, `docs/QUICK_REF.md`, `docs/MIGRATION-1.0.md`, `plugin/rules/AGENTS.md` (and vendor copy), and `plugin/skills/**`.
+- **`docs/MIGRATION-1.0.md`:** completed T8 (`StickyContextBar` layout-pin / focus-pin, `BarActions`, URL-state upgrades) and T9 (`PageEnter`, `motion-pulse`, `Tooltip` / `Disclosure` / hover motion tokens, reduced motion) sections, updated all T1–T9 status rows and PR numbers, and completed the sales-hub v0.7.0 stand-in → Semi 1.0 replacement table. Updated `lint/test/migration-doc.test.mjs` to assert zero pending-ticket references once all tickets are merged.
+- **Component docs & phase 1 follow-ups:** updated `examples/*/meta.json` and generated `docs/components/*.md` for `StickyContextBar` / `BarActions`, `FilterChipRow`, `PageTitle`, `SearchPill`, `DataTable`, `Skeleton` / `PageSkeleton`, `Tooltip`, `Field`, and `CustomSelect` (removed unexported `parseMoney` / `parseNumber` references from `DESIGN_SYSTEM.md` §9b, `src/fieldKinds.ts` and `examples/field/meta.json`; removed stale `"34px in Flat"` from `src/CustomSelect.tsx`).
+- **Skills:** updated `plugin/skills/semi-brand/SKILL.md` frontmatter to the 1.0 schema (primary + optional secondary, fonts with optional display, logo, voice; no neutrals/styles/colour-use), and updated `plugin/skills/semi-ui/SKILL.md` (1.0 List and List + reader recipes, `SegmentedControl` / `PillTabs`) and `plugin/skills/semi-sync/SKILL.md`. Regenerated manifests and synced plugin vendor copies.
+
 **1.0 lint and checks (#145, T3; includes #142 pipe flush fix; part of v1.0.0).** `semi-lint` warning rules for the 1.0 design contract, per-line / per-file opt-in allowances with a reason, `semi density` / `semi a11y` 1.0 updates, `/semi-check` 1.0 audit upgrades (brand schema, stand-in detection, `StickyContextBar` count), and the `semi-lint --json` > 64 KB pipe truncation fix.
 
 ### Fixed

@@ -90,7 +90,7 @@ export default function SelectToolbar() {
 | `align` | `'left' \| 'right'` | `"left"` | Which edge the option list lines up with (use "right" for a select at the right edge of the screen). |
 | `iconsInList` | `boolean` | `false` | Show each option's icon in the list too (default: only on the button). |
 | `iconOnly` | `boolean` | `false` | The button shows only the selected option's icon (its label becomes the tooltip), e.g. the AI profile logo. |
-| `variant` | `'toolbar' \| 'field' \| 'inline' \| 'bare'` | `"toolbar"` | toolbar = h-control toolbar control (34px in Flat) · field = full-width form field · inline = bare text inside a row · bare = no trigger styling (the caller passes it in buttonClassName, e.g. the automation code chips) |
+| `variant` | `'toolbar' \| 'field' \| 'inline' \| 'bare'` | `"toolbar"` | toolbar = h-control toolbar control (34px) · field = full-width form field · inline = bare text inside a row · bare = no trigger styling (the caller passes it in buttonClassName, e.g. the automation code chips) |
 | `disabled` | `boolean` | `false` |  |
 | `buttonClassName` | `string` | `""` | Extra classes on the button (e.g. a "modified value" colour). |
 | `id` | `string` |  |  |

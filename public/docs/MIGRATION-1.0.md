@@ -19,8 +19,7 @@ with `/semi-propose`.
    hand fixes (`file: message`).
 3. **Do the hand fixes** the migrations printed (each ticket section below lists them and how to decide).
 4. **Delete the app's stand-ins** that 1.0 replaces: the table at the end says which file or CSS rule goes and what
-   replaces it. Delete a stand-in only when its ticket is **shipped** in the version you installed; the rest stay
-   until a later release.
+   replaces it. All T1–T9 replacements ship together in 1.0.0.
 5. **Check:** `npx semi-lint`, `npx tsc --noEmit`, the build, then each key screen at 375px and 1280px in both themes:
    the first record visible without scrolling, one `h1`, at most one filled brand button per page or modal
    (`DESIGN_SYSTEM.md` §0 "Brand colour rule"). `npx semi density <url>` and `npx semi a11y <url>` clean.
@@ -32,17 +31,16 @@ with `/semi-propose`.
 | T1 #141 | Foundation: tokens, one look, brand schema | merged on `main` (#154), unreleased: ships in 1.0.0 | `1.0.0-foundation` |
 | T1b #155 | Two UI text sizes: `text-ui` 14 content, `text-chrome` 12 chrome | merged on `main` (#156), unreleased: ships in 1.0.0 | part of `1.0.0-foundation` |
 | T2 #144 | Shell: frame, RouteHeader, nav, account avatar menu, shortcuts | merged on `main` (#159), unreleased: ships in 1.0.0 | `1.0.0-app-shell` |
-| T3 #145 | Lint and checks for the 1.0 rules | merged on `main`, unreleased: ships in 1.0.0 | — |
+| T3 #145 | Lint and checks for the 1.0 rules | merged on `main` (#169), unreleased: ships in 1.0.0 | — |
 | T4 #146 | Buttons and attention marks | merged on `main` (#157), unreleased: ships in 1.0.0 | `1.0.0-buttons` |
-| T5 #147 | Tabs: PillTabs, SegmentedControl, big TextTabs | merged on `main`, unreleased: ships in 1.0.0 | `1.0.0-tabs` |
-| T6 #148 | Fields and forms | merged on `main`, unreleased: ships in 1.0.0 | — |
-| T7 #149 | Page layouts and lists | merged on `main`, unreleased: ships in 1.0.0 | — |
-| T8 #150 | StickyContextBar pinning and actions | pending | — |
-| T9 #151 | Motion wiring | pending | — |
+| T5 #147 | Tabs: PillTabs, SegmentedControl, big TextTabs | merged on `main` (#164), unreleased: ships in 1.0.0 | `1.0.0-tabs` |
+| T6 #148 | Fields and forms | merged on `main` (#165), unreleased: ships in 1.0.0 | — |
+| T7 #149 | Page layouts and lists | merged on `main` (#166), unreleased: ships in 1.0.0 | — |
+| T8 #150 | StickyContextBar pinning and actions | merged on `main` (#168), unreleased: ships in 1.0.0 | — |
+| T9 #151 | Motion wiring | merged on `main` (#167), unreleased: ships in 1.0.0 | — |
 
-Each ticket fills its own section below when it merges (what changed, the migration, the hand fixes, the stand-ins it
-replaces) and flips its row here. A section that says **pending** describes the target only: keep the app's stand-in
-for it and do not write a new one.
+All T1–T9 tickets are merged on `main` and ship together in `1.0.0`. Each section below lists what changed, what its
+migration rewrites, the hand fixes, and the stand-ins it replaces.
 
 ## T1: foundation tokens (merged, ships in 1.0.0)
 
@@ -261,27 +259,31 @@ globals tail.
 
 **What the app deletes** (sales-hub v0.7.0): in the globals tail the flush container (`main#main > div`), `.page-title-row` and `.content-card h1`, `.page-column*`, `.list-*`, and hand-built selection rows.
 
-## T8: StickyContextBar pinning (pending, #150)
+## T8: StickyContextBar pinning and URL state (merged, ships in 1.0.0)
 
-**Target.** The bar pins when the page scrolls past it or its field gets focus; once pinned only a new upward gesture
-from the list top unpins it; filter, sort and search changes keep the state; the title row's actions move into the
-pinned field (at most ••• and the main action). **Replaces:** `app/components/semi-pending/BarActions.tsx`,
-`stickyBar.ts`; in the globals tail `.bar-actions`, `[data-page="fixed"|"list"]` scroll rules and
-`.content-card [role="search"]`. **Until it ships:** keep them.
+**What changed** (#150, #129, #124, #139, CHANGELOG "1.0 StickyContextBar pin behaviour").
+- **`StickyContextBar` layout-pin & focus-pin:** pins when scrolling past the bar or focusing the search text field (250ms ease-out, instant under reduced motion, cancelled by wheel/touch; works on short lists; filter chips, sort and view buttons do not pin). From `md` (768px), pins by layout (`data-sticky-host`, `--sticky-pin`, `--sticky-view`, `overscroll-behavior: contain` on `[data-page-body]` or `ListReaderLayout` panels) so trackpad momentum and flings never unpin and only a new upward wheel gesture (> 200ms idle) from the list top unpins. Filter, sort, search, selection-mode and data changes keep pinned/unpinned state. Exposes `data-stuck` and `data-searching` and clears all attributes/vars on unmount. Below `md`, keeps native scrolling and touch behaviour.
+- **`BarActions` & `BarAction`:** pass `<BarActions actions={…} menu={…} />` in `SearchPill`'s `trailing` slot to show up to 2 icon-button slots with tooltips in title-row order (`[•••][main action]`, 8px apart) while pinned and not searching (150ms fade, opacity-only under reduced motion, out of flow and out of the accessibility tree when hidden).
+- **URL state (`useFilterParams`, `filterParams`, `urlState`, `DataTable`):** `useFilterParams` gains `legacy` (one-time post-hydration rewrite via `replaceState`, zero history entries), `patch(values, mode)` (multi-filter change in one history entry) and URL-backed `?sort=key.dir` (`sort`, `setSort`, `sortDef` shared by `FilterChipRow`, `PhoneFilterBar`, `FilterPanel` and `DataTable`, plus `readSort`, `writeSort`, `parseSort`, `formatSort`, `SORT_PARAM`); `replaceFilters` and `writeSearch` exported from `@semi/ui`; `DataTable` gains `onResultsChange` alongside `sortRows` / `searchRows`; `FilterPanel` `single` radio groups write with `"replace"` and label `role="radiogroup"` directly; an empty `single` `FilterChip` is disabled.
 
-## T9: motion (pending, #151)
+**What the app deletes** (sales-hub v0.7.0): `app/components/semi-pending/BarActions.tsx`,
+`app/components/semi-pending/stickyBar.ts`, and in the `TODO(semi-pending)` tail of `app/globals.css`: `.bar-actions`,
+`[data-page="fixed"|"list"]` scroll rules, and `.content-card [role="search"]`.
 
-**Target.** Page enter and stagger, skeleton pulse, tooltip, disclosure and the sliding pill on the T1 motion tokens;
-opacity only under reduced motion; the shell never remounts on a route change. **Replaces:**
-`app/semi-pending-motion.css` and `PageEnter`. The motion **tokens** already ship with T1 (`TOKENS.md` "Motion"); an
-app may read them now. **Until it ships:** keep the stand-ins.
+## T9: motion wiring (merged, ships in 1.0.0)
+
+**What changed** (#151, CHANGELOG "1.0 motion wiring"). Wires T1's motion tokens (`TOKENS.md` "Motion") across Semi components:
+- **`PageEnter` & `<Page enter>`:** `display: contents` route-level wrapper (keyed by `usePathname()` or custom `routeKey`) that runs `motion-enter` (400ms, opacity + translateY 4px → 0) and `motion-stagger` (35ms per item, capped at the first 10 rows/cards) once per route — never replays on filter, search, sort or `?tab=` changes, and never animates rows arriving after `windowMs` (default 1000ms).
+- **Component wiring:** `Skeleton` / `PageSkeleton` / `.shimmer` pulse quietly with `motion-pulse` (2.5s, opacity 1 → 0.6 → 1, stops under reduced motion); `Tooltip` enters with `animate-tooltip-in` (200ms, opacity + scale 0.96 → 1); `Accordion` / `Collapsible` use `--motion-disclosure` (300ms ease-out) and `--motion-disclosure-close` (300ms ease-in) with `inert` + `aria-hidden` while closed; interactive elements use `transition-hover` (150ms) instead of hard-coded durations; under `prefers-reduced-motion: reduce`, all entrances animate opacity only and skeleton pulse stops. The shell never remounts or moves on a route change.
+
+**What the app deletes** (sales-hub v0.7.0): `app/semi-pending-motion.css` and its local `PageEnter` stand-in (use `@semi/ui`'s `PageEnter` or `<Page enter>` and T1's motion tokens).
 
 ## Stand-ins and their replacements
 
 The sales-hub v0.7.0 stand-ins (the app that found these gaps), one row each. Other apps look for the same kind of
-local code. "Delete when" is the ticket that ships the replacement.
+local code. All T1–T9 replacements ship in `1.0.0`.
 
-| Stand-in | Replacement | Delete when |
+| Stand-in | Replacement | Shipped in |
 |---|---|---|
 | `app/semi-pending-neutral.css` (+ its lint skip) | T1 neutral tokens | T1 (merged, in 1.0.0) |
 | globals tail: content-panel heading weights | `font-title` 500, headings 400 / 500 | T1 (merged, in 1.0.0) |
@@ -300,6 +302,6 @@ local code. "Delete when" is the ticket that ships the replacement.
 | reply-box drag | `Textarea` / `HintTextarea` `autoGrow` + `resizable` | T6 (merged, in 1.0.0) |
 | globals tail: `.border-control-line` override | quiet fields | T6 (merged, in 1.0.0) |
 | globals tail: flush container, `.page-title-row`, `.content-card h1`, `.page-column*`, `.list-*` | T7 page layouts (`Page`, `SubNav`, `PageTitle`, `ListReaderLayout`) | T7 (merged, in 1.0.0) |
-| `semi-pending/BarActions.tsx`, `semi-pending/stickyBar.ts` | `StickyContextBar` pinning and actions | T8 |
-| globals tail: `.bar-actions`, `[data-page]` scroll rules, `.content-card [role="search"]` | `StickyContextBar` | T8 |
-| `app/semi-pending-motion.css`, `PageEnter` | motion tokens and page enter | T9 |
+| `semi-pending/BarActions.tsx`, `semi-pending/stickyBar.ts` | `StickyContextBar` pinning and `BarActions` | T8 (merged, in 1.0.0) |
+| globals tail: `.bar-actions`, `[data-page]` scroll rules, `.content-card [role="search"]` | `StickyContextBar` | T8 (merged, in 1.0.0) |
+| `app/semi-pending-motion.css`, `PageEnter` | motion tokens and `PageEnter` / `<Page enter>` | T9 (merged, in 1.0.0) |
