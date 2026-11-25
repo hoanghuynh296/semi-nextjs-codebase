@@ -53,7 +53,9 @@ export function Collapsible({
         inert={!isOpen || undefined}
         className="semi-disclosure"
       >
-        <div className="pl-6 pb-2 text-ui text-body">{children}</div>
+        <div>
+          <div className="pl-6 pb-2 text-ui text-body">{children}</div>
+        </div>
       </div>
     </div>
   );
@@ -152,7 +154,9 @@ export function Accordion({
               inert={!isOpen || undefined}
               className="semi-disclosure"
             >
-              <div className="pb-3 text-ui text-body">{it.content}</div>
+              <div>
+                <div className="pb-3 text-ui text-body">{it.content}</div>
+              </div>
             </div>
           </div>
         );

@@ -83,11 +83,19 @@ test("PageEnter & stagger on client navigation: top blocks + at most 10 items an
   expect(rowAnims.total).toBe(15);
   expect(rowAnims.animated).toBe(10);
 
-  // Wait for enter window to close, then verify filter, ?tab=, and late-arriving rows run NO enter animation
-  await expect(page.locator("[data-motion-enter]")).toHaveAttribute("data-motion-enter", "done", { timeout: 3000 });
-
+  // Early-cancel path: a ?tab= change DURING the 1000ms enter window cancels data-motion-enter immediately and runs no enter animation
+  await expect(page.locator("[data-motion-enter]")).toHaveAttribute("data-motion-enter", "active");
   await page.getByRole("tab", { name: "Đang mở" }).click();
   await expect(page).toHaveURL(/\/motion\/orders\?tab=open$/);
+  await expect(page.locator("[data-motion-enter]")).toHaveAttribute("data-motion-enter", "done");
+  const duringWindowTab = await page.evaluate(() =>
+    document.getAnimations().filter((a) => "animationName" in a && (a as CSSAnimation).animationName === "semi-enter").length,
+  );
+  expect(duringWindowTab).toBe(0);
+
+  // Switch back to All, then verify filter and late-arriving rows after enter window run NO enter animation
+  await page.getByRole("tab", { name: "Tất cả" }).click();
+  await expect(page).toHaveURL(/\/motion\/orders$/);
   const afterTab = await page.evaluate(() =>
     document.getAnimations().filter((a) => "animationName" in a && (a as CSSAnimation).animationName === "semi-enter").length,
   );
@@ -159,14 +167,23 @@ test("Skeleton pulse, Tooltip entrance, and Accordion / Collapsible disclosure u
   expect(tooltipAnim!.duration).toBe(200);
   expect(tooltipAnim!.easing).toBe("cubic-bezier(0.16, 1, 0.3, 1)");
 
-  // Accordion & Collapsible use motion-disclosure (300ms ease-out open, 300ms ease-in close)
+  // Accordion & Collapsible use motion-disclosure (300ms ease-out open, 300ms ease-in close) and collapse to 0px when closed
   const accBtn = page.getByTestId("motion-accordion").getByRole("button", { name: "Chính sách đổi trả" });
   const closedStyle = await page.evaluate(() => {
-    const panel = document.querySelector('[data-testid="motion-accordion"] .semi-disclosure')!;
-    const cs = getComputedStyle(panel);
-    return { duration: cs.transitionDuration, timing: cs.transitionTimingFunction, open: panel.getAttribute("data-open") };
+    const accPanel = document.querySelector('[data-testid="motion-accordion"] .semi-disclosure')!;
+    const colPanel = document.querySelector('[data-testid="motion-collapsible"] .semi-disclosure')!;
+    const cs = getComputedStyle(accPanel);
+    return {
+      duration: cs.transitionDuration,
+      timing: cs.transitionTimingFunction,
+      open: accPanel.getAttribute("data-open"),
+      accHeight: accPanel.getBoundingClientRect().height,
+      colHeight: colPanel.getBoundingClientRect().height,
+    };
   });
   expect(closedStyle.open).toBe("false");
+  expect(closedStyle.accHeight).toBe(0);
+  expect(closedStyle.colHeight).toBe(0);
   expect(closedStyle.duration).toContain("0.3s");
   expect(closedStyle.timing).toContain("ease-in");
 
