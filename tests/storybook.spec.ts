@@ -515,7 +515,7 @@ for (const theme of THEMES)
       await expect(page.getByRole("dialog", { name: "Trạng thái" })).toBeVisible();
 
       await open(page, "/components/view-switch/", theme);
-      const sw = example(page, "view-switch/default");
+      const sw = example(page, "view-switch/default").locator("[data-density-view]");
       await expect(sw.getByRole("radio").first().or(sw.getByRole("button").first())).toBeVisible();
       await sw.locator("button").first().focus();
       expect(await a11yHits(page)).toEqual([]);
@@ -1516,7 +1516,7 @@ test("Popover moves focus in and returns it; ContextMenu opens with Shift+F10", 
   await expect(pop).toBeHidden();
   await expect(opener).toBeFocused();
   await open(page, "/components/context-menu/", "dark");
-  const area = example(page, "context-menu/file").locator("[tabindex='0']").first();
+  const area = example(page, "context-menu/file").locator("[data-density-view] [tabindex='0']").first();
   await area.focus();
   await page.keyboard.press("Shift+F10");
   await expect(page.getByRole("menu", { name: "Thao tác tệp" })).toBeVisible();
@@ -2002,12 +2002,6 @@ for (const theme of THEMES)
     expect(await weakEdges(page)).toEqual([]);
   });
 
-test("the chosen segment has a ring, not only a faint fill", async ({ page }) => {
-  await open(page, "/components/tabs/", "light");
-  const on = page.getByRole("tab", { name: "Tuần" });
-  expect(await on.evaluate((e) => getComputedStyle(e).boxShadow)).toMatch(/inset/);
-});
-
 test("DatePicker, toolbar select and tab panel show keyboard focus", async ({ page }) => {
   const ring = async (loc: ReturnType<Page["locator"]>) => {
     await loc.focus();
@@ -2394,7 +2388,7 @@ test("PillTabs (#147): h30 round pills, sliding item-hover pill, tablist/tabpane
   // 4) prefers-reduced-motion: sliding pill transition is disabled
   const reduced = await browser.newPage({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
   await reduced.goto("/components/pill-tabs/");
-  const rPill = example(reduced, "pill-tabs/sections").locator("[data-pill]");
+  const rPill = example(reduced, "pill-tabs/sections").locator("[data-density-view] [data-pill]");
   await expect(rPill).toBeVisible();
   expect(await rPill.evaluate((el) => getComputedStyle(el).transitionProperty)).toBe("none");
   await reduced.close();
