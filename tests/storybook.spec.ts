@@ -1971,7 +1971,9 @@ function weakEdges(page: Page) {
       return base;
     };
     const fails: string[] = [];
-    const sel = 'main input[type=text]:not([data-bare]),main input[type=email],main input[type=password],main input[type=number],main textarea,main input[type=checkbox],main input[type=radio]';
+    // 1.0 (#148): text fields use a quiet resting border paired with a 2px keyboard outline (tested in fields-forms.spec.ts);
+    // checkboxes and radios keep a ≥ 3:1 resting edge.
+    const sel = "main input[type=checkbox],main input[type=radio]";
     for (const el of document.querySelectorAll<HTMLInputElement>(sel)) {
       const r = el.getBoundingClientRect();
       if (!r.width || el.disabled || el.closest("[aria-disabled=true]") || el.checked) continue;
@@ -2014,7 +2016,12 @@ test("DatePicker, toolbar select and tab panel show keyboard focus", async ({ pa
     await page.keyboard.press("Shift+Tab");
     await page.keyboard.press("Tab");
     await expect(loc).toBeFocused();
-    return loc.evaluate((e) => getComputedStyle(e).boxShadow.split(/,(?![^(]*\))/).some((s) => !/rgba\(0, 0, 0, 0\)|^none$/.test(s.trim())));
+    return loc.evaluate((e) => {
+      const s = getComputedStyle(e);
+      const hasOutline = s.outlineStyle !== "none" && parseFloat(s.outlineWidth) >= 2;
+      const hasShadow = s.boxShadow.split(/,(?![^(]*\))/).some((part) => !/rgba\(0, 0, 0, 0\)|^none$/.test(part.trim()));
+      return hasOutline || hasShadow;
+    });
   };
   await open(page, "/components/date-picker/", "light");
   expect(await ring(example(page, "date-picker/basic").getByRole("button", { name: /Ngày in/ }))).toBe(true);
@@ -2049,11 +2056,20 @@ test("text follows the browser's default font size (sizes in rem)", async ({ pag
   expect(await size()).toBeCloseTo(base * 2, 0);
 });
 
-test("focused input shows a 2px indicator; Terminal output is a named region", async ({ page }) => {
+test("focused input shows a 2px keyboard outline; Terminal output is a named region", async ({ page }) => {
   await open(page, "/components/field/", "light");
   const input = example(page, "field/basic").locator("input").first();
   await input.focus();
-  expect(await input.evaluate((e) => getComputedStyle(e).boxShadow)).toMatch(/0px 0px 0px 1px/);
+  await page.keyboard.press("Shift+Tab");
+  await page.keyboard.press("Tab");
+  await expect(input).toBeFocused();
+  const focusStyle = await input.evaluate((e) => {
+    const s = getComputedStyle(e);
+    return { outlineStyle: s.outlineStyle, outlineWidth: parseFloat(s.outlineWidth), boxShadow: s.boxShadow };
+  });
+  expect(focusStyle.outlineStyle).toBe("solid");
+  expect(focusStyle.outlineWidth).toBeGreaterThanOrEqual(2);
+  expect(focusStyle.boxShadow).toBe("none");
   await open(page, "/components/terminal/", "light");
   await expect(page.getByRole("region", { name: "npm run build" })).toBeVisible();
 });
@@ -2229,7 +2245,7 @@ test("HintTextarea: @ and / open a listbox; arrows, Enter inserts at the caret, 
   await open(page, "/components/hint-textarea/", "dark");
   const box = example(page, "hint-textarea/basic");
   const text = box.getByRole("combobox", { name: "Lời nhắn gửi nhà cung cấp" });
-  const list = box.getByRole("listbox");
+  const list = page.getByRole("listbox");
   await expect(async () => {
     await text.fill("Chào anh chị, bên em cần báo giá cho @tay");
     await expect(list).toBeVisible({ timeout: 500 });

@@ -26,6 +26,12 @@ const CASES: [string, string, string][] = [
     `<div style="background:#f6f6f6;padding:16px"><label>Ghi chú <input class="ring" style="border:0;background:#fff;height:34px"></label></div>`,
     `<div style="background:#f6f6f6;padding:16px"><label>Ghi chú <input class="ring" style="border:1px solid #767676;background:#fff;height:34px"></label></div>`,
   ],
+  [
+    // 1.0 quiet field edge (< 3:1 resting border): allowed only when :focus-visible draws a 2px ≥ 3:1 outline
+    "edge",
+    `<style>.thin:focus-visible{outline:1px solid #0a6}</style><label>Ghi chú <input class="thin" style="border:1px solid rgba(0,0,0,.1);background:#fff;height:34px"></label>`,
+    `<label>Ghi chú <input class="ring" style="border:1px solid rgba(0,0,0,.1);background:#fff;height:34px"></label>`,
+  ],
   ["name", `<button ${BTN}><svg width="16" height="16" aria-hidden="true"></svg></button>`, `<button ${BTN} aria-label="Cài đặt"><svg width="16" height="16" aria-hidden="true"></svg></button>`],
   [
     "name",

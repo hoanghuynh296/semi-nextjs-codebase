@@ -1,20 +1,27 @@
 {
-  "title": "Avatar",
+  "title": "Avatar & LetterAvatar",
   "group": "Data display",
-  "description": "A person or team: their image, or initials on a tone picked from the name.",
+  "description": "A person or team: their image, two initials on a stable tone (`Avatar`), or one upper-cased letter (`vi` locale, \"?\" when empty) on a neutral fill (`LetterAvatar`, or `Avatar initials={1}`).",
   "components": [
-    "Avatar"
+    "Avatar",
+    "LetterAvatar"
   ],
   "when": [
-    "Owners, assignees, customers in rows and cards."
+    "Owners, assignees, customers in rows and cards (`Avatar`).",
+    "Neutral one-letter account or sender marks without a photo (`LetterAvatar`, used by the route header's account menu)."
   ],
   "a11y": [
-    "The name is the accessible label; decorative next to a visible name."
+    "The full name is the accessible label (`role=\"img\"` + `aria-label`); mark `aria-hidden` when placed next to the same visible name."
   ],
   "examples": [
     {
       "file": "sizes",
       "title": "Sizes"
+    },
+    {
+      "file": "letter",
+      "title": "One-letter neutral avatar",
+      "description": "LetterAvatar draws the first letter upper-cased with the vi locale (Đ, Á, or ? when empty) on a neutral fill."
     }
   ]
 }

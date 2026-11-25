@@ -47,7 +47,15 @@ export function InputOTP({
   };
   const caret = Math.min(value.length, length - 1);
   return (
-    <div role="presentation" className={cn("relative inline-flex", className)} onClick={() => ref.current?.focus()}>
+    <div
+      role="presentation"
+      data-field-frame=""
+      className={cn(
+        "relative inline-flex rounded-control has-[input:focus-visible]:outline-solid has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-focus",
+        className,
+      )}
+      onClick={() => ref.current?.focus()}
+    >
       <input
         ref={ref}
         value={value}
@@ -71,8 +79,8 @@ export function InputOTP({
             {groupSize > 0 && i > 0 && i % groupSize === 0 && <span className="w-2 h-px bg-line-hover" />}
             <span
               className={cn(
-                "flex items-center justify-center w-10 h-12 rounded-control border bg-field text-lead font-semibold text-strong tabular-nums transition",
-                invalid ? "border-danger-fg" : focused && i === caret ? "border-outline-line bg-raised" : "border-control-line",
+                "flex items-center justify-center w-10 h-12 rounded-control border bg-field text-lead font-semibold text-strong tabular-nums transition-colors",
+                invalid ? "border-danger-fg" : focused && i === caret ? "border-field-line-focus bg-field-focus" : "border-field-line",
                 disabled && "opacity-40",
               )}
             >

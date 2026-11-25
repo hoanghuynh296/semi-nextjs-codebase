@@ -109,7 +109,7 @@ export default function GuidedSteps() {
 | `action` | `React.ReactNode` |  | The one primary action that fills the page (a filled Button). Hide the page's own primary while this shows. |
 | `tutorial` | `{ label: string; href: string; }` |  | Link to the full guide, top right from `sm`. |
 | `templates` | `GuideTemplateGroup[]` |  | Rows of ready starting points under the guide. |
-| `headingLevel` | `2 \| 1 \| 3` | `2` | Level of the title (2 inside a page, default); category headings are one below. |
+| `headingLevel` | `1 \| 2 \| 3` | `2` | Level of the title (2 inside a page, default); category headings are one below. |
 | `className` | `string` |  |  |
 
 ## Accessibility

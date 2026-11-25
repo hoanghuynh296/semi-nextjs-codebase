@@ -1,0 +1,44 @@
+{
+  "title": "Option cards",
+  "group": "Forms",
+  "description": "Selectable cards with radio-group semantics (arrow keys, single tab stop): icon, name, optional description, neutral selected state (`bg-item-selected` + `border-outline-line` + `text-strong`, no brand tint) and 8px grid gap.",
+  "components": [
+    "OptionCards"
+  ],
+  "imports": [
+    "type OptionCardItem"
+  ],
+  "when": [
+    "Picking one visual option from 2–6 choices (an AI provider, a shipping method, a plan) where a card with an icon or short description reads faster than a radio list."
+  ],
+  "instead": [
+    {
+      "need": "Compact inline radio list without cards",
+      "use": "RadioGroup"
+    },
+    {
+      "need": "Pick one from a long or searchable list",
+      "use": "CustomSelect or CustomCombobox"
+    },
+    {
+      "need": "Pick multiple values with search and chips",
+      "use": "MultiCombobox"
+    }
+  ],
+  "a11y": [
+    "role=\"radiogroup\" with role=\"radio\" and aria-checked; roving tabindex gives the whole group one tab stop.",
+    "Arrow keys (←/→/↑/↓) and Home/End move both selection and focus, wrapping around and skipping disabled cards."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "Provider picker",
+      "description": "Overline section label above a 2-column grid of option cards."
+    },
+    {
+      "file": "descriptions",
+      "title": "With descriptions",
+      "description": "Each card can carry a short muted description."
+    }
+  ]
+}

@@ -1,26 +1,39 @@
 {
   "title": "Combobox",
   "group": "Forms",
-  "description": "CustomCombobox: type to filter a long list, then pick one value.",
+  "description": "CustomCombobox: type to filter a long or grouped list (diacritic-aware, IME-safe), then pick one value or keep a new one.",
   "components": [
     "CustomCombobox"
   ],
+  "imports": [
+    "type CustomComboboxOption"
+  ],
   "when": [
-    "Long lists the user searches (materials, customers, SKUs)."
+    "Long or grouped lists the user searches (materials, customers, repositories, SKUs)."
   ],
   "instead": [
     {
-      "need": "A short fixed list",
+      "need": "A short fixed list without search",
       "use": "CustomSelect"
+    },
+    {
+      "need": "Pick multiple values with removable chips",
+      "use": "MultiCombobox"
     }
   ],
   "a11y": [
-    "ARIA combobox: arrows move through matches, Enter picks, Escape clears / closes; works inside Field."
+    "ARIA combobox: arrows move through matching enabled options (skipping group headings), Enter picks, Escape closes; works inside Field.",
+    "Option groups use role=\"group\" + aria-labelledby so headings are announced and not selectable; a heading disappears when none of its options match."
   ],
   "examples": [
     {
       "file": "basic",
       "title": "Searchable list"
+    },
+    {
+      "file": "groups",
+      "title": "Grouped options",
+      "description": "Pass group on consecutive options; headings stay only while one of their options matches."
     }
   ]
 }

@@ -8,7 +8,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 ## Machine-readable
 
-- [components.json](./components.json): all 163 components, hooks and constants with props, summaries and their doc page
+- [components.json](./components.json): all 166 components, hooks and constants with props, summaries and their doc page
 - [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
@@ -46,7 +46,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 - [Calendar](./components/calendar/) ([markdown](./docs/components/calendar.md)): A month grid to pick one day or a range (YYYY-MM-DD, weeks start on Monday). DatePicker shows it in a popover; place it inline for schedules and report filters. Components: Calendar.
 - [Checkbox](./components/checkbox/) ([markdown](./docs/components/checkbox.md)): A native checkbox with label and description, checked fill in the accent, and an indeterminate state for “select all”. Components: Checkbox.
-- [Combobox](./components/combobox/) ([markdown](./docs/components/combobox.md)): CustomCombobox: type to filter a long list, then pick one value. Components: CustomCombobox.
+- [Combobox](./components/combobox/) ([markdown](./docs/components/combobox.md)): CustomCombobox: type to filter a long or grouped list (diacritic-aware, IME-safe), then pick one value or keep a new one. Components: CustomCombobox.
 - [Date picker](./components/date-picker/) ([markdown](./docs/components/date-picker.md)): A date field with a Calendar popover (YYYY-MM-DD, min / max). Never type="date". Components: DatePicker.
 - [Drop zone](./components/drop-zone/) ([markdown](./docs/components/drop-zone.md)): The compact FileDrop for a workspace panel: a light dashed tile on the panel surface with a title and a hint, the same checks (accept, maxSize, duplicates), keyboard and announcements; the file rows are optional. Components: DropZone.
 - [Field, Input, Textarea](./components/field/) ([markdown](./docs/components/field.md)): Field gives any control a label, a hint and an error, wired for screen readers; `kind` sets the phone keyboard, autofill and Enter key of an email, phone, number, money, URL, search or password field. Input and Textarea are the standard text controls (bg-field, h-field). Components: Field, Input, Textarea.
@@ -57,7 +57,9 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Hint textarea](./components/hint-textarea/) ([markdown](./docs/components/hint-textarea.md)): A text area that says what it can do (L15): a hint row under the text (“Gõ @ để nhắc nhà cung cấp · Gõ / để chèn mẫu”) and a suggestion list while the word at the caret starts with a trigger; the chosen item is inserted with a space after it. Components: HintTextarea.
 - [Input group](./components/input-group/) ([markdown](./docs/components/input-group.md)): An input with fixed parts around it: a prefix (https://), a unit (kg, ₫), an icon or a small button (copy, show password). Components: InputGroup.
 - [Input OTP](./components/input-otp/) ([markdown](./docs/components/input-otp.md)): One-time code entry (OTP, PIN, 2FA): boxes on screen, one real input underneath, so paste, SMS autofill, screen readers and the number keypad work like a normal field. Components: InputOTP.
+- [Multi combobox](./components/multi-combobox/) ([markdown](./docs/components/multi-combobox.md)): Searchable multi-select: chosen values show as removable chips, an add button (default “Thêm” / “Add”) opens a portaled popover with a quiet search field and a checkbox list. Supports option groups (`group`), diacritic-aware search and Vietnamese Telex IME. Components: MultiCombobox.
 - [Number input](./components/number-input/) ([markdown](./docs/components/number-input.md)): NumberInput: numbers with a touch keypad (NumPadPopup) on phones and tablets, plain typing elsewhere. Never type="number". Components: NumberInput, NumPadPopup.
+- [Option cards](./components/option-cards/) ([markdown](./docs/components/option-cards.md)): Selectable cards with radio-group semantics (arrow keys, single tab stop): icon, name, optional description, neutral selected state (`bg-item-selected` + `border-outline-line` + `text-strong`, no brand tint) and 8px grid gap. Components: OptionCards.
 - [Radio group](./components/radio-group/) ([markdown](./docs/components/radio-group.md)): Exactly one option of a few, each with an optional description; vertical by default. Components: RadioGroup.
 - [Search input](./components/search-input/) ([markdown](./docs/components/search-input.md)): The toolbar search: an icon button that opens into a field (clear button, h-control); it collapses again when empty and focus leaves. SubpageToolbar includes one. Components: SearchInput.
 - [Search pill](./components/search-pill/) ([markdown](./docs/components/search-pill.md)): The wide pill search of a list page (one per page) and the result line under it: “query” · N kết quả on the left, the sort menu on the right. Typing is debounced (250 ms), Escape and the clear button clear at once, an optional key (/) focuses it. Components: SearchPill, ResultLine.
@@ -110,7 +112,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 - [Accordion](./components/accordion/) ([markdown](./docs/components/accordion.md)): A list of sections where one (or several) open at a time: FAQs, settings groups, help. Components: Accordion.
 - [Aspect ratio](./components/aspect-ratio/) ([markdown](./docs/components/aspect-ratio.md)): Keeps media at a fixed ratio while its width follows the layout (images, video, maps, 3D previews). Components: AspectRatio.
-- [Avatar](./components/avatar/) ([markdown](./docs/components/avatar.md)): A person or team: their image, or initials on a tone picked from the name. Components: Avatar.
+- [Avatar & LetterAvatar](./components/avatar/) ([markdown](./docs/components/avatar.md)): A person or team: their image, two initials on a stable tone (`Avatar`), or one upper-cased letter (`vi` locale, "?" when empty) on a neutral fill (`LetterAvatar`, or `Avatar initials={1}`). Components: Avatar, LetterAvatar.
 - [Badge](./components/badge/) ([markdown](./docs/components/badge.md)): A read-only status or tag in a tone (10% fill, 20% border, theme-safe text; one fixed palette for every brand), and the attention marks in the brand colour: CountBadge (unread, to approve; 99+ cap) and NewTag ("Mới"). Components: Badge, CountBadge, NewTag.
 - [Card](./components/card/) ([markdown](./docs/components/card.md)): The bento content card: the card surface (bg-card, separated from the page by tone: no border, no shadow, rounded-card). bordered frames a dense data view; interactive adds hover / press, active marks the selected or running item. Components: Card.
 - [Carousel](./components/carousel/) ([markdown](./docs/components/carousel.md)): Slides in a row that scroll by swipe, trackpad, arrow keys, buttons or dots (CSS scroll-snap, no library). Phones show one slide and a peek of the next. Components: Carousel.

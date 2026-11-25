@@ -1,0 +1,43 @@
+{
+  "title": "Multi combobox",
+  "group": "Forms",
+  "description": "Searchable multi-select: chosen values show as removable chips, an add button (default “Thêm” / “Add”) opens a portaled popover with a quiet search field and a checkbox list. Supports option groups (`group`), diacritic-aware search and Vietnamese Telex IME.",
+  "components": [
+    "MultiCombobox"
+  ],
+  "imports": [
+    "type MultiComboboxOption"
+  ],
+  "when": [
+    "Picking several values from a long or grouped list in a form (supplied goods, tags, assignees, repositories)."
+  ],
+  "instead": [
+    {
+      "need": "Pick one value with search",
+      "use": "CustomCombobox"
+    },
+    {
+      "need": "Pick one value from a short fixed list",
+      "use": "CustomSelect"
+    },
+    {
+      "need": "Filter a list page in a toolbar",
+      "use": "FilterChipRow"
+    }
+  ],
+  "a11y": [
+    "Each removable chip has a remove button with an accessible name (“Bỏ chọn <label>” / “Remove <label>”).",
+    "Inside the popover: the search input is a combobox owning a multi-select listbox (↑/↓ skip group headings, Enter / Space toggle, Escape closes and returns focus to the add button; IME composition keys are ignored)."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "Chips and searchable popover"
+    },
+    {
+      "file": "groups",
+      "title": "Grouped options",
+      "description": "Consecutive options with the same group share a heading; headings stay only while at least one option matches and are skipped by arrow keys."
+    }
+  ]
+}

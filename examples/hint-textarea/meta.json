@@ -35,7 +35,12 @@
     {
       "file": "basic",
       "title": "Mentions and templates",
-      "description": "Type @ or / at the start of a word."
+      "description": "Type @ or / at the start of a word. The suggestion list portals at z-popover and flips above when there is no room below."
+    },
+    {
+      "file": "snippets",
+      "title": "Plain-text snippets and reply box",
+      "description": "value (or insert) replaces the trigger word with a token (@s1) or plain text (a snippet); resizable auto-grows from 3 rows to 50% and adds a top resize edge from md."
     },
     {
       "file": "field",
@@ -43,6 +48,8 @@
     }
   ],
   "notes": [
-    "Matching ignores case and Vietnamese marks (“tay nguyen” finds “Tây Nguyên”); at most six suggestions show."
+    "`value` (or `insert` when the inserted text differs from the short key) replaces the trigger word: use it for a token (`@s1`) or plain text (a snippet or canned reply). `showValue` defaults to `false` when `insert` is set, and long values truncate so the label stays readable.",
+    "The suggestion list uses the Popover engine (`useAnchoredPosition` + portal at `z-popover`), so it flips above near the bottom and is never clipped by a scrolling pane or modal.",
+    "Matching ignores case and Vietnamese marks (“tay nguyen” finds “Tây Nguyên”); at most six suggestions show. Telex IME composition (`isComposing`, `keyCode` 229) is verified across Chromium, WebKit and Firefox."
   ]
 }

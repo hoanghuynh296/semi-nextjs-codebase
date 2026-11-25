@@ -24,6 +24,7 @@ export function Drawer({
   title,
   side = "right",
   footer,
+  autoFocusFirstField = true,
   className,
   children,
 }: {
@@ -34,6 +35,8 @@ export function Drawer({
   side?: "right" | "left" | "bottom" | "top";
   /** Actions pinned to the bottom (MODAL_FOOT). */
   footer?: React.ReactNode;
+  /** Focus the first text-like field when opening on devices with a physical keyboard (`(hover: hover) and (pointer: fine)`). Touch phones keep the keyboard closed. @default true */
+  autoFocusFirstField?: boolean;
   /** Width override for side drawers (e.g. "sm:max-w-lg"). */
   className?: string;
   children: React.ReactNode;
@@ -41,7 +44,7 @@ export function Drawer({
   const [mounted, setMounted] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const t = useSemiLocale();
-  const { titleId } = useDialog(ref, open && mounted, onClose);
+  const { titleId } = useDialog(ref, open && mounted, onClose, { autoFocusFirstField });
   useEffect(() => setMounted(true), []);
   if (!open || !mounted) return null;
 

@@ -95,7 +95,7 @@
     "id": "combobox",
     "title": "Combobox",
     "group": "Forms",
-    "description": "CustomCombobox: type to filter a long list, then pick one value.",
+    "description": "CustomCombobox: type to filter a long or grouped list (diacritic-aware, IME-safe), then pick one value or keep a new one.",
     "components": [
       "CustomCombobox"
     ]
@@ -199,6 +199,15 @@
     ]
   },
   {
+    "id": "multi-combobox",
+    "title": "Multi combobox",
+    "group": "Forms",
+    "description": "Searchable multi-select: chosen values show as removable chips, an add button (default “Thêm” / “Add”) opens a portaled popover with a quiet search field and a checkbox list. Supports option groups (`group`), diacritic-aware search and Vietnamese Telex IME.",
+    "components": [
+      "MultiCombobox"
+    ]
+  },
+  {
     "id": "number-input",
     "title": "Number input",
     "group": "Forms",
@@ -206,6 +215,15 @@
     "components": [
       "NumberInput",
       "NumPadPopup"
+    ]
+  },
+  {
+    "id": "option-cards",
+    "title": "Option cards",
+    "group": "Forms",
+    "description": "Selectable cards with radio-group semantics (arrow keys, single tab stop): icon, name, optional description, neutral selected state (`bg-item-selected` + `border-outline-line` + `text-strong`, no brand tint) and 8px grid gap.",
+    "components": [
+      "OptionCards"
     ]
   },
   {
@@ -609,11 +627,12 @@
   },
   {
     "id": "avatar",
-    "title": "Avatar",
+    "title": "Avatar & LetterAvatar",
     "group": "Data display",
-    "description": "A person or team: their image, or initials on a tone picked from the name.",
+    "description": "A person or team: their image, two initials on a stable tone (`Avatar`), or one upper-cased letter (`vi` locale, \"?\" when empty) on a neutral fill (`LetterAvatar`, or `Avatar initials={1}`).",
     "components": [
-      "Avatar"
+      "Avatar",
+      "LetterAvatar"
     ]
   },
   {

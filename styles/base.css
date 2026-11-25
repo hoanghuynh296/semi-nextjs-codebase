@@ -97,9 +97,15 @@
    its containing block instead (it stays invisible and is still read). */
 .sr-only { top: 0; left: 0; }
 
+/* Pointer-focused controls (clicks/taps on text fields, which browsers still match with :focus-visible): suppress the
+   keyboard-only 2px outline so mouse clicks keep the quiet field focus look; Tab / keyboard focus keeps the outline. */
+[data-pointer-focus] {
+  outline-style: none !important;
+}
+
 /* Forced colours (Windows high contrast) drop box-shadow, so ring-based focus (FOCUS_RING, ring-focus) vanishes and
    `outline-none` leaves nothing: draw a system-colour outline on the focused element instead (WCAG 2.4.7). Unlayered,
    so it wins over `outline-none` in any app. */
 @media (forced-colors: active) {
-  :focus-visible { outline: 2px solid Highlight; outline-offset: 2px; }
+  :focus-visible { outline: 2px solid Highlight !important; outline-offset: 2px; }
 }

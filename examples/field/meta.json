@@ -57,6 +57,11 @@
     {
       "file": "textarea",
       "title": "Textarea"
+    },
+    {
+      "file": "sections",
+      "title": "Overline section labels and reply box",
+      "description": "Use text-overline text-muted for form section labels (never for a single field), and Textarea resizable for an auto-growing reply box."
     }
   ],
   "notes": [

@@ -11,8 +11,9 @@ CustomSelect: pick one value from a list, in a field, in a toolbar, inline in a 
 
 | Need | Use |
 |---|---|
-| A long list the user types into | CustomCombobox |
-| 2–5 visible options | Pills or RadioGroup |
+| A long or grouped list that needs search | CustomCombobox |
+| Pick multiple values with search and removable chips | MultiCombobox |
+| 2–5 visible options | Pills, RadioGroup or OptionCards |
 
 ## Import
 

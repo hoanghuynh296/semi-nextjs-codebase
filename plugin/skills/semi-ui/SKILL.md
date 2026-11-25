@@ -79,7 +79,7 @@ If neither works (`semi_status` answers, or `npx semi` is missing), the app has 
 ## Semi 1.0 rules to hold while you build
 
 Full rules: `node_modules/@semi/ui/docs/DESIGN_SYSTEM.md` §0 (the 1.0 look, the brand colour rule, when to use which).
-A part marked *(Tn, pending)* there (T3, T5–T9) is a 1.0 target that has not shipped: build the rest of the screen to it, use
+A part marked *(Tn, pending)* there (T3, T5, T7–T9) is a 1.0 target that has not shipped: build the rest of the screen to it, use
 what Semi has today for that part, and never write a local stand-in.
 
 - **Brand colour:** `bg-primary` (or `bg-secondary`) only on the one main button of a page or modal (its commit action;

@@ -147,7 +147,7 @@ export function SearchPill({
     inputRef.current?.focus();
   };
   return (
-    <div className={cn("flex items-center gap-2 h-11 pl-4 pr-1.5 rounded-full bg-tint border border-control-line hover:border-control-line-hover focus-within:border-focus focus-within:ring-1 focus-within:ring-focus transition-colors", className)}>
+    <div data-field-frame="" className={cn("flex items-center gap-2 h-11 pl-4 pr-1.5 rounded-full bg-field border border-field-line focus-within:border-field-line-focus focus-within:bg-field-focus has-[input:focus-visible]:outline-solid has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-focus transition-colors", className)}>
       <Icon name="search" className="w-[18px] h-[18px] text-muted shrink-0" />
       <input
         ref={inputRef}

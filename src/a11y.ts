@@ -8,6 +8,85 @@ import { useEffect, useId, useRef, type RefObject } from "react";
 const FOCUSABLE =
   'a[href],button:not([disabled]),input:not([disabled]):not([type="hidden"]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"]),[contenteditable="true"]';
 
+const KEYBOARD_MEDIA = "(hover: hover) and (pointer: fine)";
+const FIRST_FIELD =
+  'input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([disabled]):not([readonly]), textarea:not([disabled]):not([readonly]), [role="combobox"]:not([disabled]):not([aria-disabled="true"])';
+
+const hasPhysicalKeyboard = () =>
+  typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia(KEYBOARD_MEDIA).matches;
+
+/**
+ * Focus the first text-like field inside `root` on devices with a physical keyboard (`(hover: hover) and (pointer: fine)`),
+ * so touch phones keep their on-screen keyboard closed. Does nothing when focus already sits in a field inside `root`.
+ * Useful after a tab change inside a settings page. Returns `true` if a field was focused.
+ */
+export function focusFirstField(root: ParentNode | null): boolean {
+  if (!root || !hasPhysicalKeyboard()) return false;
+  const active = document.activeElement;
+  if (active instanceof HTMLElement && (root as Node).contains(active) && (active.matches(FIRST_FIELD) || active.isContentEditable)) return false;
+  const field = [...root.querySelectorAll<HTMLElement>(FIRST_FIELD)].find(
+    (el) => (el.offsetParent !== null || el.getClientRects().length > 0) && getComputedStyle(el).visibility !== "hidden" && !el.closest("[inert], [aria-hidden='true']"),
+  );
+  if (!field) return false;
+  field.focus({ preventScroll: false });
+  return true;
+}
+
+let modalityBound = false;
+
+/**
+ * Tracks whether the latest focus came from a pointer (mouse / touch) vs the keyboard, so text-entry fields — where
+ * browsers always match `:focus-visible` even on mouse click — show the 2px focus outline only on keyboard focus.
+ * Safe to call multiple times; attaches once per document in the browser, never during SSR.
+ */
+export function ensureFocusModality() {
+  if (modalityBound || typeof document === "undefined") return;
+  modalityBound = true;
+  let byPointer = false;
+  let clearTimer: ReturnType<typeof setTimeout> | undefined;
+  const onDown = () => {
+    byPointer = true;
+    if (clearTimer !== undefined) clearTimeout(clearTimer);
+  };
+  const onUp = () => {
+    if (clearTimer !== undefined) clearTimeout(clearTimer);
+    clearTimer = setTimeout(() => {
+      byPointer = false;
+    }, 80);
+  };
+  const onKeyDown = (e: KeyboardEvent) => {
+    if (e.metaKey || e.altKey || e.ctrlKey) return;
+    byPointer = false;
+    if (clearTimer !== undefined) clearTimeout(clearTimer);
+  };
+  const mark = (el: HTMLElement, on: boolean) => {
+    const frame = el.closest<HTMLElement>("[data-field-frame]");
+    if (on) {
+      el.setAttribute("data-pointer-focus", "");
+      frame?.setAttribute("data-pointer-focus", "");
+    } else {
+      el.removeAttribute("data-pointer-focus");
+      frame?.removeAttribute("data-pointer-focus");
+    }
+  };
+  document.addEventListener("pointerdown", onDown, true);
+  document.addEventListener("mousedown", onDown, true);
+  document.addEventListener("touchstart", onDown, true);
+  document.addEventListener("pointerup", onUp, true);
+  document.addEventListener("mouseup", onUp, true);
+  document.addEventListener("touchend", onUp, true);
+  document.addEventListener("pointercancel", onUp, true);
+  document.addEventListener("keydown", onKeyDown, true);
+  document.addEventListener("focusin", (e) => {
+    if (e.target instanceof HTMLElement) mark(e.target, byPointer);
+  }, true);
+  document.addEventListener("focusout", (e) => {
+    if (e.target instanceof HTMLElement) mark(e.target, false);
+  }, true);
+}
+
+if (typeof document !== "undefined") ensureFocusModality();
+
 let locks = 0;
 const traps: object[] = []; // open dialogs, top last: only the top one handles Tab / Escape
 let saved = { overflow: "", paddingRight: "" };
@@ -64,7 +143,12 @@ const inFloatingLayer = (el: Element | null) => Boolean(el?.closest("[data-semi-
  * popover or menu inside a Modal closes that layer, not the Modal. Floating layers portaled to `body`
  * (`FLOATING_LAYER`) keep their own Tab handling; focus that lands anywhere else outside the dialog is sent back.
  */
-export function useFocusTrap(ref: RefObject<HTMLElement | null>, active: boolean, onEscape?: () => void) {
+export function useFocusTrap(
+  ref: RefObject<HTMLElement | null>,
+  active: boolean,
+  onEscape?: () => void,
+  { autoFocusFirstField = false }: { autoFocusFirstField?: boolean } = {},
+) {
   const escRef = useRef(onEscape);
   escRef.current = onEscape;
 
@@ -74,9 +158,28 @@ export function useFocusTrap(ref: RefObject<HTMLElement | null>, active: boolean
     if (!root) return;
     const opener = document.activeElement as HTMLElement | null;
     const items = () => [...root.querySelectorAll<HTMLElement>(FOCUSABLE)].filter((el) => el.offsetParent !== null || el === document.activeElement);
-    const first = root.querySelector<HTMLElement>("[data-autofocus],[autofocus]") ?? items()[0] ?? root;
-    if (first === root && !root.hasAttribute("tabindex")) root.setAttribute("tabindex", "-1");
-    first.focus({ preventScroll: true });
+    const activeEl = document.activeElement;
+    const alreadyInField =
+      activeEl instanceof HTMLElement && root.contains(activeEl) && (activeEl.matches(FIRST_FIELD) || activeEl.isContentEditable);
+    const explicit = root.querySelector<HTMLElement>("[data-autofocus],[autofocus]");
+    let first: HTMLElement;
+    if (alreadyInField) {
+      first = activeEl;
+    } else if (explicit) {
+      first = explicit;
+      first.focus({ preventScroll: true });
+    } else if (autoFocusFirstField && focusFirstField(root) && document.activeElement instanceof HTMLElement && root.contains(document.activeElement)) {
+      first = document.activeElement;
+    } else {
+      const list = items();
+      // On touch devices (no physical keyboard), prefer a non-field control (e.g. close button) and fall back to root
+      // rather than a field so the phone on-screen keyboard stays closed.
+      first = !hasPhysicalKeyboard()
+        ? (list.find((el) => !el.matches(FIRST_FIELD) && !el.isContentEditable) ?? root)
+        : (list[0] ?? root);
+      if (first === root && !root.hasAttribute("tabindex")) root.setAttribute("tabindex", "-1");
+      first.focus({ preventScroll: true });
+    }
     let last: HTMLElement = first;
     const token = {};
     traps.push(token);
@@ -128,12 +231,17 @@ export function useFocusTrap(ref: RefObject<HTMLElement | null>, active: boolean
       traps.splice(traps.indexOf(token), 1);
       if (opener && document.contains(opener)) opener.focus({ preventScroll: true });
     };
-  }, [active, ref]);
+  }, [active, ref, autoFocusFirstField]);
 }
 
 /** Everything a modal-like surface needs: focus trap, scroll lock, Escape, and an id for aria-labelledby. */
-export function useDialog(ref: RefObject<HTMLElement | null>, open: boolean, onClose?: () => void) {
-  useFocusTrap(ref, open, onClose);
+export function useDialog(
+  ref: RefObject<HTMLElement | null>,
+  open: boolean,
+  onClose?: () => void,
+  options?: { autoFocusFirstField?: boolean },
+) {
+  useFocusTrap(ref, open, onClose, options);
   useScrollLock(open);
   return { titleId: useId() };
 }
