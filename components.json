@@ -3754,7 +3754,7 @@
       "kind": "constant",
       "module": "styles/appChrome.ts",
       "client": false,
-      "summary": "Icon-only header button (AI, toggles): 34 px square, bordered. Add `HEADER_ICON_ON` when on."
+      "summary": "Icon-only header button (AI, toggles): 34 px square, bordered, 44px on a touch phone (BTN_HIT). Add `HEADER_ICON_ON` when on."
     },
     {
       "name": "HEADER_ICON_OFF",
@@ -3887,7 +3887,7 @@
       "kind": "constant",
       "module": "styles/buttons.ts",
       "client": false,
-      "summary": "Icon-only button: add to any BTN_* constant (square, h-control); keep `title` + `aria-label`."
+      "summary": "Icon-only button: add to any BTN_* constant (square, h-control); keep `title` + `aria-label`. Carries the phone touch size (BTN_HIT: 44 × 44px on a touch phone), so a hand-built icon button (`${BTN_SUBTLE} ${BTN_ICON}`) gets it too."
     },
     {
       "name": "BTN_SM",
@@ -3964,7 +3964,7 @@
       "kind": "constant",
       "module": "styles/buttons.ts",
       "client": false,
-      "summary": "44px touch target on a phone with a touch screen (`pointer-coarse` + `max-sm`): the button itself grows to at least 44 × 44px (min-height / min-width win over the `!h-7` / `!w-7` of sm / xs). Real size, not a pseudo-element, so it never covers a neighbour and never overflows a scroll row. A mouse, a tablet and a desktop keep the drawn size."
+      "summary": "44px touch target on a phone with a touch screen (`pointer-coarse` + `max-sm`): the button itself grows to at least 44 × 44px (min-height / min-width win over the `!h-7` / `!w-7` of sm / xs). Real size, not a pseudo-element, so it never covers a neighbour and never overflows a scroll row. A mouse, a tablet and a desktop keep the drawn size. The shared touch-target pair (docs/DESIGN_SYSTEM.md \"Touch targets\"): BTN_HIT grows a control that sits in a dense row (pager, view switch, step nav), HIT_AREA (styles/utils.ts) adds an invisible 44px area around an isolated small one."
     },
     {
       "name": "CARD",
@@ -4125,7 +4125,7 @@
       "kind": "constant",
       "module": "styles/surfaces.ts",
       "client": false,
-      "summary": "Close button in modal headers: visible background pill with clear contrast, easily tappable on dark backgrounds."
+      "summary": "Close button in modal headers: visible background pill with clear contrast, easily tappable on dark backgrounds; 44px on a touch phone (BTN_HIT)."
     },
     {
       "name": "STATUS_PILL",

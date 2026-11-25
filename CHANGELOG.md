@@ -4,6 +4,10 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## Unreleased
 
+### Changed
+
+- **44px touch targets on phones (#186):** On a phone with a touch screen (`pointer: coarse`, below `sm`) icon-only buttons and small dismiss / remove controls now have a hit area of at least 44 × 44px; the drawn size with a mouse, a tablet and a desktop does not change. `BTN_ICON`, `HEADER_ICON_BTN` and `MODAL_CLOSE` now carry `BTN_HIT`, so hand-built icon buttons (`RefreshButton`, the `SubpageToolbar` add CTA, the `Menu` / theme triggers, the AppHeader icons, dialog and AiChat close) grow to 44px on touch phones (34 / 36 → 44). `Pagination`, `ViewSwitch` and the `GuidedEmptyState` step nav grow to 44px on touch phones (dense rows); `Pagination` there shows first · current · last (`‹ 1 … 3 … 12 ›`) so it stays on one row. `Alert` dismiss, `MultiCombobox` chip remove, the `CustomCombobox` chevron, `SidePanel` expand / collapse, `Citation` chips, the `CardActions` ⋯ trigger and the `Calendar` month nav take `HIT_AREA` (an invisible area: 24px with a mouse, 44px on touch screens).
+
 ## 1.0.1 - 2026-11-25
 
 **Summary.** Patch release adding `AppShell.navFooter`, replacing Storybook's header global search with a sticky bottom `Tìm nhanh ⌘K` `CommandDialog` trigger, and adding Vietnamese IME composition guards in `Command` and `useFocusTrap` (#181, PR #182).
