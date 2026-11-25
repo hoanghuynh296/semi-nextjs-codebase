@@ -4,6 +4,15 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## Unreleased
 
+### Changed
+
+- **`StickyContextBar` without layout-pin (#193):** below `md`, or in a scroller outside `AppShell`'s page structure, an upward wheel gesture that starts within one screen above the pin is now driven by the bar from its first event and stops exactly at the pin (no native smooth-wheel animation for that gesture); a gesture that starts further up stays fully native and its momentum may now scroll past the pin and unpin the bar, where it used to be snapped back every frame. From `md` inside `AppShell` (layout-pin) holds, unpinning and pinning behave as before.
+- **`StickyContextBar` in a padded scroller (#193):** `--sticky-pin` and `data-stuck` are measured from the scroller's padding edge, where the bar actually sticks; a scroller with `padding-top` (e.g. the component doc example) now gets `data-stuck` (shadow and `BarActions`) and a pin that matches the stuck position, previously off by the padding.
+
+### Fixed
+
+- **`StickyContextBar` flicker while scrolling up (#193):** the wheel handler and the `scroll` listener wrote `scrollTop` back while Chrome was already scrolling natively (non-cancelable wheel events of a trackpad or mouse-wheel sequence), so the page showed the native and the written position on alternate frames. `scrollTop` is now written only for wheel events the bar prevented itself; holds are decided on a gesture's first, cancelable event. CSS variables, `data-stuck` and the short-list `min-height` are only written when their value changes.
+
 ## 1.0.1 - 2026-11-25
 
 **Summary.** Patch release adding `AppShell.navFooter`, replacing Storybook's header global search with a sticky bottom `Tìm nhanh ⌘K` `CommandDialog` trigger, and adding Vietnamese IME composition guards in `Command` and `useFocusTrap` (#181, PR #182).
