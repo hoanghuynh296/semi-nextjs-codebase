@@ -59,6 +59,8 @@ export default function RadioGroupBasic() {
 | `name` | `string` |  |  |
 | `direction` | `'horizontal' \| 'vertical'` | `"vertical"` |  |
 | `className` | `string` |  |  |
+| `aria-label` | `string` |  | Accessible name for the radiogroup when no visible `label` is rendered. `label` wins. |
+| `aria-labelledby` | `string` |  | Id of the element that names the radiogroup when no visible `label` is rendered. `label` wins. |
 
 ## Accessibility
 

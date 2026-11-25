@@ -231,3 +231,85 @@
 [data-shell-card]:has(> [data-shell-container] > [data-motion-enter] > [data-page-fixed]) {
   overflow: hidden;
 }
+
+/* StickyContextBar (#150, SPEC §6): pin-by-layout from md+, shadow fade, and in-field pinned BarActions slot.
+   From md (768px), the scroller's exact scroll range equals `--sticky-pin` and the list / reader panels scroll
+   independently with `overscroll-behavior: contain` so trackpad momentum and flings never unpin the bar.
+   Below md (phones), the page keeps native scrolling and touch behaviour. */
+[data-sticky-bar] {
+  transition: box-shadow var(--motion-hover, 150ms ease-in-out);
+}
+[data-sticky-bar][data-stuck] {
+  box-shadow: var(--shadow-card);
+}
+@media (min-width: 768px) {
+  [data-sticky-host] > [data-shell-container] {
+    height: calc(var(--sticky-view, 100%) + var(--sticky-pin, 0px));
+    min-height: 0;
+    flex: none;
+  }
+  [data-sticky-host] [data-page-layout] {
+    min-height: 0;
+    flex: 1 1 0%;
+    padding-bottom: 0;
+  }
+  [data-sticky-host] [data-page-layout="two-column"] > [data-page-subnav] {
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    height: calc(var(--sticky-view, 100%) - var(--semi-spacing, 4px));
+  }
+  [data-sticky-host] [data-page-layout="two-column"] > [data-page-main] {
+    min-height: 0;
+    padding-bottom: 0;
+  }
+  [data-sticky-host] [data-page-body] {
+    flex: 1 1 0%;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-bottom: 4rem;
+  }
+  [data-sticky-host] [data-page-body]:has(> [data-list-reader]) {
+    overflow: hidden;
+    padding-bottom: 1rem;
+  }
+}
+
+/* BarActions inside SearchPill trailing: hidden (out of flow and a11y tree) until StickyContextBar is stuck and
+   not searching. 8px apart, last action inset matches the "/" shortcut hint (0.375rem = mr-1.5). */
+.semi-bar-actions {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  max-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity var(--motion-hover, 150ms ease-in-out),
+    max-width var(--motion-hover, 150ms ease-in-out),
+    visibility 0s linear 150ms;
+}
+[data-sticky-bar][data-stuck]:not([data-searching]) .semi-bar-actions {
+  position: static;
+  max-width: 10rem;
+  overflow: visible;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  margin-right: 0.375rem;
+  transition:
+    opacity var(--motion-hover, 150ms ease-in-out),
+    max-width var(--motion-hover, 150ms ease-in-out),
+    visibility 0s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .semi-bar-actions,
+  [data-sticky-bar][data-stuck]:not([data-searching]) .semi-bar-actions {
+    transition: opacity var(--motion-hover, 150ms ease-in-out), visibility 0s;
+  }
+}

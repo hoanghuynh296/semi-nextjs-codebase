@@ -184,6 +184,7 @@ The order it shows is `sortRows(searchRows(rows, columns, search), columns, sort
 | `sort` | `null \| DataTableSort` |  |  |
 | `defaultSort` | `DataTableSort` |  |  |
 | `onSortChange` | `(sort: DataTableSort \| null) => void` |  |  |
+| `onResultsChange` | `(rows: T[]) => void` |  | Called with the searched + sorted rows (all pages) whenever the result order changes, so a DetailOverlay's ‹ › walks the table's exact order. |
 | `selectable` | `boolean` | `false` | Add a checkbox column. |
 | `selected` | `string[]` |  |  |
 | `onSelectedChange` | `(ids: string[]) => void` |  |  |

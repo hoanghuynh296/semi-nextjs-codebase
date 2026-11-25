@@ -8,7 +8,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 ## Machine-readable
 
-- [components.json](./components.json): all 173 components, hooks and constants with props, summaries and their doc page
+- [components.json](./components.json): all 174 components, hooks and constants with props, summaries and their doc page
 - [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
@@ -104,7 +104,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Scroll area](./components/scroll-area/) ([markdown](./docs/components/scroll-area.md)): A fixed-size scrolling region (a long list in a card, a log). Semi hides scrollbars, so it marks the edges that have more content, can show a thin scrollbar, and is reachable by keyboard. Components: ScrollArea.
 - [Segmented control](./components/segmented-control/) ([markdown](./docs/components/segmented-control.md)): Small single-choice filter sets shown in full (2–5 values, often with tabular-nums counts): a `raised` track (h32, radius 8, padding 4, gap 4) with h24 items (12px/600) and one solid `raised-2` pill (white in light theme) sliding in 300ms ease-out. Components: SegmentedControl.
 - [Side panel](./components/side-panel/) ([markdown](./docs/components/side-panel.md)): A 320px tool panel beside a canvas that collapses to a 48px rail; SidePanelToggle is its collapse button. Components: SidePanel, SidePanelToggle.
-- [Sticky context bar](./components/sticky-context-bar/) ([markdown](./docs/components/sticky-context-bar.md)): The top of a list page that stays while the rows scroll under it: SearchPill, then FilterChipRow (PhoneFilterBar on phones), then ResultLine. An opaque STICKY_TOOLBAR strip, below the safe area on phones. The title row with the page's action (PageTitle actions) sits above it and scrolls away. Components: StickyContextBar.
+- [Sticky context bar](./components/sticky-context-bar/) ([markdown](./docs/components/sticky-context-bar.md)): The top of a list page that pins on scroll or search focus (250ms ease-out), holds against trackpad momentum and flings, and moves up to 2 page actions into SearchPill via BarActions while pinned. Pins by layout from md+ with independent overscroll-contained list/reader scrollers; keeps native touch scrolling below md. Components: StickyContextBar, BarActions.
 - [Subpage toolbar](./components/subpage-toolbar/) ([markdown](./docs/components/subpage-toolbar.md)): The sticky row with a page's filters on the left and search, refresh and the icon-only primary action on the right: under the page title, or with the title on the same row (title). RefreshButton spins while its promise runs. Components: SubpageToolbar, RefreshButton.
 - [Tabs](./components/tabs/) ([markdown](./docs/components/tabs.md)): Switch between panels of content inside a page or card: underline (default) or segmented, with icons and counts. Components: Tabs.
 - [Text tabs](./components/text-tabs/) ([markdown](./docs/components/text-tabs.md)): Big display tabs (`font-display text-tab-xl`, 24px below sm / 28px from sm, weight 400) for 2–4 top-level views of a discovery or reading page: every tab in strong text colour, inactive at opacity 0.2 (raised on hover in 150ms), active with a 2px brand underline at 6px offset under the word only. Components: TextTabs.
@@ -301,7 +301,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (173)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (174)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
@@ -372,7 +372,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `RouteHeader`: `AccountMenu`, `RouteHeader`
 - `ScrollArea`: `ScrollArea`
 - `SearchInput`: `SearchInput`
-- `SearchPill`: `StickyContextBar`, `SearchPill`, `ResultLine`
+- `SearchPill`: `BarActions`, `StickyContextBar`, `SearchPill`, `ResultLine`
 - `SegmentedControl`: `SegmentedControl`
 - `Separator`: `Separator`
 - `SidePanel`: `SidePanelToggle`, `SidePanel`
@@ -396,7 +396,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `formValidation`: `FormErrorSummary`
 - `locale`: `SemiLocaleProvider`
 
-**Hooks:** `useAppShell`, `useHotkey`, `useRegisterCommands`, `useDetailParam`, `useField`, `useListSelection`, `useFilterParams`, `useCoarsePointer`, `useRecordCrumb`, `useTheme`, `useThemeChoices`, `useThemeUtility`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useFormValidation`, `useSemiLocale`, `useTabParam`, `useUnsavedGuard` · **Functions:** `navScript`, `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `filterCommands`, `openCommandPalette`, `openDetail`, `pageWindow`, `startTask`, `themeScript`, `updateToast`, `dismissToast`, `focusFirstField`, `ensureFocusModality`, `confirmDialog`, `confirmDelete`, `kindAttrs`, `readFilterValues`, `readFilters`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `composeRefs`, `cloneTrigger`, `normalizeSearch`, `searchRows`, `sortRows`, `cn`
+**Hooks:** `useAppShell`, `useHotkey`, `useRegisterCommands`, `useDetailParam`, `useField`, `useListSelection`, `useFilterParams`, `useCoarsePointer`, `useRecordCrumb`, `useTheme`, `useThemeChoices`, `useThemeUtility`, `useScrollLock`, `useBackdropClose`, `useFocusTrap`, `useDialog`, `useAnchoredPosition`, `useFormValidation`, `useSemiLocale`, `useTabParam`, `useUnsavedGuard` · **Functions:** `navScript`, `isoDay`, `parseDay`, `chipClass`, `chipIconClass`, `filterCommands`, `openCommandPalette`, `openDetail`, `pageWindow`, `startTask`, `themeScript`, `updateToast`, `dismissToast`, `focusFirstField`, `ensureFocusModality`, `confirmDialog`, `confirmDelete`, `kindAttrs`, `readFilterValues`, `readFilters`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `parseSort`, `formatSort`, `readSort`, `writeSort`, `composeRefs`, `cloneTrigger`, `normalizeSearch`, `searchRows`, `sortRows`, `currentSearch`, `navigationApi`, `subscribeUrl`, `holdPending`, `flushPending`, `writeSearch`, `patchSearch`, `replaceFilters`, `cn`
 <!-- generated:components:end -->
 
 
@@ -867,19 +867,14 @@ action: `inverse`, or the brand `primary` when it is the page's commit action; a
   places from the layout, each page's actions and records from `useRegisterCommands`; groups under `text-overline`
   headings; ⌘↵ opens an item with `href` in a new tab.
 
-## 4e. StickyContextBar behaviour (T8, pending)
+## 4e. StickyContextBar behaviour
 
-- **Pinning.** The bar pins when the page scrolls past it, or when its search field gets focus (focus scrolls smoothly
-  in 250ms, no layout shift).
-- **Unpinning.** Once pinned, scrolling up stops at the pin. Only a **new** upward gesture that starts at the list top
-  unpins it; momentum and flings never do.
-- **State is kept.** Filter, sort, search and data changes leave it alone: pinned stays pinned, unpinned stays unpinned.
-- **How:** once pinned the page stops scrolling and the list area (each card of a list + reader page) becomes its own
-  scroll container sized to the viewport, with `overscroll-behavior: contain`; the page's scroll range is exactly the
-  pin height. Never clamp the wheel on a scrolling document (it judders on trackpads).
-- **Actions when pinned.** The title row's actions move inside the search field, on its right: at most two, [•••][main
-  action], 8px apart, the last inset like the "/" hint, hidden while the field has focus.
-- **Today:** the bar is `sticky` under the title row; build the page as above and leave the pinning to Semi.
+- **Pinning.** `StickyContextBar` (`pin={true}` by default) pins when the scroller scrolls past it, or when its search text field gets focus (not a filter chip, sort or view button). Focus scrolls smoothly to the pin in 250ms ease-out (instant under `prefers-reduced-motion`, cancelled by wheel or touch), with zero layout shift, even on a short list; already pinned does not scroll.
+- **Unpinning.** Once pinned, scrolling up stops at the pin. Only a **new** upward wheel gesture (> 200ms idle) that starts at the pin with the list at its top unpins it; momentum tails and fast flings never unpin.
+- **State is kept.** Filter, sort, search, selection-mode and data changes leave the current state alone: pinned stays pinned (fewer results cannot unpin it), unpinned stays unpinned.
+- **Pin by layout (`md+`).** From `md` (768px), `StickyContextBar` sets `data-sticky-host`, `--sticky-pin` and `--sticky-view` on its scroller (`main#main` or nearest scrollable ancestor) and `data-stuck` / `data-searching` on itself (all cleared on unmount). CSS sizes the page container to `var(--sticky-view) + var(--sticky-pin)` so the page's exact scroll range equals the pin height (including in selection mode) and the list area (`[data-page-body]`, or each `ListReaderLayout` panel) scrolls independently with `overscroll-behavior: contain`. Never clamp wheel events on a scrolling document or write `scrollTop` per wheel event while scrolling the list. Below `md` (phones), the page keeps native scrolling and touch behaviour (the wheel stop is proven for trackpad / wheel; touch scrolling is unverified).
+- **Actions when pinned (`BarActions`).** Pass `<BarActions actions={…} menu={…} />` in `SearchPill`'s `trailing` slot: while pinned and not searching (`[data-stuck]:not([data-searching])`), the title row's actions appear inside the search field on the right — at most 2 icon-button slots with tooltips in title-row order (`[•••][main action]`, 8px apart, last button inset matching the `"/"` hint; > 2 actions keep the main one and collapse the rest into `•••`; main uses `inverse` by default, or `primary` only if the title row itself uses the brand button). Hidden while unpinned or while the search field has focus (150ms fade, opacity-only under reduced motion, out of flow and out of the accessibility tree so `"/"` never shifts).
+- **URL state (`useFilterParams`, `filterParams`, `urlState`).** `useFilterParams(specs, { prefix, legacy, sort })` supports `legacy` (rewritten once after hydration via `replaceState`, zero extra history entries), `patch(values, mode)` (change several filters in one history entry), and URL-backed `?sort=key.dir` (`sort`, `setSort`, `sortDef` shared by `FilterChipRow`, `PhoneFilterBar`, `FilterPanel` and `DataTable`, plus pure helpers `readSort`, `writeSort`, `parseSort`, `formatSort`, `SORT_PARAM`). Outside the hook, use `replaceFilters` and `writeSearch`. `DataTable` reports its searched + sorted rows via `onResultsChange` (alongside pure `sortRows` / `searchRows`) so a `DetailOverlay`'s ‹ › walks the table's exact order. In `FilterPanel`, `single` radio groups have an accessible name directly on `role="radiogroup"` and write with `"replace"` so arrowing adds no history entries; a `single` `FilterChip` with no options is disabled.
 
 ## 4f. Workspace pages
 
@@ -1305,7 +1300,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `MegaMenu.tsx`, `MinimalHeader.tsx`, `TextTabs.tsx`, `PillTabs.tsx`, `SegmentedControl.tsx`, `useTabParam.ts` | `MegaMenu` (flyout of category columns, `text-overline` headers, New badges, See all), `MinimalHeader` (breadcrumb left, one link + one primary right), `TextTabs` (big display tabs for 2–4 top-level views, brand underline, `href`, `onBeforeChange`, `activation`), `PillTabs` (default section tabs for 5+ sections or sections with icons, sliding `item-hover` pill, `tabpanel`, `href`, `onBeforeChange`, `activation`), `SegmentedControl` (2–5 filter values with counts, sliding `raised-2` pill, `radiogroup`), `useTabParam` (`?tab=` URL state without history spam per arrow key) (§4, §4h) |
 | `Page.tsx`, `PageEnter.tsx`, `ListReader.tsx` | `Page` (shared 1.0 page anatomy and `work` / `reading` / `two-column` layouts + vertical rhythm + `enter`), `PageEnter` (`display: contents` route-level `motion-enter` + `motion-stagger` wrapper for top blocks and first ~10 rows / cards, once per route), `SubNav` (240px sub-nav card with `text-nav-label` groups and h32 items), `PageSection` (20/500 heading + 16px content gap), `PageGrid` (8px `@container` grid), `ListReaderLayout` (two independent scrollers on `fixed` mode, `?open=`, `useRecordCrumb`, phone swap), `ReaderHeader` (sticky one-row reader header: wrapping title left, `[•••]` + one main action right) (§4a, §4g) |
 | `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle` (18/400 UI sans on the action row; `variant="reading"` 44/500 display title for one-column reading pages), `PageTabsTitle` (deprecated underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh; phone layout with `filters` / `collapseFilters` / `secondaryActions`), `ToolbarFilters` (§4a) |
-| `SearchPill.tsx`, `FilterChipRow.tsx`, `ViewSwitch.tsx`, `FilterPanel.tsx`, `filterParams.ts` | `StickyContextBar` (sticky search + filter row, 16px above the list), `SearchPill` (wide pill search, debounce, `/`), `ResultLine` (deprecated in 1.0), `SortDef`, `FilterChipRow` (one-line chips, ‹ ›, Xoá lọc, leading views, trailing `sort` + `selection` in-place bulk bar + `ViewSwitch`), `useListSelection` (selection-mode state hook), `BulkAction`, `ListSelection`, `FilterChip`, `FilterOptions`, `useFilterParams` (filter state in the URL, Back / Forward), `ViewSwitch` (list ↔ grid, density), `PhoneFilterBar` (views · Bộ lọc · sort · Chọn / in-place selection bar), `FilterPanel` (full-screen / side-sheet filters); URL helpers `readFilters`, `readFilterValues`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, types `FilterSpec`, `FilterDef`, `FilterOption`, `FilterValues` (§4, §4d) |
+| `SearchPill.tsx`, `FilterChipRow.tsx`, `ViewSwitch.tsx`, `FilterPanel.tsx`, `filterParams.ts`, `urlState.ts` | `StickyContextBar` (trackpad-proven layout-pin search + filter bar, focus-pin, `data-stuck` / `data-searching`, `--sticky-pin` / `--sticky-view`), `BarActions` + `BarAction` (pinned in-field actions slot, ≤ 2 slots `[•••][main]`), `SearchPill` (wide pill search, debounce, `/`, `trailing`), `ResultLine` (deprecated in 1.0), `SortDef`, `FilterChipRow` (one-line chips, ‹ ›, Xoá lọc, leading views, trailing `sort` + `selection` in-place bulk bar + `ViewSwitch`), `useListSelection` (selection-mode state hook), `BulkAction`, `ListSelection`, `FilterChip`, `FilterOptions`, `useFilterParams` (URL filter + `?sort=key.dir` state, `legacy` rewrite, `patch`, Back / Forward), `FilterParamsOptions`, `FilterParamsSortOptions`, `LegacyParamsMap`, `replaceFilters`, `writeSearch`, `ViewSwitch` (list ↔ grid, density), `PhoneFilterBar` (views · Bộ lọc · sort · Chọn / in-place selection bar), `FilterPanel` (full-screen / side-sheet filters); URL helpers `readFilters`, `readFilterValues`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `readSort`, `writeSort`, `parseSort`, `formatSort`, `SORT_PARAM`, types `FilterSpec`, `FilterDef`, `FilterOption`, `FilterValues` (§4, §4d, §4e) |
 | `SplitButton.tsx`, `CardActions.tsx`, `DetailOverlay.tsx` | `SplitButton` (main action + ▾ `Menu` of its variants, one button on phones, G1), `CardActions` (hover / focus icon actions + ⋯ on cards, ⋯ only on touch), `DetailOverlay` (record over its list: ‹ › with n / N, side panel, scroll kept), `useDetailParam` (`?open=` in the URL, Back closes), `openDetail` (open one from anywhere on the route), types `CardAction`, `DetailParamState` (§4, §9) |
 | `WorkspaceLayout.tsx`, `GuidedEmptyState.tsx`, `FeatureIntro.tsx`, `HintTextarea.tsx` | `WorkspaceLayout` (page type workspace: control panel + sticky main action, result), `WorkspaceHeader` (back + tool name, tabs), `WorkspaceSection` (`text-overline` label + counter), `Stepper` (− value +, spinbutton), `GuidedEmptyState` (EmptyState variant guided: step carousel or numbered steps, starting points), `FeatureIntro` (once-per-user feature dialog, `localIntroStore`), `HintTextarea` (@ / `/` hints and suggestions), types `GuideStep`, `GuideTemplate`, `GuideTemplateGroup`, `FeatureIntroSlide`, `FeatureIntroStore`, `HintToken`, `HintTrigger` (§4, §9b, §13, §14) |
 | `KpiCard.tsx`, `Modal.tsx` | `KpiCard` (metric card in the brand's figure font, neutral icon, `featured` for the screen's main number, shimmer), `Modal` (shared portal dialog with `MODAL_HEAD` + `MODAL_FOOT`) (§13, §14) |
@@ -4676,7 +4671,7 @@ A list page's filters as one line of chips (icon, label, chevron; solid with the
 ## Import
 
 ```tsx
-import { FilterChipRow, FilterChip, FilterOptions, useFilterParams, readFilters, writeFilters, clearFilters } from "@semi/ui";
+import { FilterChipRow, FilterChip, FilterOptions, useFilterParams, readFilters, writeFilters, clearFilters, replaceFilters, writeSearch, readSort, writeSort } from "@semi/ui";
 ```
 
 ## Examples
@@ -5002,7 +4997,7 @@ of a desktop page with more filters than its chip row shows). Changes apply at o
 | `open` * | `boolean` |  |  |
 | `onClose` * | `() => void` |  |  |
 | `filters` * | `FilterDef[]` |  |  |
-| `onChange` * | `(key: string, selected: string[]) => void` |  |  |
+| `onChange` * | `(key: string, selected: string[], mode?: "push" \| "replace") => void` |  |  |
 | `onClear` * | `() => void` |  |  |
 | `sort` | `SortDef` |  | Sort choices, shown first as a row of chips. |
 | `resultCount` | `number` |  | Rows matching now, on the bottom button ("Xem 12 kết quả"); without it the button says "Đóng". |
@@ -5967,6 +5962,8 @@ export default function RadioGroupBasic() {
 | `name` | `string` |  |  |
 | `direction` | `'horizontal' \| 'vertical'` | `"vertical"` |  |
 | `className` | `string` |  |  |
+| `aria-label` | `string` |  | Accessible name for the radiogroup when no visible `label` is rendered. `label` wins. |
+| `aria-labelledby` | `string` |  | Id of the element that names the radiogroup when no visible `label` is rendered. `label` wins. |
 
 ## Accessibility
 
@@ -6128,7 +6125,7 @@ openDetail during the debounce sends the pending text first, so the query stays 
 | `debounce` | `number` | `250` | Milliseconds to wait after the last key before `onChange` (0: every key). |
 | `focusKey` | `string` |  | A key that focuses the field from anywhere on the page, e.g. "/". Shown as a key cap while the field is empty. |
 | `shortcut` | `string` |  | Key cap shown while empty when the app binds the shortcut itself ("⌘K" for a command palette). |
-| `trailing` | `React.ReactNode` |  | Extra tools at the right end (image search, voice): IconButtons. |
+| `trailing` | `React.ReactNode` |  | Extra tools at the right end (pinned `<BarActions />`, image search, voice). |
 | `className` | `string` |  |  |
 
 ### ResultLine
@@ -10590,7 +10587,7 @@ The collapse toggle placed at the top of the panel content (next to the first la
 
 # Sticky context bar
 
-The top of a list page that stays while the rows scroll under it: SearchPill, then FilterChipRow (PhoneFilterBar on phones), then ResultLine. An opaque STICKY_TOOLBAR strip, below the safe area on phones. The title row with the page's action (PageTitle actions) sits above it and scrolls away.
+The top of a list page that pins on scroll or search focus (250ms ease-out), holds against trackpad momentum and flings, and moves up to 2 page actions into SearchPill via BarActions while pinned. Pins by layout from md+ with independent overscroll-contained list/reader scrollers; keeps native touch scrolling below md.
 
 ## When to use
 
@@ -10608,7 +10605,7 @@ The top of a list page that stays while the rows scroll under it: SearchPill, th
 ## Import
 
 ```tsx
-import { StickyContextBar } from "@semi/ui";
+import { StickyContextBar, BarActions } from "@semi/ui";
 ```
 
 ## Examples
@@ -10714,14 +10711,39 @@ export default function StickyContextBarListPage() {
 
 ### StickyContextBar
 
-The search, the filter chips and the result line of a list page, pinned to the top of the scrolling content while
-the rows scroll under it. It is `STICKY_TOOLBAR` (opaque, bleeds to the panel's side padding, below the safe area on
-phones) stacked as a column. One per page, in place of a SubpageToolbar.
+The search and filter bar of a list page, pinned to the top of the scrolling content while the rows scroll under it.
+
+Pin behaviour (#150):
+- Pins when the scroller scrolls past the bar, or when the search text field gets focus (250ms ease-out, instant
+  under reduced motion, cancelled by wheel/touch; works on short lists too; chips/sort/view buttons do not pin).
+- From `md` (768px), pins by layout: the scroller's exact scroll range equals `--sticky-pin` and the list area (or
+  each `ListReaderLayout` panel) scrolls independently with `overscroll-behavior: contain`. Only a new upward wheel
+  gesture starting at the list top unpins; momentum and flings never unpin. Below `md`, keeps native touch scrolling.
+- Exposes `data-stuck` and `data-searching` on the bar and `--sticky-pin` / `--sticky-view` on the scroller, clearing
+  them on unmount.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `children` * | `React.ReactNode` |  | Usually SearchPill, then FilterChipRow (PhoneFilterBar on phones). No ResultLine in 1.0: the list sits 16px under the filter row. |
+| `children` * | `React.ReactNode` |  | Usually SearchPill (with optional BarActions in `trailing`), then FilterChipRow (PhoneFilterBar on phones). No ResultLine in 1.0: the list sits 16px under the filter row. |
 | `label` | `string` |  | Accessible name of the region ("Tìm và lọc khách hàng"); leave it out when the bar holds only a search. |
+| `pin` | `boolean` | `true` | Enable trackpad-proven layout pinning, focus-pin and `data-stuck` / `data-searching` state (default `true`). |
+| `className` | `string` |  |  |
+
+### BarActions
+
+Page actions that move inside `SearchPill`'s `trailing` slot while `StickyContextBar` is pinned (`data-stuck`) and
+hide while the search field has focus (`data-searching`, 150ms fade, out of the accessibility tree and taking zero
+layout space when hidden so the `"/"` shortcut hint never shifts).
+
+Always renders at most **2 slots**, in the title row's order (`[•••][main action]`, 8px apart, last button inset
+matching the `"/"` hint): with more than two actions (or any `menu` items), the main action stays on the right and
+the rest collapse into `•••` on the left.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `actions` * | `BarAction[]` |  | Primary and secondary page actions (in title-row order: secondary left, `primary` last). |
+| `menu` | `BarAction[]` |  | Extra overflow items always placed inside the `•••` menu. |
+| `moreLabel` | `string` |  | Accessible name and tooltip of the `•••` overflow button (default locale `moreActions`). |
 | `className` | `string` |  |  |
 
 ## Accessibility
@@ -12648,6 +12670,7 @@ The order it shows is `sortRows(searchRows(rows, columns, search), columns, sort
 | `sort` | `null \| DataTableSort` |  |  |
 | `defaultSort` | `DataTableSort` |  |  |
 | `onSortChange` | `(sort: DataTableSort \| null) => void` |  |  |
+| `onResultsChange` | `(rows: T[]) => void` |  | Called with the searched + sorted rows (all pages) whenever the result order changes, so a DetailOverlay's ‹ › walks the table's exact order. |
 | `selectable` | `boolean` | `false` | Add a checkbox column. |
 | `selected` | `string[]` |  |  |
 | `onSelectedChange` | `(ids: string[]) => void` |  |  |

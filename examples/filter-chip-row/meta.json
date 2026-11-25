@@ -11,7 +11,11 @@
     "useFilterParams",
     "readFilters",
     "writeFilters",
-    "clearFilters"
+    "clearFilters",
+    "replaceFilters",
+    "writeSearch",
+    "readSort",
+    "writeSort"
   ],
   "when": [
     "The filters of a list, grid or table page on desktop and iPad (md+), under its SearchPill in a StickyContextBar.",

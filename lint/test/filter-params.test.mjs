@@ -1,7 +1,18 @@
 // Filter state in the URL (#99): search params in, typed filter state out, and back.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { activeFilterCount, clearFilters, readFilters, readFilterValues, toQueryString, writeFilters } from "../../src/filterParams.ts";
+import {
+  activeFilterCount,
+  clearFilters,
+  formatSort,
+  parseSort,
+  readFilters,
+  readFilterValues,
+  readSort,
+  toQueryString,
+  writeFilters,
+  writeSort,
+} from "../../src/filterParams.ts";
 
 const SPECS = [
   { key: "status", label: "Trạng thái", options: [{ value: "new", label: "Mới" }, { value: "quoting", label: "Báo giá" }, { value: "won", label: "Chốt" }] },
@@ -76,4 +87,25 @@ test("a single filter (#119): one value in the URL, clearValue never written and
   assert.equal(activeFilterCount(readFilters("f.box=all", BOX)), 0);
   assert.equal(activeFilterCount(readFilters("f.box=sales", BOX)), 1);
   assert.equal(clearFilters("f.box=sales&f.folder=x&q=a", BOX).toString(), "q=a");
+});
+
+test("URL sort helpers (#124, #150): parseSort, formatSort, readSort, writeSort", () => {
+  assert.deepEqual(parseSort("total.desc"), { key: "total", dir: "desc" });
+  assert.deepEqual(parseSort("a.b.asc"), { key: "a.b", dir: "asc" });
+  assert.equal(parseSort("total.up"), null);
+  assert.equal(parseSort(".asc"), null);
+  assert.equal(parseSort(""), null);
+  assert.equal(parseSort("total.desc", ["id", "customer"]), null);
+  assert.deepEqual(parseSort("id.asc", ["id", "customer"]), { key: "id", dir: "asc" });
+  assert.equal(formatSort({ key: "total", dir: "desc" }), "total.desc");
+  assert.equal(formatSort(null), "");
+
+  const def = { key: "id", dir: "asc" };
+  assert.deepEqual(readSort("", { defaultSort: def }), def);
+  assert.deepEqual(readSort("?sort=total.desc", { defaultSort: def }), { key: "total", dir: "desc" });
+  assert.deepEqual(readSort("?sort=bad", { defaultSort: def }), def);
+
+  assert.equal(writeSort("q=a", { key: "total", dir: "desc" }, { defaultSort: def }).toString(), "q=a&sort=total.desc");
+  assert.equal(writeSort("q=a&sort=total.desc", def, { defaultSort: def }).toString(), "q=a");
+  assert.equal(writeSort("q=a&sort=total.desc", null, { defaultSort: def }).toString(), "q=a");
 });

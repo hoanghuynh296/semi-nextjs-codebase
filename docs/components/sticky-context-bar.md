@@ -1,6 +1,6 @@
 # Sticky context bar
 
-The top of a list page that stays while the rows scroll under it: SearchPill, then FilterChipRow (PhoneFilterBar on phones), then ResultLine. An opaque STICKY_TOOLBAR strip, below the safe area on phones. The title row with the page's action (PageTitle actions) sits above it and scrolls away.
+The top of a list page that pins on scroll or search focus (250ms ease-out), holds against trackpad momentum and flings, and moves up to 2 page actions into SearchPill via BarActions while pinned. Pins by layout from md+ with independent overscroll-contained list/reader scrollers; keeps native touch scrolling below md.
 
 ## When to use
 
@@ -18,7 +18,7 @@ The top of a list page that stays while the rows scroll under it: SearchPill, th
 ## Import
 
 ```tsx
-import { StickyContextBar } from "@semi/ui";
+import { StickyContextBar, BarActions } from "@semi/ui";
 ```
 
 ## Examples
@@ -124,14 +124,39 @@ export default function StickyContextBarListPage() {
 
 ### StickyContextBar
 
-The search, the filter chips and the result line of a list page, pinned to the top of the scrolling content while
-the rows scroll under it. It is `STICKY_TOOLBAR` (opaque, bleeds to the panel's side padding, below the safe area on
-phones) stacked as a column. One per page, in place of a SubpageToolbar.
+The search and filter bar of a list page, pinned to the top of the scrolling content while the rows scroll under it.
+
+Pin behaviour (#150):
+- Pins when the scroller scrolls past the bar, or when the search text field gets focus (250ms ease-out, instant
+  under reduced motion, cancelled by wheel/touch; works on short lists too; chips/sort/view buttons do not pin).
+- From `md` (768px), pins by layout: the scroller's exact scroll range equals `--sticky-pin` and the list area (or
+  each `ListReaderLayout` panel) scrolls independently with `overscroll-behavior: contain`. Only a new upward wheel
+  gesture starting at the list top unpins; momentum and flings never unpin. Below `md`, keeps native touch scrolling.
+- Exposes `data-stuck` and `data-searching` on the bar and `--sticky-pin` / `--sticky-view` on the scroller, clearing
+  them on unmount.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `children` * | `React.ReactNode` |  | Usually SearchPill, then FilterChipRow (PhoneFilterBar on phones). No ResultLine in 1.0: the list sits 16px under the filter row. |
+| `children` * | `React.ReactNode` |  | Usually SearchPill (with optional BarActions in `trailing`), then FilterChipRow (PhoneFilterBar on phones). No ResultLine in 1.0: the list sits 16px under the filter row. |
 | `label` | `string` |  | Accessible name of the region ("Tìm và lọc khách hàng"); leave it out when the bar holds only a search. |
+| `pin` | `boolean` | `true` | Enable trackpad-proven layout pinning, focus-pin and `data-stuck` / `data-searching` state (default `true`). |
+| `className` | `string` |  |  |
+
+### BarActions
+
+Page actions that move inside `SearchPill`'s `trailing` slot while `StickyContextBar` is pinned (`data-stuck`) and
+hide while the search field has focus (`data-searching`, 150ms fade, out of the accessibility tree and taking zero
+layout space when hidden so the `"/"` shortcut hint never shifts).
+
+Always renders at most **2 slots**, in the title row's order (`[•••][main action]`, 8px apart, last button inset
+matching the `"/"` hint): with more than two actions (or any `menu` items), the main action stays on the right and
+the rest collapse into `•••` on the left.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `actions` * | `BarAction[]` |  | Primary and secondary page actions (in title-row order: secondary left, `primary` last). |
+| `menu` | `BarAction[]` |  | Extra overflow items always placed inside the `•••` menu. |
+| `moreLabel` | `string` |  | Accessible name and tooltip of the `•••` overflow button (default locale `moreActions`). |
 | `className` | `string` |  |  |
 
 ## Accessibility

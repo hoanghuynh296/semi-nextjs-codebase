@@ -19,7 +19,7 @@ A list page's filters as one line of chips (icon, label, chevron; solid with the
 ## Import
 
 ```tsx
-import { FilterChipRow, FilterChip, FilterOptions, useFilterParams, readFilters, writeFilters, clearFilters } from "@semi/ui";
+import { FilterChipRow, FilterChip, FilterOptions, useFilterParams, readFilters, writeFilters, clearFilters, replaceFilters, writeSearch, readSort, writeSort } from "@semi/ui";
 ```
 
 ## Examples
