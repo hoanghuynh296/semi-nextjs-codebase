@@ -187,7 +187,7 @@ export function useFocusTrap(
 
     // Escape in the bubble phase: a layer inside that handled it (stopPropagation / preventDefault) wins
     const onEscape = (e: KeyboardEvent) => {
-      if (e.key !== "Escape" || !isTop() || e.defaultPrevented || !escRef.current) return;
+      if (e.key !== "Escape" || e.isComposing || e.keyCode === 229 || !isTop() || e.defaultPrevented || !escRef.current) return;
       e.preventDefault();
       escRef.current();
     };

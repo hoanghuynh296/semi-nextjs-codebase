@@ -207,6 +207,8 @@ export interface AppShellProps {
   };
   /** Optional quick-search field rendered above the nav sections in the expanded sidebar and phone drawer (hidden in the rail). */
   navSearch?: React.ReactNode;
+  /** Optional content pinned at the bottom of the nav bar (above `tools`) in the desktop sidebar and phone drawer. */
+  navFooter?: React.ReactNode;
   /** A group under the main nav (saved views, frequent records). */
   pinned?: ShellPinned;
   /** The bottom row of the nav: 32×32 ghost icon buttons (help, notifications), stacked in the rail. */
@@ -313,6 +315,7 @@ export function AppShell({
   mainAction,
   primaryCta,
   navSearch,
+  navFooter,
   pinned,
   tools = [],
   toolsMenu = [],
@@ -968,6 +971,19 @@ export function AppShell({
                 )}
               </div>
 
+              {/* Pinned bottom slot (above tools): stays visible while the nav sections scroll above it */}
+              {navFooter && (
+                <div
+                  data-semi-nav-footer=""
+                  className={cn(
+                    "shrink-0 px-(--semi-nav-pad) pt-3 border-t border-divider",
+                    tools.length > 0 || toolsMenu.length > 0 ? "pb-2" : "pb-4",
+                  )}
+                >
+                  {navFooter}
+                </div>
+              )}
+
               {/* Bottom row: the tools and the ••• menu, stacked in the rail */}
               {(tools.length > 0 || toolsMenu.length > 0) && (
                 <div className={cn("shrink-0 px-(--semi-nav-pad) pb-4 flex flex-row flex-wrap items-center gap-1", `@max-[120px]/nav:flex-col`)}>
@@ -1069,6 +1085,7 @@ export function AppShell({
                 logoTile={logoTile}
                 action={action}
                 navSearch={navSearch}
+                navFooter={navFooter}
                 sections={sections}
                 isSectionOpen={isSectionOpen}
                 onToggleSection={toggleSection}
@@ -1155,6 +1172,7 @@ function PhoneDrawer({
   logoTile,
   action: create,
   navSearch,
+  navFooter,
   sections,
   isSectionOpen,
   onToggleSection,
@@ -1170,6 +1188,7 @@ function PhoneDrawer({
   logoTile: React.ReactNode;
   action: ShellAction | null;
   navSearch?: React.ReactNode;
+  navFooter?: React.ReactNode;
   sections: ShellNavSection[];
   isSectionOpen: (section: ShellNavSection, idx: number) => boolean;
   onToggleSection: (section: ShellNavSection, idx: number) => void;
@@ -1430,42 +1449,58 @@ function PhoneDrawer({
         )}
       </div>
 
-      {!level && (utilities.length > 0 || toolsMenu.length > 0) && (
-        <div className="shrink-0 border-t border-divider p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
-          <ul className="grid grid-flow-col auto-cols-fr gap-1">
-            {[...utilities, ...(toolsMenu.length ? [{ id: "__more", label: t.moreTools, icon: "more" as IconName, menu: toolsMenu }] : [])].map((u: ShellTool) => {
-              const cls = cn("relative w-full flex flex-col items-center gap-1 py-2 rounded-control text-chrome text-muted hover:text-strong hover:bg-item-hover transition-hover cursor-pointer", FOCUS_RING);
-              // the name is the label, then the visible count ("Thông báo 12"), in reading order
-              const body = (
-                <>
-                  <Icon name={u.icon ?? "box"} className={cn("w-5 h-5", u.iconHidden && "opacity-0")} />
-                  <span className="truncate max-w-full">{u.label}</span>{" "}
-                  {!!u.count && (
-                    <span className="absolute top-1 left-1/2 ml-1.5 min-w-4 h-4 px-1 rounded-full bg-primary text-on-primary text-badge leading-4 tabular-nums text-center">
-                      {u.count > 99 ? "99+" : u.count}
-                    </span>
-                  )}
-                </>
-              );
-              return (
-                <li key={u.id} className="min-w-0">
-                  {u.href ? (
-                    <Link href={u.href} onClick={() => go(u.id)} className={cls}>
-                      {body}
-                    </Link>
-                  ) : u.menu ? (
-                    <button type="button" data-drawer-row={u.id} onClick={() => open({ id: u.id, label: u.label, rows: menuRows(u.id, u.menu!) })} className={cls}>
-                      {body}
-                    </button>
-                  ) : (
-                    <button type="button" onClick={() => (u.onClick ? u.onClick() : go(u.id))} className={cls}>
-                      {body}
-                    </button>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
+      {!level && (navFooter || utilities.length > 0 || toolsMenu.length > 0) && (
+        <div
+          data-semi-nav-footer=""
+          className="shrink-0 border-t border-divider p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] flex flex-col gap-2"
+        >
+          {navFooter && (
+            <div
+              role="presentation"
+              className="px-1"
+              onClick={(e) => {
+                if ((e.target as HTMLElement | null)?.closest("a, button")) onClose();
+              }}
+            >
+              {navFooter}
+            </div>
+          )}
+          {(utilities.length > 0 || toolsMenu.length > 0) && (
+            <ul className="grid grid-flow-col auto-cols-fr gap-1">
+              {[...utilities, ...(toolsMenu.length ? [{ id: "__more", label: t.moreTools, icon: "more" as IconName, menu: toolsMenu }] : [])].map((u: ShellTool) => {
+                const cls = cn("relative w-full flex flex-col items-center gap-1 py-2 rounded-control text-chrome text-muted hover:text-strong hover:bg-item-hover transition-hover cursor-pointer", FOCUS_RING);
+                // the name is the label, then the visible count ("Thông báo 12"), in reading order
+                const body = (
+                  <>
+                    <Icon name={u.icon ?? "box"} className={cn("w-5 h-5", u.iconHidden && "opacity-0")} />
+                    <span className="truncate max-w-full">{u.label}</span>{" "}
+                    {!!u.count && (
+                      <span className="absolute top-1 left-1/2 ml-1.5 min-w-4 h-4 px-1 rounded-full bg-primary text-on-primary text-badge leading-4 tabular-nums text-center">
+                        {u.count > 99 ? "99+" : u.count}
+                      </span>
+                    )}
+                  </>
+                );
+                return (
+                  <li key={u.id} className="min-w-0">
+                    {u.href ? (
+                      <Link href={u.href} onClick={() => go(u.id)} className={cls}>
+                        {body}
+                      </Link>
+                    ) : u.menu ? (
+                      <button type="button" data-drawer-row={u.id} onClick={() => open({ id: u.id, label: u.label, rows: menuRows(u.id, u.menu!) })} className={cls}>
+                        {body}
+                      </button>
+                    ) : (
+                      <button type="button" onClick={() => (u.onClick ? u.onClick() : go(u.id))} className={cls}>
+                        {body}
+                      </button>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
       )}
     </div>
