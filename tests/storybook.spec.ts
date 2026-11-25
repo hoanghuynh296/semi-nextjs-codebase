@@ -99,6 +99,11 @@ function phoneOverflow(page: Page) {
         if (getComputedStyle(s).overflowX !== "visible") clipped = true;
         s = s.parentElement;
       }
+      // Full-bleed StickyContextBar (-mx-4 px-4) intentionally spans the column padding; its children are still checked against the gutters.
+      if (el.hasAttribute("data-sticky-bar")) {
+        if (b.right > cb.right + 1 || b.left < cb.left - 1) out.push(`sticky-bar "${(el.textContent || "").trim().slice(0, 30)}"`);
+        continue;
+      }
       if (!clipped && (b.right > right || b.left < left)) out.push(`${el.tagName.toLowerCase()} "${(el.textContent || "").trim().slice(0, 30)}"`);
     }
     return out.slice(0, 5);

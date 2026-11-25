@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useId, useMemo, useRef, useState } from "react";
+import React, { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { AppShell, type AppShellProps, type ShellNavSection, type ShellSlot, type ShellSlotState } from "../src/AppShell";
@@ -66,7 +67,9 @@ function NavQuickSearch({ sections }: { sections: ShellNavSection[] }) {
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const rootRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [dropdownRect, setDropdownRect] = useState<{ top: number; left: number; width: number } | null>(null);
   const listId = useId();
 
   const hasIconsPage = useMemo(
@@ -168,15 +171,40 @@ function NavQuickSearch({ sections }: { sections: ShellNavSection[] }) {
   useEffect(() => {
     if (!open) return;
     const onPointerDown = (e: PointerEvent) => {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
+      const target = e.target as Node;
+      if (rootRef.current?.contains(target) || listRef.current?.contains(target)) return;
+      setOpen(false);
     };
     document.addEventListener("pointerdown", onPointerDown);
     return () => document.removeEventListener("pointerdown", onPointerDown);
   }, [open]);
 
   const showDropdown = open && query.trim().length > 0;
+
+  useLayoutEffect(() => {
+    if (!showDropdown) {
+      setDropdownRect(null);
+      return;
+    }
+    const update = () => {
+      const el = rootRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      if (r.width === 0 && r.height === 0) {
+        setDropdownRect(null);
+        setOpen(false);
+        return;
+      }
+      setDropdownRect({ top: r.bottom + 4, left: r.left, width: r.width });
+    };
+    update();
+    window.addEventListener("resize", update);
+    window.addEventListener("scroll", update, true);
+    return () => {
+      window.removeEventListener("resize", update);
+      window.removeEventListener("scroll", update, true);
+    };
+  }, [showDropdown]);
   const clampedIndex = hits.length > 0 ? Math.min(activeIndex, hits.length - 1) : -1;
   const activeOptionId = showDropdown && clampedIndex >= 0 ? `${listId}-opt-${clampedIndex}` : undefined;
 
@@ -216,8 +244,53 @@ function NavQuickSearch({ sections }: { sections: ShellNavSection[] }) {
     }
   };
 
+  const dropdown =
+    showDropdown && dropdownRect && typeof document !== "undefined"
+      ? createPortal(
+          <div
+            ref={listRef}
+            id={listId}
+            role="listbox"
+            aria-label="Kết quả tìm kiếm"
+            style={{ top: dropdownRect.top, left: dropdownRect.left, width: dropdownRect.width }}
+            className="fixed z-popover rounded-card bg-panel border border-line shadow-card max-h-72 overflow-y-auto p-1"
+          >
+            {hits.length === 0 ? (
+              <div className="px-2 py-2 text-chrome text-muted">Không tìm thấy kết quả</div>
+            ) : (
+              hits.map((hit, idx) => {
+                const active = idx === clampedIndex;
+                return (
+                  <Link
+                    key={hit.id}
+                    id={`${listId}-opt-${idx}`}
+                    href={hit.href}
+                    role="option"
+                    aria-selected={active}
+                    onMouseEnter={() => setActiveIndex(idx)}
+                    onClick={() => {
+                      setOpen(false);
+                      setQuery("");
+                    }}
+                    className={cn(
+                      "w-full min-h-8 flex items-center gap-2 px-2 py-1.5 rounded-control text-left text-chrome transition-hover",
+                      active ? "bg-item-selected text-strong" : "text-body hover:bg-item-hover hover:text-strong",
+                    )}
+                  >
+                    <Icon name={hit.icon} className="w-3.5 h-3.5 shrink-0 text-muted" />
+                    <span className="flex-1 min-w-0 truncate font-medium">{hit.label}</span>
+                    <span className="shrink-0 text-muted">{hit.meta}</span>
+                  </Link>
+                );
+              })
+            )}
+          </div>,
+          document.body,
+        )
+      : null;
+
   return (
-    <div ref={rootRef} className="relative">
+    <div ref={rootRef} className="relative w-72 lg:w-80 max-w-full">
       <div className="relative">
         <Input
           ref={inputRef}
@@ -258,44 +331,7 @@ function NavQuickSearch({ sections }: { sections: ShellNavSection[] }) {
         )}
       </div>
 
-      {showDropdown && (
-        <div
-          id={listId}
-          role="listbox"
-          aria-label="Kết quả tìm kiếm"
-          className="absolute left-0 right-0 top-full mt-1 z-popover rounded-card bg-panel border border-line shadow-card max-h-72 overflow-y-auto p-1"
-        >
-          {hits.length === 0 ? (
-            <div className="px-2 py-2 text-chrome text-muted">Không tìm thấy kết quả</div>
-          ) : (
-            hits.map((hit, idx) => {
-              const active = idx === clampedIndex;
-              return (
-                <Link
-                  key={hit.id}
-                  id={`${listId}-opt-${idx}`}
-                  href={hit.href}
-                  role="option"
-                  aria-selected={active}
-                  onMouseEnter={() => setActiveIndex(idx)}
-                  onClick={() => {
-                    setOpen(false);
-                    setQuery("");
-                  }}
-                  className={cn(
-                    "w-full min-h-8 flex items-center gap-2 px-2 py-1.5 rounded-control text-left text-chrome transition-hover",
-                    active ? "bg-item-selected text-strong" : "text-body hover:bg-item-hover hover:text-strong",
-                  )}
-                >
-                  <Icon name={hit.icon} className="w-3.5 h-3.5 shrink-0 text-muted" />
-                  <span className="flex-1 min-w-0 truncate font-medium">{hit.label}</span>
-                  <span className="shrink-0 text-muted">{hit.meta}</span>
-                </Link>
-              );
-            })
-          )}
-        </div>
-      )}
+      {dropdown}
     </div>
   );
 }
@@ -355,8 +391,7 @@ export function DocsShell({
       tools={tools}
       mainAction={mainAction}
       primaryCta={primaryCta}
-      navSearch={<NavQuickSearch sections={sections} />}
-      header={{ actions: actions ?? legacyActions }}
+      header={{ middle: <NavQuickSearch sections={sections} />, actions: actions ?? legacyActions }}
     >
       {/* w-full: an auto-margin flex item would size to its widest demo and push the page past a phone screen */}
       <div className="@container w-full min-w-0 space-y-8">{children}</div>

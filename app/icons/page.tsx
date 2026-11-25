@@ -8,7 +8,7 @@ import { PageTitle } from "../../src/PageTitle";
 import { TAG } from "../../src/Chip";
 import { Badge } from "../../src/Badge";
 import { Alert, EmptyState } from "../../src/Feedback";
-import { Input } from "../../src/Field";
+import { SearchPill, StickyContextBar } from "../../src/SearchPill";
 import { CustomSelect } from "../../src/CustomSelect";
 import { ToggleGroup } from "../../src/Toggle";
 import { toast } from "../../src/Toast";
@@ -124,32 +124,32 @@ export default function IconsPage() {
           </Badge>
         </div>
 
-        <div className={`${CARD} p-card flex flex-col gap-3 @3xl:flex-row @3xl:items-center`}>
-          <div className="flex-1 min-w-0">
-            <Input
-              icon="search"
-              type="search"
-              inputMode="search"
-              enterKeyHint="search"
-              aria-label="Tìm icon"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Tên, alias hoặc ý định: checkout, database, xoá, giao hàng…"
+        <StickyContextBar label="Tìm và lọc icon">
+          <SearchPill
+            value={search}
+            onChange={setSearch}
+            label="Tìm icon"
+            placeholder="Tên, alias hoặc ý định: checkout, database, xoá, giao hàng…"
+            focusKey="/"
+            debounce={0}
+          />
+          <div className="flex flex-wrap items-center gap-2 min-w-0">
+            <CustomSelect
+              aria-label="Nhóm icon"
+              value={selectedDomain}
+              onChange={setSelectedDomain}
+              options={DOMAIN_OPTIONS.map((d) => ({ value: d.id, label: d.label }))}
             />
+            <div className="max-w-full overflow-x-auto">
+              <ToggleGroup
+                label="Màu ô icon"
+                value={[activeTone]}
+                onChange={(v) => v[0] && setActiveTone(v[0])}
+                options={TONES.map((t) => ({ key: t.id, label: t.label }))}
+              />
+            </div>
           </div>
-          <CustomSelect
-            aria-label="Nhóm icon"
-            value={selectedDomain}
-            onChange={setSelectedDomain}
-            options={DOMAIN_OPTIONS.map((d) => ({ value: d.id, label: d.label }))}
-          />
-          <ToggleGroup
-            label="Màu ô icon"
-            value={[activeTone]}
-            onChange={(v) => v[0] && setActiveTone(v[0])}
-            options={TONES.map((t) => ({ key: t.id, label: t.label }))}
-          />
-        </div>
+        </StickyContextBar>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-start">
           <div className="lg:col-span-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-2.5">
@@ -186,7 +186,7 @@ export default function IconsPage() {
             )}
           </div>
 
-          <div className={`${CARD} p-card lg:col-span-1 sticky top-4 space-y-4`}>
+          <div className={`${CARD} p-card lg:col-span-1 lg:sticky lg:top-32 space-y-4`}>
             <div className="flex items-center justify-between gap-2">
               <h3 className="text-ui font-medium text-strong">Chi tiết icon</h3>
               {selectedMeta?.domain && (
