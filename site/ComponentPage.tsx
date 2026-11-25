@@ -34,11 +34,6 @@ export function ComponentPage({ id, markdownHref }: { id: string; markdownHref?:
   return (
     <article className="@container space-y-8" data-doc={doc.id}>
       <header className="space-y-3">
-        <div className="flex flex-wrap items-center gap-2 text-ui text-muted">
-          <span>{doc.group}</span>
-          <span aria-hidden>/</span>
-          <span className="text-body">{doc.title}</span>
-        </div>
         <PageTitle title={doc.title} />
         <p className="text-lead text-body max-w-3xl">{doc.description}</p>
         <div className="flex flex-wrap items-center gap-2">

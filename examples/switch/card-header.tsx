@@ -15,7 +15,7 @@ export default function SwitchCardHeader() {
       {RULES.map((r) => (
         <Card key={r.id} className="space-y-2">
           <div className="flex items-center justify-between gap-3">
-            <span id={`rule-${r.id}`} className="text-ui font-semibold text-strong">
+            <span id={`rule-${r.id}`} className="text-ui font-medium text-strong">
               {r.name}
             </span>
             <Switch checked={on[r.id]} onChange={(v) => setOn({ ...on, [r.id]: v })} aria-labelledby={`rule-${r.id}`} />

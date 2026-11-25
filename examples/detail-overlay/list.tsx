@@ -78,7 +78,7 @@ export default function DetailOverlayList() {
       >
         {order && (
           <section className="flex flex-col gap-2">
-            <h3 className="text-ui font-semibold text-strong">Sản phẩm</h3>
+            <h3 className="text-ui font-medium text-strong">Sản phẩm</h3>
             <p className="text-ui text-body">3 mặt hàng · giao trong 2 ngày.</p>
           </section>
         )}
