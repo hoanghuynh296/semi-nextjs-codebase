@@ -271,7 +271,7 @@ export function Page({
   titleVariant?: "work" | "reading";
   /** Actions at the right end of the title row (one `inverse` or `primary` action, optional `•••` `Menu` / `RefreshButton`). */
   actions?: React.ReactNode;
-  /** Optional tab bar (`PillTabs`, `Tabs`, `Pills`, `TextTabs`, `PageTabsTitle`). */
+  /** Optional tab bar (`PillTabs`, `Tabs`, `SegmentedControl`, `TextTabs`). */
   tabs?: React.ReactNode;
   /** Optional lead intro under the title or tabs (28px below). */
   intro?: React.ReactNode;

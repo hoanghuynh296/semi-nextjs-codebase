@@ -5,7 +5,7 @@
 // 2–5 filter values use SegmentedControl.
 import React, { useId, useRef } from "react";
 import { Icon, type IconName } from "./Icon";
-import { cn, FOCUS_RING, SEGMENT_ON } from "../styles/utils";
+import { cn, FOCUS_RING } from "../styles/utils";
 
 export interface TabItem<T extends string> {
   key: T;
@@ -22,7 +22,6 @@ export function Tabs<T extends string>({
   items,
   value,
   onChange,
-  variant = "underline",
   label,
   className,
   panelClassName = "pt-4",
@@ -30,8 +29,6 @@ export function Tabs<T extends string>({
   items: TabItem<T>[];
   value: T;
   onChange: (key: T) => void;
-  /** underline = section tabs inside a card or page · segmented = compact switch inside a toolbar. */
-  variant?: "underline" | "segmented";
   /** Accessible name of the tab list. */
   label?: string;
   className?: string;
@@ -62,7 +59,6 @@ export function Tabs<T extends string>({
     }
   };
 
-  const seg = variant === "segmented";
   return (
     <div className={className}>
       <div
@@ -70,10 +66,7 @@ export function Tabs<T extends string>({
         role="tablist"
         aria-label={label}
         onKeyDown={onKeyDown}
-        className={cn(
-          "flex items-center no-scrollbar overflow-x-auto",
-          seg ? "inline-flex gap-0.5 bg-field p-0.5 h-control rounded-control border border-line" : "gap-5 border-b border-divider",
-        )}
+        className="flex items-center gap-5 border-b border-divider no-scrollbar overflow-x-auto"
       >
         {items.map((it, n) => {
           const on = it.key === value;
@@ -90,11 +83,9 @@ export function Tabs<T extends string>({
               disabled={it.disabled}
               onClick={() => onChange(it.key)}
               className={cn(
-                "inline-flex items-center gap-1.5 whitespace-nowrap text-ui font-medium transition-hover cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0",
+                "inline-flex items-center gap-1.5 whitespace-nowrap text-ui font-medium transition-hover cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0 h-9 -mb-px border-b-2",
                 FOCUS_RING,
-                seg
-                  ? cn("h-full px-2.5 rounded-control", on ? SEGMENT_ON : "text-muted hover:text-strong")
-                  : cn("h-9 -mb-px border-b-2", on ? "border-strong text-strong" : "border-transparent text-muted hover:text-strong"),
+                on ? "border-strong text-strong" : "border-transparent text-muted hover:text-strong",
               )}
             >
               {it.icon && <Icon name={it.icon} className="w-3.5 h-3.5" />}

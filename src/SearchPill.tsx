@@ -1,8 +1,7 @@
 "use client";
 
 // Search and filters (#99, C-032 L2 + L17; 1.0 #150): the sticky context bar of a list page (layout-pin on md+,
-// focus-pin in 250ms ease-out, gesture-aware unpin, pinned BarActions slot), its wide pill search and the
-// deprecated result line.
+// focus-pin in 250ms ease-out, gesture-aware unpin, pinned BarActions slot) and its wide pill search.
 import React, { useEffect, useRef, useState } from "react";
 import { Button } from "./Button";
 import { Icon, type IconName } from "./Icon";
@@ -13,7 +12,7 @@ import { STICKY_TOOLBAR } from "../styles/surfaces";
 import { cn } from "../styles/utils";
 import { holdPending, subscribeUrl } from "./urlState";
 
-/** A sort choice shown by ResultLine (a menu) and FilterPanel (a row of chips). */
+/** A sort choice shown by FilterChipRow / PhoneFilterBar (a menu) and FilterPanel (a row of chips). */
 export interface SortDef {
   value: string;
   options: { value: string; label: string }[];
@@ -122,7 +121,7 @@ export function StickyContextBar({
   pin = true,
   className,
 }: {
-  /** Usually SearchPill (with optional BarActions in `trailing`), then FilterChipRow (PhoneFilterBar on phones). No ResultLine in 1.0: the list sits 16px under the filter row. */
+  /** Usually SearchPill (with optional BarActions in `trailing`), then FilterChipRow (PhoneFilterBar on phones). The list sits 16px under the filter row. */
   children: React.ReactNode;
   /** Accessible name of the region ("Tìm và lọc khách hàng"); leave it out when the bar holds only a search. */
   label?: string;
@@ -291,62 +290,6 @@ export function SearchPill({
             {hint}
           </kbd>
         )
-      )}
-      {trailing}
-    </div>
-  );
-}
-
-/**
- * The line under the search: `“query” · N kết quả` on the left (announced politely when it changes), the sort menu on
- * the right. Leave out `query` for a plain count.
- * @deprecated Since 1.0 (#149): list pages have no result-count row; put sort and selection on `FilterChipRow` / `PhoneFilterBar`.
- */
-export function ResultLine({
-  count,
-  query,
-  unit,
-  sort,
-  trailing,
-  className,
-}: {
-  count: number;
-  query?: string;
-  /** What is counted ("khách hàng"); default the locale's "kết quả". */
-  unit?: string;
-  sort?: SortDef;
-  /** More tools at the right end, after the sort (a ViewSwitch when there is no chip row). */
-  trailing?: React.ReactNode;
-  className?: string;
-}) {
-  const t = useSemiLocale();
-  const current = sort?.options.find((o) => o.value === sort.value);
-  return (
-    <div className={cn("flex items-center gap-3 min-h-8 text-ui", className)}>
-      <p className="flex-1 min-w-0 truncate text-muted" aria-live="polite" aria-atomic="true">
-        {query ? (
-          <>
-            <span className="text-strong font-medium">“{query}”</span> ·{" "}
-          </>
-        ) : null}
-        <span className="tabular-nums">{unit ? `${t.number(count)} ${unit}` : t.results(count)}</span>
-      </p>
-      {sort && current && (
-        <Menu
-          label={t.sort}
-          items={sort.options.map((o) => ({ label: o.label, icon: o.value === sort.value ? "check" : undefined, onSelect: () => sort.onChange(o.value) }))}
-          trigger={
-            <button
-              type="button"
-              aria-label={`${t.sort}: ${current.label}`}
-              className="shrink-0 inline-flex items-center gap-1.5 h-8 px-2 rounded-control text-ui font-medium text-body hover:text-strong hover:bg-tint outline-none focus-visible:ring-2 focus-visible:ring-focus"
-            >
-              <Icon name="sliders" className="w-3.5 h-3.5 text-muted" />
-              {current.label}
-              <Icon name="chevronDown" className="w-3.5 h-3.5 text-muted" />
-            </button>
-          }
-        />
       )}
       {trailing}
     </div>

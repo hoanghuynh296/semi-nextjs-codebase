@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { StickyContextBar, SearchPill, ResultLine } from "../../../../src/SearchPill";
+import { StickyContextBar, SearchPill } from "../../../../src/SearchPill";
 import { FilterChipRow, useFilterParams } from "../../../../src/FilterChipRow";
 import { FilterPanel, PhoneFilterBar } from "../../../../src/FilterPanel";
 import { ViewSwitch, type ViewMode } from "../../../../src/ViewSwitch";
@@ -25,7 +25,6 @@ export function FiltersBar() {
         <SearchPill value={q} onChange={(v) => f.setParams({ q: v }, "replace")} label="Search orders" focusKey="/" debounce={2000} />
         <FilterChipRow filters={f.filters} onChange={f.onChange} onClear={f.onClear} trailing={<ViewSwitch view={view} onViewChange={setView} />} />
         <PhoneFilterBar activeCount={f.activeCount} onOpenFilters={() => setOpen(true)} />
-        <ResultLine query={q} count={3} />
       </StickyContextBar>
       <output data-testid="hook-status">{f.values.status.join(",") || "none"}</output>
       <FilterPanel open={open} onClose={() => setOpen(false)} filters={f.filters} onChange={f.onChange} onClear={f.onClear} resultCount={3} />

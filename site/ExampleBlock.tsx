@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Pills } from "../src/Pills";
+import { SegmentedControl } from "../src/SegmentedControl";
 import { CARD } from "../styles/surfaces";
 import type { DocExample } from "../examples/registry.generated";
 import { CodeBlock } from "./CodeBlock";
@@ -20,7 +20,8 @@ export function ExampleBlock({ example, id }: { example: DocExample; id: string 
           {example.description && <p className="text-ui text-muted max-w-2xl">{example.description}</p>}
         </div>
         {!codeOnly && (
-        <Pills
+        <SegmentedControl
+          label="Chế độ xem ví dụ"
           value={view}
           onChange={setView}
           options={[

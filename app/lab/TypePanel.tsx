@@ -3,7 +3,7 @@
 import React from "react";
 import { ShowcaseSection, DemoLabel } from "../Showcase";
 import { Field } from "../../src/Field";
-import { Pills } from "../../src/Pills";
+import { SegmentedControl } from "../../src/SegmentedControl";
 import { CustomSelect } from "../../src/CustomSelect";
 import { Table, THead, TBody, TR, TH, TD } from "../../src/Table";
 import { PageTitle } from "../../src/PageTitle";
@@ -63,10 +63,10 @@ export function TypePanel({ lab }: { lab: ReturnType<typeof useLabEditor> }) {
         </p>
         <div className="grid gap-4 @xl:grid-cols-3">
           <Field label="Xem với density">
-            <Pills value={density} onChange={setDensity} options={DENSITIES.map((d) => ({ key: d, label: d }))} />
+            <SegmentedControl label="Xem với density" value={density} onChange={setDensity} options={DENSITIES.map((d) => ({ key: d, label: d }))} />
           </Field>
           <Field label="Xem với type scale">
-            <Pills value={scale} onChange={setScale} options={SCALES.map((d) => ({ key: d, label: d }))} />
+            <SegmentedControl label="Xem với type scale" value={scale} onChange={setScale} options={SCALES.map((d) => ({ key: d, label: d }))} />
           </Field>
         </div>
         <div data-theme={resolvedTheme} data-density={density} data-type-scale={scale} className="space-y-4 bg-canvas text-body p-card rounded-card border border-line">
@@ -165,7 +165,7 @@ export function TypePanel({ lab }: { lab: ReturnType<typeof useLabEditor> }) {
       <ShowcaseSection id="lab-fonts" title="Font và độ đậm" icon="edit" meta="tokens/tokens.json shape">
         <p className="text-ui text-muted max-w-3xl">
           Font mặc định của Semi (brand kit vẫn ghi đè bằng font của thương hiệu; không có font tiêu đề thì font-display là font giao diện). Lab chỉ cho chọn những font docs đã tải; font khác cần thêm vào
-          “$fonts” của tokens.json shape và app/layout.tsx. Độ đậm của chữ thường là luật (font-medium / font-semibold, semi-lint chặn bold), không phải token.
+          “$fonts” của tokens.json shape và app/layout.tsx. Độ đậm của chữ thường là luật (font-normal / font-medium, tiêu đề tối đa 500, semi-lint chặn font-bold), không phải token.
         </p>
         <div className="grid gap-4 @xl:grid-cols-2">
           {(["font-sans", "font-display"] as const).map((role) => (
