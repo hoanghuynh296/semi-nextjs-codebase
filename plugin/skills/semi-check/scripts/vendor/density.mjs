@@ -16,7 +16,7 @@ export const DENSITY_RULES = [
   ["box-nesting", "At most three framed boxes inside each other (page panel › card › tile): a fourth frame is noise; use space, a divider or plain text instead."],
   ["type-mix", "At most four text sizes in one box (title, body, label, caption): a fifth size makes the box read as a collage."],
   ["colour-noise", "At most three colours (brand + status) in one box: colour means something (§3), so more reads as decoration."],
-  ["primary-actions", "One filled brand button per view (page, dialog, form): the rest are neutral (subtle, outline, ghost)."],
+  ["primary-actions", "One filled brand button (primary / secondary) per standalone page or modal (the nav's mainAction is not counted): the rest are neutral (subtle, surface, inverse, outline, ghost)."],
   ["cramped-boxes", "Boxes side by side keep 8px or more between them (gap-group between cards, gap-stack between tiles), or share an edge on purpose (0)."],
   ["double-line", "One line between two things: a border next to another border (card edge + row divider, divide-y + border-b) reads as a double line."],
 ];
@@ -34,11 +34,13 @@ export function densityAudit(opts) {
 
   // Density unit and control height as the page resolves them (4px / 34px at regular density).
   const probe = document.createElement("div");
-  probe.style.cssText = "position:absolute;visibility:hidden;left:0;top:0;width:calc(var(--spacing, 0.25rem) * 4);height:var(--spacing-control, 34px);background:var(--color-primary, transparent)";
+  probe.style.cssText = "position:absolute;visibility:hidden;left:0;top:0;width:calc(var(--spacing, 0.25rem) * 4);height:var(--spacing-control, 34px);background:var(--color-primary, transparent);color:var(--color-secondary, transparent)";
   (root.closest("[data-density]") || root).appendChild(probe);
   const u = probe.getBoundingClientRect().width / 4 || 4;
   const control = probe.getBoundingClientRect().height || 34;
-  const accentRaw = getComputedStyle(probe).backgroundColor;
+  const probeStyle = getComputedStyle(probe);
+  const accentRaw = probeStyle.backgroundColor;
+  const secondaryRaw = probeStyle.color;
   probe.remove();
 
   const canvas = document.createElement("canvas");
@@ -57,6 +59,7 @@ export function densityAudit(opts) {
     return colours.get(c);
   };
   const accent = rgba(accentRaw);
+  const secondary = rgba(secondaryRaw);
   const near = (a, b, tol) => Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]) + Math.abs(a[2] - b[2]) <= tol;
   const chroma = (c) => Math.max(c[0], c[1], c[2]) - Math.min(c[0], c[1], c[2]);
   const hue = (c) => {
@@ -307,18 +310,22 @@ export function densityAudit(opts) {
     if (hues.size > 3) hit("colour-noise", box, `${hues.size} colours`);
   }
 
-  // primary-actions: filled brand (bg-primary) buttons per view (dialog, form, example, page).
-  if (accent[3] > 0.5 && chroma(accent) > 24) {
+  // primary-actions: filled brand (bg-primary / bg-secondary) buttons per view (dialog, form, example, page);
+  // the nav's own mainAction sits in its own scope (<aside> / <nav>) and is not counted against the page.
+  const hasBrand = (c) => c[3] > 0.5 && chroma(c) > 24;
+  const brandFills = [accent, secondary].filter(hasBrand);
+  if (brandFills.length) {
     const views = new Map();
     for (const el of root.querySelectorAll("button, a[href], [role=button]")) {
       // A selected day, an "on" switch or the current tab is a state, not an action.
       // A SplitButton's ▾ (data-split-menu) is part of its main action: one primary, not two.
       if (!visible(el) || skipped(el) || el.matches("[data-split-menu]") || el.closest("[role=switch], [role=checkbox], [role=radio], [role=tab], [role=gridcell], [aria-pressed=true], [aria-selected=true], [aria-checked=true], [aria-current]")) continue;
       const bg = rgba(css(el).backgroundColor);
-      if (bg[3] < 0.9 || !near(bg, accent, 12)) continue;
+      if (bg[3] < 0.9 || !brandFills.some((bf) => near(bg, bf, 12))) continue;
       // A nested data-theme scope (the same screen shown in light and in dark) is a view of its own: the brand fill
       // is one colour in both themes, so the twin of a main button is not a second one.
-      let view = el.closest("[role=dialog], [role=alertdialog], form, [data-density-view], [data-theme]");
+      // The nav's mainAction (<aside> / <nav>) is its own scope, separate from the page's main action.
+      let view = el.closest("[role=dialog], [role=alertdialog], form, [data-density-view], [data-theme], aside, nav");
       if (!view || view === document.documentElement || (view !== root && !root.contains(view))) view = el.closest("main") || root;
       views.set(view, [...(views.get(view) || []), el]);
     }

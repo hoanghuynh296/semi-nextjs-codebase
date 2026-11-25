@@ -4,6 +4,25 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## Unreleased
 
+**1.0 lint and checks (#145, T3; includes #142 pipe flush fix; part of v1.0.0).** `semi-lint` warning rules for the 1.0 design contract, per-line / per-file opt-in allowances with a reason, `semi density` / `semi a11y` 1.0 updates, `/semi-check` 1.0 audit upgrades (brand schema, stand-in detection, `StickyContextBar` count), and the `semi-lint --json` > 64 KB pipe truncation fix.
+
+### Fixed
+- **`semi-lint --json` pipe truncation (#142):** CLI sets `process.exitCode` instead of calling `process.exit()` (also in `/semi-check` `audit.mjs`), so piping > 64 KB JSON output flushes completely without truncation while keeping exit codes unchanged.
+
+### Added
+- **1.0 `semi-lint` warning rules (`lint/semi-lint.mjs`, `lint/test/v1-rules.test.mjs`):**
+  - `one-brand-button`: warns on a second filled brand button (`variant="primary"` / `"secondary"`, `BTN_PRIMARY`, `BTN_SECONDARY`, `MODAL_BTN_PRIMARY`, `MODAL_BTN_SECONDARY`) per standalone page or per modal (`AppShell` `mainAction`, separate modals, neutral variants and mutually exclusive branches excluded).
+  - `brand-colour-use`: warns on brand colour utilities (`bg-primary`, `bg-secondary`, `text-primary`, `border-primary`, `bg-primary/10` …) outside main buttons, `AppShell` `mainAction`, active big-tab underline (`decoration-primary`), `CountBadge` and `NewTag`.
+  - `removed-token`: warns on 0.x tokens, classes, CSS variables (`bg-accent-subtle`, `border-accent-line`, `text-accent-fg`, `text-contrast`, `text-caption`, `text-label`, `text-title*`, `text-heading*`, `text-kpi`, `z-keypad`) and removed style attributes/files (`data-style`, `@semi/ui/styles.json`), naming the 1.0 replacement from `docs/MIGRATION-1.0.md`.
+  - `heading-weight`: warns on weight ≥ 600 (`font-semibold` / `font-bold`) on `<h1>`–`<h6>`, `PageTitle` or heading utilities (`text-hero`, `text-title-xl`, `text-tab-xl`, `text-section`), and ≥ 500 on big `TextTabs` (`text-tab-xl`, weight 400); `text-overline` headings are exempt.
+  - Per-line opt-in (`// semi-lint-allow <rule>: <reason>`) and per-file opt-in (`skip` with reason in `semi-lint.json` for `one-brand-button` and `brand-colour-use`) for owner-approved exceptions; allowances without a reason are ignored.
+
+### Changed
+- **`overline-place`:** allows `<legend>` (form section label) alongside plain section labels, and flags single field labels (`<label>`, `<Field labelClassName="text-overline">`).
+- **`semi density` (`lint/density.mjs`):** `primary-actions` counts both `bg-primary` and `bg-secondary` fills and scopes `<aside>` / `<nav>` separately so the nav's `mainAction` is not counted against the page's main button.
+- **`semi a11y` (`lint/a11y.mjs`):** keeps T6's quiet field border acceptance (`border-field-line` with 2px ≥ 3:1 `:focus-visible` outline) and documents the 44px phone touch target (`BTN_HIT`).
+- **`/semi-check` audit (`plugin/skills/semi-check/scripts/audit.mjs`):** removes style references, updates foundation semantic token regex to 1.0 tokens, validates the 1.0 `brand.json` schema (`brand-schema`), detects sales-hub-style stand-ins (`semi-pending-*.css`, `components/semi-pending/*`, `TODO(semi-pending)`) pointing to `docs/MIGRATION-1.0.md`, and counts `StickyContextBar` pages in "Refactor to Semi page structure?" (#139). Vendor copies synced.
+
 **1.0 `StickyContextBar` pin behaviour, pinned `BarActions` slot and URL state (#150, T8; part of v1.0.0).** Trackpad-proven layout-pin scrolling for list and list + reader pages, focus-pin on search input, in-field pinned actions slot (`BarActions`), and URL-state upgrades from #129, #124 and #139.
 
 ### Added

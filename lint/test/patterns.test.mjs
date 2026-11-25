@@ -156,10 +156,8 @@ test("card-hover-actions-touch: CardActions without a label is a hard error; wit
 });
 
 test("scan(): the five pattern rules are warnings (never in the baseline), card-hover-actions-touch is hard; skip / disable work", () => {
-  assert.deepEqual(
-    WARN.map(([id]) => id).slice(-5),
-    ["no-spinner-in-list", "filter-chip-wrap", "raw-pill-button", "detail-overlay-url", "overline-place"],
-  );
+  const warnIds = WARN.map(([id]) => id);
+  for (const id of ["no-spinner-in-list", "filter-chip-wrap", "raw-pill-button", "detail-overlay-url", "overline-place"]) assert.ok(warnIds.includes(id), id);
   const dir = mkdtempSync(join(tmpdir(), "semi-patterns-"));
   const file = join(dir, "page.tsx");
   writeFileSync(

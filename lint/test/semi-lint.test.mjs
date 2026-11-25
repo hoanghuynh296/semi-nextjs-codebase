@@ -1,6 +1,7 @@
 // node --test lint/test — semi-lint rules on single lines and files.
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { spawn } from "node:child_process";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -170,4 +171,44 @@ test("card-padding: a card tighter than p-card is flagged; p-card, the Card defa
   assert.deepEqual(ratchet('<Card className="space-y-2">x</Card>\n<Card padding="none">x</Card>\n<div className={`${CARD} p-card sm:p-panel`}>x</div>', "card-padding"), []);
   assert.deepEqual(ratchet('<div className={`${CARD} p-0 overflow-hidden`}>x</div>\n<div className={`${CARD} p-card`}><div className="px-2 py-1 gap-2">row</div></div>', "card-padding"), []);
   assert.deepEqual(ratchet('<Card className="p-20">x</Card>', "card-padding"), []);
+});
+
+test("#142 semi-lint --json flushes > 64 KB piped stdout without truncation and keeps exit codes", async () => {
+  const cli = new URL("../semi-lint.mjs", import.meta.url).pathname;
+  const runPiped = (cwd, args) =>
+    new Promise((resolve, reject) => {
+      const child = spawn(process.execPath, [cli, ...args], { cwd, stdio: ["ignore", "pipe", "pipe"] });
+      const chunks = [];
+      let stderr = "";
+      child.stdout.on("data", (d) => chunks.push(d));
+      child.stderr.on("data", (d) => (stderr += d));
+      child.on("error", reject);
+      child.on("close", (code) => resolve({ code, stdout: Buffer.concat(chunks).toString("utf8"), stderr }));
+    });
+  const dir = mkdtempSync(join(tmpdir(), "semi-lint-pipe-"));
+  mkdirSync(join(dir, "app"));
+  writeFileSync(join(dir, "semi-lint.json"), JSON.stringify({ scan: ["app"] }));
+  // ~400 hard violations across files → > 100 KB of JSON output (well over the 64 KB OS pipe buffer)
+  for (let i = 0; i < 40; i++) {
+    const lines = Array.from({ length: 12 }, (_, k) => `<h2 className="font-bold text-xs">Heading ${i}-${k} with enough padding text to exceed pipe buffer</h2>`).join("\n");
+    writeFileSync(join(dir, `app/page-${String(i).padStart(2, "0")}.tsx`), `export default function P${i}() { return <div>\n${lines}\n</div>; }\n`);
+  }
+  const failRun = await runPiped(dir, ["--json"]);
+  assert.equal(failRun.code, 1, failRun.stderr);
+  assert.ok(Buffer.byteLength(failRun.stdout) > 65536, `expected > 64 KB JSON, got ${Buffer.byteLength(failRun.stdout)} bytes`);
+  const parsed = JSON.parse(failRun.stdout);
+  assert.equal(parsed.files, 40);
+  assert.equal(parsed.hard.length, 40 * 12 * 2);
+
+  // Clean run with > 64 KB JSON? Verify exit 0 with clean fixture as well
+  const cleanDir = mkdtempSync(join(tmpdir(), "semi-lint-pipe-clean-"));
+  mkdirSync(join(cleanDir, "app"));
+  writeFileSync(join(cleanDir, "semi-lint.json"), JSON.stringify({ scan: ["app"] }));
+  writeFileSync(join(cleanDir, "app/page.tsx"), `export default function P() { return <p className="text-ui text-body">OK</p>; }\n`);
+  const okRun = await runPiped(cleanDir, ["--json"]);
+  assert.equal(okRun.code, 0, okRun.stderr);
+  assert.equal(JSON.parse(okRun.stdout).hard.length, 0);
+
+  rmSync(dir, { recursive: true });
+  rmSync(cleanDir, { recursive: true });
 });

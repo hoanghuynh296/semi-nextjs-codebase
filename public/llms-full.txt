@@ -1547,10 +1547,16 @@ catches and what it must not:
   `useFilterParams`, §4), `raw-pill-button` (a `rounded-full` button or link of 28px or more with a tint / field / panel fill, or a white / black alpha such as `bg-white/[0.06]`, or a class constant of one:
   `<Button iconOnly shape="round">`), `detail-overlay-url` (a `DetailOverlay` in a file that reads no URL state:
   `useDetailParam`; a wrapper that passes its own `open` prop on is fine), `overline-place` (an allow-list, C-032: `text-overline` only on
-  a plain, non-clickable section label (`div`, `span`, `p`, `h2`–`h6`, `dt`, `figcaption`, `header`) whose text is a label
-  of 40 characters or less; anywhere else (a control, link, field label, `h1`, table cell, any component) it warns; a class
+  a plain, non-clickable section or form-group label (`div`, `span`, `p`, `h2`–`h6`, `dt`, `figcaption`, `header`, `legend`) whose text is a label
+  of 40 characters or less; anywhere else (a control, link, single field label `<label>` / `<Field labelClassName>`, `h1`, table cell, any component) it warns; a class
   constant is not checked). One hard rule: `card-hover-actions-touch` (`<CardActions>` without `label`: on touch the ⋯ is the only
   control). The fixtures are `lint/test/patterns.test.mjs`.
+- **The 1.0 design rules (#145, warnings, fixtures in `lint/test/v1-rules.test.mjs`):**
+  - **`one-brand-button`:** warns on a second filled brand button (`variant="primary"` / `"secondary"`, `BTN_PRIMARY`, `BTN_SECONDARY`, `MODAL_BTN_PRIMARY`, `MODAL_BTN_SECONDARY`) in the same standalone page or modal. `AppShell` `mainAction`, separate modals, neutral variants and mutually exclusive branches (`tab === "a" && (...)`, ternaries) are excluded. Fix by moving ordinary actions to neutral variants (`subtle`, `surface`, `inverse`, `outline`, `ghost`).
+  - **`brand-colour-use`:** warns when brand utilities (`bg-primary`, `bg-secondary`, `text-primary`, `border-primary`, `bg-primary/10` …) are used outside 1.0's allowed places (main buttons, `AppShell` `mainAction`, active big-tab underline `decoration-primary`, `CountBadge`, `NewTag`). Fix with neutral tokens (`text-strong`, `bg-item-selected`, `border-outline-line`, `ring-focus`).
+  - **`removed-token`:** warns on tokens, classes, CSS variables and style attributes removed in 1.0 (`bg-accent-subtle`, `border-accent-line`, `text-accent-fg`, `text-contrast`, `text-caption`, `text-label`, `text-title*`, `text-heading*`, `text-kpi`, `z-keypad`, `data-style`, `@semi/ui/styles.json`), naming the 1.0 replacement from `docs/MIGRATION-1.0.md`.
+  - **`heading-weight`:** warns on `font-semibold` / `font-bold` (≥ 600) on `<h1>`–`<h6>`, `PageTitle`, or heading/display utilities (`text-hero`, `text-title-xl`, `text-tab-xl`, `text-section`), and `font-medium`+ on big `TextTabs` (`text-tab-xl`, weight 400). `text-overline` headings are exempt.
+  - **Opt-in allowance (with a reason):** for owner-approved exceptions (e.g. a second brand button or a product-specific brand colour), add `// semi-lint-allow <rule-id>: <reason>` on the same or immediately preceding line, or name the file with a reason under `skip` in `semi-lint.json` (`"skip": { "one-brand-button": { "app/checkout/page.tsx": "owner: dual CTA" } }`). An allowance without a reason is ignored.
 - **Emoji as icons (`emoji-icon`):** a brand whose voice allows emoji in copy disables the rule in `semi-lint.json`.
 
 **The baseline only shrinks.** `semi-lint --update-baseline` lowers it to what is left and refuses new hits;
@@ -2468,7 +2474,7 @@ with `/semi-propose`.
 | T1 #141 | Foundation: tokens, one look, brand schema | merged on `main` (#154), unreleased: ships in 1.0.0 | `1.0.0-foundation` |
 | T1b #155 | Two UI text sizes: `text-ui` 14 content, `text-chrome` 12 chrome | merged on `main` (#156), unreleased: ships in 1.0.0 | part of `1.0.0-foundation` |
 | T2 #144 | Shell: frame, RouteHeader, nav, account avatar menu, shortcuts | merged on `main` (#159), unreleased: ships in 1.0.0 | `1.0.0-app-shell` |
-| T3 #145 | Lint and checks for the 1.0 rules | pending | — |
+| T3 #145 | Lint and checks for the 1.0 rules | merged on `main`, unreleased: ships in 1.0.0 | — |
 | T4 #146 | Buttons and attention marks | merged on `main` (#157), unreleased: ships in 1.0.0 | `1.0.0-buttons` |
 | T5 #147 | Tabs: PillTabs, SegmentedControl, big TextTabs | merged on `main`, unreleased: ships in 1.0.0 | `1.0.0-tabs` |
 | T6 #148 | Fields and forms | merged on `main`, unreleased: ships in 1.0.0 | — |
@@ -2592,12 +2598,16 @@ detail page names its record with `useRecordCrumb(label)`.
 `[data-nav-num]` rules (→ AppShell shortcuts); in the globals tail `.nav-spaced` (group spacing), `.group-label`
 (→ `text-nav-label`) and the 72px rail width; the account rendered in the rail (0.37 `account` render prop).
 
-## T3: lint and checks (pending, #145)
+## T3: lint and checks (merged, ships in 1.0.0, #145)
 
-**Target.** semi-lint warns on a second filled brand button in a page or modal, brand colour outside its allowed
-uses, removed tokens, a heading heavier than 500, and `text-overline` used as anything but a group or section label;
-`/semi-check` audits the same. **Replaces:** no stand-in. **Until it ships:** follow the rules by hand
-(`DESIGN_SYSTEM.md` §0).
+**What changed** (#145, #142). `semi-lint` adds 1.0 warning rules (`one-brand-button`, `brand-colour-use`,
+`removed-token`, `heading-weight`, refined `overline-place` allowing `<legend>` and flagging `<Field labelClassName="text-overline">`)
+with per-line (`// semi-lint-allow <rule>: <reason>`) and per-file (`skip` with reason) opt-in allowances, plus `#142`
+piped `--json` stdout flush (> 64 KB). `semi density` (`primary-actions`) counts `bg-primary` and `bg-secondary` and
+scopes the nav (`<aside>` / `<nav>`) separately from the page; `semi a11y` keeps T6's quiet field edge acceptance and
+documents the 44px phone touch target. `/semi-check` (`audit.mjs`) validates the 1.0 `brand.json` schema (`brand-schema`),
+detects sales-hub-style stand-ins (`semi-pending-*.css`, `components/semi-pending/*`, `TODO(semi-pending)`) pointing to
+this file, and counts `StickyContextBar` pages (#139). **Replaces:** no stand-in.
 
 ## T4: buttons and attention marks (merged, ships in 1.0.0)
 
@@ -2927,7 +2937,7 @@ Under `prefers-reduced-motion: reduce` every entrance is opacity only (no transl
 
 All web UI here follows the **Semi Design System** (`@semi/ui`, repo `https://github.com/hoanghuynh296/semi-nextjs-codebase`). `npx semi-lint` enforces most of this; the full rules are `node_modules/@semi/ui/docs/QUICK_REF.md` (details in `docs/DESIGN_SYSTEM.md`).
 
-**Semi 1.0 in short** (`DESIGN_SYSTEM.md` §0): one look for every brand; neutral grey surfaces; **the brand colour only on the one main button of a page or modal (at most one filled brand button per page or modal), the nav's main action, the active big-tab underline, attention badges / "Mới" tags, or a case the app's owner asks for**, every other action a neutral button; headings 400 / 500, never bold; content text 14px (`text-ui`), shell chrome 12px (`text-chrome`), fields 16px on phones. Parts marked *(Tn, pending)* in `DESIGN_SYSTEM.md` (T3, T8–T9) are 1.0 targets not shipped yet: use what Semi has today for them and never build a local stand-in. Upgrading from 0.x: `docs/MIGRATION-1.0.md`.
+**Semi 1.0 in short** (`DESIGN_SYSTEM.md` §0): one look for every brand; neutral grey surfaces; **the brand colour only on the one main button of a page or modal (at most one filled brand button per page or modal), the nav's main action, the active big-tab underline, attention badges / "Mới" tags, or a case the app's owner asks for**, every other action a neutral button; headings 400 / 500, never bold; content text 14px (`text-ui`), shell chrome 12px (`text-chrome`), fields 16px on phones. Parts marked *(Tn, pending)* in `DESIGN_SYSTEM.md` (T8–T9) are 1.0 targets not shipped yet: use what Semi has today for them and never build a local stand-in. Upgrading from 0.x: `docs/MIGRATION-1.0.md`.
 
 1. **Ask Semi before writing UI.** Find the component for each need with the `semi` MCP tools (`semi_search` → `semi_docs` → `semi_example`; `semi_block` for whole pages; `semi_props` for props) or the terminal (`npx semi search "bảng có sắp xếp"`, `npx semi docs DataTable`, `npx semi example data-table`, `npx semi add dashboard`). They answer from the installed `@semi/ui`. Read *When to use*, *Use something else when* and *Accessibility*, then start from an example.
 2. **Compose, never re-create.** Import from `@semi/ui` and `@semi/ui/styles` directly. No local wrappers (`components/ui.tsx`), no raw `<select>`, `<table>`, `<dialog>`, `type="date"`, `type="number"`, `window.confirm` / `alert`, no inline `<svg>` or glyph icons (`<Icon name>`, mapping in `docs/ICONS.md`). Every AI conversation is `AIChat`; agent work uses `Reasoning`, `ToolCall`, `TaskList`, `Terminal`, `Sources`; an outward-facing, paid or irreversible agent action waits for `ActionConfirmation`. Pages sit in `AppShell` (or `AppHeader` for a one-screen tool) with `PageTitle` (or the title on the toolbar row: `SubpageToolbar title`, or `TextTabs` for 2–4 sub-pages; a detail page opens with `MinimalHeader`); the shell's one brand-filled action is `mainAction`, its bottom row is `tools` (+ `toolsMenu`), the account (with the theme) is the route header's avatar menu (`header.account`; the nav has no account), and phones use its drawer; sub-views of one area go in nav `children` (closed until the parent is chosen, optional grey icon, no colour or count; check `useAppShell().submenuVisible` and add a page picker when false); a list page that people search and filter opens with `StickyContextBar` (`SearchPill`, `FilterChipRow` on `md+` / `PhoneFilterBar` + `FilterPanel` on phones, `ResultLine`), filter state in the URL (`useFilterParams`), chips on one line, never wrapped rows (`filter-chip-wrap`, warning); dialogs are `Modal` / `Drawer` / `confirmDialog`; loading is `Skeleton`, never "Đang tải…" text, and a list, grid or table never swaps its rows for a `Spinner` (`no-spinner-in-list`, warning). `AppShell` renders once in a `layout.tsx` (never from a page), its items route by `href` (not `onSelect` + `router.push`), the session check runs once in that layout (best on the server) with `BootLoader` as the only centred spinner, and content loading is a `loading.tsx` with `PageSkeleton` inside the shell, never a skeleton gate around it. No other UI or icon library (`lucide-react`, `react-icons`, `@radix-ui`, `@mui`, a shadcn `components/ui` copy: `foreign-ui`), no own `Card` / `Badge` / `Tooltip`… (`local-primitive`), no raw `<button>`, `<input>`, `<textarea>`, `<table>` (`raw-control`), no hand-made overlay or spinner (`custom-overlay`, `custom-spinner`); a clickable card is `<Card onClick>` (keyboard-ready), never `<div onClick>` (`click-target`).

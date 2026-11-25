@@ -33,11 +33,11 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve, sep } from "node:path";
-import { analyse } from "./classes.mjs";
+import { analyse, extractApply, extractStrings, inNonClassPosition, splitToken, tokensOf } from "./classes.mjs";
 
 /** [id, regex, message] */
 export const HARD = [
-  ["font-weight", /font-(bold|extrabold|black)\b/, "weights are font-medium / font-semibold only"],
+  ["font-weight", /font-(bold|extrabold|black)\b/, "weights are font-normal (400) / font-medium (500); font-semibold (600) only for overlines and emphasised labels; 700 only in count badges"],
   ["tiny-text", /text-\[(8|9|10)px\]/, "minimum text size is text-tag / text-badge (10px)"],
   ["uppercase-label", /uppercase tracking-(wide|wider|widest)|tracking-(wide|wider|widest) uppercase/, "labels are sentence case"],
   ["native-select", /<select\b/, "use CustomSelect from @semi/ui"],
@@ -76,7 +76,7 @@ export const HARD = [
   ["external-link", /window\.open\(|<(?!ExternalLink\b)[A-Za-z][\w.]*\b[^>]*\bhref=\{?["'`]https?:\/\//, "links to other sites use ExternalLink from @semi/ui"],
   [
     "app-chrome-copy",
-    /h-(?:\[34px\]|control) px-4 rounded-(?:lg|control) text-(?:\[12px\]|label|ui) font-semibold|p-1 sm:p-1\.5 rounded-(?:2xl|panel) z-20|rounded-(?:2xl|panel) p-1 gap-1 select-none shadow-(?:xl|float)/,
+    /h-(?:\[34px\]|control) px-4 rounded-(?:lg|control) text-(?:\[12px\]|label|chrome|ui) font-semibold|p-1 sm:p-1\.5 rounded-(?:2xl|panel) z-20|rounded-(?:2xl|panel) p-1 gap-1 select-none shadow-(?:xl|float)/,
     "tool-app headers / canvas controls use @semi/ui/styles (headerPrimary, VIEWPORT_TOOLBAR, VIEWPORT_PILL…), not copies",
   ],
   [
@@ -211,8 +211,8 @@ export const RATCHET = [
     "BootLoader is only for the boot / session gate in a layout, before the shell exists. Inside the shell (a page, a loading.tsx, AppShell content) show the content's shape with skeletons (§13b).",
   ],
 ];
-/** Rules whose `skip` may name files with a reason ({ path: reason }): illustration and data colours, not UI chrome. */
-export const CONTENT_RULES = ["literal-colour-value", "inline-svg-path", "no-literal-palette", "inline-style-value"];
+/** Rules whose `skip` may name files with a reason ({ path: reason }): illustration / data colours, or owner-approved 1.0 brand exceptions. */
+export const CONTENT_RULES = ["literal-colour-value", "inline-svg-path", "no-literal-palette", "inline-style-value", "one-brand-button", "brand-colour-use"];
 
 /** The opening tag a hit sits in (back to its `<`, at most 4 lines up), or the line itself when there is none. */
 function tagAround(lines, i) {
@@ -311,7 +311,24 @@ export const WARN = [
   ["filter-chip-wrap", "Filter chips are one line (L4, C-026): FilterChipRow + useFilterParams from @semi/ui (it scrolls sideways and keeps the state in the URL), not hand-made chip buttons in a flex-wrap that grows to several rows."],
   ["raw-pill-button", "A round icon button is <Button iconOnly shape=\"round\" icon aria-label> from @semi/ui (it keeps the focus ring, the title and the hit area), not a hand-made rounded-full button with a tint / field fill."],
   ["detail-overlay-url", "A DetailOverlay is driven by the URL (L9): const { openId, open, close } = useDetailParam(); open={openId !== null} onClose={close}, so the record has a link, Back closes it and the list keeps its scroll."],
-  ["overline-place", "text-overline (C-032) is for section labels only: a sidebar / drawer group, a palette group, a mega menu column, a workspace panel section. Never a button, link, field label, title, badge, table head or a sentence: those are sentence case in their own type style."],
+  ["overline-place", "text-overline is allowed only as a group or section label (nav / sub-nav groups, palette groups, form and detail panel sections like 'MODEL', 'PROMPT'); never as a single field's label, button, link, title, badge, table cell or sentence."],
+  // 1.0 design rules (#145, T3): warnings first; opt in a specific owner-approved case with `// semi-lint-allow <rule>: <reason>` or `skip` with a reason in semi-lint.json.
+  [
+    "one-brand-button",
+    "At most one filled brand button (variant=\"primary\" / \"secondary\") per standalone page or per modal (the nav's mainAction is not counted). Make ordinary actions neutral (subtle, surface, inverse, outline, ghost), or opt an owner-approved case in with `// semi-lint-allow one-brand-button: <reason>`.",
+  ],
+  [
+    "brand-colour-use",
+    "Brand colour (bg-primary / bg-secondary, text-primary, border-primary…) is allowed only in main buttons (primary / secondary), the nav mainAction, the active big-tab underline (decoration-primary), attention CountBadge and NewTag. Use neutral tokens (text-strong, bg-item-selected, border-outline-line, ring-focus), or opt in with `// semi-lint-allow brand-colour-use: <reason>`.",
+  ],
+  [
+    "removed-token",
+    "Token or style removed in Semi 1.0 (run /semi-sync or see docs/MIGRATION-1.0.md for the 1.0 replacement).",
+  ],
+  [
+    "heading-weight",
+    "Headings (h1–h6 and title / section / display text utilities) use weight 400 or 500 (never font-semibold / font-bold; big TextTabs use weight 400). 600 is only for overlines, 'n đã chọn' and emphasised labels; 700 only in count badges.",
+  ],
 ];
 /** Hard rules that read a whole JSX tag: [id, message]. */
 export const TAG_HARD = [["card-hover-actions-touch", "<CardActions> needs a label (\"Thao tác với <tên>\"): on a touch screen the ⋯ is the only control, and the label is its name."]];
@@ -327,11 +344,12 @@ const VALIDATION_TEXT = /(?<!\p{L})(?:bắt buộc|không hợp lệ|không đư
 const KIND_LABEL = /(?<![\p{L}])(?:e-?mail|điện thoại|sđt|phone|website|url|đường dẫn|mật khẩu|password|tìm kiếm|số tiền|giá bán|giá|price|amount)(?![\p{L}])/iu;
 const lineOf = (src, index) => src.slice(0, index).split("\n").length;
 
-/** Warnings [rule, line] of the form kit for one source file. */
-export function warnHits(src) {
-  const out = [];
+/** Warnings [rule, line, message?] of the form kit, #94 patterns, and 1.0 rules for one source file. */
+export function warnHits(src, { css = false } = {}) {
   const rows = src.split(/\r?\n/);
   const code = rows.map((r) => (isComment(r) ? "" : r)).join("\n"); // same line numbers, comments blank
+  if (css) return removedTokenHits(src, code, { css: true });
+  const out = [];
   // form-no-guard: a page form (not a modal's or a popover's) without useUnsavedGuard
   const form = /<FormActions\b|<form\b/.exec(code);
   if (form && /<(?:Field|Input|Textarea)\b/.test(code) && !/\buseUnsavedGuard\b/.test(code) && !/<(?:Modal|Drawer|Popover)\b|placement=["']modal["']/.test(code)) out.push(["form-no-guard", lineOf(code, form.index)]);
@@ -357,7 +375,7 @@ export function warnHits(src) {
       if (/\btype=["'](?:email|tel|url|search|password)["']/.test(tag) && !/\binputMode=/.test(tag)) out.push(["field-input-mode", i + 1]);
     }
   });
-  return [...out, ...patternHits(code)];
+  return [...out, ...patternHits(code), ...v1Hits(src, code)];
 }
 
 // ---- The #94 patterns (#107): lists that load, filter chips, round icon buttons, DetailOverlay, text-overline ----
@@ -405,7 +423,7 @@ const tagFrom = (code, start) => {
   return { name: /^<([A-Za-z][\w.]*)/.exec(code.slice(start))?.[1], start, end, text: code.slice(start, end) };
 };
 
-/** Elements still open at the end of `text` (innermost last): [{ name, attrs }]. */
+/** Elements still open at the end of `text` (innermost last): [{ name, attrs, index }]. */
 function openStack(text) {
   const stack = [];
   for (const m of text.matchAll(/<(\/?)([A-Za-z][\w.]*)\b/g)) {
@@ -416,8 +434,8 @@ function openStack(text) {
       continue;
     }
     const tag = text.slice(m.index, tagEnd(text, m.index));
-    if (!tag.endsWith(">")) stack.push({ name, attrs: tag }); // still being written: the hit is inside this tag
-    else if (!/\/\s*>$/.test(tag)) stack.push({ name, attrs: tag });
+    if (!tag.endsWith(">")) stack.push({ name, attrs: tag, index: m.index }); // still being written: the hit is inside this tag
+    else if (!/\/\s*>$/.test(tag)) stack.push({ name, attrs: tag, index: m.index });
   }
   return stack;
 }
@@ -480,10 +498,10 @@ const isSquare = (cls) => {
 };
 const INTERACTIVE_CLS = /(?<![\w-])(?:hover:bg-|cursor-pointer|focus-visible:)/;
 const CLICKABLE_TAG = /^<(?:button|Button|a|Link)\b|\sonClick=/;
-/** Where text-overline may go (C-032 allow-list): a plain section label (div, span, p, h2–h6, dt, figcaption) that is
- * not clickable and holds a label, not a sentence. Everything else (controls, links, field labels, h1, badges, table
- * cells, any component) is flagged. */
-const OVERLINE_TAGS = /^(?:div|span|p|h[2-6]|dt|figcaption|header)$/;
+/** Where text-overline may go (C-032 / 1.0 allow-list): a plain section or form-group label (div, span, p, h2–h6, dt,
+ * figcaption, header, legend) that is not clickable and holds a label, not a sentence. Everything else (controls, links,
+ * single field labels, h1, badges, table cells, any component) is flagged. */
+const OVERLINE_TAGS = /^(?:div|span|p|h[2-6]|dt|figcaption|header|legend)$/;
 const OVERLINE_LABEL_MAX = 40;
 
 /** Code with JS `.filter(` calls removed: what is left says whether the UI is about filtering. */
@@ -596,6 +614,244 @@ export function patternHits(code) {
     const text = /^([^<{]*)/.exec(code.slice(host.end, host.end + 400))[1].replace(/\s+/g, " ").trim();
     if (!OVERLINE_TAGS.test(host.name) || clickable || text.length > OVERLINE_LABEL_MAX) push("overline-place", m.index);
   }
+  return out;
+}
+
+// ---- 1.0 design rules (#145, T3): warnings first; per-line opt-in `// semi-lint-allow <rule>: <reason>` ----
+
+/** Per-line opt-in allowance: `// semi-lint-allow <rule>: <reason>` or `/* semi-lint-allow <rule>: <reason> *\/` on the same or previous line. */
+export function isAllowedByComment(rawRows, line1, ruleId) {
+  const escaped = ruleId.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const rx = new RegExp(`(?://|/\\*)\\s*semi-lint-allow\\s+${escaped}\\s*:\\s*(?!\\*\\/)\\S`);
+  return rx.test(rawRows[line1 - 1] ?? "") || rx.test(rawRows[line1 - 2] ?? "");
+}
+
+const REMOVED_COLOR_MAP = {
+  "accent-subtle-hover": "item-selected / item-checked",
+  "accent-subtle": "item-selected / item-checked",
+  "accent-line": "outline-line",
+  "accent-fg": "strong (brand-coloured text removed)",
+  "accent-hover": "primary-hover (main button only) or neutral",
+  "on-accent": "on-primary",
+  accent: "primary (main button / attention only) or text-strong / border-outline-line / ring-focus",
+  "action-hover": "primary-hover (main button only)",
+  "on-action": "on-primary",
+  action: "primary (main button / attention only) or neutral",
+  contrast: "strong (text-strong)",
+};
+const REMOVED_COLOR_RX = new RegExp(
+  `^(bg|text|border(?:-[xytrblse])?|ring(?:-offset)?|outline|fill|stroke|decoration|divide|placeholder|caret|from|via|to|shadow|inset-shadow|accent)-(${Object.keys(REMOVED_COLOR_MAP)
+    .sort((a, b) => b.length - a.length)
+    .join("|")})(?:/[\\w.[\\]%]+)?$`,
+);
+const REMOVED_SIZE_MAP = {
+  "text-caption": "text-chrome (12px shell chrome / meta)",
+  "text-label": "text-chrome (12px shell chrome / meta) or text-ui (14px content)",
+  "text-copy": "text-ui (14px content)",
+  "text-ui-lg": "text-lead (15px)",
+  "text-title-lg": "text-lead (or max-sm:text-input on phone fields)",
+  "text-title": "text-lead (15px)",
+  "text-heading-sm": "text-section (20px)",
+  "text-heading": "text-section (20px)",
+  "text-heading-lg": "text-tab-xl (28/24px)",
+  "text-display": "text-tab-xl (28/24px)",
+  "text-kpi": "text-figure (18px)",
+  "z-keypad": "z-sheet",
+};
+const REMOVED_CSS_VAR = /--(?:semi|color)-(?:accent(?:-[\w-]+)?|action(?:-[\w-]+)?|on-accent|on-action|text-contrast)\b|--color-contrast\b|--text-(?:caption|label|copy|ui-lg|title-lg|title|heading-sm|heading-lg|heading|display|kpi)\b/g;
+
+function removedClassReplacement(utility) {
+  if (REMOVED_SIZE_MAP[utility]) return REMOVED_SIZE_MAP[utility];
+  const m = REMOVED_COLOR_RX.exec(utility);
+  if (!m) return null;
+  const [, prefix, name] = m;
+  if (name === "accent" && prefix === "decoration") return "decoration-primary";
+  if ((name === "accent" || name === "action") && /^(?:ring|outline)$/.test(prefix)) return `${prefix}-focus`;
+  if ((name === "accent" || name === "action") && /^(?:border|divide|ring-offset)/.test(prefix)) return `${prefix}-outline-line`;
+  if ((name === "accent" || name === "action") && /^(?:text|placeholder|caret|fill|stroke)$/.test(prefix)) return `${prefix}-strong`;
+  return REMOVED_COLOR_MAP[name];
+}
+
+/** Warnings [rule, line, message] for tokens, classes, CSS variables and style props removed in 1.0 (T1). */
+export function removedTokenHits(src, code = src, { css = false } = {}) {
+  const out = [];
+  const seen = new Set();
+  const push = (line, token, replacement) => {
+    const key = `${line}:${token}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    out.push(["removed-token", line, `${token} was removed in 1.0 → ${replacement} (docs/MIGRATION-1.0.md)`]);
+  };
+  const strings = css ? extractApply(src) : extractStrings(src).filter((s) => !inNonClassPosition(src, s));
+  for (const { value, line } of strings) {
+    for (const tok of tokensOf(value)) {
+      if (tok.length > 80 || !/^[!\w[\-:&>*.#%/()@,=\]]+$/.test(tok)) continue;
+      const { utility } = splitToken(tok);
+      const rep = removedClassReplacement(utility);
+      if (rep) push(line, tok, rep);
+    }
+  }
+  // data-style attribute / CSS selector, style files import
+  for (const m of code.matchAll(/\bdata-style\s*=|\[data-style\b/g)) {
+    push(lineOf(code, m.index), "data-style", "remove it (Flat / Sharp / Soft styles were removed in 1.0)");
+  }
+  for (const m of code.matchAll(/@semi\/ui\/styles\.json|\btokens\/styles\//g)) {
+    push(lineOf(code, m.index), m[0], "remove it (style files were removed in 1.0)");
+  }
+  for (const m of code.matchAll(REMOVED_CSS_VAR)) {
+    push(lineOf(code, m.index), m[0], "use the 1.0 token name (see migrations/1.0.0-foundation.mjs)");
+  }
+  return out;
+}
+
+const BRAND_UTIL = /^(bg|text|border(?:-[xytrblse])?|ring(?:-offset)?|outline|fill|stroke|decoration|divide|placeholder|caret|from|via|to|shadow|inset-shadow|accent)-(primary|primary-hover|on-primary|secondary|secondary-hover|on-secondary)(?:\/([\w.[\]%]+))?$/;
+const BRAND_ALLOWED_HOST = /^(?:Button|SplitButton|CountBadge|NewTag|AppShell|button|a|Link)$/;
+const BRAND_ALLOWED_CONST = /\b(?:BTN_PRIMARY|BTN_SECONDARY|MODAL_BTN_PRIMARY|MODAL_BTN_SECONDARY|COUNT_BADGE|NEW_TAG|headerPrimary|mainAction)\b/;
+const MODAL_SCOPE_TAG = /^(?:Modal|Drawer|Sheet)$/;
+const DIALOG_ROLE_RX = /\brole=\{?\s*["'](?:dialog|alertdialog)["']/;
+const HEAVY_WEIGHT = /(?<![\w-])font-(?:semibold|bold|extrabold|black|\[(?:600|700|800|900)\])(?![\w-])/;
+const MEDIUM_OR_HEAVIER = /(?<![\w-])font-(?:medium|semibold|bold|extrabold|black|\[(?:500|600|700|800|900)\])(?![\w-])/;
+const HEADING_SIZE_TOKEN = /^(?:text-hero|text-title-xl|text-tab-xl|text-section)$/;
+
+/** Enclosing top-level component / function name at `index` (so a file with two components scopes each separately). */
+function enclosingComponent(code, index) {
+  const head = code.slice(0, index);
+  let last = "file";
+  for (const m of head.matchAll(/^(?:export\s+(?:default\s+)?)?(?:async\s+)?(?:function\s+([A-Z]\w*)|const\s+([A-Z]\w*)\s*=)/gm)) {
+    last = `${m[1] || m[2]}@${m.index}`;
+  }
+  return last;
+}
+
+/**
+ * Enclosing conditional tab / step / view guard `{x === "a" && (...)}` at `index`, if still open (unclosed `{`).
+ * Lets multi-tab settings pages have one primary button per tab without false positives.
+ */
+function enclosingCondBranch(code, index) {
+  const from = Math.max(0, index - 4000);
+  const slice = code.slice(from, index);
+  const guards = [...slice.matchAll(/\{\s*([\w.]+)\s*===\s*["']([^"']+)["']\s*&&\s*\(/g)];
+  for (let k = guards.length - 1; k >= 0; k--) {
+    const g = guards[k];
+    let depth = 1;
+    for (let i = g.index + g[0].length; i < slice.length; i++) {
+      if (slice[i] === "(") depth++;
+      else if (slice[i] === ")") {
+        depth--;
+        if (depth === 0) break;
+      }
+    }
+    if (depth > 0) return `branch:${g[1]}=${g[2]}`;
+  }
+  return "";
+}
+
+/** True when two brand buttons in the same scope sit in mutually exclusive branches (direct ternary `:`, or separated by a JSX `return` branch). */
+function mutuallyExclusive(between) {
+  if (!between) return false;
+  // Direct ternary branch separator between the two buttons (e.g. `{cond ? <Button variant="primary">A</Button> : <Button variant="primary">B</Button>}`)
+  if (/(?:<\/(?:Button|SplitButton)>|\/>)\s*\)\s*:\s*\(?\s*$|>\s*:\s*$/.test(between.trimEnd())) return true;
+  // Separate JSX return branches (e.g. `if (step === 1) return (<Button .../>); return (<Button .../>);`)
+  if (/;\s*(?:if\s*\([^)]*\)\s*)?return\s*(?:\(\s*<|<)/.test(between)) return true;
+  return false;
+}
+
+/** Warnings [rule, line, message?] for 1.0 design rules (#145, T3) on one JS/TS(X) file. */
+export function v1Hits(src, code = src) {
+  const out = [...removedTokenHits(src, code, { css: false })];
+  const seen = new Set();
+  const push = (rule, line, msg) => {
+    const key = `${rule}:${line}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    out.push(msg ? [rule, line, msg] : [rule, line]);
+  };
+
+  // 1. one-brand-button: at most one filled brand button (variant="primary" / "secondary", BTN_PRIMARY / BTN_SECONDARY /
+  //    MODAL_BTN_PRIMARY / MODAL_BTN_SECONDARY) per standalone page or per modal; AppShell mainAction is excluded.
+  const shellRanges = [...code.matchAll(/<AppShell\b/g)].map((m) => [m.index, tagEnd(code, m.index)]);
+  const inShellProp = (idx) => shellRanges.some(([s, e]) => idx >= s && idx <= e);
+  const brandButtons = [];
+  for (const m of code.matchAll(/<(Button|SplitButton)\b/g)) {
+    if (inShellProp(m.index)) continue;
+    const tag = tagFrom(code, m.index);
+    const v = (attrValue(tag.text, "variant") ?? "").trim().replace(/^["']|["']$/g, "");
+    if (v === "primary" || v === "secondary") brandButtons.push({ index: m.index, end: tag.end });
+  }
+  for (const m of code.matchAll(/\b(?:BTN_PRIMARY|BTN_SECONDARY|MODAL_BTN_PRIMARY|MODAL_BTN_SECONDARY)\b/g)) {
+    if (inShellProp(m.index)) continue;
+    const host = enclosingTag(code, m.index);
+    if (!host) continue; // only count when rendered on a JSX element (not imports or lookup tables)
+    brandButtons.push({ index: m.index, end: host.end });
+  }
+  brandButtons.sort((a, b) => a.index - b.index);
+  const byScope = new Map();
+  for (const btn of brandButtons) {
+    const stack = openStack(code.slice(0, btn.index));
+    const modal = stack.findLast((e) => MODAL_SCOPE_TAG.test(e.name) || DIALOG_ROLE_RX.test(e.attrs));
+    const branch = enclosingCondBranch(code, btn.index);
+    const scope = (modal ? `modal:${modal.index}` : `page:${enclosingComponent(code, btn.index)}`) + (branch ? `|${branch}` : "");
+    const prev = byScope.get(scope);
+    if (!prev) {
+      byScope.set(scope, btn);
+    } else if (mutuallyExclusive(code.slice(prev.end, btn.index))) {
+      byScope.set(scope, btn);
+    } else {
+      push("one-brand-button", lineOf(code, btn.index));
+    }
+  }
+
+  // 2. brand-colour-use: brand fill / text / border utilities only in main buttons, nav mainAction, big-tab underline
+  //    (decoration-primary), attention CountBadge and NewTag.
+  const rows = src.split(/\r?\n/);
+  for (const s of extractStrings(src).filter((x) => !inNonClassPosition(src, x))) {
+    const host = enclosingTag(src, s.open);
+    const declLine = rows[s.line - 1] ?? "";
+    for (const tok of tokensOf(s.value)) {
+      if (tok.length > 80 || !/^[!\w[\-:&>*.#%/()@,=\]]+$/.test(tok)) continue;
+      const { utility } = splitToken(tok);
+      const m = BRAND_UTIL.exec(utility);
+      if (!m) continue;
+      const [, prefix, name, alpha] = m;
+      // Active big-tab underline is allowed.
+      if (prefix === "decoration" && name === "primary" && !alpha) continue;
+      // Brand-derived alpha tints (bg-primary/10, border-primary/20), brand borders/rings/fills/strokes, and brand text
+      // (text-primary, text-secondary) are never allowed.
+      const isFillOrOnText = !alpha && ((prefix === "bg" && /^(?:primary|secondary)(?:-hover)?$/.test(name)) || (prefix === "text" && /^on-(?:primary|secondary)$/.test(name)));
+      if (!isFillOrOnText) {
+        push("brand-colour-use", s.line);
+        continue;
+      }
+      // Solid brand fill (bg-primary / bg-secondary + text-on-primary / text-on-secondary): allowed on main buttons,
+      // CountBadge, NewTag, AppShell mainAction, or a named button/badge constant.
+      if (host && BRAND_ALLOWED_HOST.test(host.name)) continue;
+      if (!host && BRAND_ALLOWED_CONST.test(declLine)) continue;
+      push("brand-colour-use", s.line);
+    }
+  }
+
+  // 3. heading-weight: headings (h1–h6, PageTitle, and title / section / display utilities) use weight ≤ 500;
+  //    big TextTabs (text-tab-xl) use weight 400.
+  for (const m of code.matchAll(/<(h[1-6]|PageTitle|TextTabs)\b/g)) {
+    const tag = tagFrom(code, m.index);
+    const cls = attrValue(tag.text, "className") ?? "";
+    if (!cls) continue;
+    if (m[1] === "TextTabs") {
+      if (MEDIUM_OR_HEAVIER.test(cls)) push("heading-weight", lineOf(code, m.index));
+    } else if (!/(?<![\w-])text-overline(?![\w-])/.test(cls) && HEAVY_WEIGHT.test(cls)) {
+      push("heading-weight", lineOf(code, m.index));
+    }
+  }
+  for (const s of extractStrings(src).filter((x) => !inNonClassPosition(src, x))) {
+    const toks = tokensOf(s.value).map((t) => splitToken(t).utility);
+    const hasHeadingSize = toks.some((u) => HEADING_SIZE_TOKEN.test(u));
+    if (!hasHeadingSize) continue;
+    const isTabXl = toks.includes("text-tab-xl");
+    if (isTabXl ? MEDIUM_OR_HEAVIER.test(s.value) : HEAVY_WEIGHT.test(s.value)) {
+      push("heading-weight", s.line);
+    }
+  }
+
   return out;
 }
 
@@ -750,28 +1006,33 @@ export function scan(paths, cfg, cwd) {
   for (const p of paths) {
     const name = toPosix(relative(cwd, p));
     const src = readFileSync(p, "utf8");
+    const rows = src.split(/\r?\n/);
     const css = p.endsWith(".css");
     for (const f of analyse(src, { css })) if (!skipped(f.rule, name)) add(f.rule, name, f.line, f.token);
     if (css && cfg.brand && !skipped(BRAND_OVERRIDE[0], name)) {
-      src.split(/\r?\n/).forEach((raw, i) => {
+      rows.forEach((raw, i) => {
         if (BRAND_OVERRIDE[1].test(raw)) hard.push({ file: name, line: i + 1, rule: BRAND_OVERRIDE[0], message: BRAND_OVERRIDE[2], text: raw.trim().slice(0, 140) });
       });
     }
     if (css && !skipped("css-raw-value", name)) {
-      src.split(/\r?\n/).forEach((raw, i) => {
+      rows.forEach((raw, i) => {
         if (!raw.trim() || isComment(raw) || /^\s*@import\b/.test(raw)) return;
         if (CSS_RAW.test(raw.replace(/\/\*.*?\*\//g, ""))) add("css-raw-value", name, i + 1);
       });
     }
-    if (css) continue;
+    if (css) {
+      for (const [id, line, detail] of warnHits(src, { css: true }))
+        if (!skipped(id, name) && !isAllowedByComment(rows, line, id)) warnings.push({ file: name, line, rule: id, message: detail || WARN.find(([w]) => w === id)[1] });
+      continue;
+    }
     if (!skipped("decorative-icon-tones", name)) {
       const tones = [...src.matchAll(/\biconTone=["'{]+(\w+)/g)];
       if (new Set(tones.map((m) => m[1])).size >= DECORATIVE_TONES) add("decorative-icon-tones", name, src.slice(0, tones[0].index).split("\n").length);
     }
     for (const [id, line] of shellHits(p, src, cwd)) if (!skipped(id, name)) add(id, name, line);
-    for (const [id, line] of warnHits(src)) if (!skipped(id, name)) warnings.push({ file: name, line, rule: id, message: WARN.find(([w]) => w === id)[1] });
+    for (const [id, line, detail] of warnHits(src))
+      if (!skipped(id, name) && !isAllowedByComment(rows, line, id)) warnings.push({ file: name, line, rule: id, message: detail || WARN.find(([w]) => w === id)[1] });
     for (const [id, line, text] of tagHardHits(src)) if (!skipped(id, name)) hard.push({ file: name, line, rule: id, message: TAG_HARD.find(([h]) => h === id)[1], text });
-    const rows = src.split(/\r?\n/);
     rows.forEach((raw, i) => {
       if (!raw.trim() || isComment(raw)) return;
       for (const [id, rx, msg] of HARD) {
@@ -946,4 +1207,4 @@ function main(argv) {
 }
 
 const isMain = process.argv[1] && resolve(process.argv[1]).replace(/\\/g, "/").match(/semi-lint(\.mjs)?$/);
-if (isMain) process.exit(main(process.argv.slice(2)));
+if (isMain) process.exitCode = main(process.argv.slice(2));
