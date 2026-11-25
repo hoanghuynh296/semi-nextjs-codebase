@@ -11,10 +11,8 @@ Apps read this file from `node_modules/@semi/ui/docs/DESIGN_SYSTEM.md` (the vers
 `BRANDS.md` (brand kits), `ICONS.md`. Tokens: `@semi/ui/tokens.css` (generated from `tokens/tokens.json`). Base layer:
 `@semi/ui/base.css`. Components: `@semi/ui`; class constants: `@semi/ui/styles` (§16). Lint: `npx semi-lint`.
 
-**1.0.** Semi 1.0 is one breaking release built in tickets T1–T12 (#141–#153). A rule below marked **(T5, pending)**
-is the 1.0 target whose component has not merged yet: build the rest of the screen to it, use what Semi ships today
-for that part (named next to it), and never write a local stand-in for it. `MIGRATION-1.0.md` has the status of each
-ticket.
+**1.0.** Semi 1.0 is one breaking release (tickets T1–T9 all merged on `main`; upgrading from 0.x: `MIGRATION-1.0.md`).
+Every rule, token and component below is shipped in 1.0.0; never build a local stand-in.
 
 ## 0. The 1.0 look in one page
 
@@ -81,7 +79,7 @@ decisions C-006, C-008.
   an icon says.
 - **Flat, no glow, no gradients.** Depth comes from the neutral surface steps (§2); emphasis ("on", active, selected)
   comes from a neutral fill (`bg-inverted`, `bg-item-selected`, `bg-item-checked`) or a `border-outline-line` border.
-  The only gradient is the skeleton shimmer.
+  Skeletons pulse quietly by opacity (`motion-pulse`), never a gradient shimmer.
 - **Neutral chrome, colour on content.** The nav is neutral (grey 16px icons, the active item `bg-item-selected
   text-strong`). Colour goes where it helps reading content: a status badge, a coloured dot on a filter chip, a tile
   tone. The brand colour follows the rule above.
@@ -654,7 +652,7 @@ it form by form; the four lint rules below are warnings until 1.0.
   `autoComplete` and `enterKeyHint` on its `Input` (table in `FIELD_KINDS`; `NumberInput` takes only `autoComplete` and
   `enterKeyHint`, it keeps its own type and keypad); a prop on the control wins (`autoComplete="new-password"`, `type="text"`
   next to an `https://` addon). `number` and `money` stay text inputs with the decimal keypad, never `type="number"`; the text
-  holds Vietnamese separators, so parse it with `parseMoney` / `parseNumber` (#69), not `Number()`.
+  holds Vietnamese separators, so parse it in the app (strip grouping separators / locale-aware parser), not `Number()`.
 - **Small counts and hinted text (#106, #148).** A small whole number people nudge (tấn per line, copies, seats) is a `Stepper`
   (− value +, a spinbutton: arrows, Page Up / Down, Home / End; the − + buttons are out of the Tab order); typed numbers stay
   `NumberInput`. A message or note that can mention a record or insert a template or plain-text snippet is a `HintTextarea`:
