@@ -71,7 +71,7 @@ test("phone drawer supports collapsible nav groups, external mainAction, and bot
   await open(page, "/", "light");
 
   await page.getByRole("button", { name: /Mở menu/i }).click();
-  const drawer = page.getByRole("dialog");
+  const drawer = page.getByRole("dialog", { name: "Semi Design" });
   await expect(drawer).toBeVisible();
 
   const ghLink = drawer.getByRole("link", { name: "GitHub Repository" });
@@ -90,6 +90,7 @@ test("phone drawer supports collapsible nav groups, external mainAction, and bot
   const trigger = drawer.locator("[data-semi-nav-footer]").getByRole("button", { name: "Tìm nhanh" });
   await expect(trigger).toBeVisible();
   await trigger.click();
+  await expect(drawer).toBeHidden();
 
   const cmdDialog = page.getByRole("dialog", { name: "Bảng lệnh" });
   await expect(cmdDialog).toBeVisible();
@@ -233,6 +234,18 @@ test("CommandDialog opens via click or ⌘K/Ctrl+K, guards IME, supports keyboar
   await expect(cmdDialog).toBeHidden();
   await expect(page).toHaveURL(/\/icons\/\?q=trash/);
   await expect(page.getByRole("searchbox", { name: "Tìm icon" })).toHaveValue("trash");
+
+  // On /components/command/, ⌘K yields to the page's CommandPalette demo and the nav trigger hides ⌘K
+  await open(page, "/components/command/", "light");
+  const cmdPageTrigger = aside.locator("[data-semi-nav-footer]").getByRole("button", { name: "Tìm nhanh" });
+  await expect(cmdPageTrigger).toBeVisible();
+  await expect(cmdPageTrigger.locator("kbd")).toHaveCount(0);
+  await page.keyboard.press("ControlOrMeta+k");
+  await expect(page.getByRole("dialog", { name: "Tìm hoặc tạo" })).toBeVisible();
+  await expect(cmdDialog).toBeHidden();
+  await page.keyboard.press("Escape");
+  await cmdPageTrigger.click();
+  await expect(cmdDialog).toBeVisible();
 });
 
 test("/icons/ uses StickyContextBar + SearchPill with / shortcut, clear button, and ?q= prefill (#179)", async ({ page }) => {

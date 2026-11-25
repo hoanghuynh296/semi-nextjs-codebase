@@ -1204,7 +1204,6 @@ function PhoneDrawer({
   const drawerId = useId();
   const ref = useRef<HTMLDivElement>(null);
   const navSearchRef = useRef<HTMLDivElement>(null);
-  const navFooterRef = useRef<HTMLDivElement>(null);
   const [level, setLevel] = useState<DrillLevel | null>(null);
   // the row that opened the level: focus returns to it on the way back
   const [returnTo, setReturnTo] = useState<string | null>(null);
@@ -1219,23 +1218,6 @@ function PhoneDrawer({
     };
     el.addEventListener("click", onLinkClick);
     return () => el.removeEventListener("click", onLinkClick);
-  }, [onClose, level]);
-  // Close the drawer when a button or link inside navFooter is activated (e.g. CommandDialog trigger).
-  // Defer to a macrotask so the click event finishes bubbling to React's root listener before PhoneDrawer unmounts.
-  useEffect(() => {
-    const el = navFooterRef.current;
-    if (!el) return;
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    const onActionClick = (e: MouseEvent) => {
-      if ((e.target as HTMLElement | null)?.closest("a, button")) {
-        timer = setTimeout(onClose, 0);
-      }
-    };
-    el.addEventListener("click", onActionClick);
-    return () => {
-      el.removeEventListener("click", onActionClick);
-      if (timer !== undefined) clearTimeout(timer);
-    };
   }, [onClose, level]);
   // a new level gets focus on its first row, so a screen reader hears where it went; back at the root, the row that
   // opened it gets focus again
@@ -1473,7 +1455,13 @@ function PhoneDrawer({
           className="shrink-0 border-t border-divider p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] flex flex-col gap-2"
         >
           {navFooter && (
-            <div ref={navFooterRef} className="px-1">
+            <div
+              role="presentation"
+              className="px-1"
+              onClick={(e) => {
+                if ((e.target as HTMLElement | null)?.closest("a, button")) onClose();
+              }}
+            >
               {navFooter}
             </div>
           )}

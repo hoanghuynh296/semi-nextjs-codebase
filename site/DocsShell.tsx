@@ -55,7 +55,7 @@ export function activeFromPath(pathname: string | null): string {
 function NavCommandTrigger({ onOpen, hotkeyEnabled }: { onOpen: () => void; hotkeyEnabled: boolean }) {
   const { rail } = useAppShell();
   return (
-    <Tooltip content={rail ? "Tìm nhanh (⌘K)" : null} side="right">
+    <Tooltip content={rail ? (hotkeyEnabled ? "Tìm nhanh (⌘K)" : "Tìm nhanh") : null} side="right">
       <button
         type="button"
         onClick={onOpen}
@@ -68,9 +68,11 @@ function NavCommandTrigger({ onOpen, hotkeyEnabled }: { onOpen: () => void; hotk
       >
         <Icon name="search" className="w-4 h-4 shrink-0" />
         <span className="flex-1 min-w-0 truncate text-left @max-[120px]/nav:sr-only">Tìm nhanh</span>
-        <span aria-hidden className="max-md:hidden @max-[120px]/nav:hidden shrink-0">
-          <Kbd>⌘K</Kbd>
-        </span>
+        {hotkeyEnabled && (
+          <span aria-hidden className="max-md:hidden @max-[120px]/nav:hidden shrink-0">
+            <Kbd>⌘K</Kbd>
+          </span>
+        )}
       </button>
     </Tooltip>
   );
