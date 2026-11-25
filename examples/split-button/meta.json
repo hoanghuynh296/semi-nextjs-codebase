@@ -35,6 +35,11 @@
     {
       "file": "secondary",
       "title": "Subtle, loading"
+    },
+    {
+      "file": "full-width",
+      "title": "Full width (workspace action bar)",
+      "description": "`fullWidth` stretches the primary button across its container (e.g. WorkspaceLayout's pinned action bar) and keeps the split trigger on phones."
     }
   ]
 }

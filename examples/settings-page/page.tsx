@@ -12,18 +12,19 @@ import {
   ItemGroup,
   Page,
   PageSection,
-  Pills,
+  PillTabs,
   Switch,
   toast,
+  type IconName,
 } from "@semi/ui";
 
 type SectionKey = "general" | "notifications" | "integrations" | "danger";
 
-const SECTIONS: { key: SectionKey; label: string }[] = [
-  { key: "general", label: "Chung" },
-  { key: "notifications", label: "Thông báo" },
-  { key: "integrations", label: "Tích hợp" },
-  { key: "danger", label: "Vùng nguy hiểm" },
+const SECTIONS: { key: SectionKey; label: string; icon: IconName }[] = [
+  { key: "general", label: "Chung", icon: "settings" },
+  { key: "notifications", label: "Thông báo", icon: "bell" },
+  { key: "integrations", label: "Tích hợp", icon: "zap" },
+  { key: "danger", label: "Vùng nguy hiểm", icon: "shield" },
 ];
 
 export default function SettingsPage() {
@@ -39,7 +40,7 @@ export default function SettingsPage() {
     <Page
       layout="reading"
       title="Cấu hình"
-      tabs={<Pills value={section} onChange={setSection} options={SECTIONS} />}
+      tabs={<PillTabs label="Mục cấu hình" value={section} onChange={setSection} items={SECTIONS} />}
       intro="Thiết lập chung cho không gian làm việc, thông báo và tích hợp."
     >
       {section === "general" && (

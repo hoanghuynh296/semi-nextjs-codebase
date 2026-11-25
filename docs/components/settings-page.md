@@ -1,6 +1,6 @@
 # Settings page
 
-A 1.0 settings page on Page layout="reading" (centred max 1536px inside 16px card padding, 64px bottom) with section tabs (Pills today; PillTabs once T5 merges) and one save action per section. Copy it with `semi add settings-page`.
+A 1.0 settings page on Page layout="reading" (centred max 1536px inside 16px card padding, 64px bottom) with PillTabs section navigation and one save action per section. Copy it with `semi add settings-page`.
 
 ## When to use
 
@@ -25,18 +25,19 @@ import {
   ItemGroup,
   Page,
   PageSection,
-  Pills,
+  PillTabs,
   Switch,
   toast,
+  type IconName,
 } from "@semi/ui";
 
 type SectionKey = "general" | "notifications" | "integrations" | "danger";
 
-const SECTIONS: { key: SectionKey; label: string }[] = [
-  { key: "general", label: "Chung" },
-  { key: "notifications", label: "Thông báo" },
-  { key: "integrations", label: "Tích hợp" },
-  { key: "danger", label: "Vùng nguy hiểm" },
+const SECTIONS: { key: SectionKey; label: string; icon: IconName }[] = [
+  { key: "general", label: "Chung", icon: "settings" },
+  { key: "notifications", label: "Thông báo", icon: "bell" },
+  { key: "integrations", label: "Tích hợp", icon: "zap" },
+  { key: "danger", label: "Vùng nguy hiểm", icon: "shield" },
 ];
 
 export default function SettingsPage() {
@@ -52,7 +53,7 @@ export default function SettingsPage() {
     <Page
       layout="reading"
       title="Cấu hình"
-      tabs={<Pills value={section} onChange={setSection} options={SECTIONS} />}
+      tabs={<PillTabs label="Mục cấu hình" value={section} onChange={setSection} items={SECTIONS} />}
       intro="Thiết lập chung cho không gian làm việc, thông báo và tích hợp."
     >
       {section === "general" && (

@@ -84,6 +84,34 @@ export default function SplitButtonSecondary() {
 }
 ```
 
+### Full width (workspace action bar)
+
+`fullWidth` stretches the primary button across its container (e.g. WorkspaceLayout's pinned action bar) and keeps the split trigger on phones.
+
+```tsx
+"use client";
+
+import { SplitButton, toast } from "@semi/ui";
+
+export default function SplitButtonFullWidth() {
+  return (
+    <div className="max-w-sm">
+      <SplitButton
+        fullWidth
+        label="Gửi hỏi giá"
+        icon="send"
+        onClick={() => toast.success("Đã gửi hỏi giá")}
+        menuLabel="Cách gửi khác"
+        items={[
+          { label: "Gửi từ mẫu", icon: "fileText", onSelect: () => toast.info("Chọn mẫu") },
+          { label: "Lưu nháp", icon: "check", onSelect: () => toast.info("Đã lưu nháp") },
+        ]}
+      />
+    </div>
+  );
+}
+```
+
 ## API
 
 ### SplitButton

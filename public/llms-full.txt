@@ -161,7 +161,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Agent workspace](./components/agent-run/) ([markdown](./docs/components/agent-run.md)): A full agent turn composed from the AI parts: the request, reasoning, a plan, tool calls, an approval, the answer with sources and a composer with the context meter. Copy it with `semi add agent-run`. Components: .
 - [Dashboard](./components/dashboard/) ([markdown](./docs/components/dashboard.md)): An overview page: title, KPI row with trends, a revenue chart, orders by status and the latest orders. Copy it with `semi add dashboard`, then replace the sample data. Components: .
 - [List page](./components/list-page/) ([markdown](./docs/components/list-page.md)): A 1.0 records page on Page layout="work": 18/400 title row with an inverse action, StickyContextBar with SearchPill + FilterChipRow (sort, Chọn and in-place selection mode on the filter row; PhoneFilterBar on phones; no result-count row), DataTable / Card grid / phone Item rows sharing the same selection model, and DetailOverlay (?open=). Copy it with `semi add list-page`. Components: .
-- [Settings page](./components/settings-page/) ([markdown](./docs/components/settings-page.md)): A 1.0 settings page on Page layout="reading" (centred max 1536px inside 16px card padding, 64px bottom) with section tabs (Pills today; PillTabs once T5 merges) and one save action per section. Copy it with `semi add settings-page`. Components: .
+- [Settings page](./components/settings-page/) ([markdown](./docs/components/settings-page.md)): A 1.0 settings page on Page layout="reading" (centred max 1536px inside 16px card padding, 64px bottom) with PillTabs section navigation and one save action per section. Copy it with `semi add settings-page`. Components: .
 
 ### Setup
 
@@ -3610,6 +3610,34 @@ export default function SplitButtonSecondary() {
         { label: "Mở trong Finder", icon: "folder", onSelect: () => toast({ title: "Mở Finder" }) },
       ]}
     />
+  );
+}
+```
+
+### Full width (workspace action bar)
+
+`fullWidth` stretches the primary button across its container (e.g. WorkspaceLayout's pinned action bar) and keeps the split trigger on phones.
+
+```tsx
+"use client";
+
+import { SplitButton, toast } from "@semi/ui";
+
+export default function SplitButtonFullWidth() {
+  return (
+    <div className="max-w-sm">
+      <SplitButton
+        fullWidth
+        label="Gửi hỏi giá"
+        icon="send"
+        onClick={() => toast.success("Đã gửi hỏi giá")}
+        menuLabel="Cách gửi khác"
+        items={[
+          { label: "Gửi từ mẫu", icon: "fileText", onSelect: () => toast.info("Chọn mẫu") },
+          { label: "Lưu nháp", icon: "check", onSelect: () => toast.info("Đã lưu nháp") },
+        ]}
+      />
+    </div>
   );
 }
 ```
@@ -8871,6 +8899,131 @@ export default function ListReaderInboxExample() {
         }
       />
     </div>
+  );
+}
+```
+
+### In AppShell page="fixed"
+
+Full-height list + reader inside AppShell page="fixed" and Page layout="two-column" fixed (zero calc()). Full screen at /demo/list-reader/.
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { AppShell, Button, Item, ListReaderLayout, Page, ReaderHeader, SubNav, toast, useDetailParam, type SubNavSection } from "@semi/ui";
+
+type Thread = { id: string; subject: string; from: string; time: string; paragraphs: string[] };
+
+const THREADS: Thread[] = Array.from({ length: 24 }, (_, i) => ({
+  id: `m-${i + 1}`,
+  subject:
+    i === 0
+      ? "Báo giá hạt tiêu đen hữu cơ xuất khẩu quý 4 và lịch giao container tại cảng Cát Lái"
+      : `Trao đổi đơn hàng #${1040 + i} — xác nhận quy cách đóng gói`,
+  from: ["Gia vị Tây Nguyên", "HTX Chư Sê", "Hương Quế Yên Bái", "Nông sản Đắk Lắk"][i % 4],
+  time: `${9 + (i % 9)}:${String((i * 13) % 60).padStart(2, "0")}`,
+  paragraphs: Array.from(
+    { length: 18 },
+    (_, p) =>
+      `Đoạn ${p + 1}: Chúng tôi đã kiểm tra tồn kho và lịch tàu dự kiến trong tuần tới. Vui lòng xác nhận số lượng cuối cùng trước 15:00 để bộ phận kho giữ hàng và chuẩn bị hồ sơ xuất xưởng.`,
+  ),
+}));
+
+/** Full-height ListReaderLayout inside AppShell page="fixed" + Page layout="two-column" fixed (zero calc()). */
+export default function ListReaderInShell() {
+  const detail = useDetailParam("open");
+  const [folder, setFolder] = useState("inbox");
+  const [fallbackId, setFallbackId] = useState<string | null>(THREADS[0].id);
+  const openId = detail.openId ?? fallbackId;
+  const active = THREADS.find((t) => t.id === openId) ?? null;
+
+  const sections: SubNavSection[] = [
+    {
+      label: "Thư mục",
+      items: [
+        { id: "inbox", label: "Hộp thư đến", icon: "inbox", meta: THREADS.length },
+        { id: "sent", label: "Đã gửi", icon: "send" },
+        { id: "archive", label: "Lưu trữ", icon: "folder" },
+      ],
+    },
+  ];
+
+  return (
+    <AppShell
+      page="fixed"
+      productName="Sales Hub"
+      logoIcon="mail"
+      activeId="inbox"
+      sections={[
+        {
+          items: [
+            { id: "inbox", label: "Hộp thư", icon: "mail", href: "/demo/list-reader/" },
+            { id: "orders", label: "Đơn hàng", icon: "bag", href: "/demo/list-reader/" },
+          ],
+        },
+      ]}
+      header={{ account: { name: "Hoàng Huỳnh", detail: "Quản trị" } }}
+    >
+      <Page
+        layout="two-column"
+        fixed
+        subNav={<SubNav sections={sections} activeId={folder} onSelect={setFolder} label="Thư mục hộp thư" />}
+        title="Hộp thư"
+        actions={
+          <Button variant="inverse" icon="plus" onClick={() => toast.info("Soạn thư mới")}>
+            Soạn thư
+          </Button>
+        }
+      >
+        <ListReaderLayout
+          open={active !== null}
+          openKey={active?.id}
+          recordTitle={active?.subject}
+          onClose={() => {
+            setFallbackId(null);
+            if (detail.openId) detail.close();
+          }}
+          listLabel="Danh sách thư"
+          readerLabel="Nội dung thư"
+          list={THREADS.map((item) => (
+            <Item
+              key={item.id}
+              title={item.subject}
+              description={item.from}
+              meta={item.time}
+              selected={active?.id === item.id}
+              onClick={() => {
+                setFallbackId(item.id);
+                detail.open(item.id);
+              }}
+            />
+          ))}
+          reader={
+            active && (
+              <>
+                <ReaderHeader
+                  title={active.subject}
+                  meta={`${active.from} · ${active.time}`}
+                  moreActions={[
+                    { label: "Chuyển tiếp", icon: "send", onSelect: () => toast.info("Chuyển tiếp") },
+                    { label: "Lưu trữ", icon: "folder", onSelect: () => toast.info("Đã lưu trữ") },
+                  ]}
+                  action={{ label: "Trả lời", icon: "send", onClick: () => toast.success("Mở khung trả lời") }}
+                />
+                <div className="p-4 sm:p-5 flex flex-col gap-3">
+                  {active.paragraphs.map((p, idx) => (
+                    <p key={idx} className="text-ui text-body">
+                      {p}
+                    </p>
+                  ))}
+                </div>
+              </>
+            )
+          }
+        />
+      </Page>
+    </AppShell>
   );
 }
 ```
@@ -15825,7 +15978,7 @@ export default function ListPage() {
 
 # Settings page
 
-A 1.0 settings page on Page layout="reading" (centred max 1536px inside 16px card padding, 64px bottom) with section tabs (Pills today; PillTabs once T5 merges) and one save action per section. Copy it with `semi add settings-page`.
+A 1.0 settings page on Page layout="reading" (centred max 1536px inside 16px card padding, 64px bottom) with PillTabs section navigation and one save action per section. Copy it with `semi add settings-page`.
 
 ## When to use
 
@@ -15850,18 +16003,19 @@ import {
   ItemGroup,
   Page,
   PageSection,
-  Pills,
+  PillTabs,
   Switch,
   toast,
+  type IconName,
 } from "@semi/ui";
 
 type SectionKey = "general" | "notifications" | "integrations" | "danger";
 
-const SECTIONS: { key: SectionKey; label: string }[] = [
-  { key: "general", label: "Chung" },
-  { key: "notifications", label: "Thông báo" },
-  { key: "integrations", label: "Tích hợp" },
-  { key: "danger", label: "Vùng nguy hiểm" },
+const SECTIONS: { key: SectionKey; label: string; icon: IconName }[] = [
+  { key: "general", label: "Chung", icon: "settings" },
+  { key: "notifications", label: "Thông báo", icon: "bell" },
+  { key: "integrations", label: "Tích hợp", icon: "zap" },
+  { key: "danger", label: "Vùng nguy hiểm", icon: "shield" },
 ];
 
 export default function SettingsPage() {
@@ -15877,7 +16031,7 @@ export default function SettingsPage() {
     <Page
       layout="reading"
       title="Cấu hình"
-      tabs={<Pills value={section} onChange={setSection} options={SECTIONS} />}
+      tabs={<PillTabs label="Mục cấu hình" value={section} onChange={setSection} items={SECTIONS} />}
       intro="Thiết lập chung cho không gian làm việc, thông báo và tích hợp."
     >
       {section === "general" && (

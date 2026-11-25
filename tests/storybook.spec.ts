@@ -2746,10 +2746,74 @@ test("List + reader: sticky ReaderHeader with matching button heights, independe
   }
 });
 
-test("WorkspaceLayout without action renders no bottom bar; SplitButton fullWidth spans its container (#149)", async ({ page }) => {
-  await page.setViewportSize({ width: 1280, height: 900 });
+test("WorkspaceLayout action bar, SplitButton fullWidth, PageSkeleton workspace, Settings PillTabs, and ListReaderLayout inside AppShell page=fixed (#149)", async ({ browser }) => {
+  // 1. WorkspaceLayout: 1 pinned action bar when `action` is passed, 0 when omitted
+  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   await open(page, "/components/workspace-layout/", "dark");
+  await expect(example(page, "workspace-layout/request").locator("[data-workspace-action]")).toHaveCount(1);
   const ro = example(page, "workspace-layout/readonly");
   await expect(ro.getByRole("heading", { name: "YC-014 Tiêu đen" })).toBeVisible();
   await expect(ro.locator("[data-workspace-action]")).toHaveCount(0);
+
+  // 2. SplitButton fullWidth: fills container width at 1280 and stays split at 430
+  for (const width of [1280, 430]) {
+    await page.setViewportSize({ width, height: 900 });
+    await open(page, "/components/split-button/", "dark");
+    const fw = example(page, "split-button/full-width");
+    const group = fw.getByRole("group", { name: "Gửi hỏi giá" });
+    await expect(group).toBeVisible();
+    await expect(group.getByRole("button", { name: "Gửi hỏi giá" })).toBeVisible();
+    await expect(group.getByRole("button", { name: "Cách gửi khác" })).toBeVisible();
+    const [boxW, groupW] = await group.evaluate((el) => [
+      el.parentElement!.getBoundingClientRect().width,
+      el.getBoundingClientRect().width,
+    ]);
+    expect(Math.abs(boxW - groupW)).toBeLessThanOrEqual(2);
+  }
+
+  // 3. PageSkeleton shape="workspace": renders 2-column panel + result skeleton
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await open(page, "/components/skeleton/", "dark");
+  const ws = page.locator('[data-shape="workspace"] [role="status"]');
+  await expect(ws).toBeVisible();
+  expect(await ws.locator(":scope > div").count()).toBe(2);
+
+  // 4. Settings page uses PillTabs on Page layout="reading"
+  await open(page, "/components/settings-page/", "dark");
+  const sp = example(page, "settings-page/page");
+  await expect(sp.locator('[data-page-layout="reading"]')).toBeVisible();
+  await expect(sp.getByRole("tablist", { name: "Mục cấu hình" })).toBeVisible();
+
+  // 5. ListReaderLayout inside AppShell page="fixed" (/demo/list-reader/): card never scrolls, list & reader scroll independently
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await open(page, "/demo/list-reader/", "dark");
+  const listPane = page.locator("[data-reader-list]");
+  const readerPane = page.locator("[data-reader-pane]");
+  const header = readerPane.locator("[data-reader-header]");
+  await expect(listPane).toBeVisible();
+  await expect(readerPane).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Đường dẫn" })).toContainText("Báo giá hạt tiêu đen");
+
+  const headerBefore = (await header.boundingBox())!.y;
+  await listPane.evaluate((el) => { el.scrollTop = 240; });
+  await readerPane.evaluate((el) => { el.scrollTop = 320; });
+  const scrollMetrics = await page.evaluate(() => {
+    const main = document.querySelector("[data-shell-card]") as HTMLElement;
+    const list = document.querySelector("[data-reader-list]") as HTMLElement;
+    const reader = document.querySelector("[data-reader-pane]") as HTMLElement;
+    const hdr = document.querySelector("[data-reader-header]") as HTMLElement;
+    return {
+      windowY: window.scrollY,
+      cardScrollDelta: main.scrollHeight - main.clientHeight,
+      listTop: list.scrollTop,
+      readerTop: reader.scrollTop,
+      headerTop: hdr.getBoundingClientRect().top,
+    };
+  });
+  expect(scrollMetrics.windowY).toBe(0);
+  expect(scrollMetrics.cardScrollDelta).toBeLessThanOrEqual(1);
+  expect(scrollMetrics.listTop).toBeGreaterThan(100);
+  expect(scrollMetrics.readerTop).toBeGreaterThan(100);
+  expect(Math.abs(scrollMetrics.headerTop - headerBefore)).toBeLessThanOrEqual(1);
+  await page.close();
 });

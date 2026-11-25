@@ -32,6 +32,12 @@
       "file": "inbox",
       "title": "Mail inbox (list + reader)",
       "preview": "frame"
+    },
+    {
+      "file": "in-shell",
+      "title": "In AppShell page=\"fixed\"",
+      "description": "Full-height list + reader inside AppShell page=\"fixed\" and Page layout=\"two-column\" fixed (zero calc()). Full screen at /demo/list-reader/.",
+      "preview": "none"
     }
   ]
 }

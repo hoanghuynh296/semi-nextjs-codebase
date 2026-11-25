@@ -78,6 +78,7 @@ export function Card({
     const checkAria = selectLabel ?? (label ? t.selectItem(label) : t.selectRow);
     return (
       <div
+        onKeyDown={onKeyDown}
         className={cn(
           "group relative",
           interactive || clickable ? (bordered ? CARD_BORDERED_HOVER : CARD_HOVER) : bordered ? CARD_BORDERED : CARD,

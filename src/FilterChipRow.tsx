@@ -51,28 +51,35 @@ export interface ListSelection {
  * `onEnter` and `onExit` to `FilterChipRow` / `PhoneFilterBar` `selection`, and `toggle` / `isChecked` to rows or cards.
  */
 export function useListSelection(initial: string[] = []) {
-  const [active, setActive] = useState(initial.length > 0);
-  const [selected, setSelectedState] = useState<string[]>(initial);
+  const [state, setState] = useState<{ active: boolean; selected: string[] }>(() => ({
+    active: initial.length > 0,
+    selected: initial,
+  }));
   const setSelected = useCallback((ids: string[]) => {
-    setSelectedState(ids);
-    if (ids.length > 0) setActive(true);
+    setState((prev) => ({
+      active: ids.length > 0 ? true : prev.active,
+      selected: ids,
+    }));
   }, []);
-  const enter = useCallback(() => setActive(true), []);
+  const enter = useCallback(() => {
+    setState((prev) => (prev.active ? prev : { ...prev, active: true }));
+  }, []);
   const exit = useCallback(() => {
-    setActive(false);
-    setSelectedState([]);
+    setState({ active: false, selected: [] });
   }, []);
   const toggle = useCallback((id: string, checked?: boolean) => {
-    setSelectedState((prev) => {
-      const has = prev.includes(id);
+    setState((prev) => {
+      const has = prev.selected.includes(id);
       const nextOn = checked === undefined ? !has : checked;
-      const next = nextOn ? (has ? prev : [...prev, id]) : prev.filter((x) => x !== id);
-      if (next.length > 0) setActive(true);
-      return next;
+      const next = nextOn ? (has ? prev.selected : [...prev.selected, id]) : prev.selected.filter((x) => x !== id);
+      return {
+        active: next.length > 0 ? true : prev.active,
+        selected: next,
+      };
     });
   }, []);
-  const isChecked = useCallback((id: string) => selected.includes(id), [selected]);
-  return { active, selected, enter, exit, toggle, setSelected, isChecked };
+  const isChecked = useCallback((id: string) => state.selected.includes(id), [state.selected]);
+  return { active: state.active, selected: state.selected, enter, exit, toggle, setSelected, isChecked };
 }
 
 const CHIP =
