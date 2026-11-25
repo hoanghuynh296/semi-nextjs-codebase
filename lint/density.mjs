@@ -34,13 +34,13 @@ export function densityAudit(opts) {
 
   // Density unit and control height as the page resolves them (4px / 34px at regular density).
   const probe = document.createElement("div");
-  probe.style.cssText = "position:absolute;visibility:hidden;left:0;top:0;width:calc(var(--spacing, 0.25rem) * 4);height:var(--spacing-control, 34px);background:var(--color-primary, transparent);border:1px solid var(--color-secondary, transparent)";
+  probe.style.cssText = "position:absolute;visibility:hidden;left:0;top:0;width:calc(var(--spacing, 0.25rem) * 4);height:var(--spacing-control, 34px);background:var(--color-primary, transparent);color:var(--color-secondary, transparent)";
   (root.closest("[data-density]") || root).appendChild(probe);
   const u = probe.getBoundingClientRect().width / 4 || 4;
   const control = probe.getBoundingClientRect().height || 34;
   const probeStyle = getComputedStyle(probe);
   const accentRaw = probeStyle.backgroundColor;
-  const secondaryRaw = probeStyle.borderTopColor;
+  const secondaryRaw = probeStyle.color;
   probe.remove();
 
   const canvas = document.createElement("canvas");
