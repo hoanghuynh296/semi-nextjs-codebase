@@ -8,7 +8,7 @@ export default function CarouselProducts() {
       {ITEMS.map((name, i) => (
         <Card key={name} className="space-y-2">
           <AspectRatio ratio={4 / 3} className="rounded-control bg-field">
-            <div className="flex h-full items-center justify-center text-tab-xl font-semibold text-muted">{i + 1}</div>
+            <div className="flex h-full items-center justify-center text-tab-xl font-normal text-muted">{i + 1}</div>
           </AspectRatio>
           <div className="text-ui font-medium text-strong">{name}</div>
           <div className="text-ui text-muted tabular-nums">{(89 + i * 30).toLocaleString("vi-VN")}k ₫</div>

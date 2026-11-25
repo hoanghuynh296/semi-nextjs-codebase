@@ -120,7 +120,7 @@ export function TaskHost() {
       >
         <div className="px-5 py-5 space-y-4">
           <div aria-live="polite" className="space-y-1">
-            <h3 id={titleId} className="text-lead font-semibold text-strong">
+            <h3 id={titleId} className="text-lead font-medium text-strong">
               {c.label}
             </h3>
             {c.step && <p className="text-ui text-muted">{c.step}</p>}

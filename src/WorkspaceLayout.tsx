@@ -102,7 +102,7 @@ export function WorkspaceHeader({
           </button>
         ) : null}
         <div className="min-w-0">
-          <H className="text-lead font-semibold text-strong truncate">{title}</H>
+          <H className="text-lead font-medium text-strong truncate">{title}</H>
           {description && <p className="text-ui text-muted truncate">{description}</p>}
         </div>
       </div>
