@@ -1141,10 +1141,16 @@ catches and what it must not:
   `useFilterParams`, §4), `raw-pill-button` (a `rounded-full` button or link of 28px or more with a tint / field / panel fill, or a white / black alpha such as `bg-white/[0.06]`, or a class constant of one:
   `<Button iconOnly shape="round">`), `detail-overlay-url` (a `DetailOverlay` in a file that reads no URL state:
   `useDetailParam`; a wrapper that passes its own `open` prop on is fine), `overline-place` (an allow-list, C-032: `text-overline` only on
-  a plain, non-clickable section label (`div`, `span`, `p`, `h2`–`h6`, `dt`, `figcaption`, `header`) whose text is a label
-  of 40 characters or less; anywhere else (a control, link, field label, `h1`, table cell, any component) it warns; a class
+  a plain, non-clickable section or form-group label (`div`, `span`, `p`, `h2`–`h6`, `dt`, `figcaption`, `header`, `legend`) whose text is a label
+  of 40 characters or less; anywhere else (a control, link, single field label `<label>` / `<Field labelClassName>`, `h1`, table cell, any component) it warns; a class
   constant is not checked). One hard rule: `card-hover-actions-touch` (`<CardActions>` without `label`: on touch the ⋯ is the only
   control). The fixtures are `lint/test/patterns.test.mjs`.
+- **The 1.0 design rules (#145, warnings, fixtures in `lint/test/v1-rules.test.mjs`):**
+  - **`one-brand-button`:** warns on a second filled brand button (`variant="primary"` / `"secondary"`, `BTN_PRIMARY`, `BTN_SECONDARY`, `MODAL_BTN_PRIMARY`, `MODAL_BTN_SECONDARY`) in the same standalone page or modal. `AppShell` `mainAction`, separate modals, neutral variants and mutually exclusive branches (`tab === "a" && (...)`, ternaries) are excluded. Fix by moving ordinary actions to neutral variants (`subtle`, `surface`, `inverse`, `outline`, `ghost`).
+  - **`brand-colour-use`:** warns when brand utilities (`bg-primary`, `bg-secondary`, `text-primary`, `border-primary`, `bg-primary/10` …) are used outside 1.0's allowed places (main buttons, `AppShell` `mainAction`, active big-tab underline `decoration-primary`, `CountBadge`, `NewTag`). Fix with neutral tokens (`text-strong`, `bg-item-selected`, `border-outline-line`, `ring-focus`).
+  - **`removed-token`:** warns on tokens, classes, CSS variables and style attributes removed in 1.0 (`bg-accent-subtle`, `border-accent-line`, `text-accent-fg`, `text-contrast`, `text-caption`, `text-label`, `text-title*`, `text-heading*`, `text-kpi`, `z-keypad`, `data-style`, `@semi/ui/styles.json`), naming the 1.0 replacement from `docs/MIGRATION-1.0.md`.
+  - **`heading-weight`:** warns on `font-semibold` / `font-bold` (≥ 600) on `<h1>`–`<h6>`, `PageTitle`, or heading/display utilities (`text-hero`, `text-title-xl`, `text-tab-xl`, `text-section`), and `font-medium`+ on big `TextTabs` (`text-tab-xl`, weight 400). `text-overline` headings are exempt.
+  - **Opt-in allowance (with a reason):** for owner-approved exceptions (e.g. a second brand button or a product-specific brand colour), add `// semi-lint-allow <rule-id>: <reason>` on the same or immediately preceding line, or name the file with a reason under `skip` in `semi-lint.json` (`"skip": { "one-brand-button": { "app/checkout/page.tsx": "owner: dual CTA" } }`). An allowance without a reason is ignored.
 - **Emoji as icons (`emoji-icon`):** a brand whose voice allows emoji in copy disables the rule in `semi-lint.json`.
 
 **The baseline only shrinks.** `semi-lint --update-baseline` lowers it to what is left and refuses new hits;

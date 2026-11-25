@@ -32,7 +32,7 @@ with `/semi-propose`.
 | T1 #141 | Foundation: tokens, one look, brand schema | merged on `main` (#154), unreleased: ships in 1.0.0 | `1.0.0-foundation` |
 | T1b #155 | Two UI text sizes: `text-ui` 14 content, `text-chrome` 12 chrome | merged on `main` (#156), unreleased: ships in 1.0.0 | part of `1.0.0-foundation` |
 | T2 #144 | Shell: frame, RouteHeader, nav, account avatar menu, shortcuts | merged on `main` (#159), unreleased: ships in 1.0.0 | `1.0.0-app-shell` |
-| T3 #145 | Lint and checks for the 1.0 rules | pending | — |
+| T3 #145 | Lint and checks for the 1.0 rules | merged on `main`, unreleased: ships in 1.0.0 | — |
 | T4 #146 | Buttons and attention marks | merged on `main` (#157), unreleased: ships in 1.0.0 | `1.0.0-buttons` |
 | T5 #147 | Tabs: PillTabs, SegmentedControl, big TextTabs | merged on `main`, unreleased: ships in 1.0.0 | `1.0.0-tabs` |
 | T6 #148 | Fields and forms | merged on `main`, unreleased: ships in 1.0.0 | — |
@@ -156,12 +156,16 @@ detail page names its record with `useRecordCrumb(label)`.
 `[data-nav-num]` rules (→ AppShell shortcuts); in the globals tail `.nav-spaced` (group spacing), `.group-label`
 (→ `text-nav-label`) and the 72px rail width; the account rendered in the rail (0.37 `account` render prop).
 
-## T3: lint and checks (pending, #145)
+## T3: lint and checks (merged, ships in 1.0.0, #145)
 
-**Target.** semi-lint warns on a second filled brand button in a page or modal, brand colour outside its allowed
-uses, removed tokens, a heading heavier than 500, and `text-overline` used as anything but a group or section label;
-`/semi-check` audits the same. **Replaces:** no stand-in. **Until it ships:** follow the rules by hand
-(`DESIGN_SYSTEM.md` §0).
+**What changed** (#145, #142). `semi-lint` adds 1.0 warning rules (`one-brand-button`, `brand-colour-use`,
+`removed-token`, `heading-weight`, refined `overline-place` allowing `<legend>` and flagging `<Field labelClassName="text-overline">`)
+with per-line (`// semi-lint-allow <rule>: <reason>`) and per-file (`skip` with reason) opt-in allowances, plus `#142`
+piped `--json` stdout flush (> 64 KB). `semi density` (`primary-actions`) counts `bg-primary` and `bg-secondary` and
+scopes the nav (`<aside>` / `<nav>`) separately from the page; `semi a11y` keeps T6's quiet field edge acceptance and
+documents the 44px phone touch target. `/semi-check` (`audit.mjs`) validates the 1.0 `brand.json` schema (`brand-schema`),
+detects sales-hub-style stand-ins (`semi-pending-*.css`, `components/semi-pending/*`, `TODO(semi-pending)`) pointing to
+this file, and counts `StickyContextBar` pages (#139). **Replaces:** no stand-in.
 
 ## T4: buttons and attention marks (merged, ships in 1.0.0)
 
