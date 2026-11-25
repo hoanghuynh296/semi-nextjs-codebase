@@ -254,7 +254,7 @@ export function FilterPanel({
           >
             <Icon name="close" className="w-5 h-5" />
           </button>
-          <h2 id={titleId} className="flex-1 text-center text-lead font-semibold text-strong truncate">
+          <h2 id={titleId} className="flex-1 text-center text-lead font-medium text-strong truncate">
             {label}
           </h2>
           <button
@@ -268,7 +268,7 @@ export function FilterPanel({
         <div className="flex-1 overflow-y-auto overscroll-contain">
           {sort && (
             <div className={cn(section, "px-4 py-3")} role="group" aria-labelledby={`${titleId}-sort`}>
-              <h3 id={`${titleId}-sort`} className="text-ui font-semibold text-muted pb-2">
+              <h3 id={`${titleId}-sort`} className="text-ui font-medium text-muted pb-2">
                 {t.sort}
               </h3>
               <div className="flex flex-wrap gap-2">
@@ -342,13 +342,9 @@ export function FilterPanel({
           {children && <div className="px-4 py-3">{children}</div>}
         </div>
         <div className="shrink-0 p-3 border-t border-divider pb-[max(12px,env(safe-area-inset-bottom))]">
-          <button
-            type="button"
-            onClick={onClose}
-            className="w-full h-12 rounded-control bg-primary text-on-primary text-ui font-semibold hover:bg-primary-hover outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus cursor-pointer"
-          >
+          <Button variant="primary" size="modal" fullWidth onClick={onClose} className="!h-12">
             {resultCount === undefined ? t.close : t.showResults(resultCount)}
-          </button>
+          </Button>
         </div>
       </div>
     </div>,

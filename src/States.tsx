@@ -7,7 +7,7 @@ import { Button } from "./Button";
 import { Icon, type IconName } from "./Icon";
 import { useSemiLocale } from "./locale";
 import { useOverflowing } from "./useOverflowing";
-import { BTN_PRIMARY } from "../styles/buttons";
+import { BTN_INVERSE } from "../styles/buttons";
 import { EMPTY_PHONE_CAP } from "../styles/surfaces";
 import { cn } from "../styles/utils";
 
@@ -110,7 +110,7 @@ export function ErrorState({
 
 function HomeLink({ href, label }: { href: string; label: string }) {
   return (
-    <Link href={href} className={BTN_PRIMARY}>
+    <Link href={href} className={BTN_INVERSE}>
       <Icon name="back" className="w-3.5 h-3.5" />
       {label}
     </Link>

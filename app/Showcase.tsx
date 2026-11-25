@@ -18,7 +18,7 @@ export function ShowcaseSection({
   return (
     <section id={id} className="space-y-3 scroll-mt-6">
       <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
-        <h2 className="text-lead font-semibold text-body flex items-center gap-2">
+        <h2 className="text-lead font-medium text-body flex items-center gap-2">
           <Icon name={icon} className="w-4 h-4 text-strong" />
           <span>{title}</span>
         </h2>

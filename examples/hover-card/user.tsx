@@ -14,7 +14,7 @@ export default function HoverCardUser() {
         <div className="flex items-start gap-3">
           <Avatar name="Minh Anh" />
           <div className="space-y-1">
-            <div className="text-ui font-semibold text-strong">Minh Anh</div>
+            <div className="text-ui font-medium text-strong">Minh Anh</div>
             <div className="text-ui text-muted">Quản lý xưởng · Khu A</div>
             <Badge tone="emerald" dot size="sm">
               Đang trực

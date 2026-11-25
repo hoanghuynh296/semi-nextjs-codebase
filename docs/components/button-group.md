@@ -25,7 +25,7 @@ import { ButtonGroup } from "@semi/ui";
 ### Navigation and split button
 
 ```tsx
-import { Button, ButtonGroup, Menu } from "@semi/ui";
+import { Button, ButtonGroup } from "@semi/ui";
 
 export default function ButtonGroupBasic() {
   return (
@@ -35,17 +35,10 @@ export default function ButtonGroupBasic() {
         <Button>Hôm nay</Button>
         <Button iconOnly icon="chevron" aria-label="Ngày sau" />
       </ButtonGroup>
-      <ButtonGroup label="Lưu">
-        <Button variant="primary" icon="check">
-          Lưu
-        </Button>
-        <Menu
-          label="Tuỳ chọn lưu"
-          items={[
-            { label: "Lưu bản nháp", icon: "fileText", onSelect: () => undefined },
-            { label: "Lưu và in", icon: "printer", onSelect: () => undefined },
-          ]}
-        />
+      <ButtonGroup label="Thu phóng">
+        <Button iconOnly icon="minus" aria-label="Thu nhỏ" />
+        <Button className="tabular-nums">100%</Button>
+        <Button iconOnly icon="plus" aria-label="Phóng to" />
       </ButtonGroup>
     </div>
   );

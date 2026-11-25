@@ -217,7 +217,7 @@ export function Command({
                 className={cn(
                   "flex items-center rounded-control text-ui cursor-pointer",
                   lg ? "gap-3 px-2.5 py-2" : cn("gap-2.5 px-2.5", it.hint ? "py-1.5" : "h-9"),
-                  it.disabled ? "opacity-40 cursor-not-allowed" : index === active ? (lg ? "bg-tint-hover text-strong" : "bg-raised text-strong") : "text-body",
+                  it.disabled ? "opacity-40 cursor-not-allowed" : index === active ? "bg-item-selected text-strong" : "text-body",
                 )}
               >
                 {it.icon &&

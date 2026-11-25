@@ -228,7 +228,7 @@ export function DetailOverlay({
             <Icon name="close" className="w-4 h-4" />
           </button>
           <div className="flex-1 min-w-0 px-1">
-            <h2 id={titleId} className="text-ui font-semibold text-strong truncate">
+            <h2 id={titleId} className="text-ui font-medium text-strong truncate">
               {title}
             </h2>
             {subtitle && <div className="text-ui text-muted truncate">{subtitle}</div>}

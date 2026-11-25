@@ -5,6 +5,8 @@ import { useBackdropClose, useDialog } from "./a11y";
 import { useSemiLocale } from "./locale";
 import { createPortal } from "react-dom";
 import { Icon } from "./Icon";
+import { MODAL_BTN_PRIMARY } from "../styles/buttons";
+import { cn } from "../styles/utils";
 
 /** True on devices with a touch screen (phones, tablets). Re-evaluated on change.
  * Not just `(pointer: coarse)`: an iPad with a Magic Keyboard / trackpad (typically landscape) reports a fine
@@ -206,7 +208,7 @@ export function NumPadPopup({ label, unit, initial, integer, allowPercent, onCom
 
         <div
           className={`flex items-center justify-between gap-2 rounded-control bg-field border px-3 h-12 mb-2.5 ${
-            error ? "border-red-500" : "border-line"
+            error ? "border-danger-fg" : "border-field-line"
           }`}
         >
           <span
@@ -250,7 +252,7 @@ export function NumPadPopup({ label, unit, initial, integer, allowPercent, onCom
         <button
           type="button"
           onClick={confirm}
-          className="mt-2 w-full h-12 rounded-control bg-primary hover:bg-primary-hover text-on-primary flex items-center justify-center cursor-pointer touch-manipulation outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+          className={cn(MODAL_BTN_PRIMARY, "mt-2 w-full !h-12 touch-manipulation")}
           aria-label={strings.confirm}
         >
           <Icon name="check" className="w-6 h-6" />
