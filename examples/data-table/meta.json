@@ -48,7 +48,8 @@
   ],
   "notes": [
     "Folding is measured on the table's own box (not the viewport), from each column's one-line width: a table in a split view or next to the rail folds as soon as it is too narrow. Folding happens after hydration: the server HTML shows every column, so a table with priorities may shift once on first load at tablet width.",
-    "The order the table shows is `sortRows(searchRows(rows, columns, search), columns, sort)`: use the same two helpers to step through the results in a DetailOverlay (‹ ›, “n / N”), see the detail-overlay docs.",
+    "The order the table shows is `sortRows(searchRows(rows, columns, search), columns, sort)` (or read it from `onResultsChange`): use it to step through the results in a DetailOverlay (‹ ›, “n / N”), see the detail-overlay docs.",
+    "Pass `activeRowId` to highlight the open record's row (`bg-item-selected`, `aria-current=\"true\"`); checked rows use `bg-item-checked`.",
     "A table wider than its box draws a 2px strong line (outline-line) on each edge that has columns past it (in every table; with `stickyFirstColumn` the left line is the pinned column's edge) and keeps the first column (and the checkbox column) in place with `stickyFirstColumn`; the table then sits on `bg-card`. The sorted column never folds: its header is the only sort control."
   ]
 }

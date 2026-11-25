@@ -51,7 +51,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Drop zone](./components/drop-zone/) ([markdown](./docs/components/drop-zone.md)): The compact FileDrop for a workspace panel: a light dashed tile on the panel surface with a title and a hint, the same checks (accept, maxSize, duplicates), keyboard and announcements; the file rows are optional. Components: DropZone.
 - [Field, Input, Textarea](./components/field/) ([markdown](./docs/components/field.md)): Field gives any control a label, a hint and an error, wired for screen readers; `kind` sets the phone keyboard, autofill and Enter key of an email, phone, number, money, URL, search or password field. Input and Textarea are the standard text controls (bg-field, h-field). Components: Field, Input, Textarea.
 - [FileDrop](./components/file-drop/) ([markdown](./docs/components/file-drop.md)): A file picker and dropzone with one row per file: size, upload progress, done, and remove / retry on failure. Controlled: the app owns the list and does the upload. Components: FileDrop.
-- [Filter chip row](./components/filter-chip-row/) ([markdown](./docs/components/filter-chip-row.md)): A list page's filters as one line of chips (icon, label, chevron; solid with the value or count when on). Each chip opens a small multi-select popover, a single-choice chip a radio menu (“Hộp thư: Tất cả”), a switch chip toggles; the page's views (Pills) can lead the row; the row scrolls sideways with ‹ › when it overflows, shows “Xoá lọc” while a filter is on and ends with the view tools. State in the URL with useFilterParams or the filterParams helpers. Components: FilterChipRow, FilterChip, FilterOptions.
+- [Filter chip row](./components/filter-chip-row/) ([markdown](./docs/components/filter-chip-row.md)): A list page's filters as one line of chips (icon, label, chevron; solid with the value or count when on). Each chip opens a small multi-select popover, a single-choice chip a radio menu (“Hộp thư: Tất cả”), a switch chip toggles; the page's views (SegmentedControl) can lead the row; the row scrolls sideways with ‹ › when it overflows, shows “Xoá lọc” while a filter is on and ends with `sort`, zero-shift `selection` (“Chọn” via `useListSelection`) and `ViewSwitch`. State in the URL with useFilterParams or the filterParams helpers. Components: FilterChipRow, FilterChip, FilterOptions.
 - [Filter panel](./components/filter-panel/) ([markdown](./docs/components/filter-panel.md)): Filters on phones: one segmented pill (the page's views · Bộ lọc with the count · sort and view settings) that opens a full-screen panel: sort first, booleans as switches, one accordion per filter (a radio group for a single-choice one), “Xem N kết quả” at the bottom. From sm the panel is a side sheet, also the “Bộ lọc” panel of a page with more filters than its chip row shows. Components: PhoneFilterBar, FilterPanel.
 - [Form actions, unsaved guard, validation](./components/form-actions/) ([markdown](./docs/components/form-actions.md)): The same form behaviour everywhere: FormActions (Huỷ then Lưu / Tạo, sticky on a page, the footer of a Modal), useUnsavedGuard (nobody loses typed work), and validation that shows on blur then follows changes, with an Alert summary for several errors. Components: FormActions, useUnsavedGuard, useFormValidation, FormErrorSummary.
 - [Hint textarea](./components/hint-textarea/) ([markdown](./docs/components/hint-textarea.md)): A text area that says what it can do (L15): a hint row under the text (“Gõ @ để nhắc nhà cung cấp · Gõ / để chèn mẫu”) and a suggestion list while the word at the caret starts with a trigger; the chosen item is inserted with a space after it. Components: HintTextarea.
@@ -62,7 +62,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Option cards](./components/option-cards/) ([markdown](./docs/components/option-cards.md)): Selectable cards with radio-group semantics (arrow keys, single tab stop): icon, name, optional description, neutral selected state (`bg-item-selected` + `border-outline-line` + `text-strong`, no brand tint) and 8px grid gap. Components: OptionCards.
 - [Radio group](./components/radio-group/) ([markdown](./docs/components/radio-group.md)): Exactly one option of a few, each with an optional description; vertical by default. Components: RadioGroup.
 - [Search input](./components/search-input/) ([markdown](./docs/components/search-input.md)): The toolbar search: an icon button that opens into a field (clear button, h-control); it collapses again when empty and focus leaves. SubpageToolbar includes one. Components: SearchInput.
-- [Search pill](./components/search-pill/) ([markdown](./docs/components/search-pill.md)): The wide pill search of a list page (one per page) and the result line under it: “query” · N kết quả on the left, the sort menu on the right. Typing is debounced (250 ms), Escape and the clear button clear at once, an optional key (/) focuses it. Components: SearchPill, ResultLine.
+- [Search pill](./components/search-pill/) ([markdown](./docs/components/search-pill.md)): The wide pill search of a list page (one per page), with an optional `trailing` slot for `<BarActions>` when pinned in StickyContextBar. Typing is debounced (250 ms), Escape and the clear button clear at once, an optional key (/) focuses it. ResultLine is deprecated for 1.0 list pages (use FilterChipRow / PhoneFilterBar `sort` and `selection` instead). Components: SearchPill, ResultLine.
 - [Select](./components/select/) ([markdown](./docs/components/select.md)): CustomSelect: pick one value from a list, in a field, in a toolbar, inline in a row or bare. Never the native <select>. Components: CustomSelect.
 - [Slider](./components/slider/) ([markdown](./docs/components/slider.md)): Pick a number in a range by dragging: one thumb, or two with range for a min–max pair. Components: Slider.
 - [Stepper](./components/stepper/) ([markdown](./docs/components/stepper.md)): − value + for a small count (quantities, copies, seats) in a workspace panel or a card: one tap per step, a unit after the value, min and max. Components: Stepper.
@@ -139,7 +139,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Error, not found, no access](./components/states/) ([markdown](./docs/components/states.md)): The page-level states every app needs: ErrorState (what failed, with a retry), NotFound (a wrong URL) and Forbidden (no access), each with a link home, plus the route-file recipe (loading.tsx, error.tsx, not-found.tsx) that uses them. Components: ErrorState, NotFound, Forbidden.
 - [Guided empty state](./components/guided-empty-state/) ([markdown](./docs/components/guided-empty-state.md)): The EmptyState variant “guided” (L13): the first use of a page that needs a few steps before it is useful. A step carousel (“Bước 1 / 4”, a visual, ‹ ›) or numbered steps, the one primary action, a link to the full guide, and rows of ready starting points by category, each with “Xem tất cả”. Components: GuidedEmptyState.
 - [Progress](./components/progress/) ([markdown](./docs/components/progress.md)): A determinate bar with value, or an indeterminate one when the end is unknown; tones for success and danger. Components: Progress.
-- [Skeleton](./components/skeleton/) ([markdown](./docs/components/skeleton.md)): Shimmer placeholders while content loads, shaped like what loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, SkeletonList (divided list rows), SkeletonTable (table rows), SkeletonDetail (a record's detail panel), PageSkeleton; Loading announces the region. Never “Đang tải…” text or a spinner in a list. BootLoader is the one centred spinner, for the boot / session gate before the shell exists. Components: Skeleton, SkeletonCard, SkeletonGrid, SkeletonRows, SkeletonList, SkeletonTable, SkeletonDetail, PageSkeleton, Loading, BootLoader.
+- [Skeleton](./components/skeleton/) ([markdown](./docs/components/skeleton.md)): Quietly pulsing placeholders (`motion-pulse`: 2.5s opacity 1 → 0.6 → 1, stops under prefers-reduced-motion) while content loads, shaped like what loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, SkeletonList (divided list rows), SkeletonTable (table rows), SkeletonDetail (a record's detail panel), PageSkeleton; Loading announces the region. Never “Đang tải…” text or a spinner in a list. BootLoader is the one centred spinner, for the boot / session gate before the shell exists. Components: Skeleton, SkeletonCard, SkeletonGrid, SkeletonRows, SkeletonList, SkeletonTable, SkeletonDetail, PageSkeleton, Loading, BootLoader.
 - [Task host](./components/task-host/) ([markdown](./docs/components/task-host.md)): startTask() shows one blocking overlay for a job the user must wait for: label, current step, progress, elapsed time and an optional Cancel. Mount TaskHost once in the root layout, next to ToastHost and ConfirmHost. Components: TaskHost.
 
 ### AI
@@ -187,8 +187,7 @@ content column, 12px shell chrome around 14px content, headings 400 / 500, minim
 brand fill (`bg-primary`, optional `bg-secondary`) only for the one main button of a page or modal (at most one per
 page or modal), the nav's main action, the active big-tab underline, attention badges / "Mới" tags, or a case the app's owner asks for; every other
 action is a neutral button. **When to use which** (buttons, tabs, page layouts): `DESIGN_SYSTEM.md` §0. Moving from
-0.x: `MIGRATION-1.0.md`. Parts marked *(Tn, pending)* (T3, T8–T9) in `DESIGN_SYSTEM.md` are 1.0 targets not merged yet: use what
-Semi ships today for them, never a local stand-in.
+0.x: `MIGRATION-1.0.md`. All T1–T9 1.0 components, tokens, lint rules and motion are shipped; never build a local stand-in.
 Shell: `AppShell` (the nav panel and the content column on `bg-canvas`; the route header with crumbs and the account
 avatar menu above the content card), pages with `PageTitle` (+ `actions`) or
 `SubpageToolbar title`, list pages with `StickyContextBar`. Phones (`< md`) get the route header's menu button and the full-screen
@@ -228,31 +227,26 @@ control drawn under 24px gets `HIT_AREA` · UI text in shared components comes f
 (`<SemiLocaleProvider locale={en}>`). Checked on the rendered page in both themes by `npx semi a11y <url>` (§18):
 `contrast`, `edge`, `name`, `focus-ring`, `target-size`, `img-alt`, `lang`, `zoom-lock`, + axe-core when installed.
 
-**Style (docs/STYLES.md):** the app's style sets the neutral colours behind `bg-*` / `text-*` / `border-line`, the fonts
-(`font-sans`, `font-display`), control sizes `h-control` (toolbar buttons, pills, chips, search) / `h-field` (inputs,
-selects), the card border (`border-card`, in `CARD`) and the shape below. Never `h-[34px]` or a per-style class.
-
-**Shape (shape tokens):** marks / checkboxes / inline code `rounded-chip` · controls / tiles / rows
-`rounded-control` · cards / popovers / menus / toasts `rounded-card` · panels / hero / modal / sidebar `rounded-panel` ·
-pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (none). One look for every app (no styles, no `data-style`). Never `rounded`, `rounded-lg/xl/2xl` or `rounded-[Npx]`.
+**Look & shape (`docs/TOKENS.md`):** one look for every app (no styles, no `data-style`). Control sizes `h-control` (34px: toolbar buttons, pills, chips, search) / `h-field` (36px: inputs, selects); card border `border-card` (in `CARD`); radii: marks / checkboxes / inline code `rounded-chip` · controls / tiles / rows `rounded-control` · cards / popovers / menus / toasts `rounded-card` · panels / hero / modal / sidebar `rounded-panel` · pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (none). Never `h-[34px]`, `rounded`, `rounded-lg/xl/2xl`, `rounded-[Npx]` or `[data-style]` selectors.
 
 **Use the shared blocks (`@semi/ui` and `@semi/ui/styles`) — never create a local `ui.tsx` wrapper barrel:**
 - **Layout & Structure (`@semi/ui`):**
   - `ThemeProvider`, `useTheme`, `ThemeToggle`: Zero-runtime-overhead dual-theme management via `data-theme` attribute and CSS variables.
   - `AppShell` (+ `MobileTabBar`, `TAB_BAR_PAD` for `mobileNav="tabs"`), 1.0 (#144): a `bg-canvas` frame with the nav panel (224px or the 72px rail; the rail is the default between `lg` and 1280px, `railBelow`, and always between `md` and `lg`) and the content column, which holds the `RouteHeader` (crumbs left, `header.middle`, `header.actions` icon buttons and the account avatar menu `header.account: { name, detail, items, onSignOut }` with the theme) above the content card (`page="fixed"`, `flush`). Nav top to bottom: logo + collapse, `mainAction` (the nav's one brand-filled action), `sections` / `pinned` (labels `text-nav-label`), the bottom row `tools` (32×32 icon buttons, `count` badges, `toolsMenu` •••). No account in the nav. ⌥ / Alt + 1–9 opens the nth item (`navShortcutKeys`). A detail page names its record with `useRecordCrumb(label)`. Phones: the route header's menu button opens a full-screen drawer. A nav item with `mega` opens a `MegaMenu`. Items may carry `children` (one level, optional grey icon, no colour or count): closed by default, open only while the parent or a child is active; hidden in the rail / below `lg` / phones, so pages check `useAppShell().submenuVisible` and offer their own picker.
   - `PillTabs`, `SegmentedControl`, `TextTabs`, `useTabParam` (§4h, #147): `PillTabs` for 5+ sections or sections with icons (no track, h30 round pills, sliding `item-hover` pill, `tabpanel`); `SegmentedControl` for 2–5 filter values shown in full with tabular-nums counts (`raised` track, sliding `raised-2` pill, `radiogroup` / `radio`; replaces deprecated `Pills`); big `TextTabs` for 2–4 top-level views of a discovery or reading page (`font-display text-tab-xl font-normal`, inactive `opacity-20`, active 2px brand underline at 6px offset; replaces deprecated `PageTabsTitle`). All three share overflow edge cues, `activation="manual"`, sync/async `onBeforeChange` on button and `href` tabs, `useTabParam` (`?tab=` without history spam per arrow key), and reduced-motion support.
-  - `PageTitle`, `PageTabsTitle` (deprecated → `TextTabs`): text-only display heading. `PageTitle actions` is a list page's title row: one primary (or `inverse`) + `RefreshButton` on the right, wrapping under the title below `sm`.
+  - `Page`, `SubNav`, `PageSection`, `PageGrid`, `ListReaderLayout`, `ReaderHeader`, `PageEnter` (§4a, §4g): `Page` (`layout="work"` flush, `"reading"` centred max 1536px, `"two-column"` 240px `SubNav` + main card; `fixed`; `enter` runs once-per-route `PageEnter` stagger). `ListReaderLayout` + sticky `ReaderHeader` for list + reader pages (`?open=`, `useRecordCrumb`).
+  - `PageTitle`, `PageTabsTitle` (deprecated → `TextTabs`): `PageTitle` (`variant="work"` default) is 18 / 400 UI sans on the action row (`actions`: `inverse` or `primary` + `•••`); `variant="reading"` opts into 44 / 500 `text-title-xl` display on one-column reading pages.
   - `SubpageToolbar`: sticky toolbar (`STICKY_TOOLBAR`) with `left` filters and `right` icon-only `BTN_PRIMARY BTN_ICON` + `SearchInput` + `RefreshButton`; `title` puts the page title on the same row (then no `PageTitle`).
     Phone layout (opt-in): `filters` (typed, `FilterDef[]`; more than two collapse into "Bộ lọc · N" + active chips) or `collapseFilters` (for `left`), and `secondaryActions` (a ⋯ menu below `sm`).
-  - Overlay and actions (§4, §9, #102): a list record opens in `<DetailOverlay open onClose index total onPrev onNext side related>` driven by `useDetailParam()` (`?open=`, Back closes, ‹ › replace; over a `DataTable` its results are `sortRows(searchRows(rows, columns, q), columns, sort)`, never a copied comparator); a `DataTable` with many columns gives the minor ones `priority` 1–3 (they fold into the first column when the table's own box is narrow, e.g. 834 px beside the rail) and `stickyFirstColumn` when it can still scroll; cards get `<CardActions label actions menu>` inside a `group relative` card (`label` is required: lint `card-hover-actions-touch`, hard); round icon buttons are `<Button iconOnly shape="round">` (`raw-pill-button`); a `DetailOverlay` without `useDetailParam` warns (`detail-overlay-url`); one `<CommandPalette items>` in the root layout (⌘K; pages add `useRegisterCommands(items)`, a button calls `openCommandPalette()`). Grouping (G1–G12): alternatives of the main action → `<SplitButton label onClick items menuLabel>`; secondary page / row actions → ⋯ `Menu` (items: `group`, `description`, `checked`, `loading`, `href`, `hidden`, `disabled: "reason"`; danger always last; bottom sheet below `sm`); `ButtonGroup` only for toggles / steps of one control; one filled primary per view.
-  - Search and filters (§4, #99): `<StickyContextBar>` with `<SearchPill>`, `<FilterChipRow className="max-md:hidden" leading={<Pills/>} trailing={<ViewSwitch/>}>` (views in `leading`; `FilterSpec kind: "single"` + `clearValue` for one-of-N facets), `<PhoneFilterBar className="md:hidden">` (opens `<FilterPanel>`) and `<ResultLine count query sort>`. One line of chips, never wrapped rows; state in the URL with `useFilterParams(specs)` or `readFilters` / `writeFilters` / `clearFilters`.
+  - Overlay and actions (§4, §9, #102): a list record opens in `<DetailOverlay open onClose index total onPrev onNext side related>` driven by `useDetailParam()` (`?open=`, Back closes, ‹ › replace; over a `DataTable` its results are `sortRows(searchRows(rows, columns, q), columns, sort)` or `onResultsChange`, never a copied comparator); a `DataTable` with many columns gives the minor ones `priority` 1–3 (they fold into the first column when the table's own box is narrow, e.g. 834 px beside the rail) and `stickyFirstColumn` when it can still scroll, plus `activeRowId` (`bg-item-selected`); cards get `<CardActions label actions menu>` inside a `group relative` card (`label` is required: lint `card-hover-actions-touch`, hard); round icon buttons are `<Button iconOnly shape="round">` (`raw-pill-button`); a `DetailOverlay` without `useDetailParam` warns (`detail-overlay-url`); one `<CommandPalette items>` in the root layout (⌘K; pages add `useRegisterCommands(items)`, a button calls `openCommandPalette()`). Grouping (G1–G12): alternatives of the main action → `<SplitButton label onClick items menuLabel>` (`fullWidth` for workspace action bars); secondary page / row actions → ⋯ `Menu` (items: `group`, `description`, `checked`, `loading`, `href`, `hidden`, `disabled: "reason"`; danger always last; bottom sheet below `sm`); `ButtonGroup` only for toggles / steps of one control; one filled primary per view.
+  - Search and filters (§4d, §4e): `<StickyContextBar>` (layout-pin & focus-pin from `md+`, independent overscroll-contained list scroller) with `<SearchPill trailing={<BarActions … />} />`, `<FilterChipRow className="max-md:hidden" leading={<SegmentedControl … />} sort={…} selection={…} trailing={<ViewSwitch/>} />` (views in `leading`; `FilterSpec kind: "single"` + `clearValue` for one-of-N facets; `sort` and in-place zero-shift `selection` via `useListSelection`), `<PhoneFilterBar className="md:hidden">` (opens `<FilterPanel>`). No `ResultLine` on 1.0 list pages. One line of chips, never wrapped rows; state in the URL with `useFilterParams(specs, { legacy, sort })` (`patch`, `sort`, `setSort`, `sortDef`) or `readFilters` / `writeFilters` / `replaceFilters` / `writeSearch` / `clearFilters` / `readSort` / `writeSort`.
   - `KpiCard`: metric card with a `tabular-nums` value in the style's figure font (`font-figure`), optional neutral icon (`iconTone` only for a status), `featured` for the screen's main number, shimmer `loading` state.
   - `Modal`: portal dialog with `MODAL_BACKDROP`, `MODAL_PANEL`, `MODAL_HEAD`, `MODAL_CLOSE`, and `footer` (`MODAL_FOOT`).
 - **Controls (`@semi/ui`):**
   - `Icon` (stroke 1.75, `w-4 h-4`), `IconTile` (`size="sm|md|lg"`). Follow semantic icon mapping in `docs/ICONS.md` (e.g. `trash` for delete, `close` for dialog dismiss, `refresh` for sync, `sliders` for parameters, `user` for profiles, `filter` for lists, `sun`/`moon` for theme). New icons go into `ICONS` in `@semi/ui` (never inline `<svg><path>`; no ✕ ✓ ✗ glyphs).
   - `Pills`, `Chip` (+ `tone`), `Badge` (`tone="purple|blue|emerald|amber|rose|sky|..."`), `SearchInput`, `CustomSelect` (toolbar default vs `variant="field"` in forms), `CustomCombobox`, `DatePicker`, `Pagination`, `NumberInput` (+ `NumPadPopup`). Never native `<select>`, `type="date"`, `type="number"`.
   - `AppHeader` (stand-alone tool/3D app top bar), `PageActions`, `SidePanel`, `RefreshButton`, `ExternalLink`, `Markdown`.
-  - Loading: `Skeleton` / `SkeletonCard` / `SkeletonGrid` / `SkeletonRows` / `PageSkeleton`; no "Đang tải…" text or page spinners. Only exception: `BootLoader` (below).
+  - Loading: `Skeleton` / `SkeletonCard` / `SkeletonGrid` / `SkeletonRows` / `PageSkeleton` (`shape="cards|list|detail|workspace"`, quiet `motion-pulse` opacity pulse, stops under reduced motion); no "Đang tải…" text or page spinners. Only exception: `BootLoader` (below).
   - States (§13, §13c): `EmptyState variant="first-use"` (one icon, one sentence, one primary action) or `"no-results"` (+ `onClearFilters` → "Xoá lọc"); hide the title-row primary while the empty state shows its own; `ErrorState onRetry`, `NotFound`, `Forbidden` (link home). Each route group ships `loading.tsx` (`<PageSkeleton shape inShell />`), `error.tsx` (`<ErrorState headingLevel={1} onRetry={reset} />`), `not-found.tsx` (`<NotFound />`), plus root `app/error.tsx` and `app/global-error.tsx`; `npx semi example states`.
   - Shell and loading: `AppShell` once in `app/(app)/layout.tsx` (never in a page, `app-shell-in-page`); items routed by `href` (`shell-nav-href`); the session check once in that layout, best on the server; before the layout is known `if (!session) return <BootLoader />` (centred spinner, layouts only, `boot-loader-place`); content loading is a `loading.tsx` beside the layout with `PageSkeleton`, never a skeleton around the shell (`shell-gate`).
   - Forms (§9b): `FormActions` (Huỷ ghost, then Lưu / Tạo; `destructive` on the left; sticky on a page, `placement="modal"` in a Modal footer), `useUnsavedGuard(dirty)` (+ `<ConfirmHost />`; `confirmLeave(() => router.push(…))` for your own navigation), `<Field kind="email|tel|number|money|url|search|password">`, `useFormValidation` (error on blur, then change) + `FormErrorSummary`; page forms `max-w-2xl`; a field problem is never a toast. Lint warnings `form-no-guard`, `action-order`, `toast-for-validation`, `field-input-mode`; `npx semi example form-actions`.
@@ -267,7 +261,7 @@ pills / avatars / dots `rounded-full` · resting card shadow `shadow-card` (none
 **Not the generic AI screen (§19):** one main block per screen (`KpiCard featured`, not four equal cards) · KPI icons
 neutral, colour only for a status (`decorative-icon-tones`) · no three feature cards with icons and vague promises: proof
 (a real number, a quote, a product shot) · icons only where they help scanning · sample text from the brand brief ·
-plain sections and white space next to cards. Title weight and figure font come from the style; density and
+plain sections and white space next to cards. Title weight (400 / 500) and figure font come from Semi's tokens; density and
 type scale are the product's (`data-density`, `data-type-scale` on `<html>`, `semi-lint.json`).
 
 **Density budgets (§4c, measured on the rendered page: `npx semi density <url>`, `test:ui`):** text ≥ 12px from a
@@ -417,10 +411,8 @@ Apps read this file from `node_modules/@semi/ui/docs/DESIGN_SYSTEM.md` (the vers
 `BRANDS.md` (brand kits), `ICONS.md`. Tokens: `@semi/ui/tokens.css` (generated from `tokens/tokens.json`). Base layer:
 `@semi/ui/base.css`. Components: `@semi/ui`; class constants: `@semi/ui/styles` (§16). Lint: `npx semi-lint`.
 
-**1.0.** Semi 1.0 is one breaking release built in tickets T1–T12 (#141–#153). A rule below marked **(T5, pending)**
-is the 1.0 target whose component has not merged yet: build the rest of the screen to it, use what Semi ships today
-for that part (named next to it), and never write a local stand-in for it. `MIGRATION-1.0.md` has the status of each
-ticket.
+**1.0.** Semi 1.0 is one breaking release (tickets T1–T9 all merged on `main`; upgrading from 0.x: `MIGRATION-1.0.md`).
+Every rule, token and component below is shipped in 1.0.0; never build a local stand-in.
 
 ## 0. The 1.0 look in one page
 
@@ -487,7 +479,7 @@ decisions C-006, C-008.
   an icon says.
 - **Flat, no glow, no gradients.** Depth comes from the neutral surface steps (§2); emphasis ("on", active, selected)
   comes from a neutral fill (`bg-inverted`, `bg-item-selected`, `bg-item-checked`) or a `border-outline-line` border.
-  The only gradient is the skeleton shimmer.
+  Skeletons pulse quietly by opacity (`motion-pulse`), never a gradient shimmer.
 - **Neutral chrome, colour on content.** The nav is neutral (grey 16px icons, the active item `bg-item-selected
   text-strong`). Colour goes where it helps reading content: a status badge, a coloured dot on a filter chip, a tile
   tone. The brand colour follows the rule above.
@@ -1060,7 +1052,7 @@ it form by form; the four lint rules below are warnings until 1.0.
   `autoComplete` and `enterKeyHint` on its `Input` (table in `FIELD_KINDS`; `NumberInput` takes only `autoComplete` and
   `enterKeyHint`, it keeps its own type and keypad); a prop on the control wins (`autoComplete="new-password"`, `type="text"`
   next to an `https://` addon). `number` and `money` stay text inputs with the decimal keypad, never `type="number"`; the text
-  holds Vietnamese separators, so parse it with `parseMoney` / `parseNumber` (#69), not `Number()`.
+  holds Vietnamese separators, so parse it in the app (strip grouping separators / locale-aware parser), not `Number()`.
 - **Small counts and hinted text (#106, #148).** A small whole number people nudge (tấn per line, copies, seats) is a `Stepper`
   (− value +, a spinbutton: arrows, Page Up / Down, Home / End; the − + buttons are out of the Tab order); typed numbers stay
   `NumberInput`. A message or note that can mention a record or insert a template or plain-text snippet is a `HintTextarea`:
@@ -2461,8 +2453,7 @@ with `/semi-propose`.
    hand fixes (`file: message`).
 3. **Do the hand fixes** the migrations printed (each ticket section below lists them and how to decide).
 4. **Delete the app's stand-ins** that 1.0 replaces: the table at the end says which file or CSS rule goes and what
-   replaces it. Delete a stand-in only when its ticket is **shipped** in the version you installed; the rest stay
-   until a later release.
+   replaces it. All T1–T9 replacements ship together in 1.0.0.
 5. **Check:** `npx semi-lint`, `npx tsc --noEmit`, the build, then each key screen at 375px and 1280px in both themes:
    the first record visible without scrolling, one `h1`, at most one filled brand button per page or modal
    (`DESIGN_SYSTEM.md` §0 "Brand colour rule"). `npx semi density <url>` and `npx semi a11y <url>` clean.
@@ -2474,17 +2465,16 @@ with `/semi-propose`.
 | T1 #141 | Foundation: tokens, one look, brand schema | merged on `main` (#154), unreleased: ships in 1.0.0 | `1.0.0-foundation` |
 | T1b #155 | Two UI text sizes: `text-ui` 14 content, `text-chrome` 12 chrome | merged on `main` (#156), unreleased: ships in 1.0.0 | part of `1.0.0-foundation` |
 | T2 #144 | Shell: frame, RouteHeader, nav, account avatar menu, shortcuts | merged on `main` (#159), unreleased: ships in 1.0.0 | `1.0.0-app-shell` |
-| T3 #145 | Lint and checks for the 1.0 rules | merged on `main`, unreleased: ships in 1.0.0 | — |
+| T3 #145 | Lint and checks for the 1.0 rules | merged on `main` (#169), unreleased: ships in 1.0.0 | — |
 | T4 #146 | Buttons and attention marks | merged on `main` (#157), unreleased: ships in 1.0.0 | `1.0.0-buttons` |
-| T5 #147 | Tabs: PillTabs, SegmentedControl, big TextTabs | merged on `main`, unreleased: ships in 1.0.0 | `1.0.0-tabs` |
-| T6 #148 | Fields and forms | merged on `main`, unreleased: ships in 1.0.0 | — |
-| T7 #149 | Page layouts and lists | merged on `main`, unreleased: ships in 1.0.0 | — |
-| T8 #150 | StickyContextBar pinning and actions | pending | — |
-| T9 #151 | Motion wiring | pending | — |
+| T5 #147 | Tabs: PillTabs, SegmentedControl, big TextTabs | merged on `main` (#164), unreleased: ships in 1.0.0 | `1.0.0-tabs` |
+| T6 #148 | Fields and forms | merged on `main` (#165), unreleased: ships in 1.0.0 | — |
+| T7 #149 | Page layouts and lists | merged on `main` (#166), unreleased: ships in 1.0.0 | — |
+| T8 #150 | StickyContextBar pinning and actions | merged on `main` (#168), unreleased: ships in 1.0.0 | — |
+| T9 #151 | Motion wiring | merged on `main` (#167), unreleased: ships in 1.0.0 | — |
 
-Each ticket fills its own section below when it merges (what changed, the migration, the hand fixes, the stand-ins it
-replaces) and flips its row here. A section that says **pending** describes the target only: keep the app's stand-in
-for it and do not write a new one.
+All T1–T9 tickets are merged on `main` and ship together in `1.0.0`. Each section below lists what changed, what its
+migration rewrites, the hand fixes, and the stand-ins it replaces.
 
 ## T1: foundation tokens (merged, ships in 1.0.0)
 
@@ -2703,27 +2693,31 @@ globals tail.
 
 **What the app deletes** (sales-hub v0.7.0): in the globals tail the flush container (`main#main > div`), `.page-title-row` and `.content-card h1`, `.page-column*`, `.list-*`, and hand-built selection rows.
 
-## T8: StickyContextBar pinning (pending, #150)
+## T8: StickyContextBar pinning and URL state (merged, ships in 1.0.0)
 
-**Target.** The bar pins when the page scrolls past it or its field gets focus; once pinned only a new upward gesture
-from the list top unpins it; filter, sort and search changes keep the state; the title row's actions move into the
-pinned field (at most ••• and the main action). **Replaces:** `app/components/semi-pending/BarActions.tsx`,
-`stickyBar.ts`; in the globals tail `.bar-actions`, `[data-page="fixed"|"list"]` scroll rules and
-`.content-card [role="search"]`. **Until it ships:** keep them.
+**What changed** (#150, #129, #124, #139, CHANGELOG "1.0 StickyContextBar pin behaviour").
+- **`StickyContextBar` layout-pin & focus-pin:** pins when scrolling past the bar or focusing the search text field (250ms ease-out, instant under reduced motion, cancelled by wheel/touch; works on short lists; filter chips, sort and view buttons do not pin). From `md` (768px), pins by layout (`data-sticky-host`, `--sticky-pin`, `--sticky-view`, `overscroll-behavior: contain` on `[data-page-body]` or `ListReaderLayout` panels) so trackpad momentum and flings never unpin and only a new upward wheel gesture (> 200ms idle) from the list top unpins. Filter, sort, search, selection-mode and data changes keep pinned/unpinned state. Exposes `data-stuck` and `data-searching` and clears all attributes/vars on unmount. Below `md`, keeps native scrolling and touch behaviour.
+- **`BarActions` & `BarAction`:** pass `<BarActions actions={…} menu={…} />` in `SearchPill`'s `trailing` slot to show up to 2 icon-button slots with tooltips in title-row order (`[•••][main action]`, 8px apart) while pinned and not searching (150ms fade, opacity-only under reduced motion, out of flow and out of the accessibility tree when hidden).
+- **URL state (`useFilterParams`, `filterParams`, `urlState`, `DataTable`):** `useFilterParams` gains `legacy` (one-time post-hydration rewrite via `replaceState`, zero history entries), `patch(values, mode)` (multi-filter change in one history entry) and URL-backed `?sort=key.dir` (`sort`, `setSort`, `sortDef` shared by `FilterChipRow`, `PhoneFilterBar`, `FilterPanel` and `DataTable`, plus `readSort`, `writeSort`, `parseSort`, `formatSort`, `SORT_PARAM`); `replaceFilters` and `writeSearch` exported from `@semi/ui`; `DataTable` gains `onResultsChange` alongside `sortRows` / `searchRows`; `FilterPanel` `single` radio groups write with `"replace"` and label `role="radiogroup"` directly; an empty `single` `FilterChip` is disabled.
 
-## T9: motion (pending, #151)
+**What the app deletes** (sales-hub v0.7.0): `app/components/semi-pending/BarActions.tsx`,
+`app/components/semi-pending/stickyBar.ts`, and in the `TODO(semi-pending)` tail of `app/globals.css`: `.bar-actions`,
+`[data-page="fixed"|"list"]` scroll rules, and `.content-card [role="search"]`.
 
-**Target.** Page enter and stagger, skeleton pulse, tooltip, disclosure and the sliding pill on the T1 motion tokens;
-opacity only under reduced motion; the shell never remounts on a route change. **Replaces:**
-`app/semi-pending-motion.css` and `PageEnter`. The motion **tokens** already ship with T1 (`TOKENS.md` "Motion"); an
-app may read them now. **Until it ships:** keep the stand-ins.
+## T9: motion wiring (merged, ships in 1.0.0)
+
+**What changed** (#151, CHANGELOG "1.0 motion wiring"). Wires T1's motion tokens (`TOKENS.md` "Motion") across Semi components:
+- **`PageEnter` & `<Page enter>`:** `display: contents` route-level wrapper (keyed by `usePathname()` or custom `routeKey`) that runs `motion-enter` (400ms, opacity + translateY 4px → 0) and `motion-stagger` (35ms per item, capped at the first 10 rows/cards) once per route — never replays on filter, search, sort or `?tab=` changes, and never animates rows arriving after `windowMs` (default 1000ms).
+- **Component wiring:** `Skeleton` / `PageSkeleton` / `.shimmer` pulse quietly with `motion-pulse` (2.5s, opacity 1 → 0.6 → 1, stops under reduced motion); `Tooltip` enters with `animate-tooltip-in` (200ms, opacity + scale 0.96 → 1); `Accordion` / `Collapsible` use `--motion-disclosure` (300ms ease-out) and `--motion-disclosure-close` (300ms ease-in) with `inert` + `aria-hidden` while closed; interactive elements use `transition-hover` (150ms) instead of hard-coded durations; under `prefers-reduced-motion: reduce`, all entrances animate opacity only and skeleton pulse stops. The shell never remounts or moves on a route change.
+
+**What the app deletes** (sales-hub v0.7.0): `app/semi-pending-motion.css` and its local `PageEnter` stand-in (use `@semi/ui`'s `PageEnter` or `<Page enter>` and T1's motion tokens).
 
 ## Stand-ins and their replacements
 
 The sales-hub v0.7.0 stand-ins (the app that found these gaps), one row each. Other apps look for the same kind of
-local code. "Delete when" is the ticket that ships the replacement.
+local code. All T1–T9 replacements ship in `1.0.0`.
 
-| Stand-in | Replacement | Delete when |
+| Stand-in | Replacement | Shipped in |
 |---|---|---|
 | `app/semi-pending-neutral.css` (+ its lint skip) | T1 neutral tokens | T1 (merged, in 1.0.0) |
 | globals tail: content-panel heading weights | `font-title` 500, headings 400 / 500 | T1 (merged, in 1.0.0) |
@@ -2742,9 +2736,9 @@ local code. "Delete when" is the ticket that ships the replacement.
 | reply-box drag | `Textarea` / `HintTextarea` `autoGrow` + `resizable` | T6 (merged, in 1.0.0) |
 | globals tail: `.border-control-line` override | quiet fields | T6 (merged, in 1.0.0) |
 | globals tail: flush container, `.page-title-row`, `.content-card h1`, `.page-column*`, `.list-*` | T7 page layouts (`Page`, `SubNav`, `PageTitle`, `ListReaderLayout`) | T7 (merged, in 1.0.0) |
-| `semi-pending/BarActions.tsx`, `semi-pending/stickyBar.ts` | `StickyContextBar` pinning and actions | T8 |
-| globals tail: `.bar-actions`, `[data-page]` scroll rules, `.content-card [role="search"]` | `StickyContextBar` | T8 |
-| `app/semi-pending-motion.css`, `PageEnter` | motion tokens and page enter | T9 |
+| `semi-pending/BarActions.tsx`, `semi-pending/stickyBar.ts` | `StickyContextBar` pinning and `BarActions` | T8 (merged, in 1.0.0) |
+| globals tail: `.bar-actions`, `[data-page]` scroll rules, `.content-card [role="search"]` | `StickyContextBar` | T8 (merged, in 1.0.0) |
+| `app/semi-pending-motion.css`, `PageEnter` | motion tokens and `PageEnter` / `<Page enter>` | T9 (merged, in 1.0.0) |
 
 
 ---
@@ -2937,10 +2931,10 @@ Under `prefers-reduced-motion: reduce` every entrance is opacity only (no transl
 
 All web UI here follows the **Semi Design System** (`@semi/ui`, repo `https://github.com/hoanghuynh296/semi-nextjs-codebase`). `npx semi-lint` enforces most of this; the full rules are `node_modules/@semi/ui/docs/QUICK_REF.md` (details in `docs/DESIGN_SYSTEM.md`).
 
-**Semi 1.0 in short** (`DESIGN_SYSTEM.md` §0): one look for every brand; neutral grey surfaces; **the brand colour only on the one main button of a page or modal (at most one filled brand button per page or modal), the nav's main action, the active big-tab underline, attention badges / "Mới" tags, or a case the app's owner asks for**, every other action a neutral button; headings 400 / 500, never bold; content text 14px (`text-ui`), shell chrome 12px (`text-chrome`), fields 16px on phones. Parts marked *(Tn, pending)* in `DESIGN_SYSTEM.md` (T8–T9) are 1.0 targets not shipped yet: use what Semi has today for them and never build a local stand-in. Upgrading from 0.x: `docs/MIGRATION-1.0.md`.
+**Semi 1.0 in short** (`DESIGN_SYSTEM.md` §0): one look for every brand; neutral grey surfaces; **the brand colour only on the one main button of a page or modal (at most one filled brand button per page or modal), the nav's main action, the active big-tab underline, attention badges / "Mới" tags, or a case the app's owner asks for**, every other action a neutral button; headings 400 / 500, never bold; content text 14px (`text-ui`), shell chrome 12px (`text-chrome`), fields 16px on phones. Upgrading from 0.x: `docs/MIGRATION-1.0.md`.
 
 1. **Ask Semi before writing UI.** Find the component for each need with the `semi` MCP tools (`semi_search` → `semi_docs` → `semi_example`; `semi_block` for whole pages; `semi_props` for props) or the terminal (`npx semi search "bảng có sắp xếp"`, `npx semi docs DataTable`, `npx semi example data-table`, `npx semi add dashboard`). They answer from the installed `@semi/ui`. Read *When to use*, *Use something else when* and *Accessibility*, then start from an example.
-2. **Compose, never re-create.** Import from `@semi/ui` and `@semi/ui/styles` directly. No local wrappers (`components/ui.tsx`), no raw `<select>`, `<table>`, `<dialog>`, `type="date"`, `type="number"`, `window.confirm` / `alert`, no inline `<svg>` or glyph icons (`<Icon name>`, mapping in `docs/ICONS.md`). Every AI conversation is `AIChat`; agent work uses `Reasoning`, `ToolCall`, `TaskList`, `Terminal`, `Sources`; an outward-facing, paid or irreversible agent action waits for `ActionConfirmation`. Pages sit in `AppShell` (or `AppHeader` for a one-screen tool) with `PageTitle` (or the title on the toolbar row: `SubpageToolbar title`, or `TextTabs` for 2–4 sub-pages; a detail page opens with `MinimalHeader`); the shell's one brand-filled action is `mainAction`, its bottom row is `tools` (+ `toolsMenu`), the account (with the theme) is the route header's avatar menu (`header.account`; the nav has no account), and phones use its drawer; sub-views of one area go in nav `children` (closed until the parent is chosen, optional grey icon, no colour or count; check `useAppShell().submenuVisible` and add a page picker when false); a list page that people search and filter opens with `StickyContextBar` (`SearchPill`, `FilterChipRow` on `md+` / `PhoneFilterBar` + `FilterPanel` on phones, `ResultLine`), filter state in the URL (`useFilterParams`), chips on one line, never wrapped rows (`filter-chip-wrap`, warning); dialogs are `Modal` / `Drawer` / `confirmDialog`; loading is `Skeleton`, never "Đang tải…" text, and a list, grid or table never swaps its rows for a `Spinner` (`no-spinner-in-list`, warning). `AppShell` renders once in a `layout.tsx` (never from a page), its items route by `href` (not `onSelect` + `router.push`), the session check runs once in that layout (best on the server) with `BootLoader` as the only centred spinner, and content loading is a `loading.tsx` with `PageSkeleton` inside the shell, never a skeleton gate around it. No other UI or icon library (`lucide-react`, `react-icons`, `@radix-ui`, `@mui`, a shadcn `components/ui` copy: `foreign-ui`), no own `Card` / `Badge` / `Tooltip`… (`local-primitive`), no raw `<button>`, `<input>`, `<textarea>`, `<table>` (`raw-control`), no hand-made overlay or spinner (`custom-overlay`, `custom-spinner`); a clickable card is `<Card onClick>` (keyboard-ready), never `<div onClick>` (`click-target`).
+2. **Compose, never re-create.** Import from `@semi/ui` and `@semi/ui/styles` directly. No local wrappers (`components/ui.tsx`), no raw `<select>`, `<table>`, `<dialog>`, `type="date"`, `type="number"`, `window.confirm` / `alert`, no inline `<svg>` or glyph icons (`<Icon name>`, mapping in `docs/ICONS.md`). Every AI conversation is `AIChat`; agent work uses `Reasoning`, `ToolCall`, `TaskList`, `Terminal`, `Sources`; an outward-facing, paid or irreversible agent action waits for `ActionConfirmation`. Pages sit in `AppShell` (or `AppHeader` for a one-screen tool) with `PageTitle` (or the title on the toolbar row: `SubpageToolbar title`, or `TextTabs` for 2–4 sub-pages; a detail page opens with `MinimalHeader`); the shell's one brand-filled action is `mainAction`, its bottom row is `tools` (+ `toolsMenu`), the account (with the theme) is the route header's avatar menu (`header.account`; the nav has no account), and phones use its drawer; sub-views of one area go in nav `children` (closed until the parent is chosen, optional grey icon, no colour or count; check `useAppShell().submenuVisible` and add a page picker when false); a list page that people search and filter opens with `StickyContextBar` (`SearchPill` with `BarActions` in `trailing` for pinned actions, `FilterChipRow` with `sort` and `selection` on `md+` / `PhoneFilterBar` + `FilterPanel` on phones, no `ResultLine`), filter and sort state in the URL (`useFilterParams`), chips on one line, never wrapped rows (`filter-chip-wrap`, warning); dialogs are `Modal` / `Drawer` / `confirmDialog`; loading is `Skeleton`, never "Đang tải…" text, and a list, grid or table never swaps its rows for a `Spinner` (`no-spinner-in-list`, warning). `AppShell` renders once in a `layout.tsx` (never from a page), its items route by `href` (not `onSelect` + `router.push`), the session check runs once in that layout (best on the server) with `BootLoader` as the only centred spinner, and content loading is a `loading.tsx` with `PageSkeleton` inside the shell, never a skeleton gate around it. No other UI or icon library (`lucide-react`, `react-icons`, `@radix-ui`, `@mui`, a shadcn `components/ui` copy: `foreign-ui`), no own `Card` / `Badge` / `Tooltip`… (`local-primitive`), no raw `<button>`, `<input>`, `<textarea>`, `<table>` (`raw-control`), no hand-made overlay or spinner (`custom-overlay`, `custom-spinner`); a clickable card is `<Card onClick>` (keyboard-ready), never `<div onClick>` (`click-target`).
 3. **Tokens only** (dual theme, any brand):
    - Colour (`docs/TOKENS.md`): surfaces `bg-canvas|app|panel|field|raised` (+ `bg-card` for a card in content, never `bg-panel`; `bg-panel-0…4`); text `text-strong|body|muted|faint` (faint only for group labels, kbd hints, "Untitled", on page surfaces and cards); lines `border-line|divider`, `border-control-line` (checkbox, radio), `border-field-line` / `border-outline-line`; neutral states `bg-item-hover` (hover), `bg-item-selected` (open record, active item, selected option), `bg-item-checked` (checked rows), `bg-inverted text-on-inverted` (checked controls), `ring-focus` / `border-focus` (focus); status `bg-*-bg border-*-border text-*-fg` (danger, success, warning, info) and tones `text-tone-*` only on tags, tiles and dots. Pages separate by tone, not borders or shadows (`<Card bordered>` only for a dense data view). **Brand fills** `bg-primary hover:bg-primary-hover text-on-primary` (and `bg-secondary` … when the brand has one) only where the brand colour rule says; selection, links, check marks, active tabs and focus are neutral. Never physical colours (`bg-white`, `text-slate-900`, `text-amber-600 dark:text-amber-400`), arbitrary colours (`bg-[#…]`), `accent-*` or `primary-50…900` (removed in 1.0), gradients or glow shadows.
    - Buttons (`DESIGN_SYSTEM.md` §0, §9): ordinary actions are neutral. `Button` is `subtle` by default; `surface` for toolbar actions; `inverse` for the main action of a card or a list title row (`size="xs" shape="round"` for the pill), `outline` beside it; `ghost` for icon buttons; `primary` / `secondary` (the brand fills; `secondary` is the brand secondary, the primary when the brand has none) only for the one main button of a page or modal (its commit action), the nav's `mainAction` or a case the app's owner asks for; `danger` for destructive. Attention counts are `CountBadge` / Button `badge`, a new item is `NewTag`. Tabs (`DESIGN_SYSTEM.md` §0, §4h): `PillTabs` for 5+ sections or sections with icons (settings-like pages), `SegmentedControl` for 2–5 filter values shown in full with counts (replaces deprecated `Pills`), big `TextTabs` for 2–4 top-level views of a discovery or reading page (display face at 400, brand underline), `FilterChipRow` for filters, `Tabs` for sections of one record, `useTabParam` for `?tab=` URL state without history spam per arrow key.
@@ -4468,7 +4462,7 @@ Multi-line text on the field surface (FIELD_TEXTAREA), with optional reply-box a
 
 ## Notes
 
-- kind: email (type email, keyboard with @, autocomplete email), tel (tel keypad), number (decimal keypad), money (decimal keypad: amounts are typed with separators, parse with parseMoney / parseNumber from #69, not Number(); inputMode="numeric" for whole numbers), url (type url: the browser rejects a bare 3dnoobs.vn on submit; next to an https:// addon pass type="text"), search (Enter reads "search"), password (autocomplete current-password, Enter reads "go"). number and money stay type="text": never a native type="number" (use NumberInput for a touch numpad; inside a Field it takes only autoComplete and enterKeyHint from the kind).
+- kind: email (type email, keyboard with @, autocomplete email), tel (tel keypad), number (decimal keypad), money (decimal keypad: amounts are typed with separators, parse in the app with a locale-aware parser, not Number(); inputMode="numeric" for whole numbers), url (type url: the browser rejects a bare 3dnoobs.vn on submit; next to an https:// addon pass type="text"), search (Enter reads "search"), password (autocomplete current-password, Enter reads "go"). number and money stay type="text": never a native type="number" (use NumberInput for a touch numpad; inside a Field it takes only autoComplete and enterKeyHint from the kind).
 - Labels sit above the control, required fields get `*` (and "bắt buộc" for screen readers), the error shows under the field (`error`). Page forms are at most max-w-2xl (FORM_PAGE).
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/field/ and the types in src/ -->
@@ -4662,7 +4656,7 @@ Picker + drop area with a row per file (forms, import pages). In a narrow worksp
 
 # Filter chip row
 
-A list page's filters as one line of chips (icon, label, chevron; solid with the value or count when on). Each chip opens a small multi-select popover, a single-choice chip a radio menu (“Hộp thư: Tất cả”), a switch chip toggles; the page's views (Pills) can lead the row; the row scrolls sideways with ‹ › when it overflows, shows “Xoá lọc” while a filter is on and ends with the view tools. State in the URL with useFilterParams or the filterParams helpers.
+A list page's filters as one line of chips (icon, label, chevron; solid with the value or count when on). Each chip opens a small multi-select popover, a single-choice chip a radio menu (“Hộp thư: Tất cả”), a switch chip toggles; the page's views (SegmentedControl) can lead the row; the row scrolls sideways with ‹ › when it overflows, shows “Xoá lọc” while a filter is on and ends with `sort`, zero-shift `selection` (“Chọn” via `useListSelection`) and `ViewSwitch`. State in the URL with useFilterParams or the filterParams helpers.
 
 ## When to use
 
@@ -4675,7 +4669,7 @@ A list page's filters as one line of chips (icon, label, chevron; solid with the
 | Need | Use |
 |---|---|
 | Filters on phones (below md) | PhoneFilterBar + FilterPanel |
-| One choice among 2–5 views of the same list | Pills in FilterChipRow leading (PhoneFilterBar typeItems on phones), or TextTabs as the heading |
+| One choice among 2–5 views of the same list | SegmentedControl in FilterChipRow leading (PhoneFilterBar typeItems on phones), or TextTabs as the heading |
 | A facet with hundreds of values (a customer, a product) | a Combobox in FilterPanel's children |
 
 ## Import
@@ -4893,7 +4887,8 @@ The checkbox list of one multi filter (FilterChip's popover, FilterPanel's accor
 
 - One line, never wrapping rows of chips (C-032 L3); more than one row → this row.
 - A single filter has one value in the URL (?f.box=sales) and none while its clearValue is in effect: selected is [] then (not an active filter, “Xoá lọc” resets it), so read it as selected[0] ?? clearValue. Without clearValue nothing is checked until a value is picked.
-- `leading` holds the page's views (Pills), the md+ twin of PhoneFilterBar typeItems. A view is not a filter: “Xoá lọc” leaves it, and it does not scroll with the chips.
+- `leading` holds the page's views (`SegmentedControl`), the md+ twin of PhoneFilterBar typeItems. A view is not a filter: “Xoá lọc” leaves it, and it does not scroll with the chips.
+- Pass `sort` (from `useFilterParams(..., { sort })`) and `selection` (`useListSelection`) on FilterChipRow so sorting and in-place bulk selection share the filter row with zero vertical shift on the list.
 - URL format: one repeated param per filter (?f.status=new&f.status=won&f.big=1); unknown values from an old link are dropped. useFilterParams reads the URL after hydration (prerender-safe, no useSearchParams), writes with history.pushState(null, …) so Next's useSearchParams and router.refresh() keep the filters, pushes one history entry per change (Back undoes a filter) and follows Back / Forward, other hooks on the page and (with the Navigation API, or on the next render) a Link or router.push to the same route.
 - With Next's router of your own: readFilters(useSearchParams(), specs) in, router.push(`?${writeFilters(params, { status: [...] }, specs)}`) out.
 - Without the Navigation API (Firefox, Safari before 26) the hook re-reads the URL on Back / Forward, on its own writes and whenever its component renders. A hook in a component that stays mounted and does not re-render (a layout) can then miss a Link or router.push to the same route: there, read the filters with useSearchParams + readFilters (inside Suspense) and write them with writeFilters + router.push instead.
@@ -6047,7 +6042,7 @@ export default function SearchInputBasic() {
 
 # Search pill
 
-The wide pill search of a list page (one per page) and the result line under it: “query” · N kết quả on the left, the sort menu on the right. Typing is debounced (250 ms), Escape and the clear button clear at once, an optional key (/) focuses it.
+The wide pill search of a list page (one per page), with an optional `trailing` slot for `<BarActions>` when pinned in StickyContextBar. Typing is debounced (250 ms), Escape and the clear button clear at once, an optional key (/) focuses it. ResultLine is deprecated for 1.0 list pages (use FilterChipRow / PhoneFilterBar `sort` and `selection` instead).
 
 ## When to use
 
@@ -6264,7 +6259,7 @@ export default function SelectToolbar() {
 | `align` | `'left' \| 'right'` | `"left"` | Which edge the option list lines up with (use "right" for a select at the right edge of the screen). |
 | `iconsInList` | `boolean` | `false` | Show each option's icon in the list too (default: only on the button). |
 | `iconOnly` | `boolean` | `false` | The button shows only the selected option's icon (its label becomes the tooltip), e.g. the AI profile logo. |
-| `variant` | `'toolbar' \| 'field' \| 'inline' \| 'bare'` | `"toolbar"` | toolbar = h-control toolbar control (34px in Flat) · field = full-width form field · inline = bare text inside a row · bare = no trigger styling (the caller passes it in buttonClassName, e.g. the automation code chips) |
+| `variant` | `'toolbar' \| 'field' \| 'inline' \| 'bare'` | `"toolbar"` | toolbar = h-control toolbar control (34px) · field = full-width form field · inline = bare text inside a row · bare = no trigger styling (the caller passes it in buttonClassName, e.g. the automation code chips) |
 | `disabled` | `boolean` | `false` |  |
 | `buttonClassName` | `string` | `""` | Extra classes on the button (e.g. a "modified value" colour). |
 | `id` | `string` |  |  |
@@ -8189,6 +8184,7 @@ the tooltip is linked with aria-describedby. Touch screens show nothing: never p
 
 - Shown on focus too, linked with aria-describedby; never the only place of essential information.
 - The pointer can move onto the tooltip without it closing; Escape hides it (WCAG 1.4.13).
+- Enters with `animate-tooltip-in` (200ms, opacity + scale 0.96 → 1); opacity-only under prefers-reduced-motion.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/tooltip/ and the types in src/ -->
 
@@ -9789,7 +9785,7 @@ PageTitle is the 18 / 400 UI sans heading of a work page on the same row as the 
 ## When to use
 
 - The first line of every page (PageTitle).
-- A list page's title row: the title and the page's action (one primary or secondary, plus RefreshButton) above a StickyContextBar (PageTitle actions).
+- A list page's title row: the title and the page's action (one `inverse` or `primary` button, plus RefreshButton or ⋯ Menu) above a StickyContextBar (PageTitle actions).
 
 ## Use something else when
 
@@ -9912,8 +9908,8 @@ Underline display tabs used when a view groups 2–4 sibling sub-pages (e.g. "M�
 
 ## Notes
 
-- No subtitle under the title. Title-row actions are one primary (or secondary) with icon and text, optionally a RefreshButton before it; more actions go in a ⋯ Menu. Filters never go on the title row: they belong in the StickyContextBar or SubpageToolbar under it.
-- Below sm the actions wrap onto their own row under the title.
+- No subtitle under the title. Title-row actions are one `inverse` button (or `primary` when it is the page's commit action) with icon and text, optionally a RefreshButton before it; more actions go in a ⋯ Menu. Filters never go on the title row: they belong in the StickyContextBar or SubpageToolbar under it.
+- Actions stay on the same row as the title and wrap only when out of width.
 - A page whose SubpageToolbar carries the actions leaves `actions` out.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/page-title/ and the types in src/ -->
@@ -10759,14 +10755,15 @@ the rest collapse into `•••` on the left.
 ## Accessibility
 
 - With label it is a search landmark (role=search) named for the page, so screen-reader users jump to it.
-- Its children keep their own names; the result line announces the new count.
+- BarActions hides its icon buttons out of flow and out of the accessibility tree while unpinned or while the search field has focus.
 
 ## Notes
 
-- One per page, right under the page heading: PageTitle with `actions` (the page's one primary or secondary + RefreshButton) or TextTabs. The page's actions stay on that title row, never in this bar (it holds search, filters and the result line only).
+- One per page, right under the page heading: PageTitle with `actions` (the page's one `inverse` or `primary` action + `•••` / RefreshButton) or TextTabs. Pass `<BarActions actions={…} menu={…} />` in SearchPill's `trailing` slot so up to 2 icon buttons (`[•••][main action]`) appear inside the pinned search bar when the title row scrolls out of view.
+- 1.0 list pages omit ResultLine: the list sits 16px under the filter row, and `sort` + `selection` ("Chọn", managed with `useListSelection`) live on FilterChipRow / PhoneFilterBar.
 - Desktop and iPad show FilterChipRow (max-md:hidden on the phone bar's sibling), phones PhoneFilterBar (md:hidden): same filters, same state.
-- The page's views (Đang mở · Đã đóng · Tất cả) are Pills in FilterChipRow `leading` on md+ and PhoneFilterBar `typeItems` (radio items) on phones: same state, usually a plain param (?view=) written with useFilterParams().setParams. The default view may be other than “all”; leave it out of the URL.
-- Phone chrome: at most 2 rows plus the result line, under 25% of the viewport (P1).
+- The page's views (Đang mở · Đã đóng · Tất cả) are `SegmentedControl` in FilterChipRow `leading` on md+ and PhoneFilterBar `typeItems` (radio items) on phones: same state, usually a plain param (?view=) written with useFilterParams().setParams. The default view may be other than “all”; leave it out of the URL.
+- Phone chrome: at most 2 rows (search + PhoneFilterBar), under 25% of the viewport (P1).
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/sticky-context-bar/ and the types in src/ -->
 
@@ -12701,7 +12698,8 @@ The order it shows is `sortRows(searchRows(rows, columns, search), columns, sort
 ## Notes
 
 - Folding is measured on the table's own box (not the viewport), from each column's one-line width: a table in a split view or next to the rail folds as soon as it is too narrow. Folding happens after hydration: the server HTML shows every column, so a table with priorities may shift once on first load at tablet width.
-- The order the table shows is `sortRows(searchRows(rows, columns, search), columns, sort)`: use the same two helpers to step through the results in a DetailOverlay (‹ ›, “n / N”), see the detail-overlay docs.
+- The order the table shows is `sortRows(searchRows(rows, columns, search), columns, sort)` (or read it from `onResultsChange`): use it to step through the results in a DetailOverlay (‹ ›, “n / N”), see the detail-overlay docs.
+- Pass `activeRowId` to highlight the open record's row (`bg-item-selected`, `aria-current="true"`); checked rows use `bg-item-checked`.
 - A table wider than its box draws a 2px strong line (outline-line) on each edge that has columns past it (in every table; with `stickyFirstColumn` the left line is the pinned column's edge) and keeps the first column (and the checkbox column) in place with `stickyFirstColumn`; the table then sits on `bg-card`. The sorted column never folds: its header is the only sort control.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/data-table/ and the types in src/ -->
@@ -14051,7 +14049,7 @@ Determinate or indeterminate progress bar (uploads, quotas, print progress).
 
 # Skeleton
 
-Shimmer placeholders while content loads, shaped like what loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, SkeletonList (divided list rows), SkeletonTable (table rows), SkeletonDetail (a record's detail panel), PageSkeleton; Loading announces the region. Never “Đang tải…” text or a spinner in a list. BootLoader is the one centred spinner, for the boot / session gate before the shell exists.
+Quietly pulsing placeholders (`motion-pulse`: 2.5s opacity 1 → 0.6 → 1, stops under prefers-reduced-motion) while content loads, shaped like what loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, SkeletonList (divided list rows), SkeletonTable (table rows), SkeletonDetail (a record's detail panel), PageSkeleton; Loading announces the region. Never “Đang tải…” text or a spinner in a list. BootLoader is the one centred spinner, for the boot / session gate before the shell exists.
 
 ## When to use
 
@@ -14308,7 +14306,7 @@ Prefer a server-side session check (proxy / async layout), which needs no gate a
 ## Notes
 
 - BootLoader waits `delay` (300 ms) before the spinner shows, so a fast check flashes nothing; the spin stops under prefers-reduced-motion. Prefer a server-side session check, which needs no gate (see the App shell doc, "Session gate in the layout").
-- PageSkeleton takes shape="cards" (default), "list" or "detail": pick the one the real page has so nothing jumps when the data arrives.
+- PageSkeleton takes shape="cards" (default), "list", "detail" or "workspace": pick the one the real page has so nothing jumps when the data arrives.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/skeleton/ and the types in src/ -->
 

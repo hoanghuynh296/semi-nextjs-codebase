@@ -1,6 +1,6 @@
 # Filter chip row
 
-A list page's filters as one line of chips (icon, label, chevron; solid with the value or count when on). Each chip opens a small multi-select popover, a single-choice chip a radio menu (“Hộp thư: Tất cả”), a switch chip toggles; the page's views (Pills) can lead the row; the row scrolls sideways with ‹ › when it overflows, shows “Xoá lọc” while a filter is on and ends with the view tools. State in the URL with useFilterParams or the filterParams helpers.
+A list page's filters as one line of chips (icon, label, chevron; solid with the value or count when on). Each chip opens a small multi-select popover, a single-choice chip a radio menu (“Hộp thư: Tất cả”), a switch chip toggles; the page's views (SegmentedControl) can lead the row; the row scrolls sideways with ‹ › when it overflows, shows “Xoá lọc” while a filter is on and ends with `sort`, zero-shift `selection` (“Chọn” via `useListSelection`) and `ViewSwitch`. State in the URL with useFilterParams or the filterParams helpers.
 
 ## When to use
 
@@ -13,7 +13,7 @@ A list page's filters as one line of chips (icon, label, chevron; solid with the
 | Need | Use |
 |---|---|
 | Filters on phones (below md) | PhoneFilterBar + FilterPanel |
-| One choice among 2–5 views of the same list | Pills in FilterChipRow leading (PhoneFilterBar typeItems on phones), or TextTabs as the heading |
+| One choice among 2–5 views of the same list | SegmentedControl in FilterChipRow leading (PhoneFilterBar typeItems on phones), or TextTabs as the heading |
 | A facet with hundreds of values (a customer, a product) | a Combobox in FilterPanel's children |
 
 ## Import
@@ -231,7 +231,8 @@ The checkbox list of one multi filter (FilterChip's popover, FilterPanel's accor
 
 - One line, never wrapping rows of chips (C-032 L3); more than one row → this row.
 - A single filter has one value in the URL (?f.box=sales) and none while its clearValue is in effect: selected is [] then (not an active filter, “Xoá lọc” resets it), so read it as selected[0] ?? clearValue. Without clearValue nothing is checked until a value is picked.
-- `leading` holds the page's views (Pills), the md+ twin of PhoneFilterBar typeItems. A view is not a filter: “Xoá lọc” leaves it, and it does not scroll with the chips.
+- `leading` holds the page's views (`SegmentedControl`), the md+ twin of PhoneFilterBar typeItems. A view is not a filter: “Xoá lọc” leaves it, and it does not scroll with the chips.
+- Pass `sort` (from `useFilterParams(..., { sort })`) and `selection` (`useListSelection`) on FilterChipRow so sorting and in-place bulk selection share the filter row with zero vertical shift on the list.
 - URL format: one repeated param per filter (?f.status=new&f.status=won&f.big=1); unknown values from an old link are dropped. useFilterParams reads the URL after hydration (prerender-safe, no useSearchParams), writes with history.pushState(null, …) so Next's useSearchParams and router.refresh() keep the filters, pushes one history entry per change (Back undoes a filter) and follows Back / Forward, other hooks on the page and (with the Navigation API, or on the next render) a Link or router.push to the same route.
 - With Next's router of your own: readFilters(useSearchParams(), specs) in, router.push(`?${writeFilters(params, { status: [...] }, specs)}`) out.
 - Without the Navigation API (Firefox, Safari before 26) the hook re-reads the URL on Back / Forward, on its own writes and whenever its component renders. A hook in a component that stays mounted and does not re-render (a layout) can then miss a Link or router.push to the same route: there, read the filters with useSearchParams + readFilters (inside Suspense) and write them with writeFilters + router.push instead.

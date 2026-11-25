@@ -1,7 +1,7 @@
 {
   "title": "Skeleton",
   "group": "Feedback",
-  "description": "Shimmer placeholders while content loads, shaped like what loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, SkeletonList (divided list rows), SkeletonTable (table rows), SkeletonDetail (a record's detail panel), PageSkeleton; Loading announces the region. Never “Đang tải…” text or a spinner in a list. BootLoader is the one centred spinner, for the boot / session gate before the shell exists.",
+  "description": "Quietly pulsing placeholders (`motion-pulse`: 2.5s opacity 1 → 0.6 → 1, stops under prefers-reduced-motion) while content loads, shaped like what loads: Skeleton blocks, SkeletonCard, SkeletonGrid, SkeletonRows, SkeletonList (divided list rows), SkeletonTable (table rows), SkeletonDetail (a record's detail panel), PageSkeleton; Loading announces the region. Never “Đang tải…” text or a spinner in a list. BootLoader is the one centred spinner, for the boot / session gate before the shell exists.",
   "components": [
     "Skeleton",
     "SkeletonCard",
@@ -64,6 +64,6 @@
   ],
   "notes": [
     "BootLoader waits `delay` (300 ms) before the spinner shows, so a fast check flashes nothing; the spin stops under prefers-reduced-motion. Prefer a server-side session check, which needs no gate (see the App shell doc, \"Session gate in the layout\").",
-    "PageSkeleton takes shape=\"cards\" (default), \"list\" or \"detail\": pick the one the real page has so nothing jumps when the data arrives."
+    "PageSkeleton takes shape=\"cards\" (default), \"list\", \"detail\" or \"workspace\": pick the one the real page has so nothing jumps when the data arrives."
   ]
 }

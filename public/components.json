@@ -3756,7 +3756,7 @@
       "kind": "constant",
       "module": "src/fieldKinds.ts",
       "client": false,
-      "summary": "`number` and `money` stay `type=\"text\"` (a native `type=\"number\"` has no keyboard-safe formatting and spinner arrows; `NumberInput` is the number control) and ask for the decimal keypad (the plain numeric one has no separator key, and Vietnamese amounts are typed \"1.250.000\" or \"1,5\"). The text then holds separators: parse it with the number helpers (`parseMoney` / `parseNumber`, #69), not `Number()`. A whole-number field passes `inputMode=\"numeric\"` on the control. A new password field passes `autoComplete=\"new-password\"` on the control. `NumberInput` takes only `autoComplete` and `enterKeyHint` from a kind (it keeps its own type and keypad)."
+      "summary": "`number` and `money` stay `type=\"text\"` (a native `type=\"number\"` has no keyboard-safe formatting and spinner arrows; `NumberInput` is the number control) and ask for the decimal keypad (the plain numeric one has no separator key, and Vietnamese amounts are typed \"1.250.000\" or \"1,5\"). The text then holds separators: parse it with the number helpers (parse in the app by stripping grouping separators / locale-aware parser), not `Number()`. A whole-number field passes `inputMode=\"numeric\"` on the control. A new password field passes `autoComplete=\"new-password\"` on the control. `NumberInput` takes only `autoComplete` and `enterKeyHint` from a kind (it keeps its own type and keypad)."
     },
     {
       "name": "FILTER_PARAM_PREFIX",

@@ -65,7 +65,7 @@
     }
   ],
   "notes": [
-    "kind: email (type email, keyboard with @, autocomplete email), tel (tel keypad), number (decimal keypad), money (decimal keypad: amounts are typed with separators, parse with parseMoney / parseNumber from #69, not Number(); inputMode=\"numeric\" for whole numbers), url (type url: the browser rejects a bare 3dnoobs.vn on submit; next to an https:// addon pass type=\"text\"), search (Enter reads \"search\"), password (autocomplete current-password, Enter reads \"go\"). number and money stay type=\"text\": never a native type=\"number\" (use NumberInput for a touch numpad; inside a Field it takes only autoComplete and enterKeyHint from the kind).",
+    "kind: email (type email, keyboard with @, autocomplete email), tel (tel keypad), number (decimal keypad), money (decimal keypad: amounts are typed with separators, parse in the app with a locale-aware parser, not Number(); inputMode=\"numeric\" for whole numbers), url (type url: the browser rejects a bare 3dnoobs.vn on submit; next to an https:// addon pass type=\"text\"), search (Enter reads \"search\"), password (autocomplete current-password, Enter reads \"go\"). number and money stay type=\"text\": never a native type=\"number\" (use NumberInput for a touch numpad; inside a Field it takes only autoComplete and enterKeyHint from the kind).",
     "Labels sit above the control, required fields get `*` (and \"bắt buộc\" for screen readers), the error shows under the field (`error`). Page forms are at most max-w-2xl (FORM_PAGE)."
   ]
 }
