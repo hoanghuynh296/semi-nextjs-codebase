@@ -164,7 +164,7 @@ export function FeatureIntro({
           {s.visual}
         </div>
         <div aria-live="polite" className="p-card sm:p-panel flex flex-col gap-2">
-          <h2 id={titleId} className="text-lead font-title font-semibold text-strong">
+          <h2 id={titleId} className="text-lead font-title font-medium text-strong">
             {s.title}
           </h2>
           <p id={`${titleId}-body`} className="text-ui text-body">

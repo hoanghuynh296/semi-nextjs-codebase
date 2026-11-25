@@ -107,7 +107,7 @@ export function ComponentPage({ id, markdownHref }: { id: string; markdownHref?:
         <Heading>API</Heading>
         {doc.api.map((a) => (
           <div key={a.name} className="space-y-2">
-            <h3 className="text-lead font-semibold text-strong font-mono">{a.name}</h3>
+            <h3 className="text-lead font-medium text-strong font-mono">{a.name}</h3>
             {a.description && <p className="text-ui text-muted max-w-3xl">{a.description}</p>}
             {a.props.length ? (
               <div className={`${CARD} overflow-hidden`}>
