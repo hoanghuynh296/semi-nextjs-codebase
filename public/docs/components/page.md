@@ -164,7 +164,7 @@ Owns the vertical rhythm from the card top (32px to the header block, 28px from 
 | `title` | `React.ReactNode` |  | Page heading: a string / node rendered via `PageTitle` (18/400 UI sans by default), or leave out when `tabs` is big `TextTabs`. |
 | `titleVariant` | `'work' \| 'reading'` | `"work"` | On a `"reading"` page, `"reading"` opts into the 44 / 500 display title (`text-title-xl`). Ignored on other layouts. |
 | `actions` | `React.ReactNode` |  | Actions at the right end of the title row (one `inverse` or `primary` action, optional `•••` `Menu` / `RefreshButton`). |
-| `tabs` | `React.ReactNode` |  | Optional tab bar (`PillTabs`, `Tabs`, `Pills`, `TextTabs`, `PageTabsTitle`). |
+| `tabs` | `React.ReactNode` |  | Optional tab bar (`PillTabs`, `Tabs`, `SegmentedControl`, `TextTabs`). |
 | `intro` | `React.ReactNode` |  | Optional lead intro under the title or tabs (28px below). |
 | `toolbar` | `React.ReactNode` |  | Optional sticky toolbar / filter row (`StickyContextBar`, `SubpageToolbar`); content sits 16px below it. |
 | `children` * | `React.ReactNode` |  | Page blocks (spaced 32px apart; in `fixed` mode, fills the remaining height). |

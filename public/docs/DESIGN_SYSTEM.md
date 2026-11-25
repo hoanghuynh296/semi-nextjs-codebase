@@ -251,7 +251,7 @@ Semi's own green. A brand change is made in the brand repo (`/semi-brand`) and r
   neutral fill and shows its state on a badge. Its secondary text stays `text-muted`.
 - **Chips and tags** (`Chip.tsx`) share one pill (`rounded-full h-control px-3.5 text-ui font-medium`): `chipClass(active)`;
   static tags `TAG`. Per-item colour only on a leading dot (`TONE_DOT`) or icon (`chipIconClass(tone)`). The chosen
-  segment of `Pills`, `Toggle` and pill `Tabs` is `SEGMENT_ON`.
+  segment of `Toggle` and theme / style switchers is `SEGMENT_ON`.
 - Data series in charts use the fixed `chart-1…8` hues; syntax colours in code views are the other exception.
 
 ### 3b. Callouts and category cards
@@ -438,7 +438,7 @@ action: `inverse`, or the brand `primary` when it is the page's commit action; a
   accordion per filter, "Xem N kết quả" at the bottom). State lives in the URL: `useFilterParams(specs)` (or
   `readFilters` / `writeFilters` / `clearFilters` / `activeFilterCount`); a filter change is a history entry, so Back
   undoes it.
-- **1.0 list calm & selection (#149):** no result-count row (`ResultLine` is deprecated for list pages): the list sits
+- **1.0 list calm & selection (#149, #173):** no result-count row: the list sits
   16px under the filter row. Sort (`sort`) and "Chọn" (`selection`, managed with `useListSelection`) sit on the filter
   row (`FilterChipRow` trailing; phones: `PhoneFilterBar` keeps Bộ lọc + sort / Chọn on the same row). **Selection
   mode:** `"n đã chọn"` (600) and the bulk actions (at most one filled button, the rest in `•••`) plus `"Xong"` replace
@@ -518,13 +518,13 @@ Choose the tab or filter control mechanically from §0 "When to use which":
 - **`SegmentedControl`** (2–5 filter values shown in full, with optional tabular-nums counts): `bg-raised` track
   (`rounded-control`, padding 4, gap 4, h32), h24 items (`px-4 py-1.5`, 12px/600, inactive `text-muted`, active
   `text-strong`), one solid `bg-raised-2` pill (white in light theme) sliding in 300ms (`transition-slide`). WAI-ARIA
-  `radiogroup` / `radio` with ←/→, ↑/↓, Home / End. Replaces the deprecated `Pills`.
+  `radiogroup` / `radio` with ←/→, ↑/↓, Home / End.
 - **Big `TextTabs`** (strictly 2–4 top-level views of a discovery or reading page, as its heading): `font-display
   text-tab-xl font-normal` (24px below `sm`, 28px from `sm`, weight 400 in the brand display face — never force 600–800
   bold on top of `font-display`, lh 1.2, tracking −0.01em), every tab in `text-strong`, inactive `opacity-20` (hover
   raises opacity in 150ms, keyboard `:focus-visible` restores full contrast), active 2px `decoration-primary` underline
   at 6px offset under the word only; gaps 16 / 20 / 24 (`base` / `sm` / `md`); 28px (`pt-7` / `mb-7`) to the intro
-  below. Replaces `PageTabsTitle` (deprecated).
+  below.
 - **Shared behaviour across all three (#121):**
   - **Overflow:** one horizontal row (`no-scrollbar`), active item scrolls horizontally into view without moving the
     page vertically, no horizontal page scroll at 430px, and a 2px `bg-outline-line` edge cue (`data-edges`) marks each
@@ -675,8 +675,7 @@ it form by form; the four lint rules below are warnings until 1.0.
 ## 10. Pills, chips, badges
 
 - Single choice (2–5 filter values shown in full, with counts): `SegmentedControl` (`bg-raised` track, sliding
-  `bg-raised-2` pill, `radiogroup` / `radio`, §4h). `Pills` (`SEGMENT_ON`) is deprecated in 1.0 and kept exported for
-  compatibility.
+  `bg-raised-2` pill, `radiogroup` / `radio`, §4h).
 - Sub-page filter tabs / chips: `Chip` (see §3 Chips). Static labels: `TAG`.
 - Filter chips may carry an icon and a count: icon `w-3.5 h-3.5` + label + `COUNT_PILL`.
 - Status pill: `STATUS_PILL` + `bg-*-bg text-*-fg` (danger, success, warning, info) with a status dot (§11), or `<Badge tone>`.
@@ -891,8 +890,8 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `@semi/ui` → `AppShell.tsx`, `RouteHeader.tsx`, `MobileTabBar.tsx` | `AppShell` (1.0 frame: nav panel with main action, groups, pinned, bottom row of tools; 224px or the 72px rail; RouteHeader; content card; phone drawer; nav shortcuts), `useAppShell` (sub-items shown, rail, shortcuts), `navShortcutKeys`, `RouteHeader` (crumbs, middle, actions, account), `AccountMenu` (the account avatar menu), `useRecordCrumb` (a detail page names its record), `MobileTabBar`, `TAB_BAR_PAD` (opt-in `mobileNav="tabs"`) (§4) |
 | `MegaMenu.tsx`, `MinimalHeader.tsx`, `TextTabs.tsx`, `PillTabs.tsx`, `SegmentedControl.tsx`, `useTabParam.ts` | `MegaMenu` (flyout of category columns, `text-overline` headers, New badges, See all), `MinimalHeader` (breadcrumb left, one link + one primary right), `TextTabs` (big display tabs for 2–4 top-level views, brand underline, `href`, `onBeforeChange`, `activation`), `PillTabs` (default section tabs for 5+ sections or sections with icons, sliding `item-hover` pill, `tabpanel`, `href`, `onBeforeChange`, `activation`), `SegmentedControl` (2–5 filter values with counts, sliding `raised-2` pill, `radiogroup`), `useTabParam` (`?tab=` URL state without history spam per arrow key) (§4, §4h) |
 | `Page.tsx`, `PageEnter.tsx`, `ListReader.tsx` | `Page` (shared 1.0 page anatomy and `work` / `reading` / `two-column` layouts + vertical rhythm + `enter`), `PageEnter` (`display: contents` route-level `motion-enter` + `motion-stagger` wrapper for top blocks and first ~10 rows / cards, once per route), `SubNav` (240px sub-nav card with `text-nav-label` groups and h32 items), `PageSection` (20/500 heading + 16px content gap), `PageGrid` (8px `@container` grid), `ListReaderLayout` (two independent scrollers on `fixed` mode, `?open=`, `useRecordCrumb`, phone swap), `ReaderHeader` (sticky one-row reader header: wrapping title left, `[•••]` + one main action right) (§4a, §4g) |
-| `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle` (18/400 UI sans on the action row; `variant="reading"` 44/500 display title for one-column reading pages), `PageTabsTitle` (deprecated underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh; phone layout with `filters` / `collapseFilters` / `secondaryActions`), `ToolbarFilters` (§4a) |
-| `SearchPill.tsx`, `FilterChipRow.tsx`, `ViewSwitch.tsx`, `FilterPanel.tsx`, `filterParams.ts`, `urlState.ts` | `StickyContextBar` (trackpad-proven layout-pin search + filter bar, focus-pin, `data-stuck` / `data-searching`, `--sticky-pin` / `--sticky-view`), `BarActions` + `BarAction` (pinned in-field actions slot, ≤ 2 slots `[•••][main]`), `SearchPill` (wide pill search, debounce, `/`, `trailing`), `ResultLine` (deprecated in 1.0), `SortDef`, `FilterChipRow` (one-line chips, ‹ ›, Xoá lọc, leading views, trailing `sort` + `selection` in-place bulk bar + `ViewSwitch`), `useListSelection` (selection-mode state hook), `BulkAction`, `ListSelection`, `FilterChip`, `FilterOptions`, `useFilterParams` (URL filter + `?sort=key.dir` state, `legacy` rewrite, `patch`, Back / Forward), `FilterParamsOptions`, `FilterParamsSortOptions`, `LegacyParamsMap`, `replaceFilters`, `writeSearch`, `ViewSwitch` (list ↔ grid, density), `PhoneFilterBar` (views · Bộ lọc · sort · Chọn / in-place selection bar), `FilterPanel` (full-screen / side-sheet filters); URL helpers `readFilters`, `readFilterValues`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `readSort`, `writeSort`, `parseSort`, `formatSort`, `SORT_PARAM`, types `FilterSpec`, `FilterDef`, `FilterOption`, `FilterValues` (§4, §4d, §4e) |
+| `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle` (18/400 UI sans on the action row; `variant="reading"` 44/500 display title for one-column reading pages), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh; phone layout with `filters` / `collapseFilters` / `secondaryActions`), `ToolbarFilters` (§4a) |
+| `SearchPill.tsx`, `FilterChipRow.tsx`, `ViewSwitch.tsx`, `FilterPanel.tsx`, `filterParams.ts`, `urlState.ts` | `StickyContextBar` (trackpad-proven layout-pin search + filter bar, focus-pin, `data-stuck` / `data-searching`, `--sticky-pin` / `--sticky-view`), `BarActions` + `BarAction` (pinned in-field actions slot, ≤ 2 slots `[•••][main]`), `SearchPill` (wide pill search, debounce, `/`, `trailing`), `SortDef`, `FilterChipRow` (one-line chips, ‹ ›, Xoá lọc, leading views, trailing `sort` + `selection` in-place bulk bar + `ViewSwitch`), `useListSelection` (selection-mode state hook), `BulkAction`, `ListSelection`, `FilterChip`, `FilterOptions`, `useFilterParams` (URL filter + `?sort=key.dir` state, `legacy` rewrite, `patch`, Back / Forward), `FilterParamsOptions`, `FilterParamsSortOptions`, `LegacyParamsMap`, `replaceFilters`, `writeSearch`, `ViewSwitch` (list ↔ grid, density), `PhoneFilterBar` (views · Bộ lọc · sort · Chọn / in-place selection bar), `FilterPanel` (full-screen / side-sheet filters); URL helpers `readFilters`, `readFilterValues`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `readSort`, `writeSort`, `parseSort`, `formatSort`, `SORT_PARAM`, types `FilterSpec`, `FilterDef`, `FilterOption`, `FilterValues` (§4, §4d, §4e) |
 | `SplitButton.tsx`, `CardActions.tsx`, `DetailOverlay.tsx` | `SplitButton` (main action + ▾ `Menu` of its variants, one button on phones, G1), `CardActions` (hover / focus icon actions + ⋯ on cards, ⋯ only on touch), `DetailOverlay` (record over its list: ‹ › with n / N, side panel, scroll kept), `useDetailParam` (`?open=` in the URL, Back closes), `openDetail` (open one from anywhere on the route), types `CardAction`, `DetailParamState` (§4, §9) |
 | `WorkspaceLayout.tsx`, `GuidedEmptyState.tsx`, `FeatureIntro.tsx`, `HintTextarea.tsx` | `WorkspaceLayout` (page type workspace: control panel + sticky main action, result), `WorkspaceHeader` (back + tool name, tabs), `WorkspaceSection` (`text-overline` label + counter), `Stepper` (− value +, spinbutton), `GuidedEmptyState` (EmptyState variant guided: step carousel or numbered steps, starting points), `FeatureIntro` (once-per-user feature dialog, `localIntroStore`), `HintTextarea` (@ / `/` hints and suggestions), types `GuideStep`, `GuideTemplate`, `GuideTemplateGroup`, `FeatureIntroSlide`, `FeatureIntroStore`, `HintToken`, `HintTrigger` (§4, §9b, §13, §14) |
 | `KpiCard.tsx`, `Modal.tsx` | `KpiCard` (metric card in the brand's figure font, neutral icon, `featured` for the screen's main number, shimmer), `Modal` (shared portal dialog with `MODAL_HEAD` + `MODAL_FOOT`) (§13, §14) |
@@ -909,7 +908,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `Markdown.tsx` | `Markdown` (AI answers) |
 | `Chat.tsx` | `AIChat`, `ChatPanel`, `ChatView`, `ChatList`, `ChatComposer`, `UserMessage`, `AssistantMessage`, `ChatAnswer`, `ChatError`, `ChatThinking`, `ChatIntro`, `ChatSuggestion(s)`, `ChatAvatar`, `ChatCopyButton`, `ChatModelPicker`, `CHAT_ROW`, `CHAT_CHIP`, `CHAT_PICK_CHIP`, `ChatItem` (§14b) |
 | `ExternalLink.tsx` | `ExternalLink` |
-| `Pills.tsx`, `Chip.tsx` | single choice / on-off chips (`Chip`, `CHIP_BASE`, `chipClass`, `chipIconClass`, `TAG`, `TONE_DOT`) |
+| `Chip.tsx` | on-off chips (`Chip`, `CHIP_BASE`, `chipClass`, `chipIconClass`, `TAG`, `TONE_DOT`) |
 | `SearchInput`, `CustomSelect`, `CustomCombobox`, `MultiCombobox`, `OptionCards`, `DatePicker`, `Pagination` | toolbar and form inputs (`CustomCombobox` & `MultiCombobox`: diacritic-aware, IME-safe search + `group` headings; `OptionCards`: selectable radio-group cards with neutral `item-selected` fill, 8px grid gap) |
 | `NumberInput` (+ `NumPadPopup`, `useCoarsePointer`) | every number field (app numpad on touch screens) |
 | `SidePanel`, `SidePanelToggle`, `RefreshButton` | tool-app left panel, icon-only reload action |
@@ -967,7 +966,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | People | `Avatar` (photo or 1–2 initials on a stable tone), `LetterAvatar` (one letter upper-cased with `vi` locale, `?` when empty, neutral fill) |
 | Nothing to show yet | `EmptyState` (icon, one line, action) |
 | Related buttons as one control | `ButtonGroup` (‹ Hôm nay ›, zoom, view mode: G3); a main action with variants → `SplitButton` |
-| Pressed state / icon option sets | `Toggle` (one, `aria-pressed`); `ToggleGroup` (`type` single = radio group, multiple = toolbar). Text filters stay `Pills` |
+| Pressed state / icon option sets | `Toggle` (one, `aria-pressed`); `ToggleGroup` (`type` single = radio group, multiple = toolbar). Text filter sets use `SegmentedControl` |
 | Fixed parts around an input | `InputGroup` (`start` / `end`: prefix, unit, small button) |
 | A number by dragging | `Slider` (one thumb, or `range` for min–max; `format` for units) |
 | Pick a day / a range on the page | `Calendar` (`mode` single / range); a date field → `DatePicker` (uses Calendar) |
@@ -1014,7 +1013,7 @@ The full inventory with props is generated into `components.json` (`npm run buil
   `border-field-line`, `rounded-control`; on focus `border-field-line-focus` + `bg-field-focus`, no glow ring). Their
   resting edge is below 3:1 by the owner's choice (C-007), backed by a keyboard-only (`:focus-visible`) 2px
   `outline-focus` outline (≥ 3:1 in both themes, shared with buttons). The chosen segment of a segmented control
-  (`Pills`, `Toggle`, pill `Tabs`, theme switcher) uses `SEGMENT_ON`: its inset ring marks which one is on.
+  (`Toggle`, theme switcher) uses `SEGMENT_ON`: its inset ring marks which one is on.
 - Dialog autofocus: `Modal` and `Drawer` focus their first field only on devices with a physical keyboard
   (`(hover: hover) and (pointer: fine)`), never when focus already sits in a field, and opt out with
   `autoFocusFirstField={false}`; touch phones keep the on-screen keyboard closed. Use `focusFirstField(root)` for the
@@ -1067,7 +1066,7 @@ roomy store: `data-density` / `data-type-scale` on `<html>` (or any wrapper), mi
 |---|---|---|---|
 | Density compact / regular / airy | product | `--spacing` (Tailwind's unit: every `p-*`, `gap-*`, `space-*`) | everything |
 | Type scale even / contrast | product | `--text-figure` … `--text-tab-xl` | `PageTitle`, `KpiCard`, headings |
-| Title weight | shape | `font-title` (`--font-weight-title`) | `PageTitle`, `PageTabsTitle`, `KpiCard` |
+| Title weight | shape | `font-title` (`--font-weight-title`) | `PageTitle`, `KpiCard` |
 | Font of big numbers | shape | `font-figure` | `KpiCard` |
 
 Titles are 500 (`font-title`, headings are not bold) and figures use the sans. Apps use `font-title`

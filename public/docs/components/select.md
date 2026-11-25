@@ -13,7 +13,7 @@ CustomSelect: pick one value from a list, in a field, in a toolbar, inline in a 
 |---|---|
 | A long or grouped list that needs search | CustomCombobox |
 | Pick multiple values with search and removable chips | MultiCombobox |
-| 2–5 visible options | Pills, RadioGroup or OptionCards |
+| 2–5 visible options | SegmentedControl, RadioGroup or OptionCards |
 
 ## Import
 

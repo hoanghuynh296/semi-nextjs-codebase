@@ -46,15 +46,6 @@
     ]
   },
   {
-    "id": "pills",
-    "title": "Pills (deprecated)",
-    "group": "Actions",
-    "description": "Deprecated in 1.0: use SegmentedControl for 2–5 filter values shown in full (with counts and a sliding raised-2 pill) or PillTabs for 5+ page sections with icons. Kept exported so existing screens continue to compile until migrated.",
-    "components": [
-      "Pills"
-    ]
-  },
-  {
     "id": "split-button",
     "title": "Split button",
     "group": "Actions",
@@ -110,15 +101,6 @@
     ]
   },
   {
-    "id": "drop-zone",
-    "title": "Drop zone",
-    "group": "Forms",
-    "description": "The compact FileDrop for a workspace panel: a light dashed tile on the panel surface with a title and a hint, the same checks (accept, maxSize, duplicates), keyboard and announcements; the file rows are optional.",
-    "components": [
-      "DropZone"
-    ]
-  },
-  {
     "id": "field",
     "title": "Field, Input, Textarea",
     "group": "Forms",
@@ -133,9 +115,10 @@
     "id": "file-drop",
     "title": "FileDrop",
     "group": "Forms",
-    "description": "A file picker and dropzone with one row per file: size, upload progress, done, and remove / retry on failure. Controlled: the app owns the list and does the upload.",
+    "description": "A file picker and dropzone with one row per file (size, upload progress, done, remove / retry on failure) plus DropZone, its compact dashed-tile variant for workspace panels (optional file rows). Controlled: the app owns the list and does the upload.",
     "components": [
-      "FileDrop"
+      "FileDrop",
+      "DropZone"
     ]
   },
   {
@@ -248,10 +231,9 @@
     "id": "search-pill",
     "title": "Search pill",
     "group": "Forms",
-    "description": "The wide pill search of a list page (one per page), with an optional `trailing` slot for `<BarActions>` when pinned in StickyContextBar. Typing is debounced (250 ms), Escape and the clear button clear at once, an optional key (/) focuses it. ResultLine is deprecated for 1.0 list pages (use FilterChipRow / PhoneFilterBar `sort` and `selection` instead).",
+    "description": "The wide pill search of a list page (one per page), with an optional `trailing` slot for `<BarActions>` when pinned in StickyContextBar. Typing is debounced (250 ms), Escape and the clear button clear at once, an optional key (/) focuses it.",
     "components": [
-      "SearchPill",
-      "ResultLine"
+      "SearchPill"
     ]
   },
   {
@@ -303,18 +285,10 @@
     "id": "command",
     "title": "Command",
     "group": "Overlays",
-    "description": "A command palette: type to filter actions and pages, ↑/↓ to move, Enter to run. Command is the inline list; CommandDialog opens it over the page, usually on ⌘K (useHotkey). Matching ignores case and Vietnamese marks.",
+    "description": "Command palette and searchable action lists: CommandPalette is the app-wide ⌘K / Ctrl+K “search or create” box (mounted once in the root layout, fed by pages with useRegisterCommands); CommandDialog is a controlled dialog with your own open state (useHotkey); Command is the inline list. Matching ignores case and Vietnamese marks.",
     "components": [
       "Command",
-      "CommandDialog"
-    ]
-  },
-  {
-    "id": "command-palette",
-    "title": "Command palette",
-    "group": "Overlays",
-    "description": "The app-wide “search or create” box on ⌘K / Ctrl+K, built on Command: one dialog for places, records and quick actions. Mount it once in the root layout; pages register their own items with useRegisterCommands. Groups get text-overline headings, actions a coloured tile, records a hint line; the footer shows the keys, and ⌘↵ opens an item with href in a new tab.",
-    "components": [
+      "CommandDialog",
       "CommandPalette"
     ]
   },
@@ -521,10 +495,9 @@
     "id": "page-title",
     "title": "Page title",
     "group": "Navigation & layout",
-    "description": "PageTitle is the 18 / 400 UI sans heading of a work page on the same row as the page's main action (`actions`), with `variant=\"reading\"` (44 / 500 display face, text-title-xl) for one-column reading pages only. PageTabsTitle is kept as a deprecated alias for 2–4 sibling tabs — new screens use TextTabs.",
+    "description": "PageTitle is the 18 / 400 UI sans heading of a work page on the same row as the page's main action (`actions`), with `variant=\"reading\"` (44 / 500 display face, text-title-xl) for one-column reading pages only.",
     "components": [
-      "PageTitle",
-      "PageTabsTitle"
+      "PageTitle"
     ]
   },
   {
@@ -606,7 +579,7 @@
     "id": "tabs",
     "title": "Tabs",
     "group": "Navigation & layout",
-    "description": "Switch between panels of content inside a page or card: underline (default) or segmented, with icons and counts.",
+    "description": "Switch between panels of content inside a card or dialog with underline tabs, icons and counts.",
     "components": [
       "Tabs"
     ]

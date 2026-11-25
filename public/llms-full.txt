@@ -8,7 +8,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 ## Machine-readable
 
-- [components.json](./components.json): all 174 components, hooks and constants with props, summaries and their doc page
+- [components.json](./components.json): all 171 components, hooks and constants with props, summaries and their doc page
 - [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
@@ -38,7 +38,6 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Card actions](./components/card-actions/) ([markdown](./docs/components/card-actions.md)): Quick actions on a card or media tile: round icon buttons in the top right corner that show on hover or keyboard focus where the device can hover, and one always-visible ⋯ with every action on touch screens. Goes inside a `group relative` card. Components: CardActions.
 - [Chip](./components/chip/) ([markdown](./docs/components/chip.md)): A pill-shaped toggle for filters and tags. Neutral when off; active uses the high-contrast surface, with colour only on its dot or icon (tone). Components: Chip.
 - [External link](./components/external-link/) ([markdown](./docs/components/external-link.md)): A link to another site: opens a new tab on desktop and the external browser inside a mobile WebView, with an external-link icon. Components: ExternalLink.
-- [Pills (deprecated)](./components/pills/) ([markdown](./docs/components/pills.md)): Deprecated in 1.0: use SegmentedControl for 2–5 filter values shown in full (with counts and a sliding raised-2 pill) or PillTabs for 5+ page sections with icons. Kept exported so existing screens continue to compile until migrated. Components: Pills.
 - [Split button](./components/split-button/) ([markdown](./docs/components/split-button.md)): The main action and a ▾ that opens a Menu of the other ways to do the same job (Thêm khách hàng | ▾ Nhập từ file, Tìm trong Data Hub). One filled button in total; below sm one button opens the whole list, the main action first. Components: SplitButton.
 - [Toggle](./components/toggle/) ([markdown](./docs/components/toggle.md)): Buttons that stay pressed. Toggle for one (pin, mute, bold); ToggleGroup for a set of icon or short options, one or several at a time (list / grid view, text styles). Components: Toggle, ToggleGroup.
 
@@ -48,9 +47,8 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Checkbox](./components/checkbox/) ([markdown](./docs/components/checkbox.md)): A native checkbox with label and description, checked fill in the accent, and an indeterminate state for “select all”. Components: Checkbox.
 - [Combobox](./components/combobox/) ([markdown](./docs/components/combobox.md)): CustomCombobox: type to filter a long or grouped list (diacritic-aware, IME-safe), then pick one value or keep a new one. Components: CustomCombobox.
 - [Date picker](./components/date-picker/) ([markdown](./docs/components/date-picker.md)): A date field with a Calendar popover (YYYY-MM-DD, min / max). Never type="date". Components: DatePicker.
-- [Drop zone](./components/drop-zone/) ([markdown](./docs/components/drop-zone.md)): The compact FileDrop for a workspace panel: a light dashed tile on the panel surface with a title and a hint, the same checks (accept, maxSize, duplicates), keyboard and announcements; the file rows are optional. Components: DropZone.
 - [Field, Input, Textarea](./components/field/) ([markdown](./docs/components/field.md)): Field gives any control a label, a hint and an error, wired for screen readers; `kind` sets the phone keyboard, autofill and Enter key of an email, phone, number, money, URL, search or password field. Input and Textarea are the standard text controls (bg-field, h-field). Components: Field, Input, Textarea.
-- [FileDrop](./components/file-drop/) ([markdown](./docs/components/file-drop.md)): A file picker and dropzone with one row per file: size, upload progress, done, and remove / retry on failure. Controlled: the app owns the list and does the upload. Components: FileDrop.
+- [FileDrop](./components/file-drop/) ([markdown](./docs/components/file-drop.md)): A file picker and dropzone with one row per file (size, upload progress, done, remove / retry on failure) plus DropZone, its compact dashed-tile variant for workspace panels (optional file rows). Controlled: the app owns the list and does the upload. Components: FileDrop, DropZone.
 - [Filter chip row](./components/filter-chip-row/) ([markdown](./docs/components/filter-chip-row.md)): A list page's filters as one line of chips (icon, label, chevron; solid with the value or count when on). Each chip opens a small multi-select popover, a single-choice chip a radio menu (“Hộp thư: Tất cả”), a switch chip toggles; the page's views (SegmentedControl) can lead the row; the row scrolls sideways with ‹ › when it overflows, shows “Xoá lọc” while a filter is on and ends with `sort`, zero-shift `selection` (“Chọn” via `useListSelection`) and `ViewSwitch`. State in the URL with useFilterParams or the filterParams helpers. Components: FilterChipRow, FilterChip, FilterOptions.
 - [Filter panel](./components/filter-panel/) ([markdown](./docs/components/filter-panel.md)): Filters on phones: one segmented pill (the page's views · Bộ lọc with the count · sort and view settings) that opens a full-screen panel: sort first, booleans as switches, one accordion per filter (a radio group for a single-choice one), “Xem N kết quả” at the bottom. From sm the panel is a side sheet, also the “Bộ lọc” panel of a page with more filters than its chip row shows. Components: PhoneFilterBar, FilterPanel.
 - [Form actions, unsaved guard, validation](./components/form-actions/) ([markdown](./docs/components/form-actions.md)): The same form behaviour everywhere: FormActions (Huỷ then Lưu / Tạo, sticky on a page, the footer of a Modal), useUnsavedGuard (nobody loses typed work), and validation that shows on blur then follows changes, with an Alert summary for several errors. Components: FormActions, useUnsavedGuard, useFormValidation, FormErrorSummary.
@@ -62,7 +60,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Option cards](./components/option-cards/) ([markdown](./docs/components/option-cards.md)): Selectable cards with radio-group semantics (arrow keys, single tab stop): icon, name, optional description, neutral selected state (`bg-item-selected` + `border-outline-line` + `text-strong`, no brand tint) and 8px grid gap. Components: OptionCards.
 - [Radio group](./components/radio-group/) ([markdown](./docs/components/radio-group.md)): Exactly one option of a few, each with an optional description; vertical by default. Components: RadioGroup.
 - [Search input](./components/search-input/) ([markdown](./docs/components/search-input.md)): The toolbar search: an icon button that opens into a field (clear button, h-control); it collapses again when empty and focus leaves. SubpageToolbar includes one. Components: SearchInput.
-- [Search pill](./components/search-pill/) ([markdown](./docs/components/search-pill.md)): The wide pill search of a list page (one per page), with an optional `trailing` slot for `<BarActions>` when pinned in StickyContextBar. Typing is debounced (250 ms), Escape and the clear button clear at once, an optional key (/) focuses it. ResultLine is deprecated for 1.0 list pages (use FilterChipRow / PhoneFilterBar `sort` and `selection` instead). Components: SearchPill, ResultLine.
+- [Search pill](./components/search-pill/) ([markdown](./docs/components/search-pill.md)): The wide pill search of a list page (one per page), with an optional `trailing` slot for `<BarActions>` when pinned in StickyContextBar. Typing is debounced (250 ms), Escape and the clear button clear at once, an optional key (/) focuses it. Components: SearchPill.
 - [Select](./components/select/) ([markdown](./docs/components/select.md)): CustomSelect: pick one value from a list, in a field, in a toolbar, inline in a row or bare. Never the native <select>. Components: CustomSelect.
 - [Slider](./components/slider/) ([markdown](./docs/components/slider.md)): Pick a number in a range by dragging: one thumb, or two with range for a min–max pair. Components: Slider.
 - [Stepper](./components/stepper/) ([markdown](./docs/components/stepper.md)): − value + for a small count (quantities, copies, seats) in a workspace panel or a card: one tap per step, a unit after the value, min and max. Components: Stepper.
@@ -71,8 +69,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 ### Overlays
 
-- [Command](./components/command/) ([markdown](./docs/components/command.md)): A command palette: type to filter actions and pages, ↑/↓ to move, Enter to run. Command is the inline list; CommandDialog opens it over the page, usually on ⌘K (useHotkey). Matching ignores case and Vietnamese marks. Components: Command, CommandDialog.
-- [Command palette](./components/command-palette/) ([markdown](./docs/components/command-palette.md)): The app-wide “search or create” box on ⌘K / Ctrl+K, built on Command: one dialog for places, records and quick actions. Mount it once in the root layout; pages register their own items with useRegisterCommands. Groups get text-overline headings, actions a coloured tile, records a hint line; the footer shows the keys, and ⌘↵ opens an item with href in a new tab. Components: CommandPalette.
+- [Command](./components/command/) ([markdown](./docs/components/command.md)): Command palette and searchable action lists: CommandPalette is the app-wide ⌘K / Ctrl+K “search or create” box (mounted once in the root layout, fed by pages with useRegisterCommands); CommandDialog is a controlled dialog with your own open state (useHotkey); Command is the inline list. Matching ignores case and Vietnamese marks. Components: Command, CommandDialog, CommandPalette.
 - [Confirm dialog](./components/confirm-dialog/) ([markdown](./docs/components/confirm-dialog.md)): confirmDialog() asks one yes / no question and resolves to true or false; confirmDelete({ name }) is the irreversible-action form (names the object, red Xoá). Mount ConfirmHost once in the root layout. Never window.confirm. Components: ConfirmHost.
 - [Context menu](./components/context-menu/) ([markdown](./docs/components/context-menu.md)): The menu of an area opened at the pointer: right-click, long-press on touch, or the Menu key / Shift+F10 when the area has focus. Components: ContextMenu.
 - [Detail overlay](./components/detail-overlay/) ([markdown](./docs/components/detail-overlay.md)): An item of a list opens over the list instead of on its own page: its own URL (?open=<id> with useDetailParam, Next App Router safe), ‹ › and ← → through the current results with “n / N”, close / Esc / Back return to the list at the same scroll position. The side panel holds the actions (SplitButton, an icon row, ⋯); existing detail routes stay as deep-link targets. Components: DetailOverlay.
@@ -97,7 +94,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Navigation menu](./components/navigation-menu/) ([markdown](./docs/components/navigation-menu.md)): Top navigation of a website or landing page: links, and items that open a panel of links with descriptions. Below md it becomes one menu button with a sheet. Components: NavigationMenu.
 - [Page actions](./components/page-actions/) ([markdown](./docs/components/page-actions.md)): Lets a page put its actions into a slot of the shared header: PageActionsProvider wraps the layout, PageActionsSlot marks where they render, PageActions sends them from the page. Components: PageActions, PageActionsProvider, PageActionsSlot.
 - [Page layouts](./components/page/) ([markdown](./docs/components/page.md)): Shared 1.0 page anatomy and three layouts inside AppShell's content card: work (flush, padding 16 / 24), reading (centred max 1536px inside 16px card padding, 64px bottom), and two-column (240px sub-nav card + 4px gap + main card, stacking below md). Owns vertical rhythm (32 / 28 / 32 / 16 / 8). Components: Page, PageEnter, SubNav, PageSection, PageGrid.
-- [Page title](./components/page-title/) ([markdown](./docs/components/page-title.md)): PageTitle is the 18 / 400 UI sans heading of a work page on the same row as the page's main action (`actions`), with `variant="reading"` (44 / 500 display face, text-title-xl) for one-column reading pages only. PageTabsTitle is kept as a deprecated alias for 2–4 sibling tabs — new screens use TextTabs. Components: PageTitle, PageTabsTitle.
+- [Page title](./components/page-title/) ([markdown](./docs/components/page-title.md)): PageTitle is the 18 / 400 UI sans heading of a work page on the same row as the page's main action (`actions`), with `variant="reading"` (44 / 500 display face, text-title-xl) for one-column reading pages only. Components: PageTitle.
 - [Pagination](./components/pagination/) ([markdown](./docs/components/pagination.md)): Page numbers with previous / next for long tables. For card lists prefer auto-loading with “Xem thêm”. Components: Pagination.
 - [Pill tabs](./components/pill-tabs/) ([markdown](./docs/components/pill-tabs.md)): Default section tabs for pages with 5+ sections or sections with icons (settings-like pages): no track, h30 round pills with 16px icons and 12px/600 labels, and one item-hover pill that slides to the active tab in 300ms ease-out. Components: PillTabs.
 - [Resizable panels](./components/resizable/) ([markdown](./docs/components/resizable.md)): Panels side by side or stacked with handles to resize them (an editor beside a preview, a list beside details). Sizes are percentages and can be remembered. Components: ResizablePanels.
@@ -106,7 +103,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Side panel](./components/side-panel/) ([markdown](./docs/components/side-panel.md)): A 320px tool panel beside a canvas that collapses to a 48px rail; SidePanelToggle is its collapse button. Components: SidePanel, SidePanelToggle.
 - [Sticky context bar](./components/sticky-context-bar/) ([markdown](./docs/components/sticky-context-bar.md)): The top of a list page that pins on scroll or search focus (250ms ease-out), holds against trackpad momentum and flings, and moves up to 2 page actions into SearchPill via BarActions while pinned. Pins by layout from md+ with independent overscroll-contained list/reader scrollers; keeps native touch scrolling below md. Components: StickyContextBar, BarActions.
 - [Subpage toolbar](./components/subpage-toolbar/) ([markdown](./docs/components/subpage-toolbar.md)): The sticky row with a page's filters on the left and search, refresh and the icon-only primary action on the right: under the page title, or with the title on the same row (title). RefreshButton spins while its promise runs. Components: SubpageToolbar, RefreshButton.
-- [Tabs](./components/tabs/) ([markdown](./docs/components/tabs.md)): Switch between panels of content inside a page or card: underline (default) or segmented, with icons and counts. Components: Tabs.
+- [Tabs](./components/tabs/) ([markdown](./docs/components/tabs.md)): Switch between panels of content inside a card or dialog with underline tabs, icons and counts. Components: Tabs.
 - [Text tabs](./components/text-tabs/) ([markdown](./docs/components/text-tabs.md)): Big display tabs (`font-display text-tab-xl`, 24px below sm / 28px from sm, weight 400) for 2–4 top-level views of a discovery or reading page: every tab in strong text colour, inactive at opacity 0.2 (raised on hover in 150ms), active with a 2px brand underline at 6px offset under the word only. Components: TextTabs.
 - [Workspace layout](./components/workspace-layout/) ([markdown](./docs/components/workspace-layout.md)): Page type “workspace” (L12): a control panel on the left (segmented tabs, back + tool name, sections with a text-overline label and a counter like “3/8”, drop zones, steppers, a message box) with the main action pinned at its bottom, and the result on the right. Phones stack the panel above the result with the action at the bottom of the screen. Components: WorkspaceLayout, WorkspaceHeader, WorkspaceSection.
 
@@ -295,7 +292,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (174)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (171)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
@@ -354,10 +351,9 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `Page`: `SubNav`, `PageSection`, `PageGrid`, `Page`
 - `PageActions`: `PageActionsProvider`, `PageActionsSlot`, `PageActions`
 - `PageEnter`: `PageEnter`
-- `PageTitle`: `PageTitle`, `PageTabsTitle`
+- `PageTitle`: `PageTitle`
 - `Pagination`: `Pagination`
 - `PillTabs`: `PillTabs`
-- `Pills`: `Pills`
 - `Popover`: `Popover`, `HoverCard`
 - `Prose`: `Prose`
 - `QRCode`: `QRCode`
@@ -366,7 +362,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `RouteHeader`: `AccountMenu`, `RouteHeader`
 - `ScrollArea`: `ScrollArea`
 - `SearchInput`: `SearchInput`
-- `SearchPill`: `BarActions`, `StickyContextBar`, `SearchPill`, `ResultLine`
+- `SearchPill`: `BarActions`, `StickyContextBar`, `SearchPill`
 - `SegmentedControl`: `SegmentedControl`
 - `Separator`: `Separator`
 - `SidePanel`: `SidePanelToggle`, `SidePanel`
@@ -651,7 +647,7 @@ Semi's own green. A brand change is made in the brand repo (`/semi-brand`) and r
   neutral fill and shows its state on a badge. Its secondary text stays `text-muted`.
 - **Chips and tags** (`Chip.tsx`) share one pill (`rounded-full h-control px-3.5 text-ui font-medium`): `chipClass(active)`;
   static tags `TAG`. Per-item colour only on a leading dot (`TONE_DOT`) or icon (`chipIconClass(tone)`). The chosen
-  segment of `Pills`, `Toggle` and pill `Tabs` is `SEGMENT_ON`.
+  segment of `Toggle` and theme / style switchers is `SEGMENT_ON`.
 - Data series in charts use the fixed `chart-1…8` hues; syntax colours in code views are the other exception.
 
 ### 3b. Callouts and category cards
@@ -838,7 +834,7 @@ action: `inverse`, or the brand `primary` when it is the page's commit action; a
   accordion per filter, "Xem N kết quả" at the bottom). State lives in the URL: `useFilterParams(specs)` (or
   `readFilters` / `writeFilters` / `clearFilters` / `activeFilterCount`); a filter change is a history entry, so Back
   undoes it.
-- **1.0 list calm & selection (#149):** no result-count row (`ResultLine` is deprecated for list pages): the list sits
+- **1.0 list calm & selection (#149, #173):** no result-count row: the list sits
   16px under the filter row. Sort (`sort`) and "Chọn" (`selection`, managed with `useListSelection`) sit on the filter
   row (`FilterChipRow` trailing; phones: `PhoneFilterBar` keeps Bộ lọc + sort / Chọn on the same row). **Selection
   mode:** `"n đã chọn"` (600) and the bulk actions (at most one filled button, the rest in `•••`) plus `"Xong"` replace
@@ -918,13 +914,13 @@ Choose the tab or filter control mechanically from §0 "When to use which":
 - **`SegmentedControl`** (2–5 filter values shown in full, with optional tabular-nums counts): `bg-raised` track
   (`rounded-control`, padding 4, gap 4, h32), h24 items (`px-4 py-1.5`, 12px/600, inactive `text-muted`, active
   `text-strong`), one solid `bg-raised-2` pill (white in light theme) sliding in 300ms (`transition-slide`). WAI-ARIA
-  `radiogroup` / `radio` with ←/→, ↑/↓, Home / End. Replaces the deprecated `Pills`.
+  `radiogroup` / `radio` with ←/→, ↑/↓, Home / End.
 - **Big `TextTabs`** (strictly 2–4 top-level views of a discovery or reading page, as its heading): `font-display
   text-tab-xl font-normal` (24px below `sm`, 28px from `sm`, weight 400 in the brand display face — never force 600–800
   bold on top of `font-display`, lh 1.2, tracking −0.01em), every tab in `text-strong`, inactive `opacity-20` (hover
   raises opacity in 150ms, keyboard `:focus-visible` restores full contrast), active 2px `decoration-primary` underline
   at 6px offset under the word only; gaps 16 / 20 / 24 (`base` / `sm` / `md`); 28px (`pt-7` / `mb-7`) to the intro
-  below. Replaces `PageTabsTitle` (deprecated).
+  below.
 - **Shared behaviour across all three (#121):**
   - **Overflow:** one horizontal row (`no-scrollbar`), active item scrolls horizontally into view without moving the
     page vertically, no horizontal page scroll at 430px, and a 2px `bg-outline-line` edge cue (`data-edges`) marks each
@@ -1075,8 +1071,7 @@ it form by form; the four lint rules below are warnings until 1.0.
 ## 10. Pills, chips, badges
 
 - Single choice (2–5 filter values shown in full, with counts): `SegmentedControl` (`bg-raised` track, sliding
-  `bg-raised-2` pill, `radiogroup` / `radio`, §4h). `Pills` (`SEGMENT_ON`) is deprecated in 1.0 and kept exported for
-  compatibility.
+  `bg-raised-2` pill, `radiogroup` / `radio`, §4h).
 - Sub-page filter tabs / chips: `Chip` (see §3 Chips). Static labels: `TAG`.
 - Filter chips may carry an icon and a count: icon `w-3.5 h-3.5` + label + `COUNT_PILL`.
 - Status pill: `STATUS_PILL` + `bg-*-bg text-*-fg` (danger, success, warning, info) with a status dot (§11), or `<Badge tone>`.
@@ -1291,8 +1286,8 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `@semi/ui` → `AppShell.tsx`, `RouteHeader.tsx`, `MobileTabBar.tsx` | `AppShell` (1.0 frame: nav panel with main action, groups, pinned, bottom row of tools; 224px or the 72px rail; RouteHeader; content card; phone drawer; nav shortcuts), `useAppShell` (sub-items shown, rail, shortcuts), `navShortcutKeys`, `RouteHeader` (crumbs, middle, actions, account), `AccountMenu` (the account avatar menu), `useRecordCrumb` (a detail page names its record), `MobileTabBar`, `TAB_BAR_PAD` (opt-in `mobileNav="tabs"`) (§4) |
 | `MegaMenu.tsx`, `MinimalHeader.tsx`, `TextTabs.tsx`, `PillTabs.tsx`, `SegmentedControl.tsx`, `useTabParam.ts` | `MegaMenu` (flyout of category columns, `text-overline` headers, New badges, See all), `MinimalHeader` (breadcrumb left, one link + one primary right), `TextTabs` (big display tabs for 2–4 top-level views, brand underline, `href`, `onBeforeChange`, `activation`), `PillTabs` (default section tabs for 5+ sections or sections with icons, sliding `item-hover` pill, `tabpanel`, `href`, `onBeforeChange`, `activation`), `SegmentedControl` (2–5 filter values with counts, sliding `raised-2` pill, `radiogroup`), `useTabParam` (`?tab=` URL state without history spam per arrow key) (§4, §4h) |
 | `Page.tsx`, `PageEnter.tsx`, `ListReader.tsx` | `Page` (shared 1.0 page anatomy and `work` / `reading` / `two-column` layouts + vertical rhythm + `enter`), `PageEnter` (`display: contents` route-level `motion-enter` + `motion-stagger` wrapper for top blocks and first ~10 rows / cards, once per route), `SubNav` (240px sub-nav card with `text-nav-label` groups and h32 items), `PageSection` (20/500 heading + 16px content gap), `PageGrid` (8px `@container` grid), `ListReaderLayout` (two independent scrollers on `fixed` mode, `?open=`, `useRecordCrumb`, phone swap), `ReaderHeader` (sticky one-row reader header: wrapping title left, `[•••]` + one main action right) (§4a, §4g) |
-| `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle` (18/400 UI sans on the action row; `variant="reading"` 44/500 display title for one-column reading pages), `PageTabsTitle` (deprecated underline display tabs), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh; phone layout with `filters` / `collapseFilters` / `secondaryActions`), `ToolbarFilters` (§4a) |
-| `SearchPill.tsx`, `FilterChipRow.tsx`, `ViewSwitch.tsx`, `FilterPanel.tsx`, `filterParams.ts`, `urlState.ts` | `StickyContextBar` (trackpad-proven layout-pin search + filter bar, focus-pin, `data-stuck` / `data-searching`, `--sticky-pin` / `--sticky-view`), `BarActions` + `BarAction` (pinned in-field actions slot, ≤ 2 slots `[•••][main]`), `SearchPill` (wide pill search, debounce, `/`, `trailing`), `ResultLine` (deprecated in 1.0), `SortDef`, `FilterChipRow` (one-line chips, ‹ ›, Xoá lọc, leading views, trailing `sort` + `selection` in-place bulk bar + `ViewSwitch`), `useListSelection` (selection-mode state hook), `BulkAction`, `ListSelection`, `FilterChip`, `FilterOptions`, `useFilterParams` (URL filter + `?sort=key.dir` state, `legacy` rewrite, `patch`, Back / Forward), `FilterParamsOptions`, `FilterParamsSortOptions`, `LegacyParamsMap`, `replaceFilters`, `writeSearch`, `ViewSwitch` (list ↔ grid, density), `PhoneFilterBar` (views · Bộ lọc · sort · Chọn / in-place selection bar), `FilterPanel` (full-screen / side-sheet filters); URL helpers `readFilters`, `readFilterValues`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `readSort`, `writeSort`, `parseSort`, `formatSort`, `SORT_PARAM`, types `FilterSpec`, `FilterDef`, `FilterOption`, `FilterValues` (§4, §4d, §4e) |
+| `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle` (18/400 UI sans on the action row; `variant="reading"` 44/500 display title for one-column reading pages), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh; phone layout with `filters` / `collapseFilters` / `secondaryActions`), `ToolbarFilters` (§4a) |
+| `SearchPill.tsx`, `FilterChipRow.tsx`, `ViewSwitch.tsx`, `FilterPanel.tsx`, `filterParams.ts`, `urlState.ts` | `StickyContextBar` (trackpad-proven layout-pin search + filter bar, focus-pin, `data-stuck` / `data-searching`, `--sticky-pin` / `--sticky-view`), `BarActions` + `BarAction` (pinned in-field actions slot, ≤ 2 slots `[•••][main]`), `SearchPill` (wide pill search, debounce, `/`, `trailing`), `SortDef`, `FilterChipRow` (one-line chips, ‹ ›, Xoá lọc, leading views, trailing `sort` + `selection` in-place bulk bar + `ViewSwitch`), `useListSelection` (selection-mode state hook), `BulkAction`, `ListSelection`, `FilterChip`, `FilterOptions`, `useFilterParams` (URL filter + `?sort=key.dir` state, `legacy` rewrite, `patch`, Back / Forward), `FilterParamsOptions`, `FilterParamsSortOptions`, `LegacyParamsMap`, `replaceFilters`, `writeSearch`, `ViewSwitch` (list ↔ grid, density), `PhoneFilterBar` (views · Bộ lọc · sort · Chọn / in-place selection bar), `FilterPanel` (full-screen / side-sheet filters); URL helpers `readFilters`, `readFilterValues`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `readSort`, `writeSort`, `parseSort`, `formatSort`, `SORT_PARAM`, types `FilterSpec`, `FilterDef`, `FilterOption`, `FilterValues` (§4, §4d, §4e) |
 | `SplitButton.tsx`, `CardActions.tsx`, `DetailOverlay.tsx` | `SplitButton` (main action + ▾ `Menu` of its variants, one button on phones, G1), `CardActions` (hover / focus icon actions + ⋯ on cards, ⋯ only on touch), `DetailOverlay` (record over its list: ‹ › with n / N, side panel, scroll kept), `useDetailParam` (`?open=` in the URL, Back closes), `openDetail` (open one from anywhere on the route), types `CardAction`, `DetailParamState` (§4, §9) |
 | `WorkspaceLayout.tsx`, `GuidedEmptyState.tsx`, `FeatureIntro.tsx`, `HintTextarea.tsx` | `WorkspaceLayout` (page type workspace: control panel + sticky main action, result), `WorkspaceHeader` (back + tool name, tabs), `WorkspaceSection` (`text-overline` label + counter), `Stepper` (− value +, spinbutton), `GuidedEmptyState` (EmptyState variant guided: step carousel or numbered steps, starting points), `FeatureIntro` (once-per-user feature dialog, `localIntroStore`), `HintTextarea` (@ / `/` hints and suggestions), types `GuideStep`, `GuideTemplate`, `GuideTemplateGroup`, `FeatureIntroSlide`, `FeatureIntroStore`, `HintToken`, `HintTrigger` (§4, §9b, §13, §14) |
 | `KpiCard.tsx`, `Modal.tsx` | `KpiCard` (metric card in the brand's figure font, neutral icon, `featured` for the screen's main number, shimmer), `Modal` (shared portal dialog with `MODAL_HEAD` + `MODAL_FOOT`) (§13, §14) |
@@ -1309,7 +1304,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `Markdown.tsx` | `Markdown` (AI answers) |
 | `Chat.tsx` | `AIChat`, `ChatPanel`, `ChatView`, `ChatList`, `ChatComposer`, `UserMessage`, `AssistantMessage`, `ChatAnswer`, `ChatError`, `ChatThinking`, `ChatIntro`, `ChatSuggestion(s)`, `ChatAvatar`, `ChatCopyButton`, `ChatModelPicker`, `CHAT_ROW`, `CHAT_CHIP`, `CHAT_PICK_CHIP`, `ChatItem` (§14b) |
 | `ExternalLink.tsx` | `ExternalLink` |
-| `Pills.tsx`, `Chip.tsx` | single choice / on-off chips (`Chip`, `CHIP_BASE`, `chipClass`, `chipIconClass`, `TAG`, `TONE_DOT`) |
+| `Chip.tsx` | on-off chips (`Chip`, `CHIP_BASE`, `chipClass`, `chipIconClass`, `TAG`, `TONE_DOT`) |
 | `SearchInput`, `CustomSelect`, `CustomCombobox`, `MultiCombobox`, `OptionCards`, `DatePicker`, `Pagination` | toolbar and form inputs (`CustomCombobox` & `MultiCombobox`: diacritic-aware, IME-safe search + `group` headings; `OptionCards`: selectable radio-group cards with neutral `item-selected` fill, 8px grid gap) |
 | `NumberInput` (+ `NumPadPopup`, `useCoarsePointer`) | every number field (app numpad on touch screens) |
 | `SidePanel`, `SidePanelToggle`, `RefreshButton` | tool-app left panel, icon-only reload action |
@@ -1367,7 +1362,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | People | `Avatar` (photo or 1–2 initials on a stable tone), `LetterAvatar` (one letter upper-cased with `vi` locale, `?` when empty, neutral fill) |
 | Nothing to show yet | `EmptyState` (icon, one line, action) |
 | Related buttons as one control | `ButtonGroup` (‹ Hôm nay ›, zoom, view mode: G3); a main action with variants → `SplitButton` |
-| Pressed state / icon option sets | `Toggle` (one, `aria-pressed`); `ToggleGroup` (`type` single = radio group, multiple = toolbar). Text filters stay `Pills` |
+| Pressed state / icon option sets | `Toggle` (one, `aria-pressed`); `ToggleGroup` (`type` single = radio group, multiple = toolbar). Text filter sets use `SegmentedControl` |
 | Fixed parts around an input | `InputGroup` (`start` / `end`: prefix, unit, small button) |
 | A number by dragging | `Slider` (one thumb, or `range` for min–max; `format` for units) |
 | Pick a day / a range on the page | `Calendar` (`mode` single / range); a date field → `DatePicker` (uses Calendar) |
@@ -1414,7 +1409,7 @@ The full inventory with props is generated into `components.json` (`npm run buil
   `border-field-line`, `rounded-control`; on focus `border-field-line-focus` + `bg-field-focus`, no glow ring). Their
   resting edge is below 3:1 by the owner's choice (C-007), backed by a keyboard-only (`:focus-visible`) 2px
   `outline-focus` outline (≥ 3:1 in both themes, shared with buttons). The chosen segment of a segmented control
-  (`Pills`, `Toggle`, pill `Tabs`, theme switcher) uses `SEGMENT_ON`: its inset ring marks which one is on.
+  (`Toggle`, theme switcher) uses `SEGMENT_ON`: its inset ring marks which one is on.
 - Dialog autofocus: `Modal` and `Drawer` focus their first field only on devices with a physical keyboard
   (`(hover: hover) and (pointer: fine)`), never when focus already sits in a field, and opt out with
   `autoFocusFirstField={false}`; touch phones keep the on-screen keyboard closed. Use `focusFirstField(root)` for the
@@ -1467,7 +1462,7 @@ roomy store: `data-density` / `data-type-scale` on `<html>` (or any wrapper), mi
 |---|---|---|---|
 | Density compact / regular / airy | product | `--spacing` (Tailwind's unit: every `p-*`, `gap-*`, `space-*`) | everything |
 | Type scale even / contrast | product | `--text-figure` … `--text-tab-xl` | `PageTitle`, `KpiCard`, headings |
-| Title weight | shape | `font-title` (`--font-weight-title`) | `PageTitle`, `PageTabsTitle`, `KpiCard` |
+| Title weight | shape | `font-title` (`--font-weight-title`) | `PageTitle`, `KpiCard` |
 | Font of big numbers | shape | `font-figure` | `KpiCard` |
 
 Titles are 500 (`font-title`, headings are not bold) and figures use the sans. Apps use `font-title`
@@ -2655,11 +2650,12 @@ inverse main button) and the `content-actions-inverse` class where it only serve
   (`data-edges`), `activation="manual"`, sync/async `onBeforeChange(key)` honoured by both button and `href` tabs,
   **`useTabParam`** (`?tab=` URL state via `urlState.ts` without pushing a history entry per arrow key), and
   `prefers-reduced-motion` turning off sliding pills and edge-cue fades.
-- **Existing components:** `Pills`, `PageTabsTitle`, and `Tabs variant="segmented"` are **deprecated** (kept exported
-  so existing code keeps compiling); `ViewSwitch` is **kept** (icon-only list ↔ grid + density toggle); `Tabs`
-  underline is **kept** for sections of one record inside a card; the old `TextTabs` look is replaced in place.
+- **Removed in 1.0 (#173):** `Pills` → `SegmentedControl` / `PillTabs`, `PageTabsTitle` → `TextTabs`, and
+  `Tabs variant="segmented"` → `SegmentedControl` (`Tabs` is now underline-only for sections of one record inside a
+  card or dialog). `ViewSwitch` is **kept** (icon-only list ↔ grid + density toggle); the old `TextTabs` look is
+  replaced in place.
 
-**The migration (`1.0.0-tabs`) flags** deprecated `Pills`, `PageTabsTitle`, `Tabs variant="segmented"`, and any
+**The migration (`1.0.0-tabs`) flags** removed `Pills`, `PageTabsTitle`, `Tabs variant="segmented"`, and any
 leftover `.text-tabs-strong` stand-in rules for hand migration (because `SegmentedControl` and `PillTabs` require an
 accessible `label`).
 
@@ -2689,7 +2685,7 @@ globals tail.
 
 ## T7: page layouts and lists (merged, ships in 1.0.0)
 
-**What changed** (#149, CHANGELOG "1.0 page layouts and lists"). New `Page` (`layout="work" | "reading" | "two-column"`, `fixed`, shared anatomy slots `title` / `actions` / `tabs` / `intro` / `toolbar` / `children` / `footer` owning the 32 / 28 / 32 / 16 / 8 vertical rhythm), `SubNav` (240px sub-nav card, 20 / 10 padding, `text-nav-label` group labels with optional 16px icon actions, h32 items, 1px `bg-raised` dividers), `PageSection` (20/500 heading + 16px content gap), `PageGrid` (8px `@container` grid), `ListReaderLayout` + `ReaderHeader` (two independent scrollers on `fixed` mode, `?open=`, `useRecordCrumb`, phone swap with Back, sticky one-row header with wrapping title left and `[•••]` + one main action right), and `useListSelection`. `PageTitle` becomes 18 / 400 UI sans on the action row (`variant="reading"` opts into 44 / 500 `text-title-xl` display on one-column reading pages). `FilterChipRow` and `PhoneFilterBar` gain `sort` and in-place `selection` (`"n đã chọn"` 600 + `•••` + at most one filled bulk button + `"Xong"`, zero list shift); `ResultLine` is deprecated for list pages; `DataTable` gains `activeRowId` (`bg-item-selected`); `Card` and `Item` gain non-nested `selectable` / `checked` / `onCheckedChange` / `selected`. `WorkspaceLayout.action` is optional, `SplitButton` gains `fullWidth`, and `PageSkeleton` gains `shape="workspace"`.
+**What changed** (#149, CHANGELOG "1.0 page layouts and lists"). New `Page` (`layout="work" | "reading" | "two-column"`, `fixed`, shared anatomy slots `title` / `actions` / `tabs` / `intro` / `toolbar` / `children` / `footer` owning the 32 / 28 / 32 / 16 / 8 vertical rhythm), `SubNav` (240px sub-nav card, 20 / 10 padding, `text-nav-label` group labels with optional 16px icon actions, h32 items, 1px `bg-raised` dividers), `PageSection` (20/500 heading + 16px content gap), `PageGrid` (8px `@container` grid), `ListReaderLayout` + `ReaderHeader` (two independent scrollers on `fixed` mode, `?open=`, `useRecordCrumb`, phone swap with Back, sticky one-row header with wrapping title left and `[•••]` + one main action right), and `useListSelection`. `PageTitle` becomes 18 / 400 UI sans on the action row (`variant="reading"` opts into 44 / 500 `text-title-xl` display on one-column reading pages). `FilterChipRow` and `PhoneFilterBar` gain `sort` and in-place `selection` (`"n đã chọn"` 600 + `•••` + at most one filled bulk button + `"Xong"`, zero list shift); `ResultLine` is removed in 1.0 (#173, replaced by `FilterChipRow` / `PhoneFilterBar` `sort` and `selection`); `DataTable` gains `activeRowId` (`bg-item-selected`); `Card` and `Item` gain non-nested `selectable` / `checked` / `onCheckedChange` / `selected`. `WorkspaceLayout.action` is optional, `SplitButton` gains `fullWidth`, and `PageSkeleton` gains `shape="workspace"`.
 
 **What the app deletes** (sales-hub v0.7.0): in the globals tail the flush container (`main#main > div`), `.page-title-row` and `.content-card h1`, `.page-column*`, `.list-*`, and hand-built selection rows.
 
@@ -2977,7 +2973,7 @@ The action control, 1.0 variants: subtle (default) for ordinary actions, surface
 |---|---|
 | Go to another page | next/link (styled with BTN_* from @semi/ui/styles when it must look like a button) |
 | Link to another site | ExternalLink |
-| Pick one of 2–5 filters | Pills |
+| Pick one of 2–5 filters | SegmentedControl |
 | Turn a setting on / off | Switch |
 
 ## Import
@@ -3342,7 +3338,7 @@ A pill-shaped toggle for filters and tags. Neutral when off; active uses the hig
 
 | Need | Use |
 |---|---|
-| Exactly one of 2–5 options | Pills |
+| Exactly one of 2–5 options | SegmentedControl |
 | A read-only status | Badge |
 
 ## Import
@@ -3458,78 +3454,6 @@ export default function ExternalLinkBasic() {
 - Says it opens in a new tab (visually hidden text) and keeps rel="noopener noreferrer".
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/external-link/ and the types in src/ -->
-
-
----
-
-<!-- docs/components/pills.md -->
-
-# Pills (deprecated)
-
-Deprecated in 1.0: use SegmentedControl for 2–5 filter values shown in full (with counts and a sliding raised-2 pill) or PillTabs for 5+ page sections with icons. Kept exported so existing screens continue to compile until migrated.
-
-## When to use
-
-- Legacy screens not yet migrated to SegmentedControl or PillTabs.
-
-## Use something else when
-
-| Need | Use |
-|---|---|
-| 2–5 filter values shown in full, with counts | SegmentedControl |
-| 5+ sections of a page, or sections with icons | PillTabs |
-| 2–4 top-level views of a discovery or reading page | TextTabs |
-| Filters of a list | FilterChipRow |
-
-## Import
-
-```tsx
-import { Pills } from "@semi/ui";
-```
-
-## Examples
-
-### Status filter
-
-```tsx
-"use client";
-
-import { useState } from "react";
-import { Pills } from "@semi/ui";
-
-export default function PillsBasic() {
-  const [status, setStatus] = useState("all");
-  return (
-    <Pills
-      value={status}
-      onChange={setStatus}
-      options={[
-        { key: "all", label: "Tất cả" },
-        { key: "printing", label: "Đang in" },
-        { key: "idle", label: "Chờ lệnh" },
-        { key: "error", label: "Lỗi" },
-      ]}
-    />
-  );
-}
-```
-
-## API
-
-### Pills
-
-| Prop | Type | Default | Description |
-|---|---|---|---|
-| `value` * | `T` |  |  |
-| `options` * | `{ key: T; label: ReactNode; title?: string \| undefined; }[]` |  |  |
-| `onChange` * | `(v: T) => void` |  |  |
-| `className` | `string` | `""` |  |
-
-## Accessibility
-
-- Each option is a button with aria-pressed; Tab moves between options. SegmentedControl uses WAI-ARIA radiogroup / radio with arrow keys.
-
-<!-- GENERATED by scripts/build-docs.mjs from examples/pills/ and the types in src/ -->
 
 
 ---
@@ -3692,7 +3616,7 @@ Buttons that stay pressed. Toggle for one (pin, mute, bold); ToggleGroup for a s
 
 | Need | Use |
 |---|---|
-| Filter a list by text options | Pills |
+| Filter a list by text options | SegmentedControl |
 | A setting saved immediately with a label | Switch |
 
 ## Import
@@ -4174,96 +4098,6 @@ export default function DatePickerBasic() {
 
 ---
 
-<!-- docs/components/drop-zone.md -->
-
-# Drop zone
-
-The compact FileDrop for a workspace panel: a light dashed tile on the panel surface with a title and a hint, the same checks (accept, maxSize, duplicates), keyboard and announcements; the file rows are optional.
-
-## When to use
-
-- Attachments in a WorkspaceSection (specs, sample photos), where the section label carries the count.
-- A narrow side panel that takes files.
-
-## Use something else when
-
-| Need | Use |
-|---|---|
-| A form field or an import page with a row and progress per file | FileDrop |
-| An image to crop or a single avatar | an image picker of the app |
-
-## Import
-
-```tsx
-import { DropZone, type DropZoneProps } from "@semi/ui";
-```
-
-## Examples
-
-### In a workspace section
-
-```tsx
-import { useState } from "react";
-import { DropZone, WorkspaceSection, type FileDropItem } from "@semi/ui";
-
-export default function DropZoneBasic() {
-  const [items, setItems] = useState<FileDropItem[]>([]);
-  return (
-    <div className="max-w-sm rounded-panel bg-panel-3 p-4">
-      <WorkspaceSection label="Quy cách đính kèm" count={items.length} max={5}>
-        <DropZone
-          title="Kéo tệp quy cách vào đây"
-          hint="PDF, ảnh mẫu hoặc Excel, tối đa 10 MB"
-          accept={[".pdf", "image/*", ".xlsx"]}
-          maxSize={10_000_000}
-          multiple
-          items={items}
-          onAdd={(files) => setItems((cur) => [...cur, ...files.map((f) => ({ id: `${f.name}-${f.size}`, name: f.name, size: f.size, status: "done" as const }))])}
-          onRemove={(id) => setItems((cur) => cur.filter((i) => i.id !== id))}
-        />
-      </WorkspaceSection>
-    </div>
-  );
-}
-```
-
-## API
-
-### DropZone
-
-Compact FileDrop for a workspace panel (`WorkspaceSection`, L12): a lighter dashed tile on the panel surface (no
-field fill), smaller type, the same checks (`accept`, `maxSize`, duplicates), keyboard (Enter / Space opens the
-picker) and announcements. `items` is optional.
-
-| Prop | Type | Default | Description |
-|---|---|---|---|
-| `disabled` | `boolean` |  |  |
-| `className` | `string` |  |  |
-| `id` | `string` |  | Set by the surrounding Field when omitted. |
-| `title` | `React.ReactNode` |  | Main line of the drop area (default from the locale). |
-| `aria-describedby` | `string` |  |  |
-| `aria-label` | `string` |  | Names the drop button and the hidden file input (wins over the Field label / title). Without it the input is named by the button (`aria-labelledby`), so `getByLabel(label)` in a test reaches the input too. |
-| `multiple` | `boolean` |  |  |
-| `onAdd` * | `(files: File[]) => void` |  | Only the files that passed every check (see `onReject`); a batch never repeats a name + size. |
-| `onReject` | `(rejections: FileRejection[]) => void` |  | Everything not added, with its reason: "type" / "size" (`accept`, `maxSize`), "directory" (a dropped folder), "duplicate" (same name + size as an item or an earlier file of the batch), "multiple" (extra files while `multiple` is off). The app decides whether to show them (e.g. as a Field error). |
-| `onRemove` | `(id: string) => void` |  |  |
-| `onRetry` | `(id: string) => void` |  |  |
-| `accept` | `string[]` |  | MIME types, wildcards ("image/*") or extensions (".csv"). Omit to accept everything. |
-| `maxSize` | `number` |  | Largest file in bytes. |
-| `hint` | `React.ReactNode` |  | Second line, e.g. "CSV or XLSX, up to 10 MB". |
-| `invalid` | `boolean` |  |  |
-| `items` | `FileDropItem[]` |  | Rows of the files already added; omit when the panel shows them elsewhere (a count in its section label). |
-
-## Accessibility
-
-- A button (Enter / Space opens the file picker) named by aria-label, the surrounding Field or its title; the hidden input carries the same name for tests.
-- Added and rejected files are announced in a polite live region, as in FileDrop.
-
-<!-- GENERATED by scripts/build-docs.mjs from examples/drop-zone/ and the types in src/ -->
-
-
----
-
 <!-- docs/components/field.md -->
 
 # Field, Input, Textarea
@@ -4474,12 +4308,13 @@ Multi-line text on the field surface (FIELD_TEXTAREA), with optional reply-box a
 
 # FileDrop
 
-A file picker and dropzone with one row per file: size, upload progress, done, and remove / retry on failure. Controlled: the app owns the list and does the upload.
+A file picker and dropzone with one row per file (size, upload progress, done, remove / retry on failure) plus DropZone, its compact dashed-tile variant for workspace panels (optional file rows). Controlled: the app owns the list and does the upload.
 
 ## When to use
 
-- Choosing or dropping one or more files: CSV import, product photos, invoices, firmware, model files.
+- Choosing or dropping one or more files: CSV import, product photos, invoices, firmware, model files (FileDrop).
 - Showing the progress of each upload and letting the user retry or remove a file.
+- Attachments in a WorkspaceSection or narrow side panel where the section label carries the count (DropZone).
 - Duplicates (same name and size as an item or earlier in the batch) and dropped folders are rejected too: onReject reasons are type, size, directory, duplicate, multiple.
 
 ## Use something else when
@@ -4493,7 +4328,7 @@ A file picker and dropzone with one row per file: size, upload progress, done, a
 ## Import
 
 ```tsx
-import { FileDrop } from "@semi/ui";
+import { FileDrop, DropZone, type DropZoneProps } from "@semi/ui";
 ```
 
 ## Examples
@@ -4615,6 +4450,35 @@ export default function FileDropSingle() {
 }
 ```
 
+### Compact workspace drop zone (DropZone)
+
+A light dashed tile on the panel surface for WorkspaceSection attachments, with optional file rows.
+
+```tsx
+import { useState } from "react";
+import { DropZone, WorkspaceSection, type FileDropItem } from "@semi/ui";
+
+export default function DropZoneBasic() {
+  const [items, setItems] = useState<FileDropItem[]>([]);
+  return (
+    <div className="max-w-sm rounded-panel bg-panel-3 p-4">
+      <WorkspaceSection label="Quy cách đính kèm" count={items.length} max={5}>
+        <DropZone
+          title="Kéo tệp quy cách vào đây"
+          hint="PDF, ảnh mẫu hoặc Excel, tối đa 10 MB"
+          accept={[".pdf", "image/*", ".xlsx"]}
+          maxSize={10_000_000}
+          multiple
+          items={items}
+          onAdd={(files) => setItems((cur) => [...cur, ...files.map((f) => ({ id: `${f.name}-${f.size}`, name: f.name, size: f.size, status: "done" as const }))])}
+          onRemove={(id) => setItems((cur) => cur.filter((i) => i.id !== id))}
+        />
+      </WorkspaceSection>
+    </div>
+  );
+}
+```
+
 ## API
 
 ### FileDrop
@@ -4639,6 +4503,31 @@ Picker + drop area with a row per file (forms, import pages). In a narrow worksp
 | `aria-describedby` | `string` |  |  |
 | `aria-label` | `string` |  | Names the drop button and the hidden file input (wins over the Field label / title). Without it the input is named by the button (`aria-labelledby`), so `getByLabel(label)` in a test reaches the input too. |
 | `className` | `string` |  |  |
+
+### DropZone
+
+Compact FileDrop for a workspace panel (`WorkspaceSection`, L12): a lighter dashed tile on the panel surface (no
+field fill), smaller type, the same checks (`accept`, `maxSize`, duplicates), keyboard (Enter / Space opens the
+picker) and announcements. `items` is optional.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `disabled` | `boolean` |  |  |
+| `className` | `string` |  |  |
+| `id` | `string` |  | Set by the surrounding Field when omitted. |
+| `title` | `React.ReactNode` |  | Main line of the drop area (default from the locale). |
+| `aria-describedby` | `string` |  |  |
+| `aria-label` | `string` |  | Names the drop button and the hidden file input (wins over the Field label / title). Without it the input is named by the button (`aria-labelledby`), so `getByLabel(label)` in a test reaches the input too. |
+| `multiple` | `boolean` |  |  |
+| `onAdd` * | `(files: File[]) => void` |  | Only the files that passed every check (see `onReject`); a batch never repeats a name + size. |
+| `onReject` | `(rejections: FileRejection[]) => void` |  | Everything not added, with its reason: "type" / "size" (`accept`, `maxSize`), "directory" (a dropped folder), "duplicate" (same name + size as an item or an earlier file of the batch), "multiple" (extra files while `multiple` is off). The app decides whether to show them (e.g. as a Field error). |
+| `onRemove` | `(id: string) => void` |  |  |
+| `onRetry` | `(id: string) => void` |  |  |
+| `accept` | `string[]` |  | MIME types, wildcards ("image/*") or extensions (".csv"). Omit to accept everything. |
+| `maxSize` | `number` |  | Largest file in bytes. |
+| `hint` | `React.ReactNode` |  | Second line, e.g. "CSV or XLSX, up to 10 MB". |
+| `invalid` | `boolean` |  |  |
+| `items` | `FileDropItem[]` |  | Rows of the files already added; omit when the panel shows them elsewhere (a count in its section label). |
 
 ## Accessibility
 
@@ -4685,7 +4574,7 @@ import { FilterChipRow, FilterChip, FilterOptions, useFilterParams, readFilters,
 ```tsx
 "use client";
 
-import { FilterChipRow, ResultLine, ViewSwitch, useFilterParams, type ViewMode } from "@semi/ui";
+import { FilterChipRow, ViewSwitch, useFilterParams, type ViewMode } from "@semi/ui";
 
 const ORDERS = [
   { id: "1024", status: "new", channel: "shopee", paid: true },
@@ -4728,7 +4617,6 @@ export default function FilterChipRowUrlState() {
         onClear={f.onClear}
         trailing={<ViewSwitch view={view} onViewChange={(v) => f.setParams({ view: v === "list" ? null : v }, "replace")} />}
       />
-      <ResultLine count={rows.length} unit="đơn hàng" />
       <p className="text-ui text-muted">{rows.map((o) => `#${o.id}`).join(" · ") || "—"}</p>
     </div>
   );
@@ -4741,7 +4629,7 @@ export default function FilterChipRowUrlState() {
 "use client";
 
 import { useState } from "react";
-import { FilterChipRow, Pills, ResultLine, type FilterDef } from "@semi/ui";
+import { FilterChipRow, SegmentedControl, type FilterDef } from "@semi/ui";
 
 const MAIL = [
   { id: "Báo giá tiêu đen", box: "sales", folder: "inbox", open: true },
@@ -4790,12 +4678,11 @@ export default function FilterChipRowViews() {
   return (
     <div className="flex flex-col gap-2 w-full min-w-0">
       <FilterChipRow
-        leading={<Pills value={view} onChange={setView} options={VIEWS} />}
+        leading={<SegmentedControl label="Trạng thái thư" value={view} onChange={setView} options={VIEWS} />}
         filters={filters}
         onChange={(key, selected) => setSel({ ...sel, [key]: selected })}
         onClear={() => setSel({})}
       />
-      <ResultLine count={rows.length} unit="thư" />
       <p className="text-ui text-muted">{rows.map((m) => m.id).join(" · ") || "—"}</p>
     </div>
   );
@@ -4838,7 +4725,7 @@ export default function FilterChipRowMany() {
 
 The filter chips of a list page on one line. When they overflow, the row scrolls sideways and ‹ › buttons appear
 (hidden from screen readers and the tab order: every chip is reachable by Tab, which scrolls it into view).
-"Xoá lọc" shows while a filter is on; `leading` (the page's views as Pills) sits before the chips; `sort`,
+"Xoá lọc" shows while a filter is on; `leading` (the page's views as SegmentedControl) sits before the chips; `sort`,
 `selection` ("Chọn" → in-place `"n đã chọn"` + bulk actions at the same height) and `trailing` (`ViewSwitch`) sit
 at the right end.
 
@@ -4847,9 +4734,9 @@ at the right end.
 | `filters` * | `FilterDef[]` |  |  |
 | `onChange` * | `(key: string, selected: string[]) => void` |  |  |
 | `onClear` | `() => void` |  | Clears every filter; the "Xoá lọc" button shows while one is on. |
-| `leading` | `React.ReactNode` |  | Before the chips: the page's views (`<Pills>`: Đang mở · Đã đóng · Tất cả), the md+ twin of PhoneFilterBar's `typeItems`. A view is not a filter: "Xoá lọc" leaves it alone. Keep it short (2–5 views); it does not scroll. |
+| `leading` | `React.ReactNode` |  | Before the chips: the page's views (`<SegmentedControl>`: Đang mở · Đã đóng · Tất cả), the md+ twin of PhoneFilterBar's `typeItems`. A view is not a filter: "Xoá lọc" leaves it alone. Keep it short (2–5 views); it does not scroll. |
 | `trailing` | `React.ReactNode` |  | Extra tools at the end of the row (e.g. `ViewSwitch`). Replaced in place while `selection` is active. |
-| `sort` | `SortDef` |  | Sort menu at the right end of the filter row (1.0: replaces ResultLine's sort). |
+| `sort` | `SortDef` |  | Sort menu at the right end of the filter row. |
 | `selection` | `ListSelection` |  | Selection mode ("Chọn") and bulk actions replacing the right side at the same height (zero list shift). |
 | `label` | `string` |  | Accessible name of the chip group (default "Bộ lọc"). |
 | `className` | `string` |  |  |
@@ -5918,7 +5805,7 @@ Exactly one option of a few, each with an optional description; vertical by defa
 
 | Need | Use |
 |---|---|
-| A filter on a list | Pills |
+| A filter on a list | SegmentedControl |
 | More than 5 options | CustomSelect |
 
 ## Import
@@ -6042,12 +5929,11 @@ export default function SearchInputBasic() {
 
 # Search pill
 
-The wide pill search of a list page (one per page), with an optional `trailing` slot for `<BarActions>` when pinned in StickyContextBar. Typing is debounced (250 ms), Escape and the clear button clear at once, an optional key (/) focuses it. ResultLine is deprecated for 1.0 list pages (use FilterChipRow / PhoneFilterBar `sort` and `selection` instead).
+The wide pill search of a list page (one per page), with an optional `trailing` slot for `<BarActions>` when pinned in StickyContextBar. Typing is debounced (250 ms), Escape and the clear button clear at once, an optional key (/) focuses it.
 
 ## When to use
 
 - The search of a list, grid or DataTable page, above its filter chips (inside StickyContextBar).
-- Showing how many rows match and how they are sorted, right above the rows.
 
 ## Use something else when
 
@@ -6060,7 +5946,7 @@ The wide pill search of a list page (one per page), with an optional `trailing` 
 ## Import
 
 ```tsx
-import { SearchPill, ResultLine } from "@semi/ui";
+import { SearchPill } from "@semi/ui";
 ```
 
 ## Examples
@@ -6081,32 +5967,6 @@ export default function SearchPillDefault() {
       <p className="text-ui text-muted">
         Đang tìm: <span className="text-strong">{q || "—"}</span> (gõ xong 250 ms mới gửi; Esc để xoá; phím / để vào ô tìm)
       </p>
-    </div>
-  );
-}
-```
-
-### With the result line and sort
-
-```tsx
-"use client";
-
-import { useState } from "react";
-import { ResultLine, SearchPill } from "@semi/ui";
-
-const SORTS = [
-  { value: "recent", label: "Mới thêm" },
-  { value: "volume", label: "Sản lượng năm" },
-  { value: "name", label: "Tên A–Z" },
-];
-
-export default function SearchPillResultLine() {
-  const [q, setQ] = useState("tiêu đen");
-  const [sort, setSort] = useState("recent");
-  return (
-    <div className="flex flex-col gap-2 w-full">
-      <SearchPill value={q} onChange={setQ} label="Tìm khách hàng" shortcut="⌘K" />
-      <ResultLine query={q} count={q ? 128 : 1240} unit="khách hàng" sort={{ value: sort, onChange: setSort, options: SORTS }} />
     </div>
   );
 }
@@ -6133,24 +5993,9 @@ openDetail during the debounce sends the pending text first, so the query stays 
 | `trailing` | `React.ReactNode` |  | Extra tools at the right end (pinned `<BarActions />`, image search, voice). |
 | `className` | `string` |  |  |
 
-### ResultLine
-
-The line under the search: `“query” · N kết quả` on the left (announced politely when it changes), the sort menu on
-the right. Leave out `query` for a plain count.
-
-| Prop | Type | Default | Description |
-|---|---|---|---|
-| `count` * | `number` |  |  |
-| `query` | `string` |  |  |
-| `unit` | `string` |  | What is counted ("khách hàng"); default the locale's "kết quả". |
-| `sort` | `SortDef` |  |  |
-| `trailing` | `React.ReactNode` |  | More tools at the right end, after the sort (a ViewSwitch when there is no chip row). |
-| `className` | `string` |  |  |
-
 ## Accessibility
 
 - label is required: it names the field (type=search) and is the placeholder when none is given.
-- The result line is a polite live region, so the new count is read after typing; the sort trigger says the current choice (“Sắp xếp: Mới thêm”).
 - focusKey is ignored while typing in another field and with ⌘ / Ctrl / Alt; the key cap is hidden from screen readers.
 
 ## Notes
@@ -6182,7 +6027,7 @@ CustomSelect: pick one value from a list, in a field, in a toolbar, inline in a 
 |---|---|
 | A long or grouped list that needs search | CustomCombobox |
 | Pick multiple values with search and removable chips | MultiCombobox |
-| 2–5 visible options | Pills, RadioGroup or OptionCards |
+| 2–5 visible options | SegmentedControl, RadioGroup or OptionCards |
 
 ## Import
 
@@ -6651,32 +6496,71 @@ keep the choice in the URL (`?view=grid`) or per person (localStorage) as the pa
 
 # Command
 
-A command palette: type to filter actions and pages, ↑/↓ to move, Enter to run. Command is the inline list; CommandDialog opens it over the page, usually on ⌘K (useHotkey). Matching ignores case and Vietnamese marks.
+Command palette and searchable action lists: CommandPalette is the app-wide ⌘K / Ctrl+K “search or create” box (mounted once in the root layout, fed by pages with useRegisterCommands); CommandDialog is a controlled dialog with your own open state (useHotkey); Command is the inline list. Matching ignores case and Vietnamese marks.
 
 ## When to use
 
-- Jump anywhere and run any action from the keyboard (⌘K) in apps with many pages.
-- A searchable action list inside a Popover.
+- Every app with more than a few pages: mount CommandPalette once in the root layout to jump to a place or record and start a create action from anywhere on ⌘K (L1).
+- A SearchPill or “Tìm hoặc tạo” button in the header that opens CommandPalette (openCommandPalette).
+- A palette with your own open state and no app-wide registry (CommandDialog) or a searchable action list inside a Popover (Command).
 
 ## Use something else when
 
 | Need | Use |
 |---|---|
-| The app-wide ⌘K “search or create” box, fed by every page | CommandPalette |
 | Pick one value in a form | CustomCombobox |
-| Filter the list on the page | SearchInput |
+| Filter the list on the page | SearchPill or SearchInput |
 
 ## Import
 
 ```tsx
-import { Command, CommandDialog, useHotkey, filterCommands, normalizeSearch, type CommandItem } from "@semi/ui";
+import { Command, CommandDialog, CommandPalette, useRegisterCommands, openCommandPalette, useHotkey, filterCommands, normalizeSearch, type CommandItem } from "@semi/ui";
 ```
 
 ## Examples
 
-### ⌘K palette
+### App-wide palette (CommandPalette)
 
-Press ⌘K (Ctrl+K) or the button; try typing “don hang” without marks.
+Press ⌘K (Ctrl+K) or the button; type “tieu” to find the supplier by keyword.
+
+```tsx
+"use client";
+
+import { useMemo } from "react";
+import { Button, CommandPalette, Kbd, openCommandPalette, toast, useRegisterCommands, type CommandItem } from "@semi/ui";
+
+// Mount CommandPalette once in the root layout with the app's places. A page adds its own quick actions and records
+// with useRegisterCommands while it is mounted. ⌘↵ opens an item with href in a new tab.
+const PLACES: CommandItem[] = [
+  { id: "inbox", label: "Hộp thư", group: "Trang", icon: "mail", href: "#inbox", onSelect: () => toast({ title: "Mở Hộp thư" }) },
+  { id: "suppliers", label: "Nhà cung cấp", group: "Trang", icon: "store", href: "#suppliers", onSelect: () => toast({ title: "Mở Nhà cung cấp" }) },
+  { id: "settings", label: "Cài đặt", group: "Trang", icon: "settings", onSelect: () => toast({ title: "Mở Cài đặt" }) },
+];
+
+export default function CommandPaletteApp() {
+  const pageItems = useMemo<CommandItem[]>(
+    () => [
+      { id: "new-supplier", label: "Thêm nhà cung cấp", group: "Tạo nhanh", icon: "plus", tone: "blue", shortcut: ["⌘", "N"], onSelect: () => toast({ title: "Thêm nhà cung cấp" }) },
+      { id: "new-request", label: "Tạo yêu cầu mua", group: "Tạo nhanh", icon: "clipboardList", tone: "green", onSelect: () => toast({ title: "Tạo yêu cầu mua" }) },
+      { id: "s1", label: "Gia vị Tây Nguyên", hint: "Nhà cung cấp · Đắk Lắk", group: "Nhà cung cấp", icon: "store", keywords: ["tieu", "pepper"], href: "#suppliers?open=s1", onSelect: () => toast({ title: "Mở Gia vị Tây Nguyên" }) },
+    ],
+    [],
+  );
+  useRegisterCommands(pageItems);
+  return (
+    <>
+      <Button icon="search" onClick={() => openCommandPalette()}>
+        Tìm hoặc tạo <Kbd keys={["⌘", "K"]} />
+      </Button>
+      <CommandPalette items={PLACES} />
+    </>
+  );
+}
+```
+
+### Controlled dialog (CommandDialog)
+
+Press ⌘J (Ctrl+J) or the button; try typing “don hang” without marks.
 
 ```tsx
 "use client";
@@ -6686,7 +6570,7 @@ import { Button, CommandDialog, Kbd, toast, useHotkey, type CommandItem } from "
 
 export default function CommandPalette() {
   const [open, setOpen] = useState(false);
-  useHotkey(() => setOpen((v) => !v));
+  useHotkey(() => setOpen((v) => !v), "j");
   const go = (title: string) => () => toast({ title });
   const items: CommandItem[] = [
     { id: "orders", label: "Đơn hàng", group: "Trang", icon: "bag", onSelect: go("Mở Đơn hàng") },
@@ -6698,7 +6582,7 @@ export default function CommandPalette() {
   return (
     <>
       <Button icon="search" onClick={() => setOpen(true)}>
-        Tìm nhanh <Kbd keys={["⌘", "K"]} />
+        Tìm nhanh <Kbd keys={["⌘", "J"]} />
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen} items={items} />
     </>
@@ -6706,7 +6590,7 @@ export default function CommandPalette() {
 }
 ```
 
-### Inline
+### Inline (Command)
 
 ```tsx
 "use client";
@@ -6764,83 +6648,6 @@ The command palette over the page: a modal dialog near the top, closed by Escape
 | `placeholder` | `string` |  |  |
 | `emptyText` | `React.ReactNode` |  |  |
 
-## Accessibility
-
-- The input is an ARIA combobox owning a listbox (aria-activedescendant), so focus stays in the input; groups are labelled; the dialog traps focus and Escape closes it.
-
-<!-- GENERATED by scripts/build-docs.mjs from examples/command/ and the types in src/ -->
-
-
----
-
-<!-- docs/components/command-palette.md -->
-
-# Command palette
-
-The app-wide “search or create” box on ⌘K / Ctrl+K, built on Command: one dialog for places, records and quick actions. Mount it once in the root layout; pages register their own items with useRegisterCommands. Groups get text-overline headings, actions a coloured tile, records a hint line; the footer shows the keys, and ⌘↵ opens an item with href in a new tab.
-
-## When to use
-
-- Every app with more than a few pages: jump to a place or record and start a create action from anywhere (L1).
-- A SearchPill or “Tìm hoặc tạo” button in the header that opens the same box (openCommandPalette).
-
-## Use something else when
-
-| Need | Use |
-|---|---|
-| A small action list inside a page or Popover | Command |
-| A palette with your own open state and no app-wide registry | CommandDialog |
-| Filter the list on the page | SearchPill |
-
-## Import
-
-```tsx
-import { CommandPalette, useRegisterCommands, openCommandPalette, type CommandItem } from "@semi/ui";
-```
-
-## Examples
-
-### App-wide palette
-
-Press ⌘K (Ctrl+K) or the button; type “tieu” to find the supplier by keyword.
-
-```tsx
-"use client";
-
-import { useMemo } from "react";
-import { Button, CommandPalette, Kbd, openCommandPalette, toast, useRegisterCommands, type CommandItem } from "@semi/ui";
-
-// Mount CommandPalette once in the root layout with the app's places. A page adds its own quick actions and records
-// with useRegisterCommands while it is mounted. ⌘↵ opens an item with href in a new tab.
-const PLACES: CommandItem[] = [
-  { id: "inbox", label: "Hộp thư", group: "Trang", icon: "mail", href: "#inbox", onSelect: () => toast({ title: "Mở Hộp thư" }) },
-  { id: "suppliers", label: "Nhà cung cấp", group: "Trang", icon: "store", href: "#suppliers", onSelect: () => toast({ title: "Mở Nhà cung cấp" }) },
-  { id: "settings", label: "Cài đặt", group: "Trang", icon: "settings", onSelect: () => toast({ title: "Mở Cài đặt" }) },
-];
-
-export default function CommandPaletteApp() {
-  const pageItems = useMemo<CommandItem[]>(
-    () => [
-      { id: "new-supplier", label: "Thêm nhà cung cấp", group: "Tạo nhanh", icon: "plus", tone: "blue", shortcut: ["⌘", "N"], onSelect: () => toast({ title: "Thêm nhà cung cấp" }) },
-      { id: "new-request", label: "Tạo yêu cầu mua", group: "Tạo nhanh", icon: "clipboardList", tone: "green", onSelect: () => toast({ title: "Tạo yêu cầu mua" }) },
-      { id: "s1", label: "Gia vị Tây Nguyên", hint: "Nhà cung cấp · Đắk Lắk", group: "Nhà cung cấp", icon: "store", keywords: ["tieu", "pepper"], href: "#suppliers?open=s1", onSelect: () => toast({ title: "Mở Gia vị Tây Nguyên" }) },
-    ],
-    [],
-  );
-  useRegisterCommands(pageItems);
-  return (
-    <>
-      <Button icon="search" onClick={() => openCommandPalette()}>
-        Tìm hoặc tạo <Kbd keys={["⌘", "K"]} />
-      </Button>
-      <CommandPalette items={PLACES} />
-    </>
-  );
-}
-```
-
-## API
-
 ### CommandPalette
 
 The app-wide "search or create" box (L1): one dialog for search and quick actions, opened with ⌘K / Ctrl+K. Mount
@@ -6861,14 +6668,14 @@ it once in the root layout with the app's places; pages add their own items with
 
 ## Accessibility
 
-- A modal dialog (focus trapped, Escape closes, focus returns); the input is a combobox that owns a listbox (aria-activedescendant), groups are labelled by their heading, disabled items are aria-disabled.
+- The input is an ARIA combobox owning a listbox (aria-activedescendant), so focus stays in the input; groups are labelled by their heading, disabled items are aria-disabled; dialogs trap focus, Escape closes and focus returns.
 
 ## Notes
 
 - A record that opens in a DetailOverlay on the current route: its `onSelect` calls `openDetail(id)` (or the page's `open(id)`), not `router.push("?open=…")` to the same route, which browsers without the Navigation API do not report to the list. Give it `href` too, for ⌘↵.
 - ⌘K on Apple devices, Ctrl+K elsewhere (Ctrl+K on a Mac deletes to the end of the line in text fields); a key a widget already handled, or typed in a rich-text editor, does not open it.
 
-<!-- GENERATED by scripts/build-docs.mjs from examples/command-palette/ and the types in src/ -->
+<!-- GENERATED by scripts/build-docs.mjs from examples/command/ and the types in src/ -->
 
 
 ---
@@ -8728,7 +8535,7 @@ Where the page sits: a trail of links ending with the current page. Long trails 
 | Need | Use |
 |---|---|
 | Top-level pages of an app | AppShell navigation |
-| Sibling views | PageTabsTitle |
+| Sibling views | TextTabs |
 
 ## Import
 
@@ -9455,7 +9262,7 @@ Lets a page put its actions into a slot of the shared header: PageActionsProvide
 
 ## When to use
 
-- A layout owns the header row but the page decides the actions (PageTabsTitle + “+”).
+- A layout owns the header row but the page decides the actions (TextTabs + “+”).
 
 ## Import
 
@@ -9471,17 +9278,18 @@ import { PageActions, PageActionsProvider, PageActionsSlot } from "@semi/ui";
 "use client";
 
 import { useState } from "react";
-import { Button, PageActions, PageActionsProvider, PageActionsSlot, PageTabsTitle } from "@semi/ui";
+import { Button, PageActions, PageActionsProvider, PageActionsSlot, TextTabs } from "@semi/ui";
 
 export default function PageActionsSlotExample() {
   const [view, setView] = useState<"printers" | "jobs">("printers");
   return (
     <PageActionsProvider>
       <div className="flex items-end gap-3">
-        <PageTabsTitle
+        <TextTabs
+          label="Chế độ xem"
           value={view}
           onChange={setView}
-          tabs={[
+          items={[
             { key: "printers", label: "Máy in" },
             { key: "jobs", label: "Job in" },
           ]}
@@ -9490,7 +9298,7 @@ export default function PageActionsSlotExample() {
       </div>
       {/* Declared by the page content, shown in the slot above */}
       <PageActions>
-        <Button variant="primary" iconOnly icon="plus" aria-label={view === "printers" ? "Thêm máy in" : "Tạo job"} />
+        <Button variant="inverse" iconOnly icon="plus" aria-label={view === "printers" ? "Thêm máy in" : "Tạo job"} />
       </PageActions>
     </PageActionsProvider>
   );
@@ -9698,7 +9506,7 @@ Owns the vertical rhythm from the card top (32px to the header block, 28px from 
 | `title` | `React.ReactNode` |  | Page heading: a string / node rendered via `PageTitle` (18/400 UI sans by default), or leave out when `tabs` is big `TextTabs`. |
 | `titleVariant` | `'work' \| 'reading'` | `"work"` | On a `"reading"` page, `"reading"` opts into the 44 / 500 display title (`text-title-xl`). Ignored on other layouts. |
 | `actions` | `React.ReactNode` |  | Actions at the right end of the title row (one `inverse` or `primary` action, optional `•••` `Menu` / `RefreshButton`). |
-| `tabs` | `React.ReactNode` |  | Optional tab bar (`PillTabs`, `Tabs`, `Pills`, `TextTabs`, `PageTabsTitle`). |
+| `tabs` | `React.ReactNode` |  | Optional tab bar (`PillTabs`, `Tabs`, `SegmentedControl`, `TextTabs`). |
 | `intro` | `React.ReactNode` |  | Optional lead intro under the title or tabs (28px below). |
 | `toolbar` | `React.ReactNode` |  | Optional sticky toolbar / filter row (`StickyContextBar`, `SubpageToolbar`); content sits 16px below it. |
 | `children` * | `React.ReactNode` |  | Page blocks (spaced 32px apart; in `fixed` mode, fills the remaining height). |
@@ -9780,7 +9588,7 @@ Compact 8px (`gap-2`) grid inside a `<PageSection>` or `<Card>`, sized by `@cont
 
 # Page title
 
-PageTitle is the 18 / 400 UI sans heading of a work page on the same row as the page's main action (`actions`), with `variant="reading"` (44 / 500 display face, text-title-xl) for one-column reading pages only. PageTabsTitle is kept as a deprecated alias for 2–4 sibling tabs — new screens use TextTabs.
+PageTitle is the 18 / 400 UI sans heading of a work page on the same row as the page's main action (`actions`), with `variant="reading"` (44 / 500 display face, text-title-xl) for one-column reading pages only.
 
 ## When to use
 
@@ -9800,7 +9608,7 @@ PageTitle is the 18 / 400 UI sans heading of a work page on the same row as the 
 ## Import
 
 ```tsx
-import { PageTitle, PageTabsTitle } from "@semi/ui";
+import { PageTitle } from "@semi/ui";
 ```
 
 ## Examples
@@ -9852,29 +9660,6 @@ export default function PageTitleReading() {
 }
 ```
 
-### PageTabsTitle
-
-```tsx
-"use client";
-
-import { useState } from "react";
-import { PageTabsTitle } from "@semi/ui";
-
-export default function PageTabsTitleBasic() {
-  const [view, setView] = useState<"printers" | "jobs">("printers");
-  return (
-    <PageTabsTitle
-      value={view}
-      onChange={setView}
-      tabs={[
-        { key: "printers", label: "Máy in" },
-        { key: "jobs", label: "Job in" },
-      ]}
-    />
-  );
-}
-```
-
 ## API
 
 ### PageTitle
@@ -9890,21 +9675,9 @@ display title (`text-title-xl`). Inside `<Page title={…}>`, `<Page>` owns the 
 | `variant` | `'work' \| 'reading'` | `"work"` | `"work"` (default): 18 / 400 UI sans (`text-figure`), for lists, workspaces and two-column pages. `"reading"`: 44 / 500 display face (`text-title-xl`, lh 1.2, −0.01em), for one-column reading pages only. |
 | `className` | `string` | `""` |  |
 
-### PageTabsTitle
-
-Underline display tabs used when a view groups 2–4 sibling sub-pages (e.g. "Máy in / Job in", "Sản phẩm / Danh mục").
-
-| Prop | Type | Default | Description |
-|---|---|---|---|
-| `tabs` * | `PageTabOption<T>[]` |  |  |
-| `value` * | `T` |  |  |
-| `onChange` * | `(key: T) => void` |  |  |
-| `ariaLabel` | `string` |  |  |
-| `className` | `string` | `""` |  |
-
 ## Accessibility
 
-- PageTitle is the page h1; its actions follow it in the reading and tab order. PageTabsTitle is a tablist with arrow-key navigation.
+- PageTitle is the page h1; its actions follow it in the reading and tab order.
 
 ## Notes
 
@@ -10500,7 +10273,7 @@ export default function SegmentedControlOverflow() {
 
 ## Notes
 
-- Replaces the deprecated `Pills` component in 1.0.
+- Replaces the removed 0.x `Pills` component in 1.0.
 - When to use which: PillTabs for 5+ sections or sections with icons · SegmentedControl for 2–5 filter values shown in full with counts · TextTabs for 2–4 top-level views of a discovery or reading page · FilterChipRow for filters.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/segmented-control/ and the types in src/ -->
@@ -10629,7 +10402,6 @@ import {
   Item,
   PageTitle,
   PhoneFilterBar,
-  ResultLine,
   SearchPill,
   StickyContextBar,
   ViewSwitch,
@@ -10683,7 +10455,7 @@ export default function StickyContextBarListPage() {
       <PageTitle
         title="Nhà cung cấp"
         actions={
-          <Button variant="primary" icon="plus" onClick={() => toast({ title: "Thêm nhà cung cấp" })}>
+          <Button variant="inverse" icon="plus" onClick={() => toast({ title: "Thêm nhà cung cấp" })}>
             Thêm nhà cung cấp
           </Button>
         }
@@ -10695,10 +10467,10 @@ export default function StickyContextBarListPage() {
           filters={filters}
           onChange={onChange}
           onClear={() => setSel({})}
+          sort={sortDef}
           trailing={<ViewSwitch view={view} onViewChange={setView} />}
         />
-        <PhoneFilterBar className="md:hidden" activeCount={active} onOpenFilters={() => setPanel(true)} filtersOpen={panel} />
-        <ResultLine query={q} count={rows.length} unit="nhà cung cấp" sort={sortDef} />
+        <PhoneFilterBar className="md:hidden" activeCount={active} onOpenFilters={() => setPanel(true)} filtersOpen={panel} sort={sortDef} />
       </StickyContextBar>
       <ul className={view === "grid" ? "grid grid-cols-2 gap-group" : "flex flex-col"}>
         {rows.map((s) => (
@@ -10730,7 +10502,7 @@ Pin behaviour (#150):
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `children` * | `React.ReactNode` |  | Usually SearchPill (with optional BarActions in `trailing`), then FilterChipRow (PhoneFilterBar on phones). No ResultLine in 1.0: the list sits 16px under the filter row. |
+| `children` * | `React.ReactNode` |  | Usually SearchPill (with optional BarActions in `trailing`), then FilterChipRow (PhoneFilterBar on phones). The list sits 16px under the filter row. |
 | `label` | `string` |  | Accessible name of the region ("Tìm và lọc khách hàng"); leave it out when the bar holds only a search. |
 | `pin` | `boolean` | `true` | Enable trackpad-proven layout pinning, focus-pin and `data-stuck` / `data-searching` state (default `true`). |
 | `className` | `string` |  |  |
@@ -10760,7 +10532,7 @@ the rest collapse into `•••` on the left.
 ## Notes
 
 - One per page, right under the page heading: PageTitle with `actions` (the page's one `inverse` or `primary` action + `•••` / RefreshButton) or TextTabs. Pass `<BarActions actions={…} menu={…} />` in SearchPill's `trailing` slot so up to 2 icon buttons (`[•••][main action]`) appear inside the pinned search bar when the title row scrolls out of view.
-- 1.0 list pages omit ResultLine: the list sits 16px under the filter row, and `sort` + `selection` ("Chọn", managed with `useListSelection`) live on FilterChipRow / PhoneFilterBar.
+- 1.0 list pages have no result-count row: the list sits 16px under the filter row, and `sort` + `selection` ("Chọn", managed with `useListSelection`) live on FilterChipRow / PhoneFilterBar.
 - Desktop and iPad show FilterChipRow (max-md:hidden on the phone bar's sibling), phones PhoneFilterBar (md:hidden): same filters, same state.
 - The page's views (Đang mở · Đã đóng · Tất cả) are `SegmentedControl` in FilterChipRow `leading` on md+ and PhoneFilterBar `typeItems` (radio items) on phones: same state, usually a plain param (?view=) written with useFilterParams().setParams. The default view may be other than “all”; leave it out of the URL.
 - Phone chrome: at most 2 rows (search + PhoneFilterBar), under 25% of the viewport (P1).
@@ -10802,7 +10574,7 @@ import { SubpageToolbar, RefreshButton } from "@semi/ui";
 "use client";
 
 import { useState } from "react";
-import { Pills, SubpageToolbar, toast } from "@semi/ui";
+import { SegmentedControl, SubpageToolbar, toast } from "@semi/ui";
 
 export default function SubpageToolbarListPage() {
   const [status, setStatus] = useState("all");
@@ -10810,7 +10582,8 @@ export default function SubpageToolbarListPage() {
   return (
     <SubpageToolbar
       left={
-        <Pills
+        <SegmentedControl
+          label="Trạng thái máy in"
           value={status}
           onChange={setStatus}
           options={[
@@ -10930,8 +10703,8 @@ export default function RefreshButtonBasic() {
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `title` | `React.ReactNode` |  | The page title, on the same row as the filters and actions (the page then has no PageTitle). A string becomes the page's h1 in PageTitle type; pass a PageTabsTitle for sibling views. Leave it out to keep the title on its own row above (PageTitle + SubpageToolbar). On narrow screens the filters and actions wrap below the title. |
-| `left` | `React.ReactNode` |  | Filter controls on the left (Pills, Chip, CustomSelect). |
+| `title` | `React.ReactNode` |  | The page title, on the same row as the filters and actions (the page then has no PageTitle). A string becomes the page's h1 in PageTitle type; pass a `TextTabs` for sibling views. Leave it out to keep the title on its own row above (PageTitle + SubpageToolbar). On narrow screens the filters and actions wrap below the title. |
+| `left` | `React.ReactNode` |  | Filter controls on the left (SegmentedControl, Chip, CustomSelect). |
 | `right` | `React.ReactNode` |  | Optional extra controls on the right (placed before the primary icon button). |
 | `onPrimaryAction` | `() => void` |  | Click handler for the icon-only primary CTA button (e.g. "Thêm"). |
 | `primaryActionLabel` | `string` |  | Accessible title & aria-label for the icon-only primary CTA button. |
@@ -10962,7 +10735,7 @@ export default function RefreshButtonBasic() {
 ## Notes
 
 - Two layouts, both valid: PageTitle + SubpageToolbar (title on its own row), or SubpageToolbar with title (one row). Pick one per page, never both.
-- With title, a string becomes the page h1 in PageTitle type; a PageTabsTitle works too. Narrow screens wrap the filters and actions below the title.
+- With title, a string becomes the page h1 in PageTitle type; a TextTabs works too. Narrow screens wrap the filters and actions below the title.
 - Text buttons belong in right (secondary actions); the title itself stays text only and the primary action stays icon-only.
 - Phone layout (#57): with filters (typed, FilterDef[]) or collapseFilters (for left), below sm the toolbar is two rows at most: the title, then Bộ lọc · N, ⋯ (secondaryActions), the primary, the search. Above sm it is the row it always was; more than two typed filters collapse into Bộ lọc with the active ones as chips beside it (C-026).
 
@@ -10975,12 +10748,11 @@ export default function RefreshButtonBasic() {
 
 # Tabs
 
-Switch between panels of content inside a page or card: underline (default) or segmented, with icons and counts.
+Switch between panels of content inside a card or dialog with underline tabs, icons and counts.
 
 ## When to use
 
-- Sections of one object: Tổng quan / Hoạt động / Cài đặt.
-- A segmented period switch that changes a panel (variant="segmented").
+- Sections of one object inside a card or dialog: Tổng quan / Hoạt động / Cài đặt.
 
 ## Use something else when
 
@@ -11023,32 +10795,6 @@ export default function TabsUnderline() {
 }
 ```
 
-### Segmented
-
-```tsx
-"use client";
-
-import { useState } from "react";
-import { Tabs } from "@semi/ui";
-
-export default function TabsSegmented() {
-  const [range, setRange] = useState<"day" | "week" | "month">("week");
-  return (
-    <Tabs
-      variant="segmented"
-      label="Khoảng thời gian"
-      value={range}
-      onChange={setRange}
-      items={[
-        { key: "day", label: "Ngày" },
-        { key: "week", label: "Tuần" },
-        { key: "month", label: "Tháng" },
-      ]}
-    />
-  );
-}
-```
-
 ## API
 
 ### Tabs
@@ -11058,7 +10804,6 @@ export default function TabsSegmented() {
 | `items` * | `TabItem<T>[]` |  |  |
 | `value` * | `T` |  |  |
 | `onChange` * | `(key: T) => void` |  |  |
-| `variant` | `'underline' \| 'segmented'` | `"underline"` | underline = section tabs inside a card or page · segmented = compact switch inside a toolbar. |
 | `label` | `string` |  | Accessible name of the tab list. |
 | `className` | `string` |  |  |
 | `panelClassName` | `string` | `"pt-4"` |  |
@@ -15787,9 +15532,9 @@ import {
   Page,
   PageGrid,
   PhoneFilterBar,
-  Pills,
   RefreshButton,
   SearchPill,
+  SegmentedControl,
   StickyContextBar,
   ViewSwitch,
   toast,
@@ -15917,7 +15662,7 @@ export default function ListPage() {
           <SearchPill value={q} onChange={(v) => f.setParams({ q: v || null }, "replace")} label="Tìm đơn hàng" placeholder="Tìm mã đơn, khách hàng…" focusKey="/" />
           <FilterChipRow
             className="max-md:hidden"
-            leading={<Pills value={view} onChange={setView} options={VIEWS} />}
+            leading={<SegmentedControl label="Trạng thái đơn" value={view} onChange={setView} options={VIEWS} />}
             filters={f.filters}
             onChange={f.onChange}
             onClear={f.onClear}
@@ -16023,7 +15768,7 @@ export default function ListPage() {
 ## Accessibility
 
 - The title row is the page h1 with its action; the bar under it is a search landmark named for the page; the table has a caption; bulk actions appear as a labelled region.
-- Views are toggle buttons (Pills) on md+ and radio items of a menu on phones; a single-choice filter chip opens a menu of radio items.
+- Views are a radiogroup (SegmentedControl) on md+ and radio items of a menu on phones; a single-choice filter chip opens a menu of radio items.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/list-page/ and the types in src/ -->
 

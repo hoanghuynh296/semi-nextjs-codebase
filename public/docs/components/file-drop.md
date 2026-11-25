@@ -1,11 +1,12 @@
 # FileDrop
 
-A file picker and dropzone with one row per file: size, upload progress, done, and remove / retry on failure. Controlled: the app owns the list and does the upload.
+A file picker and dropzone with one row per file (size, upload progress, done, remove / retry on failure) plus DropZone, its compact dashed-tile variant for workspace panels (optional file rows). Controlled: the app owns the list and does the upload.
 
 ## When to use
 
-- Choosing or dropping one or more files: CSV import, product photos, invoices, firmware, model files.
+- Choosing or dropping one or more files: CSV import, product photos, invoices, firmware, model files (FileDrop).
 - Showing the progress of each upload and letting the user retry or remove a file.
+- Attachments in a WorkspaceSection or narrow side panel where the section label carries the count (DropZone).
 - Duplicates (same name and size as an item or earlier in the batch) and dropped folders are rejected too: onReject reasons are type, size, directory, duplicate, multiple.
 
 ## Use something else when
@@ -19,7 +20,7 @@ A file picker and dropzone with one row per file: size, upload progress, done, a
 ## Import
 
 ```tsx
-import { FileDrop } from "@semi/ui";
+import { FileDrop, DropZone, type DropZoneProps } from "@semi/ui";
 ```
 
 ## Examples
@@ -141,6 +142,35 @@ export default function FileDropSingle() {
 }
 ```
 
+### Compact workspace drop zone (DropZone)
+
+A light dashed tile on the panel surface for WorkspaceSection attachments, with optional file rows.
+
+```tsx
+import { useState } from "react";
+import { DropZone, WorkspaceSection, type FileDropItem } from "@semi/ui";
+
+export default function DropZoneBasic() {
+  const [items, setItems] = useState<FileDropItem[]>([]);
+  return (
+    <div className="max-w-sm rounded-panel bg-panel-3 p-4">
+      <WorkspaceSection label="Quy cách đính kèm" count={items.length} max={5}>
+        <DropZone
+          title="Kéo tệp quy cách vào đây"
+          hint="PDF, ảnh mẫu hoặc Excel, tối đa 10 MB"
+          accept={[".pdf", "image/*", ".xlsx"]}
+          maxSize={10_000_000}
+          multiple
+          items={items}
+          onAdd={(files) => setItems((cur) => [...cur, ...files.map((f) => ({ id: `${f.name}-${f.size}`, name: f.name, size: f.size, status: "done" as const }))])}
+          onRemove={(id) => setItems((cur) => cur.filter((i) => i.id !== id))}
+        />
+      </WorkspaceSection>
+    </div>
+  );
+}
+```
+
 ## API
 
 ### FileDrop
@@ -165,6 +195,31 @@ Picker + drop area with a row per file (forms, import pages). In a narrow worksp
 | `aria-describedby` | `string` |  |  |
 | `aria-label` | `string` |  | Names the drop button and the hidden file input (wins over the Field label / title). Without it the input is named by the button (`aria-labelledby`), so `getByLabel(label)` in a test reaches the input too. |
 | `className` | `string` |  |  |
+
+### DropZone
+
+Compact FileDrop for a workspace panel (`WorkspaceSection`, L12): a lighter dashed tile on the panel surface (no
+field fill), smaller type, the same checks (`accept`, `maxSize`, duplicates), keyboard (Enter / Space opens the
+picker) and announcements. `items` is optional.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `disabled` | `boolean` |  |  |
+| `className` | `string` |  |  |
+| `id` | `string` |  | Set by the surrounding Field when omitted. |
+| `title` | `React.ReactNode` |  | Main line of the drop area (default from the locale). |
+| `aria-describedby` | `string` |  |  |
+| `aria-label` | `string` |  | Names the drop button and the hidden file input (wins over the Field label / title). Without it the input is named by the button (`aria-labelledby`), so `getByLabel(label)` in a test reaches the input too. |
+| `multiple` | `boolean` |  |  |
+| `onAdd` * | `(files: File[]) => void` |  | Only the files that passed every check (see `onReject`); a batch never repeats a name + size. |
+| `onReject` | `(rejections: FileRejection[]) => void` |  | Everything not added, with its reason: "type" / "size" (`accept`, `maxSize`), "directory" (a dropped folder), "duplicate" (same name + size as an item or an earlier file of the batch), "multiple" (extra files while `multiple` is off). The app decides whether to show them (e.g. as a Field error). |
+| `onRemove` | `(id: string) => void` |  |  |
+| `onRetry` | `(id: string) => void` |  |  |
+| `accept` | `string[]` |  | MIME types, wildcards ("image/*") or extensions (".csv"). Omit to accept everything. |
+| `maxSize` | `number` |  | Largest file in bytes. |
+| `hint` | `React.ReactNode` |  | Second line, e.g. "CSV or XLSX, up to 10 MB". |
+| `invalid` | `boolean` |  |  |
+| `items` | `FileDropItem[]` |  | Rows of the files already added; omit when the panel shows them elsewhere (a count in its section label). |
 
 ## Accessibility
 

@@ -4,7 +4,7 @@ Lets a page put its actions into a slot of the shared header: PageActionsProvide
 
 ## When to use
 
-- A layout owns the header row but the page decides the actions (PageTabsTitle + “+”).
+- A layout owns the header row but the page decides the actions (TextTabs + “+”).
 
 ## Import
 
@@ -20,17 +20,18 @@ import { PageActions, PageActionsProvider, PageActionsSlot } from "@semi/ui";
 "use client";
 
 import { useState } from "react";
-import { Button, PageActions, PageActionsProvider, PageActionsSlot, PageTabsTitle } from "@semi/ui";
+import { Button, PageActions, PageActionsProvider, PageActionsSlot, TextTabs } from "@semi/ui";
 
 export default function PageActionsSlotExample() {
   const [view, setView] = useState<"printers" | "jobs">("printers");
   return (
     <PageActionsProvider>
       <div className="flex items-end gap-3">
-        <PageTabsTitle
+        <TextTabs
+          label="Chế độ xem"
           value={view}
           onChange={setView}
-          tabs={[
+          items={[
             { key: "printers", label: "Máy in" },
             { key: "jobs", label: "Job in" },
           ]}
@@ -39,7 +40,7 @@ export default function PageActionsSlotExample() {
       </div>
       {/* Declared by the page content, shown in the slot above */}
       <PageActions>
-        <Button variant="primary" iconOnly icon="plus" aria-label={view === "printers" ? "Thêm máy in" : "Tạo job"} />
+        <Button variant="inverse" iconOnly icon="plus" aria-label={view === "printers" ? "Thêm máy in" : "Tạo job"} />
       </PageActions>
     </PageActionsProvider>
   );

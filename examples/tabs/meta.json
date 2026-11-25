@@ -1,13 +1,12 @@
 {
   "title": "Tabs",
   "group": "Navigation & layout",
-  "description": "Switch between panels of content inside a page or card: underline (default) or segmented, with icons and counts.",
+  "description": "Switch between panels of content inside a card or dialog with underline tabs, icons and counts.",
   "components": [
     "Tabs"
   ],
   "when": [
-    "Sections of one object: Tổng quan / Hoạt động / Cài đặt.",
-    "A segmented period switch that changes a panel (variant=\"segmented\")."
+    "Sections of one object inside a card or dialog: Tổng quan / Hoạt động / Cài đặt."
   ],
   "instead": [
     {
@@ -30,10 +29,6 @@
     {
       "file": "underline",
       "title": "Underline with panels"
-    },
-    {
-      "file": "segmented",
-      "title": "Segmented"
     }
   ]
 }

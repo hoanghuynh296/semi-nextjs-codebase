@@ -120,7 +120,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (174)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (171)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
@@ -179,10 +179,9 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `Page`: `SubNav`, `PageSection`, `PageGrid`, `Page`
 - `PageActions`: `PageActionsProvider`, `PageActionsSlot`, `PageActions`
 - `PageEnter`: `PageEnter`
-- `PageTitle`: `PageTitle`, `PageTabsTitle`
+- `PageTitle`: `PageTitle`
 - `Pagination`: `Pagination`
 - `PillTabs`: `PillTabs`
-- `Pills`: `Pills`
 - `Popover`: `Popover`, `HoverCard`
 - `Prose`: `Prose`
 - `QRCode`: `QRCode`
@@ -191,7 +190,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `RouteHeader`: `AccountMenu`, `RouteHeader`
 - `ScrollArea`: `ScrollArea`
 - `SearchInput`: `SearchInput`
-- `SearchPill`: `BarActions`, `StickyContextBar`, `SearchPill`, `ResultLine`
+- `SearchPill`: `BarActions`, `StickyContextBar`, `SearchPill`
 - `SegmentedControl`: `SegmentedControl`
 - `Separator`: `Separator`
 - `SidePanel`: `SidePanelToggle`, `SidePanel`

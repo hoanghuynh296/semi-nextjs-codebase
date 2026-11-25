@@ -1,10 +1,9 @@
 {
   "title": "Page title",
   "group": "Navigation & layout",
-  "description": "PageTitle is the 18 / 400 UI sans heading of a work page on the same row as the page's main action (`actions`), with `variant=\"reading\"` (44 / 500 display face, text-title-xl) for one-column reading pages only. PageTabsTitle is kept as a deprecated alias for 2–4 sibling tabs — new screens use TextTabs.",
+  "description": "PageTitle is the 18 / 400 UI sans heading of a work page on the same row as the page's main action (`actions`), with `variant=\"reading\"` (44 / 500 display face, text-title-xl) for one-column reading pages only.",
   "components": [
-    "PageTitle",
-    "PageTabsTitle"
+    "PageTitle"
   ],
   "when": [
     "The first line of every page (PageTitle).",
@@ -33,7 +32,7 @@
     }
   ],
   "a11y": [
-    "PageTitle is the page h1; its actions follow it in the reading and tab order. PageTabsTitle is a tablist with arrow-key navigation."
+    "PageTitle is the page h1; its actions follow it in the reading and tab order."
   ],
   "notes": [
     "No subtitle under the title. Title-row actions are one `inverse` button (or `primary` when it is the page's commit action) with icon and text, optionally a RefreshButton before it; more actions go in a ⋯ Menu. Filters never go on the title row: they belong in the StickyContextBar or SubpageToolbar under it.",
@@ -52,10 +51,6 @@
     {
       "file": "reading",
       "title": "Reading page (44 / 500 display)"
-    },
-    {
-      "file": "tabs",
-      "title": "PageTabsTitle"
     }
   ]
 }

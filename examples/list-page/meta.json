@@ -18,7 +18,7 @@
   ],
   "a11y": [
     "The title row is the page h1 with its action; the bar under it is a search landmark named for the page; the table has a caption; bulk actions appear as a labelled region.",
-    "Views are toggle buttons (Pills) on md+ and radio items of a menu on phones; a single-choice filter chip opens a menu of radio items."
+    "Views are a radiogroup (SegmentedControl) on md+ and radio items of a menu on phones; a single-choice filter chip opens a menu of radio items."
   ],
   "examples": [
     {

@@ -30,7 +30,7 @@
   ],
   "notes": [
     "One per page, right under the page heading: PageTitle with `actions` (the page's one `inverse` or `primary` action + `•••` / RefreshButton) or TextTabs. Pass `<BarActions actions={…} menu={…} />` in SearchPill's `trailing` slot so up to 2 icon buttons (`[•••][main action]`) appear inside the pinned search bar when the title row scrolls out of view.",
-    "1.0 list pages omit ResultLine: the list sits 16px under the filter row, and `sort` + `selection` (\"Chọn\", managed with `useListSelection`) live on FilterChipRow / PhoneFilterBar.",
+    "1.0 list pages have no result-count row: the list sits 16px under the filter row, and `sort` + `selection` (\"Chọn\", managed with `useListSelection`) live on FilterChipRow / PhoneFilterBar.",
     "Desktop and iPad show FilterChipRow (max-md:hidden on the phone bar's sibling), phones PhoneFilterBar (md:hidden): same filters, same state.",
     "The page's views (Đang mở · Đã đóng · Tất cả) are `SegmentedControl` in FilterChipRow `leading` on md+ and PhoneFilterBar `typeItems` (radio items) on phones: same state, usually a plain param (?view=) written with useFilterParams().setParams. The default view may be other than “all”; leave it out of the URL.",
     "Phone chrome: at most 2 rows (search + PhoneFilterBar), under 25% of the viewport (P1)."

@@ -12,7 +12,7 @@
   "instead": [
     {
       "need": "Exactly one of 2–5 options",
-      "use": "Pills"
+      "use": "SegmentedControl"
     },
     {
       "need": "A read-only status",

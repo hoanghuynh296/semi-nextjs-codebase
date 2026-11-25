@@ -28,7 +28,7 @@ import { SubpageToolbar, RefreshButton } from "@semi/ui";
 "use client";
 
 import { useState } from "react";
-import { Pills, SubpageToolbar, toast } from "@semi/ui";
+import { SegmentedControl, SubpageToolbar, toast } from "@semi/ui";
 
 export default function SubpageToolbarListPage() {
   const [status, setStatus] = useState("all");
@@ -36,7 +36,8 @@ export default function SubpageToolbarListPage() {
   return (
     <SubpageToolbar
       left={
-        <Pills
+        <SegmentedControl
+          label="Trạng thái máy in"
           value={status}
           onChange={setStatus}
           options={[
@@ -156,8 +157,8 @@ export default function RefreshButtonBasic() {
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `title` | `React.ReactNode` |  | The page title, on the same row as the filters and actions (the page then has no PageTitle). A string becomes the page's h1 in PageTitle type; pass a PageTabsTitle for sibling views. Leave it out to keep the title on its own row above (PageTitle + SubpageToolbar). On narrow screens the filters and actions wrap below the title. |
-| `left` | `React.ReactNode` |  | Filter controls on the left (Pills, Chip, CustomSelect). |
+| `title` | `React.ReactNode` |  | The page title, on the same row as the filters and actions (the page then has no PageTitle). A string becomes the page's h1 in PageTitle type; pass a `TextTabs` for sibling views. Leave it out to keep the title on its own row above (PageTitle + SubpageToolbar). On narrow screens the filters and actions wrap below the title. |
+| `left` | `React.ReactNode` |  | Filter controls on the left (SegmentedControl, Chip, CustomSelect). |
 | `right` | `React.ReactNode` |  | Optional extra controls on the right (placed before the primary icon button). |
 | `onPrimaryAction` | `() => void` |  | Click handler for the icon-only primary CTA button (e.g. "Thêm"). |
 | `primaryActionLabel` | `string` |  | Accessible title & aria-label for the icon-only primary CTA button. |
@@ -188,7 +189,7 @@ export default function RefreshButtonBasic() {
 ## Notes
 
 - Two layouts, both valid: PageTitle + SubpageToolbar (title on its own row), or SubpageToolbar with title (one row). Pick one per page, never both.
-- With title, a string becomes the page h1 in PageTitle type; a PageTabsTitle works too. Narrow screens wrap the filters and actions below the title.
+- With title, a string becomes the page h1 in PageTitle type; a TextTabs works too. Narrow screens wrap the filters and actions below the title.
 - Text buttons belong in right (secondary actions); the title itself stays text only and the primary action stays icon-only.
 - Phone layout (#57): with filters (typed, FilterDef[]) or collapseFilters (for left), below sm the toolbar is two rows at most: the title, then Bộ lọc · N, ⋯ (secondaryActions), the primary, the search. Above sm it is the row it always was; more than two typed filters collapse into Bộ lọc with the active ones as chips beside it (C-026).
 

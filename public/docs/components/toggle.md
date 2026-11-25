@@ -10,7 +10,7 @@ Buttons that stay pressed. Toggle for one (pin, mute, bold); ToggleGroup for a s
 
 | Need | Use |
 |---|---|
-| Filter a list by text options | Pills |
+| Filter a list by text options | SegmentedControl |
 | A setting saved immediately with a label | Switch |
 
 ## Import

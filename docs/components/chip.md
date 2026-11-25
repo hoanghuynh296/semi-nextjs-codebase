@@ -11,7 +11,7 @@ A pill-shaped toggle for filters and tags. Neutral when off; active uses the hig
 
 | Need | Use |
 |---|---|
-| Exactly one of 2–5 options | Pills |
+| Exactly one of 2–5 options | SegmentedControl |
 | A read-only status | Badge |
 
 ## Import
