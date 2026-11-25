@@ -8,6 +8,10 @@
 //   scroller: no wheel clamping on a scrolling document, no `scrollTop` writes per wheel event while scrolling the list.
 // - Unpinning requires a NEW upward wheel gesture (> 200ms idle) starting at the pin with the inner list at its top;
 //   momentum tails and fast flings never unpin.
+// - No `scrollTop` write ever answers a non-cancelable wheel event or a scroll event (#193): once the browser has
+//   committed a wheel sequence to native (compositor) scrolling, it has already painted the new position, so writing
+//   it back shows two positions on alternate frames (the bar and list flicker). Holds are decided on the first,
+//   cancelable event of a sequence instead: preventing it keeps the rest of the sequence cancelable.
 // - Filter, sort, search, selection-mode or data changes never alter pinned/unpinned state.
 // - Below `md` (< 768px), the page keeps native scrolling and touch behaviour.
 import { useEffect, type RefObject } from "react";
@@ -16,6 +20,12 @@ import { useEffect, type RefObject } from "react";
 const GESTURE_GAP_MS = 200;
 /** Smooth focus-pin duration (ms); instant under `prefers-reduced-motion: reduce`. */
 const PIN_SCROLL_MS = 250;
+
+/** Scroll position of the top edge sticky children stick to: the scroller's border + padding (position: sticky
+ * keeps `top` inside the padding box edge, so a padded scroller sticks its bar `padding-top` below the border). */
+function stickEdge(scroller: HTMLElement): number {
+  return scroller.getBoundingClientRect().top + scroller.clientTop + (parseFloat(getComputedStyle(scroller).paddingTop) || 0);
+}
 
 function lineHeightDelta(e: WheelEvent): number {
   if (e.deltaMode === 1) return e.deltaY * 16;
@@ -134,35 +144,42 @@ export function useStickyBarPin(barRef: RefObject<HTMLDivElement | null>, enable
     let lastWheel = 0;
     /** Minimum scrollTop allowed for the current wheel gesture: `pin` blocks unpinning, `0` allows unpinning. */
     let floor = 0;
-    let uncancelable = false;
-    let fixed = false;
+    /** The current gesture is driven here (its first event was prevented) so it can stop exactly at the pin. */
+    let driving = false;
     let animating = false;
     let idleTimer: ReturnType<typeof setTimeout> | undefined;
     let cancelAnim: () => void = () => {};
 
     const endGesture = () => {
       floor = 0;
-      uncancelable = false;
-      fixed = false;
+      driving = false;
+    };
+
+    const setVar = (name: string, value: string) => {
+      if (scroller.style.getPropertyValue(name) !== value) scroller.style.setProperty(name, value);
+    };
+    /** Programmatic scroll, only ever called for a cancelable wheel event this handler prevented (or focus-pin). */
+    const scrollToY = (to: number) => {
+      if (Math.abs(scroller.scrollTop - to) >= 0.5) scroller.scrollTop = to;
     };
 
     const getStickyTop = () => parseFloat(getComputedStyle(bar).top) || 0;
 
     const measure = () => {
-      scroller.style.setProperty("--sticky-view", `${scroller.clientHeight}px`);
+      setVar("--sticky-view", `${scroller.clientHeight}px`);
       const stickyTop = getStickyTop();
-      const top = bar.getBoundingClientRect().top - scroller.getBoundingClientRect().top;
+      const top = bar.getBoundingClientRect().top - stickEdge(scroller);
       // While stuck at the top of the scroller, keep the last natural offset so pin never collapses to 0.
       if (scroller.scrollTop > 0 && top <= stickyTop + 0.5 && pin !== null) return;
       pin = Math.max(0, Math.round(top + scroller.scrollTop - stickyTop));
-      scroller.style.setProperty("--sticky-pin", `${pin}px`);
+      setVar("--sticky-pin", `${pin}px`);
     };
 
     const mark = () => {
       const stickyTop = getStickyTop();
-      const top = bar.getBoundingClientRect().top - scroller.getBoundingClientRect().top;
+      const top = bar.getBoundingClientRect().top - stickEdge(scroller);
       const stuck = scroller.scrollTop > 0 && top <= stickyTop + 0.5;
-      bar.toggleAttribute("data-stuck", stuck);
+      if (bar.hasAttribute("data-stuck") !== stuck) bar.toggleAttribute("data-stuck", stuck);
     };
 
     const holdShortPage = () => {
@@ -173,8 +190,9 @@ export function useStickyBarPin(barRef: RefObject<HTMLDivElement | null>, enable
       // containers without layout-pin CSS, preserve pin + view height only while pinned so fewer results never unpin.
       const naturalRange = scroller.scrollHeight - scroller.clientHeight;
       if (scroller.scrollTop >= pin - 1) {
-        if (naturalRange < pin - 1) content.style.minHeight = `${pin + scroller.clientHeight}px`;
-      } else {
+        const min = `${pin + scroller.clientHeight}px`;
+        if (naturalRange < pin - 1 && content.style.minHeight !== min) content.style.minHeight = min;
+      } else if (content.style.minHeight) {
         content.style.removeProperty("min-height");
       }
     };
@@ -188,65 +206,85 @@ export function useStickyBarPin(barRef: RefObject<HTMLDivElement | null>, enable
       lastWheel = now;
       if (idleTimer) clearTimeout(idleTimer);
       idleTimer = setTimeout(endGesture, GESTURE_GAP_MS);
-      uncancelable = !e.cancelable;
-      fixed = false;
 
       const dy = lineHeightDelta(e);
       if (dy === 0) return;
 
       const inner = findInnerScroller(e.target, scroller);
       const y = scroller.scrollTop;
+      const range = scroller.scrollHeight - scroller.clientHeight;
+      // Layout-pin (md+): the scroller's whole range is the pin, the lists scroll inside it.
+      const layoutPinned = Math.abs(range - pin) <= 1;
 
       if (newGesture) {
         const atTop = !inner || inner.scrollTop <= 0;
         // Only a NEW upward gesture starting already pinned with the inner list at its top may unpin.
         floor = y >= pin - 0.5 && !(dy < 0 && atTop && Math.abs(y - pin) <= 0.5) ? pin : 0;
+        // Without layout-pin the scroller runs past the pin. An upward gesture starting within one screen above it
+        // could cross it, momentum included: take it over from its first (cancelable) event so it stops at the pin
+        // without ever fighting native scrolling. Further up, scrolling stays native.
+        driving =
+          e.cancelable && !layoutPinned && dy < 0 && floor > 0 && y > pin + 0.5 && y - pin <= scroller.clientHeight && !inner;
+        // Pinned at the bottom of a layout-pin range, a downward wheel outside the lists scrolls nothing: prevent it so
+        // the browser keeps the sequence cancelable and a reversal in the same gesture is held at the pin too.
+        if (e.cancelable && layoutPinned && dy > 0 && !inner && y >= pin - 0.5) e.preventDefault();
+      }
+
+      if (dy < 0 && inner && inner.scrollTop > 0) {
+        // Inner panel is not at its top: let it scroll natively, and lock floor so its momentum tail cannot unpin.
+        floor = pin;
+        return;
+      }
+
+      // The browser already scrolls this sequence natively (its first event was not prevented): any scrollTop write
+      // now would land after the compositor painted the native position and flicker (#193). Let it run.
+      if (!e.cancelable) return;
+
+      if (driving) {
+        e.preventDefault();
+        scrollToY(Math.min(range, Math.max(floor, y + dy)));
+        return;
       }
 
       if (dy > 0) {
         // Not pinned yet: pin the page first before any inner overscroll-contain panel consumes the wheel.
         if (y < pin - 0.5) {
           e.preventDefault();
-          scroller.scrollTop = Math.min(pin, y + dy);
+          scrollToY(Math.min(pin, y + dy));
         }
         // Once pinned, do nothing — the inner list/reader panel scrolls natively.
         return;
       }
 
       // Scrolling up (dy < 0).
-      if (inner && inner.scrollTop > 0) {
-        // Inner panel is not at its top: let it scroll natively, and lock floor so its momentum tail cannot unpin.
-        floor = pin;
-        return;
-      }
-
       if (floor > 0 && y < floor - 0.5) {
-        if (e.cancelable) e.preventDefault();
-        scroller.scrollTop = floor;
+        e.preventDefault();
+        scrollToY(floor);
         return;
       }
 
       if (y > pin + 0.5) {
-        // Fallback when document scrolled past pin (e.g. without layout-pin): stop cleanly at pin.
+        // Without layout-pin, past the pin: stop cleanly at the pin.
         if (y + dy < pin) {
           e.preventDefault();
-          scroller.scrollTop = pin;
+          scrollToY(pin);
         }
         return;
       }
 
       if (Math.abs(y - pin) <= 0.5 && floor > 0) {
         // Held at the pin during momentum / fling.
-        if (e.cancelable) e.preventDefault();
+        e.preventDefault();
         return;
       }
 
       // Fresh upward gesture at the stop (or already between 0 and pin):
       // Without an inner panel, let the browser's native smooth scrolling handle it.
-      // Over an inner panel at top (overscroll-behavior: contain), forward the wheel to unpin the page.
+      // Over an inner panel at top (overscroll-behavior: contain), forward the wheel to unpin the page: the panel
+      // cannot chain to the page, and this event is prevented, so nothing scrolls natively meanwhile.
       if (!inner) return;
       e.preventDefault();
-      scroller.scrollTop = Math.max(0, y + dy);
+      scrollToY(Math.max(0, y + dy));
     };
 
     const onFocusIn = (e: FocusEvent) => {
@@ -273,11 +311,8 @@ export function useStickyBarPin(barRef: RefObject<HTMLDivElement | null>, enable
       }
     };
 
+    // Reads layout and updates state only: never writes scrollTop (#193).
     const onScroll = () => {
-      if (uncancelable && !fixed && floor > 0 && performance.now() - lastWheel < GESTURE_GAP_MS && scroller.scrollTop < floor) {
-        fixed = true;
-        scroller.scrollTop = floor;
-      }
       if (scroller.scrollTop === 0) measure();
       holdShortPage();
       mark();
