@@ -372,3 +372,93 @@ test("short-list focus-pin works below md (< 768px), reduced-motion pins instant
   expect(afterCancel.mainScroll).toBeLessThan(afterCancel.pinVar - 2);
   expect(afterCancel.stuck).toBe(false);
 });
+
+// #207: one upward gesture never unpins, with or without layout-pin. Replays (all events cancelable) a long continuous
+// wheel, a slow trackpad with 250-350ms pauses and a fling with momentum on the layout-pin list and on the padded doc
+// example (no layout-pin); data-stuck must never clear during the gesture, then a stop + a new upward gesture unpins.
+const SLOW_BURSTS = Array.from({ length: 14 }, () => [-12, -20, -24, -12]);
+const GESTURES_207: { name: string; run: (page: Page, x: number, y: number) => Promise<void> }[] = [
+  { name: "long continuous wheel", run: (page, x, y) => trackpadWheel(page, x, y, Array(70).fill(-40)) },
+  {
+    name: "slow trackpad with 250-350ms pauses",
+    run: async (page, x, y) => {
+      for (const [i, burst] of SLOW_BURSTS.entries()) {
+        // Plus ~50ms for the last wheel of a burst to go through: 250-350ms between two wheel events.
+        if (i) await page.waitForTimeout([200, 250, 300][i % 3]);
+        await trackpadWheel(page, x, y, burst);
+      }
+    },
+  },
+  {
+    name: "fling with momentum",
+    run: (page, x, y) =>
+      trackpadWheel(page, x, y, [-180, -240, -240, -200, -160, -120, -96, -72, -56, -40, -32, -24, -16, -12, -8, -6, -4, -2, -1]),
+  },
+];
+const TARGETS_207 = [
+  { name: "layout-pin list", url: "/demo/sticky-list/", host: "#main", over: "[data-page-body]", down: 800 },
+  { name: "padded doc example without layout-pin", url: "/components/sticky-context-bar/", host: "[data-sticky-host]", over: "[data-sticky-host]", down: 800 },
+];
+
+for (const target of TARGETS_207) {
+  test(`#207 ${target.name}: a long, a slow and a fling upward gesture never unpin; a stop + new gesture does`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 820 });
+    await page.goto(target.url);
+    await page.waitForFunction(
+      (sel) => parseFloat(document.querySelector<HTMLElement>(sel)?.style.getPropertyValue("--sticky-pin") || "0") > 0,
+      target.host,
+    );
+    await page.evaluate((sel) => document.querySelector(sel)!.scrollIntoView({ block: "center" }), target.host);
+    await page.waitForTimeout(200);
+    const box = (await page.locator(target.over).first().boundingBox())!;
+    const x = box.x + box.width / 2;
+    const y = box.y + Math.min(box.height - 40, 200);
+    // Records every data-stuck change with its time.
+    await page.evaluate((sel) => {
+      const bar = document.querySelector(sel)!.querySelector("[data-sticky-bar]")!;
+      const w = window as unknown as { __stuckLog: [number, boolean][]; __wheels: number[] };
+      w.__stuckLog = [];
+      w.__wheels = [];
+      window.addEventListener("wheel", () => w.__wheels.push(performance.now()), { capture: true, passive: true });
+      new MutationObserver(() => w.__stuckLog.push([performance.now(), bar.hasAttribute("data-stuck")])).observe(bar, {
+        attributes: true,
+        attributeFilter: ["data-stuck"],
+      });
+    }, target.host);
+    const read = () =>
+      page.evaluate((sel) => {
+        const h = document.querySelector<HTMLElement>(sel)!;
+        return {
+          now: performance.now(),
+          st: h.scrollTop,
+          pin: parseFloat(h.style.getPropertyValue("--sticky-pin")),
+          stuck: h.querySelector("[data-sticky-bar]")!.hasAttribute("data-stuck"),
+          log: (window as unknown as { __stuckLog: [number, boolean][] }).__stuckLog,
+          wheels: (window as unknown as { __wheels: number[] }).__wheels,
+        };
+      }, target.host);
+
+    for (const g of GESTURES_207) {
+      // Pin and scroll well past it (the list with layout-pin, the scroller itself without).
+      await trackpadWheel(page, x, y, Array(Math.round(target.down / 80)).fill(80));
+      await page.waitForTimeout(460);
+      const start = await read();
+      expect(start.stuck, `${g.name}: stuck before`).toBe(true);
+      await g.run(page, x, y);
+      const held = await read();
+      const cleared = held.log.filter(([t, stuck]) => t >= start.now && !stuck);
+      // The input really is one gesture: no pause between two of its wheel events reaches the 400ms "stop".
+      const wheels = held.wheels.filter((t) => t >= start.now);
+      const gaps = wheels.slice(1).map((t, i) => Math.round(t - wheels[i]));
+      expect(cleared, `${g.name}: data-stuck cleared during the gesture (wheel gaps ${gaps.filter((d) => d > 40).join(", ")} ms)`).toEqual([]);
+      expect(Math.max(...gaps), `${g.name}: longest pause inside the gesture`).toBeLessThan(400);
+      expect(held.stuck, `${g.name}: still stuck`).toBe(true);
+      expect(Math.abs(held.st - held.pin), `${g.name}: held at the pin`).toBeLessThanOrEqual(2);
+      // The stop, then a new upward gesture unpins.
+      await page.waitForTimeout(460);
+      await trackpadWheel(page, x, y, [-36, -48, -64, -48, -24]);
+      await page.waitForTimeout(300);
+      expect((await read()).stuck, `${g.name}: a new gesture after the stop unpins`).toBe(false);
+    }
+  });
+}
