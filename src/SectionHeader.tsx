@@ -81,11 +81,13 @@ function useRailPager(target: React.RefObject<HTMLElement | null> | undefined) {
     };
     update();
     el.addEventListener("scroll", update, { passive: true });
+    el.addEventListener("scrollend", update);
     const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(update) : null;
     ro?.observe(el);
     for (const child of el.children) ro?.observe(child);
     return () => {
       el.removeEventListener("scroll", update);
+      el.removeEventListener("scrollend", update);
       ro?.disconnect();
     };
   }, [target]);

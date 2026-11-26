@@ -92,6 +92,17 @@ test("SectionHeader pager by keyboard (#191): ‹ disabled at the start, › scr
   const next = group.getByRole("button", { name: "Mục sau" });
   const rail = ex.locator("[data-rail]");
   const left = () => rail.evaluate((el) => el.scrollLeft);
+  // a smooth scroll lands over several frames: wait until two reads 150ms apart agree before judging ‹ / ›
+  const settled = async () => {
+    let prevAt = -1;
+    await expect.poll(async () => {
+      const now = await left();
+      const same = now === prevAt;
+      prevAt = now;
+      await page.waitForTimeout(150);
+      return same;
+    }).toBe(true);
+  };
   await expect(prev).toBeDisabled();
   await expect(next).toBeEnabled();
   // Tab from "Xem tất cả" skips the disabled ‹ and lands on ›
@@ -100,12 +111,14 @@ test("SectionHeader pager by keyboard (#191): ‹ disabled at the start, › scr
   await expect(next).toBeFocused();
   await page.keyboard.press("Enter");
   await expect.poll(left).toBeGreaterThan(100);
+  await settled();
   await expect(prev).toBeEnabled();
   for (let i = 0; i < 6 && (await next.isEnabled()); i++) {
     const at = await left();
     await next.focus();
     await page.keyboard.press("Space");
     await expect.poll(left).toBeGreaterThan(at);
+    await settled();
   }
   await expect(next).toBeDisabled();
   const max = await rail.evaluate((el) => el.scrollWidth - el.clientWidth);
