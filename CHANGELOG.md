@@ -2,7 +2,15 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
-## Unreleased
+## 1.2.0 - 2026-11-26
+
+**Summary.** Group "staged-migration" (#184) plus a Windows fix (#185). New `@semi/ui/scoped.css` lets an app that moves to Semi screen by screen keep its own Tailwind build for the screens not migrated yet, without Semi's AppShell classes losing to the app's. `base.css` is split into `base-layers.css` and `base-global.css` (same rules, same output for apps on one `globals.css`). `/semi-check` reports a second Tailwind build that does not use the scoped entry (`second-build`). `/semi-propose` and `/semi-triage` now find the GitHub token on Windows.
+
+**What apps must do.** Nothing for apps on the single `globals.css` setup (`/semi-sync` as usual). Apps migrating screen by screen can adopt `scoped.css` (guide: `docs/BRANDS.md`, "Migrating an app in stages"). Windows users: run `/semi-sync` to get the plugin fix. No migration script: nothing is renamed or removed.
+
+**Verified.** `npm run check` and CI (`check` job incl. the `windows-latest` job, `test:ui`) on each merged PR and on this release head; `npm run build:storybook` locally (the `base.css` split is imported there); consumer trial of this head on a real app (typecheck, build, semi-lint, compiled CSS compared, `/semi-check` audit: see the release PR).
+
+**UNVERIFIED:** a real Vite / React Router app on `scoped.css`, Next dev-mode stylesheet order, a real Windows machine outside CI, Safari and Firefox.
 
 ### Added
 
