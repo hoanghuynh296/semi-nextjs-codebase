@@ -129,13 +129,16 @@ Pin behaviour (#150):
 - Pins when the scroller scrolls past the bar, or when the search text field gets focus (250ms ease-out, instant
   under reduced motion, cancelled by wheel/touch; works on short lists too; chips/sort/view buttons do not pin).
 - From `md` (768px), pins by layout: the scroller's exact scroll range equals `--sticky-pin` and the list area (or
-  each `ListReaderLayout` panel) scrolls independently with `overscroll-behavior: contain`. Only a new upward wheel
-  gesture starting at the list top unpins; momentum and flings never unpin. Below `md`, keeps native touch scrolling.
+  each `ListReaderLayout` panel) scrolls independently with `overscroll-behavior: contain`. Below `md`, keeps native
+  touch scrolling.
+- One upward gesture never unpins, with or without layout-pin (#207): it stops at the pin. Only a new upward wheel
+  gesture, after a 400ms stop at the pin with the list at its top, unpins; momentum, flings and slow trackpad
+  pauses (up to ~350ms) stay one gesture.
 - Exposes `data-stuck` and `data-searching` on the bar and `--sticky-pin` / `--sticky-view` on the scroller, clearing
   them on unmount. The pin and `data-stuck` are measured from the scroller's padding edge (where sticky children stick).
 - Never writes `scrollTop` while the browser scrolls natively (#193): holds are decided on the first wheel event of a
-  gesture. Without layout-pin (below `md`, or a scroller outside `AppShell`), an upward gesture starting within one
-  screen above the pin is driven by the bar and stops at the pin; from further up it scrolls natively and may pass it.
+  gesture. Without layout-pin (below `md`, or a scroller outside `AppShell`), while pinned every wheel gesture over
+  the page is driven by the bar from its first event (eased, clamped at the pin), so it never passes the pin.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
