@@ -87,6 +87,8 @@ export default function CheckboxRowSelect() {
 
 ### Checkbox
 
+A checkbox, alone (a row's select box, with `aria-label`) or with a label and description; `indeterminate` for select-all.
+
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `checked` * | `boolean` |  |  |

@@ -50,6 +50,8 @@ export default function RadioGroupBasic() {
 
 ### RadioGroup
 
+One choice of a few visible options (a radiogroup), vertical or horizontal.
+
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `value` * | `T` |  |  |

@@ -98,6 +98,7 @@ interface NumPadPopupProps {
 
 const OPS = ["÷", "×", "−", "+"];
 
+/** A number pad in a sheet for typing a number on a touch screen, with ÷ × − + for a quick sum; `onCommit` gets the result. */
 export function NumPadPopup({ label, unit, initial, integer, allowPercent, onCommit, onClose }: NumPadPopupProps) {
   const [text, setText] = useState(initial);
   const [fresh, setFresh] = useState(true); // next digit replaces the initial value

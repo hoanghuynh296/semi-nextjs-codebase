@@ -81,6 +81,8 @@ export default function SwitchCardHeader() {
 
 ### Switch
 
+An on / off setting that applies at once; with a label the whole row toggles it.
+
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `checked` * | `boolean` |  |  |

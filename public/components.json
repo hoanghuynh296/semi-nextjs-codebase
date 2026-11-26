@@ -596,7 +596,7 @@
       "kind": "component",
       "module": "src/Button.tsx",
       "client": true,
-      "summary": "Button and Spinner: the component form of BTN_* / MODAL_BTN_* (docs/DESIGN_SYSTEM.md §9).",
+      "summary": "The action control (docs/DESIGN_SYSTEM.md §9): `subtle` by default, a brand fill only for the one main action, `danger` for a destructive one.",
       "props": [
         "ref",
         "variant",
@@ -1012,7 +1012,7 @@
       "kind": "component",
       "module": "src/Choice.tsx",
       "client": true,
-      "summary": "Selection controls: Checkbox, Switch, RadioGroup.",
+      "summary": "A checkbox, alone (a row's select box, with `aria-label`) or with a label and description; `indeterminate` for select-all.",
       "props": [
         "checked",
         "onChange",
@@ -1032,7 +1032,7 @@
       "kind": "component",
       "module": "src/Choice.tsx",
       "client": true,
-      "summary": "Selection controls: Checkbox, Switch, RadioGroup.",
+      "summary": "An on / off setting that applies at once; with a label the whole row toggles it.",
       "props": [
         "checked",
         "onChange",
@@ -1052,7 +1052,7 @@
       "kind": "component",
       "module": "src/Choice.tsx",
       "client": true,
-      "summary": "Selection controls: Checkbox, Switch, RadioGroup.",
+      "summary": "One choice of a few visible options (a radiogroup), vertical or horizontal.",
       "props": [
         "value",
         "onChange",
@@ -1959,7 +1959,7 @@
       "kind": "component",
       "module": "src/NumPadPopup.tsx",
       "client": true,
-      "summary": "",
+      "summary": "A number pad in a sheet for typing a number on a touch screen, with ÷ × − + for a quick sum; `onCommit` gets the result.",
       "props": [
         "label",
         "unit",
@@ -2756,7 +2756,7 @@
       "kind": "component",
       "module": "src/Table.tsx",
       "client": false,
-      "summary": "Dense data table (transactions, logs, admin lists).",
+      "summary": "A dense data table (transactions, logs, admin lists) in its own horizontal scroller; compose it with THead, TBody, TR, TH, TD.",
       "props": [
         "className",
         "children"
@@ -2768,7 +2768,7 @@
       "kind": "component",
       "module": "src/Table.tsx",
       "client": false,
-      "summary": "Dense data table (transactions, logs, admin lists).",
+      "summary": "The header row group of a Table.",
       "props": [],
       "doc": "docs/components/table.md"
     },
@@ -2777,7 +2777,7 @@
       "kind": "component",
       "module": "src/Table.tsx",
       "client": false,
-      "summary": "Dense data table (transactions, logs, admin lists).",
+      "summary": "The body of a Table (no line under its last row).",
       "props": [
         "className"
       ],
@@ -2800,7 +2800,7 @@
       "kind": "component",
       "module": "src/Table.tsx",
       "client": false,
-      "summary": "Dense data table (transactions, logs, admin lists).",
+      "summary": "A column header cell (`scope=\"col\"`); `align` for numeric columns.",
       "props": [
         "align",
         "className"

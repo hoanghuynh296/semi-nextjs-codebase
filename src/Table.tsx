@@ -16,6 +16,7 @@ export const TABLE_ROW_HOVER = "hover:bg-item-hover transition-hover";
 type Align = "left" | "right" | "center";
 const ALIGN: Record<Align, string> = { left: "text-left", right: "text-right", center: "text-center" };
 
+/** A dense data table (transactions, logs, admin lists) in its own horizontal scroller; compose it with THead, TBody, TR, TH, TD. */
 export function Table({ className, children, ...rest }: React.TableHTMLAttributes<HTMLTableElement>) {
   return (
     <div data-semi="Table" className="w-full overflow-x-auto overscroll-x-contain">
@@ -26,8 +27,10 @@ export function Table({ className, children, ...rest }: React.TableHTMLAttribute
   );
 }
 
+/** The header row group of a Table. */
 export const THead = (p: React.HTMLAttributes<HTMLTableSectionElement>) => <thead data-semi="THead" {...p} />;
 
+/** The body of a Table (no line under its last row). */
 export function TBody({ className, ...rest }: React.HTMLAttributes<HTMLTableSectionElement>) {
   return <tbody data-semi="TBody" className={cn("[&>tr:last-child>td]:border-b-0", className)} {...rest} />;
 }
@@ -37,6 +40,7 @@ export function TR({ className, onClick, ...rest }: React.HTMLAttributes<HTMLTab
   return <tr data-semi="TR" onClick={onClick} className={cn(onClick && cn(TABLE_ROW_HOVER, "cursor-pointer"), className)} {...rest} />;
 }
 
+/** A column header cell (`scope="col"`); `align` for numeric columns. */
 export function TH({ align = "left", className, ...rest }: React.ThHTMLAttributes<HTMLTableCellElement> & { align?: Align }) {
   return <th data-semi="TH" scope="col" className={cn(TABLE_HEAD_CELL, ALIGN[align], className)} {...rest} />;
 }

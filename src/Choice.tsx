@@ -20,6 +20,7 @@ function useNameWarning(component: string, named: boolean) {
   }, [component, named]);
 }
 
+/** A checkbox, alone (a row's select box, with `aria-label`) or with a label and description; `indeterminate` for select-all. */
 export function Checkbox({
   checked,
   onChange,
@@ -93,6 +94,7 @@ export function Checkbox({
   );
 }
 
+/** An on / off setting that applies at once; with a label the whole row toggles it. */
 export function Switch({
   checked,
   onChange,
@@ -178,6 +180,7 @@ export interface RadioOption<T extends string> {
   disabled?: boolean;
 }
 
+/** One choice of a few visible options (a radiogroup), vertical or horizontal. */
 export function RadioGroup<T extends string>({
   value,
   onChange,

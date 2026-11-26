@@ -3225,6 +3225,8 @@ export default function ButtonSizes() {
 
 ### Button
 
+The action control (docs/DESIGN_SYSTEM.md §9): `subtle` by default, a brand fill only for the one main action, `danger` for a destructive one.
+
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `ref` | `React.Ref<HTMLButtonElement>` |  |  |
@@ -3993,6 +3995,8 @@ export default function CheckboxRowSelect() {
 ## API
 
 ### Checkbox
+
+A checkbox, alone (a row's select box, with `aria-label`) or with a label and description; `indeterminate` for select-all.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
@@ -5748,6 +5752,8 @@ export default function NumberInputBasic() {
 
 ### NumPadPopup
 
+A number pad in a sheet for typing a number on a touch screen, with ÷ × − + for a quick sum; `onCommit` gets the result.
+
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `label` * | `string` |  |  |
@@ -5937,6 +5943,8 @@ export default function RadioGroupBasic() {
 ## API
 
 ### RadioGroup
+
+One choice of a few visible options (a radiogroup), vertical or horizontal.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
@@ -6483,6 +6491,8 @@ export default function SwitchCardHeader() {
 ## API
 
 ### Switch
+
+An on / off setting that applies at once; with a label the whole row toggles it.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
@@ -13357,13 +13367,19 @@ export default function TableOrders() {
 
 ### Table
 
+A dense data table (transactions, logs, admin lists) in its own horizontal scroller; compose it with THead, TBody, TR, TH, TD.
+
 No props of its own.
 
 ### THead
 
+The header row group of a Table.
+
 No props of its own.
 
 ### TBody
+
+The body of a Table (no line under its last row).
 
 No props of its own.
 
@@ -13374,6 +13390,8 @@ A clickable row (onClick) gets the hover fill and a pointer; give it a link or b
 No props of its own.
 
 ### TH
+
+A column header cell (`scope="col"`); `align` for numeric columns.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|

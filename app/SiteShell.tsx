@@ -44,32 +44,35 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       </>
     );
   return (
-    <DocsShell
-      productName="Semi Design"
-      logoIcon="sparkles"
-      sections={START}
-      mainAction={{ label: "GitHub Repository", icon: "external", href: "https://github.com/hoanghuynh296/semi-nextjs-codebase", external: true }}
-      // the route header's right side: the version, then the theme (Light / Dark / System, keeps "system")
-      actions={
-        <>
-          <span className="hidden sm:inline-flex items-center gap-2 mr-2 text-chrome text-muted tabular-nums" title={UNRELEASED ? "Build từ main: có thay đổi chưa phát hành" : undefined}>
-            @semi/ui v{pkg.version}
-            {UNRELEASED && " · main"}
-            <Badge size="sm">{ICON_COUNT} icon</Badge>
-          </span>
-          <InspectorToggle />
-          <ThemeSwitcher variant="menu" />
-        </>
-      }
-    >
-      {children}
-      {/* What is previewed on every page: a brand (Brand preview) and a draft of core values (Design Lab) */}
-      <div className="fixed bottom-20 md:bottom-4 right-4 z-toast flex flex-col items-end gap-2">
-        <LabHost />
-        <BrandPreviewHost />
-      </div>
-      {/* Hover a piece of an example: its component name, description and page (#194) */}
+    <>
+      <DocsShell
+        productName="Semi Design"
+        logoIcon="sparkles"
+        sections={START}
+        mainAction={{ label: "GitHub Repository", icon: "external", href: "https://github.com/hoanghuynh296/semi-nextjs-codebase", external: true }}
+        // the route header's right side: the version, then the theme (Light / Dark / System, keeps "system")
+        actions={
+          <>
+            <span className="hidden sm:inline-flex items-center gap-2 mr-2 text-chrome text-muted tabular-nums" title={UNRELEASED ? "Build từ main: có thay đổi chưa phát hành" : undefined}>
+              @semi/ui v{pkg.version}
+              {UNRELEASED && " · main"}
+              <Badge size="sm">{ICON_COUNT} icon</Badge>
+            </span>
+            <InspectorToggle />
+            <ThemeSwitcher variant="menu" />
+          </>
+        }
+      >
+        {children}
+        {/* What is previewed on every page: a brand (Brand preview) and a draft of core values (Design Lab) */}
+        <div className="fixed bottom-20 md:bottom-4 right-4 z-toast flex flex-col items-end gap-2">
+          <LabHost />
+          <BrandPreviewHost />
+        </div>
+      </DocsShell>
+      {/* Hover a piece of an example: its component name, description and page (#194). Outside main: its live region
+          and card are not part of the page column. */}
       <ComponentInspector />
-    </DocsShell>
+    </>
   );
 }

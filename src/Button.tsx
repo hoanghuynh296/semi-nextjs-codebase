@@ -75,6 +75,7 @@ export type ButtonProps =
   | (Base & { iconOnly?: false; children: React.ReactNode })
   | (Base & { iconOnly: true; icon: IconName; "aria-label": string; children?: never });
 
+/** The action control (docs/DESIGN_SYSTEM.md §9): `subtle` by default, a brand fill only for the one main action, `danger` for a destructive one. */
 export function Button({
   ref,
   variant = "subtle",
