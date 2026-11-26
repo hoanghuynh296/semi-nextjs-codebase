@@ -78,6 +78,7 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Pagination](pagination.md) | `Pagination` | Server-paged tables and reports. |
 | [Pill tabs](pill-tabs.md) | `PillTabs` | 5+ sections of one page, or sections with icons (Cấu hình: Hộp thư, Nhóm thư, Nguồn khách, Mặt hàng, Mẫu thư, Data Hub, Doanh nghiệp, Người dùng). |
 | [Resizable panels](resizable.md) | `ResizablePanels` | Tools where people tune the space between two or three areas. |
+| [Route header banner](route-header-banner.md) | `RouteHeaderBanner` | A short app-wide announcement people should notice for a while: a new feature, a planned maintenance window, a changed price list. |
 | [Scroll area](scroll-area.md) | `ScrollArea` | A list or log inside a card that must keep its height. |
 | [Segmented control](segmented-control.md) | `SegmentedControl` | 2–5 filter values shown in full, often with counts (Tất cả · Đang mở · Đang báo giá · Đã chốt). |
 | [Side panel](side-panel.md) | `SidePanel`, `SidePanelToggle` | Settings or layers beside a 3D view, map or editor. |

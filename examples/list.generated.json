@@ -528,6 +528,15 @@
     ]
   },
   {
+    "id": "route-header-banner",
+    "title": "Route header banner",
+    "group": "Navigation & layout",
+    "description": "One announcement in the route header's centre slot: a “Mới” tag, one line of text, an optional date, a pill CTA and a close button. Closed once per user per id (localStorage by default, or your own store). Below md the header's centre is hidden and the same banner is one row at the top of the page content.",
+    "components": [
+      "RouteHeaderBanner"
+    ]
+  },
+  {
     "id": "scroll-area",
     "title": "Scroll area",
     "group": "Navigation & layout",

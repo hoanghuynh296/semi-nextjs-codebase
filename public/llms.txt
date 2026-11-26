@@ -8,7 +8,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 ## Machine-readable
 
-- [components.json](./components.json): all 171 components, hooks and constants with props, summaries and their doc page
+- [components.json](./components.json): all 172 components, hooks and constants with props, summaries and their doc page
 - [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
@@ -98,6 +98,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Pagination](./components/pagination/) ([markdown](./docs/components/pagination.md)): Page numbers with previous / next for long tables. For card lists prefer auto-loading with “Xem thêm”. Components: Pagination.
 - [Pill tabs](./components/pill-tabs/) ([markdown](./docs/components/pill-tabs.md)): Default section tabs for pages with 5+ sections or sections with icons (settings-like pages): no track, h30 round pills with 16px icons and 12px/600 labels, and one item-hover pill that slides to the active tab in 300ms ease-out. Components: PillTabs.
 - [Resizable panels](./components/resizable/) ([markdown](./docs/components/resizable.md)): Panels side by side or stacked with handles to resize them (an editor beside a preview, a list beside details). Sizes are percentages and can be remembered. Components: ResizablePanels.
+- [Route header banner](./components/route-header-banner/) ([markdown](./docs/components/route-header-banner.md)): One announcement in the route header's centre slot: a “Mới” tag, one line of text, an optional date, a pill CTA and a close button. Closed once per user per id (localStorage by default, or your own store). Below md the header's centre is hidden and the same banner is one row at the top of the page content. Components: RouteHeaderBanner.
 - [Scroll area](./components/scroll-area/) ([markdown](./docs/components/scroll-area.md)): A fixed-size scrolling region (a long list in a card, a log). Semi hides scrollbars, so it marks the edges that have more content, can show a thin scrollbar, and is reachable by keyboard. Components: ScrollArea.
 - [Segmented control](./components/segmented-control/) ([markdown](./docs/components/segmented-control.md)): Small single-choice filter sets shown in full (2–5 values, often with tabular-nums counts): a `raised` track (h32, radius 8, padding 4, gap 4) with h24 items (12px/600) and one solid `raised-2` pill (white in light theme) sliding in 300ms ease-out. Components: SegmentedControl.
 - [Side panel](./components/side-panel/) ([markdown](./docs/components/side-panel.md)): A 320px tool panel beside a canvas that collapses to a 48px rail; SidePanelToggle is its collapse button. Components: SidePanel, SidePanelToggle.

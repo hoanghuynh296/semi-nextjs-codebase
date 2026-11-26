@@ -2340,10 +2340,12 @@
       "kind": "component",
       "module": "src/RouteHeader.tsx",
       "client": true,
-      "summary": "The route header: h60 from `lg` (56 below), padding 0 16px (the content's inset, also on phones, #188), the column's full width; below `sm` the trail shows only the current page. Crumbs enter with `motion-crumb-in` and leave with `motion-crumb-out` (opacity only under reduced motion); the row itself never moves.",
+      "summary": "The route header: h60 from `lg` (56 below), padding 0 16px (the content's inset, also on phones, #188), the column's full width; below `sm` the trail shows only the current page. Three slot containers, always rendered (#192): left (the trail), centre (empty by default) and right (actions + account), so emptying one, e.g. closing a banner, never moves another: the right group stays at the row's right edge. Crumbs enter with `motion-crumb-in` and leave with `motion-crumb-out` (opacity only under reduced motion); the row itself never moves.",
       "props": [
         "crumbs",
+        "left",
         "middle",
+        "right",
         "actions",
         "account",
         "onMenu",
@@ -2351,6 +2353,27 @@
         "className"
       ],
       "doc": "docs/components/app-shell.md"
+    },
+    {
+      "name": "RouteHeaderBanner",
+      "kind": "component",
+      "module": "src/RouteHeaderBanner.tsx",
+      "client": true,
+      "summary": "An announcement for the route header's centre slot (one at a time): tag, text (truncates first, before the breadcrumb or the right group shrink), optional sub text, a pill CTA and a close button. `role=\"status\"`.",
+      "props": [
+        "id",
+        "text",
+        "sub",
+        "tag",
+        "tagTone",
+        "cta",
+        "store",
+        "onDismiss",
+        "placement",
+        "closeLabel",
+        "className"
+      ],
+      "doc": "docs/components/route-header-banner.md"
     },
     {
       "name": "ScrollArea",
@@ -3639,6 +3662,13 @@
       "module": "src/RouteHeader.tsx",
       "client": true,
       "summary": "The record a detail page shows (internal: AppShell provides it)."
+    },
+    {
+      "name": "localBannerStore",
+      "kind": "constant",
+      "module": "src/RouteHeaderBanner.tsx",
+      "client": true,
+      "summary": "The default store: `localStorage[\"semi_banner_<id>\"]`. With storage blocked the banner still shows, and closing it hides it until the next page load."
     },
     {
       "name": "SIDE_PANEL_WIDTH",

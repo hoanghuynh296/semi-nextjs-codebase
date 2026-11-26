@@ -379,13 +379,17 @@ export default function AppShellSubmenu() {
 ### RouteHeader
 
 The route header: h60 from `lg` (56 below), padding 0 16px (the content's inset, also on phones, #188), the column's
-full width; below `sm` the trail shows only the current page. Crumbs enter with
+full width; below `sm` the trail shows only the current page. Three slot containers, always rendered (#192): left
+(the trail), centre (empty by default) and right (actions + account), so emptying one, e.g. closing a banner, never
+moves another: the right group stays at the row's right edge. Crumbs enter with
 `motion-crumb-in` and leave with `motion-crumb-out` (opacity only under reduced motion); the row itself never moves.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `crumbs` * | `RouteCrumb[]` |  | The trail: group (a link), page, record. Every crumb is muted; the trail never wraps and long crumbs truncate. Below `sm` only the last crumb (the current page) shows. |
-| `middle` | `React.ReactNode` |  | Optional middle: a search field on a search page, a small info banner. Hidden below `md`. In its own Suspense. |
+| `crumbs` | `RouteCrumb[]` | `[]` | The trail: group (a link), page, record. Every crumb is muted; the trail never wraps and long crumbs truncate. Below `sm` only the last crumb (the current page) shows. |
+| `left` | `React.ReactNode` |  | The left slot's content in place of the trail (`crumbs` is then unused). |
+| `middle` | `React.ReactNode` |  | The centre slot (default empty): a `RouteHeaderBanner`, a search field on a search page. Hidden below `md`; at most 40% of the row, and it gives way first (a banner's text truncates before the trail or the right group shrink). In its own Suspense. |
+| `right` | `React.ReactNode` |  | The right slot's content in place of `actions` + `account`. |
 | `actions` | `React.ReactNode` |  | The page's action icon buttons (32×32, ghost or outline); keep room for a future AI chat button. In its own Suspense. |
 | `account` | `ShellAccount \| React.ReactNode` |  | The account avatar menu: the who-is-signed-in data, or your own element. |
 | `onMenu` | `() => void` |  | Phones: the menu button that opens the nav drawer (shown below `md` when set). |
@@ -433,8 +437,8 @@ then the theme (Light / Dark / System), the app's items and sign-out.
 - Page items take an href: they stay next/link links even when onSelect is set (onSelect then only reports the click). Never route with onSelect + router.push (shell-nav-href).
 - Never gate the shell behind a page skeleton (shell-gate): a route loading.tsx next to the layout shimmers the content only, and the boot / session check before the layout is known renders BootLoader once in the layout. A page never renders AppShell or imports a component that does (app-shell-in-page).
 - Top to bottom: logo + collapse, mainAction (the one brand-filled button: label + icon, a Menu with items), primaryCta (an optional quiet launcher), sections, pinned, then tools (32×32 icons with a count) and toolsMenu (•••).
-- header: crumbs (default from the active item; useRecordCrumb(label) in a detail page adds its record), middle (search field, banner; hidden below md), actions (32×32 ghost icon buttons) and account ({ name, detail, items, onSignOut }: the theme is in that menu). header={false} drops the row.
-- Slots (mainAction, header.middle / actions / account) are an element or a function of { collapsed, rail } rendered as one stable component: it may call hooks and keeps its state across a collapse, a resize and a route change. rail is exact after mount only.
+- header: crumbs (default from the active item; useRecordCrumb(label) in a detail page adds its record), middle (search field; hidden below md), banner (a RouteHeaderBanner announcement: the header's centre from md, the first row of the content below md), actions (32×32 ghost icon buttons) and account ({ name, detail, items, onSignOut }: the theme is in that menu); left / right replace the trail / actions + account. The three slot containers are always rendered, so closing a banner never moves the right group. header={false} drops the row.
+- Slots (mainAction, header.left / middle / actions / account / right) are an element or a function of { collapsed, rail } rendered as one stable component: it may call hooks and keeps its state across a collapse, a resize and a route change. rail is exact after mount only.
 - railBelow (default 1280, at least 1024) sets where the nav starts expanded; between md and lg it is always the rail. railWidth (default 72) sets the rail width.
 - page="fixed": the card does not scroll; give the page h-full min-h-0 flex flex-col and let its panels scroll. flush: no centred max-width container or padding.
 - 1.0 breaking: create → mainAction and utilities → tools (the 1.0.0-app-shell migration renames them); account / footer are gone from the nav (move the account to header.account); the stored collapse key is now semi-nav (a 0.x choice is upgraded once on load).
