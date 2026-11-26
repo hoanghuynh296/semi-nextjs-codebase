@@ -18,7 +18,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const { id } = await params;
   return (
     <>
-      <ComponentPage id={id} markdownHref={`${BASE}/docs/components/${id}.md`} />
+      <ComponentPage id={id} markdownHref={`${BASE}/docs/components/${id}.md`} framesBase={`${BASE}/demo/example`} />
     </>
   );
 }

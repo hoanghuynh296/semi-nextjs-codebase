@@ -41,10 +41,21 @@ for (const path of PAGES) {
       await open(page, path, theme);
       const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]).analyze();
       // Inactive big TextTabs render text-strong at opacity-20 by explicit owner decision (#147); keep every other
-      // axe rule active on them and keep color-contrast active on active TextTabs and every other element.
-      const inactiveBigTabs = await page.evaluate(() =>
-        [...document.querySelectorAll('[data-text-tabs] [role="tab"][aria-selected="false"]')].map((el) => el.id).filter(Boolean),
-      );
+      // axe rule active on them and keep color-contrast active on active TextTabs and every other element. Also inside
+      // the iframe of a full-screen example (#206), which axe audits too.
+      const inactiveBigTabs = (
+        await Promise.all(
+          // a lazy frame that has not loaded has no document yet: give up on it after a second
+          page.frames().map((f) =>
+            Promise.race([
+              f
+                .evaluate(() => [...document.querySelectorAll('[data-text-tabs] [role="tab"][aria-selected="false"]')].map((el) => el.id).filter(Boolean))
+                .catch(() => [] as string[]),
+              new Promise<string[]>((r) => setTimeout(() => r([]), 1000)),
+            ]),
+          ),
+        )
+      ).flat();
       const serious = violations
         .filter((v) => v.impact === "serious" || v.impact === "critical")
         .map((v) => ({
@@ -968,8 +979,8 @@ test("AppShell nav shortcuts (#144): holding Alt shows the numbers, Alt + digit 
   expect(prevented).toBe(false);
   await page.waitForTimeout(300);
   await expect(page).toHaveURL(/\/components\/$/);
-  // a rail with corner badges
-  await page.setViewportSize({ width: 1100, height: 900 });
+  // a rail with corner badges (the docs nav is the rail below 1024px, #206)
+  await page.setViewportSize({ width: 900, height: 900 });
   await expect(aside).toHaveCSS("width", "72px");
   await page.keyboard.down("Alt");
   const badge = aside.locator("[data-nav-num]").first();

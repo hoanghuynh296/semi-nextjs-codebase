@@ -22,7 +22,20 @@ function Heading({ children }: { children: React.ReactNode }) {
  * The page of one component doc: what it is, when to use it (and what instead), the import, live examples with
  * their exact code, the API from the TypeScript types, accessibility. "Copy page" copies the agent markdown.
  */
-export function ComponentPage({ id, markdownHref }: { id: string; markdownHref?: string }) {
+export function ComponentPage({
+  id,
+  markdownHref,
+  framesBase,
+}: {
+  id: string;
+  markdownHref?: string;
+  /**
+   * Base URL (with the site's base path) of a route that renders one example full screen at
+   * `<framesBase>/<doc id>/<example file>/`: examples with `preview: "none"` are then previewed in an iframe of it.
+   * Without it they are shown as code (brand previews).
+   */
+  framesBase?: string;
+}) {
   const doc = DOCS.find((d) => d.id === id);
   const [copied, setCopied] = useState(false);
   if (!doc) return <p className="text-ui text-muted">Không có tài liệu “{id}”.</p>;
@@ -94,7 +107,7 @@ export function ComponentPage({ id, markdownHref }: { id: string; markdownHref?:
       <section className="space-y-6">
         <Heading>Ví dụ</Heading>
         {doc.examples.map((ex) => (
-          <ExampleBlock key={ex.file} id={doc.id} example={ex} />
+          <ExampleBlock key={ex.file} id={doc.id} example={ex} frameHref={framesBase && ex.preview === "none" ? `${framesBase}/${doc.id}/${ex.file}/` : undefined} />
         ))}
       </section>
 

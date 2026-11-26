@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { AppShell, useAppShell, type AppShellProps, type ShellNavSection, type ShellSlot, type ShellSlotState } from "../src/AppShell";
 import { CommandDialog, useHotkey, type CommandItem } from "../src/Command";
@@ -41,6 +41,47 @@ export function componentSections(): ShellNavSection[] {
       ? [{ label: group, icon: GROUP_ICON[group], collapsible: true, defaultOpen: false, items: docs.map((d) => ({ id: d.id, label: d.title, href: `/components/${d.id}/` })) }]
       : [];
   });
+}
+
+/** Label of the rail's one section of component groups (also its <nav> name). */
+const RAIL_GROUPS = "Nhóm component";
+
+/**
+ * The rail (72px, below 1024px or when the person collapsed the nav) shows one icon per component group, with a
+ * tooltip, that opens the group's pages in a Menu, never one entry per component (#206).
+ */
+function railGroupSection(activeId: string): ShellNavSection {
+  return {
+    label: RAIL_GROUPS,
+    hideLabel: true,
+    items: GROUPS.flatMap((group) => {
+      const docs = DOCS.filter((d) => d.group === group);
+      return docs.length
+        ? [
+            {
+              id: `group:${group}`,
+              label: group,
+              icon: GROUP_ICON[group] ?? "box",
+              menu: docs.map((d) => ({ label: d.title, href: `/components/${d.id}/`, checked: d.id === activeId })),
+            },
+          ]
+        : [];
+    }),
+  };
+}
+
+/**
+ * Before hydration the rail cannot know it is the rail in JS: hide the per-component groups there with CSS (AppShell's
+ * nav container is under 120px in the rail), so the server HTML never shows cut text. After mount the rail gets
+ * `railGroupSection` instead of them.
+ */
+const RAIL_HIDES_COMPONENTS = `@container nav (width < 120px){${GROUPS.map((g) => `[data-semi-nav-panel] nav[aria-label=${JSON.stringify(g)}]`).join(",")}{display:none}}`;
+
+/** Reports AppShell's rail state (exact after mount) to DocsShell, which renders AppShell and so cannot read it. */
+function RailProbe({ onRail }: { onRail: (rail: boolean) => void }) {
+  const { rail } = useAppShell();
+  useEffect(() => onRail(rail), [rail, onRail]);
+  return null;
 }
 
 /** Which menu item the current path is (/components/button/ → "button", / → "home"). */
@@ -126,6 +167,8 @@ export function DocsShell({
   // Let /components/command/'s own CommandPalette demo keep ⌘K; the bottom nav trigger still opens DocsShell search.
   const onCommandDoc = activeId === "command";
   const [searchOpen, setSearchOpen] = useState(false);
+  const [rail, setRail] = useState(false);
+  const activeDoc = DOCS.find((d) => d.id === activeId);
 
   useHotkey(() => {
     if (!onCommandDoc) setSearchOpen((v) => !v);
@@ -187,17 +230,31 @@ export function DocsShell({
 
   return (
     <>
+      <style dangerouslySetInnerHTML={{ __html: RAIL_HIDES_COMPONENTS }} />
       <AppShell
         productName={productName}
         logoIcon={logoIcon}
-        sections={[...sections, ...componentSections()]}
-        activeId={activeId}
+        sections={rail ? [...sections, railGroupSection(activeId)] : [...sections, ...componentSections()]}
+        // the rail has no item per component: its group is the current item, and the trail is given here
+        activeId={rail && activeDoc ? `group:${activeDoc.group}` : activeId}
+        // keep the nav expanded from 1024px (AppShell's lowest rail breakpoint); 768–1023 is the rail
+        railBelow={1024}
         tools={tools}
         mainAction={mainAction}
         primaryCta={primaryCta}
         navFooter={<NavCommandTrigger onOpen={() => setSearchOpen(true)} hotkeyEnabled={!onCommandDoc} />}
-        header={{ actions: actions ?? legacyActions }}
+        header={{
+          actions: actions ?? legacyActions,
+          crumbs:
+            rail && activeDoc
+              ? [
+                  { label: activeDoc.group, href: `/components/${DOCS.find((d) => d.group === activeDoc.group)!.id}/` },
+                  { label: activeDoc.title, href: `/components/${activeDoc.id}/` },
+                ]
+              : undefined,
+        }}
       >
+        <RailProbe onRail={setRail} />
         {/* w-full: an auto-margin flex item would size to its widest demo and push the page past a phone screen */}
         <div className="@container w-full min-w-0 space-y-8">{children}</div>
       </AppShell>
