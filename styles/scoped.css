@@ -4,7 +4,9 @@
 
    Semi's Tailwind theme and utilities go in their own cascade layer `semi`, declared after `utilities`, so they win
    over the app's utilities and same-name theme variables whichever stylesheet loads first (the order differs between
-   dev and production builds). tokens.css / base.css are imported as they are (@custom-variant cannot be layered). Import it from an
+   dev and production builds). base.css's layered rules (base-layers.css) go in `semi` too, as the sub-layers semi.base / semi.components, so
+   the app's own base rules (page background, text colour, `* { border-color }`) never replace them; its variants and
+   unlayered rules (base-global.css) stay unlayered, since @custom-variant cannot sit in a layered import. Import it from an
    app file that adds @source lines for the migrated folders, and link that file only on migrated routes:
      app/(semi)/semi.css:   @import "@semi/ui/scoped.css";  @source "./";
      app/(semi)/layout.tsx: import "./semi.css";
@@ -18,4 +20,5 @@
 @source "../styles";
 
 @import "../tokens/tokens.css";
-@import "./base.css";
+@import "./base-layers.css" layer(semi);
+@import "./base-global.css";

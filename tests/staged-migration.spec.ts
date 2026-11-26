@@ -2,6 +2,8 @@
 // (`@semi/ui/scoped.css`, docs/BRANDS.md). Semi's utilities and theme sit in the `semi` layer, after `utilities`, so
 // AppShell's responsive variants win over the app's `.flex` / `.hidden` whichever sheet loads first. /staged links
 // the legacy sheet first, /staged2 Semi's first (tests/prerender-app/app/(staged), (staged2)).
+// /staged2 is the regression guard: with Semi's sheet first, a plain `@layer utilities` / `@layer base` setup loses to
+// the legacy build. /staged passes on that setup too (the later sheet wins there anyway); it stays to show both orders.
 import { expect, test, type Browser, type Page } from "@playwright/test";
 import { PRERENDER_PORT } from "../playwright.config";
 
@@ -38,7 +40,7 @@ async function cascade(page: Page) {
       }
     };
     for (const s of Array.from(document.styleSheets)) walk(s.cssRules, "");
-    return { semiAt, legacyAt, mdHidden: layerOf[".md\\:hidden"] ?? [], appClass: layerOf[".tracking-\\[0\\.37em\\]"] ?? [], flex: layerOf[".flex"] ?? [] };
+    return { semiAt, legacyAt, bodyRule: (layerOf["html, body"] ?? []).filter((l) => l.startsWith("semi")), mdHidden: layerOf[".md\\:hidden"] ?? [], appClass: layerOf[".tracking-\\[0\\.37em\\]"] ?? [], flex: layerOf[".flex"] ?? [] };
   });
 }
 
@@ -68,6 +70,15 @@ for (const [path, legacyFirst] of [["/staged/orders", true], ["/staged2/orders",
     const root = (name: string) => page.evaluate((n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim(), name);
     expect(await root("--spacing")).not.toMatch(/^0?\.3rem$/);
     expect((await root("--color-emerald-500")).toLowerCase()).toBe("#28a25a");
+    // Semi's base rules are in `semi.base`: the app's shadcn-style base (red page, blue text, red borders) never wins
+    const body = await page.evaluate(() => {
+      const s = getComputedStyle(document.body);
+      return { bg: s.backgroundColor, color: s.color, border: s.borderTopColor };
+    });
+    expect(body.bg).not.toBe("rgb(255, 0, 0)");
+    expect(body.color).not.toBe("rgb(0, 0, 255)");
+    expect(body.border).not.toBe("rgb(255, 0, 0)");
+    expect(c.bodyRule).toContain("semi.base");
     await page.context().close();
 
     // phone: the drawer top bar shows

@@ -1,0 +1,55 @@
+/* @semi/ui base rules that live in cascade layers (base, components): part of base.css, which imports it. Kept apart
+   so the scoped entry (scoped.css, issue 184) can import it inside its `semi` layer, where it beats a second Tailwind
+   build's own base rules (shadcn `* { border-color }`, `body { background }`) whichever sheet loads first.
+   Apps import base.css, never this file. */
+
+/* Tailwind v3 preflight compatibility (copied class strings render as designed). */
+@layer base {
+  *, ::after, ::before, ::backdrop, ::file-selector-button {
+    border-color: var(--color-line, currentColor);
+  }
+  button:not(:disabled), [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  input::placeholder, textarea::placeholder {
+    color: var(--color-text-muted);
+  }
+  dialog {
+    margin: auto;
+  }
+  /* iOS Safari zooms the page into a focused field under 16px and never zooms back (#61): a bare field of an app gets
+     the size Semi's own fields use below `sm`. Utility classes (text-ui, sm:text-ui) still win above it. */
+  @media (max-width: 639.98px) {
+    input:not([type="checkbox"], [type="radio"], [type="range"], [type="color"], [type="file"], [type="submit"], [type="button"], [type="reset"], [type="image"], [type="hidden"]),
+    textarea,
+    select {
+      font-size: var(--text-input);
+    }
+  }
+}
+
+@layer base {
+  html, body {
+    background-color: var(--color-app);
+    color: var(--color-text-body);
+    /* No sideways page pan or rubber-band on phones / iPad. `clip`, unlike `hidden`, creates no scroll container,
+       so position: sticky keeps working. Horizontal lists (tab bar, chips) still scroll. */
+    overflow-x: clip;
+    overscroll-behavior-x: none;
+  }
+  * {
+    overscroll-behavior-x: none;
+  }
+  body {
+    font-family: var(--font-sans);
+    font-feature-settings: "ss02" on;
+  }
+  .font-display {
+    font-family: var(--font-display) !important;
+  }
+}
+
+@layer components {
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}
