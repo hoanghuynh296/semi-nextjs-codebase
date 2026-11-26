@@ -10,6 +10,8 @@ import pkg from "../package.json";
 import { Badge } from "../src/Badge";
 import { BrandPreviewHost } from "./BrandPreview";
 import { LabHost } from "./LabPreview";
+import { ComponentInspector } from "./inspector/Inspector";
+import { InspectorToggle } from "./inspector/InspectorToggle";
 
 /** Set by the Pages workflow when the site is built from a main commit that is not the tagged release yet. */
 const UNRELEASED = process.env.NEXT_PUBLIC_SEMI_UNRELEASED === "1";
@@ -34,7 +36,13 @@ const START: ShellNavSection[] = [
 export function SiteShell({ children }: { children: React.ReactNode }) {
   // /demo/*: an example that is a whole app shell itself (examples/app-shell/full.tsx) renders without the docs shell
   const pathname = usePathname();
-  if (pathname?.startsWith("/demo/")) return <>{children}</>;
+  if (pathname?.startsWith("/demo/"))
+    return (
+      <>
+        {children}
+        <ComponentInspector />
+      </>
+    );
   return (
     <DocsShell
       productName="Semi Design"
@@ -49,6 +57,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
             {UNRELEASED && " · main"}
             <Badge size="sm">{ICON_COUNT} icon</Badge>
           </span>
+          <InspectorToggle />
           <ThemeSwitcher variant="menu" />
         </>
       }
@@ -59,6 +68,8 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
         <LabHost />
         <BrandPreviewHost />
       </div>
+      {/* Hover a piece of an example: its component name, description and page (#194) */}
+      <ComponentInspector />
     </DocsShell>
   );
 }
