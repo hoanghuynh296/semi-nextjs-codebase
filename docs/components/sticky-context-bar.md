@@ -132,7 +132,10 @@ Pin behaviour (#150):
   each `ListReaderLayout` panel) scrolls independently with `overscroll-behavior: contain`. Only a new upward wheel
   gesture starting at the list top unpins; momentum and flings never unpin. Below `md`, keeps native touch scrolling.
 - Exposes `data-stuck` and `data-searching` on the bar and `--sticky-pin` / `--sticky-view` on the scroller, clearing
-  them on unmount.
+  them on unmount. The pin and `data-stuck` are measured from the scroller's padding edge (where sticky children stick).
+- Never writes `scrollTop` while the browser scrolls natively (#193): holds are decided on the first wheel event of a
+  gesture. Without layout-pin (below `md`, or a scroller outside `AppShell`), an upward gesture starting within one
+  screen above the pin is driven by the bar and stops at the pin; from further up it scrolls natively and may pass it.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
