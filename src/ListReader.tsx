@@ -274,7 +274,7 @@ export function ListReaderLayout({
   return (
     <ReaderContext.Provider value={{ onClose, backHidden: split.back }}>
       {/* the container: its width (not the viewport) decides side by side or one pane */}
-      <div data-list-reader="" className={cn("@container/reader-layout flex-1 min-h-0 min-w-0 flex flex-col", className)}>
+      <div data-list-reader="" data-list-width={listWidth} className={cn("@container/reader-layout flex-1 min-h-0 min-w-0 flex flex-col", className)}>
         <div className={cn("flex-1 min-h-0 min-w-0 grid grid-cols-1 gap-group", split.grid, gridClassName)}>
           <section
             ref={listRef}

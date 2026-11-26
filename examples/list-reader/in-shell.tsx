@@ -9,7 +9,7 @@ const THREADS: Thread[] = Array.from({ length: 24 }, (_, i) => ({
   id: `m-${i + 1}`,
   subject:
     i === 0
-      ? "Báo giá hạt tiêu đen hữu cơ xuất khẩu quý 4 và lịch giao container tại cảng Cát Lái"
+      ? "Báo giá hạt tiêu đen hữu cơ xuất khẩu quý 4, lịch giao container tại cảng Cát Lái và điều kiện thanh toán L/C trả ngay cho lô hàng đầu tiên"
       : `Trao đổi đơn hàng #${1040 + i} — xác nhận quy cách đóng gói`,
   from: ["Gia vị Tây Nguyên", "HTX Chư Sê", "Hương Quế Yên Bái", "Nông sản Đắk Lắk"][i % 4],
   time: `${9 + (i % 9)}:${String((i * 13) % 60).padStart(2, "0")}`,
