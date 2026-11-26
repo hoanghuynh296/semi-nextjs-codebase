@@ -378,12 +378,13 @@ export default function AppShellSubmenu() {
 
 ### RouteHeader
 
-The route header: h60 from `lg` (56 below), padding 0 8px (16px from `sm`), the column's full width. Crumbs enter with
+The route header: h60 from `lg` (56 below), padding 0 16px (the content's inset, also on phones, #188), the column's
+full width; below `sm` the trail shows only the current page. Crumbs enter with
 `motion-crumb-in` and leave with `motion-crumb-out` (opacity only under reduced motion); the row itself never moves.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `crumbs` * | `RouteCrumb[]` |  | The trail: group (a link), page, record. Every crumb is muted; the trail never wraps and long crumbs truncate. |
+| `crumbs` * | `RouteCrumb[]` |  | The trail: group (a link), page, record. Every crumb is muted; the trail never wraps and long crumbs truncate. Below `sm` only the last crumb (the current page) shows. |
 | `middle` | `React.ReactNode` |  | Optional middle: a search field on a search page, a small info banner. Hidden below `md`. In its own Suspense. |
 | `actions` | `React.ReactNode` |  | The page's action icon buttons (32×32, ghost or outline); keep room for a future AI chat button. In its own Suspense. |
 | `account` | `ShellAccount \| React.ReactNode` |  | The account avatar menu: the who-is-signed-in data, or your own element. |

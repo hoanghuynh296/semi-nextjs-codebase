@@ -1,7 +1,7 @@
 {
   "title": "List + reader",
   "group": "Navigation & layout",
-  "description": "A list card beside a reader card (`ListReaderLayout`) with a sticky one-row `ReaderHeader` (wrapping title left, [•••] then one main action right, top-aligned, identical button height). Each panel scrolls independently on `AppShell page=\"fixed\"` / `Page fixed` with zero hand-tuned `calc()`. Open item lives in `?open=` (`useDetailParam`) and `RouteHeader` breadcrumbs (`useRecordCrumb`); below `lg` the reader replaces the list with a Back button.",
+  "description": "A list card beside a reader card (`ListReaderLayout`) with a sticky one-row `ReaderHeader` (wrapping title left, [•••] then one main action right, top-aligned, identical button height). Each panel scrolls independently on `AppShell page=\"fixed\"` / `Page fixed` with zero hand-tuned `calc()`. Open item lives in `?open=` (`useDetailParam`) and `RouteHeader` breadcrumbs (`useRecordCrumb`); when the layout is too narrow for the list and a 360px reader (its own width, not the viewport), the reader replaces the list with a Back button.",
   "components": [
     "ListReaderLayout",
     "ReaderHeader"
@@ -20,7 +20,7 @@
     }
   ],
   "a11y": [
-    "List and reader are named <section> landmarks; the open item marks aria-current=\"true\" on its row; below lg the Back button returns to the list and closes ?open=.",
+    "List and reader are named <section> landmarks; the open item marks aria-current=\"true\" on its row; while the reader replaces the list (narrow layout) the Back button returns to the list and closes ?open=.",
     "ReaderHeader keeps [•••] and the main action top-aligned at identical height with every secondary action inside •••."
   ],
   "notes": [
