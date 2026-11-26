@@ -1,0 +1,20 @@
+/* @semi/ui scoped entry (#184): Semi on some routes of an app that keeps its own Tailwind build for the others,
+   while it moves to Semi in stages. Transitional: once the last legacy screen is migrated, switch to the single
+   globals.css setup (docs/BRANDS.md, "Migrating an app in stages").
+
+   Semi's utilities go in their own cascade layer `semi`, declared after `utilities`, so they win over the app's
+   utilities whichever stylesheet loads first (the order differs between dev and production builds). Import it from an
+   app file that adds @source lines for the migrated folders, and link that file only on migrated routes:
+     app/(semi)/semi.css:   @import "@semi/ui/scoped.css";  @source "./";
+     app/(semi)/layout.tsx: import "./semi.css";
+   Never import it next to @import "tailwindcss" in the same file. */
+@layer theme, base, components, utilities, semi;
+@import "tailwindcss/theme.css" layer(semi);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css" layer(semi) source(none);
+
+@source "../src";
+@source "../styles";
+
+@import "../tokens/tokens.css";
+@import "./base.css";

@@ -1,0 +1,7 @@
+/* The app's own Tailwind build (#184), as a legacy app has it: plain tailwindcss with its own theme and its own
+   screens (../../legacy), so it emits `.flex`, `.hidden` and `--spacing` in its own layers. */
+@import "tailwindcss";
+@source "../../legacy";
+@theme {
+  --spacing: 0.3rem;
+}
