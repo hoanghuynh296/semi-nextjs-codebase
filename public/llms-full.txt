@@ -8,7 +8,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 ## Machine-readable
 
-- [components.json](./components.json): all 172 components, hooks and constants with props, summaries and their doc page
+- [components.json](./components.json): all 174 components, hooks and constants with props, summaries and their doc page
 - [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
@@ -100,6 +100,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Resizable panels](./components/resizable/) ([markdown](./docs/components/resizable.md)): Panels side by side or stacked with handles to resize them (an editor beside a preview, a list beside details). Sizes are percentages and can be remembered. Components: ResizablePanels.
 - [Route header banner](./components/route-header-banner/) ([markdown](./docs/components/route-header-banner.md)): One announcement in the route header's centre slot: a “Mới” tag, one line of text, an optional date, a pill CTA and a close button. Closed once per user per id (localStorage by default, or your own store). Below md the header's centre is hidden and the same banner is one row at the top of the page content. Components: RouteHeaderBanner.
 - [Scroll area](./components/scroll-area/) ([markdown](./docs/components/scroll-area.md)): A fixed-size scrolling region (a long list in a card, a log). Semi hides scrollbars, so it marks the edges that have more content, can show a thin scrollbar, and is reachable by keyboard. Components: ScrollArea.
+- [Section header](./components/section-header/) ([markdown](./docs/components/section-header.md)): The header row of a discovery or gallery section: a 20 / 500 title, an optional muted line, an actions slot on the right (usually a ghost "Xem tất cả" Button) and an optional ‹ › pager of subtle icon buttons that scrolls a rail or calls your handlers, disabled at the ends. Components: SectionHeader.
 - [Segmented control](./components/segmented-control/) ([markdown](./docs/components/segmented-control.md)): Small single-choice filter sets shown in full (2–5 values, often with tabular-nums counts): a `raised` track (h32, radius 8, padding 4, gap 4) with h24 items (12px/600) and one solid `raised-2` pill (white in light theme) sliding in 300ms ease-out. Components: SegmentedControl.
 - [Side panel](./components/side-panel/) ([markdown](./docs/components/side-panel.md)): A 320px tool panel beside a canvas that collapses to a 48px rail; SidePanelToggle is its collapse button. Components: SidePanel, SidePanelToggle.
 - [Sticky context bar](./components/sticky-context-bar/) ([markdown](./docs/components/sticky-context-bar.md)): The top of a list page that pins on scroll or search focus (250ms ease-out), holds against trackpad momentum and flings, and moves up to 2 page actions into SearchPill via BarActions while pinned. Pins by layout from md+ with independent overscroll-contained list/reader scrollers; keeps native touch scrolling below md. Components: StickyContextBar, BarActions.
@@ -125,6 +126,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Kbd](./components/kbd/) ([markdown](./docs/components/kbd.md)): A key or a shortcut (⌘ K, Ctrl Enter) as key caps, for menus, tooltips, the command palette and help text. Components: Kbd.
 - [KPI card](./components/kpi-card/) ([markdown](./docs/components/kpi-card.md)): A metric card: label, a large tabular figure in the style's figure font, a sub line coloured good / danger. One featured card leads the row; icons are optional and neutral. Components: KpiCard.
 - [Markdown](./components/markdown/) ([markdown](./docs/components/markdown.md)): Renders AI or user text safely: paragraphs, lists, bold, inline code and links (as ExternalLink). No HTML. Components: Markdown.
+- [Media card](./components/media-card/) ([markdown](./docs/components/media-card.md)): A card for a gallery or discovery rail: 16:9 media (image, video or any node) at the card radius, a 14 / 500 caption, an optional meta line in the overline style, and two optional slots over the media (top left, bottom right) that take any node. The whole card is one link or one button. Components: MediaCard.
 - [QR code](./components/qr-code/) ([markdown](./docs/components/qr-code.md)): A scannable QR code as one SVG: VietQR / EMVCo payment payloads, receipts (print variant), links. Fixed black modules on white with a 4-module quiet zone in both themes, four error-correction levels, optional caption and copy button. Components: QRCode.
 - [Separator](./components/separator/) ([markdown](./docs/components/separator.md)): A thin divider between groups of content: horizontal, vertical, or with a short label in the middle (“hoặc”). Components: Separator.
 - [Table](./components/table/) ([markdown](./docs/components/table.md)): A dense table for rows compared column by column. Cells stay on one line (the table scrolls sideways on phones); TD wrap for a long-text column, numeric for figures. Components: Table, THead, TBody, TR, TH, TD.
@@ -293,7 +295,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (172)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (174)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
@@ -339,6 +341,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `KpiCard`: `KpiCard`
 - `ListReader`: `ReaderHeader`, `ListReaderLayout`
 - `Markdown`: `Markdown`
+- `MediaCard`: `MediaCard`
 - `MegaMenu`: `MegaMenu`
 - `MinimalHeader`: `MinimalHeader`
 - `MobileTabBar`: `MobileTabBar`
@@ -365,6 +368,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `ScrollArea`: `ScrollArea`
 - `SearchInput`: `SearchInput`
 - `SearchPill`: `BarActions`, `StickyContextBar`, `SearchPill`
+- `SectionHeader`: `SectionHeader`
 - `SegmentedControl`: `SegmentedControl`
 - `Separator`: `Separator`
 - `SidePanel`: `SidePanelToggle`, `SidePanel`
@@ -520,7 +524,8 @@ Names and values: **`TOKENS.md`** "Type scale" (the contract; values in `tokens/
   `fonts.display`, falling back to the UI sans) only for the hero, reading-page titles, big tabs and editorial section
   heads. Tracking −0.01em on display sizes from 20px (in the tokens).
 - **Overline** (`text-overline`) is the only uppercase text, and only as a **group or section label**: a nav or drawer
-  group, a palette group, a mega menu column, a section of a form or detail panel. Never the label of one field, a
+  group, a palette group, a mega menu column, a section of a form or detail panel, and the meta line of a `MediaCard`
+  (a category or count under the caption, #191). Never the label of one field, a
   button, a link, a table cell or a heading (`overline-place`).
 - Sizes come from the type tokens only, never `text-[13px]` or `text-xs` / `text-sm` / `text-base`. Every size carries
   its line height (about 1.5 for UI and body: 12/18, 14/22, 15/24; 1.1–1.3 for display), so text rarely needs
@@ -924,6 +929,7 @@ Semi wires T1's motion tokens (`TOKENS.md` "Motion": `--motion-hover`, `--motion
   `display: contents`, so it adds no layout box and never breaks fixed-height chains or inner scrollers.
 - **Skeleton pulse:** `Skeleton` and `PageSkeleton` pulse quietly with `motion-pulse` (2.5s ease-in-out, opacity
   1 → 0.6 → 1), replacing Tailwind's default pulse; content replaces skeletons in place with no jump.
+- **Media card hover:** `MediaCard` scales its media to 1.05 in 300ms ease-out (`--motion-slide`) on devices that hover.
 - **Tooltip & disclosure:** `Tooltip` enters with `animate-tooltip-in` (200ms, opacity + scale 0.96 → 1); `Accordion`
   and `Collapsible` open in 300ms ease-out (`--motion-disclosure`) and close in 300ms ease-in
   (`--motion-disclosure-close`); `PillTabs` / `SegmentedControl` slide in 300ms (`transition-slide`).
@@ -1009,6 +1015,25 @@ rounded-card` with their area's `TILE_TONES`.
   <button className={SECTION_LINK}>Quản lý <Icon name="chevron" className="w-3.5 h-3.5" /></button>
 </div>
 ```
+
+### Discovery and gallery sections (#191, C-014)
+
+`SectionHeader` is the header row of a discovery or gallery section: the title (`text-section`, 20 / 500), an optional
+muted line, `actions` on the right (one `<Button variant="ghost">Xem tất cả <Icon name="chevron" /></Button>`) and an
+optional `pager`: two subtle round icon-only `Button`s ‹ › (`size="sm"`, 44px on touch phones) that scroll a rail by one
+view (`pager={{ target: railRef }}`) or call your handlers (`onPrev` / `onNext` + `prevDisabled` / `nextDisabled`), disabled
+at the ends. It draws nothing of its own: no colours, no hand-made buttons. Under it, `MediaCard`s: 16:9 media at
+`rounded-card` (12), caption `text-ui font-medium text-strong` (14 / 500), an optional meta line in `text-overline`, and two
+optional slots over the media that take any node (`topLeft`: `Badge tone="overlay"`; `bottomRight`: an Avatar + name in an
+overlay Badge, or `Button size="pill"`). The whole card is one link (`href`) or button (`onClick`) with the focus ring around
+it; the slots sit beside that control. Hover scales the media to 1.05 in 300ms ease-out (`--motion-slide`), never under
+reduced motion.
+
+- **Grid:** `grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-x-4 gap-y-6`.
+- **Rail:** `flex gap-4 overflow-x-auto snap-x snap-mandatory overscroll-x-contain`; cards `snap-start shrink-0
+  basis-[75%] sm:basis-[calc((100%-2rem)/3)] lg:basis-[calc((100%-3rem)/4)]` (phones: 75% wide, the next card peeks).
+  The header's `pager={{ target: railRef }}` pages it.
+- A work page's section with its content stays `PageSection`.
 
 ## 9. Buttons
 
@@ -1326,6 +1351,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `SearchPill.tsx`, `FilterChipRow.tsx`, `ViewSwitch.tsx`, `FilterPanel.tsx`, `filterParams.ts`, `urlState.ts` | `StickyContextBar` (trackpad-proven layout-pin search + filter bar, focus-pin, `data-stuck` / `data-searching`, `--sticky-pin` / `--sticky-view`), `BarActions` + `BarAction` (pinned in-field actions slot, ≤ 2 slots `[•••][main]`), `SearchPill` (wide pill search, debounce, `/`, `trailing`), `SortDef`, `FilterChipRow` (one-line chips, ‹ ›, Xoá lọc, leading views, trailing `sort` + `selection` in-place bulk bar + `ViewSwitch`), `useListSelection` (selection-mode state hook), `BulkAction`, `ListSelection`, `FilterChip`, `FilterOptions`, `useFilterParams` (URL filter + `?sort=key.dir` state, `legacy` rewrite, `patch`, Back / Forward), `FilterParamsOptions`, `FilterParamsSortOptions`, `LegacyParamsMap`, `replaceFilters`, `writeSearch`, `ViewSwitch` (list ↔ grid, density), `PhoneFilterBar` (views · Bộ lọc · sort · Chọn / in-place selection bar), `FilterPanel` (full-screen / side-sheet filters); URL helpers `readFilters`, `readFilterValues`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `readSort`, `writeSort`, `parseSort`, `formatSort`, `SORT_PARAM`, types `FilterSpec`, `FilterDef`, `FilterOption`, `FilterValues` (§4, §4d, §4e) |
 | `SplitButton.tsx`, `CardActions.tsx`, `DetailOverlay.tsx` | `SplitButton` (main action + ▾ `Menu` of its variants, one button on phones, G1), `CardActions` (hover / focus icon actions + ⋯ on cards, ⋯ only on touch), `DetailOverlay` (record over its list: ‹ › with n / N, side panel, scroll kept), `useDetailParam` (`?open=` in the URL, Back closes), `openDetail` (open one from anywhere on the route), types `CardAction`, `DetailParamState` (§4, §9) |
 | `WorkspaceLayout.tsx`, `GuidedEmptyState.tsx`, `FeatureIntro.tsx`, `HintTextarea.tsx` | `WorkspaceLayout` (page type workspace: control panel + sticky main action, result), `WorkspaceHeader` (back + tool name, tabs), `WorkspaceSection` (`text-overline` label + counter), `Stepper` (− value +, spinbutton), `GuidedEmptyState` (EmptyState variant guided: step carousel or numbered steps, starting points), `FeatureIntro` (once-per-user feature dialog, `localIntroStore`), `HintTextarea` (@ / `/` hints and suggestions), types `GuideStep`, `GuideTemplate`, `GuideTemplateGroup`, `FeatureIntroSlide`, `FeatureIntroStore`, `HintToken`, `HintTrigger` (§4, §9b, §13, §14) |
+| `SectionHeader.tsx`, `MediaCard.tsx` | `SectionHeader` (discovery / gallery section head: 20 / 500 title, description, `actions`, ‹ › `pager` of subtle icon Buttons over a rail or handlers; types `SectionHeaderProps`, `SectionHeaderPager`, `SectionHeaderPagerHandlers`, `SectionHeaderPagerTarget`), `MediaCard` (16:9 media card, caption + overline meta, optional `topLeft` / `bottomRight` slots, one link or button, hover scale; type `MediaCardProps`) (§8) |
 | `KpiCard.tsx`, `Modal.tsx` | `KpiCard` (metric card in the brand's figure font, neutral icon, `featured` for the screen's main number, shimmer), `Modal` (shared portal dialog with `MODAL_HEAD` + `MODAL_FOOT`) (§13, §14) |
 | `Icon.tsx` | `Icon`, `ICONS`, `IconName`, `IconTile`, `TILE_TONES`, `TONE_TEXT`, `TileTone` |
 | `AppHeader.tsx` | `AppHeader` (stand-alone app top bar, §4b) |
@@ -1415,6 +1441,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Slides in a row | `Carousel` (`perView`, scroll-snap, no auto-play) |
 | Areas people resize | `ResizablePanels` (`direction`, `defaultSizes`, `storageKey`) |
 | Media at a fixed ratio | `AspectRatio` (`ratio`, default 16 / 9) |
+| A gallery or discovery section | `SectionHeader` (title, `actions` "Xem tất cả", ‹ › `pager`) over a grid or rail of `MediaCard` (§8) |
 | Website top navigation | `NavigationMenu` (links + panels of described links; a sheet below md) |
 | Commands of a desktop-style tool | `Menubar` (Tệp · Sửa · Xem; items like `Menu`) |
 | Code to read or copy | `CodeBlock` (`title`, copy button) |
@@ -10402,6 +10429,143 @@ export default function ScrollAreaLog() {
 
 ---
 
+<!-- docs/components/section-header.md -->
+
+# Section header
+
+The header row of a discovery or gallery section: a 20 / 500 title, an optional muted line, an actions slot on the right (usually a ghost "Xem tất cả" Button) and an optional ‹ › pager of subtle icon buttons that scrolls a rail or calls your handlers, disabled at the ends.
+
+## When to use
+
+- Above a rail or a grid of MediaCards on a discovery, home or gallery page.
+- A section that links to its full list ("Xem tất cả") or pages through a row of cards (‹ ›).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A section of a work page with its content | PageSection (title, description, actions) |
+| The title of the page | PageTitle |
+| A group label in a form or a side panel | WorkspaceSection or text-overline |
+
+## Import
+
+```tsx
+import { SectionHeader, type SectionHeaderProps, type SectionHeaderPager } from "@semi/ui";
+```
+
+## Examples
+
+### Title, description and Xem tất cả
+
+```tsx
+import { Button, Icon, SectionHeader } from "@semi/ui";
+
+export default function SectionHeaderBasic() {
+  return (
+    <SectionHeader
+      title="Mẫu in nổi bật"
+      description="Được cộng đồng tải nhiều nhất tuần này."
+      actions={
+        <Button variant="ghost">
+          Xem tất cả <Icon name="chevron" className="w-3.5 h-3.5" />
+        </Button>
+      }
+    />
+  );
+}
+```
+
+### Pager over a rail of MediaCards
+
+The rail recipe: phones show 75% wide cards (the next one peeks), 3 per view from sm, 4 from lg. ‹ › scroll it by one view and turn off at the ends.
+
+```tsx
+"use client";
+
+import { useRef, useState } from "react";
+import { Badge, Button, Icon, MediaCard, SectionHeader } from "@semi/ui";
+
+// Stand-in photos (inline SVG) so the example needs no image files; n turns the hue.
+const photo = (n: number) =>
+  "data:image/svg+xml," +
+  encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180"><g style="filter:hue-rotate(${n * 47}deg)"><rect width="320" height="180" fill="#2f4858"/><circle cx="250" cy="48" r="22" fill="#86a8b8"/><polygon points="0,140 70,80 130,125 200,60 320,150 320,180 0,180" fill="#1d3340"/></g></svg>`,
+  );
+
+const ITEMS = Array.from({ length: 7 }, (_, i) => ({ title: `Video hướng dẫn ${i + 1}`, length: `${4 + i}:2${i}` }));
+
+export default function SectionHeaderRail() {
+  const rail = useRef<HTMLDivElement>(null);
+  const [opened, setOpened] = useState<string | null>(null);
+  return (
+    <section aria-labelledby="rail-head" className="flex flex-col gap-4 min-w-0">
+      <SectionHeader
+        id="rail-head"
+        title="Video mới"
+        actions={
+          <Button variant="ghost">
+            Xem tất cả <Icon name="chevron" className="w-3.5 h-3.5" />
+          </Button>
+        }
+        pager={{ target: rail }}
+      />
+      {/* the rail recipe: one row that scrolls sideways and snaps; 75% wide cards on phones, 3 then 4 per view */}
+      <div ref={rail} data-rail="" className="flex gap-4 overflow-x-auto snap-x snap-mandatory overscroll-x-contain">
+        {ITEMS.map((it, i) => (
+          <MediaCard
+            key={it.title}
+            className="snap-start shrink-0 basis-[75%] sm:basis-[calc((100%-2rem)/3)] lg:basis-[calc((100%-3rem)/4)]"
+            onClick={() => setOpened(it.title)}
+            media={<img src={photo(i)} alt="" />}
+            title={it.title}
+            meta="Video"
+            topLeft={<Badge tone="overlay" className="tabular-nums">{it.length}</Badge>}
+          />
+        ))}
+      </div>
+      <p role="status" className="text-ui text-muted">
+        {opened ? `Đã mở: ${opened}` : "Chọn một video."}
+      </p>
+    </section>
+  );
+}
+```
+
+## API
+
+### SectionHeader
+
+Header row of a discovery or gallery section: title (and description) on the left; actions and an optional ‹ ›
+pager on the right. Nothing renders for a slot you leave out.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `title` * | `React.ReactNode` |  | Section title (20 / 500, `text-section`). |
+| `description` | `React.ReactNode` |  | Optional short muted line under the title. |
+| `actions` | `React.ReactNode` |  | Right slot, before the pager: usually one `<Button variant="ghost">Xem tất cả</Button>` (or a link styled with `buttonClass("ghost")`). Any node. |
+| `pager` | `SectionHeaderPagerHandlers \| SectionHeaderPagerTarget` |  | ‹ › after the actions: handlers (`onPrev` / `onNext` + disabled flags) or a rail to scroll (`target`). |
+| `headingLevel` | `2 \| 3` | `2` |  |
+| `id` | `string` |  | Id of the heading, for `aria-labelledby` on the section (one is generated otherwise). |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- The title is an h2 (headingLevel 3 inside another section); give the section aria-labelledby={id} with the same id.
+- The pager is a group named by the title; its buttons are named "Mục trước" / "Mục sau" (locale prevItem / nextItem, or prevLabel / nextLabel) and are disabled at the start / end, so Tab skips them there. Enter or Space presses them.
+- With target, a press scrolls the rail by one visible width (instantly under prefers-reduced-motion); cards scrolled off screen stay reachable with Tab.
+
+## Notes
+
+- It renders the existing Button only: the actions are your Buttons, the pager is two Button iconOnly variant="subtle" size="sm" shape="round" (44px on a touch phone). No colours or sizes of its own.
+- pager={{ target: ref }} reads the rail after mount (the server HTML has ‹ disabled and › enabled) and follows its scroll and size; the ref can point at the scroll container or at an element that contains one (a Carousel's wrapper, though a Carousel shows its own arrows from sm).
+- pager={{ onPrev, onNext, prevDisabled, nextDisabled }} for anything else (pages of data, a carousel of yours).
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/section-header/ and the types in src/ -->
+
+
+---
+
 <!-- docs/components/segmented-control.md -->
 
 # Segmented control
@@ -13076,6 +13240,158 @@ export default function MarkdownBasic() {
 - Links become ExternalLink (new tab announced).
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/markdown/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/media-card.md -->
+
+# Media card
+
+A card for a gallery or discovery rail: 16:9 media (image, video or any node) at the card radius, a 14 / 500 caption, an optional meta line in the overline style, and two optional slots over the media (top left, bottom right) that take any node. The whole card is one link or one button.
+
+## When to use
+
+- Galleries and discovery sections: videos, templates, collections, articles with a cover image.
+- A horizontal rail under a SectionHeader, or a grid of cards that fills the width (recipes below).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| A product or record with several fields and actions | Card (with CardActions) |
+| A list row with a thumbnail | Item with media |
+| Slides people step through one at a time | Carousel |
+| A media frame without a card | AspectRatio |
+
+## Import
+
+```tsx
+import { MediaCard, type MediaCardProps } from "@semi/ui";
+```
+
+## Examples
+
+### Grid with slots
+
+Badge tone="overlay" top left; an Avatar + name or a pill Button bottom right. The cards are buttons; the pill is its own control.
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Avatar, Badge, Button, MediaCard } from "@semi/ui";
+
+// Stand-in photos (inline SVG) so the example needs no image files; n turns the hue.
+const photo = (n: number) =>
+  "data:image/svg+xml," +
+  encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180"><g style="filter:hue-rotate(${n * 47}deg)"><rect width="320" height="180" fill="#2f4858"/><circle cx="250" cy="48" r="22" fill="#86a8b8"/><polygon points="0,140 70,80 130,125 200,60 320,150 320,180 0,180" fill="#1d3340"/></g></svg>`,
+  );
+
+const ITEMS = [
+  { title: "Hướng dẫn in mô hình kiến trúc", meta: "Video · 12 phút", author: "Lan Anh", video: "12:04" },
+  { title: "Chậu cây mini in 3D", meta: "Mẫu in", author: "Minh Quân" },
+  { title: "Kệ sách gấp gọn cho bàn làm việc", meta: "Mẫu in · Mới", author: "Thu Hà" },
+  { title: "Tối ưu đường đi đầu in", meta: "Video · 8 phút", author: "Đức Huy", video: "8:31" },
+];
+
+export default function MediaCardGrid() {
+  const [opened, setOpened] = useState<string | null>(null);
+  return (
+    <div className="space-y-3">
+      {/* the grid recipe: as many 220px+ columns as fit, cards share the rest */}
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-x-4 gap-y-6">
+        {ITEMS.map((it, i) => (
+          <MediaCard
+            key={it.title}
+            onClick={() => setOpened(it.title)}
+            media={<img src={photo(i)} alt="" />}
+            title={it.title}
+            meta={it.meta}
+            topLeft={it.video ? <Badge tone="overlay" icon="video">{it.video}</Badge> : undefined}
+            bottomRight={
+              it.video ? (
+                <Button size="pill" variant="inverse" onClick={() => setOpened(`Lưu: ${it.title}`)}>
+                  Lưu
+                </Button>
+              ) : (
+                <Badge tone="overlay" className="gap-1.5 pl-0.5">
+                  <Avatar name={it.author} size="sm" className="w-5 h-5" />
+                  {it.author}
+                </Badge>
+              )
+            }
+          />
+        ))}
+      </div>
+      <p role="status" className="text-ui text-muted">
+        {opened ? `Đã mở: ${opened}` : "Chọn một thẻ."}
+      </p>
+    </div>
+  );
+}
+```
+
+### As a link
+
+href makes the card a next/link; no slots.
+
+```tsx
+import { MediaCard } from "@semi/ui";
+
+// Stand-in photos (inline SVG) so the example needs no image files; n turns the hue.
+const photo = (n: number) =>
+  "data:image/svg+xml," +
+  encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180"><g style="filter:hue-rotate(${n * 47}deg)"><rect width="320" height="180" fill="#2f4858"/><circle cx="250" cy="48" r="22" fill="#86a8b8"/><polygon points="0,140 70,80 130,125 200,60 320,150 320,180 0,180" fill="#1d3340"/></g></svg>`,
+  );
+
+export default function MediaCardLink() {
+  return (
+    <div className="max-w-xs">
+      <MediaCard href="#media-card-link" media={<img src={photo(0)} alt="" />} title="Bộ sưu tập mùa hè" meta="24 mẫu in" />
+    </div>
+  );
+}
+```
+
+## API
+
+### MediaCard
+
+Gallery / rail card. Hover (devices that hover) scales the media to 1.05 in 300ms ease-out (`--motion-slide`);
+`prefers-reduced-motion` keeps it still. Keyboard: Tab reaches the card (focus ring around the whole card), Enter
+opens it (Space too for the button form); slot buttons follow it in the tab order.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `media` * | `React.ReactNode` |  | The media: an `<img>`, a `<video>` or any node; it fills the frame (`object-cover`). Decorative images: `alt=""`. |
+| `title` * | `React.ReactNode` |  | Caption under the media (14 / 500, strong, one line with …). It names the card's link or button. |
+| `meta` | `React.ReactNode` |  | Optional meta line under the caption, in the overline style (a category, a count, a date). |
+| `topLeft` | `React.ReactNode` |  | Optional slot at the media's top left, any node: usually `<Badge tone="overlay">`. Nothing renders without it. |
+| `bottomRight` | `React.ReactNode` |  | Optional slot at the media's bottom right, any node: an Avatar + name, a `<Button size="pill">`. Nothing renders without it. |
+| `ratio` | `number` | `16 / 9` | Width / height of the media frame. |
+| `label` | `string` |  | Accessible name of the card's link or button when the caption alone is not enough (default: the caption). |
+| `className` | `string` |  |  |
+| `href` | `string \| undefined` |  |  |
+| `onClick` | `undefined \| () => void` |  |  |
+
+## Accessibility
+
+- The card is one link (href) or one button (onClick), named by its caption (label overrides it). Tab reaches it, the focus ring goes around the whole card, Enter opens it (Space too for the button).
+- The slots sit beside the card's control, never inside it: a Button in a slot is its own control and comes after the card in the tab order. Only controls in a slot take the pointer, so a badge on the media never blocks opening the card.
+- Decorative media take alt="" (the caption names the card); a video needs its own controls or a poster image.
+- Hover scales the media to 1.05 in 300ms ease-out on devices that hover; prefers-reduced-motion keeps it still.
+
+## Notes
+
+- Grid recipe: grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-x-4 gap-y-6 (as many 220px+ columns as fit).
+- Rail recipe: a flex row with overflow-x-auto snap-x snap-mandatory overscroll-x-contain, the cards snap-start shrink-0 basis-[75%] on phones (the next card peeks) and 3 or 4 per view from sm / lg; SectionHeader pager={{ target: railRef }} pages it (see Section header).
+- Slots: topLeft for a Badge tone="overlay" (duration, "Video"), bottomRight for an Avatar + name in an overlay Badge or a Button size="pill". Leave them out and nothing renders.
+- The meta line uses text-overline (11 / 600, uppercase): keep it short, a category or a count, never a sentence.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/media-card/ and the types in src/ -->
 
 
 ---

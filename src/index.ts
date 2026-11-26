@@ -93,6 +93,8 @@ export * from "./InputOTP";
 export * from "./Carousel";
 export * from "./Resizable";
 export * from "./AspectRatio";
+export * from "./MediaCard";
+export * from "./SectionHeader";
 export * from "./NavigationMenu";
 export * from "./CodeBlock";
 export * from "./Prose";

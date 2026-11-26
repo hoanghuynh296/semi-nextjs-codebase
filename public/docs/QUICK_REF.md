@@ -120,7 +120,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (172)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (174)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
@@ -166,6 +166,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `KpiCard`: `KpiCard`
 - `ListReader`: `ReaderHeader`, `ListReaderLayout`
 - `Markdown`: `Markdown`
+- `MediaCard`: `MediaCard`
 - `MegaMenu`: `MegaMenu`
 - `MinimalHeader`: `MinimalHeader`
 - `MobileTabBar`: `MobileTabBar`
@@ -192,6 +193,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `ScrollArea`: `ScrollArea`
 - `SearchInput`: `SearchInput`
 - `SearchPill`: `BarActions`, `StickyContextBar`, `SearchPill`
+- `SectionHeader`: `SectionHeader`
 - `SegmentedControl`: `SegmentedControl`
 - `Separator`: `Separator`
 - `SidePanel`: `SidePanelToggle`, `SidePanel`
