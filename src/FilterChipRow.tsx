@@ -99,7 +99,7 @@ export function useListSelection(initial: string[] = []) {
 const CHIP =
   "shrink-0 inline-flex items-center gap-1.5 h-8 pointer-coarse:max-sm:min-h-11 pointer-coarse:max-sm:min-w-11 px-3 rounded-full text-ui font-medium whitespace-nowrap transition outline-none focus-visible:ring-2 focus-visible:ring-focus cursor-pointer";
 const CHIP_ON = "bg-inverted text-on-inverted hover:bg-inverted-hover";
-const CHIP_OFF = "bg-tint text-body hover:text-strong hover:bg-tint-hover";
+const CHIP_OFF = "bg-subtle-button text-body hover:text-strong hover:bg-tint-hover";
 
 /**
  * One filter facet as a chip. A `multi` filter opens a popover of checkboxes (aria-expanded on the chip); a `switch`

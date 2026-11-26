@@ -250,8 +250,14 @@ Semi's own green. A brand change is made in the brand repo (`/semi-brand`) and r
   shade (`text-purple-700`): `no-solid-pastel-surfaces`, `no-fixed-tone-text`.
 - **Rows:** a selected row is `bg-item-selected`, a checked one `bg-item-checked`; a row that needs attention keeps a
   neutral fill and shows its state on a badge. Its secondary text stays `text-muted`.
-- **Chips and tags** (`Chip.tsx`) share one pill (`rounded-full h-control px-3.5 text-ui font-medium`): `chipClass(active)`;
-  static tags `TAG`. Per-item colour only on a leading dot (`TONE_DOT`) or icon (`chipIconClass(tone)`). The chosen
+- **Chips and tags** (`Chip.tsx`) share one pill (`rounded-full h-control px-3.5 text-ui font-medium`), with **no border**
+  (#190, C-014 / C-015): `chipClass(active)`; off = `bg-subtle-button` (the subtle button / icon button fill, hover
+  `tint-hover`), on = `bg-raised` or the tone's tint (`<Chip tone>`) **and a leading check** (`CHIP_CHECK`; `Chip` adds it,
+  a hand-built chip adds `<Icon name="check" className={CHIP_CHECK} />`), so the state never rests on colour alone. 34px
+  with a mouse; on a touch phone `CHIP_BASE` grows to at least 44 × 44px (`pointer-coarse:max-sm:`, the `BTN_HIT` pair,
+  real size: a wrapping or scrolling row of chips never shares a tap point). Static tags `TAG` and `<Badge>` have no
+  border either: the tint alone. `<Badge tone="overlay">` (`BADGE_OVERLAY`: the canvas grey at 55%, 12px backdrop blur,
+  strong text) is for text on an image or video **only**. Per-item colour only on a leading dot (`TONE_DOT`) or icon (`chipIconClass(tone)`). The chosen
   segment of `Toggle` and theme / style switchers is `SEGMENT_ON`.
 - Data series in charts use the fixed `chart-1…8` hues; syntax colours in code views are the other exception.
 
@@ -684,7 +690,8 @@ it form by form; the four lint rules below are warnings until 1.0.
 - Sub-page filter tabs / chips: `Chip` (see §3 Chips). Static labels: `TAG`.
 - Filter chips may carry an icon and a count: icon `w-3.5 h-3.5` + label + `COUNT_PILL`.
 - Status pill: `STATUS_PILL` + `bg-*-bg text-*-fg` (danger, success, warning, info) with a status dot (§11), or `<Badge tone>`.
-- Tag / meta chip: `TAG` (`h-6 px-2 rounded-full bg-field border-line text-ui text-muted`) with an icon.
+- Tag / meta chip: `TAG` (`h-6 px-2 rounded-full bg-field text-chrome text-muted`, no border) with an icon.
+- Text on an image or video (duration, "Video", a count on a thumbnail): `<Badge tone="overlay">`, only on media.
 
 ## 11. Status dot
 
@@ -913,7 +920,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `Markdown.tsx` | `Markdown` (AI answers) |
 | `Chat.tsx` | `AIChat`, `ChatPanel`, `ChatView`, `ChatList`, `ChatComposer`, `UserMessage`, `AssistantMessage`, `ChatAnswer`, `ChatError`, `ChatThinking`, `ChatIntro`, `ChatSuggestion(s)`, `ChatAvatar`, `ChatCopyButton`, `ChatModelPicker`, `CHAT_ROW`, `CHAT_CHIP`, `CHAT_PICK_CHIP`, `ChatItem` (§14b) |
 | `ExternalLink.tsx` | `ExternalLink` |
-| `Chip.tsx` | on-off chips (`Chip`, `CHIP_BASE`, `chipClass`, `chipIconClass`, `TAG`, `TONE_DOT`) |
+| `Chip.tsx` | on-off chips (`Chip`, `CHIP_BASE`, `CHIP_CHECK`, `chipClass`, `chipIconClass`, `TAG`, `TONE_DOT`) |
 | `SearchInput`, `CustomSelect`, `CustomCombobox`, `MultiCombobox`, `OptionCards`, `DatePicker`, `Pagination` | toolbar and form inputs (`CustomCombobox` & `MultiCombobox`: diacritic-aware, IME-safe search + `group` headings; `OptionCards`: selectable radio-group cards with neutral `item-selected` fill, 8px grid gap) |
 | `NumberInput` (+ `NumPadPopup`, `useCoarsePointer`) | every number field (app numpad on touch screens) |
 | `SidePanel`, `SidePanelToggle`, `RefreshButton` | tool-app left panel, icon-only reload action |

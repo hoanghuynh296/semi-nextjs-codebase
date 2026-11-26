@@ -554,7 +554,7 @@
       "kind": "component",
       "module": "src/Badge.tsx",
       "client": true,
-      "summary": "Standard Bento Tag/Badge primitive with dual-theme tonal matching. Uses 10% alpha fill + 20% alpha border + high-contrast text adapted for dark and light modes.",
+      "summary": "Standard Bento Tag/Badge primitive with dual-theme tonal matching. A 10% alpha fill + high-contrast text adapted for dark and light modes; no border (#190). `tone=\"overlay\"` on media.",
       "props": [
         "tone",
         "icon",
@@ -3244,7 +3244,7 @@
       "kind": "function",
       "module": "src/Chip.tsx",
       "client": true,
-      "summary": "Colour classes of a filter chip (add CHIP_BASE + your own size). Same for every chip."
+      "summary": "Colour classes of a filter chip (add CHIP_BASE + your own size; when active, a leading CHIP_CHECK icon). Same for every chip."
     },
     {
       "name": "chipIconClass",
@@ -3571,11 +3571,18 @@
       "summary": ""
     },
     {
+      "name": "CHIP_CHECK",
+      "kind": "constant",
+      "module": "src/Chip.tsx",
+      "client": true,
+      "summary": "Leading check of a selected chip (the non-colour cue). A hand-built chip (CHIP_BASE + chipClass) adds it itself: `{active && <Icon name=\"check\" className={CHIP_CHECK} />}`."
+    },
+    {
       "name": "TAG",
       "kind": "constant",
       "module": "src/Chip.tsx",
       "client": true,
-      "summary": "Static tag (a filament's brand / type on a card): same neutral background for every tag."
+      "summary": "Static tag (a filament's brand / type on a card): same neutral background for every tag, no border."
     },
     {
       "name": "TONE_DOT",
@@ -4177,7 +4184,14 @@
       "kind": "constant",
       "module": "styles/surfaces.ts",
       "client": false,
-      "summary": "Tonal badge base class (11px or 12px pill)."
+      "summary": "Tonal badge base class (12px pill, no border since #190: the tone's tint alone; TONAL_SURFACE's border colour has no width here)."
+    },
+    {
+      "name": "BADGE_OVERLAY",
+      "kind": "constant",
+      "module": "styles/surfaces.ts",
+      "client": false,
+      "summary": "Badge tone=\"overlay\" (#190): text on an image or video only (a duration, \"Video\", a count on a thumbnail). The canvas grey at 55% with a 12px backdrop blur and the strong text. Never on a page or card surface: there use a tone."
     },
     {
       "name": "TONAL_CONTAINER",

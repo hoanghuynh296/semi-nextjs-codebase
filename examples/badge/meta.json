@@ -1,7 +1,7 @@
 {
   "title": "Badge",
   "group": "Data display",
-  "description": "A read-only status or tag in a tone (10% fill, 20% border, theme-safe text; one fixed palette for every brand), and the attention marks in the brand colour: CountBadge (unread, to approve; 99+ cap) and NewTag (\"Mới\").",
+  "description": "A read-only status or tag in a tone (10% fill, no border, theme-safe text; one fixed palette for every brand), tone=\"overlay\" for text on an image or video, and the attention marks in the brand colour: CountBadge (unread, to approve; 99+ cap) and NewTag (\"Mới\").",
   "components": [
     "Badge",
     "CountBadge",
@@ -9,6 +9,7 @@
   ],
   "when": [
     "Status of a row or card (Đã thanh toán, Lỗi), a plan or role tag.",
+    "Text on an image or video (a duration, \"Video\", a page count on a thumbnail): tone=\"overlay\", and only there.",
     "Something waits for the user (unread, to approve): CountBadge, or Button badge on an icon button.",
     "A new feature or item in a menu: NewTag."
   ],
@@ -30,6 +31,11 @@
     {
       "file": "tones",
       "title": "Tones"
+    },
+    {
+      "file": "overlay",
+      "title": "On media (tone=\"overlay\")",
+      "description": "Only on an image or video: the canvas grey at 55% with a 12px backdrop blur behind the strong text. On a page or a card use a tone."
     },
     {
       "file": "attention",

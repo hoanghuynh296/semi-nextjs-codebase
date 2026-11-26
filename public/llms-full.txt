@@ -36,7 +36,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Button](./components/button/) ([markdown](./docs/components/button.md)): The action control, 1.0 variants: subtle (default) for ordinary actions, surface for toolbar actions, inverse for the main action of a card or a list title row, outline beside an inverse one, ghost for icon buttons, primary / secondary (the brand fills) only for the one main button of a page, a dialog or the nav, danger (solid red) for destructive actions, danger-subtle (the danger tint) for a destructive action that is not the main one. Spinner shows work in progress inside the control that runs it. Components: Button, Spinner.
 - [Button group](./components/button-group/) ([markdown](./docs/components/button-group.md)): Joins related buttons into one segmented control: shared borders, outer corners only (‹ Hôm nay ›, Lưu | ▾). Components: ButtonGroup.
 - [Card actions](./components/card-actions/) ([markdown](./docs/components/card-actions.md)): Quick actions on a card or media tile: round icon buttons in the top right corner that show on hover or keyboard focus where the device can hover, and one always-visible ⋯ with every action on touch screens. Goes inside a `group relative` card. Components: CardActions.
-- [Chip](./components/chip/) ([markdown](./docs/components/chip.md)): A pill-shaped toggle for filters and tags. Neutral when off; active uses the high-contrast surface, with colour only on its dot or icon (tone). Components: Chip.
+- [Chip](./components/chip/) ([markdown](./docs/components/chip.md)): A pill-shaped toggle for filters and tags, without a border. Off: the subtle button fill; on: the raised surface (or its tone's tint) with a leading check, so the state does not rest on colour alone. 34px, 44px on a touch phone. Components: Chip.
 - [External link](./components/external-link/) ([markdown](./docs/components/external-link.md)): A link to another site: opens a new tab on desktop and the external browser inside a mobile WebView, with an external-link icon. Components: ExternalLink.
 - [Split button](./components/split-button/) ([markdown](./docs/components/split-button.md)): The main action and a ▾ that opens a Menu of the other ways to do the same job (Thêm khách hàng | ▾ Nhập từ file, Tìm trong Data Hub). One filled button in total; below sm one button opens the whole list, the main action first. Components: SplitButton.
 - [Toggle](./components/toggle/) ([markdown](./docs/components/toggle.md)): Buttons that stay pressed. Toggle for one (pin, mute, bold); ToggleGroup for a set of icon or short options, one or several at a time (list / grid view, text styles). Components: Toggle, ToggleGroup.
@@ -112,7 +112,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Accordion](./components/accordion/) ([markdown](./docs/components/accordion.md)): A list of sections where one (or several) open at a time: FAQs, settings groups, help. Components: Accordion.
 - [Aspect ratio](./components/aspect-ratio/) ([markdown](./docs/components/aspect-ratio.md)): Keeps media at a fixed ratio while its width follows the layout (images, video, maps, 3D previews). Components: AspectRatio.
 - [Avatar & LetterAvatar](./components/avatar/) ([markdown](./docs/components/avatar.md)): A person or team: their image, two initials on a stable tone (`Avatar`), or one upper-cased letter (`vi` locale, "?" when empty) on a neutral fill (`LetterAvatar`, or `Avatar initials={1}`). Components: Avatar, LetterAvatar.
-- [Badge](./components/badge/) ([markdown](./docs/components/badge.md)): A read-only status or tag in a tone (10% fill, 20% border, theme-safe text; one fixed palette for every brand), and the attention marks in the brand colour: CountBadge (unread, to approve; 99+ cap) and NewTag ("Mới"). Components: Badge, CountBadge, NewTag.
+- [Badge](./components/badge/) ([markdown](./docs/components/badge.md)): A read-only status or tag in a tone (10% fill, no border, theme-safe text; one fixed palette for every brand), tone="overlay" for text on an image or video, and the attention marks in the brand colour: CountBadge (unread, to approve; 99+ cap) and NewTag ("Mới"). Components: Badge, CountBadge, NewTag.
 - [Card](./components/card/) ([markdown](./docs/components/card.md)): The bento content card: the card surface (bg-card, separated from the page by tone: no border, no shadow, rounded-card). bordered frames a dense data view; interactive adds hover / press, active marks the selected or running item. Components: Card.
 - [Carousel](./components/carousel/) ([markdown](./docs/components/carousel.md)): Slides in a row that scroll by swipe, trackpad, arrow keys, buttons or dots (CSS scroll-snap, no library). Phones show one slide and a peek of the next. Components: Carousel.
 - [Chart](./components/chart/) ([markdown](./docs/components/chart.md)): Charts in SVG on Semi tokens, no library: BarChart (grouped or stacked columns), LineChart (optional area wash), DonutChart (parts of a whole) and Sparkline (a trend in a tile). Series use the fixed chart-1…8 colours (validated for colour-blind readers in both themes); every chart has a legend for 2+ series, a hover / keyboard tooltip and a table view. Components: BarChart, LineChart, DonutChart, Sparkline.
@@ -207,7 +207,7 @@ drawer; never a hand-made slide-over. `mobileNav="tabs"` keeps `MobileTabBar`, w
 *Theme:* `<html suppressHydrationWarning>` + `<ThemeScript />` in `<head>` (no flash) + `<ThemeProvider defaultTheme="dark">` (same options); `<ThemeSwitcher />` (Sáng · Tối · Hệ thống, settings / sidebar footer), `<ThemeSwitcher variant="menu" />` (one icon button + Menu: headers), the account avatar menu of the route header (the default place), `useThemeUtility()` (the same in AppShell `tools`, for an app without an account) or `<ThemeToggle />` (one-tap dark/light), or `const { theme, resolvedTheme, mounted, setTheme } = useTheme()`. `data-theme="system"` follows the OS.
 
 **Colour:** neutral everywhere; the brand fill (Semi default `#00AE42`; a product gets its own from its brand kit, never in its own CSS) only on the main button and attention marks (`bg-primary`). Status tokens carry meaning only: success = online/done · warning = busy/paused · danger = error/destructive · info = news/cost. Category tints on tags, tiles and dots: `<Badge tone>`, `TONAL_SURFACE`, `text-tone-<hue>` (§3). Nav menu: grey 16px icons, no count badges on items, active = `bg-item-selected text-strong`.
-Chips (`Chip`, `chipClass(active)`): `rounded-full h-control px-3.5`, ghost when off, active uses semantic high-contrast background; colour only on a
+Chips (`Chip`, `chipClass(active)`): `rounded-full h-control px-3.5`, no border; off = `bg-subtle-button`, on = `bg-raised` (or the tone's tint) + a leading check (`CHIP_CHECK`); 44px on a touch phone. Tags (`TAG`, `<Badge>`) have no border; `<Badge tone="overlay">` only on images / video. Colour only on a
 leading dot or icon (`TONE_DOT`, `chipIconClass(tone)`). Card tiles keep their area tint. No gradients, no glow
 blobs, no `shadow-[0_0_…]` (status dots and power buttons too). Active card = `CARD_ACTIVE` (`border-outline-line`).
 
@@ -251,7 +251,7 @@ control drawn under 24px gets `HIT_AREA` · UI text in shared components comes f
   - Feedback (§14c): one toast API: `toast.success|error|warning|info(title)`, `toast.undo(title, restore)` (reversible destructive: Hoàn tác, 8 s), `toast.promise(p, { loading, success, error })`, `updateToast`; irreversible: `confirmDelete({ name })` (names the object, red Xoá, Huỷ); success once, never a modal; no toast libraries or local wrappers (`local-toast`, warning).
   - AI chat (§14b): `<AIChat messages busy onSend onStop onRetry onNewChat empty toolbar />` (or `ChatPanel` > `ChatView` > `ChatList` + `ChatComposer` with `UserMessage` / `AssistantMessage` / `ChatError` / `ChatThinking` / `ChatIntro` / `ChatSuggestion`). UI only: the app keeps messages and streaming; the provider → model → effort chips are `toolbar={<ChatModelPicker providers models efforts … />}`. Never a local composer or bubbles.
 - **Style Constants (`@semi/ui/styles`):**
-  - `surfaces.ts`: `SHELL_OUTER`, `SHELL_ASIDE`, `SHELL_MAIN`, `SHELL_CONTAINER`, `CARD`, `CARD_HOVER`, `CARD_BORDERED`, `CARD_BORDERED_HOVER`, `CARD_ACTIVE`, `HERO`, `TILE`, `SECTION_*`, `COUNT_PILL`, `EMPTY`, `ICON_BTN*`, `STATUS_PILL`, `STATUS_DOT`, `TONAL_SURFACE`, `TONAL_CONTAINER`, `TONAL_HOVER`, `BADGE_BASE`, `STICKY_TOOLBAR`, `MODAL_*`, `FIELD_LABEL`, `FIELD_INPUT`, `FIELD_TEXTAREA`.
+  - `surfaces.ts`: `SHELL_OUTER`, `SHELL_ASIDE`, `SHELL_MAIN`, `SHELL_CONTAINER`, `CARD`, `CARD_HOVER`, `CARD_BORDERED`, `CARD_BORDERED_HOVER`, `CARD_ACTIVE`, `HERO`, `TILE`, `SECTION_*`, `COUNT_PILL`, `EMPTY`, `ICON_BTN*`, `STATUS_PILL`, `STATUS_DOT`, `TONAL_SURFACE`, `TONAL_CONTAINER`, `TONAL_HOVER`, `BADGE_BASE`, `BADGE_OVERLAY`, `STICKY_TOOLBAR`, `MODAL_*`, `FIELD_LABEL`, `FIELD_INPUT`, `FIELD_TEXTAREA`.
   - `buttons.ts` (1.0 variants): `BTN_SUBTLE` (default), `BTN_SURFACE`, `BTN_INVERSE` (a card's / list title row's main action), `BTN_OUTLINE`, `BTN_GHOST`, `BTN_PRIMARY` / `BTN_SECONDARY` (brand: the one main button of a page, dialog or nav), `BTN_DANGER` (solid red), `BTN_DANGER_SUBTLE` (the danger tint), `BTN_ICON`, `BTN_LG` (40px: the one CTA of a page header), `BTN_SM`, `BTN_XS`, `BTN_PILL` (24px pill), `MODAL_BTN_*` (`MODAL_BTN_SUBTLE` for cancel). Attention: `CountBadge` / Button `badge` (brand fill, 99+), `NewTag` ("Mới").
   - `appChrome.ts`: `HEADER_ICON_*`, `headerPrimary`, `HEADER_PILL`, `VIEWPORT_*`.
 
@@ -646,8 +646,14 @@ Semi's own green. A brand change is made in the brand repo (`/semi-brand`) and r
   shade (`text-purple-700`): `no-solid-pastel-surfaces`, `no-fixed-tone-text`.
 - **Rows:** a selected row is `bg-item-selected`, a checked one `bg-item-checked`; a row that needs attention keeps a
   neutral fill and shows its state on a badge. Its secondary text stays `text-muted`.
-- **Chips and tags** (`Chip.tsx`) share one pill (`rounded-full h-control px-3.5 text-ui font-medium`): `chipClass(active)`;
-  static tags `TAG`. Per-item colour only on a leading dot (`TONE_DOT`) or icon (`chipIconClass(tone)`). The chosen
+- **Chips and tags** (`Chip.tsx`) share one pill (`rounded-full h-control px-3.5 text-ui font-medium`), with **no border**
+  (#190, C-014 / C-015): `chipClass(active)`; off = `bg-subtle-button` (the subtle button / icon button fill, hover
+  `tint-hover`), on = `bg-raised` or the tone's tint (`<Chip tone>`) **and a leading check** (`CHIP_CHECK`; `Chip` adds it,
+  a hand-built chip adds `<Icon name="check" className={CHIP_CHECK} />`), so the state never rests on colour alone. 34px
+  with a mouse; on a touch phone `CHIP_BASE` grows to at least 44 × 44px (`pointer-coarse:max-sm:`, the `BTN_HIT` pair,
+  real size: a wrapping or scrolling row of chips never shares a tap point). Static tags `TAG` and `<Badge>` have no
+  border either: the tint alone. `<Badge tone="overlay">` (`BADGE_OVERLAY`: the canvas grey at 55%, 12px backdrop blur,
+  strong text) is for text on an image or video **only**. Per-item colour only on a leading dot (`TONE_DOT`) or icon (`chipIconClass(tone)`). The chosen
   segment of `Toggle` and theme / style switchers is `SEGMENT_ON`.
 - Data series in charts use the fixed `chart-1…8` hues; syntax colours in code views are the other exception.
 
@@ -1080,7 +1086,8 @@ it form by form; the four lint rules below are warnings until 1.0.
 - Sub-page filter tabs / chips: `Chip` (see §3 Chips). Static labels: `TAG`.
 - Filter chips may carry an icon and a count: icon `w-3.5 h-3.5` + label + `COUNT_PILL`.
 - Status pill: `STATUS_PILL` + `bg-*-bg text-*-fg` (danger, success, warning, info) with a status dot (§11), or `<Badge tone>`.
-- Tag / meta chip: `TAG` (`h-6 px-2 rounded-full bg-field border-line text-ui text-muted`) with an icon.
+- Tag / meta chip: `TAG` (`h-6 px-2 rounded-full bg-field text-chrome text-muted`, no border) with an icon.
+- Text on an image or video (duration, "Video", a count on a thumbnail): `<Badge tone="overlay">`, only on media.
 
 ## 11. Status dot
 
@@ -1309,7 +1316,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `Markdown.tsx` | `Markdown` (AI answers) |
 | `Chat.tsx` | `AIChat`, `ChatPanel`, `ChatView`, `ChatList`, `ChatComposer`, `UserMessage`, `AssistantMessage`, `ChatAnswer`, `ChatError`, `ChatThinking`, `ChatIntro`, `ChatSuggestion(s)`, `ChatAvatar`, `ChatCopyButton`, `ChatModelPicker`, `CHAT_ROW`, `CHAT_CHIP`, `CHAT_PICK_CHIP`, `ChatItem` (§14b) |
 | `ExternalLink.tsx` | `ExternalLink` |
-| `Chip.tsx` | on-off chips (`Chip`, `CHIP_BASE`, `chipClass`, `chipIconClass`, `TAG`, `TONE_DOT`) |
+| `Chip.tsx` | on-off chips (`Chip`, `CHIP_BASE`, `CHIP_CHECK`, `chipClass`, `chipIconClass`, `TAG`, `TONE_DOT`) |
 | `SearchInput`, `CustomSelect`, `CustomCombobox`, `MultiCombobox`, `OptionCards`, `DatePicker`, `Pagination` | toolbar and form inputs (`CustomCombobox` & `MultiCombobox`: diacritic-aware, IME-safe search + `group` headings; `OptionCards`: selectable radio-group cards with neutral `item-selected` fill, 8px grid gap) |
 | `NumberInput` (+ `NumPadPopup`, `useCoarsePointer`) | every number field (app numpad on touch screens) |
 | `SidePanel`, `SidePanelToggle`, `RefreshButton` | tool-app left panel, icon-only reload action |
@@ -2979,7 +2986,7 @@ All web UI here follows the **Semi Design System** (`@semi/ui`, repo `https://gi
    **Grouped actions** (`DESIGN_SYSTEM.md` §9, G1–G12): one way to start one job (other ways to create the same thing go under the primary in a `SplitButton`, never as extra toolbar buttons); secondary page actions in the ⋯ `Menu` (at most one secondary button visible); `ButtonGroup` only for toggles or steps of one control; a table row has one inline action + ⋯, a card `CardActions` (always with `label`: `card-hover-actions-touch` is a hard error); a round icon button is `<Button iconOnly shape="round">`, never a hand-made `rounded-full` button (`raw-pill-button`, warning); danger last; one filled primary per view; 3+ icon-only buttons in a row go into ⋯. A list record opens in a `DetailOverlay` with `useDetailParam` (`?open=`), not a new page (`detail-overlay-url`, warning); the ⌘K box is one `CommandPalette` in the root layout (pages add items with `useRegisterCommands`).
    **Forms** (`DESIGN_SYSTEM.md` §9b): the action row is `FormActions` (Huỷ ghost, then Lưu / Tạo, destructive on the left, sticky on a page); `useUnsavedGuard(dirty)` so typed work is never lost; `Field kind` for email / phone / number / money / URL / search / password; errors under the field (`useFormValidation`, `FormErrorSummary`), never in a toast; page forms `max-w-2xl` (`npx semi example form-actions`).
 5. **Brand** (when `semi-lint.json` has `"brand"`): ask `semi_brand` (or `npx semi brand voice|color|logo|brief`) before writing UI text or placing colour. Write in the brand's voice, use its fills only as the brand colour rule says, import the logo from the kit; never define colours, fonts or Semi tokens in the app (`brand-override`). Brand changes happen in the brand repo with `/semi-brand`, then `/semi-sync` here.
-6. **Accessibility** (`DESIGN_SYSTEM.md` §18, checked on the page by `npx semi a11y <url>`): icon-only controls have `aria-label`, and a field's name comes from `Field` (a placeholder is not a label); anything clickable is a button or a link (`click-target`); custom controls keep `FOCUS_RING` or the 2px `:focus-visible` `outline-focus`, never a bare `outline-none` (`focus-hidden`); every text / background pair reaches 4.5:1 in both themes (themed text tokens, never a fixed shade on a tinted surface); text-like fields use the quiet 1.0 style (`border-field-line`, backed by the 2px `:focus-visible` outline), checkboxes and radios keep `border-control-line` (3:1); a control drawn smaller than 24px gets `HIT_AREA`, and on a touch phone every control reaches 44 × 44px (`HIT_AREA` for an isolated one, `BTN_HIT` growth in a dense row; `Button`, `BTN_ICON` and Semi's tabs, segments, filter chips, choice rows, breadcrumb and table header already have it); images have `alt`; never `maximum-scale` or `user-scalable=no` in the viewport.
+6. **Accessibility** (`DESIGN_SYSTEM.md` §18, checked on the page by `npx semi a11y <url>`): icon-only controls have `aria-label`, and a field's name comes from `Field` (a placeholder is not a label); anything clickable is a button or a link (`click-target`); custom controls keep `FOCUS_RING` or the 2px `:focus-visible` `outline-focus`, never a bare `outline-none` (`focus-hidden`); every text / background pair reaches 4.5:1 in both themes (themed text tokens, never a fixed shade on a tinted surface); text-like fields use the quiet 1.0 style (`border-field-line`, backed by the 2px `:focus-visible` outline), checkboxes and radios keep `border-control-line` (3:1); a control drawn smaller than 24px gets `HIT_AREA`, and on a touch phone every control reaches 44 × 44px (`HIT_AREA` for an isolated one, `BTN_HIT` growth in a dense row; `Button`, `BTN_ICON` and Semi's tabs, segments, filter chips and `Chip`, choice rows, breadcrumb and table header already have it); images have `alt`; never `maximum-scale` or `user-scalable=no` in the viewport.
 7. **Gaps go upstream, lint is never silenced.** When `@semi/ui` cannot express a need, run `/semi-sync`, re-check the docs, then `/semi-propose`; meanwhile a minimal compliant workaround marked `// TODO(semi#<issue>)`. Never add a `skip`, disable a rule or grow `semi-lint-baseline.json` to get past lint: fix the code. The baseline only shrinks (`semi-lint --update-baseline`); `--accept-new` is for `/semi-sync` and needs the user's OK otherwise, and `semi-lint --ci` fails a pull request whose baseline or skips grew. The one per-file `skip`, with the user's OK and a reason, is for illustrations and data colours (not UI chrome): `"skip": { "literal-colour-value": { "lib/scenePalette.ts": "data colours: 3D scene" } }` (also `inline-svg-path`, `no-literal-palette`, `inline-style-value`). Shared rules change in the Semi repo, never only in this file; app-specific patterns go in `docs/UI_EXTENSIONS.md`.
 8. **Before finishing:** `npx semi-lint` clean (it also checks `.css`), `npx tsc --noEmit`, the page checked in both themes and at phone width, and `npx semi density <url>` and `npx semi a11y <url>` clean when the app runs (no Playwright: evaluate their `--snippet` with a browser tool, `a11y` in each theme). CI runs `semi-lint --ci` and `tsc` (`.github/workflows/semi.yml`). Whole-app check: `/semi-check`; newer Semi or brand kit: `/semi-sync`.
 <!-- semi-design-system:end -->
@@ -3369,7 +3376,7 @@ export default function CardActionsGrid() {
 
 # Chip
 
-A pill-shaped toggle for filters and tags. Neutral when off; active uses the high-contrast surface, with colour only on its dot or icon (tone).
+A pill-shaped toggle for filters and tags, without a border. Off: the subtle button fill; on: the raised surface (or its tone's tint) with a leading check, so the state does not rest on colour alone. 34px, 44px on a touch phone.
 
 ## When to use
 
@@ -3393,7 +3400,7 @@ import { Chip } from "@semi/ui";
 
 ### Toggle filters
 
-tone colours the dot of what the chip filters; the chip itself stays neutral.
+tone tints the chip while it is on; every chip on shows a check.
 
 ```tsx
 "use client";
@@ -3432,12 +3439,13 @@ export default function ChipToggle() {
 | `onClick` * | `() => void` |  |  |
 | `children` * | `React.ReactNode` |  |  |
 | `title` | `string` |  |  |
-| `tone` | `SemanticTone` |  | Optional theme-matching chromatic tone when active. Defaults to neutral raised surface. |
+| `tone` | `SemanticTone` |  | Tint of the chip while active (its tone's 10% fill and text). Default: the neutral raised surface. Either way an active chip shows a leading check. |
 | `className` | `string` | `""` |  |
 
 ## Accessibility
 
 - A button with aria-pressed when it toggles; keep the text short.
+- Selected shows a leading check (not colour alone); on a touch phone each chip is at least 44 × 44px, real size, so chips in a row never share a tap point.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/chip/ and the types in src/ -->
 
@@ -11606,11 +11614,12 @@ One-letter neutral avatar: the name's first letter upper-cased with the `vi` loc
 
 # Badge
 
-A read-only status or tag in a tone (10% fill, 20% border, theme-safe text; one fixed palette for every brand), and the attention marks in the brand colour: CountBadge (unread, to approve; 99+ cap) and NewTag ("Mới").
+A read-only status or tag in a tone (10% fill, no border, theme-safe text; one fixed palette for every brand), tone="overlay" for text on an image or video, and the attention marks in the brand colour: CountBadge (unread, to approve; 99+ cap) and NewTag ("Mới").
 
 ## When to use
 
 - Status of a row or card (Đã thanh toán, Lỗi), a plan or role tag.
+- Text on an image or video (a duration, "Video", a page count on a thumbnail): tone="overlay", and only there.
 - Something waits for the user (unread, to approve): CountBadge, or Button badge on an icon button.
 - A new feature or item in a menu: NewTag.
 
@@ -11660,6 +11669,37 @@ export default function BadgeTones() {
 }
 ```
 
+### On media (tone="overlay")
+
+Only on an image or video: the canvas grey at 55% with a 12px backdrop blur behind the strong text. On a page or a card use a tone.
+
+```tsx
+import { Badge } from "@semi/ui";
+
+// A stand-in photo (inline SVG) so the example needs no image file.
+const PHOTO =
+  "data:image/svg+xml," +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180"><rect width="320" height="180" fill="#2f4858"/><circle cx="250" cy="48" r="22" fill="#86a8b8"/><polygon points="0,140 70,80 130,125 200,60 320,150 320,180 0,180" fill="#1d3340"/><polygon points="0,160 90,120 170,158 260,118 320,140 320,180 0,180" fill="#14252f"/></svg>',
+  );
+
+export default function BadgeOverlay() {
+  return (
+    <div className="relative w-full max-w-sm aspect-video rounded-card overflow-hidden">
+      <img src={PHOTO} alt="Ảnh xem trước bản in" className="absolute inset-0 w-full h-full object-cover" />
+      <div className="absolute top-2 left-2 flex items-center gap-1.5">
+        <Badge tone="overlay" icon="video">
+          Video
+        </Badge>
+      </div>
+      <Badge tone="overlay" className="absolute bottom-2 right-2 tabular-nums">
+        2:14
+      </Badge>
+    </div>
+  );
+}
+```
+
 ### Attention marks
 
 CountBadge in the brand fill (99+ cap; tone="neutral" for a plain count), Button badge at a button's corner (the count goes in an icon button's aria-label; a button with text and no aria-label gets it as screen-reader text), NewTag: the brand at 18% behind brand text, or the strong text where the brand is not AA on it.
@@ -11694,11 +11734,11 @@ export default function BadgeAttention() {
 ### Badge
 
 Standard Bento Tag/Badge primitive with dual-theme tonal matching.
-Uses 10% alpha fill + 20% alpha border + high-contrast text adapted for dark and light modes.
+A 10% alpha fill + high-contrast text adapted for dark and light modes; no border (#190). `tone="overlay"` on media.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `tone` | `SemanticTone` | `"gray"` | Chromatic tone matching the theme. Defaults to "gray". |
+| `tone` | `SemanticTone \| "overlay"` | `"gray"` | Chromatic tone matching the theme (its 10% tint and text, no border). Defaults to "gray". `"overlay"`: only for text on an image or video (grey at 55% + 12px backdrop blur, strong text); never on a page or card surface. |
 | `icon` | `IconName` |  | Optional leading icon from the Semi standard registry. |
 | `dot` | `boolean` |  | Optional leading status dot in the tone's color. |
 | `children` * | `React.ReactNode` |  |  |
