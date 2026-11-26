@@ -44,8 +44,11 @@ docs/components/README.md      the index
 - An example preview never changes the docs page's route header: `ExampleBlock` gives it a no-op record-crumb store,
   so `ListReaderLayout recordTitle` / `useRecordCrumb` in an example add no crumb (an example with its own AppShell
   keeps that shell's store).
-- The docs nav rail (72px, e.g. at 1024px) shows each component item with its group's icon and a tooltip; the expanded
-  nav hides those item icons (CSS on the nav container in `DocsShell`) and the phone drawer leaves them out.
+- `DocsShell` keeps the nav expanded from 1024px (`railBelow={1024}`, AppShell's lowest). In the rail (768–1023px, or
+  when the person collapses it) it shows one icon per component group with a tooltip, which opens the group's pages
+  in a Menu (the current one checked), never one entry per component. The rail state comes from `useAppShell` after
+  mount; before that, CSS on the nav container hides the per-component groups in the rail, and the trail is passed
+  as `header.crumbs` in the rail so it stays "Group › Page".
 - Groups: Actions, Forms, Overlays, Navigation & layout, Data display, Feedback, AI, Setup.
 - `site/` (`@semi/ui/site`) is the docs UI: `DocsShell` (AppShell with the component menu), `ComponentPage`,
   `ComponentIndex`, `ExampleBlock`, `CodeBlock`. The Semi docs (`app/`) and every brand kit's preview site

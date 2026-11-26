@@ -1,5 +1,5 @@
 // #206: the docs site itself. Full-screen examples (preview: "none") get a live iframe; an example preview never changes
-// the docs page's route header; the nav rail at 1024px shows icons with tooltips, never cut text.
+// the docs page's route header; the docs nav stays expanded at 1024px, and its rail (below) shows one icon per group.
 import { expect, test, type Page } from "@playwright/test";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -90,32 +90,65 @@ test("an example never changes the docs page's breadcrumb (list-reader inbox, re
   await expect(page).toHaveTitle(/List \+ reader/);
 });
 
-test("docs nav rail at 1024px: every item is an icon with a tooltip, no cut text", async ({ page }) => {
+test("docs nav at 1024px stays expanded; it is never one icon per component", async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 800 });
   await page.goto("/components/list-reader/");
   const panel = page.locator("[data-semi-nav-panel]");
-  await expect.poll(async () => (await panel.boundingBox())?.width).toBeLessThan(120);
-  const report = await panel.evaluate((root) => {
-    const items = [...root.querySelectorAll<HTMLElement>("nav a, nav button")].filter((el) => el.offsetWidth > 0);
-    return items.map((el) => {
-      const icon = el.querySelector<SVGElement>('[data-semi="Icon"]');
-      const iconShown = Boolean(icon && icon.getBoundingClientRect().width > 0 && getComputedStyle(icon).display !== "none");
-      // visible text: any text node whose element is rendered (not sr-only = 1px clip)
-      const texts = [...el.querySelectorAll<HTMLElement>("span")].filter((s) => {
-        const r = s.getBoundingClientRect();
-        return r.width > 2 && r.height > 2 && s.innerText.trim() !== "" && getComputedStyle(s).display !== "none";
-      });
-      return { label: el.getAttribute("aria-label") ?? el.textContent?.trim(), iconShown, visibleText: texts.map((t) => t.innerText.trim()) };
-    });
-  });
-  expect(report.length).toBeGreaterThan(20);
+  await expect(panel).toHaveCSS("width", "224px");
+  await expect(panel.locator('nav[aria-label="Navigation & layout"]').getByRole("link", { name: "List + reader" })).toBeVisible();
+  // the server HTML is already expanded (no script)
+  const ssr = await page.context().browser()!.newPage({ javaScriptEnabled: false, viewport: { width: 1024, height: 800 } });
+  await ssr.goto(page.url());
+  await expect(ssr.locator("[data-semi-nav-panel]")).toHaveCSS("width", "224px");
+  await ssr.close();
+});
+
+test("docs nav rail (900px): one icon per group with a tooltip, opening its pages; no cut text; the trail stays", async ({ page }) => {
+  await page.setViewportSize({ width: 900, height: 800 });
+  await page.goto("/components/list-reader/");
+  const panel = page.locator("[data-semi-nav-panel]");
+  await expect(panel).toHaveCSS("width", "72px");
+  const groups = panel.locator('nav[aria-label="Nhóm component"]');
+  await expect(groups).toBeVisible();
+  // after hydration: no per-component entry is rendered in the rail at all
+  await expect(panel.getByRole("link", { name: "List + reader" })).toHaveCount(0);
+  const report = await panel.evaluate((root) =>
+    [...root.querySelectorAll<HTMLElement>("nav a, nav button")]
+      .filter((el) => el.offsetWidth > 0)
+      .map((el) => {
+        const icon = el.querySelector<SVGElement>('[data-semi="Icon"]');
+        const texts = [...el.querySelectorAll<HTMLElement>("span")].filter((s) => {
+          const r = s.getBoundingClientRect();
+          return r.width > 2 && r.height > 2 && s.innerText.trim() !== "" && getComputedStyle(s).display !== "none";
+        });
+        return { label: el.textContent?.trim(), iconShown: Boolean(icon && icon.getBoundingClientRect().width > 0), visibleText: texts.map((x) => x.innerText.trim()) };
+      }),
+  );
+  const groupCount = await groups.locator("button").count();
+  expect(groupCount).toBeGreaterThanOrEqual(8);
+  expect(groupCount).toBeLessThanOrEqual(10);
   expect(report.filter((r) => !r.iconShown)).toEqual([]);
   expect(report.filter((r) => r.visibleText.length > 0)).toEqual([]);
+  // the docs trail is the same as in the expanded nav
+  await expect.poll(() => siteCrumbs(page)).toEqual(["Navigation & layout", "List + reader"]);
 
-  // keyboard: focus a component item in the rail; its tooltip names it
-  const item = panel.locator('nav[aria-label="Navigation & layout"] a', { hasText: "List + reader" });
-  await item.focus();
-  await expect(page.getByRole("tooltip").filter({ hasText: "List + reader" })).toBeVisible();
+  // keyboard: the current group is marked; focus shows its tooltip, Enter opens its pages, Enter on one navigates
+  const nav = groups.getByRole("button", { name: "Navigation & layout" });
+  await expect(nav).toHaveAttribute("class", /bg-item-selected/);
+  await expect(async () => {
+    await nav.focus();
+    await expect(page.getByRole("tooltip").filter({ hasText: "Navigation & layout" })).toBeVisible({ timeout: 1000 });
+  }).toPass();
+  await page.keyboard.press("Enter");
+  const menu = page.getByRole("menu");
+  await expect(menu).toBeVisible();
+  await expect(menu.getByRole("menuitemcheckbox", { name: "List + reader" }).or(menu.getByRole("menuitem", { name: "List + reader" }))).toBeVisible();
+  await page.keyboard.press("Home");
+  await page.keyboard.press("ArrowDown"); // App header, then App shell
+  await expect(page.locator(":focus")).toHaveText(/App shell/);
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/\/components\/app-shell\/$/);
+  await expect.poll(() => siteCrumbs(page)).toEqual(["Navigation & layout", "App shell"]);
 });
 
 test("docs nav expanded at 1440px: component items keep no icon (the group heading has it)", async ({ page }) => {
@@ -125,4 +158,5 @@ test("docs nav expanded at 1440px: component items keep no icon (the group headi
   await expect(group.getByRole("link", { name: "List + reader" })).toBeVisible();
   const shown = await group.evaluate((nav) => [...nav.querySelectorAll('[data-semi="Icon"]')].filter((i) => i.getBoundingClientRect().width > 0).length);
   expect(shown).toBe(0);
+  await expect(page.locator('nav[aria-label="Nhóm component"]')).toHaveCount(0);
 });
