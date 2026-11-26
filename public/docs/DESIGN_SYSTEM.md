@@ -1032,8 +1032,8 @@ The full inventory with props is generated into `components.json` (`npm run buil
   `SidePanelToggle`, Carousel dots: the dot stays 6px inside a 44px button), and `HIT_AREA` (an invisible `::before`:
   24px with a mouse, 44px with `any-pointer-coarse`, i.e. any device with a touch screen at any width) for an isolated
   small control (Alert dismiss, MultiCombobox chip remove, SidePanel expand, CardActions ⋯, Calendar month nav). Inline
-  chips (`Citation`) get their own area: 44px tall on touch phones, only 2px wider each side, so adjacent chips never
-  overlap. A chevron inside a field (`CustomCombobox`) becomes its own 44px column with matching input padding, so its
+  chips (`Citation`) get their own area: 44px tall on touch phones, 4px wider each side (half the 8px between two
+  chips, `mx-1`, so it is at least 24px wide), so adjacent chips never overlap. A chevron inside a field (`CustomCombobox`) becomes its own 44px column with matching input padding, so its
   area never reaches the text. Pagination shows first · current · last on a touch phone, chosen after mount (one list;
   the server renders the full window). `tests/touch-targets.spec.ts` measures a sample of each at 390 × 844 (touch),
   taps near each edge of the 44px box with `elementFromPoint`, and checks the drawn size at 1440.

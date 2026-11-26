@@ -129,7 +129,7 @@ test("touch phone: Pagination renders one list (first · current · last), steps
   await page.close();
 });
 
-test("touch phone: adjacent Citation chips [2][3] get their own taps, 44px tall, no overlap (#186)", async ({ browser }) => {
+test("touch phone: adjacent Citation chips [2][3] get their own taps, 44px tall, at least 24px wide, no overlap (#186)", async ({ browser }) => {
   const page = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   await page.goto("/components/sources/");
   await hydrated(page);
@@ -152,9 +152,10 @@ test("touch phone: adjacent Citation chips [2][3] get their own taps, 44px tall,
       twoNear3: at(r2.right - 1, cy), // the right edge of [2] opens [2], never [3]
       tall: [at(r2.x + r2.width / 2, cy - 20), at(r2.x + r2.width / 2, cy + 20)], // 44px tall on a touch phone
       notTaller: at(r2.x + r2.width / 2, cy - 24),
+      wide: Math.round(r2.width + gap) >= 24, // its area reaches half the gap on each side
     };
   }, await three.elementHandle());
-  expect(res).toEqual({ gap: 4, rightOf2: 2, leftOf3: 3, middle: true, twoNear3: 2, tall: [2, 2], notTaller: 0 });
+  expect(res).toEqual({ gap: 8, rightOf2: 2, leftOf3: 3, middle: true, twoNear3: 2, tall: [2, 2], notTaller: 0, wide: true });
   await page.close();
 });
 

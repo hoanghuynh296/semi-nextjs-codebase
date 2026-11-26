@@ -196,10 +196,12 @@ export function Sources({ sources, defaultOpen = false, className }: { sources: 
   );
 }
 
-/** A citation's hit area: 2px wider on each side of its border box (-3px from the padding edge, past the 1px border) (half the 4px between two chips, so [1][2] touch but never overlap),
- * 24px tall, 44px tall on a touch phone; not HIT_AREA, whose square would cover the neighbouring chip. */
+/** A citation's hit area: at least 24px wide (WCAG 2.5.8) and 24px tall, 44px tall on a touch phone. It reaches 4px past
+ * each side of the chip (-5px from the padding edge, past the 1px border), exactly half the 8px between two chips
+ * (mx-1), so [1][2] touch and never overlap; a chip is at least 16px, so the area is at least 24px wide. Not
+ * HIT_AREA, whose 44px square would cover the neighbouring chip. */
 const CITATION_HIT =
-  "before:absolute before:-inset-x-[3px] before:top-1/2 before:-translate-y-1/2 before:h-6 pointer-coarse:max-sm:before:h-11";
+  "before:absolute before:-inset-x-1.25 before:top-1/2 before:-translate-y-1/2 before:h-6 pointer-coarse:max-sm:before:h-11";
 
 /** A numbered citation inside answer text, linking to its source; hover or focus shows the title. */
 export function Citation({ n, source }: { /** 1-based, matching the Sources list. */ n: number; source: Source }) {
@@ -209,7 +211,7 @@ export function Citation({ n, source }: { /** 1-based, matching the Sources list
       <ExternalLink
         href={source.href}
         aria-label={`${t.source(n)}: ${source.title}`}
-        className={cn("relative inline-flex items-center justify-center min-w-4 h-4 px-1 mx-0.5 align-[0.15em] rounded-chip bg-field border border-line text-chrome leading-none text-muted hover:text-strong tabular-nums no-underline", CITATION_HIT, FOCUS_RING)}
+        className={cn("relative inline-flex items-center justify-center min-w-4 h-4 px-1 mx-1 align-[0.15em] rounded-chip bg-field border border-line text-chrome leading-none text-muted hover:text-strong tabular-nums no-underline", CITATION_HIT, FOCUS_RING)}
       >
         {n}
       </ExternalLink>
