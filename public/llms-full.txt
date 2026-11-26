@@ -1732,7 +1732,18 @@ docs/components/README.md      the index
 - `check:manifest` fails when a generated file is stale, an example imports something `@semi/ui` does not export or a
   relative path, an example has no default export, a meta names a component that does not exist, or **a component
   has no doc**. `npm run typecheck` type-checks every example.
-- `preview: "none"` shows an example as code only (it fills the viewport: AppShell, a root layout).
+- `preview: "none"` marks an example that fills the viewport (AppShell, a root layout, a route file). The Semi docs
+  preview it live in a 560px lazy iframe of `/demo/example/<id>/<file>/` (`app/demo/example/`: the example alone,
+  without the docs shell; layout examples get a sample page as `children`, route files a sample `error` / `reset`, an
+  example that renders its own `<html>` shows its body, `fetch("/api/…")` answers a sample after 800ms, links stay on
+  the page, the theme follows the docs page), with "Mở toàn màn hình" and the Preview / Code switch. The route is
+  generated from every meta's `preview: "none"`, so a new one needs nothing else. `ComponentPage` `framesBase` turns
+  this on; without it (brand previews) such an example is shown as code only.
+- An example preview never changes the docs page's route header: `ExampleBlock` gives it a no-op record-crumb store,
+  so `ListReaderLayout recordTitle` / `useRecordCrumb` in an example add no crumb (an example with its own AppShell
+  keeps that shell's store).
+- The docs nav rail (72px, e.g. at 1024px) shows each component item with its group's icon and a tooltip; the expanded
+  nav hides those item icons (CSS on the nav container in `DocsShell`) and the phone drawer leaves them out.
 - Groups: Actions, Forms, Overlays, Navigation & layout, Data display, Feedback, AI, Setup.
 - `site/` (`@semi/ui/site`) is the docs UI: `DocsShell` (AppShell with the component menu), `ComponentPage`,
   `ComponentIndex`, `ExampleBlock`, `CodeBlock`. The Semi docs (`app/`) and every brand kit's preview site

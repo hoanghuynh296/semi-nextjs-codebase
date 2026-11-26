@@ -30,7 +30,7 @@ function unwrapDocument(node: React.ReactNode): React.ReactNode {
   if (!React.isValidElement<AnyProps>(node)) return node;
   if (node.type === "html") return React.Children.map(node.props.children as React.ReactNode, unwrapDocument);
   if (node.type === "head") return null;
-  if (node.type === "body") return <div className={node.props.className as string | undefined}>{node.props.children as React.ReactNode}</div>;
+  if (node.type === "body") return <div className={`min-h-screen p-panel ${(node.props.className as string | undefined) ?? ""}`}>{node.props.children as React.ReactNode}</div>;
   return node;
 }
 
