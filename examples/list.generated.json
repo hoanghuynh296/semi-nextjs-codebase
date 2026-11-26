@@ -3,7 +3,7 @@
     "id": "button",
     "title": "Button",
     "group": "Actions",
-    "description": "The action control, 1.0 variants: subtle (default) for ordinary actions, surface for toolbar actions, inverse for the main action of a card or a list title row, outline beside an inverse one, ghost for icon buttons, primary / secondary (the brand fills) only for the one main button of a page, a dialog or the nav, danger for destructive actions. Spinner shows work in progress inside the control that runs it.",
+    "description": "The action control, 1.0 variants: subtle (default) for ordinary actions, surface for toolbar actions, inverse for the main action of a card or a list title row, outline beside an inverse one, ghost for icon buttons, primary / secondary (the brand fills) only for the one main button of a page, a dialog or the nav, danger (solid red) for destructive actions, danger-subtle (the danger tint) for a destructive action that is not the main one. Spinner shows work in progress inside the control that runs it.",
     "components": [
       "Button",
       "Spinner"

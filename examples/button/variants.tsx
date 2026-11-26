@@ -1,7 +1,7 @@
 import { Button } from "@semi/ui";
 
-const VARIANTS = ["subtle", "surface", "inverse", "outline", "ghost", "primary", "secondary", "danger"] as const;
-const LABEL = { subtle: "Làm mới", surface: "Mời", inverse: "Thêm", outline: "Chia sẻ", ghost: "Xem thêm", primary: "Lưu", secondary: "Gửi", danger: "Xoá" };
+const VARIANTS = ["subtle", "surface", "inverse", "outline", "ghost", "primary", "secondary", "danger", "danger-subtle"] as const;
+const LABEL = { subtle: "Làm mới", surface: "Mời", inverse: "Thêm", outline: "Chia sẻ", ghost: "Xem thêm", primary: "Lưu", secondary: "Gửi", danger: "Xoá", "danger-subtle": "Gỡ khỏi nhóm" };
 
 export default function ButtonVariants() {
   return (

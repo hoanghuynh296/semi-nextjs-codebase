@@ -85,6 +85,24 @@ test("one-brand-button: warns on a 2nd filled brand button in a page or modal; e
   );
 });
 
+test("one-large-button: warns on a 2nd size=\"lg\" Button in one page header; one per header, other sizes and other places pass (#189)", () => {
+  assert.ok(WARN.some(([id]) => id === "one-large-button"), "one-large-button is a warning");
+  const lines = (code) => warn(code, "one-large-button").map((w) => w.line);
+  // FAIL: two lg in a RouteHeader's actions prop
+  assert.deepEqual(lines(`<RouteHeader\n  crumbs={c}\n  actions={<>\n    <Button size="lg" variant="primary">Tạo</Button>\n    <Button size="lg">Nhập</Button>\n  </>}\n/>`), [5]);
+  // FAIL: two lg among a <header>'s children
+  assert.deepEqual(lines(`<header className="flex">\n  <h1>Đơn hàng</h1>\n  <Button size="lg" variant="primary">Tạo</Button>\n  <Button variant="outline" size="lg">Xuất</Button>\n</header>`), [4]);
+  // PASS: one lg CTA + md actions in a header
+  assert.deepEqual(lines(`<AppHeader actions={<><Button size="lg" variant="primary">Tạo</Button><Button>Xuất</Button></>} />`), []);
+  // PASS: one lg per header, two headers in one file
+  assert.deepEqual(lines(`<>\n<header><Button size="lg">A</Button></header>\n<header><Button size="lg">B</Button></header>\n</>`), []);
+  // PASS: lg outside a page header is not this rule's business; ternary branches count once
+  assert.deepEqual(lines(`<div><Button size="lg">A</Button><Button size="lg">B</Button></div>`), []);
+  assert.deepEqual(lines(`<header>{edit ? <Button size="lg">Lưu</Button> : <Button size="lg">Tạo</Button>}</header>`), []);
+  // PASS: opt-in with a reason
+  assert.deepEqual(lines(`<header>\n  <Button size="lg">A</Button>\n  // semi-lint-allow one-large-button: owner approved two CTAs on the landing header\n  <Button size="lg">B</Button>\n</header>`), []);
+});
+
 test("one-brand-button & brand-colour-use: per-line opt-in requires a reason; per-file skip with reason works and is reported", () => {
   // Per-line opt-in WITH reason suppresses warning
   assert.deepEqual(
