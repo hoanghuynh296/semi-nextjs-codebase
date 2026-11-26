@@ -171,6 +171,54 @@ hay `--semi-…` trong CSS của app, `semi-lint` chặn (`brand-override`): mà
 
 ---
 
+## Chuyển app sang Semi từng phần (Migrating an app in stages)
+
+Cách tạm thời (transitional), chỉ dùng khi một app có sẵn chuyển sang Semi từng khu vực một (#184). App mới, hay app
+chuyển xong một lần, dùng một `globals.css` như trên.
+
+**Vì sao không nhập Semi vào stylesheet chung khi còn màn cũ.** `tokens.css` định nghĩa lại biến theme của Tailwind
+(`--color-primary`, `--spacing`, cỡ chữ, bảng màu) và `base.css` ẩn thanh cuộn trên mọi phần tử: nhập vào
+`globals.css` là đổi giao diện mọi màn chưa chuyển. Nên CSS của Semi chỉ được nạp ở các route đã chuyển, cạnh bản build
+Tailwind riêng của app. Nhưng hai bản build cùng ghi vào `@layer utilities`, và trong một layer, sheet nạp sau thắng:
+`.flex` của app đè `.md:hidden` của Semi, `AppShell` vỡ (thanh trên của điện thoại hiện ở mọi bề rộng, khung thành
+cột trên desktop), và thứ tự nạp ở dev khác production.
+
+**Entry `@semi/ui/scoped.css`.** Theme và utilities của Semi nằm trong layer riêng `semi`, khai báo sau `utilities`
+(`@layer theme, base, components, utilities, semi;`), nên Semi thắng dù sheet nào nạp trước. Token, bo góc, cỡ chữ,
+`data-theme` sáng / tối giống hệt `tokens.css` + `base.css`; không có class hay token mới.
+
+App viết một file nhỏ cho các route đã chuyển (`@source` trong file của package không trỏ được vào app):
+
+```css
+/* app/(semi)/semi.css: chỉ các route đã chuyển nạp file này */
+@import "@semi/ui/scoped.css";
+@import "@3dnoobs/brand/dist/brand.css"; /* có brand kit: ngay sau scoped.css */
+@source "./";                     /* nhóm route đã chuyển */
+@source "../../components/semi";  /* component dùng chung đã chuyển */
+```
+
+- **Next.js:** `import "./semi.css";` trong `app/(semi)/layout.tsx`. `app/globals.css` (nạp ở layout gốc) giữ nguyên
+  bản build cũ của app.
+- **Vite / React Router:** nạp file như một link của route layout đã chuyển:
+  ```tsx
+  import semiCss from "./semi.css?url";
+  export const links = () => [{ rel: "stylesheet", href: semiCss }];
+  ```
+
+Không bao giờ để `@import "tailwindcss"` và `scoped.css` trong cùng một file. `/semi-check` báo mục nền móng
+`second-build` khi CSS của Semi nằm trong file thứ hai không dùng `scoped.css`.
+
+**Giới hạn.** Layer `semi` thắng cả utilities của app. Trên một route đã chuyển, component cũ mà class của nó không
+được `@source` vào sheet của Semi có thể mất biến thể responsive (ví dụ header cũ `flex md:hidden`: `.flex` của
+Semi thắng `md:hidden` của app). Luật: mọi file được render trên route đã chuyển phải được `@source` trong sheet
+Semi của route đó; component cũ nào không `@source` được thì chuyển nó trước.
+
+**Bước thoát.** Khi màn cũ cuối cùng đã chuyển: xoá `semi.css` và chỗ nạp nó, bỏ theme cũ của app khỏi `globals.css`,
+rồi chạy `/semi-check` (foundation nối khối `semi-design-system` vào `globals.css`): về đúng một stylesheet như mọi
+app Semi.
+
+---
+
 ## Khi nào dùng lệnh nào
 
 | | `/semi-brand` · `/semi-brand update` | `/semi-sync` |

@@ -2,8 +2,9 @@
    while it moves to Semi in stages. Transitional: once the last legacy screen is migrated, switch to the single
    globals.css setup (docs/BRANDS.md, "Migrating an app in stages").
 
-   Semi's utilities go in their own cascade layer `semi`, declared after `utilities`, so they win over the app's
-   utilities whichever stylesheet loads first (the order differs between dev and production builds). Import it from an
+   Semi's Tailwind theme and utilities go in their own cascade layer `semi`, declared after `utilities`, so they win
+   over the app's utilities and same-name theme variables whichever stylesheet loads first (the order differs between
+   dev and production builds). tokens.css / base.css are imported as they are (@custom-variant cannot be layered). Import it from an
    app file that adds @source lines for the migrated folders, and link that file only on migrated routes:
      app/(semi)/semi.css:   @import "@semi/ui/scoped.css";  @source "./";
      app/(semi)/layout.tsx: import "./semi.css";

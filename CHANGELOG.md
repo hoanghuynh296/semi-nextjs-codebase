@@ -2,6 +2,13 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
+## Unreleased
+
+### Added
+
+- **`@semi/ui/scoped.css` (#184):** an entry for an existing app that moves to Semi in stages and keeps its own Tailwind build for the screens not migrated yet (transitional). Semi's Tailwind theme and utilities sit in a cascade layer `semi` declared after `utilities`, so AppShell's responsive variants (`md:hidden`, `md:flex-row`) win over the app's `.flex` / `.hidden` whichever sheet loads first, in dev and in production; tokens and base rules are those of `tokens.css` / `base.css`. The app imports it from a sheet linked only by its migrated routes (Next: the route group's `layout.tsx`; Vite / React Router: `?url` + the route's `links`) and adds `@source` lines for the migrated folders. Guide, limit and exit step: `docs/BRANDS.md`, "Migrating an app in stages". Nothing changes for apps on one `globals.css`.
+- **`/semi-check` foundation item `second-build` (#184):** reported when the app has its own `@import "tailwindcss"` and Semi's `tokens.css` / `base.css` come from a second file that does not use the scoped entry ("second Tailwind build: Semi utilities share @layer utilities with the app's"). An app whose Semi CSS lives in such a sheet or in a scoped sheet no longer gets a `semi-css` item (foundation would have wired `globals.css`), and its brand `brand.css` is looked for there. SKILL.md stage 1 has the branch for apps with legacy screens and the exit step.
+
 ## 1.1.0 - 2026-11-26
 
 **Summary.** Group "Responsive + Magnific parity" (#186–#194, #196, #206, #207). Controls get 44px touch targets on touch phones (icon buttons, tabs, segmented controls, toggles, chips, pagination), narrow layouts work at phone, tablet and small-laptop widths (`ListReaderLayout` splits by its own width, `ReaderHeader` / `DetailOverlay` titles clamp with a "show full title" toggle, a SubNav that collapses into a Drawer trigger), `Button` gets `lg` and `pill` sizes and a solid red `danger` (old look: `danger-subtle`), chips and tags lose their border, new `SectionHeader`, `MediaCard`, `Badge tone="overlay"` and `RouteHeaderBanner`, every component marks its root with `data-semi`, and `StickyContextBar` no longer flickers or unpins on one upward gesture. The docs site gains a component inspector, live previews of full-screen examples and a rail nav with one icon per group.
