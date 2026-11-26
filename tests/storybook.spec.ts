@@ -979,8 +979,8 @@ test("AppShell nav shortcuts (#144): holding Alt shows the numbers, Alt + digit 
   expect(prevented).toBe(false);
   await page.waitForTimeout(300);
   await expect(page).toHaveURL(/\/components\/$/);
-  // a rail with corner badges
-  await page.setViewportSize({ width: 1100, height: 900 });
+  // a rail with corner badges (the docs nav is the rail below 1024px, #206)
+  await page.setViewportSize({ width: 900, height: 900 });
   await expect(aside).toHaveCSS("width", "72px");
   await page.keyboard.down("Alt");
   const badge = aside.locator("[data-nav-num]").first();
