@@ -63,13 +63,13 @@ for (const width of [1440, 834] as const) {
       expect(afterFling.stuck).toBe(true);
       expect(Math.abs(afterFling.mainScroll - afterFling.pinVar)).toBeLessThanOrEqual(2);
 
-      // 3. Wait for gesture idle (> 200ms), then a NEW deliberate upward gesture from list top unpins.
-      await page.waitForTimeout(260);
+      // 3. Wait for gesture idle (> 400ms: the stop), then a NEW deliberate upward gesture from list top unpins.
+      await page.waitForTimeout(460);
       await trackpadWheel(page, cx, cy, [-36, -48, -64, -48, -24]);
       const unpinned = await readMetrics(page, "[data-page-body]");
       expect(unpinned.mainScroll).toBe(0);
       expect(unpinned.stuck).toBe(false);
-      await page.waitForTimeout(240);
+      await page.waitForTimeout(460);
     };
 
     // Repeat 5 times in normal mode.
@@ -125,7 +125,7 @@ for (const width of [1440, 834] as const) {
     expect(held.innerScroll).toBe(0);
     expect(held.stuck).toBe(true);
 
-    await page.waitForTimeout(260);
+    await page.waitForTimeout(460);
     await trackpadWheel(page, lx, ly, [-40, -64, -64, -32]);
     const unpinned = await readMetrics(page, primarySelector);
     expect(unpinned.mainScroll).toBe(0);
