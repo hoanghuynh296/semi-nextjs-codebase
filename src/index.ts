@@ -23,6 +23,7 @@ export * from "./AppHeader";
 export * from "./MobileTabBar";
 export * from "./AppShell";
 export { RouteHeader, AccountMenu, useRecordCrumb, type RouteHeaderProps, type RouteCrumb, type ShellAccount } from "./RouteHeader";
+export { RouteHeaderBanner, localBannerStore, type RouteHeaderBannerProps, type RouteHeaderBannerStore } from "./RouteHeaderBanner";
 export * from "./MegaMenu";
 export * from "./MinimalHeader";
 export * from "./TextTabs";
