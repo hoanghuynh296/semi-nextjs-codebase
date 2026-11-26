@@ -51,3 +51,12 @@ The pin only applies to the published marketplace. To try unreleased plugin chan
 - `@semi/ui` from a checkout instead of a tag: `SEMI_UI_SOURCE=file:/path/to/semi-nextjs-codebase` for the skills'
   scripts. A plugin from `main` still caps the release tag it installs at its own version until the bump.
 - Validate the marketplace and the plugin: `claude plugin validate .` and `claude plugin validate ./plugin`.
+
+## Plugin scripts run on Windows too
+
+Users run the skills' scripts from cmd.exe, PowerShell and agent hosts with the default Windows PATH (no `printf`,
+no `/dev/null`, no POSIX pipes). Call programs with `execFileSync(cmd, [args], { input })` and `stdio: "ignore"`
+instead of a shell string. `getGitHubToken()` is copied in `semi-propose/scripts/propose.mjs` and
+`semi-triage/scripts/triage.mjs` (each skill installs as its own folder): edit both, `lint/test/github-token.test.mjs`
+fails when they differ or use a shell. The `windows` job of `check.yml` runs that test and both scripts' `--help` on
+`windows-latest` (#185).
