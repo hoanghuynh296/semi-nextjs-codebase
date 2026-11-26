@@ -11,19 +11,20 @@
 //   row, clamped to 3 lines), [•••] menu then one main action on the right, top-aligned, identical button height
 //   (`h-control`), sticky while the body scrolls; every other action goes into •••. When the actions do not fit beside
 //   a 70% title (a narrow pane), they move to a row under the title (#188).
-import React, { createContext, useContext, useEffect, useLayoutEffect, useRef } from "react";
+import React, { createContext, useContext, useEffect, useId, useLayoutEffect, useRef } from "react";
 import { Button } from "./Button";
 import { EmptyState } from "./Feedback";
 import type { IconName } from "./Icon";
 import { Menu, type MenuItem } from "./Overlay";
 import { useRecordCrumb } from "./RouteHeader";
+import { ClampToggle, useClampToggle } from "./clampedTitle";
 import { useSemiLocale } from "./locale";
 import { CARD } from "../styles/surfaces";
 import { cn } from "../styles/utils";
 
 // The width (container query on the layout, not the viewport) from which list and reader sit side by side: the list
 // width + the 16px gap + a 360px reader (#188). Below it the reader replaces the list (with ReaderHeader's Back).
-type ReaderContextValue = { onClose?: () => void; backHidden?: string };
+type ReaderContextValue = { onClose?: () => void; backHidden?: string; openKey?: string | null };
 const ReaderContext = createContext<ReaderContextValue>({});
 
 /** The single main action on the right of `ReaderHeader`, beside the `•••` menu. */
@@ -58,7 +59,7 @@ export function ReaderHeader({
   headingLevel = 2,
   className,
 }: {
-  /** Subject or record title on the left; wraps, at most 3 lines (a string also shows in full as the native tooltip). */
+  /** Subject or record title on the left; wraps, at most 3 lines (a string also shows in full as the native tooltip; a cut title gets a toggle that shows it whole, #196). */
   title: React.ReactNode;
   /** Optional quiet meta line directly under the title (sender, timestamp, ticket id). */
   meta?: React.ReactNode;
@@ -83,6 +84,10 @@ export function ReaderHeader({
   // a rail + SubNav the list is hidden while the viewport is lg); outside one, below lg
   const backHidden = ctx.backHidden ?? "lg:hidden";
   const H = `h${headingLevel}` as const;
+  const titleId = useId();
+  // a title cut at 3 lines gets a toggle that shows it in full (touch screens never show the native tooltip, #196)
+  // keyed on the open item (or a string title), so a re-render with a JSX title does not collapse it
+  const clamp = useClampToggle<HTMLHeadingElement>(ctx.openKey ?? (typeof title === "string" ? title : null));
   const isMainAction = (a: unknown): a is ReaderMainAction =>
     Boolean(a) && typeof a === "object" && !React.isValidElement(a) && typeof (a as ReaderMainAction).label === "string";
 
@@ -105,17 +110,23 @@ export function ReaderHeader({
           className={cn(backHidden, "-ml-1.5")}
         />
       )}
-      {/* flex-wrap + a 70% minimum: the title keeps most of the row and the actions wrap under it when they do not fit */}
-      <div data-reader-title="" className="min-w-[70%] flex-1 pt-1">
-        {/* tabIndex -1: ListReaderLayout moves focus here when the reader replaces the focused list row */}
-        <H
-          data-reader-focus=""
-          tabIndex={-1}
-          title={typeof title === "string" ? title : undefined}
-          className="text-lead font-medium text-strong break-words line-clamp-3 outline-none"
-        >
-          {title}
-        </H>
+      {/* flex-wrap + a minimum of 70% of the row for the heading itself plus 28px for its expand toggle (#196): the
+          title keeps most of the row and the actions wrap under it when they do not fit */}
+      <div data-reader-title="" className="min-w-[calc(70%+1.75rem)] flex-1 pt-1">
+        <div className="flex items-end gap-1 min-w-0">
+          {/* tabIndex -1: ListReaderLayout moves focus here when the reader replaces the focused list row */}
+          <H
+            tabIndex={-1}
+            className={cn("flex-1 min-w-0 text-lead font-medium text-strong break-words outline-none", !clamp.expanded && "line-clamp-3")}
+            ref={clamp.ref}
+            id={titleId}
+            data-reader-focus=""
+            title={typeof title === "string" ? title : undefined}
+          >
+            {title}
+          </H>
+          {clamp.cut && <ClampToggle expanded={clamp.expanded} onToggle={clamp.toggle} controls={titleId} />}
+        </div>
         {meta && <div className="text-chrome text-muted mt-0.5">{meta}</div>}
       </div>
       {(moreActions?.length || action) && (
@@ -263,9 +274,9 @@ export function ListReaderLayout({
 
   const split = SPLIT[listWidth];
   return (
-    <ReaderContext.Provider value={{ onClose, backHidden: split.back }}>
+    <ReaderContext.Provider value={{ onClose, backHidden: split.back, openKey }}>
       {/* the container: its width (not the viewport) decides side by side or one pane */}
-      <div data-list-reader="" className={cn("@container/reader-layout flex-1 min-h-0 min-w-0 flex flex-col", className)}>
+      <div data-list-reader="" data-list-width={listWidth} className={cn("@container/reader-layout flex-1 min-h-0 min-w-0 flex flex-col", className)}>
         <div className={cn("flex-1 min-h-0 min-w-0 grid grid-cols-1 gap-group", split.grid, gridClassName)}>
           <section
             ref={listRef}

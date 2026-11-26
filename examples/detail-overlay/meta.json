@@ -49,6 +49,7 @@
   "notes": [
     "Open a record from elsewhere on the same route (a CommandPalette item, a notification) with the hook's `open(id)` or `openDetail(id)`, not `router.push(\"?open=…\")`: browsers without the Navigation API (Firefox, Safari < 26) do not tell the hook about Next's own same-route navigation, so the overlay would not open unless the list re-renders. To another route, navigate with the param in the URL; the hook reads it when the list mounts.",
     "Close goes back when the entry is one this page opened (also after Back then Forward where the Navigation API exists), else it removes the param, so the list never gets a second history entry. Without the Navigation API only the entry the mounted list opened last, at that exact address, counts as its own.",
-    "Walk the results the list shows: for a DataTable build them with its own helpers, `sortRows(searchRows(rows, columns, search), columns, sort)` (all pages, the table's comparator), never a copy of the comparator. Keep filters and the query in the URL too (useFilterParams), so ‹ › and a shared link walk the same results."
+    "Walk the results the list shows: for a DataTable build them with its own helpers, `sortRows(searchRows(rows, columns, search), columns, sort)` (all pages, the table's comparator), never a copy of the comparator. Keep filters and the query in the URL too (useFilterParams), so ‹ › and a shared link walk the same results.",
+    "A cut title (one line, or 3 in a narrow dialog) gets a chevron toggle (aria-expanded, aria-controls the heading) that shows it whole, for touch screens where the native tooltip never shows (#196); open DH-1046 to see it."
   ]
 }

@@ -8,8 +8,9 @@
 // - Vertical rhythm owned by the layout: 32px from the card top to the header block, 28px from the title or tabs to
 //   the intro (or to the toolbar), 32px between blocks, 16px from a section heading to its content (`PageSection`),
 //   8px inside grids and cards (`PageGrid`).
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { Drawer } from "./Drawer";
 import { Icon, type IconName } from "./Icon";
 import { Tooltip } from "./Overlay";
 import { PageEnter } from "./PageEnter";
@@ -223,6 +224,60 @@ export function PageGrid({
 
 export type PageLayout = "work" | "reading" | "two-column";
 
+// #196: a two-column page that holds a ListReaderLayout gives the list and the reader the room first. While the page
+// is narrower than the SubNav (240px) + 4px gap + the main card's 48px padding + the layout's side-by-side width
+// (664 / 728 / 776px for listWidth sm / md / lg, ListReader.tsx), the SubNav card hides and a trigger at the top of the
+// main card opens it in a sheet. Container query on the page + :has() on the layout's data-list-width: pure CSS, so
+// the server HTML is exact. Literal classes for Tailwind.
+const SUBNAV_COLLAPSE = {
+  hide: "@max-[59.75rem]/page:group-has-[[data-list-width=sm]]/page:hidden @max-[63.75rem]/page:group-has-[[data-list-width=md]]/page:hidden @max-[66.75rem]/page:group-has-[[data-list-width=lg]]/page:hidden",
+  show: "@max-[59.75rem]/page:group-has-[[data-list-width=sm]]/page:flex @max-[63.75rem]/page:group-has-[[data-list-width=md]]/page:flex @max-[66.75rem]/page:group-has-[[data-list-width=lg]]/page:flex",
+} as const;
+
+/** The SubNav in a sheet, behind a select-like trigger naming the active item (#196). */
+function SubNavSheet({ subNav }: { subNav: React.ReactElement<React.ComponentProps<typeof SubNav>> }) {
+  const t = useSemiLocale();
+  const [open, setOpen] = useState(false);
+  const { sections, activeId, label, className } = subNav.props;
+  const navLabel = label ?? t.subNav;
+  const active = sections.flatMap((s) => s.items).find((item) => item.id === activeId);
+  return (
+    <div data-page-subnav-trigger="" className={cn("hidden shrink-0 mb-4 min-w-0", SUBNAV_COLLAPSE.show)}>
+      <button
+        type="button"
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        onClick={() => setOpen(true)}
+        className={cn(
+          "h-control max-w-full min-w-0 px-3 rounded-control bg-tint hover:bg-tint-hover text-strong text-chrome font-medium flex items-center gap-2 transition-hover cursor-pointer",
+          FOCUS_RING,
+        )}
+      >
+        {active?.icon && <Icon name={active.icon} className="w-4 h-4 shrink-0" />}
+        <span className="sr-only">{navLabel}: </span>
+        <span className="truncate">{active?.label ?? navLabel}</span>
+        <Icon name="chevronDown" className="w-4 h-4 shrink-0 text-muted" />
+      </button>
+      <Drawer open={open} onClose={() => setOpen(false)} title={navLabel} side="left" className="sm:max-w-xs">
+        {/* choosing an item closes the sheet after the item's own handler (onSelect, or the item's onClick) ran */}
+        {React.cloneElement(subNav, {
+          className: cn(className, "!p-0 !bg-transparent"),
+          sections: sections.map((s) => ({
+            ...s,
+            items: s.items.map((item) =>
+              item.onClick ? { ...item, onClick: () => (item.onClick?.(), setOpen(false)) } : item,
+            ),
+          })),
+          onSelect: (id: string) => {
+            subNav.props.onSelect?.(id);
+            setOpen(false);
+          },
+        })}
+      </Drawer>
+    </div>
+  );
+}
+
 /**
  * Shared 1.0 page anatomy and layout inside `AppShell`'s content card (#149, #71):
  * - `layout="work"` (default): flush, no centred max-width, card padding 16 / 24 (`px-4 sm:px-6`).
@@ -263,7 +318,11 @@ export function Page({
    * (`PageEnter`). Pass `true` to key by pathname, or a string for a custom route key. Adds no layout box.
    */
   enter?: boolean | string;
-  /** Sub-navigation card for `layout="two-column"` (`<SubNav sections={…} activeId={…} />`). */
+  /**
+   * Sub-navigation card for `layout="two-column"` (`<SubNav sections={…} activeId={…} />`). With a `ListReaderLayout`
+   * in the page, it turns into a sheet trigger at the top of the main card while list + reader + SubNav do not fit
+   * (956 / 1020 / 1068px of page for `listWidth` sm / md / lg, #196).
+   */
   subNav?: React.ReactNode;
   /** Page heading: a string / node rendered via `PageTitle` (18/400 UI sans by default), or leave out when `tabs` is big `TextTabs`. */
   title?: React.ReactNode;
@@ -352,8 +411,9 @@ export function Page({
   }
 
   if (layout === "two-column") {
+    const isSubNav = React.isValidElement<React.ComponentProps<typeof SubNav>>(subNav) && subNav.type === SubNav;
     const subNavEnhanced =
-      React.isValidElement<{ className?: string }>(subNav) && subNav.type === SubNav
+      isSubNav
         ? React.cloneElement(subNav, {
             className: cn(
               "md:flex-1",
@@ -366,12 +426,21 @@ export function Page({
       <div
         data-page-layout="two-column"
         data-page-fixed={fixed ? "" : undefined}
-        className={cn("w-full min-w-0 flex-1 flex flex-col md:flex-row gap-1", fixed && "h-full min-h-0", className)}
+        className={cn(
+          "w-full min-w-0 flex-1 flex flex-col md:flex-row gap-1",
+          isSubNav && "group/page @container/page",
+          fixed && "h-full min-h-0",
+          className,
+        )}
       >
         {subNav && (
           <div
             data-page-subnav=""
-            className={cn("shrink-0 w-full md:w-60 flex flex-col", fixed ? "md:min-h-0" : "md:sticky md:top-0 md:self-start")}
+            className={cn(
+              "shrink-0 w-full md:w-60 flex flex-col",
+              fixed ? "md:min-h-0" : "md:sticky md:top-0 md:self-start",
+              isSubNav && SUBNAV_COLLAPSE.hide,
+            )}
           >
             {subNavEnhanced}
           </div>
@@ -384,6 +453,7 @@ export function Page({
             fixed && "min-h-0 overflow-hidden",
           )}
         >
+          {isSubNav && <SubNavSheet subNav={subNav} />}
           {flow}
         </div>
       </div>,
