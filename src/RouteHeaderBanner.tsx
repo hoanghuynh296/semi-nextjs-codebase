@@ -4,7 +4,8 @@
 // an optional date / sub text, a pill CTA and a close button. Dismissed once per user per `id`: "dismissed" lives in a
 // store (localStorage by default, pass your own to keep it per account), the same pattern as FeatureIntro. Storage is
 // read after mount only, so the server HTML never holds it. AppShell renders it twice from `header.banner`: in the
-// header's centre from `md`, and as one row at the top of the page content below `md`; closing either hides both.
+// header's centre from `md` (a `bg-field` pill on the column), and as one row at the top of the page content below `md`
+// (`bg-card-field`: the field fill inside the content card); closing either hides both.
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Badge } from "./Badge";
@@ -175,7 +176,7 @@ export function RouteHeaderBanner({
         ref={ref}
         role="status"
         data-route-banner="inline"
-        className={cn("md:hidden flex items-center gap-2 w-full mb-4 pl-3 pr-1 py-1.5 rounded-card bg-field", className)}
+        className={cn("md:hidden flex items-center gap-2 w-full mb-4 pl-3 pr-1 py-1.5 rounded-card bg-card-field", className)}
       >
         {tagEl}
         <p className="flex-1 min-w-0 line-clamp-2 text-chrome text-strong">

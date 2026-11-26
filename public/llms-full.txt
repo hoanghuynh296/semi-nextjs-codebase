@@ -717,7 +717,7 @@ Semi's own green. A brand change is made in the brand repo (`/semi-brand`) and r
   a close button (sm ghost, round, `HIT_AREA` 44px touch area, locale `bannerClose`), on a `bg-field` pill. Closed per
   `id` in a store (`localBannerStore`: `localStorage["semi_banner_<id>"]`, or your own async `get` / `set`, as
   `FeatureIntro`), read after mount only. Below `md` the same banner is one row at the top of the page content (above the
-  title): full width, `rounded-card`, `bg-field`, text up to 2 lines, CTA + close on the row (`placement="inline"`,
+  title): full width, `rounded-card`, `bg-card-field` (the field fill inside the content card, where `bg-field` would equal the card), text up to 2 lines, CTA + close on the row (`placement="inline"`,
   `md:hidden`); AppShell renders both copies from `header.banner` and closing either hides both. Each copy is
   `role="status"`; closing moves focus to the next control after it.
 - **Account avatar menu (`AccountMenu`, `header.account`):** a one-letter avatar (32px) whose `Menu` has a header
