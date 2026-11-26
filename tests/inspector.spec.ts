@@ -12,6 +12,16 @@ async function hydrated(page: Page) {
 
 const card = (page: Page) => page.locator("[data-inspector-card]");
 
+/** Moves the pointer by hand onto `target` inside the card and rests there until the card takes clicks. */
+async function reachCard(page: Page, target: ReturnType<Page["locator"]>) {
+  const box = (await target.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, { steps: 8 });
+  await expect(card(page)).toHaveAttribute("data-armed", "");
+}
+
+const overlaps = (a: { x: number; y: number; width: number; height: number }, b: typeof a) =>
+  a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
+
 test("hover a Button in an example shows its name; clicking it opens /components/button/", async ({ page }) => {
   await page.goto("/components/button-group/");
   await hydrated(page);
@@ -24,7 +34,9 @@ test("hover a Button in an example shows its name; clicking it opens /components
   await expect(card(page).locator("p").first()).not.toBeEmpty();
   await expect(card(page)).toContainText("ButtonGroup");
   await expect(card(page).locator('[data-inspector-crumb="ButtonGroup"]')).toHaveAttribute("href", /\/components\/button-group\/$/);
-  // the outline and the card never take the example's pointer events, except the card itself
+  // the card lets presses through until the pointer rests on it
+  expect(await card(page).evaluate((el) => getComputedStyle(el).pointerEvents)).toBe("none");
+  await reachCard(page, card(page).locator("a").first());
   expect(await card(page).evaluate((el) => getComputedStyle(el).pointerEvents)).toBe("auto");
   await card(page).locator("a").first().click();
   await expect(page).toHaveURL(/\/components\/button\/$/);
@@ -42,6 +54,56 @@ test("the example's own click still works with the inspector on", async ({ page 
   // pressing hides the card; the checkbox toggled
   await expect(card(page)).toHaveCount(0);
   await expect(box).toBeChecked({ checked: !before });
+});
+
+test("a control under the card still gets the click while the card shows", async ({ page }) => {
+  await page.goto("/components/checkbox/");
+  await hydrated(page);
+  const preview = page.locator('[data-example="checkbox/row-select"] [data-example-preview]');
+  await preview.evaluate((el) => el.scrollIntoView({ block: "start" }));
+  await preview.getByRole("checkbox", { name: "Chọn đơn #1024" }).hover();
+  await expect(card(page)).toBeVisible();
+  // the next row's checkbox sits under the card
+  const next = preview.getByRole("checkbox", { name: "Chọn đơn #1025" });
+  await expect(next).toBeChecked();
+  expect(overlaps((await card(page).boundingBox())!, (await next.boundingBox())!)).toBe(true);
+  // a locator click fails when another element would catch it: the card lets the press through to the checkbox
+  await next.click();
+  await expect(next).not.toBeChecked();
+  await expect(card(page)).toHaveCount(0);
+});
+
+test("an example's open menu is inspected and keeps the I key (type-ahead)", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/components/menu/");
+  await hydrated(page);
+  const toggle = page.getByRole("switch", { name: "Soi component" });
+  await page.locator('[data-example="menu/row-actions"]').getByRole("button", { name: "Thao tác máy in" }).click();
+  const menu = page.getByRole("menu");
+  await expect(menu).toBeVisible();
+  await page.keyboard.press("i");
+  await expect(toggle).toHaveAttribute("aria-checked", "true");
+  await expect(menu).toBeVisible();
+  await menu.getByRole("menuitem", { name: "Nhân bản" }).hover();
+  await expect(card(page)).toBeVisible();
+  await expect(card(page).locator("a").first()).toHaveText("Menu");
+});
+
+test("the docs site's own menus and tooltips are never inspected", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/components/button-group/");
+  await hydrated(page);
+  const themeButton = page.locator("header").getByRole("button", { name: "Giao diện", exact: true });
+  await themeButton.hover();
+  await expect(page.getByRole("tooltip")).toBeVisible();
+  await page.getByRole("tooltip").hover();
+  await page.waitForTimeout(600);
+  await expect(card(page)).toHaveCount(0);
+  await themeButton.click();
+  const item = page.getByRole("menu", { name: "Giao diện" }).getByRole("menuitemradio").first();
+  await item.hover();
+  await page.waitForTimeout(600);
+  await expect(card(page)).toHaveCount(0);
 });
 
 test("keyboard: Alt+↓ shows the focused piece, Alt+↑ walks up the chain, Enter opens its page", async ({ page }) => {

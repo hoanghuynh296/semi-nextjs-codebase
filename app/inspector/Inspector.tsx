@@ -5,6 +5,8 @@
 // shows its name, one-line description and the chain of marked ancestors; each name opens that component's page.
 // Keyboard: with focus in an example, Alt+↑ / Alt+↓ walk the chain, Enter opens the page, Escape closes; a visually
 // hidden live region says what is shown (the floating card is decorative: aria-hidden, its links out of the tab order).
+// The card never catches a press meant for the page: it is pointer-events:none until the pointer rests on it (ARM_MS).
+// Floating layers count only when an example opened them, so the docs' own menus and tooltips are never inspected.
 // Docs site only: it lives in app/, never in @semi/ui.
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -14,17 +16,53 @@ import { cn } from "../../styles/utils";
 import { describe, loadNames, type NameMap } from "./names";
 import { inspectorOn, setInspectorOn, useInspectorOn } from "./store";
 
-/** Where it looks: example previews and floating layers (an example's menu, popover, dialog). /demo/* pages: all. */
-const SCOPE = "[data-example-preview], [data-semi-floating]";
+const PREVIEW = "[data-example-preview]";
+const FLOATING = "[data-semi-floating]";
 const DWELL_MS = 300;
 const HIDE_MS = 150;
+/** How long the pointer rests on the card before its links take clicks. */
+const ARM_MS = 250;
+/** Where the I key belongs to the focused widget (type-ahead, typing, an example's own keys). */
+const OWN_KEYS = '[role="menu"], [role="listbox"], [role="tree"], [role="grid"], [role="treegrid"], [data-example-preview], [data-semi-floating]';
+
+/** Where the last press, key or focus happened: decides whether a floating layer without a linked trigger is an example's. */
+let lastInteraction: "example" | "other" = "other";
+function noteInteraction(e: Event) {
+  const t = e.target as Element | null;
+  if (!t || typeof t.closest !== "function") return;
+  if (t.closest(PREVIEW)) lastInteraction = "example";
+  else if (!t.closest(FLOATING)) lastInteraction = "other";
+}
+
+/** Was this floating layer (menu, popover, tooltip, listbox) opened from an example preview? */
+function layerFromExample(layer: Element, depth = 0): boolean {
+  if (depth > 4) return false;
+  const ids = [layer, ...layer.querySelectorAll("[id]")].map((n) => n.id).filter(Boolean);
+  for (const id of ids) {
+    const q = CSS.escape(id);
+    const owner = document.querySelector(`[aria-controls~="${q}"], [aria-describedby~="${q}"], [aria-owns~="${q}"]`);
+    if (!owner || layer.contains(owner)) continue;
+    const parent = owner.closest(FLOATING);
+    return parent ? layerFromExample(parent, depth + 1) : Boolean(owner.closest(PREVIEW));
+  }
+  return lastInteraction === "example";
+}
+
+/** The element the inspector may look inside, for `el`: its example preview, a layer an example opened, or the page on /demo/*. */
+function scopeOf(el: Element, everywhere: boolean): Element | null {
+  if (everywhere) return document.body;
+  const preview = el.closest(PREVIEW);
+  if (preview) return preview;
+  const layer = el.closest(FLOATING);
+  return layer && layerFromExample(layer) ? layer : null;
+}
 
 type Shown = { chain: HTMLElement[]; index: number; x: number; y: number; mode: "pointer" | "keyboard" };
 
 /** Marked elements from the scope's outermost to the innermost one at `el` (elements without a box left out). */
 function chainAt(el: Element | null, everywhere: boolean): HTMLElement[] {
   if (!el || typeof el.closest !== "function" || el.closest("[data-semi-inspector]")) return [];
-  const root = el.closest(SCOPE) ?? (everywhere ? document.body : null);
+  const root = scopeOf(el, everywhere);
   if (!root) return [];
   const out: HTMLElement[] = [];
   for (let n = el.closest<HTMLElement>("[data-semi]"); n && root.contains(n); n = n.parentElement?.closest<HTMLElement>("[data-semi]") ?? null) {
@@ -43,6 +81,7 @@ export function ComponentInspector() {
   const [names, setNames] = useState<NameMap | null>(null);
   const [shown, setShown] = useState<Shown | null>(null);
   const [said, setSaid] = useState("");
+  const [armed, setArmed] = useState(false);
   const shownRef = useRef<Shown | null>(null);
   const tipRef = useRef<HTMLDivElement>(null);
   const namesRef = useRef<NameMap | null>(null);
@@ -59,13 +98,23 @@ export function ComponentInspector() {
       if (e.defaultPrevented || e.isComposing || e.keyCode === 229) return;
       if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey || e.key.toLowerCase() !== "i") return;
       if (isEditableTarget(e.target) || isEditableTarget(document.activeElement)) return;
+      const focused = document.activeElement;
+      if ((e.target as Element | null)?.closest?.(OWN_KEYS) || focused?.closest(OWN_KEYS)) return;
       e.preventDefault();
       const next = !inspectorOn();
       setInspectorOn(next);
       setSaid(next ? "Đã bật soi component" : "Đã tắt soi component");
     };
     document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
+    document.addEventListener("pointerdown", noteInteraction, true);
+    document.addEventListener("keydown", noteInteraction, true);
+    document.addEventListener("focusin", noteInteraction, true);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("pointerdown", noteInteraction, true);
+      document.removeEventListener("keydown", noteInteraction, true);
+      document.removeEventListener("focusin", noteInteraction, true);
+    };
   }, []);
 
   useEffect(() => {
@@ -88,8 +137,15 @@ export function ComponentInspector() {
     let hideTimer: ReturnType<typeof setTimeout> | undefined;
     let pending: HTMLElement | null = null;
     let pressed = false;
-    let inTip = false;
-    let last: { x: number; y: number } | null = null;
+    let armTimer: ReturnType<typeof setTimeout> | undefined;
+    let isArmed = false;
+    const arm = (next: boolean) => {
+      clearTimeout(armTimer);
+      armTimer = undefined;
+      if (isArmed === next) return;
+      isArmed = next;
+      setArmed(next);
+    };
     const stop = () => {
       clearTimeout(dwell);
       clearTimeout(hideTimer);
@@ -97,7 +153,7 @@ export function ComponentInspector() {
     };
     const hide = () => {
       stop();
-      inTip = false;
+      arm(false);
       if (shownRef.current) show(null);
     };
     const hideSoon = () => {
@@ -107,22 +163,20 @@ export function ComponentInspector() {
 
     const onMove = (e: PointerEvent) => {
       if (e.pointerType === "touch") return;
-      const prev = last;
-      last = { x: e.clientX, y: e.clientY };
       if (pressed) return;
       const target = e.target as Element;
       const tip = tipRef.current;
-      if (tip && tip.contains(target)) {
-        // A hand travels to the card through the gap beside the pointer; a jump onto it (a scripted pointer, a
-        // click on what is under it) closes it instead, so the card never sits over what the user aims at.
+      if (tip) {
+        // Over the card (by position: until armed it lets the pointer through): keep it, and after ARM_MS of rest
+        // its links take clicks. A press before that reaches what is under it (onDown hides the card).
         const r = tip.getBoundingClientRect();
-        const near = inTip || (prev && prev.x > r.left - 40 && prev.x < r.right + 40 && prev.y > r.top - 40 && prev.y < r.bottom + 40);
-        if (!near) return hide();
-        inTip = true;
-        stop();
-        return;
+        if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) {
+          stop();
+          if (!isArmed && !armTimer) armTimer = setTimeout(() => arm(true), ARM_MS);
+          return;
+        }
+        arm(false);
       }
-      inTip = false;
       const chain = chainAt(target, everywhere);
       const cur = shownRef.current;
       if (!chain.length) {
@@ -148,7 +202,7 @@ export function ComponentInspector() {
       }, DWELL_MS);
     };
     const onDown = (e: PointerEvent) => {
-      if (tipRef.current?.contains(e.target as Node)) return;
+      if (isArmed && tipRef.current?.contains(e.target as Node)) return;
       pressed = true;
       hide();
     };
@@ -173,6 +227,8 @@ export function ComponentInspector() {
       const cur = shownRef.current;
       if (!cur || cur.mode !== "keyboard" || e.isComposing || e.keyCode === 229) return;
       if (e.key === "Enter" && !e.altKey && !e.shiftKey && !e.metaKey && !e.ctrlKey) {
+        // a piece without a page leaves Enter to the focused control
+        if (!describe(cur.chain[cur.index].dataset.semi ?? "", namesRef.current).id) return;
         e.preventDefault();
         e.stopPropagation();
         open(cur);
@@ -223,6 +279,7 @@ export function ComponentInspector() {
     document.addEventListener("focusout", onFocusOut);
     return () => {
       stop();
+      clearTimeout(armTimer);
       document.removeEventListener("pointermove", onMove);
       document.removeEventListener("pointerdown", onDown, true);
       document.removeEventListener("pointerup", onUp, true);
@@ -248,7 +305,7 @@ export function ComponentInspector() {
     queueMicrotask(() => setSaid(`${info.name}. ${info.summary} ${chainText}. Enter mở trang, Alt+mũi tên lên xuống đi theo chuỗi.`));
   }, [shown, names]);
 
-  // keep the card inside the viewport: beside the pointer, or under the element for the keyboard
+  // keep the card inside the viewport, under the hovered element (or above it) so it covers as little as it can
   useLayoutEffect(() => {
     const tip = tipRef.current;
     if (!tip || !shown || !rect) return;
@@ -256,9 +313,11 @@ export function ComponentInspector() {
     const h = tip.offsetHeight;
     const vw = window.innerWidth;
     const vh = window.innerHeight;
-    let left = shown.mode === "pointer" ? shown.x + 12 : rect.left;
-    let top = shown.mode === "pointer" ? shown.y + 18 : rect.bottom + 8;
-    if (top + h > vh - 8) top = shown.mode === "pointer" ? shown.y - h - 12 : rect.top - h - 8;
+    const pointer = shown.mode === "pointer";
+    let left = pointer ? shown.x - 16 : rect.left;
+    // a tall element: no further than 48px below the pointer
+    let top = (pointer ? Math.min(rect.bottom, shown.y + 48) : rect.bottom) + 8;
+    if (top + h > vh - 8) top = (pointer ? Math.max(rect.top, shown.y - 48) : rect.top) - h - 8;
     left = Math.max(8, Math.min(left, vw - w - 8));
     top = Math.max(8, top);
     tip.style.left = `${left}px`;
@@ -281,7 +340,11 @@ export function ComponentInspector() {
             ref={tipRef}
             aria-hidden
             data-inspector-card=""
-            className="fixed z-tooltip w-max max-w-80 rounded-card bg-raised border border-line shadow-overlay p-3 text-chrome text-body"
+            data-armed={armed ? "" : undefined}
+            className={cn(
+              "fixed z-tooltip w-max max-w-80 rounded-card bg-raised border border-line shadow-overlay p-3 text-chrome text-body",
+              !armed && "pointer-events-none",
+            )}
             style={{ left: -9999, top: -9999 }}
           >
             {info.id ? (
