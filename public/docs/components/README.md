@@ -80,6 +80,7 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Resizable panels](resizable.md) | `ResizablePanels` | Tools where people tune the space between two or three areas. |
 | [Route header banner](route-header-banner.md) | `RouteHeaderBanner` | A short app-wide announcement people should notice for a while: a new feature, a planned maintenance window, a changed price list. |
 | [Scroll area](scroll-area.md) | `ScrollArea` | A list or log inside a card that must keep its height. |
+| [Section header](section-header.md) | `SectionHeader` | Above a rail or a grid of MediaCards on a discovery, home or gallery page. |
 | [Segmented control](segmented-control.md) | `SegmentedControl` | 2–5 filter values shown in full, often with counts (Tất cả · Đang mở · Đang báo giá · Đã chốt). |
 | [Side panel](side-panel.md) | `SidePanel`, `SidePanelToggle` | Settings or layers beside a 3D view, map or editor. |
 | [Sticky context bar](sticky-context-bar.md) | `StickyContextBar`, `BarActions` | A list, grid or table page with a search and filters people change while they scroll (customers, suppliers, products). |
@@ -107,6 +108,7 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Kbd](kbd.md) | `Kbd` | Show the shortcut of an action next to it. |
 | [KPI card](kpi-card.md) | `KpiCard` | The metric row at the top of a dashboard (2–4 per row), with the screen's main number as the featured card. |
 | [Markdown](markdown.md) | `Markdown` | Answers of an AI assistant, release notes, short rich text. |
+| [Media card](media-card.md) | `MediaCard` | Galleries and discovery sections: videos, templates, collections, articles with a cover image. |
 | [QR code](qr-code.md) | `QRCode` | Show a payment QR (VietQR) in a payment dialog, or print one on a receipt. |
 | [Separator](separator.md) | `Separator` | Split groups inside a card or menu; “hoặc” between two ways to sign in. |
 | [Table](table.md) | `Table`, `THead`, `TBody`, `TR`, `TH`, `TD` | Orders, invoices, logs: rows compared by column. |

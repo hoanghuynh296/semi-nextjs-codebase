@@ -546,6 +546,15 @@
     ]
   },
   {
+    "id": "section-header",
+    "title": "Section header",
+    "group": "Navigation & layout",
+    "description": "The header row of a discovery or gallery section: a 20 / 500 title, an optional muted line, an actions slot on the right (usually a ghost \"Xem tất cả\" Button) and an optional ‹ › pager of subtle icon buttons that scrolls a rail or calls your handlers, disabled at the ends.",
+    "components": [
+      "SectionHeader"
+    ]
+  },
+  {
     "id": "segmented-control",
     "title": "Segmented control",
     "group": "Navigation & layout",
@@ -754,6 +763,15 @@
     "description": "Renders AI or user text safely: paragraphs, lists, bold, inline code and links (as ExternalLink). No HTML.",
     "components": [
       "Markdown"
+    ]
+  },
+  {
+    "id": "media-card",
+    "title": "Media card",
+    "group": "Data display",
+    "description": "A card for a gallery or discovery rail: 16:9 media (image, video or any node) at the card radius, a 14 / 500 caption, an optional meta line in the overline style, and two optional slots over the media (top left, bottom right) that take any node. The whole card is one link or one button.",
+    "components": [
+      "MediaCard"
     ]
   },
   {

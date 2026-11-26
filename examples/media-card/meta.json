@@ -1,0 +1,57 @@
+{
+  "title": "Media card",
+  "group": "Data display",
+  "description": "A card for a gallery or discovery rail: 16:9 media (image, video or any node) at the card radius, a 14 / 500 caption, an optional meta line in the overline style, and two optional slots over the media (top left, bottom right) that take any node. The whole card is one link or one button.",
+  "components": [
+    "MediaCard"
+  ],
+  "imports": [
+    "type MediaCardProps"
+  ],
+  "when": [
+    "Galleries and discovery sections: videos, templates, collections, articles with a cover image.",
+    "A horizontal rail under a SectionHeader, or a grid of cards that fills the width (recipes below)."
+  ],
+  "instead": [
+    {
+      "need": "A product or record with several fields and actions",
+      "use": "Card (with CardActions)"
+    },
+    {
+      "need": "A list row with a thumbnail",
+      "use": "Item with media"
+    },
+    {
+      "need": "Slides people step through one at a time",
+      "use": "Carousel"
+    },
+    {
+      "need": "A media frame without a card",
+      "use": "AspectRatio"
+    }
+  ],
+  "a11y": [
+    "The card is one link (href) or one button (onClick), named by its caption (label overrides it). Tab reaches it, the focus ring goes around the whole card, Enter opens it (Space too for the button).",
+    "The slots sit beside the card's control, never inside it: a Button in a slot is its own control and comes after the card in the tab order. Only controls in a slot take the pointer, so a badge on the media never blocks opening the card.",
+    "Decorative media take alt=\"\" (the caption names the card); a video needs its own controls or a poster image.",
+    "Hover scales the media to 1.05 in 300ms ease-out on devices that hover; prefers-reduced-motion keeps it still."
+  ],
+  "notes": [
+    "Grid recipe: grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-x-4 gap-y-6 (as many 220px+ columns as fit).",
+    "Rail recipe: a flex row with overflow-x-auto snap-x snap-mandatory overscroll-x-contain, the cards snap-start shrink-0 basis-[75%] on phones (the next card peeks) and 3 or 4 per view from sm / lg; SectionHeader pager={{ target: railRef }} pages it (see Section header).",
+    "Slots: topLeft for a Badge tone=\"overlay\" (duration, \"Video\"), bottomRight for an Avatar + name in an overlay Badge or a Button size=\"pill\". Leave them out and nothing renders.",
+    "The meta line uses text-overline (11 / 600, uppercase): keep it short, a category or a count, never a sentence."
+  ],
+  "examples": [
+    {
+      "file": "grid",
+      "title": "Grid with slots",
+      "description": "Badge tone=\"overlay\" top left; an Avatar + name or a pill Button bottom right. The cards are buttons; the pill is its own control."
+    },
+    {
+      "file": "link",
+      "title": "As a link",
+      "description": "href makes the card a next/link; no slots."
+    }
+  ]
+}
