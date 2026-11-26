@@ -48,3 +48,13 @@ docs/components/README.md      the index
 3. Mention it in `docs/DESIGN_SYSTEM.md` (§16 / §17), `CHANGELOG.md`.
 4. `npm run build:manifest && npm run check`, then `npm run build:storybook && npm run test:ui` (every doc page is
    checked for contrast in both themes, axe and phone width).
+
+### Component inspector (docs site only, #194)
+
+On the Semi docs site, a piece of an example preview (`[data-example-preview]`, set by `site/ExampleBlock.tsx`), a floating layer it opens (`[data-semi-floating]`) and anything on a `/demo/*` page can be inspected. It reads the `data-semi` names every component puts on its root (DESIGN_SYSTEM.md §17b). Code: `app/inspector/` (`Inspector.tsx`, `InspectorToggle.tsx`, `store.ts`, `names.ts`), mounted by `app/SiteShell.tsx`; it is not part of `@semi/ui` or `@semi/ui/site`, so apps and brand previews never get it.
+
+- **Pointer:** resting 300ms on a piece outlines the innermost marked element and shows a card beside the pointer: the name, the first sentence of its `components.json` summary, and the chain of marked ancestors (`ButtonGroup › Button`). Every name is a link to `/components/<id>/` (the `doc` of its `components.json` entry; a part such as `ToastHost.Toast` links to its parent's page); ⌘ / Ctrl-click opens a new tab. The pointer can travel into the card through the gap; a jump onto it (a scripted pointer, a click aimed at what is under it) closes it instead. The outline is `pointer-events: none`; pressing the pointer, typing, scrolling, leaving the window and a page change hide the card. Touch input is ignored.
+- **Keyboard:** with focus inside an example, `Alt`+`↓` shows the focused element's innermost marked piece, `Alt`+`↑` / `Alt`+`↓` walk up and down the chain, `Enter` opens the shown page (it does not press the focused control while the card shows), `Escape` closes. A widget's own `Alt`+`↓` (one that calls `preventDefault`, such as a combobox) wins.
+- **Screen readers:** the card is decorative (`aria-hidden`, links out of the tab order); a visually hidden `role="status"` region says what the keyboard card shows (name, description, chain, keys) and when the I key turns the inspector on or off.
+- **On / off:** the "Soi component" switch in the header (from `md`) and the `I` key (not while typing in a field or contenteditable, not with a modifier, not during IME composition) turn it off and on; on by default, remembered in `localStorage["semi-docs-inspector"]`, read after mount.
+- **Tests:** `tests/inspector.spec.ts`. Other browser tests that hover an example can see the card appear after 300ms: it is `aria-hidden` (no extra `tooltip` / `link` role for `getByRole`), and it closes on the next pointer press.
