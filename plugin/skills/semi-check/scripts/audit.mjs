@@ -564,8 +564,28 @@ export function auditSingleApp(cwd) {
     setup("transpile", nextConfig || "next.config.ts", "chưa có @semi/ui trong transpilePackages", 'transpilePackages: ["@semi/ui"]');
   const cssPath = findGlobalsCss(cwd);
   const cssRel = relative(cwd, cssPath).split(sep).join("/");
-  if (!existsSync(cssPath) || !readFileSync(cssPath, "utf8").includes("@semi/ui/tokens.css"))
+  // Apps moving to Semi in stages (#184, docs/BRANDS.md "Migrating an app in stages") keep their own Tailwind build
+  // and link Semi's CSS from a second file on the migrated routes only. That file must use the scoped entry: with
+  // tokens.css / base.css next to its own `@import "tailwindcss"`, both builds write `@layer utilities` and the sheet
+  // loaded later wins (AppShell's md: variants break, differently in dev and production).
+  const cssFiles = sources.filter((s) => s.css);
+  if (existsSync(cssPath) && !cssFiles.some((s) => s.rel === cssRel)) cssFiles.push({ rel: cssRel, src: readFileSync(cssPath, "utf8"), css: true });
+  const TW_IMPORT = /@import\s+["']tailwindcss["']/;
+  const SEMI_IMPORT = /@import\s+["'][^"']*@semi\/ui\/(?:tokens|base)\.css["']/;
+  const SCOPED_IMPORT = /@import\s+["'][^"']*@semi\/ui\/scoped\.css["']/;
+  const appBuilds = cssFiles.filter((s) => TW_IMPORT.test(s.src) && !SEMI_IMPORT.test(s.src) && !SCOPED_IMPORT.test(s.src));
+  const semiSheets = cssFiles.filter((s) => s.rel !== cssRel && (SEMI_IMPORT.test(s.src) || SCOPED_IMPORT.test(s.src)));
+  if (!semiSheets.length && (!existsSync(cssPath) || !readFileSync(cssPath, "utf8").includes("@semi/ui/tokens.css")))
     setup("semi-css", cssRel, "chưa import tokens.css + base.css của Semi", "khối semi-design-system trong globals.css (đổi giao diện: so ảnh trước / sau)");
+  if (appBuilds.length)
+    for (const s of semiSheets.filter((x) => !SCOPED_IMPORT.test(x.src)))
+      setup(
+        "second-build",
+        s.rel,
+        `second Tailwind build: Semi utilities share @layer utilities with the app's (${appBuilds.map((a) => a.rel).join(", ")}); sheet nào nạp sau thắng, nên md: của AppShell vỡ (dev khác production)`,
+        `đổi ${s.rel} thành @import "@semi/ui/scoped.css" + @source các thư mục đã chuyển (docs/BRANDS.md "Migrating an app in stages"); chuyển xong màn cuối thì về một globals.css`,
+        "manual",
+      );
   if (!lintCfg._found) setup("semi-lint-config", "semi-lint.json", "chưa có semi-lint.json", "semi-lint.json + baseline lint");
   // The gate outside Claude Code: semi-lint in the lint script and a CI workflow (semi-lint --ci + tsc).
   {
@@ -596,7 +616,9 @@ export function auditSingleApp(cwd) {
   if (brand && !brandKit) setup("brand", "package.json", `brand kit ${brand.pkg} chưa cài`, "npm install, hoặc foundation --brand <github:owner/repo>");
   else if (brand) {
     const missing = [];
-    if (!existsSync(cssPath) || !readFileSync(cssPath, "utf8").includes(`${brand.pkg}/dist/brand.css`)) missing.push(`brand.css trong ${cssRel}`);
+    // the brand's CSS sits next to Semi's: globals.css, or the scoped sheet of an app moving in stages (#184)
+    const brandSheets = [...(existsSync(cssPath) ? [readFileSync(cssPath, "utf8")] : []), ...semiSheets.map((s) => s.src)];
+    if (!brandSheets.some((t) => t.includes(`${brand.pkg}/dist/brand.css`))) missing.push(`brand.css trong ${semiSheets[0]?.rel ?? cssRel}`);
     const agents = [cwd, dirname(cwd), dirname(dirname(cwd))].map((d) => join(d, "AGENTS.md")).filter((p) => existsSync(p));
     if (!agents.some((p) => readFileSync(p, "utf8").includes("<!-- semi-brand:start -->"))) missing.push("luật brand trong AGENTS.md");
     if (missing.length) setup("brand", cssRel, `chưa nối brand ${brandKit.name}: ${missing.join(", ")}`, "foundation (nối lại brand)");
@@ -681,7 +703,7 @@ export function auditSingleApp(cwd) {
     if (!css) continue;
     for (const f of analyse(src, { css: true })) if (!autoAt.has(`${rel}:${f.line}:${f.token}`)) issues.push({ phase: "lint", kind: "manual", rule: f.rule, file: rel, line: f.line, token: f.token });
   }
-  const STEP = ["semi-ui", "tailwind-v4", "transpile", "semi-css", "semi-lint-config", "semi-gate", "providers", "brand", "brand-schema", "legacy-look", "fonts"];
+  const STEP = ["semi-ui", "tailwind-v4", "transpile", "semi-css", "second-build", "semi-lint-config", "semi-gate", "providers", "brand", "brand-schema", "legacy-look", "fonts"];
   issues.sort(
     (a, b) =>
       PHASES.indexOf(a.phase) - PHASES.indexOf(b.phase) ||
@@ -820,6 +842,7 @@ const SETUP_NAMES = {
   "tailwind-v4": "Tailwind v4",
   transpile: "transpilePackages",
   "semi-css": "CSS của Semi",
+  "second-build": "Tailwind thứ hai (scoped.css)",
   "semi-lint-config": "semi-lint.json",
   "semi-gate": "semi-lint trong lint + CI",
   providers: "provider trong layout",

@@ -42,6 +42,33 @@ test("an app without Semi starts at the foundation phase", () => {
   rmSync(root, { recursive: true });
 });
 
+test("a second Tailwind build (#184): Semi's CSS in its own sheet next to the app's tailwindcss is a foundation item; the scoped entry is not", () => {
+  const { root, web } = app();
+  writeFileSync(join(web, "app/globals.css"), `@import "tailwindcss";\n@theme { --color-primary: red; }\n`);
+  mkdirSync(join(web, "app/(semi)"));
+  const sheet = join(web, "app/(semi)/semi.css");
+  writeFileSync(sheet, `@import "tailwindcss";\n@import "@semi/ui/tokens.css";\n@import "@semi/ui/base.css";\n@source "./";\n`);
+  let found = auditProject(root).apps[0].issues.filter((i) => i.phase === "foundation");
+  const item = found.find((i) => i.check === "second-build");
+  assert.ok(item, "second-build is reported");
+  assert.equal(item.file, "app/(semi)/semi.css");
+  assert.equal(item.kind, "manual");
+  assert.match(item.what, /second Tailwind build: Semi utilities share @layer utilities with the app's \(app\/globals\.css\)/);
+  assert.match(item.fix, /@semi\/ui\/scoped\.css/);
+  // Semi's CSS is in the app, only not in globals.css: no "semi-css" item (fix.mjs would wire globals.css)
+  assert.ok(!found.some((i) => i.check === "semi-css"));
+  // the scoped entry is the supported staged setup: nothing to report
+  writeFileSync(sheet, `@import "@semi/ui/scoped.css";\n@source "./";\n`);
+  found = auditProject(root).apps[0].issues.filter((i) => i.phase === "foundation");
+  assert.ok(!found.some((i) => i.check === "second-build" || i.check === "semi-css"));
+  // one build (Semi in globals.css): nothing to report either
+  rmSync(join(web, "app/(semi)"), { recursive: true });
+  writeFileSync(join(web, "app/globals.css"), `@import "tailwindcss";\n@import "@semi/ui/tokens.css";\n@import "@semi/ui/base.css";\n`);
+  found = auditProject(root).apps[0].issues.filter((i) => i.phase === "foundation");
+  assert.ok(!found.some((i) => i.check === "second-build" || i.check === "semi-css"));
+  rmSync(root, { recursive: true });
+});
+
 test("detail and list pages: only list pages need a SubpageToolbar; AppHeader counts as a Semi frame", () => {
   const { root, web } = app();
   mkdirSync(join(web, "app/about"));
