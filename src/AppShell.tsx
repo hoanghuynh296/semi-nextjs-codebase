@@ -863,7 +863,7 @@ export function AppShell({
         <PageActionsProvider>
           <script dangerouslySetInnerHTML={{ __html: navScript(storageKey) }} />
           <style dangerouslySetInnerHTML={{ __html: navWidthCss(railBelow, railWidth) }} />
-          <div className={SHELL_OUTER}>
+          <div data-semi="AppShell" className={SHELL_OUTER}>
             {/* The nav panel (md+): its width is CSS (above), what the rail hides is a container query on it */}
             <aside
               ref={asideRef}

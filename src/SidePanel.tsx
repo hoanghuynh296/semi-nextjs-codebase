@@ -15,7 +15,7 @@ export const SIDE_PANEL_COLLAPSED = 48;
 export function SidePanelToggle({ onClick }: { onClick: () => void }) {
   const t = useSemiLocale();
   return (
-    <button
+    <button data-semi="SidePanelToggle"
       type="button"
       onClick={onClick}
       aria-label={t.collapsePanel}
@@ -50,7 +50,7 @@ export function SidePanel({
     if (!reduced) setSettling(true);
   }
   return (
-    <div
+    <div data-semi="SidePanel"
       id={id}
       className="flex-shrink-0 bg-panel border-r border-divider z-10 select-none h-full relative overflow-hidden [transition:width_var(--motion-disclosure)] motion-reduce:transition-none"
       style={{ width: `${collapsed ? SIDE_PANEL_COLLAPSED : width}px` }}

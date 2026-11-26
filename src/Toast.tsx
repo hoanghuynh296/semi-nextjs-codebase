@@ -206,6 +206,7 @@ function ToastCard({ item, scale }: { item: ToastItem; scale: number }) {
   const act = item.undo ? { label: t.undo, onClick: item.undo } : item.action;
   return (
     <div
+      data-semi="ToastHost.Toast"
       data-toast-id={item.id}
       onPointerEnter={() => set("pointer", true)}
       onPointerLeave={() => set("pointer", false)}
@@ -314,6 +315,7 @@ export function ToastHost({ label, durationScale = 1, hotkey = "Alt+T" }: ToastH
         <RouteWatcher />
       </Suspense>
       <section
+        data-semi="ToastHost"
         ref={region}
         aria-keyshortcuts={hotkey || undefined}
         aria-label={label ?? t.notifications}

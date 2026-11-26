@@ -82,7 +82,7 @@ export function Pagination({
       ),
     );
   return (
-    <nav aria-label={t.pagination} className={`flex items-center justify-center gap-1 pointer-coarse:max-sm:gap-0 flex-wrap ${className}`}>
+    <nav data-semi="Pagination" aria-label={t.pagination} className={`flex items-center justify-center gap-1 pointer-coarse:max-sm:gap-0 flex-wrap ${className}`}>
       <button
         type="button"
         aria-label={t.prevPage}

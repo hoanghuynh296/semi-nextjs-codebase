@@ -2,6 +2,7 @@
 
 // Pulsing skeleton placeholders shown while a page or a list loads (docs/DESIGN_SYSTEM.md §13b). Uses `motion-pulse` (2.5s ease-in-out, opacity 1→0.6→1; stops under prefers-reduced-motion) via `.shimmer` in base.css.
 import React from "react";
+import type { SemiName } from "./a11y";
 import { useSemiLocale } from "./locale";
 import { Spinner } from "./Button";
 import { CARD } from "../styles/surfaces";
@@ -10,15 +11,20 @@ import { skeletonCellClass } from "./skeletonShape";
 
 /** One shimmering block; size and radius come from className (default rounded-control). */
 export function Skeleton({ className = "", style }: { className?: string; style?: React.CSSProperties }) {
-  return <div className={`shimmer rounded-control ${className}`} style={style} aria-hidden />;
+  return <div data-semi="Skeleton" className={`shimmer rounded-control ${className}`} style={style} aria-hidden />;
 }
 
 /** Wrapper that tells assistive tech the region is loading. `relative` keeps the absolute sr-only label inside scroll containers. */
-export function Loading({ children, className = "", label: labelProp }: { children: React.ReactNode; className?: string; label?: string }) {
+export function Loading({
+  "data-semi": semi = "Loading",
+  children,
+  className = "",
+  label: labelProp,
+}: { children: React.ReactNode; className?: string; label?: string } & SemiName) {
   const t = useSemiLocale();
   const label = labelProp ?? t.loading;
   return (
-    <div role="status" aria-busy="true" aria-live="polite" className={`relative ${className}`}>
+    <div data-semi={semi} role="status" aria-busy="true" aria-live="polite" className={`relative ${className}`}>
       <span className="sr-only">{label}</span>
       {children}
     </div>
@@ -28,7 +34,7 @@ export function Loading({ children, className = "", label: labelProp }: { childr
 /** Card placeholder: icon tile + two text lines, then an optional body block. */
 export function SkeletonCard({ body = "h-24", className = "" }: { body?: string | null; className?: string }) {
   return (
-    <div className={`${CARD} p-card flex flex-col gap-stack ${className}`}>
+    <div data-semi="SkeletonCard" className={`${CARD} p-card flex flex-col gap-stack ${className}`}>
       <div className="flex items-center gap-3">
         <Skeleton className="w-10 h-10 !rounded-control shrink-0" />
         <div className="flex-1 flex flex-col gap-2 min-w-0">
@@ -54,7 +60,7 @@ export function SkeletonGrid({
   label?: string;
 }) {
   return (
-    <Loading className={className} label={label}>
+    <Loading data-semi="SkeletonGrid" className={className} label={label}>
       {Array.from({ length: count }, (_, i) => (
         <SkeletonCard key={i} body={body} />
       ))}
@@ -65,7 +71,7 @@ export function SkeletonGrid({
 /** List row placeholders (dialog lists, tables). */
 export function SkeletonRows({ count = 5, className = "flex flex-col gap-2", label }: { count?: number; className?: string; label?: string }) {
   return (
-    <Loading className={className} label={label}>
+    <Loading data-semi="SkeletonRows" className={className} label={label}>
       {Array.from({ length: count }, (_, i) => (
         <div key={i} className="flex items-center gap-3 p-2.5 rounded-control bg-field">
           <Skeleton className="w-8 h-8 !rounded-control shrink-0" />
@@ -103,7 +109,7 @@ export function SkeletonList({
   label?: string;
 }) {
   return (
-    <Loading className={cn("flex flex-col divide-y divide-divider", className)} label={label}>
+    <Loading data-semi="SkeletonList" className={cn("flex flex-col divide-y divide-divider", className)} label={label}>
       {Array.from({ length: rows }, (_, r) => (
         <div key={r} className="flex items-center gap-3 px-4 py-3 min-w-0">
           {avatar && <Skeleton className="w-9 h-9 !rounded-full shrink-0" />}
@@ -140,7 +146,7 @@ export function SkeletonTable({
 }) {
   const cols = Array.from({ length: columns }, (_, c) => c);
   return (
-    <Loading className={cn(CARD, "overflow-hidden", className)} label={label}>
+    <Loading data-semi="SkeletonTable" className={cn(CARD, "overflow-hidden", className)} label={label}>
       <div className="flex items-center gap-4 px-4 h-10 border-b border-divider">
         {cols.map((c) => (
           <div key={c} className={cn("min-w-0", c === 0 ? "flex-[2]" : "flex-1", c > 1 && "max-sm:hidden")}>
@@ -185,7 +191,7 @@ export function SkeletonDetail({
       </div>
     ));
   return (
-    <Loading className={cn("grid gap-section", side && "lg:grid-cols-[minmax(0,1fr)_320px]", className)} label={label}>
+    <Loading data-semi="SkeletonDetail" className={cn("grid gap-section", side && "lg:grid-cols-[minmax(0,1fr)_320px]", className)} label={label}>
       <div className="flex flex-col gap-section min-w-0">
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-3">
@@ -223,7 +229,7 @@ export function PageSkeleton({ shape = "cards", inShell = false }: { shape?: "ca
   const outer = inShell ? "w-full flex flex-col gap-5" : "h-dvh bg-app p-4 sm:p-6 max-w-[1440px] w-full mx-auto flex flex-col gap-5";
   if (shape === "workspace") {
     return (
-      <div className={outer}>
+      <div data-semi="PageSkeleton" className={outer}>
         <Loading className="flex flex-col lg:flex-row lg:items-start gap-group w-full">
           <div className="w-full lg:w-[380px] shrink-0 flex flex-col gap-5 bg-panel-3 rounded-panel p-4">
             <div className="flex items-center gap-2.5">
@@ -272,7 +278,7 @@ export function PageSkeleton({ shape = "cards", inShell = false }: { shape?: "ca
     );
   }
   return (
-    <div className={outer}>
+    <div data-semi="PageSkeleton" className={outer}>
       <div className="flex items-center gap-3">
         <Skeleton className="w-10 h-10 !rounded-control" />
         <Skeleton className="h-5 w-40" />
@@ -325,7 +331,7 @@ export function BootLoader({
     return () => clearTimeout(id);
   }, [delay]);
   return (
-    <Loading label={label ?? t.booting} className={`min-h-dvh w-full grid place-items-center bg-app ${className}`}>
+    <Loading data-semi="BootLoader" label={label ?? t.booting} className={`min-h-dvh w-full grid place-items-center bg-app ${className}`}>
       {shown && <Spinner className="w-6 h-6 text-muted motion-reduce:animate-none" />}
     </Loading>
   );

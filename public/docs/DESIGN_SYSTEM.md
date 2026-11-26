@@ -1026,6 +1026,15 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 
 The full inventory with props is generated into `components.json` (`npm run build:manifest`).
 
+## 17b. `data-semi`: component names in the DOM (#194)
+
+Every exported component marks its root element with `data-semi="<ComponentName>"` (the idea of shadcn's `data-slot`); a significant part carries `<Component>.<Part>` (`ToastHost.Toast`). Floating layers carry the name of what they are: the bubble of `Tooltip` and the panel of `Menu` / `Popover` / `HoverCard` (they render in `document.body`, away from their trigger; `ContextMenu` and `Menubar` lists are `Menu` panels too). A component whose root is another Semi component passes its own name down (`SkeletonGrid` renders `<Loading data-semi="SkeletonGrid">`) through the internal `SemiName` prop (`src/a11y.ts`; API tables leave `data-*` props out), and `Menu` / `Popover` put a given `data-semi` on their trigger (`FilterChip`, `AccountMenu`). Context providers and `ThemeScript` render no element and carry none. On a component that spreads its other props onto the root (`Button`, `Card`, `ExternalLink`), a `data-semi` you pass replaces its own.
+
+- **Use it for:** debugging (`document.querySelectorAll('[data-semi="Button"]')`), tests (`page.locator('[data-semi="Card"]')`) and the docs site's component inspector (docs/COMPONENT_DOCS.md).
+- **Never style by it:** no `[data-semi=…]` selector, no `data-[semi=…]:` variant. `lint/test/data-semi.test.mjs` fails on one in `src/` or `styles/`, and on an exported component without its `data-semi`.
+- **Stable:** the value is the exported name; it changes only when the component is renamed.
+- **A new component:** put `data-semi="<Name>"` first on its root element (before a `{...rest}` spread, so a wrapping component's name wins).
+
 ## 18. Accessibility & UI strings
 
 - Contrast: every text / background pair ≥ 4.5:1 (3:1 for ≥ 24px) in **both** themes; `npm run test:ui` checks every

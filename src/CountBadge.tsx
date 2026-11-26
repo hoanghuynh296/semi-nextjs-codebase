@@ -23,7 +23,7 @@ export interface CountBadgeProps extends Omit<React.HTMLAttributes<HTMLSpanEleme
 export function CountBadge({ count, max = 99, tone = "attention", corner = false, className, ...rest }: CountBadgeProps) {
   if (!(count > 0)) return null;
   return (
-    <span className={cn(tone === "attention" ? COUNT_BADGE : COUNT_BADGE_NEUTRAL, corner && COUNT_BADGE_CORNER, className)} {...rest}>
+    <span data-semi="CountBadge" className={cn(tone === "attention" ? COUNT_BADGE : COUNT_BADGE_NEUTRAL, corner && COUNT_BADGE_CORNER, className)} {...rest}>
       {count > max ? `${max}+` : count}
     </span>
   );
@@ -38,7 +38,7 @@ export interface NewTagProps extends React.HTMLAttributes<HTMLSpanElement> {
 export function NewTag({ children, className, ...rest }: NewTagProps) {
   const t = useSemiLocale();
   return (
-    <span className={cn(NEW_TAG, className)} {...rest}>
+    <span data-semi="NewTag" className={cn(NEW_TAG, className)} {...rest}>
       {children ?? t.newBadge}
     </span>
   );

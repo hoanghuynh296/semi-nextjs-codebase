@@ -68,7 +68,7 @@ export function DatePicker({
   const name = ariaLabel ?? (field ? undefined : t.selectDate);
 
   return (
-    <div className={`relative inline-block ${className}`}>
+    <div data-semi="DatePicker" className={`relative inline-block ${className}`}>
       <button
         ref={buttonRef}
         id={id ?? field?.id}

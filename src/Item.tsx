@@ -73,7 +73,7 @@ export function Item({
       ? cn("bg-item-checked", (href || onClick) && "hover:bg-item-selected")
       : (href || onClick) && "hover:bg-item-hover";
   return (
-    <div data-motion-item="" className={cn("relative flex items-center gap-3 px-4 py-3 transition-hover", bgCls, className)}>
+    <div data-semi="Item" data-motion-item="" className={cn("relative flex items-center gap-3 px-4 py-3 transition-hover", bgCls, className)}>
       {selectable && (
         <div className="relative z-10 flex shrink-0 items-center">
           <Checkbox checked={checked} onChange={(on) => onCheckedChange?.(on)} aria-label={checkboxName} />
@@ -98,7 +98,7 @@ export function Item({
 /** Rows in a card with dividers; `label` names the list for screen readers (and shows above it when visible). */
 export function ItemGroup({ label, showLabel = false, className, children }: { label: string; showLabel?: boolean; className?: string; children: React.ReactNode }) {
   return (
-    <section aria-label={label} className={cn("space-y-2", className)}>
+    <section data-semi="ItemGroup" aria-label={label} className={cn("space-y-2", className)}>
       {showLabel && <h3 className="px-1 text-ui font-medium text-muted">{label}</h3>}
       <div className={cn(CARD, "divide-y divide-divider overflow-hidden")}>{children}</div>
     </section>

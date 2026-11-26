@@ -109,7 +109,7 @@ export function TaskHost() {
 
   if (!c) return null;
   return (
-    <div className={MODAL_BACKDROP}>
+    <div data-semi="TaskHost" className={MODAL_BACKDROP}>
       <div
         ref={panelRef}
         role="alertdialog"

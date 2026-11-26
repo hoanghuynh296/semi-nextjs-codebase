@@ -52,5 +52,5 @@ export function Markdown({ text }: { text: string }) {
     );
   }
   flush();
-  return <div className="flex flex-col gap-1.5">{blocks}</div>;
+  return <div data-semi="Markdown" className="flex flex-col gap-1.5">{blocks}</div>;
 }

@@ -48,7 +48,7 @@ export function Terminal({
   }, [text]);
   const name = title ?? command ?? "Terminal";
   return (
-    <div className={cn("w-full rounded-card border border-line bg-field overflow-hidden", className)}>
+    <div data-semi="Terminal" className={cn("w-full rounded-card border border-line bg-field overflow-hidden", className)}>
       <div className="flex items-center gap-2 border-b border-divider px-3 h-9">
         <Icon name="terminal" className="w-4 h-4 text-muted shrink-0" />
         <span className="flex-1 min-w-0 truncate text-chrome font-medium text-muted">{name}</span>

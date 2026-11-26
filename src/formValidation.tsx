@@ -56,7 +56,7 @@ export function FormErrorSummary({ errors, className }: { errors: Record<string,
   const list = Object.entries(errors).filter((e): e is [string, string] => !!e[1]);
   if (list.length < 2) return null;
   return (
-    <Alert tone="danger" title={t.formErrors(list.length)} className={className}>
+    <Alert data-semi="FormErrorSummary" tone="danger" title={t.formErrors(list.length)} className={className}>
       <ul className="list-disc pl-4 space-y-0.5">
         {list.map(([name, m]) => (
           <li key={name}>{m}</li>

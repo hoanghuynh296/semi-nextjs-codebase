@@ -51,7 +51,7 @@ export function MobileTabBar({
   );
 
   return (
-    <nav
+    <nav data-semi="MobileTabBar"
       aria-label={t.navigation}
       className="md:hidden fixed bottom-0 inset-x-0 z-drawer bg-app/95 backdrop-blur-xl border-t border-divider pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] select-none"
     >

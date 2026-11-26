@@ -91,7 +91,7 @@ export function ConfirmHost() {
   const confirmText = c.confirmLabel || (c.kind === "delete" ? t.delete : t.ok);
 
   return (
-    <div
+    <div data-semi="ConfirmHost"
       className="fixed inset-0 z-dialog flex items-center justify-center p-4 bg-overlay backdrop-blur-lg"
       role="presentation"
       onClick={() => resolveConfirm(false)}

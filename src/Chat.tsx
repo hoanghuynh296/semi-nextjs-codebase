@@ -15,7 +15,7 @@ import { ExternalLink } from "./ExternalLink";
 import { Markdown } from "./Markdown";
 import { Skeleton } from "./Skeleton";
 import { STATUS_ICON } from "./Toast";
-import { useDialog } from "./a11y";
+import { useDialog, type SemiName } from "./a11y";
 import { useSemiLocale } from "./locale";
 import { MODAL_CLOSE } from "../styles/surfaces";
 import { cn, FOCUS_RING } from "../styles/utils";
@@ -46,7 +46,7 @@ const SMALL_ACTION = cn("w-7 h-7 rounded-control text-muted hover:text-strong ho
 /** Small sparkles tile in front of every AI answer (pulses while it streams). */
 export function ChatAvatar({ busy = false, icon = "sparkles" }: { busy?: boolean; icon?: IconName }) {
   return (
-    <span className={cn("w-6 h-6 rounded-control bg-item-selected text-strong flex items-center justify-center shrink-0", busy && "motion-safe:animate-pulse")}>
+    <span data-semi="ChatAvatar" className={cn("w-6 h-6 rounded-control bg-item-selected text-strong flex items-center justify-center shrink-0", busy && "motion-safe:animate-pulse")}>
       <Icon name={icon} className="w-3.5 h-3.5" />
     </span>
   );
@@ -56,7 +56,7 @@ export function ChatAvatar({ busy = false, icon = "sparkles" }: { busy?: boolean
 export function ChatThinking({ label }: { label?: string }) {
   const t = useSemiLocale();
   return (
-    <span className="inline-flex items-center gap-1.5 text-ui text-muted h-6">
+    <span data-semi="ChatThinking" className="inline-flex items-center gap-1.5 text-ui text-muted h-6">
       {(label ?? t.chatThinking).replace(/…$/, "")}
       <span className="inline-flex gap-0.5" aria-hidden>
         {[0, 150, 300].map((d) => (
@@ -70,7 +70,7 @@ export function ChatThinking({ label }: { label?: string }) {
 /** The user's message, right-aligned. `failed`: its answer failed (shown dimmed, not sent again). */
 export function UserMessage({ failed = false, children }: { failed?: boolean; children: React.ReactNode }) {
   return (
-    <div
+    <div data-semi="UserMessage"
       className={cn(
         "self-end max-w-[85%] rounded-panel rounded-br-chip px-3 py-2 text-ui whitespace-pre-wrap break-words border",
         failed ? "bg-field border-line text-muted" : "bg-item-selected border-outline-line text-strong",
@@ -83,6 +83,7 @@ export function UserMessage({ failed = false, children }: { failed?: boolean; ch
 
 /** An AI answer, left-aligned behind the avatar. `actions` (copy, feedback) show under it once it is done. */
 export function AssistantMessage({
+  "data-semi": semi = "AssistantMessage",
   busy = false,
   actions,
   children,
@@ -90,9 +91,9 @@ export function AssistantMessage({
   busy?: boolean;
   actions?: React.ReactNode;
   children: React.ReactNode;
-}) {
+} & SemiName) {
   return (
-    <div className="self-start w-full flex gap-2">
+    <div data-semi={semi} className="self-start w-full flex gap-2">
       <ChatAvatar busy={busy} />
       <div className="min-w-0 flex-1 pt-0.5">
         <div className="text-ui text-body leading-relaxed break-words">{children}</div>
@@ -104,6 +105,7 @@ export function AssistantMessage({
 
 /** A failed answer (or an AI note in a warning tone), with an optional retry. */
 export function ChatError({
+  "data-semi": semi = "ChatError",
   tone = "danger",
   onRetry,
   children,
@@ -111,11 +113,11 @@ export function ChatError({
   tone?: "danger" | "warning";
   onRetry?: () => void;
   children: React.ReactNode;
-}) {
+} & SemiName) {
   const t = useSemiLocale();
   const s = STATUS_ICON[tone];
   return (
-    <div role={tone === "danger" ? "alert" : "status"} className="self-start flex gap-2 max-w-[96%]">
+    <div data-semi={semi} role={tone === "danger" ? "alert" : "status"} className="self-start flex gap-2 max-w-[96%]">
       <span className={cn("w-6 h-6 rounded-control border flex items-center justify-center shrink-0", s.surface, s.fg)}>
         <Icon name="alert" className="w-3.5 h-3.5" />
       </span>
@@ -143,7 +145,7 @@ export function ChatCopyButton({ text }: { text: string }) {
   }, [done]);
   const label = done ? t.copied : t.copy;
   return (
-    <button
+    <button data-semi="ChatCopyButton"
       type="button"
       className={SMALL_ACTION}
       aria-label={label}
@@ -163,7 +165,7 @@ export function ChatCopyButton({ text }: { text: string }) {
 /** Icon, title and one line above an empty conversation. */
 export function ChatIntro({ icon = "sparkles", title, children }: { icon?: IconName; title: React.ReactNode; children?: React.ReactNode }) {
   return (
-    <div className="flex flex-col items-center text-center gap-2.5 pt-2">
+    <div data-semi="ChatIntro" className="flex flex-col items-center text-center gap-2.5 pt-2">
       <IconTile name={icon} tone="green" size="lg" />
       <div className="text-lead font-medium text-strong tracking-tight">{title}</div>
       {children && <p className="text-ui text-muted max-w-[300px] leading-relaxed">{children}</p>}
@@ -196,13 +198,13 @@ export function ChatSuggestion({
   );
   if (href) {
     return (
-      <ExternalLink href={href} className={CHAT_ROW}>
+      <ExternalLink data-semi="ChatSuggestion" href={href} className={CHAT_ROW}>
         {body}
       </ExternalLink>
     );
   }
   return (
-    <button type="button" disabled={disabled} onClick={onClick} className={CHAT_ROW}>
+    <button data-semi="ChatSuggestion" type="button" disabled={disabled} onClick={onClick} className={CHAT_ROW}>
       {body}
     </button>
   );
@@ -211,7 +213,7 @@ export function ChatSuggestion({
 /** A column of ChatSuggestion rows, with an optional small heading. */
 export function ChatSuggestions({ label, children }: { label?: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-2">
+    <div data-semi="ChatSuggestions" className="flex flex-col gap-2">
       {label && <div className="text-ui font-medium text-muted px-1">{label}</div>}
       {children}
     </div>
@@ -230,6 +232,7 @@ const STICK_SLACK = 32;
  * showing) keeps it at the top so the intro is read from its start.
  */
 export function ChatList({
+  "data-semi": semi = "ChatList",
   busy = false,
   announcement,
   label,
@@ -242,7 +245,7 @@ export function ChatList({
   /** Accessible name of the log (the panel title). */
   label?: string;
   children: React.ReactNode;
-}) {
+} & SemiName) {
   const t = useSemiLocale();
   const ref = useRef<HTMLDivElement>(null);
   const stick = useRef(true);
@@ -309,7 +312,7 @@ export function ChatList({
   };
 
   return (
-    <div className="relative flex-1 min-h-0 flex flex-col">
+    <div data-semi={semi} className="relative flex-1 min-h-0 flex flex-col">
       <div ref={ref} role="log" aria-live="off" aria-label={label} aria-busy={busy || undefined} onScroll={onScroll} className={CHAT_LIST}>
         {children}
       </div>
@@ -415,7 +418,7 @@ export function ChatComposer({
   const hint = placeholder ?? t.chatPlaceholder;
 
   return (
-    <form
+    <form data-semi="ChatComposer"
       className={COMPOSER_BAR}
       onSubmit={(e) => {
         e.preventDefault();
@@ -498,7 +501,7 @@ export function ChatModelPicker({
 }) {
   const t = useSemiLocale();
   return (
-    <span className="inline-flex items-center gap-1 min-w-0 flex-wrap">
+    <span data-semi="ChatModelPicker" className="inline-flex items-center gap-1 min-w-0 flex-wrap">
       {providers.length > 1 && provider !== undefined && onProviderChange && (
         <CustomSelect
           variant="bare"
@@ -565,16 +568,16 @@ export function ChatView({
   const t = useSemiLocale();
   if (loading) {
     return (
-      <div className="p-4 flex flex-col gap-3" role="status" aria-label={t.loading}>
+      <div data-semi="ChatView" className="p-4 flex flex-col gap-3" role="status" aria-label={t.loading}>
         <Skeleton className="h-10 w-3/4" />
         <Skeleton className="h-16 w-full" />
       </div>
     );
   }
-  if (setup) return <div className="flex-1 min-h-0 overflow-y-auto p-4 flex flex-col justify-center">{setup}</div>;
+  if (setup) return <div data-semi="ChatView" className="flex-1 min-h-0 overflow-y-auto p-4 flex flex-col justify-center">{setup}</div>;
   return (
     <>
-      <ChatList busy={busy} announcement={announcement} label={label} empty={empty}>
+      <ChatList data-semi="ChatView" busy={busy} announcement={announcement} label={label} empty={empty}>
         {children}
       </ChatList>
       {composer}
@@ -690,6 +693,7 @@ function usePanelWidth(panelRef: React.RefObject<HTMLElement | null>, defaultWid
  * Keep it mounted with `shown={false}` while it slides out, then unmount.
  */
 export function ChatPanel({
+  "data-semi": semi = "ChatPanel",
   title,
   icon = "sparkles",
   placement = "workspace",
@@ -720,7 +724,7 @@ export function ChatPanel({
   widthKey?: string | null;
   /** Usually a ChatView. */
   children: React.ReactNode;
-}) {
+} & SemiName) {
   const t = useSemiLocale();
   const screen = placement === "screen";
   const panelRef = useRef<HTMLElement>(null);
@@ -732,7 +736,7 @@ export function ChatPanel({
   useEffect(() => setMounted(true), []);
 
   const panel = (
-    <aside
+    <aside data-semi={semi}
       ref={panelRef}
       inert={!shown}
       role={screen ? "dialog" : "complementary"}
@@ -798,7 +802,7 @@ export function ChatPanel({
   // event goes on to the modal: React still bubbles portal events to it, and its backdrop closes on any click.
   const stop = (e: React.SyntheticEvent) => e.stopPropagation();
   return createPortal(
-    <div role="presentation" onClick={stop} onMouseDown={stop} onPointerDown={stop} onTouchStart={stop} onKeyDown={stop}>
+    <div data-semi={semi} role="presentation" onClick={stop} onMouseDown={stop} onPointerDown={stop} onTouchStart={stop} onKeyDown={stop}>
       <div className={cn("fixed inset-0 z-dialog bg-overlay", !shown && "opacity-0 pointer-events-none transition-opacity")} aria-hidden />
       {panel}
     </div>,
@@ -824,9 +828,9 @@ export interface ChatItem {
 
 /** An answer as most chats show it: the error (with retry), the Markdown text with copy, or "thinking" while empty. */
 export function ChatAnswer({ msg, onRetry, copyable = true }: { msg: ChatItem; onRetry?: () => void; copyable?: boolean }) {
-  if (msg.error) return <ChatError onRetry={onRetry}>{msg.error}</ChatError>;
+  if (msg.error) return <ChatError data-semi="ChatAnswer" onRetry={onRetry}>{msg.error}</ChatError>;
   return (
-    <AssistantMessage busy={msg.pending} actions={copyable && msg.content ? <ChatCopyButton text={msg.content} /> : undefined}>
+    <AssistantMessage data-semi="ChatAnswer" busy={msg.pending} actions={copyable && msg.content ? <ChatCopyButton text={msg.content} /> : undefined}>
       {msg.content ? <Markdown text={msg.content} /> : msg.pending ? <ChatThinking /> : null}
     </AssistantMessage>
   );
@@ -900,7 +904,7 @@ export function AIChat<M extends ChatItem>({
   const chatShown = !loading && !setup;
 
   return (
-    <ChatPanel
+    <ChatPanel data-semi="AIChat"
       title={title}
       icon={icon}
       placement={placement}

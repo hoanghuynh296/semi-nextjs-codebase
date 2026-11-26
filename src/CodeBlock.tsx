@@ -21,7 +21,7 @@ export function CodeBlock({ code, title, className }: { code: string; /** File n
     <Button size="sm" variant="ghost" iconOnly icon={copied ? "check" : "copy"} aria-label={copied ? t.copied : t.copy} title={copied ? t.copied : t.copy} onClick={copy} className={title ? "" : "!absolute right-2 top-2 pointer-coarse:max-sm:right-1 pointer-coarse:max-sm:top-1"} />
   );
   return (
-    <div className={cn("relative rounded-control border border-line bg-field", className)}>
+    <div data-semi="CodeBlock" className={cn("relative rounded-control border border-line bg-field", className)}>
       {title && (
         <div className="flex items-center justify-between gap-2 border-b border-divider px-3 h-9 pointer-coarse:max-sm:h-12">
           <span className="text-chrome font-medium text-muted truncate">{title}</span>

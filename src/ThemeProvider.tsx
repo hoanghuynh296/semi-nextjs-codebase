@@ -128,7 +128,7 @@ export function ThemeToggle({ className = "", size = "md" }: ThemeToggleProps) {
   const sizeClasses = size === "sm" ? "w-7 h-7" : "w-control h-control";
 
   return (
-    <button
+    <button data-semi="ThemeToggle"
       type="button"
       onClick={toggleTheme}
       title={isDark ? t.toLight : t.toDark}
@@ -202,7 +202,7 @@ function ThemeMenuButton({ labels, className = "" }: { labels?: Record<Theme, st
       items={items}
       trigger={
         <Tooltip content={label}>
-          <button type="button" aria-label={label} className={cn(BTN_SUBTLE, BTN_ICON, className)}>
+          <button data-semi="ThemeSwitcher" type="button" aria-label={label} className={cn(BTN_SUBTLE, BTN_ICON, className)}>
             <Icon name={icon} className={cn("w-4 h-4 transition-opacity", !mounted && "opacity-0")} />
           </button>
         </Tooltip>
@@ -217,6 +217,7 @@ function ThemeSegments({ showLabels = false, fullWidth = false, labels: labelsPr
   const { theme, mounted, setTheme } = useTheme();
   return (
     <div
+      data-semi="ThemeSwitcher"
       role="radiogroup"
       aria-label={t.theme}
       className={`${fullWidth ? "flex w-full" : "inline-flex"} items-center gap-0.5 bg-raised p-1 h-control pointer-coarse:max-sm:h-auto rounded-control shrink-0 ${className}`}

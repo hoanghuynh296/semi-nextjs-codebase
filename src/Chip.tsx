@@ -67,7 +67,7 @@ export function Chip({
   const activeStyle = tone && TONAL_SURFACE[tone] ? TONAL_SURFACE[tone] : CHIP_ON;
   const chipStyle = active ? activeStyle : CHIP_OFF;
   return (
-    <button
+    <button data-semi="Chip"
       type="button"
       onClick={onClick}
       title={title}

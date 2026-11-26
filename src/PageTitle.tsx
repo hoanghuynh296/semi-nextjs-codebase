@@ -37,13 +37,13 @@ export function PageTitle({
   const titleCls = variant === "reading" ? PAGE_TITLE_READING_TEXT : PAGE_TITLE_TEXT;
   if (!actions) {
     return (
-      <div className={cn("mb-7 min-w-0", className)}>
+      <div data-semi="PageTitle" className={cn("mb-7 min-w-0", className)}>
         <h1 className={titleCls}>{title}</h1>
       </div>
     );
   }
   return (
-    <div className={cn("mb-7 min-w-0 flex flex-wrap items-center justify-between gap-x-3 gap-y-2", className)}>
+    <div data-semi="PageTitle" className={cn("mb-7 min-w-0 flex flex-wrap items-center justify-between gap-x-3 gap-y-2", className)}>
       <h1 className={cn("min-w-0 flex-1", titleCls)}>{title}</h1>
       <div className="flex flex-wrap items-center gap-2 shrink-0 justify-end">{actions}</div>
     </div>

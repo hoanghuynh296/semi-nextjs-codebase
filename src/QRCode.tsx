@@ -100,7 +100,7 @@ export function QRCode({
   };
 
   return (
-    <div className={cn("inline-flex max-w-full flex-col items-center gap-2", print && "bg-white text-black", className)}>
+    <div data-semi="QRCode" className={cn("inline-flex max-w-full flex-col items-center gap-2", print && "bg-white text-black", className)}>
       {"path" in result ? (
         <svg
           role="img"

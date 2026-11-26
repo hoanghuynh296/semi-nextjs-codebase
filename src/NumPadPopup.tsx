@@ -181,7 +181,7 @@ export function NumPadPopup({ label, unit, initial, integer, allowPercent, onCom
   );
 
   return createPortal(
-    <div
+    <div data-semi="NumPadPopup"
       className="fixed inset-0 z-sheet bg-overlay backdrop-blur-lg flex items-end sm:items-center justify-center p-3"
       {...backdrop}
     >

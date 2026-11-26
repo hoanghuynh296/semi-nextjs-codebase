@@ -6,6 +6,7 @@
 //     <FileDrop accept={[".csv"]} maxSize={10_000_000} items={items} onAdd={upload} onReject={showRejected} />
 //   </Field>
 import React, { createContext, useContext, useEffect, useId, useRef, useState } from "react";
+import type { SemiName } from "./a11y";
 import { Button } from "./Button";
 import { useField } from "./Field";
 import { Progress } from "./Feedback";
@@ -71,7 +72,7 @@ export type DropZoneProps = Omit<FileDropProps, "items"> & {
 export function DropZone({ items, ...props }: DropZoneProps) {
   return (
     <Compact.Provider value>
-      <FileDrop {...props} items={items ?? NO_ITEMS} />
+      <FileDrop {...props} data-semi="DropZone" items={items ?? NO_ITEMS} />
     </Compact.Provider>
   );
 }
@@ -82,6 +83,7 @@ const Compact = createContext(false);
 
 /** Picker + drop area with a row per file (forms, import pages). In a narrow workspace panel use `DropZone`. */
 export function FileDrop({
+  "data-semi": semi = "FileDrop",
   items,
   onAdd,
   onReject,
@@ -98,7 +100,7 @@ export function FileDrop({
   "aria-describedby": describedBy,
   "aria-label": ariaLabel,
   className,
-}: FileDropProps) {
+}: FileDropProps & SemiName) {
   const compact = useContext(Compact);
   const t = useSemiLocale();
   const field = useField();
@@ -153,7 +155,7 @@ export function FileDrop({
   return (
     // Drag handlers sit on the wrapper: a disabled <button> gets no drag events, and a drop nobody cancels would make
     // the browser open the file.
-    <div
+    <div data-semi={semi}
       className={cn("min-w-0", className)}
       onDragEnter={(e) => {
         if (!hasFiles(e)) return;

@@ -69,7 +69,7 @@ export function AccountMenu({ name, detail, avatarSrc, items = [], onSignOut, th
     ...(onSignOut ? [{ label: t.signOut, icon: "logout" as IconName, onSelect: onSignOut, separator: theme || items.length > 0 }] : []),
   ];
   return (
-    <Menu
+    <Menu data-semi="AccountMenu"
       label={label}
       items={all}
       header={
@@ -194,7 +194,7 @@ export function RouteHeader({ crumbs = [], left, middle, right, actions, account
   }, [leaving]);
 
   return (
-    <header className={cn("group/route-header shrink-0 h-14 lg:h-15 px-4 flex items-center gap-3 min-w-0", className)}>
+    <header data-semi="RouteHeader" className={cn("group/route-header shrink-0 h-14 lg:h-15 px-4 flex items-center gap-3 min-w-0", className)}>
       {onMenu && (
         <button
           type="button"

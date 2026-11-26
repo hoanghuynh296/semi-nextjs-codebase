@@ -7,7 +7,7 @@ import { cn } from "../styles/utils";
 
 export function Prose({ className, children }: { className?: string; /** Plain HTML elements (h2, h3, p, ul, ol, a, blockquote, code, hr) or Markdown. */ children: React.ReactNode }) {
   return (
-    <div
+    <div data-semi="Prose"
       className={cn(
         "max-w-prose text-lead leading-relaxed text-body",
         "[&>*+*]:mt-4 [&_h2]:text-section [&_h2]:font-medium [&_h2]:text-strong [&_h2]:mt-8 [&_h3]:text-lead [&_h3]:font-medium [&_h3]:text-strong [&_h3]:mt-6",

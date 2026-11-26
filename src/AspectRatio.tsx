@@ -17,7 +17,7 @@ export function AspectRatio({
   children: React.ReactNode;
 }) {
   return (
-    <div className={cn("relative w-full overflow-hidden", className)} style={{ aspectRatio: String(ratio) }}>
+    <div data-semi="AspectRatio" className={cn("relative w-full overflow-hidden", className)} style={{ aspectRatio: String(ratio) }}>
       {children}
     </div>
   );

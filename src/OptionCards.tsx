@@ -93,7 +93,7 @@ export function OptionCards<T extends string = string>({
   };
 
   return (
-    <div
+    <div data-semi="OptionCards"
       id={field?.id ?? auto}
       role="radiogroup"
       aria-label={ariaLabel ?? label}

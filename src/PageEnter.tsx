@@ -5,6 +5,7 @@
 // never animates rows that arrive later (slow data). Uses `display: contents` so it adds no layout box and never breaks
 // fixed-height chains or inner scrollers.
 import React, { useEffect, useState } from "react";
+import type { SemiName } from "./a11y";
 import { usePathname } from "next/navigation";
 
 /** Default window (ms) the enter class stays active after route mount (max stagger 11 × 35ms + 400ms enter = 785ms). */
@@ -16,6 +17,7 @@ interface NavigationLike {
 }
 
 function PageEnterInner({
+  "data-semi": semi,
   disabled,
   windowMs,
   children,
@@ -23,7 +25,7 @@ function PageEnterInner({
   disabled: boolean;
   windowMs: number;
   children: React.ReactNode;
-}) {
+} & SemiName) {
   const [active, setActive] = useState(!disabled);
 
   useEffect(() => {
@@ -55,7 +57,7 @@ function PageEnterInner({
   }, [disabled, windowMs]);
 
   return (
-    <div style={{ display: "contents" }} data-motion-enter={active ? "active" : "done"}>
+    <div data-semi={semi} style={{ display: "contents" }} data-motion-enter={active ? "active" : "done"}>
       {children}
     </div>
   );
@@ -84,7 +86,7 @@ export function PageEnter({
   const pathname = usePathname();
   const key = routeKey ?? pathname ?? "";
   return (
-    <PageEnterInner key={key} disabled={disabled} windowMs={windowMs}>
+    <PageEnterInner data-semi="PageEnter" key={key} disabled={disabled} windowMs={windowMs}>
       {children}
     </PageEnterInner>
   );

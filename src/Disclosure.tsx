@@ -32,7 +32,7 @@ export function Collapsible({
   const [isOpen, setOpen] = useOpenState(open, defaultOpen, onOpenChange);
   const id = useId();
   return (
-    <div className={className}>
+    <div data-semi="Collapsible" className={className}>
       <button
         type="button"
         aria-expanded={isOpen}
@@ -114,7 +114,7 @@ export function Accordion({
   };
   const H = `h${headingLevel}` as "h3";
   return (
-    <div className={cn("divide-y divide-divider", className)}>
+    <div data-semi="Accordion" className={cn("divide-y divide-divider", className)}>
       {items.map((it, i) => {
         const isOpen = openKeys.includes(it.key);
         const hid = `${base}-h-${i}`;

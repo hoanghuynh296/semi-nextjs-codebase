@@ -6,6 +6,7 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ### Added
 
+- **`data-semi` attributes (#194):** every exported component marks its root element with `data-semi="<ComponentName>"` (`Tooltip`, `Menu`, `Popover`, `HoverCard` on their floating panel; a part as `ToastHost.Toast`), a stable hook for debugging and tests, never for styling (docs/DESIGN_SYSTEM.md §17b). Additive: no class, role or layout changes. `Menu` and `Popover` pass a `data-semi` given to them on to their trigger.
 - **`Badge tone="overlay"` (#190):** for text on an image or video only (a duration, "Video"): the canvas grey at 55% with a 12px backdrop blur and the strong text (`BADGE_OVERLAY`). Never on a page or card surface.
 - **Button sizes `lg` and `pill` (#189):** `size="lg"` (`BTN_LG`): 40px, 14px / 500, the control radius (8), for the one call to action of a page header; `size="pill"` (`BTN_PILL`): 24px, 12px / 500, fully rounded, a small pill CTA. On a touch phone both grow to 44px like every Button (`BTN_HIT`). The default stays `md` (34px): nothing changes for existing buttons.
 - **`variant="danger-subtle"` (#189):** the previous danger look (danger tint, line and danger text) as its own variant, with `BTN_DANGER_SUBTLE` and `MODAL_BTN_DANGER_SUBTLE`.

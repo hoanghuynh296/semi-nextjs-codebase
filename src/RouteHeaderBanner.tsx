@@ -186,7 +186,7 @@ export function RouteHeaderBanner({
 
   if (inline) {
     return (
-      <div
+      <div data-semi="RouteHeaderBanner"
         ref={ref}
         role="status"
         data-route-banner="inline"
@@ -203,7 +203,7 @@ export function RouteHeaderBanner({
     );
   }
   return (
-    <div
+    <div data-semi="RouteHeaderBanner"
       ref={ref}
       role="status"
       data-route-banner="header"

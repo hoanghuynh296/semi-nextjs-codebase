@@ -40,7 +40,7 @@ export function KpiCard({
   className?: string;
 }) {
   return (
-    <div className={`${CARD} ${featured ? "col-span-2 p-card sm:p-panel gap-stack" : "p-card gap-2"} flex flex-col ${className}`} title={hint}>
+    <div data-semi="KpiCard" className={`${CARD} ${featured ? "col-span-2 p-card sm:p-panel gap-stack" : "p-card gap-2"} flex flex-col ${className}`} title={hint}>
       <div className="flex items-center gap-2 text-ui font-medium text-muted min-w-0">
         {icon && <Icon name={icon} className={`w-4 h-4 shrink-0 ${iconTone ? TONE_TEXT[iconTone] : "text-muted"}`} />}
         <span className="truncate">{label}</span>

@@ -57,7 +57,7 @@ export function Modal({
   if (!open || !mounted) return null;
 
   return createPortal(
-    <div className={MODAL_BACKDROP} {...backdrop}>
+    <div data-semi="Modal" className={MODAL_BACKDROP} {...backdrop}>
       <div
         ref={panelRef}
         role="dialog"

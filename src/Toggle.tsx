@@ -31,7 +31,7 @@ export function Toggle({
   title?: string;
 }) {
   return (
-    <button
+    <button data-semi="Toggle"
       type="button"
       aria-pressed={pressed}
       disabled={disabled}
@@ -101,7 +101,7 @@ export function ToggleGroup<T extends string>({
   return (
     // Never wider than its container: labels do not wrap, so a narrow row scrolls sideways inside the track (no
     // scrollbar; focus() scrolls the focused option into view) instead of spilling past the page edge (#187).
-    <div
+    <div data-semi="ToggleGroup"
       role={single ? "radiogroup" : "toolbar"}
       aria-label={label}
       className={cn("inline-flex items-center gap-0.5 bg-raised p-1 h-control pointer-coarse:max-sm:h-auto rounded-control shrink-0 max-w-full overflow-x-auto overscroll-x-contain no-scrollbar", className)}

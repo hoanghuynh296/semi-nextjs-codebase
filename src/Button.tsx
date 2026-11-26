@@ -11,7 +11,7 @@ import { cn } from "../styles/utils";
 /** Indeterminate activity mark for a button or field running its own action (§13b: no page spinners). */
 export function Spinner({ className = "w-4 h-4", label }: { className?: string; label?: string }) {
   return (
-    <svg
+    <svg data-semi="Spinner"
       viewBox="0 0 24 24"
       fill="none"
       role={label ? "status" : undefined}
@@ -93,7 +93,7 @@ export function Button({
 }: ButtonProps) {
   const iconCls = size === "modal" || size === "lg" ? "w-4 h-4" : size === "xs" || size === "pill" ? "w-3 h-3" : "w-3.5 h-3.5";
   return (
-    <button
+    <button data-semi="Button"
       ref={ref}
       type={type}
       disabled={disabled || loading}

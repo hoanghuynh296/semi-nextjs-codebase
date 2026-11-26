@@ -56,7 +56,7 @@ export function Checkbox({
   }, [indeterminate]);
   const on = checked || indeterminate;
   return (
-    <label htmlFor={id} className={cn("inline-flex items-start gap-2.5 cursor-pointer select-none", Boolean(label || description) && ROW_HIT, disabled && "opacity-40 cursor-not-allowed", className)}>
+    <label data-semi="Checkbox" htmlFor={id} className={cn("inline-flex items-start gap-2.5 cursor-pointer select-none", Boolean(label || description) && ROW_HIT, disabled && "opacity-40 cursor-not-allowed", className)}>
       <span className={cn("relative mt-0.5 w-4 h-4 shrink-0", HIT_AREA)}>
         <input
           ref={ref}
@@ -128,7 +128,7 @@ export function Switch({
   const knob = size === "sm" ? "w-3 h-3" : "w-4 h-4";
   const shift = size === "sm" ? "translate-x-3" : "translate-x-4";
   const sw = (
-    <button
+    <button data-semi="Switch"
       id={id}
       type="button"
       role="switch"
@@ -153,7 +153,7 @@ export function Switch({
   if (!label && !description) return sw;
   // the whole row is the label, so a tap anywhere on it (text, description, the space between) toggles the switch
   return (
-    <label htmlFor={id} className={cn("flex items-start justify-between gap-3 cursor-pointer select-none", ROW_HIT, disabled && "cursor-not-allowed", className)}>
+    <label data-semi="Switch" htmlFor={id} className={cn("flex items-start justify-between gap-3 cursor-pointer select-none", ROW_HIT, disabled && "cursor-not-allowed", className)}>
       <span className="flex flex-col gap-0.5 min-w-0">
         {label && (
           <span id={`${id}-label`} className={LABEL}>
@@ -205,7 +205,7 @@ export function RadioGroup<T extends string>({
   const auto = useId();
   const name = nameProp ?? `radio-${auto}`;
   return (
-    <div
+    <div data-semi="RadioGroup"
       role="radiogroup"
       aria-label={label ? undefined : ariaLabel}
       aria-labelledby={label ? `${name}-label` : ariaLabelledby}

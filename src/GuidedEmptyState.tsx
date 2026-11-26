@@ -91,7 +91,7 @@ export function GuidedEmptyState({
   };
   const titleText = typeof title === "string" ? title : undefined;
   return (
-    <div data-empty="guided" className={cn("flex flex-col gap-section", className)}>
+    <div data-semi="GuidedEmptyState" data-empty="guided" className={cn("flex flex-col gap-section", className)}>
       <section
         ref={ref}
         aria-label={titleText}

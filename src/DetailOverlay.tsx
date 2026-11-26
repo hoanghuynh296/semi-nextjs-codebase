@@ -218,7 +218,7 @@ export function DetailOverlay({
   if (!shown) return null;
   const counted = index !== undefined && total !== undefined && total > 0;
   return createPortal(
-    <div className="fixed inset-0 z-modal flex items-stretch justify-center sm:p-4 lg:p-6">
+    <div data-semi="DetailOverlay" className="fixed inset-0 z-modal flex items-stretch justify-center sm:p-4 lg:p-6">
       <div className="absolute inset-0 bg-overlay backdrop-blur-sm" onClick={onClose} aria-hidden />
       <div
         ref={ref}

@@ -69,7 +69,7 @@ export function SplitButton({
           ? "border-l border-on-inverted/25"
           : "border-l border-divider";
   const wide = (
-    <ButtonGroup label={label} fullWidth={fullWidth} className={cn(collapseOnPhone && "max-sm:hidden", className)}>
+    <ButtonGroup data-semi="SplitButton" label={label} fullWidth={fullWidth} className={cn(collapseOnPhone && "max-sm:hidden", className)}>
       <Button
         variant={variant}
         size={size}
@@ -98,7 +98,7 @@ export function SplitButton({
   return (
     <>
       {wide}
-      <span className={cn("sm:hidden", fullWidth ? "flex w-full" : "inline-flex", className)}>
+      <span data-semi="SplitButton" className={cn("sm:hidden", fullWidth ? "flex w-full" : "inline-flex", className)}>
         <Menu
           label={label}
           items={all}

@@ -77,7 +77,7 @@ export function readApi(root, names) {
       for (const p of checker.getPropertiesOfType(member)) {
         // Only props this library declares (HTML / React attributes are left out); a prop it re-declares counts.
         const pd = p.declarations?.find((d) => !d.getSourceFile().fileName.includes("node_modules"));
-        if (!pd) continue;
+        if (!pd || p.name.startsWith("data-")) continue; // data-semi (SemiName) is a debug hook, not API
         const ptype = checker.getTypeOfSymbolAtLocation(p, pd);
         const prev = seen.get(p.name);
         const optional = Boolean(p.flags & ts.SymbolFlags.Optional);

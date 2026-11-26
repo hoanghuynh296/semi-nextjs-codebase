@@ -166,7 +166,7 @@ export function HintTextarea({
 
   const optionId = (n: number) => `${auto}-opt-${n}`;
   return (
-    <div className={cn("relative min-w-0", className)}>
+    <div data-semi="HintTextarea" className={cn("relative min-w-0", className)}>
       {resizable && (
         <div
           role="separator"

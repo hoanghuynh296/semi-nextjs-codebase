@@ -150,7 +150,7 @@ export function FeatureIntro({
   const s = slides[at];
   const last = at === slides.length - 1;
   return createPortal(
-    <div className="fixed inset-0 z-modal flex items-end sm:items-center justify-center sm:p-4 bg-overlay backdrop-blur-sm" {...backdrop}>
+    <div data-semi="FeatureIntro" className="fixed inset-0 z-modal flex items-end sm:items-center justify-center sm:p-4 bg-overlay backdrop-blur-sm" {...backdrop}>
       <div
         ref={ref}
         role="dialog"

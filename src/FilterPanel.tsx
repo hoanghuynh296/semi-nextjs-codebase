@@ -72,7 +72,7 @@ export function PhoneFilterBar({
   if (selecting && selection) {
     const moreItems = typeof selection.moreActions === "function" ? selection.moreActions(selection.selected) : selection.moreActions;
     return (
-      <div
+      <div data-semi="PhoneFilterBar"
         data-filter-row=""
         data-selection-bar=""
         role="region"
@@ -119,7 +119,7 @@ export function PhoneFilterBar({
 
   const currentSort = sort?.options.find((o) => o.value === sort.value);
   return (
-    <div data-filter-row="" className={cn("h-11 flex items-stretch rounded-full bg-tint overflow-hidden divide-x divide-divider", className)}>
+    <div data-semi="PhoneFilterBar" data-filter-row="" className={cn("h-11 flex items-stretch rounded-full bg-tint overflow-hidden divide-x divide-divider", className)}>
       {typeItems && typeLabel && (
         <div className="flex-1 min-w-0 flex">
           <Menu
@@ -236,7 +236,7 @@ export function FilterPanel({
   const section = "border-b border-divider";
   const label = title ?? t.filters;
   return createPortal(
-    <div className="fixed inset-0 z-modal">
+    <div data-semi="FilterPanel" className="fixed inset-0 z-modal">
       <div className="max-sm:hidden absolute inset-0 bg-overlay backdrop-blur-sm" onClick={onClose} aria-hidden />
       <div
         ref={ref}

@@ -49,7 +49,7 @@ export function ScrollArea({
   }, [measure]);
   const line = "pointer-events-none absolute bg-line-hover transition-opacity";
   return (
-    <div className={cn("relative min-h-0 min-w-0", className)}>
+    <div data-semi="ScrollArea" className={cn("relative min-h-0 min-w-0", className)}>
       <div
         ref={ref}
         role="region"

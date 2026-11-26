@@ -12,7 +12,7 @@ export function RefreshButton({ onRefresh, className = "", label: labelProp }: {
   const label = labelProp ?? t.refresh;
   const [busy, setBusy] = useState(false);
   return (
-    <button
+    <button data-semi="RefreshButton"
       type="button"
       onClick={async () => {
         if (busy) return;

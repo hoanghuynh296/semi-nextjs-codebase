@@ -9,7 +9,7 @@ export type ExternalLinkProps = Omit<React.AnchorHTMLAttributes<HTMLAnchorElemen
 
 export function ExternalLink({ href, children, ...rest }: ExternalLinkProps) {
   return (
-    <a {...rest} href={href} target="_blank" rel="noopener noreferrer">
+    <a data-semi="ExternalLink" {...rest} href={href} target="_blank" rel="noopener noreferrer">
       {children}
     </a>
   );
