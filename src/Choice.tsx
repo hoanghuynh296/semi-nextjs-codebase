@@ -8,6 +8,9 @@ import { cn, FOCUS_RING, HIT_AREA } from "../styles/utils";
 
 const LABEL = "text-ui text-body";
 const DESC = "text-ui text-muted";
+/** A labelled row on a touch phone (`pointer-coarse` + `max-sm`): 12px above and below, so the row, every pixel of which
+ *  toggles the control, is at least 44px tall and a list of rows never shares a tap point (#187). */
+const ROW_HIT = "pointer-coarse:max-sm:py-3 pointer-coarse:max-sm:min-w-11";
 
 /** Dev-only console warning for a control screen readers cannot name (no label, aria-label or aria-labelledby). */
 function useNameWarning(component: string, named: boolean) {
@@ -53,7 +56,7 @@ export function Checkbox({
   }, [indeterminate]);
   const on = checked || indeterminate;
   return (
-    <label htmlFor={id} className={cn("inline-flex items-start gap-2.5 cursor-pointer select-none", disabled && "opacity-40 cursor-not-allowed", className)}>
+    <label htmlFor={id} className={cn("inline-flex items-start gap-2.5 cursor-pointer select-none", Boolean(label || description) && ROW_HIT, disabled && "opacity-40 cursor-not-allowed", className)}>
       <span className={cn("relative mt-0.5 w-4 h-4 shrink-0", HIT_AREA)}>
         <input
           ref={ref}
@@ -104,7 +107,8 @@ export function Switch({
 }: {
   checked: boolean;
   onChange: (checked: boolean) => void;
-  /** Visible label; it names the switch. */
+  /** Visible label; it names the switch. With a label (or description) the whole row is one `<label>`: a tap anywhere
+   *  on it toggles, and on a touch phone the row is at least 44px tall. */
   label?: React.ReactNode;
   description?: React.ReactNode;
   disabled?: boolean;
@@ -147,13 +151,14 @@ export function Switch({
     </button>
   );
   if (!label && !description) return sw;
+  // the whole row is the label, so a tap anywhere on it (text, description, the space between) toggles the switch
   return (
-    <div className={cn("flex items-start justify-between gap-3", className)}>
+    <label htmlFor={id} className={cn("flex items-start justify-between gap-3 cursor-pointer select-none", ROW_HIT, disabled && "cursor-not-allowed", className)}>
       <span className="flex flex-col gap-0.5 min-w-0">
         {label && (
-          <label id={`${id}-label`} htmlFor={id} className={cn(LABEL, "cursor-pointer")}>
+          <span id={`${id}-label`} className={LABEL}>
             {label}
-          </label>
+          </span>
         )}
         {description && (
           <span id={`${id}-desc`} className={DESC}>
@@ -162,7 +167,7 @@ export function Switch({
         )}
       </span>
       {sw}
-    </div>
+    </label>
   );
 }
 
@@ -216,7 +221,7 @@ export function RadioGroup<T extends string>({
           const id = `${name}-${o.value}`;
           const on = o.value === value;
           return (
-            <label key={o.value} htmlFor={id} className={cn("inline-flex items-start gap-2.5 cursor-pointer select-none", o.disabled && "opacity-40 cursor-not-allowed")}>
+            <label key={o.value} htmlFor={id} className={cn("inline-flex items-start gap-2.5 cursor-pointer select-none", ROW_HIT, o.disabled && "opacity-40 cursor-not-allowed")}>
               <input
                 id={id}
                 type="radio"

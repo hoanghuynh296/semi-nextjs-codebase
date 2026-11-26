@@ -1044,6 +1044,19 @@ The full inventory with props is generated into `components.json` (`npm run buil
   last on a touch phone, chosen after mount (one list; the server renders the full window). `tests/touch-targets.spec.ts`
   measures a sample of each at 390 × 844 (touch), taps near each edge of the 44px box with `elementFromPoint`, checks the
   Carousel dots on a touch tablet and with a mouse, and checks the drawn size at 1440.
+- Touch targets, selection controls (#187): items of a dense row grow to 44px on a touch phone (`BTN_HIT`,
+  `pointer-coarse` + `max-sm`, real size, so neighbours never share a tap point): `SegmentedControl` (the track
+  grows to 52px), `PillTabs`, `Tabs`, `TextTabs` (44px tall, the word stays on the baseline), `ToggleGroup` /
+  `Toggle`, `ThemeSwitcher` segments, `Menubar` menus, `FilterChipRow` chips and "Xoá lọc", `ChatModelPicker` chips,
+  `Breadcrumb` links and "…", the `DataTable` sort buttons and select-all cell (the header row is 44px there), the
+  `Stepper` − + (44 × 44, flush with its 44px track). Rows that scroll keep scrolling sideways on one row; a
+  `ToggleGroup` is never wider than its container and scrolls inside its own track (labels never wrap; ←/→ keep the
+  focused option in view), so an app needs no wrapper. A labelled
+  `Checkbox`, `RadioGroup` option or `Switch` is one `<label>` row: a tap anywhere on it toggles, and on a touch
+  phone it gets 12px above and below (at least 44px tall); a box or switch without a visible label keeps `HIT_AREA`.
+  `Chip` (34px) is not grown here: its look is the Magnific parity issue (#190). `tests/touch-targets.spec.ts` covers
+  one of each at 390 × 844 (touch), the dense rows (one row, no overlap, no page overflow), a tap on a label row, and
+  the drawn sizes at 1440.
 - Motion: animations respect `prefers-reduced-motion`.
 
 **Measured in apps.** Semi's components pass the checks above in `test:ui`, but a screen made of them can still fail:

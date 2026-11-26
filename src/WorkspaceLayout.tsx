@@ -200,9 +200,9 @@ export function Stepper({
     e.preventDefault();
     set(to);
   };
-  const btn = "w-9 h-9 shrink-0 rounded-control flex items-center justify-center text-strong hover:bg-tint-hover disabled:opacity-40 disabled:hover:bg-transparent disabled:cursor-not-allowed";
+  const btn = "w-9 h-9 pointer-coarse:max-sm:size-11 shrink-0 rounded-control flex items-center justify-center text-strong hover:bg-tint-hover disabled:opacity-40 disabled:hover:bg-transparent disabled:cursor-not-allowed";
   return (
-    <div className={cn("flex items-center gap-1 h-11 px-1 rounded-control bg-tint", disabled && "opacity-60", className)}>
+    <div className={cn("flex items-center gap-1 h-11 px-1 pointer-coarse:max-sm:px-0 rounded-control bg-tint", disabled && "opacity-60", className)}>
       <button type="button" tabIndex={-1} className={btn} onClick={() => set(value - step)} disabled={disabled || value <= min} aria-label={t.decrease(label)} title={t.decrease(label)}>
         <Icon name="minus" className="w-4 h-4" />
       </button>

@@ -10,6 +10,10 @@ import { Menu } from "./Overlay";
 import { useSemiLocale } from "./locale";
 import { FOCUS_RING, cn } from "../styles/utils";
 
+// touch phones (pointer-coarse + max-sm): every link and the "…" button is a 44 × 44px target; the trail grows taller
+// rather than giving its links areas that overlap the chevrons and each other (#187)
+const LINK_HIT = "pointer-coarse:max-sm:min-h-11 pointer-coarse:max-sm:min-w-11 pointer-coarse:max-sm:justify-center";
+
 export interface BreadcrumbItem {
   label: string;
   /** Link of the item; the last item is the current page and needs none. */
@@ -49,7 +53,7 @@ export function Breadcrumb({
                   align="left"
                   items={hidden.map((h) => ({ label: h.label, icon: h.icon, onSelect: () => h.href && router.push(h.href) }))}
                   trigger={
-                    <button type="button" aria-label={t.showHidden} className={cn("px-1 rounded-chip text-muted hover:text-strong", FOCUS_RING)}>
+                    <button type="button" aria-label={t.showHidden} className={cn("px-1 rounded-chip text-muted hover:text-strong", LINK_HIT, FOCUS_RING)}>
                       …
                     </button>
                   }
@@ -60,7 +64,7 @@ export function Breadcrumb({
                   {it.label}
                 </span>
               ) : it.href ? (
-                <Link href={it.href} className={cn("inline-flex items-center gap-1 text-muted hover:text-strong rounded-chip truncate", FOCUS_RING)}>
+                <Link href={it.href} className={cn("inline-flex items-center gap-1 text-muted hover:text-strong rounded-chip truncate", LINK_HIT, FOCUS_RING)}>
                   {it.icon && <Icon name={it.icon} className="w-3.5 h-3.5 shrink-0" />}
                   {it.label}
                 </Link>

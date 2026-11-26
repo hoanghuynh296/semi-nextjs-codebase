@@ -6,6 +6,7 @@
 import React, { useId, useRef } from "react";
 import { Icon, type IconName } from "./Icon";
 import { cn, FOCUS_RING } from "../styles/utils";
+import { BTN_HIT } from "../styles/buttons";
 
 export interface TabItem<T extends string> {
   key: T;
@@ -84,6 +85,7 @@ export function Tabs<T extends string>({
               onClick={() => onChange(it.key)}
               className={cn(
                 "inline-flex items-center gap-1.5 whitespace-nowrap text-ui font-medium transition-hover cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0 h-9 -mb-px border-b-2",
+                BTN_HIT,
                 FOCUS_RING,
                 on ? "border-strong text-strong" : "border-transparent text-muted hover:text-strong",
               )}

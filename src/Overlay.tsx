@@ -605,7 +605,7 @@ export function Menubar({ menus, label, className }: { menus: MenubarMenu[]; /**
             e.preventDefault();
             keys[e.key]();
           }}
-          className={cn("h-7 px-2.5 rounded-control text-chrome font-medium transition-hover outline-none focus-visible:ring-2 focus-visible:ring-focus", open === i ? "bg-item-selected text-strong" : "text-body hover:bg-item-hover hover:text-strong")}
+          className={cn("h-7 pointer-coarse:max-sm:min-h-11 pointer-coarse:max-sm:min-w-11 px-2.5 rounded-control text-chrome font-medium transition-hover outline-none focus-visible:ring-2 focus-visible:ring-focus", open === i ? "bg-item-selected text-strong" : "text-body hover:bg-item-hover hover:text-strong")}
         >
           {m.label}
         </button>

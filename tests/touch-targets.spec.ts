@@ -232,3 +232,183 @@ test("mouse 1440: the drawn size of every control stays (#186)", async ({ page }
   await page.goto("/components/pagination/");
   await expect(page.locator("main nav[aria-label]").first().getByRole("button", { name: "Trang 2", exact: true })).toBeVisible();
 });
+
+
+// #187: selection controls (tabs, segmented, chips, checkbox / radio / switch rows, breadcrumb, table header, stepper).
+// Dense rows grow their items to 44px on a touch phone (BTN_HIT, real size); a labelled Checkbox / Radio / Switch row is
+// the target (12px padding there); a box without a label keeps HIT_AREA. [doc page, locator inside main, name, drawn
+// size with a mouse at 1440]
+const SELECTION: [string, string, string, [number, number]][] = [
+  ["segmented-control", '[data-example="segmented-control/counts"] [data-density-view] [role="radio"]', "SegmentedControl item", [81, 24]],
+  ["subpage-toolbar", '[data-example="subpage-toolbar/list-page"] [data-density-view] [role="radio"]', "SubpageToolbar status segments", [68, 24]],
+  ["workspace-layout", '[data-example="workspace-layout/request"] [data-density-view] [role="radio"]', "WorkspaceHeader tabs", [86, 24]],
+  ["chat-model-picker", 'button[aria-label^="Model AI"]', "ChatModelPicker chip", [68, 24]],
+  ["pill-tabs", '[data-example="pill-tabs/sections"] [data-density-view] [role="tab"]', "PillTabs tab", [98, 30]],
+  ["text-tabs", '[data-example="text-tabs/heading"] [data-density-view] [role="tab"]', "TextTabs tab", [126, 34]],
+  ["tabs", '[data-example="tabs/underline"] [data-density-view] [role="tab"]', "Tabs tab", [89, 36]],
+  ["filter-chip-row", '[data-example="filter-chip-row/many"] [data-density-view] [role="group"] button >> nth=1', "FilterChipRow chip", [140, 32]],
+  ["filter-chip-row", '[data-example="filter-chip-row/many"] [data-density-view] button:text-is("Xoá lọc")', "FilterChipRow clear", [64, 32]],
+  ["menubar", '[role="menubar"] [role="menuitem"]', "Menubar menu", [41, 28]],
+  ["theme", '[data-example="theme/switchers"] [data-density-view] [role="radio"][aria-label="Tối"] >> nth=1', "ThemeSwitcher option (icon)", [32, 26]],
+  ["toggle", '[data-example="toggle/toggle"] [data-density-view] button[aria-pressed]', "Toggle", [76, 34]],
+  ["toggle", '[data-example="toggle/group"] [data-density-view] [role="radio"]', "ToggleGroup option", [36, 26]],
+  ["checkbox", '[data-example="checkbox/states"] [data-density-view] label', "Checkbox label row", [1094, 22]],
+  ["checkbox", '[data-example="checkbox/row-select"] [data-density-view] input >> xpath=..', "Checkbox without label (HIT_AREA)", [16, 16]],
+  ["radio-group", '[data-example="radio-group/basic"] [data-density-view] label', "RadioGroup label row", [1094, 46]],
+  ["switch", '[data-example="switch/basic"] [data-density-view] label', "Switch label row", [172, 22]],
+  ["switch", '[data-example="switch/card-header"] [data-density-view] [role="switch"]', "Switch without label (HIT_AREA)", [36, 20]],
+  ["breadcrumb", '[data-example="breadcrumb/collapsed"] [data-density-view] nav a', "Breadcrumb link", [35, 18]],
+  ["breadcrumb", '[data-example="breadcrumb/collapsed"] [data-density-view] button[aria-label="Hiện các mục ẩn"]', "Breadcrumb …", [15, 18]],
+  ["data-table", '[data-example="data-table/orders"] [data-density-view] th[aria-sort] button', "DataTable sort header", [60, 18]],
+  ["data-table", '[data-example="data-table/orders"] [data-density-view] th[data-check] input >> xpath=..', "DataTable select-all", [16, 16]],
+  ["stepper", '[data-example="stepper/basic"] [data-density-view] button[aria-label^="Tăng"]', "Stepper +", [36, 36]],
+];
+
+test("touch phone 390x844: selection controls have a 44 × 44 hit area and a tap near each edge lands on them (#187)", async ({ browser }) => {
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  let at = "";
+  for (const [doc, sel, name] of SELECTION) {
+    if (doc !== at) {
+      await page.goto(`/components/${doc}/`);
+      await hydrated(page);
+      at = doc;
+    }
+    const box = await hitBox(page.locator("main").locator(sel).first());
+    expect.soft(Math.min(box.w, box.h), name).toBeGreaterThanOrEqual(44);
+    expect.soft(box.lands, `${name}: a tap near each edge of the 44px box lands on it`).toBe(true);
+  }
+  await page.close();
+});
+
+test("touch phone: dense selection rows grow on one row, never overlap, and scroll sideways inside the page (#187)", async ({ browser }) => {
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  for (const [doc, ex, item, scrolls] of [
+    ["segmented-control", "overflow", '[role="radio"]', true],
+    ["pill-tabs", "sections", '[role="tab"]', true],
+    ["filter-chip-row", "many", '[role="group"] button', true],
+    ["breadcrumb", "collapsed", "nav :is(a, button)", false],
+  ] as const) {
+    await page.goto(`/components/${doc}/`);
+    await hydrated(page);
+    const preview = page.locator(`[data-example="${doc}/${ex}"] [data-density-view]`);
+    await preview.scrollIntoViewIfNeeded();
+    const res = await preview.evaluate((root, sel) => {
+      const items = [...root.querySelectorAll<HTMLElement>(sel)].filter((n) => n.getClientRects().length);
+      const boxes = items.map((n) => n.getBoundingClientRect());
+      const scroller = items[0].parentElement!.closest<HTMLElement>(".overflow-x-auto, [role=group]") ?? items[0].parentElement!;
+      return {
+        count: items.length,
+        rows: new Set(boxes.map((b) => Math.round(b.y))).size,
+        minH: Math.round(Math.min(...boxes.map((b) => b.height))),
+        overlap: boxes.some((b, i) => i > 0 && b.left < boxes[i - 1].right - 0.5 && Math.round(b.y) === Math.round(boxes[i - 1].y)),
+        scrolls: scroller.scrollWidth > scroller.clientWidth,
+        pageOverflow: document.documentElement.scrollWidth - innerWidth,
+      };
+    }, item);
+    expect(res.count, doc).toBeGreaterThan(2);
+    expect({ ...res, count: 0 }, doc).toEqual({ count: 0, rows: 1, minH: 44, overlap: false, scrolls, pageOverflow: 0 });
+  }
+  await page.close();
+});
+
+test("touch phone: a tap on a Checkbox / Radio / Switch label row toggles it once; Space on the switch too (#187)", async ({ browser }) => {
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  // tap the far right of the row (text or the empty end of the row), away from the box itself
+  const tapRowEnd = async (row: import("@playwright/test").Locator) => {
+    await row.scrollIntoViewIfNeeded();
+    const b = (await row.boundingBox())!;
+    await page.touchscreen.tap(b.x + b.width - 60, b.y + 4);
+  };
+  await page.goto("/components/switch/");
+  await hydrated(page);
+  const row = page.locator('[data-example="switch/basic"] [data-density-view] label').nth(1);
+  const sw = row.getByRole("switch");
+  const before = await sw.getAttribute("aria-checked");
+  await tapRowEnd(row.locator("span").first());
+  await expect(sw).toHaveAttribute("aria-checked", before === "true" ? "false" : "true");
+  await sw.tap(); // the switch itself: one toggle, not two (the row is its label)
+  await expect(sw).toHaveAttribute("aria-checked", before!);
+  await sw.focus();
+  await page.keyboard.press("Space");
+  await expect(sw).toHaveAttribute("aria-checked", before === "true" ? "false" : "true");
+
+  await page.goto("/components/radio-group/");
+  await hydrated(page);
+  const radios = page.locator('[data-example="radio-group/basic"] [data-density-view] label');
+  const second = radios.nth(1);
+  await second.locator("span").first().tap({ position: { x: 4, y: 4 } });
+  await expect(second.locator("input")).toBeChecked();
+  await second.locator("input").focus();
+  await page.keyboard.press("ArrowUp"); // the native radio group still moves by arrows (the third option is disabled)
+  await expect(radios.nth(0).locator("input")).toBeChecked();
+
+  await page.goto("/components/checkbox/");
+  await hydrated(page);
+  const box = page.locator('[data-example="checkbox/basic"] [data-density-view] label').first();
+  const input = box.locator("input");
+  const was = await input.isChecked();
+  await tapRowEnd(box.locator("span").last());
+  expect(await input.isChecked()).toBe(!was);
+  await input.focus();
+  await page.keyboard.press("Space");
+  expect(await input.isChecked()).toBe(was);
+  await page.close();
+});
+
+test("mouse 1440: the drawn size of every selection control stays (#187)", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  let at = "";
+  for (const [doc, sel, name, drawn] of SELECTION) {
+    if (name === "Switch label row") continue; // the row became the <label>; its switch is checked below
+    if (doc !== at) {
+      await page.goto(`/components/${doc}/`);
+      await hydrated(page);
+      at = doc;
+    }
+    expect.soft((await hitBox(page.locator("main").locator(sel).first())).drawn, name).toEqual(drawn);
+  }
+  await page.goto("/components/switch/");
+  await hydrated(page);
+  expect((await hitBox(page.locator('[data-example="switch/basic"] [role="switch"]').first())).drawn).toEqual([36, 20]);
+});
+
+test("touch phone 320: ToggleGroup is never wider than its container, scrolls inside its own track, keeps the focused option visible (#187)", async ({ browser }) => {
+  const page = await browser.newPage({ viewport: { width: 320, height: 700 }, isMobile: true, hasTouch: true });
+  for (const [path, group, overflows] of [
+    ["/components/toggle/", '[data-example="toggle/group"] [data-density-view] [role="toolbar"]', false],
+    ["/components/toggle/", '[data-example="toggle/group"] [data-density-view] [role="radiogroup"]', false],
+    ["/icons/", '[role="radiogroup"][aria-label="Màu ô icon"]', true],
+  ] as const) {
+    await page.goto(path);
+    await hydrated(page);
+    const g = page.locator(group).first();
+    await g.scrollIntoViewIfNeeded();
+    const res = await g.evaluate((el) => {
+      const items = [...el.querySelectorAll("button")].map((b) => b.getBoundingClientRect());
+      const r = el.getBoundingClientRect();
+      const parent = el.parentElement!.getBoundingClientRect();
+      return {
+        rows: new Set(items.map((b) => Math.round(b.y))).size,
+        minH: Math.round(Math.min(...items.map((b) => b.height))),
+        inside: r.left >= parent.left - 0.5 && r.right <= parent.right + 0.5,
+        scrolls: el.scrollWidth > el.clientWidth,
+        pageOverflow: document.documentElement.scrollWidth - innerWidth,
+      };
+    });
+    expect(res, path + " " + group).toEqual({ rows: 1, minH: 44, inside: true, scrolls: overflows, pageOverflow: 0 });
+    // ArrowRight to the last option: each focused option is in view inside the track
+    const buttons = g.locator("button");
+    const n = await buttons.count();
+    await buttons.first().focus();
+    for (let i = 1; i < n; i++) {
+      await page.keyboard.press("ArrowRight");
+      await expect(buttons.nth(i)).toBeFocused();
+      const seen = await buttons.nth(i).evaluate((b) => {
+        const [r, t] = [b.getBoundingClientRect(), b.parentElement!.getBoundingClientRect()];
+        return r.left >= t.left - 1 && r.right <= t.right + 1 && r.right <= innerWidth + 1;
+      });
+      expect(seen, `${path} option ${i + 1} of ${n} in view`).toBe(true);
+    }
+  }
+  await page.close();
+});
