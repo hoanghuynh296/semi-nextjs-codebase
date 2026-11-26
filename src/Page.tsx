@@ -259,14 +259,20 @@ function SubNavSheet({ subNav }: { subNav: React.ReactElement<React.ComponentPro
         <Icon name="chevronDown" className="w-4 h-4 shrink-0 text-muted" />
       </button>
       <Drawer open={open} onClose={() => setOpen(false)} title={navLabel} side="left" className="sm:max-w-xs">
-        {/* choosing an item (a link or a button) closes the sheet; the item's own handler still runs */}
-        <div
-          onClickCapture={(e) => {
-            if ((e.target as HTMLElement).closest("a[href], button")) setOpen(false);
-          }}
-        >
-          {React.cloneElement(subNav, { className: cn(className, "!p-0 !bg-transparent") })}
-        </div>
+        {/* choosing an item closes the sheet after the item's own handler (onSelect, or the item's onClick) ran */}
+        {React.cloneElement(subNav, {
+          className: cn(className, "!p-0 !bg-transparent"),
+          sections: sections.map((s) => ({
+            ...s,
+            items: s.items.map((item) =>
+              item.onClick ? { ...item, onClick: () => (item.onClick?.(), setOpen(false)) } : item,
+            ),
+          })),
+          onSelect: (id: string) => {
+            subNav.props.onSelect?.(id);
+            setOpen(false);
+          },
+        })}
       </Drawer>
     </div>
   );
