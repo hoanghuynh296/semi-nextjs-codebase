@@ -714,12 +714,18 @@ Semi's own green. A brand change is made in the brand repo (`/semi-brand`) and r
 - **Route header banner (`RouteHeaderBanner`, `header.banner`, #192):** one announcement at a time in the centre slot:
   a `Badge` tag ("Mới", `tag` / `tagTone`), one line of text that truncates with … before the trail or the right
   group shrink, an optional muted `sub` (a date), a `Button size="pill"` inverse CTA (`cta: { label, href | onClick }`),
-  a close button (sm ghost, round, `HIT_AREA` 44px touch area, locale `bannerClose`), on a `bg-field` pill. Closed per
+  a close button (sm ghost, round, locale `bannerClose`), on a `bg-field` pill. The CTA and the close button keep their
+  drawn size on a touch phone (`buttonClass(…, { hit: false })`, no `BTN_HIT`) and get an invisible 44px area
+  (`HIT_AREA`) instead, 8px apart so the two areas never overlap; the row stays about 40px tall. Closed per
   `id` in a store (`localBannerStore`: `localStorage["semi_banner_<id>"]`, or your own async `get` / `set`, as
-  `FeatureIntro`), read after mount only. Below `md` the same banner is one row at the top of the page content (above the
+  `FeatureIntro`), read after mount only and again when `store` changes (keep it stable). It covers `header.middle`
+  only while it shows: before the store answers and after it is closed, the app's `middle` is in the centre
+  (`fallback`). Below `md` the same banner is one row at the top of the page content (above the
   title): full width, `rounded-card`, `bg-card-field` (the field fill inside the content card, where `bg-field` would equal the card), text up to 2 lines, CTA + close on the row (`placement="inline"`,
-  `md:hidden`); AppShell renders both copies from `header.banner` and closing either hides both. Each copy is
-  `role="status"`; closing moves focus to the next control after it.
+  `md:hidden`); AppShell renders both copies from `header.banner` and closing either hides both. The row appears after
+  mount, so on phones the page content moves down once when it appears and stays there until it is closed. Each copy is
+  `role="status"`, but it is already in place when it appears, so do not count on screen readers announcing it; closing
+  moves focus to the next control after it.
 - **Account avatar menu (`AccountMenu`, `header.account`):** a one-letter avatar (32px) whose `Menu` has a header
   (name, `detail` role or email: not an item), then Light / Dark / System (radio items), the app's `items` and
   "Đăng xuất" (`onSignOut`). The nav has no account or company block.
@@ -10241,7 +10247,8 @@ export default function RouteHeaderBannerAppShell({ children }: { children: Reac
 ### RouteHeaderBanner
 
 An announcement for the route header's centre slot (one at a time): tag, text (truncates first, before the
-breadcrumb or the right group shrink), optional sub text, a pill CTA and a close button. `role="status"`.
+breadcrumb or the right group shrink), optional sub text, a pill CTA and a close button. `role="status"` marks it as a
+status region; it is in place when it appears (after mount), so screen readers are not guaranteed to announce it.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
@@ -10251,7 +10258,8 @@ breadcrumb or the right group shrink), optional sub text, a pill CTA and a close
 | `tag` | `React.ReactNode` |  | The tag before the text (a Badge); default "Mới" (locale `newBadge`); `null` drops it. |
 | `tagTone` | `SemanticTone` | `"blue"` | The tag's tone (default `blue`). |
 | `cta` | `{ label: string; href?: string; onClick?: () => void }` |  | The call to action, a `Button size="pill"`: a link (`href`) or an action (`onClick`). |
-| `store` | `RouteHeaderBannerStore` | `localBannerStore` | Where "dismissed" is read and written (default `localBannerStore`). |
+| `store` | `RouteHeaderBannerStore` | `localBannerStore` | Where "dismissed" is read and written (default `localBannerStore`). A new store is read again (e.g. a per-account store after sign-in): keep it stable (a module constant or `useMemo`), or it is read on every render. |
+| `fallback` | `React.ReactNode` | `null` | Shown in the banner's place while it is not (before the store answers, and after it is closed). AppShell passes `header.middle` here, so the app's centre content comes back once the banner is closed. |
 | `onDismiss` | `() => void` |  | After it is closed (either copy) and stored as dismissed. |
 | `placement` | `'inline' \| 'header'` | `"header"` | `header` (default): the pill for the route header's centre slot. `inline`: the row at the top of the page content, shown below `md` only. AppShell's `header.banner` renders both; a frame of your own renders both itself. |
 | `closeLabel` | `string` |  | The close button's name; default "Đóng thông báo" (locale `bannerClose`). |
@@ -10259,14 +10267,15 @@ breadcrumb or the right group shrink), optional sub text, a pill CTA and a close
 
 ## Accessibility
 
-- Each copy is role="status"; its close button is named “Đóng thông báo” (locale bannerClose) and has a 44px touch area.
+- Each copy is role="status"; it is in place when it appears, so screen readers may not announce it: never put the only copy of something people must know there. The close button is named “Đóng thông báo” (locale bannerClose).
 - Tab reaches the CTA and then the close button; Enter or Space presses them. Closing moves focus to the next control after the banner (the header's right group, or the page), never to the body.
+- On a touch screen the CTA and the close button each have an invisible 44px area (HIT_AREA) that never overlaps the other; their drawn size stays, so the row stays about 40px tall.
 
 ## Notes
 
-- In AppShell pass header.banner (data, not an element): the shell renders the header copy and the inline copy below md, and closing either hides both. It takes the header's centre in place of header.middle.
-- A frame of your own: RouteHeader middle={<RouteHeaderBanner {...b} />} plus <RouteHeaderBanner {...b} placement="inline" /> above the page title.
-- The store is read after mount only, so the server HTML never contains it; with storage blocked it shows, and closing hides it until the next page load.
+- In AppShell pass header.banner (data, not an element): the shell renders the header copy and the inline copy below md, and closing either hides both. It covers header.middle only while it shows: before the store answers and once closed, the app's middle is back in the centre.
+- A frame of your own: RouteHeader middle={<RouteHeaderBanner {...b} fallback={yourMiddle} />} plus <RouteHeaderBanner {...b} placement="inline" /> above the page title.
+- The store is read after mount only (and again when store changes: keep it stable), so the server HTML never contains it; below md the row appears after mount, so the page content moves down once and stays there until it is closed. With storage blocked it shows, and closing hides it until the next page load.
 - The text truncates with … first, before the breadcrumb or the right group shrink: one short sentence, the date in sub. The CTA is a Button size="pill" (inverse), never the brand fill.
 - RouteHeader always renders its three slot containers (left, centre, right): closing the banner never moves the right group.
 

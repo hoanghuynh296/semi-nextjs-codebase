@@ -112,6 +112,14 @@ test("RouteHeaderBanner text truncates first (#192): at 1024 the banner's text i
   expect(m.center).toBeLessThanOrEqual(m.header * 0.4 + 1);
   expect(m.leftWidth).toBeGreaterThan(100);
   await expect(page.getByRole("navigation", { name: "Đường dẫn" })).toContainText("Orders");
+  // the right group's pin at 1024 too: closing never moves it
+  const before = await header(page);
+  await banner.getByRole("button", { name: "Đóng thông báo" }).click();
+  await expect(page.locator("[data-route-banner]")).toHaveCount(0);
+  const after = await header(page);
+  expect(after.slots).toEqual([true, true, true]);
+  expect(after.right).toBe(before.right);
+  expect(after.avatarRight).toBe(before.avatarRight);
   await page.context().close();
 });
 
@@ -147,10 +155,44 @@ for (const size of [
     const cb = (await close.boundingBox())!;
     expect(Math.abs(cta.y + cta.height / 2 - (cb.y + cb.height / 2))).toBeLessThan(2);
     if (size.phone) {
-      // touch phone: the close button is a 44px target
-      expect(cb.width).toBeGreaterThanOrEqual(44);
-      expect(cb.height).toBeGreaterThanOrEqual(44);
+      // touch phone (#192 review): the drawn sizes stay (the row about 40px), each control gets an invisible 44px area,
+      // and the two areas never overlap (2px apart): elementFromPoint along the row's centre line, above and below
+      expect(r.height).toBeLessThanOrEqual(44);
+      expect(cta.height).toBeLessThan(30);
+      expect(cb.height).toBeLessThan(30);
+      const hits = await row.evaluate((el) => {
+        const [ctaEl, closeEl] = [...el.querySelectorAll<HTMLElement>("button")];
+        const a = ctaEl.getBoundingClientRect();
+        const c = closeEl.getBoundingClientRect();
+        const y = c.top + c.height / 2;
+        const at = (x: number, yy = y) => {
+          const hit = document.elementFromPoint(x, yy);
+          return hit === null ? "none" : ctaEl.contains(hit) ? "cta" : closeEl.contains(hit) ? "close" : "other";
+        };
+        return {
+          ctaRightEdge: at(a.right - 0.5),
+          justPastCta: at(a.right + 0.5),
+          closeAreaLeft: at(c.left - 7),
+          closeAreaRight: at(c.right + 7),
+          aboveCta: at(a.left + a.width / 2, a.top - 8),
+          belowCta: at(a.left + a.width / 2, a.bottom + 8),
+          aboveClose: at(c.left + c.width / 2, c.top - 7),
+          areaWidth: parseFloat(getComputedStyle(closeEl, "::before").width),
+        };
+      });
+      expect(hits).toEqual({
+        ctaRightEdge: "cta",
+        justPastCta: "other",
+        closeAreaLeft: "close",
+        closeAreaRight: "close",
+        aboveCta: "cta",
+        belowCta: "cta",
+        aboveClose: "close",
+        areaWidth: 44,
+      });
     }
+    // the header's right group does not move when the row closes (744: the centre is hidden, the pin still holds)
+    const pinBefore = await header(page);
     // keyboard: Tab from the CTA reaches close, Enter closes
     await row.getByRole("button", { name: "Xem ngay" }).focus();
     await page.keyboard.press("Tab");
@@ -158,6 +200,10 @@ for (const size of [
     await page.keyboard.press("Enter");
     await expect(page.locator("[data-route-banner]")).toHaveCount(0);
     expect(await page.evaluate(() => localStorage.getItem("semi_banner_prerender-banner"))).toBe("1");
+    const pinAfter = await header(page);
+    expect(pinAfter.slots).toEqual([true, true, true]);
+    expect(pinAfter.right).toBe(pinBefore.right);
+    expect(pinAfter.avatarRight).toBe(pinBefore.avatarRight);
     // the title moves up to the top of the content
     await expect.poll(async () => (await title.boundingBox())!.y).toBeLessThan(tb.y);
     // the header copy is closed too
@@ -167,3 +213,38 @@ for (const size of [
     await page.context().close();
   });
 }
+
+test("RouteHeaderBanner with a link CTA and the app's middle (#192 review): Tab to the link, Enter follows it; the banner covers the middle only while it shows", async ({ browser }) => {
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, colorScheme: "dark" });
+  const page = await ctx.newPage();
+  await page.goto(`${BASE}/banner2/orders`);
+  const banner = page.locator('[data-route-banner="header"]');
+  await expect(banner).toBeVisible();
+  // while the banner shows, the app's middle is not in the centre
+  await expect(page.getByTestId("app-middle")).toHaveCount(0);
+  const before = await header(page);
+  // keyboard: from the trail's link, Tab reaches the CTA link, Enter follows it (client navigation, the shell stays)
+  await page.getByRole("navigation", { name: "Đường dẫn" }).getByRole("link").first().focus();
+  await page.keyboard.press("Tab");
+  const cta = banner.getByRole("link", { name: "Xem bảng giá" });
+  await expect(cta).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/\/banner2\/news$/);
+  await expect(page.getByRole("heading", { name: "Tin mới" })).toBeVisible();
+  await expect(banner).toBeVisible();
+  // close by keyboard: the app's middle comes back in the centre slot
+  await banner.getByRole("button", { name: "Đóng thông báo" }).focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("[data-route-banner]")).toHaveCount(0);
+  const middle = page.locator('header [data-route-slot="center"]').getByTestId("app-middle");
+  await expect(middle).toBeVisible();
+  const after = await header(page);
+  expect(after.right).toBe(before.right);
+  expect(after.avatarRight).toBe(before.avatarRight);
+  // remembered: after a reload only the middle
+  await page.reload();
+  await expect(middle).toBeVisible();
+  await page.waitForTimeout(500);
+  await expect(page.locator("[data-route-banner]")).toHaveCount(0);
+  await ctx.close();
+});

@@ -2359,7 +2359,7 @@
       "kind": "component",
       "module": "src/RouteHeaderBanner.tsx",
       "client": true,
-      "summary": "An announcement for the route header's centre slot (one at a time): tag, text (truncates first, before the breadcrumb or the right group shrink), optional sub text, a pill CTA and a close button. `role=\"status\"`.",
+      "summary": "An announcement for the route header's centre slot (one at a time): tag, text (truncates first, before the breadcrumb or the right group shrink), optional sub text, a pill CTA and a close button. `role=\"status\"` marks it as a status region; it is in place when it appears (after mount), so screen readers are not guaranteed to announce it.",
       "props": [
         "id",
         "text",
@@ -2368,6 +2368,7 @@
         "tagTone",
         "cta",
         "store",
+        "fallback",
         "onDismiss",
         "placement",
         "closeLabel",
@@ -3540,7 +3541,7 @@
       "kind": "function",
       "module": "styles/buttons.ts",
       "client": false,
-      "summary": "Button's classes: variant × size, icon-only, round, full width, the phone touch size (BTN_HIT: lg and pill too), and `relative` unless className positions it."
+      "summary": "Button's classes: variant × size, icon-only, round, full width, the phone touch size (BTN_HIT: lg and pill too; `hit: false` leaves it out), and `relative` unless className positions it."
     },
     {
       "name": "cn",

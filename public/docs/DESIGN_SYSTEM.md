@@ -316,12 +316,18 @@ Semi's own green. A brand change is made in the brand repo (`/semi-brand`) and r
 - **Route header banner (`RouteHeaderBanner`, `header.banner`, #192):** one announcement at a time in the centre slot:
   a `Badge` tag ("Mới", `tag` / `tagTone`), one line of text that truncates with … before the trail or the right
   group shrink, an optional muted `sub` (a date), a `Button size="pill"` inverse CTA (`cta: { label, href | onClick }`),
-  a close button (sm ghost, round, `HIT_AREA` 44px touch area, locale `bannerClose`), on a `bg-field` pill. Closed per
+  a close button (sm ghost, round, locale `bannerClose`), on a `bg-field` pill. The CTA and the close button keep their
+  drawn size on a touch phone (`buttonClass(…, { hit: false })`, no `BTN_HIT`) and get an invisible 44px area
+  (`HIT_AREA`) instead, 8px apart so the two areas never overlap; the row stays about 40px tall. Closed per
   `id` in a store (`localBannerStore`: `localStorage["semi_banner_<id>"]`, or your own async `get` / `set`, as
-  `FeatureIntro`), read after mount only. Below `md` the same banner is one row at the top of the page content (above the
+  `FeatureIntro`), read after mount only and again when `store` changes (keep it stable). It covers `header.middle`
+  only while it shows: before the store answers and after it is closed, the app's `middle` is in the centre
+  (`fallback`). Below `md` the same banner is one row at the top of the page content (above the
   title): full width, `rounded-card`, `bg-card-field` (the field fill inside the content card, where `bg-field` would equal the card), text up to 2 lines, CTA + close on the row (`placement="inline"`,
-  `md:hidden`); AppShell renders both copies from `header.banner` and closing either hides both. Each copy is
-  `role="status"`; closing moves focus to the next control after it.
+  `md:hidden`); AppShell renders both copies from `header.banner` and closing either hides both. The row appears after
+  mount, so on phones the page content moves down once when it appears and stays there until it is closed. Each copy is
+  `role="status"`, but it is already in place when it appears, so do not count on screen readers announcing it; closing
+  moves focus to the next control after it.
 - **Account avatar menu (`AccountMenu`, `header.account`):** a one-letter avatar (32px) whose `Menu` has a header
   (name, `detail` role or email: not an item), then Light / Dark / System (radio items), the app's `items` and
   "Đăng xuất" (`onSignOut`). The nav has no account or company block.

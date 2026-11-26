@@ -138,8 +138,8 @@ export interface ShellHeader {
   middle?: ShellSlot;
   /**
    * An announcement (`RouteHeaderBanner`, one at a time) in the centre slot from md, and the same banner as one row at
-   * the top of the page content below md; closing either hides both, remembered per `id`. Takes the centre in place
-   * of `middle`.
+   * the top of the page content below md; closing either hides both, remembered per `id`. It covers `middle` only while
+   * it shows: before the store answers and once it is closed, `middle` is in the centre.
    */
   banner?: Omit<RouteHeaderBannerProps, "placement">;
   /** The right slot's content in place of `actions` + `account`. */
@@ -855,6 +855,7 @@ export function AppShell({
 
   const headerConf = header || {};
   const accountSlot = headerConf.account;
+  const middleSlot = headerConf.middle !== undefined && headerConf.middle !== null ? <SlotHost slot={headerConf.middle} state={slotState} /> : undefined;
 
   return (
     <AppShellContext.Provider value={{ submenuVisible, rail, shortcuts: shortcutMap }}>
@@ -1048,10 +1049,11 @@ export function AppShell({
                   left={headerConf.left !== undefined && headerConf.left !== null ? <SlotHost slot={headerConf.left} state={slotState} /> : undefined}
                   middle={
                     headerConf.banner ? (
-                      <RouteHeaderBanner {...headerConf.banner} placement="header" />
-                    ) : headerConf.middle !== undefined && headerConf.middle !== null ? (
-                      <SlotHost slot={headerConf.middle} state={slotState} />
-                    ) : undefined
+                      // the banner covers the centre only while it shows: closed (or not yet read), the app's middle is back
+                      <RouteHeaderBanner {...headerConf.banner} placement="header" fallback={middleSlot} />
+                    ) : (
+                      middleSlot
+                    )
                   }
                   right={headerConf.right !== undefined && headerConf.right !== null ? <SlotHost slot={headerConf.right} state={slotState} /> : undefined}
                   actions={headerConf.actions !== undefined && headerConf.actions !== null ? <SlotHost slot={headerConf.actions} state={slotState} /> : undefined}

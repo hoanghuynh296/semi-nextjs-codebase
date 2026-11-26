@@ -33,13 +33,14 @@
     }
   ],
   "a11y": [
-    "Each copy is role=\"status\"; its close button is named “Đóng thông báo” (locale bannerClose) and has a 44px touch area.",
-    "Tab reaches the CTA and then the close button; Enter or Space presses them. Closing moves focus to the next control after the banner (the header's right group, or the page), never to the body."
+    "Each copy is role=\"status\"; it is in place when it appears, so screen readers may not announce it: never put the only copy of something people must know there. The close button is named “Đóng thông báo” (locale bannerClose).",
+    "Tab reaches the CTA and then the close button; Enter or Space presses them. Closing moves focus to the next control after the banner (the header's right group, or the page), never to the body.",
+    "On a touch screen the CTA and the close button each have an invisible 44px area (HIT_AREA) that never overlaps the other; their drawn size stays, so the row stays about 40px tall."
   ],
   "notes": [
-    "In AppShell pass header.banner (data, not an element): the shell renders the header copy and the inline copy below md, and closing either hides both. It takes the header's centre in place of header.middle.",
-    "A frame of your own: RouteHeader middle={<RouteHeaderBanner {...b} />} plus <RouteHeaderBanner {...b} placement=\"inline\" /> above the page title.",
-    "The store is read after mount only, so the server HTML never contains it; with storage blocked it shows, and closing hides it until the next page load.",
+    "In AppShell pass header.banner (data, not an element): the shell renders the header copy and the inline copy below md, and closing either hides both. It covers header.middle only while it shows: before the store answers and once closed, the app's middle is back in the centre.",
+    "A frame of your own: RouteHeader middle={<RouteHeaderBanner {...b} fallback={yourMiddle} />} plus <RouteHeaderBanner {...b} placement=\"inline\" /> above the page title.",
+    "The store is read after mount only (and again when store changes: keep it stable), so the server HTML never contains it; below md the row appears after mount, so the page content moves down once and stays there until it is closed. With storage blocked it shows, and closing hides it until the next page load.",
     "The text truncates with … first, before the breadcrumb or the right group shrink: one short sentence, the date in sub. The CTA is a Button size=\"pill\" (inverse), never the brand fill.",
     "RouteHeader always renders its three slot containers (left, centre, right): closing the banner never moves the right group."
   ],
