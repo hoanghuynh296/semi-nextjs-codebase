@@ -8,11 +8,14 @@
  *   --label-issue <id> --add-labels "a,b"
  *   --close <id> [--reason completed|not_planned] [--file <md>]   Optional closing comment.
  *   --ensure-labels                   Create the standard proposal/verdict labels if missing.
+ *
+ * Auth: GITHUB_TOKEN / GH_TOKEN, else the git credential helper for github.com, else `gh auth token`.
+ * getGitHubToken() is kept byte-identical in semi-propose/scripts/propose.mjs (lint/test/github-token.test.mjs).
  */
 
 import fs from "node:fs";
 import path from "node:path";
-import { execSync } from "node:child_process";
+import { execFileSync, execSync } from "node:child_process";
 
 const REPO = "hoanghuynh296/semi-nextjs-codebase";
 const GITHUB_API = "https://api.github.com";
@@ -41,13 +44,32 @@ const out = (obj) => console.log(JSON.stringify(obj, null, 2));
 function getGitHubToken() {
   if (process.env.GITHUB_TOKEN) return process.env.GITHUB_TOKEN.trim();
   if (process.env.GH_TOKEN) return process.env.GH_TOKEN.trim();
+  // No shell anywhere (#185): cmd.exe has no printf or /dev/null, so a piped shell string always failed on Windows.
+  // GCM_INTERACTIVE=never keeps Git Credential Manager from opening a sign-in window in a headless agent run.
+  const env = { ...process.env, GIT_TERMINAL_PROMPT: "0", GCM_INTERACTIVE: "never" };
+  // 1. The git credential helper, fed through stdin.
   try {
-    const res = execSync('printf "protocol=https\\nhost=github.com\\n" | git credential fill 2>/dev/null', {
+    const res = execFileSync("git", ["credential", "fill"], {
+      input: "protocol=https\nhost=github.com\n\n",
       encoding: "utf8",
-      env: { ...process.env, GIT_TERMINAL_PROMPT: "0" },
+      env,
+      timeout: 15000,
+      stdio: ["pipe", "pipe", "ignore"],
+      windowsHide: true,
     });
     const m = res.match(/^password=(.+)$/m);
     if (m) return m[1].trim();
+  } catch {}
+  // 2. The GitHub CLI, signed in (gh auth login) but not set up as git's helper.
+  try {
+    const t = execFileSync("gh", ["auth", "token"], {
+      encoding: "utf8",
+      env,
+      timeout: 15000,
+      stdio: ["ignore", "pipe", "ignore"],
+      windowsHide: true,
+    }).trim();
+    if (t) return t;
   } catch {}
   return null;
 }

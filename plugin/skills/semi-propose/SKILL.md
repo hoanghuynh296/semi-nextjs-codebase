@@ -91,7 +91,8 @@ node "$SCRIPT" --create --title "[Component Request] DateRangePicker" --file /tm
 ```
 - Authenticated: prints `issueNumber` + `url` (labels are dropped automatically if you lack permission to set them).
 - `NO_TOKEN` / `NO_ACCESS` (repo is private): prints `savedTo` (temp file) and a prefilled `webUrl`. Give both to the user, plus the fix:
-  `gh auth login && gh auth setup-git` (or export `GITHUB_TOKEN`). Do not try other ways around auth.
+  `gh auth login` (or export `GITHUB_TOKEN`); `gh auth setup-git` is optional. The script reads `GITHUB_TOKEN` / `GH_TOKEN`,
+  then git's credential helper, then `gh auth token`, on Windows too. Do not try other ways around auth.
 
 ## Step 5 — Keep working and report
 

@@ -2,7 +2,11 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
-## 1.1.0 - 2026-11-26
+## Unreleased
+
+### Fixed
+
+- **`/semi-propose` and `/semi-triage` find the GitHub token on Windows (#185):** `getGitHubToken()` piped `printf` into `git credential fill` with `2>/dev/null` through a shell, which always fails under cmd.exe, so signed-in Windows users got `NO_TOKEN`. It now runs `git credential fill` with `execFileSync` and stdin input (no shell; `GCM_INTERACTIVE=never` so Git Credential Manager never opens a window), then falls back to `gh auth token`: `gh auth login` is enough, `gh auth setup-git` is optional. No flag or output changes. `lint/test/github-token.test.mjs` keeps the two copies identical and shell-free; a `windows-latest` job in `check.yml` runs it with the scripts' `--help`.
 
 **Summary.** Group "Responsive + Magnific parity" (#186–#194, #196, #206, #207). Controls get 44px touch targets on touch phones (icon buttons, tabs, segmented controls, toggles, chips, pagination), narrow layouts work at phone, tablet and small-laptop widths (`ListReaderLayout` splits by its own width, `ReaderHeader` / `DetailOverlay` titles clamp with a "show full title" toggle, a SubNav that collapses into a Drawer trigger), `Button` gets `lg` and `pill` sizes and a solid red `danger` (old look: `danger-subtle`), chips and tags lose their border, new `SectionHeader`, `MediaCard`, `Badge tone="overlay"` and `RouteHeaderBanner`, every component marks its root with `data-semi`, and `StickyContextBar` no longer flickers or unpins on one upward gesture. The docs site gains a component inspector, live previews of full-screen examples and a rail nav with one icon per group.
 

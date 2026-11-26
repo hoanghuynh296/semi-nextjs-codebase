@@ -8,13 +8,14 @@
  *               Falls back to a temp file + prefilled issue URL when unauthenticated.
  *   --dry-run   With --create: print what would be sent without calling the API.
  *
- * Auth: GITHUB_TOKEN / GH_TOKEN, else the user's configured git credential helper for github.com.
+ * Auth: GITHUB_TOKEN / GH_TOKEN, else the git credential helper for github.com, else `gh auth token`.
+ * getGitHubToken() is kept byte-identical in semi-triage/scripts/triage.mjs (lint/test/github-token.test.mjs).
  */
 
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { execSync } from "node:child_process";
+import { execFileSync, execSync } from "node:child_process";
 
 const REPO_OWNER = "hoanghuynh296";
 const REPO_NAME = "semi-nextjs-codebase";
@@ -35,13 +36,32 @@ const cwd = path.resolve(getArg("--cwd", process.cwd()));
 function getGitHubToken() {
   if (process.env.GITHUB_TOKEN) return process.env.GITHUB_TOKEN.trim();
   if (process.env.GH_TOKEN) return process.env.GH_TOKEN.trim();
+  // No shell anywhere (#185): cmd.exe has no printf or /dev/null, so a piped shell string always failed on Windows.
+  // GCM_INTERACTIVE=never keeps Git Credential Manager from opening a sign-in window in a headless agent run.
+  const env = { ...process.env, GIT_TERMINAL_PROMPT: "0", GCM_INTERACTIVE: "never" };
+  // 1. The git credential helper, fed through stdin.
   try {
-    const res = execSync('printf "protocol=https\\nhost=github.com\\n" | git credential fill 2>/dev/null', {
+    const res = execFileSync("git", ["credential", "fill"], {
+      input: "protocol=https\nhost=github.com\n\n",
       encoding: "utf8",
-      env: { ...process.env, GIT_TERMINAL_PROMPT: "0" },
+      env,
+      timeout: 15000,
+      stdio: ["pipe", "pipe", "ignore"],
+      windowsHide: true,
     });
     const m = res.match(/^password=(.+)$/m);
     if (m) return m[1].trim();
+  } catch {}
+  // 2. The GitHub CLI, signed in (gh auth login) but not set up as git's helper.
+  try {
+    const t = execFileSync("gh", ["auth", "token"], {
+      encoding: "utf8",
+      env,
+      timeout: 15000,
+      stdio: ["ignore", "pipe", "ignore"],
+      windowsHide: true,
+    }).trim();
+    if (t) return t;
   } catch {}
   return null;
 }
@@ -135,7 +155,7 @@ function scanProject(dir) {
 async function searchIssues(query) {
   const q = encodeURIComponent(`repo:${REPO_OWNER}/${REPO_NAME} is:issue ${query}`);
   const res = await gh(`/search/issues?q=${q}&per_page=10`);
-  if (!res.ok) return { ok: false, status: res.status, hint: res.status === 404 || res.status === 401 ? "Private repo: GitHub auth required (gh auth login && gh auth setup-git, or GITHUB_TOKEN)." : undefined };
+  if (!res.ok) return { ok: false, status: res.status, hint: res.status === 404 || res.status === 401 ? "Private repo: GitHub auth required (gh auth login, or GITHUB_TOKEN)." : undefined };
   const data = await res.json();
   return {
     ok: true,
