@@ -2,7 +2,19 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
-## Unreleased
+## 1.1.0 - 2026-11-26
+
+**Summary.** Group "Responsive + Magnific parity" (#186–#194, #196, #206, #207). Controls get 44px touch targets on touch phones (icon buttons, tabs, segmented controls, toggles, chips, pagination), narrow layouts work at phone, tablet and small-laptop widths (`ListReaderLayout` splits by its own width, `ReaderHeader` / `DetailOverlay` titles clamp with a "show full title" toggle, a SubNav that collapses into a Drawer trigger), `Button` gets `lg` and `pill` sizes and a solid red `danger` (old look: `danger-subtle`), chips and tags lose their border, new `SectionHeader`, `MediaCard`, `Badge tone="overlay"` and `RouteHeaderBanner`, every component marks its root with `data-semi`, and `StickyContextBar` no longer flickers or unpins on one upward gesture. The docs site gains a component inspector, live previews of full-screen examples and a rail nav with one icon per group.
+
+**What apps must do.** Run `/semi-sync` (no migration script for 1.1.0: nothing is renamed or removed). Then check by hand:
+1. `Button variant="danger"` / `BTN_DANGER` / `MODAL_BTN_DANGER` is now a solid red fill; where the old tinted look is wanted, use `variant="danger-subtle"` (`BTN_DANGER_SUBTLE`, `MODAL_BTN_DANGER_SUBTLE`).
+2. `ListReaderLayout` `className` now lands on a wrapper; move grid classes (gap, columns) to `gridClassName`.
+3. Hand-built chips (`CHIP_BASE` + `chipClass`) add `{active && <Icon name="check" className={CHIP_CHECK} />}` to match `Chip`.
+4. HTML snapshot tests will show the new `data-semi` attributes; touch-phone rows get taller (44px targets).
+
+**Verified.** `npm run check` (tokens, vendor, version, manifest, typecheck, semi-lint, unit tests) and the Playwright suite `test:ui` (docs site contrast AA in both themes, axe, phone width, keyboard flows, `tests/prerender-app` under Next's router, StickyContextBar wheel / trackpad simulations) green on each merged PR and on this release head in CI; consumer trial of this head on a real app (typecheck, build, semi-lint, see the release PR). The owner reviewed the Storybook docs site.
+
+**UNVERIFIED:** a real iPhone (touch targets, phone layouts), Safari and Firefox (all browser tests run in Chromium), and the real trackpad / mouse-wheel feel of the `StickyContextBar` pin (tested with simulated wheel events only).
 
 ### Added
 
