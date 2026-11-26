@@ -107,7 +107,8 @@ export function Switch({
 }: {
   checked: boolean;
   onChange: (checked: boolean) => void;
-  /** Visible label; it names the switch. */
+  /** Visible label; it names the switch. With a label (or description) the whole row is one `<label>`: a tap anywhere
+   *  on it toggles, and on a touch phone the row is at least 44px tall. */
   label?: React.ReactNode;
   description?: React.ReactNode;
   disabled?: boolean;

@@ -1436,6 +1436,17 @@ The full inventory with props is generated into `components.json` (`npm run buil
   last on a touch phone, chosen after mount (one list; the server renders the full window). `tests/touch-targets.spec.ts`
   measures a sample of each at 390 × 844 (touch), taps near each edge of the 44px box with `elementFromPoint`, checks the
   Carousel dots on a touch tablet and with a mouse, and checks the drawn size at 1440.
+- Touch targets, selection controls (#187): items of a dense row grow to 44px on a touch phone (`BTN_HIT`,
+  `pointer-coarse` + `max-sm`, real size, so neighbours never share a tap point): `SegmentedControl` (the track
+  grows to 52px), `PillTabs`, `Tabs`, `TextTabs` (44px tall, the word stays on the baseline), `ToggleGroup` /
+  `Toggle`, `ThemeSwitcher` segments, `Menubar` menus, `FilterChipRow` chips and "Xoá lọc", `ChatModelPicker` chips,
+  `Breadcrumb` links and "…", the `DataTable` sort buttons and select-all cell (the header row is 44px there), the
+  `Stepper` − + (44 × 44, flush with its 44px track). Rows that scroll keep scrolling sideways on one row. A labelled
+  `Checkbox`, `RadioGroup` option or `Switch` is one `<label>` row: a tap anywhere on it toggles, and on a touch
+  phone it gets 12px above and below (at least 44px tall); a box or switch without a visible label keeps `HIT_AREA`.
+  `Chip` (34px) is not grown here: its look is the Magnific parity issue (#190). `tests/touch-targets.spec.ts` covers
+  one of each at 390 × 844 (touch), the dense rows (one row, no overlap, no page overflow), a tap on a label row, and
+  the drawn sizes at 1440.
 - Motion: animations respect `prefers-reduced-motion`.
 
 **Measured in apps.** Semi's components pass the checks above in `test:ui`, but a screen made of them can still fail:
@@ -2961,7 +2972,7 @@ All web UI here follows the **Semi Design System** (`@semi/ui`, repo `https://gi
    **Grouped actions** (`DESIGN_SYSTEM.md` §9, G1–G12): one way to start one job (other ways to create the same thing go under the primary in a `SplitButton`, never as extra toolbar buttons); secondary page actions in the ⋯ `Menu` (at most one secondary button visible); `ButtonGroup` only for toggles or steps of one control; a table row has one inline action + ⋯, a card `CardActions` (always with `label`: `card-hover-actions-touch` is a hard error); a round icon button is `<Button iconOnly shape="round">`, never a hand-made `rounded-full` button (`raw-pill-button`, warning); danger last; one filled primary per view; 3+ icon-only buttons in a row go into ⋯. A list record opens in a `DetailOverlay` with `useDetailParam` (`?open=`), not a new page (`detail-overlay-url`, warning); the ⌘K box is one `CommandPalette` in the root layout (pages add items with `useRegisterCommands`).
    **Forms** (`DESIGN_SYSTEM.md` §9b): the action row is `FormActions` (Huỷ ghost, then Lưu / Tạo, destructive on the left, sticky on a page); `useUnsavedGuard(dirty)` so typed work is never lost; `Field kind` for email / phone / number / money / URL / search / password; errors under the field (`useFormValidation`, `FormErrorSummary`), never in a toast; page forms `max-w-2xl` (`npx semi example form-actions`).
 5. **Brand** (when `semi-lint.json` has `"brand"`): ask `semi_brand` (or `npx semi brand voice|color|logo|brief`) before writing UI text or placing colour. Write in the brand's voice, use its fills only as the brand colour rule says, import the logo from the kit; never define colours, fonts or Semi tokens in the app (`brand-override`). Brand changes happen in the brand repo with `/semi-brand`, then `/semi-sync` here.
-6. **Accessibility** (`DESIGN_SYSTEM.md` §18, checked on the page by `npx semi a11y <url>`): icon-only controls have `aria-label`, and a field's name comes from `Field` (a placeholder is not a label); anything clickable is a button or a link (`click-target`); custom controls keep `FOCUS_RING` or the 2px `:focus-visible` `outline-focus`, never a bare `outline-none` (`focus-hidden`); every text / background pair reaches 4.5:1 in both themes (themed text tokens, never a fixed shade on a tinted surface); text-like fields use the quiet 1.0 style (`border-field-line`, backed by the 2px `:focus-visible` outline), checkboxes and radios keep `border-control-line` (3:1); a control drawn smaller than 24px gets `HIT_AREA`, and on a touch phone every control reaches 44 × 44px (`HIT_AREA` for an isolated one, `BTN_HIT` growth in a dense row; `Button` and `BTN_ICON` already have it); images have `alt`; never `maximum-scale` or `user-scalable=no` in the viewport.
+6. **Accessibility** (`DESIGN_SYSTEM.md` §18, checked on the page by `npx semi a11y <url>`): icon-only controls have `aria-label`, and a field's name comes from `Field` (a placeholder is not a label); anything clickable is a button or a link (`click-target`); custom controls keep `FOCUS_RING` or the 2px `:focus-visible` `outline-focus`, never a bare `outline-none` (`focus-hidden`); every text / background pair reaches 4.5:1 in both themes (themed text tokens, never a fixed shade on a tinted surface); text-like fields use the quiet 1.0 style (`border-field-line`, backed by the 2px `:focus-visible` outline), checkboxes and radios keep `border-control-line` (3:1); a control drawn smaller than 24px gets `HIT_AREA`, and on a touch phone every control reaches 44 × 44px (`HIT_AREA` for an isolated one, `BTN_HIT` growth in a dense row; `Button`, `BTN_ICON` and Semi's tabs, segments, filter chips, choice rows, breadcrumb and table header already have it); images have `alt`; never `maximum-scale` or `user-scalable=no` in the viewport.
 7. **Gaps go upstream, lint is never silenced.** When `@semi/ui` cannot express a need, run `/semi-sync`, re-check the docs, then `/semi-propose`; meanwhile a minimal compliant workaround marked `// TODO(semi#<issue>)`. Never add a `skip`, disable a rule or grow `semi-lint-baseline.json` to get past lint: fix the code. The baseline only shrinks (`semi-lint --update-baseline`); `--accept-new` is for `/semi-sync` and needs the user's OK otherwise, and `semi-lint --ci` fails a pull request whose baseline or skips grew. The one per-file `skip`, with the user's OK and a reason, is for illustrations and data colours (not UI chrome): `"skip": { "literal-colour-value": { "lib/scenePalette.ts": "data colours: 3D scene" } }` (also `inline-svg-path`, `no-literal-palette`, `inline-style-value`). Shared rules change in the Semi repo, never only in this file; app-specific patterns go in `docs/UI_EXTENSIONS.md`.
 8. **Before finishing:** `npx semi-lint` clean (it also checks `.css`), `npx tsc --noEmit`, the page checked in both themes and at phone width, and `npx semi density <url>` and `npx semi a11y <url>` clean when the app runs (no Playwright: evaluate their `--snippet` with a browser tool, `a11y` in each theme). CI runs `semi-lint --ci` and `tsc` (`.github/workflows/semi.yml`). Whole-app check: `/semi-check`; newer Semi or brand kit: `/semi-sync`.
 <!-- semi-design-system:end -->
@@ -5868,6 +5879,7 @@ export default function RadioGroupBasic() {
 ## Accessibility
 
 - A native radio group with a group label: arrow keys move and select.
+- Each option is one label row: a tap on its text selects it; on a touch phone the row is at least 44px tall.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/radio-group/ and the types in src/ -->
 
@@ -6402,7 +6414,7 @@ export default function SwitchCardHeader() {
 |---|---|---|---|
 | `checked` * | `boolean` |  |  |
 | `onChange` * | `(checked: boolean) => void` |  |  |
-| `label` | `React.ReactNode` |  | Visible label; it names the switch. |
+| `label` | `React.ReactNode` |  | Visible label; it names the switch. With a label (or description) the whole row is one `<label>`: a tap anywhere on it toggles, and on a touch phone the row is at least 44px tall. |
 | `description` | `React.ReactNode` |  |  |
 | `disabled` | `boolean` | `false` |  |
 | `size` | `'sm' \| 'md'` | `"md"` | Visible size only: on touch screens both sizes get a 44 × 44 px hit area. |
@@ -6413,7 +6425,7 @@ export default function SwitchCardHeader() {
 
 ## Accessibility
 
-- role="switch" with aria-checked; Space toggles; label and description are linked.
+- role="switch" with aria-checked; Space toggles; label and description are linked, and the whole row is the label: a tap anywhere on it toggles.
 - Without a visible label give aria-label or aria-labelledby (label wins); in development a switch with no name logs a warning.
 - On touch screens (any coarse pointer) the hit area is 44 × 44 px around the track; the visible size and layout do not change.
 

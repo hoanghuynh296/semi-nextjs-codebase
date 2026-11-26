@@ -19,7 +19,8 @@
     }
   ],
   "a11y": [
-    "A native radio group with a group label: arrow keys move and select."
+    "A native radio group with a group label: arrow keys move and select.",
+    "Each option is one label row: a tap on its text selects it; on a touch phone the row is at least 44px tall."
   ],
   "examples": [
     {

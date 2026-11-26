@@ -85,7 +85,7 @@ export default function SwitchCardHeader() {
 |---|---|---|---|
 | `checked` * | `boolean` |  |  |
 | `onChange` * | `(checked: boolean) => void` |  |  |
-| `label` | `React.ReactNode` |  | Visible label; it names the switch. |
+| `label` | `React.ReactNode` |  | Visible label; it names the switch. With a label (or description) the whole row is one `<label>`: a tap anywhere on it toggles, and on a touch phone the row is at least 44px tall. |
 | `description` | `React.ReactNode` |  |  |
 | `disabled` | `boolean` | `false` |  |
 | `size` | `'sm' \| 'md'` | `"md"` | Visible size only: on touch screens both sizes get a 44 × 44 px hit area. |
@@ -96,7 +96,7 @@ export default function SwitchCardHeader() {
 
 ## Accessibility
 
-- role="switch" with aria-checked; Space toggles; label and description are linked.
+- role="switch" with aria-checked; Space toggles; label and description are linked, and the whole row is the label: a tap anywhere on it toggles.
 - Without a visible label give aria-label or aria-labelledby (label wins); in development a switch with no name logs a warning.
 - On touch screens (any coarse pointer) the hit area is 44 × 44 px around the track; the visible size and layout do not change.
 
