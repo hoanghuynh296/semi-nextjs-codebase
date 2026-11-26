@@ -6,18 +6,29 @@
 // - Once pinned (md+), CSS sizes the page container to `var(--sticky-view) + var(--sticky-pin)` so the scroller's
 //   exact range is the pin height and the list (or each ListReader panel) is its own `overscroll-behavior: contain`
 //   scroller: no wheel clamping on a scrolling document, no `scrollTop` writes per wheel event while scrolling the list.
-// - Unpinning requires a NEW upward wheel gesture (> 200ms idle) starting at the pin with the inner list at its top;
-//   momentum tails and fast flings never unpin.
+// - Unpinning requires a NEW upward wheel gesture (> 400ms idle) starting at the pin with the inner list at its top;
+//   one upward gesture never unpins, however long, slow or fast (momentum tails, flings, trackpad pauses up to
+//   ~350ms), with or without layout-pin (#207).
 // - No `scrollTop` write ever answers a non-cancelable wheel event or a scroll event (#193): once the browser has
 //   committed a wheel sequence to native (compositor) scrolling, it has already painted the new position, so writing
 //   it back shows two positions on alternate frames (the bar and list flicker). Holds are decided on the first,
 //   cancelable event of a sequence instead: preventing it keeps the rest of the sequence cancelable.
+// - Without layout-pin (below `md`, or a scroller outside AppShell's page structure) the scroller itself runs past the
+//   pin, so while the bar must hold, every wheel sequence over the page is driven here from its first, cancelable
+//   event (prevented, eased `scrollTop` writes, clamped at the pin): native scrolling never runs, so nothing to fight.
 // - Filter, sort, search, selection-mode or data changes never alter pinned/unpinned state.
 // - Below `md` (< 768px), the page keeps native scrolling and touch behaviour.
 import { useEffect, type RefObject } from "react";
 
-/** Wheel events closer together than this belong to one gesture (including trackpad momentum). */
-const GESTURE_GAP_MS = 200;
+/** Wheel events closer together than this belong to one gesture (including trackpad momentum and the pauses of a
+ * slow trackpad scroll, up to ~350ms, #207). A longer rest at the pin is the "stop" after which a new gesture unpins. */
+const GESTURE_GAP_MS = 400;
+/** Driven gestures ease towards their target: steps up to this many px land at once (trackpad), larger ones (notched
+ * mouse wheel) close `DRIVE_EASE` of the remaining distance per frame. */
+const DRIVE_SNAP_PX = 40;
+const DRIVE_EASE = 0.45;
+/** Layout-pin CSS (styles/base.css) applies from md. */
+const MD_QUERY = "(min-width: 768px)";
 /** Smooth focus-pin duration (ms); instant under `prefers-reduced-motion: reduce`. */
 const PIN_SCROLL_MS = 250;
 
@@ -146,6 +157,17 @@ export function useStickyBarPin(barRef: RefObject<HTMLDivElement | null>, enable
     let floor = 0;
     /** The current gesture is driven here (its first event was prevented) so it can stop exactly at the pin. */
     let driving = false;
+    /** The current gesture started at the stop (at the pin, list at its top) going up: the one gesture that unpins. */
+    let unpinning = false;
+    const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+    /** Where the driven gesture is heading, and the frame easing towards it. */
+    let driveTarget: number | null = null;
+    let driveRaf = 0;
+    let driveWrote = 0;
+    const md = window.matchMedia?.(MD_QUERY);
+    /** Layout-pin is active: the md+ CSS sizes this scroller's AppShell container to view + pin (#207: read the real
+     * state, not the range, which equals the pin on short pages without layout-pin too). */
+    const layoutPinned = () => !!md?.matches && !!scroller.querySelector(":scope > [data-shell-container]");
     let animating = false;
     let idleTimer: ReturnType<typeof setTimeout> | undefined;
     let cancelAnim: () => void = () => {};
@@ -153,6 +175,7 @@ export function useStickyBarPin(barRef: RefObject<HTMLDivElement | null>, enable
     const endGesture = () => {
       floor = 0;
       driving = false;
+      unpinning = false;
     };
 
     const setVar = (name: string, value: string) => {
@@ -161,6 +184,35 @@ export function useStickyBarPin(barRef: RefObject<HTMLDivElement | null>, enable
     /** Programmatic scroll, only ever called for a cancelable wheel event this handler prevented (or focus-pin). */
     const scrollToY = (to: number) => {
       if (Math.abs(scroller.scrollTop - to) >= 0.5) scroller.scrollTop = to;
+    };
+
+    const stopDrive = () => {
+      if (driveRaf) cancelAnimationFrame(driveRaf);
+      driveRaf = 0;
+      driveTarget = null;
+    };
+    const stepDrive = () => {
+      driveRaf = 0;
+      if (driveTarget === null) return;
+      const y = scroller.scrollTop;
+      // Something else moved the scroller (scrollbar, keyboard, focus): let it win.
+      if (Math.abs(y - driveWrote) > 1.5) return stopDrive();
+      const d = driveTarget - y;
+      // Under reduced motion the drive lands at once, like focus-pin.
+      const next = reducedMotion?.matches || Math.abs(d) <= DRIVE_SNAP_PX ? driveTarget : y + d * DRIVE_EASE;
+      scrollToY(next);
+      driveWrote = scroller.scrollTop;
+      if (Math.abs(driveTarget - driveWrote) < 0.5) driveTarget = null;
+      else driveRaf = requestAnimationFrame(stepDrive);
+    };
+    /** Moves a driven (prevented) gesture by `dy`, clamped to [floor, range]; eased on the next frames. */
+    const driveBy = (dy: number, range: number) => {
+      const base = driveTarget ?? scroller.scrollTop;
+      driveTarget = Math.min(range, Math.max(floor, base + dy));
+      if (driveTarget !== null && !driveRaf) {
+        driveWrote = scroller.scrollTop;
+        driveRaf = requestAnimationFrame(stepDrive);
+      }
     };
 
     const getStickyTop = () => parseFloat(getComputedStyle(bar).top) || 0;
@@ -208,26 +260,36 @@ export function useStickyBarPin(barRef: RefObject<HTMLDivElement | null>, enable
       idleTimer = setTimeout(endGesture, GESTURE_GAP_MS);
 
       const dy = lineHeightDelta(e);
-      if (dy === 0) return;
-
       const inner = findInnerScroller(e.target, scroller);
       const y = scroller.scrollTop;
       const range = scroller.scrollHeight - scroller.clientHeight;
-      // Layout-pin (md+): the scroller's whole range is the pin, the lists scroll inside it.
-      const layoutPinned = Math.abs(range - pin) <= 1;
+      // Layout-pin (md+ in AppShell): the scroller's whole range is the pin, the lists scroll inside it.
+      const layout = layoutPinned();
 
       if (newGesture) {
         const atTop = !inner || inner.scrollTop <= 0;
-        // Only a NEW upward gesture starting already pinned with the inner list at its top may unpin.
-        floor = y >= pin - 0.5 && !(dy < 0 && atTop && Math.abs(y - pin) <= 0.5) ? pin : 0;
-        // Without layout-pin the scroller runs past the pin. An upward gesture starting within one screen above it
-        // could cross it, momentum included: take it over from its first (cancelable) event so it stops at the pin
-        // without ever fighting native scrolling. Further up, scrolling stays native.
-        driving =
-          e.cancelable && !layoutPinned && dy < 0 && floor > 0 && y > pin + 0.5 && y - pin <= scroller.clientHeight && !inner;
+        // Only a NEW upward gesture starting already pinned with the inner list at its top may unpin. A first event
+        // with no vertical part (a trackpad sequence often starts sideways) counts as upward here.
+        unpinning = dy <= 0 && atTop && Math.abs(y - pin) <= 0.5;
+        floor = y >= pin - 0.5 && !unpinning ? pin : 0;
         // Pinned at the bottom of a layout-pin range, a downward wheel outside the lists scrolls nothing: prevent it so
         // the browser keeps the sequence cancelable and a reversal in the same gesture is held at the pin too.
-        if (e.cancelable && layoutPinned && dy > 0 && !inner && y >= pin - 0.5) e.preventDefault();
+        if (e.cancelable && layout && dy > 0 && !inner && y >= pin - 0.5) e.preventDefault();
+      }
+
+      // A gesture that reaches the pin holds there for the rest of it, also one that started above the pin going down
+      // and reverses (#207): only a new gesture after a stop unpins.
+      if (!unpinning && floor === 0 && (driveTarget ?? y) >= pin - 0.5) floor = pin;
+
+      if (dy === 0) {
+        // Horizontal only, often the first (and so the only cancelable) event of a trackpad sequence. While the bar
+        // holds without layout-pin, prevent it and drive the gesture, or its vertical part would run natively past the
+        // pin (#207). With layout-pin the overscroll-contained lists hold structurally.
+        if (e.cancelable && !layout && floor > 0 && y >= pin - 0.5) {
+          e.preventDefault();
+          driving = true;
+        }
+        return;
       }
 
       if (dy < 0 && inner && inner.scrollTop > 0) {
@@ -240,9 +302,24 @@ export function useStickyBarPin(barRef: RefObject<HTMLDivElement | null>, enable
       // now would land after the compositor painted the native position and flicker (#193). Let it run.
       if (!e.cancelable) return;
 
+      // Without layout-pin, past the pin, the page scroller itself would carry the gesture (and its momentum) across
+      // the pin, and a natively scrolled sequence can no longer be held without flicker. So while the bar holds, take
+      // every sequence over from its first, cancelable event, in both directions (a downward sequence left native would
+      // carry a reversal past the pin): prevented events keep the whole sequence cancelable and native scrolling never
+      // runs, so the eased writes in driveBy fight nothing (#207). An inner box that can still scroll keeps the wheel.
+      if (
+        !driving &&
+        !layout &&
+        y >= pin - 0.5 &&
+        // Down: only while there is room, so a nested scroller at its end still hands the wheel to the page around it.
+        (dy > 0 ? y < range - 0.5 : floor > 0) &&
+        !(inner && (dy > 0 ? inner.scrollTop + inner.clientHeight < inner.scrollHeight - 1 : inner.scrollTop > 0))
+      ) {
+        driving = true;
+      }
       if (driving) {
         e.preventDefault();
-        scrollToY(Math.min(range, Math.max(floor, y + dy)));
+        driveBy(dy, range);
         return;
       }
 
@@ -297,6 +374,7 @@ export function useStickyBarPin(barRef: RefObject<HTMLDivElement | null>, enable
         content.style.minHeight = `${pin + scroller.clientHeight}px`;
       }
       cancelAnim();
+      stopDrive();
       animating = true;
       cancelAnim = smoothTo(scroller, pin, () => {
         animating = false;
@@ -337,6 +415,7 @@ export function useStickyBarPin(barRef: RefObject<HTMLDivElement | null>, enable
       ro?.disconnect();
       if (idleTimer) clearTimeout(idleTimer);
       cancelAnim();
+      stopDrive();
       scroller.removeEventListener("wheel", onWheel);
       bar.removeEventListener("focusin", onFocusIn);
       bar.removeEventListener("focusout", onFocusOut);
