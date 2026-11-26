@@ -25,7 +25,8 @@
   ],
   "notes": [
     "General pattern for every list + reader (mail, tickets, chat): title on the left (wraps), [•••] plus one main action on the right of the same row; every other action goes into •••.",
-    "Pass `recordTitle` to `ListReaderLayout` so the open record is appended to `RouteHeader` breadcrumbs via `useRecordCrumb`."
+    "Pass `recordTitle` to `ListReaderLayout` so the open record is appended to `RouteHeader` breadcrumbs via `useRecordCrumb`.",
+    "A ReaderHeader title cut at 3 lines gets a chevron toggle (aria-expanded) that shows it whole: the native tooltip never shows on touch (#196). Inside Page two-column with a SubNav, the SubNav gives way first (a sheet trigger) before the reader replaces the list."
   ],
   "examples": [
     {

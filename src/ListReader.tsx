@@ -59,7 +59,7 @@ export function ReaderHeader({
   headingLevel = 2,
   className,
 }: {
-  /** Subject or record title on the left; wraps, at most 3 lines (a string also shows in full as the native tooltip). */
+  /** Subject or record title on the left; wraps, at most 3 lines (a string also shows in full as the native tooltip; a cut title gets a toggle that shows it whole, #196). */
   title: React.ReactNode;
   /** Optional quiet meta line directly under the title (sender, timestamp, ticket id). */
   meta?: React.ReactNode;

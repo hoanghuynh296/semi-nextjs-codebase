@@ -30,7 +30,8 @@
   "notes": [
     "Inside AppShell, a direct-child Page automatically overrides the default 1440px container and switches two-column / fixed modes in CSS without remounting AppShell (also works when wrapped in PageEnter).",
     "Wrap AppShell children in PageEnter (or pass enter on Page) to run motion-enter + motion-stagger on top blocks and the first ~10 rows / cards once per route. PageEnter renders display: contents so fixed-height chains and inner scrollers keep working; filter, search, sort and ?tab= changes never replay it.",
-    "Vertical rhythm from the card top: 32px to the header block, 28px title/tabs to intro or toolbar, 16px toolbar to list, 32px between blocks, 16px heading to content (PageSection), 8px inside grids (PageGrid)."
+    "Vertical rhythm from the card top: 32px to the header block, 28px title/tabs to intro or toolbar, 16px toolbar to list, 32px between blocks, 16px heading to content (PageSection), 8px inside grids (PageGrid).",
+    "two-column + ListReaderLayout (#196): where list + reader + SubNav do not fit (page narrower than 956 / 1020 / 1068px for listWidth sm / md / lg), the SubNav card hides and a trigger naming the active item opens it in a left Drawer; at 1024 with the rail, list and reader then sit side by side. Only a <SubNav> element collapses; pages without a ListReaderLayout keep the card."
   ],
   "examples": [
     {

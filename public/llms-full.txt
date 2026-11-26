@@ -758,8 +758,8 @@ Inside the content card, pick one of four layouts with `<Page layout="work" | "r
 
 - **Work** (`layout="work"`, default: lists, tables, workspaces): flush, no centred max-width; card padding 16 / 24 (`px-4 sm:px-6`).
 - **Reading** (`layout="reading"`: settings, explore, articles): one column centred at max 1536px (`max-w-screen-2xl`) inside 16px card padding, 64px bottom padding; pass `titleVariant="reading"` (or `<PageTitle variant="reading">`) to opt into the 44 / 500 display title (`font-display text-title-xl font-medium`).
-- **Two-column** (`layout="two-column"` + `subNav={<SubNav … />}`: an area with sub-pages or mailbox folders): a sub-nav card 240px (`md:w-60`), flush left, padding 20 / 10; a 4px gap; the main card to the right edge, padding 24; no wide side padding. Below `md` the sub-nav stacks above the content. `SubNav` sections have a group label (`text-nav-label`, 10 / 500 uppercase faint, row h32, optional 16px icon actions on the right), then items (h32, `rounded-control`, padding 4 / 16, `text-chrome` 500, 16px icon, 2px apart; inactive muted, hover `bg-item-hover`, active `bg-item-selected text-strong`); sections split by a 1px `bg-raised` line.
-- **List + reader** (`ListReaderLayout` + `ReaderHeader`, mail, tickets, chat): a list card and a reader card, each its own scroller (`overflow-y-auto overscroll-contain`), filling the remaining column height on `Page fixed` / `AppShell page="fixed"` with zero hand-tuned `calc()`. Open item lives in `?open=` (`useDetailParam`, Back closes) and feeds `RouteHeader` breadcrumbs via `useRecordCrumb` (`recordTitle`). Side by side only while the reader keeps 360px: a container query on the layout's own width (list width + 16px + 360px: 664 / 728 / 776px for `listWidth` sm / md / lg), not the viewport, so a rail, a `SubNav` or a side panel count; below it the reader replaces the list with a Back button (#188: at 1024px with the rail and a `SubNav` the reader would have been ~270px); the Back button follows the same split (also an app's own `onBack`), and focus moves to the reader's title on open and back to the open row on Back, never to `<body>`. `className` sizes the outer container (`data-list-reader`), `gridClassName` styles the panes' grid. The container query classes live in `@semi/ui/src`, so they need the README's `@source` line for `src` (every set-up has it). `ReaderHeader` is the general pattern for every list + reader: one sticky row, wrapping title on the left (at least 70% of the row, clamped to 3 lines, a string title in full as the native tooltip), `[•••]` menu then one main action on the right, top-aligned, identical button height; every other action goes into `•••`. In a narrow pane, where the actions do not fit beside a 70% title, they wrap to their own row under it, on the right (flex-wrap, so it follows the pane, not the viewport).
+- **Two-column** (`layout="two-column"` + `subNav={<SubNav … />}`: an area with sub-pages or mailbox folders): a sub-nav card 240px (`md:w-60`), flush left, padding 20 / 10; a 4px gap; the main card to the right edge, padding 24; no wide side padding. Below `md` the sub-nav stacks above the content. When the main card holds a `ListReaderLayout`, the list and the reader get the room first (owner priority: the rail first, then the SubNav): while the page is narrower than SubNav + gap + the main card's padding + the layout's side-by-side width (956 / 1020 / 1068px for `listWidth` sm / md / lg), the SubNav card hides and a select-like trigger at the top of the main card (`data-page-subnav-trigger`: active item icon + label, `aria-haspopup="dialog"`) opens the same `SubNav` in a left `Drawer`, closed by choosing an item (#196). It is CSS (a container query on the page, `:has([data-list-width])`), so the server HTML is exact; only a `subNav` that is a `<SubNav>` element collapses. `SubNav` sections have a group label (`text-nav-label`, 10 / 500 uppercase faint, row h32, optional 16px icon actions on the right), then items (h32, `rounded-control`, padding 4 / 16, `text-chrome` 500, 16px icon, 2px apart; inactive muted, hover `bg-item-hover`, active `bg-item-selected text-strong`); sections split by a 1px `bg-raised` line.
+- **List + reader** (`ListReaderLayout` + `ReaderHeader`, mail, tickets, chat): a list card and a reader card, each its own scroller (`overflow-y-auto overscroll-contain`), filling the remaining column height on `Page fixed` / `AppShell page="fixed"` with zero hand-tuned `calc()`. Open item lives in `?open=` (`useDetailParam`, Back closes) and feeds `RouteHeader` breadcrumbs via `useRecordCrumb` (`recordTitle`). Side by side only while the reader keeps 360px: a container query on the layout's own width (list width + 16px + 360px: 664 / 728 / 776px for `listWidth` sm / md / lg), not the viewport, so a rail, a `SubNav` or a side panel count; below it the reader replaces the list with a Back button (#188: at 1024px with the rail and a `SubNav` the reader would have been ~270px); the Back button follows the same split (also an app's own `onBack`), and focus moves to the reader's title on open and back to the open row on Back, never to `<body>`. `className` sizes the outer container (`data-list-reader`), `gridClassName` styles the panes' grid. The container query classes live in `@semi/ui/src`, so they need the README's `@source` line for `src` (every set-up has it). `ReaderHeader` is the general pattern for every list + reader: one sticky row, wrapping title on the left (at least 70% of the row, clamped to 3 lines, a string title in full as the native tooltip; a cut title also gets a chevron toggle with `aria-expanded` that shows it whole, since touch screens never show the tooltip, #196), `[•••]` menu then one main action on the right, top-aligned, identical button height; every other action goes into `•••`. In a narrow pane, where the actions do not fit beside a 70% title, they wrap to their own row under it, on the right (flex-wrap, so it follows the pane, not the viewport).
 
 **Vertical rhythm** (owned by `Page`, `PageSection` and `PageGrid`, so pages set no margins on these joins): 32px from the card top to the header block · 28px from the title or tabs to the intro (or toolbar) · 16px from the filter row to the list · 32px between blocks · 16px from a section heading (`PageSection`) to its content · 8px inside grids (`PageGrid`) and cards.
 
@@ -6894,6 +6894,11 @@ const ORDERS = Array.from({ length: 12 }, (_, i) => ({
   customer: ["Cửa hàng Minh An", "Nhà sách Phú Lợi", "Quán Bếp Nhà"][i % 3],
   total: (i + 3) * 185000,
   paid: i % 4 !== 0,
+  // a long title: cut to one line (3 in a narrow dialog), the chevron beside it shows it in full
+  note:
+    i === 6
+      ? "giao gấp trước Tết cho chuỗi 12 cửa hàng tại Thủ Đức và Bình Thạnh, kèm hoá đơn VAT, biên bản bàn giao từng điểm và ảnh chụp kiện hàng khi nhận"
+      : null,
 }));
 const vnd = (n: number) => `${n.toLocaleString("vi-VN")} ₫`;
 
@@ -6913,7 +6918,7 @@ export default function DetailOverlayList() {
       <DetailOverlay
         open={order !== null}
         onClose={close}
-        title={order ? `Đơn ${order.id}` : ""}
+        title={order ? `Đơn ${order.id}${order.note ? ` — ${order.note}` : ""}` : ""}
         subtitle={order?.customer}
         index={index}
         total={ORDERS.length}
@@ -7046,7 +7051,7 @@ export default function DetailOverlayTable() {
 |---|---|---|---|
 | `open` * | `boolean` |  | Drive it from the URL: `open={openId !== null}` with useDetailParam. |
 | `onClose` * | `() => void` |  | Close button, Escape and a click on the backdrop. With useDetailParam pass its `close`. |
-| `title` * | `React.ReactNode` |  |  |
+| `title` * | `React.ReactNode` |  | The record's title: one line (3 in a narrow dialog); when cut, a chevron toggle beside it shows it whole (#196). |
 | `subtitle` | `React.ReactNode` |  | One line under the title (region, category). |
 | `index` | `number` |  | Place of the item in the current result set (0-based) and its size: shows "n / N". |
 | `total` | `number` |  |  |
@@ -7068,6 +7073,7 @@ export default function DetailOverlayTable() {
 - Open a record from elsewhere on the same route (a CommandPalette item, a notification) with the hook's `open(id)` or `openDetail(id)`, not `router.push("?open=…")`: browsers without the Navigation API (Firefox, Safari < 26) do not tell the hook about Next's own same-route navigation, so the overlay would not open unless the list re-renders. To another route, navigate with the param in the URL; the hook reads it when the list mounts.
 - Close goes back when the entry is one this page opened (also after Back then Forward where the Navigation API exists), else it removes the param, so the list never gets a second history entry. Without the Navigation API only the entry the mounted list opened last, at that exact address, counts as its own.
 - Walk the results the list shows: for a DataTable build them with its own helpers, `sortRows(searchRows(rows, columns, search), columns, sort)` (all pages, the table's comparator), never a copy of the comparator. Keep filters and the query in the URL too (useFilterParams), so ‹ › and a shared link walk the same results.
+- A cut title (one line, or 3 in a narrow dialog) gets a chevron toggle (aria-expanded, aria-controls the heading) that shows it whole, for touch screens where the native tooltip never shows (#196); open DH-1046 to see it.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/detail-overlay/ and the types in src/ -->
 
@@ -8735,7 +8741,10 @@ const THREADS: Thread[] = Array.from({ length: 24 }, (_, i) => ({
   subject:
     i === 0
       ? "Báo giá hạt tiêu đen hữu cơ xuất khẩu quý 4 và lịch giao container tại cảng Cát Lái"
-      : `Trao đổi đơn hàng #${1040 + i} — xác nhận quy cách đóng gói`,
+      : i === 1
+        ? // a subject longer than 3 lines: clamped, the chevron beside it shows it in full (#196)
+          "Hợp đồng khung cung cấp quế và hồi sấy khô năm 2027: điều khoản giá theo quý, lịch giao container tại cảng Cát Lái, thanh toán L/C trả ngay cho lô đầu tiên và bảo hiểm hàng hoá"
+        : `Trao đổi đơn hàng #${1040 + i} — xác nhận quy cách đóng gói`,
   from: ["Gia vị Tây Nguyên", "HTX Chư Sê", "Hương Quế Yên Bái", "Nông sản Đắk Lắk"][i % 4],
   time: `${9 + (i % 9)}:${String((i * 13) % 60).padStart(2, "0")}`,
   paragraphs: Array.from(
@@ -8883,7 +8892,7 @@ Sticky one-row header of a reader pane (general pattern for mail, tickets, chat;
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `title` * | `React.ReactNode` |  | Subject or record title on the left; wraps, at most 3 lines (a string also shows in full as the native tooltip). |
+| `title` * | `React.ReactNode` |  | Subject or record title on the left; wraps, at most 3 lines (a string also shows in full as the native tooltip; a cut title gets a toggle that shows it whole, #196). |
 | `meta` | `React.ReactNode` |  | Optional quiet meta line directly under the title (sender, timestamp, ticket id). |
 | `action` | `ReaderMainAction \| React.ReactNode` |  | The one main action on the right (e.g. Trả lời / Reply), or a custom button element at `size="md"`. |
 | `moreActions` | `MenuItem[]` |  | Every other reader action (Chuyển tiếp, Lưu trữ, Đóng ticket, Xoá…) goes into this `•••` Menu. |
@@ -8902,6 +8911,7 @@ Sticky one-row header of a reader pane (general pattern for mail, tickets, chat;
 
 - General pattern for every list + reader (mail, tickets, chat): title on the left (wraps), [•••] plus one main action on the right of the same row; every other action goes into •••.
 - Pass `recordTitle` to `ListReaderLayout` so the open record is appended to `RouteHeader` breadcrumbs via `useRecordCrumb`.
+- A ReaderHeader title cut at 3 lines gets a chevron toggle (aria-expanded) that shows it whole: the native tooltip never shows on touch (#196). Inside Page two-column with a SubNav, the SubNav gives way first (a sheet trigger) before the reader replaces the list.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/list-reader/ and the types in src/ -->
 
@@ -9503,7 +9513,7 @@ Owns the vertical rhythm from the card top (32px to the header block, 28px from 
 | `layout` | `'work' \| 'reading' \| 'two-column'` | `"work"` | Page layout inside the content card: `"work"` (flush, 16 / 24), `"reading"` (centred max 1536px inside 16px card padding, 64px bottom), or `"two-column"` (240px sub-nav card + 4px gap + main card). |
 | `fixed` | `boolean` | `false` | Fixed-height page: fills the content column without scrolling the card so inner panels (`ListReaderLayout`, a pinned list) scroll independently. Works inside `<AppShell page="fixed">` or a shared `<AppShell>`. |
 | `enter` | `string \| boolean` | `false` | Run `motion-enter` + `motion-stagger` on the page's top blocks and first ~10 rows / cards once per route (`PageEnter`). Pass `true` to key by pathname, or a string for a custom route key. Adds no layout box. |
-| `subNav` | `React.ReactNode` |  | Sub-navigation card for `layout="two-column"` (`<SubNav sections={…} activeId={…} />`). |
+| `subNav` | `React.ReactNode` |  | Sub-navigation card for `layout="two-column"` (`<SubNav sections={…} activeId={…} />`). With a `ListReaderLayout` in the page, it turns into a sheet trigger at the top of the main card while list + reader + SubNav do not fit (956 / 1020 / 1068px of page for `listWidth` sm / md / lg, #196). |
 | `title` | `React.ReactNode` |  | Page heading: a string / node rendered via `PageTitle` (18/400 UI sans by default), or leave out when `tabs` is big `TextTabs`. |
 | `titleVariant` | `'work' \| 'reading'` | `"work"` | On a `"reading"` page, `"reading"` opts into the 44 / 500 display title (`text-title-xl`). Ignored on other layouts. |
 | `actions` | `React.ReactNode` |  | Actions at the right end of the title row (one `inverse` or `primary` action, optional `•••` `Menu` / `RefreshButton`). |
@@ -9579,6 +9589,7 @@ Compact 8px (`gap-2`) grid inside a `<PageSection>` or `<Card>`, sized by `@cont
 - Inside AppShell, a direct-child Page automatically overrides the default 1440px container and switches two-column / fixed modes in CSS without remounting AppShell (also works when wrapped in PageEnter).
 - Wrap AppShell children in PageEnter (or pass enter on Page) to run motion-enter + motion-stagger on top blocks and the first ~10 rows / cards once per route. PageEnter renders display: contents so fixed-height chains and inner scrollers keep working; filter, search, sort and ?tab= changes never replay it.
 - Vertical rhythm from the card top: 32px to the header block, 28px title/tabs to intro or toolbar, 16px toolbar to list, 32px between blocks, 16px heading to content (PageSection), 8px inside grids (PageGrid).
+- two-column + ListReaderLayout (#196): where list + reader + SubNav do not fit (page narrower than 956 / 1020 / 1068px for listWidth sm / md / lg), the SubNav card hides and a trigger naming the active item opens it in a left Drawer; at 1024 with the rail, list and reader then sit side by side. Only a <SubNav> element collapses; pages without a ListReaderLayout keep the card.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/page/ and the types in src/ -->
 

@@ -318,7 +318,11 @@ export function Page({
    * (`PageEnter`). Pass `true` to key by pathname, or a string for a custom route key. Adds no layout box.
    */
   enter?: boolean | string;
-  /** Sub-navigation card for `layout="two-column"` (`<SubNav sections={…} activeId={…} />`). */
+  /**
+   * Sub-navigation card for `layout="two-column"` (`<SubNav sections={…} activeId={…} />`). With a `ListReaderLayout`
+   * in the page, it turns into a sheet trigger at the top of the main card while list + reader + SubNav do not fit
+   * (956 / 1020 / 1068px of page for `listWidth` sm / md / lg, #196).
+   */
   subNav?: React.ReactNode;
   /** Page heading: a string / node rendered via `PageTitle` (18/400 UI sans by default), or leave out when `tabs` is big `TextTabs`. */
   title?: React.ReactNode;

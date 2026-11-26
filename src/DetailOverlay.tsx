@@ -126,6 +126,7 @@ export function DetailOverlay({
   open: boolean;
   /** Close button, Escape and a click on the backdrop. With useDetailParam pass its `close`. */
   onClose: () => void;
+  /** The record's title: one line (3 in a narrow dialog); when cut, a chevron toggle beside it shows it whole (#196). */
   title: React.ReactNode;
   /** One line under the title (region, category). */
   subtitle?: React.ReactNode;
