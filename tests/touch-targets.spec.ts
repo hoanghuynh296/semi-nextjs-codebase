@@ -262,6 +262,7 @@ const SELECTION: [string, string, string, [number, number]][] = [
   ["data-table", '[data-example="data-table/orders"] [data-density-view] th[aria-sort] button', "DataTable sort header", [60, 18]],
   ["data-table", '[data-example="data-table/orders"] [data-density-view] th[data-check] input >> xpath=..', "DataTable select-all", [16, 16]],
   ["stepper", '[data-example="stepper/basic"] [data-density-view] button[aria-label^="Tăng"]', "Stepper +", [36, 36]],
+  ["chip", '[data-example="chip/toggle"] [data-density-view] button[aria-pressed="false"]', "Chip (off)", [63, 34]],
 ];
 
 test("touch phone 390x844: selection controls have a 44 × 44 hit area and a tap near each edge lands on them (#187)", async ({ browser }) => {
@@ -287,6 +288,7 @@ test("touch phone: dense selection rows grow on one row, never overlap, and scro
     ["pill-tabs", "sections", '[role="tab"]', true],
     ["filter-chip-row", "many", '[role="group"] button', true],
     ["breadcrumb", "collapsed", "nav :is(a, button)", false],
+    ["chip", "toggle", "button[aria-pressed]", false],
   ] as const) {
     await page.goto(`/components/${doc}/`);
     await hydrated(page);
@@ -412,3 +414,62 @@ test("touch phone 320: ToggleGroup is never wider than its container, scrolls in
   }
   await page.close();
 });
+
+
+// #190: Chip, TAG and Badge have no border; an unselected Chip has the subtle button fill (hover one step up), a
+// selected one keeps its tint and shows a leading check; Space / Enter toggle it; Badge tone="overlay" blurs the media.
+for (const theme of ["dark", "light"] as const) {
+  test(`Chip and Badge without a border, Chip check and keyboard, Badge overlay · ${theme} (#190)`, async ({ page }) => {
+    await page.addInitScript((t) => localStorage.setItem("semi-theme", t), theme);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/components/chip/");
+    await hydrated(page);
+    await page.addStyleTag({ content: "*,*::before,*::after{transition:none!important;animation:none!important}" });
+    const style = (el: Locator) =>
+      el.evaluate((n) => {
+        const s = getComputedStyle(n);
+        const probe = document.createElement("span");
+        probe.className = "bg-subtle-button";
+        n.parentElement!.append(probe);
+        const subtle = getComputedStyle(probe).backgroundColor;
+        probe.className = "bg-tint-hover";
+        const hover = getComputedStyle(probe).backgroundColor;
+        probe.remove();
+        return { border: s.borderTopWidth, bg: s.backgroundColor, subtle, hover, checks: n.querySelectorAll("svg").length, h: Math.round(n.getBoundingClientRect().height) };
+      });
+    const offChip = page.locator('[data-example="chip/toggle"] [data-density-view] button[aria-pressed]').filter({ hasText: "PETG" });
+    await expect(offChip).toHaveAttribute("aria-pressed", "false");
+    const s0 = await style(offChip);
+    expect(s0.border).toBe("0px");
+    expect(s0.bg).toBe(s0.subtle);
+    expect(s0.checks).toBe(0);
+    expect(s0.h).toBe(34);
+    await offChip.hover();
+    const sh = await style(offChip);
+    expect(sh.bg).toBe(sh.hover);
+    // keyboard: Tab-reachable, Space turns it on (check appears, still no border), Enter turns it off again
+    await offChip.focus();
+    await page.keyboard.press("Space");
+    await expect(offChip).toHaveAttribute("aria-pressed", "true");
+    const s1 = await style(offChip);
+    expect(s1.border).toBe("0px");
+    expect(s1.checks).toBe(1);
+    expect(s1.bg).not.toBe(s1.subtle);
+    expect(s1.h).toBe(34);
+    await page.keyboard.press("Enter");
+    await expect(offChip).toHaveAttribute("aria-pressed", "false");
+    expect((await style(offChip)).checks).toBe(0);
+
+    await page.goto("/components/badge/");
+    await hydrated(page);
+    const badges = page.locator('[data-example="badge/tones"] [data-density-view] span.rounded-full');
+    expect(await badges.count()).toBeGreaterThan(3);
+    for (const w of await badges.evaluateAll((ns) => ns.map((n) => getComputedStyle(n).borderTopWidth))) expect(w).toBe("0px");
+    const overlay = page.locator('[data-example="badge/overlay"] [data-density-view] span.rounded-full').first();
+    const o = await overlay.evaluate((n) => {
+      const s = getComputedStyle(n);
+      return { border: s.borderTopWidth, blur: s.backdropFilter, fs: s.fontSize };
+    });
+    expect(o).toEqual({ border: "0px", blur: "blur(12px)", fs: "12px" });
+  });
+}

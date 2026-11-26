@@ -1,7 +1,7 @@
 {
   "title": "Chip",
   "group": "Actions",
-  "description": "A pill-shaped toggle for filters and tags. Neutral when off; active uses the high-contrast surface, with colour only on its dot or icon (tone).",
+  "description": "A pill-shaped toggle for filters and tags, without a border. Off: the subtle button fill; on: the raised surface (or its tone's tint) with a leading check, so the state does not rest on colour alone. 34px, 44px on a touch phone.",
   "components": [
     "Chip"
   ],
@@ -20,13 +20,14 @@
     }
   ],
   "a11y": [
-    "A button with aria-pressed when it toggles; keep the text short."
+    "A button with aria-pressed when it toggles; keep the text short.",
+    "Selected shows a leading check (not colour alone); on a touch phone each chip is at least 44 × 44px, real size, so chips in a row never share a tap point."
   ],
   "examples": [
     {
       "file": "toggle",
       "title": "Toggle filters",
-      "description": "tone colours the dot of what the chip filters; the chip itself stays neutral."
+      "description": "tone tints the chip while it is on; every chip on shows a check."
     }
   ]
 }

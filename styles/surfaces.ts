@@ -118,8 +118,12 @@ export const TONAL_SURFACE: Record<SemanticTone, string> = {
   gray: "bg-field border-line text-muted",
 };
 
-/** Tonal badge base class (11px or 12px pill). */
-export const BADGE_BASE = "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-chrome font-medium border whitespace-nowrap";
+/** Tonal badge base class (12px pill, no border since #190: the tone's tint alone; TONAL_SURFACE's border colour has no width here). */
+export const BADGE_BASE = "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-chrome font-medium whitespace-nowrap";
+
+/** Badge tone="overlay" (#190): text on an image or video only (a duration, "Video", a count on a thumbnail). The canvas
+ * grey at 55% with a 12px backdrop blur and the strong text. Never on a page or card surface: there use a tone. */
+export const BADGE_OVERLAY = "bg-canvas/55 backdrop-blur-md text-strong";
 
 /** Dual-theme tonal container (cards, callouts, alert banners): 10% alpha fill + 20% alpha border + dual-theme text. */
 export const TONAL_CONTAINER = TONAL_SURFACE;
