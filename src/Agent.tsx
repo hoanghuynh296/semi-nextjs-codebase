@@ -48,7 +48,7 @@ export function Reasoning({
   }, [busy, defaultOpen]);
   const id = useId();
   return (
-    <div className={cn("self-start w-full", className)}>
+    <div data-semi="Reasoning" className={cn("self-start w-full", className)}>
       <button
         type="button"
         aria-expanded={open}
@@ -126,7 +126,7 @@ export function ToolCall({
   const [open, setOpen] = useState(defaultOpen);
   const id = useId();
   return (
-    <div className={cn("w-full rounded-card border border-line bg-panel", className)}>
+    <div data-semi="ToolCall" className={cn("w-full rounded-card border border-line bg-panel", className)}>
       <button type="button" aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)} className={cn(DISCLOSURE_ROW, "px-3 py-2 hover:bg-raised rounded-card")}>
         <Icon name={icon} className="w-4 h-4 text-muted shrink-0" />
         <span className="flex-1 min-w-0 truncate text-ui font-medium text-strong">{title ?? name}</span>
@@ -173,7 +173,7 @@ export function Sources({ sources, defaultOpen = false, className }: { sources: 
   const id = useId();
   if (!sources.length) return null;
   return (
-    <div className={className}>
+    <div data-semi="Sources" className={className}>
       <button type="button" aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)} className={cn(DISCLOSURE_ROW, "w-auto py-1 text-ui text-muted hover:text-strong")}>
         <Icon name="fileText" className="w-3.5 h-3.5 shrink-0" />
         <span>{t.sources(sources.length)}</span>
@@ -207,7 +207,7 @@ const CITATION_HIT =
 export function Citation({ n, source }: { /** 1-based, matching the Sources list. */ n: number; source: Source }) {
   const t = useSemiLocale();
   return (
-    <Tooltip content={`${source.title} · ${host(source.href)}`}>
+    <Tooltip data-semi="Citation" content={`${source.title} · ${host(source.href)}`}>
       <ExternalLink
         href={source.href}
         aria-label={`${t.source(n)}: ${source.title}`}
@@ -260,7 +260,7 @@ export function TaskList({ title, steps, className }: { title?: React.ReactNode;
   const done = steps.filter((s) => s.status === "done" || s.status === "skipped").length;
   const id = useId();
   return (
-    <section aria-labelledby={title ? id : undefined} className={cn("w-full rounded-card border border-line bg-panel p-3", className)}>
+    <section data-semi="TaskList" aria-labelledby={title ? id : undefined} className={cn("w-full rounded-card border border-line bg-panel p-3", className)}>
       <div className="flex items-center gap-2 mb-2">
         {title && (
           <h3 id={id} className="flex-1 min-w-0 truncate text-ui font-medium text-strong">
@@ -325,7 +325,7 @@ export function ActionConfirmation({
   const id = useId();
   const s = STATUS_ICON[danger ? "danger" : "warning"];
   return (
-    <div role="group" aria-labelledby={id} className={cn("w-full rounded-card border bg-panel p-3", state === "pending" ? s.surface : "border-line", className)}>
+    <div data-semi="ActionConfirmation" role="group" aria-labelledby={id} className={cn("w-full rounded-card border bg-panel p-3", state === "pending" ? s.surface : "border-line", className)}>
       <div className="flex gap-2.5">
         <Icon name={icon} className={cn("w-4 h-4 mt-0.5 shrink-0", state === "pending" ? s.fg : "text-muted")} />
         <div className="min-w-0 flex-1 space-y-2">
@@ -466,7 +466,7 @@ export function FileTree({
   };
 
   return (
-    <ul ref={treeRef} role="tree" aria-label={label} onKeyDown={onKey} className={cn("text-ui", className)}>
+    <ul data-semi="FileTree" ref={treeRef} role="tree" aria-label={label} onKeyDown={onKey} className={cn("text-ui", className)}>
       {visible.map((v) => {
         const isFolder = Boolean(v.node.children);
         const open = expanded.has(v.path);
@@ -523,7 +523,7 @@ export function ContextMeter({ used, total, label, showValue = true, className }
   const c = 2 * Math.PI * r;
   const detail = t.contextDetail(compact.format(used), compact.format(total), pct);
   return (
-    <Tooltip content={detail}>
+    <Tooltip data-semi="ContextMeter" content={detail}>
       <span
         role="meter"
         tabIndex={0}

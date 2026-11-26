@@ -19,7 +19,7 @@ export interface MinimalHeaderProps {
 
 export function MinimalHeader({ left, link, primary, className }: MinimalHeaderProps) {
   return (
-    <header className={cn("flex items-center gap-3 min-h-12 mb-4 min-w-0", className)}>
+    <header data-semi="MinimalHeader" className={cn("flex items-center gap-3 min-h-12 mb-4 min-w-0", className)}>
       <div className="flex-1 min-w-0 truncate">{left}</div>
       {link && <div className="hidden sm:flex items-center shrink-0 text-chrome font-medium">{link}</div>}
       {primary && <div className="flex items-center shrink-0">{primary}</div>}

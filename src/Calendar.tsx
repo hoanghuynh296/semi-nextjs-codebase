@@ -139,7 +139,7 @@ export function Calendar(props: CalendarProps) {
   const navBtn = cn("relative w-8 h-8 rounded-control flex items-center justify-center text-muted hover:text-strong hover:bg-raised transition", HIT_AREA, FOCUS_RING);
 
   return (
-    <div className={cn("w-[264px] flex flex-col gap-2", className)}>
+    <div data-semi="Calendar" className={cn("w-[264px] flex flex-col gap-2", className)}>
       <div className="flex items-center justify-between">
         <button type="button" aria-label={t.prevMonth} disabled={!focus || !monthOpen(addMonths(focus, -1))} onClick={() => page(-1)} className={cn(navBtn, "disabled:opacity-30 disabled:pointer-events-none")}>
           <Icon name="back" className="w-4 h-4" />

@@ -5,6 +5,7 @@
 // (never cycled), text stays in text tokens, every chart has a legend (2+ series), a hover / keyboard tooltip and a
 // table view, so no value depends on colour or hovering alone.
 import React, { useEffect, useId, useMemo, useState } from "react";
+import type { SemiName } from "./a11y";
 import { Button } from "./Button";
 import { Table, TBody, TD, TH, THead, TR } from "./Table";
 import { useSemiLocale } from "./locale";
@@ -69,6 +70,7 @@ interface ChartCommon {
 
 /** Legend, tooltip, table view and keyboard handling shared by BarChart and LineChart. */
 function CartesianFrame({
+  "data-semi": semi,
   data,
   index,
   series,
@@ -80,7 +82,7 @@ function CartesianFrame({
   kind,
   stacked = false,
   area = false,
-}: ChartCommon & { kind: "bar" | "line"; stacked?: boolean; area?: boolean }) {
+}: ChartCommon & { kind: "bar" | "line"; stacked?: boolean; area?: boolean } & SemiName) {
   const t = useSemiLocale();
   const [wrapRef, width] = useWidth<HTMLDivElement>();
   const [active, setActive] = useState<number | null>(null);
@@ -157,7 +159,7 @@ function CartesianFrame({
 
   const tipLeft = active === null ? 0 : Math.min(Math.max(cx(active) + 12, 0), Math.max(0, width - 180));
   return (
-    <div className={cn("space-y-2", className)}>
+    <div data-semi={semi} className={cn("space-y-2", className)}>
       {table ? (
         <ChartTable label={label} data={data} index={index} series={series} format={format} formatIndex={formatIndex} />
       ) : (
@@ -272,7 +274,7 @@ function ChartTable({ label, data, index, series, format, formatIndex }: { label
  * segments. Hover or ←/→ on the focused chart shows every series of a category; the table view lists all values.
  */
 export function BarChart(props: ChartCommon & { stacked?: boolean }) {
-  return <CartesianFrame {...props} kind="bar" />;
+  return <CartesianFrame data-semi="BarChart" {...props} kind="bar" />;
 }
 
 /**
@@ -280,7 +282,7 @@ export function BarChart(props: ChartCommon & { stacked?: boolean }) {
  * to the nearest index on hover or ←/→ and lists every series.
  */
 export function LineChart(props: ChartCommon & { area?: boolean }) {
-  return <CartesianFrame {...props} kind="line" />;
+  return <CartesianFrame data-semi="LineChart" {...props} kind="line" />;
 }
 
 export interface DonutSlice {
@@ -338,7 +340,7 @@ export function DonutChart({
   const pct = (v: number) => (total ? `${Math.round((v / total) * 100)}%` : "0%");
   const shown = active !== null ? data[active] : null;
   return (
-    <div className={cn("flex flex-wrap items-center gap-6", className)}>
+    <div data-semi="DonutChart" className={cn("flex flex-wrap items-center gap-6", className)}>
       <div className="relative shrink-0" style={{ width: size, height: size }}>
         <svg
           role="img"
@@ -403,7 +405,7 @@ export function Sparkline({ values, label, width = 96, height = 28, className }:
   const d = values.map((v, i) => `${i ? "L" : "M"}${x(i)},${y(v)}`).join(" ");
   const last = values[values.length - 1];
   return (
-    <svg role="img" aria-label={`${label}: ${values[0]} → ${last} (min ${min}, max ${max})`} width={width} height={height} className={cn("block shrink-0", className)}>
+    <svg data-semi="Sparkline" role="img" aria-label={`${label}: ${values[0]} → ${last} (min ${min}, max ${max})`} width={width} height={height} className={cn("block shrink-0", className)}>
       <path d={d} fill="none" stroke="var(--color-text-muted)" strokeWidth={1.75} strokeLinejoin="round" strokeLinecap="round" />
       <circle cx={x(values.length - 1)} cy={y(last)} r={3} fill="var(--color-primary)" stroke="var(--color-panel)" strokeWidth={1.5} />
     </svg>

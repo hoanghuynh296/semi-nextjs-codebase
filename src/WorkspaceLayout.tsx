@@ -36,7 +36,7 @@ export function WorkspaceLayout({
 }) {
   const t = useSemiLocale();
   return (
-    <div data-page-type="workspace" className={cn("flex flex-col lg:flex-row lg:items-start gap-group", className)}>
+    <div data-semi="WorkspaceLayout" data-page-type="workspace" className={cn("flex flex-col lg:flex-row lg:items-start gap-group", className)}>
       <section
         aria-label={panelLabel ?? t.workspacePanel}
         className="lg:w-[380px] shrink-0 flex flex-col bg-panel-3 rounded-panel lg:sticky lg:top-4 lg:max-h-[calc(100dvh-3rem)] min-h-0"
@@ -89,7 +89,7 @@ export function WorkspaceHeader({
   const label = backLabel ?? t.back;
   const round = cn("w-8 h-8 shrink-0 rounded-full bg-tint text-strong hover:bg-tint-hover flex items-center justify-center", FOCUS_RING);
   return (
-    <div className="flex flex-col gap-3">
+    <div data-semi="WorkspaceHeader" className="flex flex-col gap-3">
       {tabs}
       <div className="flex items-center gap-2 min-w-0">
         {backHref ? (
@@ -132,7 +132,7 @@ export function WorkspaceSection({
 }) {
   const id = useId();
   return (
-    <div role="group" aria-labelledby={id} className={cn("flex flex-col gap-2 min-w-0", className)}>
+    <div data-semi="WorkspaceSection" role="group" aria-labelledby={id} className={cn("flex flex-col gap-2 min-w-0", className)}>
       <div className="flex items-center gap-2 min-h-6">
         <span id={id} className="text-overline text-muted">
           {label}
@@ -202,7 +202,7 @@ export function Stepper({
   };
   const btn = "w-9 h-9 pointer-coarse:max-sm:size-11 shrink-0 rounded-control flex items-center justify-center text-strong hover:bg-tint-hover disabled:opacity-40 disabled:hover:bg-transparent disabled:cursor-not-allowed";
   return (
-    <div className={cn("flex items-center gap-1 h-11 px-1 pointer-coarse:max-sm:px-0 rounded-control bg-tint", disabled && "opacity-60", className)}>
+    <div data-semi="Stepper" className={cn("flex items-center gap-1 h-11 px-1 pointer-coarse:max-sm:px-0 rounded-control bg-tint", disabled && "opacity-60", className)}>
       <button type="button" tabIndex={-1} className={btn} onClick={() => set(value - step)} disabled={disabled || value <= min} aria-label={t.decrease(label)} title={t.decrease(label)}>
         <Icon name="minus" className="w-4 h-4" />
       </button>

@@ -35,7 +35,7 @@ export function ViewSwitch({
     );
   const compact = density === "compact";
   return (
-    <div className={cn("flex items-center gap-0.5", className)} role="group" aria-label={t.viewMode}>
+    <div data-semi="ViewSwitch" className={cn("flex items-center gap-0.5", className)} role="group" aria-label={t.viewMode}>
       <button type="button" aria-pressed={view === "list"} aria-label={t.viewList} title={t.viewList} className={seg(view === "list")} onClick={() => onViewChange("list")}>
         <Icon name="menu" className="w-4 h-4" />
       </button>

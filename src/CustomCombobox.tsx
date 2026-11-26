@@ -168,7 +168,7 @@ export function CustomCombobox({
   };
 
   return (
-    <div ref={containerRef} className="relative w-full">
+    <div data-semi="CustomCombobox" ref={containerRef} className="relative w-full">
       <div className="relative flex items-center">
         <input
           id={id ?? field?.id}

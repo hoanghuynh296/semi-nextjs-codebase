@@ -70,7 +70,7 @@ export function FormActions({ onCancel, cancelLabel, submitLabel, create = false
   const page = placement === "page";
   const kbd = useKeyboardInset(page);
   return (
-    <div
+    <div data-semi="FormActions"
       data-form-actions={placement}
       className={cn(FORM_ACTIONS, page && FORM_ACTIONS_STICKY, !page && "w-full", className)}
       // above the keyboard: lift by its height; closed: keep the home-indicator inset below the buttons

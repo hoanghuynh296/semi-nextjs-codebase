@@ -35,7 +35,7 @@ export function Badge({
   const sizeCls = size === "sm" ? "h-5 px-1.5 text-chrome" : "h-6 px-2 text-chrome";
   const toneCls = tone === "overlay" ? BADGE_OVERLAY : TONAL_SURFACE[tone] || TONAL_SURFACE.gray;
   return (
-    <span
+    <span data-semi="Badge"
       className={`${BADGE_BASE} ${sizeCls} ${toneCls} ${className}`}
       {...props}
     >

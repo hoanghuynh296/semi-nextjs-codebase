@@ -1451,6 +1451,15 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 
 The full inventory with props is generated into `components.json` (`npm run build:manifest`).
 
+## 17b. `data-semi`: component names in the DOM (#194)
+
+Every exported component marks its root element with `data-semi="<ComponentName>"` (the idea of shadcn's `data-slot`); a significant part carries `<Component>.<Part>` (`ToastHost.Toast`). Floating layers carry the name of what they are: the bubble of `Tooltip` and the panel of `Menu` / `Popover` / `HoverCard` (they render in `document.body`, away from their trigger; `ContextMenu` and `Menubar` lists are `Menu` panels too). A component whose root is another Semi component passes its own name down (`SkeletonGrid` renders `<Loading data-semi="SkeletonGrid">`) through the internal `SemiName` prop (`src/a11y.ts`; API tables leave `data-*` props out), and `Menu` / `Popover` put a given `data-semi` on their trigger (`FilterChip`, `AccountMenu`). Context providers and `ThemeScript` render no element and carry none. On a component that spreads its other props onto the root (`Button`, `Card`, `ExternalLink`), a `data-semi` you pass replaces its own.
+
+- **Use it for:** debugging (`document.querySelectorAll('[data-semi="Button"]')`), tests (`page.locator('[data-semi="Card"]')`) and the docs site's component inspector (docs/COMPONENT_DOCS.md).
+- **Never style by it:** no `[data-semi=…]` selector, no `data-[semi=…]:` variant. `lint/test/data-semi.test.mjs` fails on one in `src/` or `styles/`, and on an exported component without its `data-semi`.
+- **Stable:** the value is the exported name; it changes only when the component is renamed.
+- **A new component:** put `data-semi="<Name>"` first on its root element (before a `{...rest}` spread, so a wrapping component's name wins).
+
 ## 18. Accessibility & UI strings
 
 - Contrast: every text / background pair ≥ 4.5:1 (3:1 for ≥ 24px) in **both** themes; `npm run test:ui` checks every
@@ -1737,6 +1746,17 @@ docs/components/README.md      the index
 3. Mention it in `docs/DESIGN_SYSTEM.md` (§16 / §17), `CHANGELOG.md`.
 4. `npm run build:manifest && npm run check`, then `npm run build:storybook && npm run test:ui` (every doc page is
    checked for contrast in both themes, axe and phone width).
+
+### Component inspector (docs site only, #194)
+
+On the Semi docs site, a piece of an example preview (`[data-example-preview]`, set by `site/ExampleBlock.tsx`), a floating layer an example opened (`[data-semi-floating]` whose trigger, found by `aria-controls` / `aria-describedby` / `aria-owns`, sits in a preview; without a linked trigger, when the last press, key or focus was in a preview) and anything on a `/demo/*` page can be inspected. The docs site's own menus and tooltips (header theme menu, nav tooltips) never are. It reads the `data-semi` names every component puts on its root (DESIGN_SYSTEM.md §17b). Code: `app/inspector/` (`Inspector.tsx`, `InspectorToggle.tsx`, `store.ts`, `names.ts`), mounted by `app/SiteShell.tsx` outside `<main>`; it is not part of `@semi/ui` or `@semi/ui/site`, so apps and brand previews never get it.
+
+- **Pointer:** resting 300ms on a piece outlines the innermost marked element and shows a card under it (at most 48px below the pointer for a tall element; above it when there is no room): the name, the first sentence of its `components.json` summary, and the chain of marked ancestors (`ButtonGroup › Button`). Every name links to `/components/<id>/` (the `doc` of its `components.json` entry; a part such as `ToastHost.Toast` links to its parent's page); ⌘ / Ctrl-click opens a new tab.
+- **The card never catches a press meant for the page:** it is `pointer-events: none` until the pointer has rested on it for 250ms (`data-armed`, then its links take clicks). A press anywhere else, including on a control under a card that is not armed yet, reaches the page and hides the card. The outline is always `pointer-events: none`. Typing, scrolling, leaving the window and a page change hide the card too. Touch input is ignored.
+- **Keyboard:** with focus inside an example, `Alt`+`↓` shows the focused element's innermost marked piece, `Alt`+`↑` / `Alt`+`↓` walk up and down the chain, `Enter` opens the shown page (it does not press the focused control while the card shows; a piece without a page leaves `Enter` to the control), `Escape` closes. A widget's own `Alt`+`↓` (one that calls `preventDefault`, such as a combobox) wins.
+- **Screen readers:** the card is decorative (`aria-hidden`, links out of the tab order); a visually hidden `role="status"` region says what the keyboard card shows (name, description, chain, keys) and when the I key turns the inspector on or off.
+- **On / off:** the "Soi component" switch in the header (from `md`) and the `I` key turn it off and on; on by default, remembered in `localStorage["semi-docs-inspector"]`, read after mount. `I` is left to the page when focus or the key's target is in a field or contenteditable, a `menu` / `listbox` / `tree` / `grid` (type-ahead), an example preview or a floating layer, with a modifier, during IME composition, or when a widget already handled it.
+- **Tests:** `tests/inspector.spec.ts`. Other browser tests that hover an example can see the card appear after 300ms: it is `aria-hidden` (no extra `tooltip` / `link` role for `getByRole`) and lets their clicks through.
 
 
 ---
@@ -2216,8 +2236,8 @@ Nếu một dự án mới thực sự cần một icon mới chưa có trong da
 1. **Không tạo icon cục bộ trong project con.**
 2. Mở repo `@semi/ui` (`semi-nextjs-codebase`).
 3. Lấy path SVG chuẩn Lucide (kích thước viewBox `0 0 24 24`).
-4. Thêm key vào `ICONS` trong [`src/Icon.tsx`](file:///Users/claw/Development/semi/core/nextjs-codebase/src/Icon.tsx).
-5. Đăng ký metadata vào `ICON_CATALOG` trong [`src/iconCatalog.ts`](file:///Users/claw/Development/semi/core/nextjs-codebase/src/iconCatalog.ts) và cập nhật file [`docs/ICONS.md`](file:///Users/claw/Development/semi/core/nextjs-codebase/docs/ICONS.md) này.
+4. Thêm key vào `ICONS` trong [`src/Icon.tsx`](../src/Icon.tsx).
+5. Đăng ký metadata vào `ICON_CATALOG` trong [`src/iconCatalog.ts`](../src/iconCatalog.ts) và cập nhật file [`docs/ICONS.md`](ICONS.md) này.
 6. Chạy `npm run check`, nâng version và tạo tag release mới. Mọi app khác chỉ cần chạy `/semi-sync` là nhận được icon mới.
 
 
@@ -3233,6 +3253,8 @@ export default function ButtonSizes() {
 
 ### Button
 
+The action control (docs/DESIGN_SYSTEM.md §9): `subtle` by default, a brand fill only for the one main action, `danger` for a destructive one.
+
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `ref` | `React.Ref<HTMLButtonElement>` |  |  |
@@ -4001,6 +4023,8 @@ export default function CheckboxRowSelect() {
 ## API
 
 ### Checkbox
+
+A checkbox, alone (a row's select box, with `aria-label`) or with a label and description; `indeterminate` for select-all.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
@@ -5756,6 +5780,8 @@ export default function NumberInputBasic() {
 
 ### NumPadPopup
 
+A number pad in a sheet for typing a number on a touch screen, with ÷ × − + for a quick sum; `onCommit` gets the result.
+
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `label` * | `string` |  |  |
@@ -5945,6 +5971,8 @@ export default function RadioGroupBasic() {
 ## API
 
 ### RadioGroup
+
+One choice of a few visible options (a radiogroup), vertical or horizontal.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
@@ -6491,6 +6519,8 @@ export default function SwitchCardHeader() {
 ## API
 
 ### Switch
+
+An on / off setting that applies at once; with a label the whole row toggles it.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
@@ -13654,13 +13684,19 @@ export default function TableOrders() {
 
 ### Table
 
+A dense data table (transactions, logs, admin lists) in its own horizontal scroller; compose it with THead, TBody, TR, TH, TD.
+
 No props of its own.
 
 ### THead
 
+The header row group of a Table.
+
 No props of its own.
 
 ### TBody
+
+The body of a Table (no line under its last row).
 
 No props of its own.
 
@@ -13671,6 +13707,8 @@ A clickable row (onClick) gets the hover fill and a pointer; give it a link or b
 No props of its own.
 
 ### TH
+
+A column header cell (`scope="col"`); `align` for numeric columns.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|

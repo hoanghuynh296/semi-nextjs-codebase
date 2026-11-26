@@ -113,7 +113,7 @@ export function FilterChip({ def, onChange }: { def: FilterDef; onChange: (selec
   const icon = def.icon && <Icon name={def.icon} className="w-3.5 h-3.5 shrink-0" />;
   if (def.kind === "switch") {
     return (
-      <button type="button" aria-pressed={on} className={cn(CHIP, on ? CHIP_ON : CHIP_OFF)} onClick={() => onChange(on ? [] : ["1"])}>
+      <button data-semi="FilterChip" type="button" aria-pressed={on} className={cn(CHIP, on ? CHIP_ON : CHIP_OFF)} onClick={() => onChange(on ? [] : ["1"])}>
         {icon}
         {def.label}
       </button>
@@ -125,7 +125,7 @@ export function FilterChip({ def, onChange }: { def: FilterDef; onChange: (selec
     const currentLabel = options.find((o) => o.value === current)?.label;
     const disabled = options.length === 0;
     const trigger = (
-      <button
+      <button data-semi="FilterChip"
         type="button"
         disabled={disabled}
         className={cn(CHIP, on ? CHIP_ON : CHIP_OFF, disabled && "opacity-40 cursor-not-allowed")}
@@ -137,7 +137,7 @@ export function FilterChip({ def, onChange }: { def: FilterDef; onChange: (selec
     );
     if (disabled) return trigger;
     return (
-      <Menu
+      <Menu data-semi="FilterChip"
         align="left"
         label={def.label}
         items={options.map((o) => ({
@@ -156,7 +156,7 @@ export function FilterChip({ def, onChange }: { def: FilterDef; onChange: (selec
   const single = on && def.selected.length === 1 && first;
   const text = !on ? def.label : single ? first.label : t.filterSelected(def.label, def.selected.length);
   return (
-    <Popover
+    <Popover data-semi="FilterChip"
       label={def.label}
       width={240}
       className="p-0"
@@ -189,7 +189,7 @@ export function FilterOptions({ def, onChange, className }: { def: FilterDef; on
   const toggle = (value: string, checked: boolean) =>
     onChange(checked ? [...def.selected, value] : def.selected.filter((s) => s !== value));
   return (
-    <div role="group" aria-label={def.label} className={cn("flex flex-col gap-0.5 p-1.5 max-h-72 overflow-y-auto overscroll-contain", className)}>
+    <div data-semi="FilterOptions" role="group" aria-label={def.label} className={cn("flex flex-col gap-0.5 p-1.5 max-h-72 overflow-y-auto overscroll-contain", className)}>
       {def.options?.map((o) => (
         <div key={o.value} className="flex items-center gap-2 min-h-9 px-2 rounded-control hover:bg-tint">
           <Checkbox
@@ -291,7 +291,7 @@ export function FilterChipRow({
   const arrow =
     "absolute top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-panel shadow-overlay flex items-center justify-center text-strong hover:bg-raised cursor-pointer";
   return (
-    <div data-filter-row="" className={cn("min-h-9 flex items-center gap-2 min-w-0", className)}>
+    <div data-semi="FilterChipRow" data-filter-row="" className={cn("min-h-9 flex items-center gap-2 min-w-0", className)}>
       {leading && <div className="shrink-0 flex items-center gap-1 pr-2 border-r border-divider">{leading}</div>}
       <div className="relative flex-1 min-w-0">
         {edges.left && (

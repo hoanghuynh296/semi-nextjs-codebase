@@ -2,9 +2,11 @@
 
 // Joins related buttons into one segmented control (Lưu | ▾, ‹ Hôm nay ›): shared borders, outer corners only.
 import React from "react";
+import type { SemiName } from "./a11y";
 import { cn } from "../styles/utils";
 
 export function ButtonGroup({
+  "data-semi": semi = "ButtonGroup",
   label,
   orientation = "horizontal",
   fullWidth = false,
@@ -19,9 +21,9 @@ export function ButtonGroup({
   className?: string;
   /** Button elements (Button, or anything styled with BTN_*). */
   children: React.ReactNode;
-}) {
+} & SemiName) {
   return (
-    <div
+    <div data-semi={semi}
       role="group"
       aria-label={label}
       className={cn(

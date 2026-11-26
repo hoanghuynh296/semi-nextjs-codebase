@@ -9,7 +9,7 @@ import Link from "next/link";
 import { Icon, type IconName } from "./Icon";
 import { Spinner } from "./Button";
 import { cloneTrigger, useAnchoredPosition, type AnchoredPosition } from "./floating";
-import { FLOATING_LAYER } from "./a11y";
+import { FLOATING_LAYER, type SemiName } from "./a11y";
 import { useSemiLocale } from "./locale";
 import { BTN_ICON, BTN_SUBTLE } from "../styles/buttons";
 import { cn } from "../styles/utils";
@@ -95,6 +95,7 @@ export function Tooltip(props: {
         createPortal(
           <div
             {...FLOATING_LAYER}
+            data-semi="Tooltip"
             id={id}
             role="tooltip"
             onPointerEnter={() => timer.current && clearTimeout(timer.current)}
@@ -279,6 +280,7 @@ function MenuPanel({
       {sheet && <div {...FLOATING_LAYER} aria-hidden className="sm:hidden fixed inset-0 z-popover bg-overlay" />}
       <div
         {...FLOATING_LAYER}
+        data-semi="Menu"
         ref={panelRef}
         {...(header ? {} : menuRole)}
         style={{ left: pos.left, top: pos.top, bottom: pos.bottom, minWidth: pos.minWidth, maxHeight: pos.maxHeight }}
@@ -395,6 +397,7 @@ function useOutsideClose(open: boolean, refs: React.RefObject<HTMLElement | null
  * returns focus. Default trigger: icon-only "more" button; pass `trigger` (an element) to use your own.
  */
 export function Menu({
+  "data-semi": semi,
   items,
   label: labelProp,
   align = "right",
@@ -419,7 +422,7 @@ export function Menu({
    * @default true
    */
   sheet?: boolean;
-}) {
+} & SemiName) {
   const t = useSemiLocale();
   const label = labelProp ?? t.actions;
   const [open, setOpen] = useState<false | "first" | "last">(false);
@@ -447,6 +450,7 @@ export function Menu({
     ref: (el: HTMLElement | null) => {
       btnRef.current = el;
     },
+    ...(semi ? { "data-semi": semi } : {}),
     "aria-haspopup": "menu" as const,
     "aria-expanded": open !== false,
     "aria-controls": open !== false ? id : undefined,
@@ -459,7 +463,7 @@ export function Menu({
       {trigger && isValidElement(trigger) ? (
         cloneTrigger(trigger, triggerProps)
       ) : (
-        <button type="button" aria-label={label} title={label} className={cn(BTN_SUBTLE, BTN_ICON)} {...triggerProps}>
+        <button data-semi="Menu" type="button" aria-label={label} title={label} className={cn(BTN_SUBTLE, BTN_ICON)} {...triggerProps}>
           <Icon name="more" className="w-4 h-4" />
         </button>
       )}
@@ -509,7 +513,7 @@ export function ContextMenu({
   const openAt = (x: number, y: number) => setAt({ x, y });
   const clearPress = () => press.current && clearTimeout(press.current);
   return (
-    <div
+    <div data-semi="ContextMenu"
       ref={areaRef}
       tabIndex={0}
       // a named stop in the tab order that says how to open its menu
@@ -576,7 +580,7 @@ export function Menubar({ menus, label, className }: { menus: MenubarMenu[]; /**
     setOpen(openIt ? k : null);
   };
   return (
-    <div ref={barRef} role="menubar" aria-label={label} className={cn("inline-flex items-center gap-0.5 rounded-control border border-line bg-panel p-0.5", className)}>
+    <div data-semi="Menubar" ref={barRef} role="menubar" aria-label={label} className={cn("inline-flex items-center gap-0.5 rounded-control border border-line bg-panel p-0.5", className)}>
       {menus.map((m, i) => (
         <button
           key={m.label}

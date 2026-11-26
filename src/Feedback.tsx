@@ -2,6 +2,7 @@
 
 // Inline feedback & identity: Alert (callout / banner), Progress, Avatar, EmptyState.
 import React from "react";
+import type { SemiName } from "./a11y";
 import { useOverflowing } from "./useOverflowing";
 import { Icon, type IconName } from "./Icon";
 import { STATUS_ICON, type StatusTone } from "./Toast";
@@ -12,6 +13,7 @@ import { cn, FOCUS_RING, HIT_AREA } from "../styles/utils";
 
 /** Callout inside a page or form (docs/DESIGN_SYSTEM.md §3b): tinted surface, tone icon, optional action / dismiss. */
 export function Alert({
+  "data-semi": semi = "Alert",
   tone = "info",
   title,
   children,
@@ -29,11 +31,11 @@ export function Alert({
   action?: React.ReactNode;
   onDismiss?: () => void;
   className?: string;
-}) {
+} & SemiName) {
   const t = useSemiLocale();
   const s = STATUS_ICON[tone];
   return (
-    <div role={tone === "danger" ? "alert" : "status"} className={cn("rounded-card border p-3 flex items-start gap-2.5", s.surface, className)}>
+    <div data-semi={semi} role={tone === "danger" ? "alert" : "status"} className={cn("rounded-card border p-3 flex items-start gap-2.5", s.surface, className)}>
       <Icon name={icon ?? s.icon} className={cn("w-4 h-4 mt-px shrink-0", s.fg)} />
       <div className="flex-1 min-w-0 space-y-1">
         {title && <div className={cn("text-ui font-medium", s.fg)}>{title}</div>}
@@ -87,7 +89,7 @@ export function Progress({
 }) {
   const pct = value === undefined ? undefined : Math.max(0, Math.min(100, (value / max) * 100));
   return (
-    <div className={cn("min-w-0", className)}>
+    <div data-semi="Progress" className={cn("min-w-0", className)}>
       {(label || showValue) && (
         <div className="flex items-center justify-between gap-2 mb-1.5 text-ui">
           {label && <span className="text-muted font-medium truncate">{label}</span>}
@@ -123,6 +125,7 @@ const firstLetter = (name: string) => {
 
 /** Person or team mark: photo, else initials on a tone picked from the name (stable per name). */
 export function Avatar({
+  "data-semi": semi = "Avatar",
   name,
   src,
   size = "md",
@@ -138,7 +141,7 @@ export function Avatar({
   /** `auto` picks a stable category tone from the name; `neutral` uses the neutral raised fill (as in LetterAvatar). */
   tone?: "auto" | "neutral";
   className?: string;
-}) {
+} & SemiName) {
   const trimmed = name.trim();
   const text =
     initials === 1
@@ -156,10 +159,10 @@ export function Avatar({
   const label = trimmed || "?";
   if (src) {
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={src} alt={label} className={cn(cls, "object-cover border-line")} />;
+    return <img data-semi={semi} src={src} alt={label} className={cn(cls, "object-cover border-line")} />;
   }
   return (
-    <span role="img" aria-label={label} className={cn(cls, surface)}>
+    <span data-semi={semi} role="img" aria-label={label} className={cn(cls, surface)}>
       {text}
     </span>
   );
@@ -177,7 +180,7 @@ export function LetterAvatar({
   size?: keyof typeof AVATAR_SIZE;
   className?: string;
 }) {
-  return <Avatar name={name} src={src} size={size} initials={1} tone="neutral" className={className} />;
+  return <Avatar data-semi="LetterAvatar" name={name} src={src} size={size} initials={1} tone="neutral" className={className} />;
 }
 
 /**
@@ -215,7 +218,7 @@ export function EmptyState({
   const heading = title ?? (noResults ? t.noResults : t.noData);
   const shownAction = noResults && onClearFilters ? <Button variant="subtle" icon="close" onClick={onClearFilters}>{t.clearFilters}</Button> : action;
   return (
-    <div ref={ref} data-empty={variant ?? "default"} tabIndex={over ? 0 : undefined} aria-label={over && typeof heading === "string" ? heading : undefined} className={cn(EMPTY_STATIC, EMPTY_PHONE_CAP, "max-sm:justify-start", className)}>
+    <div data-semi="EmptyState" ref={ref} data-empty={variant ?? "default"} tabIndex={over ? 0 : undefined} aria-label={over && typeof heading === "string" ? heading : undefined} className={cn(EMPTY_STATIC, EMPTY_PHONE_CAP, "max-sm:justify-start", className)}>
       <span className="w-9 h-9 rounded-card bg-field border border-line flex items-center justify-center text-muted shrink-0">
         <Icon name={icon ?? (noResults ? "search" : "box")} className="w-4 h-4" />
       </span>

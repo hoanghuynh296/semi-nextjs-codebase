@@ -108,7 +108,7 @@ export function SubpageToolbar({
   const primaryActionLabel = primaryActionLabelProp ?? t.add;
   const searchPlaceholder = searchPlaceholderProp ?? t.search;
   return (
-    <div
+    <div data-semi="SubpageToolbar"
       className={`${STICKY_TOOLBAR} flex flex-wrap items-center justify-between gap-2.5 min-w-0 ${
         title ? "gap-x-4 mb-5 sm:mb-6" : "mb-5"
       } ${className}`}

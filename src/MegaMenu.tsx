@@ -149,7 +149,7 @@ export function MegaMenu({
   };
 
   return createPortal(
-    <div
+    <div data-semi="MegaMenu"
       {...FLOATING_LAYER}
       ref={panelRef}
       role="dialog"

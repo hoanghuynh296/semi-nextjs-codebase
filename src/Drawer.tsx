@@ -49,7 +49,7 @@ export function Drawer({
   if (!open || !mounted) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-modal">
+    <div data-semi="Drawer" className="fixed inset-0 z-modal">
       <div className="absolute inset-0 bg-overlay backdrop-blur-sm" onClick={onClose} aria-hidden />
       <div
         ref={ref}

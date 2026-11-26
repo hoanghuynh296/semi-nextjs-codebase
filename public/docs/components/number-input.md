@@ -51,6 +51,8 @@ export default function NumberInputBasic() {
 
 ### NumPadPopup
 
+A number pad in a sheet for typing a number on a touch screen, with ÷ × − + for a quick sum; `onCommit` gets the result.
+
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `label` * | `string` |  |  |

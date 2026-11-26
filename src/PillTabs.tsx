@@ -93,7 +93,7 @@ export function PillTabs<T extends string = string>({
   const panelId = idPrefix ? `${idPrefix}-panel` : `${base}-panel`;
 
   return (
-    <div className={cn("min-w-0 max-w-full", className)}>
+    <div data-semi="PillTabs" className={cn("min-w-0 max-w-full", className)}>
       <div className="relative max-w-full min-w-0">
         <TabEdgeCue side="left" shown={edges.left} insetClass="inset-y-1" />
         <div

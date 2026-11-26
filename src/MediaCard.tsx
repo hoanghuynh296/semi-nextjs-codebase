@@ -46,7 +46,7 @@ export function MediaCard({ media, title, meta, topLeft, bottomRight, ratio = 16
   // blocks opening the card.
   const slot = "absolute z-10 max-w-[calc(100%-1rem)] pointer-events-none [&_:is(a,button,input,select,textarea,[tabindex])]:pointer-events-auto";
   return (
-    <div data-media-card="" className={cn("group relative flex flex-col gap-2 min-w-0", className)}>
+    <div data-semi="MediaCard" data-media-card="" className={cn("group relative flex flex-col gap-2 min-w-0", className)}>
       {/* first in the DOM: the card comes before its slot controls in the tab order */}
       {action.href !== undefined ? (
         <Link href={action.href} className={cover} {...named} />

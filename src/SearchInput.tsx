@@ -66,7 +66,7 @@ export function SearchInput({
 
   if (!isOpen && !value) {
     return (
-      <button
+      <button data-semi="SearchInput"
         type="button"
         onClick={handleOpen}
         aria-label={label || placeholder}
@@ -79,7 +79,7 @@ export function SearchInput({
   }
 
   return (
-    <div
+    <div data-semi="SearchInput"
       ref={containerRef}
       className={`relative flex items-center shrink-0 animate-tooltip-in ${className}`}
     >

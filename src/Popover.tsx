@@ -5,7 +5,7 @@
 import React, { isValidElement, useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { cloneTrigger, useAnchoredPosition } from "./floating";
-import { FLOATING_LAYER } from "./a11y";
+import { FLOATING_LAYER, type SemiName } from "./a11y";
 import { cn } from "../styles/utils";
 
 const PANEL = "fixed z-popover overflow-y-auto overscroll-contain bg-panel border border-line rounded-card shadow-overlay";
@@ -16,6 +16,7 @@ const FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]),select:n
  * Escape returns focus to the trigger. Controlled with `open` + `onOpenChange`, or on its own.
  */
 export function Popover({
+  "data-semi": semi,
   trigger,
   label,
   align = "left",
@@ -36,7 +37,7 @@ export function Popover({
   onOpenChange?: (open: boolean) => void;
   className?: string;
   children: React.ReactNode;
-}) {
+} & SemiName) {
   const [own, setOwn] = useState(false);
   const open = openProp ?? own;
   const setOpen = useCallback(
@@ -70,6 +71,7 @@ export function Popover({
     ref: (el: HTMLElement | null) => {
       triggerRef.current = el;
     },
+    ...(semi ? { "data-semi": semi } : {}),
     "aria-haspopup": "dialog" as const,
     "aria-expanded": open,
     "aria-controls": open ? id : undefined,
@@ -83,6 +85,7 @@ export function Popover({
         createPortal(
           <div
             {...FLOATING_LAYER}
+            data-semi="Popover"
             ref={panelRef}
             id={id}
             role="dialog"
@@ -167,6 +170,7 @@ export function HoverCard({
         createPortal(
           <div
             {...FLOATING_LAYER}
+            data-semi="HoverCard"
             id={id}
             role="tooltip"
             onPointerEnter={() => later(true, 0)}

@@ -66,7 +66,7 @@ export function SegmentedControl<T extends string = string>({
   });
 
   return (
-    <div className={cn("relative inline-block max-w-full min-w-0 align-middle", className)}>
+    <div data-semi="SegmentedControl" className={cn("relative inline-block max-w-full min-w-0 align-middle", className)}>
       <TabEdgeCue side="left" shown={edges.left} insetClass="inset-y-1" />
       <div
         ref={scrollerRef}

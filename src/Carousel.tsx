@@ -57,7 +57,7 @@ export function Carousel({
 
   const nav = cn("w-8 h-8 rounded-full bg-panel border border-line shadow-float flex items-center justify-center text-body hover:text-strong disabled:opacity-0 transition", FOCUS_RING);
   return (
-    <section aria-roledescription="carousel" aria-label={label} className={cn("relative", className)}>
+    <section data-semi="Carousel" aria-roledescription="carousel" aria-label={label} className={cn("relative", className)}>
       <div
         ref={trackRef}
         tabIndex={0}

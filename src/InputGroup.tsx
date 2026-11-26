@@ -21,7 +21,7 @@ export function InputGroup({
 }) {
   const addon = "flex items-center shrink-0 text-ui text-muted px-3 [&>button]:-mx-2";
   return (
-    <div
+    <div data-semi="InputGroup"
       data-field-frame=""
       className={cn(
         "flex items-stretch w-full h-field pointer-coarse:max-sm:min-h-11 bg-field border border-field-line rounded-control transition-colors",

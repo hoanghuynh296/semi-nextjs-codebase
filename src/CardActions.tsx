@@ -43,7 +43,7 @@ export function CardActions({
   const stop = (e: React.SyntheticEvent) => e.stopPropagation();
   return (
     // clicks here must not open the card underneath
-    <div role="group" aria-label={label} onClick={stop} className={cn("absolute top-2 right-2 z-10 flex gap-1.5", className)}>
+    <div data-semi="CardActions" role="group" aria-label={label} onClick={stop} className={cn("absolute top-2 right-2 z-10 flex gap-1.5", className)}>
       <div className="hidden [@media(hover:hover)]:flex gap-1.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-within:opacity-100 has-[[aria-expanded=true]]:opacity-100 transition-opacity">
         {actions.map((a) => (
           <button key={a.label} type="button" onClick={a.onClick} aria-label={a.label} title={a.label} className={ROUND}>

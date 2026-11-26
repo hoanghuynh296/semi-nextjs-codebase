@@ -114,7 +114,7 @@ export function Slider(props: SliderProps) {
   const lo = range ? pct(values[0]) : 0;
   const hi = pct(values[values.length - 1]);
   return (
-    <div className={cn("space-y-2", disabled && "opacity-40", className)}>
+    <div data-semi="Slider" className={cn("space-y-2", disabled && "opacity-40", className)}>
       <div className="flex items-center justify-between gap-3">
         <span id={`${id}-label`} className="text-ui font-medium text-muted">
           {label}

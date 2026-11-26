@@ -61,7 +61,7 @@ export function Tabs<T extends string>({
   };
 
   return (
-    <div className={className}>
+    <div data-semi="Tabs" className={className}>
       <div
         ref={listRef}
         role="tablist"

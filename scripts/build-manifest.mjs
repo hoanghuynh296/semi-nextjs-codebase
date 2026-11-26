@@ -59,7 +59,7 @@ function propsOf(src, at) {
     if ("}])>".includes(ch)) d--;
     if (ch === "," && d === 0) {
       const m = cur.trim().match(/^(?:\.\.\.)?["']?([\w-]+)["']?/);
-      if (m && !cur.trim().startsWith("...")) names.push(m[1]);
+      if (m && !cur.trim().startsWith("...") && !m[1].startsWith("data-")) names.push(m[1]); // data-semi: debug hook, not API
       cur = "";
     } else cur += ch;
   }

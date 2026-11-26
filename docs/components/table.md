@@ -72,13 +72,19 @@ export default function TableOrders() {
 
 ### Table
 
+A dense data table (transactions, logs, admin lists) in its own horizontal scroller; compose it with THead, TBody, TR, TH, TD.
+
 No props of its own.
 
 ### THead
 
+The header row group of a Table.
+
 No props of its own.
 
 ### TBody
+
+The body of a Table (no line under its last row).
 
 No props of its own.
 
@@ -89,6 +95,8 @@ A clickable row (onClick) gets the hover fill and a pointer; give it a link or b
 No props of its own.
 
 ### TH
+
+A column header cell (`scope="col"`); `align` for numeric columns.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|

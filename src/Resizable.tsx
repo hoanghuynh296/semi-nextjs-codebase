@@ -71,7 +71,7 @@ export function ResizablePanels({
     handle.addEventListener("pointerup", onUp);
   };
   return (
-    <div ref={ref} className={cn("flex w-full min-h-0 rounded-card border border-line overflow-hidden", horizontal ? "flex-row" : "flex-col", className)}>
+    <div data-semi="ResizablePanels" ref={ref} className={cn("flex w-full min-h-0 rounded-card border border-line overflow-hidden", horizontal ? "flex-row" : "flex-col", className)}>
       {panels.map((panel, i) => (
         <React.Fragment key={i}>
           <div className="min-w-0 min-h-0 overflow-auto" style={{ flexBasis: `${sizes[i]}%`, flexGrow: 0, flexShrink: 0 }}>

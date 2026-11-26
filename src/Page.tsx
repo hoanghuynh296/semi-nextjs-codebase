@@ -75,7 +75,7 @@ export function SubNav({
     FOCUS_RING,
   );
   return (
-    <aside
+    <aside data-semi="SubNav"
       aria-label={label ?? t.subNav}
       data-subnav=""
       className={cn("w-full bg-panel sm:rounded-panel py-5 px-2.5 flex flex-col", className)}
@@ -182,7 +182,7 @@ export function PageSection({
 }) {
   const H = `h${headingLevel}` as const;
   return (
-    <section data-page-section="" className={cn("flex flex-col gap-4 min-w-0", className)}>
+    <section data-semi="PageSection" data-page-section="" className={cn("flex flex-col gap-4 min-w-0", className)}>
       {(title || actions || description) && (
         <div className="flex flex-col gap-1 min-w-0">
           {(title || actions) && (
@@ -216,7 +216,7 @@ export function PageGrid({
   className?: string;
 }) {
   return (
-    <div data-page-grid="" className={cn("grid grid-cols-1 gap-2 min-w-0", GRID_COLS[columns], className)}>
+    <div data-semi="PageGrid" data-page-grid="" className={cn("grid grid-cols-1 gap-2 min-w-0", GRID_COLS[columns], className)}>
       {children}
     </div>
   );
@@ -392,6 +392,7 @@ export function Page({
   if (layout === "reading") {
     return wrap(
       <div
+        data-semi="Page"
         data-page-layout="reading"
         data-page-fixed={fixed ? "" : undefined}
         className={cn("@container w-full min-w-0 flex-1 flex flex-col px-4 pt-4 pb-16", fixed && "h-full min-h-0", className)}
@@ -424,6 +425,7 @@ export function Page({
         : subNav;
     return wrap(
       <div
+        data-semi="Page"
         data-page-layout="two-column"
         data-page-fixed={fixed ? "" : undefined}
         className={cn(
@@ -462,6 +464,7 @@ export function Page({
 
   return wrap(
     <div
+      data-semi="Page"
       data-page-layout="work"
       data-page-fixed={fixed ? "" : undefined}
       className={cn(

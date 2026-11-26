@@ -163,7 +163,7 @@ export function NavigationMenu({
     cn("inline-flex items-center h-control px-3 rounded-control text-ui font-medium transition-hover", href === current ? "text-strong bg-item-selected" : "text-body hover:text-strong hover:bg-item-hover", FOCUS_RING);
   const openItem = open !== null ? items[open] : undefined;
   return (
-    <nav
+    <nav data-semi="NavigationMenu"
       ref={navRef}
       aria-label={label}
       className={cn("relative", className)}

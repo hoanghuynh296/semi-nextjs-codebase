@@ -46,7 +46,7 @@ export function NumberInput({ ref, numpadLabel, unit, integer, onClick, readOnly
 
   return (
     <>
-      <input
+      <input data-semi="NumberInput"
         id={field?.id}
         aria-describedby={field?.describedBy}
         aria-invalid={field?.invalid || undefined}

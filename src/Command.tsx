@@ -174,7 +174,7 @@ export function Command({
   };
   const optionId = (i: number) => `${base}-o-${i}`;
   return (
-    <div className={cn("flex flex-col min-h-0", className)}>
+    <div data-semi="Command" className={cn("flex flex-col min-h-0", className)}>
       <div data-field-frame="" className={cn("flex items-center bg-field border-b border-field-line focus-within:border-field-line-focus focus-within:bg-field-focus has-[input:focus-visible]:outline-solid has-[input:focus-visible]:outline-2 has-[input:focus-visible]:-outline-offset-2 has-[input:focus-visible]:outline-focus transition-colors shrink-0", lg ? "gap-3 px-4 h-14" : "gap-2 px-3 h-12")}>
         <Icon name="search" className={cn("text-muted shrink-0", lg ? "w-5 h-5" : "w-4 h-4")} />
         <input
@@ -282,7 +282,7 @@ export function CommandDialog({
   );
   if (!open || !mounted) return null;
   return createPortal(
-    <div className="fixed inset-0 z-dialog flex items-start justify-center p-4 pt-[12vh]">
+    <div data-semi="CommandDialog" className="fixed inset-0 z-dialog flex items-start justify-center p-4 pt-[12vh]">
       <div className="absolute inset-0 bg-overlay backdrop-blur-sm" onClick={() => onOpenChange(false)} aria-hidden />
       <div
         ref={ref}
@@ -402,7 +402,7 @@ export function CommandPalette({
     </span>
   );
   return createPortal(
-    <div className="fixed inset-0 z-dialog flex items-start justify-center p-3 sm:p-4 pt-[8vh] sm:pt-[12vh]">
+    <div data-semi="CommandPalette" className="fixed inset-0 z-dialog flex items-start justify-center p-3 sm:p-4 pt-[8vh] sm:pt-[12vh]">
       <div className="absolute inset-0 bg-overlay backdrop-blur-sm" onClick={() => setOpen(false)} aria-hidden />
       <div
         ref={ref}

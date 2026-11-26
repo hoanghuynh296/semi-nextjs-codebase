@@ -16,9 +16,10 @@ export const TABLE_ROW_HOVER = "hover:bg-item-hover transition-hover";
 type Align = "left" | "right" | "center";
 const ALIGN: Record<Align, string> = { left: "text-left", right: "text-right", center: "text-center" };
 
+/** A dense data table (transactions, logs, admin lists) in its own horizontal scroller; compose it with THead, TBody, TR, TH, TD. */
 export function Table({ className, children, ...rest }: React.TableHTMLAttributes<HTMLTableElement>) {
   return (
-    <div className="w-full overflow-x-auto overscroll-x-contain">
+    <div data-semi="Table" className="w-full overflow-x-auto overscroll-x-contain">
       <table className={cn(TABLE, className)} {...rest}>
         {children}
       </table>
@@ -26,19 +27,22 @@ export function Table({ className, children, ...rest }: React.TableHTMLAttribute
   );
 }
 
-export const THead = (p: React.HTMLAttributes<HTMLTableSectionElement>) => <thead {...p} />;
+/** The header row group of a Table. */
+export const THead = (p: React.HTMLAttributes<HTMLTableSectionElement>) => <thead data-semi="THead" {...p} />;
 
+/** The body of a Table (no line under its last row). */
 export function TBody({ className, ...rest }: React.HTMLAttributes<HTMLTableSectionElement>) {
-  return <tbody className={cn("[&>tr:last-child>td]:border-b-0", className)} {...rest} />;
+  return <tbody data-semi="TBody" className={cn("[&>tr:last-child>td]:border-b-0", className)} {...rest} />;
 }
 
 /** A clickable row (onClick) gets the hover fill and a pointer; give it a link or button inside for keyboard users. */
 export function TR({ className, onClick, ...rest }: React.HTMLAttributes<HTMLTableRowElement>) {
-  return <tr onClick={onClick} className={cn(onClick && cn(TABLE_ROW_HOVER, "cursor-pointer"), className)} {...rest} />;
+  return <tr data-semi="TR" onClick={onClick} className={cn(onClick && cn(TABLE_ROW_HOVER, "cursor-pointer"), className)} {...rest} />;
 }
 
+/** A column header cell (`scope="col"`); `align` for numeric columns. */
 export function TH({ align = "left", className, ...rest }: React.ThHTMLAttributes<HTMLTableCellElement> & { align?: Align }) {
-  return <th scope="col" className={cn(TABLE_HEAD_CELL, ALIGN[align], className)} {...rest} />;
+  return <th data-semi="TH" scope="col" className={cn(TABLE_HEAD_CELL, ALIGN[align], className)} {...rest} />;
 }
 
 /** `numeric` right-aligns and sets tabular-nums (money, counts, dates); `wrap` lets long text wrap (min 12rem wide). */
@@ -50,7 +54,7 @@ export function TD({
   ...rest
 }: React.TdHTMLAttributes<HTMLTableCellElement> & { align?: Align; numeric?: boolean; wrap?: boolean }) {
   return (
-    <td
+    <td data-semi="TD"
       className={cn(TABLE_CELL, ALIGN[align ?? (numeric ? "right" : "left")], numeric && "tabular-nums", wrap && "!whitespace-normal min-w-48", className)}
       {...rest}
     />

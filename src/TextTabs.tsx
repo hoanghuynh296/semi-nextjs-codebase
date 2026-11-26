@@ -133,7 +133,7 @@ export function TextTabs<T extends string = string>({
   );
 
   return (
-    <div data-text-tabs="" className={cn("mb-7 min-w-0", className)}>
+    <div data-semi="TextTabs" data-text-tabs="" className={cn("mb-7 min-w-0", className)}>
       {heading ? <h1 className="m-0 min-w-0">{list}</h1> : list}
       {hasPanel && (
         <div role="tabpanel" id={`${base}-panel`} aria-labelledby={`${base}-tab-${current}`} tabIndex={0} className={cn("rounded-control", FOCUS_RING, panelClassName)}>

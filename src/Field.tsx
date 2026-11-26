@@ -66,7 +66,7 @@ export function Field({
   const state: FieldState = { id, labelId, describedBy: errorId ?? hintId, invalid: !!error, required, kind };
   return (
     <FieldContext.Provider value={state}>
-      <div className={cn("min-w-0", className)}>
+      <div data-semi="Field" className={cn("min-w-0", className)}>
         <label id={labelId} htmlFor={id} className={FIELD_LABEL}>
           {label}
           {required && (
@@ -107,7 +107,7 @@ export function Input({ ref, icon, className, ...rest }: InputProps) {
   ensureFocusModality();
   const field = useField();
   const input = (
-    <input
+    <input data-semi="Input"
       ref={ref}
       id={field?.id}
       aria-describedby={field?.describedBy}
@@ -120,7 +120,7 @@ export function Input({ ref, icon, className, ...rest }: InputProps) {
   );
   if (!icon) return input;
   return (
-    <div className="relative">
+    <div data-semi="Input" className="relative">
       <Icon name={icon} className="w-3.5 h-3.5 text-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
       {input}
     </div>
@@ -162,7 +162,7 @@ export function Textarea({ ref, className, rows = 3, autoGrow = false, resizable
     disabled: rest.disabled,
   });
   const ta = (
-    <textarea
+    <textarea data-semi="Textarea"
       ref={setRefs}
       rows={rows}
       id={textareaId}
@@ -175,7 +175,7 @@ export function Textarea({ ref, className, rows = 3, autoGrow = false, resizable
   );
   if (!resizable) return ta;
   return (
-    <div ref={wrapperRef} className="min-w-0 flex flex-col">
+    <div data-semi="Textarea" ref={wrapperRef} className="min-w-0 flex flex-col">
       <div
         role="separator"
         tabIndex={rest.disabled ? -1 : 0}

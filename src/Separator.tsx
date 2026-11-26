@@ -18,14 +18,14 @@ export function Separator({
   className?: string;
 }) {
   const a11y = decorative ? { "aria-hidden": true } : { role: "separator", "aria-orientation": orientation };
-  if (orientation === "vertical") return <div {...a11y} className={cn("w-px self-stretch bg-divider shrink-0", className)} />;
+  if (orientation === "vertical") return <div data-semi="Separator" {...a11y} className={cn("w-px self-stretch bg-divider shrink-0", className)} />;
   if (label)
     return (
-      <div {...a11y} className={cn("flex items-center gap-3 text-chrome text-muted", className)}>
+      <div data-semi="Separator" {...a11y} className={cn("flex items-center gap-3 text-chrome text-muted", className)}>
         <span className="h-px flex-1 bg-divider" />
         <span className="shrink-0">{label}</span>
         <span className="h-px flex-1 bg-divider" />
       </div>
     );
-  return <div {...a11y} className={cn("h-px w-full bg-divider", className)} />;
+  return <div data-semi="Separator" {...a11y} className={cn("h-px w-full bg-divider", className)} />;
 }

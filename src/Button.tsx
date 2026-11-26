@@ -11,7 +11,7 @@ import { cn } from "../styles/utils";
 /** Indeterminate activity mark for a button or field running its own action (§13b: no page spinners). */
 export function Spinner({ className = "w-4 h-4", label }: { className?: string; label?: string }) {
   return (
-    <svg
+    <svg data-semi="Spinner"
       viewBox="0 0 24 24"
       fill="none"
       role={label ? "status" : undefined}
@@ -75,6 +75,7 @@ export type ButtonProps =
   | (Base & { iconOnly?: false; children: React.ReactNode })
   | (Base & { iconOnly: true; icon: IconName; "aria-label": string; children?: never });
 
+/** The action control (docs/DESIGN_SYSTEM.md §9): `subtle` by default, a brand fill only for the one main action, `danger` for a destructive one. */
 export function Button({
   ref,
   variant = "subtle",
@@ -93,7 +94,7 @@ export function Button({
 }: ButtonProps) {
   const iconCls = size === "modal" || size === "lg" ? "w-4 h-4" : size === "xs" || size === "pill" ? "w-3 h-3" : "w-3.5 h-3.5";
   return (
-    <button
+    <button data-semi="Button"
       ref={ref}
       type={type}
       disabled={disabled || loading}

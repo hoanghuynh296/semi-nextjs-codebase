@@ -184,6 +184,8 @@ export default function ButtonSizes() {
 
 ### Button
 
+The action control (docs/DESIGN_SYSTEM.md §9): `subtle` by default, a brand fill only for the one main action, `danger` for a destructive one.
+
 | Prop | Type | Default | Description |
 |---|---|---|---|
 | `ref` | `React.Ref<HTMLButtonElement>` |  |  |

@@ -183,7 +183,7 @@ export function CustomSelect({
   };
 
   return (
-    <div className={`relative ${block ? "block w-full min-w-0" : "inline-block"} ${className}`}>
+    <div data-semi="CustomSelect" className={`relative ${block ? "block w-full min-w-0" : "inline-block"} ${className}`}>
       <button
         ref={btnRef}
         id={id ?? field?.id}

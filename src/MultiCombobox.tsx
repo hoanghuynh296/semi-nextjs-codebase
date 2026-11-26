@@ -218,7 +218,7 @@ export function MultiCombobox({
   };
 
   return (
-    <div
+    <div data-semi="MultiCombobox"
       role="group"
       aria-label={field ? undefined : label}
       aria-labelledby={field ? field.labelId : undefined}

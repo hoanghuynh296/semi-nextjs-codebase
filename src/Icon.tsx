@@ -350,7 +350,7 @@ export function Icon({
   const brandContent = !isMonochrome ? BRAND_PATHS[name] : null;
 
   return (
-    <svg
+    <svg data-semi="Icon"
       className={`shrink-0 ${className}`}
       fill="none"
       stroke="currentColor"
@@ -450,7 +450,7 @@ export function IconTile({
   const box = size === "sm" ? "w-8 h-8 rounded-control" : size === "lg" ? "w-12 h-12 rounded-card" : "w-10 h-10 rounded-control";
   const ico = size === "sm" ? "w-4 h-4" : size === "lg" ? "w-6 h-6" : "w-5 h-5";
   return (
-    <span className={`${box} ${TILE_TONES[resolvedTone]} flex items-center justify-center shrink-0 ${className}`}>
+    <span data-semi="IconTile" className={`${box} ${TILE_TONES[resolvedTone]} flex items-center justify-center shrink-0 ${className}`}>
       <Icon name={name} className={ico} />
     </span>
   );

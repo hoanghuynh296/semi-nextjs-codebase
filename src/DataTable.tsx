@@ -271,7 +271,7 @@ export function DataTable<T>({
   const togglePage = (on: boolean) => setSelected(on ? [...new Set([...selected, ...visibleIds])] : selected.filter((id) => !visibleIds.includes(id)));
 
   return (
-    <div className={cn("space-y-3", className)}>
+    <div data-semi="DataTable" className={cn("space-y-3", className)}>
       {selectable && selected.length > 0 && bulkActions && (
         <div role="region" aria-label={t.selectedCount(selected.length)} className="flex flex-wrap items-center gap-2 rounded-control border border-line bg-field px-3 py-2">
           <span className="text-ui font-medium text-strong tabular-nums">{t.selectedCount(selected.length)}</span>

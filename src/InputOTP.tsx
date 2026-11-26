@@ -47,7 +47,7 @@ export function InputOTP({
   };
   const caret = Math.min(value.length, length - 1);
   return (
-    <div
+    <div data-semi="InputOTP"
       role="presentation"
       data-field-frame=""
       className={cn(

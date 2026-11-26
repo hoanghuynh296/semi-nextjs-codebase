@@ -132,6 +132,13 @@ export function useBackdropClose(onClose?: () => void) {
 /** Marks a floating layer (Popover, Menu, select list…) that is rendered in a portal on `body`: focus inside it
  * counts as inside the dialog that opened it, so the focus trap leaves it alone. Spread on the portaled element. */
 export const FLOATING_LAYER = { "data-semi-floating": "" } as const;
+
+/**
+ * The `data-semi` debug hook (docs/DESIGN_SYSTEM.md "data-semi"): every component marks its root element with its
+ * name; a Semi component that renders another one as its root passes its own name down through this prop. A stable
+ * hook for debugging, tests and the docs inspector; never style by it.
+ */
+export type SemiName = { "data-semi"?: string };
 const inFloatingLayer = (el: Element | null) => Boolean(el?.closest("[data-semi-floating]"));
 
 /**

@@ -69,7 +69,7 @@ export function BarActions({
   const overflowLabel = moreLabel ?? t.moreActions;
 
   return (
-    <div data-bar-actions="" className={cn("semi-bar-actions", className)}>
+    <div data-semi="BarActions" data-bar-actions="" className={cn("semi-bar-actions", className)}>
       {rest.length > 0 && (
         <Menu
           label={overflowLabel}
@@ -136,7 +136,7 @@ export function StickyContextBar({
   useStickyBarPin(barRef, pin);
   // STICKY_TOOLBAR has py-2.5 (10px bottom padding) + -my-2.5; mb-1.5 (6px) leaves 16px from the filter row to the list.
   return (
-    <div
+    <div data-semi="StickyContextBar"
       ref={barRef}
       data-sticky-bar=""
       role={label ? "search" : undefined}
@@ -255,7 +255,7 @@ export function SearchPill({
     inputRef.current?.focus();
   };
   return (
-    <div data-field-frame="" className={cn("flex items-center gap-2 h-11 pl-4 pr-1.5 rounded-full bg-field border border-field-line focus-within:border-field-line-focus focus-within:bg-field-focus has-[input:focus-visible]:outline-solid has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-focus transition-colors", className)}>
+    <div data-semi="SearchPill" data-field-frame="" className={cn("flex items-center gap-2 h-11 pl-4 pr-1.5 rounded-full bg-field border border-field-line focus-within:border-field-line-focus focus-within:bg-field-focus has-[input:focus-visible]:outline-solid has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-focus transition-colors", className)}>
       <Icon name="search" className="w-[18px] h-[18px] text-muted shrink-0" />
       <input
         ref={inputRef}

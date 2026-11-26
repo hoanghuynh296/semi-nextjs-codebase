@@ -32,7 +32,7 @@ export function ExampleBlock({ example, id }: { example: DocExample; id: string 
         )}
       </div>
       {view === "preview" ? (
-        <div data-density-view className={`@container ${CARD} p-card sm:p-panel overflow-x-auto ${example.preview === "frame" ? "bg-canvas" : ""}`}>
+        <div data-density-view data-example-preview="" className={`@container ${CARD} p-card sm:p-panel overflow-x-auto ${example.preview === "frame" ? "bg-canvas" : ""}`}>
           <Component />
         </div>
       ) : (

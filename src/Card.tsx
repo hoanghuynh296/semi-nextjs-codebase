@@ -77,7 +77,7 @@ export function Card({
   if (selectable) {
     const checkAria = selectLabel ?? (label ? t.selectItem(label) : t.selectRow);
     return (
-      <div
+      <div data-semi="Card"
         onKeyDown={onKeyDown}
         className={cn(
           "group relative",
@@ -128,7 +128,7 @@ export function Card({
       }
     : { onKeyDown };
   return (
-    <div
+    <div data-semi="Card"
       className={cn(
         interactive || clickable ? (bordered ? CARD_BORDERED_HOVER : CARD_HOVER) : bordered ? CARD_BORDERED : CARD,
         (active || selected) && CARD_ACTIVE,

@@ -2,6 +2,7 @@
 
 // Page-level states: error, not found, no access (docs/DESIGN_SYSTEM.md §13c). Empty lists use EmptyState (§13).
 import React from "react";
+import type { SemiName } from "./a11y";
 import Link from "next/link";
 import { Button } from "./Button";
 import { Icon, type IconName } from "./Icon";
@@ -15,6 +16,7 @@ type StateTone = "danger" | "neutral";
 export type StateHeadingLevel = 1 | 2 | 3;
 
 function StateBlock({
+  "data-semi": semi,
   kind,
   icon,
   tone,
@@ -36,11 +38,12 @@ function StateBlock({
   headingLevel?: StateHeadingLevel;
   children?: React.ReactNode;
   className?: string;
-}) {
+} & SemiName) {
   const [ref, over] = useOverflowing<HTMLDivElement>();
   const Heading = `h${headingLevel}` as const;
   return (
     <div
+      data-semi={semi}
       ref={ref}
       role={role}
       data-state={kind}
@@ -97,7 +100,7 @@ export function ErrorState({
 }) {
   const t = useSemiLocale();
   return (
-    <StateBlock kind="error" role="alert" headingLevel={headingLevel} icon={icon} tone="danger" title={title ?? t.errorTitle} message={message ?? t.errorMessage} detail={detail} className={className}>
+    <StateBlock data-semi="ErrorState" kind="error" role="alert" headingLevel={headingLevel} icon={icon} tone="danger" title={title ?? t.errorTitle} message={message ?? t.errorMessage} detail={detail} className={className}>
       {onRetry && (
         <Button variant="inverse" icon="refresh" onClick={onRetry}>
           {retryLabel ?? t.retry}
@@ -137,7 +140,7 @@ export function NotFound({
 }) {
   const t = useSemiLocale();
   return (
-    <StateBlock kind="not-found" headingLevel={headingLevel} icon="search" tone="neutral" title={title ?? t.notFoundTitle} message={message ?? t.notFoundMessage} className={className}>
+    <StateBlock data-semi="NotFound" kind="not-found" headingLevel={headingLevel} icon="search" tone="neutral" title={title ?? t.notFoundTitle} message={message ?? t.notFoundMessage} className={className}>
       <HomeLink href={homeHref} label={homeLabel ?? t.home} />
     </StateBlock>
   );
@@ -165,7 +168,7 @@ export function Forbidden({
 }) {
   const t = useSemiLocale();
   return (
-    <StateBlock kind="forbidden" headingLevel={headingLevel} icon="lock" tone="neutral" title={title ?? t.forbiddenTitle} message={message ?? t.forbiddenMessage} className={className}>
+    <StateBlock data-semi="Forbidden" kind="forbidden" headingLevel={headingLevel} icon="lock" tone="neutral" title={title ?? t.forbiddenTitle} message={message ?? t.forbiddenMessage} className={className}>
       <HomeLink href={homeHref} label={homeLabel ?? t.home} />
       {action}
     </StateBlock>

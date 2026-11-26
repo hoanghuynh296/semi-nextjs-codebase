@@ -15,12 +15,12 @@ export function PageActionsProvider({ children }: { children: React.ReactNode })
 /** Where the actions appear: the right end of the page header row. */
 export function PageActionsSlot({ className = "" }: { className?: string }) {
   const ctx = useContext(SlotContext);
-  return <div ref={ctx?.setEl} className={`flex items-center gap-2 shrink-0 empty:hidden ${className}`} />;
+  return <div data-semi="PageActionsSlot" ref={ctx?.setEl} className={`flex items-center gap-2 shrink-0 empty:hidden ${className}`} />;
 }
 
 /** Renders its children in the page header slot (inline when the page has no slot). */
 export function PageActions({ children }: { children: React.ReactNode }) {
   const ctx = useContext(SlotContext);
-  if (!ctx?.el) return ctx ? null : <div className="flex items-center justify-end gap-2">{children}</div>;
+  if (!ctx?.el) return ctx ? null : <div data-semi="PageActions" className="flex items-center justify-end gap-2">{children}</div>;
   return createPortal(children, ctx.el);
 }
