@@ -45,7 +45,7 @@ export function ExampleBlock({ example, id, frameHref }: { example: DocExample; 
                 target="_blank"
                 rel="noopener"
                 data-example-fullscreen=""
-                className={cn("inline-flex items-center gap-1 rounded-control text-ui font-medium text-strong hover:underline underline-offset-2", FOCUS_RING)}
+                className={cn("inline-flex items-center gap-1 h-8 px-1 rounded-control text-ui font-medium text-strong hover:underline underline-offset-2", FOCUS_RING)}
               >
                 Mở toàn màn hình
                 <Icon name="external" className="w-3.5 h-3.5" />
