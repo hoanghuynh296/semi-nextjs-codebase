@@ -8,7 +8,7 @@ import { FOCUS_RING, cn } from "../styles/utils";
 
 // the BTN_HIT pair: at least 44 × 44px on a touch phone (pointer-coarse + max-sm), the drawn size elsewhere
 const ITEM =
-  "inline-flex items-center justify-center gap-1.5 whitespace-nowrap min-w-control pointer-coarse:max-sm:min-h-11 pointer-coarse:max-sm:min-w-11 px-2.5 rounded-control text-ui font-medium transition-hover cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed";
+  "inline-flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0 min-w-control pointer-coarse:max-sm:min-h-11 pointer-coarse:max-sm:min-w-11 px-2.5 rounded-control text-ui font-medium transition-hover cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed";
 const SEG_STATE = (on: boolean) => (on ? "bg-raised-2 text-strong" : "text-muted hover:text-strong hover:bg-item-hover");
 
 /** One button that stays pressed (aria-pressed). Icon-only needs an aria-label. */
@@ -85,13 +85,27 @@ export function ToggleGroup<T extends string>({
     const to = { ArrowRight: enabled[(k + 1) % enabled.length], ArrowLeft: enabled[(k - 1 + enabled.length) % enabled.length], Home: enabled[0], End: enabled[enabled.length - 1] }[e.key];
     if (to === undefined) return;
     e.preventDefault();
-    refs.current[to]?.focus();
+    const el = refs.current[to];
+    el?.focus({ preventScroll: true });
+    // keep the focused option fully inside the track when it scrolls sideways (only the track moves, never the page)
+    const track = el?.parentElement;
+    if (el && track) {
+      const [r, t] = [el.getBoundingClientRect(), track.getBoundingClientRect()];
+      if (r.left < t.left) track.scrollLeft -= t.left - r.left + 4;
+      else if (r.right > t.right) track.scrollLeft += r.right - t.right + 4;
+    }
     if (type === "single") onChange([options[to].key]);
   };
   const single = type === "single";
   const current = options.findIndex((o) => value.includes(o.key));
   return (
-    <div role={single ? "radiogroup" : "toolbar"} aria-label={label} className={cn("inline-flex items-center gap-0.5 bg-raised p-1 h-control pointer-coarse:max-sm:h-auto rounded-control shrink-0", className)}>
+    // Never wider than its container: labels do not wrap, so a narrow row scrolls sideways inside the track (no
+    // scrollbar; focus() scrolls the focused option into view) instead of spilling past the page edge (#187).
+    <div
+      role={single ? "radiogroup" : "toolbar"}
+      aria-label={label}
+      className={cn("inline-flex items-center gap-0.5 bg-raised p-1 h-control pointer-coarse:max-sm:h-auto rounded-control shrink-0 max-w-full overflow-x-auto overscroll-x-contain no-scrollbar", className)}
+    >
       {options.map((o, i) => {
         const on = value.includes(o.key);
         return (

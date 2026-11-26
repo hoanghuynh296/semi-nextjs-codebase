@@ -371,3 +371,44 @@ test("mouse 1440: the drawn size of every selection control stays (#187)", async
   await hydrated(page);
   expect((await hitBox(page.locator('[data-example="switch/basic"] [role="switch"]').first())).drawn).toEqual([36, 20]);
 });
+
+test("touch phone 320: ToggleGroup is never wider than its container, scrolls inside its own track, keeps the focused option visible (#187)", async ({ browser }) => {
+  const page = await browser.newPage({ viewport: { width: 320, height: 700 }, isMobile: true, hasTouch: true });
+  for (const [path, group, overflows] of [
+    ["/components/toggle/", '[data-example="toggle/group"] [data-density-view] [role="toolbar"]', false],
+    ["/components/toggle/", '[data-example="toggle/group"] [data-density-view] [role="radiogroup"]', false],
+    ["/icons/", '[role="radiogroup"][aria-label="Màu ô icon"]', true],
+  ] as const) {
+    await page.goto(path);
+    await hydrated(page);
+    const g = page.locator(group).first();
+    await g.scrollIntoViewIfNeeded();
+    const res = await g.evaluate((el) => {
+      const items = [...el.querySelectorAll("button")].map((b) => b.getBoundingClientRect());
+      const r = el.getBoundingClientRect();
+      const parent = el.parentElement!.getBoundingClientRect();
+      return {
+        rows: new Set(items.map((b) => Math.round(b.y))).size,
+        minH: Math.round(Math.min(...items.map((b) => b.height))),
+        inside: r.left >= parent.left - 0.5 && r.right <= parent.right + 0.5,
+        scrolls: el.scrollWidth > el.clientWidth,
+        pageOverflow: document.documentElement.scrollWidth - innerWidth,
+      };
+    });
+    expect(res, path + " " + group).toEqual({ rows: 1, minH: 44, inside: true, scrolls: overflows, pageOverflow: 0 });
+    // ArrowRight to the last option: each focused option is in view inside the track
+    const buttons = g.locator("button");
+    const n = await buttons.count();
+    await buttons.first().focus();
+    for (let i = 1; i < n; i++) {
+      await page.keyboard.press("ArrowRight");
+      await expect(buttons.nth(i)).toBeFocused();
+      const seen = await buttons.nth(i).evaluate((b) => {
+        const [r, t] = [b.getBoundingClientRect(), b.parentElement!.getBoundingClientRect()];
+        return r.left >= t.left - 1 && r.right <= t.right + 1 && r.right <= innerWidth + 1;
+      });
+      expect(seen, `${path} option ${i + 1} of ${n} in view`).toBe(true);
+    }
+  }
+  await page.close();
+});

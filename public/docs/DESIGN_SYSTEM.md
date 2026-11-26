@@ -1049,7 +1049,9 @@ The full inventory with props is generated into `components.json` (`npm run buil
   grows to 52px), `PillTabs`, `Tabs`, `TextTabs` (44px tall, the word stays on the baseline), `ToggleGroup` /
   `Toggle`, `ThemeSwitcher` segments, `Menubar` menus, `FilterChipRow` chips and "Xoá lọc", `ChatModelPicker` chips,
   `Breadcrumb` links and "…", the `DataTable` sort buttons and select-all cell (the header row is 44px there), the
-  `Stepper` − + (44 × 44, flush with its 44px track). Rows that scroll keep scrolling sideways on one row. A labelled
+  `Stepper` − + (44 × 44, flush with its 44px track). Rows that scroll keep scrolling sideways on one row; a
+  `ToggleGroup` is never wider than its container and scrolls inside its own track (labels never wrap; ←/→ keep the
+  focused option in view), so an app needs no wrapper. A labelled
   `Checkbox`, `RadioGroup` option or `Switch` is one `<label>` row: a tap anywhere on it toggles, and on a touch
   phone it gets 12px above and below (at least 44px tall); a box or switch without a visible label keeps `HIT_AREA`.
   `Chip` (34px) is not grown here: its look is the Magnific parity issue (#190). `tests/touch-targets.spec.ts` covers
