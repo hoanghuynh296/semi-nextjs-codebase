@@ -123,8 +123,10 @@ export const BUTTON_PAIRS = [
   ["secondary", "color-on-secondary", "color-secondary"],
   ["secondary hover", "color-on-secondary", "color-secondary-hover"],
   ["disabled", "color-text-muted", "color-subtle-button"],
-  ["danger", "color-danger-fg", "color-danger-bg"],
-  ["danger hover", "color-danger-fg", "color-danger-bg-hover"],
+  ["danger", "color-on-solid", "color-danger-fill"],
+  ["danger hover", "color-on-solid", "color-danger-fill-hover"],
+  ["danger-subtle", "color-danger-fg", "color-danger-bg"],
+  ["danger-subtle hover", "color-danger-fg", "color-danger-bg-hover"],
   ["count badge", "color-on-primary", "color-primary"],
   ["new tag", "color-on-new-tag", "color-new-tag"],
 ];

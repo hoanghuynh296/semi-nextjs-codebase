@@ -7,6 +7,11 @@ const ORDERS = Array.from({ length: 12 }, (_, i) => ({
   customer: ["Cửa hàng Minh An", "Nhà sách Phú Lợi", "Quán Bếp Nhà"][i % 3],
   total: (i + 3) * 185000,
   paid: i % 4 !== 0,
+  // a long title: cut to one line (3 in a narrow dialog), the chevron beside it shows it in full
+  note:
+    i === 6
+      ? "giao gấp trước Tết cho chuỗi 12 cửa hàng tại Thủ Đức và Bình Thạnh, kèm hoá đơn VAT, biên bản bàn giao từng điểm và ảnh chụp kiện hàng khi nhận"
+      : null,
 }));
 const vnd = (n: number) => `${n.toLocaleString("vi-VN")} ₫`;
 
@@ -26,7 +31,7 @@ export default function DetailOverlayList() {
       <DetailOverlay
         open={order !== null}
         onClose={close}
-        title={order ? `Đơn ${order.id}` : ""}
+        title={order ? `Đơn ${order.id}${order.note ? ` — ${order.note}` : ""}` : ""}
         subtitle={order?.customer}
         index={index}
         total={ORDERS.length}

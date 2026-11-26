@@ -79,6 +79,8 @@
       "danger-bg-hover",
       "danger-border",
       "danger-solid",
+      "danger-fill",
+      "danger-fill-hover",
       "success-bg",
       "success-border",
       "success-solid",
@@ -3515,7 +3517,7 @@
       "kind": "function",
       "module": "styles/buttons.ts",
       "client": false,
-      "summary": "Button's classes: variant × size, icon-only, round, full width, the phone touch size (BTN_HIT), and `relative` unless className positions it."
+      "summary": "Button's classes: variant × size, icon-only, round, full width, the phone touch size (BTN_HIT: lg and pill too), and `relative` unless className positions it."
     },
     {
       "name": "cn",
@@ -3881,7 +3883,14 @@
       "kind": "constant",
       "module": "styles/buttons.ts",
       "client": false,
-      "summary": "Destructive action (Dừng in, Xoá): the danger status fill (tint + line) with danger text."
+      "summary": "Destructive action (Dừng in, Xoá): solid red (danger-fill, hover danger-fill-hover) with white text (on-solid), AA in both themes (#189)."
+    },
+    {
+      "name": "BTN_DANGER_SUBTLE",
+      "kind": "constant",
+      "module": "styles/buttons.ts",
+      "client": false,
+      "summary": "The quieter destructive look (the danger status tint + line, danger text): the pre-#189 `danger`, for a destructive action that is not the main one."
     },
     {
       "name": "BTN_ICON",
@@ -3903,6 +3912,20 @@
       "module": "styles/buttons.ts",
       "client": false,
       "summary": "Smallest (24px, 12px text): the inverse pill of a list title row, chips of actions. Add to any BTN_* constant."
+    },
+    {
+      "name": "BTN_LG",
+      "kind": "constant",
+      "module": "styles/buttons.ts",
+      "client": false,
+      "summary": "Large CTA (40px, 14px / 500, the control radius): the one call to action of a page header (#189; lint `one-large-button`). Add to any BTN_* constant."
+    },
+    {
+      "name": "BTN_PILL",
+      "kind": "constant",
+      "module": "styles/buttons.ts",
+      "client": false,
+      "summary": "Small pill CTA (24px, 12px / 500, fully rounded) (#189). Add to any BTN_* constant."
     },
     {
       "name": "MODAL_BTN_SURFACE",
@@ -3958,7 +3981,14 @@
       "kind": "constant",
       "module": "styles/buttons.ts",
       "client": false,
-      "summary": "Destructive confirm in a dialog (Xoá, Dừng in): the danger status fill (tint + line, danger text: AA in both themes)."
+      "summary": "Destructive confirm in a dialog (Xoá, Dừng in): solid red with white text (AA in both themes, #189)."
+    },
+    {
+      "name": "MODAL_BTN_DANGER_SUBTLE",
+      "kind": "constant",
+      "module": "styles/buttons.ts",
+      "client": false,
+      "summary": "The quieter destructive look at dialog size (danger tint + line, danger text): the pre-#189 MODAL_BTN_DANGER."
     },
     {
       "name": "BTN_HIT",

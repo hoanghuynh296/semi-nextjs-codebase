@@ -10,6 +10,7 @@ import { Icon } from "./Icon";
 import { useDialog } from "./a11y";
 import { currentSearch, navigationApi, patchSearch, subscribeUrl } from "./urlState";
 import { useSemiLocale } from "./locale";
+import { ClampToggle, useClampToggle } from "./clampedTitle";
 import { cn } from "../styles/utils";
 
 /** What useDetailParam returns: the open id and the ways to change it (all write the URL). */
@@ -125,6 +126,7 @@ export function DetailOverlay({
   open: boolean;
   /** Close button, Escape and a click on the backdrop. With useDetailParam pass its `close`. */
   onClose: () => void;
+  /** The record's title: one line (3 in a narrow dialog); when cut, a chevron toggle beside it shows it whole (#196). */
   title: React.ReactNode;
   /** One line under the title (region, category). */
   subtitle?: React.ReactNode;
@@ -152,6 +154,9 @@ export function DetailOverlay({
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   const shown = open && mounted;
+  // a cut title (one line, or 3 in a narrow dialog) gets a toggle that shows it in full (no tooltip on touch, #196);
+  // collapsed again for another item or a new opening
+  const clamp = useClampToggle<HTMLHeadingElement>(`${shown}:${index ?? ""}:${typeof title === "string" ? title : ""}`);
   useDialog(ref, shown, onClose);
 
   // the list keeps its scroll: remember it on open, put it back if anything moved it while the overlay was up
@@ -229,14 +234,23 @@ export function DetailOverlay({
           <button type="button" onClick={onClose} aria-label={t.close} title={`${t.close} (Esc)`} className={NAV}>
             <Icon name="close" className="w-4 h-4" />
           </button>
-          <div data-detail-title="" className="flex-1 min-w-[60%] px-1">
-            <h2
-              id={titleId}
-              title={typeof title === "string" ? title : undefined}
-              className="text-ui font-medium text-strong truncate @max-[36rem]/detail-header:whitespace-normal @max-[36rem]/detail-header:break-words @max-[36rem]/detail-header:line-clamp-3"
-            >
-              {title}
-            </h2>
+          <div data-detail-title="" className="flex-1 min-w-[calc(60%+2.25rem)] px-1">
+            <div className="flex items-end gap-1 min-w-0">
+              <h2
+                ref={clamp.ref}
+                id={titleId}
+                title={typeof title === "string" ? title : undefined}
+                className={cn(
+                  "flex-1 min-w-0 text-ui font-medium text-strong",
+                  clamp.expanded
+                    ? "whitespace-normal break-words"
+                    : "truncate @max-[36rem]/detail-header:whitespace-normal @max-[36rem]/detail-header:break-words @max-[36rem]/detail-header:line-clamp-3",
+                )}
+              >
+                {title}
+              </h2>
+              {clamp.cut && <ClampToggle expanded={clamp.expanded} onToggle={clamp.toggle} controls={titleId} />}
+            </div>
             {subtitle && <div className="text-ui text-muted truncate">{subtitle}</div>}
           </div>
           <div data-detail-nav="" className="ml-auto shrink-0 flex items-center gap-2">
