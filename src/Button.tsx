@@ -28,7 +28,8 @@ export function Spinner({ className = "w-4 h-4", label }: { className?: string; 
 /**
  * 1.0 variants (#146): `subtle` (default, ordinary actions) · `surface` (toolbar actions) · `inverse` (the main action of a
  * card or a list title row) · `outline` (beside an inverse one) · `ghost` (icon buttons, the nav bottom row) · `primary` /
- * `secondary` (brand fills: the one main button of a page, a dialog or the nav) · `danger`.
+ * `secondary` (brand fills: the one main button of a page, a dialog or the nav) · `danger` (solid red, #189) · `danger-subtle`
+ * (the danger tint, the pre-#189 look).
  */
 export type ButtonVariant = ButtonVariantName;
 export type ButtonSize = ButtonSizeName;
@@ -39,15 +40,18 @@ type Base = Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "children"> & {
    * Look of the button. `subtle` ordinary action · `surface` toolbar action · `inverse` the main action of a card or a
    * list title row · `outline` beside an inverse one · `ghost` icon buttons, the nav bottom row · `primary` /
    * `secondary` the brand fill, only for the one main button of a page, a dialog (its commit) or the nav, or a case the
-   * app's owner asks for (`secondary` is the brand secondary; the primary when the brand has none) · `danger`.
+   * app's owner asks for (`secondary` is the brand secondary; the primary when the brand has none) · `danger` a
+   * destructive action: solid red with white text · `danger-subtle` a destructive action that is not the main one: the
+   * danger tint and line with danger text.
    * Disabled is neutral for every variant.
    * @default "subtle"
    */
   variant?: ButtonVariant;
   /**
-   * md = h-control (34px, 14px text) · sm = 28px, 12px text (dense rows, toolbars) · xs = 24px, 12px text (the inverse
-   * pill of a list title row) · modal = 44px and 15px text on phones, h-control from sm (dialog footers, a full-width
-   * commit).
+   * md = h-control (34px, 14px text) · lg = 40px, 14px text: the one call to action of a page header (lint
+   * `one-large-button`) · sm = 28px, 12px text (dense rows, toolbars) · xs = 24px, 12px text (the inverse pill of a list
+   * title row) · pill = 24px, 12px text, fully rounded (a small pill CTA) · modal = 44px and 15px text on phones,
+   * h-control from sm (dialog footers, a full-width commit). On a touch phone every size is at least 44 × 44px.
    * @default "md"
    */
   size?: ButtonSize;
@@ -87,7 +91,7 @@ export function Button({
   children,
   ...rest
 }: ButtonProps) {
-  const iconCls = size === "modal" ? "w-4 h-4" : size === "xs" ? "w-3 h-3" : "w-3.5 h-3.5";
+  const iconCls = size === "modal" || size === "lg" ? "w-4 h-4" : size === "xs" || size === "pill" ? "w-3 h-3" : "w-3.5 h-3.5";
   return (
     <button
       ref={ref}

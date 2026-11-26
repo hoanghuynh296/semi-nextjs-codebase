@@ -386,6 +386,8 @@
   --color-danger-bg-hover: var(--semi-danger-bg-hover); /* Hover of the danger button's tint (danger text keeps 4.5:1 on it; danger-border is a line, too dark a fill for the light danger text) */
   --color-danger-border: var(--semi-danger-border); /* Border of the tinted danger surface */
   --color-danger-solid: var(--semi-danger-solid); /* Solid danger fill (status dot, progress, destructive confirm); text on it is on-solid */
+  --color-danger-fill: var(--semi-danger-fill); /* Fill of the solid danger button (Button variant="danger", BTN_DANGER, MODAL_BTN_DANGER); text on it is on-solid (white, 4.83:1). The lightest red step with white text at 4.5:1, the same in both themes (#189) */
+  --color-danger-fill-hover: var(--semi-danger-fill-hover); /* Hover of the solid danger button: one red step darker than danger-fill */
   --color-success-bg: var(--semi-success-bg); /* Tinted success surface (callout, badge, danger button) */
   --color-success-border: var(--semi-success-border); /* Border of the tinted success surface */
   --color-success-solid: var(--semi-success-solid); /* Solid success fill (status dot, progress, destructive confirm); text on it is on-solid */
@@ -481,6 +483,8 @@
   --semi-danger-bg-hover: color-mix(in oklab, var(--color-rose-500) 18%, transparent);
   --semi-danger-border: color-mix(in oklab, var(--color-rose-500) 25%, transparent);
   --semi-danger-solid: var(--color-rose-500);
+  --semi-danger-fill: var(--color-red-600);
+  --semi-danger-fill-hover: var(--color-red-700);
   --semi-success-bg: color-mix(in oklab, var(--color-emerald-500) 12%, transparent);
   --semi-success-border: color-mix(in oklab, var(--color-emerald-500) 25%, transparent);
   --semi-success-solid: var(--color-emerald-500);
@@ -575,6 +579,8 @@
   --semi-danger-bg-hover: color-mix(in oklab, var(--color-rose-500) 15%, transparent);
   --semi-danger-border: color-mix(in oklab, var(--color-rose-500) 30%, transparent);
   --semi-danger-solid: var(--color-rose-600);
+  --semi-danger-fill: var(--color-red-600);
+  --semi-danger-fill-hover: var(--color-red-700);
   --semi-success-bg: color-mix(in oklab, var(--color-emerald-500) 10%, transparent);
   --semi-success-border: color-mix(in oklab, var(--color-emerald-500) 30%, transparent);
   --semi-success-solid: var(--color-emerald-600);
@@ -669,6 +675,8 @@
     --semi-danger-bg-hover: color-mix(in oklab, var(--color-rose-500) 15%, transparent);
     --semi-danger-border: color-mix(in oklab, var(--color-rose-500) 30%, transparent);
     --semi-danger-solid: var(--color-rose-600);
+    --semi-danger-fill: var(--color-red-600);
+    --semi-danger-fill-hover: var(--color-red-700);
     --semi-success-bg: color-mix(in oklab, var(--color-emerald-500) 10%, transparent);
     --semi-success-border: color-mix(in oklab, var(--color-emerald-500) 30%, transparent);
     --semi-success-solid: var(--color-emerald-600);
@@ -769,6 +777,8 @@
   --color-danger-bg-hover: var(--semi-danger-bg-hover);
   --color-danger-border: var(--semi-danger-border);
   --color-danger-solid: var(--semi-danger-solid);
+  --color-danger-fill: var(--semi-danger-fill);
+  --color-danger-fill-hover: var(--semi-danger-fill-hover);
   --color-success-bg: var(--semi-success-bg);
   --color-success-border: var(--semi-success-border);
   --color-success-solid: var(--semi-success-solid);

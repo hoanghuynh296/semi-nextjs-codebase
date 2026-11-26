@@ -100,7 +100,8 @@ const themed = (css) => themedScopes(css).plain;
  * reference), so they still change with the theme.
  */
 const BRAND = ["--semi-primary", "--semi-primary-hover", "--semi-on-primary", "--semi-secondary", "--semi-secondary-hover", "--semi-on-secondary", "--semi-new-tag-text-dark", "--semi-new-tag-text-light"];
-const SAME_OK = new Set(["--semi-on-solid", ...BRAND]);
+// danger-fill (#189): the lightest red with white text at 4.5:1 is the same step in both themes.
+const SAME_OK = new Set(["--semi-on-solid", "--semi-danger-fill", "--semi-danger-fill-hover", ...BRAND]);
 function sameTokens({ dark, light }) {
   return Object.keys(light)
     .filter((k) => k.startsWith("--semi-") && k in dark && dark[k].toLowerCase() === light[k].toLowerCase() && !SAME_OK.has(k) && !/var\(--semi-/.test(light[k]))
