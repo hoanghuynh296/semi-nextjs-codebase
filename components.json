@@ -1853,6 +1853,24 @@
       "doc": "docs/components/markdown.md"
     },
     {
+      "name": "MediaCard",
+      "kind": "component",
+      "module": "src/MediaCard.tsx",
+      "client": true,
+      "summary": "Gallery / rail card. Hover (devices that hover) scales the media to 1.05 in 300ms ease-out (`--motion-slide`); `prefers-reduced-motion` keeps it still. Keyboard: Tab reaches the card (focus ring around the whole card), Enter opens it (Space too for the button form); slot buttons follow it in the tab order.",
+      "props": [
+        "media",
+        "title",
+        "meta",
+        "topLeft",
+        "bottomRight",
+        "ratio",
+        "label",
+        "className"
+      ],
+      "doc": "docs/components/media-card.md"
+    },
+    {
       "name": "MegaMenu",
       "kind": "component",
       "module": "src/MegaMenu.tsx",
@@ -2452,6 +2470,23 @@
         "className"
       ],
       "doc": "docs/components/search-pill.md"
+    },
+    {
+      "name": "SectionHeader",
+      "kind": "component",
+      "module": "src/SectionHeader.tsx",
+      "client": true,
+      "summary": "Header row of a discovery or gallery section: title (and description) on the left; actions and an optional ‹ › pager on the right. Nothing renders for a slot you leave out.",
+      "props": [
+        "title",
+        "description",
+        "actions",
+        "pager",
+        "headingLevel",
+        "id",
+        "className"
+      ],
+      "doc": "docs/components/section-header.md"
     },
     {
       "name": "SegmentedControl",

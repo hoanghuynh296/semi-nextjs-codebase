@@ -122,7 +122,8 @@ Names and values: **`TOKENS.md`** "Type scale" (the contract; values in `tokens/
   `fonts.display`, falling back to the UI sans) only for the hero, reading-page titles, big tabs and editorial section
   heads. Tracking −0.01em on display sizes from 20px (in the tokens).
 - **Overline** (`text-overline`) is the only uppercase text, and only as a **group or section label**: a nav or drawer
-  group, a palette group, a mega menu column, a section of a form or detail panel. Never the label of one field, a
+  group, a palette group, a mega menu column, a section of a form or detail panel, and the meta line of a `MediaCard`
+  (a category or count under the caption, #191). Never the label of one field, a
   button, a link, a table cell or a heading (`overline-place`).
 - Sizes come from the type tokens only, never `text-[13px]` or `text-xs` / `text-sm` / `text-base`. Every size carries
   its line height (about 1.5 for UI and body: 12/18, 14/22, 15/24; 1.1–1.3 for display), so text rarely needs
@@ -526,6 +527,7 @@ Semi wires T1's motion tokens (`TOKENS.md` "Motion": `--motion-hover`, `--motion
   `display: contents`, so it adds no layout box and never breaks fixed-height chains or inner scrollers.
 - **Skeleton pulse:** `Skeleton` and `PageSkeleton` pulse quietly with `motion-pulse` (2.5s ease-in-out, opacity
   1 → 0.6 → 1), replacing Tailwind's default pulse; content replaces skeletons in place with no jump.
+- **Media card hover:** `MediaCard` scales its media to 1.05 in 300ms ease-out (`--motion-slide`) on devices that hover.
 - **Tooltip & disclosure:** `Tooltip` enters with `animate-tooltip-in` (200ms, opacity + scale 0.96 → 1); `Accordion`
   and `Collapsible` open in 300ms ease-out (`--motion-disclosure`) and close in 300ms ease-in
   (`--motion-disclosure-close`); `PillTabs` / `SegmentedControl` slide in 300ms (`transition-slide`).
@@ -611,6 +613,25 @@ rounded-card` with their area's `TILE_TONES`.
   <button className={SECTION_LINK}>Quản lý <Icon name="chevron" className="w-3.5 h-3.5" /></button>
 </div>
 ```
+
+### Discovery and gallery sections (#191, C-014)
+
+`SectionHeader` is the header row of a discovery or gallery section: the title (`text-section`, 20 / 500), an optional
+muted line, `actions` on the right (one `<Button variant="ghost">Xem tất cả <Icon name="chevron" /></Button>`) and an
+optional `pager`: two subtle round icon-only `Button`s ‹ › (`size="sm"`, 44px on touch phones) that scroll a rail by one
+view (`pager={{ target: railRef }}`) or call your handlers (`onPrev` / `onNext` + `prevDisabled` / `nextDisabled`), disabled
+at the ends. It draws nothing of its own: no colours, no hand-made buttons. Under it, `MediaCard`s: 16:9 media at
+`rounded-card` (12), caption `text-ui font-medium text-strong` (14 / 500), an optional meta line in `text-overline`, and two
+optional slots over the media that take any node (`topLeft`: `Badge tone="overlay"`; `bottomRight`: an Avatar + name in an
+overlay Badge, or `Button size="pill"`). The whole card is one link (`href`) or button (`onClick`) with the focus ring around
+it; the slots sit beside that control. Hover scales the media to 1.05 in 300ms ease-out (`--motion-slide`), never under
+reduced motion.
+
+- **Grid:** `grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-x-4 gap-y-6`.
+- **Rail:** `flex gap-4 overflow-x-auto snap-x snap-mandatory overscroll-x-contain`; cards `snap-start shrink-0
+  basis-[75%] sm:basis-[calc((100%-2rem)/3)] lg:basis-[calc((100%-3rem)/4)]` (phones: 75% wide, the next card peeks).
+  The header's `pager={{ target: railRef }}` pages it.
+- A work page's section with its content stays `PageSection`.
 
 ## 9. Buttons
 
@@ -928,6 +949,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `SearchPill.tsx`, `FilterChipRow.tsx`, `ViewSwitch.tsx`, `FilterPanel.tsx`, `filterParams.ts`, `urlState.ts` | `StickyContextBar` (trackpad-proven layout-pin search + filter bar, focus-pin, `data-stuck` / `data-searching`, `--sticky-pin` / `--sticky-view`), `BarActions` + `BarAction` (pinned in-field actions slot, ≤ 2 slots `[•••][main]`), `SearchPill` (wide pill search, debounce, `/`, `trailing`), `SortDef`, `FilterChipRow` (one-line chips, ‹ ›, Xoá lọc, leading views, trailing `sort` + `selection` in-place bulk bar + `ViewSwitch`), `useListSelection` (selection-mode state hook), `BulkAction`, `ListSelection`, `FilterChip`, `FilterOptions`, `useFilterParams` (URL filter + `?sort=key.dir` state, `legacy` rewrite, `patch`, Back / Forward), `FilterParamsOptions`, `FilterParamsSortOptions`, `LegacyParamsMap`, `replaceFilters`, `writeSearch`, `ViewSwitch` (list ↔ grid, density), `PhoneFilterBar` (views · Bộ lọc · sort · Chọn / in-place selection bar), `FilterPanel` (full-screen / side-sheet filters); URL helpers `readFilters`, `readFilterValues`, `writeFilters`, `clearFilters`, `activeFilterCount`, `toQueryString`, `readSort`, `writeSort`, `parseSort`, `formatSort`, `SORT_PARAM`, types `FilterSpec`, `FilterDef`, `FilterOption`, `FilterValues` (§4, §4d, §4e) |
 | `SplitButton.tsx`, `CardActions.tsx`, `DetailOverlay.tsx` | `SplitButton` (main action + ▾ `Menu` of its variants, one button on phones, G1), `CardActions` (hover / focus icon actions + ⋯ on cards, ⋯ only on touch), `DetailOverlay` (record over its list: ‹ › with n / N, side panel, scroll kept), `useDetailParam` (`?open=` in the URL, Back closes), `openDetail` (open one from anywhere on the route), types `CardAction`, `DetailParamState` (§4, §9) |
 | `WorkspaceLayout.tsx`, `GuidedEmptyState.tsx`, `FeatureIntro.tsx`, `HintTextarea.tsx` | `WorkspaceLayout` (page type workspace: control panel + sticky main action, result), `WorkspaceHeader` (back + tool name, tabs), `WorkspaceSection` (`text-overline` label + counter), `Stepper` (− value +, spinbutton), `GuidedEmptyState` (EmptyState variant guided: step carousel or numbered steps, starting points), `FeatureIntro` (once-per-user feature dialog, `localIntroStore`), `HintTextarea` (@ / `/` hints and suggestions), types `GuideStep`, `GuideTemplate`, `GuideTemplateGroup`, `FeatureIntroSlide`, `FeatureIntroStore`, `HintToken`, `HintTrigger` (§4, §9b, §13, §14) |
+| `SectionHeader.tsx`, `MediaCard.tsx` | `SectionHeader` (discovery / gallery section head: 20 / 500 title, description, `actions`, ‹ › `pager` of subtle icon Buttons over a rail or handlers; types `SectionHeaderProps`, `SectionHeaderPager`, `SectionHeaderPagerHandlers`, `SectionHeaderPagerTarget`), `MediaCard` (16:9 media card, caption + overline meta, optional `topLeft` / `bottomRight` slots, one link or button, hover scale; type `MediaCardProps`) (§8) |
 | `KpiCard.tsx`, `Modal.tsx` | `KpiCard` (metric card in the brand's figure font, neutral icon, `featured` for the screen's main number, shimmer), `Modal` (shared portal dialog with `MODAL_HEAD` + `MODAL_FOOT`) (§13, §14) |
 | `Icon.tsx` | `Icon`, `ICONS`, `IconName`, `IconTile`, `TILE_TONES`, `TONE_TEXT`, `TileTone` |
 | `AppHeader.tsx` | `AppHeader` (stand-alone app top bar, §4b) |
@@ -1017,6 +1039,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Slides in a row | `Carousel` (`perView`, scroll-snap, no auto-play) |
 | Areas people resize | `ResizablePanels` (`direction`, `defaultSizes`, `storageKey`) |
 | Media at a fixed ratio | `AspectRatio` (`ratio`, default 16 / 9) |
+| A gallery or discovery section | `SectionHeader` (title, `actions` "Xem tất cả", ‹ › `pager`) over a grid or rail of `MediaCard` (§8) |
 | Website top navigation | `NavigationMenu` (links + panels of described links; a sheet below md) |
 | Commands of a desktop-style tool | `Menubar` (Tệp · Sửa · Xem; items like `Menu`) |
 | Code to read or copy | `CodeBlock` (`title`, copy button) |

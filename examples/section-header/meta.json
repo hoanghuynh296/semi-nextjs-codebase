@@ -1,0 +1,51 @@
+{
+  "title": "Section header",
+  "group": "Navigation & layout",
+  "description": "The header row of a discovery or gallery section: a 20 / 500 title, an optional muted line, an actions slot on the right (usually a ghost \"Xem tất cả\" Button) and an optional ‹ › pager of subtle icon buttons that scrolls a rail or calls your handlers, disabled at the ends.",
+  "components": [
+    "SectionHeader"
+  ],
+  "imports": [
+    "type SectionHeaderProps",
+    "type SectionHeaderPager"
+  ],
+  "when": [
+    "Above a rail or a grid of MediaCards on a discovery, home or gallery page.",
+    "A section that links to its full list (\"Xem tất cả\") or pages through a row of cards (‹ ›)."
+  ],
+  "instead": [
+    {
+      "need": "A section of a work page with its content",
+      "use": "PageSection (title, description, actions)"
+    },
+    {
+      "need": "The title of the page",
+      "use": "PageTitle"
+    },
+    {
+      "need": "A group label in a form or a side panel",
+      "use": "WorkspaceSection or text-overline"
+    }
+  ],
+  "a11y": [
+    "The title is an h2 (headingLevel 3 inside another section); give the section aria-labelledby={id} with the same id.",
+    "The pager is a group named by the title; its buttons are named \"Mục trước\" / \"Mục sau\" (locale prevItem / nextItem, or prevLabel / nextLabel) and are disabled at the start / end, so Tab skips them there. Enter or Space presses them.",
+    "With target, a press scrolls the rail by one visible width (instantly under prefers-reduced-motion); cards scrolled off screen stay reachable with Tab."
+  ],
+  "notes": [
+    "It renders the existing Button only: the actions are your Buttons, the pager is two Button iconOnly variant=\"subtle\" size=\"sm\" shape=\"round\" (44px on a touch phone). No colours or sizes of its own.",
+    "pager={{ target: ref }} reads the rail after mount (the server HTML has ‹ disabled and › enabled) and follows its scroll and size; the ref can point at the scroll container or at an element that contains one (a Carousel's wrapper, though a Carousel shows its own arrows from sm).",
+    "pager={{ onPrev, onNext, prevDisabled, nextDisabled }} for anything else (pages of data, a carousel of yours)."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "Title, description and Xem tất cả"
+    },
+    {
+      "file": "rail",
+      "title": "Pager over a rail of MediaCards",
+      "description": "The rail recipe: phones show 75% wide cards (the next one peeks), 3 per view from sm, 4 from lg. ‹ › scroll it by one view and turn off at the ends."
+    }
+  ]
+}
