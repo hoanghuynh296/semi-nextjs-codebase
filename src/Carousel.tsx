@@ -5,7 +5,7 @@
 import React, { Children, useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Icon } from "./Icon";
 import { useSemiLocale } from "./locale";
-import { FOCUS_RING, HIT_AREA, cn } from "../styles/utils";
+import { FOCUS_RING, cn } from "../styles/utils";
 
 const SM = "(min-width: 640px)";
 const subscribeSm = (cb: () => void) => {
@@ -94,8 +94,9 @@ export function Carousel({
               <Icon name="chevron" className="w-4 h-4" />
             </button>
           </div>
-          {/* a dot is drawn 6px; its button is 44 × 44 on a touch phone (real size, gap 0: boxes touch, never overlap) */}
-          <div className="mt-3 pointer-coarse:max-sm:mt-0 flex justify-center gap-1.5 pointer-coarse:max-sm:gap-0">
+          {/* a dot is drawn 6px inside a real button box, 24 × 24 with a mouse and 44 × 44 on any touch screen (phones, tablets,
+              touch laptops), no gap: neighbouring boxes touch and never overlap (no pseudo-element hit area) */}
+          <div className="mt-1 any-pointer-coarse:mt-0 flex justify-center">
             {Array.from({ length: pages }, (_, i) => (
               <button
                 key={i}
@@ -103,7 +104,7 @@ export function Carousel({
                 aria-label={t.goToSlide(i + 1)}
                 aria-current={i === index || undefined}
                 onClick={() => go(i)}
-                className={cn("group/dot relative flex items-center justify-center rounded-full pointer-coarse:max-sm:size-11", HIT_AREA, FOCUS_RING)}
+                className={cn("group/dot flex items-center justify-center h-6 min-w-6 rounded-full any-pointer-coarse:size-11", FOCUS_RING)}
               >
                 <span aria-hidden className={cn("block h-1.5 rounded-full transition-all", i === index ? "w-5 bg-inverted" : "w-1.5 bg-line-hover group-hover/dot:bg-muted")} />
               </button>

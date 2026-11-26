@@ -182,6 +182,37 @@ test("touch phone: the CustomCombobox chevron is its own 44px column; a tap just
   await page.close();
 });
 
+// Carousel dots: real boxes, no pseudo-element, so a tap on a dot never opens its neighbour, on a tablet or with a mouse.
+for (const [label, opts, min] of [
+  ["touch tablet 820x1180", { viewport: { width: 820, height: 1180 }, isMobile: true, hasTouch: true }, 44],
+  ["mouse 1440", { viewport: { width: 1440, height: 900 } }, 24],
+] as const) {
+  test(`${label}: Carousel dots are ${min}px boxes side by side, and a tap near a dot's edge opens that dot (#186)`, async ({ browser }) => {
+    const page = await browser.newPage(opts);
+    await page.goto("/components/carousel/");
+    await hydrated(page);
+    const dots = page.locator("main").getByRole("button", { name: /\d$/ }).filter({ hasNotText: /./ });
+    await expect(dots.first()).toBeVisible();
+    await dots.first().scrollIntoViewIfNeeded();
+    const res = await dots.first().evaluate((first) => {
+      const all = [...first.parentElement!.querySelectorAll("button")];
+      return all.map((d, i) => {
+        const r = d.getBoundingClientRect();
+        const cy = r.y + r.height / 2;
+        const at = (x: number, y: number) => all.indexOf(document.elementFromPoint(x, y)?.closest("button") as HTMLButtonElement);
+        const pseudo = getComputedStyle(d, "::before").content !== "none";
+        return { size: Math.min(r.width, r.height), left: at(r.left + 1, cy), right: at(r.right - 1, cy), top: at(r.x + r.width / 2, r.top + 1), bottom: at(r.x + r.width / 2, r.bottom - 1), i, pseudo };
+      });
+    });
+    expect(res.length).toBeGreaterThan(1);
+    for (const d of res) {
+      expect(d.size).toBeGreaterThanOrEqual(min);
+      expect([d.left, d.right, d.top, d.bottom, d.pseudo]).toEqual([d.i, d.i, d.i, d.i, false]);
+    }
+    await page.close();
+  });
+}
+
 test("mouse 1440: the drawn size of every control stays (#186)", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   let at = "";
