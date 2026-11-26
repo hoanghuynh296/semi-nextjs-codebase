@@ -325,8 +325,8 @@ const INPUTS: { name: string; depth: number; run: (cdp: CDPSession, x: number, y
     run: async (cdp, x, y) => {
       await replay(cdp, x, y, SLOW_TRACKPAD);
       // The same pauses through Chrome's own pipeline: each burst is a new native sequence. Starting a synthesized
-      // gesture takes Chrome ~100ms, so these sleeps give 250-350ms between the last and first wheel events.
-      for (const gap of [150, 250, 200, 250]) {
+      // gesture takes Chrome ~100ms (more under load), so these sleeps give ~230-330ms between two wheel events.
+      for (const gap of [130, 230, 180, 230]) {
         await sleep(gap);
         await cdp.send("Input.synthesizeScrollGesture", { x, y, yDistance: 120, speed: 600, gestureSourceType: "mouse" });
       }

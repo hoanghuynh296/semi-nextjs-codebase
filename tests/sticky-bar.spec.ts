@@ -383,8 +383,8 @@ const GESTURES_207: { name: string; run: (page: Page, x: number, y: number) => P
     name: "slow trackpad with 250-350ms pauses",
     run: async (page, x, y) => {
       for (const [i, burst] of SLOW_BURSTS.entries()) {
-        // Plus ~50ms for the last wheel of a burst to go through: 250-350ms between two wheel events.
-        if (i) await page.waitForTimeout([200, 250, 300][i % 3]);
+        // Plus ~50ms (more under load) for the last wheel of a burst to go through: ~230-330ms between two wheel events.
+        if (i) await page.waitForTimeout([180, 230, 280][i % 3]);
         await trackpadWheel(page, x, y, burst);
       }
     },
