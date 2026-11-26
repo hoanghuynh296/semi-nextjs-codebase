@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { AppShell, useAppShell, type AppShellProps, type ShellNavSection, type ShellSlot, type ShellSlotState } from "../src/AppShell";
 import { CommandDialog, useHotkey, type CommandItem } from "../src/Command";
@@ -33,14 +33,47 @@ const PAGE_KEYWORDS: Record<string, string[]> = {
   lab: ["lab", "design lab", "thử nghiệm", "tune"],
 };
 
-/** Menu sections of every component doc, by group (hrefs with a trailing slash: static export + GitHub Pages). */
-export function componentSections(): ShellNavSection[] {
+/**
+ * Menu sections of every component doc, by group (hrefs with a trailing slash: static export + GitHub Pages). Each
+ * item carries its group's icon (or "box") so the 72px rail shows an icon with a tooltip, never cut text (#206);
+ * `DocsShell` hides those icons in the expanded nav (`RAIL_ONLY_ICONS`) and leaves them out on phones (drawer).
+ */
+export function componentSections({ itemIcons = true }: { itemIcons?: boolean } = {}): ShellNavSection[] {
   return GROUPS.flatMap((group) => {
     const docs = DOCS.filter((d) => d.group === group);
+    const icon: IconName = GROUP_ICON[group] ?? "box";
     return docs.length
-      ? [{ label: group, icon: GROUP_ICON[group], collapsible: true, defaultOpen: false, items: docs.map((d) => ({ id: d.id, label: d.title, href: `/components/${d.id}/` })) }]
+      ? [
+          {
+            label: group,
+            icon: GROUP_ICON[group],
+            collapsible: true,
+            defaultOpen: false,
+            items: docs.map((d) => ({ id: d.id, label: d.title, href: `/components/${d.id}/`, ...(itemIcons ? { icon } : {}) })),
+          },
+        ]
       : [];
   });
+}
+
+/**
+ * The expanded nav shows the group icon on the group heading only (a repeated icon says nothing): the items' icons are
+ * for the rail. CSS on AppShell's nav container (`nav`, under 120px = the rail), so the server HTML is exact at every
+ * width. A component group's <nav> is named by its label.
+ */
+const RAIL_ONLY_ICONS = `@container nav (width >= 120px){${GROUPS.map((g) => `[data-semi-nav-panel] nav[aria-label=${JSON.stringify(g)}] [data-semi="Icon"]`).join(",")}{display:none}}`;
+
+/** Below md the nav is the phone drawer: its rows have no rail, so the component items go without icons. */
+function usePhone() {
+  const [phone, setPhone] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767.98px)");
+    const sync = () => setPhone(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+  return phone;
 }
 
 /** Which menu item the current path is (/components/button/ → "button", / → "home"). */
@@ -126,6 +159,7 @@ export function DocsShell({
   // Let /components/command/'s own CommandPalette demo keep ⌘K; the bottom nav trigger still opens DocsShell search.
   const onCommandDoc = activeId === "command";
   const [searchOpen, setSearchOpen] = useState(false);
+  const phone = usePhone();
 
   useHotkey(() => {
     if (!onCommandDoc) setSearchOpen((v) => !v);
@@ -187,10 +221,11 @@ export function DocsShell({
 
   return (
     <>
+      <style dangerouslySetInnerHTML={{ __html: RAIL_ONLY_ICONS }} />
       <AppShell
         productName={productName}
         logoIcon={logoIcon}
-        sections={[...sections, ...componentSections()]}
+        sections={[...sections, ...componentSections({ itemIcons: !phone })]}
         activeId={activeId}
         tools={tools}
         mainAction={mainAction}
