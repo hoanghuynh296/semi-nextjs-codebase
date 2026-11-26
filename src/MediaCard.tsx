@@ -43,16 +43,23 @@ export function MediaCard({ media, title, meta, topLeft, bottomRight, ratio = 16
   const cover = cn("absolute inset-0 z-0 rounded-card cursor-pointer", FOCUS_RING);
   const named = label ? { "aria-label": label } : { "aria-labelledby": titleId };
   // the slots sit over the media and above the cover (z-10); only their controls take the pointer, so a badge never
-  // blocks opening the card. The cover comes after the media in the DOM, so it paints over it and takes its clicks.
+  // blocks opening the card.
   const slot = "absolute z-10 max-w-[calc(100%-1rem)] pointer-events-none [&_:is(a,button,input,select,textarea,[tabindex])]:pointer-events-auto";
   return (
     <div data-media-card="" className={cn("group relative flex flex-col gap-2 min-w-0", className)}>
-      <AspectRatio ratio={ratio} className="rounded-card bg-field">
+      {/* first in the DOM: the card comes before its slot controls in the tab order */}
+      {action.href !== undefined ? (
+        <Link href={action.href} className={cover} {...named} />
+      ) : (
+        <button type="button" onClick={action.onClick} className={cover} {...named} />
+      )}
+      {/* the media lets the pointer through to the cover under it (it paints above the cover, being later) */}
+      <AspectRatio ratio={ratio} className="rounded-card bg-field pointer-events-none">
         <div className="size-full *:size-full *:object-cover [transition:scale_var(--motion-slide)] motion-safe:group-hover:scale-105">
           {media}
         </div>
-        {topLeft && <div className={cn(slot, "top-2 left-2")}>{topLeft}</div>}
-        {bottomRight && <div className={cn(slot, "bottom-2 right-2")}>{bottomRight}</div>}
+        {topLeft && <div data-slot="top-left" className={cn(slot, "top-2 left-2")}>{topLeft}</div>}
+        {bottomRight && <div data-slot="bottom-right" className={cn(slot, "bottom-2 right-2")}>{bottomRight}</div>}
       </AspectRatio>
       <div className="min-w-0 flex flex-col">
         <p id={titleId} className="text-ui font-medium text-strong truncate">
@@ -60,11 +67,6 @@ export function MediaCard({ media, title, meta, topLeft, bottomRight, ratio = 16
         </p>
         {meta && <p className="text-overline text-muted truncate">{meta}</p>}
       </div>
-      {action.href !== undefined ? (
-        <Link href={action.href} className={cover} {...named} />
-      ) : (
-        <button type="button" onClick={action.onClick} className={cover} {...named} />
-      )}
     </div>
   );
 }

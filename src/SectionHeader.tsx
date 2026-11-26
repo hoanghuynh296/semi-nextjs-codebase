@@ -121,7 +121,7 @@ export function SectionHeader({ title, description, actions, pager, headingLevel
   }
 
   return (
-    <div data-section-header="" className={cn("flex items-end justify-between gap-x-4 gap-y-2 min-w-0", className)}>
+    <div data-section-header="" className={cn("flex justify-between gap-x-4 gap-y-2 min-w-0", description ? "items-end" : "items-center", className)}>
       <div className="min-w-0 flex flex-col gap-1">
         <H id={headingId} className="text-section text-strong min-w-0">
           {title}
