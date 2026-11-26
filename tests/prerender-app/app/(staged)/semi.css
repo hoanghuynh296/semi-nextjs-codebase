@@ -1,0 +1,4 @@
+/* The app's Semi sheet for its migrated routes (docs/BRANDS.md, "Migrating an app in stages"): the scoped entry plus
+   @source for the migrated folders. An app writes @import "@semi/ui/scoped.css"; here the package is the repo. */
+@import "../../../../styles/scoped.css";
+@source "./";

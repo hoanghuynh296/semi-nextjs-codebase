@@ -196,6 +196,8 @@ Trong `app/globals.css`:
 /* semi-design-system:end */
 ```
 
+App có sẵn chuyển sang Semi từng phần, còn màn cũ với bản Tailwind riêng: không nhập khối trên vào `globals.css`, mà nạp `@semi/ui/scoped.css` (utilities của Semi trong layer `semi`, thắng bản build của app) chỉ ở các route đã chuyển, xem [`docs/BRANDS.md`](docs/BRANDS.md#chuyển-app-sang-semi-từng-phần-migrating-an-app-in-stages). Tạm thời: chuyển xong màn cuối thì về một `globals.css`.
+
 Không khai báo màu hay `@theme` riêng trong app (`brand-override` chặn): màu của một thương hiệu đến từ brand kit (`/semi-brand`), app chỉ nhập `brand.css` của kit ngay dưới khối trên (luôn sau `@semi/ui/tokens.css`: kit ghi đè biến của Semi ở cùng độ ưu tiên, nhập trước thì kit không có tác dụng, kể cả `primaryStyle: "inverted"`).
 
 Trong `app/layout.tsx` (chống nháy sai theme khi tải trang):

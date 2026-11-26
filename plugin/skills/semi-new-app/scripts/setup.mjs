@@ -1,6 +1,6 @@
 // Setup steps shared by /semi-new-app (new app), /semi-check (foundation of an existing app) and /semi-sync. Each step
 // only adds what is missing and can run again safely.
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
@@ -218,6 +218,43 @@ export function findGlobalsCss(webDir) {
     join(webDir, "styles", "globals.css"),
   ];
   return candidates.find((p) => existsSync(p)) || candidates[0];
+}
+
+/**
+ * Stylesheets other than globals.css that import Semi's CSS (tokens.css, base.css or the scoped entry): the sheet of
+ * an app moving to Semi in stages (#184, docs/BRANDS.md "Migrating an app in stages"), or Semi's half of one build
+ * split across files. Semi's brand.css belongs there, and globals.css must then be left alone.
+ */
+export function findSemiSheets(webDir) {
+  const globals = findGlobalsCss(webDir);
+  const out = [];
+  const walk = (dir, depth) => {
+    if (depth > 6 || !existsSync(dir)) return;
+    for (const name of readdirSync(dir)) {
+      if (name.startsWith(".") || ["node_modules", "dist", "build", "out", "public"].includes(name)) continue;
+      const p = join(dir, name);
+      const st = statSync(p);
+      if (st.isDirectory()) walk(p, depth + 1);
+      else if (name.endsWith(".css") && p !== globals && /@import\s+["'][^"']*@semi\/ui\/(?:tokens|base|scoped)\.css["']/.test(readFileSync(p, "utf8"))) out.push(p);
+    }
+  };
+  walk(webDir, 0);
+  return out.sort();
+}
+
+/** Adds the brand kit's brand.css right after the last Semi import of a Semi sheet (findSemiSheets); returns the path. */
+export function wireSheetBrand(cssPath, brandPkg) {
+  const line = `@import "${brandPkg}/dist/brand.css";`;
+  const content = readFileSync(cssPath, "utf8");
+  if (content.includes(`${brandPkg}/dist/brand.css`)) return cssPath;
+  const lines = content.split("\n");
+  let at = -1;
+  lines.forEach((l, i) => {
+    if (/@import\s+["'][^"']*@semi\/ui\/(?:tokens|base|scoped)\.css["']/.test(l)) at = i;
+  });
+  lines.splice(at + 1, 0, line);
+  writeFileSync(cssPath, lines.join("\n"));
+  return cssPath;
 }
 
 export function wireGlobalsCss(webDir, brandPkg = readBrand(webDir)?.pkg ?? null) {
@@ -582,9 +619,11 @@ export function wireBrand(appDir, rootDir, pkg) {
   cfg.brand = pkg;
   delete cfg.palette; // removed in v0.14.0; the brand sets the neutrals
   writeFileSync(cfgPath, JSON.stringify(cfg, null, 2) + "\n");
-  const css = wireGlobalsCss(appDir, pkg);
+  // An app moving in stages keeps Semi out of globals.css (#184): the brand goes into the sheet that imports Semi.
+  const sheets = findSemiSheets(appDir);
+  const css = sheets.length ? sheets.map((s) => wireSheetBrand(s, pkg)) : [wireGlobalsCss(appDir, pkg)];
   wireBrandAgents(rootDir, dir);
-  return { ok: true, message: `${relative(appDir, css)} ← @import "${pkg}/dist/brand.css", semi-lint.json ← "brand": "${pkg}", AGENTS.md ← luật của brand` };
+  return { ok: true, message: `${css.map((c) => relative(appDir, c)).join(", ")} ← @import "${pkg}/dist/brand.css", semi-lint.json ← "brand": "${pkg}", AGENTS.md ← luật của brand` };
 }
 
 export function wireAgentsMd(rootDir, version) {

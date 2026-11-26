@@ -39,7 +39,19 @@ The check part changes **no source file**. Its only output is `semi-check.md` at
      `semi-lint.json`: `"keep": { "<check>": "<the user's reason>" }` (or an array of path prefixes). Never keep
      something the user did not choose to keep.
 5. **Phase 1 — Foundation** (`F…`). It changes how the app looks, so first take screenshots of 3–5 key pages in the
-   app's current theme (dev server + browser, when available). Then:
+   app's current theme (dev server + browser, when available).
+   **An app that moves in stages** (legacy screens that must keep their look while some routes move to Semi, or a
+   `second-build` item; ask when the app is large and the user did not say): Semi's CSS must not go into the global
+   sheet (`tokens.css` redefines `--color-primary`, `--spacing`…, `base.css` hides every scrollbar). Before running
+   foundation, write the migrated routes' own sheet, e.g. `app/(semi)/semi.css`: `@import "@semi/ui/scoped.css";` and an
+   `@source` line for every migrated folder; import it in that
+   route group's `layout.tsx` (Vite / React Router: `import semiCss from "./semi.css?url"` + the route's `links`).
+   A `second-build` sheet (`@import "tailwindcss"` + `tokens.css` / `base.css`) becomes that sheet. Foundation then
+   leaves `globals.css` alone and puts the brand kit's `brand.css` (when there is one) in that sheet. Every file rendered on a migrated route must be sourced there or migrated first (the
+   `semi` layer beats the app's own utilities too). Exit step, when the last legacy screen is migrated: delete the
+   scoped sheet and its imports, drop the app's old theme from `globals.css` and run foundation again, which wires
+   the single `globals.css` setup (`docs/BRANDS.md`, "Migrating an app in stages").
+   Then:
    ```bash
    node "<path-to-this-skill>/scripts/fix.mjs" --cwd "<audited-dir>" foundation [--brand "<github:owner/repo>"]
    ```
@@ -137,7 +149,7 @@ The check part changes **no source file**. Its only output is `semi-check.md` at
 
 | Phase | Issues | How it is fixed |
 |---|---|---|
-| 1. Nền móng (`F…`) | `@semi/ui` not installed, `transpilePackages`, Semi CSS, `semi-lint.json`, layout providers, brand kit not installed / not wired (`brand`), a style / palette left from before 1.0 (`legacy-look`), fonts not loaded (`fonts`), Tailwind v3 | `fix.mjs foundation` (installs, keeps Next / Tailwind) + the layout by hand, screenshots before / after |
+| 1. Nền móng (`F…`) | `@semi/ui` not installed, `transpilePackages`, Semi CSS, a second Tailwind build next to Semi's CSS without the scoped entry (`second-build`), `semi-lint.json`, layout providers, brand kit not installed / not wired (`brand`), a style / palette left from before 1.0 (`legacy-look`), fonts not loaded (`fonts`), Tailwind v3 | `fix.mjs foundation` (installs, keeps Next / Tailwind) + the layout by hand, screenshots before / after |
 | 2. Token | colour / size / radius classes the codemod maps safely (`rounded-lg` → `rounded-control`, `shadow-sm` → `shadow-card`) | `fix.mjs tokens [--only dir] [--dry-run] [--theme dark\|light]` |
 | 3. Sửa tay (`L…`) | lint hits no codemod can fix safely | edits by hand |
 | 4. Cấu trúc (`D…`) | AppShell / AppHeader frame, local wrappers, list pages without `SubpageToolbar`, tables, components that duplicate `@semi/ui`, other UI libraries | asks: fix, or keep (`semi-lint.json` `keep`) |

@@ -1,0 +1,4 @@
+/* As (staged)/semi.css; this group links Semi's sheet before the legacy one (#184). */
+@import "../../../../styles/scoped.css";
+@source "./";
+@source "../(staged)";
