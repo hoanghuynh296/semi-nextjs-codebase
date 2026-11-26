@@ -87,7 +87,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [App header](./components/app-header/) ([markdown](./docs/components/app-header.md)): The top bar of a stand-alone tool app: logo + title go home, the module name, and one primary action on the right. No Home button. Components: AppHeader.
 - [App shell](./components/app-shell/) ([markdown](./docs/components/app-shell.md)): The 1.0 frame of a multi-page app: a canvas frame with the nav panel (main action, groups, pinned, a bottom row of icon tools) and the content column (the RouteHeader with crumbs, actions and the account avatar menu, then the content card). The nav is the 72px rail first when width runs short (always md–lg, by default lg–1280, the user's toggle remembered), then the phone drawer. Alt + 1…9 opens a nav item. This docs site is an AppShell; the full example runs at /demo/app-shell/. Components: AppShell, RouteHeader, AccountMenu, MobileTabBar.
 - [Breadcrumb](./components/breadcrumb/) ([markdown](./docs/components/breadcrumb.md)): Where the page sits: a trail of links ending with the current page. Long trails collapse their middle into a “…” menu. Components: Breadcrumb.
-- [List + reader](./components/list-reader/) ([markdown](./docs/components/list-reader.md)): A list card beside a reader card (`ListReaderLayout`) with a sticky one-row `ReaderHeader` (wrapping title left, [•••] then one main action right, top-aligned, identical button height). Each panel scrolls independently on `AppShell page="fixed"` / `Page fixed` with zero hand-tuned `calc()`. Open item lives in `?open=` (`useDetailParam`) and `RouteHeader` breadcrumbs (`useRecordCrumb`); below `lg` the reader replaces the list with a Back button. Components: ListReaderLayout, ReaderHeader.
+- [List + reader](./components/list-reader/) ([markdown](./docs/components/list-reader.md)): A list card beside a reader card (`ListReaderLayout`) with a sticky one-row `ReaderHeader` (wrapping title left, [•••] then one main action right, top-aligned, identical button height). Each panel scrolls independently on `AppShell page="fixed"` / `Page fixed` with zero hand-tuned `calc()`. Open item lives in `?open=` (`useDetailParam`) and `RouteHeader` breadcrumbs (`useRecordCrumb`); when the layout is too narrow for the list and a 360px reader (its own width, not the viewport), the reader replaces the list with a Back button. Components: ListReaderLayout, ReaderHeader.
 - [Mega menu](./components/mega-menu/) ([markdown](./docs/components/mega-menu.md)): A flyout of links in category columns: a text-overline header per column, links with a grey icon, a hint and a New badge, and a See all link. AppShell opens it beside the sidebar from a nav item with mega; an app can open it from its own trigger. Components: MegaMenu.
 - [Menubar](./components/menubar/) ([markdown](./docs/components/menubar.md)): The menu bar of a desktop-style tool (Tệp · Sửa · Xem): menus that open from a bar and behave like Menu. Components: Menubar.
 - [Minimal header](./components/minimal-header/) ([markdown](./docs/components/minimal-header.md)): The top row of a detail or settings page inside AppShell: where the page sits on the left (a Breadcrumb), one text link and one primary action on the right. The page's own heading follows it. Components: MinimalHeader.
@@ -691,8 +691,8 @@ Semi's own green. A brand change is made in the brand repo (`/semi-brand`) and r
 
 - **Frame (1.0, #144):** a `bg-canvas` frame (`sm:p-2 sm:gap-2`, none on phones) holding the **nav panel** (`bg-panel`,
   `rounded-panel`, padding 16 / 20, 224px or the 72px rail, `railWidth`) and the **content column** (`bg-app`,
-  `rounded-panel`). The column holds the **RouteHeader** (h60 from `lg`, padding 0 8px / 16px from `sm`, the column's
-  full width: crumbs left, an optional `middle` hidden below `md`, `actions` icon buttons 32×32 and the account avatar
+  `rounded-panel`). The column holds the **RouteHeader** (h60 from `lg`, padding 0 16px, the content's inset, phones included, #188; the column's
+  full width; below `sm` the trail shows only the current page: crumbs left, an optional `middle` hidden below `md`, `actions` icon buttons 32×32 and the account avatar
   menu right; `middle` and `actions` sit in their own `Suspense`) and under it the **content card** (`bg-panel`,
   `rounded-panel`, flush with the column, 4px above its bottom, no border; inside it `bg-app` is the panel colour, since the card sets
   `--semi-app` to `--semi-panel`, so sticky strips that paint `bg-app` match the card). `page="fixed"`: the card does not scroll, its panels do. `flush`: no centred
@@ -759,7 +759,7 @@ Inside the content card, pick one of four layouts with `<Page layout="work" | "r
 - **Work** (`layout="work"`, default: lists, tables, workspaces): flush, no centred max-width; card padding 16 / 24 (`px-4 sm:px-6`).
 - **Reading** (`layout="reading"`: settings, explore, articles): one column centred at max 1536px (`max-w-screen-2xl`) inside 16px card padding, 64px bottom padding; pass `titleVariant="reading"` (or `<PageTitle variant="reading">`) to opt into the 44 / 500 display title (`font-display text-title-xl font-medium`).
 - **Two-column** (`layout="two-column"` + `subNav={<SubNav … />}`: an area with sub-pages or mailbox folders): a sub-nav card 240px (`md:w-60`), flush left, padding 20 / 10; a 4px gap; the main card to the right edge, padding 24; no wide side padding. Below `md` the sub-nav stacks above the content. `SubNav` sections have a group label (`text-nav-label`, 10 / 500 uppercase faint, row h32, optional 16px icon actions on the right), then items (h32, `rounded-control`, padding 4 / 16, `text-chrome` 500, 16px icon, 2px apart; inactive muted, hover `bg-item-hover`, active `bg-item-selected text-strong`); sections split by a 1px `bg-raised` line.
-- **List + reader** (`ListReaderLayout` + `ReaderHeader`, mail, tickets, chat): a list card and a reader card, each its own scroller (`overflow-y-auto overscroll-contain`), filling the remaining column height on `Page fixed` / `AppShell page="fixed"` with zero hand-tuned `calc()`. Open item lives in `?open=` (`useDetailParam`, Back closes) and feeds `RouteHeader` breadcrumbs via `useRecordCrumb` (`recordTitle`). Below `lg` the reader replaces the list with a Back button. `ReaderHeader` is the general pattern for every list + reader: one sticky row, wrapping title on the left, `[•••]` menu then one main action on the right, top-aligned, identical button height; every other action goes into `•••`.
+- **List + reader** (`ListReaderLayout` + `ReaderHeader`, mail, tickets, chat): a list card and a reader card, each its own scroller (`overflow-y-auto overscroll-contain`), filling the remaining column height on `Page fixed` / `AppShell page="fixed"` with zero hand-tuned `calc()`. Open item lives in `?open=` (`useDetailParam`, Back closes) and feeds `RouteHeader` breadcrumbs via `useRecordCrumb` (`recordTitle`). Side by side only while the reader keeps 360px: a container query on the layout's own width (list width + 16px + 360px: 664 / 728 / 776px for `listWidth` sm / md / lg), not the viewport, so a rail, a `SubNav` or a side panel count; below it the reader replaces the list with a Back button (#188: at 1024px with the rail and a `SubNav` the reader would have been ~270px); the Back button follows the same split (also an app's own `onBack`), and focus moves to the reader's title on open and back to the open row on Back, never to `<body>`. `className` sizes the outer container (`data-list-reader`), `gridClassName` styles the panes' grid. The container query classes live in `@semi/ui/src`, so they need the README's `@source` line for `src` (every set-up has it). `ReaderHeader` is the general pattern for every list + reader: one sticky row, wrapping title on the left (at least 70% of the row, clamped to 3 lines, a string title in full as the native tooltip), `[•••]` menu then one main action on the right, top-aligned, identical button height; every other action goes into `•••`. In a narrow pane, where the actions do not fit beside a 70% title, they wrap to their own row under it, on the right (flex-wrap, so it follows the pane, not the viewport).
 
 **Vertical rhythm** (owned by `Page`, `PageSection` and `PageGrid`, so pages set no margins on these joins): 32px from the card top to the header block · 28px from the title or tabs to the intro (or toolbar) · 16px from the filter row to the list · 32px between blocks · 16px from a section heading (`PageSection`) to its content · 8px inside grids (`PageGrid`) and cards.
 
@@ -844,7 +844,7 @@ action: `inverse`, or the brand `primary` when it is the page's commit action; a
   non-nested, keyboard-accessible selection model.
 - **Opening a record:** a record opens in a `DetailOverlay` over the list, not on its own page. Its id lives in the URL
   (`useDetailParam()` → `?open=<id>`; Back closes it, ‹ › replace it); the list stays mounted, so close / Esc / Back land
-  at the same scroll. The header has close, the title, "n / N" and ‹ › through the **current** results (over a
+  at the same scroll. The header has close, the title, "n / N" and ‹ › through the **current** results (one 56px row; in a dialog narrower than the title's 60% plus the controls, copy link, "n / N" and ‹ › wrap to a row under the title, which then may take 3 lines, #188) (over a
   `DataTable`: `sortRows(searchRows(rows, columns, search), columns, sort)`, never a copied comparator); the side panel
   holds the actions (one `SplitButton` or main button, icon buttons, a ⋯ `Menu`) then the facts. A palette item or a
   notification opens a record of the current route with `openDetail(id)`. Cards and media tiles in a grid get
@@ -8457,12 +8457,13 @@ export default function AppShellSubmenu() {
 
 ### RouteHeader
 
-The route header: h60 from `lg` (56 below), padding 0 8px (16px from `sm`), the column's full width. Crumbs enter with
+The route header: h60 from `lg` (56 below), padding 0 16px (the content's inset, also on phones, #188), the column's
+full width; below `sm` the trail shows only the current page. Crumbs enter with
 `motion-crumb-in` and leave with `motion-crumb-out` (opacity only under reduced motion); the row itself never moves.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `crumbs` * | `RouteCrumb[]` |  | The trail: group (a link), page, record. Every crumb is muted; the trail never wraps and long crumbs truncate. |
+| `crumbs` * | `RouteCrumb[]` |  | The trail: group (a link), page, record. Every crumb is muted; the trail never wraps and long crumbs truncate. Below `sm` only the last crumb (the current page) shows. |
 | `middle` | `React.ReactNode` |  | Optional middle: a search field on a search page, a small info banner. Hidden below `md`. In its own Suspense. |
 | `actions` | `React.ReactNode` |  | The page's action icon buttons (32×32, ghost or outline); keep room for a future AI chat button. In its own Suspense. |
 | `account` | `ShellAccount \| React.ReactNode` |  | The account avatar menu: the who-is-signed-in data, or your own element. |
@@ -8618,7 +8619,7 @@ export default function BreadcrumbCollapsed() {
 
 # List + reader
 
-A list card beside a reader card (`ListReaderLayout`) with a sticky one-row `ReaderHeader` (wrapping title left, [•••] then one main action right, top-aligned, identical button height). Each panel scrolls independently on `AppShell page="fixed"` / `Page fixed` with zero hand-tuned `calc()`. Open item lives in `?open=` (`useDetailParam`) and `RouteHeader` breadcrumbs (`useRecordCrumb`); below `lg` the reader replaces the list with a Back button.
+A list card beside a reader card (`ListReaderLayout`) with a sticky one-row `ReaderHeader` (wrapping title left, [•••] then one main action right, top-aligned, identical button height). Each panel scrolls independently on `AppShell page="fixed"` / `Page fixed` with zero hand-tuned `calc()`. Open item lives in `?open=` (`useDetailParam`) and `RouteHeader` breadcrumbs (`useRecordCrumb`); when the layout is too narrow for the list and a 360px reader (its own width, not the viewport), the reader replaces the list with a Back button.
 
 ## When to use
 
@@ -8862,7 +8863,9 @@ List + reader layout (#149, #118): a list card on the left and a reader card on 
 scroll container (`overflow-y-auto overscroll-contain`), filling the remaining height of `AppShell page="fixed"` /
 `Page fixed` with zero hand-tuned `calc()`. Drive `open` and `onClose` from `useDetailParam()` (`?open=`, Back
 closes); pass `recordTitle` to add the open record to `RouteHeader` breadcrumbs via `useRecordCrumb`.
-Below `lg`, opening an item swaps the reader in place of the list (with `ReaderHeader`'s Back button).
+When the layout itself is narrower than the list + 16px + a 360px reader (a container query, not the viewport: a rail,
+a sub-nav or a side panel all count), opening an item swaps the reader in place of the list (with `ReaderHeader`'s
+Back button), so the reader never drops below 360px (#188).
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
@@ -8870,38 +8873,41 @@ Below `lg`, opening an item swaps the reader in place of the list (with `ReaderH
 | `reader` * | `React.ReactNode` |  | The open record (`<ReaderHeader … />` + body). Shown when `open` is true. |
 | `open` * | `boolean` |  | True while an item is open (`openId !== null` from `useDetailParam()`). |
 | `openKey` | `null \| string` |  | Identifier of the open item (resets reader scroll to top when switching items). |
-| `onClose` | `() => void` |  | Close handler (`useDetailParam().close`, wired to `ReaderHeader`'s below-`lg` Back button). |
+| `onClose` | `() => void` |  | Close handler (`useDetailParam().close`, wired to `ReaderHeader`'s Back button while the reader replaces the list). |
 | `recordTitle` | `null \| string` |  | Open record label pushed into `RouteHeader` breadcrumbs via `useRecordCrumb` while `open` is true. |
-| `empty` | `React.ReactNode` |  | Empty state shown in the reader card on `lg+` when no item is open. |
-| `listWidth` | `'sm' \| 'md' \| 'lg'` | `"md"` | Width of the list card from `lg`: `"sm"` 288px, `"md"` 352px (default), `"lg"` 400px. |
+| `empty` | `React.ReactNode` |  | Empty state shown in the reader card, while list and reader sit side by side, when no item is open. |
+| `listWidth` | `'sm' \| 'md' \| 'lg'` | `"md"` | Width of the list card side by side: `"sm"` 288px, `"md"` 352px (default), `"lg"` 400px. Side by side from 664 / 728 / 776px of layout width. |
 | `listLabel` | `string` |  | Accessible name of the list region (default locale `listLabel`). |
 | `readerLabel` | `string` |  | Accessible name of the reader region (default locale `readerLabel`). |
-| `className` | `string` |  |  |
+| `className` | `string` |  | Classes of the outer element (`data-list-reader`, the container the split is measured on): size and placement. |
+| `gridClassName` | `string` |  | Classes of the inner grid that holds the two panes (gap, columns). Before 1.1 `className` landed here. |
 
 ### ReaderHeader
 
 Sticky one-row header of a reader pane (general pattern for mail, tickets, chat; owner decision 2026-11-23):
-- Left: below-`lg` Back button (wired automatically from `ListReaderLayout`'s `onClose`) + wrapping `title` (never
-  truncated) and optional muted `meta` line underneath.
+- Left: Back button while the reader replaces the list (wired automatically from `ListReaderLayout`'s `onClose`;
+  below `lg` with your own `onBack`) + wrapping `title` (at least 70% of the row; clamped to 3 lines, the full text
+  in the native tooltip when it is a string) and optional muted `meta` line underneath.
 - Right: `[•••]` `Menu` (all secondary / overflow actions) then one main `action`, top-aligned (`items-start`),
-  both buttons at identical `md` (`h-control`) height.
+  both buttons at identical `md` (`h-control`) height. In a narrow pane, where they do not fit beside a 70% title,
+  they move to their own row under the title, on the right (#188).
 - Stays sticky (`sticky top-0 z-sticky bg-app`) while the reader body scrolls underneath.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `title` * | `React.ReactNode` |  | Subject or record title on the left; wraps cleanly onto multiple lines. |
+| `title` * | `React.ReactNode` |  | Subject or record title on the left; wraps, at most 3 lines (a string also shows in full as the native tooltip). |
 | `meta` | `React.ReactNode` |  | Optional quiet meta line directly under the title (sender, timestamp, ticket id). |
 | `action` | `ReaderMainAction \| React.ReactNode` |  | The one main action on the right (e.g. Trả lời / Reply), or a custom button element at `size="md"`. |
 | `moreActions` | `MenuItem[]` |  | Every other reader action (Chuyển tiếp, Lưu trữ, Đóng ticket, Xoá…) goes into this `•••` Menu. |
 | `moreLabel` | `string` |  | Accessible name of the `•••` menu (default locale `moreActions`). |
-| `onBack` | `() => void` |  | Back handler below `lg` (defaults to the enclosing `ListReaderLayout`'s `onClose`). |
+| `onBack` | `() => void` |  | Back handler (defaults to the enclosing `ListReaderLayout`'s `onClose`). Inside a `ListReaderLayout` the button shows while the reader replaces the list; outside one, below `lg`. |
 | `backLabel` | `string` |  | Accessible name of the phone Back button (default locale `backToList`). |
 | `headingLevel` | `1 \| 2 \| 3` | `2` | Heading level for the reader title (default 2: the page `h1` sits above). |
 | `className` | `string` |  |  |
 
 ## Accessibility
 
-- List and reader are named <section> landmarks; the open item marks aria-current="true" on its row; below lg the Back button returns to the list and closes ?open=.
+- List and reader are named <section> landmarks; the open item marks aria-current="true" on its row; while the reader replaces the list (narrow layout) the Back button returns to the list and closes ?open=.
 - ReaderHeader keeps [•••] and the main action top-aligned at identical height with every secondary action inside •••.
 
 ## Notes

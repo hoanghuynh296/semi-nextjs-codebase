@@ -38,7 +38,9 @@ export default function StickyReaderDemoLayout({ children }: { children: React.R
     () => (q ? MAILS.filter((m) => `${m.subject} ${m.from}`.toLowerCase().includes(q.toLowerCase())) : MAILS),
     [q],
   );
-  const active = filtered.find((m) => m.id === detail.openId) ?? filtered[0] ?? null;
+  // the first mail shows until the reader is closed with Back (an app's own onBack, #188)
+  const [fallback, setFallback] = useState(true);
+  const active = filtered.find((m) => m.id === detail.openId) ?? (fallback ? (filtered[0] ?? null) : null);
 
   const sections: SubNavSection[] = [
     {
@@ -118,6 +120,10 @@ export default function StickyReaderDemoLayout({ children }: { children: React.R
             active && (
               <>
                 <ReaderHeader
+                  onBack={() => {
+                    setFallback(false);
+                    if (detail.openId) detail.close();
+                  }}
                   title={active.subject}
                   meta={`${active.from} · ${active.time}`}
                   moreActions={[{ label: "Lưu trữ", icon: "folder", onSelect: () => setActionLog(`archive:${active.id}`) }]}
