@@ -30,7 +30,7 @@ export function ViewSwitch({
   const t = useSemiLocale();
   const seg = (on: boolean) =>
     cn(
-      "w-8 h-8 rounded-control flex items-center justify-center transition outline-none focus-visible:ring-2 focus-visible:ring-focus cursor-pointer",
+      "w-8 h-8 pointer-coarse:max-sm:min-h-11 pointer-coarse:max-sm:min-w-11 rounded-control flex items-center justify-center transition outline-none focus-visible:ring-2 focus-visible:ring-focus cursor-pointer",
       on ? "bg-tint-hover text-strong" : "text-muted hover:text-strong hover:bg-tint",
     );
   const compact = density === "compact";

@@ -72,9 +72,9 @@ export const ICON_BTN =
 export const ICON_BTN_DANGER =
   "w-7 h-7 rounded-control flex items-center justify-center text-muted hover:text-danger-fg bg-tint hover:bg-danger-bg active:bg-danger-border transition-hover outline-none focus-visible:ring-2 focus-visible:ring-focus active:scale-95";
 
-/** Close button in modal headers: visible background pill with clear contrast, easily tappable on dark backgrounds. */
+/** Close button in modal headers: visible background pill with clear contrast, easily tappable on dark backgrounds; 44px on a touch phone (BTN_HIT). */
 export const MODAL_CLOSE =
-  "w-9 h-9 sm:w-8 sm:h-8 rounded-full bg-tint hover:bg-tint-hover text-muted hover:text-strong flex items-center justify-center transition-hover outline-none focus-visible:ring-2 focus-visible:ring-focus active:scale-95 shrink-0";
+  "w-9 h-9 sm:w-8 sm:h-8 pointer-coarse:max-sm:min-h-11 pointer-coarse:max-sm:min-w-11 rounded-full bg-tint hover:bg-tint-hover text-muted hover:text-strong flex items-center justify-center transition-hover outline-none focus-visible:ring-2 focus-visible:ring-focus active:scale-95 shrink-0";
 
 /** Status pill (device state, job result): coloured 15% fill + 300 text. */
 export const STATUS_PILL = "inline-flex items-center gap-1.5 h-6 px-2 rounded-full text-chrome font-medium whitespace-nowrap";

@@ -43,7 +43,7 @@ export interface GuideTemplateGroup {
 }
 
 const NAV = cn(
-  "w-8 h-8 rounded-full bg-tint text-strong hover:bg-tint-hover flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-tint",
+  "w-8 h-8 pointer-coarse:max-sm:min-h-11 pointer-coarse:max-sm:min-w-11 rounded-full bg-tint text-strong hover:bg-tint-hover flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-tint",
   FOCUS_RING,
 );
 const TILE = cn("flex items-start gap-3 p-card rounded-card bg-card text-left hover:bg-tint-hover transition-colors min-w-0", FOCUS_RING);

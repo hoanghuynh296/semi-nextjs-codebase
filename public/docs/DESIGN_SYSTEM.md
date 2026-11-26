@@ -602,7 +602,7 @@ neutral for every variant, at least 44 × 44px on a phone with a touch screen (`
 Sizes: `md` (h-control, 14px), `sm` (`BTN_SM`, 28px, 12px `text-chrome`: dense rows, toolbars), `xs` (`BTN_XS`, 24px,
 12px), `modal` (`MODAL_BTN_*`: 44px / 15px on phones, h-control from sm: dialog footers, a full-width commit; commit
 `primary`, cancel `subtle`, destructive `danger`). `badge` pins an attention `CountBadge` to an icon button's corner.
-Every variant's text reaches 4.5:1 on its fill and on its hover fill in both themes (the token build checks it). Icon-only: add `BTN_ICON`, or `ICON_BTN` (`w-7 h-7 rounded-control`) inside cards. Big
+Every variant's text reaches 4.5:1 on its fill and on its hover fill in both themes (the token build checks it). Icon-only: add `BTN_ICON` (it carries `BTN_HIT`, so a hand-built `${BTN_SUBTLE} ${BTN_ICON}` is 44px on a touch phone too), or `ICON_BTN` (`w-7 h-7 rounded-control`) inside cards. Big
 state toggles (power) are round: `w-20 h-20 sm:w-24 sm:h-24 rounded-full`, flat `bg-inverted text-on-inverted` when on (an "on" state is neutral, §0),
 `bg-field` when off. A running action shows a spinner inside its own button only.
 
@@ -1026,6 +1026,20 @@ The full inventory with props is generated into `components.json` (`npm run buil
   smaller (a carousel dot, a slider thumb, a text button in a line, a 16px checkbox) takes `HIT_AREA`
   (`@semi/ui/styles`): a pseudo-element that grows the click area to 24px, 44px on touch screens, while the visible
   size and layout stay; the control needs `relative` and no `::before` of its own.
+- Touch targets (#186): every control has a tap area of at least 44 × 44px on a touch screen, while the drawn size
+  with a mouse stays. Two shared helpers, nothing hand-made: `BTN_HIT` (`pointer-coarse` + `max-sm`, touch phones only,
+  real growth; in `Button`, `BTN_ICON`, `HEADER_ICON_BTN`, `MODAL_CLOSE`) for a control in a dense row or above
+  content, whose 44px pseudo-element would cover a neighbour (Pagination, ViewSwitch, GuidedEmptyState step nav,
+  `SidePanelToggle`), and `HIT_AREA` (an invisible `::before`: 24px with a mouse, 44px with `any-pointer-coarse`, i.e.
+  any device with a touch screen at any width) for an isolated small control (Alert dismiss, MultiCombobox chip remove,
+  SidePanel expand, CardActions ⋯, Calendar month nav). Never `HIT_AREA` on a row of small targets: Carousel dots sit in
+  real buttons with no gap (24 × 24, `any-pointer-coarse:size-11`), the dot drawn 6px inside. Inline chips (`Citation`)
+  get their own area: 4px wider each side (half the 8px between two chips, `mx-1`, so it is at least 24px wide), 24px
+  tall, 44px on touch phones, so adjacent chips never overlap. A chevron inside a field (`CustomCombobox`) becomes its
+  own 44px column with matching input padding, so its area never reaches the text. Pagination shows first · current ·
+  last on a touch phone, chosen after mount (one list; the server renders the full window). `tests/touch-targets.spec.ts`
+  measures a sample of each at 390 × 844 (touch), taps near each edge of the 44px box with `elementFromPoint`, checks the
+  Carousel dots on a touch tablet and with a mouse, and checks the drawn size at 1440.
 - Motion: animations respect `prefers-reduced-motion`.
 
 **Measured in apps.** Semi's components pass the checks above in `test:ui`, but a screen made of them can still fail:

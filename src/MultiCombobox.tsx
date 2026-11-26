@@ -13,7 +13,7 @@ import { useAnchoredPosition } from "./floating";
 import { normalizeSearch } from "./listQuery";
 import { useSemiLocale } from "./locale";
 import { FIELD_INPUT } from "../styles/surfaces";
-import { cn } from "../styles/utils";
+import { cn, HIT_AREA } from "../styles/utils";
 
 export interface MultiComboboxOption {
   value: string;
@@ -236,7 +236,7 @@ export function MultiCombobox({
             onClick={() => toggle(o.value)}
             aria-label={t.removeChoice(o.label)}
             title={t.removeChoice(o.label)}
-            className="w-6 h-6 rounded-full inline-flex items-center justify-center text-muted hover:text-strong hover:bg-item-hover transition-colors outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus shrink-0 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+            className={cn("relative w-6 h-6 rounded-full inline-flex items-center justify-center text-muted hover:text-strong hover:bg-item-hover transition-colors outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus shrink-0 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed", HIT_AREA)}
           >
             <Icon name="close" className="w-3 h-3" />
           </button>

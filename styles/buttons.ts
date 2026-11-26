@@ -37,8 +37,9 @@ export const BTN_SECONDARY = `${BASE} px-3 bg-secondary hover:bg-secondary-hover
 /** Destructive action (Dừng in, Xoá): the danger status fill (tint + line) with danger text. */
 export const BTN_DANGER = `${BASE} px-3 bg-danger-bg hover:bg-danger-bg-hover border border-danger-border text-danger-fg`;
 
-/** Icon-only button: add to any BTN_* constant (square, h-control); keep `title` + `aria-label`. */
-export const BTN_ICON = "w-control !px-0";
+/** Icon-only button: add to any BTN_* constant (square, h-control); keep `title` + `aria-label`. Carries the phone touch
+ * size (BTN_HIT: 44 × 44px on a touch phone), so a hand-built icon button (`${BTN_SUBTLE} ${BTN_ICON}`) gets it too. */
+export const BTN_ICON = "w-control !px-0 pointer-coarse:max-sm:min-h-11 pointer-coarse:max-sm:min-w-11";
 
 /** Compact (28px, 12px text) for dense rows and toolbars: add to any BTN_* constant. */
 export const BTN_SM = "!h-7 !px-2.5 !text-chrome";
@@ -73,6 +74,8 @@ export const MODAL_BTN_DANGER = `${MODAL_BASE} bg-danger-bg hover:bg-danger-bg-h
  * 44px touch target on a phone with a touch screen (`pointer-coarse` + `max-sm`): the button itself grows to at least
  * 44 × 44px (min-height / min-width win over the `!h-7` / `!w-7` of sm / xs). Real size, not a pseudo-element, so it
  * never covers a neighbour and never overflows a scroll row. A mouse, a tablet and a desktop keep the drawn size.
+ * The shared touch-target pair (docs/DESIGN_SYSTEM.md "Touch targets"): BTN_HIT grows a control that sits in a dense row
+ * (pager, view switch, step nav), HIT_AREA (styles/utils.ts) adds an invisible 44px area around an isolated small one.
  */
 export const BTN_HIT = "pointer-coarse:max-sm:min-h-11 pointer-coarse:max-sm:min-w-11";
 

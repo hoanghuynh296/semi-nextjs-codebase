@@ -197,7 +197,7 @@ export function CustomCombobox({
           }}
           onKeyDown={onKeyDown}
           placeholder={placeholder}
-          className={cn(FIELD_INPUT, "pr-8 aria-invalid:border-danger-fg aria-invalid:focus:border-danger-fg")}
+          className={cn(FIELD_INPUT, "pr-8 pointer-coarse:max-sm:pr-11 aria-invalid:border-danger-fg aria-invalid:focus:border-danger-fg")}
         />
         <button
           type="button"
@@ -205,7 +205,9 @@ export function CustomCombobox({
           aria-hidden
           disabled={disabled}
           onClick={() => setOpen((prev) => !prev)}
-          className="absolute right-2.5 p-1 text-muted hover:text-strong transition-hover cursor-pointer"
+          // 22px drawn; on a touch phone the button is its own 44px column at the field's right edge (the input keeps a
+          // matching pr-11), so a tap on the text never opens the list and the chevron never covers the caret area
+          className="absolute right-2.5 p-1 pointer-coarse:max-sm:right-0 pointer-coarse:max-sm:inset-y-0 pointer-coarse:max-sm:w-11 pointer-coarse:max-sm:p-0 flex items-center justify-center text-muted hover:text-strong transition-hover cursor-pointer"
         >
           <Icon name="chevronDown" className={`w-3.5 h-3.5 [transition:transform_var(--motion-hover)] motion-reduce:transition-none ${open ? "rotate-180" : ""}`} />
         </button>

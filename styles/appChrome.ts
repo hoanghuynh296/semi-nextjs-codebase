@@ -1,9 +1,9 @@
 // Shared chrome of the stand-alone apps (tool apps with a canvas / 3D view): header buttons and the floating controls
 // over the canvas. One string per element, so every tool app looks the same (docs/DESIGN_SYSTEM.md §4b).
 
-/** Icon-only header button (AI, toggles): 34 px square, bordered. Add `HEADER_ICON_ON` when on. */
+/** Icon-only header button (AI, toggles): 34 px square, bordered, 44px on a touch phone (BTN_HIT). Add `HEADER_ICON_ON` when on. */
 export const HEADER_ICON_BTN =
-  "w-control h-control rounded-control border border-line flex items-center justify-center transition-hover outline-none focus-visible:ring-2 focus-visible:ring-focus shrink-0 disabled:opacity-40";
+  "w-control h-control pointer-coarse:max-sm:min-h-11 pointer-coarse:max-sm:min-w-11 rounded-control border border-line flex items-center justify-center transition-hover outline-none focus-visible:ring-2 focus-visible:ring-focus shrink-0 disabled:opacity-40";
 export const HEADER_ICON_OFF = "text-muted hover:text-strong hover:bg-raised";
 export const HEADER_ICON_ON = "bg-raised text-strong";
 

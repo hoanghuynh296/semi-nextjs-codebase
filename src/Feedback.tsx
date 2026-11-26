@@ -8,7 +8,7 @@ import { STATUS_ICON, type StatusTone } from "./Toast";
 import { useSemiLocale } from "./locale";
 import { Button } from "./Button";
 import { EMPTY_PHONE_CAP, EMPTY_STATIC, TONAL_SURFACE } from "../styles/surfaces";
-import { cn, FOCUS_RING } from "../styles/utils";
+import { cn, FOCUS_RING, HIT_AREA } from "../styles/utils";
 
 /** Callout inside a page or form (docs/DESIGN_SYSTEM.md §3b): tinted surface, tone icon, optional action / dismiss. */
 export function Alert({
@@ -45,7 +45,7 @@ export function Alert({
           type="button"
           aria-label={t.dismiss}
           onClick={onDismiss}
-          className={cn("w-6 h-6 rounded-control text-muted hover:text-strong flex items-center justify-center transition shrink-0 cursor-pointer", FOCUS_RING)}
+          className={cn("relative w-6 h-6 rounded-control text-muted hover:text-strong flex items-center justify-center transition shrink-0 cursor-pointer", HIT_AREA, FOCUS_RING)}
         >
           <Icon name="close" className="w-3.5 h-3.5" />
         </button>

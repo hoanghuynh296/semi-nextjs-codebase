@@ -6,7 +6,7 @@
 import React from "react";
 import { Icon, type IconName } from "./Icon";
 import { Menu, type MenuItem } from "./Overlay";
-import { cn } from "../styles/utils";
+import { cn, HIT_AREA } from "../styles/utils";
 
 export interface CardAction {
   icon: IconName;
@@ -20,7 +20,7 @@ const ROUND =
 
 /** The ⋯ trigger: a plain element, so Menu can add its ref, handlers and aria-* to it. */
 const moreButton = (label: string) => (
-  <button type="button" aria-label={label} title={label} className={ROUND}>
+  <button type="button" aria-label={label} title={label} className={cn("relative", ROUND, HIT_AREA)}>
     <Icon name="more" className="w-4 h-4" />
   </button>
 );
