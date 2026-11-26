@@ -219,7 +219,7 @@ function ThemeSegments({ showLabels = false, fullWidth = false, labels: labelsPr
     <div
       role="radiogroup"
       aria-label={t.theme}
-      className={`${fullWidth ? "flex w-full" : "inline-flex"} items-center gap-0.5 bg-raised p-1 h-control rounded-control shrink-0 ${className}`}
+      className={`${fullWidth ? "flex w-full" : "inline-flex"} items-center gap-0.5 bg-raised p-1 h-control pointer-coarse:max-sm:h-auto rounded-control shrink-0 ${className}`}
     >
       {THEME_OPTIONS.map(({ key, icon }) => {
         // Nothing is selected until the stored theme is known (avoids flashing defaultTheme as selected).
@@ -233,7 +233,7 @@ function ThemeSegments({ showLabels = false, fullWidth = false, labels: labelsPr
             aria-label={labels[key]}
             title={labels[key]}
             onClick={() => setTheme(key)}
-            className={`${fullWidth ? "flex-1" : ""} ${showLabels ? "px-2.5" : "w-8"} h-full rounded-control inline-flex items-center justify-center gap-1.5 text-chrome font-medium whitespace-nowrap transition-hover cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-focus ${
+            className={`${fullWidth ? "flex-1" : ""} ${showLabels ? "px-2.5" : "w-8"} h-full pointer-coarse:max-sm:min-h-11 pointer-coarse:max-sm:min-w-11 rounded-control inline-flex items-center justify-center gap-1.5 text-chrome font-medium whitespace-nowrap transition-hover cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-focus ${
               on ? "bg-raised-2 text-strong" : "text-muted hover:text-strong hover:bg-item-hover"
             }`}
           >

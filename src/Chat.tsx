@@ -459,7 +459,7 @@ export function ChatComposer({
 
 /** A compact chip select under the composer field (provider, model, thinking effort). */
 export const CHAT_PICK_CHIP = cn(
-  "inline-flex items-center gap-1 h-6 px-2 rounded-full bg-field hover:bg-raised border border-line text-chrome font-medium text-body hover:text-strong transition min-w-0 max-w-[150px] truncate",
+  "inline-flex items-center gap-1 h-6 pointer-coarse:max-sm:min-h-11 pointer-coarse:max-sm:min-w-11 px-2 rounded-full bg-field hover:bg-raised border border-line text-chrome font-medium text-body hover:text-strong transition min-w-0 max-w-[150px] truncate",
   FOCUS_RING,
 );
 

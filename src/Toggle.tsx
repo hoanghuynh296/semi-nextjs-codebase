@@ -6,8 +6,9 @@ import React, { useRef } from "react";
 import { Icon, type IconName } from "./Icon";
 import { FOCUS_RING, cn } from "../styles/utils";
 
+// the BTN_HIT pair: at least 44 × 44px on a touch phone (pointer-coarse + max-sm), the drawn size elsewhere
 const ITEM =
-  "inline-flex items-center justify-center gap-1.5 min-w-control px-2.5 rounded-control text-ui font-medium transition-hover cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed";
+  "inline-flex items-center justify-center gap-1.5 min-w-control pointer-coarse:max-sm:min-h-11 pointer-coarse:max-sm:min-w-11 px-2.5 rounded-control text-ui font-medium transition-hover cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed";
 const SEG_STATE = (on: boolean) => (on ? "bg-raised-2 text-strong" : "text-muted hover:text-strong hover:bg-item-hover");
 
 /** One button that stays pressed (aria-pressed). Icon-only needs an aria-label. */
@@ -90,7 +91,7 @@ export function ToggleGroup<T extends string>({
   const single = type === "single";
   const current = options.findIndex((o) => value.includes(o.key));
   return (
-    <div role={single ? "radiogroup" : "toolbar"} aria-label={label} className={cn("inline-flex items-center gap-0.5 bg-raised p-1 h-control rounded-control shrink-0", className)}>
+    <div role={single ? "radiogroup" : "toolbar"} aria-label={label} className={cn("inline-flex items-center gap-0.5 bg-raised p-1 h-control pointer-coarse:max-sm:h-auto rounded-control shrink-0", className)}>
       {options.map((o, i) => {
         const on = value.includes(o.key);
         return (

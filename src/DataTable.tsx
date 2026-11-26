@@ -14,6 +14,7 @@ import { foldColumns } from "./dataTableFold";
 import { searchRows, sortRows } from "./listQuery";
 import { useSemiLocale } from "./locale";
 import { FOCUS_RING, HIT_AREA, cn } from "../styles/utils";
+import { BTN_HIT } from "../styles/buttons";
 
 export interface DataTableColumn<T> {
   key: string;
@@ -293,7 +294,7 @@ export function DataTable<T>({
             <THead>
               <TR>
                 {selectable && (
-                  <TH data-check="" {...pinned(false, 0)} className={cn("w-10", pinned(false, 0).className)}>
+                  <TH data-check="" {...pinned(false, 0)} className={cn("w-10 pointer-coarse:max-sm:h-11", pinned(false, 0).className)}>
                     <Checkbox
                       checked={onPage > 0 && onPage === visibleIds.length}
                       indeterminate={onPage > 0 && onPage < visibleIds.length}
@@ -319,7 +320,7 @@ export function DataTable<T>({
                         <button
                           type="button"
                           onClick={() => toggleSort(c.key)}
-                          className={cn("relative inline-flex items-center gap-1 rounded-chip hover:text-strong", active && "text-strong", c.numeric && "flex-row-reverse", HIT_AREA, FOCUS_RING)}
+                          className={cn("relative inline-flex items-center gap-1 rounded-chip hover:text-strong", active && "text-strong", c.numeric && "flex-row-reverse", HIT_AREA, BTN_HIT, FOCUS_RING)}
                         >
                           {c.header}
                           <Icon name={active && sort!.dir === "desc" ? "chevronDown" : "chevronUp"} className={cn("w-3.5 h-3.5", active ? "opacity-100" : "opacity-40")} />

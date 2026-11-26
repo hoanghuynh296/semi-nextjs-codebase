@@ -17,6 +17,7 @@ import {
 } from "./tabUtils";
 import type { TabChangeMeta } from "./useTabParam";
 import { cn, FOCUS_RING } from "../styles/utils";
+import { BTN_HIT } from "../styles/buttons";
 
 export type { TabActivation, TabBeforeChange };
 
@@ -121,6 +122,7 @@ export function PillTabs<T extends string = string>({
               const on = it.key === value;
               const sharedClass = cn(
                 "relative z-10 inline-flex items-center gap-1 shrink-0 whitespace-nowrap h-[30px] px-4 py-1.5 rounded-full text-chrome font-semibold leading-none transition-hover motion-reduce:transition-opacity",
+                BTN_HIT,
                 it.disabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer",
                 FOCUS_RING,
                 on ? "text-strong" : "text-muted hover:text-strong",

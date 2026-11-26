@@ -15,6 +15,7 @@ import {
 } from "./tabUtils";
 import type { TabChangeMeta } from "./useTabParam";
 import { cn } from "../styles/utils";
+import { BTN_HIT } from "../styles/buttons";
 
 export interface SegmentOption<T extends string = string> {
   key: T;
@@ -79,7 +80,7 @@ export function SegmentedControl<T extends string = string>({
           aria-label={label}
           onKeyDown={onListKeyDown}
           onBlur={onListBlur}
-          className="relative inline-flex items-center gap-1 p-1 h-[32px] w-max rounded-control bg-raised"
+          className="relative inline-flex items-center gap-1 p-1 h-[32px] pointer-coarse:max-sm:h-auto w-max rounded-control bg-raised"
         >
           {pill && (
             <span
@@ -103,6 +104,7 @@ export function SegmentedControl<T extends string = string>({
                 onClick={(e) => onItemClick(o, e)}
                 className={cn(
                   "relative z-10 inline-flex items-center justify-center shrink-0 whitespace-nowrap h-[24px] px-4 py-1.5 rounded-control text-chrome font-semibold leading-none transition-hover motion-reduce:transition-opacity outline-none focus-visible:ring-2 focus-visible:ring-focus",
+                  BTN_HIT,
                   o.disabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer",
                   on ? "text-strong" : "text-muted hover:text-strong",
                 )}

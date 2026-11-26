@@ -109,6 +109,8 @@ export function TextTabs<T extends string = string>({
               onKeyDown: (e: React.KeyboardEvent<HTMLElement>) => onItemKeyDown(it, e),
               className: cn(
                 "shrink-0 whitespace-nowrap font-display text-tab-xl font-normal text-strong rounded-control underline decoration-2 underline-offset-6 transition-hover",
+                // touch phones: a 44px tall tap target; the word stays on the row's baseline, the extra height goes above it
+                "pointer-coarse:max-sm:inline-flex pointer-coarse:max-sm:items-end pointer-coarse:max-sm:min-h-11",
                 it.disabled ? "opacity-20 cursor-not-allowed" : "cursor-pointer",
                 FOCUS_RING,
                 on ? "opacity-100 decoration-primary" : cn("opacity-20 decoration-transparent", !it.disabled && "hover:opacity-50 focus-visible:opacity-100"),
