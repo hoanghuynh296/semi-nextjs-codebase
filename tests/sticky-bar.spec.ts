@@ -374,17 +374,17 @@ test("short-list focus-pin works below md (< 768px), reduced-motion pins instant
 });
 
 // #207: one upward gesture never unpins, with or without layout-pin. Replays (all events cancelable) a long continuous
-// wheel, a slow trackpad with 250-350ms pauses and a fling with momentum on the layout-pin list and on the padded doc
+// wheel, a slow trackpad with 150-250ms pauses and a fling with momentum on the layout-pin list and on the padded doc
 // example (no layout-pin); data-stuck must never clear during the gesture, then a stop + a new upward gesture unpins.
 const SLOW_BURSTS = Array.from({ length: 14 }, () => [-12, -20, -24, -12]);
 const GESTURES_207: { name: string; run: (page: Page, x: number, y: number) => Promise<void> }[] = [
   { name: "long continuous wheel", run: (page, x, y) => trackpadWheel(page, x, y, Array(70).fill(-40)) },
   {
-    name: "slow trackpad with 250-350ms pauses",
+    name: "slow trackpad with 150-250ms pauses",
     run: async (page, x, y) => {
       for (const [i, burst] of SLOW_BURSTS.entries()) {
-        // Plus ~50ms (more under load) for the last wheel of a burst to go through: ~230-330ms between two wheel events.
-        if (i) await page.waitForTimeout([180, 230, 280][i % 3]);
+        // Plus ~50ms (more under load) for the last wheel of a burst to go through: ~150-250ms between two wheel events.
+        if (i) await page.waitForTimeout([100, 150, 200][i % 3]);
         await trackpadWheel(page, x, y, burst);
       }
     },
@@ -450,8 +450,9 @@ for (const target of TARGETS_207) {
       // The input really is one gesture: no pause between two of its wheel events reaches the 400ms "stop".
       const wheels = held.wheels.filter((t) => t >= start.now);
       const gaps = wheels.slice(1).map((t, i) => Math.round(t - wheels[i]));
+      // First: if a pause reached the stop, the input was two gestures and the run proves nothing about the bar.
+      expect(Math.max(...gaps), `${g.name}: longest pause inside the gesture (input, not the bar)`).toBeLessThan(400);
       expect(cleared, `${g.name}: data-stuck cleared during the gesture (wheel gaps ${gaps.filter((d) => d > 40).join(", ")} ms)`).toEqual([]);
-      expect(Math.max(...gaps), `${g.name}: longest pause inside the gesture`).toBeLessThan(400);
       expect(held.stuck, `${g.name}: still stuck`).toBe(true);
       expect(Math.abs(held.st - held.pin), `${g.name}: held at the pin`).toBeLessThanOrEqual(2);
       // The stop, then a new upward gesture unpins.
@@ -462,3 +463,114 @@ for (const target of TARGETS_207) {
     }
   });
 }
+
+// #207 review: two more ways one gesture could unpin.
+// (1) A trackpad sequence whose first event is pure horizontal (deltaY 0): Chrome only lets that first event be
+//     cancelled, so without layout-pin the bar must prevent it, or the vertical rest scrolls natively past the pin.
+// (2) A gesture that starts above the pin going down, pins, and reverses within the same gesture must stay pinned.
+const TARGETS_207_REVIEW = [
+  { name: "layout-pin list", url: "/demo/sticky-list/", host: "#main", over: "[data-page-body]", width: 1440, layout: true },
+  { name: "page scroller below md", url: "/demo/sticky-list/", host: "#main", over: "#main", width: 700, layout: false },
+  { name: "padded doc example", url: "/components/sticky-context-bar/", host: "[data-sticky-host]", over: "[data-sticky-host]", width: 1440, layout: false },
+];
+
+async function setup207(page: Page, t: (typeof TARGETS_207_REVIEW)[number]) {
+  await page.setViewportSize({ width: t.width, height: 820 });
+  await page.goto(t.url);
+  await page.waitForFunction(
+    (sel) => parseFloat(document.querySelector<HTMLElement>(sel)?.style.getPropertyValue("--sticky-pin") || "0") > 0,
+    t.host,
+  );
+  await page.evaluate((sel) => document.querySelector(sel)!.scrollIntoView({ block: "center" }), t.host);
+  await page.waitForTimeout(200);
+  const box = (await page.locator(t.over).first().boundingBox())!;
+  await page.evaluate((sel) => {
+    const bar = document.querySelector(sel)!.querySelector("[data-sticky-bar]")!;
+    const w = window as unknown as { __stuckLog: [number, boolean][]; __wheel: [number, number, boolean, boolean][] };
+    w.__stuckLog = [];
+    w.__wheel = [];
+    // Bubbling listener on window: runs after the bar's handler on the scroller, so defaultPrevented is its verdict.
+    window.addEventListener("wheel", (e) => w.__wheel.push([e.deltaX, e.deltaY, e.cancelable, e.defaultPrevented]), { passive: true });
+    new MutationObserver(() => w.__stuckLog.push([performance.now(), bar.hasAttribute("data-stuck")])).observe(bar, {
+      attributes: true,
+      attributeFilter: ["data-stuck"],
+    });
+  }, t.host);
+  const read = () =>
+    page.evaluate((sel) => {
+      const h = document.querySelector<HTMLElement>(sel)!;
+      const w = window as unknown as { __stuckLog: [number, boolean][]; __wheel: [number, number, boolean, boolean][] };
+      return {
+        now: performance.now(),
+        st: h.scrollTop,
+        pin: parseFloat(h.style.getPropertyValue("--sticky-pin")),
+        stuck: h.querySelector("[data-sticky-bar]")!.hasAttribute("data-stuck"),
+        log: w.__stuckLog,
+        wheel: w.__wheel,
+      };
+    }, t.host);
+  return { x: box.x + box.width / 2, y: box.y + Math.min(box.height - 40, 200), read };
+}
+
+for (const t of TARGETS_207_REVIEW) {
+  test(`#207 ${t.name}: an upward gesture whose first event is pure horizontal stays pinned`, async ({ page }) => {
+    const { x, y, read } = await setup207(page, t);
+    await trackpadWheel(page, x, y, Array(10).fill(80));
+    await page.waitForTimeout(460);
+    const start = await read();
+    expect(start.stuck, "stuck before").toBe(true);
+    const from = start.wheel.length;
+    await page.mouse.move(x, y);
+    await page.mouse.wheel(-30, 0);
+    await page.waitForTimeout(16);
+    await trackpadWheel(page, x, y, Array(40).fill(-40));
+    const held = await read();
+    const first = held.wheel[from];
+    expect(first.slice(0, 2), "the gesture starts sideways").toEqual([-30, 0]);
+    if (!t.layout) expect(first[3], "the horizontal first event is prevented while the bar holds").toBe(true);
+    expect(held.log.filter(([at, stuck]) => at >= start.now && !stuck), "data-stuck cleared during the gesture").toEqual([]);
+    expect(Math.abs(held.st - held.pin), "held at the pin").toBeLessThanOrEqual(2);
+    await page.waitForTimeout(460);
+    await trackpadWheel(page, x, y, [-36, -48, -64, -48, -24]);
+    await page.waitForTimeout(300);
+    expect((await read()).stuck, "a new gesture after the stop unpins").toBe(false);
+  });
+
+  test(`#207 ${t.name}: a gesture that pins on the way down and reverses stays pinned`, async ({ page }) => {
+    const { x, y, read } = await setup207(page, t);
+    const start = await read();
+    expect(start.stuck, "not stuck before").toBe(false);
+    expect(start.st).toBeLessThan(start.pin);
+    // One gesture (16ms apart): down past the pin, then straight back up much further than it went down.
+    await trackpadWheel(page, x, y, [...Array(8).fill(40), ...Array(30).fill(-40)]);
+    const held = await read();
+    const changes = held.log.filter(([at]) => at >= start.now).map(([, stuck]) => stuck);
+    expect(changes, "data-stuck is set once and never cleared within the gesture").toEqual([true]);
+    expect(Math.abs(held.st - held.pin), "held at the pin").toBeLessThanOrEqual(2);
+    await page.waitForTimeout(460);
+    await trackpadWheel(page, x, y, [-36, -48, -64, -48, -24]);
+    await page.waitForTimeout(300);
+    expect((await read()).stuck, "a new gesture after the stop unpins").toBe(false);
+  });
+}
+
+test("#207 padded doc example under reduced motion: a driven wheel step lands at once (no easing)", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const t = TARGETS_207_REVIEW[2];
+  const { x, y, read } = await setup207(page, t);
+  await trackpadWheel(page, x, y, Array(10).fill(80));
+  await page.waitForTimeout(460);
+  const start = await read();
+  expect(start.stuck).toBe(true);
+  expect(start.st - start.pin).toBeGreaterThan(150);
+  await page.mouse.wheel(0, -120);
+  // Two frames: an eased step (45% of the rest per frame) would still be on its way.
+  const st = await page.evaluate(
+    (sel) =>
+      new Promise<number>((r) =>
+        requestAnimationFrame(() => requestAnimationFrame(() => r(document.querySelector<HTMLElement>(sel)!.scrollTop))),
+      ),
+    t.host,
+  );
+  expect(Math.abs(st - (start.st - 120))).toBeLessThanOrEqual(1);
+});

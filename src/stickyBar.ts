@@ -157,6 +157,9 @@ export function useStickyBarPin(barRef: RefObject<HTMLDivElement | null>, enable
     let floor = 0;
     /** The current gesture is driven here (its first event was prevented) so it can stop exactly at the pin. */
     let driving = false;
+    /** The current gesture started at the stop (at the pin, list at its top) going up: the one gesture that unpins. */
+    let unpinning = false;
+    const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)");
     /** Where the driven gesture is heading, and the frame easing towards it. */
     let driveTarget: number | null = null;
     let driveRaf = 0;
@@ -172,6 +175,7 @@ export function useStickyBarPin(barRef: RefObject<HTMLDivElement | null>, enable
     const endGesture = () => {
       floor = 0;
       driving = false;
+      unpinning = false;
     };
 
     const setVar = (name: string, value: string) => {
@@ -194,7 +198,8 @@ export function useStickyBarPin(barRef: RefObject<HTMLDivElement | null>, enable
       // Something else moved the scroller (scrollbar, keyboard, focus): let it win.
       if (Math.abs(y - driveWrote) > 1.5) return stopDrive();
       const d = driveTarget - y;
-      const next = Math.abs(d) <= DRIVE_SNAP_PX ? driveTarget : y + d * DRIVE_EASE;
+      // Under reduced motion the drive lands at once, like focus-pin.
+      const next = reducedMotion?.matches || Math.abs(d) <= DRIVE_SNAP_PX ? driveTarget : y + d * DRIVE_EASE;
       scrollToY(next);
       driveWrote = scroller.scrollTop;
       if (Math.abs(driveTarget - driveWrote) < 0.5) driveTarget = null;
@@ -255,8 +260,6 @@ export function useStickyBarPin(barRef: RefObject<HTMLDivElement | null>, enable
       idleTimer = setTimeout(endGesture, GESTURE_GAP_MS);
 
       const dy = lineHeightDelta(e);
-      if (dy === 0) return;
-
       const inner = findInnerScroller(e.target, scroller);
       const y = scroller.scrollTop;
       const range = scroller.scrollHeight - scroller.clientHeight;
@@ -265,11 +268,28 @@ export function useStickyBarPin(barRef: RefObject<HTMLDivElement | null>, enable
 
       if (newGesture) {
         const atTop = !inner || inner.scrollTop <= 0;
-        // Only a NEW upward gesture starting already pinned with the inner list at its top may unpin.
-        floor = y >= pin - 0.5 && !(dy < 0 && atTop && Math.abs(y - pin) <= 0.5) ? pin : 0;
+        // Only a NEW upward gesture starting already pinned with the inner list at its top may unpin. A first event
+        // with no vertical part (a trackpad sequence often starts sideways) counts as upward here.
+        unpinning = dy <= 0 && atTop && Math.abs(y - pin) <= 0.5;
+        floor = y >= pin - 0.5 && !unpinning ? pin : 0;
         // Pinned at the bottom of a layout-pin range, a downward wheel outside the lists scrolls nothing: prevent it so
         // the browser keeps the sequence cancelable and a reversal in the same gesture is held at the pin too.
         if (e.cancelable && layout && dy > 0 && !inner && y >= pin - 0.5) e.preventDefault();
+      }
+
+      // A gesture that reaches the pin holds there for the rest of it, also one that started above the pin going down
+      // and reverses (#207): only a new gesture after a stop unpins.
+      if (!unpinning && floor === 0 && (driveTarget ?? y) >= pin - 0.5) floor = pin;
+
+      if (dy === 0) {
+        // Horizontal only, often the first (and so the only cancelable) event of a trackpad sequence. While the bar
+        // holds without layout-pin, prevent it and drive the gesture, or its vertical part would run natively past the
+        // pin (#207). With layout-pin the overscroll-contained lists hold structurally.
+        if (e.cancelable && !layout && floor > 0 && y >= pin - 0.5) {
+          e.preventDefault();
+          driving = true;
+        }
+        return;
       }
 
       if (dy < 0 && inner && inner.scrollTop > 0) {

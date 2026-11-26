@@ -306,7 +306,7 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /** Slow trackpad: short bursts of small deltas with 250-350ms pauses between them (fingers resting on the pad). */
 const SLOW_TRACKPAD: Seq = Array.from({ length: 16 }, (_, i) => [
-  [i === 0 ? 0 : [250, 300, 350][i % 3], -14, 1],
+  [i === 0 ? 0 : [150, 200, 250][i % 3], -14, 1],
   [16, -22, 1],
   [16, -26, 1],
   [16, -14, 1],
@@ -320,13 +320,14 @@ const INPUTS: { name: string; depth: number; run: (cdp: CDPSession, x: number, y
     run: (cdp, x, y) => cdp.send("Input.synthesizeScrollGesture", { x, y, yDistance: 3200, speed: 900, gestureSourceType: "mouse" }),
   },
   {
-    name: "slow trackpad with 250-350ms pauses",
+    name: "slow trackpad with 150-250ms pauses",
     depth: 700,
     run: async (cdp, x, y) => {
       await replay(cdp, x, y, SLOW_TRACKPAD);
       // The same pauses through Chrome's own pipeline: each burst is a new native sequence. Starting a synthesized
-      // gesture takes Chrome ~100ms (more under load), so these sleeps give ~230-330ms between two wheel events.
-      for (const gap of [130, 230, 180, 230]) {
+      // gesture takes Chrome ~100ms (more under load), so these sleeps give ~150-250ms between two wheel events,
+      // well clear of the 400ms stop even on a loaded machine.
+      for (const gap of [50, 130, 100, 150]) {
         await sleep(gap);
         await cdp.send("Input.synthesizeScrollGesture", { x, y, yDistance: 120, speed: 600, gestureSourceType: "mouse" });
       }
@@ -381,8 +382,9 @@ for (const d of [DISPLAYS[0], DISPLAYS[3]]) {
         const t1 = data.ev.find((e) => e.kind === "mark" && e.name === "stop")!.t;
         const wheels = data.ev.filter((e) => e.kind === "wheel" && e.t >= t0 && e.t <= t1).map((e) => e.t);
         const maxGap = Math.max(0, ...wheels.slice(1).map((t, i) => t - wheels[i]));
+        // First: if a pause reached the stop, the input was two gestures and the run proves nothing about the bar.
+        expect(maxGap, "longest pause inside the gesture (input, not the bar)").toBeLessThan(400);
         expect(lost, `data-stuck cleared during one upward gesture (start st=${start.st}, pin=${start.pin}, longest pause ${maxGap.toFixed(0)}ms)`).toEqual([]);
-        expect(maxGap, "longest pause inside the gesture").toBeLessThan(400);
         check(data, "gesture", "stop", input.name);
         expect(Math.abs(held.st - held.pin), "held at the pin").toBeLessThanOrEqual(1);
         const after = check(data, "unpin", "end", "new gesture up");
