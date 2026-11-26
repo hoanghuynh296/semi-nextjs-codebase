@@ -69,6 +69,50 @@ test("a second Tailwind build (#184): Semi's CSS in its own sheet next to the ap
   rmSync(root, { recursive: true });
 });
 
+test("one Tailwind build split across files (#184 review): a Semi sheet that globals.css @imports is not a second build", () => {
+  const { root, web } = app();
+  writeFileSync(join(web, "app/globals.css"), `@import "tailwindcss";\n@import "./semi.css";\n`);
+  writeFileSync(join(web, "app/semi.css"), `@import "@semi/ui/tokens.css";\n@import "@semi/ui/base.css";\n`);
+  let found = auditProject(root).apps[0].issues.filter((i) => i.phase === "foundation").map((i) => i.check);
+  assert.ok(!found.includes("second-build") && !found.includes("semi-css"), found.join());
+  // through a folder and two levels: still one build
+  mkdirSync(join(web, "app/styles"));
+  writeFileSync(join(web, "app/globals.css"), `@import "tailwindcss";\n@import "./styles/index.css";\n`);
+  writeFileSync(join(web, "app/styles/index.css"), `@import "../semi.css";\n`);
+  found = auditProject(root).apps[0].issues.filter((i) => i.phase === "foundation").map((i) => i.check);
+  assert.ok(!found.includes("second-build"), found.join());
+  rmSync(root, { recursive: true });
+});
+
+test("brand kit in an app moving in stages (#184 review): the brand item points at the scoped sheet; foundation wires brand.css there and leaves globals.css alone", () => {
+  const { root, web } = app();
+  const kit = join(web, "node_modules", "@3dnoobs", "brand");
+  mkdirSync(kit, { recursive: true });
+  writeFileSync(join(kit, "package.json"), JSON.stringify({ name: "@3dnoobs/brand", version: "1.0.0" }));
+  writeFileSync(join(kit, "brand.json"), JSON.stringify({ name: "3D Noobs", package: "@3dnoobs/brand", primary: "#00AE42", fonts: { sans: "Inter" } }));
+  execFileSync("node", [new URL("../../brand/cli.mjs", import.meta.url).pathname, "build"], { cwd: kit });
+  writeFileSync(join(web, "semi-lint.json"), JSON.stringify({ scan: ["app"], brand: "@3dnoobs/brand", keep: { tables: "x", "app-shell": "x", "subpage-toolbar": "x" } }));
+  writeFileSync(join(web, "app/layout.tsx"), LAYOUT.replace("<body>", "<body><ThemeProvider>").replace("</body>", "</ThemeProvider></body>"));
+  const legacy = `@import "tailwindcss";\n@theme { --color-primary: red; }\n`;
+  writeFileSync(join(web, "app/globals.css"), legacy);
+  mkdirSync(join(web, "app/(semi)"));
+  const sheet = join(web, "app/(semi)/semi.css");
+  writeFileSync(sheet, `@import "@semi/ui/scoped.css";\n@source "./";\n`);
+  const issue = (check) => auditProject(root).apps[0].issues.find((i) => i.check === check);
+  assert.equal(issue("brand").file, "app/(semi)/semi.css");
+  assert.match(issue("brand").what, /brand\.css trong app\/\(semi\)\/semi\.css/);
+  try {
+    execFileSync("node", [FIX, "--cwd", root, "foundation"], { encoding: "utf8" });
+  } catch (e) {
+    throw new Error(e.stdout + e.stderr);
+  }
+  assert.equal(readFileSync(join(web, "app/globals.css"), "utf8"), legacy); // legacy screens keep their look
+  assert.equal(readFileSync(sheet, "utf8"), `@import "@semi/ui/scoped.css";\n@import "@3dnoobs/brand/dist/brand.css";\n@source "./";\n`);
+  assert.equal(issue("brand"), undefined);
+  assert.equal(issue("semi-css"), undefined);
+  rmSync(root, { recursive: true });
+});
+
 test("detail and list pages: only list pages need a SubpageToolbar; AppHeader counts as a Semi frame", () => {
   const { root, web } = app();
   mkdirSync(join(web, "app/about"));

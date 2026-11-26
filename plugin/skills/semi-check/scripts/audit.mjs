@@ -577,8 +577,21 @@ export function auditSingleApp(cwd) {
   const semiSheets = cssFiles.filter((s) => s.rel !== cssRel && (SEMI_IMPORT.test(s.src) || SCOPED_IMPORT.test(s.src)));
   if (!semiSheets.length && (!existsSync(cssPath) || !readFileSync(cssPath, "utf8").includes("@semi/ui/tokens.css")))
     setup("semi-css", cssRel, "chưa import tokens.css + base.css của Semi", "khối semi-design-system trong globals.css (đổi giao diện: so ảnh trước / sau)");
+  // A Semi sheet that an app build @imports is part of that one build (globals.css: `@import "tailwindcss";
+  // @import "./semi.css";`), not a second build: follow the app builds' relative imports.
+  const inAppBuild = new Set();
+  const follow = (s) => {
+    for (const m of s.src.matchAll(/@import\s+["'](\.{1,2}\/[^"']+\.css)["']/g)) {
+      const rel = relative(cwd, join(cwd, dirname(s.rel), m[1])).split(sep).join("/");
+      if (inAppBuild.has(rel)) continue;
+      inAppBuild.add(rel);
+      const next = cssFiles.find((x) => x.rel === rel);
+      if (next) follow(next);
+    }
+  };
+  appBuilds.forEach(follow);
   if (appBuilds.length)
-    for (const s of semiSheets.filter((x) => !SCOPED_IMPORT.test(x.src)))
+    for (const s of semiSheets.filter((x) => !SCOPED_IMPORT.test(x.src) && !inAppBuild.has(x.rel)))
       setup(
         "second-build",
         s.rel,
@@ -621,7 +634,7 @@ export function auditSingleApp(cwd) {
     if (!brandSheets.some((t) => t.includes(`${brand.pkg}/dist/brand.css`))) missing.push(`brand.css trong ${semiSheets[0]?.rel ?? cssRel}`);
     const agents = [cwd, dirname(cwd), dirname(dirname(cwd))].map((d) => join(d, "AGENTS.md")).filter((p) => existsSync(p));
     if (!agents.some((p) => readFileSync(p, "utf8").includes("<!-- semi-brand:start -->"))) missing.push("luật brand trong AGENTS.md");
-    if (missing.length) setup("brand", cssRel, `chưa nối brand ${brandKit.name}: ${missing.join(", ")}`, "foundation (nối lại brand)");
+    if (missing.length) setup("brand", semiSheets[0]?.rel ?? cssRel, `chưa nối brand ${brandKit.name}: ${missing.join(", ")}`, "foundation (nối lại brand)");
     // 1.0 brand.json schema: primary (required), optional secondary, fonts (sans + optional display), logo, voice; no 0.x fields.
     const srcBrandPath = join(brand.dir, "brand.json");
     let srcBrand = null;

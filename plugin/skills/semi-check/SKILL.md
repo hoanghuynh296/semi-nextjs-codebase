@@ -43,11 +43,11 @@ The check part changes **no source file**. Its only output is `semi-check.md` at
    **An app that moves in stages** (legacy screens that must keep their look while some routes move to Semi, or a
    `second-build` item; ask when the app is large and the user did not say): Semi's CSS must not go into the global
    sheet (`tokens.css` redefines `--color-primary`, `--spacing`…, `base.css` hides every scrollbar). Before running
-   foundation, write the migrated routes' own sheet, e.g. `app/(semi)/semi.css`: `@import "@semi/ui/scoped.css";`, the
-   brand kit's `brand.css` import when there is one, and an `@source` line for every migrated folder; import it in that
+   foundation, write the migrated routes' own sheet, e.g. `app/(semi)/semi.css`: `@import "@semi/ui/scoped.css";` and an
+   `@source` line for every migrated folder; import it in that
    route group's `layout.tsx` (Vite / React Router: `import semiCss from "./semi.css?url"` + the route's `links`).
    A `second-build` sheet (`@import "tailwindcss"` + `tokens.css` / `base.css`) becomes that sheet. Foundation then
-   leaves `globals.css` alone. Every file rendered on a migrated route must be sourced there or migrated first (the
+   leaves `globals.css` alone and puts the brand kit's `brand.css` (when there is one) in that sheet. Every file rendered on a migrated route must be sourced there or migrated first (the
    `semi` layer beats the app's own utilities too). Exit step, when the last legacy screen is migrated: delete the
    scoped sheet and its imports, drop the app's old theme from `globals.css` and run foundation again, which wires
    the single `globals.css` setup (`docs/BRANDS.md`, "Migrating an app in stages").
