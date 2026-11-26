@@ -318,6 +318,10 @@ export const WARN = [
     "At most one filled brand button (variant=\"primary\" / \"secondary\") per standalone page or per modal (the nav's mainAction is not counted). Make ordinary actions neutral (subtle, surface, inverse, outline, ghost), or opt an owner-approved case in with `// semi-lint-allow one-brand-button: <reason>`.",
   ],
   [
+    "one-large-button",
+    "size=\"lg\" (40px) is the call to action of a page header (#189): at most one per header (RouteHeader, AppHeader, WorkspaceHeader, MinimalHeader, ReaderHeader, PageHeader, <header>). Give the other actions the default size (md), or opt an owner-approved case in with `// semi-lint-allow one-large-button: <reason>`.",
+  ],
+  [
     "brand-colour-use",
     "Brand colour (bg-primary / bg-secondary, text-primary, border-primary…) is allowed only in main buttons (primary / secondary), the nav mainAction, the active big-tab underline (decoration-primary), attention CountBadge and NewTag. Use neutral tokens (text-strong, bg-item-selected, border-outline-line, ring-focus), or opt in with `// semi-lint-allow brand-colour-use: <reason>`.",
   ],
@@ -708,6 +712,8 @@ const BRAND_UTIL = /^(bg|text|border(?:-[xytrblse])?|ring(?:-offset)?|outline|fi
 const BRAND_ALLOWED_HOST = /^(?:Button|SplitButton|CountBadge|NewTag|AppShell|button|a|Link)$/;
 const BRAND_ALLOWED_CONST = /\b(?:BTN_PRIMARY|BTN_SECONDARY|MODAL_BTN_PRIMARY|MODAL_BTN_SECONDARY|COUNT_BADGE|NEW_TAG|headerPrimary|mainAction)\b/;
 const MODAL_SCOPE_TAG = /^(?:Modal|Drawer|Sheet)$/;
+/** Page headers where a size="lg" Button is the one call to action (one-large-button, #189). */
+const PAGE_HEADER_TAG = /<(RouteHeader|AppHeader|WorkspaceHeader|MinimalHeader|ReaderHeader|PageHeader|header)\b/g;
 const DIALOG_ROLE_RX = /\brole=\{?\s*["'](?:dialog|alertdialog)["']/;
 const HEAVY_WEIGHT = /(?<![\w-])font-(?:semibold|bold|extrabold|black|\[(?:600|700|800|900)\])(?![\w-])/;
 const MEDIUM_OR_HEAVIER = /(?<![\w-])font-(?:medium|semibold|bold|extrabold|black|\[(?:500|600|700|800|900)\])(?![\w-])/;
@@ -849,6 +855,22 @@ export function v1Hits(src, code = src) {
     const isTabXl = toks.includes("text-tab-xl");
     if (isTabXl ? MEDIUM_OR_HEAVIER.test(s.value) : HEAVY_WEIGHT.test(s.value)) {
       push("heading-weight", s.line);
+    }
+  }
+
+  // 4. one-large-button (#189): size="lg" is the call to action of a page header; a second one in the same header
+  //    (its props, e.g. actions={…}, and its children) warns, unless the two sit in mutually exclusive branches.
+  for (const m of code.matchAll(PAGE_HEADER_TAG)) {
+    const open = tagFrom(code, m.index);
+    const close = /\/\s*>$/.test(open.text) ? -1 : code.indexOf(`</${m[1]}>`, open.end);
+    const end = close < 0 ? open.end : close;
+    let prev = null;
+    for (const b of code.slice(m.index, end).matchAll(/<(?:Button|SplitButton)\b/g)) {
+      const at = m.index + b.index;
+      const tag = tagFrom(code, at);
+      if ((attrValue(tag.text, "size") ?? "").trim().replace(/^["']|["']$/g, "") !== "lg") continue;
+      if (!prev || mutuallyExclusive(code.slice(prev.end, at))) prev = tag;
+      else push("one-large-button", lineOf(code, at));
     }
   }
 

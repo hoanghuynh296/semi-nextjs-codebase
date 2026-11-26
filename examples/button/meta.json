@@ -1,7 +1,7 @@
 {
   "title": "Button",
   "group": "Actions",
-  "description": "The action control, 1.0 variants: subtle (default) for ordinary actions, surface for toolbar actions, inverse for the main action of a card or a list title row, outline beside an inverse one, ghost for icon buttons, primary / secondary (the brand fills) only for the one main button of a page, a dialog or the nav, danger for destructive actions. Spinner shows work in progress inside the control that runs it.",
+  "description": "The action control, 1.0 variants: subtle (default) for ordinary actions, surface for toolbar actions, inverse for the main action of a card or a list title row, outline beside an inverse one, ghost for icon buttons, primary / secondary (the brand fills) only for the one main button of a page, a dialog or the nav, danger (solid red) for destructive actions, danger-subtle (the danger tint) for a destructive action that is not the main one. Spinner shows work in progress inside the control that runs it.",
   "components": [
     "Button",
     "Spinner"
@@ -10,6 +10,7 @@
     "Any action: save, create, refresh, delete, open a dialog.",
     "Icon-only toolbar actions (iconOnly + aria-label); an attention count on one with badge.",
     "Dialog footers (size=\"modal\": 44px touch target on phones): commit primary, cancel subtle, a destructive confirm danger.",
+    "The one call to action of a page header: size=\"lg\" (40px; lint one-large-button warns on a second one in the same header). A small pill CTA: size=\"pill\" (24px, fully rounded).",
     "Round icon buttons over media, in an overlay header or beside a carousel (iconOnly + shape=\"round\"); the inverse pill of a list title row (size=\"xs\" shape=\"round\")."
   ],
   "instead": [
@@ -40,7 +41,7 @@
     {
       "file": "variants",
       "title": "Variants",
-      "description": "subtle (default) for ordinary actions, surface for toolbar actions, inverse for a card's or a list title row's main action, outline beside it, ghost for quiet and icon actions, primary / secondary (brand) for the one main button of the page or dialog, danger for destructive. The second row is disabled: neutral for every variant."
+      "description": "subtle (default) for ordinary actions, surface for toolbar actions, inverse for a card's or a list title row's main action, outline beside it, ghost for quiet and icon actions, primary / secondary (brand) for the one main button of the page or dialog, danger (solid red, white text) for destructive, danger-subtle (tint, line, danger text) for a quieter destructive action. The second row is disabled: neutral for every variant."
     },
     {
       "file": "icons",
@@ -60,7 +61,7 @@
     {
       "file": "sizes",
       "title": "Sizes",
-      "description": "xs (24px) for the inverse pill of a list title row, sm (28px, 12px text) for dense rows and toolbars, md (default, 14px text) for content, modal for dialog footers and a full-width commit; badge pins an attention count to an icon button."
+      "description": "lg (40px, 14px) for the one call to action of a page header, md (default, 34px, 14px text) for content, sm (28px, 12px text) for dense rows and toolbars, pill (24px, 12px, fully rounded) for a small pill CTA, xs (24px) for the inverse pill of a list title row, modal for dialog footers and a full-width commit; every size is at least 44px on a touch phone. The second row: danger at lg and md, danger-subtle as a pill. badge pins an attention count to an icon button."
     }
   ]
 }

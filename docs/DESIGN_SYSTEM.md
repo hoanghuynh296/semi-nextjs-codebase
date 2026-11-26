@@ -190,7 +190,8 @@ is re-declared per theme scope for app CSS (`var(--color-panel)`).
 
 | Need | Tokens |
 |---|---|
-| Status callout / badge / danger button | `bg-{danger,success,warning,info}-bg` + `border-*-border` + `text-*-fg` (`Alert`, `BTN_DANGER`) |
+| Status callout / badge / quiet danger button | `bg-{danger,success,warning,info}-bg` + `border-*-border` + `text-*-fg` (`Alert`, `BTN_DANGER_SUBTLE`) |
+| Danger button (solid red, #189) | `bg-danger-fill` (hover `danger-fill-hover`) + `text-on-solid` (`BTN_DANGER`, `MODAL_BTN_DANGER`) |
 | Status dot, progress fill, destructive solid | `bg-*-solid` (+ `text-on-solid`) |
 | Backdrop of modal / drawer / dialog | `bg-overlay` (or `OVERLAY`) |
 | Floating layer (modal, popover, menu, toast, tooltip) | `shadow-overlay` |
@@ -597,10 +598,13 @@ neutral for every variant, at least 44 × 44px on a phone with a touch screen (`
 | `outline` | `BTN_OUTLINE` | transparent, 1px `outline-line` | beside an inverse one (Chia sẻ) |
 | `ghost` | `BTN_GHOST` | no fill, `item-hover` on hover | icon buttons, the nav bottom row, quiet row actions |
 | `primary` / `secondary` | `BTN_PRIMARY` / `BTN_SECONDARY` | the brand fills with their on-colours | only the one main button of a page, a dialog (its commit: Gửi, Lưu) or the nav, or a case the app's owner asks for; `secondary` is the brand secondary (the primary when the brand has none) |
-| `danger` | `BTN_DANGER` | the danger status fill (tint, line, danger text) | destructive actions; the destructive confirm of a dialog |
+| `danger` | `BTN_DANGER` | solid red (`bg-danger-fill`, hover `danger-fill-hover`) with white text (`text-on-solid`) | destructive actions; the destructive confirm of a dialog (`confirmDelete`, `confirmDialog({ tone: "danger" })`) |
+| `danger-subtle` | `BTN_DANGER_SUBTLE` | the danger status fill (tint, line, danger text): the pre-#189 `danger` | a destructive action that is not the main one (remove from a group beside other actions) |
 
-Sizes: `md` (h-control, 14px), `sm` (`BTN_SM`, 28px, 12px `text-chrome`: dense rows, toolbars), `xs` (`BTN_XS`, 24px,
-12px), `modal` (`MODAL_BTN_*`: 44px / 15px on phones, h-control from sm: dialog footers, a full-width commit; commit
+Sizes: `md` (h-control 34px, 14px; the default), `lg` (`BTN_LG`, 40px, 14px / 500, the control radius: the one call to
+action of a page header; lint `one-large-button` warns on a second one in the same header), `sm` (`BTN_SM`, 28px, 12px
+`text-chrome`: dense rows, toolbars), `pill` (`BTN_PILL`, 24px, 12px / 500, fully rounded: a small pill CTA), `xs`
+(`BTN_XS`, 24px, 12px), `modal` (`MODAL_BTN_*`: 44px / 15px on phones, h-control from sm: dialog footers, a full-width commit; commit
 `primary`, cancel `subtle`, destructive `danger`). `badge` pins an attention `CountBadge` to an icon button's corner.
 Every variant's text reaches 4.5:1 on its fill and on its hover fill in both themes (the token build checks it). Icon-only: add `BTN_ICON` (it carries `BTN_HIT`, so a hand-built `${BTN_SUBTLE} ${BTN_ICON}` is 44px on a touch phone too), or `ICON_BTN` (`w-7 h-7 rounded-control`) inside cards. Big
 state toggles (power) are round: `w-20 h-20 sm:w-24 sm:h-24 rounded-full`, flat `bg-inverted text-on-inverted` when on (an "on" state is neutral, §0),
@@ -915,7 +919,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `SidePanel`, `SidePanelToggle`, `RefreshButton` | tool-app left panel, icon-only reload action |
 | Hooks (`Field.tsx`, `a11y.ts`, `floating.ts`) | `useField` (a custom control reads its `Field`: id, `aria-describedby`, invalid), `useDialog` (focus trap + scroll lock + Escape for a modal-like surface; built on `useFocusTrap` and `useScrollLock`), `focusFirstField(root)` (focuses the first field only on `(hover: hover) and (pointer: fine)` unless focus already sits in a field; `Modal` and `Drawer` run it on open by default, `autoFocusFirstField={false}` opts out), `useBackdropClose` (a backdrop that wraps its panel closes only on a click that starts and ends on it), `useAnchoredPosition` (fixed menu / tooltip next to its trigger, flips above, never clipped), `useCoarsePointer`, `useTheme` |
 | `@semi/ui/styles` → `surfaces.ts` | `SHELL_*`, `CARD`, `CARD_HOVER`, `CARD_BORDERED`, `CARD_BORDERED_HOVER`, `CARD_ACTIVE`, `HERO`, `TILE`, `SECTION_*`, `COUNT_PILL`, `EMPTY`, `ICON_BTN` / `ICON_BTN_DANGER`, `STATUS_PILL`, `STATUS_DOT`, `STICKY_TOOLBAR`, `MODAL_*`, `FIELD_LABEL`, `FIELD_INPUT`, `FIELD_TEXTAREA`, `FORM_PAGE`, `FORM_ACTIONS`, `FORM_ACTIONS_STICKY` |
-| `buttons.ts` | `BTN_PRIMARY`, `BTN_SECONDARY`, `BTN_OUTLINE`, `BTN_DANGER`, `BTN_ICON`, `MODAL_BTN_*` (incl. `MODAL_BTN_OUTLINE`) |
+| `buttons.ts` | `BTN_PRIMARY`, `BTN_SECONDARY`, `BTN_OUTLINE`, `BTN_DANGER`, `BTN_DANGER_SUBTLE`, `BTN_ICON`, `BTN_LG`, `BTN_PILL`, `MODAL_BTN_*` (incl. `MODAL_BTN_OUTLINE`, `MODAL_BTN_DANGER_SUBTLE`) |
 | `appChrome.ts` | `HEADER_ICON_*`, `headerPrimary`, `HEADER_PILL`, `VIEWPORT_*` |
 
 Components are client components (`"use client"`), shipped as TypeScript source: the app adds
@@ -1161,6 +1165,7 @@ catches and what it must not:
   - **`one-brand-button`:** warns on a second filled brand button (`variant="primary"` / `"secondary"`, `BTN_PRIMARY`, `BTN_SECONDARY`, `MODAL_BTN_PRIMARY`, `MODAL_BTN_SECONDARY`) in the same standalone page or modal. `AppShell` `mainAction`, separate modals, neutral variants and mutually exclusive branches (`tab === "a" && (...)`, ternaries) are excluded. Fix by moving ordinary actions to neutral variants (`subtle`, `surface`, `inverse`, `outline`, `ghost`).
   - **`brand-colour-use`:** warns when brand utilities (`bg-primary`, `bg-secondary`, `text-primary`, `border-primary`, `bg-primary/10` …) are used outside 1.0's allowed places (main buttons, `AppShell` `mainAction`, active big-tab underline `decoration-primary`, `CountBadge`, `NewTag`). Fix with neutral tokens (`text-strong`, `bg-item-selected`, `border-outline-line`, `ring-focus`).
   - **`removed-token`:** warns on tokens, classes, CSS variables and style attributes removed in 1.0 (`bg-accent-subtle`, `border-accent-line`, `text-accent-fg`, `text-contrast`, `text-caption`, `text-label`, `text-title*`, `text-heading*`, `text-kpi`, `z-keypad`, `data-style`, `@semi/ui/styles.json`), naming the 1.0 replacement from `docs/MIGRATION-1.0.md`.
+  - **`one-large-button` (#189):** warns on a second `<Button size="lg">` (or `SplitButton`) inside the same page header (`RouteHeader`, `AppHeader`, `WorkspaceHeader`, `MinimalHeader`, `ReaderHeader`, `PageHeader` or a `<header>`: its props such as `actions={…}` and its children). `lg` is the one call to action; give the other actions `md`. Mutually exclusive branches count once; `lg` outside a header is not checked.
   - **`heading-weight`:** warns on `font-semibold` / `font-bold` (≥ 600) on `<h1>`–`<h6>`, `PageTitle`, or heading/display utilities (`text-hero`, `text-title-xl`, `text-tab-xl`, `text-section`), and `font-medium`+ on big `TextTabs` (`text-tab-xl`, weight 400). `text-overline` headings are exempt.
   - **Opt-in allowance (with a reason):** for owner-approved exceptions (e.g. a second brand button or a product-specific brand colour), add `// semi-lint-allow <rule-id>: <reason>` on the same or immediately preceding line, or name the file with a reason under `skip` in `semi-lint.json` (`"skip": { "one-brand-button": { "app/checkout/page.tsx": "owner: dual CTA" } }`). An allowance without a reason is ignored.
 - **Emoji as icons (`emoji-icon`):** a brand whose voice allows emoji in copy disables the rule in `semi-lint.json`.

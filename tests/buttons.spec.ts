@@ -119,7 +119,7 @@ test("FilterPanel apply and NumPadPopup confirm: a 2px focus outline, like Butto
 test("Button: a visible 2px focus outline on every variant and on a MODAL_* (modal size) button", async ({ page }) => {
   await page.goto("/components/button/");
   // the first row of the variants example: one enabled Button per variant (the second row is disabled)
-  const VARIANTS = ["Làm mới", "Mời", "Thêm", "Chia sẻ", "Xem thêm", "Lưu", "Gửi", "Xoá"];
+  const VARIANTS = ["Làm mới", "Mời", "Thêm", "Chia sẻ", "Xem thêm", "Lưu", "Gửi", "Xoá", "Gỡ khỏi nhóm"];
   const variants = page.locator('[data-example="button/variants"]');
   const modal = page.locator('[data-example="button/sizes"]').getByRole("button", { name: "Xác nhận", exact: true });
   const buttons = [...VARIANTS.map((name) => variants.getByRole("button", { name, exact: true }).first()), modal];
@@ -132,5 +132,67 @@ test("Button: a visible 2px focus outline on every variant and on a MODAL_* (mod
     // drawn in a colour, not transparent
     expect(await btn.evaluate((el) => getComputedStyle(el).outlineColor), name).not.toMatch(/rgba\(0, 0, 0, 0\)|transparent/);
   }
-  expect(buttons.length).toBe(9);
+  expect(buttons.length).toBe(10);
+});
+
+const rgb = (el: Element) => {
+  const s = getComputedStyle(el);
+  return [s.backgroundColor, s.color];
+};
+
+// #189: lg 40px and pill 24px fully rounded with a mouse; md stays 34; danger is solid red with white text, danger-subtle the tint.
+test("Button sizes lg / pill and danger variants: drawn sizes with a mouse, solid red danger, keyboard focus and activation (#189)", async ({ page }) => {
+  await page.goto("/components/button/");
+  const sizes = page.locator('[data-example="button/sizes"]');
+  const lg = sizes.getByRole("button", { name: "Tạo đơn (lg)" });
+  const md = sizes.getByRole("button", { name: "Sửa (md)" });
+  const pill = sizes.getByRole("button", { name: "Mời (pill)" });
+  await expect(lg).toBeVisible();
+  expect(Math.round((await lg.boundingBox())!.height)).toBe(40);
+  expect(Math.round((await md.boundingBox())!.height)).toBe(34);
+  expect(Math.round((await pill.boundingBox())!.height)).toBe(24);
+  expect(await lg.evaluate((el) => [getComputedStyle(el).fontSize, getComputedStyle(el).fontWeight, getComputedStyle(el).borderTopLeftRadius])).toEqual(["14px", "500", "8px"]);
+  expect(await pill.evaluate((el) => [getComputedStyle(el).fontSize, getComputedStyle(el).fontWeight])).toEqual(["12px", "500"]);
+  expect(await pill.evaluate((el) => parseFloat(getComputedStyle(el).borderTopLeftRadius))).toBeGreaterThanOrEqual(12);
+
+  const variants = page.locator('[data-example="button/variants"]');
+  const danger = variants.getByRole("button", { name: "Xoá", exact: true }).first();
+  const subtle = variants.getByRole("button", { name: "Gỡ khỏi nhóm", exact: true }).first();
+  for (const theme of ["dark", "light"]) {
+    await page.evaluate((t) => document.documentElement.setAttribute("data-theme", t), theme);
+    expect(await danger.evaluate(rgb), theme).toEqual(["rgb(220, 38, 38)", "rgb(255, 255, 255)"]);
+    const [bg, fg] = await subtle.evaluate(rgb);
+    expect(fg, theme).not.toBe("rgb(255, 255, 255)");
+    expect(bg, theme).not.toBe("rgb(220, 38, 38)");
+  }
+
+  // keyboard: Tab reaches the lg and pill buttons with the 2px outline; Enter and Space activate them
+  await page.evaluate(() => {
+    (window as unknown as { hits: string[] }).hits = [];
+    for (const b of document.querySelectorAll('[data-example="button/sizes"] button'))
+      b.addEventListener("click", () => (window as unknown as { hits: string[] }).hits.push(b.textContent!.trim()));
+  });
+  await md.focus();
+  await page.keyboard.press("Shift+Tab");
+  await expect(lg).toBeFocused();
+  expect(await lg.evaluate(outlined)).toBe("solid 2px");
+  await page.keyboard.press("Enter");
+  await pill.focus();
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Shift+Tab");
+  await expect(pill).toBeFocused();
+  expect(await pill.evaluate(outlined)).toBe("solid 2px");
+  await page.keyboard.press(" ");
+  expect(await page.evaluate(() => (window as unknown as { hits: string[] }).hits)).toEqual(["Tạo đơn (lg)", "Mời (pill)"]);
+});
+
+test("Button lg and pill on a touch phone: at least 44 × 44px (#189)", async ({ browser }) => {
+  const page = await browser.newPage({ viewport: { width: 375, height: 812 }, isMobile: true, hasTouch: true });
+  await page.goto("/components/button/");
+  const sizes = page.locator('[data-example="button/sizes"]');
+  for (const name of ["Tạo đơn (lg)", "Mời (pill)", "Gỡ (pill)"]) {
+    const r = (await sizes.getByRole("button", { name }).boundingBox())!;
+    expect(Math.min(r.width, r.height), name).toBeGreaterThanOrEqual(44);
+  }
+  await page.close();
 });
