@@ -95,9 +95,17 @@ export function AccountMenu({ name, detail, avatarSrc, items = [], onSignOut, th
 
 export interface RouteHeaderProps {
   /** The trail: group (a link), page, record. Every crumb is muted; the trail never wraps and long crumbs truncate. Below `sm` only the last crumb (the current page) shows. */
-  crumbs: RouteCrumb[];
-  /** Optional middle: a search field on a search page, a small info banner. Hidden below `md`. In its own Suspense. */
+  crumbs?: RouteCrumb[];
+  /** The left slot's content in place of the trail (`crumbs` is then unused). */
+  left?: React.ReactNode;
+  /**
+   * The centre slot (default empty): a `RouteHeaderBanner`, a search field on a search page. Hidden below `md`; at most
+   * 40% of the row, and it gives way first (a banner's text truncates before the trail or the right group shrink). In
+   * its own Suspense.
+   */
   middle?: React.ReactNode;
+  /** The right slot's content in place of `actions` + `account`. */
+  right?: React.ReactNode;
   /** The page's action icon buttons (32×32, ghost or outline); keep room for a future AI chat button. In its own Suspense. */
   actions?: React.ReactNode;
   /** The account avatar menu: the who-is-signed-in data, or your own element. */
@@ -161,10 +169,12 @@ function Trail({ crumbs, className, label, hidden }: { crumbs: RouteCrumb[]; cla
 
 /**
  * The route header: h60 from `lg` (56 below), padding 0 16px (the content's inset, also on phones, #188), the column's
- * full width; below `sm` the trail shows only the current page. Crumbs enter with
+ * full width; below `sm` the trail shows only the current page. Three slot containers, always rendered (#192): left
+ * (the trail), centre (empty by default) and right (actions + account), so emptying one, e.g. closing a banner, never
+ * moves another: the right group stays at the row's right edge. Crumbs enter with
  * `motion-crumb-in` and leave with `motion-crumb-out` (opacity only under reduced motion); the row itself never moves.
  */
-export function RouteHeader({ crumbs, middle, actions, account, onMenu, menuExpanded, className }: RouteHeaderProps) {
+export function RouteHeader({ crumbs = [], left, middle, right, actions, account, onMenu, menuExpanded, className }: RouteHeaderProps) {
   const t = useSemiLocale();
   const key = crumbs.map((c) => c.label).join("\u203a");
   // a new trail: the old one fades out on top while the new one slides in (not on the first render). State updated
@@ -184,7 +194,7 @@ export function RouteHeader({ crumbs, middle, actions, account, onMenu, menuExpa
   }, [leaving]);
 
   return (
-    <header className={cn("shrink-0 h-14 lg:h-15 px-4 flex items-center gap-3 min-w-0", className)}>
+    <header className={cn("group/route-header shrink-0 h-14 lg:h-15 px-4 flex items-center gap-3 min-w-0", className)}>
       {onMenu && (
         <button
           type="button"
@@ -197,23 +207,35 @@ export function RouteHeader({ crumbs, middle, actions, account, onMenu, menuExpa
           <Icon name="menu" className="w-5 h-5" />
         </button>
       )}
-      <div className="relative flex-1 min-w-0 flex items-center overflow-hidden">
-        <Trail key={key} crumbs={crumbs} label={t.breadcrumb} className={cn("min-w-0", animate && "animate-crumb-in")} />
-        {leaving && <Trail key={`out-${leaving.key}`} crumbs={leaving.crumbs} label={t.breadcrumb} hidden className="semi-crumb-out absolute inset-y-0 left-0 flex items-center pointer-events-none" />}
+      {/* Three slots, always in the DOM (#192). Left and right share the space beside a centre that has content, so the
+          centre stays in the middle; with an empty centre the right group takes only its own width. The right group is
+          justified to the end either way, so its right edge never moves. */}
+      <div data-route-slot="left" className="relative flex-[1_1_0%] min-w-0 flex items-center overflow-hidden">
+        {left !== undefined ? (
+          left
+        ) : (
+          <>
+            <Trail key={key} crumbs={crumbs} label={t.breadcrumb} className={cn("min-w-0", animate && "animate-crumb-in")} />
+            {leaving && <Trail key={`out-${leaving.key}`} crumbs={leaving.crumbs} label={t.breadcrumb} hidden className="semi-crumb-out absolute inset-y-0 left-0 flex items-center pointer-events-none" />}
+          </>
+        )}
       </div>
-      {middle && (
-        <div className="hidden md:flex shrink-0 min-w-0 max-w-[40%] items-center justify-center">
-          <Suspense fallback={<SlotSkeleton />}>{middle}</Suspense>
-        </div>
-      )}
-      {(actions || account) ? (
-        <div className={cn("flex items-center justify-end gap-1", middle ? "md:flex-1 shrink-0" : "shrink-0")}>
-          {actions && <Suspense fallback={<SlotSkeleton />}>{actions}</Suspense>}
-          {account && (isAccount(account) ? <AccountMenu {...account} /> : account)}
-        </div>
-      ) : middle ? (
-        <div className="hidden md:block flex-1 min-w-0" aria-hidden />
-      ) : null}
+      <div data-route-slot="center" className="hidden md:flex md:empty:hidden min-w-0 max-w-[40%] items-center justify-center">
+        {middle != null && middle !== false && <Suspense fallback={<SlotSkeleton />}>{middle}</Suspense>}
+      </div>
+      <div
+        data-route-slot="right"
+        className="flex shrink-0 min-w-fit items-center justify-end gap-1 md:group-has-[[data-route-slot=center]>*]/route-header:flex-[1_1_0%]"
+      >
+        {right !== undefined ? (
+          right
+        ) : (
+          <>
+            {actions && <Suspense fallback={<SlotSkeleton />}>{actions}</Suspense>}
+            {account && (isAccount(account) ? <AccountMenu {...account} /> : account)}
+          </>
+        )}
+      </div>
     </header>
   );
 }

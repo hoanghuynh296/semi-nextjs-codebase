@@ -1,0 +1,60 @@
+{
+  "title": "Route header banner",
+  "group": "Navigation & layout",
+  "description": "One announcement in the route header's centre slot: a “Mới” tag, one line of text, an optional date, a pill CTA and a close button. Closed once per user per id (localStorage by default, or your own store). Below md the header's centre is hidden and the same banner is one row at the top of the page content.",
+  "components": [
+    "RouteHeaderBanner"
+  ],
+  "imports": [
+    "localBannerStore",
+    "type RouteHeaderBannerProps",
+    "type RouteHeaderBannerStore"
+  ],
+  "when": [
+    "A short app-wide announcement people should notice for a while: a new feature, a planned maintenance window, a changed price list.",
+    "One at a time: the newest announcement replaces the previous one (a new id shows again for everybody)."
+  ],
+  "instead": [
+    {
+      "need": "The first visit of a feature, with slides",
+      "use": "FeatureIntro"
+    },
+    {
+      "need": "A message about this page or this record",
+      "use": "Alert in the page"
+    },
+    {
+      "need": "The result of an action",
+      "use": "Toast"
+    },
+    {
+      "need": "A search field in the header",
+      "use": "RouteHeader middle (header.middle)"
+    }
+  ],
+  "a11y": [
+    "Each copy is role=\"status\"; it is in place when it appears, so screen readers may not announce it: never put the only copy of something people must know there. The close button is named “Đóng thông báo” (locale bannerClose).",
+    "Tab reaches the CTA and then the close button; Enter or Space presses them. Closing moves focus to the next control after the banner (the header's right group, or the page), never to the body.",
+    "On a touch screen the CTA and the close button each have an invisible 44px area (HIT_AREA) that never overlaps the other; their drawn size stays, so the row stays about 40px tall."
+  ],
+  "notes": [
+    "In AppShell pass header.banner (data, not an element): the shell renders the header copy and the inline copy below md, and closing either hides both. It covers header.middle only while it shows: before the store answers and once closed, the app's middle is back in the centre.",
+    "A frame of your own: RouteHeader middle={<RouteHeaderBanner {...b} fallback={yourMiddle} />} plus <RouteHeaderBanner {...b} placement=\"inline\" /> above the page title.",
+    "The store is read after mount only (and again when store changes: keep it stable), so the server HTML never contains it; below md the row appears after mount, so the page content moves down once and stays there until it is closed. With storage blocked it shows, and closing hides it until the next page load.",
+    "The text truncates with … first, before the breadcrumb or the right group shrink: one short sentence, the date in sub. The CTA is a Button size=\"pill\" (inverse), never the brand fill.",
+    "RouteHeader always renders its three slot containers (left, centre, right): closing the banner never moves the right group."
+  ],
+  "examples": [
+    {
+      "file": "basic",
+      "title": "In the route header",
+      "description": "The header copy and the row copy share one id: close either and both go. The button shows it again (a new id)."
+    },
+    {
+      "file": "app-shell",
+      "title": "In AppShell",
+      "description": "header.banner: the shell renders both copies.",
+      "preview": "none"
+    }
+  ]
+}

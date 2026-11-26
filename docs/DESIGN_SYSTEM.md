@@ -298,7 +298,7 @@ Semi's own green. A brand change is made in the brand repo (`/semi-brand`) and r
   `rounded-panel`, padding 16 / 20, 224px or the 72px rail, `railWidth`) and the **content column** (`bg-app`,
   `rounded-panel`). The column holds the **RouteHeader** (h60 from `lg`, padding 0 16px, the content's inset, phones included, #188; the column's
   full width; below `sm` the trail shows only the current page: crumbs left, an optional `middle` hidden below `md`, `actions` icon buttons 32×32 and the account avatar
-  menu right; `middle` and `actions` sit in their own `Suspense`) and under it the **content card** (`bg-panel`,
+  menu right; `middle` and `actions` sit in their own `Suspense`; three slots, see below) and under it the **content card** (`bg-panel`,
   `rounded-panel`, flush with the column, 4px above its bottom, no border; inside it `bg-app` is the panel colour, since the card sets
   `--semi-app` to `--semi-panel`, so sticky strips that paint `bg-app` match the card). `page="fixed"`: the card does not scroll, its panels do. `flush`: no centred
   `max-w-[1440px]` container or padding around the page (the page layout decides). `header={false}` drops the row.
@@ -306,6 +306,28 @@ Semi's own green. A brand change is made in the brand repo (`/semi-brand`) and r
   names with `useRecordCrumb(label)`; or `header.crumbs`. Every crumb is `text-chrome` muted 400 with a chevron, the
   current one is not highlighted, the trail never wraps (long crumbs truncate). New crumbs enter with
   `animate-crumb-in`, the old ones fade out (`motion-crumb-out`); the shell itself never moves on a route change.
+- **Three header slots (#192):** the RouteHeader always renders three slot containers (`data-route-slot` left / center /
+  right), even when one is empty, so emptying one never moves another. Left: the trail (`left` replaces it); centre:
+  empty by default (`middle`, or `header.banner`), hidden below `md`, at most 40% of the row and the first to give way;
+  right: `actions` + account (`right` replaces both), always justified to the row's end. Beside a centre with content,
+  left and right share the rest equally (the centre stays centred); with an empty centre the right group takes only its
+  own width. The right group's right edge is the same with and without a centre. Never lay the row out as a grid whose
+  cells come and go (a 3-column grid that loses its centre cell slides the right group into the middle).
+- **Route header banner (`RouteHeaderBanner`, `header.banner`, #192):** one announcement at a time in the centre slot:
+  a `Badge` tag ("Mới", `tag` / `tagTone`), one line of text that truncates with … before the trail or the right
+  group shrink, an optional muted `sub` (a date), a `Button size="pill"` inverse CTA (`cta: { label, href | onClick }`),
+  a close button (sm ghost, round, locale `bannerClose`), on a `bg-field` pill. The CTA and the close button keep their
+  drawn size on a touch phone (`buttonClass(…, { hit: false })`, no `BTN_HIT`) and get an invisible 44px area
+  (`HIT_AREA`) instead, 8px apart so the two areas never overlap; the row stays about 40px tall. Closed per
+  `id` in a store (`localBannerStore`: `localStorage["semi_banner_<id>"]`, or your own async `get` / `set`, as
+  `FeatureIntro`), read after mount only and again when `store` changes (keep it stable). It covers `header.middle`
+  only while it shows: before the store answers and after it is closed, the app's `middle` is in the centre
+  (`fallback`). Below `md` the same banner is one row at the top of the page content (above the
+  title): full width, `rounded-card`, `bg-card-field` (the field fill inside the content card, where `bg-field` would equal the card), text up to 2 lines, CTA + close on the row (`placement="inline"`,
+  `md:hidden`); AppShell renders both copies from `header.banner` and closing either hides both. The row appears after
+  mount, so on phones the page content moves down once when it appears and stays there until it is closed. Each copy is
+  `role="status"`, but it is already in place when it appears, so do not count on screen readers announcing it; closing
+  moves focus to the next control after it.
 - **Account avatar menu (`AccountMenu`, `header.account`):** a one-letter avatar (32px) whose `Menu` has a header
   (name, `detail` role or email: not an item), then Light / Dark / System (radio items), the app's `items` and
   "Đăng xuất" (`onSignOut`). The nav has no account or company block.
@@ -325,7 +347,7 @@ Semi's own green. A brand change is made in the brand repo (`/semi-brand`) and r
   crosses a breakpoint or the nav collapses. (2) Below `md` a page's sub-nav stacks above its content (T7). (3) Phones
   get the drawer and no frame padding. In the rail every item keeps its name (the label is `sr-only`) and shows it in
   a `Tooltip` on the right with its shortcut. An item without `icon` shows its initials (`shortLabel`).
-- **Slots are components:** `mainAction`, `header.middle`, `header.actions` and `header.account` take an element or a
+- **Slots are components:** `mainAction`, `header.left`, `header.middle`, `header.actions`, `header.account` and `header.right` take an element or a
   function of `{ collapsed, rail }` that is rendered as the body of one stable component, so it may call hooks; each
   keeps one instance (and its state) across a collapse, a resize over any breakpoint and a route change. `rail` and
   `collapsed` are exact after mount only: style what the rail hides with CSS.
@@ -892,7 +914,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 
 | Import | Exports |
 |---|---|
-| `@semi/ui` → `AppShell.tsx`, `RouteHeader.tsx`, `MobileTabBar.tsx` | `AppShell` (1.0 frame: nav panel with main action, groups, pinned, bottom row of tools; 224px or the 72px rail; RouteHeader; content card; phone drawer; nav shortcuts), `useAppShell` (sub-items shown, rail, shortcuts), `navShortcutKeys`, `RouteHeader` (crumbs, middle, actions, account), `AccountMenu` (the account avatar menu), `useRecordCrumb` (a detail page names its record), `MobileTabBar`, `TAB_BAR_PAD` (opt-in `mobileNav="tabs"`) (§4) |
+| `@semi/ui` → `AppShell.tsx`, `RouteHeader.tsx`, `RouteHeaderBanner.tsx`, `MobileTabBar.tsx` | `AppShell` (1.0 frame: nav panel with main action, groups, pinned, bottom row of tools; 224px or the 72px rail; RouteHeader; content card; phone drawer; nav shortcuts), `useAppShell` (sub-items shown, rail, shortcuts), `navShortcutKeys`, `RouteHeader` (three slots: crumbs or `left`, middle, actions + account or `right`), `RouteHeaderBanner` (the centre slot's announcement, `localBannerStore`, types `RouteHeaderBannerProps`, `RouteHeaderBannerStore`), `AccountMenu` (the account avatar menu), `useRecordCrumb` (a detail page names its record), `MobileTabBar`, `TAB_BAR_PAD` (opt-in `mobileNav="tabs"`) (§4) |
 | `MegaMenu.tsx`, `MinimalHeader.tsx`, `TextTabs.tsx`, `PillTabs.tsx`, `SegmentedControl.tsx`, `useTabParam.ts` | `MegaMenu` (flyout of category columns, `text-overline` headers, New badges, See all), `MinimalHeader` (breadcrumb left, one link + one primary right), `TextTabs` (big display tabs for 2–4 top-level views, brand underline, `href`, `onBeforeChange`, `activation`), `PillTabs` (default section tabs for 5+ sections or sections with icons, sliding `item-hover` pill, `tabpanel`, `href`, `onBeforeChange`, `activation`), `SegmentedControl` (2–5 filter values with counts, sliding `raised-2` pill, `radiogroup`), `useTabParam` (`?tab=` URL state without history spam per arrow key) (§4, §4h) |
 | `Page.tsx`, `PageEnter.tsx`, `ListReader.tsx` | `Page` (shared 1.0 page anatomy and `work` / `reading` / `two-column` layouts + vertical rhythm + `enter`), `PageEnter` (`display: contents` route-level `motion-enter` + `motion-stagger` wrapper for top blocks and first ~10 rows / cards, once per route), `SubNav` (240px sub-nav card with `text-nav-label` groups and h32 items), `PageSection` (20/500 heading + 16px content gap), `PageGrid` (8px `@container` grid), `ListReaderLayout` (two independent scrollers on `fixed` mode, `?open=`, `useRecordCrumb`, phone swap), `ReaderHeader` (sticky one-row reader header: wrapping title left, `[•••]` + one main action right) (§4a, §4g) |
 | `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle` (18/400 UI sans on the action row; `variant="reading"` 44/500 display title for one-column reading pages), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh; phone layout with `filters` / `collapseFilters` / `secondaryActions`), `ToolbarFilters` (§4a) |

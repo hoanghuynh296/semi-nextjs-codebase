@@ -21,6 +21,7 @@ import { MobileTabBar, TAB_BAR_PAD, type MobileTabItem } from "./MobileTabBar";
 import { Menu, Tooltip, type MenuItem } from "./Overlay";
 import { PageActionsProvider, PageActionsSlot } from "./PageActions";
 import { RecordCrumbContext, RouteHeader, type RouteCrumb, type ShellAccount } from "./RouteHeader";
+import { RouteHeaderBanner, type RouteHeaderBannerProps } from "./RouteHeaderBanner";
 import { useDialog } from "./a11y";
 import { navShortcutKeys, shortcutText, useNavShortcuts } from "./navShortcuts";
 
@@ -131,8 +132,18 @@ export interface ShellHeader {
    * sub-item, then the record a detail page names with `useRecordCrumb`.
    */
   crumbs?: RouteCrumb[];
-  /** Optional middle (a search field on a search page, a small info banner); hidden below md, in its own Suspense. */
+  /** The left slot's content in place of the trail. */
+  left?: ShellSlot;
+  /** The centre slot (default empty): a search field on a search page; hidden below md, in its own Suspense. */
   middle?: ShellSlot;
+  /**
+   * An announcement (`RouteHeaderBanner`, one at a time) in the centre slot from md, and the same banner as one row at
+   * the top of the page content below md; closing either hides both, remembered per `id`. It covers `middle` only while
+   * it shows: before the store answers and once it is closed, `middle` is in the centre.
+   */
+  banner?: Omit<RouteHeaderBannerProps, "placement">;
+  /** The right slot's content in place of `actions` + `account`. */
+  right?: ShellSlot;
   /** Action icon buttons (32×32, ghost or outline), before the account. In its own Suspense. */
   actions?: ShellSlot;
   /** The account avatar menu: who is signed in (theme, the app's items and sign-out in its Menu), or your own slot. */
@@ -844,6 +855,7 @@ export function AppShell({
 
   const headerConf = header || {};
   const accountSlot = headerConf.account;
+  const middleSlot = headerConf.middle !== undefined && headerConf.middle !== null ? <SlotHost slot={headerConf.middle} state={slotState} /> : undefined;
 
   return (
     <AppShellContext.Provider value={{ submenuVisible, rail, shortcuts: shortcutMap }}>
@@ -1034,7 +1046,16 @@ export function AppShell({
                   className="max-md:pt-[env(safe-area-inset-top)] max-md:box-content"
                   onMenu={tabs ? undefined : () => setDrawerOpen(true)}
                   menuExpanded={drawerOpen}
-                  middle={headerConf.middle !== undefined && headerConf.middle !== null ? <SlotHost slot={headerConf.middle} state={slotState} /> : undefined}
+                  left={headerConf.left !== undefined && headerConf.left !== null ? <SlotHost slot={headerConf.left} state={slotState} /> : undefined}
+                  middle={
+                    headerConf.banner ? (
+                      // the banner covers the centre only while it shows: closed (or not yet read), the app's middle is back
+                      <RouteHeaderBanner {...headerConf.banner} placement="header" fallback={middleSlot} />
+                    ) : (
+                      middleSlot
+                    )
+                  }
+                  right={headerConf.right !== undefined && headerConf.right !== null ? <SlotHost slot={headerConf.right} state={slotState} /> : undefined}
                   actions={headerConf.actions !== undefined && headerConf.actions !== null ? <SlotHost slot={headerConf.actions} state={slotState} /> : undefined}
                   account={
                     accountSlot === undefined || accountSlot === null
@@ -1060,6 +1081,8 @@ export function AppShell({
                 )}
               >
                 <div data-shell-container="" className={cn(flush ? "flex-1 min-w-0 min-h-0 w-full flex flex-col" : SHELL_CONTAINER, page === "fixed" && "min-h-0", containerClassName)}>
+                  {/* below md the header's centre is hidden: its banner is the first row of the page content */}
+                  {headerOn && headerConf.banner && <RouteHeaderBanner {...headerConf.banner} placement="inline" />}
                   <PageActionsSlot className="empty:hidden ml-auto mb-2 sticky top-0 z-sticky" />
                   {children}
                 </div>

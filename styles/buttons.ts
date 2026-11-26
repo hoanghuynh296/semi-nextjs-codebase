@@ -109,18 +109,32 @@ const ICON_W: Partial<Record<ButtonSizeName, string>> = { pill: "!w-6", xs: "!w-
 /** A className that positions the button itself (then it is already a containing block: no `relative`). */
 const POSITIONED = /(^|\s)(?:[\w-]+:)*(absolute|fixed|sticky)(?=\s|$)/;
 
-/** Button's classes: variant × size, icon-only, round, full width, the phone touch size (BTN_HIT: lg and pill too), and `relative` unless className positions it. */
+/** Button's classes: variant × size, icon-only, round, full width, the phone touch size (BTN_HIT: lg and pill too; `hit: false` leaves it out), and `relative` unless className positions it. */
 export function buttonClass(
   variant: ButtonVariantName = "subtle",
   size: ButtonSizeName = "md",
-  { iconOnly = false, round = false, fullWidth = false, className = "" }: { iconOnly?: boolean; round?: boolean; fullWidth?: boolean; className?: string } = {},
+  {
+    iconOnly = false,
+    round = false,
+    fullWidth = false,
+    hit = true,
+    className = "",
+  }: {
+    iconOnly?: boolean;
+    round?: boolean;
+    fullWidth?: boolean;
+    /** The phone touch size (BTN_HIT, also inside BTN_ICON). `false` keeps the drawn size on a touch phone: give the control an invisible area instead (HIT_AREA, styles/utils.ts), e.g. in a row that must stay short (RouteHeaderBanner, #192). */
+    hit?: boolean;
+    className?: string;
+  } = {},
 ): string {
   const base = size === "modal" ? MODAL[variant] : size === "md" ? MD[variant] : `${MD[variant]} ${SIZE[size]}`;
   return [
     base,
-    POSITIONED.test(className) ? "" : "relative",
-    BTN_HIT,
-    iconOnly && BTN_ICON,
+    // a ::before / ::after position (HIT_AREA's before:absolute) does not position the button itself
+    POSITIONED.test(className.split(/\s+/).filter((c) => !/(^|:)(before|after):/.test(c)).join(" ")) ? "" : "relative",
+    hit && BTN_HIT,
+    iconOnly && (hit ? BTN_ICON : "w-control !px-0"),
     iconOnly && ICON_W[size],
     round && "!rounded-full",
     fullWidth && "w-full",

@@ -8,7 +8,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 
 ## Machine-readable
 
-- [components.json](./components.json): all 171 components, hooks and constants with props, summaries and their doc page
+- [components.json](./components.json): all 172 components, hooks and constants with props, summaries and their doc page
 - [docs/components/README.md](./docs/components/README.md): every component doc by group, with when to use it
 - [QUICK_REF.md](./docs/QUICK_REF.md): Quick reference: the rules and imports to read before any UI change
 - [DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md): Full design system rules (layout, colour, components, accessibility, anti-patterns)
@@ -98,6 +98,7 @@ In a project with the package installed, ask the docs instead of reading files: 
 - [Pagination](./components/pagination/) ([markdown](./docs/components/pagination.md)): Page numbers with previous / next for long tables. For card lists prefer auto-loading with “Xem thêm”. Components: Pagination.
 - [Pill tabs](./components/pill-tabs/) ([markdown](./docs/components/pill-tabs.md)): Default section tabs for pages with 5+ sections or sections with icons (settings-like pages): no track, h30 round pills with 16px icons and 12px/600 labels, and one item-hover pill that slides to the active tab in 300ms ease-out. Components: PillTabs.
 - [Resizable panels](./components/resizable/) ([markdown](./docs/components/resizable.md)): Panels side by side or stacked with handles to resize them (an editor beside a preview, a list beside details). Sizes are percentages and can be remembered. Components: ResizablePanels.
+- [Route header banner](./components/route-header-banner/) ([markdown](./docs/components/route-header-banner.md)): One announcement in the route header's centre slot: a “Mới” tag, one line of text, an optional date, a pill CTA and a close button. Closed once per user per id (localStorage by default, or your own store). Below md the header's centre is hidden and the same banner is one row at the top of the page content. Components: RouteHeaderBanner.
 - [Scroll area](./components/scroll-area/) ([markdown](./docs/components/scroll-area.md)): A fixed-size scrolling region (a long list in a card, a log). Semi hides scrollbars, so it marks the edges that have more content, can show a thin scrollbar, and is reachable by keyboard. Components: ScrollArea.
 - [Segmented control](./components/segmented-control/) ([markdown](./docs/components/segmented-control.md)): Small single-choice filter sets shown in full (2–5 values, often with tabular-nums counts): a `raised` track (h32, radius 8, padding 4, gap 4) with h24 items (12px/600) and one solid `raised-2` pill (white in light theme) sliding in 300ms ease-out. Components: SegmentedControl.
 - [Side panel](./components/side-panel/) ([markdown](./docs/components/side-panel.md)): A 320px tool panel beside a canvas that collapses to a 48px rail; SidePanelToggle is its collapse button. Components: SidePanel, SidePanelToggle.
@@ -229,7 +230,7 @@ control drawn under 24px gets `HIT_AREA` · UI text in shared components comes f
 **Use the shared blocks (`@semi/ui` and `@semi/ui/styles`) — never create a local `ui.tsx` wrapper barrel:**
 - **Layout & Structure (`@semi/ui`):**
   - `ThemeProvider`, `useTheme`, `ThemeToggle`: Zero-runtime-overhead dual-theme management via `data-theme` attribute and CSS variables.
-  - `AppShell` (+ `MobileTabBar`, `TAB_BAR_PAD` for `mobileNav="tabs"`), 1.0 (#144): a `bg-canvas` frame with the nav panel (224px or the 72px rail; the rail is the default between `lg` and 1280px, `railBelow`, and always between `md` and `lg`) and the content column, which holds the `RouteHeader` (crumbs left, `header.middle`, `header.actions` icon buttons and the account avatar menu `header.account: { name, detail, items, onSignOut }` with the theme) above the content card (`page="fixed"`, `flush`). Nav top to bottom: logo + collapse, `mainAction` (the nav's one brand-filled action), `sections` / `pinned` (labels `text-nav-label`), the bottom row `tools` (32×32 icon buttons, `count` badges, `toolsMenu` •••). No account in the nav. ⌥ / Alt + 1–9 opens the nth item (`navShortcutKeys`). A detail page names its record with `useRecordCrumb(label)`. Phones: the route header's menu button opens a full-screen drawer. A nav item with `mega` opens a `MegaMenu`. Items may carry `children` (one level, optional grey icon, no colour or count): closed by default, open only while the parent or a child is active; hidden in the rail / below `lg` / phones, so pages check `useAppShell().submenuVisible` and offer their own picker.
+  - `AppShell` (+ `MobileTabBar`, `TAB_BAR_PAD` for `mobileNav="tabs"`), 1.0 (#144): a `bg-canvas` frame with the nav panel (224px or the 72px rail; the rail is the default between `lg` and 1280px, `railBelow`, and always between `md` and `lg`) and the content column, which holds the `RouteHeader` (three slot containers, always rendered: crumbs left (`header.left` replaces them), the centre `header.middle` or `header.banner` (a `RouteHeaderBanner` announcement, closed per id; below `md` it is the first row of the page content instead), right `header.actions` icon buttons and the account avatar menu `header.account: { name, detail, items, onSignOut }` with the theme (`header.right` replaces both)) above the content card (`page="fixed"`, `flush`). Nav top to bottom: logo + collapse, `mainAction` (the nav's one brand-filled action), `sections` / `pinned` (labels `text-nav-label`), the bottom row `tools` (32×32 icon buttons, `count` badges, `toolsMenu` •••). No account in the nav. ⌥ / Alt + 1–9 opens the nth item (`navShortcutKeys`). A detail page names its record with `useRecordCrumb(label)`. Phones: the route header's menu button opens a full-screen drawer. A nav item with `mega` opens a `MegaMenu`. Items may carry `children` (one level, optional grey icon, no colour or count): closed by default, open only while the parent or a child is active; hidden in the rail / below `lg` / phones, so pages check `useAppShell().submenuVisible` and offer their own picker.
   - `PillTabs`, `SegmentedControl`, `TextTabs`, `useTabParam` (§4h, #147): `PillTabs` for 5+ sections or sections with icons (no track, h30 round pills, sliding `item-hover` pill, `tabpanel`); `SegmentedControl` for 2–5 filter values shown in full with tabular-nums counts (`raised` track, sliding `raised-2` pill, `radiogroup` / `radio`; replaces deprecated `Pills`); big `TextTabs` for 2–4 top-level views of a discovery or reading page (`font-display text-tab-xl font-normal`, inactive `opacity-20`, active 2px brand underline at 6px offset; replaces deprecated `PageTabsTitle`). All three share overflow edge cues, `activation="manual"`, sync/async `onBeforeChange` on button and `href` tabs, `useTabParam` (`?tab=` without history spam per arrow key), and reduced-motion support.
   - `Page`, `SubNav`, `PageSection`, `PageGrid`, `ListReaderLayout`, `ReaderHeader`, `PageEnter` (§4a, §4g): `Page` (`layout="work"` flush, `"reading"` centred max 1536px, `"two-column"` 240px `SubNav` + main card; `fixed`; `enter` runs once-per-route `PageEnter` stagger). `ListReaderLayout` + sticky `ReaderHeader` for list + reader pages (`?open=`, `useRecordCrumb`).
   - `PageTitle`, `PageTabsTitle` (deprecated → `TextTabs`): `PageTitle` (`variant="work"` default) is 18 / 400 UI sans on the action row (`actions`: `inverse` or `primary` + `•••`); `variant="reading"` opts into 44 / 500 `text-title-xl` display on one-column reading pages.
@@ -292,7 +293,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 ## Component inventory
 
 <!-- generated:components:start (scripts/build-manifest.mjs) -->
-**Components (171)** — full props / summaries in `node_modules/@semi/ui/components.json`:
+**Components (172)** — full props / summaries in `node_modules/@semi/ui/components.json`:
 
 - `Agent`: `Reasoning`, `ToolCall`, `Sources`, `Citation`, `TaskList`, `ActionConfirmation`, `FileTree`, `ContextMeter`
 - `AppHeader`: `AppHeader`
@@ -360,6 +361,7 @@ frame that stands for a whole screen (preview, sample app); `data-density-skip="
 - `RefreshButton`: `RefreshButton`
 - `Resizable`: `ResizablePanels`
 - `RouteHeader`: `AccountMenu`, `RouteHeader`
+- `RouteHeaderBanner`: `RouteHeaderBanner`
 - `ScrollArea`: `ScrollArea`
 - `SearchInput`: `SearchInput`
 - `SearchPill`: `BarActions`, `StickyContextBar`, `SearchPill`
@@ -694,7 +696,7 @@ Semi's own green. A brand change is made in the brand repo (`/semi-brand`) and r
   `rounded-panel`, padding 16 / 20, 224px or the 72px rail, `railWidth`) and the **content column** (`bg-app`,
   `rounded-panel`). The column holds the **RouteHeader** (h60 from `lg`, padding 0 16px, the content's inset, phones included, #188; the column's
   full width; below `sm` the trail shows only the current page: crumbs left, an optional `middle` hidden below `md`, `actions` icon buttons 32×32 and the account avatar
-  menu right; `middle` and `actions` sit in their own `Suspense`) and under it the **content card** (`bg-panel`,
+  menu right; `middle` and `actions` sit in their own `Suspense`; three slots, see below) and under it the **content card** (`bg-panel`,
   `rounded-panel`, flush with the column, 4px above its bottom, no border; inside it `bg-app` is the panel colour, since the card sets
   `--semi-app` to `--semi-panel`, so sticky strips that paint `bg-app` match the card). `page="fixed"`: the card does not scroll, its panels do. `flush`: no centred
   `max-w-[1440px]` container or padding around the page (the page layout decides). `header={false}` drops the row.
@@ -702,6 +704,28 @@ Semi's own green. A brand change is made in the brand repo (`/semi-brand`) and r
   names with `useRecordCrumb(label)`; or `header.crumbs`. Every crumb is `text-chrome` muted 400 with a chevron, the
   current one is not highlighted, the trail never wraps (long crumbs truncate). New crumbs enter with
   `animate-crumb-in`, the old ones fade out (`motion-crumb-out`); the shell itself never moves on a route change.
+- **Three header slots (#192):** the RouteHeader always renders three slot containers (`data-route-slot` left / center /
+  right), even when one is empty, so emptying one never moves another. Left: the trail (`left` replaces it); centre:
+  empty by default (`middle`, or `header.banner`), hidden below `md`, at most 40% of the row and the first to give way;
+  right: `actions` + account (`right` replaces both), always justified to the row's end. Beside a centre with content,
+  left and right share the rest equally (the centre stays centred); with an empty centre the right group takes only its
+  own width. The right group's right edge is the same with and without a centre. Never lay the row out as a grid whose
+  cells come and go (a 3-column grid that loses its centre cell slides the right group into the middle).
+- **Route header banner (`RouteHeaderBanner`, `header.banner`, #192):** one announcement at a time in the centre slot:
+  a `Badge` tag ("Mới", `tag` / `tagTone`), one line of text that truncates with … before the trail or the right
+  group shrink, an optional muted `sub` (a date), a `Button size="pill"` inverse CTA (`cta: { label, href | onClick }`),
+  a close button (sm ghost, round, locale `bannerClose`), on a `bg-field` pill. The CTA and the close button keep their
+  drawn size on a touch phone (`buttonClass(…, { hit: false })`, no `BTN_HIT`) and get an invisible 44px area
+  (`HIT_AREA`) instead, 8px apart so the two areas never overlap; the row stays about 40px tall. Closed per
+  `id` in a store (`localBannerStore`: `localStorage["semi_banner_<id>"]`, or your own async `get` / `set`, as
+  `FeatureIntro`), read after mount only and again when `store` changes (keep it stable). It covers `header.middle`
+  only while it shows: before the store answers and after it is closed, the app's `middle` is in the centre
+  (`fallback`). Below `md` the same banner is one row at the top of the page content (above the
+  title): full width, `rounded-card`, `bg-card-field` (the field fill inside the content card, where `bg-field` would equal the card), text up to 2 lines, CTA + close on the row (`placement="inline"`,
+  `md:hidden`); AppShell renders both copies from `header.banner` and closing either hides both. The row appears after
+  mount, so on phones the page content moves down once when it appears and stays there until it is closed. Each copy is
+  `role="status"`, but it is already in place when it appears, so do not count on screen readers announcing it; closing
+  moves focus to the next control after it.
 - **Account avatar menu (`AccountMenu`, `header.account`):** a one-letter avatar (32px) whose `Menu` has a header
   (name, `detail` role or email: not an item), then Light / Dark / System (radio items), the app's `items` and
   "Đăng xuất" (`onSignOut`). The nav has no account or company block.
@@ -721,7 +745,7 @@ Semi's own green. A brand change is made in the brand repo (`/semi-brand`) and r
   crosses a breakpoint or the nav collapses. (2) Below `md` a page's sub-nav stacks above its content (T7). (3) Phones
   get the drawer and no frame padding. In the rail every item keeps its name (the label is `sr-only`) and shows it in
   a `Tooltip` on the right with its shortcut. An item without `icon` shows its initials (`shortLabel`).
-- **Slots are components:** `mainAction`, `header.middle`, `header.actions` and `header.account` take an element or a
+- **Slots are components:** `mainAction`, `header.left`, `header.middle`, `header.actions`, `header.account` and `header.right` take an element or a
   function of `{ collapsed, rail }` that is rendered as the body of one stable component, so it may call hooks; each
   keeps one instance (and its state) across a collapse, a resize over any breakpoint and a route change. `rail` and
   `collapsed` are exact after mount only: style what the rail hides with CSS.
@@ -1288,7 +1312,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 
 | Import | Exports |
 |---|---|
-| `@semi/ui` → `AppShell.tsx`, `RouteHeader.tsx`, `MobileTabBar.tsx` | `AppShell` (1.0 frame: nav panel with main action, groups, pinned, bottom row of tools; 224px or the 72px rail; RouteHeader; content card; phone drawer; nav shortcuts), `useAppShell` (sub-items shown, rail, shortcuts), `navShortcutKeys`, `RouteHeader` (crumbs, middle, actions, account), `AccountMenu` (the account avatar menu), `useRecordCrumb` (a detail page names its record), `MobileTabBar`, `TAB_BAR_PAD` (opt-in `mobileNav="tabs"`) (§4) |
+| `@semi/ui` → `AppShell.tsx`, `RouteHeader.tsx`, `RouteHeaderBanner.tsx`, `MobileTabBar.tsx` | `AppShell` (1.0 frame: nav panel with main action, groups, pinned, bottom row of tools; 224px or the 72px rail; RouteHeader; content card; phone drawer; nav shortcuts), `useAppShell` (sub-items shown, rail, shortcuts), `navShortcutKeys`, `RouteHeader` (three slots: crumbs or `left`, middle, actions + account or `right`), `RouteHeaderBanner` (the centre slot's announcement, `localBannerStore`, types `RouteHeaderBannerProps`, `RouteHeaderBannerStore`), `AccountMenu` (the account avatar menu), `useRecordCrumb` (a detail page names its record), `MobileTabBar`, `TAB_BAR_PAD` (opt-in `mobileNav="tabs"`) (§4) |
 | `MegaMenu.tsx`, `MinimalHeader.tsx`, `TextTabs.tsx`, `PillTabs.tsx`, `SegmentedControl.tsx`, `useTabParam.ts` | `MegaMenu` (flyout of category columns, `text-overline` headers, New badges, See all), `MinimalHeader` (breadcrumb left, one link + one primary right), `TextTabs` (big display tabs for 2–4 top-level views, brand underline, `href`, `onBeforeChange`, `activation`), `PillTabs` (default section tabs for 5+ sections or sections with icons, sliding `item-hover` pill, `tabpanel`, `href`, `onBeforeChange`, `activation`), `SegmentedControl` (2–5 filter values with counts, sliding `raised-2` pill, `radiogroup`), `useTabParam` (`?tab=` URL state without history spam per arrow key) (§4, §4h) |
 | `Page.tsx`, `PageEnter.tsx`, `ListReader.tsx` | `Page` (shared 1.0 page anatomy and `work` / `reading` / `two-column` layouts + vertical rhythm + `enter`), `PageEnter` (`display: contents` route-level `motion-enter` + `motion-stagger` wrapper for top blocks and first ~10 rows / cards, once per route), `SubNav` (240px sub-nav card with `text-nav-label` groups and h32 items), `PageSection` (20/500 heading + 16px content gap), `PageGrid` (8px `@container` grid), `ListReaderLayout` (two independent scrollers on `fixed` mode, `?open=`, `useRecordCrumb`, phone swap), `ReaderHeader` (sticky one-row reader header: wrapping title left, `[•••]` + one main action right) (§4a, §4g) |
 | `PageTitle.tsx`, `SubpageToolbar.tsx` | `PageTitle` (18/400 UI sans on the action row; `variant="reading"` 44/500 display title for one-column reading pages), `SubpageToolbar` (`STICKY_TOOLBAR` + icon-only CTA + search + refresh; phone layout with `filters` / `collapseFilters` / `secondaryActions`), `ToolbarFilters` (§4a) |
@@ -8502,13 +8526,17 @@ export default function AppShellSubmenu() {
 ### RouteHeader
 
 The route header: h60 from `lg` (56 below), padding 0 16px (the content's inset, also on phones, #188), the column's
-full width; below `sm` the trail shows only the current page. Crumbs enter with
+full width; below `sm` the trail shows only the current page. Three slot containers, always rendered (#192): left
+(the trail), centre (empty by default) and right (actions + account), so emptying one, e.g. closing a banner, never
+moves another: the right group stays at the row's right edge. Crumbs enter with
 `motion-crumb-in` and leave with `motion-crumb-out` (opacity only under reduced motion); the row itself never moves.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `crumbs` * | `RouteCrumb[]` |  | The trail: group (a link), page, record. Every crumb is muted; the trail never wraps and long crumbs truncate. Below `sm` only the last crumb (the current page) shows. |
-| `middle` | `React.ReactNode` |  | Optional middle: a search field on a search page, a small info banner. Hidden below `md`. In its own Suspense. |
+| `crumbs` | `RouteCrumb[]` | `[]` | The trail: group (a link), page, record. Every crumb is muted; the trail never wraps and long crumbs truncate. Below `sm` only the last crumb (the current page) shows. |
+| `left` | `React.ReactNode` |  | The left slot's content in place of the trail (`crumbs` is then unused). |
+| `middle` | `React.ReactNode` |  | The centre slot (default empty): a `RouteHeaderBanner`, a search field on a search page. Hidden below `md`; at most 40% of the row, and it gives way first (a banner's text truncates before the trail or the right group shrink). In its own Suspense. |
+| `right` | `React.ReactNode` |  | The right slot's content in place of `actions` + `account`. |
 | `actions` | `React.ReactNode` |  | The page's action icon buttons (32×32, ghost or outline); keep room for a future AI chat button. In its own Suspense. |
 | `account` | `ShellAccount \| React.ReactNode` |  | The account avatar menu: the who-is-signed-in data, or your own element. |
 | `onMenu` | `() => void` |  | Phones: the menu button that opens the nav drawer (shown below `md` when set). |
@@ -8556,8 +8584,8 @@ then the theme (Light / Dark / System), the app's items and sign-out.
 - Page items take an href: they stay next/link links even when onSelect is set (onSelect then only reports the click). Never route with onSelect + router.push (shell-nav-href).
 - Never gate the shell behind a page skeleton (shell-gate): a route loading.tsx next to the layout shimmers the content only, and the boot / session check before the layout is known renders BootLoader once in the layout. A page never renders AppShell or imports a component that does (app-shell-in-page).
 - Top to bottom: logo + collapse, mainAction (the one brand-filled button: label + icon, a Menu with items), primaryCta (an optional quiet launcher), sections, pinned, then tools (32×32 icons with a count) and toolsMenu (•••).
-- header: crumbs (default from the active item; useRecordCrumb(label) in a detail page adds its record), middle (search field, banner; hidden below md), actions (32×32 ghost icon buttons) and account ({ name, detail, items, onSignOut }: the theme is in that menu). header={false} drops the row.
-- Slots (mainAction, header.middle / actions / account) are an element or a function of { collapsed, rail } rendered as one stable component: it may call hooks and keeps its state across a collapse, a resize and a route change. rail is exact after mount only.
+- header: crumbs (default from the active item; useRecordCrumb(label) in a detail page adds its record), middle (search field; hidden below md), banner (a RouteHeaderBanner announcement: the header's centre from md, the first row of the content below md), actions (32×32 ghost icon buttons) and account ({ name, detail, items, onSignOut }: the theme is in that menu); left / right replace the trail / actions + account. The three slot containers are always rendered, so closing a banner never moves the right group. header={false} drops the row.
+- Slots (mainAction, header.left / middle / actions / account / right) are an element or a function of { collapsed, rail } rendered as one stable component: it may call hooks and keeps its state across a collapse, a resize and a route change. rail is exact after mount only.
 - railBelow (default 1280, at least 1024) sets where the nav starts expanded; between md and lg it is always the rail. railWidth (default 72) sets the rail width.
 - page="fixed": the card does not scroll; give the page h-full min-h-0 flex flex-col and let its panels scroll. flush: no centred max-width container or padding.
 - 1.0 breaking: create → mainAction and utilities → tools (the 1.0.0-app-shell migration renames them); account / footer are gone from the nav (move the account to header.account); the stored collapse key is now semi-nav (a 0.x choice is upgraded once on load).
@@ -10124,6 +10152,148 @@ export default function ResizableVertical() {
 - Each handle is a focusable separator with aria-valuenow; ←/→ (↑/↓ when stacked) resize, Shift for bigger steps.
 
 <!-- GENERATED by scripts/build-docs.mjs from examples/resizable/ and the types in src/ -->
+
+
+---
+
+<!-- docs/components/route-header-banner.md -->
+
+# Route header banner
+
+One announcement in the route header's centre slot: a “Mới” tag, one line of text, an optional date, a pill CTA and a close button. Closed once per user per id (localStorage by default, or your own store). Below md the header's centre is hidden and the same banner is one row at the top of the page content.
+
+## When to use
+
+- A short app-wide announcement people should notice for a while: a new feature, a planned maintenance window, a changed price list.
+- One at a time: the newest announcement replaces the previous one (a new id shows again for everybody).
+
+## Use something else when
+
+| Need | Use |
+|---|---|
+| The first visit of a feature, with slides | FeatureIntro |
+| A message about this page or this record | Alert in the page |
+| The result of an action | Toast |
+| A search field in the header | RouteHeader middle (header.middle) |
+
+## Import
+
+```tsx
+import { RouteHeaderBanner, localBannerStore, type RouteHeaderBannerProps, type RouteHeaderBannerStore } from "@semi/ui";
+```
+
+## Examples
+
+### In the route header
+
+The header copy and the row copy share one id: close either and both go. The button shows it again (a new id).
+
+```tsx
+import { useState } from "react";
+import { Button, RouteHeader, RouteHeaderBanner, type RouteHeaderBannerProps, type RouteHeaderBannerStore } from "@semi/ui";
+
+// "Dismissed" in memory, so this page can show it again; an app keeps the default localStorage store or its own.
+const memory = new Set<string>();
+const memoryStore: RouteHeaderBannerStore = { get: (id) => memory.has(id), set: (id) => void memory.add(id) };
+
+export default function RouteHeaderBannerBasic() {
+  const [round, setRound] = useState(0);
+  const banner: RouteHeaderBannerProps = {
+    id: `docs-ai-assistant-${round}`,
+    text: "Trợ lý AI giờ đọc được cả đơn hàng và báo giá",
+    sub: "Từ 01/12",
+    cta: { label: "Xem ngay", onClick: () => {} },
+    store: memoryStore,
+  };
+  return (
+    <div className="flex flex-col gap-stack">
+      <div className="rounded-card bg-app">
+        <RouteHeader
+          crumbs={[{ label: "Bán hàng", href: "#" }, { label: "Đơn hàng" }]}
+          middle={<RouteHeaderBanner {...banner} />}
+          actions={<Button variant="ghost" iconOnly icon="bell" aria-label="Thông báo" />}
+          account={{ name: "Lan Phạm", detail: "Quản lý" }}
+        />
+      </div>
+      {/* below md the header's centre is hidden: the same banner is the first row of the page */}
+      <RouteHeaderBanner {...banner} placement="inline" />
+      <Button size="sm" icon="refresh" onClick={() => setRound((n) => n + 1)} className="self-start">
+        Hiện lại thông báo
+      </Button>
+    </div>
+  );
+}
+```
+
+### In AppShell
+
+header.banner: the shell renders both copies.
+
+```tsx
+import { AppShell } from "@semi/ui";
+
+// In AppShell: header.banner. The shell puts it in the header's centre from md and as the first row of the page
+// content below md; closing either hides both, remembered per id (localStorage unless you pass a store).
+export default function RouteHeaderBannerAppShell({ children }: { children: React.ReactNode }) {
+  return (
+    <AppShell
+      productName="Kho hàng"
+      sections={[{ items: [{ id: "orders", label: "Đơn hàng", icon: "bag", href: "/orders" }] }]}
+      activeId="orders"
+      header={{
+        banner: {
+          id: "ai-assistant-2026-12",
+          text: "Trợ lý AI giờ đọc được cả đơn hàng và báo giá",
+          sub: "Từ 01/12",
+          cta: { label: "Xem ngay", href: "/whats-new" },
+        },
+        account: { name: "Lan Phạm", detail: "Quản lý" },
+      }}
+    >
+      {children}
+    </AppShell>
+  );
+}
+```
+
+## API
+
+### RouteHeaderBanner
+
+An announcement for the route header's centre slot (one at a time): tag, text (truncates first, before the
+breadcrumb or the right group shrink), optional sub text, a pill CTA and a close button. `role="status"` marks it as a
+status region; it is in place when it appears (after mount), so screen readers are not guaranteed to announce it.
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `id` * | `string` |  | One id per announcement ("ai-assistant-2026"): closed once per id. |
+| `text` * | `React.ReactNode` |  | One short sentence. One line in the header (cut with …), up to two lines in the row below `md`. |
+| `sub` | `React.ReactNode` |  | Optional date or sub text after the text, muted ("Từ 01/12"). |
+| `tag` | `React.ReactNode` |  | The tag before the text (a Badge); default "Mới" (locale `newBadge`); `null` drops it. |
+| `tagTone` | `SemanticTone` | `"blue"` | The tag's tone (default `blue`). |
+| `cta` | `{ label: string; href?: string; onClick?: () => void }` |  | The call to action, a `Button size="pill"`: a link (`href`) or an action (`onClick`). |
+| `store` | `RouteHeaderBannerStore` | `localBannerStore` | Where "dismissed" is read and written (default `localBannerStore`). A new store is read again (e.g. a per-account store after sign-in): keep it stable (a module constant or `useMemo`), or it is read on every render. |
+| `fallback` | `React.ReactNode` | `null` | Shown in the banner's place while it is not (before the store answers, and after it is closed). AppShell passes `header.middle` here, so the app's centre content comes back once the banner is closed. |
+| `onDismiss` | `() => void` |  | After it is closed (either copy) and stored as dismissed. |
+| `placement` | `'inline' \| 'header'` | `"header"` | `header` (default): the pill for the route header's centre slot. `inline`: the row at the top of the page content, shown below `md` only. AppShell's `header.banner` renders both; a frame of your own renders both itself. |
+| `closeLabel` | `string` |  | The close button's name; default "Đóng thông báo" (locale `bannerClose`). |
+| `className` | `string` |  |  |
+
+## Accessibility
+
+- Each copy is role="status"; it is in place when it appears, so screen readers may not announce it: never put the only copy of something people must know there. The close button is named “Đóng thông báo” (locale bannerClose).
+- Tab reaches the CTA and then the close button; Enter or Space presses them. Closing moves focus to the next control after the banner (the header's right group, or the page), never to the body.
+- On a touch screen the CTA and the close button each have an invisible 44px area (HIT_AREA) that never overlaps the other; their drawn size stays, so the row stays about 40px tall.
+
+## Notes
+
+- In AppShell pass header.banner (data, not an element): the shell renders the header copy and the inline copy below md, and closing either hides both. It covers header.middle only while it shows: before the store answers and once closed, the app's middle is back in the centre.
+- A frame of your own: RouteHeader middle={<RouteHeaderBanner {...b} fallback={yourMiddle} />} plus <RouteHeaderBanner {...b} placement="inline" /> above the page title.
+- The store is read after mount only (and again when store changes: keep it stable), so the server HTML never contains it; below md the row appears after mount, so the page content moves down once and stays there until it is closed. With storage blocked it shows, and closing hides it until the next page load.
+- The text truncates with … first, before the breadcrumb or the right group shrink: one short sentence, the date in sub. The CTA is a Button size="pill" (inverse), never the brand fill.
+- RouteHeader always renders its three slot containers (left, centre, right): closing the banner never moves the right group.
+
+<!-- GENERATED by scripts/build-docs.mjs from examples/route-header-banner/ and the types in src/ -->
 
 
 ---
