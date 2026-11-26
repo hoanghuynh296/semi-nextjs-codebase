@@ -24,7 +24,7 @@ import { cn } from "../styles/utils";
 
 // The width (container query on the layout, not the viewport) from which list and reader sit side by side: the list
 // width + the 16px gap + a 360px reader (#188). Below it the reader replaces the list (with ReaderHeader's Back).
-type ReaderContextValue = { onClose?: () => void; backHidden?: string };
+type ReaderContextValue = { onClose?: () => void; backHidden?: string; openKey?: string | null };
 const ReaderContext = createContext<ReaderContextValue>({});
 
 /** The single main action on the right of `ReaderHeader`, beside the `•••` menu. */
@@ -86,7 +86,8 @@ export function ReaderHeader({
   const H = `h${headingLevel}` as const;
   const titleId = useId();
   // a title cut at 3 lines gets a toggle that shows it in full (touch screens never show the native tooltip, #196)
-  const clamp = useClampToggle<HTMLHeadingElement>(title);
+  // keyed on the open item (or a string title), so a re-render with a JSX title does not collapse it
+  const clamp = useClampToggle<HTMLHeadingElement>(ctx.openKey ?? (typeof title === "string" ? title : null));
   const isMainAction = (a: unknown): a is ReaderMainAction =>
     Boolean(a) && typeof a === "object" && !React.isValidElement(a) && typeof (a as ReaderMainAction).label === "string";
 
@@ -109,8 +110,9 @@ export function ReaderHeader({
           className={cn(backHidden, "-ml-1.5")}
         />
       )}
-      {/* flex-wrap + a 70% minimum: the title keeps most of the row and the actions wrap under it when they do not fit */}
-      <div data-reader-title="" className="min-w-[70%] flex-1 pt-1">
+      {/* flex-wrap + a minimum of 70% of the row for the heading itself plus 28px for its expand toggle (#196): the
+          title keeps most of the row and the actions wrap under it when they do not fit */}
+      <div data-reader-title="" className="min-w-[calc(70%+1.75rem)] flex-1 pt-1">
         <div className="flex items-end gap-1 min-w-0">
           {/* tabIndex -1: ListReaderLayout moves focus here when the reader replaces the focused list row */}
           <H
@@ -272,7 +274,7 @@ export function ListReaderLayout({
 
   const split = SPLIT[listWidth];
   return (
-    <ReaderContext.Provider value={{ onClose, backHidden: split.back }}>
+    <ReaderContext.Provider value={{ onClose, backHidden: split.back, openKey }}>
       {/* the container: its width (not the viewport) decides side by side or one pane */}
       <div data-list-reader="" data-list-width={listWidth} className={cn("@container/reader-layout flex-1 min-h-0 min-w-0 flex flex-col", className)}>
         <div className={cn("flex-1 min-h-0 min-w-0 grid grid-cols-1 gap-group", split.grid, gridClassName)}>

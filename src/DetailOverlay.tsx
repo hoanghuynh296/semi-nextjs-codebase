@@ -151,11 +151,12 @@ export function DetailOverlay({
   const ref = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
-  // a cut title (one line, or 3 in a narrow dialog) gets a toggle that shows it in full (no tooltip on touch, #196)
-  const clamp = useClampToggle<HTMLHeadingElement>(title);
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   const shown = open && mounted;
+  // a cut title (one line, or 3 in a narrow dialog) gets a toggle that shows it in full (no tooltip on touch, #196);
+  // collapsed again for another item or a new opening
+  const clamp = useClampToggle<HTMLHeadingElement>(`${shown}:${index ?? ""}:${typeof title === "string" ? title : ""}`);
   useDialog(ref, shown, onClose);
 
   // the list keeps its scroll: remember it on open, put it back if anything moved it while the overlay was up
@@ -233,7 +234,7 @@ export function DetailOverlay({
           <button type="button" onClick={onClose} aria-label={t.close} title={`${t.close} (Esc)`} className={NAV}>
             <Icon name="close" className="w-4 h-4" />
           </button>
-          <div data-detail-title="" className="flex-1 min-w-[60%] px-1">
+          <div data-detail-title="" className="flex-1 min-w-[calc(60%+2.25rem)] px-1">
             <div className="flex items-end gap-1 min-w-0">
               <h2
                 ref={clamp.ref}

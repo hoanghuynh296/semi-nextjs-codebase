@@ -12,7 +12,7 @@ const THREADS: Thread[] = Array.from({ length: 24 }, (_, i) => ({
       ? "Báo giá hạt tiêu đen hữu cơ xuất khẩu quý 4 và lịch giao container tại cảng Cát Lái"
       : i === 1
         ? // a subject longer than 3 lines: clamped, the chevron beside it shows it in full (#196)
-          "Hợp đồng khung cung cấp quế và hồi sấy khô năm 2027: điều khoản giá theo quý, lịch giao container tại cảng Cát Lái, thanh toán L/C trả ngay cho lô đầu tiên và bảo hiểm hàng hoá"
+          "Hợp đồng khung cung cấp quế và hồi sấy khô năm 2027: điều khoản giá theo quý, lịch giao container tại cảng Cát Lái, thanh toán L/C trả ngay cho lô đầu tiên, bảo hiểm hàng hoá trong suốt hành trình và kiểm định chất lượng tại kho"
         : `Trao đổi đơn hàng #${1040 + i} — xác nhận quy cách đóng gói`,
   from: ["Gia vị Tây Nguyên", "HTX Chư Sê", "Hương Quế Yên Bái", "Nông sản Đắk Lắk"][i % 4],
   time: `${9 + (i % 9)}:${String((i * 13) % 60).padStart(2, "0")}`,

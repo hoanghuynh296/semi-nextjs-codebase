@@ -50,6 +50,8 @@ export default function StickyReaderDemoLayout({ children }: { children: React.R
         { id: "sent", label: "Đã gửi", icon: "send" },
       ],
     },
+    // a link item: in the SubNav sheet (narrow widths, #196) it navigates and closes the sheet
+    { label: "Liên kết", items: [{ id: "list-demo", label: "Hộp thư mẫu", icon: "mail", href: "/demo/list-reader/" }] },
   ];
 
   const barActions: BarAction[] = [

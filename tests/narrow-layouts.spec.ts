@@ -44,12 +44,11 @@ for (const path of ["/demo/list-reader/", "/demo/sticky-reader/?open=m-1"]) {
       const title = pane.locator("[data-reader-header] h2");
       await expect(title).toBeVisible();
 
-      // the title (with its expand toggle when it is cut, #196) keeps at least 60% of the reader pane (the actions
-      // wrap under it when they do not fit)
+      // the heading itself keeps at least 60% of the reader pane, beside its expand toggle when it is cut (#196); the
+      // actions wrap under it when they do not fit
       const paneBox = (await pane.boundingBox())!;
       const titleBox = (await title.boundingBox())!;
-      const blockBox = (await pane.locator("[data-reader-title]").boundingBox())!;
-      expect(blockBox.width).toBeGreaterThanOrEqual(paneBox.width * 0.6);
+      expect(titleBox.width).toBeGreaterThanOrEqual(paneBox.width * 0.6);
       // long titles clamp to 3 lines (line height 24px), the full text stays in the tooltip
       expect(titleBox.height).toBeLessThanOrEqual(3 * 24 + 1);
       expect(await title.getAttribute("title")).toBeTruthy();
@@ -149,7 +148,8 @@ test("DetailOverlay on a phone: the title keeps 60% of the header, ‹ › wrap 
   const nav = header.locator("[data-detail-nav]");
   await expect(title).toBeVisible();
   const [h, tb, nb] = [(await header.boundingBox())!, (await title.boundingBox())!, (await nav.boundingBox())!];
-  expect(tb.width).toBeGreaterThanOrEqual(h.width * 0.6);
+  // the heading itself, not only its block (#196: room is kept for the expand toggle)
+  expect((await title.locator("h2").boundingBox())!.width).toBeGreaterThanOrEqual(h.width * 0.6);
   expect(nb.y).toBeGreaterThanOrEqual(tb.y + tb.height - 1);
   // keyboard still steps through the results from the wrapped row
   await header.getByRole("button", { name: "Mục sau" }).focus();
@@ -168,7 +168,7 @@ test("DetailOverlay on a laptop keeps its one 56px header row, title and subtitl
 });
 
 // #196: where list + reader + SubNav do not fit, the SubNav (not the list) gives way: a trigger opens it in a sheet.
-for (const size of [SIZES[0], SIZES[2]]) {
+for (const size of SIZES) {
   test(`SubNav becomes a sheet trigger · /demo/list-reader/ · ${size.width}px (#196)`, async ({ browser }) => {
     const page = await newPage(browser, size);
     await page.goto("/demo/list-reader/");
@@ -258,6 +258,55 @@ for (const size of [SIZES[0], SIZES[2]]) {
     await header.getByRole("button", { name: "Mục trước" }).click();
     await expect(page).toHaveURL(/item=DH-1045/);
     await expect(header.locator("[data-title-toggle]")).toHaveCount(0);
+    await page.context().close();
+  });
+}
+
+test("SubNav sheet: a link item navigates by keyboard and closes the sheet · 744px (#196)", async ({ browser }) => {
+  const page = await newPage(browser, SIZES[1]);
+  await page.goto("/demo/sticky-reader/");
+  const trigger = page.getByRole("button", { name: "Thư mục: Hộp thư đến" });
+  const sheet = page.getByRole("dialog", { name: "Thư mục" });
+  await expect(async () => {
+    await trigger.focus();
+    await page.keyboard.press("Enter");
+    await expect(sheet).toBeVisible({ timeout: 500 });
+  }).toPass();
+  const link = sheet.getByRole("link", { name: "Hộp thư mẫu" });
+  for (let i = 0; i < 10 && !(await link.evaluate((el) => el === document.activeElement)); i++) await page.keyboard.press("Tab");
+  await expect(link).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/\/demo\/list-reader\/$/);
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Thư mục hộp thư: Hộp thư đến" })).toBeVisible();
+  await page.context().close();
+});
+
+// #196 review: a constant long title (the heading mounts only when the overlay opens) still gets its toggle, and a new
+// opening starts collapsed.
+for (const size of [SIZES[0], SIZES[2]]) {
+  test(`DetailOverlay with a constant title: the toggle shows on every opening · ${size.width}px (#196)`, async ({ browser }) => {
+    const page = await newPage(browser, size);
+    await page.goto("/demo/title-toggle/");
+    const opener = page.getByRole("button", { name: "Mở chi tiết" });
+    const dialog = page.getByRole("dialog");
+    await expect(async () => {
+      await opener.click();
+      await expect(dialog).toBeVisible({ timeout: 500 });
+    }).toPass();
+    const header = dialog.locator("[data-detail-header]");
+    const title = header.locator("h2");
+    const toggle = header.getByRole("button", { name: "Xem đủ tiêu đề" });
+    await expandByKeyboard(page, title, toggle);
+    await toggle.focus();
+    await page.keyboard.press("Enter");
+    await expect(toggle).toHaveAttribute("aria-expanded", "true");
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+    await opener.click();
+    await expect(dialog).toBeVisible();
+    await expect(toggle).toBeVisible();
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
     await page.context().close();
   });
 }
