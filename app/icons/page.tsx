@@ -24,6 +24,7 @@ const DOMAIN_OPTIONS: { id: string; label: string }[] = [
   { id: "analytics", label: "Analytics & Metrics" },
   { id: "hardware_3d", label: "3D & Hardware" },
   { id: "media", label: "Media & Files" },
+  { id: "editor", label: "Trình soạn thảo" },
   { id: "brand", label: "Brands & TMĐT VN" },
 ];
 
