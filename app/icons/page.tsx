@@ -2,7 +2,7 @@
 
 import React, { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { IconTile, type IconName, type TileTone, BRAND_TONES } from "../../src/Icon";
+import { Icon, type IconName } from "../../src/Icon";
 import { ICON_CATALOG, suggestIcon } from "../../src/iconCatalog";
 import { PageTitle } from "../../src/PageTitle";
 import { TAG } from "../../src/Chip";
@@ -10,7 +10,6 @@ import { Badge } from "../../src/Badge";
 import { Alert, EmptyState } from "../../src/Feedback";
 import { SearchPill, StickyContextBar } from "../../src/SearchPill";
 import { CustomSelect } from "../../src/CustomSelect";
-import { ToggleGroup } from "../../src/Toggle";
 import { toast } from "../../src/Toast";
 import { CARD, SECTION_HEAD, SECTION_TITLE } from "../../styles/surfaces";
 import { Card } from "../../src/Card";
@@ -24,16 +23,8 @@ const DOMAIN_OPTIONS: { id: string; label: string }[] = [
   { id: "analytics", label: "Analytics & Metrics" },
   { id: "hardware_3d", label: "3D & Hardware" },
   { id: "media", label: "Media & Files" },
+  { id: "editor", label: "Trình soạn thảo" },
   { id: "brand", label: "Brands & TMĐT VN" },
-];
-
-const TONES: { id: TileTone; label: string }[] = [
-  { id: "green", label: "Xanh lá" },
-  { id: "pink", label: "Hồng" },
-  { id: "sky", label: "Xanh trời" },
-  { id: "amber", label: "Hổ phách" },
-  { id: "violet", label: "Tím" },
-  { id: "gray", label: "Xám" },
 ];
 
 function QuerySync({ onQuery }: { onQuery: (q: string) => void }) {
@@ -48,7 +39,6 @@ function QuerySync({ onQuery }: { onQuery: (q: string) => void }) {
 export default function IconsPage() {
   const [search, setSearch] = useState("");
   const [selectedDomain, setSelectedDomain] = useState("all");
-  const [activeTone, setActiveTone] = useState<TileTone>("green");
   const [selectedIconName, setSelectedIconName] = useState<IconName | null>("sparkles");
 
   const handleQueryPrefill = React.useCallback((q: string) => {
@@ -140,14 +130,6 @@ export default function IconsPage() {
               onChange={setSelectedDomain}
               options={DOMAIN_OPTIONS.map((d) => ({ value: d.id, label: d.label }))}
             />
-            <div className="max-w-full overflow-x-auto">
-              <ToggleGroup
-                label="Màu ô icon"
-                value={[activeTone]}
-                onChange={(v) => v[0] && setActiveTone(v[0])}
-                options={TONES.map((t) => ({ key: t.id, label: t.label }))}
-              />
-            </div>
           </div>
         </StickyContextBar>
 
@@ -166,7 +148,7 @@ export default function IconsPage() {
                   title={`Copy <Icon name="${name}" />`}
                   className="flex flex-col items-center justify-center gap-2 text-center"
                 >
-                  <IconTile name={name as IconName} tone={meta.domain === "brand" ? (BRAND_TONES[name as IconName] || activeTone) : activeTone} size="md" />
+                  <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-control bg-item-selected text-strong"><Icon name={name as IconName} className="w-5 h-5" /></span>
                   <span className="w-full">
                     <span className="text-ui font-medium text-strong block truncate">{name}</span>
                     <span className="text-ui text-muted block truncate">{meta.lucideEquivalent || meta.category}</span>
@@ -199,7 +181,7 @@ export default function IconsPage() {
             {selectedMeta ? (
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <IconTile name={selectedMeta.name} tone={selectedMeta.domain === "brand" ? (BRAND_TONES[selectedMeta.name] || activeTone) : activeTone} size="lg" />
+                  <span className="inline-flex size-12 shrink-0 items-center justify-center rounded-control bg-item-selected text-strong"><Icon name={selectedMeta.name} className="w-6 h-6" /></span>
                   <div className="min-w-0 flex-1">
                     <div className="text-lead font-medium text-strong truncate">{selectedMeta.name}</div>
                     <div className="text-ui text-muted truncate">Nhóm: {selectedMeta.category}</div>

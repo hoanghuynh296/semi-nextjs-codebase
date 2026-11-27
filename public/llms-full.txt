@@ -2143,6 +2143,111 @@ Khi cần hiển thị biểu tượng cho một hành động hoặc trạng th
 
 ---
 
+### 2.12. Trình soạn thảo văn bản (Rich-text / WYSIWYG Editor)
+
+Bộ 62 icon cho thanh công cụ soạn thảo (email, ghi chú, mô tả, CMS, bình luận): không app nào cần `<svg>` riêng. Dùng `<Button iconOnly variant="ghost" icon="bold" aria-label="In đậm" />`. Icon của nhóm này có `domain: "editor"` và từ khoá "soạn thảo" / "editor" (lọc "Trình soạn thảo" ở trang Icons). Tên tiêu đề cấp 1–6 là `heading1`…`heading6`; `link` vẫn là alias của `external` (chèn liên kết trong soạn thảo dùng `hyperlink`).
+
+**Dùng lại icon có sẵn, không nhân đôi:** `undo` / `redo` (hoàn tác / làm lại), `image` (ảnh), `code` (mã trong dòng và xem mã nguồn, alias `source`, `html_source`), `eraser`, `printer` (in, alias `print`), `expand` / `shrink` (toàn màn hình / thu nhỏ, alias `fullscreen`, `fullscreen_exit`), `paperclip` (đính kèm), `search` (tìm), `video` (video), `plus`, `trash`.
+
+**Kiểu chữ (Text style)**
+
+| Icon | Ý nghĩa | Alias |
+|---|---|---|
+| `bold` | In đậm văn bản trong trình soạn thảo | `strong` |
+| `italic` | In nghiêng văn bản trong trình soạn thảo | `emphasis`, `em` |
+| `underline` | Gạch chân văn bản trong trình soạn thảo |  |
+| `strikethrough` | Gạch ngang văn bản trong trình soạn thảo | `strike`, `strike_through`, `line_through` |
+| `subscript` | Chỉ số dưới (subscript, ví dụ H2O) trong trình soạn thảo | `sub` |
+| `superscript` | Chỉ số trên (superscript, ví dụ m2) trong trình soạn thảo | `sup` |
+| `fontSize` | Cỡ chữ trong trình soạn thảo (chữ A nhỏ và lớn) | `fontFamily` | Phông chữ (font family) trong trình soạn thảo | `font_family`, `font`, `typeface` |
+| `textColor` | Màu chữ trong trình soạn thảo (chữ A kèm thanh màu) | `text_color`, `font_color`, `tx_color`, `foreground_color` |
+| `highlight` | Tô nền / đánh dấu văn bản (bút highlight) trong trình soạn thảo | `highlighter`, `marker`, `background_color`, `bg_color`, `text_highlight`, `highlight_color` |
+| `clearFormatting` | Xoá định dạng văn bản (chữ T có dấu gạch chéo) | `clear_formatting`, `clear_format`, `remove_formatting`, `remove_format`, `clear_style` |
+| `textCase` | Đổi kiểu chữ hoa / thường (Aa) trong trình soạn thảo | `text_case`, `change_case`, `capitalization` |
+| `upperCase` | Chuyển thành chữ HOA (AB) trong trình soạn thảo | `upper_case`, `all_caps`, `to_upper` |
+| `lowerCase` | Chuyển thành chữ thường (ab) trong trình soạn thảo | `lower_case`, `to_lower` |
+
+**Đoạn văn (Paragraph)**
+
+| Icon | Ý nghĩa | Alias |
+|---|---|---|
+| `heading` | Tiêu đề (chữ H) trong trình soạn thảo | `headings`, `heading_style` |
+| `heading1` | Tiêu đề cấp 1 (H1) trong trình soạn thảo | `h1`, `heading_1` |
+| `heading2` | Tiêu đề cấp 2 (H2) trong trình soạn thảo | `h2`, `heading_2` |
+| `heading3` | Tiêu đề cấp 3 (H3) trong trình soạn thảo | `h3`, `heading_3` |
+| `heading4` | Tiêu đề cấp 4 (H4) trong trình soạn thảo | `h4`, `heading_4` |
+| `heading5` | Tiêu đề cấp 5 (H5) trong trình soạn thảo | `h5`, `heading_5` |
+| `heading6` | Tiêu đề cấp 6 (H6) trong trình soạn thảo | `h6`, `heading_6` |
+| `paragraph` | Đoạn văn thường (ký hiệu ¶) trong trình soạn thảo | `pilcrow`, `para`, `normal_text`, `paragraph_mark` |
+| `quote` | Trích dẫn (blockquote) trong trình soạn thảo | `blockquote`, `block_quote` |
+| `codeBlock` | Khối mã (code block) trong trình soạn thảo | `code_block`, `pre`, `preformatted`, `fenced_code` |
+| `horizontalRule` | Đường kẻ ngang phân tách (horizontal rule) trong trình soạn thảo | `horizontal_rule`, `hr`, `divider`, `separator`, `rule` |
+| `pageBreak` | Ngắt trang (page break) trong trình soạn thảo / tài liệu | `page_break`, `break_page`, `section_break` |
+| `lineHeight` | Giãn dòng (line height) trong trình soạn thảo | `line_height`, `line_spacing`, `leading` |
+| `textDirectionLtr` | Hướng văn bản từ trái sang phải (LTR) | `ltr`, `left_to_right`, `text_direction_ltr` |
+| `textDirectionRtl` | Hướng văn bản từ phải sang trái (RTL) | `rtl`, `right_to_left`, `text_direction_rtl` |
+
+**Căn lề và thụt lề (Align and indent)**
+
+| Icon | Ý nghĩa | Alias |
+|---|---|---|
+| `alignLeft` | Căn lề trái đoạn văn | `align_left`, `text_left`, `left_align` |
+| `alignCenter` | Căn giữa đoạn văn | `align_center`, `text_center`, `center_align` |
+| `alignRight` | Căn lề phải đoạn văn | `align_right`, `text_right`, `right_align` |
+| `alignJustify` | Căn đều hai bên đoạn văn | `align_justify`, `justify`, `text_justify` |
+| `indent` | Tăng thụt lề (indent) trong trình soạn thảo | `indent_increase`, `increase_indent` |
+| `outdent` | Giảm thụt lề (outdent) trong trình soạn thảo | `indent_decrease`, `decrease_indent`, `dedent` |
+
+**Danh sách (Lists)**
+
+| Icon | Ý nghĩa | Alias |
+|---|---|---|
+| `list` | Danh sách dấu đầu dòng trong trình soạn thảo | `bullet_list`, `bullets`, `ul`, `unordered_list` |
+| `orderedList` | Danh sách đánh số trong trình soạn thảo | `ordered_list`, `numbered_list`, `ol`, `numbering` |
+| `checklist` | Danh sách việc cần làm (task list) trong trình soạn thảo | `check_list`, `task_list`, `todo_list`, `checkbox_list`, `todo` |
+| `nestedList` | Danh sách lồng nhau nhiều cấp trong trình soạn thảo | `nested_list`, `outline`, `tree_list` |
+
+**Chèn (Insert)**
+
+| Icon | Ý nghĩa | Alias |
+|---|---|---|
+| `hyperlink` | Chèn hoặc sửa siêu liên kết (hình mắt xích) trong trình soạn thảo | `chain`, `insert_link` |
+| `h1`…`h6`, `align_left`, `justify`, `ol`, `ul`, `clear_format`, `tx_color`, `hr`… | (bộ soạn thảo) | Mọi alias của bộ icon soạn thảo nằm ở bảng §2.12 |
+| `unlink` | Gỡ siêu liên kết (mắt xích đứt) trong trình soạn thảo | `remove_link`, `unlink_text`, `break_link` |
+| `imageInsert` | Chèn ảnh vào văn bản (ảnh kèm dấu cộng) trong trình soạn thảo | `insert_image`, `add_image`, `image_plus` |
+| `embed` | Nhúng video / nội dung ngoài (media embed) trong trình soạn thảo | `media_embed`, `iframe`, `embed_media`, `insert_media` |
+| `mention` | Nhắc tên (mention, ký hiệu @) trong trình soạn thảo | `at`, `at_sign`, `mention_user` |
+| `emoji` | Chèn biểu tượng cảm xúc (emoji, mặt cười) trong trình soạn thảo | `smile`, `smiley`, `emoticon`, `insert_emoji` |
+| `footnote` | Chú thích cuối trang (footnote) trong trình soạn thảo | `footnotes`, `endnote` |
+| `specialCharacter` | Ký tự đặc biệt (omega Ω) trong trình soạn thảo | `special_character`, `special_char`, `omega`, `symbol`, `insert_symbol` |
+| `formula` | Công thức toán (sigma Σ) trong trình soạn thảo | `sigma`, `math`, `equation`, `formula_editor` |
+| `comment` | Bình luận (comment) trên văn bản hoặc nội dung | `comment_on_text`, `annotation`, `chat_bubble` |
+
+**Bảng (Table)**
+
+| Icon | Ý nghĩa | Alias |
+|---|---|---|
+| `table` | Chèn bảng trong trình soạn thảo (khung bảng có hàng tiêu đề) | `insert_table` |
+| `tableInsertRowAbove` | Thêm hàng phía trên trong bảng | `insert_row_above`, `add_row_above`, `row_above` |
+| `tableInsertRowBelow` | Thêm hàng phía dưới trong bảng | `insert_row_below`, `add_row_below`, `row_below` |
+| `tableInsertColumnLeft` | Thêm cột bên trái trong bảng | `insert_column_left`, `add_column_left`, `column_left` |
+| `tableInsertColumnRight` | Thêm cột bên phải trong bảng | `insert_column_right`, `add_column_right`, `column_right` |
+| `tableDeleteRow` | Xoá hàng trong bảng | `delete_row`, `remove_row` |
+| `tableDeleteColumn` | Xoá cột trong bảng | `delete_column`, `delete_col`, `remove_column` |
+| `tableDelete` | Xoá cả bảng trong trình soạn thảo | `delete_table`, `remove_table` |
+| `tableMergeCells` | Gộp ô trong bảng | `merge_cells`, `merge_cell` |
+| `tableSplitCell` | Tách ô trong bảng | `split_cell`, `split_cells` |
+| `tableHeaderRow` | Hàng tiêu đề của bảng (header row) | `header_row`, `table_header` |
+
+**Thao tác trình soạn thảo (Editor actions)**
+
+| Icon | Ý nghĩa | Alias |
+|---|---|---|
+| `findReplace` | Tìm và thay thế (find & replace) trong trình soạn thảo | `find`, `find_replace`, `find_and_replace`, `search_replace`, `replace` |
+| `spellcheck` | Kiểm tra chính tả (spellcheck) trong trình soạn thảo | `spell_check`, `spelling`, `proofread` |
+
+---
+
 ## 3. Quy tắc tránh nhầm lẫn từ khoá (Aliases & Anti-patterns)
 
 Khi lập trình, nếu viết các từ khoá sau thì `semi-lint` hoặc `tsc` sẽ báo lỗi:
@@ -2174,6 +2279,8 @@ Khi lập trình, nếu viết các từ khoá sau thì `semi-lint` hoặc `tsc`
 | `incoming` | `inbox` | Hộp thư đến dùng `inbox` |
 | `message` | `send` | Gửi tin nhắn dùng `send` |
 | `link`, `open_link` | `external` | Liên kết ngoài dùng `external` |
+| `chain`, `insert_link` | `hyperlink` | Chèn / sửa siêu liên kết trong trình soạn thảo dùng `hyperlink` (không phải `link`, vẫn là `external`) |
+| `font_size`, `text_size` | `fontSize` | Cỡ chữ trong trình soạn thảo |
 | `shutdown`, `turn_off`, `power_off` | `power` | Nguồn thiết bị dùng `power` |
 | `scale` | `resize` | Thu phóng, đổi kích thước đối tượng dùng `resize` |
 | `decrease` | `minus` | Nút trừ / giảm dùng `minus` |
@@ -2275,6 +2382,14 @@ Nếu một dự án mới thực sự cần một icon mới chưa có trong da
 4. Thêm key vào `ICONS` trong [`src/Icon.tsx`](../src/Icon.tsx).
 5. Đăng ký metadata vào `ICON_CATALOG` trong [`src/iconCatalog.ts`](../src/iconCatalog.ts) và cập nhật file [`docs/ICONS.md`](ICONS.md) này.
 6. Chạy `npm run check`, nâng version và tạo tag release mới. Mọi app khác chỉ cần chạy `/semi-sync` là nhận được icon mới.
+
+---
+
+## 5. Nguồn hình và giấy phép (Icon sources & licence)
+
+Hình học các icon Lucide-derived lấy từ [Lucide](https://lucide.dev) (ISC), vẽ lại cùng lưới 24 và nét 1.75 của Semi; vài icon vẽ riêng cho cùng lưới (`textColor`, `horizontalRule`, `pageBreak`, `footnote`, `quote`, `table`, `tableDeleteRow`, `tableDeleteColumn`, `tableDelete`, `tableHeaderRow`). Bộ soạn thảo (§2.12) đối chiếu thêm với Material Symbols (`format_*`), Tabler, Phosphor, Font Awesome và thanh công cụ của Tiptap, TinyMCE, CKEditor 5, Quill, Lexical, Google Docs, Notion để chọn đủ tên; chỉ hình học Lucide (ISC / MIT) được sao chép. Icon bắt nguồn từ Feather (`italic`, `type`→`fontFamily`, `link`→`hyperlink`, `smile`→`emoji`, `at-sign`→`mention`, `code`, `search`…) theo giấy phép MIT.
+
+> Lucide: ISC License, Copyright (c) 2026 Lucide Icons and Contributors. Feather: MIT License, Copyright (c) 2013-present Cole Bemis. Permission to use, copy, modify, and/or distribute these icons is granted provided that the above copyright notices and the licence permission notices (ISC and MIT) are retained in all copies; the icons are provided "as is", without warranty.
 
 
 ---

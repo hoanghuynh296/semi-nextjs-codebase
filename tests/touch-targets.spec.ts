@@ -379,7 +379,6 @@ test("touch phone 320: ToggleGroup is never wider than its container, scrolls in
   for (const [path, group, overflows] of [
     ["/components/toggle/", '[data-example="toggle/group"] [data-density-view] [role="toolbar"]', false],
     ["/components/toggle/", '[data-example="toggle/group"] [data-density-view] [role="radiogroup"]', false],
-    ["/icons/", '[role="radiogroup"][aria-label="Màu ô icon"]', true],
   ] as const) {
     await page.goto(path);
     await hydrated(page);
