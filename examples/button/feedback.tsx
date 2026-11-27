@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Button, Checkbox, Chip, Item, ItemGroup, PRESSABLE, Switch, Toggle } from "@semi/ui";
 
 // Hover and press (#218): every control shares one hover timing (transition-hover, 150ms) and one press: buttons and
-// controls shrink to 98% while pressed (PRESS, still under reduced motion); rows, list items, cards and tiles never
+// controls shrink to 98% while pressed (PRESS; none under reduced motion); rows, list items, cards and tiles never
 // shrink, they keep their hover fill while pressed (PRESSABLE for an app's own tile). Hover shows on any device with a
 // pointer that can hover (any-hover), so an iPad with a trackpad gets it too.
 export default function ButtonFeedback() {

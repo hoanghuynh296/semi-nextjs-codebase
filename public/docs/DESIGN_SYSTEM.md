@@ -524,8 +524,9 @@ Semi wires T1's motion tokens (`TOKENS.md` "Motion": `--motion-hover`, `--motion
   `@media (any-hover: hover) { &:hover }` (Tailwind's default is `(hover: hover)`), so every `hover:`, `group-hover:` and
   `peer-hover:` class shows on any device with a pointer that can hover, an iPad with a trackpad or mouse included
   (iPadOS reports its primary input as touch, so `(hover: hover)` gave it no hover at all). A phone or a tablet with no
-  such pointer gets none. Tradeoff: on an iPad with a trackpad attached a finger tap can leave a hover until the next tap
-  elsewhere. Layout choices that hide a control behind hover (`CardActions`) keep `(hover: hover)`: touch must always
+  such pointer gets none. Tradeoffs: on an iPad with a trackpad attached a finger tap can leave a hover until the next tap
+  elsewhere; some Android phones with stylus or mouse support report `any-hover: hover` while their primary input is
+  touch, so a hover can stick after a tap there too (not tested on a real phone). Layout choices that hide a control behind hover (`CardActions`) keep `(hover: hover)`: touch must always
   reach the control, so an iPad shows the always-visible `⋯` even with a trackpad.
 - **Press (#218):** one press for buttons and controls (`Button` / `BTN_*` / `MODAL_BTN_*` of every variant, icon
   buttons, `appChrome.ts`, chips, `Toggle`, `Checkbox`, `Switch`, `CardActions`): `PRESS` (`@semi/ui/styles`,

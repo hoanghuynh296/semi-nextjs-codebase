@@ -182,7 +182,7 @@ export default function ButtonSizes() {
 
 ### Hover and press
 
-One hover timing (transition-hover, 150ms) and one press for every control: buttons, icon buttons, chips, toggles, checkboxes and switches shrink to 98% while pressed (PRESS; still under reduced motion). Rows, list items, cards and an app's own tiles (PRESSABLE) never shrink: they keep their hover fill while pressed. Hover shows on any device with a pointer that can hover (any-hover), an iPad with a trackpad too.
+One hover timing (transition-hover, 150ms) and one press for every control: buttons, icon buttons, chips, toggles, checkboxes and switches shrink to 98% while pressed (PRESS; none under reduced motion). Rows, list items, cards and an app's own tiles (PRESSABLE) never shrink: they keep their hover fill while pressed. Hover shows on any device with a pointer that can hover (any-hover), an iPad with a trackpad too.
 
 ```tsx
 "use client";
@@ -192,7 +192,7 @@ import { useState } from "react";
 import { Button, Checkbox, Chip, Item, ItemGroup, PRESSABLE, Switch, Toggle } from "@semi/ui";
 
 // Hover and press (#218): every control shares one hover timing (transition-hover, 150ms) and one press: buttons and
-// controls shrink to 98% while pressed (PRESS, still under reduced motion); rows, list items, cards and tiles never
+// controls shrink to 98% while pressed (PRESS; none under reduced motion); rows, list items, cards and tiles never
 // shrink, they keep their hover fill while pressed (PRESSABLE for an app's own tile). Hover shows on any device with a
 // pointer that can hover (any-hover), so an iPad with a trackpad gets it too.
 export default function ButtonFeedback() {

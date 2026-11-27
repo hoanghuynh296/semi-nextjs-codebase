@@ -5,7 +5,7 @@
 /**
  * What every variant shares: content text (text-ui, 14px), hover in 150ms (transition-hover = --motion-hover), a 2px
  * focus outline (outline-focus, the strong text colour, as on fields), a neutral disabled look for every variant
- * (brand ones too), and one press (PRESS: 98% while pressed, still under reduced motion) for every variant
+ * (brand ones too), and one press (PRESS: 98% while pressed, none under reduced motion) for every variant
  * (#218). Not `relative` (Button adds it for the corner badge unless its className positions it) and not
  * BTN_HIT: Button adds the phone touch size; a BTN_* on a Link adds BTN_HIT itself.
  */

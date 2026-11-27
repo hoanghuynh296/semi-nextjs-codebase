@@ -260,7 +260,7 @@ control drawn under 24px gets `HIT_AREA` · UI text in shared components comes f
   - `buttons.ts` (1.0 variants): `BTN_SUBTLE` (default), `BTN_SURFACE`, `BTN_INVERSE` (a card's / list title row's main action), `BTN_OUTLINE`, `BTN_GHOST`, `BTN_PRIMARY` / `BTN_SECONDARY` (brand: the one main button of a page, dialog or nav), `BTN_DANGER` (solid red), `BTN_DANGER_SUBTLE` (the danger tint), `BTN_ICON`, `BTN_LG` (40px: the one CTA of a page header), `BTN_SM`, `BTN_XS`, `BTN_PILL` (24px pill), `MODAL_BTN_*` (`MODAL_BTN_SUBTLE` for cancel). Attention: `CountBadge` / Button `badge` (brand fill, 99+), `NewTag` ("Mới").
   - `appChrome.ts`: `HEADER_ICON_*`, `headerPrimary`, `HEADER_PILL`, `VIEWPORT_*`.
   - `utils.ts`: `cn`, `FOCUS_RING`, `PRESS` (the press of a button or control: `motion-safe:active:scale-[0.98]`), `HIT_AREA`, `SEGMENT_ON`, `OVERLAY`.
-- **Hover & press (§4g, #218):** hover in 150ms (`transition-hover`), shown on any device with a hovering pointer (`hover:` follows `any-hover` in `base.css`: an iPad with a trackpad gets hover). Buttons and controls press with `PRESS` (98%, still under reduced motion); rows, cards, list items and tiles never shrink, they keep their hover fill while pressed (`PRESSABLE` for an app's own tile on a link). Never hand-write `active:scale-*` or `duration-*` on a control (`hand-press`, warning).
+- **Hover & press (§4g, #218):** hover in 150ms (`transition-hover`), shown on any device with a hovering pointer (`hover:` follows `any-hover` in `base.css`: an iPad with a trackpad gets hover). Buttons and controls press with `PRESS` (98%, none under reduced motion); rows, cards, list items and tiles never shrink, they keep their hover fill while pressed (`PRESSABLE` for an app's own tile on a link). Never hand-write `active:scale-*` or `duration-*` on a control (`hand-press`, warning).
 
 **Not the generic AI screen (§19):** one main block per screen (`KpiCard featured`, not four equal cards) · KPI icons
 neutral, colour only for a status (`decorative-icon-tones`) · no three feature cards with icons and vague promises: proof
@@ -930,8 +930,9 @@ Semi wires T1's motion tokens (`TOKENS.md` "Motion": `--motion-hover`, `--motion
   `@media (any-hover: hover) { &:hover }` (Tailwind's default is `(hover: hover)`), so every `hover:`, `group-hover:` and
   `peer-hover:` class shows on any device with a pointer that can hover, an iPad with a trackpad or mouse included
   (iPadOS reports its primary input as touch, so `(hover: hover)` gave it no hover at all). A phone or a tablet with no
-  such pointer gets none. Tradeoff: on an iPad with a trackpad attached a finger tap can leave a hover until the next tap
-  elsewhere. Layout choices that hide a control behind hover (`CardActions`) keep `(hover: hover)`: touch must always
+  such pointer gets none. Tradeoffs: on an iPad with a trackpad attached a finger tap can leave a hover until the next tap
+  elsewhere; some Android phones with stylus or mouse support report `any-hover: hover` while their primary input is
+  touch, so a hover can stick after a tap there too (not tested on a real phone). Layout choices that hide a control behind hover (`CardActions`) keep `(hover: hover)`: touch must always
   reach the control, so an iPad shows the always-visible `⋯` even with a trackpad.
 - **Press (#218):** one press for buttons and controls (`Button` / `BTN_*` / `MODAL_BTN_*` of every variant, icon
   buttons, `appChrome.ts`, chips, `Toggle`, `Checkbox`, `Switch`, `CardActions`): `PRESS` (`@semi/ui/styles`,
@@ -3345,7 +3346,7 @@ export default function ButtonSizes() {
 
 ### Hover and press
 
-One hover timing (transition-hover, 150ms) and one press for every control: buttons, icon buttons, chips, toggles, checkboxes and switches shrink to 98% while pressed (PRESS; still under reduced motion). Rows, list items, cards and an app's own tiles (PRESSABLE) never shrink: they keep their hover fill while pressed. Hover shows on any device with a pointer that can hover (any-hover), an iPad with a trackpad too.
+One hover timing (transition-hover, 150ms) and one press for every control: buttons, icon buttons, chips, toggles, checkboxes and switches shrink to 98% while pressed (PRESS; none under reduced motion). Rows, list items, cards and an app's own tiles (PRESSABLE) never shrink: they keep their hover fill while pressed. Hover shows on any device with a pointer that can hover (any-hover), an iPad with a trackpad too.
 
 ```tsx
 "use client";
@@ -3355,7 +3356,7 @@ import { useState } from "react";
 import { Button, Checkbox, Chip, Item, ItemGroup, PRESSABLE, Switch, Toggle } from "@semi/ui";
 
 // Hover and press (#218): every control shares one hover timing (transition-hover, 150ms) and one press: buttons and
-// controls shrink to 98% while pressed (PRESS, still under reduced motion); rows, list items, cards and tiles never
+// controls shrink to 98% while pressed (PRESS; none under reduced motion); rows, list items, cards and tiles never
 // shrink, they keep their hover fill while pressed (PRESSABLE for an app's own tile). Hover shows on any device with a
 // pointer that can hover (any-hover), so an iPad with a trackpad gets it too.
 export default function ButtonFeedback() {

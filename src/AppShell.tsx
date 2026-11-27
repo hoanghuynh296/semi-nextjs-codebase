@@ -1141,7 +1141,7 @@ export function AppShell({
                     {navItems.map((item) => {
                       const cls = cn(
                         "flex items-center gap-2.5 h-10 px-3 rounded-card text-ui font-medium transition-hover",
-                        activeTopId === item.id ? "bg-item-selected text-strong" : "bg-tint text-body hover:bg-tint-hover hover:text-strong",
+                        activeTopId === item.id ? "bg-item-selected text-strong" : "bg-tint text-body hover:bg-tint-hover active:bg-tint-hover hover:text-strong",
                       );
                       const pick = () => {
                         onSelect?.(item.id);

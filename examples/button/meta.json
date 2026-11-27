@@ -66,7 +66,7 @@
     {
       "file": "feedback",
       "title": "Hover and press",
-      "description": "One hover timing (transition-hover, 150ms) and one press for every control: buttons, icon buttons, chips, toggles, checkboxes and switches shrink to 98% while pressed (PRESS; still under reduced motion). Rows, list items, cards and an app's own tiles (PRESSABLE) never shrink: they keep their hover fill while pressed. Hover shows on any device with a pointer that can hover (any-hover), an iPad with a trackpad too."
+      "description": "One hover timing (transition-hover, 150ms) and one press for every control: buttons, icon buttons, chips, toggles, checkboxes and switches shrink to 98% while pressed (PRESS; none under reduced motion). Rows, list items, cards and an app's own tiles (PRESSABLE) never shrink: they keep their hover fill while pressed. Hover shows on any device with a pointer that can hover (any-hover), an iPad with a trackpad too."
     }
   ]
 }
