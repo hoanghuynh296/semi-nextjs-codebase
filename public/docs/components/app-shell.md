@@ -345,6 +345,71 @@ export default function AppShellSubmenu() {
 }
 ```
 
+### The app's own theme in the account menu
+
+An app that keeps its own theme (a cookie the server reads) and no ThemeProvider: theme: false, and its Light / Dark / System radios in the account items.
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { AppShell, type MenuItem, type ShellNavSection } from "@semi/ui";
+
+// An app that owns its theme (a cookie the server reads, so the first HTML already has the right data-theme) and does
+// not render Semi's ThemeProvider. `theme: false` keeps AccountMenu off Semi's theme, and the app puts its own
+// Light / Dark / System radios in `items`. ThemeToggle, ThemeSwitcher and useThemeUtility still need ThemeProvider.
+type Mode = "light" | "dark" | "system";
+
+/** Stands in for the app's own theme hook (next-themes, a cookie, the host product's setting). */
+function useAppTheme() {
+  const [mode, setMode] = useState<Mode>("system");
+  const choose = (next: Mode) => {
+    setMode(next);
+    document.cookie = `theme=${next}; path=/; max-age=31536000`;
+    const dark = next === "dark" || (next === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+  };
+  return { mode, choose };
+}
+
+const SECTIONS: ShellNavSection[] = [
+  {
+    items: [
+      { id: "courses", label: "Khoá học", icon: "fileText", href: "/courses" },
+      { id: "students", label: "Học viên", icon: "users", href: "/students" },
+    ],
+  },
+];
+
+export default function OwnThemeShell({ children }: { children?: React.ReactNode }) {
+  const { mode, choose } = useAppTheme();
+  const themeItems: MenuItem[] = [
+    { label: "Sáng", icon: "sun", radio: true, checked: mode === "light", group: "Giao diện", onSelect: () => choose("light") },
+    { label: "Tối", icon: "moon", radio: true, checked: mode === "dark", group: "Giao diện", onSelect: () => choose("dark") },
+    { label: "Hệ thống", icon: "monitor", radio: true, checked: mode === "system", group: "Giao diện", onSelect: () => choose("system") },
+  ];
+  return (
+    <AppShell
+      productName="Lớp học"
+      logoIcon="award"
+      sections={SECTIONS}
+      activeId="courses"
+      header={{
+        account: {
+          name: "Minh Trần",
+          detail: "Giáo viên",
+          theme: false,
+          items: [...themeItems, { label: "Tài khoản", icon: "user", href: "/account", separator: true }],
+          onSignOut: () => {},
+        },
+      }}
+    >
+      {children}
+    </AppShell>
+  );
+}
+```
+
 ## API
 
 ### AppShell
@@ -408,7 +473,7 @@ then the theme (Light / Dark / System), the app's items and sign-out.
 | `avatarSrc` | `string` |  | A photo in place of the letter. |
 | `items` | `MenuItem[]` | `[]` | The app's own items (Tài khoản, Cài đặt…), between the theme choices and sign-out. |
 | `onSignOut` | `() => void` |  | Adds the last item, "Đăng xuất" (locale `signOut`), after a divider. |
-| `theme` | `boolean` | `true` | Light / Dark / System as radio items at the top (default true). Turn off only when the app pins one theme. |
+| `theme` | `boolean` | `true` | Light / Dark / System as radio items at the top (default true), from Semi's `ThemeProvider`. `false`: no theme choices and no theme read, so the menu also works without a ThemeProvider: an app that pins one theme, or owns its theme (a cookie the server reads, next-themes) and puts its own radio items (`radio`, `checked`) in `items`. `true` without a ThemeProvider shows no choices and warns in development. |
 
 ### MobileTabBar
 
@@ -437,7 +502,7 @@ then the theme (Light / Dark / System), the app's items and sign-out.
 - Page items take an href: they stay next/link links even when onSelect is set (onSelect then only reports the click). Never route with onSelect + router.push (shell-nav-href).
 - Never gate the shell behind a page skeleton (shell-gate): a route loading.tsx next to the layout shimmers the content only, and the boot / session check before the layout is known renders BootLoader once in the layout. A page never renders AppShell or imports a component that does (app-shell-in-page).
 - Top to bottom: logo + collapse, mainAction (the one brand-filled button: label + icon, a Menu with items), primaryCta (an optional quiet launcher), sections, pinned, then tools (32×32 icons with a count) and toolsMenu (•••).
-- header: crumbs (default from the active item; useRecordCrumb(label) in a detail page adds its record), middle (search field; hidden below md), banner (a RouteHeaderBanner announcement: the header's centre from md, the first row of the content below md), actions (32×32 ghost icon buttons) and account ({ name, detail, items, onSignOut }: the theme is in that menu); left / right replace the trail / actions + account. The three slot containers are always rendered, so closing a banner never moves the right group. header={false} drops the row.
+- header: crumbs (default from the active item; useRecordCrumb(label) in a detail page adds its record), middle (search field; hidden below md), banner (a RouteHeaderBanner announcement: the header's centre from md, the first row of the content below md), actions (32×32 ghost icon buttons) and account ({ name, detail, items, onSignOut }: the theme is in that menu, from ThemeProvider; an app that owns its theme passes theme: false and its own radio items in items, and then needs no ThemeProvider); left / right replace the trail / actions + account. The three slot containers are always rendered, so closing a banner never moves the right group. header={false} drops the row.
 - Slots (mainAction, header.left / middle / actions / account / right) are an element or a function of { collapsed, rail } rendered as one stable component: it may call hooks and keeps its state across a collapse, a resize and a route change. rail is exact after mount only.
 - railBelow (default 1280, at least 1024) sets where the nav starts expanded; between md and lg it is always the rail. railWidth (default 72) sets the rail width.
 - page="fixed": the card does not scroll; give the page h-full min-h-0 flex flex-col and let its panels scroll. flush: no centred max-width container or padding.

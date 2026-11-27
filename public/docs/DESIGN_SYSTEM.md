@@ -337,7 +337,11 @@ Semi's own green. A brand change is made in the brand repo (`/semi-brand`) and r
   moves focus to the next control after it.
 - **Account avatar menu (`AccountMenu`, `header.account`):** a one-letter avatar (32px) whose `Menu` has a header
   (name, `detail` role or email: not an item), then Light / Dark / System (radio items), the app's `items` and
-  "Đăng xuất" (`onSignOut`). The nav has no account or company block.
+  "Đăng xuất" (`onSignOut`). The nav has no account or company block. The theme choices come from `ThemeProvider`; an
+  app that owns its theme (a cookie the server reads, next-themes) passes `theme: false`, so the menu needs no provider (it
+  reads the context with the internal `useOptionalTheme`, null without one, and builds no choices), and puts its own Light / Dark / System radio items (`radio`, `checked`) in `items`.
+  `theme: true` without a provider shows no choices and warns in development. `ThemeToggle`, `ThemeSwitcher` and
+  `useThemeUtility` still need `ThemeProvider`.
 - **Nav order:** logo + collapse button (the logo expands the rail at `lg+`) · the **main action** (`mainAction`: an
   ordinary primary button with the app's label and icon, a `Menu` when it has `items`, its icon with a Tooltip in the
   rail; or your own slot) · the groups (`sections`, `pinned`) separated by a 24px spacer with a 1px `bg-raised` line,
