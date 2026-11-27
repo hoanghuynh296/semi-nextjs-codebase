@@ -57,7 +57,11 @@ export const HARD = [
     /export\s+function\s+(PageHeader|Select|Modal|Input|Textarea|Button|EmptyState)\b/,
     "do not keep a local ui.tsx wrapper: use Button, Input, Textarea, Field, CustomSelect, Modal, EmptyState, PageTitle, SubpageToolbar from @semi/ui",
   ],
-  ["gradient", /bg-gradient-|linear-gradient|radial-gradient|from-primary-\d+ to-/, "flat UI: no gradients"],
+  [
+    "gradient",
+    /bg-gradient-|\bbg-(?:linear|radial|conic)(?:-|\b)|(?:linear|radial|conic)-gradient|from-primary-\d+ to-/,
+    "flat UI: no gradients (the scroll edge effect is SCROLL_EDGE + useScrollEdges from @semi/ui, never a copy)",
+  ],
   [
     "glow",
     /GLOW_(PRIMARY|CARD)|shadow-\[0_0_|shadow-\[[^\]]*rgba\((?!0,\s*0,\s*0)|(?<!backdrop-)\bblur-(lg|xl|2xl|3xl)\b/,
@@ -96,6 +100,21 @@ export const BRAND_OVERRIDE = [
   /(?:^|[\s;{])--(?:color-(?:primary|secondary|on-primary|on-secondary|accent|on-accent)[\w-]*|semi-[\w-]+|brand-[\w-]+|density-spacing|spacing|font-(?:sans|display|figure|weight-title)(?:-family)?)\s*:/,
   "this app uses a brand kit: its colours, fonts and Semi tokens come only from the brand, density and type scale from semi-lint.json (change them in the brand repo with /semi-brand)",
 ];
+/**
+ * The one place a HARD rule's hit is allowed (C-022): the scroll edge effect's own constant, `SCROLL_EDGE` in Semi's
+ * `styles/surfaces.ts`. Only the lines of that declaration, never the rest of the file: a copy of its value anywhere
+ * else is still a hit. (name, lines, i) → true when the hit on line i is allowed.
+ */
+const HARD_ALLOWED_IN = {
+  gradient: (name, lines, i) => {
+    if (name !== "styles/surfaces.ts") return false;
+    for (let k = i; k >= 0 && k > i - 4; k--) {
+      if (/^export const SCROLL_EDGE = \{/.test(lines[k])) return true;
+      if (k < i && /^\S/.test(lines[k])) return false;
+    }
+    return false;
+  },
+};
 /** Rules that are opt-in: they only run on the path prefixes listed in config "only". */
 const OPT_IN = new Set(["viewport-grid-cols"]);
 
@@ -1068,7 +1087,7 @@ export function scan(paths, cfg, cwd) {
         if (skipped(id, name)) continue;
         if (OPT_IN.has(id) && !(onlyMap[id] || []).some((s) => name.startsWith(s))) continue;
         if (!OPT_IN.has(id) && onlyMap[id] && !onlyMap[id].some((s) => name.startsWith(s))) continue;
-        if (rx.test(raw)) hard.push({ file: name, line: i + 1, rule: id, message: msg, text: raw.trim().slice(0, 140) });
+        if (rx.test(raw) && !HARD_ALLOWED_IN[id]?.(name, rows, i)) hard.push({ file: name, line: i + 1, rule: id, message: msg, text: raw.trim().slice(0, 140) });
       }
       for (const [id, rx] of RATCHET) {
         if (!rx || skipped(id, name)) continue;

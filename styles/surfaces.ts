@@ -171,10 +171,25 @@ export const MODAL_PANEL =
 /** Modal header row: icon/title left, close button right. Includes safe-area padding on mobile. */
 export const MODAL_HEAD = "px-5 pt-4 max-sm:pt-[max(1rem,env(safe-area-inset-top))] pb-3 flex items-center justify-between gap-3 shrink-0";
 /** Modal title. */
-export const MODAL_TITLE = "text-lead font-medium text-strong tracking-tight truncate";
+/** Modal title: wraps (never cut to one line, #222); `Modal` and `Drawer` clamp it to 3 lines with an expand toggle. */
+export const MODAL_TITLE = "min-w-0 text-lead font-medium text-strong tracking-tight break-words";
 /** Modal footer: buttons right-aligned; stretched on a phone with safe-area bottom padding. */
 export const MODAL_FOOT =
   "px-5 py-3 max-sm:pb-[max(1rem,env(safe-area-inset-bottom))] border-t border-divider flex items-center justify-end gap-2 shrink-0 max-sm:*:flex-1";
+
+/**
+ * Scroll edge effect (C-022): the one gradient Semi allows. A soft fade on an edge of a scrolling area where more
+ * content continues (only on that side, gone at the end of the scroll), like Apple's. It fades from the panel surface
+ * (`bg-panel`: dialogs, drawers, the content card) to transparent, so it is right in dark and light with no token of its
+ * own. Put the scrolling element in a `relative` wrapper and add one `<span aria-hidden>` per edge after it, with
+ * `opacity-100` while `useScrollEdges(ref)` reports that edge and `opacity-0` otherwise (`Modal`, `Drawer` and
+ * `confirmDialog` do this). Fades in 150ms (`transition-hover`), no transition under reduced motion; never takes clicks.
+ * semi-lint lets only this constant through its `gradient` rule: never copy its value.
+ */
+export const SCROLL_EDGE = {
+  top: "pointer-events-none absolute inset-x-0 top-0 h-8 bg-linear-to-b from-panel to-transparent transition-hover motion-reduce:transition-none",
+  bottom: "pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-linear-to-t from-panel to-transparent transition-hover motion-reduce:transition-none",
+} as const;
 
 /** A page form's column (D13): never wider than `max-w-2xl`, fields stacked `gap-stack`, labels above the controls. */
 export const FORM_PAGE = "w-full max-w-2xl flex flex-col gap-stack";

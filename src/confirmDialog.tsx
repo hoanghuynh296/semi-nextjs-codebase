@@ -7,6 +7,8 @@ import { useDialog } from "./a11y";
 import { useSemiLocale } from "./locale";
 import type { ReactNode } from "react";
 import { MODAL_BTN_DANGER, MODAL_BTN_PRIMARY, MODAL_BTN_SUBTLE } from "../styles/buttons";
+import { cn } from "../styles/utils";
+import { ScrollEdgeFades, useScrollEdges } from "./scrollEdges";
 
 export interface ConfirmOptions {
   title: string;
@@ -83,12 +85,15 @@ export function ConfirmHost() {
   const panelRef = useRef<HTMLDivElement>(null);
   const t = useSemiLocale();
   const { titleId } = useDialog(panelRef, !!c, () => resolveConfirm(false));
+  const messageRef = useRef<HTMLDivElement>(null);
+  const edges = useScrollEdges(messageRef);
 
   if (!c) return null;
   const danger = c.tone === "danger";
   const title = c.title ?? (c.kind === "delete" ? t.deleteTitle(c.name ?? "") : "");
   const message = c.message ?? (c.kind === "delete" ? t.deleteMessage : undefined);
   const confirmText = c.confirmLabel || (c.kind === "delete" ? t.delete : t.ok);
+  const descId = `${titleId}-desc`;
 
   return (
     <div data-semi="ConfirmHost"
@@ -101,18 +106,36 @@ export function ConfirmHost() {
         role="alertdialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="bg-panel border border-line rounded-panel w-full max-w-sm shadow-overlay overflow-hidden"
+        aria-describedby={message ? descId : undefined}
+        // At most 92% of the screen: a long message scrolls between the title and the buttons, which always show (#223).
+        className="bg-panel border border-line rounded-panel w-full max-w-sm max-h-[92dvh] flex flex-col shadow-overlay overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className={`px-5 pt-5 pb-4 space-y-2 ${c.icon ? "text-center" : ""}`}>
+        <div className={cn("px-5 pt-5 space-y-2 shrink-0", message ? "pb-2" : "pb-4", c.icon ? "text-center" : undefined)}>
           {c.icon && <div className="flex justify-center pb-1">{c.icon}</div>}
-          <h3 id={titleId} className="text-lead font-medium text-strong">
+          <h3 id={titleId} className="text-lead font-medium text-strong break-words">
             {title}
           </h3>
-          {message && <p className="text-ui text-muted leading-relaxed whitespace-pre-line">{message}</p>}
         </div>
+        {message && (
+          <div className="relative min-h-0 flex flex-col">
+            <div
+              ref={messageRef}
+              id={descId}
+              // focusable only while it scrolls, so arrow keys can scroll it
+              tabIndex={edges.scrolls ? 0 : undefined}
+              className={cn(
+                "min-h-0 overflow-y-auto overscroll-contain px-5 pb-4 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus",
+                c.icon ? "text-center" : undefined,
+              )}
+            >
+              <p className="text-ui text-muted leading-relaxed whitespace-pre-line break-words">{message}</p>
+            </div>
+            <ScrollEdgeFades edges={edges} />
+          </div>
+        )}
         <div
-          className={`px-5 pb-5 max-sm:pb-[max(1rem,env(safe-area-inset-bottom))] flex items-center gap-2 ${c.icon ? "*:flex-1" : "justify-end max-sm:*:flex-1"}`}
+          className={`px-5 pb-5 max-sm:pb-[max(1rem,env(safe-area-inset-bottom))] flex items-center gap-2 shrink-0 ${c.icon ? "*:flex-1" : "justify-end max-sm:*:flex-1"}`}
         >
           <button type="button" data-autofocus={danger ? "" : undefined} onClick={() => resolveConfirm(false)} className={MODAL_BTN_SUBTLE}>
             {c.cancelLabel || t.cancel}

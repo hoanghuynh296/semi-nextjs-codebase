@@ -86,6 +86,7 @@ export * from "./Command";
 export * from "./Slider";
 export * from "./Calendar";
 export * from "./ScrollArea";
+export { useScrollEdges, type ScrollEdgeState } from "./scrollEdges";
 export * from "./DataTable";
 export * from "./listQuery";
 export * from "./Chart";

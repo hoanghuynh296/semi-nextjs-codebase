@@ -6,6 +6,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Icon } from "./Icon";
+import { ClampToggle, useClampToggle } from "./clampedTitle";
+import { ScrollEdgeFades, useScrollEdges } from "./scrollEdges";
 import { useBackdropClose, useDialog } from "./a11y";
 import { useSemiLocale } from "./locale";
 import {
@@ -16,6 +18,7 @@ import {
   MODAL_PANEL,
   MODAL_TITLE,
 } from "../styles/surfaces";
+import { cn } from "../styles/utils";
 
 export function Modal({
   open,
@@ -49,6 +52,10 @@ export function Modal({
   const { titleId } = useDialog(panelRef, open && mounted, onClose, { autoFocusFirstField });
   const descId = `${titleId}-desc`;
   const backdrop = useBackdropClose(closeOnBackdrop ? onClose : undefined);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const edges = useScrollEdges(bodyRef);
+  // A long title wraps and clamps to 3 lines; the toggle shows it whole (also on touch, where `title=` never shows).
+  const clamp = useClampToggle<HTMLHeadingElement>(`${open}:${typeof title === "string" ? title : ""}`);
 
   useEffect(() => {
     setMounted(true);
@@ -68,21 +75,30 @@ export function Modal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className={`${MODAL_HEAD} border-b border-divider`}>
-          <div className="min-w-0">
-            <h2 id={titleId} className={MODAL_TITLE}>
-              {title}
-            </h2>
+          {/* As tall as the close button, so a one-line title stays centred on it and a wrapped one starts at its top. */}
+          <div className="min-w-0 flex-1 min-h-9 sm:min-h-8 pointer-coarse:max-sm:min-h-11 flex flex-col justify-center">
+            <div className="flex items-start gap-1">
+              <h2 id={titleId} ref={clamp.ref} className={cn(MODAL_TITLE, "flex-1", !clamp.expanded && "line-clamp-3")}>
+                {title}
+              </h2>
+              {clamp.cut && <ClampToggle expanded={clamp.expanded} onToggle={clamp.toggle} controls={titleId} />}
+            </div>
             {description && (
               <p id={descId} className="text-ui text-muted mt-0.5">
                 {description}
               </p>
             )}
           </div>
-          <button type="button" onClick={onClose} aria-label={t.close} className={MODAL_CLOSE}>
+          <button type="button" onClick={onClose} aria-label={t.close} className={cn(MODAL_CLOSE, "self-start")}>
             <Icon name="close" className="w-4 h-4" />
           </button>
         </div>
-        <div className="p-5 flex-1 overflow-y-auto overscroll-contain space-y-4">{children}</div>
+        <div className="relative flex-1 min-h-0 flex flex-col">
+          <div ref={bodyRef} className="p-5 flex-1 min-h-0 overflow-y-auto overscroll-contain space-y-4">
+            {children}
+          </div>
+          <ScrollEdgeFades edges={edges} />
+        </div>
         {footer && <div className={MODAL_FOOT}>{footer}</div>}
       </div>
     </div>,

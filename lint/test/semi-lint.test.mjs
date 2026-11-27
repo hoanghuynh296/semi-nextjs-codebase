@@ -212,3 +212,22 @@ test("#142 semi-lint --json flushes > 64 KB piped stdout without truncation and 
   rmSync(dir, { recursive: true });
   rmSync(cleanDir, { recursive: true });
 });
+
+test("gradient (C-022): only Semi's SCROLL_EDGE declaration passes; a hand-written gradient or blur is caught anywhere", () => {
+  const dir = mkdtempSync(join(tmpdir(), "semi-lint-"));
+  mkdirSync(join(dir, "styles"));
+  const constant = 'export const SCROLL_EDGE = {\n  top: "pointer-events-none absolute inset-x-0 top-0 h-8 bg-linear-to-b from-panel to-transparent",\n  bottom: "absolute bottom-0 h-8 bg-linear-to-t from-panel to-transparent",\n} as const;\n';
+  const copy = 'export const FADE = "absolute bottom-0 h-8 bg-linear-to-t from-panel to-transparent";\n';
+  writeFileSync(join(dir, "styles/surfaces.ts"), constant + copy);
+  writeFileSync(join(dir, "edge.tsx"), constant);
+  writeFileSync(join(dir, "use.tsx"), '<span aria-hidden className={cn(SCROLL_EDGE.bottom, edges.bottom ? "opacity-100" : "opacity-0")} />\n');
+  const r = scan([join(dir, "styles/surfaces.ts"), join(dir, "edge.tsx"), join(dir, "use.tsx")], {}, dir);
+  const hits = r.hard.filter((h) => h.rule === "gradient").map((h) => `${h.file}:${h.line}`);
+  // the constant in Semi's surfaces.ts passes, the copy below it and the same block in an app file do not; using it is fine
+  assert.deepEqual(hits, ["styles/surfaces.ts:5", "edge.tsx:2", "edge.tsx:3"]);
+  rmSync(dir, { recursive: true });
+  for (const g of ["bg-gradient-to-b from-panel", "bg-linear-to-t from-panel to-transparent", "bg-radial from-app", "bg-conic-180 from-app", "style={{ background: 'linear-gradient(#000, transparent)' }}", "mask-image: radial-gradient(black, transparent)"])
+    assert.ok(lint(`<div className="${g}" />`).includes("gradient"), g);
+  assert.ok(lint('<div className="absolute inset-x-0 bottom-0 h-8 blur-xl bg-panel" />').includes("glow"));
+  assert.deepEqual(lint('<div className="bg-linear-gradient-free bg-line" />').filter((r) => r === "gradient"), ["gradient"]);
+});

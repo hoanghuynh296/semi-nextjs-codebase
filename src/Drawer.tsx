@@ -6,6 +6,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Icon } from "./Icon";
+import { ClampToggle, useClampToggle } from "./clampedTitle";
+import { ScrollEdgeFades, useScrollEdges } from "./scrollEdges";
 import { useDialog } from "./a11y";
 import { useSemiLocale } from "./locale";
 import { MODAL_CLOSE, MODAL_FOOT, MODAL_TITLE } from "../styles/surfaces";
@@ -45,6 +47,9 @@ export function Drawer({
   const ref = useRef<HTMLDivElement>(null);
   const t = useSemiLocale();
   const { titleId } = useDialog(ref, open && mounted, onClose, { autoFocusFirstField });
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const edges = useScrollEdges(bodyRef);
+  const clamp = useClampToggle<HTMLHeadingElement>(`${open}:${typeof title === "string" ? title : ""}`);
   useEffect(() => setMounted(true), []);
   if (!open || !mounted) return null;
 
@@ -59,14 +64,22 @@ export function Drawer({
         className={cn("absolute bg-panel border-line shadow-overlay flex flex-col", PANEL[side], className)}
       >
         <div className="px-5 pt-4 max-sm:pt-[max(1rem,env(safe-area-inset-top))] pb-3 flex items-center justify-between gap-3 border-b border-divider shrink-0">
-          <h2 id={titleId} className={MODAL_TITLE}>
-            {title}
-          </h2>
-          <button type="button" onClick={onClose} aria-label={t.close} className={MODAL_CLOSE}>
+          <div className="min-w-0 flex-1 min-h-9 sm:min-h-8 pointer-coarse:max-sm:min-h-11 flex items-center gap-1">
+            <h2 id={titleId} ref={clamp.ref} className={cn(MODAL_TITLE, "flex-1", !clamp.expanded && "line-clamp-3")}>
+              {title}
+            </h2>
+            {clamp.cut && <ClampToggle expanded={clamp.expanded} onToggle={clamp.toggle} controls={titleId} className="self-start" />}
+          </div>
+          <button type="button" onClick={onClose} aria-label={t.close} className={cn(MODAL_CLOSE, "self-start")}>
             <Icon name="close" className="w-4 h-4" />
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto overscroll-contain p-5 space-y-4">{children}</div>
+        <div className="relative flex-1 min-h-0 flex flex-col">
+          <div ref={bodyRef} className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-5 space-y-4">
+            {children}
+          </div>
+          <ScrollEdgeFades edges={edges} />
+        </div>
         {footer && <div className={MODAL_FOOT}>{footer}</div>}
       </div>
     </div>,
