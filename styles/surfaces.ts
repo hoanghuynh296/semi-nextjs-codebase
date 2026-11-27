@@ -18,9 +18,9 @@ export const CARD_BORDERED_HOVER = `${CARD_BORDERED} hover:border-line-hover act
 /**
  * An app's own clickable tile, row or list item (#218): the hover fill in the hover timing (transition-hover), the same
  * fill while pressed (touch screens have no hover), the keyboard focus ring and the pointer. No press scale: a surface
- * never shrinks (buttons and controls use PRESS). Add the shape and padding at the call site; a <button> or a link,
- * never a <div onClick>.
- *   <button type="button" className={`${PRESSABLE} rounded-card p-3 text-left`}>…</button>
+ * never shrinks (buttons and controls use PRESS). Add the shape and padding at the call site; on a link (next/link),
+ * never a <div onClick> (a clickable card is <Card onClick>).
+ *   <Link href="/orders/42" className={`${PRESSABLE} block rounded-card p-card`}>…</Link>
  */
 export const PRESSABLE = `transition-hover hover:bg-item-hover active:bg-item-hover cursor-pointer ${FOCUS_RING}`;
 

@@ -4103,7 +4103,7 @@
       "kind": "constant",
       "module": "styles/surfaces.ts",
       "client": false,
-      "summary": "An app's own clickable tile, row or list item (#218): the hover fill in the hover timing (transition-hover), the same fill while pressed (touch screens have no hover), the keyboard focus ring and the pointer. No press scale: a surface never shrinks (buttons and controls use PRESS). Add the shape and padding at the call site; a <button> or a link, never a <div onClick>."
+      "summary": "An app's own clickable tile, row or list item (#218): the hover fill in the hover timing (transition-hover), the same fill while pressed (touch screens have no hover), the keyboard focus ring and the pointer. No press scale: a surface never shrinks (buttons and controls use PRESS). Add the shape and padding at the call site; on a link (next/link), never a <div onClick> (a clickable card is <Card onClick>)."
     },
     {
       "name": "HERO",
