@@ -7,6 +7,7 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 ### Added
 
 - **`PRESSABLE` and `PRESS` in `@semi/ui/styles` (#218):** `PRESSABLE` (`surfaces.ts`) for an app's own clickable tile or row on a link: `transition-hover hover:bg-item-hover active:bg-item-hover cursor-pointer` + `FOCUS_RING`, no shrink. `PRESS` (`utils.ts`, `motion-safe:active:scale-[0.98]`) is the one press of a button or control. New Button example "Hover and press" (light and dark on the docs site). New semi-lint warning `hand-press`: a hand-written `active:scale-*` (use `PRESS`; rows and tiles: `PRESSABLE`); a warning only, never a hard error.
+- **Rich-text editor icons (#217):** `fontSize`, `bold`, `italic`, `underline`, `strikethrough`, `quote`, `hyperlink`, `table`, `list`, `orderedList` in `<Icon name>` (24 grid, stroke 1.75, round caps, like the rest). `hyperlink` (chain; aliases `chain`, `insert_link`) is the editor link: `link` stays an alias of `external`, so no app changes. `table` has a header row line so it reads differently from `grid`. Other aliases: `font_size`, `blockquote`, `strike`, `bullet_list`, `ordered_list`, `numbered_list`. Apps with a local editor-icon `<svg>` can drop it after `/semi-sync`. No migration: nothing is renamed or removed. Guide: `docs/ICONS.md` §2.12.
 
 ### Changed
 
