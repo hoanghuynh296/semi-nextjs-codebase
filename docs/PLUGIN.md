@@ -60,3 +60,12 @@ instead of a shell string. `getGitHubToken()` is copied in `semi-propose/scripts
 `semi-triage/scripts/triage.mjs` (each skill installs as its own folder): edit both, `lint/test/github-token.test.mjs`
 fails when they differ or use a shell. The `windows` job of `check.yml` runs that test and both scripts' `--help` on
 `windows-latest` (#185).
+
+npm, npx, pnpm, yarn and the app's `node_modules/.bin` tools are `.cmd` shims on Windows, and Node refuses to spawn a
+`.cmd` without a shell (CVE-2024-27980: `EINVAL`, `status: null`). Start them with `runTool(bin, args, { cwd })` or
+`runLocal(appDir, bin, args)` from `semi-new-app/scripts/setup.mjs`, never `spawnSync("npm" | pm, …)`: on Windows they
+run the package's JS entry (its package.json `bin`: `npm-cli.js` next to node, pnpm from the PATH folder that holds
+`pnpm.cmd`) with `process.execPath`, and fall back to the `.cmd` through cmd.exe only when no entry is found, saying
+so. A run that did not start (`status === null` or `error`) prints `could not run <bin>: <error>` and returns a
+non-zero status with `failed: true`. `lint/test/plugin-spawn.test.mjs` covers both branches and runs in the
+`windows` job too (#216).

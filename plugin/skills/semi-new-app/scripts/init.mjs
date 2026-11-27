@@ -3,7 +3,6 @@
 // touched: it adopts Semi with /semi-check (the foundation step there installs @semi/ui).
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
-import { spawnSync } from "node:child_process";
 import { discoverFrontendApps } from "../../semi-check/scripts/audit.mjs";
 import {
   detectPkgManager,
@@ -11,6 +10,7 @@ import {
   wireLintGate,
   resolveTargetSpec,
   runLocal,
+  runTool,
   installPackage,
   nextFontCode,
   semiFonts,
@@ -323,7 +323,7 @@ opts.typeScale ??= KINDS[opts.kind].typeScale;
 opts.theme ??= KINDS[opts.kind].theme;
 const cnaTag = opts.nextVersion && opts.nextVersion !== "keep" ? opts.nextVersion : "latest";
 console.log(`Scaffolding new Next.js (${cnaTag}) + Tailwind project in ${webDir}...`);
-const create = spawnSync(
+const create = runTool(
   "npx",
   ["--yes", `create-next-app@${cnaTag}`, ".", "--ts", "--tailwind", "--eslint", "--app", "--no-src-dir", "--import-alias", "@/*", "--use-npm", "--yes"],
   { cwd: webDir, stdio: "inherit" },
@@ -363,7 +363,7 @@ for (const c of wireLintGate(webDir)) console.log(`  ${c}`);
 
 const pm = detectPkgManager(webDir);
 console.log(`Installing @semi/ui (${spec}) with ${pm}...`);
-const inst = spawnSync(pm, pm === "npm" ? ["install", "--install-links"] : ["install"], { cwd: webDir, stdio: "inherit" });
+const inst = runTool(pm, pm === "npm" ? ["install", "--install-links"] : ["install"], { cwd: webDir });
 if (inst.status !== 0) process.exit(inst.status || 1);
 const installedVersion = installedSemiVersion(webDir);
 
@@ -398,7 +398,7 @@ console.log("\nRunning verification (semi-lint + tsc + next build)...");
 const failed = [
   runLocal(webDir, "semi-lint", []),
   runLocal(webDir, "tsc", ["--noEmit"]),
-  spawnSync(pm, ["run", "build"], { cwd: webDir, stdio: "inherit" }),
+  runTool(pm, ["run", "build"], { cwd: webDir }),
 ].some((r) => r.status !== 0);
 if (failed) process.exit(1);
 console.log(`\nNew Semi app (@semi/ui v${installedVersion}${brandKit ? `, brand ${brandKit.name}` : ""}, ${opts.kind}, theme ${opts.theme}) created and verified in ${webDir}`);

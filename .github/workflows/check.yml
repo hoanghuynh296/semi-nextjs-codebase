@@ -112,6 +112,9 @@ jobs:
       - name: "Token lookup without GH_TOKEN / GITHUB_TOKEN: a token or NO_TOKEN, never a throw"
         run: node --test lint/test/github-token.test.mjs
 
+      - name: "npm, pnpm and node_modules/.bin tools run through node (no .cmd, no shell); CHANGELOG headings (#216)"
+        run: node --test lint/test/plugin-spawn.test.mjs
+
   # The one required status (branch protection keeps the name `check`): fails when the build, any shard or windows fails or is
   # cancelled.
   check:

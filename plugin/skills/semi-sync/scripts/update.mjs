@@ -25,7 +25,7 @@ import {
   wireAgentsMd,
   wireBrand,
 } from "../../semi-new-app/scripts/setup.mjs";
-import { cmpVersion, runMigrations } from "./migrate.mjs";
+import { changelogBetween, cmpVersion, runMigrations } from "./migrate.mjs";
 
 let cwd = process.cwd();
 const argv = process.argv.slice(2);
@@ -42,18 +42,6 @@ const apps = discoverFrontendApps(cwd).filter((dir) => {
 if (!apps.length) {
   console.error(`Không có app nào dùng @semi/ui dưới ${cwd}. App có sẵn: /semi-check. App mới: /semi-new-app.`);
   process.exit(1);
-}
-
-/** CHANGELOG sections of the releases after `from` up to `to`. */
-function changelogBetween(text, from, to) {
-  const parts = text.split(/^(?=## \[)/m);
-  return parts
-    .filter((p) => {
-      const v = p.match(/^## \[(\d+\.\d+\.\d+)\]/)?.[1];
-      return v && (!from || cmpVersion(v, from) > 0) && cmpVersion(v, to) <= 0;
-    })
-    .join("")
-    .trim();
 }
 
 let exitCode = 0;
@@ -153,7 +141,14 @@ for (const appDir of apps) {
   // shrinks from here as it is fixed); any other growth of the baseline is refused by semi-lint and by semi-lint --ci.
   if (from && to && cmpVersion(to, from) > 0) {
     const b = runLocal(appDir, "semi-lint", ["--update-baseline", "--accept-new"]);
-    if (!b.skipped) console.log(`${name}: luật lint mới của ${to}: lỗi cũ được ghi vào semi-lint-baseline.json (sửa dần, baseline chỉ giảm)`);
+    if (b.failed) {
+      // runTool printed "could not run semi-lint: <error>": nothing was written.
+      exitCode = 1;
+      console.log(`${name}: semi-lint-baseline.json KHÔNG được ghi (semi-lint không chạy được). Tự chạy trong ${appDir}: npx semi-lint --update-baseline --accept-new`);
+    } else if (!b.skipped) {
+      console.log(`${name}: luật lint mới của ${to}: lỗi cũ được ghi vào semi-lint-baseline.json (sửa dần, baseline chỉ giảm)`);
+      if (b.status !== 0) console.log(`${name}: semi-lint còn báo lỗi ngoài baseline (ở trên): sửa bằng /semi-check.`);
+    }
   }
   if (runLocal(appDir, "tsc", ["--noEmit"]).status !== 0) exitCode = 1;
 }

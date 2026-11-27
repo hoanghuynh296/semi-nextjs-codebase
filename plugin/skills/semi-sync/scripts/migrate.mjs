@@ -13,6 +13,21 @@ export function cmpVersion(a, b) {
   return 0;
 }
 
+/** The release of a CHANGELOG heading: `## 1.2.0 - date`, `## 0.36.1 — date` (long dash) or `## [1.2.0]`; null for others. */
+export const changelogVersion = (heading) => heading.match(/^## \[?(\d+\.\d+\.\d+)\]?(?=[\s—-]|$)/)?.[1] ?? null;
+
+/** CHANGELOG sections of the releases after `from` (all when unknown) up to `to`; other sections (Unreleased) are left out. */
+export function changelogBetween(text, from, to) {
+  return text
+    .split(/^(?=## )/m)
+    .filter((p) => {
+      const v = changelogVersion(p);
+      return v && (!from || cmpVersion(v, from) > 0) && cmpVersion(v, to) <= 0;
+    })
+    .join("")
+    .trim();
+}
+
 /** Every migration module in dir (lib.mjs and _*.mjs are helpers), sorted by version then file name. */
 export async function loadMigrations(dir) {
   if (!existsSync(dir)) return [];
