@@ -15,25 +15,25 @@ export const headerPrimary = (enabled: boolean) =>
 
 /** Round pill buttons of the header centre (file badge, save). */
 export const HEADER_PILL =
-  "h-control flex items-center gap-2 bg-field hover:bg-raised active:scale-95 border border-line hover:border-outline-line rounded-full transition-hover outline-none focus-visible:ring-2 focus-visible:ring-focus text-body";
+  "h-control flex items-center gap-2 bg-field hover:bg-raised motion-safe:active:scale-[0.98] border border-line hover:border-outline-line rounded-full transition-hover outline-none focus-visible:ring-2 focus-visible:ring-focus text-body";
 
 /** Floating tool bar at the top centre of the 3D view (object tools). */
 export const VIEWPORT_TOOLBAR =
   "absolute top-2 sm:top-3 left-1/2 -translate-x-1/2 w-max max-w-[calc(100%-1rem)] flex items-center bg-panel/95 backdrop-blur-md border border-line p-1 sm:p-1.5 rounded-panel z-20 select-none shadow-float";
 /** A tool of that bar; add `VIEWPORT_TOOL_ON` when active. */
 export const VIEWPORT_TOOL =
-  "h-10 sm:h-11 min-w-10 sm:min-w-11 px-2 rounded-card text-muted hover:text-strong bg-transparent hover:bg-raised border border-transparent hover:border-line active:scale-95 transition-hover outline-none focus-visible:ring-2 focus-visible:ring-focus flex items-center justify-center gap-1.5 text-ui font-medium cursor-pointer disabled:opacity-30 disabled:pointer-events-none";
+  "h-10 sm:h-11 min-w-10 sm:min-w-11 px-2 rounded-card text-muted hover:text-strong bg-transparent hover:bg-raised border border-transparent hover:border-line motion-safe:active:scale-[0.98] transition-hover outline-none focus-visible:ring-2 focus-visible:ring-focus flex items-center justify-center gap-1.5 text-ui font-medium cursor-pointer disabled:opacity-30 disabled:pointer-events-none";
 export const VIEWPORT_TOOL_ON = "bg-raised !border-strong text-strong";
 
 /** Undo / redo pill at the bottom centre of the 3D view. */
 export const VIEWPORT_PILL =
   "absolute bottom-4 left-1/2 -translate-x-1/2 z-20 pointer-events-auto flex items-center bg-panel/95 border border-line backdrop-blur-md rounded-panel p-1 gap-1 select-none shadow-float";
 export const VIEWPORT_PILL_BTN =
-  "w-10 h-10 sm:w-11 sm:h-11 rounded-card text-muted hover:text-strong hover:bg-raised flex items-center justify-center transition-hover outline-none focus-visible:ring-2 focus-visible:ring-focus active:scale-95 disabled:opacity-30 disabled:pointer-events-none";
+  "w-10 h-10 sm:w-11 sm:h-11 rounded-card text-muted hover:text-strong hover:bg-raised flex items-center justify-center transition-hover outline-none focus-visible:ring-2 focus-visible:ring-focus motion-safe:active:scale-[0.98] disabled:opacity-30 disabled:pointer-events-none";
 
 /** Round view button at the bottom left of the 3D view (fit the model). */
 export const VIEWPORT_ROUND_BTN =
-  "w-10 h-10 rounded-full bg-panel/90 border border-line backdrop-blur-md text-muted hover:text-strong hover:border-line-hover flex items-center justify-center transition-hover outline-none focus-visible:ring-2 focus-visible:ring-focus active:scale-95 shadow-float";
+  "w-10 h-10 rounded-full bg-panel/90 border border-line backdrop-blur-md text-muted hover:text-strong hover:border-line-hover flex items-center justify-center transition-hover outline-none focus-visible:ring-2 focus-visible:ring-focus motion-safe:active:scale-[0.98] shadow-float";
 
 /** Info badge at the bottom right of the 3D view (size, count). */
 export const VIEWPORT_BADGE =

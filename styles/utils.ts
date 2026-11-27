@@ -10,6 +10,12 @@ export function cn(...parts: Array<string | false | null | undefined | 0>): stri
 export const FOCUS_RING =
   "outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-1 focus-visible:ring-offset-panel";
 
+/** Press feedback of a button or a control (#218): it shrinks to 98% while pressed, in the hover timing (transition-hover
+ * carries `scale`). Only where motion is welcome (`motion-safe:`), so reduced motion keeps it still. Buttons, icon
+ * buttons, chips, toggles, checkboxes and switches only: never a row, a card or a list item (a large surface that shrinks
+ * looks broken); those press with their hover fill (`active:bg-item-hover`, see PRESSABLE). */
+export const PRESS = "motion-safe:active:scale-[0.98]";
+
 /** The click area of a control drawn smaller than 24px (a dot, a thumb, a text button in a line): at least 24 × 24 px
  * around its centre (WCAG 2.5.8), 44 × 44 px on a touch screen, from a pseudo-element, so the visible size and the
  * layout stay. The control needs `relative` (or another position) and no ::before of its own. */

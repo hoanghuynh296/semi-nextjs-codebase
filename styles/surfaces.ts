@@ -1,4 +1,5 @@
 // Shared surface classes (docs/DESIGN_SYSTEM.md §5, §13, §15). Use these instead of re-typing them.
+import { FOCUS_RING } from "./utils";
 
 /** Content card (C-030): the card surface (bg-card: dark one step above the panel, light recessed one step below the
  * app), separated by tone, no visible border in Flat and Soft (the style's card border, radius and resting shadow; Sharp
@@ -8,11 +9,20 @@ export const CARD = "bg-card border-card rounded-card shadow-card min-w-0";
 /** Bordered card for dense data views (a table or a list of rows that needs a frame): the panel fill and a 1px line, the look of CARD before 0.36. */
 export const CARD_BORDERED = "bg-panel border border-line rounded-card shadow-card min-w-0";
 
-/** Clickable card (opens a detail view): the border shows on hover. */
-export const CARD_HOVER = `${CARD} hover:border-line-hover active:scale-[0.99] transition-hover`;
+/** Clickable card (opens a detail view): the border shows on hover and while pressed (a card never shrinks, #218). */
+export const CARD_HOVER = `${CARD} hover:border-line-hover active:border-line-hover transition-hover`;
 
 /** Clickable bordered card. */
-export const CARD_BORDERED_HOVER = `${CARD_BORDERED} hover:border-line-hover active:scale-[0.99] transition-hover`;
+export const CARD_BORDERED_HOVER = `${CARD_BORDERED} hover:border-line-hover active:border-line-hover transition-hover`;
+
+/**
+ * An app's own clickable tile, row or list item (#218): the hover fill in the hover timing (transition-hover), the same
+ * fill while pressed (touch screens have no hover), the keyboard focus ring and the pointer. No press scale: a surface
+ * never shrinks (buttons and controls use PRESS). Add the shape and padding at the call site; a <button> or a link,
+ * never a <div onClick>.
+ *   <button type="button" className={`${PRESSABLE} rounded-card p-3 text-left`}>…</button>
+ */
+export const PRESSABLE = `transition-hover hover:bg-item-hover active:bg-item-hover cursor-pointer ${FOCUS_RING}`;
 
 /** Plain hero panel at the top of a page, on the card surface. No glow (docs/DESIGN_SYSTEM.md, "Flat, no glow, no gradients"). */
 export const HERO = "relative overflow-hidden rounded-panel border-card bg-card shadow-card p-card sm:p-panel";
@@ -68,13 +78,13 @@ export const EMPTY_PHONE_CAP = "max-sm:p-4 max-sm:gap-2 max-sm:max-h-[40svh] max
 
 /** Square icon-only action button in a card header (edit, delete, more). */
 export const ICON_BTN =
-  "w-7 h-7 rounded-control flex items-center justify-center text-muted hover:text-strong bg-tint hover:bg-tint-hover transition-hover outline-none focus-visible:ring-2 focus-visible:ring-focus active:scale-95";
+  "w-7 h-7 rounded-control flex items-center justify-center text-muted hover:text-strong bg-tint hover:bg-tint-hover transition-hover outline-none focus-visible:ring-2 focus-visible:ring-focus motion-safe:active:scale-[0.98]";
 export const ICON_BTN_DANGER =
-  "w-7 h-7 rounded-control flex items-center justify-center text-muted hover:text-danger-fg bg-tint hover:bg-danger-bg active:bg-danger-border transition-hover outline-none focus-visible:ring-2 focus-visible:ring-focus active:scale-95";
+  "w-7 h-7 rounded-control flex items-center justify-center text-muted hover:text-danger-fg bg-tint hover:bg-danger-bg active:bg-danger-border transition-hover outline-none focus-visible:ring-2 focus-visible:ring-focus motion-safe:active:scale-[0.98]";
 
 /** Close button in modal headers: visible background pill with clear contrast, easily tappable on dark backgrounds; 44px on a touch phone (BTN_HIT). */
 export const MODAL_CLOSE =
-  "w-9 h-9 sm:w-8 sm:h-8 pointer-coarse:max-sm:min-h-11 pointer-coarse:max-sm:min-w-11 rounded-full bg-tint hover:bg-tint-hover text-muted hover:text-strong flex items-center justify-center transition-hover outline-none focus-visible:ring-2 focus-visible:ring-focus active:scale-95 shrink-0";
+  "w-9 h-9 sm:w-8 sm:h-8 pointer-coarse:max-sm:min-h-11 pointer-coarse:max-sm:min-w-11 rounded-full bg-tint hover:bg-tint-hover text-muted hover:text-strong flex items-center justify-center transition-hover outline-none focus-visible:ring-2 focus-visible:ring-focus motion-safe:active:scale-[0.98] shrink-0";
 
 /** Status pill (device state, job result): coloured 15% fill + 300 text. */
 export const STATUS_PILL = "inline-flex items-center gap-1.5 h-6 px-2 rounded-full text-chrome font-medium whitespace-nowrap";

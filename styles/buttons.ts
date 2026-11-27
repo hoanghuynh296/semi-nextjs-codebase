@@ -5,11 +5,12 @@
 /**
  * What every variant shares: content text (text-ui, 14px), hover in 150ms (transition-hover = --motion-hover), a 2px
  * focus outline (outline-focus, the strong text colour, as on fields), a neutral disabled look for every variant
- * (brand ones too). Not `relative` (Button adds it for the corner badge unless its className positions it) and not
+ * (brand ones too), and one press (PRESS: 98% while pressed, still under reduced motion) for every variant
+ * (#218). Not `relative` (Button adds it for the corner badge unless its className positions it) and not
  * BTN_HIT: Button adds the phone touch size; a BTN_* on a Link adds BTN_HIT itself.
  */
 const CORE =
-  "inline-flex items-center justify-center gap-1.5 rounded-control font-medium transition-hover outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus cursor-pointer shrink-0 whitespace-nowrap " +
+  "inline-flex items-center justify-center gap-1.5 rounded-control font-medium transition-hover motion-safe:active:scale-[0.98] outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus cursor-pointer shrink-0 whitespace-nowrap " +
   "disabled:cursor-not-allowed disabled:!bg-subtle-button disabled:!text-muted disabled:!border-transparent disabled:active:!scale-100";
 const BASE = `${CORE} h-control text-ui`;
 
@@ -20,7 +21,7 @@ export const BTN_SUBTLE = `${BASE} px-3 bg-subtle-button hover:bg-tint-hover tex
 export const BTN_SURFACE = `${BASE} px-3 bg-raised hover:bg-raised-2 text-strong`;
 
 /** Main action of a card or of a list page's title row (Thêm, Xem): the strong text colour as the fill. */
-export const BTN_INVERSE = `${BASE} px-3 bg-inverted hover:bg-inverted-hover text-on-inverted active:scale-[0.98]`;
+export const BTN_INVERSE = `${BASE} px-3 bg-inverted hover:bg-inverted-hover text-on-inverted`;
 
 /** Secondary action beside an inverse one (Chia sẻ): transparent with a 1px outline-line. */
 export const BTN_OUTLINE = `${BASE} px-3 bg-transparent border border-outline-line hover:bg-item-hover text-strong`;
@@ -29,13 +30,13 @@ export const BTN_OUTLINE = `${BASE} px-3 bg-transparent border border-outline-li
 export const BTN_GHOST = `${BASE} px-3 bg-transparent hover:bg-item-hover text-body hover:text-strong`;
 
 /** The one main button of a page, a dialog (its commit: Gửi, Lưu) or the nav: the brand primary fill. */
-export const BTN_PRIMARY = `${BASE} px-3 bg-primary hover:bg-primary-hover text-on-primary active:scale-[0.98]`;
+export const BTN_PRIMARY = `${BASE} px-3 bg-primary hover:bg-primary-hover text-on-primary`;
 
 /** A second brand main button: the brand secondary fill (the primary when the brand has none). */
-export const BTN_SECONDARY = `${BASE} px-3 bg-secondary hover:bg-secondary-hover text-on-secondary active:scale-[0.98]`;
+export const BTN_SECONDARY = `${BASE} px-3 bg-secondary hover:bg-secondary-hover text-on-secondary`;
 
 /** Destructive action (Dừng in, Xoá): solid red (danger-fill, hover danger-fill-hover) with white text (on-solid), AA in both themes (#189). */
-export const BTN_DANGER = `${BASE} px-3 bg-danger-fill hover:bg-danger-fill-hover text-on-solid active:scale-[0.98]`;
+export const BTN_DANGER = `${BASE} px-3 bg-danger-fill hover:bg-danger-fill-hover text-on-solid`;
 
 /** The quieter destructive look (the danger status tint + line, danger text): the pre-#189 `danger`, for a destructive action that is not the main one. */
 export const BTN_DANGER_SUBTLE = `${BASE} px-3 bg-danger-bg hover:bg-danger-bg-hover border border-danger-border text-danger-fg`;
@@ -61,14 +62,14 @@ const MODAL_BASE = `${CORE} max-sm:h-11 sm:h-control px-4 sm:px-3 max-sm:text-le
 
 /** Surface / inverse / ghost at dialog size. */
 export const MODAL_BTN_SURFACE = `${MODAL_BASE} bg-raised hover:bg-raised-2 text-strong`;
-export const MODAL_BTN_INVERSE = `${MODAL_BASE} bg-inverted hover:bg-inverted-hover text-on-inverted active:scale-[0.98]`;
+export const MODAL_BTN_INVERSE = `${MODAL_BASE} bg-inverted hover:bg-inverted-hover text-on-inverted`;
 export const MODAL_BTN_GHOST = `${MODAL_BASE} bg-transparent hover:bg-item-hover text-body hover:text-strong`;
 
 /** Commit action of a dialog (Lưu, In lại, Gửi lệnh): the brand primary. */
-export const MODAL_BTN_PRIMARY = `${MODAL_BASE} bg-primary hover:bg-primary-hover text-on-primary active:scale-[0.98]`;
+export const MODAL_BTN_PRIMARY = `${MODAL_BASE} bg-primary hover:bg-primary-hover text-on-primary`;
 
 /** Second brand action of a dialog: the brand secondary. */
-export const MODAL_BTN_SECONDARY = `${MODAL_BASE} bg-secondary hover:bg-secondary-hover text-on-secondary active:scale-[0.98]`;
+export const MODAL_BTN_SECONDARY = `${MODAL_BASE} bg-secondary hover:bg-secondary-hover text-on-secondary`;
 
 /** Cancel / close in a dialog (Huỷ, Đóng): subtle. */
 export const MODAL_BTN_SUBTLE = `${MODAL_BASE} bg-subtle-button hover:bg-tint-hover text-strong`;
@@ -77,10 +78,10 @@ export const MODAL_BTN_SUBTLE = `${MODAL_BASE} bg-subtle-button hover:bg-tint-ho
 export const MODAL_BTN_OUTLINE = `${MODAL_BASE} bg-transparent border border-outline-line hover:bg-item-hover text-strong`;
 
 /** Destructive confirm in a dialog (Xoá, Dừng in): solid red with white text (AA in both themes, #189). */
-export const MODAL_BTN_DANGER = `${MODAL_BASE} bg-danger-fill hover:bg-danger-fill-hover text-on-solid active:scale-[0.98]`;
+export const MODAL_BTN_DANGER = `${MODAL_BASE} bg-danger-fill hover:bg-danger-fill-hover text-on-solid`;
 
 /** The quieter destructive look at dialog size (danger tint + line, danger text): the pre-#189 MODAL_BTN_DANGER. */
-export const MODAL_BTN_DANGER_SUBTLE = `${MODAL_BASE} bg-danger-bg hover:bg-danger-bg-hover border border-danger-border text-danger-fg active:scale-[0.98]`;
+export const MODAL_BTN_DANGER_SUBTLE = `${MODAL_BASE} bg-danger-bg hover:bg-danger-bg-hover border border-danger-border text-danger-fg`;
 
 /**
  * 44px touch target on a phone with a touch screen (`pointer-coarse` + `max-sm`): the button itself grows to at least
