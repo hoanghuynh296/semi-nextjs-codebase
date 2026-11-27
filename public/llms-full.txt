@@ -260,7 +260,7 @@ control drawn under 24px gets `HIT_AREA` · UI text in shared components comes f
   - `buttons.ts` (1.0 variants): `BTN_SUBTLE` (default), `BTN_SURFACE`, `BTN_INVERSE` (a card's / list title row's main action), `BTN_OUTLINE`, `BTN_GHOST`, `BTN_PRIMARY` / `BTN_SECONDARY` (brand: the one main button of a page, dialog or nav), `BTN_DANGER` (solid red), `BTN_DANGER_SUBTLE` (the danger tint), `BTN_ICON`, `BTN_LG` (40px: the one CTA of a page header), `BTN_SM`, `BTN_XS`, `BTN_PILL` (24px pill), `MODAL_BTN_*` (`MODAL_BTN_SUBTLE` for cancel). Attention: `CountBadge` / Button `badge` (brand fill, 99+), `NewTag` ("Mới").
   - `appChrome.ts`: `HEADER_ICON_*`, `headerPrimary`, `HEADER_PILL`, `VIEWPORT_*`.
   - `utils.ts`: `cn`, `FOCUS_RING`, `PRESS` (the press of a button or control: `motion-safe:active:scale-[0.98]`), `HIT_AREA`, `SEGMENT_ON`, `OVERLAY`.
-- **Hover & press (§4g, #218):** hover in 150ms (`transition-hover`), shown on any device with a hovering pointer (`hover:` follows `any-hover` in `base.css`: an iPad with a trackpad gets hover). Buttons and controls press with `PRESS` (98%, still under reduced motion); rows, cards, list items and tiles never shrink, they keep their hover fill while pressed (`PRESSABLE` for an app's own tile on a link). Never hand-write `active:scale-*` or `duration-*` on a control.
+- **Hover & press (§4g, #218):** hover in 150ms (`transition-hover`), shown on any device with a hovering pointer (`hover:` follows `any-hover` in `base.css`: an iPad with a trackpad gets hover). Buttons and controls press with `PRESS` (98%, still under reduced motion); rows, cards, list items and tiles never shrink, they keep their hover fill while pressed (`PRESSABLE` for an app's own tile on a link). Never hand-write `active:scale-*` or `duration-*` on a control (`hand-press`, warning).
 
 **Not the generic AI screen (§19):** one main block per screen (`KpiCard featured`, not four equal cards) · KPI icons
 neutral, colour only for a status (`decorative-icon-tones`) · no three feature cards with icons and vague promises: proof
@@ -942,7 +942,7 @@ Semi wires T1's motion tokens (`TOKENS.md` "Motion": `--motion-hover`, `--motion
   `PillTabs` and `SegmentedControl` do not shrink: their sliding indicator is the feedback. Fields (`CustomSelect` /
   `CustomCombobox` triggers) do not shrink either. An app's own clickable tile or row on a link: `PRESSABLE`
   (`transition-hover hover:bg-item-hover active:bg-item-hover cursor-pointer` + `FOCUS_RING`). Never hand-write
-  `active:scale-*` or `duration-*` on a control.
+  `active:scale-*` or `duration-*` on a control (lint `hand-press`, warning).
 - **Page enter (`PageEnter` / `<Page enter>`):** top blocks and the first ~10 rows / cards (`tbody > tr`,
   `[role="listitem"]`, `[data-page-grid] > *`, `[data-motion-item]`, `Item`) rise in with `motion-enter` (400ms,
   opacity + 4px) and `motion-stagger` (35ms per item), **once per route** (keyed by pathname — never on filter, search,

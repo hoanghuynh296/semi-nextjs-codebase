@@ -71,7 +71,7 @@ export function SearchInput({
         onClick={handleOpen}
         aria-label={label || placeholder}
         title={label || placeholder}
-        className="w-control h-control pointer-coarse:max-sm:min-h-11 pointer-coarse:max-sm:min-w-11 rounded-control bg-field border border-field-line hover:bg-item-hover text-muted hover:text-strong flex items-center justify-center transition-hover outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus active:scale-95 shrink-0"
+        className="w-control h-control pointer-coarse:max-sm:min-h-11 pointer-coarse:max-sm:min-w-11 rounded-control bg-field border border-field-line hover:bg-item-hover text-muted hover:text-strong flex items-center justify-center transition-hover outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus motion-safe:active:scale-[0.98] shrink-0"
       >
         <Icon name="search" className="w-3.5 h-3.5" />
       </button>

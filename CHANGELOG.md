@@ -6,7 +6,7 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ### Added
 
-- **`PRESSABLE` and `PRESS` in `@semi/ui/styles` (#218):** `PRESSABLE` (`surfaces.ts`) for an app's own clickable tile or row on a link: `transition-hover hover:bg-item-hover active:bg-item-hover cursor-pointer` + `FOCUS_RING`, no shrink. `PRESS` (`utils.ts`, `motion-safe:active:scale-[0.98]`) is the one press of a button or control. New Button example "Hover and press" (light and dark on the docs site).
+- **`PRESSABLE` and `PRESS` in `@semi/ui/styles` (#218):** `PRESSABLE` (`surfaces.ts`) for an app's own clickable tile or row on a link: `transition-hover hover:bg-item-hover active:bg-item-hover cursor-pointer` + `FOCUS_RING`, no shrink. `PRESS` (`utils.ts`, `motion-safe:active:scale-[0.98]`) is the one press of a button or control. New Button example "Hover and press" (light and dark on the docs site). New semi-lint warning `hand-press`: a hand-written `active:scale-*` (use `PRESS`; rows and tiles: `PRESSABLE`); a warning only, never a hard error.
 
 ### Changed
 

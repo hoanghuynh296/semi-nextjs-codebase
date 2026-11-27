@@ -536,7 +536,7 @@ Semi wires T1's motion tokens (`TOKENS.md` "Motion": `--motion-hover`, `--motion
   `PillTabs` and `SegmentedControl` do not shrink: their sliding indicator is the feedback. Fields (`CustomSelect` /
   `CustomCombobox` triggers) do not shrink either. An app's own clickable tile or row on a link: `PRESSABLE`
   (`transition-hover hover:bg-item-hover active:bg-item-hover cursor-pointer` + `FOCUS_RING`). Never hand-write
-  `active:scale-*` or `duration-*` on a control.
+  `active:scale-*` or `duration-*` on a control (lint `hand-press`, warning).
 - **Page enter (`PageEnter` / `<Page enter>`):** top blocks and the first ~10 rows / cards (`tbody > tr`,
   `[role="listitem"]`, `[data-page-grid] > *`, `[data-motion-item]`, `Item`) rise in with `motion-enter` (400ms,
   opacity + 4px) and `motion-stagger` (35ms per item), **once per route** (keyed by pathname — never on filter, search,
