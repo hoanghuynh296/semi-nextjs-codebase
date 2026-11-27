@@ -1,0 +1,6 @@
+{
+  // src/ and styles/ type-checked as a Cloudflare Workers app sees them (DOM + the Workers global Element), ds#214.
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "incremental": false, "plugins": [] },
+  "include": ["src", "styles", "tests/types/workers-element.d.ts"]
+}
