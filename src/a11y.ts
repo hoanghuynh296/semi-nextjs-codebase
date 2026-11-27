@@ -20,7 +20,7 @@ const hasPhysicalKeyboard = () =>
  * so touch phones keep their on-screen keyboard closed. Does nothing when focus already sits in a field inside `root`.
  * Useful after a tab change inside a settings page. Returns `true` if a field was focused.
  */
-export function focusFirstField(root: ParentNode | null): boolean {
+export function focusFirstField(root: Element | Document | DocumentFragment | null): boolean {
   if (!root || !hasPhysicalKeyboard()) return false;
   const active = document.activeElement;
   if (active instanceof HTMLElement && (root as Node).contains(active) && (active.matches(FIRST_FIELD) || active.isContentEditable)) return false;

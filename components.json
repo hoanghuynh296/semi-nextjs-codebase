@@ -3261,11 +3261,18 @@
       "summary": ""
     },
     {
+      "name": "useOptionalTheme",
+      "kind": "hook",
+      "module": "src/ThemeProvider.tsx",
+      "client": true,
+      "summary": "Internal (not in index.ts): the theme, or null outside a ThemeProvider. For a component whose theme part is optional (AccountMenu's `theme`), so an app that owns its theme can still render it (ds#215)."
+    },
+    {
       "name": "useThemeChoices",
       "kind": "hook",
       "module": "src/ThemeProvider.tsx",
       "client": true,
-      "summary": "The three choices as Menu radio items (`menuitemradio`; the menu opens on the current one), the current one `checked` (none until the stored theme is known)."
+      "summary": "The three choices as Menu radio items (`menuitemradio`; the menu opens on the current one), the current one `checked` (none until the stored theme is known). Needs a ThemeProvider."
     },
     {
       "name": "useThemeUtility",
@@ -3408,6 +3415,13 @@
       "module": "src/TaskHost.tsx",
       "client": true,
       "summary": "Show the blocking task overlay. Starting a task while one runs replaces it; the old handle then does nothing. For work the user can keep going during, use an inline Progress or a toast instead."
+    },
+    {
+      "name": "themeChoices",
+      "kind": "function",
+      "module": "src/ThemeProvider.tsx",
+      "client": true,
+      "summary": "The theme choices of a given theme context (pure, so a component may skip them without a conditional hook call)."
     },
     {
       "name": "themeScript",
@@ -3816,6 +3830,13 @@
       "module": "src/Table.tsx",
       "client": false,
       "summary": "A clickable row: the hover fill, also while pressed (touch screens have no hover); a row never shrinks (#218)."
+    },
+    {
+      "name": "ThemeContext",
+      "kind": "constant",
+      "module": "src/ThemeProvider.tsx",
+      "client": true,
+      "summary": "Internal (not in index.ts): the provider's context. tests/prerender-app clears it to render a screen as an app without ThemeProvider."
     },
     {
       "name": "TOAST_NAV_GRACE",

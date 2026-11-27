@@ -20,7 +20,8 @@ export interface ThemeContextValue {
   toggleTheme: () => void;
 }
 
-const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
+/** Internal (not in index.ts): the provider's context. tests/prerender-app clears it to render a screen as an app without ThemeProvider. */
+export const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 export interface ThemeProviderProps extends ThemeOptions {
   children: React.ReactNode;
@@ -115,6 +116,14 @@ export function useTheme(): ThemeContextValue {
   return context;
 }
 
+/**
+ * Internal (not in index.ts): the theme, or null outside a ThemeProvider. For a component whose theme part is optional
+ * (AccountMenu's `theme`), so an app that owns its theme can still render it (ds#215).
+ */
+export function useOptionalTheme(): ThemeContextValue | null {
+  return useContext(ThemeContext) ?? null;
+}
+
 export interface ThemeToggleProps {
   className?: string;
   size?: "sm" | "md";
@@ -146,15 +155,19 @@ const THEME_OPTIONS = [
   { key: "system", icon: "monitor" },
 ] as const;
 
-/** The three choices as Menu radio items (`menuitemradio`; the menu opens on the current one), the current one `checked` (none until the stored theme is known). */
-export function useThemeChoices(labelsProp?: Record<Theme, string>) {
-  const t = useSemiLocale();
+/** The theme choices of a given theme context (pure, so a component may skip them without a conditional hook call). */
+export function themeChoices({ theme, mounted, setTheme }: ThemeContextValue, t: ReturnType<typeof useSemiLocale>, labelsProp?: Record<Theme, string>) {
   const labels = labelsProp ?? { light: t.themeLight, dark: t.themeDark, system: t.themeSystem };
-  const { theme, mounted, setTheme } = useTheme();
   const items: MenuItem[] = THEME_OPTIONS.map(({ key, icon }) => ({ label: labels[key], icon, radio: true, checked: mounted && theme === key, onSelect: () => setTheme(key) }));
   // the chosen mode's icon; hidden until the stored theme is read, so it never swaps after hydration
   const icon: IconName = THEME_OPTIONS.find((o) => o.key === theme)?.icon ?? "sun";
   return { items, icon, label: t.theme, mounted };
+}
+
+/** The three choices as Menu radio items (`menuitemradio`; the menu opens on the current one), the current one `checked` (none until the stored theme is known). Needs a ThemeProvider. */
+export function useThemeChoices(labelsProp?: Record<Theme, string>) {
+  const t = useSemiLocale();
+  return themeChoices(useTheme(), t, labelsProp);
 }
 
 /**

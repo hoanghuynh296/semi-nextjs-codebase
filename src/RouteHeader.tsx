@@ -9,7 +9,7 @@ import { Icon, type IconName } from "./Icon";
 import { LetterAvatar } from "./Feedback";
 import { Menu, Tooltip, type MenuItem } from "./Overlay";
 import { useSemiLocale } from "./locale";
-import { useThemeChoices } from "./ThemeProvider";
+import { themeChoices, useOptionalTheme } from "./ThemeProvider";
 import { cn, FOCUS_RING } from "../styles/utils";
 
 /** One crumb of the route header. Every crumb is muted; the last is the current page and needs no `href`. */
@@ -31,7 +31,12 @@ export interface ShellAccount {
   items?: MenuItem[];
   /** Adds the last item, "Đăng xuất" (locale `signOut`), after a divider. */
   onSignOut?: () => void;
-  /** Light / Dark / System as radio items at the top (default true). Turn off only when the app pins one theme. */
+  /**
+   * Light / Dark / System as radio items at the top (default true), from Semi's `ThemeProvider`. `false`: no theme
+   * choices and no theme read, so the menu also works without a ThemeProvider: an app that pins one theme, or owns its
+   * theme (a cookie the server reads, next-themes) and puts its own radio items (`radio`, `checked`) in `items`.
+   * `true` without a ThemeProvider shows no choices and warns in development.
+   */
   theme?: boolean;
 }
 
@@ -61,12 +66,19 @@ export function useRecordCrumb(label: string | null | undefined) {
  */
 export function AccountMenu({ name, detail, avatarSrc, items = [], onSignOut, theme = true }: ShellAccount) {
   const t = useSemiLocale();
-  const choices = useThemeChoices();
+  // no hook depends on `theme`: the context is read either way (null without a provider), the choices only when asked
+  const ctx = useOptionalTheme();
+  const choices = theme && ctx ? themeChoices(ctx, t) : null;
+  const missing = theme && !ctx;
+  useEffect(() => {
+    if (missing && typeof process !== "undefined" && process.env.NODE_ENV !== "production")
+      console.warn("@semi/ui AccountMenu: theme is on but there is no <ThemeProvider>, so the menu shows no theme choices. Wrap the app in ThemeProvider, or pass theme: false (and your own radio items in items).");
+  }, [missing]);
   const label = `${t.account}: ${name}`;
   const all: MenuItem[] = [
-    ...(theme ? choices.items.map((it) => ({ ...it, group: choices.label })) : []),
-    ...items.map((it, i) => (i === 0 && theme ? { ...it, separator: true } : it)),
-    ...(onSignOut ? [{ label: t.signOut, icon: "logout" as IconName, onSelect: onSignOut, separator: theme || items.length > 0 }] : []),
+    ...(choices ? choices.items.map((it) => ({ ...it, group: choices.label })) : []),
+    ...items.map((it, i) => (i === 0 && choices ? { ...it, separator: true } : it)),
+    ...(onSignOut ? [{ label: t.signOut, icon: "logout" as IconName, onSelect: onSignOut, separator: !!choices || items.length > 0 }] : []),
   ];
   return (
     <Menu data-semi="AccountMenu"

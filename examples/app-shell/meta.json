@@ -41,7 +41,7 @@
     "Page items take an href: they stay next/link links even when onSelect is set (onSelect then only reports the click). Never route with onSelect + router.push (shell-nav-href).",
     "Never gate the shell behind a page skeleton (shell-gate): a route loading.tsx next to the layout shimmers the content only, and the boot / session check before the layout is known renders BootLoader once in the layout. A page never renders AppShell or imports a component that does (app-shell-in-page).",
     "Top to bottom: logo + collapse, mainAction (the one brand-filled button: label + icon, a Menu with items), primaryCta (an optional quiet launcher), sections, pinned, then tools (32×32 icons with a count) and toolsMenu (•••).",
-    "header: crumbs (default from the active item; useRecordCrumb(label) in a detail page adds its record), middle (search field; hidden below md), banner (a RouteHeaderBanner announcement: the header's centre from md, the first row of the content below md), actions (32×32 ghost icon buttons) and account ({ name, detail, items, onSignOut }: the theme is in that menu); left / right replace the trail / actions + account. The three slot containers are always rendered, so closing a banner never moves the right group. header={false} drops the row.",
+    "header: crumbs (default from the active item; useRecordCrumb(label) in a detail page adds its record), middle (search field; hidden below md), banner (a RouteHeaderBanner announcement: the header's centre from md, the first row of the content below md), actions (32×32 ghost icon buttons) and account ({ name, detail, items, onSignOut }: the theme is in that menu, from ThemeProvider; an app that owns its theme passes theme: false and its own radio items in items, and then needs no ThemeProvider); left / right replace the trail / actions + account. The three slot containers are always rendered, so closing a banner never moves the right group. header={false} drops the row.",
     "Slots (mainAction, header.left / middle / actions / account / right) are an element or a function of { collapsed, rail } rendered as one stable component: it may call hooks and keeps its state across a collapse, a resize and a route change. rail is exact after mount only.",
     "railBelow (default 1280, at least 1024) sets where the nav starts expanded; between md and lg it is always the rail. railWidth (default 72) sets the rail width.",
     "page=\"fixed\": the card does not scroll; give the page h-full min-h-0 flex flex-col and let its panels scroll. flush: no centred max-width container or padding.",
@@ -82,6 +82,12 @@
       "title": "Sub-items",
       "preview": "none",
       "description": "A mailbox with folders as sub-items, and the page's own folder picker when the sidebar cannot show them."
+    },
+    {
+      "file": "own-theme",
+      "title": "The app's own theme in the account menu",
+      "preview": "none",
+      "description": "An app that keeps its own theme (a cookie the server reads) and no ThemeProvider: theme: false, and its Light / Dark / System radios in the account items."
     }
   ]
 }
