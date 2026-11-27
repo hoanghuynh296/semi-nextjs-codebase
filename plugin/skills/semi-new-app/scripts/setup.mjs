@@ -582,7 +582,7 @@ export function installPackage(appDir, spec) {
   const pkgPath = join(appDir, "package.json");
   const before = JSON.parse(readFileSync(pkgPath, "utf8"));
   const { pm, args, cmd } = addPackageCommand(appDir, resolved);
-  const res = spawnSync(pm, args, { cwd: appDir, stdio: "inherit" });
+  const res = runTool(pm, args, { cwd: appDir });
   if (res.status !== 0) {
     console.error(installFailHint(cmd, appDir));
     return { ok: false, spec: resolved, cmd };
@@ -695,7 +695,7 @@ export function installSemiUi(appDir, spec) {
   // upgrade to a new tag would silently stay on the old one. Run in the app folder so a workspace lockfile is updated.
   const dev = Boolean(pkg.devDependencies?.["@semi/ui"]);
   const { pm, args, cmd } = addPackageCommand(appDir, `@semi/ui@${spec}`, { dev });
-  const res = spawnSync(pm, args, { cwd: appDir, stdio: "inherit" });
+  const res = runTool(pm, args, { cwd: appDir });
   if (res.status !== 0) {
     // Put package.json back: with @semi/ui listed but not installed, the next run would think the step is done.
     writeFileSync(pkgPath, before);
@@ -719,5 +719,80 @@ export function runLocal(appDir, bin, args) {
     console.log(`(${bin} is not installed in ${appDir}: skipped)`);
     return { status: 0, skipped: true };
   }
-  return spawnSync(p, args, { cwd: appDir, stdio: "inherit" });
+  return runTool(bin, args, { cwd: appDir, local: true });
+}
+
+/** The JS file a package in `nodeModules` declares for `bin` (its package.json "bin"), or null. */
+export function binEntry(nodeModules, bin) {
+  const pkgDirs = [join(nodeModules, bin)];
+  let names = [];
+  try {
+    names = readdirSync(nodeModules);
+  } catch {
+    return null;
+  }
+  for (const n of names) {
+    if (n.startsWith(".")) continue;
+    if (!n.startsWith("@")) pkgDirs.push(join(nodeModules, n));
+    else {
+      try {
+        for (const s of readdirSync(join(nodeModules, n))) pkgDirs.push(join(nodeModules, n, s));
+      } catch {}
+    }
+  }
+  for (const dir of pkgDirs) {
+    let pkg;
+    try {
+      pkg = JSON.parse(readFileSync(join(dir, "package.json"), "utf8"));
+    } catch {
+      continue;
+    }
+    const rel = typeof pkg.bin === "string" ? (String(pkg.name).split("/").pop() === bin ? pkg.bin : null) : pkg.bin?.[bin];
+    if (rel && existsSync(join(dir, rel))) return join(dir, rel);
+  }
+  return null;
+}
+
+/**
+ * How to start `bin` with no shell (docs/PLUGIN.md): { file, args, via, verbatim }. Elsewhere the program itself (from
+ * the app's node_modules/.bin when `appDir` is given). On Windows npm, npx, pnpm, yarn and the .bin entries are .cmd
+ * shims, which Node refuses to spawn without a shell since CVE-2024-27980 (EINVAL, status null): run the package's JS
+ * entry with this Node instead. A local bin comes from the app's node_modules; a package manager from the PATH folder
+ * that holds `<bin>.cmd` (npm keeps its global packages in <that folder>/node_modules), then from the folder of node
+ * itself (the npm, npx and corepack pnpm / yarn that ship with Node). Only when no entry is found does the .cmd run
+ * through cmd.exe (via "cmd"; runTool says so).
+ */
+export function commandFor(bin, args, { appDir = null, platform = process.platform, env = process.env, execPath = process.execPath } = {}) {
+  if (platform !== "win32") return { file: appDir ? join(appDir, "node_modules", ".bin", bin) : bin, args, via: "direct" };
+  let entry = null;
+  let shim = appDir ? join(appDir, "node_modules", ".bin", `${bin}.cmd`) : `${bin}.cmd`;
+  if (appDir) entry = binEntry(join(appDir, "node_modules"), bin);
+  else {
+    const pathKey = Object.keys(env).find((k) => k.toUpperCase() === "PATH");
+    const dirs = [...String((pathKey && env[pathKey]) || "").split(";").filter(Boolean), dirname(execPath)];
+    for (const d of dirs) {
+      if (!existsSync(join(d, `${bin}.cmd`)) && d !== dirname(execPath)) continue;
+      entry = binEntry(join(d, "node_modules"), bin);
+      if (entry) break;
+    }
+  }
+  if (entry) return { file: execPath, args: [entry, ...args], via: "node", entry };
+  const q = (s) => `"${String(s).replace(/"/g, '""')}"`;
+  return { file: env.ComSpec || "cmd.exe", args: ["/d", "/s", "/c", `"${[shim, ...args].map(q).join(" ")}"`], via: "cmd", verbatim: true };
+}
+
+/**
+ * spawnSync without a shell that works on Windows too (commandFor). A run that did not start or was killed (status null
+ * or an error, e.g. EINVAL / ENOENT / EACCES) prints "could not run <bin>: <error>" and comes back with a non-zero status
+ * and `failed: true`, so a caller checking `status !== 0` never takes it for success.
+ */
+export function runTool(bin, args, { cwd, local = false, stdio = "inherit", ...rest } = {}) {
+  const c = commandFor(bin, args, { appDir: local ? cwd : null });
+  if (c.via === "cmd") console.log(`(${bin}: no JS entry found in its package, running ${bin}.cmd through cmd.exe)`);
+  const res = spawnSync(c.file, c.args, { cwd, stdio, windowsVerbatimArguments: Boolean(c.verbatim), ...rest });
+  if (res.status === null || res.error) {
+    console.error(`could not run ${bin}: ${res.error?.message ?? `stopped by ${res.signal}`}`);
+    return { ...res, status: res.status || 1, failed: true };
+  }
+  return res;
 }

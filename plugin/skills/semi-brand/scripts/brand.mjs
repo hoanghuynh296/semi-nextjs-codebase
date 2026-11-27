@@ -20,7 +20,7 @@
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
-import { brandSemiRange, cmpSemver, detectPkgManager, resolveTargetSpec, runLocal } from "../../semi-new-app/scripts/setup.mjs";
+import { brandSemiRange, cmpSemver, detectPkgManager, resolveTargetSpec, runLocal, runTool } from "../../semi-new-app/scripts/setup.mjs";
 
 const argv = process.argv.slice(2);
 const cmd = argv[0];
@@ -209,9 +209,9 @@ function installSemi(spec) {
     // old lock would also keep the commit it has for the git dependency, so a new tag would never be installed.
     rmSync(join(cwd, "package-lock.json"), { force: true });
     rmSync(join(cwd, "node_modules", ".package-lock.json"), { force: true });
-    return spawnSync("npm", ["install", "--install-links", "--no-audit", "--no-fund"], { cwd, stdio: "inherit" }).status === 0; // --install-links: a local @semi/ui (SEMI_UI_SOURCE, the docs brand book) is copied, not symlinked
+    return runTool("npm", ["install", "--install-links", "--no-audit", "--no-fund"], { cwd }).status === 0; // --install-links: a local @semi/ui (SEMI_UI_SOURCE, the docs brand book) is copied, not symlinked
   }
-  return spawnSync(pm, ["add", "-D", `@semi/ui@${spec}`], { cwd, stdio: "inherit" }).status === 0;
+  return runTool(pm, ["add", "-D", `@semi/ui@${spec}`], { cwd }).status === 0;
 }
 
 /** Brand tokens of the last build (dist/brand.json), for comparing before / after an update. */
