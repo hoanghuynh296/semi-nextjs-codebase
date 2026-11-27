@@ -4,6 +4,16 @@ All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` 
 
 ## Unreleased
 
+## 1.3.0 - 2026-11-27
+
+**Summary.** Group "editor icons + control feedback" (#217, #218). Every button and control now gives the same hover and press feedback (a 98% shrink while pressed, in the hover timing), rows and cards keep a fill instead of shrinking, `hover:` now follows `any-hover` so an iPad with a trackpad or mouse shows hover, and a warn-only lint rule `hand-press` flags hand-written `active:scale-*`. 62 new icons cover rich-text / WYSIWYG editor toolbars (domain `editor`; `hyperlink`, not `link`). The Storybook Icons page loses its colour chips.
+
+**What apps must do.** Nothing is required: run `/semi-sync` as usual (no migration script; nothing is renamed or removed). `hand-press` is a warning only: replace a hand-written `active:scale-*` on a control with the shared `PRESS`, and on a clickable tile or row with `PRESSABLE`. Know the `hover:` change and its tradeoffs: an iPad with a trackpad now shows hover; a finger tap there, or on an Android phone that reports `any-hover: hover` (stylus or mouse support), can leave a hover until the next tap. Apps with a local editor-icon `<svg>` can drop it.
+
+**Verified.** `npm run check` and CI (`check` job, `test:ui`) on each merged PR and on this release head; the owner checked hover and press on a computer in a local build; consumer trial of this head on a real app (typecheck, build, semi-lint, compiled CSS compared, `/semi-check` audit: see the release PR); `npm run build:storybook` locally.
+
+**UNVERIFIED:** hover on a real iPad with a trackpad (the `any-hover` change), a real Android phone with stylus or mouse, a real iPhone, Safari and Firefox, and the `hand-press` rule on the product apps' code.
+
 ### Added
 
 - **`PRESSABLE` and `PRESS` in `@semi/ui/styles` (#218):** `PRESSABLE` (`surfaces.ts`) for an app's own clickable tile or row on a link: `transition-hover hover:bg-item-hover active:bg-item-hover cursor-pointer` + `FOCUS_RING`, no shrink. `PRESS` (`utils.ts`, `motion-safe:active:scale-[0.98]`) is the one press of a button or control. New Button example "Hover and press" (light and dark on the docs site). New semi-lint warning `hand-press`: a hand-written `active:scale-*` (use `PRESS`; rows and tiles: `PRESSABLE`); a warning only, never a hard error.
