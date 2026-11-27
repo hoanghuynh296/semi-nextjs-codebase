@@ -7,7 +7,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Icon } from "./Icon";
 import { ClampToggle, useClampToggle } from "./clampedTitle";
-import { ScrollEdgeFades, useScrollEdges } from "./scrollEdges";
+import { scrollEdgeFades, useScrollEdges } from "./scrollEdges";
 import { useBackdropClose, useDialog } from "./a11y";
 import { useSemiLocale } from "./locale";
 import {
@@ -97,7 +97,7 @@ export function Modal({
           <div ref={bodyRef} className="p-5 flex-1 min-h-0 overflow-y-auto overscroll-contain space-y-4">
             {children}
           </div>
-          <ScrollEdgeFades edges={edges} />
+          {scrollEdgeFades(edges)}
         </div>
         {footer && <div className={MODAL_FOOT}>{footer}</div>}
       </div>

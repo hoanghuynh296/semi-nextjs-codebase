@@ -79,7 +79,10 @@ decisions C-006, C-008.
   an icon says.
 - **Flat, no glow, no gradients.** Depth comes from the neutral surface steps (§2); emphasis ("on", active, selected)
   comes from a neutral fill (`bg-inverted`, `bg-item-selected`, `bg-item-checked`) or a `border-outline-line` border.
-  Skeletons pulse quietly by opacity (`motion-pulse`), never a gradient shimmer.
+  Skeletons pulse quietly by opacity (`motion-pulse`), never a gradient shimmer. **One exception (C-022): the scroll
+  edge effect**, a soft fade from the panel colour on the edge of a scrolling area where more content continues (only
+  that side, gone at the end of the scroll), like Apple's. It is `SCROLL_EDGE` + `useScrollEdges` (§14), built into
+  `Modal`, `Drawer` and `confirmDialog`; never a hand-written gradient or blur (`semi-lint` `gradient`, `glow`).
 - **Neutral chrome, colour on content.** The nav is neutral (grey 16px icons, the active item `bg-item-selected
   text-strong`). Colour goes where it helps reading content: a status badge, a coloured dot on a filter chip, a tile
   tone. The brand colour follows the rule above.
@@ -845,6 +848,17 @@ field while it loads: a `w-3 h-3` spinner + "Đang tải …" in `text-ui text-m
 The panel caps itself at `92dvh` and scrolls; pass only a width (`max-w-md`…) and, for a fixed header / footer,
 `flex flex-col` with a `flex-1 overflow-y-auto` body. `MODAL_HEAD` / `MODAL_TITLE` / `MODAL_FOOT`: header = `IconTile`
 + title + close `MODAL_CLOSE`; footer buttons right-aligned, stretched on a phone. Buttons are `MODAL_BTN_*`.
+**Titles wrap, never cut** (#222): `MODAL_TITLE` breaks long words and wraps; `Modal` and `Drawer` clamp it to 3 lines
+with the expand chevron of `DetailOverlay` (it works on touch, where `title=` never shows), and the close button stays
+at the top of a wrapped title. **Scroll edge effect** (C-022): the body of `Modal` and `Drawer` and the message of
+`confirmDialog` show a soft fade on the edge where more content continues, only on that side and only while it does
+(a short body shows none, the end of the scroll hides it). It fades with opacity in 150ms (`transition-hover`, none under
+reduced motion), from the panel colour to transparent (right in dark and light, no token of its own), never takes a
+click (`pointer-events-none`, `aria-hidden`); the system overlay scrollbar stays as it is. Your own scroller on
+`bg-panel` gets it with `useScrollEdges(ref)` (`top`, `bottom`, `scrolls`: focusable while it scrolls) and one
+`SCROLL_EDGE.top` / `.bottom` span per edge in a `relative` wrapper (doc `scroll-edge`). It is the only gradient Semi
+allows: never copy its value (`semi-lint` `gradient` lets only the constant through). `confirmDialog` stays inside the
+screen (`max-h-[92dvh]`): a long message scrolls between the title and the buttons, which always show (#223).
 Every overlay (modals, full-screen viewers, popups, numpad) uses this backdrop. Big detail views split into two columns
 from `md` (iPad). Confirmations go through `confirmDialog()` / `confirmDelete()` (mount `<ConfirmHost />` once in the root layout), never
 `window.confirm`; what to use when is §14c. Phones can use a bottom sheet for pickers and filter panels.
@@ -1051,6 +1065,7 @@ visible size (`size="sm" | "md"`) and the layout stay the same.
 | Jump / run anything from the keyboard | `CommandPalette` once in the root layout (⌘K, pages add items with `useRegisterCommands`, `openCommandPalette()`); `CommandDialog` + `useHotkey` for a palette of your own, `Command` inline; matching ignores Vietnamese marks |
 | Sort / filter / select / page rows | `DataTable` (`columns`, `search`, `selectable` + `bulkActions`, `pageSize`, `loading`). Many columns (a tablet beside the rail, a split view): give the less important ones `priority` 1–3; they fold into the first column's second line when the table's **own box** is too narrow (3 first; the first column and columns without a priority never fold). The sorted column never folds (its header is the sort control). Folding is measured after hydration, so such a table may shift once on first load. What still does not fit scrolls sideways with a 2px strong line (outline-line) on each edge that has columns past it and the scroll box focusable; `stickyFirstColumn` keeps the names in place. The order it shows is `sortRows(searchRows(rows, columns, search), columns, sort)` (pure, also for a DetailOverlay's ‹ ›) |
 | Fixed-height scrolling list | `ScrollArea` (edge lines, optional thin scrollbar, keyboard focusable) |
+| Show that your own scroller on `bg-panel` continues | `useScrollEdges(ref)` + `SCROLL_EDGE` (the scroll edge effect, §14; built into `Modal`, `Drawer`, `confirmDialog`) |
 | Divider / key cap | `Separator` (horizontal, vertical, with a label); `Kbd` (`keys={["⌘", "K"]}`) |
 | Charts | `BarChart` (grouped / `stacked`), `LineChart` (`area`), `DonutChart` (≤ 5 parts), `Sparkline` (trend in a KPI tile). Series colours are the fixed `chart-1…8` tokens in order, a 9th series folds into “Khác”; one y axis only; legend for 2+ series, keyboard tooltip and table view built in |
 | One-time code / PIN | `InputOTP` (one real input, paste and SMS autofill work) |
@@ -1276,7 +1291,7 @@ catches and what it must not:
 - The colour / size rules read class tokens from every string literal (className, `cn()`, constants, template parts, `@apply`), not lines, so any spelling of a colour is caught.
 - **Illustrations and data colours** (a device drawing, a 3D scene palette, other companies' logos) are content, not UI chrome: name each file under `skip` in `semi-lint.json` with a reason, for `literal-colour-value`, `inline-svg-path` or `no-literal-palette` only: `"skip": { "literal-colour-value": { "lib/scenePalette.ts": "data colours: 3D scene" } }`. The `/semi-check` audit lists each one ("Minh hoạ / màu dữ liệu") and its codemod leaves them; never a whole folder, never the baseline.
 - **Overriding Card component (`card-class-override`):** Never pass any `bg-*` or `shadow-*` (with or without a variant such as `hover:`) to `<Card />`; use `TONAL_CONTAINER` on a plain element for a tinted card.
-- Gradients, glow blobs, coloured glow shadows (`shadow-[0_0_…]`), "glassmorphism" panels.
+- Gradients (`bg-gradient-*`, Tailwind 4 `bg-linear-*` / `bg-radial` / `bg-conic`, `linear-gradient()`), glow blobs, coloured glow shadows (`shadow-[0_0_…]`), "glassmorphism" panels. The one exception is the scroll edge effect, `SCROLL_EDGE` + `useScrollEdges` (§14, C-022), never a copy of it.
 - Solid greys for surfaces (`bg-gray-800/900`), `border-gray-700`, hard-coded hex colour classes (`bg-[#...]`, `text-[#...]`).
 - `font-bold` / `extrabold` / `black`, or a heading heavier than 500 (`font-semibold` on a title); `text-[9px]` / `text-[10px]`; `text-xs` / `text-sm`; `uppercase` labels; ALL-CAPS button text.
 - Raw or arbitrary radii (`rounded-lg`, `rounded-[10px]`) instead of the shape tokens; `font-mono` for numbers (fine on `<code>`, `<pre>`, `CodeBlock`, `Terminal` and `textarea` / `contentEditable` code editors); coloured icon tiles in front of every card title; one decorative icon colour per card (`decorative-icon-tones`, §19).

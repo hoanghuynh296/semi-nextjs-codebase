@@ -546,6 +546,15 @@
     ]
   },
   {
+    "id": "scroll-edge",
+    "title": "Scroll edge",
+    "group": "Navigation & layout",
+    "description": "A soft fade on the edge of a scrolling area where more content continues, like Apple's: only on that side, gone at the end of the scroll. Modal, Drawer and confirmDialog have it built in; SCROLL_EDGE + useScrollEdges give it to your own scroller on the panel surface. It is the one gradient Semi allows (C-022).",
+    "components": [
+      "useScrollEdges"
+    ]
+  },
+  {
     "id": "section-header",
     "title": "Section header",
     "group": "Navigation & layout",

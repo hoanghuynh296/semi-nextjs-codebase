@@ -7,7 +7,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Icon } from "./Icon";
 import { ClampToggle, useClampToggle } from "./clampedTitle";
-import { ScrollEdgeFades, useScrollEdges } from "./scrollEdges";
+import { scrollEdgeFades, useScrollEdges } from "./scrollEdges";
 import { useDialog } from "./a11y";
 import { useSemiLocale } from "./locale";
 import { MODAL_CLOSE, MODAL_FOOT, MODAL_TITLE } from "../styles/surfaces";
@@ -78,7 +78,7 @@ export function Drawer({
           <div ref={bodyRef} className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-5 space-y-4">
             {children}
           </div>
-          <ScrollEdgeFades edges={edges} />
+          {scrollEdgeFades(edges)}
         </div>
         {footer && <div className={MODAL_FOOT}>{footer}</div>}
       </div>

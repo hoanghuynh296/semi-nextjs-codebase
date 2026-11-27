@@ -24,7 +24,8 @@
     }
   ],
   "a11y": [
-    "An alertdialog: focus starts on the safe button (Huỷ) in a danger dialog and on the confirm button otherwise; Escape cancels."
+    "An alertdialog: focus starts on the safe button (Huỷ) in a danger dialog and on the confirm button otherwise; Escape cancels.",
+    "The message describes the dialog (aria-describedby); while it scrolls it is focusable, so arrow keys scroll it."
   ],
   "examples": [
     {
@@ -35,6 +36,11 @@
       "file": "delete",
       "title": "Irreversible delete",
       "description": "confirmDelete: the title names the object, the button is red and says Xoá."
+    },
+    {
+      "file": "long-message",
+      "title": "Long message",
+      "description": "The panel stays inside the screen (92dvh): the message scrolls with a soft edge, the title and the buttons always show."
     }
   ],
   "notes": [

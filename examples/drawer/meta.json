@@ -21,7 +21,8 @@
   ],
   "a11y": [
     "A modal dialog: focus trap, Escape, focus returns to the opener; the title labels it.",
-    "Autofocuses the first field on devices with a physical keyboard ((hover: hover) and (pointer: fine)) unless autoFocusFirstField={false}; touch phones keep the on-screen keyboard closed."
+    "Autofocuses the first field on devices with a physical keyboard ((hover: hover) and (pointer: fine)) unless autoFocusFirstField={false}; touch phones keep the on-screen keyboard closed.",
+    "A title longer than 3 lines gets an expand button (aria-expanded, aria-controls the title). The scroll edges are aria-hidden."
   ],
   "examples": [
     {
@@ -32,6 +33,11 @@
       "file": "sides",
       "title": "Sides",
       "description": "side picks the edge: right (default), left, bottom (phone-style sheet) or top."
+    },
+    {
+      "file": "long-content",
+      "title": "Long title and long body",
+      "description": "The title wraps (3 lines, then a chevron); the body scrolls with a soft edge on the side where more content continues."
     }
   ]
 }

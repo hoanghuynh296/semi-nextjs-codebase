@@ -3324,6 +3324,13 @@
       "summary": "Strings for the current locale (vi unless a SemiLocaleProvider says otherwise)."
     },
     {
+      "name": "useScrollEdges",
+      "kind": "hook",
+      "module": "src/scrollEdges.tsx",
+      "client": true,
+      "summary": "Which edges of a vertically scrolling element have more content past them, for the scroll edge effect (`SCROLL_EDGE`): `top` once it is scrolled down, `bottom` until its end, both false when the content fits. `scrolls` tells when to make the element keyboard focusable (`tabIndex={0}`). The element may mount after the hook (a dialog that opens): it is picked up on the next render."
+    },
+    {
       "name": "useTabParam",
       "kind": "hook",
       "module": "src/useTabParam.ts",
@@ -3569,6 +3576,13 @@
       "module": "src/listQuery.ts",
       "client": false,
       "summary": "The rows in DataTable's order for `sort`: numbers by value, text in Vietnamese order with numbers inside compared as numbers (\"SO-9\" before \"SO-10\"), empty values (`null` / `undefined`) last in both directions, ties in their input order. No sort, or a key no column has, returns `rows` itself."
+    },
+    {
+      "name": "scrollEdgeFades",
+      "kind": "function",
+      "module": "src/scrollEdges.tsx",
+      "client": true,
+      "summary": "Internal (not exported from index): the two fades of `SCROLL_EDGE`, placed after the scrolling element inside its `relative` wrapper."
     },
     {
       "name": "currentSearch",
@@ -4368,7 +4382,7 @@
       "kind": "constant",
       "module": "styles/surfaces.ts",
       "client": false,
-      "summary": "Modal title."
+      "summary": "Modal title: wraps (never cut to one line, #222); `Modal` and `Drawer` clamp it to 3 lines with an expand toggle."
     },
     {
       "name": "MODAL_FOOT",
@@ -4376,6 +4390,13 @@
       "module": "styles/surfaces.ts",
       "client": false,
       "summary": "Modal footer: buttons right-aligned; stretched on a phone with safe-area bottom padding."
+    },
+    {
+      "name": "SCROLL_EDGE",
+      "kind": "constant",
+      "module": "styles/surfaces.ts",
+      "client": false,
+      "summary": "Scroll edge effect (C-022): the one gradient Semi allows. A soft fade on an edge of a scrolling area where more content continues (only on that side, gone at the end of the scroll), like Apple's. It fades from the panel surface (`bg-panel`: dialogs, drawers, the content card) to transparent, so it is right in dark and light with no token of its own. Put the scrolling element in a `relative` wrapper and add one `<span aria-hidden>` per edge after it, with `opacity-100` while `useScrollEdges(ref)` reports that edge and `opacity-0` otherwise (`Modal`, `Drawer` and `confirmDialog` do this). Fades in 150ms (`transition-hover`), no transition under reduced motion; never takes clicks. semi-lint lets only this constant through its `gradient` rule: never copy its value."
     },
     {
       "name": "FORM_PAGE",

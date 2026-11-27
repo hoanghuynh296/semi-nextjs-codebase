@@ -8,7 +8,7 @@ import { useSemiLocale } from "./locale";
 import type { ReactNode } from "react";
 import { MODAL_BTN_DANGER, MODAL_BTN_PRIMARY, MODAL_BTN_SUBTLE } from "../styles/buttons";
 import { cn } from "../styles/utils";
-import { ScrollEdgeFades, useScrollEdges } from "./scrollEdges";
+import { scrollEdgeFades, useScrollEdges } from "./scrollEdges";
 
 export interface ConfirmOptions {
   title: string;
@@ -131,7 +131,7 @@ export function ConfirmHost() {
             >
               <p className="text-ui text-muted leading-relaxed whitespace-pre-line break-words">{message}</p>
             </div>
-            <ScrollEdgeFades edges={edges} />
+            {scrollEdgeFades(edges)}
           </div>
         )}
         <div

@@ -80,6 +80,7 @@ example, keep its imports from `@semi/ui`. Generated from `examples/` and the ty
 | [Resizable panels](resizable.md) | `ResizablePanels` | Tools where people tune the space between two or three areas. |
 | [Route header banner](route-header-banner.md) | `RouteHeaderBanner` | A short app-wide announcement people should notice for a while: a new feature, a planned maintenance window, a changed price list. |
 | [Scroll area](scroll-area.md) | `ScrollArea` | A list or log inside a card that must keep its height. |
+| [Scroll edge](scroll-edge.md) | `useScrollEdges` | Your own fixed-height scroller on bg-panel (a terms box, a list in a popover) whose content can be longer than the box. |
 | [Section header](section-header.md) | `SectionHeader` | Above a rail or a grid of MediaCards on a discovery, home or gallery page. |
 | [Segmented control](segmented-control.md) | `SegmentedControl` | 2–5 filter values shown in full, often with counts (Tất cả · Đang mở · Đang báo giá · Đã chốt). |
 | [Side panel](side-panel.md) | `SidePanel`, `SidePanelToggle` | Settings or layers beside a 3D view, map or editor. |

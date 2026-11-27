@@ -62,8 +62,9 @@ export function useScrollEdges(ref: RefObject<HTMLElement | null>): ScrollEdgeSt
   return edges;
 }
 
-/** Internal: the two fades of `SCROLL_EDGE`, placed after the scrolling element inside its `relative` wrapper. */
-export function ScrollEdgeFades({ edges }: { edges: ScrollEdgeState }) {
+/** Internal (not exported from index): the two fades of `SCROLL_EDGE`, placed after the scrolling element inside its
+ * `relative` wrapper. */
+export function scrollEdgeFades(edges: ScrollEdgeState) {
   return (
     <>
       <span aria-hidden data-scroll-edge="top" data-shown={edges.top || undefined} className={cn(SCROLL_EDGE.top, edges.top ? "opacity-100" : "opacity-0")} />
