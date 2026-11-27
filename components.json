@@ -3753,7 +3753,7 @@
       "kind": "constant",
       "module": "src/Table.tsx",
       "client": false,
-      "summary": ""
+      "summary": "A clickable row: the hover fill, also while pressed (touch screens have no hover); a row never shrinks (#218)."
     },
     {
       "name": "TOAST_NAV_GRACE",
@@ -4089,7 +4089,7 @@
       "kind": "constant",
       "module": "styles/surfaces.ts",
       "client": false,
-      "summary": "Clickable card (opens a detail view): the border shows on hover."
+      "summary": "Clickable card (opens a detail view): the border shows on hover and while pressed (a card never shrinks, #218)."
     },
     {
       "name": "CARD_BORDERED_HOVER",
@@ -4097,6 +4097,13 @@
       "module": "styles/surfaces.ts",
       "client": false,
       "summary": "Clickable bordered card."
+    },
+    {
+      "name": "PRESSABLE",
+      "kind": "constant",
+      "module": "styles/surfaces.ts",
+      "client": false,
+      "summary": "An app's own clickable tile, row or list item (#218): the hover fill in the hover timing (transition-hover), the same fill while pressed (touch screens have no hover), the keyboard focus ring and the pointer. No press scale: a surface never shrinks (buttons and controls use PRESS). Add the shape and padding at the call site; a <button> or a link, never a <div onClick>."
     },
     {
       "name": "HERO",
@@ -4412,6 +4419,13 @@
       "module": "styles/utils.ts",
       "client": false,
       "summary": "Keyboard focus ring for custom controls (buttons, tabs, options). Visible on keyboard focus only."
+    },
+    {
+      "name": "PRESS",
+      "kind": "constant",
+      "module": "styles/utils.ts",
+      "client": false,
+      "summary": "Press feedback of a button or a control (#218): it shrinks to 98% while pressed, in the hover timing (transition-hover carries `scale`). Only where motion is welcome (`motion-safe:`), so reduced motion keeps it still. Buttons, icon buttons, chips, toggles, checkboxes and switches only: never a row, a card or a list item (a large surface that shrinks looks broken); those press with their hover fill (`active:bg-item-hover`, see PRESSABLE)."
     },
     {
       "name": "HIT_AREA",

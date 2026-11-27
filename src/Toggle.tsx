@@ -8,7 +8,7 @@ import { FOCUS_RING, cn } from "../styles/utils";
 
 // the BTN_HIT pair: at least 44 × 44px on a touch phone (pointer-coarse + max-sm), the drawn size elsewhere
 const ITEM =
-  "inline-flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0 min-w-control pointer-coarse:max-sm:min-h-11 pointer-coarse:max-sm:min-w-11 px-2.5 rounded-control text-ui font-medium transition-hover cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed";
+  "inline-flex items-center justify-center gap-1.5 whitespace-nowrap shrink-0 min-w-control pointer-coarse:max-sm:min-h-11 pointer-coarse:max-sm:min-w-11 px-2.5 rounded-control text-ui font-medium transition-hover motion-safe:active:scale-[0.98] disabled:active:scale-100 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed";
 const SEG_STATE = (on: boolean) => (on ? "bg-raised-2 text-strong" : "text-muted hover:text-strong hover:bg-item-hover");
 
 /** One button that stays pressed (aria-pressed). Icon-only needs an aria-label. */

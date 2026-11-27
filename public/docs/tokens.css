@@ -305,9 +305,9 @@
   }
 }
 
-/* Colour cross-fade on hover / active */
+/* Colour cross-fade on hover / active, and the press scale of buttons and controls (PRESS) */
 @utility transition-hover {
-  transition: color var(--motion-hover), background-color var(--motion-hover), border-color var(--motion-hover), text-decoration-color var(--motion-hover), fill var(--motion-hover), stroke var(--motion-hover), opacity var(--motion-hover);
+  transition: color var(--motion-hover), background-color var(--motion-hover), border-color var(--motion-hover), text-decoration-color var(--motion-hover), fill var(--motion-hover), stroke var(--motion-hover), opacity var(--motion-hover), scale var(--motion-hover);
 }
 
 /* Nav item active background */

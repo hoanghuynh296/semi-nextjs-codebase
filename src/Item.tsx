@@ -71,7 +71,7 @@ export function Item({
     ? "bg-item-selected"
     : checked
       ? cn("bg-item-checked", (href || onClick) && "hover:bg-item-selected")
-      : (href || onClick) && "hover:bg-item-hover";
+      : (href || onClick) && "hover:bg-item-hover active:bg-item-hover";
   return (
     <div data-semi="Item" data-motion-item="" className={cn("relative flex items-center gap-3 px-4 py-3 transition-hover", bgCls, className)}>
       {selectable && (

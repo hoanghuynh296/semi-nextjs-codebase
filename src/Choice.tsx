@@ -70,7 +70,7 @@ export function Checkbox({
           aria-describedby={description ? `${id}-desc` : undefined}
           onChange={(e) => onChange(e.target.checked)}
           className={cn(
-            "peer relative appearance-none w-4 h-4 rounded-chip border transition cursor-pointer disabled:cursor-not-allowed",
+            "peer relative appearance-none w-4 h-4 rounded-chip border transition-hover motion-safe:active:scale-[0.98] cursor-pointer disabled:cursor-not-allowed",
             on ? "bg-inverted border-transparent" : "bg-field border-control-line hover:border-control-line-hover",
             FOCUS_RING,
           )}
@@ -141,10 +141,10 @@ export function Switch({
       disabled={disabled}
       onClick={() => onChange(!checked)}
       className={cn(
-        "relative shrink-0 rounded-full border transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed p-px",
+        "relative shrink-0 rounded-full border transition-hover motion-safe:active:scale-[0.98] disabled:active:scale-100 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed p-px",
         track,
         HIT_AREA,
-        checked ? "bg-inverted border-transparent" : "bg-raised border-line",
+        checked ? "bg-inverted hover:bg-inverted-hover border-transparent" : "bg-raised hover:bg-raised-2 border-line hover:border-line-hover",
         FOCUS_RING,
         !label && !description && className,
       )}

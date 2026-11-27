@@ -273,7 +273,7 @@ function MenuPanel({
     cn(
       "w-full text-left px-3 py-2 max-sm:py-3 rounded-control text-ui flex items-center gap-2 transition-hover outline-none",
       it.disabled ? "opacity-40 cursor-not-allowed" : it.loading ? "cursor-progress" : "cursor-pointer",
-      it.danger ? "text-danger-fg hover:bg-danger-bg focus-visible:bg-danger-bg" : "text-body hover:bg-item-hover hover:text-strong focus-visible:bg-item-hover focus-visible:text-strong",
+      it.danger ? "text-danger-fg hover:bg-danger-bg focus-visible:bg-danger-bg" : "text-body hover:bg-item-hover active:bg-item-hover hover:text-strong focus-visible:bg-item-hover focus-visible:text-strong",
     );
   return createPortal(
     <>

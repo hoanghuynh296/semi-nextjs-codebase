@@ -35,7 +35,7 @@ export function MobileTabBar({
 }) {
   const t = useSemiLocale();
   const itemClass = (on: boolean) =>
-    `flex-1 min-w-0 h-16 flex flex-col items-center justify-center gap-1 transition active:scale-95 cursor-pointer ${
+    `flex-1 min-w-0 h-16 flex flex-col items-center justify-center gap-1 transition-hover motion-safe:active:scale-[0.98] cursor-pointer ${
       on ? "text-strong" : "text-muted"
     }`;
 

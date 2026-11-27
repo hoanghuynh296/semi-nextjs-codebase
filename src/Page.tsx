@@ -115,7 +115,7 @@ export function SubNav({
             <nav aria-label={section.label ?? `${label ?? t.subNav} ${idx + 1}`} className="flex flex-col gap-0.5">
               {section.items.map((item) => {
                 const active = item.id === activeId;
-                const stateCls = active ? "bg-item-selected text-strong" : "text-muted hover:bg-item-hover hover:text-strong";
+                const stateCls = active ? "bg-item-selected text-strong" : "text-muted hover:bg-item-hover active:bg-item-hover hover:text-strong";
                 const inner = (
                   <>
                     {item.icon && <Icon name={item.icon} className="w-4 h-4 shrink-0" />}

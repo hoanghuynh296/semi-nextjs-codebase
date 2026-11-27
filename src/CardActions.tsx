@@ -16,7 +16,7 @@ export interface CardAction {
 }
 
 const ROUND =
-  "w-8 h-8 rounded-full bg-panel-4/90 backdrop-blur text-strong hover:bg-panel-4 shadow-card flex items-center justify-center cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-focus";
+  "w-8 h-8 rounded-full bg-panel-4/90 backdrop-blur text-strong hover:bg-panel-4 shadow-card flex items-center justify-center transition-hover motion-safe:active:scale-[0.98] cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-focus";
 
 /** The ⋯ trigger: a plain element, so Menu can add its ref, handlers and aria-* to it. */
 const moreButton = (label: string) => (
