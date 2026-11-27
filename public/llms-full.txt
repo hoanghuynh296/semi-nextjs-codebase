@@ -2143,6 +2143,25 @@ Khi cần hiển thị biểu tượng cho một hành động hoặc trạng th
 
 ---
 
+### 2.12. Trình soạn thảo văn bản (Rich-text Editor)
+
+Thanh công cụ soạn thảo (email, ghi chú, mô tả, CMS) dùng `<Button iconOnly variant="ghost" icon="bold" aria-label="In đậm" />`; cùng với `undo`, `redo`, `code`, `image`, `paperclip`.
+
+| Định dạng | Icon chuẩn (`IconName`) | Code mẫu | Ghi chú |
+|---|---|---|---|
+| **Cỡ chữ** | `fontSize` | `<Icon name="fontSize" />` | Nút chọn cỡ chữ của thanh công cụ soạn thảo; không dùng cho zoom (`resize`, `expand`) |
+| **In đậm** | `bold` | `<Icon name="bold" />` | Định dạng in đậm trong trình soạn thảo |
+| **In nghiêng** | `italic` | `<Icon name="italic" />` | Định dạng in nghiêng trong trình soạn thảo |
+| **Gạch chân** | `underline` | `<Icon name="underline" />` | Định dạng gạch chân; liên kết dùng `hyperlink` |
+| **Gạch ngang** | `strikethrough` | `<Icon name="strikethrough" />` | Định dạng gạch ngang; xoá dữ liệu dùng `trash` |
+| **Trích dẫn (blockquote)** | `quote` | `<Icon name="quote" />` | Khối trích dẫn trong trình soạn thảo |
+| **Chèn / sửa siêu liên kết (mắt xích)** | `hyperlink` | `<Icon name="hyperlink" />` | Alias `chain`, `insert_link`. Liên kết mở tab mới vẫn là `external` (`link` → `external`, không đổi) |
+| **Chèn bảng** | `table` | `<Icon name="table" />` | Khung bảng có hàng tiêu đề; bố cục lưới dùng `grid` |
+| **Danh sách gạch đầu dòng** | `list` | `<Icon name="list" />` | Bullet list; danh sách đánh số dùng `orderedList` |
+| **Danh sách đánh số** | `orderedList` | `<Icon name="orderedList" />` | Numbered list 1. 2. 3. |
+
+---
+
 ## 3. Quy tắc tránh nhầm lẫn từ khoá (Aliases & Anti-patterns)
 
 Khi lập trình, nếu viết các từ khoá sau thì `semi-lint` hoặc `tsc` sẽ báo lỗi:
@@ -2174,6 +2193,12 @@ Khi lập trình, nếu viết các từ khoá sau thì `semi-lint` hoặc `tsc`
 | `incoming` | `inbox` | Hộp thư đến dùng `inbox` |
 | `message` | `send` | Gửi tin nhắn dùng `send` |
 | `link`, `open_link` | `external` | Liên kết ngoài dùng `external` |
+| `chain`, `insert_link` | `hyperlink` | Chèn / sửa siêu liên kết trong trình soạn thảo dùng `hyperlink` (không phải `link`, vẫn là `external`) |
+| `font_size`, `text_size` | `fontSize` | Cỡ chữ trong trình soạn thảo |
+| `blockquote` | `quote` | Khối trích dẫn |
+| `strike`, `strike_through` | `strikethrough` | Gạch ngang văn bản |
+| `bullet_list`, `bullets`, `ul` | `list` | Danh sách gạch đầu dòng |
+| `ordered_list`, `numbered_list`, `ol` | `orderedList` | Danh sách đánh số |
 | `shutdown`, `turn_off`, `power_off` | `power` | Nguồn thiết bị dùng `power` |
 | `scale` | `resize` | Thu phóng, đổi kích thước đối tượng dùng `resize` |
 | `decrease` | `minus` | Nút trừ / giảm dùng `minus` |

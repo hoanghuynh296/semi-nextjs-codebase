@@ -355,7 +355,17 @@
     "viettel",
     "vinfast",
     "vnpost",
-    "tgdd"
+    "tgdd",
+    "fontSize",
+    "bold",
+    "italic",
+    "underline",
+    "strikethrough",
+    "quote",
+    "hyperlink",
+    "table",
+    "list",
+    "orderedList"
   ],
   "components": [
     {
