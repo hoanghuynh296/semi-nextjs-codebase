@@ -520,6 +520,24 @@ Semi wires T1's motion tokens (`TOKENS.md` "Motion": `--motion-hover`, `--motion
 
 - **Hover & nav:** colours on hover and active change in 150ms (`transition-hover`) on links, buttons, tabs, menus and
   rows; the nav's active background in 150ms (`transition-nav`).
+- **Hover follows `any-hover` (#218):** `base.css` redefines Tailwind's `hover:` variant as
+  `@media (any-hover: hover) { &:hover }` (Tailwind's default is `(hover: hover)`), so every `hover:`, `group-hover:` and
+  `peer-hover:` class shows on any device with a pointer that can hover, an iPad with a trackpad or mouse included
+  (iPadOS reports its primary input as touch, so `(hover: hover)` gave it no hover at all). A phone or a tablet with no
+  such pointer gets none. Tradeoffs: on an iPad with a trackpad attached a finger tap can leave a hover until the next tap
+  elsewhere; some Android phones with stylus or mouse support report `any-hover: hover` while their primary input is
+  touch, so a hover can stick after a tap there too (not tested on a real phone). Layout choices that hide a control behind hover (`CardActions`) keep `(hover: hover)`: touch must always
+  reach the control, so an iPad shows the always-visible `⋯` even with a trackpad.
+- **Press (#218):** one press for buttons and controls (`Button` / `BTN_*` / `MODAL_BTN_*` of every variant, icon
+  buttons, `appChrome.ts`, chips, `Toggle`, `Checkbox`, `Switch`, `CardActions`): `PRESS` (`@semi/ui/styles`,
+  `motion-safe:active:scale-[0.98]`), 98% in the hover timing (`transition-hover` carries `scale`). **Never on rows,
+  cards, list items or tiles** (a large surface that shrinks looks broken): `TR` / `DataTable` rows, `Item`, menu
+  items, select and combobox options, `SubNav` and nav items keep their hover fill while pressed
+  (`active:bg-item-hover`; touch screens have no hover); `Card onClick` / `CARD_HOVER` keep the hover border. Tabs,
+  `PillTabs` and `SegmentedControl` do not shrink: their sliding indicator is the feedback. Fields (`CustomSelect` /
+  `CustomCombobox` triggers) do not shrink either. An app's own clickable tile or row on a link: `PRESSABLE`
+  (`transition-hover hover:bg-item-hover active:bg-item-hover cursor-pointer` + `FOCUS_RING`). Never hand-write
+  `active:scale-*` or `duration-*` on a control (lint `hand-press`, warning).
 - **Page enter (`PageEnter` / `<Page enter>`):** top blocks and the first ~10 rows / cards (`tbody > tr`,
   `[role="listitem"]`, `[data-page-grid] > *`, `[data-motion-item]`, `Item`) rise in with `motion-enter` (400ms,
   opacity + 4px) and `motion-stagger` (35ms per item), **once per route** (keyed by pathname — never on filter, search,
@@ -531,8 +549,8 @@ Semi wires T1's motion tokens (`TOKENS.md` "Motion": `--motion-hover`, `--motion
 - **Tooltip & disclosure:** `Tooltip` enters with `animate-tooltip-in` (200ms, opacity + scale 0.96 → 1); `Accordion`
   and `Collapsible` open in 300ms ease-out (`--motion-disclosure`) and close in 300ms ease-in
   (`--motion-disclosure-close`); `PillTabs` / `SegmentedControl` slide in 300ms (`transition-slide`).
-- **Reduced motion (`prefers-reduced-motion: reduce`):** opacity only (no translate, no scale, no slide); skeleton
-  pulse stops.
+- **Reduced motion (`prefers-reduced-motion: reduce`):** opacity only (no translate, no scale, no slide, no press
+  scale: `PRESS` is `motion-safe:`); skeleton pulse stops.
 - **Shell stillness:** the shell (nav, frame, route header bar, content card) never animates, remounts or moves on a
   route change.
 
@@ -636,7 +654,7 @@ reduced motion.
 ## 9. Buttons
 
 1.0 variants (#146), `Button variant` or the `BTN_*` constants from `@semi/ui/styles` (`rounded-control`, `h-control`,
-`text-ui` 14px `font-medium`, flat, hover in 150ms `transition-hover`, a 2px `outline-focus` focus outline, disabled
+`text-ui` 14px `font-medium`, flat, hover in 150ms `transition-hover`, one press for every variant (`PRESS`: 98% while pressed, §4g), a 2px `outline-focus` focus outline, disabled
 neutral for every variant, at least 44 × 44px on a phone with a touch screen (`BTN_HIT`: `pointer-coarse` + `max-sm`, real size, no pseudo-element that could cover a neighbour)):
 
 | Variant | Constant | Look | When |
@@ -969,7 +987,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `NumberInput` (+ `NumPadPopup`, `useCoarsePointer`) | every number field (app numpad on touch screens) |
 | `SidePanel`, `SidePanelToggle`, `RefreshButton` | tool-app left panel, icon-only reload action |
 | Hooks (`Field.tsx`, `a11y.ts`, `floating.ts`) | `useField` (a custom control reads its `Field`: id, `aria-describedby`, invalid), `useDialog` (focus trap + scroll lock + Escape for a modal-like surface; built on `useFocusTrap` and `useScrollLock`), `focusFirstField(root)` (focuses the first field only on `(hover: hover) and (pointer: fine)` unless focus already sits in a field; `Modal` and `Drawer` run it on open by default, `autoFocusFirstField={false}` opts out), `useBackdropClose` (a backdrop that wraps its panel closes only on a click that starts and ends on it), `useAnchoredPosition` (fixed menu / tooltip next to its trigger, flips above, never clipped), `useCoarsePointer`, `useTheme` |
-| `@semi/ui/styles` → `surfaces.ts` | `SHELL_*`, `CARD`, `CARD_HOVER`, `CARD_BORDERED`, `CARD_BORDERED_HOVER`, `CARD_ACTIVE`, `HERO`, `TILE`, `SECTION_*`, `COUNT_PILL`, `EMPTY`, `ICON_BTN` / `ICON_BTN_DANGER`, `STATUS_PILL`, `STATUS_DOT`, `STICKY_TOOLBAR`, `MODAL_*`, `FIELD_LABEL`, `FIELD_INPUT`, `FIELD_TEXTAREA`, `FORM_PAGE`, `FORM_ACTIONS`, `FORM_ACTIONS_STICKY` |
+| `@semi/ui/styles` → `surfaces.ts` | `SHELL_*`, `CARD`, `PRESSABLE` (an app's own clickable tile or row on a link: hover fill, the same fill pressed, focus ring, no shrink; §4g), `CARD_HOVER`, `CARD_BORDERED`, `CARD_BORDERED_HOVER`, `CARD_ACTIVE`, `HERO`, `TILE`, `SECTION_*`, `COUNT_PILL`, `EMPTY`, `ICON_BTN` / `ICON_BTN_DANGER`, `STATUS_PILL`, `STATUS_DOT`, `STICKY_TOOLBAR`, `MODAL_*`, `FIELD_LABEL`, `FIELD_INPUT`, `FIELD_TEXTAREA`, `FORM_PAGE`, `FORM_ACTIONS`, `FORM_ACTIONS_STICKY` |
 | `buttons.ts` | `BTN_PRIMARY`, `BTN_SECONDARY`, `BTN_OUTLINE`, `BTN_DANGER`, `BTN_DANGER_SUBTLE`, `BTN_ICON`, `BTN_LG`, `BTN_PILL`, `MODAL_BTN_*` (incl. `MODAL_BTN_OUTLINE`, `MODAL_BTN_DANGER_SUBTLE`) |
 | `appChrome.ts` | `HEADER_ICON_*`, `headerPrimary`, `HEADER_PILL`, `VIEWPORT_*` |
 

@@ -1132,7 +1132,7 @@ export function AppShell({
                       type="button"
                       onClick={() => setMoreOpen(false)}
                       aria-label={t.close}
-                      className="w-8 h-8 rounded-full bg-tint hover:bg-tint-hover flex items-center justify-center text-muted hover:text-strong transition"
+                      className="w-8 h-8 rounded-full bg-tint hover:bg-tint-hover flex items-center justify-center text-muted hover:text-strong transition-hover motion-safe:active:scale-[0.98]"
                     >
                       <Icon name="close" className="w-4 h-4" />
                     </button>
@@ -1140,8 +1140,8 @@ export function AppShell({
                   <div className="grid grid-cols-2 gap-1.5">
                     {navItems.map((item) => {
                       const cls = cn(
-                        "flex items-center gap-2.5 h-10 px-3 rounded-card text-ui font-medium transition",
-                        activeTopId === item.id ? "bg-item-selected text-strong" : "bg-tint text-body hover:bg-tint-hover hover:text-strong",
+                        "flex items-center gap-2.5 h-10 px-3 rounded-card text-ui font-medium transition-hover",
+                        activeTopId === item.id ? "bg-item-selected text-strong" : "bg-tint text-body hover:bg-tint-hover active:bg-tint-hover hover:text-strong",
                       );
                       const pick = () => {
                         onSelect?.(item.id);
@@ -1319,7 +1319,7 @@ function PhoneDrawer({
     <div ref={ref} role="dialog" aria-modal="true" aria-labelledby={titleId} className="md:hidden fixed inset-0 z-drawer bg-panel flex flex-col pt-[env(safe-area-inset-top)]">
       <div className="flex items-center gap-2 h-14 px-2 shrink-0">
         {level ? (
-          <button type="button" data-drawer-back="" onClick={back} className={cn("flex items-center gap-2 h-11 px-2 rounded-control text-ui font-semibold text-strong hover:bg-tint cursor-pointer min-w-0", FOCUS_RING)}>
+          <button type="button" data-drawer-back="" onClick={back} className={cn("flex items-center gap-2 h-11 px-2 rounded-control text-ui font-semibold text-strong hover:bg-tint transition-hover cursor-pointer min-w-0", FOCUS_RING)}>
             <Icon name="back" className="w-5 h-5 shrink-0" />
             <span id={titleId} className="truncate">
               {level.label}
@@ -1334,7 +1334,7 @@ function PhoneDrawer({
             </span>
           </span>
         )}
-        <button type="button" onClick={onClose} aria-label={t.closeMenu} className={cn("ml-auto w-11 h-11 shrink-0 rounded-control flex items-center justify-center text-strong hover:bg-tint cursor-pointer", FOCUS_RING)}>
+        <button type="button" onClick={onClose} aria-label={t.closeMenu} className={cn("ml-auto w-11 h-11 shrink-0 rounded-control flex items-center justify-center text-strong hover:bg-tint transition-hover motion-safe:active:scale-[0.98] cursor-pointer", FOCUS_RING)}>
           <Icon name="close" className="w-5 h-5" />
         </button>
       </div>
@@ -1404,7 +1404,7 @@ function PhoneDrawer({
                       rows: menuRows("__create", create.items!, "plus"),
                     })
                   }
-                  className={cn("mx-1 flex items-center gap-2 h-11 px-3 rounded-control bg-primary text-on-primary hover:bg-primary-hover text-ui font-semibold cursor-pointer", FOCUS_RING)}
+                  className={cn("mx-1 flex items-center gap-2 h-11 px-3 rounded-control bg-primary text-on-primary hover:bg-primary-hover text-ui font-semibold transition-hover motion-safe:active:scale-[0.98] cursor-pointer", FOCUS_RING)}
                 >
                   <Icon name={create.icon ?? "plus"} className="w-4 h-4 shrink-0" />
                   <span className="flex-1 text-left">{create.label}</span>
@@ -1416,7 +1416,7 @@ function PhoneDrawer({
                   target={create.external ? "_blank" : undefined}
                   rel={create.external ? "noopener noreferrer" : undefined}
                   onClick={onClose}
-                  className={cn("mx-1 flex items-center justify-center gap-2 h-11 rounded-control bg-primary text-on-primary hover:bg-primary-hover text-ui font-semibold", FOCUS_RING)}
+                  className={cn("mx-1 flex items-center justify-center gap-2 h-11 rounded-control bg-primary text-on-primary hover:bg-primary-hover text-ui font-semibold transition-hover motion-safe:active:scale-[0.98]", FOCUS_RING)}
                 >
                   <Icon name={create.icon ?? "plus"} className="w-4 h-4" />
                   {create.label}
@@ -1428,7 +1428,7 @@ function PhoneDrawer({
                     onClose();
                     create.onClick?.();
                   }}
-                  className={cn("mx-1 flex items-center justify-center gap-2 h-11 rounded-control bg-primary text-on-primary hover:bg-primary-hover text-ui font-semibold cursor-pointer", FOCUS_RING)}
+                  className={cn("mx-1 flex items-center justify-center gap-2 h-11 rounded-control bg-primary text-on-primary hover:bg-primary-hover text-ui font-semibold transition-hover motion-safe:active:scale-[0.98] cursor-pointer", FOCUS_RING)}
                 >
                   <Icon name={create.icon ?? "plus"} className="w-4 h-4" />
                   {create.label}

@@ -309,6 +309,7 @@ export const WARN = [
     "A list, grid or table that is loading shows its own shape (§13b, L16): DataTable / List `loading`, SkeletonList, SkeletonTable, SkeletonDetail, SkeletonRows or SkeletonGrid (shaped like the rows), not a Spinner or \"Đang tải\" text in place of the rows. A Spinner stays inside the button or field that runs its own action.",
   ],
   ["filter-chip-wrap", "Filter chips are one line (L4, C-026): FilterChipRow + useFilterParams from @semi/ui (it scrolls sideways and keeps the state in the URL), not hand-made chip buttons in a flex-wrap that grows to several rows."],
+  ["hand-press", "One press for buttons and controls (#218, DESIGN_SYSTEM.md §4g): PRESS from @semi/ui/styles (motion-safe:active:scale-[0.98], none under reduced motion), already on every Semi control. Rows, cards, list items and tiles never shrink: they keep their hover fill while pressed (PRESSABLE). Not a hand-written active:scale-*."],
   ["raw-pill-button", "A round icon button is <Button iconOnly shape=\"round\" icon aria-label> from @semi/ui (it keeps the focus ring, the title and the hit area), not a hand-made rounded-full button with a tint / field fill."],
   ["detail-overlay-url", "A DetailOverlay is driven by the URL (L9): const { openId, open, close } = useDetailParam(); open={openId !== null} onClose={close}, so the record has a link, Back closes it and the list keeps its scroll."],
   ["overline-place", "text-overline is allowed only as a group or section label (nav / sub-nav groups, palette groups, form and detail panel sections like 'MODEL', 'PROMPT'); never as a single field's label, button, link, title, badge, table cell or sentence."],
@@ -595,6 +596,12 @@ export function patternHits(code) {
   for (const m of code.matchAll(/<Button\b/g)) {
     const tag = tagFrom(code, m.index).text;
     if (/\siconOnly\b/.test(tag) && /(?<![\w-])!?rounded-full(?![\w-])/.test(attrValue(tag, "className") ?? "")) push("raw-pill-button", m.index);
+  }
+
+  // hand-press (#218): a hand-written press scale; PRESS (motion-safe:active:scale-[0.98]) is the one press, disabled: may undo it.
+  for (const m of code.matchAll(/(?<![\w:\[-])((?:[\w-]+:)*active:!?scale-[\w.\[\]-]+)/g)) {
+    if (m[1] === "motion-safe:active:scale-[0.98]" || m[1].startsWith("disabled:")) continue;
+    push("hand-press", m.index);
   }
 
   // detail-overlay-url: DetailOverlay whose open does not come from the URL.

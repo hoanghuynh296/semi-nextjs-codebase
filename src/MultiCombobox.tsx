@@ -190,20 +190,20 @@ export function MultiCombobox({
         onClick={() => !opt.disabled && toggle(opt.value)}
         onPointerEnter={() => !opt.disabled && setActive(i)}
         className={cn(
-          "w-full min-h-control px-2.5 py-1.5 rounded-control text-ui transition-colors flex items-center gap-2.5 select-none",
+          "w-full min-h-control px-2.5 py-1.5 rounded-control text-ui transition-hover flex items-center gap-2.5 select-none",
           opt.disabled
             ? "opacity-40 cursor-not-allowed text-muted"
             : isActive
               ? "bg-item-hover text-strong cursor-pointer"
               : checked
                 ? "text-strong hover:bg-item-hover cursor-pointer"
-                : "text-body hover:bg-item-hover hover:text-strong cursor-pointer",
+                : "text-body hover:bg-item-hover active:bg-item-hover hover:text-strong cursor-pointer",
         )}
       >
         <span
           aria-hidden
           className={cn(
-            "w-4 h-4 rounded-chip border flex items-center justify-center shrink-0 transition-colors",
+            "w-4 h-4 rounded-chip border flex items-center justify-center shrink-0 transition-hover",
             checked ? "bg-inverted border-transparent text-on-inverted" : "bg-field border-control-line",
           )}
         >
@@ -236,7 +236,7 @@ export function MultiCombobox({
             onClick={() => toggle(o.value)}
             aria-label={t.removeChoice(o.label)}
             title={t.removeChoice(o.label)}
-            className={cn("relative w-6 h-6 rounded-full inline-flex items-center justify-center text-muted hover:text-strong hover:bg-item-hover transition-colors outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus shrink-0 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed", HIT_AREA)}
+            className={cn("relative w-6 h-6 rounded-full inline-flex items-center justify-center text-muted hover:text-strong hover:bg-item-hover transition-hover motion-safe:active:scale-[0.98] outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus shrink-0 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed", HIT_AREA)}
           >
             <Icon name="close" className="w-3 h-3" />
           </button>

@@ -97,7 +97,7 @@ export function useListSelection(initial: string[] = []) {
 }
 
 const CHIP =
-  "shrink-0 inline-flex items-center gap-1.5 h-8 pointer-coarse:max-sm:min-h-11 pointer-coarse:max-sm:min-w-11 px-3 rounded-full text-ui font-medium whitespace-nowrap transition outline-none focus-visible:ring-2 focus-visible:ring-focus cursor-pointer";
+  "shrink-0 inline-flex items-center gap-1.5 h-8 pointer-coarse:max-sm:min-h-11 pointer-coarse:max-sm:min-w-11 px-3 rounded-full text-ui font-medium whitespace-nowrap transition-hover motion-safe:active:scale-[0.98] outline-none focus-visible:ring-2 focus-visible:ring-focus cursor-pointer";
 const CHIP_ON = "bg-inverted text-on-inverted hover:bg-inverted-hover";
 const CHIP_OFF = "bg-subtle-button text-body hover:text-strong hover:bg-tint-hover";
 
@@ -174,7 +174,7 @@ export function FilterChip({ def, onChange }: { def: FilterDef; onChange: (selec
           <button
             type="button"
             onClick={() => onChange([])}
-            className="w-full h-8 rounded-control text-ui font-medium text-muted hover:text-strong hover:bg-tint outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            className="w-full h-8 rounded-control text-ui font-medium text-muted hover:text-strong hover:bg-tint transition-hover outline-none focus-visible:ring-2 focus-visible:ring-focus"
           >
             {t.clearSelection}
           </button>
@@ -191,7 +191,7 @@ export function FilterOptions({ def, onChange, className }: { def: FilterDef; on
   return (
     <div data-semi="FilterOptions" role="group" aria-label={def.label} className={cn("flex flex-col gap-0.5 p-1.5 max-h-72 overflow-y-auto overscroll-contain", className)}>
       {def.options?.map((o) => (
-        <div key={o.value} className="flex items-center gap-2 min-h-9 px-2 rounded-control hover:bg-tint">
+        <div key={o.value} className="flex items-center gap-2 min-h-9 px-2 rounded-control hover:bg-tint transition-hover">
           <Checkbox
             checked={def.selected.includes(o.value)}
             onChange={(c) => toggle(o.value, c)}
@@ -289,7 +289,7 @@ export function FilterChipRow({
     : undefined;
   const hasRight = Boolean(sort || selection || trailing);
   const arrow =
-    "absolute top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-panel shadow-overlay flex items-center justify-center text-strong hover:bg-raised cursor-pointer";
+    "absolute top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full bg-panel shadow-overlay flex items-center justify-center text-strong hover:bg-raised transition-hover motion-safe:active:scale-[0.98] cursor-pointer";
   return (
     <div data-semi="FilterChipRow" data-filter-row="" className={cn("min-h-9 flex items-center gap-2 min-w-0", className)}>
       {leading && <div className="shrink-0 flex items-center gap-1 pr-2 border-r border-divider">{leading}</div>}
@@ -307,7 +307,7 @@ export function FilterChipRow({
             <button
               type="button"
               onClick={onClear}
-              className="shrink-0 h-8 pointer-coarse:max-sm:min-h-11 pointer-coarse:max-sm:min-w-11 px-2 rounded-control text-ui font-medium text-muted hover:text-strong outline-none focus-visible:ring-2 focus-visible:ring-focus cursor-pointer"
+              className="shrink-0 h-8 pointer-coarse:max-sm:min-h-11 pointer-coarse:max-sm:min-w-11 px-2 rounded-control text-ui font-medium text-muted hover:text-strong transition-hover outline-none focus-visible:ring-2 focus-visible:ring-focus cursor-pointer"
             >
               {t.clearFilters}
             </button>

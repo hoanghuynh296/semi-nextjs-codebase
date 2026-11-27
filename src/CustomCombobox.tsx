@@ -151,14 +151,14 @@ export function CustomCombobox({
         onClick={() => pick(opt)}
         onPointerEnter={() => !opt.disabled && setActive(i)}
         className={cn(
-          "w-full text-left px-3 py-1.5 rounded-control text-ui transition-colors flex items-center justify-between gap-2",
+          "w-full text-left px-3 py-1.5 rounded-control text-ui transition-hover flex items-center justify-between gap-2",
           opt.disabled
             ? "opacity-40 cursor-not-allowed text-muted"
             : isSelected
               ? "bg-item-selected text-strong font-medium cursor-pointer"
               : i === active
                 ? "bg-item-hover text-strong cursor-pointer"
-                : "text-body hover:bg-item-hover hover:text-strong cursor-pointer",
+                : "text-body hover:bg-item-hover active:bg-item-hover hover:text-strong cursor-pointer",
         )}
       >
         <span className="truncate">{opt.label || opt.value}</span>

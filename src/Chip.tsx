@@ -11,7 +11,7 @@ import { Icon, TONE_TEXT, type TileTone } from "./Icon";
 import { type SemanticTone, TONAL_SURFACE } from "../styles/surfaces";
 
 export const CHIP_BASE =
-  "shrink-0 inline-flex items-center justify-center gap-1.5 px-3.5 h-control pointer-coarse:max-sm:min-h-11 pointer-coarse:max-sm:min-w-11 rounded-full text-ui font-medium whitespace-nowrap transition outline-none focus-visible:ring-2 focus-visible:ring-focus cursor-pointer";
+  "shrink-0 inline-flex items-center justify-center gap-1.5 px-3.5 h-control pointer-coarse:max-sm:min-h-11 pointer-coarse:max-sm:min-w-11 rounded-full text-ui font-medium whitespace-nowrap transition-hover motion-safe:active:scale-[0.98] outline-none focus-visible:ring-2 focus-visible:ring-focus cursor-pointer";
 
 const CHIP_ON = "bg-raised text-strong";
 

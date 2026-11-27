@@ -246,7 +246,7 @@ export function CustomSelect({
                         ? "bg-item-selected text-strong font-medium"
                         : i === active
                         ? "bg-item-hover text-strong"
-                        : "text-body hover:bg-item-hover hover:text-strong"
+                        : "text-body hover:bg-item-hover active:bg-item-hover hover:text-strong"
                     }`}
                   >
                     <span className="flex items-center gap-1.5 min-w-0">

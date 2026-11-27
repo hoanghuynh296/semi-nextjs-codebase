@@ -62,6 +62,11 @@
       "file": "sizes",
       "title": "Sizes",
       "description": "lg (40px, 14px) for the one call to action of a page header, md (default, 34px, 14px text) for content, sm (28px, 12px text) for dense rows and toolbars, pill (24px, 12px, fully rounded) for a small pill CTA, xs (24px) for the inverse pill of a list title row, modal for dialog footers and a full-width commit; every size is at least 44px on a touch phone. The second row: danger at lg and md, danger-subtle as a pill. badge pins an attention count to an icon button."
+    },
+    {
+      "file": "feedback",
+      "title": "Hover and press",
+      "description": "One hover timing (transition-hover, 150ms) and one press for every control: buttons, icon buttons, chips, toggles, checkboxes and switches shrink to 98% while pressed (PRESS; none under reduced motion). Rows, list items, cards and an app's own tiles (PRESSABLE) never shrink: they keep their hover fill while pressed. Hover shows on any device with a pointer that can hover (any-hover), an iPad with a trackpad too."
     }
   ]
 }

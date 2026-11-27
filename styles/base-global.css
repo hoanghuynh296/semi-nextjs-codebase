@@ -5,6 +5,18 @@
 /* `dark:` and `light:` variants follow a class or data-theme attribute (Semi is dark-first by default). */
 @custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
 @custom-variant light (&:where(.light, .light *, [data-theme="light"], [data-theme="light"] *));
+/* Hover follows any-hover, not Tailwind's default (hover: hover) (#218): iPadOS reports its primary input as touch even
+   with a trackpad or mouse attached, so (hover: hover) gave it no hover at all. any-hover is true when any attached
+   pointer can hover; a phone or a tablet without one still gets none. Tradeoffs: on an iPad with a trackpad attached a
+   finger tap can leave a hover until the next tap elsewhere; some Android phones with stylus or mouse support report
+   any-hover: hover while their primary input is touch, so a hover can stick after a tap there too. Every hover:, group-hover: and peer-hover: class follows. */
+@custom-variant hover {
+  @media (any-hover: hover) {
+    &:hover {
+      @slot;
+    }
+  }
+}
 
 /* No visible scrollbars anywhere (every page, every screen size); content still scrolls by wheel, touch and keys.
    `custom-scrollbar` is a no-op kept for older markup. */

@@ -256,9 +256,11 @@ control drawn under 24px gets `HIT_AREA` · UI text in shared components comes f
   - Feedback (§14c): one toast API: `toast.success|error|warning|info(title)`, `toast.undo(title, restore)` (reversible destructive: Hoàn tác, 8 s), `toast.promise(p, { loading, success, error })`, `updateToast`; irreversible: `confirmDelete({ name })` (names the object, red Xoá, Huỷ); success once, never a modal; no toast libraries or local wrappers (`local-toast`, warning).
   - AI chat (§14b): `<AIChat messages busy onSend onStop onRetry onNewChat empty toolbar />` (or `ChatPanel` > `ChatView` > `ChatList` + `ChatComposer` with `UserMessage` / `AssistantMessage` / `ChatError` / `ChatThinking` / `ChatIntro` / `ChatSuggestion`). UI only: the app keeps messages and streaming; the provider → model → effort chips are `toolbar={<ChatModelPicker providers models efforts … />}`. Never a local composer or bubbles.
 - **Style Constants (`@semi/ui/styles`):**
-  - `surfaces.ts`: `SHELL_OUTER`, `SHELL_ASIDE`, `SHELL_MAIN`, `SHELL_CONTAINER`, `CARD`, `CARD_HOVER`, `CARD_BORDERED`, `CARD_BORDERED_HOVER`, `CARD_ACTIVE`, `HERO`, `TILE`, `SECTION_*`, `COUNT_PILL`, `EMPTY`, `ICON_BTN*`, `STATUS_PILL`, `STATUS_DOT`, `TONAL_SURFACE`, `TONAL_CONTAINER`, `TONAL_HOVER`, `BADGE_BASE`, `BADGE_OVERLAY`, `STICKY_TOOLBAR`, `MODAL_*`, `FIELD_LABEL`, `FIELD_INPUT`, `FIELD_TEXTAREA`.
+  - `surfaces.ts`: `SHELL_OUTER`, `SHELL_ASIDE`, `SHELL_MAIN`, `SHELL_CONTAINER`, `CARD`, `PRESSABLE` (an app's own clickable tile / row on a link), `CARD_HOVER`, `CARD_BORDERED`, `CARD_BORDERED_HOVER`, `CARD_ACTIVE`, `HERO`, `TILE`, `SECTION_*`, `COUNT_PILL`, `EMPTY`, `ICON_BTN*`, `STATUS_PILL`, `STATUS_DOT`, `TONAL_SURFACE`, `TONAL_CONTAINER`, `TONAL_HOVER`, `BADGE_BASE`, `BADGE_OVERLAY`, `STICKY_TOOLBAR`, `MODAL_*`, `FIELD_LABEL`, `FIELD_INPUT`, `FIELD_TEXTAREA`.
   - `buttons.ts` (1.0 variants): `BTN_SUBTLE` (default), `BTN_SURFACE`, `BTN_INVERSE` (a card's / list title row's main action), `BTN_OUTLINE`, `BTN_GHOST`, `BTN_PRIMARY` / `BTN_SECONDARY` (brand: the one main button of a page, dialog or nav), `BTN_DANGER` (solid red), `BTN_DANGER_SUBTLE` (the danger tint), `BTN_ICON`, `BTN_LG` (40px: the one CTA of a page header), `BTN_SM`, `BTN_XS`, `BTN_PILL` (24px pill), `MODAL_BTN_*` (`MODAL_BTN_SUBTLE` for cancel). Attention: `CountBadge` / Button `badge` (brand fill, 99+), `NewTag` ("Mới").
   - `appChrome.ts`: `HEADER_ICON_*`, `headerPrimary`, `HEADER_PILL`, `VIEWPORT_*`.
+  - `utils.ts`: `cn`, `FOCUS_RING`, `PRESS` (the press of a button or control: `motion-safe:active:scale-[0.98]`), `HIT_AREA`, `SEGMENT_ON`, `OVERLAY`.
+- **Hover & press (§4g, #218):** hover in 150ms (`transition-hover`), shown on any device with a hovering pointer (`hover:` follows `any-hover` in `base.css`: an iPad with a trackpad gets hover). Buttons and controls press with `PRESS` (98%, none under reduced motion); rows, cards, list items and tiles never shrink, they keep their hover fill while pressed (`PRESSABLE` for an app's own tile on a link). Never hand-write `active:scale-*` or `duration-*` on a control (`hand-press`, warning).
 
 **Not the generic AI screen (§19):** one main block per screen (`KpiCard featured`, not four equal cards) · KPI icons
 neutral, colour only for a status (`decorative-icon-tones`) · no three feature cards with icons and vague promises: proof
@@ -924,6 +926,24 @@ Semi wires T1's motion tokens (`TOKENS.md` "Motion": `--motion-hover`, `--motion
 
 - **Hover & nav:** colours on hover and active change in 150ms (`transition-hover`) on links, buttons, tabs, menus and
   rows; the nav's active background in 150ms (`transition-nav`).
+- **Hover follows `any-hover` (#218):** `base.css` redefines Tailwind's `hover:` variant as
+  `@media (any-hover: hover) { &:hover }` (Tailwind's default is `(hover: hover)`), so every `hover:`, `group-hover:` and
+  `peer-hover:` class shows on any device with a pointer that can hover, an iPad with a trackpad or mouse included
+  (iPadOS reports its primary input as touch, so `(hover: hover)` gave it no hover at all). A phone or a tablet with no
+  such pointer gets none. Tradeoffs: on an iPad with a trackpad attached a finger tap can leave a hover until the next tap
+  elsewhere; some Android phones with stylus or mouse support report `any-hover: hover` while their primary input is
+  touch, so a hover can stick after a tap there too (not tested on a real phone). Layout choices that hide a control behind hover (`CardActions`) keep `(hover: hover)`: touch must always
+  reach the control, so an iPad shows the always-visible `⋯` even with a trackpad.
+- **Press (#218):** one press for buttons and controls (`Button` / `BTN_*` / `MODAL_BTN_*` of every variant, icon
+  buttons, `appChrome.ts`, chips, `Toggle`, `Checkbox`, `Switch`, `CardActions`): `PRESS` (`@semi/ui/styles`,
+  `motion-safe:active:scale-[0.98]`), 98% in the hover timing (`transition-hover` carries `scale`). **Never on rows,
+  cards, list items or tiles** (a large surface that shrinks looks broken): `TR` / `DataTable` rows, `Item`, menu
+  items, select and combobox options, `SubNav` and nav items keep their hover fill while pressed
+  (`active:bg-item-hover`; touch screens have no hover); `Card onClick` / `CARD_HOVER` keep the hover border. Tabs,
+  `PillTabs` and `SegmentedControl` do not shrink: their sliding indicator is the feedback. Fields (`CustomSelect` /
+  `CustomCombobox` triggers) do not shrink either. An app's own clickable tile or row on a link: `PRESSABLE`
+  (`transition-hover hover:bg-item-hover active:bg-item-hover cursor-pointer` + `FOCUS_RING`). Never hand-write
+  `active:scale-*` or `duration-*` on a control (lint `hand-press`, warning).
 - **Page enter (`PageEnter` / `<Page enter>`):** top blocks and the first ~10 rows / cards (`tbody > tr`,
   `[role="listitem"]`, `[data-page-grid] > *`, `[data-motion-item]`, `Item`) rise in with `motion-enter` (400ms,
   opacity + 4px) and `motion-stagger` (35ms per item), **once per route** (keyed by pathname — never on filter, search,
@@ -935,8 +955,8 @@ Semi wires T1's motion tokens (`TOKENS.md` "Motion": `--motion-hover`, `--motion
 - **Tooltip & disclosure:** `Tooltip` enters with `animate-tooltip-in` (200ms, opacity + scale 0.96 → 1); `Accordion`
   and `Collapsible` open in 300ms ease-out (`--motion-disclosure`) and close in 300ms ease-in
   (`--motion-disclosure-close`); `PillTabs` / `SegmentedControl` slide in 300ms (`transition-slide`).
-- **Reduced motion (`prefers-reduced-motion: reduce`):** opacity only (no translate, no scale, no slide); skeleton
-  pulse stops.
+- **Reduced motion (`prefers-reduced-motion: reduce`):** opacity only (no translate, no scale, no slide, no press
+  scale: `PRESS` is `motion-safe:`); skeleton pulse stops.
 - **Shell stillness:** the shell (nav, frame, route header bar, content card) never animates, remounts or moves on a
   route change.
 
@@ -1040,7 +1060,7 @@ reduced motion.
 ## 9. Buttons
 
 1.0 variants (#146), `Button variant` or the `BTN_*` constants from `@semi/ui/styles` (`rounded-control`, `h-control`,
-`text-ui` 14px `font-medium`, flat, hover in 150ms `transition-hover`, a 2px `outline-focus` focus outline, disabled
+`text-ui` 14px `font-medium`, flat, hover in 150ms `transition-hover`, one press for every variant (`PRESS`: 98% while pressed, §4g), a 2px `outline-focus` focus outline, disabled
 neutral for every variant, at least 44 × 44px on a phone with a touch screen (`BTN_HIT`: `pointer-coarse` + `max-sm`, real size, no pseudo-element that could cover a neighbour)):
 
 | Variant | Constant | Look | When |
@@ -1373,7 +1393,7 @@ and is listed in `semi-lint.json` → `skip.inline-svg-path`.
 | `NumberInput` (+ `NumPadPopup`, `useCoarsePointer`) | every number field (app numpad on touch screens) |
 | `SidePanel`, `SidePanelToggle`, `RefreshButton` | tool-app left panel, icon-only reload action |
 | Hooks (`Field.tsx`, `a11y.ts`, `floating.ts`) | `useField` (a custom control reads its `Field`: id, `aria-describedby`, invalid), `useDialog` (focus trap + scroll lock + Escape for a modal-like surface; built on `useFocusTrap` and `useScrollLock`), `focusFirstField(root)` (focuses the first field only on `(hover: hover) and (pointer: fine)` unless focus already sits in a field; `Modal` and `Drawer` run it on open by default, `autoFocusFirstField={false}` opts out), `useBackdropClose` (a backdrop that wraps its panel closes only on a click that starts and ends on it), `useAnchoredPosition` (fixed menu / tooltip next to its trigger, flips above, never clipped), `useCoarsePointer`, `useTheme` |
-| `@semi/ui/styles` → `surfaces.ts` | `SHELL_*`, `CARD`, `CARD_HOVER`, `CARD_BORDERED`, `CARD_BORDERED_HOVER`, `CARD_ACTIVE`, `HERO`, `TILE`, `SECTION_*`, `COUNT_PILL`, `EMPTY`, `ICON_BTN` / `ICON_BTN_DANGER`, `STATUS_PILL`, `STATUS_DOT`, `STICKY_TOOLBAR`, `MODAL_*`, `FIELD_LABEL`, `FIELD_INPUT`, `FIELD_TEXTAREA`, `FORM_PAGE`, `FORM_ACTIONS`, `FORM_ACTIONS_STICKY` |
+| `@semi/ui/styles` → `surfaces.ts` | `SHELL_*`, `CARD`, `PRESSABLE` (an app's own clickable tile or row on a link: hover fill, the same fill pressed, focus ring, no shrink; §4g), `CARD_HOVER`, `CARD_BORDERED`, `CARD_BORDERED_HOVER`, `CARD_ACTIVE`, `HERO`, `TILE`, `SECTION_*`, `COUNT_PILL`, `EMPTY`, `ICON_BTN` / `ICON_BTN_DANGER`, `STATUS_PILL`, `STATUS_DOT`, `STICKY_TOOLBAR`, `MODAL_*`, `FIELD_LABEL`, `FIELD_INPUT`, `FIELD_TEXTAREA`, `FORM_PAGE`, `FORM_ACTIONS`, `FORM_ACTIONS_STICKY` |
 | `buttons.ts` | `BTN_PRIMARY`, `BTN_SECONDARY`, `BTN_OUTLINE`, `BTN_DANGER`, `BTN_DANGER_SUBTLE`, `BTN_ICON`, `BTN_LG`, `BTN_PILL`, `MODAL_BTN_*` (incl. `MODAL_BTN_OUTLINE`, `MODAL_BTN_DANGER_SUBTLE`) |
 | `appChrome.ts` | `HEADER_ICON_*`, `headerPrimary`, `HEADER_PILL`, `VIEWPORT_*` |
 
@@ -3090,7 +3110,7 @@ Each token is a duration and an easing, usable in a `transition` or `animation` 
 
 | Token | Value | Use |
 |---|---|---|
-| `--motion-hover` | 150ms ease-in-out | colours on hover / active (`transition-hover`) |
+| `--motion-hover` | 150ms ease-in-out | colours on hover / active and the press scale of buttons and controls (`transition-hover`, `PRESS`) |
 | `--motion-nav` | 150ms cubic-bezier(0.4,0,0.2,1) | nav active background (`transition-nav`) |
 | `--motion-crumb-in` | 220ms cubic-bezier(0.22,1,0.36,1) | breadcrumb entering: opacity + translateX(−6px → 0) (`animate-crumb-in`) |
 | `--motion-crumb-out` | 160ms cubic-bezier(0.4,0,1,1) | breadcrumb leaving |
@@ -3129,7 +3149,7 @@ All web UI here follows the **Semi Design System** (`@semi/ui`, repo `https://gi
    **Density budgets** (`DESIGN_SYSTEM.md` §4c, measured on the page by `npx semi density <url>`): at most three frames inside each other (page panel › card › tile); at most four text sizes and three colours (brand + status) in one box; one filled brand button per page or modal; text 12px from a box's sides and 8px from its top and bottom; a list row at least `h-control` tall (`Item`, `Menu`, `DataTable`); 8px or more between boxes; one line between two things (no `border-b` on a card's last row). `px-2` / `py-1` are for the inside of a control, never a row's or a box's padding.
    **Every state** (`DESIGN_SYSTEM.md` §19b, §13c): use `EmptyState` (`first-use` / `no-results`), `ErrorState`, `NotFound`, `Forbidden`, and give each route group `loading.tsx` / `error.tsx` / `not-found.tsx` (`npx semi example states`); each screen has its loading (skeleton of the real shape), empty (with the action that fills it), "no result", error (what failed + retry, loaded data kept), no-permission and too-much-data states; a destructive action is undoable (`toast.undo`) or, when irreversible, confirmed (`confirmDelete`); Escape closes, Enter submits, back works.
    **Feedback** (`DESIGN_SYSTEM.md` §14c): one toast API from `@semi/ui` (`toast.success|error|warning|info`, `toast.undo`, `toast.promise`), never a toast library or a local wrapper (`local-toast`, warning); a reversible destructive action is done at once with `toast.undo(title, restore)` (Hoàn tác, 8 s); an irreversible one asks first with `confirmDelete({ name })` (names the object, red Xoá, Huỷ); success is one toast, never a modal (`npx semi example toast`).
-   **Grouped actions** (`DESIGN_SYSTEM.md` §9, G1–G12): one way to start one job (other ways to create the same thing go under the primary in a `SplitButton`, never as extra toolbar buttons); secondary page actions in the ⋯ `Menu` (at most one secondary button visible); `ButtonGroup` only for toggles or steps of one control; a table row has one inline action + ⋯, a card `CardActions` (always with `label`: `card-hover-actions-touch` is a hard error); a round icon button is `<Button iconOnly shape="round">`, never a hand-made `rounded-full` button (`raw-pill-button`, warning); danger last; one filled primary per view; 3+ icon-only buttons in a row go into ⋯. A list record opens in a `DetailOverlay` with `useDetailParam` (`?open=`), not a new page (`detail-overlay-url`, warning); the ⌘K box is one `CommandPalette` in the root layout (pages add items with `useRegisterCommands`).
+   **Grouped actions** (`DESIGN_SYSTEM.md` §9, G1–G12): one way to start one job (other ways to create the same thing go under the primary in a `SplitButton`, never as extra toolbar buttons); secondary page actions in the ⋯ `Menu` (at most one secondary button visible); `ButtonGroup` only for toggles or steps of one control; a table row has one inline action + ⋯, a card `CardActions` (always with `label`: `card-hover-actions-touch` is a hard error); a round icon button is `<Button iconOnly shape="round">`, never a hand-made `rounded-full` button (`raw-pill-button`, warning); danger last; one filled primary per view; 3+ icon-only buttons in a row go into ⋯. A list record opens in a `DetailOverlay` with `useDetailParam` (`?open=`), not a new page (`detail-overlay-url`, warning); the ⌘K box is one `CommandPalette` in the root layout (pages add items with `useRegisterCommands`). **Hover & press** (`DESIGN_SYSTEM.md` §4g): Semi's controls already carry them; never hand-write `active:scale-*`, `duration-*` or `transition-colors` on a control (`PRESS` for a custom control, `PRESSABLE` for the app's own clickable tile or row on a link: rows, cards and tiles never shrink).
    **Forms** (`DESIGN_SYSTEM.md` §9b): the action row is `FormActions` (Huỷ ghost, then Lưu / Tạo, destructive on the left, sticky on a page); `useUnsavedGuard(dirty)` so typed work is never lost; `Field kind` for email / phone / number / money / URL / search / password; errors under the field (`useFormValidation`, `FormErrorSummary`), never in a toast; page forms `max-w-2xl` (`npx semi example form-actions`).
 5. **Brand** (when `semi-lint.json` has `"brand"`): ask `semi_brand` (or `npx semi brand voice|color|logo|brief`) before writing UI text or placing colour. Write in the brand's voice, use its fills only as the brand colour rule says, import the logo from the kit; never define colours, fonts or Semi tokens in the app (`brand-override`). Brand changes happen in the brand repo with `/semi-brand`, then `/semi-sync` here.
 6. **Accessibility** (`DESIGN_SYSTEM.md` §18, checked on the page by `npx semi a11y <url>`): icon-only controls have `aria-label`, and a field's name comes from `Field` (a placeholder is not a label); anything clickable is a button or a link (`click-target`); custom controls keep `FOCUS_RING` or the 2px `:focus-visible` `outline-focus`, never a bare `outline-none` (`focus-hidden`); every text / background pair reaches 4.5:1 in both themes (themed text tokens, never a fixed shade on a tinted surface); text-like fields use the quiet 1.0 style (`border-field-line`, backed by the 2px `:focus-visible` outline), checkboxes and radios keep `border-control-line` (3:1); a control drawn smaller than 24px gets `HIT_AREA`, and on a touch phone every control reaches 44 × 44px (`HIT_AREA` for an isolated one, `BTN_HIT` growth in a dense row; `Button`, `BTN_ICON` and Semi's tabs, segments, filter chips and `Chip`, choice rows, breadcrumb and table header already have it); images have `alt`; never `maximum-scale` or `user-scalable=no` in the viewport.
@@ -3319,6 +3339,53 @@ export default function ButtonSizes() {
           Xác nhận
         </Button>
       </div>
+    </div>
+  );
+}
+```
+
+### Hover and press
+
+One hover timing (transition-hover, 150ms) and one press for every control: buttons, icon buttons, chips, toggles, checkboxes and switches shrink to 98% while pressed (PRESS; none under reduced motion). Rows, list items, cards and an app's own tiles (PRESSABLE) never shrink: they keep their hover fill while pressed. Hover shows on any device with a pointer that can hover (any-hover), an iPad with a trackpad too.
+
+```tsx
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+import { Button, Checkbox, Chip, Item, ItemGroup, PRESSABLE, Switch, Toggle } from "@semi/ui";
+
+// Hover and press (#218): every control shares one hover timing (transition-hover, 150ms) and one press: buttons and
+// controls shrink to 98% while pressed (PRESS; none under reduced motion); rows, list items, cards and tiles never
+// shrink, they keep their hover fill while pressed (PRESSABLE for an app's own tile). Hover shows on any device with a
+// pointer that can hover (any-hover), so an iPad with a trackpad gets it too.
+export default function ButtonFeedback() {
+  const [chip, setChip] = useState(false);
+  const [bold, setBold] = useState(false);
+  const [check, setCheck] = useState(true);
+  const [on, setOn] = useState(false);
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center gap-2">
+        <Button>Làm mới</Button>
+        <Button variant="outline">Chia sẻ</Button>
+        <Button variant="ghost">Xem thêm</Button>
+        <Button variant="inverse">Thêm</Button>
+        <Button variant="ghost" iconOnly icon="more" aria-label="Thao tác khác" title="Thao tác khác" />
+        <Chip active={chip} onClick={() => setChip(!chip)}>
+          Đang in
+        </Chip>
+        <Toggle pressed={bold} onPressedChange={setBold} icon="star" aria-label="Đánh dấu" title="Đánh dấu" />
+        <Checkbox checked={check} onChange={setCheck} label="Gửi email" />
+        <Switch checked={on} onChange={setOn} label="Tự động" />
+      </div>
+      <ItemGroup label="Máy in" className="max-w-md">
+        <Item icon="printer" title="X1 Carbon 03" description="Hàng: hover fill, không co lại" href="#x1" />
+        <Item icon="printer" title="P1S 02" description="Nhấn giữ: cùng màu hover" href="#p1s" />
+      </ItemGroup>
+      <Link href="#tile" className={`${PRESSABLE} block rounded-card bg-card p-card text-ui text-strong max-w-md`}>
+        Ô tuỳ chỉnh của ứng dụng (PRESSABLE)
+      </Link>
     </div>
   );
 }
@@ -12313,7 +12380,7 @@ so checking and opening never nest interactive elements.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `interactive` | `boolean` | `false` | Clickable card (opens a detail view): hover border + press scale. |
+| `interactive` | `boolean` | `false` | Clickable card (opens a detail view): the border shows on hover and while pressed; a card never shrinks (#218). |
 | `active` | `boolean` |  | "On" / selected card: outline border, no glow. On a non-selectable card with onClick it is also its pressed state (aria-pressed). |
 | `bordered` | `boolean` | `false` | Framed card for dense data views (a table or rows that need an edge): panel fill + 1px line instead of the borderless card surface. |
 | `padding` | `'card' \| 'panel' \| 'none'` | `"card"` | Inner padding: `"card"` = p-card (16px at regular density, the default), `"panel"` = p-card sm:p-panel (a roomy card, 24px from sm), `"none"` for an image or a table that runs to the edge. A padding class in `className` (p-*, px-*, py-*) replaces it. |

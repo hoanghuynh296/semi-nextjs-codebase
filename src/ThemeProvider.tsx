@@ -133,7 +133,7 @@ export function ThemeToggle({ className = "", size = "md" }: ThemeToggleProps) {
       onClick={toggleTheme}
       title={isDark ? t.toLight : t.toDark}
       aria-label={isDark ? t.toLight : t.toDark}
-      className={cn(sizeClasses, "rounded-control bg-raised hover:bg-raised-2 text-muted hover:text-strong flex items-center justify-center transition-hover active:scale-95 cursor-pointer shrink-0", FOCUS_RING, className)}
+      className={cn(sizeClasses, "rounded-control bg-raised hover:bg-raised-2 text-muted hover:text-strong flex items-center justify-center transition-hover motion-safe:active:scale-[0.98] cursor-pointer shrink-0", FOCUS_RING, className)}
     >
       <Icon name={isDark ? "sun" : "moon"} className={`${size === "sm" ? "w-3.5 h-3.5" : "w-4 h-4"} transition-opacity ${mounted ? "" : "opacity-0"}`} />
     </button>

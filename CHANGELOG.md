@@ -2,6 +2,19 @@
 
 All notable changes to the **Semi Design System** (`@semi/ui` and `semi-design` plugin) are documented in this file.
 
+## Unreleased
+
+### Added
+
+- **`PRESSABLE` and `PRESS` in `@semi/ui/styles` (#218):** `PRESSABLE` (`surfaces.ts`) for an app's own clickable tile or row on a link: `transition-hover hover:bg-item-hover active:bg-item-hover cursor-pointer` + `FOCUS_RING`, no shrink. `PRESS` (`utils.ts`, `motion-safe:active:scale-[0.98]`) is the one press of a button or control. New Button example "Hover and press" (light and dark on the docs site). New semi-lint warning `hand-press`: a hand-written `active:scale-*` (use `PRESS`; rows and tiles: `PRESSABLE`); a warning only, never a hard error.
+
+### Changed
+
+- **Hover follows `any-hover` (#218):** `base.css` (`base-global.css`) redefines Tailwind's `hover:` variant as `@media (any-hover: hover) { &:hover }` instead of Tailwind's default `(hover: hover)`. This affects every `hover:`, `group-hover:` and `peer-hover:` class in an app that imports Semi's base CSS, the app's own classes included. Effect: hover now shows on an iPad with a trackpad or mouse attached (iPadOS reports its primary input as touch, so it had no hover at all); a phone or a tablet with no hovering pointer still gets none. Tradeoffs: on an iPad with a trackpad attached a finger tap can leave a hover until the next tap elsewhere; some Android phones with stylus or mouse support report `any-hover: hover` while their primary input is touch, so a hover can stick after a tap there too (not tested on a real phone). `CardActions` keeps `(hover: hover)` for which control it shows, so touch always reaches the `⋯`. No migration needed.
+- **One press for buttons and controls (#218):** every `Button` variant and `BTN_*` / `MODAL_BTN_*` now shrinks to 98% while pressed (before: only the filled ones; subtle, surface, outline, ghost and danger-subtle did not); `appChrome.ts`, `ICON_BTN`, `ICON_BTN_DANGER`, `MODAL_CLOSE`, `ThemeToggle`, `AppHeader`'s brand and `MobileTabBar` move from 95% to 98%; chips (`Chip`, `CHIP_BASE`, `FilterChip`), `Toggle`, `Checkbox`, `Switch` and `CardActions` buttons gain it. The press is `motion-safe:` (none under reduced motion) and animates in the hover timing: `transition-hover` now also transitions `scale`. No migration needed.
+- **Rows and cards never shrink (#218):** `CARD_HOVER` / `CARD_BORDERED_HOVER` (`Card interactive` / `onClick`) lose `active:scale-[0.99]` and keep the hover border while pressed; clickable `TR` / `DataTable` rows (`TABLE_ROW_HOVER`), `Item`, `Menu` items, `CustomSelect` / `CustomCombobox` / `MultiCombobox` options, `SubNav` and `NavigationMenu` links keep their hover fill while pressed (`active:bg-item-hover`), so a tap on a touch screen shows feedback. No migration needed.
+- **Hover timing gaps (#218):** `CustomCombobox` / `MultiCombobox` options and chips moved from Tailwind's `transition-colors` / `transition` to `transition-hover` (150ms ease-in-out, `--motion-hover`); `Switch` gains a hover (`raised-2` off, `inverted-hover` on); FilterChipRow's clear and scroll buttons, `NavigationMenu` links and `AppShell`'s drawer buttons gain `transition-hover`. No new motion tokens.
+
 ## 1.2.0 - 2026-11-26
 
 **Summary.** Group "staged-migration" (#184) plus a Windows fix (#185). New `@semi/ui/scoped.css` lets an app that moves to Semi screen by screen keep its own Tailwind build for the screens not migrated yet, without Semi's AppShell classes losing to the app's. `base.css` is split into `base-layers.css` and `base-global.css` (same rules, same output for apps on one `globals.css`). `/semi-check` reports a second Tailwind build that does not use the scoped entry (`second-build`). `/semi-propose` and `/semi-triage` now find the GitHub token on Windows.

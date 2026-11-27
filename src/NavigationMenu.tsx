@@ -85,7 +85,7 @@ function NavigationPanel({
               href={l.href}
               aria-current={l.href === current ? "page" : undefined}
               onClick={() => onClose(false)}
-              className={cn("flex gap-3 rounded-control p-2.5 hover:bg-item-hover", FOCUS_RING)}
+              className={cn("flex gap-3 rounded-control p-2.5 hover:bg-item-hover active:bg-item-hover transition-hover", FOCUS_RING)}
             >
               {l.icon && <Icon name={l.icon} className="w-4 h-4 mt-0.5 text-strong shrink-0" />}
               <span className="min-w-0">
@@ -247,7 +247,7 @@ export function NavigationMenu({
                   <ul className="space-y-0.5">
                     {it.links.map((l) => (
                       <li key={l.href}>
-                        <Link href={l.href} onClick={() => setSheet(false)} aria-current={l.href === current ? "page" : undefined} className={cn("flex items-center gap-2 rounded-control px-2 py-2 text-ui", l.href === current ? "bg-item-selected text-strong font-medium" : "text-body hover:bg-item-hover", FOCUS_RING)}>
+                        <Link href={l.href} onClick={() => setSheet(false)} aria-current={l.href === current ? "page" : undefined} className={cn("flex items-center gap-2 rounded-control px-2 py-2 text-ui", l.href === current ? "bg-item-selected text-strong font-medium" : "text-body hover:bg-item-hover active:bg-item-hover", "transition-hover", FOCUS_RING)}>
                           {l.icon && <Icon name={l.icon} className="w-4 h-4 text-muted" />}
                           {l.label}
                         </Link>
@@ -256,7 +256,7 @@ export function NavigationMenu({
                   </ul>
                 </>
               ) : (
-                <Link href={it.href ?? "#"} onClick={() => setSheet(false)} className={cn("block rounded-control px-2 py-2 text-ui font-medium text-strong hover:bg-item-hover", FOCUS_RING)}>
+                <Link href={it.href ?? "#"} onClick={() => setSheet(false)} className={cn("block rounded-control px-2 py-2 text-ui font-medium text-strong hover:bg-item-hover active:bg-item-hover transition-hover", FOCUS_RING)}>
                   {it.label}
                 </Link>
               )}

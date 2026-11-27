@@ -12,7 +12,7 @@ import { CARD, CARD_ACTIVE, CARD_BORDERED, CARD_BORDERED_HOVER, CARD_HOVER } fro
 import { FOCUS_RING, cn } from "../styles/utils";
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  /** Clickable card (opens a detail view): hover border + press scale. */
+  /** Clickable card (opens a detail view): the border shows on hover and while pressed; a card never shrinks (#218). */
   interactive?: boolean;
   /** "On" / selected card: outline border, no glow. On a non-selectable card with onClick it is also its pressed state (aria-pressed). */
   active?: boolean;

@@ -155,6 +155,22 @@ test("card-hover-actions-touch: CardActions without a label is a hard error; wit
   assert.deepEqual(rule(`// <CardActions actions={a} />\nconst a = 1;`), []);
 });
 
+test("hand-press: a hand-written active:scale warns; PRESS and a disabled: reset do not (#218)", () => {
+  for (const code of [
+    `<Link className="rounded-control hover:bg-item-hover active:scale-95" href="/a" />`,
+    `const TILE = "p-3 active:scale-[0.99] transition-hover";`,
+    `<Link className="motion-safe:active:scale-90" href="/a" />`,
+  ])
+    assert.deepEqual(rules(code), ["hand-press"], code);
+  for (const code of [
+    `<Link className={\`\${PRESSABLE} rounded-card p-card\`} href="/a" />`,
+    `const X = "motion-safe:active:scale-[0.98] disabled:active:!scale-100";`,
+    `<Link className="hover:scale-105" href="/a" />`,
+  ])
+    assert.deepEqual(rules(code), [], code);
+  assert.ok(WARN.some(([id]) => id === "hand-press"), "a warning, never hard");
+});
+
 test("scan(): the five pattern rules are warnings (never in the baseline), card-hover-actions-touch is hard; skip / disable work", () => {
   const warnIds = WARN.map(([id]) => id);
   for (const id of ["no-spinner-in-list", "filter-chip-wrap", "raw-pill-button", "detail-overlay-url", "overline-place"]) assert.ok(warnIds.includes(id), id);

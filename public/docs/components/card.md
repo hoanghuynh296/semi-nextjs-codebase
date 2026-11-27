@@ -93,7 +93,7 @@ so checking and opening never nest interactive elements.
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `interactive` | `boolean` | `false` | Clickable card (opens a detail view): hover border + press scale. |
+| `interactive` | `boolean` | `false` | Clickable card (opens a detail view): the border shows on hover and while pressed; a card never shrinks (#218). |
 | `active` | `boolean` |  | "On" / selected card: outline border, no glow. On a non-selectable card with onClick it is also its pressed state (aria-pressed). |
 | `bordered` | `boolean` | `false` | Framed card for dense data views (a table or rows that need an edge): panel fill + 1px line instead of the borderless card surface. |
 | `padding` | `'card' \| 'panel' \| 'none'` | `"card"` | Inner padding: `"card"` = p-card (16px at regular density, the default), `"panel"` = p-card sm:p-panel (a roomy card, 24px from sm), `"none"` for an image or a table that runs to the edge. A padding class in `className` (p-*, px-*, py-*) replaces it. |

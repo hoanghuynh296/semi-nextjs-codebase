@@ -161,7 +161,7 @@ Each token is a duration and an easing, usable in a `transition` or `animation` 
 
 | Token | Value | Use |
 |---|---|---|
-| `--motion-hover` | 150ms ease-in-out | colours on hover / active (`transition-hover`) |
+| `--motion-hover` | 150ms ease-in-out | colours on hover / active and the press scale of buttons and controls (`transition-hover`, `PRESS`) |
 | `--motion-nav` | 150ms cubic-bezier(0.4,0,0.2,1) | nav active background (`transition-nav`) |
 | `--motion-crumb-in` | 220ms cubic-bezier(0.22,1,0.36,1) | breadcrumb entering: opacity + translateX(−6px → 0) (`animate-crumb-in`) |
 | `--motion-crumb-out` | 160ms cubic-bezier(0.4,0,1,1) | breadcrumb leaving |

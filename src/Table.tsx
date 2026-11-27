@@ -11,7 +11,8 @@ import { cn } from "../styles/utils";
 export const TABLE = "w-full text-ui border-collapse";
 export const TABLE_HEAD_CELL = "h-9 px-3 text-left text-chrome font-medium text-muted bg-field border-b border-line whitespace-nowrap first:rounded-tl-card last:rounded-tr-card";
 export const TABLE_CELL = "h-11 px-3 py-2 text-body border-b border-divider whitespace-nowrap";
-export const TABLE_ROW_HOVER = "hover:bg-item-hover transition-hover";
+/** A clickable row: the hover fill, also while pressed (touch screens have no hover); a row never shrinks (#218). */
+export const TABLE_ROW_HOVER = "hover:bg-item-hover active:bg-item-hover transition-hover";
 
 type Align = "left" | "right" | "center";
 const ALIGN: Record<Align, string> = { left: "text-left", right: "text-right", center: "text-center" };
