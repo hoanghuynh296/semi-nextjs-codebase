@@ -386,7 +386,9 @@ export function AppShell({
     if (value) root.setAttribute("data-semi-nav", value);
     else root.removeAttribute("data-semi-nav");
     setMounted(true);
-    return () => root.removeAttribute("data-semi-nav");
+    return () => {
+      root.removeAttribute("data-semi-nav");
+    };
   }, [storageKey]);
 
   const canToggle = width === "lg" || width === "wide";
