@@ -1,7 +1,10 @@
 name: Deploy Semi Storybook to GitHub Pages
 
 # main: every merge is checked and published (labelled "· main" until it is released).
-# release: the tagged commit is published again without the label, so the live docs match what apps install.
+# release: the tagged commit is published without the label, so the live docs match what apps install.
+# One deploy per release (#229): a push to main whose version is not released yet, or whose commit is the tagged
+# release commit, is skipped (`plan`); the `release: published` run publishes that commit. Jobs: plan -> build ->
+# ui (6 shards) -> deploy, so a failed deploy (or one shard) is re-run alone from the Actions page.
 on:
   push:
     branches:
@@ -25,11 +28,38 @@ env:
   NEXT_PUBLIC_BASE_PATH: /semi-nextjs-codebase
 
 jobs:
-  build-and-deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  # A push to main that a release run will publish needs no deploy of its own (one deploy per release).
+  plan:
     runs-on: ubuntu-latest
+    outputs:
+      deploy: ${{ steps.plan.outputs.deploy }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Is this run the one that publishes this commit?
+        id: plan
+        run: |
+          v=$(node -p "require('./package.json').version")
+          tagged=$(git ls-remote --tags origin "refs/tags/v$v" "refs/tags/v$v^{}" | cut -f1)
+          deploy=true
+          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            if [ -z "$tagged" ]; then
+              echo "v$v is not released yet: the release run publishes it, no deploy for this push"
+              deploy=false
+            elif echo "$tagged" | grep -qx "$GITHUB_SHA"; then
+              echo "This commit is the v$v release: the release run publishes it, no deploy for this push"
+              deploy=false
+            fi
+          fi
+          echo "deploy=$deploy" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: plan
+    if: needs.plan.outputs.deploy == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -47,8 +77,10 @@ jobs:
         run: npm run check
 
       - name: Release or main
+        id: version
         run: |
           v=$(node -p "require('./package.json').version")
+          echo "version=$v" >> "$GITHUB_OUTPUT"
           tagged=$(git ls-remote --tags origin "refs/tags/v$v" "refs/tags/v$v^{}" | cut -f1)
           if [ "$GITHUB_EVENT_NAME" = "release" ] || echo "$tagged" | grep -qx "$GITHUB_SHA"; then
             echo "Release v$v"
@@ -63,12 +95,6 @@ jobs:
       - name: "Prerender regression build (#82: bare ToastHost in a root layout, dynamic route)"
         run: npm run build:prerender-test
 
-      - name: Install WebKit and Firefox for the IME test
-        run: npx playwright install --with-deps webkit firefox
-
-      - name: Browser checks on that build (contrast AA both themes, axe, theme, keyboard)
-        run: npm run test:ui
-
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
@@ -77,6 +103,61 @@ jobs:
         with:
           path: "./out"
 
+      # The same build the shards test and `deploy` publishes: tested is deployed.
+      - name: Upload the builds for the browser shards
+        uses: actions/upload-artifact@v4
+        with:
+          name: builds
+          path: |
+            out
+            out-brand
+            tests/prerender-app/.next
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 1
+
+  ui:
+    name: "ui (shard ${{ matrix.shard }}/6)"
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download the builds
+        uses: actions/download-artifact@v4
+        with:
+          name: builds
+
+      - name: Install WebKit and Firefox when this shard runs the IME test
+        run: |
+          if npx playwright test --list --shard=${{ matrix.shard }}/6 | grep -q "hint-textarea-ime"; then
+            npx playwright install --with-deps webkit firefox
+          fi
+
+      - name: "Browser checks on that build (contrast AA both themes, axe, theme, keyboard), shard ${{ matrix.shard }}/6"
+        run: npm run test:ui -- --shard=${{ matrix.shard }}/6
+
+  deploy:
+    needs: [build, ui]
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
@@ -86,8 +167,9 @@ jobs:
       - name: Smoke-check the live site
         env:
           URL: ${{ steps.deployment.outputs.page_url }}
+          VERSION: ${{ needs.build.outputs.version }}
         run: |
-          v=$(node -p "require('./package.json').version")
+          v="$VERSION"
           for i in $(seq 1 10); do
             live=$(curl -fsS "${URL}components.json?sha=$GITHUB_SHA" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>console.log(JSON.parse(s).version))' || true)
             [ "$live" = "$v" ] && break
