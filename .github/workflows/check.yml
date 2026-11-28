@@ -1,7 +1,7 @@
 name: Check
 
 # One run per PR push (agents always open a PR, so a separate push run was a duplicate); a newer push cancels the
-# older run of the same ref (about 4.5 min wall: 1 min build + 3 min shards). main runs the same checks in deploy-storybook.yml.
+# older run of the same ref (about 4.5 min wall: 1 min build + 3 min shards). main runs the same checks, sharded the same way, on the Pages-path build in deploy-storybook.yml.
 on:
   pull_request:
   workflow_dispatch:
@@ -116,10 +116,10 @@ jobs:
         run: node --test lint/test/plugin-spawn.test.mjs
 
   # The one required status (branch protection keeps the name `check`): fails when the build, any shard or windows fails or is
-  # cancelled.
+  # skipped. `!cancelled()` (not `always()`): a run cancelled by a newer push reports no red `check` on the stale commit.
   check:
     needs: [build, ui, windows]
-    if: always()
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     steps:
       - name: All jobs passed
